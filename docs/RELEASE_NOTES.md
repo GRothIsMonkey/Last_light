@@ -1,5 +1,7 @@
 # Last Light v0.1 — final polish
 
+> These notes describe the v0.1 release (`codex/astra-v0.1-release`). The later structural polish pass on `claude/epic-planck-cme9eq` is described in [ASTRA_HANDOFF.md](ASTRA_HANDOFF.md).
+
 Based directly on Claude's `claude/loving-newton-1vlisx` at `02cbde1`. All original story beats, the three distinct departures, the route, final exploration area and ending text are preserved.
 
 ## Visuals

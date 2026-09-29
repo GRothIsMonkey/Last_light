@@ -29,7 +29,7 @@ canvas.requestPointerLock=()=>{document.pointerLockElement=canvas;docEvents.get(
 globalThis.window={};globalThis.devicePixelRatio=2;globalThis.innerWidth=1440;globalThis.innerHeight=900;globalThis.matchMedia=()=>({matches:false});globalThis.addEventListener=(type,fn)=>events.set(type,fn);let tick;globalThis.requestAnimationFrame=fn=>tick=fn;
 globalThis.FakeRenderer=class{constructor(){this.shadowMap={};this.capabilities={maxTextureSize:8192};this.pixelRatio=1;}setPixelRatio(r){this.pixelRatio=r;}setSize(){}render(){}};
 let source=fs.readFileSync(root+'game.js','utf8').replaceAll(/'\.\/([\w.]+)\.js'/g,(_,name)=>JSON.stringify(pathToFileURL(root+name+'.js').href)).replace('new THREE.WebGLRenderer','new globalThis.FakeRenderer');
-source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,selfPose,self,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;}};`;
+source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,selfPose,self,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},place(d,lat,v=4.5){distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;},get bikeY(){return bikeY;}};`;
 const t0=Date.now();
 await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const buildMs=Date.now()-t0;
@@ -207,14 +207,16 @@ check('pause menu: start over resets the ride',()=>{element('restart').onclick()
 await Promise.resolve();canvas.events.get('pointerdown')({clientX:100,clientY:100,pointerId:1});events.get('mousemove')({clientX:150,clientY:130});events.get('mousemove')({clientX:250,clientY:180});press('KeyW');advance(.5);check('drag fallback works when pointer lock unavailable',()=>assert.ok(h.snapshot.look<-.15));canvas.events.get('pointerup')();tap('KeyR');advance(.5);
 
 // Pushing: Shift gives a bounded burst; the friends answer it and the group re-forms.
-{advance(12);const F=h.friends.list,before=F.map(f=>f.d);let top=0,minStamina=1,lead=-99;press('ShiftLeft');
- advance(10,()=>{const s=h.snapshot;top=Math.max(top,s.speed);minStamina=Math.min(minStamina,s.stamina);lead=Math.max(lead,s.distance-Math.max(...F.map(f=>f.d)));});release('ShiftLeft');const pushedTo=h.snapshot.distance;
+{advance(12);const F=h.friends.list,before=F.map(f=>f.d);let top=0,minStamina=1,lead=-99,surge=[],stoodAt=F.map(()=>null),t0=simTime;press('ShiftLeft');
+ advance(10,()=>{const s=h.snapshot;top=Math.max(top,s.speed);minStamina=Math.min(minStamina,s.stamina);lead=Math.max(lead,s.distance-Math.max(...F.map(f=>f.d)));surge.push(F.map(f=>f.crank));F.forEach((f,i)=>{if(stoodAt[i]===null&&f.stand>.5)stoodAt[i]=simTime-t0;});});
+ check('friends answering a surge pedal hard out of step, and not all stand at once',()=>{let apart=0;for(const c of surge){const w=c.map(a=>((a%(Math.PI*2))+Math.PI*2)%(Math.PI*2));let near=false;for(let i=0;i<w.length;i++)for(let j=i+1;j<w.length;j++){const d=Math.abs(w[i]-w[j]);if(Math.min(d,Math.PI*2-d)<.25)near=true;}if(!near)apart++;}assert.ok(apart/surge.length>.6,'in sync '+(1-apart/surge.length));
+  const stood=stoodAt.filter(x=>x!==null);assert.ok(stood.length>=1,'nobody stood to answer');if(stood.length>=2)assert.ok(Math.max(...stood)-Math.min(...stood)>.5,'stood up in unison '+stood);metrics.surgeStandTimes=stoodAt.map(x=>x===null?null:+x.toFixed(2));});release('ShiftLeft');const pushedTo=h.snapshot.distance;
  check('pushing harder is faster but bounded, and tires you',()=>{assert.ok(top>5.4&&top<6.45,'top speed '+top);assert.ok(minStamina<.85,'stamina '+minStamina);metrics.pushTopSpeed=+top.toFixed(2);metrics.pushLeadMeters=+lead.toFixed(2);});
  advance(25);check('the friends answer a push and the group rides together again, without jumps',()=>{const s=h.snapshot;const gap=s.distance-Math.max(...F.map(f=>f.d));assert.ok(gap<6,'still ahead by '+gap);assert.ok(lead<4,'left them behind by '+lead);assert.ok(s.speed<5.6,'still sprinting '+s.speed);});}
 
 // Full ride, holding W, as a first-time player might.
 function ride(label,{each}={}){
- const F=h.friends.list,last=new Map(),seen={},angles={};let observed=h.snapshot.nextMemory,maxEye=[9,0],maxJump=0,hiddenBad=[],minGroup=99,glanced=0,reflectionsSeen=[],lastReflection='',overlap=0,phases=[];const fwd=new THREE.Vector3();
+ const F=h.friends.list,last=new Map(),seen={},angles={};let repeatedPrompt='',observed=h.snapshot.nextMemory,maxEye=[9,0],maxJump=0,hiddenBad=[],minGroup=99,glanced=0,reflectionsSeen=[],lastReflection='',overlap=0,phases=[];const fwd=new THREE.Vector3();
  const mark=(f,tag,obj)=>{if(seen[f.name+tag])return;seen[f.name+tag]=true;h.camera.getWorldDirection(fwd);const p=obj.getWorldPosition(new THREE.Vector3()).sub(h.camera.position);angles[f.name+':'+tag]=Math.round(Math.acos(Math.max(-1,Math.min(1,(p.x*fwd.x+p.z*fwd.z)/Math.hypot(p.x,p.z)/Math.hypot(fwd.x,fwd.z))))*180/Math.PI);};
  let rideSeconds=0;const departures=Object.values(FORMATION).map(f=>f.leaveAt);
  while(['riding','arriving'].includes(h.snapshot.state)&&rideSeconds<400){advance(DT);rideSeconds+=DT;const s=h.snapshot;each?.(s);
@@ -225,16 +227,19 @@ function ride(label,{each}={}){
   const r=h.ui.reflection;if(r&&r!==lastReflection){reflectionsSeen.push(r);if(s.captionTimer>0)overlap++;}lastReflection=r;
   // Riders still riding keep their speed while someone peels off.
   if(departures.some(a=>s.distance>a-5&&s.distance<a+60))for(const f of F)if(f.mode==='ride'&&s.distance>30)minGroup=Math.min(minGroup,f.speed);
-  if(s.distance>40&&s.distance<300&&Math.round(rideSeconds*30)%15===0)phases.push(F.map(f=>f.crank));
+  {const riding=F.filter(f=>f.mode==='ride');if(s.distance>40&&riding.length>=2&&Math.round(rideSeconds*30)%10===0)phases.push(riding.map(f=>f.crank));}
   for(const f of F){for(const [tag,obj] of [['bike',f.bike.group],['body',f.person.parts.pelvis]]){const p=obj.getWorldPosition(new THREE.Vector3()),k=f.name+tag,q=last.get(k);if(q&&f.person.group.visible&&(tag==='body'||obj.visible)){const jump=p.distanceTo(q);maxJump=Math.max(maxJump,jump);assert.ok(jump<.3,`${f.name} ${tag} jumped ${jump.toFixed(2)} m (step ${f.step})`);}last.set(k,p);}
    for(const v of Object.values(f.person.group.position))assert.ok(Number.isFinite(v));
    if(f.mode==='leave'&&f.step===1)mark(f,'stops',f.bike.group);if(f.mode==='foot'&&f.step>=3)mark(f,'on foot',f.person.group);if(f.inside)mark(f,'inside',f.person.group);
    if(!f.person.group.visible&&!f.inside)hiddenBad.push(f.name);}
+  if(s.state==='riding'&&s.distance>160&&h.ui.promptText&&h.ui.promptText!=='W:Keep riding')repeatedPrompt=h.ui.promptText;
   assert.equal(h.ending.state.clue,false,'clue during the ride');assert.equal(h.ending.state.otherBike,false,'other bike during the ride');
  }
  check(`${label}: all 14 story triggers in order, eye height steady`,()=>{assert.equal(h.snapshot.nextMemory,14);assert.ok(maxEye[0]>1.35&&maxEye[1]<1.62,`eye ${maxEye}`);});
+ check(`${label}: once learned, controls are not shown again during the ride`,()=>assert.equal(repeatedPrompt,''));
  check(`${label}: the group never brakes for a departure`,()=>assert.ok(minGroup>3.2,'group speed fell to '+minGroup));
- check(`${label}: friends pedal out of step with each other`,()=>{let apart=0;for(const c of phases){const w=c.map(a=>((a%(Math.PI*2))+Math.PI*2)%(Math.PI*2));let near=false;for(let i=0;i<w.length;i++)for(let j=i+1;j<w.length;j++){const d=Math.abs(w[i]-w[j]);if(Math.min(d,Math.PI*2-d)<.25)near=true;}if(!near)apart++;}assert.ok(apart/phases.length>.6,'in sync '+(1-apart/phases.length));});
+ check(`${label}: friends pedal out of step with each other`,()=>{let apart=0;for(const c of phases){const w=c.map(a=>((a%(Math.PI*2))+Math.PI*2)%(Math.PI*2));let near=false;for(let i=0;i<w.length;i++)for(let j=i+1;j<w.length;j++){const d=Math.abs(w[i]-w[j]);if(Math.min(d,Math.PI*2-d)<.25)near=true;}if(!near)apart++;}
+  assert.ok(phases.length>=60,'too few samples '+phases.length);metrics[label+' crank samples in step']=+(1-apart/phases.length).toFixed(3);assert.ok(apart/phases.length>.6,'in sync '+(1-apart/phases.length));});
  metrics[label+' ride seconds']=Math.round(rideSeconds);metrics[label+' departure view angles (deg)']=angles;metrics.maxFriendStepMeters=+maxJump.toFixed(3);metrics[label+' min group speed in departures']=+minGroup.toFixed(2);
  return {hiddenBad,glanced,reflectionsSeen,overlap};
 }
@@ -288,7 +293,7 @@ const frozen={clock:h.snapshot.clock,finale:h.snapshot.finaleT,position:h.camera
 check('ending freezes the world and clears prompts',()=>{assert.equal(h.snapshot.clock,frozen.clock);assert.equal(h.snapshot.finaleT,frozen.finale);assert.ok(h.camera.position.equals(frozen.position));assert.equal(h.ui.promptText,'');});
 element('again').onclick();advance(.1);
 check('replay resets story, view, bike, friends, doors and controls',()=>{const s=h.snapshot;assert.equal(s.state,'riding');assert.ok(s.distance<.2);assert.equal(s.nextMemory,0);assert.equal(s.look,0);assert.equal(s.headPitch,0);assert.equal(s.finaleT,0);assert.equal(element('ending').hidden,true);
- for(const f of h.friends.list){assert.equal(f.mode,'ride');assert.ok(f.person.group.visible&&f.bike.group.visible);assert.equal(f.person.group.parent,f.bike.group);}assert.equal(W.garages.sam.open,1);assert.equal(W.doors.jamie.open,0);assert.equal(h.keys.size,0);});
+ for(const f of h.friends.list){assert.equal(f.mode,'ride');assert.ok(f.person.group.visible&&f.bike.group.visible);assert.equal(f.person.group.parent,f.bike.group);}assert.equal(W.garages.sam.open,1);assert.equal(W.doors.jamie.open,0);assert.equal(h.keys.size,0);assert.equal(s.push,0);assert.equal(s.stamina,1);assert.equal(s.yawOffset,0);});
 check('replay resets the environment, interactions, memory lines and the ending',()=>{assert.equal(h.friends.mom.slammed,false);assert.equal(h.ambient.state.kidVisible,true);assert.ok(h.ambient.time.value<.2);assert.ok(h.ambient.state.lamps.every(l=>l===0));assert.ok(h.ambient.state.sprinklers.every(l=>l>.99));assert.equal(h.ambient.state.car,'wait');assert.equal(W.alexWindow.emissiveIntensity,0);
  assert.equal(h.ambient.state.swing,0);assert.equal(h.interact.pose,null);assert.deepEqual(h.interact.used,[]);assert.deepEqual(h.nostalgia.shown,[]);assert.equal(h.ui.reflection,'');assert.deepEqual(h.ending.state,{clue:false,faint:0,otherBike:false});assert.equal(h.ending.otherBike.visible,false);assert.equal(h.ui.promptText,'W:Pedal|Mouse:Look around');});
 
@@ -307,4 +312,13 @@ check('staying at the end of the street eventually fades to the ending on its ow
 element('again').onclick();press('KeyW');advance(6);release('KeyW');tap('Escape');advance(.2);
 check('back to the title from the pause menu resets everything and waits',()=>{element('to-title').onclick();advance(1);const s=h.snapshot;assert.equal(s.state,'intro');assert.equal(element('intro').hidden,false);assert.equal(element('ride-ui').hidden,true);assert.equal(element('pause').hidden,true);assert.ok(!document.body.classList.contains('riding'));assert.ok(s.distance<.01);assert.equal(h.ui.promptText,'');
  element('start').onclick();advance(.2);assert.equal(h.snapshot.state,'riding');assert.ok(h.snapshot.distance<.05);});
+// On a fresh ride (after the title check), where moving the rider cannot disturb the story checks.
+// Sidewalk riding: up a driveway cut, along the walk past it, and the planting strip holds you there.
+{const cut=W.drivewayOpenings.filter(dr=>dr.side>0&&dr.d>30&&dr.d<260&&!JUNCTIONS.some(j=>Math.abs(dr.d-j.d)<30)).sort((a,b)=>a.d-b.d)[0];
+ h.place(cut.d0+.4,5.4,3.2);press('KeyW');let onWalk=false;advance(3,()=>{const s=h.snapshot;if(!onWalk&&s.lateral<6.75){press('KeyD');}else{release('KeyD');onWalk=true;}});release('KeyD');let lats=[],worstY=0;
+ advance(6,()=>{const s=h.snapshot;lats.push(s.lateral);if(s.distance>cut.d1+2)worstY=Math.max(worstY,Math.abs(h.bikeY-W.groundY(s.distance,s.lateral)));});
+ check('ride up a driveway cut onto the sidewalk and along it',()=>{const s=h.snapshot;assert.ok(s.distance>cut.d1+8,'did not pass the cut');assert.ok(Math.min(...lats.slice(-60))>6.3&&Math.max(...lats)<7.9,'left the walk '+Math.min(...lats)+'..'+Math.max(...lats));assert.ok(worstY<.05,'bike height off the walk '+worstY);});
+ press('KeyA');advance(1.2);release('KeyA');advance(1);check('the planting strip keeps you on the sidewalk between driveways',()=>{const s=h.snapshot;assert.ok(W.rideable(s.distance,s.lateral,0));assert.ok(s.lateral>6.2||W.drivewayOpenings.some(dr=>dr.contains(s.distance,s.lateral)),'dropped off the curb at '+s.lateral);});
+ release('KeyW');}
+
 console.log(JSON.stringify({passed:checks.length,checks,metrics,testMethod:'Actual Three.js geometry and full state updates with a mocked WebGL renderer and DOM.'},null,2));

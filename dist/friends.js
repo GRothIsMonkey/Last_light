@@ -48,7 +48,7 @@ export function createFriends(scene,world,hooks={}){
  function reset(){
   for(const f of list){const rand=seeded(hashSeed(21,f.slot));Object.assign(f,{d:f.keys[0][1],lat:f.keys[0][2],speed:0,latVel:0,crank:f.R.phase,wheel:0,steer:0,lean:0,fall:0,kick:0,spin:0,spinV:0,psi:0,mode:'ride',astride:1,stand:0,look:0,lookT:0,
     bd:0,blat:0,bpsi:0,pd:0,plat:0,ppsi:0,py:null,gait:0,script:null,step:0,prevYaw:null,inside:false,glance:1+rand()*4,garageClosing:false,windowOn:false,holding:false,waved:false,posed:false,
-    rand,seen:0,yield:0,effort:0,standHold:0,rock:0,bellLook:0,weaveA:rand()*6.3,weaveB:rand()*6.3});
+    rand,seen:0,yield:0,effort:0,standHold:0,standWait:0,standDelay:.2+rand()*2.8,standRest:.4+rand()*1.6,rock:0,bellLook:0,weaveA:rand()*6.3,weaveB:rand()*6.3});
    f.bd=f.d;f.blat=f.lat;if(f.person.group.parent!==f.bike.group){f.bike.group.add(f.person.group);}f.person.group.position.set(0,0,0);f.person.group.rotation.set(0,0,0);
    f.person.group.visible=true;f.bike.group.visible=true;}
   Object.assign(mom,{mode:'waiting',t:0,pd:0,plat:0,ppsi:0,py:null,gait:0,look:0,slammed:false,closeT:0,u:0});mom.person.group.visible=false;
@@ -68,13 +68,22 @@ export function createFriends(scene,world,hooks={}){
   const stopped=ctx.speed<.35&&ctx.state!=='intro';
   let vCmd=f.seen+clamp(gap*.42,-2.2,2.3);if(stopped)vCmd=clamp(gap*.35,0,1.6);if(ctx.state==='intro')vCmd=0;vCmd=Math.min(vCmd,SPRINT);
   if(Math.abs(f.d-D)<3&&Math.abs(f.lat-ctx.lateral)<1.4)latT=ctx.lateral+Math.sign(f.lat-ctx.lateral||1)*1.6;
+  // Never brake right in front of you: a friend in your line keeps rolling at your pace and
+  // moves aside first, even while letting you take the lead.
+  const inLine=!stopped&&ctx.state!=='intro'&&f.d-D>-.4&&f.d-D<4.5&&Math.abs(f.lat-ctx.lateral)<1.3;
+  if(inLine)vCmd=Math.min(Math.max(vCmd,f.seen+.45,ctx.speed+.3),SPRINT);
   for(const o of list)if(o!==f&&o.mode==='ride'&&Math.abs(o.d-f.d)<2.2&&Math.abs(o.lat-f.lat)<1)latT+=Math.sign(f.lat-o.lat||1)*.6;
   const accel=vCmd>f.speed?1.05+.3*R.stand:2.5;f.speed=Math.max(0,f.speed+clamp(vCmd-f.speed,-accel*dt,accel*dt));
-  f.d+=f.speed*dt;f.latVel=damp(f.latVel,clamp((latT-f.lat)*.7,-.32*f.speed,.32*f.speed),4,dt);f.lat=clamp(f.lat+f.latVel*dt,-3.7,3.7);
+  f.d+=f.speed*dt;const latCap=.32*Math.max(f.speed,inLine?2.2:0);f.latVel=damp(f.latVel,clamp((latT-f.lat)*(inLine?1.2:.7),-latCap,latCap),4,dt);f.lat=clamp(f.lat+f.latVel*dt,-3.7,3.7);
   f.psi=Math.atan2(f.latVel,Math.max(f.speed,.6));f.bd=f.d;f.blat=f.lat;f.bpsi=f.psi;
   // Effort: how hard they are pushing right now. Standing comes in their own bursts.
   f.effort=damp(f.effort,clamp((vCmd-f.speed)/1.1+(f.speed-4.9)/1.6,0,1),2.5,dt);f.standHold-=dt;
-  if(f.effort>.6/R.stand&&f.standHold<-.4&&f.speed>1.8)f.standHold=.8+f.rand()*1.4*R.stand;
+  // Each rider gets up out of the saddle after their own beat (drawn fresh for every surge),
+  // so a push never has everyone standing in unison.
+  if(f.effort>.6/R.stand&&f.standHold<-f.standRest&&f.speed>1.8){f.standWait+=dt;if(f.standWait>f.standDelay){
+    // Not every push gets everyone out of the saddle: some stay seated this time.
+    const up=f.rand()<Math.min(1,.2+.45*R.stand);f.standHold=up?.8+f.rand()*1.4*R.stand:0;f.standRest=up?.4+f.rand()*1.6:2+f.rand()*2;f.standWait=0;f.standDelay=.2+f.rand()*2.8;}}
+  else if(f.effort<.45/R.stand)f.standWait=0;
   f.stand=damp(f.stand,f.standHold>0?1:0,f.standHold>0?3.5:2,dt);
   f.astride=damp(f.astride,f.speed<.25?1:0,f.speed<.25?3:7,dt);
   cycle(f,dt,vCmd<f.speed-.4);
@@ -85,10 +94,11 @@ export function createFriends(scene,world,hooks={}){
   const v=f.speed,k=yawRate/Math.max(v,.8),R=f.R||{cadence:1,sway:1};f.wheel+=v*dt/f.bike.geom.wheelR;
   if(!coast&&v>.2)f.crank+=v*dt*RAD_PER_M*R.cadence*(1+.1*(f.effort||0));else{const level=Math.round((f.crank-Math.PI/2)/Math.PI)*Math.PI+Math.PI/2;f.crank=damp(f.crank,level,2.5,dt);}
   f.steer=damp(f.steer,v>.3?clamp(-Math.atan(k*1.0)+Math.sin(f.wheel*.35+(f.weaveA||0))*.012,-.55,.55):f.steer,6,dt);
-  // Standing riders rock the bike under them with each stroke; seated riders barely at all.
+  // Standing riders rock the bike under them with each stroke while the body stays nearly
+  // upright (ridePose rolls the torso back against the bike); seated riders barely rock at all.
   f.rock=(f.stand*.9+(f.effort||0)*.15)*Math.sin(f.crank)*R.sway;
   const targetLean=v>.5?clamp(-Math.atan(v*v*k/9.8),-.32,.32):(f.astride>.5?.05*Math.sign(f.lat||1):0);
-  f.lean=damp(f.lean,targetLean+f.rock*.11,5,dt);
+  f.lean=damp(f.lean,targetLean+f.rock*.14,5,dt);
  }
  const rideOpts=f=>({stand:f.stand,astride:f.astride,steer:f.steer,look:f.look,lookPitch:0,rock:f.rock,geom:f.bike.geom,posture:(f.cast.build.posture||0)+(f.effort||0)*.08,shoulder:f.rock*.14});
  function rideLook(f,ctx,dt){

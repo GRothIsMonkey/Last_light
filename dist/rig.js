@@ -267,7 +267,7 @@ export function poseBike(bike){const G=bike.geom||DEFAULT_G;
 const _p=new THREE.Vector3();
 export function ridePose(p,crank,{stand=0,astride=0,steer=0,look=0,lookPitch=0,rock=0,geom=DEFAULT_G,posture=0,shoulder=0}={}){
  const G=geom,lean=.62+posture+.12*stand-.40*astride+Math.abs(steer)*.1*(1-astride);
- set3(p,P.root,rock*.02,G.saddle[1]+.045+.1*stand-.12*astride,G.saddle[2]-.17*stand-.13*astride);p[P.yaw]=0;p[P.lean]=lean;p[P.roll]=-rock*.6;p[P.twist]=steer*.95*(1-astride)+shoulder;p[P.hy]=look;p[P.hp]=lookPitch;
+ set3(p,P.root,rock*.02,G.saddle[1]+.045+.1*stand-.12*astride,G.saddle[2]-.17*stand-.13*astride);p[P.yaw]=0;p[P.lean]=lean;p[P.roll]=-rock*.2;p[P.twist]=steer*.95*(1-astride)+shoulder;p[P.hy]=look;p[P.hp]=lookPitch;
  for(const [o,side,po] of [[P.lf,-1,P.lfp],[P.rf,1,P.rfp]]){
   pedalPos(crank,side,_p,G);const a=crank+(side<0?Math.PI:0);
   const px=side*(G.pedalX+.035),py=_p.y+.062,pz=_p.z+.05,gx=side*.23,gy=BODY.ankle,gz=.06;

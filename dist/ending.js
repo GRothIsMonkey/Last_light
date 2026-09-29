@@ -22,7 +22,7 @@ export function createEnding(scene,world){
  const o=LOOKOUT.oak,oakP=groundPoint(o.d,o.lat),oakY=world.groundY(o.d,o.lat),toward=Math.atan2(-(LOOKOUT.swing.lat-o.lat),LOOKOUT.swing.d-o.d);
  const carve=new THREE.Group();carve.position.set(oakP.x,oakY+1.32,oakP.z);carve.rotation.y=-heading(o.d)+toward;scene.add(carve);carve.name='oak-carving';
  {const R=.462,cut=[];const letters=[[[0,0],[.06,.16],[.12,0]],[[.03,.07],[.09,.07]],[[.17,0],[.17,.16],[.25,.16],[.26,.11],[.18,.08],[.27,0]]];
-  for(const s of letters)for(let i=0;i<s.length-1;i++)for(const [x,y] of [s[i],s[i+1]]){const a=(x-.13)/R;cut.push(Math.sin(a)*R,y,-Math.cos(a)*R);}
+  for(const s of letters)for(let i=0;i<s.length-1;i++)for(const [x,y] of [s[i],s[i+1]]){const a=(x-.13)/R;cut.push(-Math.sin(a)*R,y,-Math.cos(a)*R);/* reads left to right from the swing side */}
   carve.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(cut,3)),new THREE.LineBasicMaterial({color:0x2e2620})));}
  // The bike that was not there.
  const old=createBike({style:'road-kid',frame:0x7a8a6e,bars:'swept',wheelR:.3,saddle:0x3a2e26,grips:0x8a8272,tire:0x3a3a38,extras:[]});

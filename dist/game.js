@@ -181,13 +181,18 @@ function updateRide(dt){
  // through a critically damped response, and momentum carries on after you let go.
  const input=state==='riding'?(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0):0;
  steerIn=damp(steerIn,input,input?4.5:2.4,dt);
- let psiT=steerIn*clamp(.55-.05*speed,.24,.45);
+ let psiT=steerIn*clamp(.72-.06*speed,.3,.58);// enough to turn up a driveway cut at riding speed
  if(state==='arriving')psiT=clamp((LOOKOUT.stop.lat-lateral)*.18,-.2,.2)*Math.min(1,speed);
  const w=input||state==='arriving'?3.8:2.5;psiVel+=(w*w*(psiT-yawOffset)-2*w*psiVel)*dt;yawOffset+=psiVel*dt;
  steerVelocity=speed*Math.sin(yawOffset);const next=lateral+steerVelocity*dt;
  if(state==='arriving'||world.rideable(distance,next))lateral=next;
  else{// Curb or grass: the front wheel turns away and the bike runs along the edge.
   steerVelocity=0;yawOffset=damp(yawOffset,0,7,dt);psiVel*=.5;}
+ // Rolling straight off the end of a driveway apron: the bike eases down onto the nearest
+ // paved band (sidewalk or street) instead of carrying on across the grass strip.
+ if(state==='riding'&&speed>.05&&!world.rideable(distance,lateral,.1)){let best=null;
+  for(let k=1;k<=25&&best===null;k++)for(const sg of [1,-1]){const l=lateral+sg*k*.1;if(world.rideable(distance,l,.2)){best=l;break;}}
+  if(best!==null)lateral=damp(lateral,best,10,dt);}
  const yaw=heading(distance)+yawOffset;if(prevYaw===null)prevYaw=yaw;const yawRate=(yaw-prevYaw)/Math.max(dt,1e-3);prevYaw=yaw;
  const k=yawRate/Math.max(speed,.8);steerAngle=damp(steerAngle,speed>.3?clamp(-Math.atan(k*BIKE.wheelbase)*1.2-steerIn*.05,-.5,.5):clamp(-steerIn*.4,-.5,.5),7,dt);
  lean=damp(lean,speed>.4?clamp(-Math.atan(speed*speed*k/9.8)*1.3,-.2,.2):0,5,dt);
@@ -323,4 +328,6 @@ requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
 if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);return renderer.info.render;},press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
- get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,audio:()=>audio,renderer,scene,playerBike,self,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;}};
+ get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,audio:()=>audio,renderer,scene,playerBike,self,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},
+ // QA only: put the bike somewhere on the street (screenshots of sidewalk riding etc.).
+ place(d,lat,v=3){distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;}};

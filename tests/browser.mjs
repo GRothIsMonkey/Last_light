@@ -18,10 +18,33 @@ page.on('pageerror',e=>{errors.push(String(e));console.error('PAGE',String(e));}
 const base=`http://127.0.0.1:${server.address().port}`;
 const check=(name,value)=>{assert.ok(value,name);checks.push(name);};
 const state=()=>page.evaluate(()=>lastLight.state);
-const snap=async name=>{const info=await page.evaluate(()=>({...lastLight.render()}));await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:90});frames.push({name,...info});console.log('Captured',name);};
+const snap=async(name,{clean=false}={})=>{if(clean)await page.evaluate(()=>{for(const el of document.querySelectorAll('header,#date,#ride-ui,#subtitle,#prompt,#reflection'))el.style.visibility='hidden';});
+ const info=await page.evaluate(()=>({...lastLight.render()}));await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:90});frames.push({name,...info});console.log('Captured',name,JSON.stringify(info));
+ if(clean)await page.evaluate(()=>{for(const el of document.querySelectorAll('header,#date,#ride-ui,#subtitle,#prompt,#reflection'))el.style.visibility='';});};
+// Look somewhere for a moment, take a clean frame, then look ahead again (the ride keeps going only when stepped).
+const view=async(name,yaw,pitch=0)=>{await page.evaluate(([y,p])=>{lastLight.look(y,p);lastLight.step(.05);},[yaw,pitch]);await snap(name,{clean:true});await page.evaluate(()=>{lastLight.look(0,0);});};
+// A QA camera placed relative to something in the world, for one rendered frame (the next step puts the eye back).
+// who: 'jamie'|'sam'|'alex' (their bike), or {house:'sam'|'jamie'|'alex', from:[x,y,z], at:[x,y,z]} in house coordinates.
+const camAt=async(name,target,off=[2.4,.1,.6],look=[0,.75,0])=>{await page.evaluate(async([target,off,look])=>{const T=await import('./three.module.js');lastLight.scene.updateMatrixWorld(true);
+  if(typeof target==='string'){const f=lastLight.friends.list.find(f=>f.key===target),g=f.bike.group,q=g.getWorldQuaternion(new T.Quaternion()),p=g.getWorldPosition(new T.Vector3());lastLight.camera.position.copy(p).add(new T.Vector3(...off).applyQuaternion(q));lastLight.camera.lookAt(p.x+look[0],p.y+look[1],p.z+look[2]);}
+  else{const W=lastLight.world,h=target.plan?W.houses.find(p=>Math.abs(p.u-target.plan.u)<.01&&p.side===target.plan.side):W.homes[target.house||target.door||target.garage];
+   // Anchors: the house center, its front door (x from the door, z from the front wall) or its garage door.
+   const G=h.garageInfo,o=target.door?[h.doorX,h.front]:target.garage?[G.x,G.front]:[0,0],zz=v=>v==='back'?-G.depth+.6:v;
+   if(target.open){const d=W.doors[target.door]||W.garages[target.garage];window.__qaOpen=[d,d.open];d.set(1);}
+   const a=h.toWorld(o[0]+target.from[0],o[1]+zz(target.from[2])),b=h.toWorld(o[0]+target.at[0],o[1]+zz(target.at[2]));lastLight.camera.position.set(a.x,a.ground+target.from[1],a.z);lastLight.camera.lookAt(b.x,b.ground+target.at[1],b.z);}
+  // The sky dome follows the eye in game; keep it centered on this QA camera too.
+  const sky=lastLight.scene.children.find(o=>o.isMesh&&o.geometry?.parameters?.radius===350);sky?.position.copy(lastLight.camera.position);
+  lastLight.camera.updateMatrixWorld();},[target,off,look]);await snap(name,{clean:true});await page.evaluate(()=>{if(window.__qaOpen){const [d,v]=window.__qaOpen;d.set(v);window.__qaOpen=null;}});};
+// A short sequence of frames, dt seconds apart, each framed by frame() (a view or a camera override).
+const sequence=async(name,n,dt,frame)=>{for(let i=1;i<=n;i++){await page.evaluate(dt=>lastLight.step(dt),dt);await frame(name+'-'+i);}};
 const advanceTo=async d=>{await page.evaluate(d=>{let frames=0;while(lastLight.state.distance<d&&frames++<14000)lastLight.step(1/30);},d);check('reached '+d,(await state()).distance>=d);};
 try{
  await page.goto(base+'/index.html?qa');await page.waitForFunction(()=>window.lastLight);await page.evaluate(()=>lastLight.step(.04));await snap('01-opening');
+ // Title menu: Settings and Credits open over it and come back.
+ await page.click('#open-settings');check('settings panel opens from the title',await page.locator('#settings').isVisible()&&!(await page.locator('#intro').isVisible()));await snap('01b-settings');
+ await page.selectOption('#set-quality','high');check('graphics setting changes the shadow map',await page.evaluate(()=>lastLight.scene.children.find(o=>o.isDirectionalLight).shadow.mapSize.x===3072));await page.selectOption('#set-quality','medium');
+ await page.click('#settings-back');check('settings returns to the title',await page.locator('#intro').isVisible());
+ await page.click('#open-credits');await snap('01c-credits');await page.keyboard.press('Escape');check('Esc closes credits back to the title',await page.locator('#intro').isVisible()&&!(await page.locator('#credits').isVisible()));
  await page.click('#start');await page.evaluate(()=>lastLight.step(.4));
  check('audio starts from a user gesture',await page.evaluate(()=>lastLight.audio()?.ctx?.state==='running'));
  check('mouse captured in Chromium',await page.evaluate(()=>document.pointerLockElement===document.querySelector('#world')));
@@ -31,18 +54,46 @@ try{
  // Headless audio still runs in real time; accelerate only after muting.
  await page.keyboard.press('m');check('M mutes sound under pointer lock',await page.evaluate(()=>!lastLight.audio().enabled));await page.evaluate(()=>lastLight.look(0,-.7));await page.evaluate(()=>lastLight.step(.25));await snap('02-pedaling');
  await page.evaluate(()=>lastLight.look(0,0));await page.keyboard.press('Escape');const paused=await state();await page.evaluate(()=>lastLight.step(5));check('QA pause freezes simulation',(await state()).distance===paused.distance&&(await state()).state==='paused');
- await page.click('#resume');await page.evaluate(()=>lastLight.press('KeyW'));await advanceTo(85);await snap('03-group-ride');await advanceTo(180);await snap('04-first-hill');
- for(const [name,d] of [['05-jamie-runs-home',398],['06-jamie-at-door',407],['07-sam-parks',685],['08-sam-garage-closes',698],['09-alex-waves',967],['10-alex-porch',979],['11-alex-upstairs-light',1005],['12-late-sunset',1060],['13-final-arrival',1136.5]]){await advanceTo(d);await snap(name);}
+ check('pause menu offers resume, settings, start over and title',await page.locator('#pause #resume').isVisible()&&await page.locator('#pause #restart').isVisible()&&await page.locator('#pause #to-title').isVisible());await snap('02b-pause-menu');
+ await page.click('#resume');await page.evaluate(()=>lastLight.press('KeyW'));await advanceTo(22);await snap('02c-prompt');
+ // World edge: behind the start, through the gaps, out to the sides.
+ await view('edge-01-looking-back-at-start',Math.PI*.98,.02);await view('edge-02-left-gap',1.5,.03);await view('edge-03-right-gap',-1.5,.03);
+ await advanceTo(85);await snap('03-group-ride');await view('body-01-looking-down',0,-1.15);await view('body-02-over-the-shoulder',1.8,-.2);
+ await sequence('seq-group-pedaling',4,.18,n=>camAt(n,'sam',[2.6,.15,.4]));
+ // The body stays whole while steering, braking and pushing hard.
+ await advanceTo(100);await page.evaluate(()=>{lastLight.press('KeyA');lastLight.step(.6);});await view('body-03-steering-left',0,-1.0);await page.evaluate(()=>{lastLight.release('KeyA');lastLight.press('KeyD');lastLight.step(1.1);lastLight.release('KeyD');lastLight.step(2);});
+ await page.evaluate(()=>{lastLight.release('KeyW');lastLight.press('KeyS');lastLight.step(.7);});await view('body-04-braking',0,-1.0);await page.evaluate(()=>{lastLight.release('KeyS');lastLight.press('KeyW');lastLight.step(2);});
+ await page.evaluate(()=>{lastLight.press('ShiftLeft');lastLight.step(3.2);});check('Shift pushes harder',(await state()).push>.2);await view('body-05-hard-pedaling',0,-1.05);
+ await sequence('seq-friends-surge',4,.25,n=>camAt(n,'sam',[2.2,.2,-1.6],[0,.8,0]));await view('friends-04-answering-a-push',-.55,-.08);await page.evaluate(()=>{lastLight.release('ShiftLeft');lastLight.step(3);});
+ await advanceTo(180);await snap('04-first-hill');await view('friends-01-left',.95,-.12);await view('friends-02-right',-.9,-.12);
+ await advanceTo(250);await view('friends-03-alongside',1.25,-.18);await view('edge-04-backyards-left',1.6,.06);
+ await advanceTo(396);await sequence('seq-jamie-goes-home',4,.55,n=>snap(n,{clean:true}));await camAt('house-01-jamie-entry',{door:'jamie',open:true,from:[.7,1.9,5.2],at:[0,1.4,-2.2]});
+ for(const [name,d,look] of [['05-jamie-runs-home',398],['06-jamie-at-door',407],['edge-05-briarwood-ln',592,[-1.45,.02]],['edge-06-briarwood-down-the-street',597,[-1.57,.01]]]){await advanceTo(d);if(look)await view(name,...look);else await snap(name);}
+ await advanceTo(664);await camAt('house-02-sam-garage-open',{garage:'sam',from:[.4,1.6,6.5],at:[0,1.0,'back']});
+ await advanceTo(684);await sequence('seq-sam-rides-into-the-garage',4,.7,n=>camAt(n,{garage:'sam',from:[1.8,1.7,8.5],at:[-.2,1.0,'back']}));
+ for(const [name,d,look] of [['07-sam-parks',690],['08-sam-garage-closes',698],['edge-07-summerfield-rd',867,[1.45,.02]],['edge-08-summerfield-down-the-street',872,[1.57,.01]],['09-alex-waves',967],['10-alex-porch',979],['house-03-alex-entry',984,'alex'],['11-alex-upstairs-light',1005],['edge-10-late-left',1030,[1.57,.03]],['edge-11-late-right',1034,[-1.57,.03]],['12-late-sunset',1060],['13-final-arrival',1136.5]]){await advanceTo(d);if(look==='alex')await camAt(name,{door:'alex',open:true,from:[.7,1.9,5.6],at:[0,1.4,-2.2]});else if(look)await view(name,...look);else await snap(name);}
  check('every friend is inside',(await state()).friends.every(f=>f.inside));check('no clue during main ride',!(await state()).clue);
- await page.evaluate(()=>{lastLight.release('KeyW');lastLight.step(2);lastLight.key('KeyF');lastLight.step(2);});check('dismount reaches walking',(await state()).state==='walking');
+ await page.evaluate(()=>{lastLight.release('KeyW');lastLight.step(2);});await view('body-06-stopped-looking-down',0,-1.1);await page.evaluate(()=>{lastLight.look(0,0);lastLight.step(.3);lastLight.key('KeyF');lastLight.step(.55);});await snap('body-07-getting-off',{clean:true});
+ await page.evaluate(()=>lastLight.step(1.5));check('dismount reaches walking',(await state()).state==='walking');
  await page.evaluate(()=>{lastLight.press('KeyW');lastLight.step(12);lastLight.release('KeyW');lastLight.step(.4);lastLight.look(-.4,.12);});await snap('14-oak-and-bench');
  await page.evaluate(()=>{lastLight.look(Math.PI,0);lastLight.step(3);});await snap('15-looking-home');
  await page.evaluate(()=>lastLight.step(10));check('distant call triggers',(await state()).callDone);check('clue remains absent after call',!(await state()).clue);
+ await page.evaluate(()=>{lastLight.look(0,.02);lastLight.step(.1);});await snap('edge-09-lookout-field',{clean:true});
+ // The end of the street, touched: the swing, the bench, the chalk, the oak.
+ const L=await page.evaluate(async()=>(await import('./layout.js')).LOOKOUT);
+ await page.evaluate(L=>{lastLight.walkTo(L.swing.d-1.2,L.swing.lat,0,0);lastLight.step(.2);},L);check('swing prompt',(await state()).prompt==='F:Push the swing');
+ await page.evaluate(()=>{lastLight.key('KeyF');lastLight.step(.7);});check('the swing swings',(await state()).swing>.1);await snap('20-swing-pushed');
+ await page.evaluate(L=>{lastLight.walkTo(L.bench.d-1.1,L.bench.lat,0,0);lastLight.step(.2);lastLight.key('KeyF');lastLight.step(1.5);},L);check('sitting on the bench',(await state()).pose==='bench');await snap('21-bench-view');
+ await page.evaluate(()=>{lastLight.key('KeyF');lastLight.step(1.2);});check('standing up again',(await state()).pose===null);check('the other bike is there after the call',(await state()).otherBike);
+ await page.evaluate(L=>{lastLight.walkTo(L.chalk.d-.7,L.chalk.lat+.6,0,0);lastLight.step(.2);lastLight.key('KeyF');lastLight.step(1.3);},L);check('crouched at the chalk',(await state()).pose==='chalk');await snap('22-chalk-crouch',{clean:true});
+ await page.evaluate(()=>{lastLight.look(-1.0,.7);lastLight.step(.3);});check('faint AR after the call',(await state()).clue);await snap('23-chalk-ar-faint',{clean:true});await page.evaluate(()=>lastLight.step(5));
+ await page.evaluate(L=>{const d=L.oak.d-.26,lat=L.oak.lat-1.27;lastLight.walkTo(d,lat,Math.atan2(-(L.oak.lat-lat),L.oak.d-d),-.12);lastLight.step(.1);},L);await snap('24-oak-carving',{clean:true});
+ await page.evaluate(L=>{lastLight.walkTo(L.swing.d-4,L.swing.lat-5,Math.atan2(-(L.oak.lat+.6-(L.swing.lat-5)),L.oak.d+.9-(L.swing.d-4)),-.15);lastLight.step(.1);},L);await snap('25-the-other-bike',{clean:true});
  // Return by walking; no teleport/set-distance hooks.
- await page.evaluate(()=>{for(let i=0;i<1400;i++){const s=lastLight.state;if(Math.hypot(s.walkD-s.distance,s.walkLat-s.lateral)<1.5)break;lastLight.look(Math.atan2(-(s.lateral+.75-s.walkLat),s.distance-s.walkD),0);lastLight.press('KeyW');lastLight.step(1/30);}lastLight.release('KeyW');lastLight.step(.3);lastLight.key('KeyF');lastLight.step(1.6);});
+ await page.evaluate(()=>{for(let i=0;i<1400;i++){const s=lastLight.state;if(Math.hypot(s.walkD-s.distance,s.walkLat-s.lateral)<1.5)break;lastLight.look(Math.atan2(-(s.lateral+.75-s.walkLat),s.distance-s.walkD),0);lastLight.press('KeyW');lastLight.step(1/30);}lastLight.release('KeyW');lastLight.step(.3);lastLight.key('KeyF');lastLight.step(.5);});await snap('body-08-getting-back-on',{clean:true});await page.evaluate(()=>lastLight.step(1.1));
  check('return to bike starts leaving',(await state()).state==='leaving');await page.evaluate(()=>lastLight.step(.35));check('single clue appears only in last fade',(await state()).clue&&(await state()).fade>0);await snap('16-final-fade');
  // Diagnostic view of the same subtle mark, without altering gameplay state.
- await page.evaluate(async()=>{const T=await import('./three.module.js');lastLight.camera.position.add(new T.Vector3(1,1,-7));const p=lastLight.ambient.clue.geometry.attributes.position;lastLight.camera.lookAt(p.getX(0),p.getY(0),p.getZ(0));});await snap('17-ending-clue-detail');
+ await page.evaluate(async()=>{const T=await import('./three.module.js');lastLight.camera.position.add(new T.Vector3(1,1,-7));const p=lastLight.ending.clue.geometry.attributes.position;lastLight.camera.lookAt(p.getX(0),p.getY(0),p.getZ(0));});await snap('17-ending-clue-detail');
  await page.evaluate(()=>lastLight.step(6));
  // Simulation stepping does not advance the ending card's real-time CSS fade.
  await page.waitForFunction(()=>!document.querySelector('#ending').hidden&&Number(getComputedStyle(document.querySelector('#ending')).opacity)>.99);
@@ -50,7 +101,26 @@ try{
  const ended=await state();await page.evaluate(()=>lastLight.step(20));check('ending clock does not advance',(await state()).finaleT===ended.finaleT);
  await page.click('#again');await page.evaluate(()=>lastLight.step(.1));const replay=await state();check('replay resets story and clue',replay.distance===0&&!replay.clue&&replay.friends.every(f=>!f.inside&&f.mode==='ride'));
  check('replay resets environment',await page.evaluate(()=>lastLight.ambient.state.kidVisible&&lastLight.ambient.state.car==='wait'&&lastLight.ambient.state.sprinklers.every(v=>v>.99)&&!lastLight.friends.mom.slammed));
- await page.evaluate(()=>lastLight.press('KeyW'));await advanceTo(1136.5);await page.evaluate(()=>{lastLight.release('KeyW');lastLight.step(95.8);});check('idle route reveals same clue',(await state()).clue);await snap('19-idle-clue');await page.evaluate(()=>lastLight.step(8));check('second complete playthrough ends',(await state()).state==='ended');
+ await page.evaluate(()=>lastLight.press('KeyW'));await advanceTo(1136.5);await page.evaluate(()=>{lastLight.release('KeyW');lastLight.step(101);});check('idle route reveals same clue',(await state()).clue);await snap('19-idle-clue');await page.evaluate(()=>lastLight.step(8));check('second complete playthrough ends',(await state()).state==='ended');
+ await page.click('#again');await page.evaluate(()=>{lastLight.press('KeyW');lastLight.step(4);lastLight.release('KeyW');});await page.keyboard.press('Escape');await page.click('#to-title');await page.evaluate(()=>lastLight.step(.5));
+ check('back to the title resets and waits',(await state()).state==='intro'&&(await state()).distance<.01&&await page.locator('#intro').isVisible());await snap('26-back-to-title');
+ // Character close-ups: the camera is set beside each person for a single rendered frame.
+ const portrait=async(name,who,off)=>{await page.evaluate(async([who,off])=>{const T=await import('./three.module.js');const F=lastLight.friends.list;const person=who==='mom'?lastLight.friends.mom.person:F.find(f=>f.key===who).person;
+  lastLight.scene.updateMatrixWorld(true);const p=person.parts.head.getWorldPosition(new T.Vector3()),q=person.group.getWorldQuaternion(new T.Quaternion());lastLight.camera.position.copy(p).add(new T.Vector3(...off).applyQuaternion(q));lastLight.camera.lookAt(p.x,p.y-.25,p.z);lastLight.scene.children.find(o=>o.isMesh&&o.geometry?.parameters?.radius===350)?.position.copy(lastLight.camera.position);lastLight.camera.updateMatrixWorld();},[who,off]);await snap(name,{clean:true});};
+ await page.click('#start');await page.evaluate(()=>{lastLight.press('KeyW');lastLight.step(22);});
+ for(const who of ['jamie','sam','alex']){await portrait('character-'+who+'-front',who,[.55,.05,-1.25]);await portrait('character-'+who+'-side',who,[1.9,-.15,-.2]);}
+ // Sidewalk riding: up a driveway cut and along the walk.
+ const cut=await page.evaluate(()=>{const s=lastLight.state,c=lastLight.world.drivewayOpenings.filter(dr=>dr.side>0&&dr.d>s.distance+15&&dr.d<s.distance+160).sort((a,b)=>a.d-b.d)[0];return {d0:c.d0,d1:c.d1};});
+ await page.evaluate(c=>{lastLight.place(c.d0+.4,5.4,3.2);lastLight.press('KeyW');let on=false;for(let i=0;i<90;i++){const s=lastLight.state;if(!on&&s.lateral<6.75)lastLight.press('KeyD');else{lastLight.release('KeyD');on=true;}lastLight.step(1/30);}lastLight.release('KeyD');lastLight.step(2.5);},cut);
+ {const s=await state();check('riding along the sidewalk in the browser',s.lateral>6.3&&s.lateral<7.9&&s.distance>cut.d1+4);}await snap('sidewalk-01-riding',{clean:true});await view('sidewalk-02-looking-down',0,-1.0);
+ // House QA: several kinds of house from the front corner, the side and the back corner.
+ const picks=await page.evaluate(()=>{const H=lastLight.world.houses.filter(p=>p.frameId==='main'&&p.lod==='full'&&!p.key&&p.u>60&&p.u<700),out=[];
+  for(const want of [p=>p.style==='ranch'&&p.brick==='front',p=>p.style==='colonial'&&p.porch==='porch',p=>p.style==='cape',p=>p.style==='frontgable',p=>p.style==='ranch'&&p.roof==='hip',p=>p.style==='colonial'&&p.brick==='lower']){const h=H.find(p=>want(p)&&!out.includes(p));if(h)out.push(h);}
+  return out.map(h=>({u:h.u,side:h.side,name:h.style+(h.brick?'-brick-'+h.brick:'')+(h.roof==='hip'?'-hip':'')+(h.porch==='porch'?'-porch':''),w:h.w,depth:h.depth}));});
+ check('house QA found varied houses',picks.length>=5);
+ for(const [i,h] of picks.entries()){const plan={u:h.u,side:h.side},tag=`house-q${i+1}-${h.name}`;
+  await camAt(tag+'-front-corner',{plan,from:[h.w/2+6,2.0,h.depth/2+9],at:[0,2.4,0]});await camAt(tag+'-side',{plan,from:[h.w/2+11,1.8,.5],at:[0,2.2,0]});await camAt(tag+'-back-corner',{plan,from:[-(h.w/2+6),2.4,-(h.depth/2+10)],at:[0,2.4,0]});}
+ await page.evaluate(()=>{lastLight.place(lastLight.state.distance,-.3,4);let n=0;while(lastLight.state.distance<402&&n++<9000)lastLight.step(1/30);});await portrait('character-mom','mom',[.5,.05,-1.4]);
  const gpu=await page.evaluate(()=>{const gl=lastLight.renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'unavailable';});
  // Real Web Audio renders of every important synthesized sound, retained for listening.
  const audioReport=await page.evaluate(async()=>{

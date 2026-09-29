@@ -21,7 +21,7 @@ export function createInteractions({world,ambient,sfx=()=>{}}){
  function act(s,from){used.add(s.id);t=0;
   if(s.id==='swing'){ambient.pushSwing?.(from);sfx('creak',ambient.swingPosition?.(),{gain:.5});return null;}
   if(s.id==='bench'){const b=LOOKOUT.bench,y=world.groundY(b.d,b.lat);pose={id:'bench',d:b.d+.02,lat:b.lat,eye:y+1.02,yaw:0,pitch:-.05,from};return pose;}
-  if(s.id==='chalk'){const c=LOOKOUT.chalk,y=world.groundY(c.d,c.lat);pose={id:'chalk',d:c.d-.55,lat:c.lat+.55,eye:y+.72,yaw:-.3,pitch:-.95,from,hold:3.4};return pose;}
+  if(s.id==='chalk'){const c=LOOKOUT.chalk,y=world.groundY(c.d,c.lat);pose={id:'chalk',d:c.d-.95,lat:c.lat+.55,eye:y+.78,yaw:-.28,pitch:-.72,from,hold:3.4};return pose;}
   return null;}
  // Blend from where you stood into the pose and back out (hold = seconds, or until released).
  function update(dt){if(!pose)return null;t+=dt;const inT=smooth(t/.9);let w=inT;if(pose.hold&&t>pose.hold)w=1-smooth((t-pose.hold)/.9);if(pose.leaving){pose.leaveT+=dt;w=Math.min(w,1-smooth(pose.leaveT/.8));}

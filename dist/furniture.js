@@ -114,8 +114,9 @@ export function buildFurniture(W){
  // Manholes, patches and cracks in the asphalt.
  const manhole=K.mat(0x4b4a47,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
  for(let d=ROAD_START+40;d<1120;d+=95){const m=new THREE.Mesh(new THREE.CylinderGeometry(.36,.36,.02,16),manhole);m.position.set(((Math.abs(d)/95|0)%2?.8:-1.2),roadCrown(d,1)-.004,-d);mainG.add(m);}
- const patch=K.mat(0x5a5a57,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
- for(let k=0;k<30;k++){const d=ROAD_START+W.rand()*(1100-ROAD_START),x=(W.rand()-.5)*6,w=.8+W.rand()*1.6,l=1.2+W.rand()*2.6;
+ // Patches share the asphalt's grain, a shade darker; none right where the ride starts.
+ const patch=W.surfaceMaterial(K.mat(STREET.patch,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),'asphalt');
+ for(let k=0;k<30;k++){const d=ROAD_START+W.rand()*(1100-ROAD_START),x=(W.rand()-.5)*6,w=.8+W.rand()*1.6,l=1.2+W.rand()*2.6;if(d>-14&&d<30)continue;
   const p=[],idx=[];for(const dd of [d,d+l/2,d+l])for(const xx of [x-w/2,x+w/2])p.push(xx,roadCrown(dd,xx)+.002,-dd);idx.push(0,1,2,1,3,2,2,3,4,3,5,4);const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(idx);mainG.add(new THREE.Mesh(g,patch));}
  for(let k=0;k<44;k++){const d=ROAD_START+W.rand()*(1110-ROAD_START),x=(W.rand()-.5)*8,pts=[];let px=x,pd=d;for(let j=0;j<5;j++){pts.push([px,roadCrown(pd,px)+.006,-pd]);px+=(W.rand()-.5)*.5;pd+=.3+W.rand()*.5;}K.line(mainG,pts,0x51504c);}
  W.poles=poles;
