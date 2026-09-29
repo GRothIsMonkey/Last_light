@@ -2,7 +2,7 @@
 
 The recovered Astra build is based directly on Claude's `claude/loving-newton-1vlisx` at `02cbde1`. The original 14 story beats, four chapters, route, three different friend departures and ending text are preserved. The final work is on `codex/astra-v0.1-release`.
 
-**Status:** implementation, automated checks and rendered visual QA pass. The required perceptual listening review remains incomplete. This environment cannot listen to the rendered audio, so signal checks are not treated as listening approval. The combined build must remain on its release branch until that requirement is satisfied; `main` is not yet the completed release.
+**Status:** implementation, automated checks and rendered visual QA pass. The required perceptual listening review remains incomplete. This environment cannot listen to the rendered audio, so signal checks are not treated as listening approval. On 2026-09-29, the repository owner explicitly instructed publication to `main` without waiting for that review. Audio listening remains a documented limitation, not a passed check.
 
 ## Automated simulation
 
@@ -45,7 +45,7 @@ Every rendered case contains finite, nonzero audio and passes the peak/headroom 
 
 The final call now uses softened harmonics and moving formants without its old feedback echo. It is still synthesized, not a recorded voice. Its emotional character, recognizability, perceived distance, spatial balance and the mix's comfort/repetition **have not been judged by listening**. Offline clips also do not establish how every sound combines during a full real-time ride.
 
-The [review page](qa/audio-review.html), [complete reel](qa/audio-review.mp3), individual clips and [reel index](qa/audio-review-index.json) preserve actual game output levels; they are not loudness-normalized. Complete the required listening review, particularly the final call, before marking this release complete or merging it into `main`.
+The [review page](qa/audio-review.html), [complete reel](qa/audio-review.mp3), individual clips and [reel index](qa/audio-review-index.json) preserve actual game output levels; they are not loudness-normalized. The listening review, particularly the final call, remains outstanding. Publication to `main` was explicitly requested with this limitation on 2026-09-29.
 
 ## Performance
 
@@ -65,7 +65,7 @@ The original group view submitted about 523,112 triangles in 425 calls. The revi
 
 One faint additional set of chalk initials, **AR**, appears beside the existing initials during the last fade, after the call home. There is no stinger, extra voice, figure, camera cue or explanatory lore. The same restrained clue serves both endings and is cleared on replay.
 
-- Required perceptual audio review is outstanding. This is the release/merge gate.
+- Perceptual audio review is outstanding. The repository owner instructed publication without waiting for it.
 - Real-GPU performance and physical touch-device behavior remain unmeasured. Browser pointer lock was tested in headless Chromium, not on a physical desktop setup.
 - The geometry and sound remain deliberately stylized and locally synthesized. The call especially needs a human listening verdict.
 - No known failing automated check or reproduced runtime exception remains in the tested build.

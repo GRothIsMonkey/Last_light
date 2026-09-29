@@ -23,7 +23,7 @@ Based directly on Claude's `claude/loving-newton-1vlisx` at `02cbde1`. All origi
 
 The original locally synthesized sound system remains. The pass removes the final call's feedback echo, softens its harmonic source, adds early bird calls, adjusts rolling/cricket levels, cleans up finished sources and resets old sounds on replay. The evening layers fade beneath the ending chord. A master compressor provides headroom protection.
 
-Real OfflineAudioContext renders and signal checks cover 22 sound cases. They are not a perceptual listening review. The rendered clips and review page accompany the release so this last required gate can be completed without reconstructing the work.
+Real OfflineAudioContext renders and signal checks cover 22 sound cases. They are not a perceptual listening review. The rendered clips and review page accompany the release for the outstanding listening review. On 2026-09-29, the repository owner instructed publication to `main` without waiting for that review.
 
 ## Ending detail (spoiler)
 

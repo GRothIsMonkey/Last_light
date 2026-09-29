@@ -5,7 +5,7 @@
   "previousMain": "22c5ae9720077393ca7a86d734154baca9ed0a7d",
   "simulationChecks": 44,
   "browserChecks": 55,
-  "audioReview": "Signal checks passed; perceptual listening remains required before merging main.",
+  "audioReview": "Signal checks passed; perceptual listening remains outstanding. The repository owner instructed publication to main without waiting for it on 2026-09-29.",
   "commands": [
     "npm test",
     "BROWSER_PATH=/tmp/chromium SOFTWARE_GL=1 npm run test:browser"
@@ -27,5 +27,6 @@
     "package.json": "c8f6bdff95f8a735687cc13f37f9877376040f985c5833a009cbe13f4de13e20",
     "tests/browser.mjs": "2a2293a4c5c12ce5a9487d226bc2d3988140abe1106189ac0dfddb4efbb18794",
     "tests/verify.mjs": "3ad4f01aa011cc64dca2a65b0d83b8e1e2c3d3625a480b650268a119ce92e585"
-  }
+  },
+  "testedReleaseCommit": "7a3812f6fc2621d751e8f129359409c652674eb6"
 }

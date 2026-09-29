@@ -4,7 +4,7 @@ A short first-person bicycle memory set on August 21, 2011. Ride through a warm 
 
 A normal playthrough takes about **5–6 minutes**: roughly 4.6 minutes of riding, then a quiet stop at the end of the street. The memory fades by itself after about 100 seconds at the lookout. Stopping during the ride can extend the experience.
 
-The combined Claude implementation and Astra polish are on `codex/astra-v0.1-release`. Implementation and automated/visual QA are complete; the required perceptual audio check is the remaining release gate before merging to `main`. See [release notes](docs/RELEASE_NOTES.md), [verification](docs/TEST_REPORT.md), and the [audio review](docs/qa/audio-review.html).
+The combined Claude implementation and Astra polish form the v0.1 release. Implementation and automated/visual QA are complete. On 2026-09-29, the repository owner instructed publication to `main` with the perceptual audio review still outstanding; signal checks are not a listening verdict. See [release notes](docs/RELEASE_NOTES.md), [verification](docs/TEST_REPORT.md), and the [audio review](docs/qa/audio-review.html).
 
 ## Play
 
