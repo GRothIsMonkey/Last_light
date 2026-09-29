@@ -12,7 +12,7 @@ const CF=SECTION.curbFace;
 export function buildFurniture(W){
  const {K}=W,mainG=W.bent(MAIN);
  const groundMain=(d,lat)=>groundPoint(d,lat).y+W.surfaceY(d,lat);
- const lines=[];const wire=(pts,color=STREET.wire)=>{const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color}));W.baked.push(l);lines.push(l);return l;};
+ const lines=W.wires=[];const wire=(pts,color=STREET.wire,kind='span')=>{const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color}));W.baked.push(l);lines.push({kind,a:pts[0].clone(),b:pts[pts.length-1].clone(),mid:pts[pts.length>>1].clone()});return l;};
  const sag=(a,b,s,n=14)=>{const pts=[];for(let k=0;k<=n;k++){const t=k/n;pts.push(new THREE.Vector3(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t-4*s*t*(1-t),a.z+(b.z-a.z)*t));}return pts;};
  const clearAt=(frame,u,v,r)=>{const p=frame.point(u,v);return W.space.free(p.x,p.z,r);};
 
@@ -39,7 +39,7 @@ export function buildFurniture(W){
   K.box(g,0,7.25,.1,.5,.08,.08,0x5a5a55);if(transformer){K.cyl(g,.32,7.75,0,.24,.75,0x7b7f7c,10);K.cyl(g,.32,8.16,0,.26,.06,0x6b6f6c,10);}
   const pole={frame,u,v,x:p.x,z:p.z,y,rot:-frame.heading(u)+arm,
    at(dx,h){const c=Math.cos(this.rot),s=Math.sin(this.rot);return new THREE.Vector3(this.x+dx*c,this.y+h,this.z-dx*s);}};
-  if(guy){const a=pole.at(0,8.6),b=new THREE.Vector3(p.x+guy[0],y-.1,p.z+guy[1]);wire([a,b],0x8a8a86);const gg=W.placeWorld(b.x,b.z,y,0,false);K.cyl(gg,0,1,0,.05,2,0xd8c040,6);}
+  if(guy){const a=pole.at(0,8.6),b=new THREE.Vector3(p.x+guy[0],y-.1,p.z+guy[1]);wire([a,b],0x8a8a86,'guy');const gg=W.placeWorld(b.x,b.z,y,0,false);K.cyl(gg,0,1,0,.05,2,0xd8c040,6);}
   W.space.circle(p.x,p.z,.5,'pole');if(frame===MAIN)W.obstacles.push({d0:u-.3,d1:u+.3,l0:v-.3,l1:v+.3});poles.push(pole);return pole;
  }
  // Wires run along a span; when a crossarm is parallel to the span (a branch leaving the
@@ -72,7 +72,7 @@ export function buildFurniture(W){
  for(const h of [...W.plans,...W.sidePlans.filter(p=>p.lod==='full')]){
   const q=h.toWorld(h.hasGarage?-h.gs*h.w/2:h.w/2,h.front-1.2),target=new THREE.Vector3(q.x,q.ground+h.h-.35,q.z);
   let best=null,bd=1e9;for(const p of poles){const d=Math.hypot(p.x-q.x,p.z-q.z);if(d<bd){bd=d;best=p;}}
-  if(best&&bd<52)wire(sag(best.at(0,7.1),target,.35+bd*.008,10),0x322c28);
+  if(best&&bd<52)wire(sag(best.at(0,7.1),target,.35+bd*.008,10),0x322c28,'drop');
  }
 
  // Signs --------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ export function buildFurniture(W){
  // A sign face: front (and optionally a printed back), set in a thin rim so no edge is ever see-through.
  function plate(g,w,h,y,tex,fallback,{back=null,alpha=false,rot=0,shape='rect',name=''}={}){
   const pg=new THREE.Group();pg.position.y=y;pg.rotation.y=rot;g.add(pg);
-  const face=(t,flip)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),t?new THREE.MeshStandardMaterial({map:t,roughness:.55,transparent:alpha,alphaTest:alpha?.5:0}):K.mat(fallback));m.position.z=flip?-.012:.012;if(flip)m.rotation.y=Math.PI;m.userData.sign=name;pg.add(m);return m;};
+  const face=(t,flip)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),t?new THREE.MeshStandardMaterial({map:t,roughness:.55,transparent:alpha,alphaTest:alpha?.5:0}):K.mat(fallback));m.name='sign-face';m.position.z=flip?-.012:.012;if(flip)m.rotation.y=Math.PI;m.userData.sign=name;pg.add(m);return m;};
   face(tex,false);if(back!==null)face(back===true?tex:back,true);else{const r=new THREE.Mesh(new THREE.PlaneGeometry(w*.98,h*.98),K.mat(0x9a9c98));r.rotation.y=Math.PI;r.position.z=-.012;pg.add(r);}
   if(shape==='rect'){const rim=new THREE.Mesh(K.boxGeo,K.mat(0x8d908b));rim.scale.set(w,h,.02);pg.add(rim);}
   return pg;}

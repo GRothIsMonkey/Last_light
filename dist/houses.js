@@ -40,7 +40,7 @@ export function planHouse(rand,o){
  P.setback??=18.2+rand()*2.6;P.front=P.depth/2;
  P.wall??=pick(HOUSE.walls);P.roofColor??=pick(HOUSE.roofs);P.door??=pick(HOUSE.doors);P.garageColor??=pick(HOUSE.garageDoors);
  P.shutters??=rand()<(style==='colonial'?.75:.4)?pick(HOUSE.shutters):null;
- P.brick??=rand()<.28?(style==='ranch'?'front':'lower'):null;
+ P.brick??=rand()<.28?(style==='ranch'?'front':'lower'):null;if(P.dynamicDoor)P.brick=null;// friends' doors open for real; keep their walls plain
  P.garage??=rand()<.84;P.hasGarage=!!P.garage;
  P.gs=P.garageSide==='near'?P.side:P.garageSide==='far'?-P.side:(P.gs??(rand()<.5?1:-1));
  P.gw??=rand()<.5?4:6.4;P.gd=Math.min(P.depth,7);P.gh=2.9;P.gfront=P.front-(P.garageInset??(style==='colonial'&&rand()<.4?.8:0));P.gx=P.gs*(P.w/2+P.gw/2);
@@ -130,7 +130,9 @@ export function buildHouse(W,P){
  // Corner boards.
  if(!mid)for(const [x,z] of [[-1,1],[1,1],[-1,-1],[1,-1]]){K.box(g,x*(W2+.01),h/2+.15,z*(D2+.01),.13,h-.3,.13,T);}
  // Windows on all four walls, avoiding the door and garage.
- const face=(wall,a,y=0)=>wall==='front'?K.group(g,a,D2,0,y):wall==='back'?K.group(g,a,-D2,Math.PI,y):wall==='left'?K.group(g,-W2,a,-Math.PI/2,y):K.group(g,W2,a,Math.PI/2,y);
+ // Front windows, door and light sit on the face of any brick veneer, never behind it.
+ const brickOut=P.brick==='front'?.065:P.brick==='lower'?.055:0;
+ const face=(wall,a,y=0)=>wall==='front'?K.group(g,a,D2+brickOut,0,y):wall==='back'?K.group(g,a,-D2,Math.PI,y):wall==='left'?K.group(g,-W2,a,-Math.PI/2,y):K.group(g,W2,a,Math.PI/2,y);
  const winW=P.stories===2?1.1:1.3,winH=P.stories===2?1.35:1.25,rows=P.stories===2?[1.6,4.3]:[1.55];
  const count=Math.max(2,Math.round(w/3.3));
  function windowUnit(fg,x,y,ww,wh,{shutter=null,glass=null,lit=true,simple=false}={}){
@@ -156,7 +158,7 @@ export function buildHouse(W,P){
  else{const fd=face('front',P.doorX,P.floor);K.box(fd,0,2.2,.02,1.3,.1,.08,T);for(const s of [-1,1])K.box(fd,s*.58,1.08,.02,.1,2.2,.08,T);}
  // Jamie's porch light is switched on by Jamie's mother, so it gets a material of its own.
  const porchMat=P.porchMat||(P.key==='jamie'?new THREE.MeshStandardMaterial({color:0xfff0c8,emissive:0xffc070,emissiveIntensity:.05}):pick(W.porchMats));P.porchMat=porchMat;
- {const lx=P.doorX+P.gs*.8,lt=face('front',lx,P.floor);K.box(lt,0,1.84,.06,.1,.05,.12,0x2d2d2b);K.box(lt,0,1.72,.1,.15,.22,.15,porchMat);K.box(lt,0,1.86,.1,.19,.04,.19,0x2d2d2b);P.porchLight={x:lx,y:P.floor+1.72,z:D2+.1};}
+ {const lx=P.doorX+P.gs*.8,lt=face('front',lx,P.floor);K.box(lt,0,1.84,.06,.1,.05,.12,0x2d2d2b);K.box(lt,0,1.72,.1,.15,.22,.15,porchMat);K.box(lt,0,1.86,.1,.19,.04,.19,0x2d2d2b);P.porchLight={x:lx,y:P.floor+1.72,z:D2+.1+brickOut};}
  buildEntry(W,P,g,rand,mid);
  // Roof, and the garage beside it.
  const roofY=h;

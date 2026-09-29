@@ -21,3 +21,13 @@ export const memories=[
 // The end of the street. Kept short on purpose.
 export const finale={call:'Far down the street, someone is calling you in.',hintWalk:'Your bike is where you left it.',hintBike:'Whenever you’re ready.'};
 export function chapterAt(d){let n=0;for(let i=0;i<chapters.length;i++)if(d>=chapters[i].at)n=i;return n;}
+// A few memory lines, in the voice of the one looking back. Each appears once, softly,
+// only when nobody is talking, and only at these moments. Kept few on purpose.
+// at/until: a window of distance along the street; after: a moment in the evening.
+export const reflections=[
+ {id:'together',at:132,until:168,text:'I thought we’d always ride this street.'},
+ {id:'tomorrow',after:'first-home',delay:2.5,until:478,text:'Back then, going home only meant until tomorrow.'},
+ {id:'lights',at:571,until:598,text:'We used to stay out until the streetlights came on.'},
+ {id:'quiet',at:734,until:770,text:'I don’t remember when the neighborhood got this quiet.'},
+ {id:'last',after:'leaving',delay:.6,text:'Nobody ever said which summer would be the last.'},
+];

@@ -23,7 +23,9 @@ export function createAudio({context=null,random=Math.random}={}){
   const fw=ctx.createOscillator();fw.type='square';fw.frequency.value=40;layers.free=gain(0);fw.connect(filt('highpass',2600)).connect(layers.free).connect(bus);fw.start();layers.freeOsc=fw;
   crickets=[...Array(5)].map((_,i)=>({pan:-.8+i*.4,next:0,rate:.55+random()*.6,pitch:4300+random()*700,vol:.5+random()*.5}));
  }
- function setEnabled(on){enabled=on;if(!ctx)return;if(on&&!context)ctx.resume?.();master.gain.setTargetAtTime(on?.62:0,ctx.currentTime,on?.3:.15);}
+ let volume=1;
+ function setEnabled(on){enabled=on;if(!ctx)return;if(on&&!context)ctx.resume?.();master.gain.setTargetAtTime(on?.775*volume:0,ctx.currentTime,on?.3:.15);}
+ function setVolume(v){volume=Math.max(0,Math.min(1,v));if(ctx&&enabled)master.gain.setTargetAtTime(.775*volume,ctx.currentTime,.1);}
  const now=()=>ctx.currentTime;
  function env(g,t,a,peak,d,shape='exp'){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+a);if(shape==='exp')g.gain.exponentialRampToValueAtTime(.0001,t+a+d);else g.gain.linearRampToValueAtTime(0,t+a+d);}
  function tone(freq,t,dur,vol,type='sine',out=bus,glide=null){const o=shot(ctx.createOscillator()),g=gain();o.type=type;o.frequency.setValueAtTime(freq,t);if(glide)o.frequency.exponentialRampToValueAtTime(glide,t+dur);env(g,t,.012,vol,dur);o.connect(g).connect(out);o.start(t);o.stop(t+dur+.1);return o;}
@@ -102,5 +104,5 @@ for(const [f,d] of [[220,0],[277.18,.5],[329.63,1.0],[440,1.6]])tone(f,t+d,6,.04
  function makeLoop(kind){const out=gain(0),pan=ctx.createStereoPanner();out.connect(pan).connect(bus);
   if(kind==='mower'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=96;const lp=filt('lowpass',650),am=gain(.6),lfo=ctx.createOscillator(),d=gain(.35);lfo.frequency.value=7;lfo.connect(d).connect(am.gain);o.connect(lp).connect(am).connect(out);o.start();lfo.start();const n=src();n.connect(filt('bandpass',400,.8)).connect(gain(.2)).connect(out);return {out,pan,vol:.09,ref:40};}
   const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=48;const lp=filt('lowpass',320);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('lowpass',500)).connect(gain(.25)).connect(out);return {out,pan,vol:.18,ref:10};}
- return {ensure,setEnabled,sfx,bell,footstep,call,ending,leaving,reset,update,get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;}};
+ return {ensure,setEnabled,setVolume,sfx,bell,footstep,call,ending,leaving,reset,update,get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;}};
 }

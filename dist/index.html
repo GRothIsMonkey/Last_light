@@ -1,1 +1,105 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#302e42"><title>Last Light — Summer, 2011 · v0.1</title><link rel="stylesheet" href="style.css"></head><body><main id="experience"><canvas id="world" aria-label="First-person bicycle ride through a suburban neighborhood at sunset"></canvas><div class="grain"></div><div class="vignette"></div><header><a class="wordmark" href="./" aria-label="Last Light home">LAST LIGHT<span>A SUMMER YOU STILL REMEMBER</span></a><button id="sound" aria-pressed="false" aria-label="Enable sound">SOUND <span>OFF</span></button></header><div id="date">AUGUST 21, 2011 <i></i> 7:42 PM</div><section id="intro"><div class="eyebrow">ONE MORE LAP AROUND THE BLOCK</div><h1>Last <em>Light</em></h1><p>It’s getting late.<br>But nobody wants to go home yet.</p><button id="start" class="primary">Take the long way home <span>↗</span></button><div class="intro-note">A 5-MINUTE MEMORY · BEST WITH HEADPHONES</div></section><div id="subtitle" role="status" aria-live="polite"></div><div id="ride-ui" hidden><div id="chapter">01 <span>THE LONG WAY HOME</span></div><div id="distance"><span id="ride-label">STAY A LITTLE LONGER</span><div class="track"><div id="progress"></div></div></div></div><footer><div id="controls"><kbd>W</kbd> PEDAL <span> / </span><kbd>A</kbd><kbd>D</kbd> STEER <span> / </span><kbd>SPACE</kbd> BELL</div><span id="footer-right">NOTHING TO WIN. NOWHERE TO HURRY.</span></footer><div id="mobile" hidden><button id="left" aria-label="Steer left">←</button><button id="pedal" aria-label="Hold to pedal">PEDAL</button><button id="right" aria-label="Steer right">→</button><button id="bell" aria-label="Ring bicycle bell">♩</button><button id="act" hidden></button></div><div id="fade"></div><section id="pause" hidden><h2>Stay here a little.</h2><button id="resume" class="primary">Keep riding</button><p>W / ↑ pedal · S / ↓ brake · A / D steer<br>Mouse look · Q / E keyboard look · R center view<br>Click the scene to capture your mouse; drag if unavailable.<br>Space ring bell · M sound on/off · Esc pause<br>At the end of the street: F get off, W A S D walk</p></section><section id="ending" hidden><div class="eyebrow">SOMEWHERE, IT’S STILL SUMMER.</div><h2>We thought we had<br><em>forever.</em></h2><p>You don’t remember the last time you rode together.<br>Only that, once, you did.</p><button id="again" class="primary">One more summer <span>↻</span></button><span>A MEMORY OF AUGUST, 2011</span></section><div id="error" hidden><h2>This memory needs WebGL.</h2><p>Please enable hardware acceleration or try another browser.</p></div></main><script type="module" src="game.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#302e42">
+<title>Last Light — Summer, 2011</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="experience">
+ <canvas id="world" aria-label="First-person bicycle ride through a suburban neighborhood at sunset"></canvas>
+ <div class="grain"></div><div class="vignette"></div>
+ <header>
+  <a class="wordmark" href="./" aria-label="Last Light home">LAST LIGHT<span>A SUMMER YOU STILL REMEMBER</span></a>
+  <button id="sound" aria-pressed="false" aria-label="Enable sound">SOUND <span>OFF</span></button>
+ </header>
+ <div id="date">AUGUST 21, 2011 <i></i> 7:42 PM</div>
+
+ <!-- Title -->
+ <section id="intro">
+  <div class="eyebrow">ONE MORE LAP AROUND THE BLOCK</div>
+  <h1>Last <em>Light</em></h1>
+  <p>It’s getting late.<br>But nobody wants to go home yet.</p>
+  <nav class="menu" aria-label="Title menu">
+   <button id="start" class="primary">Take the long way home <span>↗</span></button>
+   <button id="open-settings" class="quiet">Settings</button>
+   <button id="open-credits" class="quiet">Credits</button>
+  </nav>
+  <dl id="controls" class="controls" aria-label="Controls">
+   <div><dt><kbd>W</kbd></dt><dd>Pedal <small>(hold <kbd>Shift</kbd> to push harder)</small></dd></div>
+   <div><dt><kbd>A</kbd><kbd>D</kbd></dt><dd>Steer</dd></div>
+   <div><dt><kbd>S</kbd></dt><dd>Brake</dd></div>
+   <div><dt>Mouse</dt><dd>Look around</dd></div>
+   <div><dt><kbd>Q</kbd><kbd>E</kbd></dt><dd>Look left / right</dd></div>
+   <div><dt><kbd>Space</kbd></dt><dd>Bell</dd></div>
+   <div><dt><kbd>F</kbd></dt><dd>When it matters</dd></div>
+   <div><dt><kbd>Esc</kbd></dt><dd>Pause</dd></div>
+  </dl>
+  <div class="intro-note">A 5-MINUTE MEMORY · BEST WITH HEADPHONES</div>
+ </section>
+
+ <!-- During the ride -->
+ <div id="subtitle" role="status" aria-live="polite"></div>
+ <div id="reflection" aria-live="polite"></div>
+ <div id="prompt" aria-live="polite"></div>
+ <div id="ride-ui" hidden>
+  <div id="chapter">01 <span>THE LONG WAY HOME</span></div>
+  <div id="distance"><span id="ride-label">STAY A LITTLE LONGER</span><div class="track"><div id="progress"></div></div></div>
+ </div>
+ <div id="mobile" hidden>
+  <button id="left" aria-label="Steer left">←</button><button id="pedal" aria-label="Hold to pedal">PEDAL</button><button id="right" aria-label="Steer right">→</button>
+  <button id="bell" aria-label="Ring bicycle bell">♩</button><button id="act" hidden></button>
+ </div>
+ <div id="fade"></div>
+
+ <!-- Pause -->
+ <section id="pause" hidden>
+  <h2>Stay here a little.</h2>
+  <nav class="menu" aria-label="Pause menu">
+   <button id="resume" class="primary">Keep riding</button>
+   <button id="pause-settings" class="quiet">Settings</button>
+   <button id="restart" class="quiet">Start over</button>
+   <button id="to-title" class="quiet">Back to the title</button>
+  </nav>
+  <p class="hint">Click the scene to look around with the mouse.</p>
+ </section>
+
+ <!-- Settings -->
+ <section id="settings" hidden aria-labelledby="settings-title">
+  <h2 id="settings-title">Settings</h2>
+  <form id="settings-form" onsubmit="return false">
+   <label>Volume <input id="set-volume" type="range" min="0" max="1" step="0.05" value="1"></label>
+   <label>Mouse sensitivity <input id="set-sensitivity" type="range" min="0.4" max="2" step="0.05" value="1"></label>
+   <label>Graphics
+    <select id="set-quality"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+   </label>
+   <label class="toggle"><input id="set-captions" type="checkbox" checked> Show what your friends say</label>
+   <label class="toggle"><input id="set-memories" type="checkbox" checked> Show memory lines</label>
+   <label class="toggle"><input id="set-fullscreen" type="checkbox"> Full screen</label>
+  </form>
+  <button id="settings-back" class="primary">Done</button>
+ </section>
+
+ <!-- Credits -->
+ <section id="credits" hidden aria-labelledby="credits-title">
+  <h2 id="credits-title">Last Light</h2>
+  <p>A short memory of a summer evening in 2011.</p>
+  <p class="small">Every house, tree, voice and sound is made by the game itself, as you play.<br>Rendered with Three.js r160 (MIT license).</p>
+  <button id="credits-back" class="primary">Back</button>
+ </section>
+
+ <!-- Ending -->
+ <section id="ending" hidden>
+  <div class="eyebrow">SOMEWHERE, IT’S STILL SUMMER.</div>
+  <h2>We thought we had<br><em>forever.</em></h2>
+  <p>You don’t remember the last time you rode together.<br>Only that, once, you did.</p>
+  <button id="again" class="primary">One more summer <span>↻</span></button>
+  <span>A MEMORY OF AUGUST, 2011</span>
+ </section>
+ <div id="error" hidden><h2>This memory needs WebGL.</h2><p>Please enable hardware acceleration or try another browser.</p></div>
+</main>
+<script type="module" src="game.js"></script>
+</body>
+</html>

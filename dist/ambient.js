@@ -170,13 +170,22 @@ export function createAmbient(scene,world,hooks={}){
  // The tire swing at the lookout, and lights of the next town over -------------------------------------------
  const sw=LOOKOUT.swing,oak=LOOKOUT.oak,swingRoot=world.anchor(sw.d,sw.lat,world.groundY(sw.d,sw.lat)-groundPoint(sw.d,sw.lat).y+4.35);
  {const limb=new THREE.Mesh(new THREE.CylinderGeometry(.09,.13,1,6),world.material(0x5d4f42));const dl=oak.lat-sw.lat,dd=oak.d-sw.d;limb.scale.y=Math.hypot(dl,dd)+.4;limb.position.set(dl/2,-.05,-dd/2);limb.rotation.set(0,Math.atan2(dl,-dd),Math.PI/2);limb.rotation.order='YXZ';limb.castShadow=true;swingRoot.add(limb);}
- const swing=new THREE.Group();swingRoot.add(swing);{const rope=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,3.05,5),world.material(0xb8a57e));rope.position.y=-1.52;swing.add(rope);const tire=new THREE.Mesh(new THREE.TorusGeometry(.3,.11,8,16),world.material(0x2a2a2b));tire.position.y=-3.35;tire.castShadow=true;swing.add(tire);}
+ const swing=new THREE.Group();swingRoot.add(swing);const tire=new THREE.Mesh(new THREE.TorusGeometry(.3,.11,8,16),world.material(0x2a2a2b));{const rope=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,3.05,5),world.material(0xb8a57e));rope.position.y=-1.52;swing.add(rope);tire.position.y=-3.35;tire.castShadow=true;swing.add(tire);}
+ // A real pendulum (3.35 m of rope): the evening air keeps it turning a little, a push sends it
+ // away from you and it swings back, slower each time. th: along the street, ph: across it.
+ const pend={th:0,ph:0,wt:0,wp:0,creak:0};
+ function pushSwing(from){const dd=sw.d-(from?.d??sw.d-1),dl=sw.lat-(from?.lat??sw.lat),n=Math.hypot(dd,dl)||1;pend.wt+=.62*dd/n;pend.wp+=.62*dl/n;}
+ function swingPosition(){swingRoot.updateMatrixWorld(true);return tire.getWorldPosition(new THREE.Vector3());}
  const townGeo=new THREE.BufferGeometry(),tp=[],tl=[];for(let i=0;i<46;i++){const lat=(hash(i*4.4)-.5)*420,d=1480+hash(i*2.2)*120,p=groundPoint(d,lat);tp.push(p.x,p.y-6+hash(i*8.8)*3,p.z);tl.push(.3+hash(i*1.7)*.7);}
  townGeo.setAttribute('position',new THREE.Float32BufferAttribute(tp,3));townGeo.setAttribute('level',new THREE.Float32BufferAttribute(tl,1));
  const townMat=glowMat(5);townMat.fog=false;townMat.uniforms.uColor.value.set(0xffd9a0);const town=new THREE.Points(townGeo,townMat);town.frustumCulled=false;scene.add(town);
- function updateLookout(dt,ctx){const t=time.value;swing.rotation.set(.07*Math.sin(t*1.05)+.025*Math.sin(t*.37)*gust.value,0,.04*Math.sin(t*.8+1));
-  townMat.uniforms.uScale.value=(hooks.renderer?.domElement?.height||900);const lv=smooth((ctx.p-.8)/.2)*.6+ctx.night*.5;town.visible=lv>.01;townMat.uniforms.uColor.value.setRGB(1*lv,.85*lv,.62*lv);
-  if(ctx.finale>0&&Math.abs(Math.sin(t*.6))>.995&&!updateLookout.creak){updateLookout.creak=true;sfx('creak',swingRoot.position,{gain:.4});}if(Math.abs(Math.sin(t*.6))<.9)updateLookout.creak=false;}
+ function updateLookout(dt,ctx){const t=time.value,G=9.8/3.35;
+  for(const [a,w] of [['th','wt'],['ph','wp']]){pend[w]+=(-G*Math.sin(pend[a])-.22*pend[w])*dt;pend[a]=clamp(pend[a]+pend[w]*dt,-.75,.75);}
+  const moving=Math.abs(pend.th)+Math.abs(pend.ph)>.1;if(moving&&Math.sign(pend.wt)!==pend.creak){pend.creak=Math.sign(pend.wt);sfx('creak',swingPosition(),{gain:.25});}
+  // At rest the rope still creaks now and then in the breeze, as it always did.
+  if(!moving&&ctx.finale>0&&Math.abs(Math.sin(t*.6))>.995&&!pend.idle){pend.idle=true;sfx('creak',swingRoot.position,{gain:.4});}if(Math.abs(Math.sin(t*.6))<.9)pend.idle=false;
+  swing.rotation.set(pend.th+.07*Math.sin(t*1.05)+.025*Math.sin(t*.37)*gust.value,0,pend.ph+.04*Math.sin(t*.8+1));
+  townMat.uniforms.uScale.value=(hooks.renderer?.domElement?.height||900);const lv=smooth((ctx.p-.8)/.2)*.6+ctx.night*.5;town.visible=lv>.01;townMat.uniforms.uColor.value.setRGB(1*lv,.85*lv,.62*lv);}
 
  // Heard, not seen: a screen door somewhere, a mower early, a dog now and then.
  const screenDoor=street.filter(h=>h.side<0).sort((a,b)=>Math.abs(a.dc-700)-Math.abs(b.dc-700))[1];let screenPlayed=false,barks=[418,472,655];
@@ -184,15 +193,7 @@ export function createAmbient(scene,world,hooks={}){
   for(let i=0;i<barks.length;i++)if(barks[i]&&ctx.distance>=barks[i]){barks[i]=0;const p=groundPoint(ctx.distance+60,(i%2?1:-1)*45);sfx('dog',tmp.set(p.x,p.y+.5,p.z));}
   const mower=groundPoint(170,-48);sources.push({kind:'mower',pos:tmp.clone().set(mower.x,mower.y,mower.z),level:1-smooth((ctx.distance-150)/140)});}
 
- // One understated discrepancy, next to the old initials, only during the final fade.
- // No camera cue, sound, caption, or earlier hint accompanies it.
- const cluePoints=[];
- for(const stroke of [[[0,.1],[.36,.95],[.7,.1]],[[.16,.45],[.54,.45]],[[.85,.1],[.85,.94],[1.3,.94],[1.4,.71],[.88,.5],[1.42,.1]]]){
-  for(let i=0;i<stroke.length-1;i++)for(const [x,z] of [stroke[i],stroke[i+1]]){const d=1149.5+z*.42,lat=1.6+x*.42,p=groundPoint(d,lat);cluePoints.push(p.x,world.groundY(d,lat)+.009,p.z);}}
- const clue=new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(cluePoints,3)),new THREE.LineBasicMaterial({color:0xd5cbb3,transparent:true,opacity:0,depthWrite:false}));clue.name='last-chalk';clue.visible=false;scene.add(clue);
- function setEndingClue(on,fade){clue.visible=!!on;clue.material.opacity=on?smooth(fade/.18)*.58:0;}
-
- function reset(){time.value=0;gust.value=0;sources.length=0;setEndingClue(false,0);updateLookout.creak=false;
+ function reset(){time.value=0;gust.value=0;sources.length=0;Object.assign(pend,{th:0,ph:0,wt:0,wp:0,creak:0,idle:false});
   for(const s of sprinklers){s.on=1;s.angle=0;s.dir=1;s.tick=0;s.jet.visible=true;}kid.t=0;kid.lastBounce=-1;kid.phase='dribble';kid.person.group.visible=ballMesh.visible=true;
   car.mode='wait';car.u=0;car.v=0;car.t=0;car.opened=false;car.closing=false;car.path=car.path||carPath();cg.set(0);carParts.head.emissiveIntensity=1.2;for(const w of carParts.wheels)w.rotation.x=0;for(const s of carGlow)s.material.opacity=.9;placeCar();carGroup.visible=false;
   for(const f of flocks){f.t=-1;for(const b of f.birds)b.g.visible=false;}for(const f of fData)f.d=0;for(const l of lamps){l.level=0;l.mat.emissiveIntensity=0;}for(const light of localLights)light.intensity=0;screenPlayed=false;barks=[418,472,655];jamiePorch=0;}
@@ -202,5 +203,5 @@ export function createAmbient(scene,world,hooks={}){
  reset();
  // Things in the street a rider should not pass through.
  function blockers(){return carGroup.visible&&car.mode!=='parked'&&Math.abs(car.lat)<5?[{d:car.d,lat:car.lat,half:2.6,width:1.1,speed:car.mode==='drive'?car.v:0}]:[];}
- return {update,reset,sources,time,blockers,setEndingClue,clue,get state(){return {sprinklers:sprinklers.map(s=>s.on),kidVisible:kid.person.group.visible,car:car.mode,lamps:lamps.map(l=>l.level),clue:clue.visible};}};
+ return {update,reset,sources,time,blockers,pushSwing,swingPosition,get swing(){return {...pend};},get state(){return {sprinklers:sprinklers.map(s=>s.on),kidVisible:kid.person.group.visible,car:car.mode,lamps:lamps.map(l=>l.level),swing:Math.abs(pend.th)+Math.abs(pend.ph)};}};
 }

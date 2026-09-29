@@ -34,7 +34,7 @@ export function createVegetation(W){
    return {trunk:.1,crown:1*size};}
   // Maple and oak: flared trunk, forked limbs, a crown cluster at the end of every limb.
   const oak=kind==='oak',wide=oak?1.35:1,trunkH=(oak?3.2:4.2)*size,tr=(oak?.36:.28)*size;
-  const sides=6;K.lathe(g,[[.001,-.35],[tr*1.9,-.35],[tr*1.45,-.05],[tr*1.12,.25],[tr,.7],[tr*.8,trunkH*.75],[tr*.62,trunkH]],0,0,0,bark,sides);
+  const sides=oak?14:6;K.lathe(g,[[.001,-.35],[tr*1.9,-.35],[tr*1.45,-.05],[tr*1.12,.25],[tr,.7],[tr*.8,trunkH*.75],[tr*.62,trunkH]],0,0,0,bark,sides);
   const n=oak?6:3,top=[0,trunkH,0];
   crown(g,0,trunkH+1.5*size,0,(1.6+rand()*.4)*size*(oak?1.15:1),leafC,rand,lod,0);
   for(let k=0;k<n;k++){const a=k/n*Math.PI*2+rand()*.8,reach=(1.7+rand()*.9)*size*wide,rise=(oak?.8:1.3+rand()*.8)*size,start=[0,trunkH*(.72+rand()*.2),0],end=[Math.cos(a)*reach,trunkH+rise,Math.sin(a)*reach];

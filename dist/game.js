@@ -7,12 +7,16 @@ import {createFriends,localToStreet} from './friends.js';
 import {CAST} from './cast.js';
 import {createAmbient} from './ambient.js';
 import {createAudio} from './audio.js';
+import {createUI} from './ui.js';
+import {createNostalgia} from './nostalgia.js';
+import {createInteractions} from './interactions.js';
+import {createEnding} from './ending.js';
 
 const $=id=>document.getElementById(id), canvas=$('world');
 const clamp=THREE.MathUtils.clamp,damp=THREE.MathUtils.damp;
 let renderer;
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});}catch(e){$('error').hidden=false;throw e;}
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.16;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.16;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 const scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(64,innerWidth/innerHeight,.06,390);scene.add(camera);
 scene.fog=new THREE.FogExp2(0xe3ac8d,.008);
 const hemi=new THREE.HemisphereLight(0xe8e3d3,0x68675d,2.0);scene.add(hemi);
@@ -45,6 +49,10 @@ const ctx={distance:0,speed:0,lateral:0,state:'intro',clock:0,speaker:null,eye:n
 let audio=null;const sfx=(name,pos,opts)=>audio?.sfx(name,pos,opts);
 const friends=createFriends(scene,world,{sfx});
 const ambient=createAmbient(scene,world,{sfx,camera,renderer,riders:()=>friends.list.filter(f=>f.mode!=='foot'&&f.bike.group.visible).map(f=>({d:f.bd,lat:f.blat}))});
+// The end of the street: what can be touched there, and what does not quite fit.
+const ending=createEnding(scene,world),interact=createInteractions({world,ambient,sfx});
+// Menus, settings, prompts and memory lines.
+const ui=createUI($,{onSetting:applySetting}),nostalgia=createNostalgia(ui);
 
 // The player's bicycle and first-person body -----------------------------------------------------
 const bikeRoot=new THREE.Group();scene.add(bikeRoot);const playerBike=createBike(CAST.player.bike);bikeRoot.add(playerBike.group);
@@ -57,40 +65,62 @@ let mouseYaw=0,mousePitch=0,headPitch=0,steerVelocity=0,lean=0,pedalPhase=0,last
 let lookInputAt=0,glance=0,manualLook=false,answerBellAt=-1,held=0,stamina=1,push=0,steerIn=0,psiVel=0,bikeY=null,bikePitch=0;
 let state='intro',distance=0,speed=0,lateral=-.3,look=0,clock=0,lastStamp=0,nextMemory=0,captionTimer=0,idleTime=0,bellCooldown=0,resumeState='riding';
 // Final stop: on foot the player is in street coordinates too.
-let finaleT=0,walkD=0,walkLat=0,walkYaw=0,walkPitch=0,gait=0,lastStep=0,moveT=0,transT=0,transFrom=null,callDone=false,callT=-1,lookedBack=0,fade=0,endHint=false,wHint=false,leaveT=0;
+let tut={},walkHint=0,firstHome=false,finaleT=0,walkD=0,walkLat=0,walkYaw=0,walkPitch=0,gait=0,lastStep=0,moveT=0,transT=0,transFrom=null,callDone=false,callT=-1,lookedBack=0,fade=0,endHint=false,wHint=false,leaveT=0;
 const keys=new Set();const touch=matchMedia('(pointer:coarse)').matches;if(touch)document.body.classList.add('touch');
 const qa=typeof location!=='undefined'&&/[?&]qa\b/.test(location.search||'');
 let muted=true;
 const onBike=()=>['riding','arriving','stopped','leaving'].includes(state);
 const active=()=>['riding','arriving','stopped','dismounting','walking','remounting','leaving'].includes(state);
 
-function setSound(on){if(!audio){audio=createAudio();}audio.ensure();muted=!on;audio.setEnabled(on&&state!=='paused');$('sound').setAttribute('aria-pressed',String(on));$('sound').setAttribute('aria-label',on?'Mute sound':'Enable sound');$('sound').innerHTML=`SOUND <span>${on?'ON':'OFF'}</span>`;}
+function setSound(on){if(!audio){audio=createAudio();audio.setVolume(ui.settings.volume);}audio.ensure();muted=!on;audio.setEnabled(on&&state!=='paused');$('sound').setAttribute('aria-pressed',String(on));$('sound').setAttribute('aria-label',on?'Mute sound':'Enable sound');$('sound').innerHTML=`SOUND <span>${on?'ON':'OFF'}</span>`;}
 function bell(){if(!onBike()||bellCooldown>0)return;bellCooldown=2;audio?.bell();friends.hearBell(ctx);const f=friends.answerer();
  if(distance<850&&captionTimer<1&&state==='riding'){showCaption('',f?'A bell answers from up ahead.':'The sound drifts down the street.');if(f)answerBellAt=clock+.65;}}
 function showCaption(who,text,time=7.5){$('subtitle').replaceChildren();if(who){const s=document.createElement('small');s.textContent=who;$('subtitle').append(s);}$('subtitle').append(document.createTextNode(text));$('subtitle').style.opacity='1';captionTimer=time;ctx.speaker=who||null;}
-const CONTROLS={riding:'<kbd>W</kbd> PEDAL <span>/</span><kbd>A</kbd><kbd>D</kbd> STEER <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>R</kbd> CENTER <span>/</span><kbd>SPACE</kbd> BELL <span>/</span><kbd>ESC</kbd> PAUSE',
- stopped:'<kbd>F</kbd> GET OFF <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>ESC</kbd> PAUSE',
- walking:'<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> WALK <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>Q</kbd><kbd>E</kbd> TURN <span>/</span><kbd>ESC</kbd> PAUSE',
- home:'<kbd>F</kbd> RIDE HOME <span>/</span><kbd>MOUSE</kbd> LOOK',homeBike:'<kbd>W</kbd> RIDE HOME <span>/</span><kbd>F</kbd> GET OFF <span>/</span><kbd>MOUSE</kbd> LOOK',none:''};
-let controlsMode='';function setControls(m){if(m===controlsMode)return;controlsMode=m;$('controls').innerHTML=CONTROLS[m];const act=$('act');if(act){const label=m==='stopped'?'GET OFF':m==='home'||m==='homeBike'?'RIDE HOME':'';act.hidden=!touch||!label;act.textContent=label;}}
-function start(){state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;setControls('riding');cockpit.visible=true;self.group.visible=true;if(!audio)setSound(true);else if(!muted)setSound(true);showCaption('','Hold W or ↑ to pedal. There’s still a little light.');}
-function pause(){if(!active())return;resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();$('pause').hidden=false;audio?.setEnabled(false);}
-function resume(){if(state!=='paused')return;state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
-function finish(){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();setControls('none');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;audio?.ending();}
-function reset(){glance=0;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
+// Captions: friends' lines can be switched off in Settings; the game's own few lines stay.
+function say(who,text,time){if(who&&!ui.settings.captions){captionTimer=time??7.5;return;}showCaption(who,text,time);}
+function start(){if(state!=='intro')return;ui.closePanels();state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;cockpit.visible=true;self.group.visible=true;if(!audio)setSound(true);else if(!muted)setSound(true);showCaption('','There’s still a little light.',5.5);}
+function pause(){if(!active())return;resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();ui.prompt(null);$('pause').hidden=false;audio?.setEnabled(false);}
+function resume(){if(state!=='paused')return;ui.closePanels();state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
+function finish(){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();ui.clear();setAct('');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;audio?.ending();}
+// Everything a replay needs to start clean: the ride, the finale, the interface and the world's small stories.
+function resetState(){glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
  finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
- friends.reset();ambient.reset();audio?.reset();$('ending').hidden=true;start();}
-$('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>{if(state==='stopped'&&callDone)leave();else action();};
+ friends.reset();ambient.reset();ending.reset();interact.reset();nostalgia.reset();ui.clear();setAct('');audio?.reset();$('ending').hidden=true;$('pause').hidden=true;$('subtitle').style.opacity=0;}
+function reset(){resetState();state='intro';start();}
+// Back to the title: the evening waits, unstarted, behind the menu.
+function toTitle(){resetState();state='intro';ui.closePanels();document.body.classList.remove('riding');$('intro').hidden=false;$('ride-ui').hidden=true;$('mobile').hidden=true;if(document.pointerLockElement===canvas)document.exitPointerLock?.();audio?.setEnabled(false);placePlayerBike(0);}
+
+$('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>action();
+if($('restart'))$('restart').onclick=()=>{$('pause').hidden=true;reset();};if($('to-title'))$('to-title').onclick=toTitle;
+// Settings apply at once and are remembered in this browser.
+function applyQuality(q){const dpr=globalThis.devicePixelRatio||1,max=renderer.capabilities?.maxTextureSize||4096;
+ renderer.setPixelRatio(q==='low'?Math.min(dpr,1):q==='high'?Math.min(dpr,2):Math.min(dpr,1.35));renderer.setSize(innerWidth,innerHeight);
+ const size=Math.min(max,q==='low'?1024:q==='high'?3072:2048);if(sunlight.shadow.mapSize.x!==size){sunlight.shadow.mapSize.set(size,size);sunlight.shadow.map?.dispose();sunlight.shadow.map=null;}}
+function applySetting(k,v){
+ if(k==='volume')audio?.setVolume(v);
+ else if(k==='sensitivity')sens=.0022*v;
+ else if(k==='quality')applyQuality(v);
+ else if(k==='fullscreen'){try{if(v&&!document.fullscreenElement)document.documentElement.requestFullscreen?.()?.catch?.(()=>{});else if(!v&&document.fullscreenElement)document.exitFullscreen?.();}catch{}}
+ else if(k==='captions'&&!v&&ctx.speaker){$('subtitle').style.opacity=0;}
+ else if(k==='memories'&&!v)ui.clear();}
+document.addEventListener('fullscreenchange',()=>{ui.settings.fullscreen=!!document.fullscreenElement;ui.fill();});
+// The touch action button carries whatever F would do right now.
+let actLabel='';function setAct(label){if(label===actLabel)return;actLabel=label;const act=$('act');if(act){act.hidden=!touch||!label;act.textContent=label.toUpperCase();}}
+
 // F: get off at the end of the street, or get back on and ride home.
 function action(){
  if(state==='stopped'){state='dismounting';transT=0;transFrom=eyeWorld();self.group.visible=false;sfx('kickstand',bikeRoot.position);return;}
- if(state==='walking'&&nearBike()){state='remounting';transT=0;transFrom={pos:camera.position.clone(),yaw:walkYaw,pitch:walkPitch};mouseYaw=mousePitch=look=headPitch=0;return;}
+ if(state!=='walking')return;
+ // Sitting on the bench: F stands back up. Crouched at the chalk: it lets you up on its own.
+ if(interact.pose){if(interact.pose.id==='bench')interact.release();return;}
+ if(nearBike()){state='remounting';transT=0;transFrom={pos:camera.position.clone(),yaw:walkYaw,pitch:walkPitch};mouseYaw=mousePitch=look=headPitch=0;return;}
+ const spot=interact.nearest(walkD,walkLat,walkYaw);if(spot)interact.act(spot,{d:walkD,lat:walkLat,yaw:walkYaw,pitch:walkPitch});
 }
-function leave(){if(state!=='stopped'&&state!=='remounting')return;state='leaving';leaveT=0;setControls('none');audio?.leaving();}
+function leave(){if(state!=='stopped'&&state!=='remounting')return;state='leaving';leaveT=0;nostalgia.mark('leaving',clock);audio?.leaving();}
 addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
  if(e.code==='KeyM'&&!e.repeat){setSound(muted);return;}
- if(e.code==='Escape'){if(e.repeat)return;if(active())pause();else if(state==='paused'&&performance.now()-lastPauseAt>180)resume();return;}
- if(active()){keys.add(e.code);if(e.code==='KeyR'){mouseYaw=0;mousePitch=0;lookInputAt=clock;glance=0;manualLook=false;}if(e.code==='Space'&&!e.repeat)bell();if(e.code==='KeyF'&&!e.repeat)action();
+ if(e.code==='Escape'){if(e.repeat)return;if(ui.closePanels())return;if(active())pause();else if(state==='paused'&&performance.now()-lastPauseAt>180)resume();return;}
+ if(active()){keys.add(e.code);if(e.code==='KeyR'){mouseYaw=0;mousePitch=0;lookInputAt=clock;glance=0;manualLook=false;}if(e.code==='Space'&&!e.repeat){tut.bell=true;bell();}if(e.code==='KeyF'&&!e.repeat)action();if(e.code.startsWith('Shift'))tut.shift=true;if(['KeyA','KeyD','ArrowLeft','ArrowRight'].includes(e.code))tut.steered=true;
   if((e.code==='KeyW'||e.code==='ArrowUp')&&!e.repeat&&state==='stopped'){if(callDone)leave();else if(!endHint&&captionTimer<1){endHint=true;showCaption('','The street ends here.',4);}}}});
 addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 // Pointer lock is optional. Mouse-drag works if the browser declines it.
@@ -163,7 +193,7 @@ function updateRide(dt){
  lean=damp(lean,speed>.4?clamp(-Math.atan(speed*speed*k/9.8)*1.3,-.2,.2):0,5,dt);
  const coasting=state==='leaving'?false:!pedal||state!=='riding';if(!coasting&&speed>.15)pedalPhase+=speed*dt*1.25*(1+.12*push);else if(speed<.15||state!=='riding'){const level=Math.round((pedalPhase-Math.PI/2)/Math.PI)*Math.PI+Math.PI/2;pedalPhase=damp(pedalPhase,level,2.5,dt);}
  wheelTurn+=speed*dt/playerBike.geom.wheelR;astride=damp(astride,speed<.2&&state!=='riding'?1:speed<.12?1:0,speed<.2?2.5:7,dt);
- if(state==='arriving'&&speed<.02&&distance>=LOOKOUT.stop.d-.05){state='stopped';speed=0;finaleT=0;setControls('stopped');}
+ if(state==='arriving'&&speed<.02&&distance>=LOOKOUT.stop.d-.05){state='stopped';speed=0;finaleT=0;}
  return {pedal:!coasting&&speed>.15,coasting:coasting&&speed>.3};
 }
 function placePlayerBike(dt){
@@ -180,8 +210,10 @@ function placePlayerBike(dt){
  headPos(selfPose,_v);eyeRig.position.set(_v.x,_v.y+EYE.up+bob,_v.z-EYE.forward);eyeRig.rotation.set(EYE.pitch+headPitch,look,-(lean+bikeLean)*.6,'YXZ');
 }
 function updateWalk(dt){
- const f=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0);
- const s=touch?0:(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
+ let f=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0);
+ let s=touch?0:(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
+ // Seated or crouched you stay put; stepping off the bench is as good as pressing F.
+ if(interact.pose){if((f||s)&&interact.pose.id==='bench')interact.release();f=s=0;}
  const turn=(keys.has('KeyQ')?1:0)-(keys.has('KeyE')?1:0)+(touch||keys.has('ArrowLeft')||keys.has('ArrowRight')?(keys.has('ArrowLeft')||keys.has('KeyA')?1:0)-(keys.has('ArrowRight')||keys.has('KeyD')?1:0):0);
  walkYaw+=turn*1.6*dt;
  const len=Math.hypot(f,s)||1,want=(f||s)?1.35:0;moveT=damp(moveT,want,(f||s)?5:7,dt);
@@ -195,6 +227,14 @@ function updateWalk(dt){
  if(Math.floor(gait*2)!==lastStep&&moveT>.3){lastStep=Math.floor(gait*2);audio?.footstep(Math.hypot(walkLat,walkD-1142)<11||Math.abs(walkLat)<4.7&&walkD<1140?'asphalt':'grass',moveT);}
  const y=groundY(walkD,walkLat),p=groundPoint(walkD,walkLat),bob=Math.abs(Math.sin(gait*Math.PI))*.028*moveT/1.35;
  camera.position.set(p.x,y+1.42+bob-.014,p.z);camera.rotation.set(walkPitch,-(heading(walkD))+walkYaw,Math.sin(gait*Math.PI)*.004*moveT,'YXZ');
+ if(moveT>.3)walkHint=Math.max(walkHint,6);
+ // Bench and chalk: the eye eases down into the pose and back up; the mouse still looks around.
+ const r=interact.update(dt);
+ if(r&&!r.done){const P=r.pose,w=r.w,gp=groundPoint(P.d,P.lat);
+  // On the way out, stand up facing wherever you were looking.
+  if(r.out&&!P.rebased){P.rebased=true;walkYaw=P.yaw+(walkYaw-P.from.yaw);walkPitch=clamp(P.pitch+(walkPitch-P.from.pitch),-1.1,.9);P.from.yaw=P.yaw;P.from.pitch=P.pitch;}
+  const yawP=-heading(P.d)+P.yaw+(walkYaw-P.from.yaw),pitchP=clamp(P.pitch+(walkPitch-P.from.pitch),-1.3,.9),yawW=-heading(walkD)+walkYaw;
+  camera.position.lerp(_v.set(gp.x,P.eye,gp.z),w);_e.set(walkPitch+(pitchP-walkPitch)*w,yawW+Math.atan2(Math.sin(yawP-yawW),Math.cos(yawP-yawW))*w,0,'YXZ');camera.quaternion.setFromEuler(_e);}
 }
 // Smoothly move the eye between the saddle and standing beside the bike.
 function standSpot(){const o=localToStreet(yawOffset,-.62,-.05);return {d:distance+o.dd,lat:lateral+o.dl};}
@@ -203,20 +243,20 @@ function updateTransition(dt,down){
  if(down){kick=smooth(transT/.6);const s=standSpot(),y=groundY(s.d,s.lat)+1.42,p=groundPoint(s.d,s.lat);const arc=Math.sin(Math.PI*u)*.12;
   camera.position.lerpVectors(transFrom.pos,_v.set(p.x,y,p.z),u);camera.position.y+=arc;
   _e.set(transFrom.pitch*(1-u)-.1*Math.sin(Math.PI*u),transFrom.yaw,0,'YXZ');camera.quaternion.setFromEuler(_e);
-  if(transT>=T){state='walking';walkD=s.d;walkLat=s.lat;walkYaw=transFrom.yaw+heading(s.d);walkPitch=transFrom.pitch;gait=0;moveT=0;setControls(callDone?'home':'walking');}}
+  if(transT>=T){state='walking';walkD=s.d;walkLat=s.lat;walkYaw=transFrom.yaw+heading(s.d);walkPitch=transFrom.pitch;gait=0;moveT=0;}}
  else{placePlayerBike(dt);eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(_v);camera.position.lerpVectors(transFrom.pos,_v,u);eyeRig.getWorldQuaternion(_q);_e.set(transFrom.pitch,-(heading(walkD))+transFrom.yaw,0,'YXZ');camera.quaternion.setFromEuler(_e).slerp(_q,u);
-  kick=1-smooth((transT-.5)/.5);if(transT>.45)self.group.visible=true;if(transT>=T){mouseYaw=0;mousePitch=0;look=0;headPitch=0;leave();}}
+  kick=1-smooth((transT-.5)/.5);if(transT>.45)self.group.visible=true;if(transT>=T){mouseYaw=0;mousePitch=0;look=0;headPitch=0;kick=0;if(callDone)leave();else state='stopped';}}
 }
 function updateFinale(dt){
  finaleT+=dt;ctx.finale=finaleT;
  // Looking back down the street for a moment brings the evening's last sound.
  const camYaw=_e.setFromQuaternion(camera.quaternion,'YXZ').y,streetBack=-heading(distance)+Math.PI;let diff=Math.abs(((camYaw-streetBack)%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI);
  if(diff<.7)lookedBack+=dt;
- if(!callDone&&finaleT>14&&(finaleT>30||lookedBack>1.4)){callDone=true;callT=finaleT;audio?.call();showCaption('',finale.call,8);}
+ if(!callDone&&finaleT>18&&(finaleT>36||lookedBack>1.4)){callDone=true;callT=finaleT;audio?.call();showCaption('',finale.call,8);}
  if(callDone&&!wHint&&finaleT-callT>9&&captionTimer<.5){wHint=true;showCaption('',state==='walking'?finale.hintWalk:finale.hintBike,6);}
- if(state==='stopped')setControls(callDone?'homeBike':'stopped');if(state==='walking')setControls(callDone&&nearBike()?'home':'walking');
- if(state==='leaving'){leaveT+=dt;fade=smooth(leaveT/3.4);if(leaveT>3.6)finish();}
- else if(finaleT>95){fade=Math.min(1,fade+dt/5);if(fade>=1)finish();}
+ // Leaving is slow: the street goes dark over several seconds, with room for one last thought.
+ if(state==='leaving'){leaveT+=dt;fade=smooth(leaveT/6.2);if(leaveT>6.6)finish();}
+ else if(finaleT>100){if(!fade)nostalgia.mark('leaving',clock);fade=Math.min(1,fade+dt/6);if(fade>=1)finish();}
  $('fade').style.opacity=fade;
 }
 
@@ -224,9 +264,9 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;
  if(answerBellAt>=0&&clock>=answerBellAt){answerBellAt=-1;const f=friends.answerer();if(f&&onBike())audio?.bell(f.bike.group.position,.55);}ctx.clock=clock;bellCooldown=Math.max(0,bellCooldown-dt);
  let bikeAudio={pedal:false,coasting:false};
  if(onBike()&&state!=='intro'){bikeAudio=updateRide(dt);
-  const pedal=keys.has('KeyW')||keys.has('ArrowUp');idleTime=pedal||state!=='riding'?0:idleTime+dt;if(idleTime>20&&captionTimer<=0){showCaption('','Hold W or ↑ to keep riding.');idleTime=0;}
-  if(nextMemory<memories.length&&distance>=memories[nextMemory].at){const m=memories[nextMemory++];showCaption(m.who,m.text);}
-  if(state==='riding'&&distance>=LOOKOUT.stop.d-24){state='arriving';setControls('none');}
+  const pedal=keys.has('KeyW')||keys.has('ArrowUp');idleTime=pedal||state!=='riding'?0:idleTime+dt;if(pedal&&held>1.2)tut.pedaled=true;
+  if(nextMemory<memories.length&&distance>=memories[nextMemory].at){const m=memories[nextMemory++];say(m.who,m.text);}
+  if(state==='riding'&&distance>=LOOKOUT.stop.d-24)state='arriving';
   const ch=chapterAt(distance);if(ch!==currentChapter){currentChapter=ch;$('chapter').innerHTML=`0${ch+1} <span>${chapters[ch].title}</span>`;}$('progress').style.width=`${Math.min(1,distance/LENGTH)*100}%`;$('ride-label').textContent=distance<870?'STAY A LITTLE LONGER':'YOU KNOW THE WAY HOME';
   const keyLook=(keys.has('KeyQ')?1.1:0)-(keys.has('KeyE')?1.1:0);if(keyLook){lookInputAt=clock;manualLook=true;}
   // Manual looking always wins; the automatic glance returns only after a long quiet spell, looking ahead.
@@ -248,15 +288,39 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;
  else if(state==='walking')updateWalk(dt);
  else{eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(camera.position);eyeRig.getWorldQuaternion(camera.quaternion);}
  camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=distance;ctx.speed=speed;ctx.lateral=lateral;ctx.state=state;
- friends.update(dt,ctx);ambient.update(dt,ctx);ambient.setEndingClue(callDone&&fade>0&&state!=='ended',fade);
+ friends.update(dt,ctx);ambient.update(dt,ctx);ending.update(dt,{callDone,fade,ended:state==='ended',camera});
+ // Memory lines follow the evening (the first friend home, the ride home); prompts follow what you can do.
+ if(!firstHome&&friends.list.some(f=>f.inside)){firstHome=true;nostalgia.mark('first-home',clock);}
+ if(active())nostalgia.update(dt,{distance,clock},{captionBusy:captionTimer>0,enabled:ui.settings.memories});
+ if(state!=='intro'){if(state==='walking')walkHint+=dt;const items=promptItems();ui.prompt(touch?null:items);setAct(items?.find(i=>i[0]==='F')?.[1]||'');}
+ ui.update(dt);
  sky.position.copy(camera.position);
  const minute=42+Math.floor(p*18);$('date').innerHTML=p>.83?'AUGUST, 2011 <i></i> AS YOU REMEMBER IT':`AUGUST 21, 2011 <i></i> ${minute<60?'7:':'8:'}${String(minute%60).padStart(2,'0')} PM`;
  if(audio&&!muted&&active()){camera.getWorldDirection(_v);audio.update(dt,{speed,pedal:bikeAudio.pedal,coasting:bikeAudio.coasting,onBike:onBike(),surface:Math.abs(lateral)>4.7?'grass':'asphalt',p,night,finale:ctx.finale,listener:camera.position,forward:_v,friendsLeft:friends.list.filter(f=>!f.inside).length,state,crank:pedalPhase,sources:ambient.sources});}
 }
 const _c1=new THREE.Color(),_c2=new THREE.Color();
+// What the keys would do right now, shown only when it matters: a short riding tutorial,
+// then nothing until the end of the street.
+function promptItems(){
+ if(state==='riding'){
+  if(!tut.pedaled)return [['W','Pedal'],['Mouse','Look around']];
+  if(idleTime>12)return [['W','Keep riding']];
+  if(!tut.steered&&distance>12&&distance<110)return [['A+D','Steer']];
+  if(!tut.bell&&distance>45&&distance<85)return [['Space','Ring your bell']];
+  if(!tut.shift&&distance>118&&distance<150)return [['Shift','Pedal harder']];
+  return null;}
+ if(state==='stopped')return callDone?[['W','Ride home'],['F','Get off']]:[['F','Get off']];
+ if(state==='walking'){const P=interact.pose;if(P)return P.id==='bench'&&!P.leaving?[['F','Stand up']]:null;
+  const walk=walkHint<6?[['W+A+S+D','Walk']]:[];
+  if(nearBike())return [...walk,['F',callDone?'Ride home':'Get back on']];
+  const spot=interact.nearest(walkD,walkLat,walkYaw);if(spot)return [['F',spot.label]];
+  return walk.length?[...walk,['Mouse','Look around']]:null;}
+ return null;}
 function frame(stamp){const dt=Math.min((stamp-lastStamp)/1000,.05);lastStamp=stamp;if(!qa){if(state!=='paused')update(dt);renderer.render(scene,camera);}requestAnimationFrame(frame);}
+// Saved settings take effect before the first frame.
+for(const k of ['sensitivity','quality'])applySetting(k,ui.settings[k]);
 requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
 if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);return renderer.info.render;},press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
- get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ambient.clue.visible,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,audio:()=>audio,renderer,scene,playerBike,self,reset};
+ get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,audio:()=>audio,renderer,scene,playerBike,self,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;}};
