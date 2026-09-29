@@ -12,7 +12,12 @@ export function surfaceMaterial(material,kind){
   if(kind==='asphalt')detail=`float grain=softNoise(vSurface.xz*115.);float broad=softNoise(vSurface.xz*.8);float aa=1.-smoothstep(.03,.2,length(fwidth(vSurface.xz)));diffuseColor.rgb*=.91+.1*broad+(grain-.5)*.18*aa;`;
   if(kind==='concrete')detail=`float wear=softNoise(vSurface.xz*6.)*.5+softNoise(vSurface.xz*.5)*.5;diffuseColor.rgb*=.92+.12*wear;`;
   if(kind==='roof')detail=`float row=floor(vSurface.y*8.);float seam=1.-smoothstep(.03,.14,abs(fract(vSurface.y*8.)-.5));float fleck=softNoise(vSurface.xz*28.);diffuseColor.rgb*=.9+.12*fleck-.07*seam;`;
-  if(kind==='siding')detail=`float fade=softNoise(vSurface.xz*.4);diffuseColor.rgb*=.96+.06*fade;`;
+  // Lap siding: a soft shadow line under each board, fading out before it would shimmer.
+  if(kind==='siding')detail=`float fade=softNoise(vSurface.xz*.4);float lap=fract(vSurface.y*2.78);float aa=1.-smoothstep(.04,.2,fwidth(vSurface.y*2.78));diffuseColor.rgb*=(.96+.06*fade)*mix(1.,.87+.13*smoothstep(0.,.16,lap),aa);`;
+  // Running-bond brick with mortar joints, measured along whichever wall it is on.
+  // Board fence: vertical board seams along whichever direction the fence runs.
+  if(kind==='fence')detail=`float along=(vSurface.x-vSurface.z)*6.6;float aa=1.-smoothstep(.05,.25,fwidth(along));float seam=1.-smoothstep(0.,.12,fract(along));float grain=softNoise(vec2(floor(along),vSurface.y*.7));diffuseColor.rgb*=(.9+.18*grain)*(1.-.28*seam*aa);`;
+  if(kind==='brick')detail=`float row=vSurface.y*13.3;float along=(vSurface.x+vSurface.z)*4.4+floor(row)*.5;float aa=1.-smoothstep(.05,.25,fwidth(row));float joint=max(1.-smoothstep(0.,.1,fract(row)),1.-smoothstep(0.,.06,fract(along)));float tone=hsh(floor(vec2(along,row)));diffuseColor.rgb=mix(diffuseColor.rgb*(.86+.26*tone),vec3(.62,.58,.53),joint*aa*.85);`;
   sh.fragmentShader='varying vec3 vSurface;\n'+noise+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n'+detail);
  };material.customProgramCacheKey=()=>kind;material.needsUpdate=true;return material;
 }
@@ -27,10 +32,13 @@ for(let y=0;y<size;y++)for(let x=0;x<size;x++){
  const i=(y*size+x)*4;pixels[i]=pixels[i+1]=pixels[i+2]=shade*255;pixels[i+3]=alpha;
 }
 export const leafTexture=new THREE.DataTexture(pixels,size,size);leafTexture.colorSpace=THREE.SRGBColorSpace;leafTexture.magFilter=THREE.LinearFilter;leafTexture.minFilter=THREE.LinearMipmapLinearFilter;leafTexture.generateMipmaps=true;leafTexture.needsUpdate=true;
-const verts=[],normals=[],uvs=[],UP=new THREE.Vector3(0,1,0);
-for(let i=0;i<30;i++){
- const a=i*2.39996,h=1-2*(i+.5)/30,r=Math.sqrt(1-h*h),n=new THREE.Vector3(Math.cos(a)*r,h,Math.sin(a)*r),center=n.clone().multiplyScalar(.73);
- const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),n),corners=[[-.48,-.44],[.48,-.44],[.48,.44],[-.48,.44]];
+function cardCluster(count,size=1){const verts=[],normals=[],uvs=[];
+for(let i=0;i<count;i++){
+ const a=i*2.39996,h=1-2*(i+.5)/count,r=Math.sqrt(1-h*h),n=new THREE.Vector3(Math.cos(a)*r,h,Math.sin(a)*r),center=n.clone().multiplyScalar(.73);
+ const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),n),corners=[[-.48,-.44],[.48,-.44],[.48,.44],[-.48,.44]].map(([x,y])=>[x*size,y*size]);
  for(const k of [0,1,2,0,2,3]){const [x,y]=corners[k],v=new THREE.Vector3(x,y,0).applyQuaternion(q).add(center);verts.push(v.x,v.y,v.z);normals.push(n.x,n.y,n.z);uvs.push(k===0||k===3?0:1,k<2?0:1);}
 }
-export const leafGeometry=new THREE.BufferGeometry();leafGeometry.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));leafGeometry.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));leafGeometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));return g;}
+export const leafGeometry=cardCluster(30);
+// A lighter cluster for tufts and mid-distance trees.
+export const leafGeometrySmall=cardCluster(12,1.3);

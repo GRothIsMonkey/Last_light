@@ -98,6 +98,7 @@ export function createFriends(scene,world,hooks={}){
    if(remain<.05||(remain<.35&&f.speed<.12)){f.speed=0;return true;}}}
  function easeIn(f,e){if(e<.35)blendPose(f.pose,f.from,f.pose,smooth(e/.35));}
  function wait(t){let e=0;return dt=>(e+=dt)>=t;}
+ function until(test){return ()=>test();}
  function act(fn){return (dt,ctx)=>{fn(ctx);return true;}}
  function settleAstride(f,t=.45){let e=0;return (dt)=>{e+=dt;f.speed=0;cycle(f,dt,true);f.astride=damp(f.astride,1,8,dt);f.lean=damp(f.lean,0,8,dt);f.steer=damp(f.steer,.08,4,dt);return e>=t;};}
  // Hand the rider over from the bike to the ground, preserving the pose exactly.
@@ -141,10 +142,12 @@ export function createFriends(scene,world,hooks={}){
     idle(f,.85,{wave:1,look:lookPlayer(f)}),walkTo(f,[[door.inside.d,door.inside.lat]],{speed:1.4}),hide(f,'person')];}
   if(f.key==='sam'){const dr=h.drivD,gar=world.garages.sam;
    // Sam rides straight up the driveway into the open garage, the way kids do.
-   const park=h.S(h.gx,h.gfront-2.4);
+   const park=h.S(h.gx,h.gfront-2.6);
+   // After the wave the garage door starts down while Sam goes in through the door to the house.
    return [rideIn(f,[[dr-16,s*2.8],[dr-5,s*3.2],[dr-.6,s*5.8],[dr,s*8.5],[gar.mouth.d,gar.mouth.lat-s*1.2],[park.d,park.lat]],{vmax:5.6,decel:1.6}),
     settleAstride(f,.3),dismount(f,1.25),kickstand(f),act(()=>{f.holding=false;}),turnTo(f,()=>worldPsiTo(f,ctx),.8),idle(f,1.4,{wave:1,look:lookPlayer(f)}),
-    act(()=>{f.garageClosing=true;sfx('garage',gar.panel.getWorldPosition(tmpV));}),idle(f,3.3,{look:lookPlayer(f)}),hide(f,'both')];}
+    act(()=>{f.garageClosing=true;sfx('garage',gar.panel.getWorldPosition(tmpV));}),idle(f,.5,{look:lookPlayer(f)}),
+    walkTo(f,[[gar.houseDoor.d,gar.houseDoor.lat],[gar.beyond.d,gar.beyond.lat]],{speed:1.15}),hide(f,'person'),until(()=>gar.open<.02),hide(f,'bike')];}
   // Alex cuts across the lawn and leaves the bike standing at the foot of the porch steps.
   const dr=h.drivD,door=world.doors.alex,stop=h.S(h.doorX-h.gs*1.3,h.stepFront+1.6),mid=h.S((h.doorX+h.drivX)/2,h.stepFront+2.4);
   return [rideIn(f,[[dr-18,s*2.7],[dr-5,s*3.2],[dr-.6,s*5.7],[dr+.4,s*8],[mid.d,mid.lat],[stop.d,stop.lat]],{vmax:5.2,decel:1.3}),

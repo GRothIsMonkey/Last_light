@@ -5,7 +5,7 @@ import * as THREE from '../dist/three.module.js';
 import {roadFrame,roadGrade,groundPoint,roadSurface,LATERAL_LIMIT,heading} from '../dist/route.js';
 import {memories,LENGTH} from '../dist/story.js';
 import {BODY,BIKE,newPose,ridePose,walkPose,dismountKeys,samplePose,createPerson,applyPose,pedalPos,P,stride} from '../dist/rig.js';
-import {LOOKOUT} from '../dist/world.js';
+import {LOOKOUT,JUNCTIONS} from '../dist/world.js';
 const root=fileURLToPath(new URL('../dist/',import.meta.url));
 const elements=new Map(),events=new Map(),docEvents=new Map();
 function element(id){if(!elements.has(id))elements.set(id,{hidden:['ending','pause','error','ride-ui','mobile','act'].includes(id),style:{},textContent:'',innerHTML:'',children:[],events:new Map(),setAttribute(){},replaceChildren(){this.children=[]},append(x){this.children.push(x)},addEventListener(type,fn){this.events.set(type,fn)},setPointerCapture(){}});return elements.get(id);}
@@ -29,7 +29,8 @@ advance(.05);
 check('all local assets resolve',()=>{const html=fs.readFileSync(root+'index.html','utf8');for(const m of html.matchAll(/(?:src|href)="([^"#]+)"/g))if(m[1]!=='./')assert.ok(fs.existsSync(root+m[1]),m[1]);for(const f of fs.readdirSync(root).filter(f=>f.endsWith('.js')))for(const m of fs.readFileSync(root+f,'utf8').matchAll(/from '\.\/([\w.]+)'/g))assert.ok(fs.existsSync(root+m[1]),f+' -> '+m[1]);});
 check('gentle continuous route with constant distance scale',()=>{let maxGrade=0,maxStep=0;for(let d=0;d<LENGTH+40;d+=.5){const a=roadFrame(d),b=roadFrame(d+.5);assert.ok(Math.abs(Math.hypot(b.x-a.x,b.z-a.z)-.5)<.0002);maxGrade=Math.max(maxGrade,Math.abs(roadGrade(d)));maxStep=Math.max(maxStep,Math.abs(a.heading-b.heading));}assert.ok(maxGrade<.043);assert.ok(maxStep<.007);});
 check('asphalt faces upward and follows terrain throughout ride',()=>{for(let d=0;d<=LENGTH;d+=5)for(const side of [-LATERAL_LIMIT,0,LATERAL_LIMIT]){const p=groundPoint(d,side);ray.set(new THREE.Vector3(p.x,p.y+5,p.z),down);const hits=ray.intersectObject(h.road);assert.ok(hits.length,`road missing at ${d}, ${side}`);assert.ok(hits[0].face.normal.y>.99);assert.ok(Math.abs(hits[0].point.y-roadSurface(d,side))<.002,`height discontinuity ${d}`);}});
-check('side streets connect through curb openings',()=>{const asphalt=h.originals.filter(o=>o.material===h.road.material);for(const j of [{d:475,side:1},{d:740,side:-1}])for(let x=3.5;x<49;x+=.5){const p=groundPoint(j.d,j.side*x);ray.set(new THREE.Vector3(p.x,p.y+5,p.z),down);const hits=ray.intersectObjects(asphalt);assert.ok(hits.length,`gap at junction ${j.d}, ${x}`);assert.ok(Math.abs(hits[0].point.y-p.y)<.09);}});
+check('side streets leave through curb openings and continue out of sight',()=>{const asphalt=h.originals.filter(o=>o.material===h.road.material);assert.equal(JUNCTIONS.length,2);
+ for(const [i,j] of JUNCTIONS.entries()){const f=h.world.sideFrames[i];for(let u=3.5;u<210;u+=.5){const p=u<4.7?groundPoint(j.d,j.side*u):f.point(u,0);ray.set(new THREE.Vector3(p.x,p.y+5,p.z),down);const hits=ray.intersectObjects(asphalt);assert.ok(hits.length,`gap at junction ${j.d}, ${u}`);assert.ok(Math.abs(hits[0].point.y-p.y)<.09,`step at junction ${j.d}, ${u}`);}}});
 check('walkable ground height matches rendered lawns, walks, drives and the lookout',()=>{
  // Every point riders and walkers stand on must agree with the visible surface under it.
  const solid=h.world.merged.filter(m=>!m.material.transparent&&m.material.side!==THREE.BackSide);const spots=[];

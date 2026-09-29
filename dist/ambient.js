@@ -20,18 +20,19 @@ export function createAmbient(scene,world,hooks={}){
   sh.vertexShader='uniform float uTime,uGust;\n'+sh.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
    float sway=(.05+.05*uGust)*smoothstep(.4,4.,transformed.y-0.)*.6;vec2 ph=transformed.xz*.21;
    transformed.x+=sin(uTime*1.3+ph.x+ph.y)*sway+sin(uTime*3.1+transformed.y*2.)*.012;transformed.z+=cos(uTime*1.1+ph.y*1.3)*sway*.8;transformed.y+=sin(uTime*2.3+ph.x*3.)*.01;`);};m.needsUpdate=true;}
- world.grassMat.onBeforeCompile=sh=>{sh.uniforms.uTime=time;sh.vertexShader='varying vec3 vW;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n vW=transformed;');
+ for(const gm of world.grassMats)gm.onBeforeCompile=sh=>{sh.uniforms.uTime=time;sh.vertexShader='varying vec3 vW;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n vW=transformed;');
   sh.fragmentShader='uniform float uTime;varying vec3 vW;\nfloat n2(vec2 p){return sin(p.x)*sin(p.y);}\n'+sh.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
    float lawnPatch=n2(vW.xz*.045)*.5+n2(vW.xz*.11+3.)*.3;float dry=smoothstep(.35,.8,n2(vW.xz*.021+7.)*.6+n2(vW.xz*.07)*.4);
    diffuseColor.rgb*=.93+.09*lawnPatch;diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(1.18,1.05,.72),dry*.45);
-   float wave=sin(dot(vW.xz,vec2(.23,.17))-uTime*1.7)*sin(dot(vW.xz,vec2(-.11,.29))-uTime*1.1);diffuseColor.rgb*=1.+.035*wave;`);};world.grassMat.needsUpdate=true;
+   float wave=sin(dot(vW.xz,vec2(.23,.17))-uTime*1.7)*sin(dot(vW.xz,vec2(-.11,.29))-uTime*1.1);diffuseColor.rgb*=1.+.035*wave;`);};for(const gm of world.grassMats)gm.needsUpdate=true;
+ const street=world.houses.filter(h=>h.frameId==='main');
 
  const addAt=(d,lat,y=0)=>world.anchor(d,lat,y);
  const glow=glowTexture();
 
  // Impact sprinklers on a few lawns, off by the time the streetlights are on -------------------
  const sprinklers=[];
- for(const [dc,side] of [[62,-1],[212,1],[268,-1],[440,1]]){const h=world.houses.filter(x=>x.side===side&&!Object.values(world.homes).includes(x)).sort((a,b)=>Math.abs(a.dc-dc)-Math.abs(b.dc-dc))[0];if(!h)continue;
+ for(const [dc,side] of [[62,-1],[212,1],[268,-1],[440,1]]){const h=street.filter(x=>x.side===side&&!Object.values(world.homes).includes(x)).sort((a,b)=>Math.abs(a.dc-dc)-Math.abs(b.dc-dc))[0];if(!h)continue;
   const x=-h.gs*h.w*.25,s=h.S(x,h.setback-10.2),y=world.groundY(s.d,s.lat)-groundPoint(s.d,s.lat).y;const root=addAt(s.d,s.lat,y);
   const base=new THREE.Mesh(new THREE.CylinderGeometry(.05,.08,.18,8),world.material(0x5a5d5a));base.position.y=.09;root.add(base);const head=new THREE.Group();head.position.y=.2;root.add(head);
   const arm=new THREE.Mesh(new THREE.BoxGeometry(.03,.03,.22),world.material(0x8a8c86));arm.position.set(0,.03,-.08);arm.rotation.x=.4;head.add(arm);
@@ -74,7 +75,9 @@ export function createAmbient(scene,world,hooks={}){
  const ch=world.homes.car,cg=world.garages.car,carGroup=new THREE.Group();scene.add(carGroup);const carParts=world.car(carGroup,'van',0x6f7f8a,{lights:true});carGroup.traverse(o=>{if(o.isMesh)o.castShadow=true;});
  const carGlow=[-1,1].map(s=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glow,color:0xfff0d0,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.9}));sp.scale.setScalar(1.4);sp.position.set(s*(carParts.W/2-.3),.78,-carParts.L/2-.12);carGroup.add(sp);return sp;});
  const car={};
- function carPath(){const dr=ch.drivD,pts=[[600,-2.45],[dr+14,-2.45],[dr+4.5,-2.7],[dr+.8,-5.4],[dr,-8.2],[cg.mouth.d,cg.mouth.lat],[ch.S(ch.gx,ch.gfront-3.4).d,ch.S(ch.gx,ch.gfront-3.4).lat]];
+ // The parent's minivan comes down Briarwood Lane, turns onto Oak Hollow and pulls into its garage.
+ const J1=world.sideFrames[0].junction,lane=J1.d+J1.side*2.1;
+ function carPath(){const dr=ch.drivD,pts=[[lane,J1.side*72],[lane,J1.side*30],[lane,J1.side*12],[J1.d-3,J1.side*4],[J1.d-12,-2.2],[dr+14,-2.45],[dr+4.5,-2.7],[dr+.8,-5.4],[dr,-8.2],[cg.mouth.d,cg.mouth.lat],[ch.S(ch.gx,ch.gfront-3.4).d,ch.S(ch.gx,ch.gfront-3.4).lat]];
   const P2=[];for(let i=0;i<pts.length-1;i++){const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];for(let k=0;k<14;k++){const t=k/14,t2=t*t,t3=t2*t;const f=(a,b,c,d)=>.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);P2.push([f(p0[0],p1[0],p2[0],p3[0]),f(p0[1],p1[1],p2[1],p3[1])]);}}P2.push(pts[pts.length-1]);
   const s=[0];for(let i=1;i<P2.length;i++){const a=groundPoint(...P2[i-1]),b=groundPoint(...P2[i]);s.push(s[i-1]+Math.hypot(b.x-a.x,b.z-a.z));}return {pts:P2,s,length:s[s.length-1]};}
  function carAt(u){const {pts,s}=car.path;u=clamp(u,0,car.path.length);let i=1;while(i<s.length-1&&s[i]<u)i++;const t=(u-s[i-1])/((s[i]-s[i-1])||1),a=pts[i-1],b=pts[i];return {d:a[0]+(b[0]-a[0])*t,lat:a[1]+(b[1]-a[1])*t,psi:Math.atan2(b[1]-a[1],b[0]-a[0])};}
@@ -82,7 +85,7 @@ export function createAmbient(scene,world,hooks={}){
   carGroup.position.set(p.x,(yF+yR)/2,p.z);carGroup.rotation.set(Math.atan2(yF-yR,3),-(heading(q.d)+q.psi),0,'YXZ');car.d=q.d;car.lat=q.lat;}
  function updateCar(dt,ctx){
   if(car.mode==='parked')return;
-  if(car.mode==='wait'){carGroup.visible=false;if(ctx.distance>=436&&ctx.state!=='intro'){car.mode='drive';carGroup.visible=true;car.u=0;car.v=7;}else return;}
+  if(car.mode==='wait'){carGroup.visible=false;if(ctx.distance>=404&&ctx.state!=='intro'){car.mode='drive';carGroup.visible=true;car.u=0;car.v=7;}else return;}
   if(car.mode==='drive'){const remain=car.path.length-car.u;let v=Math.min(7.5,Math.sqrt(2*1.3*Math.max(0,remain-.3))+.05);const q=carAt(car.u+6);if(Math.abs(q.lat)>4)v=Math.min(v,3);
    // Yield to anyone in the lane ahead.
    const ahead=[{d:ctx.distance,lat:ctx.lateral},...hooks.riders?.()||[]].some(r=>r.d<car.d-1&&r.d>car.d-16&&Math.abs(r.lat-car.lat)<1.9);if(ahead)v=0;
@@ -121,8 +124,8 @@ export function createAmbient(scene,world,hooks={}){
  const dust=new THREE.Points(dustGeo,dustMat);dust.frustumCulled=false;scene.add(dust);
 
  // A flag on a porch ----------------------------------------------------------------------------
- const flagHouse=world.houses.filter(h=>h.porch==='porch'&&!Object.values(world.homes).includes(h)).sort((a,b)=>Math.abs(a.dc-250)-Math.abs(b.dc-250))[0];let flag=null;
- if(flagHouse){const h=flagHouse,s=h.S(h.doorX+ (h.gs>0?-1:1)*1.3,h.front+h.pdep-.15);const root=world.anchor(s.d,s.lat,h.floor+2.1);const inner=new THREE.Group();inner.rotation.y=h.side>0?-Math.PI/2:Math.PI/2;root.add(inner);
+ const flagHouse=street.filter(h=>h.porch==='porch'&&!Object.values(world.homes).includes(h)).sort((a,b)=>Math.abs(a.dc-250)-Math.abs(b.dc-250))[0];let flag=null;
+ if(flagHouse){const h=flagHouse,s=h.S(h.doorX+ (h.gs>0?-1:1)*1.3,h.front+h.pdep-.15);const inner=world.houseAnchor(h,h.doorX+(h.gs>0?-1:1)*1.3,h.front+h.pdep-.15,h.floor+2.1).g;
   const pole=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,1.8,6),world.material(0xd8d4c8));pole.rotation.x=.7;pole.position.set(0,.55,.5);inner.add(pole);const tip=new THREE.Group();tip.position.set(0,1.28,1.1);inner.add(tip);
   const geo=new THREE.PlaneGeometry(1.2,.7,12,6);geo.translate(.6,-.35,0);const cloth=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map:flagTexture(),side:THREE.DoubleSide,roughness:.9}));cloth.castShadow=true;tip.add(cloth);tip.rotation.y=Math.PI/2;
   flag={cloth,base:Float32Array.from(geo.attributes.position.array),d:s.d};}
@@ -142,7 +145,7 @@ export function createAmbient(scene,world,hooks={}){
  const poolTex=glowTexture(),pools=lamps.map(l=>{const d=l.d,lat=l.lat;const m=new THREE.Mesh(new THREE.CircleGeometry(4.2,24),new THREE.MeshBasicMaterial({map:poolTex,color:0xffa65a,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4}));
   const p=groundPoint(d,lat*.55);m.position.set(p.x,world.groundY(d,lat*.55)+.04,p.z);m.rotation.x=-Math.PI/2;scene.add(m);return m;});
  // Porch lights as one set of glows sharing the porch material groups.
- const porchGlowGeo=new THREE.BufferGeometry(),pp=[],pg=[];world.houses.forEach(h=>{const s=h.S(h.doorX+h.gs*.78,h.front+.25),p=groundPoint(s.d,s.lat);pp.push(p.x,p.y+h.floor+1.75,p.z);pg.push(h.porchMat===world.homes.jamie?.porchMat?99:world.porchMats.indexOf(h.porchMat));});
+ const porchGlowGeo=new THREE.BufferGeometry(),pp=[],pg=[];world.houses.forEach(h=>{const w=h.toWorld(h.porchLight.x,h.porchLight.z+.08);pp.push(w.x,w.ground+h.porchLight.y,w.z);pg.push(h.porchMat===world.homes.jamie?.porchMat?99:world.porchMats.indexOf(h.porchMat));});
  porchGlowGeo.setAttribute('position',new THREE.Float32BufferAttribute(pp,3));porchGlowGeo.setAttribute('level',new THREE.Float32BufferAttribute(new Float32Array(pg.length),1));
  const porchGlow=new THREE.Points(porchGlowGeo,glowMat(.9));porchGlow.material.uniforms.uColor.value.set(0xffc27a);porchGlow.frustumCulled=false;scene.add(porchGlow);
  const porchOn=world.porchMats.map((_,i)=>.2+hash(i*5.1)*.42),windowOn=world.windowMats.map((_,i)=>.08+hash(i*2.7)*.5);
@@ -155,6 +158,9 @@ export function createAmbient(scene,world,hooks={}){
   const jp=world.homes.jamie.porchMat;jamiePorch=damp(jamiePorch,ctx.distance>=286?1:0,3,dt);jp.emissiveIntensity=.05+Math.max(jamiePorch,smooth((p-.3)/.06))*1.6;
   const pl=porchGlowGeo.attributes.level;for(let i=0;i<pg.length;i++){const g=pg[i];const lvl=g===99?jamiePorch:smooth((p-porchOn[g])/.06);pl.setX(i,lvl*(.45+.55*smooth((p-.35)/.4)));}pl.needsUpdate=true;
   world.windowMats.forEach((m,i)=>{m.emissiveIntensity=.08+smooth((p-windowOn[i])/.25)*1.05+n*.15;});
+  for(const lit of [world.glassLit,world.porchLit])if(lit){lit.userData.uniforms.uP.value=p;lit.userData.uniforms.uNight.value=n;}
+  // The rest of the neighborhood lights up a little after the street does.
+  if(world.farWindow)world.farWindow.emissiveIntensity=.05+smooth((p-.5)/.3)*1.1+n*.2;
   const scale=(hooks.renderer?.domElement?.height||900);lampGlow.material.uniforms.uScale.value=scale;porchGlow.material.uniforms.uScale.value=scale;}
 
  function updateLocalLights(dt,ctx){const nearest=lamps.map(l=>({l,p:groundPoint(l.d,l.lat)})).sort((a,b)=>Math.hypot(a.p.x-ctx.eye.x,a.p.z-ctx.eye.z)-Math.hypot(b.p.x-ctx.eye.x,b.p.z-ctx.eye.z));
@@ -172,7 +178,7 @@ export function createAmbient(scene,world,hooks={}){
   if(ctx.finale>0&&Math.abs(Math.sin(t*.6))>.995&&!updateLookout.creak){updateLookout.creak=true;sfx('creak',swingRoot.position,{gain:.4});}if(Math.abs(Math.sin(t*.6))<.9)updateLookout.creak=false;}
 
  // Heard, not seen: a screen door somewhere, a mower early, a dog now and then.
- const screenDoor=world.houses.filter(h=>h.side<0).sort((a,b)=>Math.abs(a.dc-700)-Math.abs(b.dc-700))[1];let screenPlayed=false,barks=[418,472,655];
+ const screenDoor=street.filter(h=>h.side<0).sort((a,b)=>Math.abs(a.dc-700)-Math.abs(b.dc-700))[1];let screenPlayed=false,barks=[418,472,655];
  function updateSounds(ctx){if(!screenPlayed&&ctx.distance>=695){screenPlayed=true;const s=screenDoor.S(screenDoor.doorX,screenDoor.front),p=groundPoint(s.d,s.lat);sfx('doorSlam',tmp.set(p.x,p.y+1,p.z),{gain:.7});}
   for(let i=0;i<barks.length;i++)if(barks[i]&&ctx.distance>=barks[i]){barks[i]=0;const p=groundPoint(ctx.distance+60,(i%2?1:-1)*45);sfx('dog',tmp.set(p.x,p.y+.5,p.z));}
   const mower=groundPoint(170,-48);sources.push({kind:'mower',pos:tmp.clone().set(mower.x,mower.y,mower.z),level:1-smooth((ctx.distance-150)/140)});}

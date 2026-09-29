@@ -15,7 +15,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWid
 const scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(64,innerWidth/innerHeight,.06,390);scene.add(camera);
 scene.fog=new THREE.FogExp2(0xe3ac8d,.008);
 const hemi=new THREE.HemisphereLight(0xe8e3d3,0x68675d,2.0);scene.add(hemi);
-const sunlight=new THREE.DirectionalLight(0xffd09b,2.7);sunlight.castShadow=true;sunlight.shadow.mapSize.set(2048,2048);Object.assign(sunlight.shadow.camera,{left:-60,right:60,top:60,bottom:-60,near:1,far:240});sunlight.shadow.bias=-.0005;sunlight.shadow.normalBias=.023;scene.add(sunlight,sunlight.target);
+const sunlight=new THREE.DirectionalLight(0xffd09b,2.7);sunlight.castShadow=true;sunlight.shadow.mapSize.set(2048,2048);Object.assign(sunlight.shadow.camera,{left:-60,right:60,top:60,bottom:-60,near:1,far:240});sunlight.shadow.bias=-.0005;sunlight.shadow.normalBias=.023;sunlight.shadow.camera.layers.enable(1);scene.add(sunlight,sunlight.target);// layer 1: the world's merged shadow proxies
 // A real-time sky, shifting from late afternoon into the blue of a remembered evening; stars wait for the very end.
 const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{dusk:{value:0},night:{value:0}},vertexShader:'varying vec3 v; void main(){v=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
  fragmentShader:`varying vec3 v;uniform float dusk,night;
