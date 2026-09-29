@@ -4,6 +4,7 @@ import {LATERAL_LIMIT,roadFrame,groundPoint,roadGrade,heading} from './route.js'
 import {buildWorld,LOOKOUT} from './world.js';
 import {createPerson,createBike,newPose,ridePose,applyPose,poseBike,headPos,BIKE,smooth} from './rig.js';
 import {createFriends,localToStreet} from './friends.js';
+import {CAST} from './cast.js';
 import {createAmbient} from './ambient.js';
 import {createAudio} from './audio.js';
 
@@ -40,21 +41,20 @@ const world=buildWorld(scene);
 // Added after the neighborhood is bent and merged, so the sky stays a sky.
 scene.add(sky);const {road,originals,groundY}=world;// road and originals are read by tests/verify.mjs.
 const _v=new THREE.Vector3(),_q=new THREE.Quaternion(),_e=new THREE.Euler();
-const ctx={distance:0,speed:0,lateral:0,state:'intro',clock:0,speaker:null,eye:new THREE.Vector3(),p:0,night:0,finale:0};
+const ctx={distance:0,speed:0,lateral:0,state:'intro',clock:0,speaker:null,eye:new THREE.Vector3(),p:0,night:0,finale:0,push:0};
 let audio=null;const sfx=(name,pos,opts)=>audio?.sfx(name,pos,opts);
 const friends=createFriends(scene,world,{sfx});
 const ambient=createAmbient(scene,world,{sfx,camera,renderer,riders:()=>friends.list.filter(f=>f.mode!=='foot'&&f.bike.group.visible).map(f=>({d:f.bd,lat:f.blat}))});
 
 // The player's bicycle and first-person body -----------------------------------------------------
-const bikeRoot=new THREE.Group();scene.add(bikeRoot);const playerBike=createBike(0x5f8f93,{grips:0x303032});bikeRoot.add(playerBike.group);
-const self=createPerson({shirt:0x8a9bb0,shorts:0x4d5566,skin:0xd9a883,firstPerson:true});playerBike.group.add(self.group);const selfPose=newPose();
-// Upper arms sit too close to the eye to read well; forearms, hands and knees are enough.
-for(const k of ['lsleeve','rsleeve','lupper','rupper'])self.parts[k].visible=false;
+const bikeRoot=new THREE.Group();scene.add(bikeRoot);const playerBike=createBike(CAST.player.bike);bikeRoot.add(playerBike.group);
+// The whole body is there (arms, shoulders, legs, shoes); only the head is left out, the camera sits in it.
+const self=createPerson({...CAST.player,firstPerson:true});playerBike.group.add(self.group);const selfPose=newPose();
 const eyeRig=new THREE.Object3D();bikeRoot.add(eyeRig);
 const cockpit=playerBike.group;
 
 let mouseYaw=0,mousePitch=0,headPitch=0,steerVelocity=0,lean=0,pedalPhase=0,lastMouse=null,lastPauseAt=-Infinity,yawOffset=0,steerAngle=0,astride=0,prevYaw=null,wheelTurn=0,kick=0,bikeLean=0;
-let lookInputAt=0,glance=0,manualLook=false,answerBellAt=-1;
+let lookInputAt=0,glance=0,manualLook=false,answerBellAt=-1,held=0,stamina=1,push=0,steerIn=0,psiVel=0,bikeY=null,bikePitch=0;
 let state='intro',distance=0,speed=0,lateral=-.3,look=0,clock=0,lastStamp=0,nextMemory=0,captionTimer=0,idleTime=0,bellCooldown=0,resumeState='riding';
 // Final stop: on foot the player is in street coordinates too.
 let finaleT=0,walkD=0,walkLat=0,walkYaw=0,walkPitch=0,gait=0,lastStep=0,moveT=0,transT=0,transFrom=null,callDone=false,callT=-1,lookedBack=0,fade=0,endHint=false,wHint=false,leaveT=0;
@@ -65,7 +65,7 @@ const onBike=()=>['riding','arriving','stopped','leaving'].includes(state);
 const active=()=>['riding','arriving','stopped','dismounting','walking','remounting','leaving'].includes(state);
 
 function setSound(on){if(!audio){audio=createAudio();}audio.ensure();muted=!on;audio.setEnabled(on&&state!=='paused');$('sound').setAttribute('aria-pressed',String(on));$('sound').setAttribute('aria-label',on?'Mute sound':'Enable sound');$('sound').innerHTML=`SOUND <span>${on?'ON':'OFF'}</span>`;}
-function bell(){if(!onBike()||bellCooldown>0)return;bellCooldown=2;audio?.bell();const f=friends.answerer();
+function bell(){if(!onBike()||bellCooldown>0)return;bellCooldown=2;audio?.bell();friends.hearBell(ctx);const f=friends.answerer();
  if(distance<850&&captionTimer<1&&state==='riding'){showCaption('',f?'A bell answers from up ahead.':'The sound drifts down the street.');if(f)answerBellAt=clock+.65;}}
 function showCaption(who,text,time=7.5){$('subtitle').replaceChildren();if(who){const s=document.createElement('small');s.textContent=who;$('subtitle').append(s);}$('subtitle').append(document.createTextNode(text));$('subtitle').style.opacity='1';captionTimer=time;ctx.speaker=who||null;}
 const CONTROLS={riding:'<kbd>W</kbd> PEDAL <span>/</span><kbd>A</kbd><kbd>D</kbd> STEER <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>R</kbd> CENTER <span>/</span><kbd>SPACE</kbd> BELL <span>/</span><kbd>ESC</kbd> PAUSE',
@@ -77,7 +77,7 @@ function start(){state='riding';requestLook();document.body.classList.add('ridin
 function pause(){if(!active())return;resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();$('pause').hidden=false;audio?.setEnabled(false);}
 function resume(){if(state!=='paused')return;state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
 function finish(){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();setControls('none');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;audio?.ending();}
-function reset(){glance=0;lookInputAt=0;manualLook=false;answerBellAt=-1;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
+function reset(){glance=0;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
  finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
  friends.reset();ambient.reset();audio?.reset();$('ending').hidden=true;start();}
 $('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>{if(state==='stopped'&&callDone)leave();else action();};
@@ -102,7 +102,9 @@ canvas.addEventListener('pointerdown',e=>{if(!active())return;if(e.pointerType!=
  if(document.pointerLockElement!==canvas)try{canvas.setPointerCapture?.(e.pointerId);}catch{}
 });
 canvas.addEventListener('pointerup',()=>{dragging=false;lastMouse=null;});canvas.addEventListener('pointercancel',()=>{dragging=false;lastMouse=null;});canvas.addEventListener('lostpointercapture',()=>{dragging=false;lastMouse=null;});
-function turnView(dx,dy){if(!dx&&!dy)return;manualLook=true;lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*.0022;walkPitch=clamp(walkPitch-dy*.0022,-1.1,.9);}else{mouseYaw=clamp(mouseYaw-dx*.0022,-1.35,1.35);mousePitch=clamp(mousePitch-dy*.0022,-1.02,.42);}}
+// Head-look limits on the bike: a good look over each shoulder, never all the way round.
+const LOOK={yaw:1.85,down:1.2,up:.6};let sens=.0022;
+function turnView(dx,dy){if(!dx&&!dy)return;manualLook=true;lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else{mouseYaw=clamp(mouseYaw-dx*sens,-LOOK.yaw,LOOK.yaw);mousePitch=clamp(mousePitch-dy*sens,-LOOK.down,LOOK.up);}}
 addEventListener('mousemove',e=>{if(!active()||touch)return;let dx=0,dy=0;
  if(document.pointerLockElement===canvas){dx=e.movementX||0;dy=e.movementY||0;
   // Chromium can report one huge jump right after the lock engages; ignore it.
@@ -114,45 +116,68 @@ for(const [id,key]of [['pedal','KeyW'],['left','KeyA'],['right','KeyD']]){const 
 function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);}addEventListener('resize',resize);
 let currentChapter=-1;
 
-// Pacing: the bike slows a touch uphill and while a friend is heading home.
+// Pacing: the bike slows a touch uphill and eases a little while a friend heads home,
+// never so much that the group seems to brake for it.
 const bump=(d,a,b)=>smooth((d-a)/8)*(1-smooth((d-b)/10));
-const pace=d=>1-.26*bump(d,312,392)-.32*bump(d,606,700)-.34*bump(d,862,995);
-const CRUISE=4.75;
+const pace=d=>1-PACE[0]*bump(d,312,392)-PACE[1]*bump(d,606,700)-PACE[2]*bump(d,862,995);
+const PACE=[.15,.1,.1];
+// Cruise speed and how much harder a push can go (6.2 m/s at most, about 22 km/h).
+const CRUISE=4.75,PUSH=.3;
+// First-person eye relative to the head center, and the resting downward gaze of a rider.
+const EYE={up:.03,forward:.06,pitch:-.16};
 function eyeWorld(){camera.updateMatrixWorld();return {pos:camera.position.clone(),quat:camera.quaternion.clone(),yaw:-(heading(distance)+yawOffset)+look,pitch:headPitch};}
 function nearBike(){const b=groundPoint(distance,lateral),p=groundPoint(walkD,walkLat);return Math.hypot(b.x-p.x,b.z-p.z)<1.9;}
 
+// Riding. W pedals at an easy cruise; holding W a while, or Shift+W, pushes harder,
+// as hard as a kid's legs allow: the extra fades as you tire and comes back when you ease
+// off. Get well ahead of the others and you naturally stop pushing so hard.
 function updateRide(dt){
- const pedal=keys.has('KeyW')||keys.has('ArrowUp'),brake=keys.has('KeyS')||keys.has('ArrowDown');
+ const pedal=keys.has('KeyW')||keys.has('ArrowUp'),brake=keys.has('KeyS')||keys.has('ArrowDown'),hard=pedal&&(keys.has('ShiftLeft')||keys.has('ShiftRight'));
  const grade=roadGrade(distance),cruise=CRUISE*clamp(1-3.5*grade,.84,1.12)*pace(distance);
+ held=pedal&&state==='riding'?held+dt:0;
+ const want=state!=='riding'||!pedal?0:hard?1:smooth((held-5)/5)*.45;
+ stamina=clamp(stamina+(want>.35?-(want-.35)*dt/7:dt/6),0,1);
+ const ahead=friends.list.filter(f=>f.mode==='ride').reduce((m,f)=>Math.max(m,distance-f.d),-99);
+ push=damp(push,want*(.35+.65*smooth(stamina*2.2))*(1-smooth((ahead-9)/8)),2.2,dt);ctx.push=push;
  if(state==='arriving'){const rem=Math.max(0,LOOKOUT.stop.d-distance);speed=Math.min(speed,Math.sqrt(2*.42*rem)+.02);if(rem<.03){speed=0;distance=LOOKOUT.stop.d;}}
  else if(brake)speed=Math.max(0,speed-3.2*dt);
- else if(pedal)speed=damp(speed,cruise,1.4,dt);
+ else if(pedal)speed=damp(speed,cruise*(1+PUSH*push),1.2+push*.4,dt);
  else speed=Math.max(0,speed-(.16+9.8*grade*.8)*dt);
  if(state==='stopped'||state==='leaving')speed=state==='leaving'?Math.min(1.6,speed+.5*dt):0;
  // Nobody rides through a friend's back wheel or a waiting car: ease off behind them.
  if(state==='riding')for(const o of [...friends.list.filter(f=>f.mode!=='foot'&&f.bike.group.visible&&Math.abs(f.blat)<4.8).map(f=>({d:f.bd,lat:f.blat,half:.55,width:.5,speed:f.speed})),...ambient.blockers()]){const gap=o.d-distance-o.half-.6;if(gap>-o.half&&gap<2.2&&Math.abs(o.lat-lateral)<o.width+.35)speed=Math.min(speed,Math.max(0,o.speed+gap*.8));}
  distance=Math.min(state==='riding'?LOOKOUT.stop.d:LOOKOUT.stop.d+8,distance+speed*dt);
- const steering=state==='riding'?(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0):0;
- let target=steering*Math.min(speed*.34,1.5);if(state==='arriving')target=clamp((LOOKOUT.stop.lat-lateral)*.6,-.5,.5)*Math.min(1,speed);
- steerVelocity=damp(steerVelocity,target,6,dt);lateral=clamp(lateral+steerVelocity*dt,-LATERAL_LIMIT,LATERAL_LIMIT);if(Math.abs(lateral)>=LATERAL_LIMIT)steerVelocity=0;
- yawOffset=damp(yawOffset,Math.atan2(steerVelocity,Math.max(speed,1.2))*.9,8,dt);
+ // Steering has weight: the bars ease in and back out, the bike's heading follows them
+ // through a critically damped response, and momentum carries on after you let go.
+ const input=state==='riding'?(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0):0;
+ steerIn=damp(steerIn,input,input?4.5:2.4,dt);
+ let psiT=steerIn*clamp(.55-.05*speed,.24,.45);
+ if(state==='arriving')psiT=clamp((LOOKOUT.stop.lat-lateral)*.18,-.2,.2)*Math.min(1,speed);
+ const w=input||state==='arriving'?3.8:2.5;psiVel+=(w*w*(psiT-yawOffset)-2*w*psiVel)*dt;yawOffset+=psiVel*dt;
+ steerVelocity=speed*Math.sin(yawOffset);const next=lateral+steerVelocity*dt;
+ if(state==='arriving'||world.rideable(distance,next))lateral=next;
+ else{// Curb or grass: the front wheel turns away and the bike runs along the edge.
+  steerVelocity=0;yawOffset=damp(yawOffset,0,7,dt);psiVel*=.5;}
  const yaw=heading(distance)+yawOffset;if(prevYaw===null)prevYaw=yaw;const yawRate=(yaw-prevYaw)/Math.max(dt,1e-3);prevYaw=yaw;
- const k=yawRate/Math.max(speed,.8);steerAngle=damp(steerAngle,speed>.3?clamp(-Math.atan(k)*1.2,-.5,.5):steerAngle*.98,7,dt);
+ const k=yawRate/Math.max(speed,.8);steerAngle=damp(steerAngle,speed>.3?clamp(-Math.atan(k*BIKE.wheelbase)*1.2-steerIn*.05,-.5,.5):clamp(-steerIn*.4,-.5,.5),7,dt);
  lean=damp(lean,speed>.4?clamp(-Math.atan(speed*speed*k/9.8)*1.3,-.2,.2):0,5,dt);
- const coasting=state==='leaving'?false:!pedal||state!=='riding';if(!coasting&&speed>.15)pedalPhase+=speed*dt*1.25;else if(speed<.15||state!=='riding'){const level=Math.round((pedalPhase-Math.PI/2)/Math.PI)*Math.PI+Math.PI/2;pedalPhase=damp(pedalPhase,level,2.5,dt);}
- wheelTurn+=speed*dt/BIKE.wheelR;astride=damp(astride,speed<.2&&state!=='riding'?1:speed<.12?1:0,speed<.2?2.5:7,dt);
+ const coasting=state==='leaving'?false:!pedal||state!=='riding';if(!coasting&&speed>.15)pedalPhase+=speed*dt*1.25*(1+.12*push);else if(speed<.15||state!=='riding'){const level=Math.round((pedalPhase-Math.PI/2)/Math.PI)*Math.PI+Math.PI/2;pedalPhase=damp(pedalPhase,level,2.5,dt);}
+ wheelTurn+=speed*dt/playerBike.geom.wheelR;astride=damp(astride,speed<.2&&state!=='riding'?1:speed<.12?1:0,speed<.2?2.5:7,dt);
  if(state==='arriving'&&speed<.02&&distance>=LOOKOUT.stop.d-.05){state='stopped';speed=0;finaleT=0;setControls('stopped');}
  return {pedal:!coasting&&speed>.15,coasting:coasting&&speed>.3};
 }
 function placePlayerBike(dt){
- const rf=roadFrame(distance),y=groundY(distance,lateral);const p=groundPoint(distance,lateral);
+ // The bike rides on whatever it is on (road, driveway cut, sidewalk), pitched by its two wheels.
+ const rf=roadFrame(distance),p=groundPoint(distance,lateral),yF=groundY(distance+.5,lateral),yR=groundY(distance-.5,lateral),yT=(yF+yR)/2;
+ bikeY=bikeY===null||dt===0?yT:damp(bikeY,yT,18,dt);bikePitch=damp(bikePitch,Math.atan2(yF-yR,1),12,dt);const y=bikeY;
  bikeLean=damp(bikeLean,(state==='dismounting'||state==='walking'||state==='remounting')?.13:astride*.035,4,dt);
- bikeRoot.position.set(p.x,y,p.z);bikeRoot.rotation.set(rf.pitch,-(rf.heading+yawOffset),lean+bikeLean,'YXZ');
+ bikeRoot.position.set(p.x,y,p.z);bikeRoot.rotation.set(bikePitch,-(rf.heading+yawOffset),lean+bikeLean,'YXZ');
  playerBike.wheel=wheelTurn;playerBike.crankAngle=pedalPhase;playerBike.steerAngle=steerAngle;playerBike.kickstand=kick;poseBike(playerBike);
  const bob=state==='riding'?Math.sin(pedalPhase*2)*Math.min(speed*.0012,.006):0;
- ridePose(selfPose,pedalPhase,{astride,steer:steerAngle,look:0});applyPose(self,selfPose);
- // The eye sits a little behind the head so hands and bars stay in peripheral view, as they do in life.
- headPos(selfPose,_v);eyeRig.position.set(_v.x,_v.y+.05+bob,_v.z+.24);eyeRig.rotation.set(-.09+headPitch,look,-(lean+bikeLean)*.6,'YXZ');
+ ridePose(selfPose,pedalPhase,{astride,steer:steerAngle,look:0,geom:playerBike.geom,posture:CAST.player.build.posture});applyPose(self,selfPose);
+ // The eye sits where eyes are: in the (hidden) head, just behind the face. Looking down finds
+ // the chest, arms, hands on the grips, knees and shoes on the pedals, all connected.
+ headPos(selfPose,_v);eyeRig.position.set(_v.x,_v.y+EYE.up+bob,_v.z-EYE.forward);eyeRig.rotation.set(EYE.pitch+headPitch,look,-(lean+bikeLean)*.6,'YXZ');
 }
 function updateWalk(dt){
  const f=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0);
@@ -203,12 +228,14 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;
   if(nextMemory<memories.length&&distance>=memories[nextMemory].at){const m=memories[nextMemory++];showCaption(m.who,m.text);}
   if(state==='riding'&&distance>=LOOKOUT.stop.d-24){state='arriving';setControls('none');}
   const ch=chapterAt(distance);if(ch!==currentChapter){currentChapter=ch;$('chapter').innerHTML=`0${ch+1} <span>${chapters[ch].title}</span>`;}$('progress').style.width=`${Math.min(1,distance/LENGTH)*100}%`;$('ride-label').textContent=distance<870?'STAY A LITTLE LONGER':'YOU KNOW THE WAY HOME';
-  const keyLook=(keys.has('KeyQ')?.75:0)-(keys.has('KeyE')?.75:0);if(keyLook){lookInputAt=clock;manualLook=true;}
+  const keyLook=(keys.has('KeyQ')?1.1:0)-(keys.has('KeyE')?1.1:0);if(keyLook){lookInputAt=clock;manualLook=true;}
+  // Manual looking always wins; the automatic glance returns only after a long quiet spell, looking ahead.
+  if(manualLook&&clock-lookInputAt>14&&Math.abs(mouseYaw)<.25)manualLook=false;
   // When a friend is heading inside and the player isn't steering the view, the head turns a little toward them.
   const target=state==='riding'&&!manualLook&&clock-lookInputAt>3?friends.attention():null;let want=0;
   if(target){const dx=target.x-bikeRoot.position.x,dz=target.z-bikeRoot.position.z,fwd=-(heading(distance)+yawOffset);let a=Math.atan2(-dx,-dz)-fwd;a=Math.atan2(Math.sin(a),Math.cos(a));want=clamp(a,-.85,.85);}
   glance=damp(glance,want,target?1.1:.9,dt);
-  look=damp(look,clamp(mouseYaw+keyLook+glance,-1.35,1.35),8,dt);headPitch=damp(headPitch,mousePitch,8,dt);}
+  look=damp(look,clamp(mouseYaw+keyLook+glance,-LOOK.yaw,LOOK.yaw),8,dt);headPitch=damp(headPitch,mousePitch,8,dt);}
  if(active()){captionTimer-=dt;if(captionTimer<1){$('subtitle').style.opacity=Math.max(0,captionTimer);if(captionTimer<=0)ctx.speaker=null;}}
  if(['stopped','dismounting','walking','remounting','leaving'].includes(state))updateFinale(dt);
  if(['arriving','stopped','dismounting','walking','remounting','leaving'].includes(state))$('ride-ui').style.opacity=state==='arriving'?1:Math.max(0,1-finaleT/3);

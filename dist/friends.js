@@ -3,22 +3,17 @@
 import * as THREE from './three.module.js';
 import {createPerson,createBike,newPose,ridePose,walkPose,standPose,addWave,dismountKeys,samplePose,blendPose,copyPose,applyPose,poseBike,pushPose,PUSH_OFFSET,P,smooth,stride} from './rig.js';
 import {groundPoint,heading} from './route.js';
+import {CAST,FORMATION} from './cast.js';
+import {seeded,hashSeed} from './kit.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
-const RAD_PER_M=1.25;
+const RAD_PER_M=1.25,SPRINT=6.3;
 // Street-frame helpers: psi is yaw relative to the road (0 = along the ride, +pi/2 = toward +lateral).
 export function localToStreet(psi,x,z){const c=Math.cos(psi),s=Math.sin(psi);return {dd:-z*c-x*s,dl:-z*s+x*c};}
 function wrapAngle(a){while(a>Math.PI)a-=Math.PI*2;while(a<-Math.PI)a+=Math.PI*2;return a;}
 
-// Formation keys: [player distance, lead, lateral]. Friends drift alongside when they talk.
-const CAST=[
- {name:'JAMIE',key:'jamie',leaveAt:315,look:{shirt:0xc8743f,shorts:0x55504a,skin:0xd6a57f,hair:0x3b2a20,cap:0x2d4a7a,shoes:0xe9e4d6},bike:0xb2553a,
-  keys:[[0,11,1.7],[8,11,1.7],[16,24,1.35],[42,30,1.2],[85,14,1.6],[300,14,1.8],[315,14,1.9]]},
- {name:'SAM',key:'sam',leaveAt:610,look:{shirt:0x6d9a8a,shorts:0x3f4a5c,skin:0xc4906a,hair:0x2a1c14,longHair:true,shoes:0xd8d0c0,stripe:0xe9e1cf},bike:0x4d7f8f,
-  keys:[[0,17,-1.4],[140,15,-1.4],[165,3.3,-2.05],[205,3.3,-2.05],[238,11,-1.6],[330,8,-1.3],[468,3.6,-2.05],[522,3.6,-2.05],[560,12,-1.6],[610,12,-1.6]]},
- {name:'ALEX',key:'alex',leaveAt:865,look:{shirt:0xd4b25a,shorts:0x6b6252,skin:0xe0b595,hair:0x7a5230,shoes:0x3d4450},bike:0x8a8f3f,
-  keys:[[0,7,2.5],[240,7,2.4],[262,2.9,1.95],[292,2.9,1.95],[322,8,2.2],[640,8,2.2],[680,6,1.9],[760,6,1.9],[776,2.9,1.85],[872,2.9,1.85]]},
-];
+// Formation keys ([player distance, lead, lateral]) and departure points live in cast.js.
+const ORDER=['jamie','sam','alex'];
 function formation(keys,D){if(D<=keys[0][0])return [keys[0][1],keys[0][2]];for(let i=0;i<keys.length-1;i++){const a=keys[i],b=keys[i+1];if(D<b[0]){const t=smooth((D-a[0])/(b[0]-a[0]));return [a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];}}const l=keys[keys.length-1];return [l[1],l[2]];}
 
 // A path through street-coordinate control points, measured in world meters.
@@ -34,9 +29,10 @@ function makePath(ctrl){const pts=[];for(let i=0;i<ctrl.length-1;i++){const p0=c
 
 export function createFriends(scene,world,hooks={}){
  const sfx=hooks.sfx||(()=>{});
- const list=CAST.map(c=>{const bike=createBike(c.bike),person=createPerson(c.look);scene.add(bike.group);bike.group.add(person.group);return {...c,bike,person,pose:newPose(),tmp:newPose(),from:newPose(),rest:newPose(),home:world.homes[c.key]};});
+ const list=ORDER.map((key,slot)=>{const c=CAST[key],bike=createBike(c.bike),person=createPerson(c);scene.add(bike.group);bike.group.add(person.group);
+  return {...FORMATION[key],key,name:c.name,cast:c,R:c.ride,slot,bike,person,pose:newPose(),tmp:newPose(),from:newPose(),rest:newPose(),home:world.homes[key]};});
  // Jamie's mother comes to the door; she is a small part of the scene, not a character.
- const mom={person:createPerson({shirt:0x9c3b3b,pants:0x3d4a66,skin:0xd6a57f,hair:0x6b4a2a,longHair:true,shoes:0x2f2f33,scale:1.13}),pose:newPose()};scene.add(mom.person.group);
+ const mom={person:createPerson(CAST.mom),pose:newPose()};scene.add(mom.person.group);
  const tmpV=new THREE.Vector3();
 
  function placeBike(f){const b=f.bike,fw=localToStreet(f.bpsi,0,-.5);
@@ -50,8 +46,9 @@ export function createFriends(scene,world,hooks={}){
  function lookAt(f,d,lat,psi,wx,wz){const p=groundPoint(d,lat),yaw=heading(d)+psi;const dx=wx-p.x,dz=wz-p.z;const target=Math.atan2(dx,-dz);return clamp(wrapAngle(-(target-yaw)),-1.25,1.25);}
 
  function reset(){
-  for(const f of list){Object.assign(f,{d:f.keys[0][1],lat:f.keys[0][2],speed:0,latVel:0,crank:Math.random()*6,wheel:0,steer:0,lean:0,fall:0,kick:0,spin:0,spinV:0,psi:0,mode:'ride',astride:1,stand:0,look:0,lookT:0,
-    bd:0,blat:0,bpsi:0,pd:0,plat:0,ppsi:0,py:null,gait:0,script:null,step:0,prevYaw:null,inside:false,glance:Math.random()*5,garageClosing:false,windowOn:false,holding:false,waved:false,posed:false});
+  for(const f of list){const rand=seeded(hashSeed(21,f.slot));Object.assign(f,{d:f.keys[0][1],lat:f.keys[0][2],speed:0,latVel:0,crank:f.R.phase,wheel:0,steer:0,lean:0,fall:0,kick:0,spin:0,spinV:0,psi:0,mode:'ride',astride:1,stand:0,look:0,lookT:0,
+    bd:0,blat:0,bpsi:0,pd:0,plat:0,ppsi:0,py:null,gait:0,script:null,step:0,prevYaw:null,inside:false,glance:1+rand()*4,garageClosing:false,windowOn:false,holding:false,waved:false,posed:false,
+    rand,seen:0,yield:0,effort:0,standHold:0,rock:0,bellLook:0,weaveA:rand()*6.3,weaveB:rand()*6.3});
    f.bd=f.d;f.blat=f.lat;if(f.person.group.parent!==f.bike.group){f.bike.group.add(f.person.group);}f.person.group.position.set(0,0,0);f.person.group.rotation.set(0,0,0);
    f.person.group.visible=true;f.bike.group.visible=true;}
   Object.assign(mom,{mode:'waiting',t:0,pd:0,plat:0,ppsi:0,py:null,gait:0,look:0,slammed:false,closeT:0,u:0});mom.person.group.visible=false;
@@ -59,34 +56,47 @@ export function createFriends(scene,world,hooks={}){
  }
 
  // Group riding -----------------------------------------------------------------------
+ // Each friend reads your speed with their own lag, has their own gear and legs, stands
+ // up on the pedals on their own schedule and drifts in their own line. While you push
+ // ahead they gradually let you lead; when you ease off they re-form around you.
  function ride(f,dt,ctx){
-  const D=ctx.distance,[lead,latKey]=formation(f.keys,D);let latT=latKey+Math.sin(ctx.clock*.31+f.keys[0][1])*.18;
+  const R=f.R,D=ctx.distance,[lead0,latKey]=formation(f.keys,D);
+  f.seen=damp(f.seen,ctx.speed,1/Math.max(.2,R.reaction),dt);
+  f.yield=damp(f.yield,ctx.push>.4?1:0,ctx.push>.4?.3:.1,dt);
+  const lead=lead0+(-1.2-f.slot*1.6-lead0)*f.yield,gap=D+lead-f.d;
+  let latT=latKey+R.weave*(.13*Math.sin(ctx.clock*.29+f.weaveA)+.06*Math.sin(ctx.clock*.71+f.weaveB));
   const stopped=ctx.speed<.35&&ctx.state!=='intro';
-  let vCmd=ctx.speed+clamp((D+lead-f.d)*.5,-2.4,2.6);if(stopped)vCmd=clamp((D+lead-f.d)*.35,0,1.6);if(ctx.state==='intro')vCmd=0;
+  let vCmd=f.seen+clamp(gap*.42,-2.2,2.3);if(stopped)vCmd=clamp(gap*.35,0,1.6);if(ctx.state==='intro')vCmd=0;vCmd=Math.min(vCmd,SPRINT);
   if(Math.abs(f.d-D)<3&&Math.abs(f.lat-ctx.lateral)<1.4)latT=ctx.lateral+Math.sign(f.lat-ctx.lateral||1)*1.6;
   for(const o of list)if(o!==f&&o.mode==='ride'&&Math.abs(o.d-f.d)<2.2&&Math.abs(o.lat-f.lat)<1)latT+=Math.sign(f.lat-o.lat||1)*.6;
-  const accel=vCmd>f.speed?1.35:2.6;f.speed=Math.max(0,f.speed+clamp(vCmd-f.speed,-accel*dt,accel*dt));
+  const accel=vCmd>f.speed?1.05+.3*R.stand:2.5;f.speed=Math.max(0,f.speed+clamp(vCmd-f.speed,-accel*dt,accel*dt));
   f.d+=f.speed*dt;f.latVel=damp(f.latVel,clamp((latT-f.lat)*.7,-.32*f.speed,.32*f.speed),4,dt);f.lat=clamp(f.lat+f.latVel*dt,-3.7,3.7);
   f.psi=Math.atan2(f.latVel,Math.max(f.speed,.6));f.bd=f.d;f.blat=f.lat;f.bpsi=f.psi;
-  f.stand=damp(f.stand,vCmd-f.speed>1.1&&f.speed>1.5?1:0,3,dt);
+  // Effort: how hard they are pushing right now. Standing comes in their own bursts.
+  f.effort=damp(f.effort,clamp((vCmd-f.speed)/1.1+(f.speed-4.9)/1.6,0,1),2.5,dt);f.standHold-=dt;
+  if(f.effort>.6/R.stand&&f.standHold<-.4&&f.speed>1.8)f.standHold=.8+f.rand()*1.4*R.stand;
+  f.stand=damp(f.stand,f.standHold>0?1:0,f.standHold>0?3.5:2,dt);
   f.astride=damp(f.astride,f.speed<.25?1:0,f.speed<.25?3:7,dt);
   cycle(f,dt,vCmd<f.speed-.4);
  }
- // Wheels, cranks, steering and lean follow actual motion.
+ // Wheels, cranks, steering and lean follow actual motion; each bike has its own gearing.
  function cycle(f,dt,coast){
   const yaw=heading(f.bd)+f.bpsi;if(f.prevYaw===null)f.prevYaw=yaw;const yawRate=wrapAngle(yaw-f.prevYaw)/Math.max(dt,1e-3);f.prevYaw=yaw;
-  const v=f.speed,k=yawRate/Math.max(v,.8);f.wheel+=v*dt/.31;
-  if(!coast&&v>.2)f.crank+=v*dt*RAD_PER_M;else{const level=Math.round((f.crank-Math.PI/2)/Math.PI)*Math.PI+Math.PI/2;f.crank=damp(f.crank,level,2.5,dt);}
-  f.steer=damp(f.steer,v>.3?clamp(-Math.atan(k*1.0)+Math.sin(f.wheel*.35)*.012,-.55,.55):f.steer,6,dt);
+  const v=f.speed,k=yawRate/Math.max(v,.8),R=f.R||{cadence:1,sway:1};f.wheel+=v*dt/f.bike.geom.wheelR;
+  if(!coast&&v>.2)f.crank+=v*dt*RAD_PER_M*R.cadence*(1+.1*(f.effort||0));else{const level=Math.round((f.crank-Math.PI/2)/Math.PI)*Math.PI+Math.PI/2;f.crank=damp(f.crank,level,2.5,dt);}
+  f.steer=damp(f.steer,v>.3?clamp(-Math.atan(k*1.0)+Math.sin(f.wheel*.35+(f.weaveA||0))*.012,-.55,.55):f.steer,6,dt);
+  // Standing riders rock the bike under them with each stroke; seated riders barely at all.
+  f.rock=(f.stand*.9+(f.effort||0)*.15)*Math.sin(f.crank)*R.sway;
   const targetLean=v>.5?clamp(-Math.atan(v*v*k/9.8),-.32,.32):(f.astride>.5?.05*Math.sign(f.lat||1):0);
-  f.lean=damp(f.lean,targetLean+(f.stand>.2?Math.sin(f.crank)*.1*f.stand:0),5,dt);
+  f.lean=damp(f.lean,targetLean+f.rock*.11,5,dt);
  }
+ const rideOpts=f=>({stand:f.stand,astride:f.astride,steer:f.steer,look:f.look,lookPitch:0,rock:f.rock,geom:f.bike.geom,posture:(f.cast.build.posture||0)+(f.effort||0)*.08,shoulder:f.rock*.14});
  function rideLook(f,ctx,dt){
-  let target=0,pitch=0;f.glance-=dt;
-  if(ctx.speaker===f.name||(f.speed<.3&&f.mode==='ride')){target=lookAt(f,f.bd,f.blat,f.bpsi,ctx.eye.x,ctx.eye.z);}
-  else if(f.glance<0){f.lookT=(Math.random()-.5)*1.2;f.glance=3+Math.random()*6;}
+  let target=0,pitch=0;f.glance-=dt;f.bellLook-=dt;
+  if(ctx.speaker===f.name||(f.bellLook>0&&f.bellLook<1.6)||(f.speed<.3&&f.mode==='ride')){target=lookAt(f,f.bd,f.blat,f.bpsi,ctx.eye.x,ctx.eye.z);}
+  else if(f.glance<0){f.lookT=(f.rand()-.5)*1.2*f.R.look;f.glance=(3+f.rand()*6)/Math.max(.4,f.R.look);}
   if(f.glance>2.2&&ctx.speaker!==f.name)target=f.lookT;
-  f.look=damp(f.look,target,3,dt);return pitch;
+  f.look=damp(f.look,target,3,dt);return pitch-(f.cast.build.hunch||0);
  }
 
  // Scripted departure -------------------------------------------------------------------
@@ -94,7 +104,7 @@ export function createFriends(scene,world,hooks={}){
    if(!path){path=makePath([[f.d,f.lat],...ctrl]);u=0;}
    const remain=path.length-u,kappa=path.curv(u+1.5);let v=Math.max(Math.min(.3,remain*2),Math.min(vmax,Math.sqrt(vend*vend+2*decel*Math.max(0,remain-.1)),Math.sqrt(2.3/Math.max(kappa,.02))));
    f.speed=f.speed+clamp(v-f.speed,-2.6*dt,1.4*dt);u+=f.speed*dt;const q=path.at(u);f.d=f.bd=q.d;f.lat=f.blat=q.lat;f.bpsi+=wrapAngle(q.psi-f.bpsi)*(1-Math.exp(-10*dt));
-   f.stand=damp(f.stand,v-f.speed>1.2&&f.speed<4?1:0,3,dt);cycle(f,dt,v<f.speed-.3||remain<5);f.astride=damp(f.astride,f.speed<.35&&remain<.8?1:0,6,dt);
+   f.effort=damp(f.effort||0,clamp((v-f.speed)/1.2,0,1),2.5,dt);f.stand=damp(f.stand,v-f.speed>1.2&&f.speed<4?1:0,3,dt);cycle(f,dt,v<f.speed-.3||remain<5);f.astride=damp(f.astride,f.speed<.35&&remain<.8?1:0,6,dt);
    if(remain<.05||(remain<.35&&f.speed<.12)){f.speed=0;return true;}}}
  function easeIn(f,e){if(e<.35)blendPose(f.pose,f.from,f.pose,smooth(e/.35));}
  function wait(t){let e=0;return dt=>(e+=dt)>=t;}
@@ -102,7 +112,7 @@ export function createFriends(scene,world,hooks={}){
  function act(fn){return (dt,ctx)=>{fn(ctx);return true;}}
  function settleAstride(f,t=.45){let e=0;return (dt)=>{e+=dt;f.speed=0;cycle(f,dt,true);f.astride=damp(f.astride,1,8,dt);f.lean=damp(f.lean,0,8,dt);f.steer=damp(f.steer,.08,4,dt);return e>=t;};}
  // Hand the rider over from the bike to the ground, preserving the pose exactly.
- function dismount(f,speed=1){const keys=dismountKeys();let e=0;return (dt)=>{
+ function dismount(f,speed=1){const keys=dismountKeys(f.bike.geom);let e=0;return (dt)=>{
    if(e===0){f.pd=f.bd;f.plat=f.blat;f.ppsi=f.bpsi;f.py=null;scene.attach(f.person.group);f.mode='foot';f.fall=0;f.lean=0;}
    e+=dt*speed;samplePose(f.pose,keys,e);applyPose(f.person,f.pose);f.person.group.visible=true;
    f.posed=true;if(e>=keys[keys.length-1][0]){const x0=f.pose[0],z0=f.pose[2],r=localToStreet(f.ppsi,x0,z0);f.pd+=r.dd;f.plat+=r.dl;for(const o of [P.root,P.lh,P.rh,P.lf,P.rf]){f.pose[o]-=x0;f.pose[o+2]-=z0;}applyPose(f.person,f.pose);f.holding=true;return true;}}}
@@ -119,7 +129,7 @@ export function createFriends(scene,world,hooks={}){
    const maxTurn=(push?1.6:3.2)*dt;f.ppsi+=clamp(turn,-maxTurn,maxTurn);const slow=Math.abs(turn)>1.2?.35:1;
    const step=v*slow*dt;u+=step;const at=path.at(u);const before=groundPoint(f.pd,f.plat);f.pd=at.d;f.plat=at.lat;const after=groundPoint(f.pd,f.plat);
    const moved=Math.hypot(after.x-before.x,after.z-before.z)+Math.abs(clamp(turn,-maxTurn,maxTurn))*.18;f.gait+=moved/stride(Math.max(v,.8));
-   const lk=look?look(ctx):0;if(push){pushPose(f.pose,f.gait,Math.max(v,.8),{look:lk});const o=localToStreet(f.ppsi,PUSH_OFFSET.x,PUSH_OFFSET.z);f.bd=f.pd+o.dd;f.blat=f.plat+o.dl;f.bpsi=f.ppsi;f.speed=v*slow;f.wheel+=step/.31;f.steer=damp(f.steer,clamp(turn*.6,-.4,.4),5,dt);}
+   const lk=look?look(ctx):0;if(push){pushPose(f.pose,f.gait,Math.max(v,.8),{look:lk,geom:f.bike.geom});const o=localToStreet(f.ppsi,PUSH_OFFSET.x,PUSH_OFFSET.z);f.bd=f.pd+o.dd;f.blat=f.plat+o.dl;f.bpsi=f.ppsi;f.speed=v*slow;f.wheel+=step/.31;f.steer=damp(f.steer,clamp(turn*.6,-.4,.4),5,dt);}
    else walkPose(f.pose,f.gait,Math.max(v,.8),{look:lk});
    easeIn(f,e);footGround(f,f.pose);applyPose(f.person,f.pose);f.posed=true;
    if(remain<.04){if(push)f.speed=0;return true;}}}
@@ -136,22 +146,23 @@ export function createFriends(scene,world,hooks={}){
 
  function plan(f,ctx){const h=f.home,s=h.side;
   if(f.key==='jamie'){const dr=h.drivD,door=world.doors.jamie;
-   return [rideIn(f,[[dr-15,s*2.9],[dr-4.5,s*3.4],[dr-.6,s*5.6],[dr+.2,s*8.3],[dr+2.4,s*10.1],[dr+3.6,s*10.7]],{vmax:6.2,decel:1.7}),
-    settleAstride(f,.3),dismount(f,1.35),dropBike(f),
-    walkTo(f,[[door.steps.d-1.2,door.steps.lat-s*.2],[door.steps.d,door.steps.lat],[door.porch.d,door.porch.lat]],{speed:3.1,look:ctx2=>0}),
-    idle(f,.85,{wave:1,look:lookPlayer(f)}),walkTo(f,[[door.inside.d,door.inside.lat]],{speed:1.4}),hide(f,'person')];}
+   // Kids race home: fast in, off the bike, bike on the lawn, a run to the door.
+   return [rideIn(f,[[dr-15,s*2.9],[dr-4.5,s*3.4],[dr-.6,s*5.6],[dr+.2,s*8.3],[dr+2.4,s*10.1],[dr+3.6,s*10.7]],{vmax:7.4,decel:2.3}),
+    settleAstride(f,.2),dismount(f,1.65),dropBike(f),turnTo(f,()=>worldPsiTo(f,ctx),.45),idle(f,.9,{wave:1,look:lookPlayer(f)}),
+    walkTo(f,[[door.steps.d-1.2,door.steps.lat-s*.2],[door.steps.d,door.steps.lat],[door.porch.d,door.porch.lat]],{speed:3.4,look:ctx2=>0}),
+    idle(f,.5,{wave:1,look:lookPlayer(f)}),walkTo(f,[[door.inside.d,door.inside.lat]],{speed:1.4}),hide(f,'person')];}
   if(f.key==='sam'){const dr=h.drivD,gar=world.garages.sam;
    // Sam rides straight up the driveway into the open garage, the way kids do.
    const park=h.S(h.gx,h.gfront-2.6);
    // After the wave the garage door starts down while Sam goes in through the door to the house.
-   return [rideIn(f,[[dr-16,s*2.8],[dr-5,s*3.2],[dr-.6,s*5.8],[dr,s*8.5],[gar.mouth.d,gar.mouth.lat-s*1.2],[park.d,park.lat]],{vmax:5.6,decel:1.6}),
-    settleAstride(f,.3),dismount(f,1.25),kickstand(f),act(()=>{f.holding=false;}),turnTo(f,()=>worldPsiTo(f,ctx),.8),idle(f,1.4,{wave:1,look:lookPlayer(f)}),
+   return [rideIn(f,[[dr-16,s*2.8],[dr-5,s*3.2],[dr-.6,s*5.8],[dr,s*8.5],[gar.mouth.d,gar.mouth.lat-s*1.2],[park.d,park.lat]],{vmax:7.2,decel:2.2}),
+    settleAstride(f,.2),dismount(f,1.55),kickstand(f),act(()=>{f.holding=false;}),turnTo(f,()=>worldPsiTo(f,ctx),.6),idle(f,1.6,{wave:1,look:lookPlayer(f)}),
     act(()=>{f.garageClosing=true;sfx('garage',gar.panel.getWorldPosition(tmpV));}),idle(f,.5,{look:lookPlayer(f)}),
     walkTo(f,[[gar.houseDoor.d,gar.houseDoor.lat],[gar.beyond.d,gar.beyond.lat]],{speed:1.15}),hide(f,'person'),until(()=>gar.open<.02),hide(f,'bike')];}
   // Alex cuts across the lawn and leaves the bike standing at the foot of the porch steps.
   const dr=h.drivD,door=world.doors.alex,stop=h.S(h.doorX-h.gs*1.3,h.stepFront+1.6),mid=h.S((h.doorX+h.drivX)/2,h.stepFront+2.4);
-  return [rideIn(f,[[dr-18,s*2.7],[dr-5,s*3.2],[dr-.6,s*5.7],[dr+.4,s*8],[mid.d,mid.lat],[stop.d,stop.lat]],{vmax:5.2,decel:1.3}),
-   settleAstride(f,.4),dismount(f,1.1),kickstand(f),act(()=>{f.holding=false;}),turnTo(f,()=>worldPsiTo(f,ctx),.8),idle(f,1.7,{wave:1,look:lookPlayer(f)}),
+  return [rideIn(f,[[dr-18,s*2.7],[dr-5,s*3.2],[dr-.6,s*5.7],[dr+.4,s*8],[mid.d,mid.lat],[stop.d,stop.lat]],{vmax:6.8,decel:1.9}),
+   settleAstride(f,.3),dismount(f,1.35),kickstand(f),act(()=>{f.holding=false;}),turnTo(f,()=>worldPsiTo(f,ctx),.7),idle(f,1.9,{wave:1,look:lookPlayer(f)}),
    // Wait on the latch side, clear of the door's swing, then go in through the middle.
    walkTo(f,[[door.steps.d,door.steps.lat],[door.latch.d,door.latch.lat]],{speed:1.4,look:lookPlayer(f)}),
    idle(f,.25,{look:ctx2=>0}),doorOpen(door,.5),walkTo(f,[[door.porch.d,door.porch.lat],[door.inside.d,door.inside.lat]],{speed:1.25}),hide(f,'person'),doorClose(door,.1),wait(3.5),act(()=>{f.windowOn=true;})];
@@ -178,8 +189,7 @@ export function createFriends(scene,world,hooks={}){
    f.posed=false;if(f.script&&f.step<f.script.length){if(f.script[f.step](dt,ctx))f.step++;}
    // Between explicit actions a person on foot settles into a relaxed stance.
    if(f.mode==='foot'&&!f.posed&&f.person.group.visible&&!f.holding){standPose(f.rest,ctx.clock);blendPose(f.pose,f.pose,f.rest,1-Math.exp(-6*dt));footGround(f,f.pose);applyPose(f.person,f.pose);}
-   if(f.mode==='leave'&&f.person.group.parent===f.bike.group){const lp=rideLook(f,ctx,dt);ridePose(f.pose,f.crank,{stand:f.stand,astride:f.astride,steer:f.steer,look:f.look,lookPitch:lp,rock:f.stand*Math.sin(f.crank)});applyPose(f.person,f.pose);}
-   if(f.mode==='ride'){const lp=rideLook(f,ctx,dt);ridePose(f.pose,f.crank,{stand:f.stand,astride:f.astride,steer:f.steer,look:f.look,lookPitch:lp,rock:f.stand*Math.sin(f.crank)});applyPose(f.person,f.pose);}
+   if((f.mode==='leave'&&f.person.group.parent===f.bike.group)||f.mode==='ride'){const lp=rideLook(f,ctx,dt);ridePose(f.pose,f.crank,{...rideOpts(f),lookPitch:lp});applyPose(f.person,f.pose);}
    if(f.spinV>0){f.spin+=f.spinV*dt;f.spinV=Math.max(0,f.spinV-dt*1.6);}
    if(f.garageClosing){const g=world.garages.sam;g.set(Math.max(0,g.open-dt/3));}
    if(f.windowOn)world.alexWindow.emissiveIntensity=Math.min(.9,world.alexWindow.emissiveIntensity+dt*.5);
@@ -191,6 +201,8 @@ export function createFriends(scene,world,hooks={}){
  function attention(){for(const f of list){if(f.inside)continue;if(f.mode==='foot'&&f.person.group.visible)return f.person.group.position;if(f.mode==='leave'&&f.speed<2.2&&Math.abs(f.blat)>4.8)return f.bike.group.position;}return null;}
  // Nearest friend still riding with you, for the answering bell.
  function answerer(){return list.find(f=>f.mode==='ride')||null;}
+ // Your bell: friends still riding nearby look back at you, each after their own moment.
+ function hearBell(ctx){for(const f of list)if(f.mode==='ride'&&Math.abs(f.d-ctx.distance)<30)f.bellLook=1.6+.2+f.R.reaction*.6+f.rand()*.3;}
  reset();
- return {list,mom,update,reset,answerer,attention};
+ return {list,mom,update,reset,answerer,attention,hearBell};
 }

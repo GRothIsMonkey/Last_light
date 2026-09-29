@@ -5,6 +5,7 @@ import {groundPoint,heading,roadFrame} from './route.js';
 import {createPerson,newPose,standPose,applyPose,P,smooth} from './rig.js';
 import {localToStreet} from './friends.js';
 import {LOOKOUT} from './world.js';
+import {CAST} from './cast.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
 const hash=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
@@ -48,7 +49,7 @@ export function createAmbient(scene,world,hooks={}){
 
  // A kid shooting hoops in a driveway -------------------------------------------------------
  const hh=world.homes.hoop,ring=hh.S(hh.gx,hh.gfront+.35),spot=hh.S(hh.gx+.6*hh.gs,hh.gfront+4.3);
- const kid={person:createPerson({shirt:0xe6e2d6,shorts:0x2e4a7a,skin:0xa5724f,hair:0x1f1a17,shoes:0xdad6cc}),pose:newPose(),t:0,phase:'dribble',d:spot.d,lat:spot.lat,psi:Math.atan2(ring.lat-spot.lat,ring.d-spot.d)};scene.add(kid.person.group);
+ const kid={person:createPerson(CAST.kid),pose:newPose(),t:0,phase:'dribble',d:spot.d,lat:spot.lat,psi:Math.atan2(ring.lat-spot.lat,ring.d-spot.d)};scene.add(kid.person.group);
  const ballMesh=new THREE.Mesh(new THREE.IcosahedronGeometry(.12,1),world.material(0xc2652f));ballMesh.castShadow=true;scene.add(ballMesh);
  const ringY=world.groundY(ring.d,ring.lat)+3.05;
  function kidToWorld(x,y,z,out){const s=localToStreet(kid.psi,x,z),p=groundPoint(kid.d+s.dd,kid.lat+s.dl);return out.set(p.x,world.groundY(kid.d,kid.lat)+y,p.z);}
