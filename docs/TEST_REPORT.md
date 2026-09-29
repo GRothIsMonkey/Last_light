@@ -1,79 +1,73 @@
-# Last Light v0.1 — verification report
+# Last Light v0.1 — combined release verification
 
-Final v0.1 implementation and gameplay pass. The original 14 story beats, four chapters and ending text are kept. This pass adds believable friend departures, a rigged cast, a rebuilt neighborhood, background life, reworked audio, and a small final stop at the end of the street.
+The recovered Astra build is based directly on Claude's `claude/loving-newton-1vlisx` at `02cbde1`. The original 14 story beats, four chapters, route, three different friend departures and ending text are preserved. The final work is on `codex/astra-v0.1-release`.
 
-## Automated results (`npm test`)
+**Status:** implementation, automated checks and rendered visual QA pass. The required perceptual listening review remains incomplete. This environment cannot listen to the rendered audio, so signal checks are not treated as listening approval. The combined build must remain on its release branch until that requirement is satisfied; `main` is not yet the completed release.
 
-35 checks pass. The suite loads the real modules and full scene, using a mocked WebGL renderer and DOM. It plays the game twice: a full first playthrough with walking and riding home, a replay, a second ride, and the idle ending.
+## Automated simulation
 
-- Assets and imports: every file referenced by `index.html` and every module import resolves locally.
-- Route: constant distance scale, grade below 4.3%, smooth heading.
-- Surfaces:
-  - Raycast checks confirm the asphalt faces upward and matches the road surface height over the whole ride.
-  - Side streets connect through curb openings.
-  - `groundY` (used by every rider and walker) matches the rendered lawns, driveways, walks, porch steps and lookout within 0.5 cm.
-- Rig:
-  - Thigh, shin and forearm lengths are preserved (to 0.1 mm) across riding, standing on the pedals, walking, running and the dismount keyframes.
-  - Riders' feet stay on the pedals through a full crank turn (0 mm error).
-  - Walking stance feet stay planted.
-- Input:
-  - W pedals; A/D steering stays inside the road edges and turns the handlebars and leans the bike.
-  - Mouse look is separate from steering; R, Q and E work.
-  - Pause freezes travel and releases the mouse.
-  - A spurious mouse jump right after pointer lock is ignored.
-  - Pointer-lock exit pauses; drag-look works when pointer lock is unavailable.
-- Story: all 14 triggers fire in order within 0.27 m of their distances on both rides. Riding eye height stays between 1.35 and 1.62 m.
-- Friends:
-  - Every friend ends inside their house.
-  - No friend's body or bike moves more than 0.3 m in a frame (largest: 0.25 m, Jamie sprinting). There is no teleporting.
-  - Nobody is hidden before going inside: Jamie and Alex are only hidden once through their own doorway, and Sam behind the closed garage door.
-  - Jamie's bike is left lying on the lawn, Alex's stands on its kickstand, and Sam's is put away in the garage. Doors and the garage end closed.
-- Final stop:
-  - The bike rolls to a stop at the end of the street, and F gets off.
-  - W/A/S/D walking moves the player, stays inside the lookout, is stopped by the fence, and keeps standing eye height.
-  - The player can turn all the way around, and looking back brings the distant call.
-  - F beside the bike rides home, and the ending card appears.
-- Replay resets story, view, bike, friends, doors, garage and controls.
-- If the player just waits at the end of the street, the memory fades to the ending on its own (after about 100 s).
+`npm test` passes **44 checks** using the real game modules and Three.js geometry, with a mocked renderer and DOM. It covers two complete playthroughs, including a voluntary return home, replay, and the idle ending. See [simulation-report.json](qa/simulation-report.json).
 
-### Metrics (from the latest run)
+- All local assets and module imports resolve.
+- The route is continuous, with constant distance scale. Asphalt and roof slopes face upward; side streets connect through curb openings. The final sidewalk follows the rise and faces upward.
+- Ground queries match the rendered lawns, driveways, walks and lookout within 0.005 m.
+- Riding, walking and dismounting preserve limb lengths. Feet stay on the pedals and walking stance feet stay planted. Hands remain within 0.0164 m of the grips while steering.
+- Pedaling, steering, independent mouse look, recentering, keyboard look, pause, pointer-lock exit and drag-look fallback work.
+- Both rides trigger all 14 story beats in order. Every friend gets inside before being hidden. Jamie's bicycle stays on the lawn, Alex's stays on its kickstand, and Sam's is put away in the garage. Doors and the garage finish closed.
+- Getting off, walking, the lookout boundary and fence, turning back, the distant call, remounting and returning home work.
+- The single ending clue is absent throughout the ride and appears during both ending fades. Ending freezes the world and clears controls.
+- Replay resets story, camera, riders, bicycles, doors, mother sound state, ambient timers, basketball child, vehicle, sprinkler levels, clue and controls.
 
-| | |
-|---|---|
-| Ride to the end of the street, holding W | 278 s (4.6 min) |
-| Full first playthrough, including the test's walk at the lookout | 5.6 min |
-| Largest ground-height mismatch | 0.005 m |
-| Largest per-frame friend movement | 0.25 m |
-| World build time (Node) | about 2.4 s |
+| Measurement | Result |
+|---|---:|
+| Uninterrupted ride holding W | 278 s / 4.6 min |
+| First complete test playthrough, including walking | 5.64 min |
+| Largest ground mismatch | 0.005 m |
+| Largest hand-to-grip error | 0.0164 m |
+| Pedal contact error | 0 m |
+| Largest friend movement in one test frame | 0.25 m |
 
-Camera-relative angle to each friend at key moments, holding W and never touching the mouse. The gentle "attention glance" is included, and the horizontal half field of view is about 48°:
+The initial test also exercises controls before its timed first-ride segment, so that segment alone is shorter than the uninterrupted second ride. Player stops can extend the experience.
 
-| | stops | gets off | goes inside |
-|---|---|---|---|
-| Jamie | 4–5° | 1–2° | 18–22° |
-| Sam | 8–9° | 6° | 44–47° (the garage door coming down) |
-| Alex | 0–1° | 0° | 7–8° |
+## Chromium and rendered QA
 
-## Browser checks
+`npm run test:browser` passes **55 checks** in Chromium 153.0.8010.0 with SwiftShader. It runs the actual WebGL shaders and Web Audio implementation, starts sound through a user gesture, exercises pointer lock, a click while captured, W, bell, M, Escape/resume, and completes two playthroughs through the deterministic `?qa` stepping hook. It walks back to the bicycle without teleporting. There are **no JavaScript, console or shader errors**. See [browser-report.json](qa/browser-report.json) and [errors.json](qa/errors.json).
 
-The game was run in headless Chromium (SwiftShader WebGL) through the `?qa` hook, which steps the simulation deterministically. Screenshots were reviewed for:
+Nineteen 1440 × 900 screenshots were reviewed, covering the intro, player bicycle, group ride, first hill, all three departures, porch/upstairs lights, late sunset, cul-de-sac, oak/bench/tire swing, looking home, final fade, ending and idle ending. The close view of the chalk mark is a diagnostic camera view, not a forced camera movement in the game.
 
-- the intro, with friends waiting astride
-- group riding, with friends drifting alongside when they speak
-- Jamie's exit: mother on the stoop, the dropped bike on the lawn, the wave at the door
-- the minivan's headlights arriving
-- Sam's open garage
-- Alex's bike on its kickstand at the porch, with the porch light and window lit
-- streetlights and lit windows at dusk
-- arrival at the cul-de-sac
-- looking back down the lit street past the parked bike
-- the lookout (bench, oak, tire swing, fence, chalk initials)
-- the call caption, the fade, and the ending card
+The review confirmed closed roof surfaces, continuous final paving/curbs, textured suburban houses, softer leaf canopies, visible rider contact, warm-to-cool sunset progression, and readable ending UI. The recovered build was run again before the final documentation and commit work.
 
-No page errors or console errors occurred with sound enabled. Rendering was 230–420 draw calls (shadow pass included) and about 0.5 M triangles per frame.
+## Audio
 
-## Limitations
+The browser renders **22 cases** using a real stereo OfflineAudioContext at 48 kHz: rolling, grass, coasting, two footsteps, bell, sprinkler, basketball bounce/rim, door opening/closing, garage, dropped bicycle, kickstand, stopped vehicle, dog, swing creak, bird, distant call, early/late ambience and ending chord. The bike clips include the associated drivetrain layers; ambience clips include wind, insects, mower and distant traffic.
 
-- SwiftShader is a software renderer, so real-GPU frame rate was not measured. Scene cost is modest (static geometry is merged by material; about 190 merged meshes), but a check on low-end hardware is still outstanding.
-- Real hardware pointer lock, touch controls on a physical device, and the synthesized audio were exercised for errors only; nobody has listened to them. The distant voice at the end is synthesized and deliberately faint, so it deserves a listen during the art/audio pass.
-- Friend departures are tuned for a player holding W. A player who stops or looks around sees them differently, which is intended; the glance only engages when the view has been left alone for 3 s.
+Every rendered case contains finite, nonzero audio and passes the peak/headroom check. The largest tested peak is approximately **0.1198** of full scale; no tested sample clips. Finished one-shot sources disconnect, replay stops old sources, and delayed bell replies use simulation time.
+
+The final call now uses softened harmonics and moving formants without its old feedback echo. It is still synthesized, not a recorded voice. Its emotional character, recognizability, perceived distance, spatial balance and the mix's comfort/repetition **have not been judged by listening**. Offline clips also do not establish how every sound combines during a full real-time ride.
+
+The [review page](qa/audio-review.html), [complete reel](qa/audio-review.mp3), individual clips and [reel index](qa/audio-review-index.json) preserve actual game output levels; they are not loudness-normalized. Complete the required listening review, particularly the final call, before marking this release complete or merging it into `main`.
+
+## Performance
+
+Static meshes are batched in spatial cells by compatible material, retaining vertex colors, texture coordinates and appropriate material flags. The renderer can cull distant cells while preserving neighborhood detail.
+
+| Captured rendering cost, including shadows | Result |
+|---|---:|
+| Draw calls across captured views | 46–470 |
+| Submitted triangles across captured views | 89,293–298,271 |
+| Group ride | 470 calls / 298,271 triangles |
+| Final arrival | 66 calls / 126,334 triangles |
+| Looking home | 299 calls / 256,725 triangles |
+
+The original group view submitted about 523,112 triangles in 425 calls. The revised group view submits about 43% fewer triangles, with a modest increase in calls. This is a geometry-cost improvement, not an established frame-rate improvement. SwiftShader is a software renderer; no real-GPU or low-end-device FPS claim is made.
+
+## Ending detail and remaining limitations
+
+One faint additional set of chalk initials, **AR**, appears beside the existing initials during the last fade, after the call home. There is no stinger, extra voice, figure, camera cue or explanatory lore. The same restrained clue serves both endings and is cleared on replay.
+
+- Required perceptual audio review is outstanding. This is the release/merge gate.
+- Real-GPU performance and physical touch-device behavior remain unmeasured. Browser pointer lock was tested in headless Chromium, not on a physical desktop setup.
+- The geometry and sound remain deliberately stylized and locally synthesized. The call especially needs a human listening verdict.
+- No known failing automated check or reproduced runtime exception remains in the tested build.
+
+No v0.2 work is included.

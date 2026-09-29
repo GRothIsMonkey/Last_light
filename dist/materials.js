@@ -1,0 +1,36 @@
+// Restrained, world-space surface detail: no asset downloads or texture seams.
+import * as THREE from './three.module.js';
+const noise=`
+float hsh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float softNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hsh(i),hsh(i+vec2(1,0)),f.x),mix(hsh(i+vec2(0,1)),hsh(i+1.),f.x),f.y);}
+`;
+export function surfaceMaterial(material,kind){
+ if(material.userData.surface)return material;material.userData.surface=kind;
+ material.onBeforeCompile=sh=>{
+  sh.vertexShader='varying vec3 vSurface;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvSurface=position;');
+  let detail='';
+  if(kind==='asphalt')detail=`float grain=softNoise(vSurface.xz*115.);float broad=softNoise(vSurface.xz*.8);float aa=1.-smoothstep(.03,.2,length(fwidth(vSurface.xz)));diffuseColor.rgb*=.91+.1*broad+(grain-.5)*.18*aa;`;
+  if(kind==='concrete')detail=`float wear=softNoise(vSurface.xz*6.)*.5+softNoise(vSurface.xz*.5)*.5;diffuseColor.rgb*=.92+.12*wear;`;
+  if(kind==='roof')detail=`float row=floor(vSurface.y*8.);float seam=1.-smoothstep(.03,.14,abs(fract(vSurface.y*8.)-.5));float fleck=softNoise(vSurface.xz*28.);diffuseColor.rgb*=.9+.12*fleck-.07*seam;`;
+  if(kind==='siding')detail=`float fade=softNoise(vSurface.xz*.4);diffuseColor.rgb*=.96+.06*fade;`;
+  sh.fragmentShader='varying vec3 vSurface;\n'+noise+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n'+detail);
+ };material.customProgramCacheKey=()=>kind;material.needsUpdate=true;return material;
+}
+// A small cutout spray of leaves, generated locally. Intersecting cards make
+// airy tree silhouettes at a lower triangle count than solid polygon crowns.
+const size=64,pixels=new Uint8Array(size*size*4);
+const leaflets=Array.from({length:15},(_,i)=>({x:.5+Math.sin(i*2.4)*(.12+i*.014),y:.18+(i%5)*.14,a:i*2.1,rx:.115,ry:.055}));
+for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+ const u=x/size,v=y/size;let alpha=0,shade=.8;
+ for(const l of leaflets){const dx=u-l.x,dy=v-l.y,c=Math.cos(l.a),s=Math.sin(l.a),xx=(dx*c+dy*s)/l.rx,yy=(-dx*s+dy*c)/l.ry,r=xx*xx+yy*yy;
+  if(r<1){alpha=255;shade=.72+.25*(1-r);}}
+ const i=(y*size+x)*4;pixels[i]=pixels[i+1]=pixels[i+2]=shade*255;pixels[i+3]=alpha;
+}
+export const leafTexture=new THREE.DataTexture(pixels,size,size);leafTexture.colorSpace=THREE.SRGBColorSpace;leafTexture.magFilter=THREE.LinearFilter;leafTexture.minFilter=THREE.LinearMipmapLinearFilter;leafTexture.generateMipmaps=true;leafTexture.needsUpdate=true;
+const verts=[],normals=[],uvs=[],UP=new THREE.Vector3(0,1,0);
+for(let i=0;i<30;i++){
+ const a=i*2.39996,h=1-2*(i+.5)/30,r=Math.sqrt(1-h*h),n=new THREE.Vector3(Math.cos(a)*r,h,Math.sin(a)*r),center=n.clone().multiplyScalar(.73);
+ const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),n),corners=[[-.48,-.44],[.48,-.44],[.48,.44],[-.48,.44]];
+ for(const k of [0,1,2,0,2,3]){const [x,y]=corners[k],v=new THREE.Vector3(x,y,0).applyQuaternion(q).add(center);verts.push(v.x,v.y,v.z);normals.push(n.x,n.y,n.z);uvs.push(k===0||k===3?0:1,k<2?0:1);}
+}
+export const leafGeometry=new THREE.BufferGeometry();leafGeometry.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));leafGeometry.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));leafGeometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));

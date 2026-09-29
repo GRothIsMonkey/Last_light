@@ -54,7 +54,7 @@ export function createFriends(scene,world,hooks={}){
     bd:0,blat:0,bpsi:0,pd:0,plat:0,ppsi:0,py:null,gait:0,script:null,step:0,prevYaw:null,inside:false,glance:Math.random()*5,garageClosing:false,windowOn:false,holding:false,waved:false,posed:false});
    f.bd=f.d;f.blat=f.lat;if(f.person.group.parent!==f.bike.group){f.bike.group.add(f.person.group);}f.person.group.position.set(0,0,0);f.person.group.rotation.set(0,0,0);
    f.person.group.visible=true;f.bike.group.visible=true;}
-  Object.assign(mom,{mode:'waiting',t:0,pd:0,plat:0,ppsi:0,py:null,gait:0,look:0});mom.person.group.visible=false;
+  Object.assign(mom,{mode:'waiting',t:0,pd:0,plat:0,ppsi:0,py:null,gait:0,look:0,slammed:false,closeT:0,u:0});mom.person.group.visible=false;
   world.doors.jamie.set(0);world.doors.alex.set(0);world.garages.sam.set(1);world.alexWindow.emissiveIntensity=0;
  }
 
@@ -93,7 +93,7 @@ export function createFriends(scene,world,hooks={}){
  function rideIn(f,ctrl,{vmax=5,vend=0,decel=1.4}={}){let path=null,u=0;return (dt,ctx)=>{
    if(!path){path=makePath([[f.d,f.lat],...ctrl]);u=0;}
    const remain=path.length-u,kappa=path.curv(u+1.5);let v=Math.max(Math.min(.3,remain*2),Math.min(vmax,Math.sqrt(vend*vend+2*decel*Math.max(0,remain-.1)),Math.sqrt(2.3/Math.max(kappa,.02))));
-   f.speed=f.speed+clamp(v-f.speed,-2.6*dt,1.4*dt);u+=f.speed*dt;const q=path.at(u);f.d=f.bd=q.d;f.lat=f.blat=q.lat;f.bpsi=damp(f.bpsi,q.psi,10,dt);
+   f.speed=f.speed+clamp(v-f.speed,-2.6*dt,1.4*dt);u+=f.speed*dt;const q=path.at(u);f.d=f.bd=q.d;f.lat=f.blat=q.lat;f.bpsi+=wrapAngle(q.psi-f.bpsi)*(1-Math.exp(-10*dt));
    f.stand=damp(f.stand,v-f.speed>1.2&&f.speed<4?1:0,3,dt);cycle(f,dt,v<f.speed-.3||remain<5);f.astride=damp(f.astride,f.speed<.35&&remain<.8?1:0,6,dt);
    if(remain<.05||(remain<.35&&f.speed<.12)){f.speed=0;return true;}}}
  function easeIn(f,e){if(e<.35)blendPose(f.pose,f.from,f.pose,smooth(e/.35));}
@@ -162,7 +162,7 @@ export function createFriends(scene,world,hooks={}){
   if(m.mode==='opening'){door.set(smooth(m.t/.6));standPose(m.pose,m.t);if(m.t>.5){m.mode='out';m.t=0;m.path=makePath([[m.pd,m.plat],[door.outside.d,door.outside.lat],[door.outside.d-h.gs*h.side*-.55,door.outside.lat+0]]);m.u=0;}}
   else if(m.mode==='out'||m.mode==='in'){const step=1.1*dt;m.u+=step;const q=m.path.at(m.u);const want=Math.atan2(q.lat-m.plat,q.d-m.pd);if(m.path.length-m.u>.05)m.ppsi+=clamp(wrapAngle(want-m.ppsi),-3*dt,3*dt);m.pd=q.d;m.plat=q.lat;m.gait+=step/stride(1.1);walkPose(m.pose,m.gait,1.1,{});
    if(m.u>=m.path.length){if(m.mode==='out'){m.mode='porch';m.t=0;}else{m.person.group.visible=false;m.mode='gone';m.closeT=0;}}}
-  else if(m.mode==='porch'){m.ppsi+=clamp(wrapAngle(Math.PI/2*-h.side-m.ppsi),-2*dt,2*dt);const jp=jamie.mode==='foot'?jamie.person.group.position:jamie.bike.group.position;standPose(m.pose,m.t,{look:lookAt(null,m.pd,m.plat,m.ppsi,jp.x,jp.z)});
+  else if(m.mode==='porch'){m.ppsi+=clamp(wrapAngle(Math.PI/2*-h.side-m.ppsi),-2*dt,2*dt);const jp=jamie.mode==='foot'?jamie.person.group.position:jamie.bike.group.position;standPose(m.pose,m.t,{look:lookAt(null,m.pd,m.plat,m.ppsi,jp.x,jp.z)});addWave(m.pose,m.t,smooth(m.t/.7)*(1-smooth((m.t-1.6)/.8))*.45);
    if(jamie.inside||(jamie.mode==='foot'&&jamie.person.group.visible===false)){m.mode='in';m.path=makePath([[m.pd,m.plat],[door.inside.d,door.inside.lat]]);m.u=0;}}
   else if(m.mode==='gone'){m.closeT+=dt;const t=clamp((m.closeT-.15)/.45,0,1);door.set(1-t*t);if(t>=1&&!m.slammed){m.slammed=true;sfx('doorSlam',door.pivot.getWorldPosition(tmpV));}return;}
   if(m.mode!=='gone'){place();footGround(m,m.pose);applyPose(m.person,m.pose);}

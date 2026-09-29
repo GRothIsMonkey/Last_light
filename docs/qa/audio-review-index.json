@@ -1,0 +1,90 @@
+[
+  {
+    "name": "Bicycle on asphalt",
+    "seconds": 0.0
+  },
+  {
+    "name": "Bicycle on grass",
+    "seconds": 6.75
+  },
+  {
+    "name": "Bicycle coasting",
+    "seconds": 13.5
+  },
+  {
+    "name": "Footstep on asphalt",
+    "seconds": 20.25
+  },
+  {
+    "name": "Footstep on grass",
+    "seconds": 27.0
+  },
+  {
+    "name": "Bicycle bell",
+    "seconds": 33.75
+  },
+  {
+    "name": "Sprinkler",
+    "seconds": 40.5
+  },
+  {
+    "name": "Basketball bounce",
+    "seconds": 47.25
+  },
+  {
+    "name": "Basketball rim",
+    "seconds": 54.0
+  },
+  {
+    "name": "Front door opening",
+    "seconds": 60.75
+  },
+  {
+    "name": "Screen door closing",
+    "seconds": 67.5
+  },
+  {
+    "name": "Garage door",
+    "seconds": 74.25
+  },
+  {
+    "name": "Jamie\u2019s dropped bike",
+    "seconds": 81.0
+  },
+  {
+    "name": "Kickstand",
+    "seconds": 87.75
+  },
+  {
+    "name": "Vehicle stopping",
+    "seconds": 94.5
+  },
+  {
+    "name": "Distant dog",
+    "seconds": 101.25
+  },
+  {
+    "name": "Tire-swing creak",
+    "seconds": 108.0
+  },
+  {
+    "name": "Birds",
+    "seconds": 114.75
+  },
+  {
+    "name": "Distant call home",
+    "seconds": 121.5
+  },
+  {
+    "name": "Early neighborhood (mower and distant traffic)",
+    "seconds": 128.25
+  },
+  {
+    "name": "Late neighborhood (wind and insects)",
+    "seconds": 135.0
+  },
+  {
+    "name": "Ending chord",
+    "seconds": 141.75
+  }
+]

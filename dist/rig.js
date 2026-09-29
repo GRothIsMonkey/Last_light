@@ -183,8 +183,8 @@ export function poseBike(bike){
 // Rider on a bicycle: seated, standing on the pedals, or stopped astride the frame.
 const _p=new THREE.Vector3();
 export function ridePose(p,crank,{stand=0,astride=0,steer=0,look=0,lookPitch=0,rock=0}={}){
- const lean=.5+.12*stand-.28*astride;
- set3(p,P.root,rock*.02,.925+.1*stand-.12*astride,.21-.17*stand-.13*astride);p[P.yaw]=0;p[P.lean]=lean;p[P.roll]=-rock*.6;p[P.twist]=0;p[P.hy]=look;p[P.hp]=lookPitch;
+ const lean=.62+.12*stand-.40*astride+Math.abs(steer)*.1*(1-astride);
+ set3(p,P.root,rock*.02,.925+.1*stand-.12*astride,.21-.17*stand-.13*astride);p[P.yaw]=0;p[P.lean]=lean;p[P.roll]=-rock*.6;p[P.twist]=steer*.95*(1-astride);p[P.hy]=look;p[P.hp]=lookPitch;
  for(const [o,side,po] of [[P.lf,-1,P.lfp],[P.rf,1,P.rfp]]){
   pedalPos(crank,side,_p);const a=crank+(side<0?Math.PI:0);
   const px=side*(BIKE.pedalX+.035),py=_p.y+.062,pz=_p.z+.05,gx=side*.23,gy=BODY.ankle,gz=.06;

@@ -5,6 +5,7 @@
   "type": "module",
   "description": "A short nostalgic first-person bicycle ride through a suburban summer evening in 2011.",
   "scripts": {
-    "test": "node tests/verify.mjs"
+    "test": "node tests/verify.mjs",
+    "test:browser": "node tests/browser.mjs"
   }
 }

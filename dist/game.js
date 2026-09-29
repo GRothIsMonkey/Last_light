@@ -14,15 +14,26 @@ try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'hig
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.16;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 const scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(64,innerWidth/innerHeight,.06,390);scene.add(camera);
 scene.fog=new THREE.FogExp2(0xe3ac8d,.008);
-const hemi=new THREE.HemisphereLight(0xffdcaf,0x615745,2.1);scene.add(hemi);
-const sunlight=new THREE.DirectionalLight(0xffc27d,2.6);sunlight.castShadow=true;sunlight.shadow.mapSize.set(2048,2048);Object.assign(sunlight.shadow.camera,{left:-60,right:60,top:60,bottom:-60,near:1,far:240});sunlight.shadow.bias=-.0005;sunlight.shadow.normalBias=.05;scene.add(sunlight,sunlight.target);
+const hemi=new THREE.HemisphereLight(0xe8e3d3,0x68675d,2.0);scene.add(hemi);
+const sunlight=new THREE.DirectionalLight(0xffd09b,2.7);sunlight.castShadow=true;sunlight.shadow.mapSize.set(2048,2048);Object.assign(sunlight.shadow.camera,{left:-60,right:60,top:60,bottom:-60,near:1,far:240});sunlight.shadow.bias=-.0005;sunlight.shadow.normalBias=.023;scene.add(sunlight,sunlight.target);
 // A real-time sky, shifting from late afternoon into the blue of a remembered evening; stars wait for the very end.
 const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{dusk:{value:0},night:{value:0}},vertexShader:'varying vec3 v; void main(){v=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
- fragmentShader:`varying vec3 v;uniform float dusk,night;float h3(vec3 p){return fract(sin(dot(p,vec3(12.9898,78.233,37.719)))*43758.5453);}
- void main(){vec3 n=normalize(v);float h=max(n.y,0.);vec3 low=mix(vec3(1.,.67,.40),vec3(.73,.43,.46),dusk);low=mix(low,vec3(.36,.27,.36),night);vec3 high=mix(vec3(.32,.43,.57),vec3(.13,.19,.34),dusk);high=mix(high,vec3(.05,.07,.15),night);
- vec3 col=mix(low,high,pow(h,.48));vec3 sun=normalize(vec3(.22,.075-dusk*.055-night*.03,-1.));float a=dot(n,sun);col+=vec3(1.,.53,.22)*pow(max(a,0.),90.)*.35*(1.-night*.6);col+=vec3(1.,.45,.25)*pow(max(a,0.),6.)*.12*night*(1.-h);
- col=mix(col,vec3(1.,.9,.64),smoothstep(.9995,.9997,a)*(1.-night));float cloud=sin(n.x*29.+n.z*13.)*sin(n.z*41.-n.y*73.);float bands=exp(-pow((n.y-.15)/.05,2.));col=mix(col,mix(vec3(.99,.70,.56),vec3(.55,.36,.42),night),max(0.,cloud-.25)*bands*.2);
- vec3 c=floor(n*260.);float s=step(.9975,h3(c))*smoothstep(.08,.35,n.y);col+=vec3(.9,.92,1.)*s*smoothstep(.35,1.,night)*.55;gl_FragColor=vec4(col,1.);}`});
+ fragmentShader:`varying vec3 v;uniform float dusk,night;
+ float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+ float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+1.),f.x),f.y);}
+ float cloud(vec2 p){return noise(p)*.55+noise(p*2.03)*.27+noise(p*4.07)*.12+noise(p*8.1)*.06;}
+ void main(){vec3 n=normalize(v);float h=max(n.y,0.);float blue=smoothstep(.30,1.,dusk);
+ vec3 low=mix(vec3(.98,.73,.51),vec3(.73,.48,.53),blue);low=mix(low,vec3(.29,.31,.43),night*.8);
+ vec3 high=mix(vec3(.37,.56,.72),vec3(.20,.25,.44),blue);high=mix(high,vec3(.075,.12,.24),night*.8);
+ vec3 col=mix(low,high,pow(h,.48));vec3 sun=normalize(vec3(.44,.14-dusk*.14-night*.035,-.85));float a=dot(n,sun);
+ col+=vec3(1.,.47,.19)*pow(max(a,0.),36.)*.18*(1.-night*.8);
+ col=mix(col,vec3(1.,.92,.73),smoothstep(.99982,.99991,a)*(1.-smoothstep(.82,1.,dusk)));
+ vec2 uv=n.xz/(max(n.y,.045)+.28);float field=cloud(uv*vec2(2.2,6.8)+vec2(3.,5.));
+ float band=smoothstep(.035,.13,h)*(1.-smoothstep(.32,.52,h));float wisps=smoothstep(.49,.72,field)*band;
+ vec3 cloudColor=mix(vec3(.94,.78,.65),vec3(.70,.48,.59),blue);cloudColor=mix(cloudColor,vec3(.22,.25,.36),night);
+ col=mix(col,cloudColor,wisps*.65);vec2 cell=floor(n.xz/(h+.1)*180.);float stars=step(.9985,hash(cell))*smoothstep(.2,.5,h);
+ col+=vec3(.78,.85,1.)*stars*smoothstep(.4,1.,night)*.35;
+ gl_FragColor=vec4(col,1.);}`});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);
 
 const world=buildWorld(scene);
@@ -43,7 +54,7 @@ const eyeRig=new THREE.Object3D();bikeRoot.add(eyeRig);
 const cockpit=playerBike.group;
 
 let mouseYaw=0,mousePitch=0,headPitch=0,steerVelocity=0,lean=0,pedalPhase=0,lastMouse=null,lastPauseAt=-Infinity,yawOffset=0,steerAngle=0,astride=0,prevYaw=null,wheelTurn=0,kick=0,bikeLean=0;
-let lookInputAt=0,glance=0;
+let lookInputAt=0,glance=0,manualLook=false,answerBellAt=-1;
 let state='intro',distance=0,speed=0,lateral=-.3,look=0,clock=0,lastStamp=0,nextMemory=0,captionTimer=0,idleTime=0,bellCooldown=0,resumeState='riding';
 // Final stop: on foot the player is in street coordinates too.
 let finaleT=0,walkD=0,walkLat=0,walkYaw=0,walkPitch=0,gait=0,lastStep=0,moveT=0,transT=0,transFrom=null,callDone=false,callT=-1,lookedBack=0,fade=0,endHint=false,wHint=false,leaveT=0;
@@ -55,7 +66,7 @@ const active=()=>['riding','arriving','stopped','dismounting','walking','remount
 
 function setSound(on){if(!audio){audio=createAudio();}audio.ensure();muted=!on;audio.setEnabled(on&&state!=='paused');$('sound').setAttribute('aria-pressed',String(on));$('sound').setAttribute('aria-label',on?'Mute sound':'Enable sound');$('sound').innerHTML=`SOUND <span>${on?'ON':'OFF'}</span>`;}
 function bell(){if(!onBike()||bellCooldown>0)return;bellCooldown=2;audio?.bell();const f=friends.answerer();
- if(distance<850&&captionTimer<1&&state==='riding'){showCaption('',f?'A bell answers from up ahead.':'The sound drifts down the street.');if(f)setTimeout(()=>audio?.bell(f.bike.group.position,.55),650);}}
+ if(distance<850&&captionTimer<1&&state==='riding'){showCaption('',f?'A bell answers from up ahead.':'The sound drifts down the street.');if(f)answerBellAt=clock+.65;}}
 function showCaption(who,text,time=7.5){$('subtitle').replaceChildren();if(who){const s=document.createElement('small');s.textContent=who;$('subtitle').append(s);}$('subtitle').append(document.createTextNode(text));$('subtitle').style.opacity='1';captionTimer=time;ctx.speaker=who||null;}
 const CONTROLS={riding:'<kbd>W</kbd> PEDAL <span>/</span><kbd>A</kbd><kbd>D</kbd> STEER <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>R</kbd> CENTER <span>/</span><kbd>SPACE</kbd> BELL <span>/</span><kbd>ESC</kbd> PAUSE',
  stopped:'<kbd>F</kbd> GET OFF <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>ESC</kbd> PAUSE',
@@ -65,8 +76,8 @@ let controlsMode='';function setControls(m){if(m===controlsMode)return;controlsM
 function start(){state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;setControls('riding');cockpit.visible=true;self.group.visible=true;if(!audio)setSound(true);else if(!muted)setSound(true);showCaption('','Hold W or ↑ to pedal. There’s still a little light.');}
 function pause(){if(!active())return;resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();$('pause').hidden=false;audio?.setEnabled(false);}
 function resume(){if(state!=='paused')return;state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
-function finish(){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;audio?.ending();}
-function reset(){glance=0;lookInputAt=0;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
+function finish(){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();setControls('none');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;audio?.ending();}
+function reset(){glance=0;lookInputAt=0;manualLook=false;answerBellAt=-1;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
  finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
  friends.reset();ambient.reset();audio?.reset();$('ending').hidden=true;start();}
 $('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>{if(state==='stopped'&&callDone)leave();else action();};
@@ -77,16 +88,21 @@ function action(){
 }
 function leave(){if(state!=='stopped'&&state!=='remounting')return;state='leaving';leaveT=0;setControls('none');audio?.leaving();}
 addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
+ if(e.code==='KeyM'&&!e.repeat){setSound(muted);return;}
  if(e.code==='Escape'){if(e.repeat)return;if(active())pause();else if(state==='paused'&&performance.now()-lastPauseAt>180)resume();return;}
- if(active()){keys.add(e.code);if(e.code==='KeyR'){mouseYaw=0;mousePitch=0;lookInputAt=clock;glance=0;}if(e.code==='Space'&&!e.repeat)bell();if(e.code==='KeyF'&&!e.repeat)action();
+ if(active()){keys.add(e.code);if(e.code==='KeyR'){mouseYaw=0;mousePitch=0;lookInputAt=clock;glance=0;manualLook=false;}if(e.code==='Space'&&!e.repeat)bell();if(e.code==='KeyF'&&!e.repeat)action();
   if((e.code==='KeyW'||e.code==='ArrowUp')&&!e.repeat&&state==='stopped'){if(callDone)leave();else if(!endHint&&captionTimer<1){endHint=true;showCaption('','The street ends here.',4);}}}});
 addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 // Pointer lock is optional. Mouse-drag works if the browser declines it.
 function requestLook(){if(touch)return;lastMouse=null;lockAt=clock;try{const result=canvas.requestPointerLock?.();result?.catch?.(()=>{});}catch{}}
 let dragging=false,lockAt=-1;
-canvas.addEventListener('pointerdown',e=>{if(!active())return;if(e.pointerType!=='touch')requestLook();dragging=true;lastMouse={x:e.clientX,y:e.clientY};canvas.setPointerCapture?.(e.pointerId);});
+canvas.addEventListener('pointerdown',e=>{if(!active())return;if(e.pointerType!=='touch')requestLook();dragging=true;lastMouse={x:e.clientX,y:e.clientY};
+ // Pointer lock can win the race with pointer capture; Chromium then rejects
+ // capture because this pointer is no longer active. Drag-look remains optional.
+ if(document.pointerLockElement!==canvas)try{canvas.setPointerCapture?.(e.pointerId);}catch{}
+});
 canvas.addEventListener('pointerup',()=>{dragging=false;lastMouse=null;});canvas.addEventListener('pointercancel',()=>{dragging=false;lastMouse=null;});canvas.addEventListener('lostpointercapture',()=>{dragging=false;lastMouse=null;});
-function turnView(dx,dy){lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*.0022;walkPitch=clamp(walkPitch-dy*.0022,-1.1,.9);}else{mouseYaw=clamp(mouseYaw-dx*.0022,-1.35,1.35);mousePitch=clamp(mousePitch-dy*.0022,-1.02,.42);}}
+function turnView(dx,dy){if(!dx&&!dy)return;manualLook=true;lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*.0022;walkPitch=clamp(walkPitch-dy*.0022,-1.1,.9);}else{mouseYaw=clamp(mouseYaw-dx*.0022,-1.35,1.35);mousePitch=clamp(mousePitch-dy*.0022,-1.02,.42);}}
 addEventListener('mousemove',e=>{if(!active()||touch)return;let dx=0,dy=0;
  if(document.pointerLockElement===canvas){dx=e.movementX||0;dy=e.movementY||0;
   // Chromium can report one huge jump right after the lock engages; ignore it.
@@ -141,7 +157,7 @@ function placePlayerBike(dt){
 function updateWalk(dt){
  const f=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0);
  const s=touch?0:(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
- const turn=(keys.has('KeyQ')?1:0)-(keys.has('KeyE')?1:0)+(touch||keys.has('ArrowLeft')?(keys.has('ArrowLeft')||keys.has('KeyA')?1:0)-(keys.has('ArrowRight')||keys.has('KeyD')?1:0):0);
+ const turn=(keys.has('KeyQ')?1:0)-(keys.has('KeyE')?1:0)+(touch||keys.has('ArrowLeft')||keys.has('ArrowRight')?(keys.has('ArrowLeft')||keys.has('KeyA')?1:0)-(keys.has('ArrowRight')||keys.has('KeyD')?1:0):0);
  walkYaw+=turn*1.6*dt;
  const len=Math.hypot(f,s)||1,want=(f||s)?1.35:0;moveT=damp(moveT,want,(f||s)?5:7,dt);
  // walkYaw is relative to the street: 0 looks along the ride, positive turns left.
@@ -179,16 +195,17 @@ function updateFinale(dt){
  $('fade').style.opacity=fade;
 }
 
-function update(dt){clock+=dt;ctx.clock=clock;bellCooldown=Math.max(0,bellCooldown-dt);
+function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;
+ if(answerBellAt>=0&&clock>=answerBellAt){answerBellAt=-1;const f=friends.answerer();if(f&&onBike())audio?.bell(f.bike.group.position,.55);}ctx.clock=clock;bellCooldown=Math.max(0,bellCooldown-dt);
  let bikeAudio={pedal:false,coasting:false};
  if(onBike()&&state!=='intro'){bikeAudio=updateRide(dt);
   const pedal=keys.has('KeyW')||keys.has('ArrowUp');idleTime=pedal||state!=='riding'?0:idleTime+dt;if(idleTime>20&&captionTimer<=0){showCaption('','Hold W or ↑ to keep riding.');idleTime=0;}
   if(nextMemory<memories.length&&distance>=memories[nextMemory].at){const m=memories[nextMemory++];showCaption(m.who,m.text);}
   if(state==='riding'&&distance>=LOOKOUT.stop.d-24){state='arriving';setControls('none');}
   const ch=chapterAt(distance);if(ch!==currentChapter){currentChapter=ch;$('chapter').innerHTML=`0${ch+1} <span>${chapters[ch].title}</span>`;}$('progress').style.width=`${Math.min(1,distance/LENGTH)*100}%`;$('ride-label').textContent=distance<870?'STAY A LITTLE LONGER':'YOU KNOW THE WAY HOME';
-  const keyLook=(keys.has('KeyQ')?.75:0)-(keys.has('KeyE')?.75:0);if(keyLook)lookInputAt=clock;
+  const keyLook=(keys.has('KeyQ')?.75:0)-(keys.has('KeyE')?.75:0);if(keyLook){lookInputAt=clock;manualLook=true;}
   // When a friend is heading inside and the player isn't steering the view, the head turns a little toward them.
-  const target=state==='riding'&&clock-lookInputAt>3?friends.attention():null;let want=0;
+  const target=state==='riding'&&!manualLook&&clock-lookInputAt>3?friends.attention():null;let want=0;
   if(target){const dx=target.x-bikeRoot.position.x,dz=target.z-bikeRoot.position.z,fwd=-(heading(distance)+yawOffset);let a=Math.atan2(-dx,-dz)-fwd;a=Math.atan2(Math.sin(a),Math.cos(a));want=clamp(a,-.85,.85);}
   glance=damp(glance,want,target?1.1:.9,dt);
   look=damp(look,clamp(mouseYaw+keyLook+glance,-1.35,1.35),8,dt);headPitch=damp(headPitch,mousePitch,8,dt);}
@@ -197,22 +214,22 @@ function update(dt){clock+=dt;ctx.clock=clock;bellCooldown=Math.max(0,bellCooldo
  if(['arriving','stopped','dismounting','walking','remounting','leaving'].includes(state))$('ride-ui').style.opacity=state==='arriving'?1:Math.max(0,1-finaleT/3);
  // Light and atmosphere follow the ride, then the last of the evening at the end of the street.
  const p=Math.min(1,distance/LENGTH),night=Math.min(1,ctx.finale/80);ctx.p=p;ctx.night=night;
- skyMat.uniforms.dusk.value=p;skyMat.uniforms.night.value=night;scene.fog.color.set(0xe3ac8d).lerp(_c1.set(0x777990),p*.85).lerp(_c2.set(0x3f4258),night*.6);scene.fog.density=.008+p*.005+night*.002;
- hemi.intensity=2.1-p*.85-night*.55;sunlight.intensity=Math.max(.05,2.6-p*1.95-night*.55);const rf=roadFrame(Math.min(distance,1140));sunlight.position.set(rf.x+35,rf.y+34-p*10,rf.z-70);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=1.16-p*.16-night*.08;
+ skyMat.uniforms.dusk.value=p;skyMat.uniforms.night.value=night;scene.fog.color.set(0xdbb79b).lerp(_c1.set(0x8f8caa),p*.88).lerp(_c2.set(0x555e7c),night*.75);scene.fog.density=.0058+p*.004+night*.001;
+ hemi.intensity=2.0-p*.58-night*.48;hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p);sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4);const rf=roadFrame(Math.min(distance,1140));sunlight.position.set(rf.x+44,rf.y+30-p*21,rf.z-85);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=1.10-p*.06-night*.06;
  if(onBike()||state==='intro'||state==='ended'||state==='dismounting')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
  else if(state==='walking')updateWalk(dt);
  else{eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(camera.position);eyeRig.getWorldQuaternion(camera.quaternion);}
  camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=distance;ctx.speed=speed;ctx.lateral=lateral;ctx.state=state;
- friends.update(dt,ctx);ambient.update(dt,ctx);
+ friends.update(dt,ctx);ambient.update(dt,ctx);ambient.setEndingClue(callDone&&fade>0&&state!=='ended',fade);
  sky.position.copy(camera.position);
  const minute=42+Math.floor(p*18);$('date').innerHTML=p>.83?'AUGUST, 2011 <i></i> AS YOU REMEMBER IT':`AUGUST 21, 2011 <i></i> ${minute<60?'7:':'8:'}${String(minute%60).padStart(2,'0')} PM`;
- if(audio&&!muted&&active()){camera.getWorldDirection(_v);audio.update(dt,{speed,pedal:bikeAudio.pedal,coasting:bikeAudio.coasting,onBike:onBike(),p,night,finale:ctx.finale,listener:camera.position,forward:_v,friendsLeft:friends.list.filter(f=>!f.inside).length,state,crank:pedalPhase,sources:ambient.sources});}
+ if(audio&&!muted&&active()){camera.getWorldDirection(_v);audio.update(dt,{speed,pedal:bikeAudio.pedal,coasting:bikeAudio.coasting,onBike:onBike(),surface:Math.abs(lateral)>4.7?'grass':'asphalt',p,night,finale:ctx.finale,listener:camera.position,forward:_v,friendsLeft:friends.list.filter(f=>!f.inside).length,state,crank:pedalPhase,sources:ambient.sources});}
 }
 const _c1=new THREE.Color(),_c2=new THREE.Color();
 function frame(stamp){const dt=Math.min((stamp-lastStamp)/1000,.05);lastStamp=stamp;if(!qa){if(state!=='paused')update(dt);renderer.render(scene,camera);}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
-if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(h);},render(){renderer.render(scene,camera);return renderer.info.render;},press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
- get state(){return {state,distance,speed,lateral,look,finaleT,callDone,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera};
+if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);return renderer.info.render;},press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
+ get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ambient.clue.visible,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,audio:()=>audio,renderer,scene,playerBike,self,reset};

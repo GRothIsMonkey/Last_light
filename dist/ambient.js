@@ -137,6 +137,8 @@ export function createAmbient(scene,world,hooks={}){
   vertexShader:'attribute float level;uniform float uScale,uSize;varying float vL;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vL=level*clamp(1.2-(-mv.z)/260.,0.,1.);gl_PointSize=uScale*uSize/-mv.z;gl_Position=projectionMatrix*mv;}',
   fragmentShader:'uniform vec3 uColor;varying float vL;void main(){float r=length(gl_PointCoord-.5)*2.;float a=(pow(max(0.,1.-r),3.)*.7+pow(max(0.,1.-r),14.)*.8)*vL;gl_FragColor=vec4(uColor*a,a);}'});
  const lampGlow=new THREE.Points(lampGlowGeo,glowMat(2.6));lampGlow.frustumCulled=false;scene.add(lampGlow);
+ // Two local lamps light nearby pavement, bikes and people; distant lamps remain cheap glows.
+ const localLights=Array.from({length:2},()=>{const light=new THREE.PointLight(0xffc58c,0,19,2);scene.add(light);return light;});
  const poolTex=glowTexture(),pools=lamps.map(l=>{const d=l.d,lat=l.lat;const m=new THREE.Mesh(new THREE.CircleGeometry(4.2,24),new THREE.MeshBasicMaterial({map:poolTex,color:0xffa65a,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4}));
   const p=groundPoint(d,lat*.55);m.position.set(p.x,world.groundY(d,lat*.55)+.04,p.z);m.rotation.x=-Math.PI/2;scene.add(m);return m;});
  // Porch lights as one set of glows sharing the porch material groups.
@@ -155,6 +157,9 @@ export function createAmbient(scene,world,hooks={}){
   world.windowMats.forEach((m,i)=>{m.emissiveIntensity=.08+smooth((p-windowOn[i])/.25)*1.05+n*.15;});
   const scale=(hooks.renderer?.domElement?.height||900);lampGlow.material.uniforms.uScale.value=scale;porchGlow.material.uniforms.uScale.value=scale;}
 
+ function updateLocalLights(dt,ctx){const nearest=lamps.map(l=>({l,p:groundPoint(l.d,l.lat)})).sort((a,b)=>Math.hypot(a.p.x-ctx.eye.x,a.p.z-ctx.eye.z)-Math.hypot(b.p.x-ctx.eye.x,b.p.z-ctx.eye.z));
+  localLights.forEach((light,i)=>{const {l,p}=nearest[i];light.position.set(p.x,p.y+l.y-.15,p.z);light.intensity=damp(light.intensity,l.level*19*smooth((ctx.p-.45)/.3),2,dt);});}
+
  // The tire swing at the lookout, and lights of the next town over -------------------------------------------
  const sw=LOOKOUT.swing,oak=LOOKOUT.oak,swingRoot=world.anchor(sw.d,sw.lat,world.groundY(sw.d,sw.lat)-groundPoint(sw.d,sw.lat).y+4.35);
  {const limb=new THREE.Mesh(new THREE.CylinderGeometry(.09,.13,1,6),world.material(0x5d4f42));const dl=oak.lat-sw.lat,dd=oak.d-sw.d;limb.scale.y=Math.hypot(dl,dd)+.4;limb.position.set(dl/2,-.05,-dd/2);limb.rotation.set(0,Math.atan2(dl,-dd),Math.PI/2);limb.rotation.order='YXZ';limb.castShadow=true;swingRoot.add(limb);}
@@ -172,13 +177,23 @@ export function createAmbient(scene,world,hooks={}){
   for(let i=0;i<barks.length;i++)if(barks[i]&&ctx.distance>=barks[i]){barks[i]=0;const p=groundPoint(ctx.distance+60,(i%2?1:-1)*45);sfx('dog',tmp.set(p.x,p.y+.5,p.z));}
   const mower=groundPoint(170,-48);sources.push({kind:'mower',pos:tmp.clone().set(mower.x,mower.y,mower.z),level:1-smooth((ctx.distance-150)/140)});}
 
- function reset(){for(const s of sprinklers){s.on=1;s.angle=0;s.dir=1;}kid.t=0;kid.phase='dribble';car.mode='wait';car.u=0;car.v=0;car.opened=false;car.closing=false;car.path=car.path||carPath();cg.set(0);carParts.head.emissiveIntensity=1.2;for(const s of carGlow)s.material.opacity=.9;placeCar();carGroup.visible=false;
-  for(const f of flocks){f.t=-1;for(const b of f.birds)b.g.visible=false;}for(const f of fData)f.d=0;for(const l of lamps)l.level=0;screenPlayed=false;barks=[418,472,655];jamiePorch=0;}
+ // One understated discrepancy, next to the old initials, only during the final fade.
+ // No camera cue, sound, caption, or earlier hint accompanies it.
+ const cluePoints=[];
+ for(const stroke of [[[0,.1],[.36,.95],[.7,.1]],[[.16,.45],[.54,.45]],[[.85,.1],[.85,.94],[1.3,.94],[1.4,.71],[.88,.5],[1.42,.1]]]){
+  for(let i=0;i<stroke.length-1;i++)for(const [x,z] of [stroke[i],stroke[i+1]]){const d=1149.5+z*.42,lat=1.6+x*.42,p=groundPoint(d,lat);cluePoints.push(p.x,world.groundY(d,lat)+.009,p.z);}}
+ const clue=new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(cluePoints,3)),new THREE.LineBasicMaterial({color:0xd5cbb3,transparent:true,opacity:0,depthWrite:false}));clue.name='last-chalk';clue.visible=false;scene.add(clue);
+ function setEndingClue(on,fade){clue.visible=!!on;clue.material.opacity=on?smooth(fade/.18)*.58:0;}
+
+ function reset(){time.value=0;gust.value=0;sources.length=0;setEndingClue(false,0);updateLookout.creak=false;
+  for(const s of sprinklers){s.on=1;s.angle=0;s.dir=1;s.tick=0;s.jet.visible=true;}kid.t=0;kid.lastBounce=-1;kid.phase='dribble';kid.person.group.visible=ballMesh.visible=true;
+  car.mode='wait';car.u=0;car.v=0;car.t=0;car.opened=false;car.closing=false;car.path=car.path||carPath();cg.set(0);carParts.head.emissiveIntensity=1.2;for(const w of carParts.wheels)w.rotation.x=0;for(const s of carGlow)s.material.opacity=.9;placeCar();carGroup.visible=false;
+  for(const f of flocks){f.t=-1;for(const b of f.birds)b.g.visible=false;}for(const f of fData)f.d=0;for(const l of lamps){l.level=0;l.mat.emissiveIntensity=0;}for(const light of localLights)light.intensity=0;screenPlayed=false;barks=[418,472,655];jamiePorch=0;}
  function update(dt,ctx){time.value+=dt;gust.value=damp(gust.value,.5+.5*Math.sin(time.value*.13)*Math.sin(time.value*.07),1,dt);hooksDistance=ctx.distance;sources.length=0;
-  updateSprinklers(dt,ctx);updateKid(dt,ctx);updateCar(dt,ctx);updateBirds(dt,ctx);updateFireflies(dt,ctx);updateFlag();updateLights(dt,ctx);updateLookout(dt,ctx);updateSounds(ctx);
+  updateSprinklers(dt,ctx);updateKid(dt,ctx);updateCar(dt,ctx);updateBirds(dt,ctx);updateFireflies(dt,ctx);updateFlag();updateLights(dt,ctx);updateLocalLights(dt,ctx);updateLookout(dt,ctx);updateSounds(ctx);
   const rf=roadFrame(Math.min(ctx.distance,1140));dust.position.set(rf.x,rf.y+Math.sin(time.value*.1)*.2,rf.z);dust.rotation.y=-rf.heading;dustMat.uniforms.uOpacity.value=.6*(1-smooth((ctx.p-.6)/.3));dustMat.uniforms.uScale.value=(hooks.renderer?.domElement?.height||900)*.9;}
  reset();
  // Things in the street a rider should not pass through.
  function blockers(){return carGroup.visible&&car.mode!=='parked'&&Math.abs(car.lat)<5?[{d:car.d,lat:car.lat,half:2.6,width:1.1,speed:car.mode==='drive'?car.v:0}]:[];}
- return {update,reset,sources,time,blockers};
+ return {update,reset,sources,time,blockers,setEndingClue,clue,get state(){return {sprinklers:sprinklers.map(s=>s.on),kidVisible:kid.person.group.visible,car:car.mode,lamps:lamps.map(l=>l.level),clue:clue.visible};}};
 }

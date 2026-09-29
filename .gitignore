@@ -6,3 +6,6 @@ node_modules/
 !.env.example
 .openai/
 .sites-runtime/
+
+# QA keeps compact listening copies; full PCM renders can be regenerated.
+docs/qa/audio/*.wav

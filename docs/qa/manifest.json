@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-09-29T17:55:17.713623+00:00",
+  "branch": "codex/astra-v0.1-release",
+  "claudeBase": "02cbde1ad2b4d0061dc7346c52c66e85d4c95642",
+  "previousMain": "22c5ae9720077393ca7a86d734154baca9ed0a7d",
+  "simulationChecks": 44,
+  "browserChecks": 55,
+  "audioReview": "Signal checks passed; perceptual listening remains required before merging main.",
+  "commands": [
+    "npm test",
+    "BROWSER_PATH=/tmp/chromium SOFTWARE_GL=1 npm run test:browser"
+  ],
+  "sha256": {
+    "dist/THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
+    "dist/ambient.js": "ab93151f18d72b9b673efed66b716acb4cb61a547d4e31938a4002e6d45199c8",
+    "dist/audio.js": "2979c5eda500d834c77677847a0655bfac5cbc8f139e12856fe8d56d515fef5e",
+    "dist/friends.js": "14fb6d3ae260930dee23077203acb7336d740021a891070042cd2bca258530d4",
+    "dist/game.js": "1e89048683fc3a16cd191d644fb2f0ee59558e38d4af42798ce8fb119f44e09d",
+    "dist/index.html": "1a76028e6318ef8d66ac094f0e2913166b685a6da78f817209ddefe84980cade",
+    "dist/materials.js": "16a864fd5881107b89aa9384e53d131b9e5ad1cce86c394398a3574c5cc052a1",
+    "dist/rig.js": "db07905648dad503e9488d571e827bf87680c810c0096c4394711d8cb53230ab",
+    "dist/route.js": "62cf097f22dfacfbfbb2ff0edfd68c6af2ed6a276d692ae0ac2cf28b05ea5122",
+    "dist/story.js": "56fcb0caad8b72ea8ecc39fe3a6555887b2a851e9c80942039df1600619ef9d4",
+    "dist/style.css": "e2800962536d99aa8e12a1baf6e2d48dab953425a1c638e6575d0a1f5ab02fa7",
+    "dist/three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
+    "dist/world.js": "8448fdea610487ba71d10b078ed75b225a16461c7a613aec972cca0eef2c6f63",
+    "package.json": "c8f6bdff95f8a735687cc13f37f9877376040f985c5833a009cbe13f4de13e20",
+    "tests/browser.mjs": "2a2293a4c5c12ce5a9487d226bc2d3988140abe1106189ac0dfddb4efbb18794",
+    "tests/verify.mjs": "3ad4f01aa011cc64dca2a65b0d83b8e1e2c3d3625a480b650268a119ce92e585"
+  }
+}

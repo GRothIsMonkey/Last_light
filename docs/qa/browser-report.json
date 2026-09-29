@@ -1,0 +1,374 @@
+{
+  "browser": "153.0.8010.0",
+  "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "passed": 55,
+  "checks": [
+    "audio starts from a user gesture",
+    "mouse captured in Chromium",
+    "click while locked keeps capture",
+    "W key pedals",
+    "bell schedules real Web Audio sources",
+    "M mutes sound under pointer lock",
+    "QA pause freezes simulation",
+    "reached 85",
+    "reached 180",
+    "reached 398",
+    "reached 407",
+    "reached 685",
+    "reached 698",
+    "reached 967",
+    "reached 979",
+    "reached 1005",
+    "reached 1060",
+    "reached 1136.5",
+    "every friend is inside",
+    "no clue during main ride",
+    "dismount reaches walking",
+    "distant call triggers",
+    "clue remains absent after call",
+    "return to bike starts leaving",
+    "single clue appears only in last fade",
+    "ending card shown",
+    "ending clock does not advance",
+    "replay resets story and clue",
+    "replay resets environment",
+    "reached 1136.5",
+    "idle route reveals same clue",
+    "second complete playthrough ends",
+    "audio finite and unclipped: rolling",
+    "audio finite and unclipped: grass",
+    "audio finite and unclipped: coasting",
+    "audio finite and unclipped: footstep-asphalt",
+    "audio finite and unclipped: footstep-grass",
+    "audio finite and unclipped: bell",
+    "audio finite and unclipped: sprinkler",
+    "audio finite and unclipped: dribble",
+    "audio finite and unclipped: rim",
+    "audio finite and unclipped: doorOpen",
+    "audio finite and unclipped: doorSlam",
+    "audio finite and unclipped: garage",
+    "audio finite and unclipped: bikeDrop",
+    "audio finite and unclipped: kickstand",
+    "audio finite and unclipped: engineOff",
+    "audio finite and unclipped: dog",
+    "audio finite and unclipped: creak",
+    "audio finite and unclipped: bird",
+    "audio finite and unclipped: call",
+    "audio finite and unclipped: morning-neighborhood",
+    "audio finite and unclipped: evening-neighborhood",
+    "audio finite and unclipped: ending",
+    "no JavaScript or shader errors"
+  ],
+  "frames": [
+    {
+      "name": "01-opening",
+      "frame": 1,
+      "calls": 452,
+      "triangles": 261240,
+      "points": 580,
+      "lines": 1439
+    },
+    {
+      "name": "02-pedaling",
+      "frame": 2,
+      "calls": 186,
+      "triangles": 212659,
+      "points": 580,
+      "lines": 1303
+    },
+    {
+      "name": "03-group-ride",
+      "frame": 3,
+      "calls": 470,
+      "triangles": 298271,
+      "points": 580,
+      "lines": 1439
+    },
+    {
+      "name": "04-first-hill",
+      "frame": 4,
+      "calls": 448,
+      "triangles": 293186,
+      "points": 580,
+      "lines": 1413
+    },
+    {
+      "name": "05-jamie-runs-home",
+      "frame": 5,
+      "calls": 248,
+      "triangles": 102417,
+      "points": 580,
+      "lines": 1253
+    },
+    {
+      "name": "06-jamie-at-door",
+      "frame": 6,
+      "calls": 274,
+      "triangles": 219807,
+      "points": 580,
+      "lines": 1227
+    },
+    {
+      "name": "07-sam-parks",
+      "frame": 7,
+      "calls": 128,
+      "triangles": 95316,
+      "points": 576,
+      "lines": 1189
+    },
+    {
+      "name": "08-sam-garage-closes",
+      "frame": 8,
+      "calls": 71,
+      "triangles": 89293,
+      "points": 576,
+      "lines": 1151
+    },
+    {
+      "name": "09-alex-waves",
+      "frame": 9,
+      "calls": 223,
+      "triangles": 229637,
+      "points": 622,
+      "lines": 1228
+    },
+    {
+      "name": "10-alex-porch",
+      "frame": 10,
+      "calls": 169,
+      "triangles": 181739,
+      "points": 622,
+      "lines": 1189
+    },
+    {
+      "name": "11-alex-upstairs-light",
+      "frame": 11,
+      "calls": 132,
+      "triangles": 180024,
+      "points": 622,
+      "lines": 1190
+    },
+    {
+      "name": "12-late-sunset",
+      "frame": 12,
+      "calls": 114,
+      "triangles": 170174,
+      "points": 622,
+      "lines": 1190
+    },
+    {
+      "name": "13-final-arrival",
+      "frame": 13,
+      "calls": 66,
+      "triangles": 126334,
+      "points": 622,
+      "lines": 975
+    },
+    {
+      "name": "14-oak-and-bench",
+      "frame": 14,
+      "calls": 46,
+      "triangles": 125168,
+      "points": 622,
+      "lines": 312
+    },
+    {
+      "name": "15-looking-home",
+      "frame": 15,
+      "calls": 299,
+      "triangles": 256725,
+      "points": 622,
+      "lines": 1266
+    },
+    {
+      "name": "16-final-fade",
+      "frame": 16,
+      "calls": 67,
+      "triangles": 126334,
+      "points": 622,
+      "lines": 983
+    },
+    {
+      "name": "17-ending-clue-detail",
+      "frame": 17,
+      "calls": 54,
+      "triangles": 125192,
+      "points": 622,
+      "lines": 1198
+    },
+    {
+      "name": "18-ending",
+      "frame": 18,
+      "calls": 67,
+      "triangles": 126424,
+      "points": 622,
+      "lines": 447
+    },
+    {
+      "name": "19-idle-clue",
+      "frame": 19,
+      "calls": 69,
+      "triangles": 126382,
+      "points": 622,
+      "lines": 983
+    }
+  ],
+  "audio": [
+    {
+      "name": "rolling",
+      "peak": 0.025369836017489433,
+      "rms": 0.005180471076474367,
+      "nonFinite": 0,
+      "maxSampleJump": 0.0160966576077044
+    },
+    {
+      "name": "grass",
+      "peak": 0.029438404366374016,
+      "rms": 0.007361540464319035,
+      "nonFinite": 0,
+      "maxSampleJump": 0.028170804493129253
+    },
+    {
+      "name": "coasting",
+      "peak": 0.028007056564092636,
+      "rms": 0.005224186147432585,
+      "nonFinite": 0,
+      "maxSampleJump": 0.020055768080055714
+    },
+    {
+      "name": "footstep-asphalt",
+      "peak": 0.028216371312737465,
+      "rms": 0.0007760498122915897,
+      "nonFinite": 0,
+      "maxSampleJump": 0.009053131565451622
+    },
+    {
+      "name": "footstep-grass",
+      "peak": 0.014764472842216492,
+      "rms": 0.00024107093514551985,
+      "nonFinite": 0,
+      "maxSampleJump": 0.015269188676029444
+    },
+    {
+      "name": "bell",
+      "peak": 0.0777316763997078,
+      "rms": 0.005815895066587782,
+      "nonFinite": 0,
+      "maxSampleJump": 0.028446689248085022
+    },
+    {
+      "name": "sprinkler",
+      "peak": 0.06995616853237152,
+      "rms": 0.0005962515918468194,
+      "nonFinite": 0,
+      "maxSampleJump": 0.08662336505949497
+    },
+    {
+      "name": "dribble",
+      "peak": 0.11979091912508011,
+      "rms": 0.004113779304667369,
+      "nonFinite": 0,
+      "maxSampleJump": 0.0019343870153534226
+    },
+    {
+      "name": "rim",
+      "peak": 0.045658133924007416,
+      "rms": 0.0018889688742970588,
+      "nonFinite": 0,
+      "maxSampleJump": 0.005490406882017851
+    },
+    {
+      "name": "doorOpen",
+      "peak": 0.013369742780923843,
+      "rms": 0.0002965468075843762,
+      "nonFinite": 0,
+      "maxSampleJump": 0.007397708599455655
+    },
+    {
+      "name": "doorSlam",
+      "peak": 0.11864476650953293,
+      "rms": 0.003434455652441588,
+      "nonFinite": 0,
+      "maxSampleJump": 0.011786313145421445
+    },
+    {
+      "name": "garage",
+      "peak": 0.037587281316518784,
+      "rms": 0.007486333151919952,
+      "nonFinite": 0,
+      "maxSampleJump": 0.0034350818023085594
+    },
+    {
+      "name": "bikeDrop",
+      "peak": 0.056215010583400726,
+      "rms": 0.0013491576889031029,
+      "nonFinite": 0,
+      "maxSampleJump": 0.00797520438209176
+    },
+    {
+      "name": "kickstand",
+      "peak": 0.01702168397605419,
+      "rms": 0.0005712010682452023,
+      "nonFinite": 0,
+      "maxSampleJump": 0.008810803410597146
+    },
+    {
+      "name": "engineOff",
+      "peak": 0.03791366145014763,
+      "rms": 0.0015737262384379737,
+      "nonFinite": 0,
+      "maxSampleJump": 0.03474860335700214
+    },
+    {
+      "name": "dog",
+      "peak": 0.039762791246175766,
+      "rms": 0.0011073813374254293,
+      "nonFinite": 0,
+      "maxSampleJump": 0.005726373288780451
+    },
+    {
+      "name": "creak",
+      "peak": 0.0031983342487365007,
+      "rms": 0.000226840675831013,
+      "nonFinite": 0,
+      "maxSampleJump": 0.00041645469900686294
+    },
+    {
+      "name": "bird",
+      "peak": 0.012804006226360798,
+      "rms": 0.0006648882415995145,
+      "nonFinite": 0,
+      "maxSampleJump": 0.004107670160010457
+    },
+    {
+      "name": "call",
+      "peak": 0.03764643520116806,
+      "rms": 0.004104330432967007,
+      "nonFinite": 0,
+      "maxSampleJump": 0.00225091353058815
+    },
+    {
+      "name": "morning-neighborhood",
+      "peak": 0.0789077877998352,
+      "rms": 0.01984400334144651,
+      "nonFinite": 0,
+      "maxSampleJump": 0.011824215950582584
+    },
+    {
+      "name": "evening-neighborhood",
+      "peak": 0.047161269932985306,
+      "rms": 0.0051107412724097885,
+      "nonFinite": 0,
+      "maxSampleJump": 0.012176156626082957
+    },
+    {
+      "name": "ending",
+      "peak": 0.06090833619236946,
+      "rms": 0.01052895405664632,
+      "nonFinite": 0,
+      "maxSampleJump": 0.0028681252151727676
+    }
+  ],
+  "errors": [],
+  "audioLimitation": "Offline Web Audio signal checks and recorded clips; no claim of perceptual listening."
+}
