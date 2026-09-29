@@ -1,0 +1,44 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+import * as THREE from '../dist/three.module.js';
+import {roadFrame,roadGrade,groundPoint,roadSurface,ROAD_HALF,LATERAL_LIMIT,pedalPose} from '../dist/route.js';
+import {memories,LENGTH} from '../dist/story.js';
+const root=fileURLToPath(new URL('../dist/',import.meta.url));
+const elements=new Map(),events=new Map(),docEvents=new Map();
+function element(id){if(!elements.has(id))elements.set(id,{hidden:['ending','pause','error','ride-ui','mobile'].includes(id),style:{},textContent:'',innerHTML:'',children:[],events:new Map(),setAttribute(){},replaceChildren(){this.children=[]},append(x){this.children.push(x)},addEventListener(type,fn){this.events.set(type,fn)},setPointerCapture(){}});return elements.get(id);}
+const canvas=element('world');
+globalThis.document={getElementById:element,createElement:()=>element('el'+Math.random()),createTextNode:text=>({textContent:text}),body:{classList:{add(){}}},addEventListener:(t,fn)=>docEvents.set(t,fn),hidden:false,pointerLockElement:null,exitPointerLock(){this.pointerLockElement=null;docEvents.get('pointerlockchange')?.();}};
+canvas.requestPointerLock=()=>{document.pointerLockElement=canvas;docEvents.get('pointerlockchange')?.();return Promise.resolve();};
+globalThis.window={};globalThis.devicePixelRatio=1;globalThis.innerWidth=1440;globalThis.innerHeight=900;globalThis.matchMedia=()=>({matches:false});globalThis.addEventListener=(type,fn)=>events.set(type,fn);let tick;globalThis.requestAnimationFrame=fn=>tick=fn;
+globalThis.FakeRenderer=class{constructor(){this.shadowMap={}}setPixelRatio(){}setSize(){}render(){}};
+let source=fs.readFileSync(root+'game.js','utf8').replaceAll(/'\.\/(three\.module|story|route)\.js'/g,(_,name)=>JSON.stringify(pathToFileURL(root+name+'.js').href)).replace('new THREE.WebGLRenderer','new globalThis.FakeRenderer');
+source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys};`;
+await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const h=globalThis.harness,key=code=>({code,preventDefault(){},repeat:false});let t=0;
+const advance=(seconds)=>{for(let i=0;i<Math.ceil(seconds/.05);i++){t+=50;tick(t);}};
+const press=code=>events.get('keydown')(key(code)),release=code=>events.get('keyup')(key(code));
+const checks=[];function check(name,fn){fn();checks.push(name);}
+advance(.05);
+check('all local assets resolve',()=>{const html=fs.readFileSync(root+'index.html','utf8');for(const m of html.matchAll(/(?:src|href)="([^"#]+)"/g))if(m[1]!=='./')assert.ok(fs.existsSync(root+m[1]),m[1]);});
+check('gentle continuous route with constant distance scale',()=>{let maxGrade=0,maxStep=0;for(let d=0;d<LENGTH;d+=.5){const a=roadFrame(d),b=roadFrame(d+.5);assert.ok(Math.abs(Math.hypot(b.x-a.x,b.z-a.z)-.5)<.0002);maxGrade=Math.max(maxGrade,Math.abs(roadGrade(d)));maxStep=Math.max(maxStep,Math.abs(a.heading-b.heading));}assert.ok(maxGrade<.043);assert.ok(maxStep<.007);});
+check('asphalt faces upward and follows terrain throughout ride',()=>{const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);for(let d=0;d<=LENGTH;d+=5)for(const side of [-LATERAL_LIMIT,0,LATERAL_LIMIT]){const p=groundPoint(d,side);ray.set(new THREE.Vector3(p.x,p.y+5,p.z),down);const hits=ray.intersectObject(h.road);assert.ok(hits.length,`road missing at ${d}, ${side}`);assert.ok(hits[0].face.normal.y>.99);assert.ok(Math.abs(hits[0].point.y-roadSurface(d,side))<.002,`height discontinuity ${d}`);}});
+check('side streets connect through curb openings',()=>{const asphaltMeshes=h.originals.filter(o=>o.material===h.road.material);const ray=new THREE.Raycaster();for(const j of [{d:475,side:1},{d:740,side:-1}])for(let x=3.5;x<49;x+=.5){const p=groundPoint(j.d,j.side*x);ray.set(new THREE.Vector3(p.x,p.y+5,p.z),new THREE.Vector3(0,-1,0));const hits=ray.intersectObjects(asphaltMeshes);assert.ok(hits.length,`gap at junction ${j.d}, ${x}`);assert.ok(Math.abs(hits[0].point.y-p.y)<.09);}});
+check('pedal linkage closes and stays above pavement',()=>{for(let a=0;a<Math.PI*2;a+=.05){const l=pedalPose(a,-1),r=pedalPose(a,1);assert.ok(Math.abs((l.foot.y+r.foot.y)/2-.49)<1e-8);for(const p of [l,r]){assert.ok(Math.abs(Math.hypot(p.hip.y-p.knee.y,p.hip.z-p.knee.z)-.43)<1e-8);assert.ok(Math.abs(Math.hypot(p.foot.y-p.knee.y,p.foot.z-p.knee.z)-.43)<1e-8);assert.ok(p.foot.y>.31);}}});
+element('start').onclick();press('KeyW');advance(5);
+check('pedaling advances bike, animated feet stay on pedals',()=>{assert.ok(h.snapshot.distance>20);assert.ok(h.snapshot.pedalPhase>10);const p=pedalPose(h.snapshot.pedalPhase,1),leg=h.playerBike.legs.find(l=>l.side===1);assert.ok(Math.abs(leg.shoe.position.y-p.foot.y-.045)<1e-8);});
+const initialLateral=h.snapshot.lateral;
+events.get('mousemove')({movementX:300,movementY:180});advance(.8);
+check('mouse head-look turns smoothly without steering',()=>{assert.ok(h.snapshot.look<-.5);assert.ok(h.snapshot.headPitch<-.3);assert.equal(h.snapshot.lateral,initialLateral);assert.equal(h.bikeRoot.rotation.y,-roadFrame(h.snapshot.distance).heading);});
+press('KeyR');advance(.8);check('R returns gaze forward',()=>{assert.ok(Math.abs(h.snapshot.look)<.01);assert.ok(Math.abs(h.snapshot.headPitch)<.01);});
+press('KeyQ');advance(.7);check('Q looks left',()=>assert.ok(h.snapshot.look>.70));release('KeyQ');press('KeyE');advance(.7);check('E looks right',()=>assert.ok(h.snapshot.look<-.70));release('KeyE');advance(.7);
+press('KeyA');advance(5);check('A steering stays inside left road edge',()=>assert.equal(h.snapshot.lateral,-LATERAL_LIMIT));release('KeyA');press('KeyD');advance(8);check('D steering stays inside right road edge',()=>assert.equal(h.snapshot.lateral,LATERAL_LIMIT));release('KeyD');
+const stopped=h.snapshot.distance;press('Escape');advance(1);check('pause freezes travel and releases mouse',()=>{assert.equal(h.snapshot.state,'paused');assert.equal(h.snapshot.distance,stopped);assert.equal(document.pointerLockElement,null);});
+element('resume').onclick();press('KeyW');advance(.1);document.exitPointerLock();check('browser pointer-lock exit pauses safely',()=>assert.equal(h.snapshot.state,'paused'));
+canvas.requestPointerLock=()=>Promise.reject(new Error('test unavailable'));element('resume').onclick();await Promise.resolve();canvas.events.get('pointerdown')({clientX:100,clientY:100,pointerId:1});events.get('mousemove')({clientX:150,clientY:130});events.get('mousemove')({clientX:250,clientY:180});press('KeyW');advance(.5);check('drag fallback works when pointer lock unavailable',()=>assert.ok(h.snapshot.look<-.15));canvas.events.get('pointerup')();press('KeyR');
+let observedMemory=h.snapshot.nextMemory,arrivalTime=0,maxEyeClearanceError=0;
+while(h.snapshot.state==='riding'&&arrivalTime<260){advance(.05);arrivalTime+=.05;const s=h.snapshot;assert.ok(Math.abs(s.lateral)<=LATERAL_LIMIT);assert.ok(s.nextMemory===observedMemory||s.nextMemory===observedMemory+1);if(s.nextMemory>observedMemory){assert.ok(s.distance>=memories[s.nextMemory-1].at);assert.ok(s.distance-memories[s.nextMemory-1].at<.27);observedMemory=s.nextMemory;}const p=h.camera.getWorldPosition(new THREE.Vector3());const clearance=p.y-roadSurface(s.distance,s.lateral);maxEyeClearanceError=Math.max(maxEyeClearanceError,Math.abs(clearance-1.65));assert.ok(clearance>1.60&&clearance<1.70);}
+check('complete ride reaches all 14 original triggers and ending',()=>{assert.equal(h.snapshot.nextMemory,14);assert.equal(h.snapshot.state,'ended');assert.equal(h.snapshot.distance,LENGTH);assert.equal(element('ending').hidden,false);assert.equal(h.snapshot.currentChapter,3);assert.ok(h.friends.every(f=>!f.group.visible));});
+element('again').onclick();advance(.1);check('replay resets story, view, bike, friends, and controls',()=>{assert.equal(h.snapshot.state,'riding');assert.equal(h.snapshot.distance,0);assert.equal(h.snapshot.nextMemory,0);assert.equal(h.snapshot.pedalPhase,0);assert.equal(h.snapshot.look,0);assert.equal(h.snapshot.headPitch,0);assert.equal(element('ending').hidden,true);assert.ok(h.friends.every(f=>f.group.visible));assert.equal(h.keys.size,0);});
+press('KeyW');advance(224);check('second uninterrupted playthrough also completes',()=>assert.equal(h.snapshot.state,'ended'));
+console.log(JSON.stringify({passed:checks.length,checks,maxEyeClearanceErrorMeters:+maxEyeClearanceError.toFixed(4),cruiseDurationSeconds:Math.round(LENGTH/5.1),testMethod:'Actual Three.js geometry and state updates with mocked WebGL renderer and DOM. No browser visual/input QA.'},null,2));

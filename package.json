@@ -1,0 +1,10 @@
+{
+  "name": "last-light",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A short nostalgic first-person bicycle ride through a suburban summer evening in 2011.",
+  "scripts": {
+    "test": "node tests/verify.mjs"
+  }
+}
