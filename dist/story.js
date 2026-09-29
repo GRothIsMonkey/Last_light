@@ -18,4 +18,6 @@ export const memories=[
 {at:995,who:'',text:'You moved away in October. You meant to keep in touch.'},
 {at:1060,who:'',text:'For a moment, you can almost hear their bikes again.'}
 ];
+// The end of the street. Kept short on purpose.
+export const finale={call:'Far down the street, someone is calling you in.',hintWalk:'Your bike is where you left it.',hintBike:'Whenever you’re ready.'};
 export function chapterAt(d){let n=0;for(let i=0;i<chapters.length;i++)if(d>=chapters[i].at)n=i;return n;}

@@ -1,139 +1,218 @@
 import * as THREE from './three.module.js';
-import {LENGTH,chapters,memories,chapterAt} from './story.js';
-import {ROAD_HALF,LATERAL_LIMIT,roadFrame,groundPoint,roadSurface,pedalPose} from './route.js';
-// Existing scenery is authored in street coordinates, then fitted to the route.
-const center=()=>0;
+import {LENGTH,chapters,memories,chapterAt,finale} from './story.js';
+import {LATERAL_LIMIT,roadFrame,groundPoint,roadGrade,heading} from './route.js';
+import {buildWorld,LOOKOUT} from './world.js';
+import {createPerson,createBike,newPose,ridePose,applyPose,poseBike,headPos,BIKE,smooth} from './rig.js';
+import {createFriends,localToStreet} from './friends.js';
+import {createAmbient} from './ambient.js';
+import {createAudio} from './audio.js';
+
 const $=id=>document.getElementById(id), canvas=$('world');
+const clamp=THREE.MathUtils.clamp,damp=THREE.MathUtils.damp;
 let renderer;
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});}catch(e){$('error').hidden=false;throw e;}
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.16;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-const scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.08,390);
+const scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(64,innerWidth/innerHeight,.06,390);scene.add(camera);
 scene.fog=new THREE.FogExp2(0xe3ac8d,.008);
 const hemi=new THREE.HemisphereLight(0xffdcaf,0x615745,2.1);scene.add(hemi);
-const sunlight=new THREE.DirectionalLight(0xffc27d,2.6);sunlight.position.set(-40,60,-160);scene.add(sunlight);sunlight.castShadow=true;sunlight.shadow.mapSize.set(2048,2048);Object.assign(sunlight.shadow.camera,{left:-65,right:65,top:65,bottom:-65,near:1,far:230});sunlight.shadow.bias=-.0005;sunlight.shadow.normalBias=.05;scene.add(sunlight.target);
-const mats=new Map();function mat(color,extra={}){const key=color+JSON.stringify(extra);if(!mats.has(key))mats.set(key,new THREE.MeshStandardMaterial({color,roughness:.9,...extra}));return mats.get(key);}
-const boxGeo=new THREE.BoxGeometry(1,1,1);const sphereGeo=new THREE.IcosahedronGeometry(1,1);
-function box(g,x,y,z,w,h,d,c){const m=new THREE.Mesh(boxGeo,typeof c==='object'?c:mat(c));m.position.set(x,y,z);m.scale.set(w,h,d);g.add(m);return m;}
-function ball(g,x,y,z,r,c,scale=[1,1,1]){const m=new THREE.Mesh(sphereGeo,mat(c));m.position.set(x,y,z);m.scale.set(r*scale[0],r*scale[1],r*scale[2]);g.add(m);return m;}
-function rod(g,a,b,r,c){const v=new THREE.Vector3(...b).sub(new THREE.Vector3(...a));const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,v.length(),6),typeof c==='object'?c:mat(c));m.position.copy(new THREE.Vector3(...a).add(new THREE.Vector3(...b)).multiplyScalar(.5));m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),v.normalize());g.add(m);return m;}
-let seed=2011;function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
-const grass=mat(0x818657), drivewayOpenings=[];
-const junctions=[{d:475,side:1},{d:740,side:-1}];
-const atJunction=(d,side,margin=5)=>junctions.some(j=>j.side===side&&Math.abs(j.d-d)<margin);
-function surface(x0,x1,d0,d1,y,color,dx=3,dd=2){
- const nx=Math.max(1,Math.ceil((x1-x0)/dx)),nz=Math.max(1,Math.ceil((d1-d0)/dd)),p=[],idx=[];
- for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=x0+(x1-x0)*i/nx,d=d0+(d1-d0)*j/nz;p.push(x,typeof y==='function'?y(d,x):y,-d);}
- for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,c=a+nx+1;idx.push(a,b,c,b,c+1,c);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(idx);g.computeVertexNormals();const mesh=new THREE.Mesh(g,typeof color==='object'?color:mat(color));mesh.userData.surface=true;scene.add(mesh);return mesh;
-}
-surface(-74,74,-120,1400,-.08,grass,3,3);
-const asphalt=mat(0x646360,{roughness:1});
-const road=surface(-ROAD_HALF,ROAD_HALF,-120,1400,(d,x)=>.025+.035*(1-(x/ROAD_HALF)**2),asphalt,1.6,1);road.name='main-road';
-for(const j of junctions){const a=j.side>0?4.5:-49,b=j.side>0?49:-4.5;surface(a,b,j.d-4,j.d+4,.03,asphalt,2,1);for(const edge of [-1,1])surface(a,b,j.d+edge*5.5-.75,j.d+edge*5.5+.75,.16,0xc4b8a1,2,1);const p=[j.side*47,.03,-j.d],ix=[];for(let k=0;k<=48;k++){let angle=k*Math.PI/24;p.push(j.side*47+Math.cos(angle)*9,.03,-j.d+Math.sin(angle)*9);if(k<48)ix.push(0,k+2,k+1);}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(p,3));geo.setIndex(ix);geo.computeVertexNormals();const cul=new THREE.Mesh(geo,asphalt);cul.userData.surface=true;scene.add(cul);}
-// A real-time sky, shifting from late afternoon into the blue of a remembered evening.
-const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,uniforms:{dusk:{value:0}},vertexShader:'varying vec3 v; void main(){v=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:`varying vec3 v;uniform float dusk;void main(){vec3 n=normalize(v);float h=max(n.y,0.);vec3 low=mix(vec3(1.,.67,.40),vec3(.73,.43,.46),dusk);vec3 high=mix(vec3(.32,.43,.57),vec3(.13,.19,.34),dusk);vec3 col=mix(low,high,pow(h,.48));vec3 sun=normalize(vec3(.22,.075-dusk*.055,-1.));float a=dot(n,sun);col+=vec3(1.,.53,.22)*pow(max(a,0.),90.)*.35;col=mix(col,vec3(1.,.9,.64),smoothstep(.9995,.9997,a));float cloud=sin(n.x*29.+n.z*13.)*sin(n.z*41.-n.y*73.);float bands=exp(-pow((n.y-.15)/.05,2.));col=mix(col,vec3(.99,.70,.56),max(0.,cloud-.25)*bands*.2);gl_FragColor=vec4(col,1.);}`});const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);scene.add(sky);
-const windows=[],lamps=[],sprinklers=[];
-function tree(x,z,size=1){if(junctions.some(j=>(j.side*x>4&&j.side*x<48&&Math.abs(-z-j.d)<5.5)||Math.hypot(x-j.side*47,-z-j.d)<10))return;const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);rod(g,[0,0,0],[.3,5.4*size,0],.25*size,0x665647);rod(g,[.2,3.5*size,0],[-1.8*size,6*size,.4],.13*size,0x665647);const colors=[0x687c4b,0x7d8650,0x87905a,0x596e4b];for(let k=0;k<5;k++)ball(g,(rand()-.5)*3.5*size,(5.8+rand()*2)*size,(rand()-.5)*3*size,(2+rand())*size,colors[k%4],[1,.9,1]);}
-function house(d,side){const g=new THREE.Group();const setback=19+rand()*3;const x=side*setback;g.position.set(x,0,-d);g.rotation.y=side>0?-Math.PI/2:Math.PI/2;scene.add(g);const width=10+rand()*4,h=4+rand()*2;const palettes=[0xb9b69e,0xc0a58c,0x92a6a2,0xc3b9a3,0xa5a895,0xb89883];const color=palettes[Math.floor(rand()*palettes.length)];box(g,0,h/2,0,width,h,9,color);box(g,0,.22,0,width+.4,.45,9.4,0x8b8176);
-const roof=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,3,1),mat([0x655958,0x71615a,0x5b6262][Math.floor(rand()*3)]));roof.rotation.z=Math.PI/2;roof.rotation.y=Math.PI/2;roof.scale.set(6, width+1,3.3);roof.position.y=h+.9;g.add(roof);
-// Sloped gable roof with the ridge running along the facade.
-roof.geometry.dispose();const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.Float32BufferAttribute([-width/2-.6,0,-5,-width/2-.6,0,5,-width/2-.6,2.6,0,width/2+.6,0,-5,width/2+.6,2.6,0,width/2+.6,0,5,-width/2-.6,0,-5,-width/2-.6,2.6,0,width/2+.6,2.6,0,-width/2-.6,0,-5,width/2+.6,2.6,0,width/2+.6,0,-5,-width/2-.6,2.6,0,-width/2-.6,0,5,width/2+.6,0,5,-width/2-.6,2.6,0,width/2+.6,0,5,width/2+.6,2.6,0],3));rg.computeVertexNormals();roof.geometry=rg;roof.rotation.set(0,0,0);roof.scale.set(1,1,1);roof.position.y=h;roof.material.side=THREE.DoubleSide;
-box(g,-width*.26,h+1.6,-1.5,.8,2.5,.8,0x8c7064);box(g,0,1.45,4.56,1.15,2.6,.14,0x625b54);box(g,0,2.88,4.7,1.7,.15,.7,0xe2cbb0);
-for(const sx of [-1,1]){const wm=new THREE.MeshStandardMaterial({color:0x6c7980,emissive:0xffb652,emissiveIntensity:.14,roughness:.5});windows.push(wm);box(g,sx*width*.3,2.7,4.55,1.75,1.85,.12,wm);for(const dx of [-1,1])box(g,sx*width*.3+dx*1.05,2.7,4.57,.34,2.05,.14,0x5c6c66);box(g,sx*width*.3,2.7,4.64,.065,1.9,.08,0xe6cfab);box(g,sx*width*.3,2.7,4.64,1.85,.075,.08,0xe6cfab);}
-for(let yy=.75;yy<h;yy+=.42)box(g,0,yy,4.515,width,.026,.015,0x928e7a);
-const walk=box(g,0,.09,(setback-6.3+4.5)/2,1.4,.18,setback-6.3-4.5,0xc5b89d);walk.userData.surface=true;
-const driveD=d+side*width*.4;surface(side>0?4.58:-(setback-4.5),side>0?setback-4.5:-4.58,driveD-2,driveD+2,(dd,x)=>{const t=THREE.MathUtils.clamp((Math.abs(x)-4.6)/1.8,0,1);return .035+.14*t*t*(3-2*t);},0xb0a68f,.6,.6);drivewayOpenings.push({d:driveD,side});box(g,0,.17,5.4,3,.3,1.8,0xb3a38b);
-for(const sx of [-1,1]){box(g,sx*1.2,1.6,5.8,.15,3.1,.15,0xe0cbb0);ball(g,sx*3,.7,5.7,.9,0x60734c,[1.4,.8,.9]);}box(g,0,3.15,5.25,3.3,.18,2,0xc6b499);
-const lampMat=new THREE.MeshStandardMaterial({color:0xffe9b4,emissive:0xffbd64,emissiveIntensity:.7});box(g,.8,2.1,4.85,.17,.27,.2,lampMat);lamps.push(lampMat);
-const mx=center(d)+side*5.65;rod(scene,[mx,0,-d-3],[mx,1.1,-d-3],.075,0x787364);box(scene,mx,1.22,-d-3,.48,.33,.68,0x657479);box(scene,mx-side*.27,1.4,-d-3,.055,.18,.25,0xb87b62);
-if(rand()>.45){const cg=new THREE.Group();cg.position.set(side*13,.18,-driveD);cg.rotation.y=side*Math.PI/2;scene.add(cg);box(cg,0,.65,0,1.85,.7,3.8,[0x9d7064,0x7d9294,0xcbc0a1][Math.floor(rand()*3)]);box(cg,0,1.2,.25,1.65,.6,1.9,0x596d73);box(cg,0,1.53,.25,1.75,.08,1.95,0xaab0a2);for(const xx of [-1,1])for(const zz of [-1.15,1.15])ball(cg,xx*.94,.4,zz,.36,0x3f4141,[.34,1,1]);}
-if(rand()>.5){const bx=center(d)+side*11;rod(scene,[bx,0,-d+9],[bx,4.4,-d+9],.065,0x7a7770);box(scene,bx,4.2,-d+9,1.8,1.1,.1,0xc9c6b0);box(scene,bx,4.16,-d+8.93,.66,.47,.02,0xaa7d64);const hoop=new THREE.Mesh(new THREE.TorusGeometry(.33,.028,5,14),mat(0xba7855));hoop.rotation.x=Math.PI/2;hoop.position.set(bx,3.75,-d+8.5);scene.add(hoop);ball(scene,bx+1,.23,-d+6,.23,0xad7250);}
-if(rand()>.6){const sx=center(d)+side*11;const points=[];for(let j=0;j<34;j++){const t=j/34;points.push(sx+side*t*3,.2+Math.sin(t*Math.PI)*1.6,-d+t*2);}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));const spray=new THREE.Points(geo,new THREE.PointsMaterial({color:0xffedba,size:.06,transparent:true,opacity:.7}));scene.add(spray);sprinklers.push(spray);}
-if(rand()>.25)tree(center(d)+side*(10.5+rand()*2),-d-10,.8+rand()*.35);
-return g;}
-const houses=[];for(let d=-50;d<1240;d+=29){for(const side of [-1,1])if(!atJunction(d,side,24))houses.push(house(d+rand()*5,side));}
-for(let d=-40;d<1300;d+=26){tree(center(d)-39-rand()*22,-d,1.5);tree(center(d)+39+rand()*22,-d,1.6);}
-for(let d=5;d<1170;d+=70){if(atJunction(d,1,6))continue;const x=5.65;rod(scene,[x,0,-d],[x,7.4,-d],.10,0x68665e);rod(scene,[x,7.4,-d],[x-1.5,7.5,-d],.07,0x68665e);const lm=new THREE.MeshStandardMaterial({color:0xe4ceb0,emissive:0xffcb79,emissiveIntensity:.05});box(scene,x-1.5,7.4,-d,.65,.14,.32,lm);lamps.push(lm);}
-// Overhead utility lines and small sidewalk chalk marks.
-for(let d=0;d<1250;d+=58){const x=center(d)-10.3;rod(scene,[x,0,-d],[x,9,-d],.13,0x786551);box(scene,x,8.5,-d,1.8,.13,.13,0x786551);if(d<1200){const points=[];for(let j=0;j<=12;j++){let t=j/12;points.push(new THREE.Vector3(x+(center(d+58)-center(d))*t,8.7-Math.sin(t*Math.PI)*.6,-d-58*t));}const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),new THREE.LineBasicMaterial({color:0x756966}));scene.add(line);}}
-for(let d=45;d<250;d+=55){for(let k=0;k<6;k++){const x=center(d)-7.1+(k%2)*.5;const z=-d-Math.floor(k/2)*.6;const pts=[new THREE.Vector3(x,.17,z),new THREE.Vector3(x+.42,.17,z),new THREE.Vector3(x+.42,.17,z-.48),new THREE.Vector3(x,.17,z-.48),new THREE.Vector3(x,.17,z)];scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0xedd0a5})));}}
-for(const side of [-1,1])for(let d=-120;d<1400;d+=2){
- if(atJunction(d+1,side,4.6))continue;
- const driveway=drivewayOpenings.some(o=>o.side===side&&Math.abs(o.d-d-1)<3);
- surface(side>0?6.35:-7.85,side>0?7.85:-6.35,d,d+2,.16,0xc4b8a1,1.5,2);
- if(!driveway){const curb=box(scene,side*4.85,.045,-d-1,.30,.21,2,0xb9b1a0);curb.userData.surface=true;}
- if(Math.round(d)%4===0){const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(side*6.35,.166,-d),new THREE.Vector3(side*7.85,.166,-d)]),new THREE.LineBasicMaterial({color:0xa79f8d}));line.userData.surface=true;scene.add(line);}
-}
-// Fit every static surface and prop to one road frame. Houses stay upright;
-// paving is finely sampled so it follows the terrain without steps or gaps.
-scene.updateMatrixWorld(true);
-const staticObjects=[];scene.traverse(o=>{if((o.isMesh||o.isLine||o.isPoints)&&o!==sky)staticObjects.push(o);});
-for(const o of staticObjects){const g=o.geometry.clone(),p=g.attributes.position;const v=new THREE.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);const q=groundPoint(-v.z,v.x);p.setXYZ(i,q.x,q.y+v.y,q.z);}g.computeBoundingSphere();if(o.isMesh)g.computeVertexNormals();o.geometry=g;o.position.set(0,0,0);o.rotation.set(0,0,0);o.scale.set(1,1,1);scene.add(o);o.updateMatrixWorld(true);}
-// Combine the permanent neighborhood by material to keep draw calls modest.
-scene.updateMatrixWorld(true);
-const batches=new Map(), originals=[];
-scene.traverse(o=>{if(!o.isMesh||o===sky)return;const key=o.material.uuid;if(!batches.has(key))batches.set(key,{material:o.material,p:[],n:[]});const b=batches.get(key),geo=o.geometry,index=geo.index,pos=geo.attributes.position,norm=geo.attributes.normal,normalMatrix=new THREE.Matrix3().getNormalMatrix(o.matrixWorld);const v=new THREE.Vector3(),n=new THREE.Vector3();for(let i=0;i<(index?index.count:pos.count);i++){const j=index?index.getX(i):i;v.fromBufferAttribute(pos,j).applyMatrix4(o.matrixWorld);n.fromBufferAttribute(norm,j).applyMatrix3(normalMatrix).normalize();b.p.push(v.x,v.y,v.z);b.n.push(n.x,n.y,n.z);}originals.push(o);});
-for(const o of originals)o.removeFromParent();
-for(const b of batches.values()){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(b.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(b.n,3));g.computeBoundingSphere();const mesh=new THREE.Mesh(g,b.material);mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);}
-function segment(g,color,radius){const m=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,1,7),mat(color));g.add(m);return m;}
-const up=new THREE.Vector3(0,1,0);
-function placeSegment(mesh,a,b){const av=new THREE.Vector3(a.x,a.y,a.z),bv=new THREE.Vector3(b.x,b.y,b.z),v=bv.clone().sub(av);mesh.position.copy(av).add(bv).multiplyScalar(.5);mesh.scale.y=v.length();mesh.quaternion.setFromUnitVectors(up,v.normalize());}
-function bicycle(color,rider=false){const g=new THREE.Group(),wheels=[],legs=[];const metal=mat(color),tire=mat(0x343738);
- for(const z of [-.58,.58]){const pivot=new THREE.Group();pivot.position.set(0,.40,z);g.add(pivot);const wheel=new THREE.Mesh(new THREE.TorusGeometry(.37,.036,6,24),tire);wheel.rotation.y=Math.PI/2;pivot.add(wheel);wheels.push(pivot);for(let k=0;k<8;k++){const a=k*Math.PI/4;rod(pivot,[0,0,0],[0,Math.sin(a)*.34,Math.cos(a)*.34],.006,0xb4b6aa);}}
- const A=[0,.45,.58],B=[0,.49,0],C=[0,1.02,.2],D=[0,1.04,-.42],E=[0,.4,-.58];for(const [a,b]of [[A,B],[B,C],[C,A],[C,D],[D,B],[D,E]])rod(g,a,b,.029,metal);
- box(g,0,1.10,.22,.27,.08,.32,0x454747);rod(g,[0,1,-.43],[0,1.3,-.5],.023,0xbbb8ab);rod(g,[-.34,1.3,-.5],[.34,1.3,-.5],.028,0xb7b7a7);
- for(const side of [-1,1]){rod(g,[side*.34,1.3,-.5],[side*.24,1.3,-.5],.043,0x514b43);const upper=segment(g,0x536175,.088),lower=segment(g,0xcc9e7c,.064),crank=segment(g,0xb9b6aa,.019),shoe=box(g,0,0,0,.15,.10,.27,0xd3ceba),pedal=box(g,0,0,0,.17,.035,.11,0x535858);legs.push({side,upper,lower,crank,shoe,pedal});}
- if(rider){box(g,0,1.46,.1,.48,.64,.3,color);ball(g,0,1.98,.02,.22,0xcfa489,[.84,1,.85]);ball(g,0,2.12,.04,.215,0x61514a,[1,.5,1]);for(const side of [-1,1])rod(g,[side*.21,1.63,.1],[side*.31,1.31,-.48],.065,0xd0a387);}
- return {group:g,wheels,legs};
-}
-function animateBike(bike,phase,travel){for(const w of bike.wheels)w.rotation.x=-travel/.37;for(const leg of bike.legs){const p=pedalPose(phase,leg.side);placeSegment(leg.upper,p.hip,p.knee);placeSegment(leg.lower,p.knee,p.foot);placeSegment(leg.crank,{x:leg.side*.14,y:.49,z:0},p.foot);leg.shoe.position.set(p.foot.x,p.foot.y+.045,p.foot.z-.035);leg.pedal.position.set(p.foot.x,p.foot.y-.02,p.foot.z);}}
-const friends=[{name:'Jamie',off:-1.9,lead:12,leave:320,color:0xc57f53,side:-1},{name:'Sam',off:.35,lead:17,leave:620,color:0x809f9e,side:1},{name:'Alex',off:2,lead:10,leave:875,color:0xb9a668,side:-1}].map(f=>{const b=bicycle(f.color,true);scene.add(b.group);return {...f,...b};});
-const bikeRoot=new THREE.Group();scene.add(bikeRoot);bikeRoot.add(camera);const playerBike=bicycle(0x6f9495);bikeRoot.add(playerBike.group);const cockpit=playerBike.group;
-for(const side of [-1,1]){rod(cockpit,[side*.31,1.3,-.5],[side*.38,1.47,.13],.065,0xd0aa89);ball(cockpit,side*.31,1.31,-.5,.075,0xd0aa89,[.75,.7,1]);}ball(cockpit,-.20,1.35,-.5,.06,0xd4c1a0,[1,.5,1]);
-// A sparse field of insects catching the last light.
-const dustPositions=new Float32Array(300*3);for(let i=0;i<300;i++){dustPositions[i*3]=(rand()-.5)*40;dustPositions[i*3+1]=.3+rand()*7;dustPositions[i*3+2]=-rand()*150;}const dustGeo=new THREE.BufferGeometry();dustGeo.setAttribute('position',new THREE.BufferAttribute(dustPositions,3));const dust=new THREE.Points(dustGeo,new THREE.PointsMaterial({color:0xffe6ad,size:.035,transparent:true,opacity:.6}));scene.add(dust);
-let mouseYaw=0,mousePitch=0,headPitch=0,steerVelocity=0,lean=0,pedalPhase=0,lastMouse=null,lastPauseAt=-Infinity;
-let state='intro',distance=0,speed=0,lateral=-.3,look=0,clock=0,rideTime=0,lastStamp=0,nextMemory=0,captionTimer=0,idleTime=0,bellCooldown=0;
+const sunlight=new THREE.DirectionalLight(0xffc27d,2.6);sunlight.castShadow=true;sunlight.shadow.mapSize.set(2048,2048);Object.assign(sunlight.shadow.camera,{left:-60,right:60,top:60,bottom:-60,near:1,far:240});sunlight.shadow.bias=-.0005;sunlight.shadow.normalBias=.05;scene.add(sunlight,sunlight.target);
+// A real-time sky, shifting from late afternoon into the blue of a remembered evening; stars wait for the very end.
+const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{dusk:{value:0},night:{value:0}},vertexShader:'varying vec3 v; void main(){v=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+ fragmentShader:`varying vec3 v;uniform float dusk,night;float h3(vec3 p){return fract(sin(dot(p,vec3(12.9898,78.233,37.719)))*43758.5453);}
+ void main(){vec3 n=normalize(v);float h=max(n.y,0.);vec3 low=mix(vec3(1.,.67,.40),vec3(.73,.43,.46),dusk);low=mix(low,vec3(.36,.27,.36),night);vec3 high=mix(vec3(.32,.43,.57),vec3(.13,.19,.34),dusk);high=mix(high,vec3(.05,.07,.15),night);
+ vec3 col=mix(low,high,pow(h,.48));vec3 sun=normalize(vec3(.22,.075-dusk*.055-night*.03,-1.));float a=dot(n,sun);col+=vec3(1.,.53,.22)*pow(max(a,0.),90.)*.35*(1.-night*.6);col+=vec3(1.,.45,.25)*pow(max(a,0.),6.)*.12*night*(1.-h);
+ col=mix(col,vec3(1.,.9,.64),smoothstep(.9995,.9997,a)*(1.-night));float cloud=sin(n.x*29.+n.z*13.)*sin(n.z*41.-n.y*73.);float bands=exp(-pow((n.y-.15)/.05,2.));col=mix(col,mix(vec3(.99,.70,.56),vec3(.55,.36,.42),night),max(0.,cloud-.25)*bands*.2);
+ vec3 c=floor(n*260.);float s=step(.9975,h3(c))*smoothstep(.08,.35,n.y);col+=vec3(.9,.92,1.)*s*smoothstep(.35,1.,night)*.55;gl_FragColor=vec4(col,1.);}`});
+const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);
+
+const world=buildWorld(scene);
+// Added after the neighborhood is bent and merged, so the sky stays a sky.
+scene.add(sky);const {road,originals,groundY}=world;// road and originals are read by tests/verify.mjs.
+const _v=new THREE.Vector3(),_q=new THREE.Quaternion(),_e=new THREE.Euler();
+const ctx={distance:0,speed:0,lateral:0,state:'intro',clock:0,speaker:null,eye:new THREE.Vector3(),p:0,night:0,finale:0};
+let audio=null;const sfx=(name,pos,opts)=>audio?.sfx(name,pos,opts);
+const friends=createFriends(scene,world,{sfx});
+const ambient=createAmbient(scene,world,{sfx,camera,renderer,riders:()=>friends.list.filter(f=>f.mode!=='foot'&&f.bike.group.visible).map(f=>({d:f.bd,lat:f.blat}))});
+
+// The player's bicycle and first-person body -----------------------------------------------------
+const bikeRoot=new THREE.Group();scene.add(bikeRoot);const playerBike=createBike(0x5f8f93,{grips:0x303032});bikeRoot.add(playerBike.group);
+const self=createPerson({shirt:0x8a9bb0,shorts:0x4d5566,skin:0xd9a883,firstPerson:true});playerBike.group.add(self.group);const selfPose=newPose();
+// Upper arms sit too close to the eye to read well; forearms, hands and knees are enough.
+for(const k of ['lsleeve','rsleeve','lupper','rupper'])self.parts[k].visible=false;
+const eyeRig=new THREE.Object3D();bikeRoot.add(eyeRig);
+const cockpit=playerBike.group;
+
+let mouseYaw=0,mousePitch=0,headPitch=0,steerVelocity=0,lean=0,pedalPhase=0,lastMouse=null,lastPauseAt=-Infinity,yawOffset=0,steerAngle=0,astride=0,prevYaw=null,wheelTurn=0,kick=0,bikeLean=0;
+let lookInputAt=0,glance=0;
+let state='intro',distance=0,speed=0,lateral=-.3,look=0,clock=0,lastStamp=0,nextMemory=0,captionTimer=0,idleTime=0,bellCooldown=0,resumeState='riding';
+// Final stop: on foot the player is in street coordinates too.
+let finaleT=0,walkD=0,walkLat=0,walkYaw=0,walkPitch=0,gait=0,lastStep=0,moveT=0,transT=0,transFrom=null,callDone=false,callT=-1,lookedBack=0,fade=0,endHint=false,wHint=false,leaveT=0;
 const keys=new Set();const touch=matchMedia('(pointer:coarse)').matches;if(touch)document.body.classList.add('touch');
-let audio=null,muted=true;
-function initAudio(){if(audio)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const ctx=new AC(), master=ctx.createGain();master.gain.value=0;master.connect(ctx.destination);const noise=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate);const data=noise.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;const src=ctx.createBufferSource();src.buffer=noise;src.loop=true;const band=ctx.createBiquadFilter();band.type='bandpass';band.frequency.value=4800;band.Q.value=6;const insects=ctx.createGain();insects.gain.value=.055;src.connect(band).connect(insects).connect(master);src.start();const wind=ctx.createBiquadFilter();wind.type='lowpass';wind.frequency.value=400;const windGain=ctx.createGain();windGain.gain.value=.025;src.connect(wind).connect(windGain).connect(master);audio={ctx,master,insects,windGain,nextNote:0,note:0};}
-function tone(freq,when,duration,volume,type='sine'){if(!audio)return;const {ctx,master}=audio,o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(volume,when+.018);g.gain.exponentialRampToValueAtTime(.0001,when+duration);o.connect(g).connect(master);o.start(when);o.stop(when+duration+.1);}
-function setSound(on){initAudio();muted=!on;if(audio){audio.ctx.resume();audio.master.gain.setTargetAtTime(on&&state!=='paused'?.6:0,audio.ctx.currentTime,.3);}$('sound').setAttribute('aria-pressed',String(on));$('sound').setAttribute('aria-label',on?'Mute sound':'Enable sound');$('sound').innerHTML=`SOUND <span>${on?'ON':'OFF'}</span>`;}
-function bell(){if(state!=='riding'||bellCooldown>0)return;bellCooldown=2;tone(1568,audio?.ctx.currentTime||0,1.4,.15);tone(2093,(audio?.ctx.currentTime||0)+.09,.8,.055);if(distance<850&&captionTimer<1){showCaption('',distance<320?'A bell answers from up ahead.':'The sound drifts down the street.');if(distance<320){tone(1760,(audio?.ctx.currentTime||0)+.65,1,.08);}}}
-function showCaption(who,text){$('subtitle').replaceChildren();if(who){const s=document.createElement('small');s.textContent=who;$('subtitle').append(s);}$('subtitle').append(document.createTextNode(text));$('subtitle').style.opacity='1';captionTimer=7.5;}
-function start(){state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;$('controls').innerHTML='<kbd>W</kbd> PEDAL <span>/</span><kbd>A</kbd><kbd>D</kbd> STEER <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>R</kbd> CENTER <span>/</span><kbd>SPACE</kbd> BELL <span>/</span><kbd>ESC</kbd> PAUSE';cockpit.visible=true;if(!audio)setSound(true);else if(!muted)setSound(true);showCaption('','Hold W or ↑ to pedal. There’s still a little light.');}
-function pause(){if(state!=='riding')return;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();$('pause').hidden=false;if(audio)audio.master.gain.setTargetAtTime(0,audio.ctx.currentTime,.15);}
-function resume(){if(state!=='paused')return;state='riding';requestLook();$('pause').hidden=true;if(audio&&!muted){audio.ctx.resume();audio.master.gain.setTargetAtTime(.6,audio.ctx.currentTime,.2);}}
-function finish(){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;}
-function reset(){mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=0;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;rideTime=0;idleTime=0;captionTimer=0;for(const f of friends)f.group.visible=true;$('ending').hidden=true;start();}
-$('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;$('bell').onclick=bell;
-addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();if(e.code==='Escape'){if(e.repeat)return;if(state==='riding')pause();else if(state==='paused'&&performance.now()-lastPauseAt>180)resume();return;}if(state==='riding'){keys.add(e.code);if(e.code==='KeyR'){mouseYaw=0;mousePitch=0;}if(e.code==='Space'&&!e.repeat)bell();}});addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+const qa=typeof location!=='undefined'&&/[?&]qa\b/.test(location.search||'');
+let muted=true;
+const onBike=()=>['riding','arriving','stopped','leaving'].includes(state);
+const active=()=>['riding','arriving','stopped','dismounting','walking','remounting','leaving'].includes(state);
+
+function setSound(on){if(!audio){audio=createAudio();}audio.ensure();muted=!on;audio.setEnabled(on&&state!=='paused');$('sound').setAttribute('aria-pressed',String(on));$('sound').setAttribute('aria-label',on?'Mute sound':'Enable sound');$('sound').innerHTML=`SOUND <span>${on?'ON':'OFF'}</span>`;}
+function bell(){if(!onBike()||bellCooldown>0)return;bellCooldown=2;audio?.bell();const f=friends.answerer();
+ if(distance<850&&captionTimer<1&&state==='riding'){showCaption('',f?'A bell answers from up ahead.':'The sound drifts down the street.');if(f)setTimeout(()=>audio?.bell(f.bike.group.position,.55),650);}}
+function showCaption(who,text,time=7.5){$('subtitle').replaceChildren();if(who){const s=document.createElement('small');s.textContent=who;$('subtitle').append(s);}$('subtitle').append(document.createTextNode(text));$('subtitle').style.opacity='1';captionTimer=time;ctx.speaker=who||null;}
+const CONTROLS={riding:'<kbd>W</kbd> PEDAL <span>/</span><kbd>A</kbd><kbd>D</kbd> STEER <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>R</kbd> CENTER <span>/</span><kbd>SPACE</kbd> BELL <span>/</span><kbd>ESC</kbd> PAUSE',
+ stopped:'<kbd>F</kbd> GET OFF <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>ESC</kbd> PAUSE',
+ walking:'<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> WALK <span>/</span><kbd>MOUSE</kbd> LOOK <span>/</span><kbd>Q</kbd><kbd>E</kbd> TURN <span>/</span><kbd>ESC</kbd> PAUSE',
+ home:'<kbd>F</kbd> RIDE HOME <span>/</span><kbd>MOUSE</kbd> LOOK',homeBike:'<kbd>W</kbd> RIDE HOME <span>/</span><kbd>F</kbd> GET OFF <span>/</span><kbd>MOUSE</kbd> LOOK',none:''};
+let controlsMode='';function setControls(m){if(m===controlsMode)return;controlsMode=m;$('controls').innerHTML=CONTROLS[m];const act=$('act');if(act){const label=m==='stopped'?'GET OFF':m==='home'||m==='homeBike'?'RIDE HOME':'';act.hidden=!touch||!label;act.textContent=label;}}
+function start(){state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;setControls('riding');cockpit.visible=true;self.group.visible=true;if(!audio)setSound(true);else if(!muted)setSound(true);showCaption('','Hold W or ↑ to pedal. There’s still a little light.');}
+function pause(){if(!active())return;resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();$('pause').hidden=false;audio?.setEnabled(false);}
+function resume(){if(state!=='paused')return;state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
+function finish(){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;audio?.ending();}
+function reset(){glance=0;lookInputAt=0;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
+ finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
+ friends.reset();ambient.reset();audio?.reset();$('ending').hidden=true;start();}
+$('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>{if(state==='stopped'&&callDone)leave();else action();};
+// F: get off at the end of the street, or get back on and ride home.
+function action(){
+ if(state==='stopped'){state='dismounting';transT=0;transFrom=eyeWorld();self.group.visible=false;sfx('kickstand',bikeRoot.position);return;}
+ if(state==='walking'&&nearBike()){state='remounting';transT=0;transFrom={pos:camera.position.clone(),yaw:walkYaw,pitch:walkPitch};mouseYaw=mousePitch=look=headPitch=0;return;}
+}
+function leave(){if(state!=='stopped'&&state!=='remounting')return;state='leaving';leaveT=0;setControls('none');audio?.leaving();}
+addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
+ if(e.code==='Escape'){if(e.repeat)return;if(active())pause();else if(state==='paused'&&performance.now()-lastPauseAt>180)resume();return;}
+ if(active()){keys.add(e.code);if(e.code==='KeyR'){mouseYaw=0;mousePitch=0;lookInputAt=clock;glance=0;}if(e.code==='Space'&&!e.repeat)bell();if(e.code==='KeyF'&&!e.repeat)action();
+  if((e.code==='KeyW'||e.code==='ArrowUp')&&!e.repeat&&state==='stopped'){if(callDone)leave();else if(!endHint&&captionTimer<1){endHint=true;showCaption('','The street ends here.',4);}}}});
+addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 // Pointer lock is optional. Mouse-drag works if the browser declines it.
-function requestLook(){if(touch)return;lastMouse=null;try{const result=canvas.requestPointerLock?.();result?.catch?.(()=>{});}catch{}}
-let dragging=false;
-canvas.addEventListener('pointerdown',e=>{if(state!=='riding')return;dragging=true;lastMouse={x:e.clientX,y:e.clientY};canvas.setPointerCapture?.(e.pointerId);requestLook();});
+function requestLook(){if(touch)return;lastMouse=null;lockAt=clock;try{const result=canvas.requestPointerLock?.();result?.catch?.(()=>{});}catch{}}
+let dragging=false,lockAt=-1;
+canvas.addEventListener('pointerdown',e=>{if(!active())return;if(e.pointerType!=='touch')requestLook();dragging=true;lastMouse={x:e.clientX,y:e.clientY};canvas.setPointerCapture?.(e.pointerId);});
 canvas.addEventListener('pointerup',()=>{dragging=false;lastMouse=null;});canvas.addEventListener('pointercancel',()=>{dragging=false;lastMouse=null;});canvas.addEventListener('lostpointercapture',()=>{dragging=false;lastMouse=null;});
-addEventListener('mousemove',e=>{if(state!=='riding'||touch)return;let dx=0,dy=0;if(document.pointerLockElement===canvas){dx=e.movementX||0;dy=e.movementY||0;}else if(dragging){if(lastMouse){dx=e.clientX-lastMouse.x;dy=e.clientY-lastMouse.y;}lastMouse={x:e.clientX,y:e.clientY};}else return;mouseYaw=THREE.MathUtils.clamp(mouseYaw-dx*.0022,-1.35,1.35);mousePitch=THREE.MathUtils.clamp(mousePitch-dy*.0022,-1.02,.42);});
-document.addEventListener('pointerlockchange',()=>{lastMouse=null;if(!document.pointerLockElement&&state==='riding')pause();});
-for(const [id,key]of [['pedal','KeyW'],['left','KeyA'],['right','KeyD']]){const b=$(id);b.addEventListener('pointerdown',e=>{if(state==='riding'){b.setPointerCapture(e.pointerId);keys.add(key);}});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>keys.delete(key));}
+function turnView(dx,dy){lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*.0022;walkPitch=clamp(walkPitch-dy*.0022,-1.1,.9);}else{mouseYaw=clamp(mouseYaw-dx*.0022,-1.35,1.35);mousePitch=clamp(mousePitch-dy*.0022,-1.02,.42);}}
+addEventListener('mousemove',e=>{if(!active()||touch)return;let dx=0,dy=0;
+ if(document.pointerLockElement===canvas){dx=e.movementX||0;dy=e.movementY||0;
+  // Chromium can report one huge jump right after the lock engages; ignore it.
+  if(clock-lockAt<.25&&(Math.abs(dx)>60||Math.abs(dy)>60))return;if(Math.abs(dx)>400||Math.abs(dy)>400)return;}
+ else if(dragging){if(lastMouse){dx=e.clientX-lastMouse.x;dy=e.clientY-lastMouse.y;}lastMouse={x:e.clientX,y:e.clientY};}else return;turnView(dx,dy);});
+canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='touch'||!dragging||!active())return;if(lastMouse)turnView((e.clientX-lastMouse.x)*1.4,(e.clientY-lastMouse.y)*1.4);lastMouse={x:e.clientX,y:e.clientY};});
+document.addEventListener('pointerlockchange',()=>{lastMouse=null;lockAt=clock;if(!document.pointerLockElement&&active())pause();});
+for(const [id,key]of [['pedal','KeyW'],['left','KeyA'],['right','KeyD']]){const b=$(id);b.addEventListener('pointerdown',e=>{if(active()){b.setPointerCapture(e.pointerId);keys.add(key);if(key==='KeyW'&&state==='stopped'&&callDone)leave();}});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>keys.delete(key));}
 function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);}addEventListener('resize',resize);
 let currentChapter=-1;
-function update(dt){clock+=dt;bellCooldown=Math.max(0,bellCooldown-dt);const riding=state==='riding';if(riding){rideTime+=dt;const pedal=keys.has('KeyW')||keys.has('ArrowUp'),brake=keys.has('KeyS')||keys.has('ArrowDown');speed=THREE.MathUtils.damp(speed,brake?0:pedal?5.1:0,brake?5:pedal?1.4:.6,dt);distance=Math.min(LENGTH,distance+speed*dt);const steering=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0);
-steerVelocity=THREE.MathUtils.damp(steerVelocity,steering*Math.min(speed*.34,1.5),6,dt);lateral=THREE.MathUtils.clamp(lateral+steerVelocity*dt,-LATERAL_LIMIT,LATERAL_LIMIT);if(Math.abs(lateral)>=LATERAL_LIMIT)steerVelocity=0;
-lean=THREE.MathUtils.damp(lean,-steerVelocity*.023,5,dt);pedalPhase+=speed*dt*1.25;
-const keyLook=(keys.has('KeyQ')?.75:0)-(keys.has('KeyE')?.75:0);look=THREE.MathUtils.damp(look,THREE.MathUtils.clamp(mouseYaw+keyLook,-1.35,1.35),8,dt);headPitch=THREE.MathUtils.damp(headPitch,mousePitch,8,dt);
-idleTime=pedal?0:idleTime+dt;if(idleTime>20&&captionTimer<=0){showCaption('','Hold W or ↑ to keep riding.');idleTime=0;}
-if(nextMemory<memories.length&&distance>=memories[nextMemory].at){const m=memories[nextMemory++];showCaption(m.who,m.text);}
-captionTimer-=dt;if(captionTimer<1)$('subtitle').style.opacity=Math.max(0,captionTimer);const ch=chapterAt(distance);if(ch!==currentChapter){currentChapter=ch;$('chapter').innerHTML=`0${ch+1} <span>${chapters[ch].title}</span>`;}$('progress').style.width=`${distance/LENGTH*100}%`;$('ride-label').textContent=distance<870?'STAY A LITTLE LONGER':'YOU KNOW THE WAY HOME';if(distance>=LENGTH)finish();}
-const p=distance/LENGTH;skyMat.uniforms.dusk.value=p;scene.fog.color.set(0xe3ac8d).lerp(new THREE.Color(0x777990),p*.85);scene.fog.density=.008+p*.005;hemi.intensity=2.1-p*.85;sunlight.intensity=2.6-p*1.95;const rf=roadFrame(distance);sunlight.position.set(rf.x+35,rf.y+40,rf.z-70);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=1.16-p*.16;for(const w of windows)w.emissiveIntensity=.14+Math.max(0,p-.15)*1.3;for(const l of lamps)l.emissiveIntensity=.1+p*2;
-const bob=state==='riding'?Math.sin(pedalPhase*2)*Math.min(speed*.0013,.007):0;
-const position=groundPoint(distance,lateral);bikeRoot.position.set(position.x,roadSurface(distance,lateral),position.z);bikeRoot.rotation.set(rf.pitch,-rf.heading,lean,'YXZ');camera.position.set(0,1.65+bob,.2);camera.rotation.set(-.022+headPitch,look,0,'YXZ');cockpit.visible=state!=='intro';animateBike(playerBike,pedalPhase,distance);
-camera.updateWorldMatrix(true,false);sky.position.copy(camera.getWorldPosition(new THREE.Vector3()));
-for(const f of friends){const departure=Math.max(0,(distance-f.leave)/38);f.group.visible=departure<1;const d=distance+f.lead+Math.min(departure,1)*4,offset=f.off+Math.sin(clock*.55+f.lead)*.15+f.side*departure*16,pos=groundPoint(d,offset),frame=roadFrame(d);f.group.position.set(pos.x,pos.y+.04,pos.z);f.group.rotation.set(frame.pitch,-frame.heading-f.side*departure*1.45,Math.sin(pedalPhase+f.lead)*Math.min(speed*.003,.016),'YXZ');animateBike(f,pedalPhase+f.lead,distance);}
-// Dissolve friends softly as they reach their driveways, without popping out of view.
-for(const f of friends){const fade=Math.max(0,Math.min(1,(distance-f.leave-15)/23));if(!f.fadeMaterials){f.fadeMaterials=[];f.group.traverse(o=>{if(o.isMesh){o.material=o.material.clone();o.material.transparent=true;f.fadeMaterials.push(o.material);}});}for(const m of f.fadeMaterials)m.opacity=1-fade;}
-for(const s of sprinklers){s.material.opacity=(.5+Math.sin(clock*8)*.12)*(1-p*.5);}dust.position.set(rf.x,rf.y+Math.sin(clock*.1)*.2,rf.z);dust.rotation.y=-rf.heading;
-const minute=42+Math.floor(p*18);$('date').innerHTML=p>.83?'AUGUST, 2011 <i></i> AS YOU REMEMBER IT':`AUGUST 21, 2011 <i></i> ${minute<60?'7:':'8:'}${String(minute%60).padStart(2,'0')} PM`;
-if(audio&&riding&&!muted){const {ctx}=audio;audio.windGain.gain.setTargetAtTime(.012+speed*.007,ctx.currentTime,.5);audio.insects.gain.setTargetAtTime(.055*(1-p*.86),ctx.currentTime,.5);if(ctx.currentTime>audio.nextNote){const notes=[220,329.63,440,493.88,369.99,329.63,293.66,220];tone(notes[audio.note++%notes.length],ctx.currentTime,4.5,.055);tone(110,ctx.currentTime,5,.018);audio.nextNote=ctx.currentTime+3.5+Math.random()*2;}}
+
+// Pacing: the bike slows a touch uphill and while a friend is heading home.
+const bump=(d,a,b)=>smooth((d-a)/8)*(1-smooth((d-b)/10));
+const pace=d=>1-.26*bump(d,312,392)-.32*bump(d,606,700)-.34*bump(d,862,995);
+const CRUISE=4.75;
+function eyeWorld(){camera.updateMatrixWorld();return {pos:camera.position.clone(),quat:camera.quaternion.clone(),yaw:-(heading(distance)+yawOffset)+look,pitch:headPitch};}
+function nearBike(){const b=groundPoint(distance,lateral),p=groundPoint(walkD,walkLat);return Math.hypot(b.x-p.x,b.z-p.z)<1.9;}
+
+function updateRide(dt){
+ const pedal=keys.has('KeyW')||keys.has('ArrowUp'),brake=keys.has('KeyS')||keys.has('ArrowDown');
+ const grade=roadGrade(distance),cruise=CRUISE*clamp(1-3.5*grade,.84,1.12)*pace(distance);
+ if(state==='arriving'){const rem=Math.max(0,LOOKOUT.stop.d-distance);speed=Math.min(speed,Math.sqrt(2*.42*rem)+.02);if(rem<.03){speed=0;distance=LOOKOUT.stop.d;}}
+ else if(brake)speed=Math.max(0,speed-3.2*dt);
+ else if(pedal)speed=damp(speed,cruise,1.4,dt);
+ else speed=Math.max(0,speed-(.16+9.8*grade*.8)*dt);
+ if(state==='stopped'||state==='leaving')speed=state==='leaving'?Math.min(1.6,speed+.5*dt):0;
+ // Nobody rides through a friend's back wheel or a waiting car: ease off behind them.
+ if(state==='riding')for(const o of [...friends.list.filter(f=>f.mode!=='foot'&&f.bike.group.visible&&Math.abs(f.blat)<4.8).map(f=>({d:f.bd,lat:f.blat,half:.55,width:.5,speed:f.speed})),...ambient.blockers()]){const gap=o.d-distance-o.half-.6;if(gap>-o.half&&gap<2.2&&Math.abs(o.lat-lateral)<o.width+.35)speed=Math.min(speed,Math.max(0,o.speed+gap*.8));}
+ distance=Math.min(state==='riding'?LOOKOUT.stop.d:LOOKOUT.stop.d+8,distance+speed*dt);
+ const steering=state==='riding'?(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0):0;
+ let target=steering*Math.min(speed*.34,1.5);if(state==='arriving')target=clamp((LOOKOUT.stop.lat-lateral)*.6,-.5,.5)*Math.min(1,speed);
+ steerVelocity=damp(steerVelocity,target,6,dt);lateral=clamp(lateral+steerVelocity*dt,-LATERAL_LIMIT,LATERAL_LIMIT);if(Math.abs(lateral)>=LATERAL_LIMIT)steerVelocity=0;
+ yawOffset=damp(yawOffset,Math.atan2(steerVelocity,Math.max(speed,1.2))*.9,8,dt);
+ const yaw=heading(distance)+yawOffset;if(prevYaw===null)prevYaw=yaw;const yawRate=(yaw-prevYaw)/Math.max(dt,1e-3);prevYaw=yaw;
+ const k=yawRate/Math.max(speed,.8);steerAngle=damp(steerAngle,speed>.3?clamp(-Math.atan(k)*1.2,-.5,.5):steerAngle*.98,7,dt);
+ lean=damp(lean,speed>.4?clamp(-Math.atan(speed*speed*k/9.8)*1.3,-.2,.2):0,5,dt);
+ const coasting=state==='leaving'?false:!pedal||state!=='riding';if(!coasting&&speed>.15)pedalPhase+=speed*dt*1.25;else if(speed<.15||state!=='riding'){const level=Math.round((pedalPhase-Math.PI/2)/Math.PI)*Math.PI+Math.PI/2;pedalPhase=damp(pedalPhase,level,2.5,dt);}
+ wheelTurn+=speed*dt/BIKE.wheelR;astride=damp(astride,speed<.2&&state!=='riding'?1:speed<.12?1:0,speed<.2?2.5:7,dt);
+ if(state==='arriving'&&speed<.02&&distance>=LOOKOUT.stop.d-.05){state='stopped';speed=0;finaleT=0;setControls('stopped');}
+ return {pedal:!coasting&&speed>.15,coasting:coasting&&speed>.3};
 }
-function frame(stamp){const dt=Math.min((stamp-lastStamp)/1000,.05);lastStamp=stamp;if(state!=='paused')update(dt);renderer.render(scene,camera);requestAnimationFrame(frame);}requestAnimationFrame(frame);
+function placePlayerBike(dt){
+ const rf=roadFrame(distance),y=groundY(distance,lateral);const p=groundPoint(distance,lateral);
+ bikeLean=damp(bikeLean,(state==='dismounting'||state==='walking'||state==='remounting')?.13:astride*.035,4,dt);
+ bikeRoot.position.set(p.x,y,p.z);bikeRoot.rotation.set(rf.pitch,-(rf.heading+yawOffset),lean+bikeLean,'YXZ');
+ playerBike.wheel=wheelTurn;playerBike.crankAngle=pedalPhase;playerBike.steerAngle=steerAngle;playerBike.kickstand=kick;poseBike(playerBike);
+ const bob=state==='riding'?Math.sin(pedalPhase*2)*Math.min(speed*.0012,.006):0;
+ ridePose(selfPose,pedalPhase,{astride,steer:steerAngle,look:0});applyPose(self,selfPose);
+ // The eye sits a little behind the head so hands and bars stay in peripheral view, as they do in life.
+ headPos(selfPose,_v);eyeRig.position.set(_v.x,_v.y+.05+bob,_v.z+.24);eyeRig.rotation.set(-.09+headPitch,look,-(lean+bikeLean)*.6,'YXZ');
+}
+function updateWalk(dt){
+ const f=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0);
+ const s=touch?0:(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
+ const turn=(keys.has('KeyQ')?1:0)-(keys.has('KeyE')?1:0)+(touch||keys.has('ArrowLeft')?(keys.has('ArrowLeft')||keys.has('KeyA')?1:0)-(keys.has('ArrowRight')||keys.has('KeyD')?1:0):0);
+ walkYaw+=turn*1.6*dt;
+ const len=Math.hypot(f,s)||1,want=(f||s)?1.35:0;moveT=damp(moveT,want,(f||s)?5:7,dt);
+ // walkYaw is relative to the street: 0 looks along the ride, positive turns left.
+ const c=Math.cos(walkYaw),sn=Math.sin(walkYaw),step=moveT*dt/len;
+ const dd=(f*c+s*sn)*step,dl=(-f*sn+s*c)*step;
+ const B=LOOKOUT.bounds;let nd=clamp(walkD+dd,B.d0,B.d1),nl=clamp(walkLat+dl,B.l0,B.l1);
+ const blocked=(d,l)=>world.obstacles.some(o=>!o.house&&d>o.d0-.25&&d<o.d1+.25&&l>o.l0-.25&&l<o.l1+.25)||(Math.abs(l-lateral)<.42&&Math.abs(d-distance)<.8);
+ if(!blocked(nd,nl)){walkD=nd;walkLat=nl;}else if(!blocked(nd,walkLat))walkD=nd;else if(!blocked(walkD,nl))walkLat=nl;
+ const moved=moveT*dt;gait+=moved/1.05;
+ if(Math.floor(gait*2)!==lastStep&&moveT>.3){lastStep=Math.floor(gait*2);audio?.footstep(Math.hypot(walkLat,walkD-1142)<11||Math.abs(walkLat)<4.7&&walkD<1140?'asphalt':'grass',moveT);}
+ const y=groundY(walkD,walkLat),p=groundPoint(walkD,walkLat),bob=Math.abs(Math.sin(gait*Math.PI))*.028*moveT/1.35;
+ camera.position.set(p.x,y+1.42+bob-.014,p.z);camera.rotation.set(walkPitch,-(heading(walkD))+walkYaw,Math.sin(gait*Math.PI)*.004*moveT,'YXZ');
+}
+// Smoothly move the eye between the saddle and standing beside the bike.
+function standSpot(){const o=localToStreet(yawOffset,-.62,-.05);return {d:distance+o.dd,lat:lateral+o.dl};}
+function updateTransition(dt,down){
+ transT+=dt;const T=down?1.35:1.05,u=smooth(transT/T);
+ if(down){kick=smooth(transT/.6);const s=standSpot(),y=groundY(s.d,s.lat)+1.42,p=groundPoint(s.d,s.lat);const arc=Math.sin(Math.PI*u)*.12;
+  camera.position.lerpVectors(transFrom.pos,_v.set(p.x,y,p.z),u);camera.position.y+=arc;
+  _e.set(transFrom.pitch*(1-u)-.1*Math.sin(Math.PI*u),transFrom.yaw,0,'YXZ');camera.quaternion.setFromEuler(_e);
+  if(transT>=T){state='walking';walkD=s.d;walkLat=s.lat;walkYaw=transFrom.yaw+heading(s.d);walkPitch=transFrom.pitch;gait=0;moveT=0;setControls(callDone?'home':'walking');}}
+ else{placePlayerBike(dt);eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(_v);camera.position.lerpVectors(transFrom.pos,_v,u);eyeRig.getWorldQuaternion(_q);_e.set(transFrom.pitch,-(heading(walkD))+transFrom.yaw,0,'YXZ');camera.quaternion.setFromEuler(_e).slerp(_q,u);
+  kick=1-smooth((transT-.5)/.5);if(transT>.45)self.group.visible=true;if(transT>=T){mouseYaw=0;mousePitch=0;look=0;headPitch=0;leave();}}
+}
+function updateFinale(dt){
+ finaleT+=dt;ctx.finale=finaleT;
+ // Looking back down the street for a moment brings the evening's last sound.
+ const camYaw=_e.setFromQuaternion(camera.quaternion,'YXZ').y,streetBack=-heading(distance)+Math.PI;let diff=Math.abs(((camYaw-streetBack)%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI);
+ if(diff<.7)lookedBack+=dt;
+ if(!callDone&&finaleT>14&&(finaleT>30||lookedBack>1.4)){callDone=true;callT=finaleT;audio?.call();showCaption('',finale.call,8);}
+ if(callDone&&!wHint&&finaleT-callT>9&&captionTimer<.5){wHint=true;showCaption('',state==='walking'?finale.hintWalk:finale.hintBike,6);}
+ if(state==='stopped')setControls(callDone?'homeBike':'stopped');if(state==='walking')setControls(callDone&&nearBike()?'home':'walking');
+ if(state==='leaving'){leaveT+=dt;fade=smooth(leaveT/3.4);if(leaveT>3.6)finish();}
+ else if(finaleT>95){fade=Math.min(1,fade+dt/5);if(fade>=1)finish();}
+ $('fade').style.opacity=fade;
+}
+
+function update(dt){clock+=dt;ctx.clock=clock;bellCooldown=Math.max(0,bellCooldown-dt);
+ let bikeAudio={pedal:false,coasting:false};
+ if(onBike()&&state!=='intro'){bikeAudio=updateRide(dt);
+  const pedal=keys.has('KeyW')||keys.has('ArrowUp');idleTime=pedal||state!=='riding'?0:idleTime+dt;if(idleTime>20&&captionTimer<=0){showCaption('','Hold W or ↑ to keep riding.');idleTime=0;}
+  if(nextMemory<memories.length&&distance>=memories[nextMemory].at){const m=memories[nextMemory++];showCaption(m.who,m.text);}
+  if(state==='riding'&&distance>=LOOKOUT.stop.d-24){state='arriving';setControls('none');}
+  const ch=chapterAt(distance);if(ch!==currentChapter){currentChapter=ch;$('chapter').innerHTML=`0${ch+1} <span>${chapters[ch].title}</span>`;}$('progress').style.width=`${Math.min(1,distance/LENGTH)*100}%`;$('ride-label').textContent=distance<870?'STAY A LITTLE LONGER':'YOU KNOW THE WAY HOME';
+  const keyLook=(keys.has('KeyQ')?.75:0)-(keys.has('KeyE')?.75:0);if(keyLook)lookInputAt=clock;
+  // When a friend is heading inside and the player isn't steering the view, the head turns a little toward them.
+  const target=state==='riding'&&clock-lookInputAt>3?friends.attention():null;let want=0;
+  if(target){const dx=target.x-bikeRoot.position.x,dz=target.z-bikeRoot.position.z,fwd=-(heading(distance)+yawOffset);let a=Math.atan2(-dx,-dz)-fwd;a=Math.atan2(Math.sin(a),Math.cos(a));want=clamp(a,-.85,.85);}
+  glance=damp(glance,want,target?1.1:.9,dt);
+  look=damp(look,clamp(mouseYaw+keyLook+glance,-1.35,1.35),8,dt);headPitch=damp(headPitch,mousePitch,8,dt);}
+ if(active()){captionTimer-=dt;if(captionTimer<1){$('subtitle').style.opacity=Math.max(0,captionTimer);if(captionTimer<=0)ctx.speaker=null;}}
+ if(['stopped','dismounting','walking','remounting','leaving'].includes(state))updateFinale(dt);
+ if(['arriving','stopped','dismounting','walking','remounting','leaving'].includes(state))$('ride-ui').style.opacity=state==='arriving'?1:Math.max(0,1-finaleT/3);
+ // Light and atmosphere follow the ride, then the last of the evening at the end of the street.
+ const p=Math.min(1,distance/LENGTH),night=Math.min(1,ctx.finale/80);ctx.p=p;ctx.night=night;
+ skyMat.uniforms.dusk.value=p;skyMat.uniforms.night.value=night;scene.fog.color.set(0xe3ac8d).lerp(_c1.set(0x777990),p*.85).lerp(_c2.set(0x3f4258),night*.6);scene.fog.density=.008+p*.005+night*.002;
+ hemi.intensity=2.1-p*.85-night*.55;sunlight.intensity=Math.max(.05,2.6-p*1.95-night*.55);const rf=roadFrame(Math.min(distance,1140));sunlight.position.set(rf.x+35,rf.y+34-p*10,rf.z-70);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=1.16-p*.16-night*.08;
+ if(onBike()||state==='intro'||state==='ended'||state==='dismounting')placePlayerBike(dt);
+ if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
+ else if(state==='walking')updateWalk(dt);
+ else{eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(camera.position);eyeRig.getWorldQuaternion(camera.quaternion);}
+ camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=distance;ctx.speed=speed;ctx.lateral=lateral;ctx.state=state;
+ friends.update(dt,ctx);ambient.update(dt,ctx);
+ sky.position.copy(camera.position);
+ const minute=42+Math.floor(p*18);$('date').innerHTML=p>.83?'AUGUST, 2011 <i></i> AS YOU REMEMBER IT':`AUGUST 21, 2011 <i></i> ${minute<60?'7:':'8:'}${String(minute%60).padStart(2,'0')} PM`;
+ if(audio&&!muted&&active()){camera.getWorldDirection(_v);audio.update(dt,{speed,pedal:bikeAudio.pedal,coasting:bikeAudio.coasting,onBike:onBike(),p,night,finale:ctx.finale,listener:camera.position,forward:_v,friendsLeft:friends.list.filter(f=>!f.inside).length,state,crank:pedalPhase,sources:ambient.sources});}
+}
+const _c1=new THREE.Color(),_c2=new THREE.Color();
+function frame(stamp){const dt=Math.min((stamp-lastStamp)/1000,.05);lastStamp=stamp;if(!qa){if(state!=='paused')update(dt);renderer.render(scene,camera);}requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+// Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
+// In QA mode the page is driven only by these calls, so runs are repeatable.
+if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(h);},render(){renderer.render(scene,camera);return renderer.info.render;},press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
+ get state(){return {state,distance,speed,lateral,look,finaleT,callDone,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera};
