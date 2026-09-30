@@ -11,9 +11,10 @@ export function surfaceMaterial(material,kind){
   let detail='';
   if(kind==='asphalt')detail=`float grain=softNoise(vSurface.xz*115.);float broad=softNoise(vSurface.xz*.8);float aa=1.-smoothstep(.03,.2,length(fwidth(vSurface.xz)));diffuseColor.rgb*=.91+.1*broad+(grain-.5)*.18*aa;`;
   if(kind==='concrete')detail=`float wear=softNoise(vSurface.xz*6.)*.5+softNoise(vSurface.xz*.5)*.5;diffuseColor.rgb*=.92+.12*wear;`;
-  if(kind==='roof')detail=`float row=floor(vSurface.y*8.);float seam=1.-smoothstep(.03,.14,abs(fract(vSurface.y*8.)-.5));float fleck=softNoise(vSurface.xz*28.);diffuseColor.rgb*=.9+.12*fleck-.07*seam;`;
+  if(kind==='bark')detail=`float grain=softNoise(vec2((vSurface.x+vSurface.z)*18.,vSurface.y*1.4));diffuseColor.rgb*=.83+.24*grain;`;
+  if(kind==='roof')detail=`float row=vSurface.y*7.;float along=(vSurface.x+vSurface.z)*3.6+floor(row)*.5;float aa=1.-smoothstep(.08,.45,fwidth(row));float seam=(1.-smoothstep(0.,.09,fract(row)))*.15+(1.-smoothstep(0.,.04,fract(along)))*.07;float tile=hsh(floor(vec2(along,row)));float fleck=softNoise(vSurface.xz*32.);diffuseColor.rgb*=(.86+.20*tile-seam*aa)+(.06*fleck-.03)*aa;`;
   // Lap siding: a soft shadow line under each board, fading out before it would shimmer.
-  if(kind==='siding')detail=`float fade=softNoise(vSurface.xz*.4);float lap=fract(vSurface.y*2.78);float aa=1.-smoothstep(.04,.2,fwidth(vSurface.y*2.78));diffuseColor.rgb*=(.96+.06*fade)*mix(1.,.87+.13*smoothstep(0.,.16,lap),aa);`;
+  if(kind==='siding')detail=`float fade=softNoise(vSurface.xz*.4);float lap=fract(vSurface.y*5.55);float aa=1.-smoothstep(.04,.2,fwidth(vSurface.y*5.55));diffuseColor.rgb*=(.96+.06*fade)*mix(1.,.87+.13*smoothstep(0.,.16,lap),aa);`;
   // Running-bond brick with mortar joints, measured along whichever wall it is on.
   // Board fence: vertical board seams along whichever direction the fence runs.
   if(kind==='fence')detail=`float along=(vSurface.x-vSurface.z)*6.6;float aa=1.-smoothstep(.05,.25,fwidth(along));float seam=1.-smoothstep(0.,.12,fract(along));float grain=softNoise(vec2(floor(along),vSurface.y*.7));diffuseColor.rgb*=(.9+.18*grain)*(1.-.28*seam*aa);`;

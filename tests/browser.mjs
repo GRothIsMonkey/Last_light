@@ -50,7 +50,7 @@ try{
  check('mouse captured in Chromium',await page.evaluate(()=>document.pointerLockElement===document.querySelector('#world')));
  await page.mouse.click(720,450);await page.keyboard.press('r');check('click while locked keeps capture',await page.evaluate(()=>document.pointerLockElement===document.querySelector('#world')));
  await page.keyboard.down('w');await page.evaluate(()=>lastLight.step(3));await page.keyboard.up('w');check('W key pedals',(await state()).distance>5);
- await page.keyboard.press('Space');check('bell schedules real Web Audio sources',await page.evaluate(()=>lastLight.audio().activeShots>0));
+ await page.keyboard.press('Space');await page.evaluate(()=>lastLight.step(.13));check('bell schedules real Web Audio sources',await page.evaluate(()=>lastLight.audio().activeShots>0));
  // Headless audio still runs in real time; accelerate only after muting.
  await page.keyboard.press('m');check('M mutes sound under pointer lock',await page.evaluate(()=>!lastLight.audio().enabled));await page.evaluate(()=>lastLight.look(0,-.7));await page.evaluate(()=>lastLight.step(.25));await snap('02-pedaling');
  await page.evaluate(()=>lastLight.look(0,0));await page.keyboard.press('Escape');const paused=await state();await page.evaluate(()=>lastLight.step(5));check('QA pause freezes simulation',(await state()).distance===paused.distance&&(await state()).state==='paused');
@@ -121,15 +121,46 @@ try{
  for(const [i,h] of picks.entries()){const plan={u:h.u,side:h.side},tag=`house-q${i+1}-${h.name}`;
   await camAt(tag+'-front-corner',{plan,from:[h.w/2+6,2.0,h.depth/2+9],at:[0,2.4,0]});await camAt(tag+'-side',{plan,from:[h.w/2+11,1.8,.5],at:[0,2.2,0]});await camAt(tag+'-back-corner',{plan,from:[-(h.w/2+6),2.4,-(h.depth/2+10)],at:[0,2.4,0]});}
  await page.evaluate(()=>{lastLight.place(lastLight.state.distance,-.3,4);let n=0;while(lastLight.state.distance<402&&n++<9000)lastLight.step(1/30);});await portrait('character-mom','mom',[.5,.05,-1.4]);
+ // Player-reported regressions, tested with actual input and rendered contact frames.
+ await page.evaluate(()=>{lastLight.reset();lastLight.press('KeyW');lastLight.step(8);lastLight.release('KeyW');lastLight.press('KeyS');lastLight.step(13);lastLight.release('KeyS');lastLight.look(0,-1.1);});
+ check('all four riders stop with feet down',await page.evaluate(()=>lastLight.friends.list.every(f=>f.speed<.25&&Math.min(f.person.joints.lankle.y,f.person.joints.rankle.y)<.078)&&lastLight.self.joints.lankle.y<.078));
+ await snap('polish-stopped-player',{clean:true});for(const who of ['jamie','sam','alex'])await camAt('polish-stopped-'+who,who,[1.7,.05,-1.2],[0,.65,0]);
+ await page.evaluate(()=>{lastLight.look(0,-.8);lastLight.step(.05);});await snap('polish-bell-before',{clean:true});
+ const wrist=await page.evaluate(()=>lastLight.self.joints.lwrist.toArray());await page.keyboard.press('Space');await page.evaluate(()=>lastLight.step(.13));
+ check('bell hand reaches and lever presses at the strike',await page.evaluate(w=>Math.hypot(...lastLight.self.joints.lwrist.toArray().map((v,i)=>v-w[i]))>.035&&Math.abs(lastLight.playerBike.bell.lever.rotation.x)>.2,wrist));await snap('polish-bell-press',{clean:true});
+ await page.evaluate(()=>lastLight.step(.7));check('bell lever returns',await page.evaluate(()=>lastLight.playerBike.bell.lever.rotation.x===0));await snap('polish-bell-return',{clean:true});
+ check('only contextual bell control shown while riding',(await state()).prompt==='Space:Ring bell');
+ const signCount=await page.evaluate(()=>lastLight.world.originals.filter(o=>o.name==='sign-face').length);
+ for(let i=0;i<signCount;i++){
+  const data=await page.evaluate(async i=>{const T=await import('./three.module.js'),W=lastLight.world,o=W.originals.filter(o=>o.name==='sign-face')[i],g=o.geometry;g.computeBoundingBox();const p=g.boundingBox.getCenter(new T.Vector3()),n=new T.Vector3().fromBufferAttribute(g.attributes.normal,0).normalize();lastLight.camera.position.copy(p).addScaledVector(n,1.7);lastLight.camera.lookAt(p);lastLight.scene.children.find(o=>o.isMesh&&o.geometry?.parameters?.radius===350)?.position.copy(lastLight.camera.position);lastLight.camera.updateMatrixWorld();return {name:o.userData.sign,map:o.material.map?.uuid,preserved:W.merged.some(m=>m.material.map===o.material.map)};},i);
+  check('sign texture survives batching '+i+' '+data.name,!!data.map&&data.preserved);await snap('polish-sign-'+String(i).padStart(2,'0'),{clean:true});
+ }
+ for(const side of [-1,1])for(const direction of ['up','down'])for(const slow of [false,true]){
+  await page.evaluate(({side,direction})=>{const W=lastLight.world;let d=80;while(d<1050&&(W.drivewayOpenings.some(c=>c.side===side&&c.d1>d-1&&c.d0<d+23)||W.obstacles.some(o=>o.d1>d-1&&o.d0<d+23&&Math.sign(o.l0)===side&&Math.min(Math.abs(o.l0),Math.abs(o.l1))<8)))d++;lastLight.place(d,side*(direction==='up'?4.25:7.5),2.8);lastLight.look(0,-.95);lastLight.press('KeyW');lastLight.press(side*(direction==='up'?1:-1)>0?'KeyD':'KeyA');}, {side,direction});
+  const tag=`polish-curb-${side<0?'left':'right'}-${direction}-${slow?'slow':'normal'}`;
+  const contact=await page.evaluate(({slow,direction})=>{let maxOffset=0,front=null,rear=null;for(let i=0;i<(slow?850:120);i++){if(slow){if(lastLight.state.speed>1.1)lastLight.press('KeyS');else lastLight.release('KeyS');}lastLight.step(1/30);const c=lastLight.contact.state;maxOffset=Math.max(maxOffset,Math.abs(c.offset));front=front||c.events.find(e=>e.wheel==='front'&&e.direction===direction);rear=rear||c.events.find(e=>e.wheel==='rear'&&e.direction===direction);if(front&&rear)break;}return {front,rear,maxOffset};},{slow,direction});
+  check(tag+' front and rear contacts',contact.front&&contact.rear&&contact.maxOffset<.009);await snap(tag,{clean:true});
+  await page.evaluate(()=>{for(const k of ['KeyW','KeyS','KeyA','KeyD'])lastLight.release(k);});
+ }
+ await page.evaluate(()=>{lastLight.reset();lastLight.press('KeyW');});await advanceTo(1136.5);await page.evaluate(()=>{lastLight.release('KeyW');lastLight.step(38);lastLight.key('KeyF');lastLight.step(2);});
+ await page.evaluate(()=>{const d=lastLight.ending.drawing.position;lastLight.camera.position.copy(d).add({x:0,y:1.5,z:8});lastLight.camera.lookAt(d.x,d.y+1.5,d.z+30);lastLight.camera.updateMatrixWorld();lastLight.ending.update(.1,{callDone:true,fade:0,ended:false,camera:lastLight.camera});lastLight.ending.update(.1,{callDone:true,fade:0,ended:false,camera:lastLight.camera});});
+ check('fifth chalk rider appears only after call and looking away',await page.evaluate(()=>lastLight.ending.state.fifthRider));
+ await page.evaluate(()=>{const d=lastLight.ending.drawing.position;lastLight.camera.position.copy(d).add({x:.4,y:1.4,z:1});lastLight.camera.lookAt(d);lastLight.camera.updateMatrixWorld();});await snap('polish-fifth-rider',{clean:true});
+ await page.evaluate(()=>{const s=lastLight.state;lastLight.walkTo(s.distance,s.lateral+.8);lastLight.step(.1);});check('bike prompt becomes Go home',(await state()).prompt==='F:Go home');await snap('polish-go-home');
+ await page.evaluate(()=>{lastLight.reset();lastLight.step(.1);});check('replay resets added lore and impact state',await page.evaluate(()=>!lastLight.ending.fifth.visible&&!lastLight.ending.state.fifthRider&&lastLight.contact.state.events.length===0));
+ // A laptop title screen must keep the complete controls and buttons available.
+ await page.setViewportSize({width:1280,height:720});await page.waitForFunction(()=>Math.abs(lastLight.camera.aspect-1280/720)<.001);await page.evaluate(()=>{lastLight.toTitle();lastLight.step(.1);});await snap('polish-title-laptop');
+ check('laptop title controls fit',await page.locator('.controls').evaluate(el=>el.getBoundingClientRect().bottom<=innerHeight&&lastLight.state.state==='intro'&&getComputedStyle(document.querySelector('#prompt')).visibility==='hidden'));await page.setViewportSize({width:1440,height:900});
+
  const gpu=await page.evaluate(()=>{const gl=lastLight.renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'unavailable';});
  // Real Web Audio renders of every important synthesized sound, retained for listening.
  const audioReport=await page.evaluate(async()=>{
   const {createAudio}=await import('./audio.js');const clips=[];
-  for(const name of ['rolling','grass','coasting','footstep-asphalt','footstep-grass','bell','sprinkler','dribble','rim','doorOpen','doorSlam','garage','bikeDrop','kickstand','engineOff','dog','creak','bird','call','morning-neighborhood','evening-neighborhood','ending']){
+  for(const name of ['rolling','grass','coasting','footstep-asphalt','footstep-grass','bell','curb','sprinkler','dribble','rim','doorOpen','doorSlam','garage','bikeDrop','kickstand','engineOff','dog','creak','bird','call','morning-neighborhood','evening-neighborhood','ending']){
    const ctx=new OfflineAudioContext(2,48000*(name==='ending'?10:7),48000);let seed=2011;const audio=createAudio({context:ctx,random:()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}});audio.ensure();audio.setEnabled(true);
    const ready=ctx.suspend(.75),rendering=ctx.startRendering();await ready;
    const ride={speed:4.5,pedal:true,coasting:false,onBike:true,surface:'asphalt',p:.2,night:0,finale:0,listener:{x:0,y:1.5,z:0},forward:{x:0,z:-1},friendsLeft:3,state:'riding',crank:2,sources:[]};
-   if(name==='rolling'||name==='grass'||name==='coasting'){audio.update(1/30,{...ride,surface:name==='grass'?'grass':'asphalt',coasting:name==='coasting',p:1,night:0,finale:2});}
+   if(name==='rolling'||name==='grass'||name==='coasting'){audio.update(1/30,{...ride,surface:name==='grass'?'grass':'asphalt',coasting:name==='coasting',pedal:name!=='coasting',p:1,night:0,finale:2});}
    else if(name.startsWith('footstep-'))audio.footstep(name.slice(9),1.1);
    else if(name==='morning-neighborhood'||name==='evening-neighborhood')audio.update(1/30,{...ride,p:name.startsWith('evening')?1:.1,night:name.startsWith('evening')?.8:0,speed:0,onBike:false,friendsLeft:name.startsWith('evening')?0:3,sources:name.startsWith('evening')?[]:[{kind:'mower',pos:{x:-25,y:0,z:-20},level:1},{kind:'engine',pos:{x:14,y:0,z:-10},level:.6}]});
    else if(['bell','call','ending'].includes(name))audio[name]();else audio.sfx(name,null);

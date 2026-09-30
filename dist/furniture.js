@@ -68,8 +68,9 @@ export function buildFurniture(W){
   if(j.side>0){const u0=j.d+(j.half+j.corner+3),c=pole(MAIN,u0,CF+.9,{ground:groundMain(u0,CF+.9),arm:Math.PI/2});span(prev,c);prev=c;}
   for(let u=j.corner+22;u<f.length+30;u+=42){let uu=u;for(let k=0;k<6&&onCut(f.id,-1,uu,1);k++)uu+=2.5;const p=f.point(uu,v),gy=p.y+LAWN;const pl=pole(f,uu,v,{ground:gy,transformer:branch.length%2===1});span(prev,pl);prev=pl;branch.push(pl);}
  });
- // Service drops: every house near the line gets its own wire, pole to eave.
+ // A sparse selection of service drops; the continuous pole network is unchanged.
  for(const h of [...W.plans,...W.sidePlans.filter(p=>p.lod==='full')]){
+  if(h.seedA>.27&&!h.key)continue;
   const q=h.toWorld(h.hasGarage?-h.gs*h.w/2:h.w/2,h.front-1.2),target=new THREE.Vector3(q.x,q.ground+h.h-.35,q.z);
   let best=null,bd=1e9;for(const p of poles){const d=Math.hypot(p.x-q.x,p.z-q.z);if(d<bd){bd=d;best=p;}}
   if(best&&bd<52)wire(sag(best.at(0,7.1),target,.35+bd*.008,10),0x322c28,'drop');
@@ -81,7 +82,7 @@ export function buildFurniture(W){
  const signs=W.signs=[];
  // A sign face: front (and optionally a printed back), set in a thin rim so no edge is ever see-through.
  function plate(g,w,h,y,tex,fallback,{back=null,alpha=false,rot=0,shape='rect',name=''}={}){
-  const pg=new THREE.Group();pg.position.y=y;pg.rotation.y=rot;g.add(pg);
+  const pg=new THREE.Group();pg.position.y=y;pg.position.x=back===true?0:Math.sin(rot)*.065;pg.position.z=back===true?0:Math.cos(rot)*.065;pg.rotation.y=rot;g.add(pg);
   const face=(t,flip)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),t?new THREE.MeshStandardMaterial({map:t,roughness:.55,transparent:alpha,alphaTest:alpha?.5:0}):K.mat(fallback));m.name='sign-face';m.position.z=flip?-.012:.012;if(flip)m.rotation.y=Math.PI;m.userData.sign=name;pg.add(m);return m;};
   face(tex,false);if(back!==null)face(back===true?tex:back,true);else{const r=new THREE.Mesh(new THREE.PlaneGeometry(w*.98,h*.98),K.mat(0x9a9c98));r.rotation.y=Math.PI;r.position.z=-.012;pg.add(r);}
   if(shape==='rect'){const rim=new THREE.Mesh(K.boxGeo,K.mat(0x8d908b));rim.scale.set(w,h,.02);pg.add(rim);}
@@ -95,7 +96,11 @@ export function buildFurniture(W){
  const octagon=paint(128,128,(c,w,h)=>{c.fillStyle='#b8322c';c.beginPath();for(let k=0;k<8;k++){const a=Math.PI/8+k*Math.PI/4;c.lineTo(w/2+Math.cos(a)*w*.48,h/2+Math.sin(a)*h*.48);}c.closePath();c.fill();c.strokeStyle='#f2efe8';c.lineWidth=5;c.stroke();text(c,'STOP',w/2,h/2+2,34,'#f7f4ee');});
  // At each junction: stop sign for the cross street, both names on double-sided blades above it.
  for(const j of JUNCTIONS){const sg=j.side>0?1:-1,C=[j.d+sg*(j.half+j.corner),j.side*(CF+j.corner)],r=j.corner-1.05,a=Math.PI/4;
-  const u=C[0]-sg*r*Math.sin(a),v=C[1]-j.side*r*Math.cos(a),g=post(MAIN,u,v,3.1,groundMain(u,v));
+  // Keep the assembly clear of the junction utility pole, on the same curb arc.
+  const candidates=[a,.22,1.35].map(angle=>{const u=C[0]-sg*r*Math.sin(angle),v=C[1]-j.side*r*Math.cos(angle),p=MAIN.point(u,v);return {u,v,clearance:Math.min(...poles.map(q=>Math.hypot(q.x-p.x,q.z-p.z)))};});
+  const {u,v}=candidates.find(p=>p.clearance>2.1)||candidates.sort((a,b)=>b.clearance-a.clearance)[0],g=post(MAIN,u,v,2.59,groundMain(u,v));
+  // Double-sided blades sit above the post, joined only through the gaps.
+  K.cyl(g,0,2.61,0,.025,.03,0x8d908b,6);K.cyl(g,0,2.85,0,.025,.07,0x8d908b,6);
   // Main-street blade runs along Oak Hollow; the cross-street blade runs along the cross street.
   plate(g,1.2,.19,2.72,blade(STREETS.main),STREET.sign,{back:true,rot:Math.PI/2,name:STREETS.main});
   plate(g,1.2,.19,2.98,blade(j.name),STREET.sign,{back:true,rot:0,name:j.name});

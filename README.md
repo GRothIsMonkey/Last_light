@@ -4,17 +4,9 @@ A short first-person bicycle memory set on August 21, 2011. Ride through a warm 
 
 A normal playthrough takes about **5–6 minutes**: roughly 4–4.5 minutes of riding, then a quiet stop at the end of the street. The memory fades by itself about 100 seconds after you stop. Stopping during the ride can extend the experience.
 
-**This branch** (`claude/epic-planck-cme9eq`) is the structural polish pass on top of the v0.1 release (`codex/astra-v0.1-release`). It is not merged into `main`. The v0.1 story, pacing, departures, ending and audio are unchanged. What changed:
+**Final polish release:** `codex/astra-last-light-final-polish`, based directly on Claude's structural pass at `59c647220e80d12da0d205b1562d483cc5bdb7f3`. It preserves the route, pacing, distinct departures, neighborhood, settings and lookout interactions. This pass adds fuller sidewalk access and wheel-by-wheel curb feedback, an animated bell reach, grounded stopping poses, richer house/bike/character details, corrected signs, quieter service wiring, refined menus and a restrained final memory anomaly.
 
-- the world around the ride
-- houses, streets, bikes and people
-- riding feel
-- menus and settings
-- a few small interactions at the end of the street
-- memory lines
-- two quiet ending details
-
-See **[docs/ASTRA_HANDOFF.md](docs/ASTRA_HANDOFF.md)** for what changed, where everything lives and what the final art pass should focus on, and [docs/TEST_REPORT.md](docs/TEST_REPORT.md) for verification. The v0.1 release notes remain in [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md).
+See **[docs/ASTRA_FINAL_RELEASE.md](docs/ASTRA_FINAL_RELEASE.md)** for the complete release record, [docs/TEST_REPORT.md](docs/TEST_REPORT.md) for measured verification, and [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md) for release history. [docs/ASTRA_HANDOFF.md](docs/ASTRA_HANDOFF.md) preserves the preceding structural handoff.
 
 ## Play
 
@@ -22,17 +14,17 @@ The title screen shows the controls. During play, only the key that matters righ
 
 - **W / Up:** pedal. Hold it a while, or add **Shift**, to push harder; you tire, and it comes back when you ease off.
 - **S / Down:** brake.
-- **A / D or Left / Right:** steer. You can ride on the street, up driveway curb cuts and along the sidewalks, but not on lawns.
+- **A / D or Left / Right:** steer. Use the full sidewalk width or cross the curb and narrow roadside planting strip in either direction; driveway cuts remain smoother. Yards and solid obstacles stay outside the riding area.
 - **Mouse:** look around. The start button requests mouse capture; click the scene to capture again. If capture is unavailable, hold the mouse button and drag.
 - **Q / E:** look left / right, or turn while on foot.
 - **R:** center the view.
-- **Space:** ring the bell. Friends still riding look back, and a bell answers.
+- **Space:** reach to the bell, ring it and return your hand to the grip. Friends still riding look back, and a bell answers.
 - **F at the end of the street:**
   - get off the bike
   - push the tire swing
   - sit on the bench (and stand up)
   - crouch to look at the chalk
-  - get back on the bike
+  - get back on the bike (the prompt becomes **Go home** after the call)
 - **W A S D on foot:** walk around the lookout.
 - **Escape:** pause. From the pause menu: Keep riding, Settings, Start over, Back to the title.
 - **Settings** (from the title or pause), remembered in this browser:
@@ -82,6 +74,7 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
   - `dist/kit.js`: shared geometry helpers.
   - `dist/palette.js`: all colors.
   - `dist/materials.js`: surface shaders.
+- **Wheel contact:** `dist/ride-contact.js`: front/rear surface contacts and damped curb feedback.
 - **People:**
   - `dist/cast.js`: who everyone is.
   - `dist/rig.js`: bodies, heads, bikes, poses, IK.
@@ -95,13 +88,13 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
   - `dist/interactions.js`: end-of-street interactions.
   - `dist/ending.js`: the last minute's details.
 - **Tests:**
-  - `tests/verify.mjs`: 92 headless checks.
+  - `tests/verify.mjs`: simulation and geometry regression checks.
   - `tests/browser.mjs`: Chromium checks, screenshots and audio renders.
 - **QA material:** `docs/qa/`: screenshots, machine-readable results and listening clips.
 
 ## Verification
 
-**`npm test`** (Node.js only) loads the real modules and scene with a mocked WebGL renderer and DOM. It runs **92 checks**, covering:
+**`npm test`** (Node.js only) loads the real modules and scene with a mocked WebGL renderer and DOM. It covers:
 
 - world continuity and the edges of the world
 - side streets, street signs and houses
@@ -113,6 +106,7 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
 - riding, steering, head look, pushing and sidewalk riding
 - two complete playthroughs, ending both ways (riding home and staying until the fade)
 - replay and back to the title
+- both sidewalk edges, curb up/down on both sides, speed-scaled impacts, feet-down stops and the actual bell hand/lever movement
 
 `QUICK=1 npm test` skips the slow world-geometry sweeps.
 

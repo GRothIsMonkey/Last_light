@@ -12,7 +12,7 @@ export function createVegetation(W){
  const blob=new THREE.IcosahedronGeometry(1,1),flat=new THREE.IcosahedronGeometry(1,0);
  function crown(g,x,y,z,R,c,rand,lod,a){
   if(lod==='far'){const m=new THREE.Mesh(flat,solid(c));m.position.set(x,y,z);m.scale.set(R*1.05,R*.85,R*1.05);m.rotation.y=a;g.add(m);return;}
-  const cr=new THREE.Mesh(lod==='full'?leafGeometry:leafGeometrySmall,leaf(c));cr.position.set(x,y,z);cr.scale.set(R,R*.8,R);cr.rotation.y=a;g.add(cr);
+  const cr=new THREE.Mesh(lod==='full'?leafGeometry:leafGeometrySmall,leaf(c));cr.position.set(x,y,z);cr.scale.set(R*(.9+rand()*.2),R*(.85+rand()*.3),R*(.9+rand()*.2));cr.rotation.set(Math.sin(a)*.20,a,Math.cos(a)*.16);g.add(cr);
   const tufts=lod==='full'?2:1;for(let j=0;j<tufts;j++){const b=a+j*2.1+rand(),t=new THREE.Mesh(leafGeometrySmall,leaf(c));t.position.set(x+Math.cos(b)*R*.72,y+Math.sin(b*2)*R*.3,z+Math.sin(b)*R*.72);t.scale.set(R*.45,R*.38,R*.45);t.rotation.y=b;g.add(t);}
  }
  // Build a tree in local coordinates (ground at y = 0) under group g.
@@ -34,7 +34,7 @@ export function createVegetation(W){
    return {trunk:.1,crown:1*size};}
   // Maple and oak: flared trunk, forked limbs, a crown cluster at the end of every limb.
   const oak=kind==='oak',wide=oak?1.35:1,trunkH=(oak?3.2:4.2)*size,tr=(oak?.36:.28)*size;
-  const sides=oak?14:6;K.lathe(g,[[.001,-.35],[tr*1.9,-.35],[tr*1.45,-.05],[tr*1.12,.25],[tr,.7],[tr*.8,trunkH*.75],[tr*.62,trunkH]],0,0,0,bark,sides);
+  const sides=oak?14:10;K.lathe(g,[[.001,-.35],[tr*1.9,-.35],[tr*1.45,-.05],[tr*1.12,.25],[tr,.7],[tr*.8,trunkH*.75],[tr*.62,trunkH]],0,0,0,bark,sides);
   const n=oak?6:3,top=[0,trunkH,0];
   crown(g,0,trunkH+1.5*size,0,(1.6+rand()*.4)*size*(oak?1.15:1),leafC,rand,lod,0);
   for(let k=0;k<n;k++){const a=k/n*Math.PI*2+rand()*.8,reach=(1.7+rand()*.9)*size*wide,rise=(oak?.8:1.3+rand()*.8)*size,start=[0,trunkH*(.72+rand()*.2),0],end=[Math.cos(a)*reach,trunkH+rise,Math.sin(a)*reach];

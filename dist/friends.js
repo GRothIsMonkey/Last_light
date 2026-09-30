@@ -1,7 +1,7 @@
 // Friends ride with the player as independent riders, then each goes home in
 // a small readable sequence: ride in, stop, get off, deal with the bike, walk inside.
 import * as THREE from './three.module.js';
-import {createPerson,createBike,newPose,ridePose,walkPose,standPose,addWave,dismountKeys,samplePose,blendPose,copyPose,applyPose,poseBike,pushPose,PUSH_OFFSET,P,smooth,stride} from './rig.js';
+import {createPerson,blinkPerson,createBike,newPose,ridePose,walkPose,standPose,addWave,dismountKeys,samplePose,blendPose,copyPose,applyPose,poseBike,pushPose,PUSH_OFFSET,P,smooth,stride} from './rig.js';
 import {groundPoint,heading} from './route.js';
 import {CAST,FORMATION} from './cast.js';
 import {seeded,hashSeed} from './kit.js';
@@ -100,7 +100,7 @@ export function createFriends(scene,world,hooks={}){
   const targetLean=v>.5?clamp(-Math.atan(v*v*k/9.8),-.32,.32):(f.astride>.5?.05*Math.sign(f.lat||1):0);
   f.lean=damp(f.lean,targetLean+f.rock*.14,5,dt);
  }
- const rideOpts=f=>({stand:f.stand,astride:f.astride,steer:f.steer,look:f.look,lookPitch:0,rock:f.rock,geom:f.bike.geom,posture:(f.cast.build.posture||0)+(f.effort||0)*.08,shoulder:f.rock*.14});
+ const rideOpts=f=>({stopSide:f.mode==='ride'?[-1,1,0][f.slot]:0,stand:f.stand,astride:f.astride,steer:f.steer,look:f.look,lookPitch:0,rock:f.rock,geom:f.bike.geom,posture:(f.cast.build.posture||0)+(f.effort||0)*.08,shoulder:f.rock*.14});
  function rideLook(f,ctx,dt){
   let target=0,pitch=0;f.glance-=dt;f.bellLook-=dt;
   if(ctx.speaker===f.name||(f.bellLook>0&&f.bellLook<1.6)||(f.speed<.3&&f.mode==='ride')){target=lookAt(f,f.bd,f.blat,f.bpsi,ctx.eye.x,ctx.eye.z);}
@@ -194,6 +194,7 @@ export function createFriends(scene,world,hooks={}){
 
  function update(dt,ctx){
   for(const f of list){
+   blinkPerson(f.person,ctx.clock,f.slot+1);
    if(f.mode==='ride'&&ctx.distance>=f.leaveAt&&ctx.state!=='intro'){f.mode='leave';f.script=plan(f,ctx);f.step=0;}
    if(f.mode==='ride')ride(f,dt,ctx);
    f.posed=false;if(f.script&&f.step<f.script.length){if(f.script[f.step](dt,ctx))f.step++;}

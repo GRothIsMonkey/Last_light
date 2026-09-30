@@ -159,14 +159,16 @@ export function buildStreets(W){
  };
  // Where the bicycle may go: the asphalt, sidewalks, and the driveway cuts between them.
  // (The mouths of the side streets are open a few meters; the story continues straight on.)
- W.rideable=(d,lat,margin=.32)=>{
+ W.rideable=(d,lat,margin=.04)=>{
   const a=Math.abs(lat);
+  if(W.obstacles.some(o=>d>o.d0-.12&&d<o.d1+.12&&lat>o.l0-.12&&lat<o.l1+.12))return false;
   if(d>=culStart-.5){const cd=culDist(d,lat);if(cd<-margin&&d>=culStart)return true;if(a<=ROAD_HALF-margin&&d<=roadEndD+2)return true;
-   return cd>=XS.strip+margin*.6&&cd<=XS.walk-margin*.6;}
+   return cd>=-margin&&cd<=XS.walk-.025;}
   if(a<=ROAD_HALF-margin)return true;
   const j=J.find(j=>Math.sign(lat)===j.side&&Math.abs(d-j.d)<j.half+j.R+1);
   if(j){if(Math.abs(d-j.d)<=j.half-margin&&a<=CF+j.R+2)return true;for(const sg of [-1,1]){const C=[j.d+sg*(j.half+j.R),j.side*(CF+j.R)];if(sg*(d-j.d)>=j.half-.01&&a<=CF+j.R&&Math.hypot(d-C[0],lat-C[1])>=j.R+margin)return true;}}
-  if(a>=CF+XS.strip+margin*.6&&a<=CF+XS.walk-margin*.6&&!(j&&Math.abs(d-j.d)<j.half+j.R))return true;
+  if(a<=CF+XS.walk-.025&&!(j&&Math.abs(d-j.d)<j.half+j.R))return true;
+  if(j)for(const sg of [-1,1]){const C=[j.d+sg*(j.half+j.R),j.side*(CF+j.R)],o=j.R-Math.hypot(d-C[0],lat-C[1]);if(sg*(d-j.d)>=j.half-.01&&a<=CF+j.R&&o>=0&&o<=XS.walk-.025)return true;}
   const cut=W.cuts.find(c=>c.frame==='main'&&c.side===Math.sign(lat)&&d>c.u0+margin&&d<c.u1-margin);
   return !!cut&&a<=CF+XS.walk;
  };

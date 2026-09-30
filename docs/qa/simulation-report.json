@@ -1,5 +1,5 @@
 {
-  "passed": 92,
+  "passed": 102,
   "checks": [
     "all local assets resolve",
     "gentle continuous route with constant distance scale",
@@ -17,7 +17,7 @@
     "houses are closed on all four sides, with windows front, back and on open sides",
     "front doors open inward into a lit room, never into a wall",
     "Sam's garage has depth and clutter, and a door into the house",
-    "rideable surfaces: road, driveway cuts and sidewalks yes; lawns and curbs no",
+    "rideable surfaces: road, full sidewalks and curbs yes; yards no",
     "trees stand clear of roads, sidewalks and driveways",
     "power lines never end in the air: spans pole to pole, drops pole to house",
     "scattered props stay off sidewalks and driveways",
@@ -92,7 +92,17 @@
     "staying at the end of the street eventually fades to the ending on its own",
     "back to the title from the pause menu resets everything and waits",
     "ride up a driveway cut onto the sidewalk and along it",
-    "the planting strip keeps you on the sidewalk between driveways"
+    "steering off the sidewalk crosses the roadside strip without trapping the bike",
+    "junction signs stand clear of utility poles",
+    "the full visible sidewalk width is usable on both sides",
+    "curb up on left side: two wheels cross without getting stuck",
+    "curb down on left side: two wheels cross without getting stuck",
+    "curb up on right side: two wheels cross without getting stuck",
+    "curb down on right side: two wheels cross without getting stuck",
+    "wheel impacts scale with speed and settle without ringing",
+    "stopped riders plant support feet with individual sides",
+    "bell moves the actual left hand and lever, then returns them to the grip",
+    "replay clears wheel-impact and additional lore state"
   ],
   "metrics": {
     "maxGroundMismatch": 0.037,
@@ -109,13 +119,13 @@
     "treesPlaced": 1661,
     "wires": {
       "spans": 114,
-      "drops": 112,
+      "drops": 41,
       "guys": 1,
       "poles": 39
     },
-    "worldTriangles": 1432332,
-    "worldMeshes": 845,
-    "worldBuildMs": 5121,
+    "worldTriangles": 1621465,
+    "worldMeshes": 893,
+    "worldBuildMs": 4790,
     "gripReachErrorMeters": 0.0164,
     "pedalReachErrorMeters": 0,
     "surgeStandTimes": [
@@ -158,6 +168,5 @@
     },
     "second ride min group speed in departures": 4.23
   },
-  "testMethod": "Actual Three.js geometry and full state updates with a mocked WebGL renderer and DOM.",
-  "recordedWith": "npm test (tests/verify.mjs)"
+  "testMethod": "Actual Three.js geometry and full state updates with a mocked WebGL renderer and DOM."
 }

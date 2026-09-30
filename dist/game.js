@@ -2,7 +2,7 @@ import * as THREE from './three.module.js';
 import {LENGTH,chapters,memories,chapterAt,finale} from './story.js';
 import {LATERAL_LIMIT,roadFrame,groundPoint,roadGrade,heading} from './route.js';
 import {buildWorld,LOOKOUT} from './world.js';
-import {createPerson,createBike,newPose,ridePose,applyPose,poseBike,headPos,BIKE,smooth} from './rig.js';
+import {createPerson,createBike,newPose,ridePose,applyPose,poseBike,headPos,BIKE,smooth,P,gripPos} from './rig.js';
 import {createFriends,localToStreet} from './friends.js';
 import {CAST} from './cast.js';
 import {createAmbient} from './ambient.js';
@@ -11,6 +11,7 @@ import {createUI} from './ui.js';
 import {createNostalgia} from './nostalgia.js';
 import {createInteractions} from './interactions.js';
 import {createEnding} from './ending.js';
+import {createRideContact} from './ride-contact.js';
 
 const $=id=>document.getElementById(id), canvas=$('world');
 const clamp=THREE.MathUtils.clamp,damp=THREE.MathUtils.damp;
@@ -60,6 +61,7 @@ const bikeRoot=new THREE.Group();scene.add(bikeRoot);const playerBike=createBike
 const self=createPerson({...CAST.player,firstPerson:true});playerBike.group.add(self.group);const selfPose=newPose();
 const eyeRig=new THREE.Object3D();bikeRoot.add(eyeRig);
 const cockpit=playerBike.group;
+const contact=createRideContact();let bellTime=-1,bellStruck=false;
 
 let mouseYaw=0,mousePitch=0,headPitch=0,steerVelocity=0,lean=0,pedalPhase=0,lastMouse=null,lastPauseAt=-Infinity,yawOffset=0,steerAngle=0,astride=0,prevYaw=null,wheelTurn=0,kick=0,bikeLean=0;
 let lookInputAt=0,glance=0,manualLook=false,answerBellAt=-1,held=0,stamina=1,push=0,steerIn=0,psiVel=0,bikeY=null,bikePitch=0;
@@ -73,7 +75,7 @@ const onBike=()=>['riding','arriving','stopped','leaving'].includes(state);
 const active=()=>['riding','arriving','stopped','dismounting','walking','remounting','leaving'].includes(state);
 
 function setSound(on){if(!audio){audio=createAudio();audio.setVolume(ui.settings.volume);}audio.ensure();muted=!on;audio.setEnabled(on&&state!=='paused');$('sound').setAttribute('aria-pressed',String(on));$('sound').setAttribute('aria-label',on?'Mute sound':'Enable sound');$('sound').innerHTML=`SOUND <span>${on?'ON':'OFF'}</span>`;}
-function bell(){if(!onBike()||bellCooldown>0)return;bellCooldown=2;audio?.bell();friends.hearBell(ctx);const f=friends.answerer();
+function bell(){if(!onBike()||bellCooldown>0)return;bellCooldown=2;bellTime=0;bellStruck=false;friends.hearBell(ctx);const f=friends.answerer();
  if(distance<850&&captionTimer<1&&state==='riding'){showCaption('',f?'A bell answers from up ahead.':'The sound drifts down the street.');if(f)answerBellAt=clock+.65;}}
 function showCaption(who,text,time=7.5){$('subtitle').replaceChildren();if(who){const s=document.createElement('small');s.textContent=who;$('subtitle').append(s);}$('subtitle').append(document.createTextNode(text));$('subtitle').style.opacity='1';captionTimer=time;ctx.speaker=who||null;}
 // Captions: friends' lines can be switched off in Settings; the game's own few lines stay.
@@ -83,7 +85,7 @@ function pause(){if(!active())return;resumeState=state;state='paused';lastPauseA
 function resume(){if(state!=='paused')return;ui.closePanels();state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
 function finish(){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();ui.clear();setAct('');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;audio?.ending();}
 // Everything a replay needs to start clean: the ride, the finale, the interface and the world's small stories.
-function resetState(){glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
+function resetState(){contact.reset();bellTime=-1;bellStruck=false;playerBike.bell.lever.rotation.x=0;glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
  finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
  friends.reset();ambient.reset();ending.reset();interact.reset();nostalgia.reset();ui.clear();setAct('');audio?.reset();$('ending').hidden=true;$('pause').hidden=true;$('subtitle').style.opacity=0;}
 function reset(){resetState();state='intro';start();}
@@ -203,16 +205,29 @@ function updateRide(dt){
 }
 function placePlayerBike(dt){
  // The bike rides on whatever it is on (road, driveway cut, sidewalk), pitched by its two wheels.
- const rf=roadFrame(distance),p=groundPoint(distance,lateral),yF=groundY(distance+.5,lateral),yR=groundY(distance-.5,lateral),yT=(yF+yR)/2;
- bikeY=bikeY===null||dt===0?yT:damp(bikeY,yT,18,dt);bikePitch=damp(bikePitch,Math.atan2(yF-yR,1),12,dt);const y=bikeY;
+ const rf=roadFrame(distance),p=groundPoint(distance,lateral);
+ const hit=contact.update(dt,{d:distance,lat:lateral,yaw:yawOffset,speed,geom:playerBike.geom,groundY,baseY:(d,l)=>groundPoint(d,l).y,impact:e=>audio?.sfx('curb',null,{gain:(e.direction==='up'?.8:.6)*e.strength})}),yT=hit.height;
+ bikeY=bikeY===null||dt===0?yT:damp(bikeY,yT,18,dt);bikePitch=damp(bikePitch,hit.pitch,16,dt);const y=bikeY;
  bikeLean=damp(bikeLean,(state==='dismounting'||state==='walking'||state==='remounting')?.13:astride*.035,4,dt);
  bikeRoot.position.set(p.x,y,p.z);bikeRoot.rotation.set(bikePitch,-(rf.heading+yawOffset),lean+bikeLean,'YXZ');
  playerBike.wheel=wheelTurn;playerBike.crankAngle=pedalPhase;playerBike.steerAngle=steerAngle;playerBike.kickstand=kick;poseBike(playerBike);
  const bob=state==='riding'?Math.sin(pedalPhase*2)*Math.min(speed*.0012,.006):0;
- ridePose(selfPose,pedalPhase,{astride,steer:steerAngle,look:0,geom:playerBike.geom,posture:CAST.player.build.posture});applyPose(self,selfPose);
+ ridePose(selfPose,pedalPhase,{astride,steer:steerAngle,look:0,geom:playerBike.geom,posture:CAST.player.build.posture});
+ // Reach toward the bell, press its lever at 0.12 s, and return to the grip.
+ if(bellTime>=0){bellTime+=dt;const reach=smooth(bellTime/.12)*(1-smooth((bellTime-.20)/.20));
+  playerBike.steer.updateWorldMatrix(true,false);playerBike.group.updateWorldMatrix(true,false);
+  const target=playerBike.group.worldToLocal(playerBike.steer.localToWorld(playerBike.bell.position.clone()));
+  selfPose[P.lh]+=(target.x-.025-selfPose[P.lh])*reach;
+  selfPose[P.lh+1]+=(target.y+.015-selfPose[P.lh+1])*reach;
+  selfPose[P.lh+2]+=(target.z+.025-selfPose[P.lh+2])*reach;
+  playerBike.bell.lever.rotation.x=-reach*.4;
+  if(!bellStruck&&bellTime>=.12){bellStruck=true;audio?.bell();}
+  if(bellTime>.45){bellTime=-1;playerBike.bell.lever.rotation.x=0;}
+ }
+ applyPose(self,selfPose);
  // The eye sits where eyes are: in the (hidden) head, just behind the face. Looking down finds
  // the chest, arms, hands on the grips, knees and shoes on the pedals, all connected.
- headPos(selfPose,_v);eyeRig.position.set(_v.x,_v.y+EYE.up+bob,_v.z-EYE.forward);eyeRig.rotation.set(EYE.pitch+headPitch,look,-(lean+bikeLean)*.6,'YXZ');
+ headPos(selfPose,_v);eyeRig.position.set(_v.x,_v.y+EYE.up+bob+hit.offset,_v.z-EYE.forward);eyeRig.rotation.set(EYE.pitch+headPitch,look,-(lean+bikeLean)*.6,'YXZ');
 }
 function updateWalk(dt){
  let f=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0);
@@ -286,8 +301,8 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;
  if(['arriving','stopped','dismounting','walking','remounting','leaving'].includes(state))$('ride-ui').style.opacity=state==='arriving'?1:Math.max(0,1-finaleT/3);
  // Light and atmosphere follow the ride, then the last of the evening at the end of the street.
  const p=Math.min(1,distance/LENGTH),night=Math.min(1,ctx.finale/80);ctx.p=p;ctx.night=night;
- skyMat.uniforms.dusk.value=p;skyMat.uniforms.night.value=night;scene.fog.color.set(0xdbb79b).lerp(_c1.set(0x8f8caa),p*.88).lerp(_c2.set(0x555e7c),night*.75);scene.fog.density=.0058+p*.004+night*.001;
- hemi.intensity=2.0-p*.58-night*.48;hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p);sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4);const rf=roadFrame(Math.min(distance,1140));sunlight.position.set(rf.x+44,rf.y+30-p*21,rf.z-85);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=1.10-p*.06-night*.06;
+ skyMat.uniforms.dusk.value=p;skyMat.uniforms.night.value=night;scene.fog.color.set(0xe0b294).lerp(_c1.set(0x9991af),p*.88).lerp(_c2.set(0x53678c),night*.75);scene.fog.density=.0058+p*.004+night*.001;
+ hemi.intensity=2.05-p*.56-night*.40;hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p);sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4);const rf=roadFrame(Math.min(distance,1140));sunlight.position.set(rf.x+44,rf.y+30-p*21,rf.z-85);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=1.10-p*.06-night*.06;
  if(onBike()||state==='intro'||state==='ended'||state==='dismounting')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
  else if(state==='walking')updateWalk(dt);
@@ -307,20 +322,14 @@ const _c1=new THREE.Color(),_c2=new THREE.Color();
 // What the keys would do right now, shown only when it matters: a short riding tutorial,
 // then nothing until the end of the street.
 function promptItems(){
- if(state==='riding'){
-  if(!tut.pedaled)return [['W','Pedal'],['Mouse','Look around']];
-  if(idleTime>12)return [['W','Keep riding']];
-  if(!tut.steered&&distance>12&&distance<110)return [['A+D','Steer']];
-  if(!tut.bell&&distance>45&&distance<85)return [['Space','Ring your bell']];
-  if(!tut.shift&&distance>118&&distance<150)return [['Shift','Pedal harder']];
-  return null;}
- if(state==='stopped')return callDone?[['W','Ride home'],['F','Get off']]:[['F','Get off']];
+ if(state==='riding'||state==='arriving')return [['Space','Ring bell']];
+ if(state==='stopped')return [['F','Get off bike']];
  if(state==='walking'){const P=interact.pose;if(P)return P.id==='bench'&&!P.leaving?[['F','Stand up']]:null;
-  const walk=walkHint<6?[['W+A+S+D','Walk']]:[];
-  if(nearBike())return [...walk,['F',callDone?'Ride home':'Get back on']];
+  if(nearBike())return [['F',callDone?'Go home':'Get on bike']];
   const spot=interact.nearest(walkD,walkLat,walkYaw);if(spot)return [['F',spot.label]];
-  return walk.length?[...walk,['Mouse','Look around']]:null;}
- return null;}
+ }
+ return null;
+}
 function frame(stamp){const dt=Math.min((stamp-lastStamp)/1000,.05);lastStamp=stamp;if(!qa){if(state!=='paused')update(dt);renderer.render(scene,camera);}requestAnimationFrame(frame);}
 // Saved settings take effect before the first frame.
 for(const k of ['sensitivity','quality'])applySetting(k,ui.settings[k]);
@@ -328,6 +337,6 @@ requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
 if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);return renderer.info.render;},press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
- get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,audio:()=>audio,renderer,scene,playerBike,self,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},
+ get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,contact,audio:()=>audio,renderer,scene,playerBike,self,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},
  // QA only: put the bike somewhere on the street (screenshots of sidewalk riding etc.).
- place(d,lat,v=3){distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;}};
+ place(d,lat,v=3){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;}};

@@ -40,9 +40,9 @@ export function samplePose(out,keys,t){
 // Shared geometry and materials --------------------------------------------------
 const mats=new Map();
 export function material(color,extra={}){const key=color+JSON.stringify(extra);if(!mats.has(key))mats.set(key,new THREE.MeshStandardMaterial({color,roughness:.85,...extra}));return mats.get(key);}
-const vcMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.8}),vcMetal=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.25});
+const vcMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.8}),vcMetal=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.38,metalness:.38});
 const geos=new Map();
-function capsule(r,len){const key=r.toFixed(4)+':'+len;if(!geos.has(key))geos.set(key,new THREE.CapsuleGeometry(r,len,3,8));return geos.get(key);}
+function capsule(r,len){const key=r.toFixed(4)+':'+len;if(!geos.has(key))geos.set(key,new THREE.CapsuleGeometry(r,len,4,12));return geos.get(key);}
 // Icosahedra come out flat-shaded; a unit sphere's normals are just its positions.
 function sphereGeo(detail){const g=new THREE.IcosahedronGeometry(1,detail);g.setAttribute('normal',g.attributes.position.clone());return g;}
 const ball=sphereGeo(2);
@@ -88,15 +88,25 @@ export function headGeometry(face={},hair={},size=1){
  else if(H.style==='shaggy'){S(0,.036,.012,.111,.092,.116,c);S(0,-.018,.066,.092,.065,.05,c);for(const x of [-.04,0,.04])S(x,.066,-.088,.03,.024,.018,c,.35,0,x*4);for(const s of [-1,1])S(s*.093,.004,.018,.022,.05,.06,c);}
  else if(H.style==='ponytail'){S(0,.04,.012,.11,.09,.115,c);S(0,.0,.1,.035,.03,.04,c);S(0,-.08,.125,.04,.1,.04,c,.25);for(const s of [-1,1])S(s*.09,.0,.02,.02,.055,.065,c);}
  else{S(0,.042,.012,.105,.083,.11,c);}// cropped
+ if(H.style!=='cap')for(let i=0;i<9;i++){
+  const a=i*2.39996+(H.style==='swept'?.6:0),r=.038+(i%3)*.019;
+  const shade=new THREE.Color(c).multiplyScalar(.9+(i%4)*.05).getHex();
+  S(Math.cos(a)*r,.085+(i%3)*.008,Math.sin(a)*r,.022,.018,.044,shade,.20+Math.sin(a)*.2,a,.18,ball);
+ }
  const g=mergeParts(parts.map(q=>({...q,matrix:(q.matrix||new THREE.Matrix4()).premultiply(new THREE.Matrix4().makeScale(size,size,size))})));headCache.set(key,g);return g;
 }
-function shoeGeometry(upper,sole){return mergeParts([{geo:new THREE.CapsuleGeometry(.044,.13,3,8),color:upper,matrix:M4(0,.006,0,1.05,1,.86,Math.PI/2)},{geo:roundedBoxGeometry(.084,.024,.215,.01),color:sole,matrix:M4(0,-.03,0)},{geo:new THREE.BoxGeometry(.028,.01,.075),color:sole,matrix:M4(0,.043,-.035)}]);}
+function shoeGeometry(upper,sole){const parts=[{geo:new THREE.CapsuleGeometry(.044,.13,3,8),color:upper,matrix:M4(0,.006,0,1.05,1,.86,Math.PI/2)},{geo:roundedBoxGeometry(.084,.024,.215,.01),color:sole,matrix:M4(0,-.03,0)},{geo:new THREE.BoxGeometry(.028,.01,.075),color:sole,matrix:M4(0,.043,-.035)}];for(let i=0;i<3;i++)parts.push({geo:roundedBoxGeometry(.035,.006,.006,.002),color:sole,matrix:M4(0,.048,-.055+i*.018)});return mergeParts(parts);}
 // A loose fist: palm and curled fingers along local y, thumb on the inside.
 const HAND_CURL=-.9;
-function handGeometry(skin,bulk){return mergeParts([{geo:roundedBoxGeometry(.064*bulk,.05,.042,.018),color:skin,matrix:M4(0,.02,0)},{geo:roundedBoxGeometry(.06*bulk,.04,.034,.015),color:skin,matrix:M4(0,.05,.012,1,1,1,.7)},{geo:new THREE.CapsuleGeometry(.012,.028,2,6),color:skin,matrix:M4(-.03,.03,-.014,1,1,1,.3,0,.5)}]);}
+function handGeometry(skin,bulk){const parts=[{geo:roundedBoxGeometry(.064*bulk,.05,.042,.018),color:skin,matrix:M4(0,.02,0)},{geo:roundedBoxGeometry(.06*bulk,.04,.034,.015),color:skin,matrix:M4(0,.05,.012,1,1,1,.7)},{geo:new THREE.CapsuleGeometry(.012,.028,2,6),color:skin,matrix:M4(-.03,.03,-.014,1,1,1,.3,0,.5)}];
+ for(let i=0;i<4;i++)parts.push({geo:new THREE.CapsuleGeometry(.007,.019,3,8),color:skin,matrix:M4((i-1.5)*.014,.049,.028,1,1,1,.55)});return mergeParts(parts);}
 function torsoGeometry(c,b){const parts=[{geo:new THREE.CapsuleGeometry(.105*(b.bulk??1),.25,3,10),color:c.shirt,matrix:M4(0,0,0,1.22*(b.shoulders??1),1,.8*(b.bulk??1))}];
  if(c.trim!=null&&!c.collar)parts.push({geo:new THREE.TorusGeometry(.05,.008,4,16),color:c.trim,matrix:M4(0,.206,-.004,1.2,1,.55,Math.PI/2)});
  if(c.collar)for(const s of [-1,1])parts.push({geo:roundedBoxGeometry(.05,.012,.045,.005),color:c.trim??c.shirt,matrix:M4(s*.03,.212,-.045,1,1,1,-.5,s*.5,s*.25)});
+ for(const s of [-1,1])parts.push({geo:ball,color:c.shirt,matrix:M4(s*.12,.16,0,.055,.047,.057)});
+ const seam=new THREE.Color(c.shirt).multiplyScalar(.85).getHex();
+ parts.push({geo:new THREE.TorusGeometry(.096,.003,3,20),color:seam,matrix:M4(0,-.13,0,1.27,1,.8,Math.PI/2)});
+ for(const s of [-1,1])parts.push({geo:new THREE.CapsuleGeometry(.004,.09,2,5),color:seam,matrix:M4(s*.11,-.035,-.035,1,1,1,0,0,s*.12)});
  return mergeParts(parts);}
 export function createPerson(spec={}){
  const d=describe(spec),{face,hair,build,clothes:c}=d,bulk=build.bulk??1,group=new THREE.Group(),B=BODY,parts={};group.scale.setScalar(d.scale);
@@ -104,6 +114,8 @@ export function createPerson(spec={}){
  parts.pelvis=mesh(group,capsule(.085*bulk,.1),lower);parts.pelvis.scale.set(1,1,.82);
  parts.torso=mesh(group,torsoGeometry(c,build),vcMat);
  parts.neck=mesh(group,capsule(.036*bulk,.05),skin,false);parts.head=mesh(group,headGeometry(face,hair,build.head??1),vcMat);
+ const lids=[];
+ if(!d.firstPerson)for(const side of [-1,1]){const lid=new THREE.Mesh(ball,material(skin));const size=build.head??1;lid.position.set(side*(face.eyeGap??.036)*size,(face.eyeY??.012)*size,-.100*size);lid.scale.set(.018*size,.013*size,.005*size);lid.visible=false;parts.head.add(lid);lids.push(lid);}
  // In first person the head is only a shadow: the camera sits inside it (layer 1 is drawn by the sun only).
  if(d.firstPerson){parts.head.layers.set(1);parts.neck.layers.set(1);parts.neck.castShadow=true;}
  const shoe=shoeGeometry(c.shoes??0xe6e0d0,c.sole??0xf2efe6),hand=handGeometry(skin,bulk);
@@ -117,8 +129,12 @@ export function createPerson(spec={}){
   parts[s+'sock']=mesh(group,capsule(.047*bulk,.03),c.socks??0xf0ece2,false);
   parts[s+'shoe']=mesh(group,shoe,vcMat);
  }
- const person={group,parts,pose:newPose(),scale:d.scale,firstPerson:d.firstPerson,joints:{},build};
+ const person={group,parts,lids,pose:newPose(),scale:d.scale,firstPerson:d.firstPerson,joints:{},build};
  applyPose(person,person.pose);return person;
+}
+export function blinkPerson(person,time,seed=0){
+ const phase=(time+seed*1.37)%(3.7+seed*.43),close=phase<.14?Math.sin(phase/.14*Math.PI):0;
+ for(const lid of person.lids){lid.visible=close>.08;lid.scale.y=.014*(person.build.head??1)*close;}
 }
 const _v=[...Array(12)].map(()=>new THREE.Vector3()),_q=[...Array(7)].map(()=>new THREE.Quaternion()),_e=new THREE.Euler(),UP=new THREE.Vector3(0,1,0);
 function place(m,a,b){m.position.addVectors(a,b).multiplyScalar(.5);_v[11].subVectors(b,a).normalize();m.quaternion.setFromUnitVectors(UP,_v[11]);}
@@ -198,7 +214,7 @@ export function addWave(p,t,w){if(w<=0)return p;const sh=shoulderPos(p,1,_v[3]);
 // Bicycles -----------------------------------------------------------------------
 const V=(...a)=>new THREE.Vector3(...a);
 const toSteer=(G,x,y,z)=>V(x,y,z).sub(G.pivotV).applyQuaternion(G.rakeInv);
-function tube(parts,a,b,r,color,sides=7){const A=a.isVector3?a:V(...a),Bv=b.isVector3?b:V(...b),len=A.distanceTo(Bv);const m=new THREE.Matrix4().compose(A.clone().add(Bv).multiplyScalar(.5),new THREE.Quaternion().setFromUnitVectors(UP,Bv.clone().sub(A).normalize()),V(1,1,1));parts.push({geo:new THREE.CylinderGeometry(r,r,len,sides,1),color,matrix:m});}
+function tube(parts,a,b,r,color,sides=10){const A=a.isVector3?a:V(...a),Bv=b.isVector3?b:V(...b),len=A.distanceTo(Bv);const m=new THREE.Matrix4().compose(A.clone().add(Bv).multiplyScalar(.5),new THREE.Quaternion().setFromUnitVectors(UP,Bv.clone().sub(A).normalize()),V(1,1,1));parts.push({geo:new THREE.CylinderGeometry(r,r,len,sides,1),color,matrix:m});}
 function wheelGeometry(G,tire,knobby){const R=G.wheelR,parts=[{geo:new THREE.TorusGeometry(R-.025,knobby?.032:.026,6,28),color:tire,matrix:M4(0,0,0,1,1,1,0,Math.PI/2)},{geo:new THREE.TorusGeometry(R-.05,.009,4,28),color:0xb8bbb4,matrix:M4(0,0,0,1,1,1,0,Math.PI/2)},{geo:new THREE.CylinderGeometry(.022,.022,.1,8),color:0x9fa39c,matrix:M4(0,0,0,1,1,1,0,0,Math.PI/2)}];
  if(knobby)for(let k=0;k<18;k++){const a=k/18*Math.PI*2;parts.push({geo:new THREE.BoxGeometry(.05,.018,.03),color:tire,matrix:M4(0,Math.sin(a)*(R-.0),Math.cos(a)*(R-.0),1,1,1,a)});}
  return mergeParts(parts);}
@@ -241,9 +257,18 @@ export function createBike(spec,{grips=0x2b2b2d}={}){
  for(const s of [-1,1])tube(sp,toSteer(G,s*(gr[0]-.07),gr[1],gr[2]),toSteer(G,s*(gr[0]+.045),gr[1],gr[2]),.019,S.grips??grips,8);
  if(extras.includes('bell')||!S.style)sp.push({geo:ball,color:0xc8c6bc,matrix:new THREE.Matrix4().compose(toSteer(G,-.15,gr[1]+.025,gr[2]),new THREE.Quaternion(),V(.026,.018,.026))});
  if(extras.includes('reflector'))sp.push({geo:new THREE.BoxGeometry(.05,.07,.012),color:0xe8e4d8,matrix:new THREE.Matrix4().setPosition(toSteer(G,0,G.pivot[1]+.12,G.pivot[2]-.06))});
+ // Brake levers and curved cable housings follow the steering assembly.
+ for(const s of [-1,1]){
+  tube(sp,toSteer(G,s*(gr[0]-.085),gr[1],gr[2]),toSteer(G,s*(gr[0]-.025),gr[1]-.023,gr[2]-.055),.007,0x777c7d,8);
+  tube(sp,toSteer(G,s*(gr[0]-.085),gr[1],gr[2]),toSteer(G,s*(gr[0]-.10),gr[1]-.01,gr[2]-.04),.008,0x303437,6);
+  const curve=new THREE.QuadraticBezierCurve3(toSteer(G,s*(gr[0]-.10),gr[1]-.01,gr[2]-.04),toSteer(G,s*.13,gr[1]-.18,gr[2]-.24),toSteer(G,s*.03,G.wheelR+.12,G.front+.04));
+  sp.push({geo:new THREE.TubeGeometry(curve,10,.003,4,false),color:0x303437});
+ }
  const steerMesh=new THREE.Mesh(mergeParts(sp),vcMetal);steerMesh.castShadow=true;steer.add(steerMesh);
  const frontWheel=new THREE.Group();frontWheel.position.copy(axle);steer.add(frontWheel);const fw=new THREE.Mesh(wheelGeometry(G,tire,knobby),vcMat);fw.castShadow=true;frontWheel.add(fw,spokes(G));
  const bell={position:toSteer(G,-.15,gr[1]+.025,gr[2])};
+ bell.lever=new THREE.Mesh(roundedBoxGeometry(.026,.013,.036,.005),material(0x35393b,{roughness:.4,metalness:.45}));
+ bell.lever.position.copy(bell.position).add(V(-.022,-.008,.012));bell.lever.name='bell-lever';steer.add(bell.lever);
  // Cranks turn; pedals stay level.
  const crank=new THREE.Group();crank.position.copy(bb);frame.add(crank);
  const cp=[{geo:new THREE.TorusGeometry(.085,.008,4,20),color:0x8e908a,matrix:M4(.055,0,0,1,1,1,0,Math.PI/2)}];for(const s of [-1,1])cp.push({geo:new THREE.BoxGeometry(.016,G.crank,.024),color:0x55575a,matrix:M4(s*.075,s*G.crank/2,0)});
@@ -265,13 +290,14 @@ export function poseBike(bike){const G=bike.geom||DEFAULT_G;
 // Rider on a bicycle: seated, standing on the pedals, or stopped astride the frame.
 // posture tips the torso forward (+) or upright (-); geom is the rider's own bike.
 const _p=new THREE.Vector3();
-export function ridePose(p,crank,{stand=0,astride=0,steer=0,look=0,lookPitch=0,rock=0,geom=DEFAULT_G,posture=0,shoulder=0}={}){
+export function ridePose(p,crank,{stand=0,astride=0,steer=0,look=0,lookPitch=0,rock=0,geom=DEFAULT_G,posture=0,shoulder=0,stopSide=0}={}){
  const G=geom,lean=.62+posture+.12*stand-.40*astride+Math.abs(steer)*.1*(1-astride);
- set3(p,P.root,rock*.02,G.saddle[1]+.045+.1*stand-.12*astride,G.saddle[2]-.17*stand-.13*astride);p[P.yaw]=0;p[P.lean]=lean;p[P.roll]=-rock*.2;p[P.twist]=steer*.95*(1-astride)+shoulder;p[P.hy]=look;p[P.hp]=lookPitch;
+ set3(p,P.root,rock*.02+stopSide*.025*astride,G.saddle[1]+.045+.1*stand-.20*astride,G.saddle[2]-.17*stand-.13*astride);p[P.yaw]=0;p[P.lean]=lean;p[P.roll]=-rock*.2;p[P.twist]=steer*.95*(1-astride)+shoulder;p[P.hy]=look;p[P.hp]=lookPitch;
  for(const [o,side,po] of [[P.lf,-1,P.lfp],[P.rf,1,P.rfp]]){
   pedalPos(crank,side,_p,G);const a=crank+(side<0?Math.PI:0);
   const px=side*(G.pedalX+.035),py=_p.y+.062,pz=_p.z+.05,gx=side*.23,gy=BODY.ankle,gz=.06;
-  set3(p,o,px+(gx-px)*astride,py+(gy-py)*astride,pz+(gz-pz)*astride);p[po]=(.12*Math.sin(a)-.05)*(1-astride);
+  const plant=astride*(stopSide===0||side===stopSide?1:0);
+  set3(p,o,px+(gx-px)*plant,py+(gy-py)*plant,pz+(gz-pz)*plant);p[po]=(.12*Math.sin(a)-.05)*(1-plant);
  }
  gripPos(steer,-1,_p,G);set3(p,P.lh,_p.x+.01,_p.y+.02,_p.z+.02);gripPos(steer,1,_p,G);set3(p,P.rh,_p.x-.01,_p.y+.02,_p.z+.02);
  set3(p,P.lk,-.12,0,-1);set3(p,P.rk,.12,0,-1);set3(p,P.le,-.7,-.3,.6);set3(p,P.re,.7,-.3,.6);return p;

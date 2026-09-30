@@ -26,16 +26,17 @@ export function makeCar(K,g,kind,color,{lights=false}={}){
  const {W,L,r,belt,roof,hood}=S,xw=L/2-.95,clr=.3,arch=r+.07;
  const out=[[-L/2+.06,clr]];for(const cx of [-xw,xw]){out.push([cx-arch,clr]);for(let k=0;k<=6;k++){const a=Math.PI-k/6*Math.PI;out.push([cx+Math.cos(a)*arch,r+Math.sin(a)*arch*.95]);}out.push([cx+arch,clr]);}
  out.push([L/2-.06,clr],[L/2,.5],[L/2-.03,hood-.1],[L/2-.25,hood],[L/2-S.f[0],hood+.05],[-L/2+.25,belt+.02],[-L/2+.02,belt-.08],[-L/2,.52]);
- const body=K.extrude(g,out,W,.07,color,{curve:4,bevelSegments:1});body.rotation.y=Math.PI/2;
+ const paint=K.mat(color,{roughness:.38,metalness:.25});
+ const body=K.extrude(g,out,W,.075,paint,{curve:4,bevelSegments:1});body.rotation.y=Math.PI/2;
  // Greenhouse: glass with the roof and pillars in body color.
  const f0=L/2-S.f[0]-.05,f1=L/2-S.f[1],f2=L/2-S.f[2],b0=-L/2+S.b[0],b1=-L/2+S.b[1];
  const gl=kind==='pickup'?[[f0,hood+.05],[f1,roof-.02],[-.2,roof-.02],[-.25,belt]]:[[f0,hood+.05],[f2,roof-.02],[b0,roof-.02],[b1+.1,belt+.02]];
- const glass=K.extrude(g,[...gl,[gl[gl.length-1][0],belt],[f0,belt]],W*.9,.04,CAR.glass,{curve:2,bevelSegments:1});glass.rotation.y=Math.PI/2;
+ const glass=K.extrude(g,[...gl,[gl[gl.length-1][0],belt],[f0,belt]],W*.9,.04,K.mat(0x40515b,{roughness:.22,metalness:.42}),{curve:2,bevelSegments:1});glass.rotation.y=Math.PI/2;
  const roofPts=kind==='pickup'?[[f1-.02,roof-.04],[-.18,roof-.04],[-.18,roof+.02],[f1+.04,roof+.02]]:[[f2-.02,roof-.05],[b0+.05,roof-.05],[b0,roof+.02],[f2+.06,roof+.02]];
- const rf=K.extrude(g,roofPts,W*.92,.03,color,{curve:2,bevelSegments:1});rf.rotation.y=Math.PI/2;
+ const rf=K.extrude(g,roofPts,W*.92,.035,paint,{curve:2,bevelSegments:1});rf.rotation.y=Math.PI/2;
  for(const s of [-1,1]){const x=s*W*.452;// pillars
   for(const z of kind==='pickup'?[f0-.05,(f1-.2)/2,-.22]:[f0-.05,(f2+b0)/2+.1,b0+.18]){const p=K.box(g,x,(belt+roof)/2,-z,.05,roof-belt,.11,color);}
-  K.box(g,s*(W/2+.07),belt+.02,-(L/2-S.f[0]-.35),.12,.09,.16,color);// mirror
+  K.rbox(g,s*(W/2+.07),belt+.02,-(L/2-S.f[0]-.35),.15,.10,.19,.035,paint);// mirror
   K.box(g,s*(W/2+.004),belt-.3,-(L/2-S.f[0]-.6),.01,.5,.012,0x2a2b2c);K.box(g,s*(W/2+.004),belt-.3,-(L/2-S.f[0]-1.55),.01,.5,.012,0x2a2b2c);}
  if(kind==='pickup'){K.rbox(g,0,belt-.02,L/2-S.b[0]/2+.05-2.6,W,.1,.06,.02,color);for(const s of [-1,1])K.rbox(g,s*(W/2-.06),belt-.25,-(-L/2+1.25),.1,.5,2.45,.02,color);K.box(g,0,.62,L/2-.3,W*.9,.05,2.2,0x2b2b2d);}
  // Bumpers, grille, lights, plate.
@@ -43,9 +44,12 @@ export function makeCar(K,g,kind,color,{lights=false}={}){
  const head=lights?new THREE.MeshStandardMaterial({color:0xfff4d6,emissive:0xfff0c8,emissiveIntensity:1.2}):K.mat(0xe8e4d6),tail=lights?new THREE.MeshStandardMaterial({color:0xa02a22,emissive:0xff3020,emissiveIntensity:.9}):K.mat(0x9e3a30);
  for(const s of [-1,1]){K.box(g,s*(W/2-.28),.68,-L/2+.005,.36,.14,.06,head);K.box(g,s*(W/2-.14),.72,L/2-.005,.22,.2,.06,tail);}
  K.box(g,0,.45,L/2+.1,.5,.12,.02,0xe8e6de);
+ for(let k=0;k<3;k++)K.box(g,0,.61+k*.043,-L/2-.035,W*.49,.012,.018,0x888d8b);
+ for(const s of [-1,1]){K.rbox(g,s*(W/2+.012),belt-.13,-.2,.025,.035,.18,.008,0xb0b2ac);K.box(g,s*(W/2+.014),belt+.015,.1,.016,.028,L*.55,0x858a87);}
  const wheels=[];for(const s of [-1,1])for(const z of [-xw,xw]){const wg=new THREE.Group();wg.position.set(s*(W/2-.14),r,z);g.add(wg);
   const t=new THREE.Mesh(tireGeo(r),K.mat(CAR.tire));t.rotation.z=Math.PI/2;wg.add(t);const hc=new THREE.Mesh(hubGeo(r),K.mat(CAR.rim));hc.rotation.z=Math.PI/2;wg.add(hc);
-  K.box(wg,s*.125,r*.35,0,.01,.07,.05,0x6d706d);wheels.push(wg);}
+  for(let k=0;k<5;k++){const a=k*Math.PI*2/5;K.rod(wg,[s*.125,Math.sin(a)*r*.18,Math.cos(a)*r*.18],[s*.125,Math.sin(a)*r*.51,Math.cos(a)*r*.51],.018,CAR.rim,.013,3);}
+  K.cyl(wg,s*.13,0,0,.07,.025,0x686d70,10,[0,0,Math.PI/2]);wheels.push(wg);}
  return {wheels,head,tail,L,W};
 }
 
@@ -102,7 +106,7 @@ export function buildYards(W){
     else if(style==='picket'){K.box(bay,0,.35,-.03,len,.06,.04,mats.picket);K.box(bay,0,.85,-.03,len,.06,.04,mats.picket);if(lod==='full')for(let x=-len/2+.07;x<len/2;x+=.14)K.box(bay,x,.5,0,.08,.9,.02,mats.picket);else K.box(bay,0,.5,0,len,.9,.02,mats.picket);}
     else if(style==='chain'){K.box(bay,0,H/2+.03,0,len,H,.01,mats.chain);K.box(bay,0,H,0,len,.04,.04,0x8e928f);}
     else{K.box(bay,0,.45,0,len,.1,.07,FENCE.rail);K.box(bay,0,.9,0,len,.1,.07,FENCE.rail);}
-    if(k>0||i>0||endPosts){const pb=K.group(g,va,-ua,0);K.box(pb,0,(H+.12)/2,0,style==='chain'?.06:.1,H+.12,style==='chain'?.06:.1,postC);if(lod==='full'&&style==='privacy')K.box(pb,0,H+.14,0,.13,.03,.13,postC);}}
+    if(k>0||i>0||endPosts){const pb=K.group(g,va,-ua,0);K.box(pb,0,(H+.12)/2,0,style==='chain'?.06:.1,H+.12,style==='chain'?.06:.1,postC);if(lod==='full'&&style==='privacy')K.lathe(pb,[[.001,0],[.09,0],[.09,.025],[.07,.045],[.001,.045]],0,H+.1175,0,postC,4);}}
    if(i===pts.length-2&&endPosts){const pb=K.group(g,v1,-u1,0);K.box(pb,0,(H+.12)/2,0,.1,H+.12,.1,postC);}}
   return g;}
  W.fenceRun=fenceRun;
@@ -182,8 +186,10 @@ export function buildYards(W){
   for(let lat=-17;lat<=17.1;lat+=2.6)post(lat);
   for(const yy of [.55,1.05])for(let lat=-17;lat<17;lat+=2.6){const r=seeded(hashSeed(9,lat,yy))();K.rod(g,[lat,yy+knoll(fd,lat)-LAWN,-fd+.06],[lat+2.6,yy+knoll(fd,lat+2.6)-LAWN+(r-.5)*.05,-fd+.06],.05,FENCE.rail,.045,5);}
   W.obstacles.push({d0:fd-.3,d1:fd+.3,l0:-18,l1:18});}
- {const tall=K.mat(0x8e8a55,{flatShading:true});W.foliage.push(tall);const rand=seeded(77);
-  for(let k=0;k<160;k++){const lat=(rand()-.5)*32,d=1167.5+rand()*9.5;if(Math.abs(lat)<1&&d<1172)continue;const g=W.place(MAIN,d,lat,{y:groundPoint(d,lat).y+knoll(d,lat)-.05,rot:rand()*3});const c=new THREE.Mesh(new THREE.ConeGeometry(.12+rand()*.1,.5+rand()*.5,4),tall);c.position.y=.25;c.rotation.set((rand()-.5)*.3,0,(rand()-.5)*.3);g.add(c);}}
+ {const tall=K.mat(0x8a9263,{side:THREE.DoubleSide,roughness:1});W.foliage.push(tall);const rand=seeded(77);
+  for(let k=0;k<160;k++){const lat=(rand()-.5)*32,d=1167.5+rand()*9.5;if(Math.abs(lat)<1&&d<1172)continue;const g=W.place(MAIN,d,lat,{y:groundPoint(d,lat).y+knoll(d,lat)-.05,rot:rand()*3});for(let blade=0;blade<5;blade++){const h=.20+rand()*.36,w=.016+rand()*.018,bend=.06+rand()*.12;
+   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([-w,0,0,w,0,0,-w*.6,h*.55,bend*.3,w*.6,h*.55,bend*.3,bend*.35,h,bend],3));geo.setIndex([0,1,2,1,3,2,2,3,4]);geo.computeVertexNormals();
+   const c=new THREE.Mesh(geo,tall);c.rotation.y=rand()*Math.PI*2;c.position.set((rand()-.5)*.19,0,(rand()-.5)*.19);g.add(c);}}}
  {const d=1172.2,lat=-12.5,g=W.place(MAIN,d,lat,{y:groundPoint(d,lat).y+knoll(d,lat)});K.ball(g,0,.12,0,.12,0xb8643a,[1,1,1],true);hook('ball-in-grass',g);}
  chalkSun(3.2,1147.5,.034,0xf2cf7a);chalkText('JSA',LOOKOUT.chalk.lat,LOOKOUT.chalk.d,.034,0xe8e2d0,.6);hopscotch(-5.8,1135,-1,.034);hook('initials',null,{d:LOOKOUT.chalk.d,lat:LOOKOUT.chalk.lat});
  // Trees around the lookout and in the field beyond.

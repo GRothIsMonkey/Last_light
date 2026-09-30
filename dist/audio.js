@@ -21,6 +21,7 @@ export function createAudio({context=null,random=Math.random}={}){
   const ty=src();layers.tyre=gain(0);ty.connect(filt('bandpass',300,1.1)).connect(layers.tyre).connect(bus);
   const gr=src();layers.grit=gain(0);gr.connect(filt('highpass',3200)).connect(layers.grit).connect(bus);
   const fw=ctx.createOscillator();fw.type='square';fw.frequency.value=40;layers.free=gain(0);fw.connect(filt('highpass',2600)).connect(layers.free).connect(bus);fw.start();layers.freeOsc=fw;
+  const chain=src();layers.chain=gain(0);chain.connect(filt('bandpass',1650,1.7)).connect(layers.chain).connect(bus);
   crickets=[...Array(5)].map((_,i)=>({pan:-.8+i*.4,next:0,rate:.55+random()*.6,pitch:4300+random()*700,vol:.5+random()*.5}));
  }
  let volume=1;
@@ -43,6 +44,7 @@ export function createAudio({context=null,random=Math.random}={}){
   doorSlam(t,o){burst(t,.12,.35,'lowpass',1400,.8,o);tone(95,t,.18,.2,'sine',o,60);for(let k=0;k<4;k++)burst(t+.04+k*.035,.02,.06/(k+1),'bandpass',3000,3,o);burst(t+.16,.06,.1,'lowpass',1200,.8,o);},
   garage(t,o){const m=shot(ctx.createOscillator()),b=filt('lowpass',520),g=gain();m.type='sawtooth';m.frequency.value=112;env(g,t,.25,.07,3.3,'lin');m.connect(b).connect(g).connect(o);m.start(t);m.stop(t+3.7);
    for(let k=0;k<26;k++)burst(t+.2+k*.12+random()*.03,.03,.025,'bandpass',1800,2,o);burst(t+3.45,.14,.25,'lowpass',700,.7,o);},
+  curb(t,o){burst(t,.045,.055,'lowpass',620,.8,o);burst(t+.014,.045,.018,'bandpass',2100,2,o);tone(1240,t+.016,.085,.007,'sine',o);},
   bikeDrop(t,o){burst(t,.09,.3,'lowpass',900,.6,o);for(let k=0;k<5;k++)burst(t+.03+k*.05+random()*.02,.03,.1/(1+k*.4),'bandpass',2200+random()*1800,4,o);tone(930,t+.04,.5,.035,'sine',o);tone(2310,t+.05,.35,.02,'sine',o);},
   kickstand(t,o){burst(t,.02,.12,'bandpass',2600,3,o);tone(1850,t+.01,.18,.03,'sine',o);},
   engineOff(t,o){tone(55,t,.6,.08,'sawtooth',o,40);},
@@ -88,7 +90,8 @@ for(const [f,d] of [[220,0],[277.18,.5],[329.63,1.0],[440,1.6]])tone(f,t+d,6,.04
   set(layers.wind,.02+.012*Math.sin(t*.21)+(s.state==='walking'||s.state==='stopped'?.008:0),1);set(layers.rush,Math.min(.03,s.speed*s.speed*.0014));
   set(layers.traffic,(.022+.012*Math.max(0,Math.sin(t*.09)))*life*(1-night*.6),1.5);
   const roll=s.onBike?s.speed:0,grass=s.surface==='grass';set(layers.tyre,roll*(grass?.007:.011),.15);set(layers.grit,roll*(grass?.0035:.0016),.15);
-  layers.freeOsc.frequency.setTargetAtTime(Math.max(8,roll/1.95*16),t,.1);set(layers.free,s.coasting?Math.min(.012,roll*.004):0,.08);
+  set(layers.chain,s.onBike&&s.pedal?Math.min(.008,roll*.0014):0,.16);
+  layers.freeOsc.frequency.setTargetAtTime(Math.max(8,roll/1.95*16),t,.1);set(layers.free,s.onBike&&s.coasting?Math.min(.012,roll*.004):0,.08);
   if(s.pedal&&s.crank!==undefined){const half=Math.floor(s.crank/Math.PI);if(half!==lastCrank){lastCrank=half;burst(t,.03,.008,'bandpass',1900,2);}}
   // Crickets arrive as the light goes.
   const ck=smooth((p-.35)/.45)*.6+night*.25;for(const c of crickets){if(ck<.02)break;if(t>=c.next){c.next=t+1/c.rate*(.8+random()*.5);const o=gain(ck*c.vol*.9),pn=ctx.createStereoPanner();pn.pan.value=c.pan;o.connect(pn).connect(bus);

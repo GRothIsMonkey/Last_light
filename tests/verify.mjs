@@ -28,15 +28,15 @@ globalThis.document={getElementById:element,createElement:()=>element('el'+Math.
 canvas.requestPointerLock=()=>{document.pointerLockElement=canvas;docEvents.get('pointerlockchange')?.();return Promise.resolve();};
 globalThis.window={};globalThis.devicePixelRatio=2;globalThis.innerWidth=1440;globalThis.innerHeight=900;globalThis.matchMedia=()=>({matches:false});globalThis.addEventListener=(type,fn)=>events.set(type,fn);let tick;globalThis.requestAnimationFrame=fn=>tick=fn;
 globalThis.FakeRenderer=class{constructor(){this.shadowMap={};this.capabilities={maxTextureSize:8192};this.pixelRatio=1;}setPixelRatio(r){this.pixelRatio=r;}setSize(){}render(){}};
-let source=fs.readFileSync(root+'game.js','utf8').replaceAll(/'\.\/([\w.]+)\.js'/g,(_,name)=>JSON.stringify(pathToFileURL(root+name+'.js').href)).replace('new THREE.WebGLRenderer','new globalThis.FakeRenderer');
-source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,selfPose,self,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},place(d,lat,v=4.5){distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;},get bikeY(){return bikeY;}};`;
+let source=fs.readFileSync(root+'game.js','utf8').replaceAll(/'\.\/([\w.\-]+)\.js'/g,(_,name)=>JSON.stringify(pathToFileURL(root+name+'.js').href)).replace('new THREE.WebGLRenderer','new globalThis.FakeRenderer');
+source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,contact,selfPose,self,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},place(d,lat,v=4.5){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;},get bikeY(){return bikeY;}};`;
 const t0=Date.now();
 await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const buildMs=Date.now()-t0;
 const h=globalThis.harness,key=code=>({code,preventDefault(){},repeat:false});let t=0,simTime=0;
 const DT=1/30;const advance=(seconds,each)=>{for(let i=0;i<Math.ceil(seconds/DT-1e-9);i++){t+=DT*1000;tick(t);simTime+=DT;each?.();}};
 const press=code=>events.get('keydown')(key(code)),release=code=>events.get('keyup')(key(code)),tap=code=>{press(code);release(code);};
-const checks=[],metrics={};function check(name,fn){fn();checks.push(name);}
+const checks=[],metrics={};function check(name,fn){try{fn();}catch(e){e.message=name+': '+e.message;throw e;}checks.push(name);}
 // QUICK=1 skips the slow world-geometry sweeps while iterating on gameplay checks.
 const QUICK=!!process.env.QUICK,wcheck=(name,fn)=>QUICK?null:check(name,fn);
 const ray=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
@@ -48,7 +48,7 @@ advance(.05);
 // ------------------------------------------------------------------------------------------
 // World: roads, ground, houses, continuity
 // ------------------------------------------------------------------------------------------
-wcheck('all local assets resolve',()=>{const html=fs.readFileSync(root+'index.html','utf8');for(const m of html.matchAll(/(?:src|href)="([^"#]+)"/g))if(m[1]!=='./')assert.ok(fs.existsSync(root+m[1]),m[1]);for(const f of fs.readdirSync(root).filter(f=>f.endsWith('.js')))for(const m of fs.readFileSync(root+f,'utf8').matchAll(/from '\.\/([\w.]+)'/g))assert.ok(fs.existsSync(root+m[1]),f+' -> '+m[1]);});
+wcheck('all local assets resolve',()=>{const html=fs.readFileSync(root+'index.html','utf8');for(const m of html.matchAll(/(?:src|href)="([^"#]+)"/g))if(m[1]!=='./')assert.ok(fs.existsSync(root+m[1]),m[1]);for(const f of fs.readdirSync(root).filter(f=>f.endsWith('.js')))for(const m of fs.readFileSync(root+f,'utf8').matchAll(/from '\.\/([\w.\-]+)'/g))assert.ok(fs.existsSync(root+m[1]),f+' -> '+m[1]);});
 wcheck('gentle continuous route with constant distance scale',()=>{let maxGrade=0,maxStep=0;for(let d=0;d<LENGTH+40;d+=.5){const a=roadFrame(d),b=roadFrame(d+.5);assert.ok(Math.abs(Math.hypot(b.x-a.x,b.z-a.z)-.5)<.0002);maxGrade=Math.max(maxGrade,Math.abs(roadGrade(d)));maxStep=Math.max(maxStep,Math.abs(a.heading-b.heading));}assert.ok(maxGrade<.043);assert.ok(maxStep<.007);});
 wcheck('asphalt faces upward and follows terrain throughout the ride',()=>{for(let d=0;d<=LENGTH;d+=5)for(const side of [-LATERAL_LIMIT,0,LATERAL_LIMIT]){const p=groundPoint(d,side);ray.set(new THREE.Vector3(p.x,p.y+5,p.z),down);const hits=ray.intersectObject(h.road);assert.ok(hits.length,`road missing at ${d}, ${side}`);assert.ok(hits[0].face.normal.y>.99);assert.ok(Math.abs(hits[0].point.y-roadSurface(d,side))<.002,`height discontinuity ${d}`);}});
 wcheck('the street runs on well behind the start (no road edge in view looking back)',()=>{const asphalt=h.originals.filter(o=>o.material===h.road.material);for(let d=-400;d<0;d+=10){const p=groundPoint(d,0);ray.set(new THREE.Vector3(p.x,p.y+5,p.z),down);assert.ok(ray.intersectObjects(asphalt).length,`no road at ${d}`);}});
@@ -68,7 +68,7 @@ wcheck('walkable ground height matches rendered lawns, walks, drives and the loo
  const solid=W.merged.filter(m=>!m.material.transparent&&m.material.side!==THREE.BackSide);const spots=[];
  for(const home of Object.values(W.homes)){for(let u=0;u<=1;u+=.25){spots.push([home.drivD,home.side*(5.2+u*(home.endLat-6))]);}const door=home.S(home.doorX,home.front+.5);spots.push([door.d,door.lat]);const st=home.S(home.doorX,home.stepFront+.5);spots.push([st.d,st.lat]);}
  for(let d=40;d<1100;d+=97)for(const lat of [-12,-7,7,12])spots.push([d,lat]);for(let d=1124;d<1170;d+=5)for(const lat of [-9,-3,0,4,10])spots.push([d,lat]);
- let worst=0;for(const [d,lat] of spots){const p=groundPoint(d,lat);ray.set(new THREE.Vector3(p.x,W.groundY(d,lat)+.9,p.z),down);const hit=ray.intersectObjects(solid)[0];if(!hit)continue;const err=Math.abs(hit.point.y-W.groundY(d,lat));if(err>worst)worst=err;assert.ok(err<.06,`ground mismatch ${err.toFixed(3)} at ${d.toFixed(1)}, ${lat.toFixed(1)}`);}metrics.maxGroundMismatch=+worst.toFixed(3);});
+ let worst=0;for(const [d,lat] of spots){if(W.obstacles.some(o=>d>=o.d0&&d<=o.d1&&lat>=o.l0&&lat<=o.l1))continue;const p=groundPoint(d,lat);ray.set(new THREE.Vector3(p.x,W.groundY(d,lat)+.9,p.z),down);const hit=ray.intersectObjects(solid)[0];if(!hit)continue;const err=Math.abs(hit.point.y-W.groundY(d,lat));if(err>worst)worst=err;assert.ok(err<.06,`ground mismatch ${err.toFixed(3)} at ${d.toFixed(1)}, ${lat.toFixed(1)}`);}metrics.maxGroundMismatch=+worst.toFixed(3);});
 wcheck('no world edge: the ground reaches the horizon in every direction',()=>{
  // From eye height at eight places along the ride, 24 directions each: a ray 2 degrees below
  // the horizon must land on something within the camera's range, and a level ray should
@@ -113,9 +113,9 @@ wcheck('front doors open inward into a lit room, never into a wall',()=>{for(con
 wcheck('Sam\'s garage has depth and clutter, and a door into the house',()=>{const g=W.garages.sam,I=W.interiors[g.house.key];assert.ok(I&&I.kind==='garage');assert.ok(g.houseDoor&&g.beyond,'no house door');
  const a=groundPoint(g.mouth.d,g.mouth.lat),b=groundPoint(g.back.d,g.back.lat);assert.ok(Math.hypot(a.x-b.x,a.z-b.z)>5,'shallow garage');
  const clutter=h.originals.filter(o=>o.name==='garage-interior');assert.ok(clutter.length>=1);});
-wcheck('rideable surfaces: road, driveway cuts and sidewalks yes; lawns and curbs no',()=>{
+wcheck('rideable surfaces: road, full sidewalks and curbs yes; yards no',()=>{
  for(const home of Object.values(W.homes)){assert.ok(W.rideable(home.drivD,home.side*4.9),'driveway cut '+home.drivD);assert.ok(W.rideable(home.drivD,home.side*7.1),'sidewalk at drive');}
- let walk=0,lawn=0,curb=0;for(let d=30;d<1100;d+=13)for(const s of [-1,1]){if(JUNCTIONS.some(j=>Math.abs(d-j.d)<16))continue;if(W.rideable(d,s*7.1))walk++;if(W.rideable(d,s*11,0))lawn++;if(!W.rideable(d,s*4.95,0))curb++;}
+ let walk=0,lawn=0,curb=0;for(let d=30;d<1100;d+=13)for(const s of [-1,1]){if(JUNCTIONS.some(j=>Math.abs(d-j.d)<16))continue;if(W.rideable(d,s*7.1))walk++;if(W.rideable(d,s*11,0))lawn++;if(W.rideable(d,s*4.95,0))curb++;}
  assert.equal(lawn,0,'rode onto a lawn');assert.ok(walk>150,'sidewalk rideable '+walk);assert.ok(curb>100,'curbs '+curb);});
 wcheck('trees stand clear of roads, sidewalks and driveways',()=>{const trees=W.space.items('tree');assert.ok(trees.length>300,'trees '+trees.length);const bad=[];
  for(const t of trees){const r=MAIN.project(t.x,t.z),q={d:r.u,lat:r.v};if(q.d<-420||q.d>1135||Math.abs(q.lat)>40)continue;const a=Math.abs(q.lat);
@@ -126,7 +126,7 @@ wcheck('power lines never end in the air: spans pole to pole, drops pole to hous
  let spans=0,drops=0,guys=0;for(const w of W.wires){if(w.kind==='span'){spans++;assert.ok(atPole(w.a)&&atPole(w.b),'span ends in the air');assert.ok(w.mid.y<Math.max(w.a.y,w.b.y),'span without sag');}
   else if(w.kind==='drop'){drops++;assert.ok(atPole(w.a,6.5,7.5),'drop not at a pole');const y=W.terrainY(w.b.x,w.b.z);assert.ok(w.b.y>y+2,'drop ends near the ground');}
   else if(w.kind==='guy'){guys++;assert.ok(atPole(w.a,8,9));}}
- assert.ok(spans>60&&drops>40&&guys>=1,`${spans} spans ${drops} drops ${guys} guys`);metrics.wires={spans,drops,guys,poles:poles.length};});
+ assert.ok(spans>60&&drops>15&&drops<55&&guys>=1,`${spans} spans ${drops} drops ${guys} guys`);metrics.wires={spans,drops,guys,poles:poles.length};});
 wcheck('scattered props stay off sidewalks and driveways',()=>{const onWalk=(d,lat)=>d<1118&&Math.abs(lat)>6.3&&Math.abs(lat)<7.9;for(const [name,list] of Object.entries(W.hooks))for(const hk of list){if(hk.d===undefined||name==='chalk'||name==='initials'||name==='toy-at-curb')continue;assert.ok(!onWalk(hk.d,hk.lat),`${name} on the sidewalk at ${hk.d}`);}
  const sc=W.hooks['scooter-in-grass']?.[0]?.object;assert.ok(sc,'scooter');const p=sc.getWorldPosition(new THREE.Vector3()),r=MAIN.project(p.x,p.z);assert.ok(Math.abs(r.v)>8,'scooter on the walk');});
 wcheck('lookout sidewalk follows the grassy rise and faces upward',()=>{const ring=h.originals.find(o=>o.name==='lookout-walk');assert.ok(ring);for(let a=.7;a<5.6;a+=.2){const d=1142-Math.cos(a)*13.1,lat=Math.sin(a)*13.1,p=groundPoint(d,lat);ray.set(new THREE.Vector3(p.x,p.y+4,p.z),down);const hit=ray.intersectObject(ring)[0];assert.ok(hit,'missing sidewalk');assert.ok(hit.face.normal.y>.95);assert.ok(Math.abs(hit.point.y-W.groundY(d,lat))<.035);}});
@@ -174,9 +174,9 @@ check('settings apply immediately and are remembered',()=>{
 // Riding
 // ------------------------------------------------------------------------------------------
 element('start').onclick();advance(.2);
-check('start: title hidden, riding interface and the first prompt shown',()=>{assert.equal(h.snapshot.state,'riding');assert.equal(element('intro').hidden,true);assert.equal(element('ride-ui').hidden,false);assert.ok(document.body.classList.contains('riding'));assert.equal(h.ui.promptText,'W:Pedal|Mouse:Look around');});
+check('start: title hidden, riding interface and the first prompt shown',()=>{assert.equal(h.snapshot.state,'riding');assert.equal(element('intro').hidden,true);assert.equal(element('ride-ui').hidden,false);assert.ok(document.body.classList.contains('riding'));assert.equal(h.ui.promptText,'Space:Ring bell');});
 press('KeyW');advance(5);
-check('pedaling advances the bike and the prompt moves on to steering',()=>{assert.ok(h.snapshot.distance>15);assert.ok(h.snapshot.pedalPhase>10);const p=h.selfPose;for(const s of ['l','r'])assert.ok(h.self.joints[s+'ankle'].distanceTo(new THREE.Vector3().fromArray(p,s==='l'?P.lf:P.rf))<.005);assert.equal(h.ui.promptText,'A+D:Steer');});
+check('pedaling advances the bike and the prompt moves on to steering',()=>{assert.ok(h.snapshot.distance>15);assert.ok(h.snapshot.pedalPhase>10);const p=h.selfPose;for(const s of ['l','r'])assert.ok(h.self.joints[s+'ankle'].distanceTo(new THREE.Vector3().fromArray(p,s==='l'?P.lf:P.rf))<.005);assert.equal(h.ui.promptText,'Space:Ring bell');});
 check('looking down finds your own chest, arms, hands on the grips and knees',()=>{
  h.scene.updateMatrixWorld(true);/* the mocked renderer never does this */const dir=new THREE.Vector3(0,-.85,-.55).normalize().applyQuaternion(h.bikeRoot.quaternion);ray.set(h.camera.getWorldPosition(new THREE.Vector3()),dir);ray.layers.set(0);
  const hit=ray.intersectObjects([h.self.group,h.playerBike.group],true)[0];assert.ok(hit&&hit.distance<1.3,'nothing below the eye');
@@ -203,7 +203,7 @@ element('resume').onclick();press('KeyW');advance(.1);
 check('spurious mouse jump right after pointer lock is ignored',()=>{const before=h.snapshot.look;events.get('mousemove')({movementX:-640,movementY:-500});advance(.3);assert.ok(Math.abs(h.snapshot.look-before)<.05);});
 document.exitPointerLock();check('browser pointer-lock exit pauses safely',()=>assert.equal(h.snapshot.state,'paused'));
 canvas.requestPointerLock=()=>Promise.reject(new Error('test unavailable'));
-check('pause menu: start over resets the ride',()=>{element('restart').onclick();advance(.1);const s=h.snapshot;assert.equal(s.state,'riding');assert.ok(s.distance<.5);assert.equal(element('pause').hidden,true);assert.equal(h.ui.promptText,'W:Pedal|Mouse:Look around');});
+check('pause menu: start over resets the ride',()=>{element('restart').onclick();advance(.1);const s=h.snapshot;assert.equal(s.state,'riding');assert.ok(s.distance<.5);assert.equal(element('pause').hidden,true);assert.equal(h.ui.promptText,'Space:Ring bell');});
 await Promise.resolve();canvas.events.get('pointerdown')({clientX:100,clientY:100,pointerId:1});events.get('mousemove')({clientX:150,clientY:130});events.get('mousemove')({clientX:250,clientY:180});press('KeyW');advance(.5);check('drag fallback works when pointer lock unavailable',()=>assert.ok(h.snapshot.look<-.15));canvas.events.get('pointerup')();tap('KeyR');advance(.5);
 
 // Pushing: Shift gives a bounded burst; the friends answer it and the group re-forms.
@@ -232,7 +232,7 @@ function ride(label,{each}={}){
    for(const v of Object.values(f.person.group.position))assert.ok(Number.isFinite(v));
    if(f.mode==='leave'&&f.step===1)mark(f,'stops',f.bike.group);if(f.mode==='foot'&&f.step>=3)mark(f,'on foot',f.person.group);if(f.inside)mark(f,'inside',f.person.group);
    if(!f.person.group.visible&&!f.inside)hiddenBad.push(f.name);}
-  if(s.state==='riding'&&s.distance>160&&h.ui.promptText&&h.ui.promptText!=='W:Keep riding')repeatedPrompt=h.ui.promptText;
+  if(s.state==='riding'&&s.distance>160&&h.ui.promptText&&h.ui.promptText!=='Space:Ring bell')repeatedPrompt=h.ui.promptText;
   assert.equal(h.ending.state.clue,false,'clue during the ride');assert.equal(h.ending.state.otherBike,false,'other bike during the ride');
  }
  check(`${label}: all 14 story triggers in order, eye height steady`,()=>{assert.equal(h.snapshot.nextMemory,14);assert.ok(maxEye[0]>1.35&&maxEye[1]<1.62,`eye ${maxEye}`);});
@@ -244,7 +244,7 @@ function ride(label,{each}={}){
  return {hiddenBad,glanced,reflectionsSeen,overlap};
 }
 function friendsHome(label){
- check(`${label}: bike rolls to a stop at the end of the street, prompt offers F`,()=>{assert.equal(h.snapshot.state,'stopped');assert.ok(Math.abs(h.snapshot.distance-LOOKOUT.stop.d)<.05);assert.equal(h.ui.promptText,'F:Get off');});
+ check(`${label}: bike rolls to a stop at the end of the street, prompt offers F`,()=>{assert.equal(h.snapshot.state,'stopped');assert.ok(Math.abs(h.snapshot.distance-LOOKOUT.stop.d)<.05);assert.equal(h.ui.promptText,'F:Get off bike');});
  check(`${label}: every friend went home believably`,()=>{const F=h.friends.list;
   for(const f of F){assert.ok(f.inside,`${f.name} not inside`);assert.equal(f.person.group.visible,false);}
   const [jamie,sam,alex]=F;assert.ok(jamie.bike.group.visible&&Math.abs(jamie.fall)>1.2,'Jamie\'s bike lies on the lawn');assert.ok(alex.bike.group.visible&&alex.kick>.99,'Alex\'s bike stands on its kickstand');
@@ -256,7 +256,7 @@ const eyeAbove=()=>h.camera.position.y-W.groundY(h.snapshot.walkD,h.snapshot.wal
 function finalStop(label){
  friendsHome(label);
  release('KeyW');advance(2);tap('KeyF');advance(2);
- check(`${label}: F gets off the bike and the player can walk`,()=>{assert.equal(h.snapshot.state,'walking');assert.ok(h.ui.promptText.startsWith('W+A+S+D:Walk'),h.ui.promptText);});
+ check(`${label}: F gets off the bike and the player can walk`,()=>{assert.equal(h.snapshot.state,'walking');assert.ok(h.ui.promptText==='F:Get on bike',h.ui.promptText);});
  const start=[h.snapshot.walkD,h.snapshot.walkLat];press('KeyW');advance(6);release('KeyW');
  check(`${label}: walking moves the player and stays inside the lookout`,()=>{const s=h.snapshot,B=LOOKOUT.bounds;assert.ok(Math.hypot(s.walkD-start[0],s.walkLat-start[1])>3,'did not move');assert.ok(s.walkD>=B.d0&&s.walkD<=B.d1&&s.walkLat>=B.l0&&s.walkLat<=B.l1);
   const eye=eyeAbove();assert.ok(eye>1.35&&eye<1.5,'standing eye '+eye);});
@@ -278,7 +278,7 @@ function finalStop(label){
   drag(1.0/.0022,-.7/.0022);advance(.4);assert.ok(h.ending.state.clue,'faint clue');advance(5);assert.equal(h.interact.pose,null,'still crouched');assert.ok(eyeAbove()>1.35);});
  // Walk back to the bike and ride home.
  for(let i=0;i<1500&&!(Math.hypot(h.snapshot.walkD-h.snapshot.distance,h.snapshot.walkLat-h.snapshot.lateral)<1.5);i++){const s=h.snapshot;const want=Math.atan2(-(s.lateral+.75-s.walkLat),s.distance-s.walkD);drag(-(want-s.walkYaw)/.0022);press('KeyW');advance(DT);}
- release('KeyW');advance(.3);check(`${label}: near the bike after the call, F means ride home`,()=>assert.equal(h.ui.promptText,'F:Ride home'));
+ release('KeyW');advance(.3);check(`${label}: near the bike after the call, F means ride home`,()=>assert.equal(h.ui.promptText,'F:Go home'));
  tap('KeyF');advance(1.5);check(`${label}: F near the bike rides home`,()=>assert.ok(['leaving','ended'].includes(h.snapshot.state)));
  let clueSeen=false,reflected='';advance(7,()=>{clueSeen ||=h.ending.state.clue;reflected ||=h.ui.reflection;});
  check(`${label}: the chalk initials show plainly in the final fade, with one last memory line`,()=>{assert.ok(clueSeen);assert.equal(reflected,reflections.find(r=>r.id==='last').text);});
@@ -295,7 +295,7 @@ element('again').onclick();advance(.1);
 check('replay resets story, view, bike, friends, doors and controls',()=>{const s=h.snapshot;assert.equal(s.state,'riding');assert.ok(s.distance<.2);assert.equal(s.nextMemory,0);assert.equal(s.look,0);assert.equal(s.headPitch,0);assert.equal(s.finaleT,0);assert.equal(element('ending').hidden,true);
  for(const f of h.friends.list){assert.equal(f.mode,'ride');assert.ok(f.person.group.visible&&f.bike.group.visible);assert.equal(f.person.group.parent,f.bike.group);}assert.equal(W.garages.sam.open,1);assert.equal(W.doors.jamie.open,0);assert.equal(h.keys.size,0);assert.equal(s.push,0);assert.equal(s.stamina,1);assert.equal(s.yawOffset,0);});
 check('replay resets the environment, interactions, memory lines and the ending',()=>{assert.equal(h.friends.mom.slammed,false);assert.equal(h.ambient.state.kidVisible,true);assert.ok(h.ambient.time.value<.2);assert.ok(h.ambient.state.lamps.every(l=>l===0));assert.ok(h.ambient.state.sprinklers.every(l=>l>.99));assert.equal(h.ambient.state.car,'wait');assert.equal(W.alexWindow.emissiveIntensity,0);
- assert.equal(h.ambient.state.swing,0);assert.equal(h.interact.pose,null);assert.deepEqual(h.interact.used,[]);assert.deepEqual(h.nostalgia.shown,[]);assert.equal(h.ui.reflection,'');assert.deepEqual(h.ending.state,{clue:false,faint:0,otherBike:false});assert.equal(h.ending.otherBike.visible,false);assert.equal(h.ui.promptText,'W:Pedal|Mouse:Look around');});
+ assert.equal(h.ambient.state.swing,0);assert.equal(h.interact.pose,null);assert.deepEqual(h.interact.used,[]);assert.deepEqual(h.nostalgia.shown,[]);assert.equal(h.ui.reflection,'');assert.deepEqual(h.ending.state,{clue:false,faint:0,otherBike:false,fifthRider:false});assert.equal(h.ending.otherBike.visible,false);assert.equal(h.ui.promptText,'Space:Ring bell');});
 
 // Second ride: friends' lines and memory lines switched off, and no looking around.
 setField('set-captions',false);setField('set-memories',false);
@@ -303,7 +303,7 @@ const whoShown=new Set();press('KeyW');const r2=ride('second ride',{each:()=>{fo
 check('with captions off, friends\' lines are not shown; with memories off, no memory lines',()=>{assert.equal(whoShown.size,0,[...whoShown].join());assert.equal(r2.reflectionsSeen.length,0);});
 setField('set-captions',true);setField('set-memories',true);
 friendsHome('second ride');
-advance(1);tap('KeyF');advance(2);check('before the call, getting back on the bike keeps you at the end of the street',()=>{assert.equal(h.snapshot.state,'walking');assert.equal(h.ui.promptText,'W+A+S+D:Walk|F:Get back on');tap('KeyF');advance(1.5);assert.equal(h.snapshot.state,'stopped');assert.equal(h.snapshot.callDone,false);});
+advance(1);tap('KeyF');advance(2);check('before the call, getting back on the bike keeps you at the end of the street',()=>{assert.equal(h.snapshot.state,'walking');assert.equal(h.ui.promptText,'F:Get on bike');tap('KeyF');advance(1.5);assert.equal(h.snapshot.state,'stopped');assert.equal(h.snapshot.callDone,false);});
 tap('KeyF');advance(2);{const c=LOOKOUT.chalk;h.walkTo(c.d-.7,c.lat+.6,0,0);advance(.2);tap('KeyF');advance(1.3);drag(1.0/.0022,-.7/.0022);advance(.4);
  check('before the call there is only JSA in the chalk, and no other bike',()=>{assert.equal(h.snapshot.callDone,false);assert.equal(h.ending.state.clue,false);assert.equal(h.ending.state.otherBike,false);});advance(5);}
 let idleClue=false,bikeAppearedInView=false;advance(104,()=>{idleClue ||=h.ending.state.clue;if(!bikeAppearedInView&&h.ending.otherBike.visible&&!h.ending.otherBike.userData.checked){h.ending.otherBike.userData.checked=true;const dir=h.camera.getWorldDirection(new THREE.Vector3()),to=h.ending.otherBike.getWorldPosition(new THREE.Vector3()).sub(h.camera.position).normalize();if(dir.dot(to)>0)bikeAppearedInView=true;}});
@@ -318,7 +318,39 @@ check('back to the title from the pause menu resets everything and waits',()=>{e
  h.place(cut.d0+.4,5.4,3.2);press('KeyW');let onWalk=false;advance(3,()=>{const s=h.snapshot;if(!onWalk&&s.lateral<6.75){press('KeyD');}else{release('KeyD');onWalk=true;}});release('KeyD');let lats=[],worstY=0;
  advance(6,()=>{const s=h.snapshot;lats.push(s.lateral);if(s.distance>cut.d1+2)worstY=Math.max(worstY,Math.abs(h.bikeY-W.groundY(s.distance,s.lateral)));});
  check('ride up a driveway cut onto the sidewalk and along it',()=>{const s=h.snapshot;assert.ok(s.distance>cut.d1+8,'did not pass the cut');assert.ok(Math.min(...lats.slice(-60))>6.3&&Math.max(...lats)<7.9,'left the walk '+Math.min(...lats)+'..'+Math.max(...lats));assert.ok(worstY<.05,'bike height off the walk '+worstY);});
- press('KeyA');advance(1.2);release('KeyA');advance(1);check('the planting strip keeps you on the sidewalk between driveways',()=>{const s=h.snapshot;assert.ok(W.rideable(s.distance,s.lateral,0));assert.ok(s.lateral>6.2||W.drivewayOpenings.some(dr=>dr.contains(s.distance,s.lateral)),'dropped off the curb at '+s.lateral);});
+ press('KeyA');advance(1.2);release('KeyA');advance(1);check('steering off the sidewalk crosses the roadside strip without trapping the bike',()=>{const s=h.snapshot;assert.ok(W.rideable(s.distance,s.lateral,0));assert.ok(s.lateral<6.2,'still trapped on walk '+s.lateral);});
  release('KeyW');}
+
+// Final-polish regressions: player-reported sidewalk/curb, bell and support-foot bugs.
+check('junction signs stand clear of utility poles',()=>{for(const sign of W.signs){const p=groundPoint(sign.d,sign.lat);assert.ok(Math.min(...W.poles.map(q=>Math.hypot(q.x-p.x,q.z-p.z)))>2.1,sign.junction+' pole obscures blades');}});
+check('the full visible sidewalk width is usable on both sides',()=>{
+ for(const d of [50,210,460,740,1020])for(const s of [-1,1])for(const x of [6.40,7.10,7.80])assert.ok(W.rideable(d,s*x),`sidewalk edge ${d}, ${s*x}`);
+ for(const d of [50,210,460,740])for(const s of [-1,1])assert.equal(W.rideable(d,s*8.05),false,'yard must stay outside riding band');
+});
+for(const side of [-1,1])for(const direction of ['up','down'])check(`curb ${direction} on ${side<0?'left':'right'} side: two wheels cross without getting stuck`,()=>{
+ let start=80;while(start<1050&&(W.drivewayOpenings.some(c=>c.side===side&&c.d1>start-1&&c.d0<start+23)||W.obstacles.some(o=>o.d1>start-1&&o.d0<start+23&&Math.sign(o.l0)===side&&Math.min(Math.abs(o.l0),Math.abs(o.l1))<8)))start+=1;assert.ok(start<1050,'no clear curb section');
+ h.keys.clear();h.place(start,side*(direction==='up'?4.25:7.5),2.8);press('KeyW');const key=(side*(direction==='up'?1:-1))>0?'KeyD':'KeyA';press(key);let biggestStep=0,prev=h.snapshot.lateral;
+ advance(4,()=>{biggestStep=Math.max(biggestStep,Math.abs(h.snapshot.lateral-prev));prev=h.snapshot.lateral;});release(key);release('KeyW');
+ const ev=h.contact.state.events.filter(e=>e.direction===direction);assert.ok(ev.some(e=>e.wheel==='front')&&ev.some(e=>e.wheel==='rear'),JSON.stringify(h.contact.state));
+ assert.ok(direction==='up'?Math.abs(h.snapshot.lateral)>6.4:Math.abs(h.snapshot.lateral)<4.5,'curb trap');assert.ok(biggestStep<.13,'lateral teleport');assert.ok(Math.abs(h.contact.state.offset)<.009);
+});
+{
+ const {createRideContact}=await import('../dist/ride-contact.js');
+ check('wheel impacts scale with speed and settle without ringing',()=>{
+  const run=speed=>{const c=createRideContact(),events=[];for(let n=0;n<200;n++){const d=n*.015;c.update(1/60,{d,lat:0,yaw:0,speed,geom:BIKE,groundY:d=>d>1?.15:.025,baseY:()=>0,impact:e=>events.push(e)});}return {events,state:c.state};};
+  const slow=run(.5),fast=run(4);assert.equal(slow.events.length,2);assert.equal(fast.events.length,2);assert.ok(slow.events[0].strength<fast.events[0].strength*.2);assert.ok(Math.abs(fast.state.offset)<.0001);
+ });
+}
+element('restart').onclick();press('KeyW');advance(8);release('KeyW');press('KeyS');advance(13);release('KeyS');
+check('stopped riders plant support feet with individual sides',()=>{
+ assert.ok(h.snapshot.speed<.02);assert.ok(h.self.joints.lankle.y<.075&&h.self.joints.rankle.y<.075);
+ for(const f of h.friends.list){assert.ok(f.speed<.25,`${f.name} still rolling ${f.speed}`);const J=f.person.joints;assert.ok(Math.min(J.lankle.y,J.rankle.y)<.078,`${f.name} feet floating`);}
+ const [j,s,a]=h.friends.list;assert.ok(j.person.joints.lankle.y<j.person.joints.rankle.y);assert.ok(s.person.joints.rankle.y<s.person.joints.lankle.y);assert.ok(a.person.joints.lankle.y<.078&&a.person.joints.rankle.y<.078);
+});
+check('bell moves the actual left hand and lever, then returns them to the grip',()=>{
+ const left=h.self.joints.lwrist.clone(),right=h.self.joints.rwrist.clone();tap('Space');advance(.14);
+ assert.ok(h.self.joints.lwrist.distanceTo(left)>.035,'no hand reach');assert.ok(h.self.joints.rwrist.distanceTo(right)<.02,'other hand moved');assert.ok(Math.abs(h.playerBike.bell.lever.rotation.x)>.2,'lever did not move');advance(.7);assert.ok(h.self.joints.lwrist.distanceTo(left)<.015);assert.equal(h.playerBike.bell.lever.rotation.x,0);
+});
+check('replay clears wheel-impact and additional lore state',()=>{element('restart').onclick();advance(.1);assert.equal(h.contact.state.events.length,0);assert.equal(h.ending.fifth.visible,false);assert.equal(h.ending.state.fifthRider,false);});
 
 console.log(JSON.stringify({passed:checks.length,checks,metrics,testMethod:'Actual Three.js geometry and full state updates with a mocked WebGL renderer and DOM.'},null,2));

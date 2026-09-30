@@ -1,4 +1,20 @@
-# Last Light v0.1 — final polish
+# Last Light — final polish release
+
+Built directly on `claude/epic-planck-cme9eq` at `59c647220e80d12da0d205b1562d483cc5bdb7f3`, on `codex/astra-last-light-final-polish`. All preceding game and structural history is retained.
+
+- Full sidewalk width and curb crossings in both directions, with separate front/rear contact, subtle camera settling and quiet tire/rattle feedback.
+- Actual bell-hand reach and lever press, contextual bell/Go home prompts, and individual feet-down stopping poses.
+- Refined house surfaces and interiors, bike hardware, garments, hair, blinks, cars, grass and evening light.
+- Corrected sign texture batching and post occlusion; reduced house wire clutter while retaining the pole network.
+- Pedaling chain sound and coasting freewheel distinction; refreshed title, settings, pause and end-card presentation.
+- Two revised memory lines, an unseen fifth chalk child and connected AR bicycle detail; final line: “I thought I remembered everyone.”
+- 102 simulation checks, 115 browser checks, 130 rendered captures and 23 audio signal cases. Both ending paths and replay pass. World geometry remains under the existing limits.
+
+See [ASTRA_FINAL_RELEASE.md](ASTRA_FINAL_RELEASE.md) for the complete change record and known limitations, and [TEST_REPORT.md](TEST_REPORT.md) for evidence. Perceptual audio review and real-GPU performance measurements remain outstanding.
+
+---
+
+# Last Light v0.1 — historical release
 
 > These notes describe the v0.1 release (`codex/astra-v0.1-release`). The later structural polish pass on `claude/epic-planck-cme9eq` is described in [ASTRA_HANDOFF.md](ASTRA_HANDOFF.md).
 

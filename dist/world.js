@@ -106,7 +106,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
  function batchMaterial(m){
   if(W.windowMats.includes(m)||m===W.darkGlass||m===W.farWindow)return W.glassLit;if(W.porchMats.includes(m))return W.porchLit;
   if(plain(m))return m;
-  const isLeaf=W.foliage.includes(m),kind=m.userData.surface||'',key=[m.roughness,m.metalness,m.side,isLeaf?'leaf':kind,m.alphaTest,m.polygonOffset,m.polygonOffsetFactor,m.polygonOffsetUnits,!!m.map].join(':');
+  const isLeaf=W.foliage.includes(m),kind=m.userData.surface||'',key=[m.roughness,m.metalness,m.side,isLeaf?'leaf':kind,m.alphaTest,m.polygonOffset,m.polygonOffsetFactor,m.polygonOffsetUnits,m.map?.uuid||'none'].join(':');
   if(!colorMaterials.has(key)){const b=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:m.roughness,metalness:m.metalness,side:m.side,map:m.map,alphaTest:m.alphaTest,polygonOffset:m.polygonOffset,polygonOffsetFactor:m.polygonOffsetFactor,polygonOffsetUnits:m.polygonOffsetUnits});
    if(kind)W.surfaceMaterial(b,kind);if(isLeaf)W.foliage.push(b);colorMaterials.set(key,b);}
   return colorMaterials.get(key);

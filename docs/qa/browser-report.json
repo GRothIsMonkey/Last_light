@@ -1,7 +1,7 @@
 {
-  "browser": "141.0.7390.37",
+  "browser": "153.0.8010.0",
   "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
-  "passed": 84,
+  "passed": 115,
   "checks": [
     "settings panel opens from the title",
     "graphics setting changes the shadow map",
@@ -64,12 +64,43 @@
     "back to the title resets and waits",
     "riding along the sidewalk in the browser",
     "house QA found varied houses",
+    "all four riders stop with feet down",
+    "bell hand reaches and lever presses at the strike",
+    "bell lever returns",
+    "only contextual bell control shown while riding",
+    "sign texture survives batching 0 SLOW CHILDREN AT PLAY",
+    "sign texture survives batching 1 SPEED LIMIT 25",
+    "sign texture survives batching 2 NO OUTLET",
+    "sign texture survives batching 3 OAK HOLLOW DR",
+    "sign texture survives batching 4 OAK HOLLOW DR",
+    "sign texture survives batching 5 BRIARWOOD LN",
+    "sign texture survives batching 6 BRIARWOOD LN",
+    "sign texture survives batching 7 STOP",
+    "sign texture survives batching 8 OAK HOLLOW DR",
+    "sign texture survives batching 9 OAK HOLLOW DR",
+    "sign texture survives batching 10 SUMMERFIELD RD",
+    "sign texture survives batching 11 SUMMERFIELD RD",
+    "sign texture survives batching 12 STOP",
+    "polish-curb-left-up-normal front and rear contacts",
+    "polish-curb-left-up-slow front and rear contacts",
+    "polish-curb-left-down-normal front and rear contacts",
+    "polish-curb-left-down-slow front and rear contacts",
+    "polish-curb-right-up-normal front and rear contacts",
+    "polish-curb-right-up-slow front and rear contacts",
+    "polish-curb-right-down-normal front and rear contacts",
+    "polish-curb-right-down-slow front and rear contacts",
+    "reached 1136.5",
+    "fifth chalk rider appears only after call and looking away",
+    "bike prompt becomes Go home",
+    "replay resets added lore and impact state",
+    "laptop title controls fit",
     "audio finite and unclipped: rolling",
     "audio finite and unclipped: grass",
     "audio finite and unclipped: coasting",
     "audio finite and unclipped: footstep-asphalt",
     "audio finite and unclipped: footstep-grass",
     "audio finite and unclipped: bell",
+    "audio finite and unclipped: curb",
     "audio finite and unclipped: sprinkler",
     "audio finite and unclipped: dribble",
     "audio finite and unclipped: rim",
@@ -92,456 +123,456 @@
     {
       "name": "01-opening",
       "frame": 1,
-      "calls": 349,
-      "triangles": 477840,
+      "calls": 366,
+      "triangles": 575039,
       "points": 645,
-      "lines": 7428
+      "lines": 6718
     },
     {
       "name": "01b-settings",
       "frame": 2,
-      "calls": 349,
-      "triangles": 477840,
+      "calls": 366,
+      "triangles": 575039,
       "points": 645,
-      "lines": 7428
+      "lines": 6718
     },
     {
       "name": "01c-credits",
       "frame": 3,
-      "calls": 349,
-      "triangles": 477840,
+      "calls": 366,
+      "triangles": 575039,
       "points": 645,
-      "lines": 7428
+      "lines": 6718
     },
     {
       "name": "02-pedaling",
       "frame": 4,
-      "calls": 152,
-      "triangles": 316477,
+      "calls": 158,
+      "triangles": 357065,
       "points": 645,
-      "lines": 7292
+      "lines": 6582
     },
     {
       "name": "02b-pause-menu",
       "frame": 5,
-      "calls": 152,
-      "triangles": 316477,
+      "calls": 158,
+      "triangles": 357065,
       "points": 645,
-      "lines": 7292
+      "lines": 6582
     },
     {
       "name": "02c-prompt",
       "frame": 6,
-      "calls": 350,
-      "triangles": 442057,
+      "calls": 367,
+      "triangles": 525430,
       "points": 645,
-      "lines": 7428
+      "lines": 6718
     },
     {
       "name": "edge-01-looking-back-at-start",
       "frame": 7,
-      "calls": 235,
-      "triangles": 386335,
+      "calls": 251,
+      "triangles": 436297,
       "points": 645,
-      "lines": 7044
+      "lines": 6334
     },
     {
       "name": "edge-02-left-gap",
       "frame": 8,
-      "calls": 96,
-      "triangles": 156971,
+      "calls": 98,
+      "triangles": 177952,
       "points": 645,
-      "lines": 7236
+      "lines": 6526
     },
     {
       "name": "edge-03-right-gap",
       "frame": 9,
-      "calls": 112,
-      "triangles": 186741,
+      "calls": 114,
+      "triangles": 207982,
       "points": 645,
-      "lines": 7236
+      "lines": 6526
     },
     {
       "name": "03-group-ride",
       "frame": 10,
-      "calls": 353,
-      "triangles": 501002,
+      "calls": 367,
+      "triangles": 590208,
       "points": 645,
-      "lines": 7390
+      "lines": 6680
     },
     {
       "name": "body-01-looking-down",
       "frame": 11,
-      "calls": 98,
-      "triangles": 169009,
+      "calls": 101,
+      "triangles": 198101,
       "points": 645,
-      "lines": 7274
+      "lines": 6564
     },
     {
       "name": "body-02-over-the-shoulder",
       "frame": 12,
-      "calls": 113,
-      "triangles": 180430,
+      "calls": 117,
+      "triangles": 199880,
       "points": 645,
-      "lines": 7236
+      "lines": 6526
     },
     {
       "name": "seq-group-pedaling-1",
       "frame": 13,
-      "calls": 137,
-      "triangles": 203920,
+      "calls": 142,
+      "triangles": 235084,
       "points": 645,
-      "lines": 7274
+      "lines": 6564
     },
     {
       "name": "seq-group-pedaling-2",
       "frame": 14,
-      "calls": 137,
-      "triangles": 203920,
+      "calls": 140,
+      "triangles": 234724,
       "points": 645,
-      "lines": 7274
+      "lines": 6564
     },
     {
       "name": "seq-group-pedaling-3",
       "frame": 15,
-      "calls": 138,
-      "triangles": 204049,
+      "calls": 141,
+      "triangles": 234853,
       "points": 645,
-      "lines": 7274
+      "lines": 6564
     },
     {
       "name": "seq-group-pedaling-4",
       "frame": 16,
-      "calls": 137,
-      "triangles": 204041,
+      "calls": 140,
+      "triangles": 234845,
       "points": 645,
-      "lines": 7274
+      "lines": 6564
     },
     {
       "name": "body-03-steering-left",
       "frame": 17,
-      "calls": 106,
-      "triangles": 205291,
+      "calls": 113,
+      "triangles": 235554,
       "points": 645,
-      "lines": 7256
+      "lines": 6546
     },
     {
       "name": "body-04-braking",
       "frame": 18,
-      "calls": 97,
-      "triangles": 135710,
+      "calls": 100,
+      "triangles": 152717,
       "points": 645,
-      "lines": 7256
+      "lines": 6546
     },
     {
       "name": "body-05-hard-pedaling",
       "frame": 19,
-      "calls": 101,
-      "triangles": 186412,
+      "calls": 106,
+      "triangles": 214796,
       "points": 645,
-      "lines": 7256
+      "lines": 6546
     },
     {
       "name": "seq-friends-surge-1",
       "frame": 20,
-      "calls": 221,
-      "triangles": 306117,
+      "calls": 228,
+      "triangles": 357030,
       "points": 645,
-      "lines": 7300
+      "lines": 6590
     },
     {
       "name": "seq-friends-surge-2",
       "frame": 21,
-      "calls": 223,
-      "triangles": 306526,
+      "calls": 231,
+      "triangles": 359153,
       "points": 645,
-      "lines": 7300
+      "lines": 6590
     },
     {
       "name": "seq-friends-surge-3",
       "frame": 22,
-      "calls": 208,
-      "triangles": 305367,
+      "calls": 215,
+      "triangles": 356300,
       "points": 645,
-      "lines": 7300
+      "lines": 6590
     },
     {
       "name": "seq-friends-surge-4",
       "frame": 23,
-      "calls": 207,
-      "triangles": 304527,
+      "calls": 214,
+      "triangles": 355460,
       "points": 645,
-      "lines": 7300
+      "lines": 6590
     },
     {
       "name": "friends-04-answering-a-push",
       "frame": 24,
-      "calls": 336,
-      "triangles": 587806,
+      "calls": 350,
+      "triangles": 678664,
       "points": 645,
-      "lines": 7326
+      "lines": 6616
     },
     {
       "name": "04-first-hill",
       "frame": 25,
-      "calls": 310,
-      "triangles": 516957,
+      "calls": 322,
+      "triangles": 596479,
       "points": 645,
-      "lines": 7326
+      "lines": 6616
     },
     {
       "name": "friends-01-left",
       "frame": 26,
-      "calls": 190,
-      "triangles": 470957,
+      "calls": 195,
+      "triangles": 532012,
       "points": 645,
-      "lines": 7254
+      "lines": 6544
     },
     {
       "name": "friends-02-right",
       "frame": 27,
-      "calls": 263,
-      "triangles": 543415,
+      "calls": 277,
+      "triangles": 625909,
       "points": 645,
-      "lines": 7326
+      "lines": 6616
     },
     {
       "name": "friends-03-alongside",
       "frame": 28,
-      "calls": 172,
-      "triangles": 412095,
+      "calls": 178,
+      "triangles": 466150,
       "points": 645,
-      "lines": 7158
+      "lines": 6448
     },
     {
       "name": "edge-04-backyards-left",
       "frame": 29,
-      "calls": 125,
-      "triangles": 176148,
+      "calls": 128,
+      "triangles": 200496,
       "points": 645,
-      "lines": 7178
+      "lines": 6468
     },
     {
       "name": "seq-jamie-goes-home-1",
       "frame": 30,
-      "calls": 228,
-      "triangles": 302057,
+      "calls": 237,
+      "triangles": 354543,
       "points": 645,
-      "lines": 7204
+      "lines": 6494
     },
     {
       "name": "seq-jamie-goes-home-2",
       "frame": 31,
-      "calls": 226,
-      "triangles": 295722,
+      "calls": 233,
+      "triangles": 346222,
       "points": 645,
-      "lines": 7204
+      "lines": 6494
     },
     {
       "name": "seq-jamie-goes-home-3",
       "frame": 32,
-      "calls": 218,
-      "triangles": 280664,
+      "calls": 225,
+      "triangles": 330926,
       "points": 645,
-      "lines": 7178
+      "lines": 6468
     },
     {
       "name": "seq-jamie-goes-home-4",
       "frame": 33,
-      "calls": 197,
-      "triangles": 251708,
+      "calls": 203,
+      "triangles": 295603,
       "points": 645,
-      "lines": 7158
+      "lines": 6448
     },
     {
       "name": "house-01-jamie-entry",
       "frame": 34,
-      "calls": 125,
-      "triangles": 150344,
+      "calls": 127,
+      "triangles": 172109,
       "points": 645,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "05-jamie-runs-home",
       "frame": 35,
-      "calls": 125,
-      "triangles": 150344,
+      "calls": 127,
+      "triangles": 172109,
       "points": 645,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "06-jamie-at-door",
       "frame": 36,
-      "calls": 193,
-      "triangles": 251694,
+      "calls": 200,
+      "triangles": 295589,
       "points": 645,
-      "lines": 7140
+      "lines": 6448
     },
     {
       "name": "edge-05-briarwood-ln",
       "frame": 37,
-      "calls": 246,
-      "triangles": 516194,
+      "calls": 295,
+      "triangles": 592030,
       "points": 641,
-      "lines": 7188
+      "lines": 6478
     },
     {
       "name": "edge-06-briarwood-down-the-street",
       "frame": 38,
-      "calls": 189,
-      "triangles": 471212,
+      "calls": 196,
+      "triangles": 543445,
       "points": 641,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "house-02-sam-garage-open",
       "frame": 39,
       "calls": 97,
-      "triangles": 189024,
+      "triangles": 210519,
       "points": 641,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "seq-sam-rides-into-the-garage-1",
       "frame": 40,
-      "calls": 128,
-      "triangles": 199957,
+      "calls": 129,
+      "triangles": 228484,
       "points": 641,
-      "lines": 7178
+      "lines": 6468
     },
     {
       "name": "seq-sam-rides-into-the-garage-2",
       "frame": 41,
-      "calls": 128,
-      "triangles": 199957,
+      "calls": 129,
+      "triangles": 228484,
       "points": 641,
-      "lines": 7178
+      "lines": 6468
     },
     {
       "name": "seq-sam-rides-into-the-garage-3",
       "frame": 42,
-      "calls": 128,
-      "triangles": 199957,
+      "calls": 129,
+      "triangles": 228484,
       "points": 641,
-      "lines": 7178
+      "lines": 6468
     },
     {
       "name": "seq-sam-rides-into-the-garage-4",
       "frame": 43,
-      "calls": 128,
-      "triangles": 199957,
+      "calls": 129,
+      "triangles": 228484,
       "points": 641,
-      "lines": 7178
+      "lines": 6468
     },
     {
       "name": "07-sam-parks",
       "frame": 44,
-      "calls": 128,
-      "triangles": 199957,
+      "calls": 129,
+      "triangles": 228484,
       "points": 641,
-      "lines": 7178
+      "lines": 6468
     },
     {
       "name": "08-sam-garage-closes",
       "frame": 45,
-      "calls": 143,
-      "triangles": 278246,
+      "calls": 149,
+      "triangles": 312306,
       "points": 641,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "edge-07-summerfield-rd",
       "frame": 46,
-      "calls": 123,
-      "triangles": 221535,
+      "calls": 129,
+      "triangles": 252074,
       "points": 641,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "edge-08-summerfield-down-the-street",
       "frame": 47,
-      "calls": 124,
-      "triangles": 218465,
+      "calls": 130,
+      "triangles": 249004,
       "points": 641,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "09-alex-waves",
       "frame": 48,
-      "calls": 212,
-      "triangles": 282492,
+      "calls": 257,
+      "triangles": 323646,
       "points": 687,
-      "lines": 7226
+      "lines": 6516
     },
     {
       "name": "10-alex-porch",
       "frame": 49,
-      "calls": 186,
-      "triangles": 253731,
+      "calls": 232,
+      "triangles": 294900,
       "points": 687,
-      "lines": 7226
+      "lines": 6516
     },
     {
       "name": "house-03-alex-entry",
       "frame": 50,
-      "calls": 134,
-      "triangles": 147640,
+      "calls": 137,
+      "triangles": 189557,
       "points": 687,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "11-alex-upstairs-light",
       "frame": 51,
-      "calls": 97,
-      "triangles": 150884,
+      "calls": 101,
+      "triangles": 170797,
       "points": 687,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "edge-10-late-left",
       "frame": 52,
-      "calls": 156,
-      "triangles": 292752,
+      "calls": 166,
+      "triangles": 334518,
       "points": 687,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "edge-11-late-right",
       "frame": 53,
-      "calls": 85,
-      "triangles": 126649,
+      "calls": 87,
+      "triangles": 143482,
       "points": 687,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "12-late-sunset",
       "frame": 54,
-      "calls": 134,
-      "triangles": 175620,
+      "calls": 176,
+      "triangles": 195406,
       "points": 687,
-      "lines": 7188
+      "lines": 6478
     },
     {
       "name": "13-final-arrival",
       "frame": 55,
-      "calls": 82,
-      "triangles": 78990,
+      "calls": 124,
+      "triangles": 82885,
       "points": 687,
       "lines": 3279
     },
     {
       "name": "body-06-stopped-looking-down",
       "frame": 56,
-      "calls": 69,
-      "triangles": 75722,
+      "calls": 70,
+      "triangles": 83468,
       "points": 687,
       "lines": 3446
     },
     {
       "name": "body-07-getting-off",
       "frame": 57,
-      "calls": 80,
-      "triangles": 78956,
+      "calls": 120,
+      "triangles": 82035,
       "points": 687,
       "lines": 3079
     },
@@ -549,493 +580,748 @@
       "name": "14-oak-and-bench",
       "frame": 58,
       "calls": 70,
-      "triangles": 74651,
+      "triangles": 77082,
       "points": 687,
       "lines": 8
     },
     {
       "name": "15-looking-home",
       "frame": 59,
-      "calls": 280,
-      "triangles": 519036,
+      "calls": 336,
+      "triangles": 591135,
       "points": 687,
-      "lines": 7256
+      "lines": 6546
     },
     {
       "name": "edge-09-lookout-field",
       "frame": 60,
-      "calls": 81,
-      "triangles": 76907,
+      "calls": 83,
+      "triangles": 79922,
       "points": 687,
-      "lines": 46
+      "lines": 54
     },
     {
       "name": "20-swing-pushed",
       "frame": 61,
-      "calls": 74,
-      "triangles": 72456,
+      "calls": 75,
+      "triangles": 75363,
       "points": 687,
-      "lines": 38
+      "lines": 46
     },
     {
       "name": "21-bench-view",
       "frame": 62,
       "calls": 62,
-      "triangles": 71226,
+      "triangles": 73657,
       "points": 687,
       "lines": 0
     },
     {
       "name": "22-chalk-crouch",
       "frame": 63,
-      "calls": 67,
-      "triangles": 77625,
+      "calls": 82,
+      "triangles": 80176,
       "points": 687,
-      "lines": 7153
+      "lines": 6033
     },
     {
       "name": "23-chalk-ar-faint",
       "frame": 64,
-      "calls": 73,
-      "triangles": 75150,
+      "calls": 122,
+      "triangles": 78009,
       "points": 687,
-      "lines": 7195
+      "lines": 6075
     },
     {
       "name": "24-oak-carving",
       "frame": 65,
       "calls": 58,
-      "triangles": 69242,
+      "triangles": 71673,
       "points": 687,
-      "lines": 7148
+      "lines": 6438
     },
     {
       "name": "25-the-other-bike",
       "frame": 66,
-      "calls": 68,
-      "triangles": 75595,
+      "calls": 70,
+      "triangles": 78610,
       "points": 687,
-      "lines": 46
+      "lines": 54
     },
     {
       "name": "body-08-getting-back-on",
       "frame": 67,
       "calls": 75,
-      "triangles": 120068,
+      "triangles": 132589,
       "points": 687,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "16-final-fade",
       "frame": 68,
-      "calls": 94,
-      "triangles": 81246,
+      "calls": 146,
+      "triangles": 84973,
       "points": 687,
-      "lines": 3325
+      "lines": 3333
     },
     {
       "name": "17-ending-clue-detail",
       "frame": 69,
-      "calls": 89,
-      "triangles": 77555,
+      "calls": 141,
+      "triangles": 80890,
       "points": 687,
-      "lines": 7233
+      "lines": 6531
     },
     {
       "name": "18-ending",
       "frame": 70,
-      "calls": 89,
-      "triangles": 78872,
+      "calls": 141,
+      "triangles": 82599,
       "points": 687,
-      "lines": 3117
+      "lines": 3125
     },
     {
       "name": "19-idle-clue",
       "frame": 71,
-      "calls": 85,
-      "triangles": 79406,
+      "calls": 128,
+      "triangles": 85305,
       "points": 687,
       "lines": 3287
     },
     {
       "name": "26-back-to-title",
       "frame": 72,
-      "calls": 350,
-      "triangles": 478140,
+      "calls": 367,
+      "triangles": 575339,
       "points": 645,
-      "lines": 7428
+      "lines": 6718
     },
     {
       "name": "character-jamie-front",
       "frame": 73,
-      "calls": 331,
-      "triangles": 446768,
+      "calls": 348,
+      "triangles": 519474,
       "points": 645,
-      "lines": 7350
+      "lines": 6640
     },
     {
       "name": "character-jamie-side",
       "frame": 74,
-      "calls": 195,
-      "triangles": 221900,
+      "calls": 199,
+      "triangles": 262996,
       "points": 645,
-      "lines": 7350
+      "lines": 6640
     },
     {
       "name": "character-sam-front",
       "frame": 75,
-      "calls": 344,
-      "triangles": 453574,
+      "calls": 361,
+      "triangles": 528344,
       "points": 645,
-      "lines": 7370
+      "lines": 6660
     },
     {
       "name": "character-sam-side",
       "frame": 76,
-      "calls": 135,
-      "triangles": 206519,
+      "calls": 137,
+      "triangles": 236548,
       "points": 645,
-      "lines": 7274
+      "lines": 6564
     },
     {
       "name": "character-alex-front",
       "frame": 77,
-      "calls": 275,
-      "triangles": 408609,
+      "calls": 290,
+      "triangles": 464159,
       "points": 645,
-      "lines": 7274
+      "lines": 6564
     },
     {
       "name": "character-alex-side",
       "frame": 78,
-      "calls": 164,
-      "triangles": 186559,
+      "calls": 170,
+      "triangles": 217825,
       "points": 645,
-      "lines": 7312
+      "lines": 6602
     },
     {
       "name": "sidewalk-01-riding",
       "frame": 79,
-      "calls": 277,
-      "triangles": 510848,
+      "calls": 287,
+      "triangles": 584542,
       "points": 645,
-      "lines": 7288
+      "lines": 6578
     },
     {
       "name": "sidewalk-02-looking-down",
       "frame": 80,
-      "calls": 111,
-      "triangles": 216117,
+      "calls": 116,
+      "triangles": 244860,
       "points": 645,
-      "lines": 7256
+      "lines": 6546
     },
     {
       "name": "house-q1-ranch-brick-front-front-corner",
       "frame": 81,
-      "calls": 319,
-      "triangles": 593203,
+      "calls": 332,
+      "triangles": 681327,
       "points": 645,
-      "lines": 7326
+      "lines": 6616
     },
     {
       "name": "house-q1-ranch-brick-front-side",
       "frame": 82,
-      "calls": 413,
-      "triangles": 480204,
+      "calls": 427,
+      "triangles": 574682,
       "points": 645,
-      "lines": 7440
+      "lines": 6730
     },
     {
       "name": "house-q1-ranch-brick-front-back-corner",
       "frame": 83,
-      "calls": 352,
-      "triangles": 484915,
+      "calls": 374,
+      "triangles": 559328,
       "points": 645,
-      "lines": 7338
+      "lines": 6628
     },
     {
       "name": "house-q2-colonial-porch-front-corner",
       "frame": 84,
-      "calls": 186,
-      "triangles": 364535,
+      "calls": 190,
+      "triangles": 408195,
       "points": 645,
-      "lines": 7236
+      "lines": 6526
     },
     {
       "name": "house-q2-colonial-porch-side",
       "frame": 85,
-      "calls": 219,
-      "triangles": 356594,
+      "calls": 233,
+      "triangles": 400925,
       "points": 645,
-      "lines": 7236
+      "lines": 6526
     },
     {
       "name": "house-q2-colonial-porch-back-corner",
       "frame": 86,
-      "calls": 438,
-      "triangles": 583266,
+      "calls": 456,
+      "triangles": 697337,
       "points": 645,
-      "lines": 7466
+      "lines": 6756
     },
     {
       "name": "house-q3-cape-brick-lower-front-corner",
       "frame": 87,
-      "calls": 123,
-      "triangles": 227083,
+      "calls": 125,
+      "triangles": 249714,
       "points": 645,
-      "lines": 7236
+      "lines": 6526
     },
     {
       "name": "house-q3-cape-brick-lower-side",
       "frame": 88,
-      "calls": 405,
-      "triangles": 509166,
+      "calls": 423,
+      "triangles": 605009,
       "points": 645,
-      "lines": 7414
+      "lines": 6704
     },
     {
       "name": "house-q3-cape-brick-lower-back-corner",
       "frame": 89,
-      "calls": 199,
-      "triangles": 400109,
+      "calls": 207,
+      "triangles": 455489,
       "points": 645,
-      "lines": 7192
+      "lines": 6482
     },
     {
       "name": "house-q4-frontgable-brick-lower-porch-front-corner",
       "frame": 90,
-      "calls": 287,
-      "triangles": 646837,
+      "calls": 302,
+      "triangles": 743899,
       "points": 645,
-      "lines": 7288
+      "lines": 6578
     },
     {
       "name": "house-q4-frontgable-brick-lower-porch-side",
       "frame": 91,
-      "calls": 413,
-      "triangles": 509005,
+      "calls": 429,
+      "triangles": 610775,
       "points": 645,
-      "lines": 7466
+      "lines": 6756
     },
     {
       "name": "house-q4-frontgable-brick-lower-porch-back-corner",
       "frame": 92,
-      "calls": 210,
-      "triangles": 365642,
+      "calls": 222,
+      "triangles": 411185,
       "points": 645,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "house-q5-ranch-hip-front-corner",
       "frame": 93,
-      "calls": 273,
-      "triangles": 627588,
+      "calls": 285,
+      "triangles": 719388,
       "points": 645,
-      "lines": 7288
+      "lines": 6578
     },
     {
       "name": "house-q5-ranch-hip-side",
       "frame": 94,
-      "calls": 268,
-      "triangles": 497760,
+      "calls": 278,
+      "triangles": 571064,
       "points": 645,
-      "lines": 7288
+      "lines": 6578
     },
     {
       "name": "house-q5-ranch-hip-back-corner",
       "frame": 95,
-      "calls": 324,
-      "triangles": 354331,
+      "calls": 336,
+      "triangles": 431676,
       "points": 645,
-      "lines": 7414
+      "lines": 6704
     },
     {
       "name": "house-q6-colonial-brick-lower-front-corner",
       "frame": 96,
-      "calls": 136,
-      "triangles": 274906,
+      "calls": 140,
+      "triangles": 310154,
       "points": 645,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "house-q6-colonial-brick-lower-side",
       "frame": 97,
-      "calls": 281,
-      "triangles": 577803,
+      "calls": 293,
+      "triangles": 662977,
       "points": 645,
-      "lines": 7140
+      "lines": 6430
     },
     {
       "name": "house-q6-colonial-brick-lower-back-corner",
       "frame": 98,
-      "calls": 421,
-      "triangles": 553663,
+      "calls": 439,
+      "triangles": 662920,
       "points": 645,
-      "lines": 7466
+      "lines": 6756
     },
     {
       "name": "character-mom",
       "frame": 99,
-      "calls": 144,
-      "triangles": 279052,
+      "calls": 146,
+      "triangles": 317987,
       "points": 645,
-      "lines": 7140
+      "lines": 6430
+    },
+    {
+      "name": "polish-stopped-player",
+      "frame": 100,
+      "calls": 376,
+      "triangles": 562890,
+      "points": 645,
+      "lines": 6718
+    },
+    {
+      "name": "polish-stopped-jamie",
+      "frame": 101,
+      "calls": 232,
+      "triangles": 392773,
+      "points": 645,
+      "lines": 6506
+    },
+    {
+      "name": "polish-stopped-sam",
+      "frame": 102,
+      "calls": 190,
+      "triangles": 352093,
+      "points": 645,
+      "lines": 6468
+    },
+    {
+      "name": "polish-stopped-alex",
+      "frame": 103,
+      "calls": 226,
+      "triangles": 386216,
+      "points": 645,
+      "lines": 6506
+    },
+    {
+      "name": "polish-bell-before",
+      "frame": 104,
+      "calls": 125,
+      "triangles": 244141,
+      "points": 645,
+      "lines": 6544
+    },
+    {
+      "name": "polish-bell-press",
+      "frame": 105,
+      "calls": 125,
+      "triangles": 244141,
+      "points": 645,
+      "lines": 6544
+    },
+    {
+      "name": "polish-bell-return",
+      "frame": 106,
+      "calls": 125,
+      "triangles": 244141,
+      "points": 645,
+      "lines": 6544
+    },
+    {
+      "name": "polish-sign-00",
+      "frame": 107,
+      "calls": 369,
+      "triangles": 528073,
+      "points": 645,
+      "lines": 6718
+    },
+    {
+      "name": "polish-sign-01",
+      "frame": 108,
+      "calls": 274,
+      "triangles": 504146,
+      "points": 645,
+      "lines": 6578
+    },
+    {
+      "name": "polish-sign-02",
+      "frame": 109,
+      "calls": 235,
+      "triangles": 304428,
+      "points": 645,
+      "lines": 6478
+    },
+    {
+      "name": "polish-sign-03",
+      "frame": 110,
+      "calls": 151,
+      "triangles": 442646,
+      "points": 645,
+      "lines": 6526
+    },
+    {
+      "name": "polish-sign-04",
+      "frame": 111,
+      "calls": 200,
+      "triangles": 525734,
+      "points": 645,
+      "lines": 6430
+    },
+    {
+      "name": "polish-sign-05",
+      "frame": 112,
+      "calls": 352,
+      "triangles": 633251,
+      "points": 645,
+      "lines": 6470
+    },
+    {
+      "name": "polish-sign-06",
+      "frame": 113,
+      "calls": 342,
+      "triangles": 689548,
+      "points": 645,
+      "lines": 6604
+    },
+    {
+      "name": "polish-sign-07",
+      "frame": 114,
+      "calls": 151,
+      "triangles": 442646,
+      "points": 645,
+      "lines": 6526
+    },
+    {
+      "name": "polish-sign-08",
+      "frame": 115,
+      "calls": 130,
+      "triangles": 273354,
+      "points": 645,
+      "lines": 6430
+    },
+    {
+      "name": "polish-sign-09",
+      "frame": 116,
+      "calls": 174,
+      "triangles": 491018,
+      "points": 645,
+      "lines": 6430
+    },
+    {
+      "name": "polish-sign-10",
+      "frame": 117,
+      "calls": 247,
+      "triangles": 344633,
+      "points": 645,
+      "lines": 6478
+    },
+    {
+      "name": "polish-sign-11",
+      "frame": 118,
+      "calls": 313,
+      "triangles": 717080,
+      "points": 645,
+      "lines": 6456
+    },
+    {
+      "name": "polish-sign-12",
+      "frame": 119,
+      "calls": 174,
+      "triangles": 491018,
+      "points": 645,
+      "lines": 6430
+    },
+    {
+      "name": "polish-curb-left-up-normal",
+      "frame": 120,
+      "calls": 135,
+      "triangles": 331768,
+      "points": 645,
+      "lines": 6546
+    },
+    {
+      "name": "polish-curb-left-up-slow",
+      "frame": 121,
+      "calls": 137,
+      "triangles": 332229,
+      "points": 645,
+      "lines": 6546
+    },
+    {
+      "name": "polish-curb-left-down-normal",
+      "frame": 122,
+      "calls": 110,
+      "triangles": 227677,
+      "points": 645,
+      "lines": 6546
+    },
+    {
+      "name": "polish-curb-left-down-slow",
+      "frame": 123,
+      "calls": 118,
+      "triangles": 231623,
+      "points": 645,
+      "lines": 6546
+    },
+    {
+      "name": "polish-curb-right-up-normal",
+      "frame": 124,
+      "calls": 121,
+      "triangles": 249733,
+      "points": 645,
+      "lines": 6546
+    },
+    {
+      "name": "polish-curb-right-up-slow",
+      "frame": 125,
+      "calls": 116,
+      "triangles": 246067,
+      "points": 645,
+      "lines": 6546
+    },
+    {
+      "name": "polish-curb-right-down-normal",
+      "frame": 126,
+      "calls": 115,
+      "triangles": 243286,
+      "points": 645,
+      "lines": 6546
+    },
+    {
+      "name": "polish-curb-right-down-slow",
+      "frame": 127,
+      "calls": 117,
+      "triangles": 243718,
+      "points": 645,
+      "lines": 6546
+    },
+    {
+      "name": "polish-fifth-rider",
+      "frame": 128,
+      "calls": 103,
+      "triangles": 76462,
+      "points": 687,
+      "lines": 6443
+    },
+    {
+      "name": "polish-go-home",
+      "frame": 129,
+      "calls": 142,
+      "triangles": 84883,
+      "points": 687,
+      "lines": 3125
+    },
+    {
+      "name": "polish-title-laptop",
+      "frame": 130,
+      "calls": 377,
+      "triangles": 577208,
+      "points": 645,
+      "lines": 6718
     }
   ],
   "audio": [
     {
       "name": "rolling",
-      "peak": 0.03171229362487793,
-      "rms": 0.006475603750261324,
+      "peak": 0.033917590975761414,
+      "rms": 0.006538751037976922,
       "nonFinite": 0,
-      "maxSampleJump": 0.020120824221521616
+      "maxSampleJump": 0.02017215033993125
     },
     {
       "name": "grass",
-      "peak": 0.036798007786273956,
-      "rms": 0.009201946682516143,
+      "peak": 0.039284802973270416,
+      "rms": 0.009247460269375202,
       "nonFinite": 0,
-      "maxSampleJump": 0.03521350538358092
+      "maxSampleJump": 0.03547146078199148
     },
     {
       "name": "coasting",
       "peak": 0.03500881791114807,
-      "rms": 0.006530247699909674,
+      "rms": 0.0065562229074421835,
       "nonFinite": 0,
-      "maxSampleJump": 0.02506978251039982
+      "maxSampleJump": 0.02506978390738368
     },
     {
       "name": "footstep-asphalt",
-      "peak": 0.035270463675260544,
-      "rms": 0.0009700622555597344,
+      "peak": 0.037454307079315186,
+      "rms": 0.0009729288167599567,
       "nonFinite": 0,
-      "maxSampleJump": 0.011316416785120964
+      "maxSampleJump": 0.01009768107905984
     },
     {
       "name": "footstep-grass",
-      "peak": 0.018455594778060913,
-      "rms": 0.000301338671329823,
+      "peak": 0.016957320272922516,
+      "rms": 0.00027061261526429556,
       "nonFinite": 0,
-      "maxSampleJump": 0.019086484797298908
+      "maxSampleJump": 0.0205103550106287
     },
     {
       "name": "bell",
-      "peak": 0.097164586186409,
-      "rms": 0.00726986853847244,
+      "peak": 0.0971645936369896,
+      "rms": 0.0072698685616608815,
       "nonFinite": 0,
-      "maxSampleJump": 0.03555837133899331
+      "maxSampleJump": 0.03555836295709014
+    },
+    {
+      "name": "curb",
+      "peak": 0.007261907681822777,
+      "rms": 0.00016951688391587548,
+      "nonFinite": 0,
+      "maxSampleJump": 0.0016730241404729895
     },
     {
       "name": "sprinkler",
-      "peak": 0.0874451994895935,
-      "rms": 0.0007453144374672883,
+      "peak": 0.06504498422145844,
+      "rms": 0.0007304298809783797,
       "nonFinite": 0,
-      "maxSampleJump": 0.10827920585870743
+      "maxSampleJump": 0.094843290746212
     },
     {
       "name": "dribble",
-      "peak": 0.1497386395931244,
-      "rms": 0.00514222340048998,
+      "peak": 0.14952996373176575,
+      "rms": 0.005135727351022322,
       "nonFinite": 0,
-      "maxSampleJump": 0.0024179906395147555
+      "maxSampleJump": 0.0023748595267534256
     },
     {
       "name": "rim",
-      "peak": 0.057072658091783524,
-      "rms": 0.002361210616242679,
+      "peak": 0.05707266554236412,
+      "rms": 0.002361210606355089,
       "nonFinite": 0,
-      "maxSampleJump": 0.0068630005698651075
+      "maxSampleJump": 0.006863003131002188
     },
     {
       "name": "doorOpen",
-      "peak": 0.01671217754483223,
-      "rms": 0.00037068341344249775,
+      "peak": 0.02065112441778183,
+      "rms": 0.00037876173928043,
       "nonFinite": 0,
-      "maxSampleJump": 0.009247136302292347
+      "maxSampleJump": 0.010301257017999887
     },
     {
       "name": "doorSlam",
-      "peak": 0.14830590784549713,
-      "rms": 0.00429306897336999,
+      "peak": 0.14898250997066498,
+      "rms": 0.004180578210579453,
       "nonFinite": 0,
-      "maxSampleJump": 0.014732886775163934
+      "maxSampleJump": 0.015168288722634315
     },
     {
       "name": "garage",
-      "peak": 0.04698411375284195,
-      "rms": 0.009357941538581733,
+      "peak": 0.04700418561697006,
+      "rms": 0.009362774580215567,
       "nonFinite": 0,
-      "maxSampleJump": 0.004293854348361492
+      "maxSampleJump": 0.004095518961548805
     },
     {
       "name": "bikeDrop",
-      "peak": 0.07026875764131546,
-      "rms": 0.0016864467042306444,
+      "peak": 0.05135941877961159,
+      "rms": 0.0016170402604267567,
       "nonFinite": 0,
-      "maxSampleJump": 0.009969005128368735
+      "maxSampleJump": 0.010760060511529446
     },
     {
       "name": "kickstand",
-      "peak": 0.021277105435729027,
-      "rms": 0.0007140012540212313,
+      "peak": 0.025608712807297707,
+      "rms": 0.0007232517219929534,
       "nonFinite": 0,
-      "maxSampleJump": 0.011013504583388567
+      "maxSampleJump": 0.012505526188760996
     },
     {
       "name": "engineOff",
-      "peak": 0.047392070293426514,
-      "rms": 0.0019671571926255993,
+      "peak": 0.04739207774400711,
+      "rms": 0.0019671574157004456,
       "nonFinite": 0,
-      "maxSampleJump": 0.04343574354425073
+      "maxSampleJump": 0.04343575518578291
     },
     {
       "name": "dog",
-      "peak": 0.04970349743962288,
-      "rms": 0.0013842264165797626,
+      "peak": 0.04830479994416237,
+      "rms": 0.0013862869425765745,
       "nonFinite": 0,
-      "maxSampleJump": 0.007157968357205391
+      "maxSampleJump": 0.008637013146653771
     },
     {
       "name": "creak",
       "peak": 0.003997915890067816,
-      "rms": 0.00028355084100722483,
+      "rms": 0.000283550832347524,
       "nonFinite": 0,
-      "maxSampleJump": 0.0005205680208746344
+      "maxSampleJump": 0.0005205680499784648
     },
     {
       "name": "bird",
       "peak": 0.016005011275410652,
-      "rms": 0.0008311103426781299,
+      "rms": 0.0008311103396602872,
       "nonFinite": 0,
       "maxSampleJump": 0.005134588107466698
     },
     {
       "name": "call",
-      "peak": 0.0470576174557209,
-      "rms": 0.005130418760795821,
+      "peak": 0.04705759882926941,
+      "rms": 0.00512950708739995,
       "nonFinite": 0,
-      "maxSampleJump": 0.0028136204928159714
+      "maxSampleJump": 0.0028136223554611206
     },
     {
       "name": "morning-neighborhood",
-      "peak": 0.09863527119159698,
-      "rms": 0.024805058359665393,
+      "peak": 0.09873313456773758,
+      "rms": 0.024792644201342265,
       "nonFinite": 0,
-      "maxSampleJump": 0.014780269804759882
+      "maxSampleJump": 0.014796610921621323
     },
     {
       "name": "evening-neighborhood",
-      "peak": 0.05895157903432846,
-      "rms": 0.00638842986291864,
+      "peak": 0.07152844220399857,
+      "rms": 0.006435410716226737,
       "nonFinite": 0,
-      "maxSampleJump": 0.015220189932733774
+      "maxSampleJump": 0.02561765629798174
     },
     {
       "name": "ending",
       "peak": 0.07613586634397507,
-      "rms": 0.013161281114637404,
+      "rms": 0.01316128106831243,
       "nonFinite": 0,
-      "maxSampleJump": 0.0035852817818522453
+      "maxSampleJump": 0.0035852801520377398
     }
   ],
   "errors": [],

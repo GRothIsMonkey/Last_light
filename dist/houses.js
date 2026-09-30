@@ -127,6 +127,9 @@ export function buildHouse(W,P){
  // Brick: a low wainscot band or a full brick front.
  if(P.brick==='lower'&&!mid)K.rbox(g,0,.62,D2+.025,w+.03,1.05,.05,.015,brick);
  if(P.brick==='front'){K.rbox(g,0,h/2+.1,D2+.03,w+.04,h-.2,.06,.015,brick);}
+ // A worn coir mat and threshold, clear of the doorway path.
+ if(!mid){K.rbox(g,P.doorX,P.floor+.012,front+.45,.72,.02,.4,.018,0x827056);
+  K.rbox(g,P.doorX,P.floor+.028,front+.12,1.02,.045,.18,.012,0xa69c86);}
  // Corner boards.
  if(!mid)for(const [x,z] of [[-1,1],[1,1],[-1,-1],[1,-1]]){K.box(g,x*(W2+.01),h/2+.15,z*(D2+.01),.13,h-.3,.13,T);}
  // Windows on all four walls, avoiding the door and garage.
@@ -141,7 +144,9 @@ export function buildHouse(W,P){
   K.box(fg,x,y+wh/2+t/2,.03,ww+.22,t,.08,T);K.box(fg,x,y-wh/2-t/2,.05,ww+.32,t,.14,T);for(const s of [-1,1])K.box(fg,x+s*(ww/2+t/2),y,.03,t,wh,.08,T);
   if(!mid){K.box(fg,x,y,.035,.035,wh,.025,T);K.box(fg,x,y+wh*.08,.035,ww,.035,.025,T);
    if(rand()<.7){for(const s of [-1,1])K.box(fg,x+s*ww*.34,y+.02,.033,ww*.2,wh-.12,.012,HOUSE.curtain);}}
-  if(shutter)for(const s of [-1,1])K.box(fg,x+s*(ww/2+.27),y,.03,.36,wh+.1,.05,shutter);
+  if(shutter)for(const s of [-1,1]){const xx=x+s*(ww/2+.27);K.box(fg,xx,y,.03,.36,wh+.1,.06,shutter);
+   for(let yy=y-wh/2+.09;yy<y+wh/2;yy+=.20)K.box(fg,xx,yy,.064,.28,.025,.018,shutter);}
+  K.box(fg,x,y+wh/2+.13,.045,ww+.3,.05,.12,T);
   return gl;}
  const front1=face('front',0);
  rows.forEach((y,f)=>{for(let i=0;i<count;i++){const x=-W2+w*(i+.5)/count;if(f===0&&Math.abs(x-P.doorX)<1.4)continue;
@@ -241,7 +246,7 @@ function dormer(W,g,x,z,roofY,P,roofMat,gable,rand,mid){const {K}=W,dg=K.group(g
 // Porch, portico or stoop; steps reach the ground (local y = 0 is the ground everywhere).
 function buildEntry(W,P,g,rand,mid){const {K}=W,{front}=P,dx=P.doorX,fl=P.floor,pw=P.porchW,pd=P.pdep,n=P.steps,F=HOUSE.fascia,col=HOUSE.trim;
  K.rbox(g,dx,fl/2,front+pd/2,pw,fl,pd,.025,HOUSE.porchFloor);
- for(let k=0;k<n-1;k++){const z=front+pd+.15+.3*(n-2-k),y=fl*(k+1)/n;K.box(g,dx,y/2,z,1.6,y,.32,HOUSE.step);}
+ for(let k=0;k<n-1;k++){const z=front+pd+.15+.3*(n-2-k),y=fl*(k+1)/n;K.rbox(g,dx,y/2,z,1.6,y,.32,.018,HOUSE.step);}
  if(P.porch==='porch'){const ph=P.lowPorch?P.eaveFront-.12-.25-.24-fl:2.75;
   // Lattice skirt under the porch floor edge.
   if(!mid)K.box(g,dx,fl*.45,front+pd-.03,pw-.1,fl*.8,.04,0x8f8778);
@@ -304,7 +309,8 @@ function buildGarage(W,P,g,rand,mid,siding,roofMat,gable){const {K}=W,{gx,gw,gd,
 }
 function foundationBeds(W,P,g,rand){const {K}=W,pick=pickFrom(rand),{front,w}=P,W2=w/2;
  for(const [x0,x1] of [[-W2+.3,P.doorX-P.porchW/2-.2],[P.doorX+P.porchW/2+.2,W2-.3]]){if(x1-x0<1)continue;
-  K.box(g,(x0+x1)/2,.03,front+.55,x1-x0,.06,.9,HOUSE.mulch);
+  K.rbox(g,(x0+x1)/2,.03,front+.55,x1-x0,.06,.9,.025,HOUSE.mulch);
+  K.rbox(g,(x0+x1)/2,.025,front+1.0,x1-x0,.04,.09,.01,0x9d9480);
   for(let x=x0+.6;x<x1-.3;x+=1.5+rand()*.6){K.ball(g,x,.42,front+.55,.42+rand()*.2,W.foliageMat(pick([0x5d7048,0x546a43,0x687a4c])),[1.2,.85,1]);
    if(rand()<.5)for(let k=0;k<4;k++)K.ball(g,x+.4+rand()*.4,.2,front+.82+rand()*.2,.07,pick([0xd4665a,0xe8c160,0xd98fb0,0xf0ede0]));}}
 }
@@ -323,13 +329,17 @@ function buildFoyer(W,P,g){const {K}=W,{front,h}=P,dx=P.doorX,fl=P.floor,hinge=P
  const floorM=new THREE.MeshStandardMaterial({color:INTERIOR.floor,emissive:0x5a3418,emissiveIntensity:.25,roughness:.7});floorM.userData.keep=true;
  const warm=new THREE.MeshStandardMaterial({color:INTERIOR.lamp,emissive:0xffd49a,emissiveIntensity:1.4});
  const room=K.box(g,cx,(fl+top)/2,z0-depth/2,width,top-fl,depth,lit);room.name='foyer';
- K.box(g,cx,fl+.01,z0-depth/2,width-.02,.02,depth-.02,floorM);K.box(g,cx+hinge*.2,fl+.025,z0-1.5,1.2,.01,1.8,INTERIOR.rug);
+ K.box(g,cx,fl+.01,z0-depth/2,width-.02,.02,depth-.02,floorM);
+ for(let x=cx-width/2+.18;x<cx+width/2;x+=.18)K.box(g,x,fl+.022,z0-depth/2,.008,.003,depth-.04,0x68513c);
+ for(const s of [-1,1])K.box(g,cx+s*(width/2-.02),fl+.07,z0-depth/2,.035,.14,depth-.04,HOUSE.trim);
+ for(const s of [-1,1])K.rbox(g,cx+hinge*(width/2-.25)+s*.07,fl+.055,z0-.65,.09,.07,.23,.025,0x515561);K.box(g,cx+hinge*.2,fl+.025,z0-1.5,1.2,.01,1.8,INTERIOR.rug);
  // Threshold, jambs and the reveal through the wall.
  K.box(g,dx,fl+.02,front-.1,1.02,.04,.24,0x9a8a70);for(const s of [-1,1])K.box(g,dx+s*.5,fl+1.08,front-.1,.04,2.16,.22,HOUSE.trim);K.box(g,dx,fl+2.14,front-.1,1.02,.04,.22,HOUSE.trim);
  // Stairs rising along the far wall, a banister, a hall table with a lamp, a lit doorway beyond.
  const sx=cx-hinge*(width/2-.5);for(let k=0;k<9;k++){K.box(g,sx,fl+.09+.18*k,z0-.9-.28*k,.9,.18*(k+1),.28,INTERIOR.stair);}
  K.rod(g,[sx+hinge*.45,fl+1,z0-.8],[sx+hinge*.45,fl+2.6,z0-3.3],.025,0x5a3a24);K.box(g,sx+hinge*.45,fl+.5,z0-.75,.08,1,.08,0x5a3a24);
  const tx=cx+hinge*(width/2-.35);K.box(g,tx,fl+.4,z0-1.7,.4,.05,.9,0x6a4a30);for(const s of [-1,1])K.box(g,tx,fl+.19,z0-1.7+s*.4,.35,.38,.04,0x6a4a30);K.cyl(g,tx,fl+.62,z0-1.7,.1,.28,warm,10);
+ K.box(g,tx,fl+.435,z0-1.38,.22,.015,.17,0xe6d9bf);K.box(g,tx+.015,fl+.45,z0-1.4,.17,.015,.15,0xa77858);
  K.box(g,cx+hinge*(width/2-.02),fl+1.6,z0-1.7,.02,.5,.4,0x6d5a44);K.box(g,cx,fl+2.58,z0-1.4,.34,.04,.34,warm);
  K.box(g,cx+hinge*.4,fl+1.05,z0-depth+.02,1,2.1,.02,warm);
  P.localPads.push({x0:cx-width/2,x1:cx+width/2,z0:z0-depth,z1:front,y:fl});
@@ -340,7 +350,7 @@ function buildGarageInterior(W,P,g,rand,doorW,dh){const {K}=W,{gx,gw,gd,gh,gfron
  const wallM=new THREE.MeshStandardMaterial({color:INTERIOR.garageWall,emissive:0xffe0a8,emissiveIntensity:.16,roughness:1,side:THREE.BackSide});wallM.userData.keep=true;
  const lamp=new THREE.MeshStandardMaterial({color:0xfff4d8,emissive:0xffe0a0,emissiveIntensity:1});
  const shell=K.box(g,gx,gh/2+.1,gz-.05,gw-.34,gh-.2,gd-.34,wallM);shell.name='garage-interior';
- K.box(g,gx,.21,gz,gw-.34,.02,gd-.3,INTERIOR.garageFloor);if(!car)K.box(g,gx+.3,.222,gz+.4,1.1,.004,1.6,0x6f6a62);
+ K.box(g,gx,.21,gz,gw-.34,.02,gd-.3,W.surfaceMaterial(K.mat(INTERIOR.garageFloor),'concrete'));if(!car)K.box(g,gx+.3,.222,gz+.4,1.1,.004,1.6,0x6f6a62);
  K.box(g,gx,gh-.12,gz,.9,.05,.4,lamp);K.box(g,gx,gh-.25,gz-gd/2+1.2,.35,.18,.5,0x5a5a58);K.box(g,gx,gh-.22,gz+.4,.05,.05,gd-2.2,0x6a6a68);
  for(const k of [-1,1])K.box(g,gx+k*(doorW/2+.05),gh-.35,gz+.5,.05,.08,gd-1.8,0x6a6a68);
  // Shelving along the wall away from the house, with bins.

@@ -1,47 +1,71 @@
 {
-  "recordedAt": "2026-09-29T23:59:25.411768+00:00",
-  "branch": "claude/epic-planck-cme9eq",
+  "recordedAt": "2026-09-30T13:00:25.755621+00:00",
+  "branch": "codex/astra-last-light-final-polish",
   "base": {
-    "branch": "codex/astra-v0.1-release",
-    "commit": "21bb7a7147f2f81702b3bd5376c8cbdc81f184a2"
+    "branch": "claude/epic-planck-cme9eq",
+    "commit": "59c647220e80d12da0d205b1562d483cc5bdb7f3"
   },
-  "simulationChecks": 92,
-  "browserChecks": 84,
+  "simulationChecks": 102,
+  "browserChecks": 115,
   "browserErrors": 0,
-  "framesCaptured": 99,
-  "audioReview": "Signal checks passed; perceptual listening remains outstanding. The repository owner instructed publication to main without waiting for it on 2026-09-29.",
+  "framesCaptured": 130,
+  "renderedReview": "Contact sheets of all 130 captures; full-size inspection of representative and reported problem areas, including final sign and laptop-title corrections.",
+  "audioCases": 23,
+  "audioReview": "Signal checks passed; refreshed MP3 clips and reel. Perceptual listening remains outstanding.",
+  "performance": {
+    "worldTriangles": 1621465,
+    "worldMeshes": 893,
+    "worldBuildMs": 4790,
+    "allCapturedViews": {
+      "calls": {
+        "min": 58,
+        "max": 456
+      },
+      "triangles": {
+        "min": 71673,
+        "max": 743899
+      }
+    },
+    "browser": "153.0.8010.0",
+    "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "hardwareFPS": "not measured"
+  },
   "commands": [
-    "npm test",
-    "NODE_PATH=<playwright node_modules> SOFTWARE_GL=1 npm run test:browser"
+    "node tests/verify.mjs (npm test script)",
+    "QA_OUTPUT=docs/qa BROWSER_PATH=<chromium> SOFTWARE_GL=1 npm run test:browser",
+    "git diff --check"
   ],
   "sha256": {
     "dist/THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
     "dist/ambient.js": "eb9936e96346a24b8a5d7336d7597a11d92741a2f2a3d013a604376c67ea6496",
-    "dist/audio.js": "5027d3b39c00fa0d7e60dff04c179837dcb54cb040579b011407486c4917d930",
+    "dist/audio.js": "771d69bdefa6dc46fd7d977b2c0610040a61045d494ee4e421d225b26fd44025",
     "dist/background.js": "2230fe66784156b0d0bd43112efbba86c0b4466efdc91f4f0c5cba0686f94ae1",
     "dist/cast.js": "e404dca52cb44c624f8a341a3d995a6cb4ef58d8916c857b6bd190e894a1909e",
-    "dist/ending.js": "e10615e463280a003e8975cd1785d221842d43d3f684771300ff77040cea4255",
-    "dist/friends.js": "90f3c0a37e99b03f87614d29362a26d38fc9b5e0ffc98d19f49ae11eb2f3fe49",
-    "dist/furniture.js": "994446cf3767c2dafeaeb413a7ac5992f095c127a72b30cc10f9f15779910f30",
-    "dist/game.js": "9c59dbba983badfcd63cc0cfd8ea090a29c80a835c8894170de914798060c789",
-    "dist/houses.js": "e6aed50250d7e301cefe82cc4231ad6bab8e128e5538f48e895d1f8c7d128b79",
-    "dist/index.html": "2cd797d1da0f7937680e95b6ddf3aeefcc1f59bc217cc1c5f5097d19e912b2db",
+    "dist/ending.js": "d37bd20fbbb165719f37e6437998a529df5dbf1c04ac57f3653390867366f729",
+    "dist/friends.js": "1cf40c3f9fc68d65319e0176861d45e2ba43f5148525740e541f1ac411af5efb",
+    "dist/furniture.js": "1af7b67afe9050782ad40ac46532166a9e70460f5e160852d7ae73fd3f6a0c90",
+    "dist/game.js": "b84c7c61c6f26ca0356099cfc8eb069481abeaad5abc76d1f256199224dba528",
+    "dist/houses.js": "147068e6a4c539b9f7767580ad17df58a1b17a068f5022319417e934ce7035fe",
+    "dist/index.html": "b1e941f1e26269b1a41ba933793ddd2f3556b46563cbb043b2fbb237175f4b63",
     "dist/interactions.js": "d1f8b6e0859fb439d09cf3d634013a34c52242684a493be8892e9924bf65ccc1",
     "dist/kit.js": "cfe9b1f5569e92443315453836341626ed242deda379f1b567087edc43a99388",
     "dist/layout.js": "aa531c2573bbaab6d860357375e0909681dc1c03f9cd61a6926beaf9270e6024",
-    "dist/materials.js": "f26e7c58ba4c32d6b4e1ab0a9ea0928188c5187c35b5dd7bb3b34b4b5b8e8af1",
+    "dist/materials.js": "4c23c10975b007c719f0ba5b82dbc6dec7a7deee300e32019ebc78f8901d7d86",
     "dist/nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
     "dist/palette.js": "52a0632bb1e9c5363b8ecfbc34983d037ab09bd9f1018f52d32d1b0ccada6a65",
-    "dist/props.js": "e94da2a1c05e2873f0fb07c18dfb8fbb56483cbb5efbc755b5c49a411d73bfd5",
-    "dist/rig.js": "0718de4f24d75f8d0967d324c18840c8a1d346a1b4af005b2ae5e327caa36441",
+    "dist/props.js": "ac227e943c80f87be18cc0caa10e08a9c001d3f28d5d28fc26c651ed8da0f49d",
+    "dist/ride-contact.js": "c6a3af3649f04468258914e03c96ee72828d730f0387fe4a3db10de87cc25f42",
+    "dist/rig.js": "b9db2ea5f7adec93dbefe93f2b58a8a4b5a516b01c75381656acdb93ac6bec90",
     "dist/route.js": "f17de16440dbcb6101a0ea0b483d22ef55663934398613ab932fcf030412b3f5",
-    "dist/story.js": "a1b5c0f2be373871d2d529a5c66c6ad2eb5440cbeb2c3d93a4a85b1d4db54756",
-    "dist/streets.js": "185b78cee6203e10c462f9412a0bc8ecdb3a1c4c9278bc961b9f88a0882af644",
-    "dist/style.css": "45f04f1b0d1ea75ec039a7c865e1549b58b7ddd8dec3eb8d0e634c0d90e947c4",
+    "dist/story.js": "74cb94a24ef58894741c4e08e045a26fa34fe84711d22d4e60985587226123ce",
+    "dist/streets.js": "d84308d952d32f5f11d4e02dbbe7afc897bf4467f85b3a90725343dc331107ba",
+    "dist/style.css": "fe5d39590f4bc5e3c03d01355a43487b228de89bda8e76749031114719187a3a",
     "dist/terrain.js": "23fbe1e836444c700ccbb74ba3fe9be260432372812c4fcf1532df8702f061d0",
     "dist/three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
     "dist/ui.js": "c1f68f97bb18715fbe45a3af067de626e5131a3c0c65de3a2c8377fd4a385a11",
-    "dist/vegetation.js": "2ba3d2faa1ad5885d1c7aa1fa979eead33e27e8450fe273652fe3510c5a76ec0",
-    "dist/world.js": "85b7d8090e3ab33f79b96a0d1f270ba76ab4e71a7b63239458e856bae647ce13"
+    "dist/vegetation.js": "afbdfe19822105f003277874648367cc16126f66d56f55b44e71916d4a4aa943",
+    "dist/world.js": "0a966b1512e2ba8b038c75ccd7587b927a50a9b08345d8e7508b835847f71546",
+    "tests/browser.mjs": "19ffe73f26902a3d7a09553a36aae5841c12bc09489a35524aa59bdf494e7b97",
+    "tests/verify.mjs": "035143408278755fadd4f100cf4a36c2f7ec31b38c23265af87b122a8d0b564b"
   }
 }

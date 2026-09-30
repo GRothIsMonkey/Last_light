@@ -1,3 +1,9 @@
+# Historical handoff
+
+This document records Claude's structural pass at `59c647220e80d12da0d205b1562d483cc5bdb7f3`. The subsequent final polish release is documented in [ASTRA_FINAL_RELEASE.md](ASTRA_FINAL_RELEASE.md); current verification is in [TEST_REPORT.md](TEST_REPORT.md). Art-pass suggestions and branch status below describe that earlier handoff.
+
+---
+
 # Last Light — handoff to Astra (structural polish pass)
 
 This branch (`claude/epic-planck-cme9eq`) starts from `codex/astra-v0.1-release` (`21bb7a7`) and is **not merged into `main`**. It is a structural pass. Story, pacing, the three departures, the sunset, the end of the street, the `AR` chalk clue, the ending card and the audio are all preserved. What changed is the foundation: geometry, physical layout, riding systems, character construction, interaction plumbing and QA.
