@@ -1,0 +1,4 @@
+Last Light playtest preview
+play:        https://grothismonkey.github.io/Last_light/preview/
+source:      claude/epic-planck-cme9eq @ 59c647220e80d12da0d205b1562d483cc5bdb7f3 (dist/ copied unchanged into preview/)
+site root:   codex/astra-v0.1-release @ 21bb7a7147f2f81702b3bd5376c8cbdc81f184a2 (unchanged)
