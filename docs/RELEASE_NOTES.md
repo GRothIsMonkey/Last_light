@@ -1,3 +1,20 @@
+# Last Light — Astra Chapter One polish
+
+Continues the existing `codex/astra-chapter1-final-polish` branch from Claude Chapter One source `ed471c04b34bc083da10bdc876f20419246a08e6`. Completed interrupted work and all source ancestry are preserved. No merge to main and no Chapter Two content.
+
+- Sequential **Find Jamie.** / **Find Sam.** objectives, brief memory reminders, distinct permanent house landmarks, warm porch/window lighting, clear side paths and a gentle Sam-first redirect.
+- Faster walking, a visible on-foot body, Shift sprint/stamina, Space jump, C/Ctrl crouch and a T-toggle spare flashlight received from Jamie.
+- Varied riding and walking formations, bounded continuous catch-up and local obstacle/companion avoidance.
+- Officer approach to the player's position, Dad joining naturally and adaptive conversation staging.
+- Refined cruiser body/cabin/wheels, steering and braking motion; limited emergency-light falloff; adult face/clothing details and distant silhouettes.
+- Supported window climb and bike lift, visible pebble throws and Sam's garage side-door exit.
+- Non-glowing sidewalk joints; creek surface/prop detail, chipped taped reflector and softer flashlight exposure; final look toward the distant bell.
+- Restrained title/end UI and **Show dialogue captions** semantics.
+
+Final measured results, captures, audio-listening limitation and performance caveats: [ASTRA_CHAPTER1_FINAL_RELEASE.md](ASTRA_CHAPTER1_FINAL_RELEASE.md) and [TEST_REPORT.md](TEST_REPORT.md).
+
+---
+
 # Last Light — Chapter One pass
 
 Built directly on `codex/astra-last-light-final-polish` at `9520b4f1d72759b27ac823671bdefae19ce27e55`, on `claude/relaxed-heisenberg-gv002b`. All preceding history is retained; the release branch and `main` are untouched.

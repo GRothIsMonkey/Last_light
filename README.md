@@ -4,7 +4,9 @@ A short first-person bicycle memory set on August 21, 2011. Ride through a warm 
 
 The prologue takes about **5–6 minutes**. Chapter One runs about **12–15 minutes**, from the ride home to the first clue at the creek. Stopping anywhere extends it; nothing fails.
 
-**Chapter One pass:** `claude/relaxed-heisenberg-gv002b`, based directly on `codex/astra-last-light-final-polish` at `9520b4f1d72759b27ac823671bdefae19ce27e55`. See **[docs/ASTRA_CHAPTER1_HANDOFF.md](docs/ASTRA_CHAPTER1_HANDOFF.md)** for what was built, where it lives, QA jumps, tuning knobs and known issues; [docs/TEST_REPORT.md](docs/TEST_REPORT.md) for verification; [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md) for history. [docs/ASTRA_FINAL_RELEASE.md](docs/ASTRA_FINAL_RELEASE.md) and [docs/ASTRA_HANDOFF.md](docs/ASTRA_HANDOFF.md) record the earlier passes.
+**Current Astra Chapter One polish:** `codex/astra-chapter1-final-polish`, continuing Claude source `ed471c04b34bc083da10bdc876f20419246a08e6`. See **[docs/ASTRA_CHAPTER1_FINAL_RELEASE.md](docs/ASTRA_CHAPTER1_FINAL_RELEASE.md)** for the final changes, human playtest navigation fixes, validation and limitations.
+
+**Historical Chapter One source:** `claude/relaxed-heisenberg-gv002b`, based directly on `codex/astra-last-light-final-polish` at `9520b4f1d72759b27ac823671bdefae19ce27e55`. See **[docs/ASTRA_CHAPTER1_HANDOFF.md](docs/ASTRA_CHAPTER1_HANDOFF.md)** for what was built, where it lives, QA jumps, tuning knobs and known issues; [docs/TEST_REPORT.md](docs/TEST_REPORT.md) for verification; [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md) for history. [docs/ASTRA_FINAL_RELEASE.md](docs/ASTRA_FINAL_RELEASE.md) and [docs/ASTRA_HANDOFF.md](docs/ASTRA_HANDOFF.md) record the earlier passes.
 
 ## Play
 
@@ -16,7 +18,7 @@ The title screen shows the controls. During play, only the key that matters righ
 - **Mouse:** look around. The start button requests mouse capture; click the scene to capture again. If capture is unavailable, hold the mouse button and drag.
 - **Q / E:** look left / right, or turn while on foot.
 - **R:** center the view.
-- **Space:** reach to the bell, ring it and return your hand to the grip. Friends still riding look back, and a bell answers.
+- **Space on the bike:** reach to the bell, ring it and return your hand to the grip. Friends still riding look back, and a bell answers.
 - **F at the end of the street:**
   - get off the bike
   - push the tire swing
@@ -24,16 +26,19 @@ The title screen shows the controls. During play, only the key that matters righ
   - crouch to look at the chalk
   - get back on the bike (the prompt becomes **Go home** after the call)
 - **W A S D on foot:** walk around the lookout (and, in Chapter One, anywhere a kid could walk: yards, side yards, the creek bank).
+- **Shift on foot:** sprint, with a small stamina bar that recovers at rest.
+- **Space on foot:** jump. **C / Ctrl:** hold to crouch.
+- **T:** toggle your flashlight after Jamie gives you the spare at the creek.
 - **Chapter One:** the same bike and body, free in the neighborhood. F gets off and back on the bike anywhere, taps on a window, or looks closer at something; A/D while stopped walks the bike round. The objective sits under the date line. **Continue** on the title menu returns to the last place the night reached.
-- **Escape:** pause. From the pause menu: Keep riding, Settings, Start over, Back to the title.
+- **Escape:** pause. From the pause menu: Keep going, Settings, Start over, Back to the title.
 - **Settings** (from the title or pause), remembered in this browser:
   - volume
   - mouse sensitivity
   - graphics quality
-  - friends' lines on or off
+  - Show dialogue captions (all spoken lines)
   - memory lines on or off
   - full screen
-- **Touch devices:** hold the on-screen pedal and steering buttons, drag to look; the extra button does whatever F would do.
+- **Touch devices:** hold the on-screen pedal and steering buttons, drag to look; the extra button does whatever F would do. Sprint, jump, crouch and flashlight currently use keyboard controls.
 - **M or the Sound button:** toggle sound. No sound plays before interaction.
 
 There is no failure condition. Pedaling advances the story; stopping lets you stay in a moment, and your friends stop with you.
@@ -74,8 +79,12 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
   - `dist/kit.js`: shared geometry helpers.
   - `dist/palette.js`: all colors.
   - `dist/materials.js`: surface shaders.
+- **On foot:** `dist/on-foot.js`: walking/sprint stamina, crouch, jump, visible body and hand-held flashlight.
 - **Wheel contact:** `dist/ride-contact.js`: front/rear surface contacts and damped curb feedback.
-- **Chapter One:** `dist/chapter1.js` (the director: phases, objectives, dialogue, title, checkpoints, QA jumps), `dist/police.js` (patrol cars, emergency lights), `dist/people.js` (grown-ups), `dist/companions.js` (Jamie and Sam at night), `dist/nav.js` (where you can ride and walk at night), `dist/creek.js` (the drainage strip).
+- **Shift on foot:** sprint, with a small stamina bar that recovers at rest.
+- **Space on foot:** jump. **C / Ctrl:** hold to crouch.
+- **T:** toggle your flashlight after Jamie gives you the spare at the creek.
+- **Chapter One:** `dist/chapter1.js` (the director: phases, objectives, dialogue, title, checkpoints, QA jumps), `dist/police.js` and `dist/patrol-art.js` (patrol cars, emergency lights), `dist/people.js` and `dist/adult-art.js` (grown-ups), `dist/companions.js` (Jamie and Sam at night), `dist/nav.js` (where you can ride and walk at night), `dist/creek.js` (the drainage strip).
 - **People:**
   - `dist/cast.js`: who everyone is.
   - `dist/rig.js`: bodies, heads, bikes, poses, IK.
@@ -90,7 +99,8 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
   - `dist/ending.js`: the last minute's details.
 - **Tests:**
   - `tests/verify.mjs`: simulation and geometry regression checks.
-  - `tests/browser.mjs`: Chromium checks, screenshots and audio renders.
+  - `tests/browser.mjs`: Chromium checks, screenshots and audio renders, including `tests/astra-browser.mjs` for two full input-driven Chapter One runs and new controls/staging.
+  - `tests/scene-browser.mjs`: targeted animation, property clearance, close-art captures and scene allocation inventory.
 - **QA material:** `docs/qa/`: screenshots, machine-readable results and listening clips.
 
 ## Verification

@@ -1,3 +1,64 @@
+# Last Light — Astra Chapter One final verification
+
+Input `claude/relaxed-heisenberg-gv002b` at `ed471c04b34bc083da10bdc876f20419246a08e6`; final branch `codex/astra-chapter1-final-polish`. Game/test commit `ec67022c9dfd99ede3d4de206b751e9fce93509a`. Both complete suites passed against the same runtime hashes. See [ASTRA_CHAPTER1_FINAL_RELEASE.md](ASTRA_CHAPTER1_FINAL_RELEASE.md) for changes and limits.
+
+- **156 full simulation checks**, including the original world/prologue/story regressions, movement, stamina, jump, crouch, flashlight, Sam-first redirect and all six Continue checkpoints.
+- **184 browser checks**, **219 rendered captures**, **35 audio signal cases**, **0 JavaScript/console/shader errors**.
+- Two complete prologue-to-Chapter-One-ending runs and replay using normal movement/interaction inputs, with no QA jumps or coordinate placement inside those runs. The route controller uses authored coordinates, so this is not a blind human usability test.
+- Existing 11 QA jumps, lingering, off-script travel, menu/settings, caption visibility, pointer lock, title, returning home/idle transition and reset coverage preserved.
+- Companion formation range and per-step continuity/local player spacing; officer and Dad approach from curb, driveway and porch-side; supported climb and every sampled position along Jamie's new house-to-bike path; mother’s handset orientation; finite scene inventory.
+- All final contact sheets plus high-risk full-size frames reviewed. [Gallery](qa/visual-review.html); [audio listening page](qa/audio-review.html).
+
+Validated game/test commit: `ec67022c9dfd99ede3d4de206b751e9fce93509a`. The publication commit adds documentation and QA assets; the manifest's runtime hashes bind both full test reports to the exact shipped payload.
+
+| Gate | Final result |
+|---|---:|
+| Full simulation/geometry checks | **156 passed** |
+| Browser/WebGL/Web Audio checks | **184 passed** |
+| Rendered gameplay/inspection captures | **219** |
+| Audio signal cases | **35 passed** |
+| JavaScript / console / shader errors | **0** |
+| Static world triangles (excluding duplicate shadow proxies) | **1,716,635** |
+| Merged/static world meshes | **935** |
+| Scene triangle instances, including invisible dynamic objects/LODs | 2,006,303 |
+| Unique geometry attribute/index buffers in the scene | 237.9 MiB |
+| Renderer | 153.0.8010.0 / SwiftShader |
+| Real-GPU FPS | Not measured |
+
+Representative rendered frames, default medium quality:
+
+| Capture | Triangles | Draw calls | Active lights |
+|---|---:|---:|---:|
+| 03-group-ride | 632,375 | 364 | 2 |
+| c1-03-police-passing | 605,470 | 278 | 5 |
+| c1-06-briarwood-police-scene | 414,715 | 301 | 4 |
+| c1-09-jamie-window | 656,321 | 293 | 4 |
+| astra-jamie-night-road | 769,980 | 450 | 4 |
+| astra-sam-night-road | 342,096 | 189 | 4 |
+| astra-sam-garage-side-exit | 901,283 | 549 | 4 |
+| c1-17-creek-flashlight | 395,267 | 326 | 7 |
+| astra-reflector-detail | 455,793 | 147 | 6 |
+| astra-bell-look-toward-trees | 587,873 | 262 | 6 |
+
+Across all captures: **71,673–912,204 triangles**, **57–549 draw calls**. Counts include inspection cameras, unusual angles, shadow passes and story close-ups; they are not a uniform gameplay benchmark. The Sam side-door view back along the street is a 549-call outlier, above the complex-scene guidance. Several broad neighborhood views also exceed the ordinary 300-call target. These remain a hardware-profiling limitation, not a claim of measured smooth performance. Static totals remain well inside the revised normal targets.
+
+Night captures have **0 shadow-casting lights**; daytime uses one. Peak renderer allocations across captures: 1305 geometry objects, 15 textures, 73 programs. Buffer inventory is CPU attribute/index storage, including shadow proxies and alternate geometry; it is not measured GPU VRAM.
+
+Evidence: [visual review gallery](qa/visual-review.html), 10 contact sheets, [audio review](qa/audio-review.html), and the two machine-readable test reports. Runtime SHA-256 hashes match between both tests and `dist/`.
+
+
+## Reproduce
+
+`npm test` runs the full suite. `BROWSER_PATH=/path/to/chromium SOFTWARE_GL=1 npm run test:browser` runs the rendered suite when Playwright is installed. Omit SOFTWARE_GL for your hardware-backed environment. `QA_OUTPUT` selects the output folder. `node tests/focused-browser.mjs` and `node tests/scene-browser.mjs` are targeted iteration runners; their counts are not added again to the final combined total.
+
+The browser reports contain runtime hashes. Compare them to `docs/qa/manifest.json` before attributing this validation to a changed payload. Generated WAV files are reproducible and excluded from Git; compact MP3 listening copies and a reel are retained. No human listening, real-GPU FPS or cross-browser/touch validation is claimed.
+
+---
+
+## Historical verification below
+
+The following reports describe earlier source states; their counts and old budget limits do not supersede the current report above.
+
 # Last Light — Chapter One verification
 
 Branch `claude/relaxed-heisenberg-gv002b`, based directly on `codex/astra-last-light-final-polish` at `9520b4f1d72759b27ac823671bdefae19ce27e55`. The baseline (102 simulation, 115 browser checks) was run before editing. See [ASTRA_CHAPTER1_HANDOFF.md](ASTRA_CHAPTER1_HANDOFF.md) for the change record and [qa/manifest.json](qa/manifest.json) for content hashes.

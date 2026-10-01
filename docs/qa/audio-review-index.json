@@ -6,7 +6,7 @@
   },
   {
     "name": "Bicycle on grass",
-    "seconds": 7.4,
+    "seconds": 7.45,
     "file": "audio/grass.mp3"
   },
   {
@@ -16,157 +16,162 @@
   },
   {
     "name": "Footstep on asphalt",
-    "seconds": 22.3,
+    "seconds": 22.35,
     "file": "audio/footstep-asphalt.mp3"
   },
   {
     "name": "Footstep on grass",
-    "seconds": 29.7,
+    "seconds": 29.8,
     "file": "audio/footstep-grass.mp3"
   },
   {
     "name": "Bell",
-    "seconds": 37.2,
+    "seconds": 37.25,
     "file": "audio/bell.mp3"
   },
   {
     "name": "Curb",
-    "seconds": 44.6,
+    "seconds": 44.7,
     "file": "audio/curb.mp3"
   },
   {
     "name": "Sprinkler",
-    "seconds": 52.0,
+    "seconds": 52.15,
     "file": "audio/sprinkler.mp3"
   },
   {
     "name": "Basketball dribble",
-    "seconds": 59.5,
+    "seconds": 59.6,
     "file": "audio/dribble.mp3"
   },
   {
     "name": "Basketball rim",
-    "seconds": 66.9,
+    "seconds": 67.05,
     "file": "audio/rim.mp3"
   },
   {
     "name": "Door opening",
-    "seconds": 74.3,
+    "seconds": 74.5,
     "file": "audio/doorOpen.mp3"
   },
   {
     "name": "Door closing",
-    "seconds": 81.8,
+    "seconds": 81.95,
     "file": "audio/doorSlam.mp3"
   },
   {
     "name": "Garage door",
-    "seconds": 89.2,
+    "seconds": 89.4,
     "file": "audio/garage.mp3"
   },
   {
     "name": "Bike dropped on the lawn",
-    "seconds": 96.6,
+    "seconds": 96.85,
     "file": "audio/bikeDrop.mp3"
   },
   {
     "name": "Kickstand",
-    "seconds": 104.0,
+    "seconds": 104.3,
     "file": "audio/kickstand.mp3"
   },
   {
     "name": "Engine off",
-    "seconds": 111.5,
+    "seconds": 111.75,
     "file": "audio/engineOff.mp3"
   },
   {
     "name": "Distant dog",
-    "seconds": 118.9,
+    "seconds": 119.2,
     "file": "audio/dog.mp3"
   },
   {
     "name": "Tire swing creak",
-    "seconds": 126.3,
+    "seconds": 126.65,
     "file": "audio/creak.mp3"
   },
   {
     "name": "Bird",
-    "seconds": 133.8,
+    "seconds": 134.1,
     "file": "audio/bird.mp3"
   },
   {
     "name": "Distant call home",
-    "seconds": 141.2,
+    "seconds": 141.55,
     "file": "audio/call.mp3"
   },
   {
     "name": "Early-evening neighborhood",
-    "seconds": 148.6,
+    "seconds": 149.0,
     "file": "audio/morning-neighborhood.mp3"
   },
   {
     "name": "Late-evening neighborhood",
-    "seconds": 156.1,
+    "seconds": 156.45,
     "file": "audio/evening-neighborhood.mp3"
   },
   {
     "name": "Prologue ending chord (no longer used at Go home)",
-    "seconds": 163.5,
+    "seconds": 163.9,
     "file": "audio/ending.mp3"
   },
   {
     "name": "Chapter 1: knuckles on a window",
-    "seconds": 173.9,
+    "seconds": 174.35,
     "file": "audio/tap.mp3"
   },
   {
     "name": "Chapter 1: pebble on glass",
-    "seconds": 181.4,
+    "seconds": 181.8,
     "file": "audio/pebble.mp3"
   },
   {
     "name": "Chapter 1: window sash sliding",
-    "seconds": 188.8,
+    "seconds": 189.25,
     "file": "audio/window.mp3"
   },
   {
     "name": "Chapter 1: flashlight switch",
-    "seconds": 196.2,
+    "seconds": 196.7,
     "file": "audio/click.mp3"
   },
   {
     "name": "Chapter 1: police radio squelch",
-    "seconds": 203.7,
+    "seconds": 204.15,
     "file": "audio/squelch.mp3"
   },
   {
     "name": "Chapter 1: car door",
-    "seconds": 211.1,
+    "seconds": 211.6,
     "file": "audio/carDoor.mp3"
   },
   {
     "name": "Chapter 1: Alex\u2019s dad calling his name, down the street",
-    "seconds": 218.5,
+    "seconds": 219.05,
     "file": "audio/callName.mp3"
   },
   {
     "name": "Chapter 1: siren, near (excerpt)",
-    "seconds": 226.0,
+    "seconds": 226.5,
     "file": "audio/siren-near.mp3"
   },
   {
     "name": "Chapter 1: siren, far off behind houses (excerpt)",
-    "seconds": 233.4,
+    "seconds": 233.95,
     "file": "audio/siren-far-muffled.mp3"
   },
   {
     "name": "Chapter 1: night ambience (radio, creek, idling car, TV through a wall)",
-    "seconds": 240.8,
+    "seconds": 241.4,
     "file": "audio/night-search.mp3"
   },
   {
     "name": "Chapter 1: end of chapter",
-    "seconds": 248.3,
+    "seconds": 248.85,
     "file": "audio/chapter-ending.mp3"
+  },
+  {
+    "name": "Chapter One: distant final bicycle bell, two strikes",
+    "seconds": 259.3,
+    "file": "audio/distant-final-bell.mp3"
   }
 ]
