@@ -1,4 +1,79 @@
-# Last Light — final polish verification
+# Last Light — Chapter One verification
+
+Branch `claude/relaxed-heisenberg-gv002b`, based directly on `codex/astra-last-light-final-polish` at `9520b4f1d72759b27ac823671bdefae19ce27e55`. The baseline (102 simulation, 115 browser checks) was run before editing. See [ASTRA_CHAPTER1_HANDOFF.md](ASTRA_CHAPTER1_HANDOFF.md) for the change record and [qa/manifest.json](qa/manifest.json) for content hashes.
+
+## Results
+
+| Gate | Result |
+|---|---|
+| Simulation and geometry (`npm test`, full sweeps) | **136 passed** |
+| Chromium / WebGL / Web Audio (`npm run test:browser`, SwiftShader) | **152 passed** |
+| JavaScript, console and shader errors | **0 reported** |
+| Rendered captures | **171** (43 for Chapter One: story beats, every QA jump, lingering, unusual angles) |
+| Audio signal cases | **34 passed** (11 new night sounds): finite, non-silent, peak below 0.95 |
+| Full Chapter One playthrough, by autopilot, in both suites | Passed |
+| QA jumps (11), Continue, lingering, riding off script, replay from mid-chapter | Passed |
+
+Machine-readable evidence: [simulation-report.json](qa/simulation-report.json), [browser-report.json](qa/browser-report.json), [errors.json](qa/errors.json).
+
+## Chapter One coverage
+
+**The simulation suite** (`tests/verify.mjs`) rides Go home into the chapter and on through it with an autopilot that presses W and A/D. Walking places the walker where a player would stand. It checks:
+- the transition: both last memory lines, including “I thought I remembered everyone.”, the chalk plain in the fade, and the ride home resuming at d ≈ 840;
+- 20–40 s of quiet before the siren (measured: **25.2 s**);
+- the police car passing you after you cross Briarwood (measured: at d 538.4, **4.46 m** away, never over 15 m/s), braking and turning onto Briarwood behind you;
+- your head following the car, the siren going quiet before the title, the title card coming and going, then the objective;
+- every line of the officer conversation as written, and Alex's bike absent with the garage hook empty;
+- the Jamie window sequence (joke, then concern), his window closed again, and Jamie riding with you;
+- Sam's window via pebbles, his big garage door staying shut, and his exit through the side door with his bike;
+- the oak memory lines;
+- the companions never hidden and never left behind on the retrace;
+- the police stop, the creek and the reflector prompt;
+- “That’s his.” / “Why would he come back here?” as the last lines, then the end card;
+- every phase in order, and no non-finite positions anywhere.
+
+**Separately, the simulation suite checks:**
+- all 11 QA jumps land in their phase with the night set up;
+- checkpoints are saved silently, and Continue appears only in the title menu;
+- 90 s lingering on Briarwood starts nothing;
+- riding away when the siren starts: the car still arrives and the title still comes;
+- replay from mid-chapter restores the prologue completely.
+
+**The prologue checks are kept and updated:**
+- Alex leaves first and out of sight: when he goes, his position is outside the view frustum and occluded, at 147.7 m;
+- Jamie and Sam still go home believably;
+- the idle fade now wakes into the ride home.
+
+**The browser suite** (`tests/browser.mjs`):
+- plays the same natural route from Go home, with captures at each beat (`qa/c1-*.jpg`);
+- renders every QA jump (`qa-jump-*`), 150 s lingering in four places (`linger-*`), and unusual angles: up, down, behind, and above the police scene and the creek (`angle-*`);
+- checks Continue on the title;
+- records the night's synthesized sounds (`qa/audio/*.mp3`, [audio-review.html](qa/audio-review.html)).
+
+## Measurements
+
+| Measurement | Result |
+|---|---:|
+| Full world triangles | 1,676,763 (limit 1.7 M) |
+| Merged world meshes | 897 (limit 900) |
+| World build | about 6 s (mocked renderer, Node) |
+| Draw calls, all captured views | 58–462 |
+| Draw calls, Chapter One views | at most about 430 |
+| Triangles, Chapter One views | at most about 780 k |
+
+## Not covered
+
+- Real-GPU frame rate.
+- Touch devices and non-Chromium browsers.
+- Human playtesting.
+- Perceptual listening: nobody has listened to the sounds.
+
+Rendered review was of representative frames at full size during development, not a full contact-sheet pass.
+
+---
+
+# Earlier: final polish verification (historical)
+
 
 Release branch: `codex/astra-last-light-final-polish`, directly descended from Claude's `59c647220e80d12da0d205b1562d483cc5bdb7f3`. See [ASTRA_FINAL_RELEASE.md](ASTRA_FINAL_RELEASE.md) for changes and [qa/manifest.json](qa/manifest.json) for the exact verified content hashes. The baseline passed 92 simulation and 84 browser checks before editing.
 

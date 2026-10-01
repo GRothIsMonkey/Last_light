@@ -1,3 +1,17 @@
+# Last Light — Chapter One pass
+
+Built directly on `codex/astra-last-light-final-polish` at `9520b4f1d72759b27ac823671bdefae19ce27e55`, on `claude/relaxed-heisenberg-gv002b`. All preceding history is retained; the release branch and `main` are untouched.
+
+- **Prologue:** Alex now leaves first, down Briarwood Lane (goodbye, bell, wave, gone round the curve); Jamie and Sam keep their full house sequences, farther along the street. Added Alex's “Did you guys hear that?” setup. Go home no longer ends the game: “I thought I remembered everyone.” carries the transition into the ride home.
+- **Chapter One**, ending at the first clue: a quiet ride home; a police car passing and turning onto Briarwood behind you with siren Doppler and red/blue light; the LAST LIGHT title; Alex's house with officers, his parents and a neighbor; Jamie woken at his window and Sam got out through his garage side door; the friends comparing memories at the old oak; the retrace down Briarwood in the dark, stopped short by the police; the creek, a tire line, Alex's broken rear reflector, and a distant bell.
+- **New systems:** free world-space night riding and walking, objectives, a dialogue queue, a title card, invisible checkpoints with Continue on the title menu, QA jumps (`?qa` / `?jump=`), reusable police cars and emergency lighting, grown-up NPCs, and world-space companions.
+- **World:** Briarwood's curve, the creek strip, Alex's house past it, Briarwood streetlights, friends' sneak windows with lit rooms, Sam's garage side door (his garage mirrored to make room).
+- **Verification:** 152 browser checks, 171 captures (43 for Chapter One: its story beats, every QA jump, lingering and unusual angles) and 34 audio signal cases, plus the simulation suite with a full scripted Chapter One playthrough (see [TEST_REPORT.md](TEST_REPORT.md)). The new sounds have not been listened to.
+
+See [ASTRA_CHAPTER1_HANDOFF.md](ASTRA_CHAPTER1_HANDOFF.md) for details and known issues.
+
+---
+
 # Last Light — final polish release
 
 Built directly on `claude/epic-planck-cme9eq` at `59c647220e80d12da0d205b1562d483cc5bdb7f3`, on `codex/astra-last-light-final-polish`. All preceding game and structural history is retained.

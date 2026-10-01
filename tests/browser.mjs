@@ -100,6 +100,7 @@ try{
  // Page-side helpers: ride with the QA autopilot (W and A/D), stand where a player would stand.
  await page.evaluate(()=>{const L=lastLight,B=L.world.sideFrames[0];
   window.__c1={said:[],last:'',
+   sl(u0,u1,v,st=8){const o=[];const n=Math.ceil(Math.abs(u1-u0)/st);for(let i=1;i<=n;i++)o.push(this.S(u0+(u1-u0)*i/n,v));return o;},
    M:async(d,l)=>{const {groundPoint}=await import('./route.js');const p=groundPoint(d,l);return [p.x,p.z];},S:(u,v)=>{const p=B.point(u,v);return [p.x,p.z];},
    watch(){const s=L.state.chapter;if(s.line&&s.line!==this.last){this.last=s.line;this.said.push((s.speaker||'')+': '+s.line);}},
    until(fn,max){for(let t=0;t<max;t+=1/30){L.step(1/30);this.watch();if(fn())return true;}return false;},
@@ -120,14 +121,14 @@ try{
  check('Chapter 1: the siren, the police car passing and turning, then the title card',shots.siren&&shots.near&&shots.pass&&shots.title&&(await cstate()).phase==='briarwood');
  await page.evaluate(()=>lastLight.step(1.2));check('Chapter 1: objective after the title',(await state()).objective==='See what’s happening on Briarwood.');
  await c1(async()=>{const C=window.__c1,L=lastLight;L.stopDriving();L.press('KeyS');C.until(()=>L.state.speed<.05,8);L.release('KeyS');const {groundPoint,heading}=await import('./route.js');const Lc=L.nav.locate(L.roam.x,L.roam.z),q=groundPoint(Lc.d,-1.8);L.placePlayer({x:q.x,z:q.z,a:heading(Lc.d),mode:'ride',speed:0});
-  const pts=[];for(let d=Lc.d+12;d<566;d+=20)pts.push(await C.M(d,-1.8));pts.push(await C.M(568,-1.6),await C.M(584,1),C.S(8,1.9),C.S(14,1.8),C.S(30,1.8),C.S(50,1.8),C.S(70,1.8),C.S(90,1.8));C.ride(pts,100);});
+  const pts=[];for(let d=Lc.d+12;d<566;d+=20)pts.push(await C.M(d,-1.8));pts.push(await C.M(568,-1.6),await C.M(584,1),C.S(8,1.9),...C.sl(8,96,1.8));C.ride(pts,100);});
  await snap('c1-06-briarwood-police-scene');
- await c1(()=>{const C=window.__c1;C.ride([C.S(106,1.6),C.S(112,1.6)],30);lastLight.release('KeyW');C.until(()=>lastLight.state.chapter.line,20);});await snap('c1-07-officer-asks');
+ await c1(()=>{const C=window.__c1;C.ride(C.sl(96,112,1.7),30);lastLight.release('KeyW');C.until(()=>lastLight.state.chapter.line,20);});await snap('c1-07-officer-asks');
  await c1(()=>window.__c1.until(()=>lastLight.state.chapter.phase==='friends',70));
  check('Chapter 1: the conversation at Alex\'s house, as written',await c1(()=>['OFFICER: “You were with Alex tonight?”','YOU: “Yeah.”','OFFICER: “When did he leave you?”','YOU: “At Oak Hollow. He turned here.”','ALEX’S DAD: “He never came home.”','OFFICER: “Was anyone with him?”','YOU: “No.”'].every(l=>window.__c1.said.includes(l))));
  await camAt('c1-08-alex-garage-empty',{garage:'alex',from:[.4,1.6,6],at:[0,1.2,'back']});
  // Jamie's window.
- await c1(async()=>{const C=window.__c1,pts=[C.S(100,1.8),C.S(70,1.8),C.S(40,-1.8),C.S(20,-2),await C.M(584,-2)];for(let d=604;d<=786;d+=20)pts.push(await C.M(d,-2.2));C.ride(pts,120);C.off();const w=lastLight.chapter.windows.jamie;C.standAt([w.stand.x,w.stand.z],[w.glass.x,w.glass.z]);});
+ await c1(async()=>{const C=window.__c1,pts=[...C.sl(112,16,-1.9),await C.M(584,-2)];for(let d=604;d<=786;d+=20)pts.push(await C.M(d,-2.2));C.ride(pts,120);C.off();const w=lastLight.chapter.windows.jamie;C.standAt([w.stand.x,w.stand.z],[w.glass.x,w.glass.z]);});
  check('Chapter 1: F taps on Jamie\'s window',(await state()).prompt==='F:Tap on the window');await snap('c1-09-jamie-window');
  await c1(()=>{lastLight.key('KeyF');window.__c1.until(()=>lastLight.state.chapter.line==='“Ha. Nice try.”',20);});await snap('c1-10-jamie-nice-try');
  await c1(()=>window.__c1.until(()=>lastLight.state.chapter.flags.jamieClosing,40));await snap('c1-11-jamie-climbed-out');
@@ -141,9 +142,9 @@ try{
  await c1(async()=>{const C=window.__c1;C.on();lastLight.press('KeyW');const pts=[];for(let d=1000;d<=1128;d+=16)pts.push(await C.M(d,-1.5));C.ride(pts,60);lastLight.release('KeyW');C.until(()=>lastLight.state.chapter.line==='“He stopped first.”',60);});
  await view('c1-15-oak-he-stopped-first',.9,-.05);
  await c1(()=>window.__c1.until(()=>lastLight.state.chapter.phase==='retrace',60));check('Chapter 1: the friends compare memories at the oak',await c1(()=>['SAM: “He stopped first.”','YOU: “No he didn’t.”','SAM: “Yeah, he did. For a second.”'].every(l=>window.__c1.said.includes(l))));
- await c1(async()=>{const C=window.__c1;lastLight.press('KeyW');const pts=[await C.M(1138,3),await C.M(1134,4)];for(let d=1130;d>=606;d-=25)pts.push(await C.M(d,2));pts.push(await C.M(598,4),C.S(14,1.8),C.S(30,1.8),C.S(50,1.8));C.ride(pts,180);});
+ await c1(async()=>{const C=window.__c1;lastLight.press('KeyW');const pts=[await C.M(1138,3),await C.M(1134,4)];for(let d=1130;d>=606;d-=25)pts.push(await C.M(d,2));pts.push(await C.M(598,4),C.S(10,1.8),...C.sl(10,50,1.8));C.ride(pts,180);});
  await snap('c1-16-retrace-briarwood-dark');
- await c1(()=>{const C=window.__c1;C.ride([C.S(66,1.8),C.S(78,1.8)],30);lastLight.release('KeyW');C.until(()=>lastLight.state.chapter.phase==='creek',30);C.until(()=>false,8);C.off();});
+ await c1(()=>{const C=window.__c1;C.ride(C.sl(50,78,1.8),30);lastLight.release('KeyW');C.until(()=>lastLight.state.chapter.phase==='creek',30);C.until(()=>false,8);C.off();});
  await snap('c1-17-creek-flashlight');console.log('creek state',JSON.stringify({ch:(await cstate()).phase,flags:(await cstate()).flags,line:(await cstate()).line,roam:(await state()).roam,said:await c1(()=>window.__c1.said.slice(-6))}));check('Chapter 1: the police keep them back; the creek instead',(await cstate()).phase==='creek');
  await c1(()=>{const C=window.__c1,c=lastLight.chapter.clue.position;C.standAt([c.x+1.2,c.z+.6],[c.x,c.z]);});check('Chapter 1: the reflector can be found',(await state()).prompt==='F:Look closer');await snap('c1-18-reflector-in-the-weeds');
  await c1(()=>{lastLight.key('KeyF');window.__c1.until(()=>lastLight.state.chapter.line==='“That’s his.”',10);});await snap('c1-19-thats-his');

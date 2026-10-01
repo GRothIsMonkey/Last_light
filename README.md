@@ -1,12 +1,10 @@
 # Last Light
 
-A short first-person bicycle memory set on August 21, 2011. Ride through a warm suburban neighborhood with three friends, who go home one at a time as sunset turns to dusk, until the street ends at a small grassy lookout where the evening runs out.
+A short first-person bicycle memory set on August 21, 2011. Ride through a warm suburban neighborhood with three friends, who go home one at a time as sunset turns to dusk, until the street ends at a small grassy lookout where the evening runs out. Then, on the ride home, a police car turns onto Briarwood Lane, and the evening becomes the night Alex did not come home: **Chapter One**.
 
-A normal playthrough takes about **5–6 minutes**: roughly 4–4.5 minutes of riding, then a quiet stop at the end of the street. The memory fades by itself about 100 seconds after you stop. Stopping during the ride can extend the experience.
+The prologue takes about **5–6 minutes**. Chapter One runs about **12–15 minutes**, from the ride home to the first clue at the creek. Stopping anywhere extends it; nothing fails.
 
-**Final polish release:** `codex/astra-last-light-final-polish`, based directly on Claude's structural pass at `59c647220e80d12da0d205b1562d483cc5bdb7f3`. It preserves the route, pacing, distinct departures, neighborhood, settings and lookout interactions. This pass adds fuller sidewalk access and wheel-by-wheel curb feedback, an animated bell reach, grounded stopping poses, richer house/bike/character details, corrected signs, quieter service wiring, refined menus and a restrained final memory anomaly.
-
-See **[docs/ASTRA_FINAL_RELEASE.md](docs/ASTRA_FINAL_RELEASE.md)** for the complete release record, [docs/TEST_REPORT.md](docs/TEST_REPORT.md) for measured verification, and [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md) for release history. [docs/ASTRA_HANDOFF.md](docs/ASTRA_HANDOFF.md) preserves the preceding structural handoff.
+**Chapter One pass:** `claude/relaxed-heisenberg-gv002b`, based directly on `codex/astra-last-light-final-polish` at `9520b4f1d72759b27ac823671bdefae19ce27e55`. See **[docs/ASTRA_CHAPTER1_HANDOFF.md](docs/ASTRA_CHAPTER1_HANDOFF.md)** for what was built, where it lives, QA jumps, tuning knobs and known issues; [docs/TEST_REPORT.md](docs/TEST_REPORT.md) for verification; [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md) for history. [docs/ASTRA_FINAL_RELEASE.md](docs/ASTRA_FINAL_RELEASE.md) and [docs/ASTRA_HANDOFF.md](docs/ASTRA_HANDOFF.md) record the earlier passes.
 
 ## Play
 
@@ -25,7 +23,8 @@ The title screen shows the controls. During play, only the key that matters righ
   - sit on the bench (and stand up)
   - crouch to look at the chalk
   - get back on the bike (the prompt becomes **Go home** after the call)
-- **W A S D on foot:** walk around the lookout.
+- **W A S D on foot:** walk around the lookout (and, in Chapter One, anywhere a kid could walk: yards, side yards, the creek bank).
+- **Chapter One:** the same bike and body, free in the neighborhood. F gets off and back on the bike anywhere, taps on a window, or looks closer at something; A/D while stopped walks the bike round. The objective sits under the date line. **Continue** on the title menu returns to the last place the night reached.
 - **Escape:** pause. From the pause menu: Keep riding, Settings, Start over, Back to the title.
 - **Settings** (from the title or pause), remembered in this browser:
   - volume
@@ -43,12 +42,13 @@ There is no failure condition. Pedaling advances the story; stopping lets you st
 
 - **Jamie, Sam and Alex ride as three different kids.** Each has their own face, hair, clothes, build, bike and way of riding: their own cadence, their own moments of standing on the pedals, their own line. Push ahead and they answer at their own pace; ease off and the group comes back together.
 - **Each goes home differently:**
+  - Alex goes first: he says see you tomorrow, turns onto Briarwood Lane, rings his bell twice and waves, and rides on until the street's curve takes him out of sight.
   - Jamie's mother comes to the door; Jamie drops the bike on the lawn, runs in through the open door and waves.
   - Sam rides into the garage, parks, waves, goes through the door at the back, and the garage door comes down.
-  - Alex leaves the bike on its kickstand at the porch steps, waves and goes inside, and a moment later an upstairs light comes on.
 - **The neighborhood keeps living around you** and keeps going wherever you look: down the two cross streets (Briarwood Lane and Summerfield Road), between the houses, over the back fences and out to the hills. Sprinklers sweep and switch off, a kid shoots hoops, a parent's minivan comes home, streetlights and porch lights come on one by one, fireflies come out.
 - **Now and then, a short memory line** appears in the voice of the one looking back.
 - **The street ends in a cul-de-sac.** Get off the bike and walk the small grassy rise: bench, old oak with a tire swing, chalk initials, a fence at the edge of the field. Look back at the lit street; someone far away calls you in. Ride home when you are ready.
+- **Chapter One.** Riding home alone, a siren; a police car passes and turns onto Briarwood behind you. LAST LIGHT. At Alex's house an officer asks when you last saw him. You wake Jamie at his window and get Sam out through his garage's side door, meet at the old oak, and go back the way Alex went, down to the creek, where the first thing anyone finds is the broken reflector off his bike. Far off, a bell. The chapter ends there.
 
 ## Run locally
 
@@ -75,6 +75,7 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
   - `dist/palette.js`: all colors.
   - `dist/materials.js`: surface shaders.
 - **Wheel contact:** `dist/ride-contact.js`: front/rear surface contacts and damped curb feedback.
+- **Chapter One:** `dist/chapter1.js` (the director: phases, objectives, dialogue, title, checkpoints, QA jumps), `dist/police.js` (patrol cars, emergency lights), `dist/people.js` (grown-ups), `dist/companions.js` (Jamie and Sam at night), `dist/nav.js` (where you can ride and walk at night), `dist/creek.js` (the drainage strip).
 - **People:**
   - `dist/cast.js`: who everyone is.
   - `dist/rig.js`: bodies, heads, bikes, poses, IK.

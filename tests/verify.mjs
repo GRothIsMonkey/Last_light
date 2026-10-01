@@ -297,6 +297,7 @@ function finalStop(label){
 // ------------------------------------------------------------------------------------------
 const C1=()=>h.chapter.state,B1=W.sideFrames[0];
 const M1=(d,l)=>{const p=groundPoint(d,l);return [p.x,p.z];},S1=(u,v)=>{const p=B1.point(u,v);return [p.x,p.z];};
+const sline1=(u0,u1,v,st=8)=>{const o=[];const n=Math.ceil(Math.abs(u1-u0)/st);for(let i=1;i<=n;i++)o.push(S1(u0+(u1-u0)*i/n,v));return o;};
 const line1=(d0,d1,l,st=20)=>{const o=[];const n=Math.ceil(Math.abs(d1-d0)/st);for(let i=1;i<=n;i++)o.push(M1(d0+(d1-d0)*i/n,l));return o;};
 function chapterOne(label){
  const said=[],objectives=[],phases=[];let last='',lastObj='',bad=[],minCarGap=99,companionsHidden=0,maxSpeed=0,lastPhase='';
@@ -325,13 +326,13 @@ function chapterOne(label){
  // Stop, walk the bike round (A held while stopped), and ride back to Briarwood.
  release('KeyW');press('KeyS');until(()=>h.night.speed<.05,8);release('KeyS');{const L=h.nav.locate(h.roam.x,h.roam.z),q=groundPoint(L.d,-1.8);h.placePlayer({x:q.x,z:q.z,a:heading(L.d),mode:'ride',speed:0});}
  metrics['chapter1 turned round at d']=+h.nav.locate(h.roam.x,h.roam.z).d.toFixed(1);
- const reached=rideTo([...line1(h.nav.locate(h.roam.x,h.roam.z).d+12,560,-1.8,20),M1(568,-1.6),M1(584,1),S1(8,1.9),S1(14,1.8),S1(30,1.8),S1(50,1.8),S1(70,1.8),S1(90,1.8),S1(106,1.6),S1(112,1.6)],100);release('KeyW');
+ const reached=rideTo([...line1(h.nav.locate(h.roam.x,h.roam.z).d+12,560,-1.8,20),M1(568,-1.6),M1(584,1),S1(8,1.9),...sline1(8,112,1.8)],100);release('KeyW');
  metrics['chapter1 reached Alex house']=reached;until(()=>C1().phase==='friends',70);
  check(`${label}: at Alex's house the officer asks, his father answers, nothing supernatural`,()=>{for(const l of ['OFFICER: “You were with Alex tonight?”','YOU: “Yeah.”','OFFICER: “When did he leave you?”','YOU: “At Oak Hollow. He turned here.”','ALEX’S DAD: “He never came home.”','OFFICER: “Was anyone with him?”','YOU: “No.”'])assert.ok(said.includes(l),l+' | phase '+C1().phase+' reached '+metrics['chapter1 reached Alex house']+' at '+JSON.stringify(h.nav.locate(h.roam.x,h.roam.z))+' said '+said.join(' / ')+' phases '+phases);
   assert.equal(C1().objective,'Find Jamie and Sam.');});
  check(`${label}: Alex's bike is nowhere at his house; the garage hook is empty`,()=>{const al=h.friends.list[2];assert.equal(al.bike.group.visible,false);assert.ok(W.garages.alex.open>.9);assert.equal(W.homes.alex.garageBike,'empty');});
  // Jamie: a tap on his window.
- rideTo([S1(100,1.8),S1(70,1.8),S1(40,-1.8),S1(20,-2),M1(584,-2),...line1(584,786,-2.2)],120);off();
+ rideTo([...sline1(112,16,-1.9),M1(584,-2),...line1(584,786,-2.2)],120);off();
  const jw=h.chapter.windows.jamie;standAt([jw.stand.x,jw.stand.z],[jw.glass.x,jw.glass.z]);
  check(`${label}: at Jamie's side window, F taps on it`,()=>assert.equal(h.ui.promptText,'F:Tap on the window'));tap('KeyF');
  until(()=>C1().jamie.follow==='ride',90);
@@ -339,12 +340,12 @@ function chapterOne(label){
  on();press('KeyW');rideTo(line1(790,983,-2.2),80);off();
  const sw=h.chapter.windows.sam;standAt([sw.stand.x,sw.stand.z],[sw.glass.x,sw.glass.z]);tap('KeyF');
  until(()=>C1().objective==='Wait by Sam’s garage.',60);
- check(`${label}: Jamie throws pebbles at Sam's window; Sam is skeptical`,()=>{assert.ok(said.includes('SAM: “That’s not funny.”'));assert.ok(said.includes('SAM: “This is so dumb. Okay. Side door. Two minutes.”'));assert.equal(W.garages.sam.open,0,'big garage door stays shut');});
+ check(`${label}: Jamie throws pebbles at Sam's window; Sam is skeptical`,()=>{assert.ok(said.includes('SAM: “That’s not funny.”'),JSON.stringify({obj:C1().objective,where:h.nav.locate(h.roam.x,h.roam.z),state:h.night.state,j:C1().jamie,said:said.slice(-5),prompt:h.ui.promptText}));assert.ok(said.includes('SAM: “This is so dumb. Okay. Side door. Two minutes.”'));assert.equal(W.garages.sam.open,0,'big garage door stays shut');});
  const sd=h.chapter.sideDoor.outside;standAt([sd.x+1.5,sd.z+1],[sd.x,sd.z]);until(()=>C1().sam.follow==='ride',60);
  check(`${label}: Sam comes out of the garage's side door pushing his bike`,()=>{assert.ok(said.includes('SAM: “If my dad finds out, I’m dead.”'));assert.equal(C1().sam.mode,'ride');assert.ok(W.sideDoors.sam.open<.05,'side door left open');assert.equal(C1().objective,'Go to the old oak.');});
  on();press('KeyW');rideTo(line1(1000,1128,-1.5),60);release('KeyW');until(()=>C1().phase==='retrace',90);
  check(`${label}: at the old oak they compare what they remember`,()=>{for(const l of ['SAM: “He stopped first.”','YOU: “No he didn’t.”','SAM: “Yeah, he did. For a second.”'])assert.ok(said.includes(l),l);});
- press('KeyW');rideTo([M1(1138,3),M1(1134,4),...line1(1130,606,2,25),M1(598,4),S1(14,1.8),S1(30,1.8),S1(50,1.8),S1(66,1.8),S1(78,1.8)],180);release('KeyW');
+ press('KeyW');rideTo([M1(1138,3),M1(1134,4),...line1(1130,606,2,25),M1(598,4),S1(10,1.8),...sline1(10,78,1.8)],180);release('KeyW');
  until(()=>C1().phase==='creek',30);
  check(`${label}: Jamie and Sam kept up the whole way, never hidden`,()=>{assert.equal(companionsHidden,0);for(const c of h.chapter.companions.all){const n=h.night;assert.ok(Math.hypot((c.mode==='ride'?c.bx:c.px)-n.roam.x,(c.mode==='ride'?c.bz:c.pz)-n.roam.z)<20,c.key+' left behind');}});
  check(`${label}: the police ahead stop them; they go to the creek instead`,()=>{assert.ok(said.includes('JAMIE: “Wait—stop. Cops.”'));assert.equal(C1().objective,'Look around the creek.');});

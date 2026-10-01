@@ -744,8 +744,8 @@
     {
       "name": "c1-06-briarwood-police-scene",
       "frame": 74,
-      "calls": 274,
-      "triangles": 302584,
+      "calls": 262,
+      "triangles": 298977,
       "points": 705,
       "lines": 6435
     },
@@ -753,7 +753,7 @@
       "name": "c1-07-officer-asks",
       "frame": 75,
       "calls": 283,
-      "triangles": 419271,
+      "triangles": 417414,
       "points": 705,
       "lines": 6435
     },
@@ -816,24 +816,24 @@
     {
       "name": "c1-15-oak-he-stopped-first",
       "frame": 83,
-      "calls": 75,
-      "triangles": 85255,
+      "calls": 63,
+      "triangles": 78810,
       "points": 705,
-      "lines": 3040
+      "lines": 8
     },
     {
       "name": "c1-16-retrace-briarwood-dark",
       "frame": 84,
-      "calls": 297,
-      "triangles": 381316,
+      "calls": 304,
+      "triangles": 336164,
       "points": 705,
       "lines": 6435
     },
     {
       "name": "c1-17-creek-flashlight",
       "frame": 85,
-      "calls": 327,
-      "triangles": 333432,
+      "calls": 325,
+      "triangles": 332916,
       "points": 705,
       "lines": 6491
     },
@@ -1530,23 +1530,23 @@
     {
       "name": "rolling",
       "peak": 0.03256918862462044,
-      "rms": 0.006485113909284058,
+      "rms": 0.006485113908306811,
       "nonFinite": 0,
-      "maxSampleJump": 0.021532539278268814
+      "maxSampleJump": 0.021532541140913963
     },
     {
       "name": "grass",
       "peak": 0.04301435127854347,
-      "rms": 0.009213139343519956,
+      "rms": 0.009213139345928559,
       "nonFinite": 0,
-      "maxSampleJump": 0.03677768539637327
+      "maxSampleJump": 0.03677768632769585
     },
     {
       "name": "coasting",
       "peak": 0.03285012021660805,
-      "rms": 0.006496960963134034,
+      "rms": 0.006496960963490583,
       "nonFinite": 0,
-      "maxSampleJump": 0.023507828824222088
+      "maxSampleJump": 0.023507827427238226
     },
     {
       "name": "footstep-asphalt",
@@ -1565,16 +1565,16 @@
     {
       "name": "bell",
       "peak": 0.097164586186409,
-      "rms": 0.007269868537598002,
+      "rms": 0.007269868541136565,
       "nonFinite": 0,
-      "maxSampleJump": 0.03555836621671915
+      "maxSampleJump": 0.03555837133899331
     },
     {
       "name": "curb",
       "peak": 0.005208845715969801,
-      "rms": 0.00016464973565658933,
+      "rms": 0.00016464973576527694,
       "nonFinite": 0,
-      "maxSampleJump": 0.0014012150440976257
+      "maxSampleJump": 0.0014012149950985986
     },
     {
       "name": "sprinkler",
@@ -1593,9 +1593,9 @@
     {
       "name": "rim",
       "peak": 0.057072658091783524,
-      "rms": 0.002361210616242679,
+      "rms": 0.002361210614014195,
       "nonFinite": 0,
-      "maxSampleJump": 0.0068630005698651075
+      "maxSampleJump": 0.006862999638542533
     },
     {
       "name": "doorOpen",
@@ -1607,7 +1607,7 @@
     {
       "name": "doorSlam",
       "peak": 0.14188936352729797,
-      "rms": 0.004242414580987598,
+      "rms": 0.004242414581270416,
       "nonFinite": 0,
       "maxSampleJump": 0.019502905197441578
     },
@@ -1621,9 +1621,9 @@
     {
       "name": "bikeDrop",
       "peak": 0.05148735269904137,
-      "rms": 0.0016414734458521365,
+      "rms": 0.001641473449284628,
       "nonFinite": 0,
-      "maxSampleJump": 0.006639964762143791
+      "maxSampleJump": 0.006639964820351452
     },
     {
       "name": "kickstand",
@@ -1663,28 +1663,28 @@
     {
       "name": "call",
       "peak": 0.0470576174557209,
-      "rms": 0.005130907980035334,
+      "rms": 0.005130907980035756,
       "nonFinite": 0,
       "maxSampleJump": 0.0028136204928159714
     },
     {
       "name": "morning-neighborhood",
       "peak": 0.09853439033031464,
-      "rms": 0.024756069241347548,
+      "rms": 0.02475606923457173,
       "nonFinite": 0,
-      "maxSampleJump": 0.014149252325296402
+      "maxSampleJump": 0.014149250462651253
     },
     {
       "name": "evening-neighborhood",
-      "peak": 0.057841092348098755,
-      "rms": 0.0064058536148199246,
+      "peak": 0.057841088622808456,
+      "rms": 0.006405853617252101,
       "nonFinite": 0,
       "maxSampleJump": 0.025062854401767254
     },
     {
       "name": "ending",
       "peak": 0.07613586634397507,
-      "rms": 0.01316128110843316,
+      "rms": 0.013161281110572451,
       "nonFinite": 0,
       "maxSampleJump": 0.0035852817818522453
     },
@@ -1726,7 +1726,7 @@
     {
       "name": "carDoor",
       "peak": 0.08909951150417328,
-      "rms": 0.0028355990219158652,
+      "rms": 0.0028355990230165655,
       "nonFinite": 0,
       "maxSampleJump": 0.0056620389223098755
     },
@@ -1739,24 +1739,24 @@
     },
     {
       "name": "siren-near",
-      "peak": 0.12197031080722809,
-      "rms": 0.046494108967650244,
+      "peak": 0.12197030335664749,
+      "rms": 0.04649410896545087,
       "nonFinite": 0,
-      "maxSampleJump": 0.06280361954122782
+      "maxSampleJump": 0.06280361930839717
     },
     {
       "name": "siren-far-muffled",
-      "peak": 0.04302230104804039,
-      "rms": 0.001918625099060276,
+      "peak": 0.04302229732275009,
+      "rms": 0.0019186250988888478,
       "nonFinite": 0,
-      "maxSampleJump": 0.02637416683137417
+      "maxSampleJump": 0.026374165900051594
     },
     {
       "name": "night-search",
-      "peak": 0.043794646859169006,
-      "rms": 0.008931096889364026,
+      "peak": 0.04379464313387871,
+      "rms": 0.008931096887076674,
       "nonFinite": 0,
-      "maxSampleJump": 0.026703202165663242
+      "maxSampleJump": 0.026703204959630966
     },
     {
       "name": "chapter-ending",

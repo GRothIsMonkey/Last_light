@@ -1,0 +1,172 @@
+[
+  {
+    "name": "Bicycle on asphalt",
+    "seconds": 0.0,
+    "file": "audio/rolling.mp3"
+  },
+  {
+    "name": "Bicycle on grass",
+    "seconds": 7.4,
+    "file": "audio/grass.mp3"
+  },
+  {
+    "name": "Bicycle coasting",
+    "seconds": 14.9,
+    "file": "audio/coasting.mp3"
+  },
+  {
+    "name": "Footstep on asphalt",
+    "seconds": 22.3,
+    "file": "audio/footstep-asphalt.mp3"
+  },
+  {
+    "name": "Footstep on grass",
+    "seconds": 29.7,
+    "file": "audio/footstep-grass.mp3"
+  },
+  {
+    "name": "Bell",
+    "seconds": 37.2,
+    "file": "audio/bell.mp3"
+  },
+  {
+    "name": "Curb",
+    "seconds": 44.6,
+    "file": "audio/curb.mp3"
+  },
+  {
+    "name": "Sprinkler",
+    "seconds": 52.0,
+    "file": "audio/sprinkler.mp3"
+  },
+  {
+    "name": "Basketball dribble",
+    "seconds": 59.5,
+    "file": "audio/dribble.mp3"
+  },
+  {
+    "name": "Basketball rim",
+    "seconds": 66.9,
+    "file": "audio/rim.mp3"
+  },
+  {
+    "name": "Door opening",
+    "seconds": 74.3,
+    "file": "audio/doorOpen.mp3"
+  },
+  {
+    "name": "Door closing",
+    "seconds": 81.8,
+    "file": "audio/doorSlam.mp3"
+  },
+  {
+    "name": "Garage door",
+    "seconds": 89.2,
+    "file": "audio/garage.mp3"
+  },
+  {
+    "name": "Bike dropped on the lawn",
+    "seconds": 96.6,
+    "file": "audio/bikeDrop.mp3"
+  },
+  {
+    "name": "Kickstand",
+    "seconds": 104.0,
+    "file": "audio/kickstand.mp3"
+  },
+  {
+    "name": "Engine off",
+    "seconds": 111.5,
+    "file": "audio/engineOff.mp3"
+  },
+  {
+    "name": "Distant dog",
+    "seconds": 118.9,
+    "file": "audio/dog.mp3"
+  },
+  {
+    "name": "Tire swing creak",
+    "seconds": 126.3,
+    "file": "audio/creak.mp3"
+  },
+  {
+    "name": "Bird",
+    "seconds": 133.8,
+    "file": "audio/bird.mp3"
+  },
+  {
+    "name": "Distant call home",
+    "seconds": 141.2,
+    "file": "audio/call.mp3"
+  },
+  {
+    "name": "Early-evening neighborhood",
+    "seconds": 148.6,
+    "file": "audio/morning-neighborhood.mp3"
+  },
+  {
+    "name": "Late-evening neighborhood",
+    "seconds": 156.1,
+    "file": "audio/evening-neighborhood.mp3"
+  },
+  {
+    "name": "Prologue ending chord (no longer used at Go home)",
+    "seconds": 163.5,
+    "file": "audio/ending.mp3"
+  },
+  {
+    "name": "Chapter 1: knuckles on a window",
+    "seconds": 173.9,
+    "file": "audio/tap.mp3"
+  },
+  {
+    "name": "Chapter 1: pebble on glass",
+    "seconds": 181.4,
+    "file": "audio/pebble.mp3"
+  },
+  {
+    "name": "Chapter 1: window sash sliding",
+    "seconds": 188.8,
+    "file": "audio/window.mp3"
+  },
+  {
+    "name": "Chapter 1: flashlight switch",
+    "seconds": 196.2,
+    "file": "audio/click.mp3"
+  },
+  {
+    "name": "Chapter 1: police radio squelch",
+    "seconds": 203.7,
+    "file": "audio/squelch.mp3"
+  },
+  {
+    "name": "Chapter 1: car door",
+    "seconds": 211.1,
+    "file": "audio/carDoor.mp3"
+  },
+  {
+    "name": "Chapter 1: Alex\u2019s dad calling his name, down the street",
+    "seconds": 218.5,
+    "file": "audio/callName.mp3"
+  },
+  {
+    "name": "Chapter 1: siren, near (excerpt)",
+    "seconds": 226.0,
+    "file": "audio/siren-near.mp3"
+  },
+  {
+    "name": "Chapter 1: siren, far off behind houses (excerpt)",
+    "seconds": 233.4,
+    "file": "audio/siren-far-muffled.mp3"
+  },
+  {
+    "name": "Chapter 1: night ambience (radio, creek, idling car, TV through a wall)",
+    "seconds": 240.8,
+    "file": "audio/night-search.mp3"
+  },
+  {
+    "name": "Chapter 1: end of chapter",
+    "seconds": 248.3,
+    "file": "audio/chapter-ending.mp3"
+  }
+]

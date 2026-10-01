@@ -1,0 +1,102 @@
+{
+  "recordedAt": "2026-10-01T13:20:36.900592+00:00",
+  "branch": "claude/relaxed-heisenberg-gv002b",
+  "base": {
+    "branch": "codex/astra-last-light-final-polish",
+    "commit": "9520b4f1d72759b27ac823671bdefae19ce27e55"
+  },
+  "simulationChecks": 136,
+  "browserChecks": 152,
+  "browserErrors": 0,
+  "framesCaptured": 171,
+  "renderedReview": "Representative Chapter One frames inspected at full size during development (ride home, police pass, title, Alex's house, both window scenes, side door, oak, retrace, creek, reflector, end card); the complete set was not contact-sheet reviewed.",
+  "audioCases": 34,
+  "audioReview": "Signal checks passed (finite, non-silent, peak below 0.95); MP3 clips and reel refreshed. Nobody has listened to them; perceptual review remains outstanding.",
+  "performance": {
+    "worldTriangles": 1676763,
+    "worldMeshes": 897,
+    "worldBuildMs": 5932,
+    "allCapturedViews": {
+      "calls": {
+        "min": 58,
+        "max": 462
+      },
+      "triangles": {
+        "min": 71673,
+        "max": 809251
+      }
+    },
+    "chapterOneViews": {
+      "calls": {
+        "max": 430
+      },
+      "triangles": {
+        "max": 777659
+      }
+    },
+    "browser": "141.0.7390.37",
+    "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "hardwareFPS": "not measured"
+  },
+  "chapterOne": {
+    "chapter1 quiet seconds": 25.2,
+    "police pass at d": 538.4,
+    "police closest m": 4.46,
+    "chapter1 turned round at d": 537.9,
+    "chapter1 reached Alex house": true,
+    "chapter1 lines spoken": 49,
+    "chapter1 objectives": [
+      "See what\u2019s happening on Briarwood.",
+      "Find Jamie and Sam.",
+      "Get Sam.",
+      "Wait by Sam\u2019s garage.",
+      "Go to the old oak.",
+      "Go the way Alex went.",
+      "Look around the creek."
+    ]
+  },
+  "commands": [
+    "node tests/verify.mjs (npm test script)",
+    "QA_OUTPUT=docs/qa SOFTWARE_GL=1 npm run test:browser",
+    "git diff --check"
+  ],
+  "sha256": {
+    "dist/THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
+    "dist/ambient.js": "fbd0070765b06b722772c3604f41a116e05a705549510d0f6466ea624d1bce52",
+    "dist/audio.js": "b6bc8d57a705c17c57ea4037936961fd246bf78fccfa8c3e0c49e4ff9bd2ba56",
+    "dist/background.js": "2230fe66784156b0d0bd43112efbba86c0b4466efdc91f4f0c5cba0686f94ae1",
+    "dist/cast.js": "bfc977fc428a3860f648ad4f40a7eb6bd2e5424b3bdef2a1ebdbaf83e11c3ff9",
+    "dist/chapter1.js": "3a3aa470a4b884cce1c3b69fe643f4d7417fcf478365a705a42dd0cab176faac",
+    "dist/companions.js": "01cb069a56216ebbd13d0f2b082625c4bdef8abcef97d8c7d60204a058cc5bfe",
+    "dist/creek.js": "c0e45b2139b9b4ad777696e998d37f046b3aa6782e8da47297f1e2e7ece30cd5",
+    "dist/ending.js": "2a35fb18914df32505fb7aee0e809a1facacbc0c1ccb650a15be2152d408ab17",
+    "dist/friends.js": "41691dd7d7b8d0028f4411f38736b8a9a4675780d34c5ffcd9828db6f96fbd97",
+    "dist/furniture.js": "70f5ffccac9c2cfd4505a3c74470aaafb15f235e6fad78db06664d3ad5de7661",
+    "dist/game.js": "b614efb1a715305db951ba9f8ae542861df15b55ebc5480edef273a110c93896",
+    "dist/houses.js": "63c3e7a00aa92f8bc2348a5aef363e9cffe01c451b8427bd4b9bcab9f23ba958",
+    "dist/index.html": "c0e48d47d510feeac62f6f2840f22c89b3ab547b282514cf63ccd56494ce6607",
+    "dist/interactions.js": "d1f8b6e0859fb439d09cf3d634013a34c52242684a493be8892e9924bf65ccc1",
+    "dist/kit.js": "6ba15469732e2bd1f9ce798f97cd1650fec57973b63743eb5c8761fca26e14bd",
+    "dist/layout.js": "e7ce1858e8ee3349535a5cde7f371c09c8c8ba949d04b5c22b2244d8f09c8a9d",
+    "dist/materials.js": "4c23c10975b007c719f0ba5b82dbc6dec7a7deee300e32019ebc78f8901d7d86",
+    "dist/nav.js": "215d519974ba0a0d31bffe137fe8516a1f2a803e1323326aeff16194b19917b7",
+    "dist/nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
+    "dist/palette.js": "52a0632bb1e9c5363b8ecfbc34983d037ab09bd9f1018f52d32d1b0ccada6a65",
+    "dist/people.js": "215fa51cbe98f8aca9762cc57f06bfc6bf68e1cac30d6ab041e244b5f441fa8f",
+    "dist/police.js": "c27411eeebed9d2f28600a2ba43a4d84031701d6756fd2606d16e4977145f5e8",
+    "dist/props.js": "f4f41e2c9ae3c4adfcc7fc141147cdd70feac9557435691d42e9b72bcdd96f64",
+    "dist/ride-contact.js": "c6a3af3649f04468258914e03c96ee72828d730f0387fe4a3db10de87cc25f42",
+    "dist/rig.js": "4a50fffa629eb5e084e06caca1c68a72de3ddac5ddacf21c846809c8e5169b3f",
+    "dist/route.js": "f17de16440dbcb6101a0ea0b483d22ef55663934398613ab932fcf030412b3f5",
+    "dist/story.js": "c1f2bfccdace50fdb27d65786a86028b83d4e7c84ea9c8254fdd24ef361958e0",
+    "dist/streets.js": "8732ee3a4ce0e2954e9312e15a61007f606de14213072a3ed0f6404df6cbf66a",
+    "dist/style.css": "bb42decda1401805cb2a30134ba1e2ff6fcd8ef0d457f6fc2172ea49425dbc11",
+    "dist/terrain.js": "ecc674f1b9d847c7d6e992b65b287cd65a425b237ee40c540fa4e2ea364d6902",
+    "dist/three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
+    "dist/ui.js": "c1f68f97bb18715fbe45a3af067de626e5131a3c0c65de3a2c8377fd4a385a11",
+    "dist/vegetation.js": "afbdfe19822105f003277874648367cc16126f66d56f55b44e71916d4a4aa943",
+    "dist/world.js": "abe1214d2b7bc8e07e6f4c0674042b781044237ac92a52b85e072be50b2c44d0",
+    "tests/browser.mjs": "61621bb0332dd0784248207692f32e0b97ea76943c481b62cb1645245aa06e13",
+    "tests/verify.mjs": "a5c24b0bca063ca77f761fe8ec89bb8c1a41e6a7dfee9cc824845901fee8ed63"
+  }
+}

@@ -418,7 +418,8 @@ function autoDrive(){if(!auto||state!=='c1-ride')return;const p=auto.pts[auto.i]
  const dx=p[0]-roam.x,dz=p[1]-roam.z;if(Math.hypot(dx,dz)<(auto.r||2.4)){auto.i++;return;}
  // Stuck against someone or something: swing the bike round to one side for a moment, as a rider would.
  if(keys.has('KeyW')&&speed<.05)auto.stuck=(auto.stuck||0)+1/30;else if(speed>.5)auto.stuck=0;
- if(auto.stuck>.5){auto.dodge=(auto.dodge||0)+1;auto.stuck=-1.2;}if(auto.stuck<0){auto.stuck+=1/30;keys.delete('KeyW');keys.delete('KeyS');keys.delete('KeyA');keys.add('KeyD');if(auto.stuck>-.15)keys.add('KeyW');return;}
+ if(auto.stuck>.5){auto.dodge=(auto.dodge||0)+1;auto.stuck=-1.2;if(auto.dodge%4===0)auto.i++;}// alternate sides; past a few tries, skip the point
+ if(auto.stuck<0){auto.stuck+=1/30;keys.delete('KeyW');keys.delete('KeyS');keys.delete('KeyA');keys.delete('KeyD');keys.add(auto.dodge%2?'KeyD':'KeyA');if(auto.stuck>-.15)keys.add('KeyW');return;}
  const err=wrap(Math.atan2(dx,-dz)-roam.a),sharp=Math.abs(err)>.6;keys.delete('KeyS');keys.delete('KeyA');keys.delete('KeyD');
  // Slow down for a sharp turn, as a rider would, instead of circling the point.
  if(sharp&&speed>.3){keys.delete('KeyW');if(speed>1.2)keys.add('KeyS');}else if(sharp){keys.delete('KeyW');}else keys.add('KeyW');if(err>.05)keys.add('KeyD');else if(err<-.05)keys.add('KeyA');}
