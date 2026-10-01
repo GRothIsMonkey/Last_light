@@ -11,6 +11,8 @@ export function surfaceMaterial(material,kind){
   let detail='';
   if(kind==='asphalt')detail=`float grain=softNoise(vSurface.xz*115.);float broad=softNoise(vSurface.xz*.8);float aa=1.-smoothstep(.03,.2,length(fwidth(vSurface.xz)));diffuseColor.rgb*=.91+.1*broad+(grain-.5)*.18*aa;`;
   if(kind==='concrete')detail=`float wear=softNoise(vSurface.xz*6.)*.5+softNoise(vSurface.xz*.5)*.5;diffuseColor.rgb*=.92+.12*wear;`;
+  if(kind==='earth')detail=`float grit=softNoise(vSurface.xz*78.);float damp=softNoise(vSurface.xz*2.4)*.5+softNoise(vSurface.xz*.35)*.5;float aa=1.-smoothstep(.025,.15,length(fwidth(vSurface.xz)));diffuseColor.rgb*=.66+.39*damp+(grit-.5)*.24*aa;`;
+  if(kind==='water')detail=`float ripple=sin(vSurface.x*53.+sin(vSurface.z*9.))*sin(vSurface.z*37.);diffuseColor.rgb*=.88+.12*ripple;`;
   if(kind==='bark')detail=`float grain=softNoise(vec2((vSurface.x+vSurface.z)*18.,vSurface.y*1.4));diffuseColor.rgb*=.83+.24*grain;`;
   if(kind==='roof')detail=`float row=vSurface.y*7.;float along=(vSurface.x+vSurface.z)*3.6+floor(row)*.5;float aa=1.-smoothstep(.08,.45,fwidth(row));float seam=(1.-smoothstep(0.,.09,fract(row)))*.15+(1.-smoothstep(0.,.04,fract(along)))*.07;float tile=hsh(floor(vec2(along,row)));float fleck=softNoise(vSurface.xz*32.);diffuseColor.rgb*=(.86+.20*tile-seam*aa)+(.06*fleck-.03)*aa;`;
   // Lap siding: a soft shadow line under each board, fading out before it would shimmer.

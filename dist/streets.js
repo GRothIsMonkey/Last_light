@@ -51,7 +51,7 @@ export function buildStreets(W){
   const walk=[[0,(i,u,v,kk)=>kk<.99?SIDEWALK:.10],[.04,SIDEWALK],[1.46,SIDEWALK],[1.5,(i,u,v,kk)=>kk<.99?SIDEWALK:.10]];
   sweep(parent,us.map(u=>[u,side*(cf+XS.strip)]),walk.map(([o,h])=>[o,typeof h==='function'?h:()=>h]),concrete,{side:-side,heightScale:k});
   grid(parent,side>0?[cf-.38,cf]:[-cf,-cf+.38],range(u0,u1,1),(d,x)=>roadY(d,x),gutterC);
-  for(let u=Math.ceil(u0/1.52)*1.52;u<u1;u+=1.52)K.line(parent,[[side*(cf+XS.strip+.02),SIDEWALK+.004,-u],[side*(cf+XS.walk-.02),SIDEWALK+.004,-u]],0xa39b8a);
+  for(let u=Math.ceil(u0/1.52)*1.52;u<u1;u+=1.52){const joint=K.box(parent,side*(cf+(XS.strip+XS.walk)/2),SIDEWALK+.002,-u,XS.walk-XS.strip-.04,.003,.014,K.mat(0x726d61,{roughness:1}));joint.name='sidewalk-joint';}
  }
 
  // Main road ------------------------------------------------------------------------

@@ -15,6 +15,7 @@ import {smooth} from './kit.js';
 import {createPolice} from './police.js';
 import {createActor,ADULTS,wrap,headingTo} from './people.js';
 import {createCompanions} from './companions.js';
+import {mergeParts} from './rig.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
 const SAVE='lastlight.chapter1';
@@ -48,10 +49,17 @@ export function createChapter1(o){
  // ---- small props of the night: the clue, a tire track, flashlight beams, fireflies ------------
  const clue=new THREE.Group();clue.name='alex-reflector';scene.add(clue);clue.visible=false;
  const lens=new THREE.MeshStandardMaterial({color:0x8a1a14,emissive:0xff2a18,emissiveIntensity:0,roughness:.3,metalness:.1});
- {const piece=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.014,16,1,false,0,3.7),lens);clue.add(piece);
-  const bracket=new THREE.Mesh(new THREE.BoxGeometry(.03,.046,.01),new THREE.MeshStandardMaterial({color:0x9da09a,roughness:.5,metalness:.4}));bracket.position.set(.004,.006,-.03);bracket.rotation.set(Math.PI/2,0,.5);clue.add(bracket);
-  const tape=new THREE.Mesh(new THREE.BoxGeometry(.036,.016,.02),new THREE.MeshStandardMaterial({color:0x161617,roughness:.6}));tape.position.set(.006,.008,-.042);tape.rotation.set(0,.5,0);clue.add(tape);
-  const p=side(...spotsC.clue),gy=nav.groundY(p.x,p.z);clue.position.set(p.x,gy+.012,p.z);clue.rotation.set(.18,ha(spotsC.clue[0])+2.1,-.12);}
+ {const shape=new THREE.Shape(),outline=[[-.046,-.033],[.024,-.034],[.044,-.019],[.037,.002],[.048,.016],[.014,.022],[.005,.034],[-.043,.029]];outline.forEach(([x,y],i)=>i?shape.lineTo(x,y):shape.moveTo(x,y));shape.closePath();
+  const geo=new THREE.ExtrudeGeometry(shape,{depth:.008,bevelEnabled:true,bevelSize:.002,bevelThickness:.0015,bevelSegments:1,steps:1});geo.rotateX(-Math.PI/2);
+  const rim=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x382824,roughness:.65}));rim.scale.set(1.08,1,1.08);clue.add(rim);
+  const piece=new THREE.Mesh(geo,lens);piece.position.y=.003;clue.add(piece);
+  // Molded prismatic lens faces catch the beam; the chipped corner breaks the regular pattern.
+  const facets=new THREE.Group();for(let x=-.033;x<.032;x+=.012)for(let z=-.018;z<.023;z+=.012){if(x>.016&&z<-.006)continue;const tri=new THREE.Mesh(new THREE.ConeGeometry(.006,.003,4),lens);tri.position.set(x,.015,z);tri.rotation.y=Math.PI/4;facets.add(tri);}facets.updateMatrixWorld(true);const faces=[];facets.traverse(m=>{if(m.isMesh)faces.push({geo:m.geometry,matrix:m.matrixWorld,color:0xffffff});});clue.add(new THREE.Mesh(mergeParts(faces),lens));
+  const tape=new THREE.Mesh(new THREE.BoxGeometry(.02,.008,.067),new THREE.MeshStandardMaterial({color:0x161718,roughness:.93}));tape.position.set(-.015,.016,0);tape.rotation.y=.07;clue.add(tape);
+  const bracket=new THREE.Mesh(new THREE.BoxGeometry(.017,.007,.035),new THREE.MeshStandardMaterial({color:0x8c9290,roughness:.5,metalness:.55}));bracket.position.set(.006,.002,.04);clue.add(bracket);
+  const bolt=new THREE.Mesh(new THREE.CylinderGeometry(.004,.004,.008,8),bracket.material);bolt.position.set(.006,.008,.047);clue.add(bolt);
+  const scratches=new THREE.BufferGeometry();scratches.setAttribute('position',new THREE.Float32BufferAttribute([-.031,.018,-.008,-.023,.018,.01,.014,.016,-.018,.024,.016,-.008],3));const mark=new THREE.LineSegments(scratches,new THREE.LineBasicMaterial({color:0x512d28}));clue.add(mark);
+  const p=side(...spotsC.clue),gy=nav.groundY(p.x,p.z);clue.position.set(p.x,gy+.012,p.z);clue.rotation.set(.12,ha(spotsC.clue[0])+2.1,-.08);}
  const glint=new THREE.Sprite(new THREE.SpriteMaterial({map:police.cars[0].glowR.material.map,color:0xff3a22,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));glint.scale.setScalar(.1);glint.position.copy(clue.position).add(new THREE.Vector3(0,.03,0));scene.add(glint);glint.visible=false;
  // A thin tire line in the soft ground of the path, going down toward the channel.
  const track=(()=>{const pts=[[91.5,7.95],[92.7,9.3],[94,10.6],[95.3,11.8],[96.6,13],[97.7,14.2]],p=[],idx=[];
@@ -59,7 +67,7 @@ export function createChapter1(o){
    for(const k of [-1,1]){const uu=u+(-dv/l)*(w*k+wob),vv=v+(du/l)*(w*k+wob),pt=side(uu,vv);p.push(pt.x,nav.groundY(pt.x,pt.z)+.016,pt.z);}}
   for(let i=0;i<pts.length-1;i++){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(idx);g.computeVertexNormals();
-  const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0x2a231b,transparent:true,opacity:.55,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}));m.name='tire-track';scene.add(m);m.visible=false;return m;})();
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({roughness:1,color:0x393326,transparent:true,opacity:.55,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}));m.name='tire-track';scene.add(m);m.visible=false;return m;})();
  const trackMid=side(94.6,11.2);
  // Flashlight beams: a soft cone you can see in the dark (Jamie's also lights things for real).
  const beamMat=()=>new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,uniforms:{uA:{value:0}},
@@ -85,7 +93,7 @@ export function createChapter1(o){
  fresh();
  const api={night:1,deep:0,arPlain:false,sources:[],urgent:false,glanceMax:.85,hideBell:true,pose:null,phase:()=>S.phase};
  // ---- objective, title card, date ----------------------------------------------------------------
- function objective(text){if(text===S.objective)return;S.objective=text;const el=$('objective');if(!el)return;el.classList.remove('on');S.objT=text?.9:0;if(!text)el.textContent='';}
+ function objective(text){const note=$('objective-note');if(note){note.textContent=text==='Find Jamie.'?'Back on Oak Hollow. The red chair on his porch.':text==='Find Sam.'?'Farther toward the oak. His garage with the old hoop.':'';note.style.opacity=note.textContent?'1':'0';}if(text===S.objective)return;S.objective=text;const el=$('objective');if(!el)return;el.classList.remove('on');S.objT=text?.9:0;if(!text)el.textContent='';}
  function updateObjective(dt){if(S.objT>0){S.objT-=dt;if(S.objT<=0){const el=$('objective');if(el){el.textContent=S.objective;if(S.objective)el.classList.add('on');}}}}
  function title(on){const el=$('title-card');if(!el)return;if(on)el.classList.add('on');else el.classList.remove('on');S.titleOn=on;}
  const date=k=>setDate(`AUGUST 21, 2011 <i></i> ${CLOCK[k]} PM`);
@@ -99,11 +107,12 @@ export function createChapter1(o){
  function updateTalk(dt){
   if(S.line){S.lineT+=dt;const l=S.line;
    // Walk away from a conversation and it ends, the way they do.
-   if(l.range&&l.anchor&&dist(player(),l.anchor.pos)>l.range){S.queue=S.queue.filter(q=>q.then);S.line=null;S.talking=null;return;}
+   if(l.range&&l.anchor&&dist(player(),l.anchor.pos)>l.range){S.queue=[];S.line=null;S.talking=null;if(S.phase==='briarwood'){S.flags.talked=false;S.flags.approaching=false;officer.lookAt=dad.lookAt=null;}say('','',.01);return;}
+   if(l.until&&!l.until())return;
    if(S.lineT>=l.dur){S.line=null;S.talking=null;S.gap=l.gap??.35;}return;}
   if(S.gap>0){S.gap-=dt;return;}
   const l=S.queue.shift();if(!l)return;
-  if(l.then){l.then();return;}if(l.act)l.act();if(l.wait){S.line={...l,dur:l.wait,text:''};S.lineT=0;return;}
+  if(l.then){l.then();return;}if(l.act)l.act();if(l.wait||l.until){S.line={...l,dur:l.wait||.01,text:''};S.lineT=0;return;}
   l.dur=lineTime(l);S.line=l;S.lineT=0;S.talking=l.from||null;if(l.from)l.from.talk=l.dur;say(l.who,l.text,l.dur+.6);}
  const speaking=()=>S.line&&S.line.text?S.line.who:null;
  // ---- helpers for places ---------------------------------------------------------------------------
@@ -150,19 +159,30 @@ export function createChapter1(o){
  // The officer from the arriving car gets out and walks to the end of the driveway.
  function arrivedOfficer(){if(S.alexScene)return;S.alexScene=true;const door=side(124.6,1.2),q=side(120.7,8.4);officer.show(true);officer.place(door.x,door.z,ha(124.6));officer.walk([side(122.3,.9),side(121.6,5.6),q].map(p=>[p.x,p.z]),{speed:1.4,then:a=>{a.faceTo(dad.x,dad.z);}});}
  // ---- the briarwood conversation ------------------------------------------------------------------
- function startAlexTalk(){S.flags.talked=true;const p=me(),dx=officer.x-p.x,dz=officer.z-p.z,l=Math.hypot(dx,dz)||1,t={x:p.x+dx/l*2.3,z:p.z+dz/l*2.3};
-  if(nav.walkable(t.x,t.z)&&l>2.6)officer.walk([[t.x,t.z]],{speed:1.2,then:a=>{a.lookAt=camera.position;}});
-  officer.lookAt=camera.position;dad.lookAt=camera.position;mom.lookAt=null;
+ function conversationalSpot(actor,p,r,angle=0){const a=headingTo(p.x,p.z,actor.x,actor.z)+angle;
+  for(const off of [0,.4,-.4,.8,-.8,1.2,-1.2]){const h=a+off,q={x:p.x+Math.sin(h)*r,z:p.z-Math.cos(h)*r};if(nav.walkable(q.x,q.z)&&!blockers(true).some(b=>Math.hypot(b.x-actor.x,b.z-actor.z)>.1&&Math.hypot(b.x-q.x,b.z-q.z)<b.r+.5))return q;}return {x:actor.x,z:actor.z};}
+ function approach(actor,q){const obs=blockers(true).filter(b=>Math.hypot(b.x-actor.x,b.z-actor.z)>.1),path=nav.walkPath(actor,q,obs);if(path.length)actor.walk(path,{speed:1.35,then:a=>{a.faceTo(me().x,me().z);a.lookAt=camera.position;}});}
+ function startAlexTalk(){S.flags.talked=true;S.flags.approaching=true;S.flags.dadJoining=false;S.approachT=0;S.talkOrigin={x:me().x,z:me().z};officer.gest(null);dad.gest(null);officer.lookAt=camera.position;dad.lookAt=officer.pos;mom.lookAt=null;
+  approach(officer,conversationalSpot(officer,me(),2.35));}
+ function beginAlexLines(){S.flags.approaching=false;
   talk([{who:'OFFICER',text:'“You were with Alex tonight?”',from:officer},
    {who:'YOU',text:'“Yeah.”',time:1.7},
    {who:'OFFICER',text:'“When did he leave you?”',from:officer},
    {who:'YOU',text:'“At Oak Hollow. He turned here.”'},
+   {until:()=>!dad.walking&&dist(dad,me())<5.8},
    {who:'ALEX’S DAD',text:'“He never came home.”',from:dad,act:()=>dad.gest('head')},
    {who:'OFFICER',text:'“Was anyone with him?”',from:officer},
    {who:'YOU',text:'“No.”',time:1.8},
    {who:'OFFICER',text:'“Okay. Thank you. Head on home now, alright? We’ll call your folks if we need anything.”',from:officer,time:5.2,gap:1.2}],
-   {range:24,from:officer,then:afterAlexTalk});}
- function afterAlexTalk(){S.flags.alexDone=true;officer.lookAt=null;dad.lookAt=null;officer.gest('radio');dad.gest('fold');go('friends');objective('Find Jamie and Sam.');date('friends');checkpoint('jamie');
+   {range:12,from:officer,then:afterAlexTalk});}
+ function stageAlex(dt){if(S.phase!=='briarwood'||!S.flags.talked||S.flags.alexDone)return;
+  const p=me();if(dist(p,S.talkOrigin)>13){S.queue=[];S.line=null;S.flags.talked=S.flags.approaching=false;say('','',.01);return;}
+  S.approachT+=dt;officer.lookAt=S.line?.who==='ALEX’S DAD'?dad.pos:camera.position;dad.lookAt=S.line?.who==='OFFICER'?officer.pos:camera.position;
+  if(!officer.walking)officer.faceTo(p.x,p.z);if(!dad.walking)dad.faceTo(p.x,p.z);
+  if(S.approachT>1&&!S.flags.dadJoining){S.flags.dadJoining=true;approach(dad,conversationalSpot(dad,p,3.35,.58));}
+  if(S.approachT>2.5&&Math.floor(S.approachT)%2===0){if(!officer.walking&&dist(officer,p)>4.4)approach(officer,conversationalSpot(officer,p,2.35));if(!dad.walking&&dist(dad,p)>5.4)approach(dad,conversationalSpot(dad,p,3.35,.58));}
+  if(S.flags.approaching&&!officer.walking&&dist(officer,p)<4.4)beginAlexLines();}
+ function afterAlexTalk(){S.flags.alexDone=true;officer.lookAt=null;dad.lookAt=null;officer.gest('radio');dad.gest('fold');go('friends');objective('Find Jamie.');date('friends');checkpoint('jamie');
   // What you hear as you go: the radio, and his father calling his name down the street.
   talk([{wait:2.2},{who:'RADIO',text:'“…twelve-year-old male, last seen on Oak Hollow around eight, riding a green bicycle…”',time:4.6,act:()=>sfx('squelch',officer.pos)}]);S.dadCall=S.t+9;}
  // ---- Jamie ------------------------------------------------------------------------------------------
@@ -186,11 +206,12 @@ export function createChapter1(o){
  // To the bike he dropped on the lawn: stand it up, get on, and come along.
  function jamieToBike(){const f=jamie.f,bp=main(f.bd,f.blat),ba=heading(f.bd)+f.bpsi;jamie.bx=bp.x;jamie.bz=bp.z;jamie.ba=ba;jamie.fall=f.fall;jamie.kick=0;
   const sideP={x:bp.x-Math.cos(ba)*.43+Math.sin(ba)*.1,z:bp.z-Math.sin(ba)*.43-Math.cos(ba)*.1};
-  comp.run(jamie,[comp.steps.walkTo(jamie,[[sideP.x,sideP.z]],{speed:1.5}),comp.steps.turnTo(jamie,ba,.6),comp.steps.lift(jamie),comp.steps.mount(jamie)],{then:()=>{S.jamieIn=true;jamie.follow='ride';jamie.lookPlayer=false;
-   objective('Get Sam.');date('sam');checkpoint('sam');}});}
+  const path=nav.walkPath({x:jamie.px,z:jamie.pz},sideP),corner=JH.toWorld(JW.s*(JH.w/2+1.65),JH.front+2.8);
+  comp.run(jamie,[comp.steps.walkTo(jamie,path.length?path:[[corner.x,corner.z],[sideP.x,sideP.z]],{speed:1.5}),comp.steps.turnTo(jamie,ba,.6),comp.steps.lift(jamie),comp.steps.mount(jamie)],{then:()=>{S.jamieIn=true;jamie.follow='ride';jamie.lookPlayer=false;
+   objective('Find Sam.');date('sam');checkpoint('sam');}});}
  // ---- Sam ---------------------------------------------------------------------------------------------
  function tapSam(){sfx('tap',SWin.glass);S.samTap++;
-  if(!S.jamieIn){talk([{wait:2.4},{who:'',text:'No answer. Somewhere inside, a TV is on.',time:4}]);if(S.objective==='Find Jamie and Sam.')objective('Find Jamie.');return;}
+  if(!S.jamieIn){S.samTap=0;talk([{who:'',text:'I should get Jamie first.',time:3.5}]);objective('Find Jamie.');return;}
   S.flags.samSignal=true;roam.walkLock=false;
   talk([{wait:1.6},{who:'JAMIE',text:'“He sleeps with a fan on. He can’t hear anything. Watch.”',from:jamie}]);
   const stand=SWin.stand,away={x:stand.x+(stand.x-SWin.wall.x)*1.2+Math.sin(headingTo(SWin.wall.x,SWin.wall.z,stand.x,stand.z)+Math.PI/2)*1.4,z:stand.z+(stand.z-SWin.wall.z)*1.2-Math.cos(headingTo(SWin.wall.x,SWin.wall.z,stand.x,stand.z)+Math.PI/2)*1.4};
@@ -216,7 +237,7 @@ export function createChapter1(o){
   const a=headingTo(sideDoor.inside.x,sideDoor.inside.z,sideDoor.outside.x,sideDoor.outside.z),bike={x:sideDoor.inside.x+Math.cos(a)*.43+Math.sin(a)*.12,z:sideDoor.inside.z+Math.sin(a)*.43-Math.cos(a)*.12,a};
   comp.putFoot(sam,sideDoor.inside.x,sideDoor.inside.z,a,{bike});sam.holding=true;sam.lookPlayer=false;
   const drive=at(SH,SH.S(SH.gx,SH.gfront+3.4)),out2={x:sideDoor.outside.x+Math.sin(a)*.9,z:sideDoor.outside.z-Math.cos(a)*.9};
-  comp.run(sam,[comp.steps.wait(.7),comp.steps.walkTo(sam,[[sideDoor.through.x,sideDoor.through.z],[out2.x,out2.z]],{speed:.9,push:true}),comp.steps.act(()=>{S.flags.sideDoorClosing=true;}),
+  comp.run(sam,[comp.steps.wait(.7),comp.steps.walkTo(sam,[[sideDoor.through.x,sideDoor.through.z],[out2.x,out2.z]],{speed:.9,push:true}),comp.steps.act(()=>{S.flags.sideDoorClosing=true;sfx('doorSlam',sideDoor.through,{gain:.17});}),
    comp.steps.walkTo(sam,[[drive.x,drive.z]],{speed:1.1,push:true}),comp.steps.act(()=>{sam.lookPlayer=true;
     talk([{who:'SAM',text:'“If my dad finds out, I’m dead.”',from:sam},{who:'JAMIE',text:'“He won’t.”',from:jamie,time:1.8},{who:'JAMIE',text:'“Not here. The oak.”',from:jamie,time:2.4}]);}),
    comp.steps.idle(sam,1.4),comp.steps.mount(sam)],{then:()=>{S.samIn=true;sam.follow='ride';sam.lookPlayer=false;go('oak');objective('Go to the old oak.');date('oak');checkpoint('oak');}});
@@ -236,24 +257,24 @@ export function createChapter1(o){
  // ---- the creek ------------------------------------------------------------------------------------------
  function copsAhead(){S.flags.cops=true;roam.brake=.6;S.brakeT=1.6;
   talk([{who:'JAMIE',text:'“Wait—stop. Cops.”',from:jamie,time:2},{who:'JAMIE',text:'“If they see us, we’re done.”',from:jamie},
-   {who:'SAM',text:'“So let’s go home.”',from:sam,time:2},{who:'JAMIE',text:'“The creek. We always cut through the creek.”',from:jamie}],{then:()=>{go('creek');objective('Look around the creek.');date('creek');checkpoint('investigation');}});
+   {who:'SAM',text:'“So let’s go home.”',from:sam,time:2},{who:'JAMIE',text:'“The creek. We always cut through the creek.”',from:jamie},{who:'JAMIE',text:'“Here. Take the spare.”',from:jamie,time:2.2,act:()=>{o.giveFlashlight?.();say('','T — Flashlight',2.2);}}],{then:()=>{go('creek');objective('Look around the creek.');date('creek');checkpoint('investigation');}});
   // They pull up on the sidewalk by the railing and leave the bikes there.
   comp.run(jamie,[comp.steps.rideTo(jamie,[[side(84,4.6).x,side(84,4.6).z],[side(88.6,6.6).x,side(88.6,6.6).z],[side(90.3,6.9).x,side(90.3,6.9).z]],{vmax:3.2}),comp.steps.brake(jamie,.3),comp.steps.dismount(jamie),comp.steps.drop(jamie),
    comp.steps.act(()=>{S.flashOn=true;sfx('click',jamie.person.group.position);torch.visible=true;}),comp.steps.walkTo(jamie,[[side(91.7,8.5).x,side(91.7,8.5).z],[side(93.5,11.2).x,side(93.5,11.2).z],[side(95.3,14.3).x,side(95.3,14.3).z]],{speed:.9})],{then:()=>{jamie.follow=null;S.flags.jamieSearching=true;}});
   comp.run(sam,[comp.steps.rideTo(sam,[[side(82,4).x,side(82,4).z],[side(86.2,6.5).x,side(86.2,6.5).z],[side(87.6,6.8).x,side(87.6,6.8).z]],{vmax:3}),comp.steps.brake(sam,.3),comp.steps.dismount(sam),comp.steps.kickstand(sam)],{then:()=>{sam.follow='walk';}});}
  function findClue(){go('clue');S.clueT=0;roam.walkLock=true;const c=clue.position,p=me(),a=headingTo(p.x,p.z,c.x,c.z),back={x:c.x-Math.sin(a)*.5,z:c.z+Math.cos(a)*.5};
-  objective('');S.pose={w:0,x:back.x,y:nav.groundY(back.x,back.z)+.5,z:back.z,yaw:a,pitch:-.78,from:p.a,fromPitch:p.pitch||0};api.pose=S.pose;
+  objective('');S.pose={w:0,x:back.x,y:nav.groundY(back.x,back.z)+.68,z:back.z,yaw:a,pitch:-.86,from:p.a,fromPitch:p.pitch||0,baseYaw:a,baseY:nav.groundY(back.x,back.z)+.68};api.pose=S.pose;
   jamie.lookAt=c;sam.lookAt=c;S.lookTarget=c;
   talk([{wait:1.4},{who:'YOU',text:'“That’s his.”',time:2.6,gap:.8},{who:'SAM',text:'“Why would he come back here?”',from:sam,time:3},{wait:3.6},
    {act:()=>{S.bellAt=S.t;const b=side(...spotsC.bell);o.audio()?.bell({x:b.x,y:b.y+1,z:b.z},1.8);S.lookTarget=b;jamie.lookAt=b;sam.lookAt=b;},wait:3.4},
    {act:()=>{S.endT=0;},wait:.1}]);}
  // ---- the spots F works on ---------------------------------------------------------------------------------
  function spots(){const out=[];const ph=S.phase;
-  if((ph==='friends')&&!S.flags.jamieTapped)out.push({id:'tap-jamie',label:'Tap on the window',at:JWin.stand,face:JWin.glass,r:1.7});
-  if((ph==='friends')&&!S.flags.samSignal&&S.samTap<3)out.push({id:'tap-sam',label:'Tap on the window',at:SWin.stand,face:SWin.glass,r:1.7});
+  if((ph==='friends')&&!S.flags.jamieTapped)out.push({id:'tap-jamie',label:'Tap on the window',at:JWin.stand,face:JWin.glass,r:2.6});
+  if((ph==='friends')&&!S.flags.samSignal&&S.samTap<3)out.push({id:'tap-sam',label:'Tap on the window',at:SWin.stand,face:SWin.glass,r:2.5});
   if(ph==='creek'){const c=clue.position;out.push({id:'reflector',label:'Look closer',at:c,face:c,r:1.9});}
   return out;}
- function spot(){const p=me();if(!p.walking)return null;let best=null,bd=1e9;for(const s of spots()){const d=dist(p,s.at);if(d>s.r||d>bd)continue;const a=wrap(headingTo(p.x,p.z,s.face.x,s.face.z)-p.a);if(Math.abs(a)>1.25&&d>.8)continue;best=s;bd=d;}return best;}
+ function spot(){if(busy()&&S.phase==='friends'&&(S.flags.jamieTapped||S.flags.samSignal))return null;const p=me();if(!p.walking)return null;let best=null,bd=1e9;for(const s of spots()){const d=dist(p,s.at);if(d>s.r||d>bd)continue;const a=wrap(headingTo(p.x,p.z,s.face.x,s.face.z)-p.a);if(Math.abs(a)>1.25&&d>.8)continue;best=s;bd=d;}return best;}
  function act(id){if(id==='tap-jamie')tapJamie();else if(id==='tap-sam')tapSam();else if(id==='reflector'&&S.phase==='creek')findClue();}
  // ---- every frame -----------------------------------------------------------------------------------------
  const eye=new THREE.Vector3();
@@ -269,6 +290,7 @@ export function createChapter1(o){
   else if(ph==='cruiser'){if(S.titleT<0&&S.sirenOff>=0&&!S.siren?.active&&S.t-S.sirenOff>3.6){S.titleT=0;go('title');}}
   if(S.titleT>=0){S.titleT+=dt;if(S.titleT>.2&&S.titleT<5.2)title(true);else title(false);if(S.titleT>7.4&&S.phase==='title'){S.titleT=-2;go('briarwood');objective('See what’s happening on Briarwood.');date('briarwood');checkpoint('alex-house');}}
   if(S.phase==='briarwood'&&!S.flags.talked&&S.alexScene&&officer.visible&&dist(p,officer.pos)<13.5&&!busy())startAlexTalk();
+  stageAlex(dt);
   // Jamie and Sam.
   if(S.phase==='friends'&&S.samWait>=0&&!S.flags.samOut&&S.t-S.samWait>9&&dist(p,sideDoor.outside)<7)samOut();
   if(S.flags.jamieWindow&&!S.flags.jamieClosing)JW.set(Math.min(.82,JW.open+dt*1.1));if(S.flags.jamieClosing)JW.set(Math.max(.12,JW.open-dt*.8));
@@ -288,7 +310,7 @@ export function createChapter1(o){
    if(!S.flags.nervous&&S.searchT>9&&!busy()){S.flags.nervous=true;talk([{who:'SAM',text:'“This is a bad idea.”',from:sam,time:2.4}]);}
    if(!S.flags.trackSeen&&dist(p,trackMid)<2.4&&p.walking&&camLooksAt(trackMid,.5)&&!busy()){S.flags.trackSeen=true;talk([{who:'SAM',text:'“Somebody rode down here.”',from:sam,time:2.6}]);}
    if(!S.flags.pointed&&S.searchT>38&&!busy()){S.flags.pointed=true;S.lookTarget=clue.position;talk([{who:'JAMIE',text:'“Wait. What’s that?”',from:jamie,time:2.4}]);}}
-  if(S.phase==='clue'){S.clueT+=dt;S.pose.w=smooth(S.clueT/1.1);if(S.endT>=0){S.endT+=dt;fade(smooth(S.endT/3.6));if(S.endT>4.2){go('end');finish();}}}
+  if(S.phase==='clue'){S.clueT+=dt;S.pose.w=smooth(S.clueT/1.1);if(S.bellAt>=0){const b=side(...spotsC.bell),w=smooth((S.t-S.bellAt-.2)/1.6);S.pose.yaw=S.pose.baseYaw+wrap(headingTo(S.pose.x,S.pose.z,b.x,b.z)-S.pose.baseYaw)*w;S.pose.pitch=-.86+.82*w;S.pose.y=S.pose.baseY+.28*w;}if(S.endT>=0){S.endT+=dt;fade(smooth(S.endT/3.6));if(S.endT>4.2){go('end');finish();}}}
   // Alex's dad, out at the end of the driveway, calling his name.
   // Ordinary search sounds, heard only near his street and never down at the creek.
   if(S.dadCall>0&&S.t>S.dadCall&&['friends','oak','retrace'].includes(S.phase)&&dist(me(),dad)<110){S.dadCall=S.t+38+Math.random()*12;const q=side(119.4,6.4);if(!dad.walking){dad.walk([[q.x,q.z]],{speed:1.1,then:a=>{a.face(ha(119.4)+Math.PI*.5);a.gest(null);
@@ -297,8 +319,8 @@ export function createChapter1(o){
   updateTalk(dt);updateObjective(dt);
   if(S.brakeT>0){S.brakeT-=dt;if(S.brakeT<=0)roam.brake=0;}
   // Cast and cars.
-  for(const a of adults)a.update(dt);police.update(dt,eye);updateSiren(dt);
-  comp.update(dt,{player:{...p,bx:p.bike.x,bz:p.bike.z},eye,clock:S.t,speaker:speaking(),inView});
+  for(const a of adults)a.update(dt,{eye});police.update(dt,eye);updateSiren(dt);
+  comp.update(dt,{player:{...p,bx:p.bike.x,bz:p.bike.z},eye,clock:S.t,speaker:speaking(),inView,obstacles:blockers().filter(b=>!comp.all.some(c=>Math.hypot(c.bx-b.x,c.bz-b.z)<.01||Math.hypot(c.px-b.x,c.pz-b.z)<.01))});
   updateFlashlights(dt);updateClue(dt);flyMat.uniforms.uTime.value=S.t;flyMat.uniforms.uScale.value=(o.renderer?.domElement?.height||900)*.9;
   for(let i=0;i<FN;i++){const h=flyHome[i],t=S.t*.3+i;fly[i*3]=h.x+Math.sin(t*.7)*1.2;fly[i*3+1]=nav.baseY?.(h.x,h.z)+.5+Math.sin(t*.5)*.4+(i%3)*.35;fly[i*3+2]=h.z+Math.cos(t*.6)*1.2;}flyGeo.attributes.position.needsUpdate=true;
   sources();attention();}
@@ -333,18 +355,18 @@ export function createChapter1(o){
   if(S.flashOn&&jamie.active){police.spotUser.who=jamie;torch.visible=true;jamie.person.parts.rhand.getWorldPosition(hand);
    // Where Jamie points it: around the bank and the channel, at what you are looking at, at the sound.
    sweep+=dt;let target=S.lookTarget;if(!target){const k=Math.floor(sweep/3.2)%4,pts=[[97.2,14.8],[99.1,18.6],[98,12.6],[96.4,19.4]];target=side(...pts[k]);target.y=nav.groundY(target.x,target.z);}
-   aim.set(target.x,(target.y??nav.groundY(target.x,target.z))+.05,target.z);aimS.lerp(aim,1-Math.exp(-2.4*dt));if(aimS.lengthSq()===0)aimS.copy(aim);jamie.lookAt={x:aimS.x,z:aimS.z,y:aimS.y};
-   H.position.copy(hand);H.target.position.copy(aimS);H.angle=.36;H.penumbra=.55;H.distance=20;H.decay=1.5;H.intensity=clamp(hand.distanceTo(aimS)*7,10,40);H.color.setHex(0xfff0d6);
-   beamJ.visible=true;beamJ.position.copy(hand);beamJ.lookAt(aimS);beamJ.material.uniforms.uA.value=.11;}
+   aim.set(target.x,(target.y??nav.groundY(target.x,target.z))+.05,target.z);if(!S.flags.aimReady){aimS.copy(aim);S.flags.aimReady=true;}else aimS.lerp(aim,1-Math.exp(-3.5*dt));jamie.lookAt={x:aimS.x,z:aimS.z,y:aimS.y};
+   H.position.copy(hand);H.target.position.copy(aimS);H.angle=.31;H.penumbra=.8;H.distance=18;H.decay=2;H.intensity=clamp(hand.distanceTo(aimS)*3.3,8,25);H.color.setHex(0xfff0d6);
+   beamJ.visible=true;beamJ.position.copy(hand);beamJ.lookAt(aimS);beamJ.material.uniforms.uA.value=.035;}
   else{beamJ.visible=false;if(police.spotUser.who===jamie){police.spotUser.who=null;H.intensity=0;}}
   if(officer2.visible&&officer2.gesture==='flashlight'){officer2.person.parts.rhand.getWorldPosition(tmp);const a=officer2.a+Math.sin(S.t*.7)*.6+.5,dir=new THREE.Vector3(Math.sin(a),-.32,-Math.cos(a));
-   beamO.visible=true;beamO.position.copy(tmp);beamO.lookAt(tmp.x+dir.x*5,tmp.y+dir.y*5,tmp.z+dir.z*5);beamO.material.uniforms.uA.value=.09;}else beamO.visible=false;}
+   beamO.visible=true;beamO.position.copy(tmp);beamO.lookAt(tmp.x+dir.x*5,tmp.y+dir.y*5,tmp.z+dir.z*5);beamO.material.uniforms.uA.value=.03;}else beamO.visible=false;}
  function updateClue(dt){if(!clue.visible)return;let g=0;
   // Retroreflective: it lights up when a light shines on it from about where you are looking.
   if(S.flashOn){const H=police.head,L=tmp.copy(clue.position).sub(H.position),dl=L.length();L.normalize();const beam=aim.copy(H.target.position).sub(H.position).normalize();const on=beam.dot(L);
    if(on>.94&&dl<14)g=Math.max(g,smooth((on-.94)/.05)*clamp(1.4-dl/12,0,1)*Math.max(.25,smooth((camera.position.distanceTo(H.position)<4?1:0))));}
-  const dc=camera.position.distanceTo(clue.position);if(dc<4.5&&camLooksAt(clue.position,.9))g=Math.max(g,.35*(1-dc/4.5));
-  S.glintV=damp(S.glintV,g,8,dt);lens.emissiveIntensity=.1+S.glintV*(dc<1.6?1:3);glint.visible=S.glintV>.02&&dc>1.6;glint.material.opacity=S.glintV*.8*clamp(dc-1.6,0,1);}
+  const pl=o.playerLight;if(pl?.intensity>0){const L=tmp.copy(clue.position).sub(pl.position),dl=L.length();L.normalize();const dir=aim.copy(pl.target.position).sub(pl.position).normalize();g=Math.max(g,smooth((dir.dot(L)-Math.cos(pl.angle))/.045)*clamp(1-dl/15,0,1));}const dc=camera.position.distanceTo(clue.position);
+  S.glintV=damp(S.glintV,g,8,dt);lens.emissiveIntensity=.025+S.glintV*(dc<1.6?.32:.95);glint.visible=S.glintV>.02&&dc>1.6;glint.material.opacity=S.glintV*.8*clamp(dc-1.6,0,1);}
  // ---- lifecycle ---------------------------------------------------------------------------------------------------------
  function reset(){fresh();api.pose=null;api.sources.length=0;api.deep=0;comp.reset();for(const c of comp.all)comp.release(c);police.reset();police.attach(false);
   for(const a of adults){a.show(false);a.lookAt=null;a.gest(null);a.mode='stand';a.path=null;}
@@ -359,18 +381,18 @@ export function createChapter1(o){
   else if(section==='title'){arrivedScene();const q=main(560,-1.8);put(q,heading(560),'ride',0);date('home');go('title');S.titleT=0;}
   else if(section==='alex-house'){arrivedScene();const q=side(104,1.4);put(q,ha(104),'ride',2.5);go('briarwood');objective('See what’s happening on Briarwood.');date('briarwood');}
   else{arrivedScene();S.flags.talked=true;S.flags.alexDone=true;officer.gest('radio');
-   if(section==='jamie'){const q=JWin.stand,a=headingTo(q.x,q.z,JWin.glass.x,JWin.glass.z),b=main(JH.drivD-3,-2.2);placePlayer({x:q.x-Math.sin(a)*1.4,z:q.z+Math.cos(a)*1.4,a,mode:'walk',bike:{x:b.x,z:b.z,a:heading(JH.drivD)}});go('friends');objective('Find Jamie and Sam.');date('friends');}
+   if(section==='jamie'){const q=JWin.stand,a=headingTo(q.x,q.z,JWin.glass.x,JWin.glass.z),b=main(JH.drivD-3,-2.2);placePlayer({x:q.x-Math.sin(a)*1.4,z:q.z+Math.cos(a)*1.4,a,mode:'walk',bike:{x:b.x,z:b.z,a:heading(JH.drivD)}});go('friends');objective('Find Jamie.');date('friends');}
    else{// Jamie is with you from here on.
     S.jamieIn=true;S.flags.jamieTapped=true;
     if(section==='sam'){const q=SWin.stand,a=headingTo(q.x,q.z,SWin.glass.x,SWin.glass.z),b=main(SH.drivD+4,-2.4);placePlayer({x:q.x-Math.sin(a)*1.2,z:q.z+Math.cos(a)*1.2,a,mode:'walk',bike:{x:b.x,z:b.z,a:heading(SH.drivD)+Math.PI}});
-     ride(jamie,main(SH.drivD+7.5,-2.6),heading(SH.drivD)+Math.PI);jamie.follow='ride';go('friends');objective('Get Sam.');date('sam');}
+     ride(jamie,main(SH.drivD+7.5,-2.6),heading(SH.drivD)+Math.PI);jamie.follow='ride';go('friends');objective('Find Sam.');date('sam');}
     else{S.samIn=true;S.flags.samSignal=true;S.flags.samOut=true;
      if(section==='oak'){const q=main(1112,-1.5);put(q,heading(1112),'ride',3.6);ride(jamie,main(1109,-.4),heading(1109));ride(sam,main(1106.5,-1.9),heading(1106.5));go('oak');objective('Go to the old oak.');date('oak');}
      else if(section==='retrace'){S.flags.oakTalk=true;const q=main(1128,-1.2);put(q,heading(1128)+Math.PI,'ride',2);ride(jamie,main(1131,-.2),heading(1131)+Math.PI);ride(sam,main(1133.5,-2),heading(1133.5)+Math.PI);go('retrace');objective('Go the way Alex went.');date('retrace');}
      else{S.flags.oakTalk=true;S.flags.cops=true;S.flags.r1=S.flags.r2=S.flags.r3=true;
       // At the creek: bikes left by the railing, Jamie down the bank with his flashlight, Sam with you.
       const jb=side(89.9,7.4),sb=side(87.6,6.8);comp.putFoot(jamie,side(95.3,14.3).x,side(95.3,14.3).z,ha(95)+1.2,{bike:{x:jb.x,z:jb.z,a:ha(89.9),fall:-1.36}});comp.putFoot(sam,side(90.2,10.2).x,side(90.2,10.2).z,ha(91)+1,{bike:{x:sb.x,z:sb.z,a:ha(87.6),kick:1}});
-      sam.follow='walk';S.flashOn=true;S.flags.jamieSearching=true;go('creek');objective('Look around the creek.');date('creek');
+      sam.follow='walk';o.giveFlashlight?.();S.flashOn=true;S.flags.jamieSearching=true;go('creek');objective('Look around the creek.');date('creek');
       const pb=side(86.5,5.6);
       if(section==='investigation'){const q=side(91.6,8.2);placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,side(95,13).x,side(95,13).z),mode:'walk',bike:{x:pb.x,z:pb.z,a:ha(86.5)}});}
       else{const c=clue.position,q=side(97.6,14.1);placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,c.x,c.z),mode:'walk',bike:{x:pb.x,z:pb.z,a:ha(86.5)}});S.searchT=10;}}}}}

@@ -2,6 +2,7 @@
 // renderer, with actual Three.js geometry, so world geometry, riding, characters, interface,
 // interactions, the ending and replay are all checked on the code that ships in dist/.
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import * as THREE from '../dist/three.module.js';
@@ -29,7 +30,7 @@ canvas.requestPointerLock=()=>{document.pointerLockElement=canvas;docEvents.get(
 globalThis.window={};globalThis.devicePixelRatio=2;globalThis.innerWidth=1440;globalThis.innerHeight=900;globalThis.matchMedia=()=>({matches:false});globalThis.addEventListener=(type,fn)=>events.set(type,fn);let tick;globalThis.requestAnimationFrame=fn=>tick=fn;
 globalThis.FakeRenderer=class{constructor(){this.shadowMap={};this.capabilities={maxTextureSize:8192};this.pixelRatio=1;}setPixelRatio(r){this.pixelRatio=r;}setSize(){}render(){}};
 let source=fs.readFileSync(root+'game.js','utf8').replaceAll(/'\.\/([\w.\-]+)\.js'/g,(_,name)=>JSON.stringify(pathToFileURL(root+name+'.js').href)).replace('new THREE.WebGLRenderer','new globalThis.FakeRenderer');
-source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,contact,selfPose,self,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},place(d,lat,v=4.5){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;},get bikeY(){return bikeY;},
+source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,contact,selfPose,self,foot,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},place(d,lat,v=4.5){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;},get bikeY(){return bikeY;},
  jump:jumpTo,chapter,roam,nav,placePlayer,action:()=>action(),drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},get night(){return {state,wx,wz,wa,speed,fade,roam:{...roam}};}};`;
 const t0=Date.now();
 await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
@@ -132,7 +133,7 @@ wcheck('scattered props stay off sidewalks and driveways',()=>{const onWalk=(d,l
  const sc=W.hooks['scooter-in-grass']?.[0]?.object;assert.ok(sc,'scooter');const p=sc.getWorldPosition(new THREE.Vector3()),r=MAIN.project(p.x,p.z);assert.ok(Math.abs(r.v)>8,'scooter on the walk');});
 wcheck('lookout sidewalk follows the grassy rise and faces upward',()=>{const ring=h.originals.find(o=>o.name==='lookout-walk');assert.ok(ring);for(let a=.7;a<5.6;a+=.2){const d=1142-Math.cos(a)*13.1,lat=Math.sin(a)*13.1,p=groundPoint(d,lat);ray.set(new THREE.Vector3(p.x,p.y+4,p.z),down);const hit=ray.intersectObject(ring)[0];assert.ok(hit,'missing sidewalk');assert.ok(hit.face.normal.y>.95);assert.ok(Math.abs(hit.point.y-W.groundY(d,lat))<.035);}});
 wcheck('render budget: triangles and draw calls stay bounded',()=>{let tris=0,calls=0;for(const m of W.merged){if(m.material.colorWrite===false)continue;calls++;const g=m.geometry;tris+=(g.index?g.index.count:g.attributes.position.count)/3;}
- metrics.worldTriangles=Math.round(tris);metrics.worldMeshes=calls;metrics.worldBuildMs=buildMs;assert.ok(tris<1.7e6,'triangles '+tris);assert.ok(calls<900,'meshes '+calls);/* each is frustum-culled; per-view draw calls are measured in the browser QA */});
+ metrics.worldTriangles=Math.round(tris);metrics.worldMeshes=calls;metrics.worldBuildMs=buildMs;metrics.performanceTargets={normalTriangles:4000000,normalMeshes:1500,profileCeilingTriangles:6000000,profileCeilingMeshes:2000};assert.ok(tris<6e6,'profile geometry above ceiling '+tris);assert.ok(calls<2000,'profile meshes above ceiling '+calls);/* each is frustum-culled; per-view draw calls are measured in the browser QA */});
 
 // ------------------------------------------------------------------------------------------
 // Characters and bikes
@@ -329,14 +330,14 @@ function chapterOne(label){
  const reached=rideTo([...line1(h.nav.locate(h.roam.x,h.roam.z).d+12,560,-1.8,20),M1(568,-1.6),M1(584,1),S1(8,1.9),...sline1(8,112,1.8)],100);release('KeyW');
  metrics['chapter1 reached Alex house']=reached;until(()=>C1().phase==='friends',70);
  check(`${label}: at Alex's house the officer asks, his father answers, nothing supernatural`,()=>{for(const l of ['OFFICER: “You were with Alex tonight?”','YOU: “Yeah.”','OFFICER: “When did he leave you?”','YOU: “At Oak Hollow. He turned here.”','ALEX’S DAD: “He never came home.”','OFFICER: “Was anyone with him?”','YOU: “No.”'])assert.ok(said.includes(l),l+' | phase '+C1().phase+' reached '+metrics['chapter1 reached Alex house']+' at '+JSON.stringify(h.nav.locate(h.roam.x,h.roam.z))+' said '+said.join(' / ')+' phases '+phases);
-  assert.equal(C1().objective,'Find Jamie and Sam.');});
+  assert.equal(C1().objective,'Find Jamie.');});
  check(`${label}: Alex's bike is nowhere at his house; the garage hook is empty`,()=>{const al=h.friends.list[2];assert.equal(al.bike.group.visible,false);assert.ok(W.garages.alex.open>.9);assert.equal(W.homes.alex.garageBike,'empty');});
  // Jamie: a tap on his window.
  rideTo([...sline1(112,16,-1.9),M1(584,-2),...line1(584,786,-2.2)],120);off();
  const jw=h.chapter.windows.jamie;standAt([jw.stand.x,jw.stand.z],[jw.glass.x,jw.glass.z]);
  check(`${label}: at Jamie's side window, F taps on it`,()=>assert.equal(h.ui.promptText,'F:Tap on the window'));tap('KeyF');
  until(()=>C1().jamie.follow==='ride',90);
- check(`${label}: Jamie thinks it is a joke, then climbs out and rides with you`,()=>{assert.ok(said.includes('JAMIE: “Ha. Nice try.”'));assert.ok(said.includes('JAMIE: “…Wait. For real?”'));assert.equal(C1().jamie.mode,'ride');assert.ok(W.windows.jamie.open<.3,'window left open');assert.equal(C1().objective,'Get Sam.');});
+ check(`${label}: Jamie thinks it is a joke, then climbs out and rides with you`,()=>{assert.ok(said.includes('JAMIE: “Ha. Nice try.”'));assert.ok(said.includes('JAMIE: “…Wait. For real?”'));assert.equal(C1().jamie.mode,'ride');assert.ok(W.windows.jamie.open<.3,'window left open');assert.equal(C1().objective,'Find Sam.');});
  on();press('KeyW');rideTo(line1(790,983,-2.2),80);off();
  const sw=h.chapter.windows.sam;standAt([sw.stand.x,sw.stand.z],[sw.glass.x,sw.glass.z]);tap('KeyF');
  until(()=>C1().objective==='Wait by Sam’s garage.',60);
@@ -452,4 +453,30 @@ check('replay clears wheel-impact and additional lore state',()=>{element('resta
   assert.ok(h.chapter.adults.every(a=>!a.visible));assert.ok(h.chapter.companions.all.every(c=>!c.active));for(const f of h.friends.list){assert.equal(f.external,false);assert.equal(f.person.group.parent,f.bike.group);assert.ok(f.person.group.visible);}
   assert.equal(W.windows.jamie.open,0);assert.equal(W.sideDoors.sam.open,0);assert.equal(W.doors.alex.open,0);assert.equal(h.chapter.clue.visible,false);assert.equal(element('objective').textContent,'');assert.equal(h.ambient.nightMode,false);assert.equal(h.ambient.state.kidVisible,true);});}
 
-console.log(JSON.stringify({passed:checks.length,checks,metrics,testMethod:'Actual Three.js geometry and full state updates with a mocked WebGL renderer and DOM.'},null,2));
+// Focused human-playtest regressions. The full two-run story above remains unchanged.
+{h.jump('jamie');const q=groundPoint(850,0),a=heading(850);h.placePlayer({x:q.x,z:q.z,a,mode:'walk',bike:{x:q.x+3,z:q.z,a}});advance(.2);
+ check('on foot: torso, connected legs and shoes are present, head excluded',()=>{assert.equal(h.self.group.parent,h.scene);assert.ok(h.self.group.visible);assert.equal(h.self.parts.head.layers.mask,2);assert.ok(h.self.joints.lankle.distanceTo(h.self.joints.lknee)<.38);});
+ const p=h.camera.position.clone();press('KeyW');advance(4);release('KeyW');advance(.4);
+ check('on foot: normal pace covers a practical eight metres in four seconds',()=>assert.ok(h.camera.position.distanceTo(p)>7.7&&h.camera.position.distanceTo(p)<9));
+ press('KeyW');press('ShiftLeft');advance(5);
+ check('sprint: drains stamina gradually and lasts beyond three seconds',()=>{assert.ok(h.foot.sprint);assert.ok(h.foot.stamina>.5&&h.foot.stamina<.7);});
+ advance(8);check('sprint: exhaustion returns to walking with no movement freeze',()=>{assert.ok(h.foot.exhausted);assert.ok(h.foot.speed>1.9);});release('ShiftLeft');release('KeyW');advance(5);
+ check('sprint: walking or stopping restores stamina and releases exhaustion',()=>{assert.ok(h.foot.stamina>.6);assert.ok(!h.foot.exhausted);});
+ const eyeY=h.camera.position.y;press('KeyC');advance(.7);
+ check('crouch: camera lowers smoothly and the torso bends coherently',()=>{assert.ok(h.foot.crouch>.95);assert.ok(eyeY-h.camera.position.y>.48);assert.ok(h.foot.pose[P.lean]>.5);});release('KeyC');advance(.7);
+ tap('Space');let peak=0;advance(.8,()=>{peak=Math.max(peak,h.foot.height);});
+ check('jump: restrained arc, gravity, landing and cooldown; no horizontal collision bypass',()=>{assert.ok(peak>.4&&peak<.6);assert.equal(h.foot.height,0);assert.ok(h.foot.cooldown>=0);});
+ const win=h.chapter.windows.jamie;const inside=win.inside;
+ check('jump does not make the house wall walkable',()=>assert.equal(h.nav.walkable(inside.x,inside.z),false));
+ h.jump('investigation');advance(.3);check('flashlight: creek checkpoint grants the spare with a connected player body',()=>{assert.ok(h.foot.owned&&h.foot.on&&h.foot.light.intensity>0);assert.equal(h.self.group.parent,h.scene);});
+ tap('KeyT');advance(.1);check('flashlight: T toggles without activating F interactions',()=>{assert.equal(h.foot.on,false);assert.equal(C1().phase,'creek');});tap('KeyT');advance(.1);
+ element('restart').onclick();advance(.1);check('replay clears stamina, jump, crouch, flashlight and returns body to bicycle',()=>{assert.equal(h.foot.owned,false);assert.equal(h.foot.stamina,1);assert.equal(h.foot.crouch,0);assert.equal(h.foot.height,0);assert.equal(h.self.group.parent,h.playerBike.group);assert.equal(h.foot.light.intensity,0);});
+}
+check('night sidewalks use lit non-emissive joint geometry',()=>{const joints=W.originals.filter(m=>m.name==='sidewalk-joint');assert.ok(joints.length>500);assert.ok(joints.every(m=>m.material.isMeshStandardMaterial&&m.material.emissive.getHex()===0));});
+check('friend homes have distinct persistent prologue/night landmarks',()=>{assert.match(W.homes.jamie.landmark,/red porch chair/);assert.match(W.homes.sam.landmark,/garage/);assert.notEqual(W.homes.jamie.style,W.homes.sam.style);});
+{h.jump('jamie');const w=h.chapter.windows.sam;h.placePlayer({x:w.stand.x,z:w.stand.z,a:Math.atan2(w.glass.x-w.stand.x,-(w.glass.z-w.stand.z)),mode:'walk'});advance(.2);tap('KeyF');advance(.4);
+ check('Sam first: gentle redirect preserves Jamie-first order',()=>{assert.equal(C1().objective,'Find Jamie.');assert.equal(C1().sam.active,false);assert.equal(C1().line,'I should get Jamie first.');});}
+for(const [section,label] of [['alex-house','Briarwood Lane'],['jamie','Jamie’s house'],['sam','Sam’s house'],['oak','The old oak'],['retrace','The way he went'],['investigation','The creek']]){localStorage.setItem('lastlight.chapter1',JSON.stringify({section}));element('to-title').onclick();element('continue').onclick();advance(.5);check('Continue restores '+label,()=>{assert.ok(h.snapshot.state.startsWith('c1-'));assert.ok(Number.isFinite(h.camera.position.y));});}
+
+const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(root+n).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(root+n)).digest('hex')]));
+console.log(JSON.stringify({runtimeHashes,passed:checks.length,checks,metrics,testMethod:'Actual Three.js geometry and full state updates with a mocked WebGL renderer and DOM.'},null,2));

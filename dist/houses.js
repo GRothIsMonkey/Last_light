@@ -186,11 +186,12 @@ export function buildHouse(W,P){
  else gableRoof(W,g,w,depth,roofY,P.rise,.35,.45,roofMat,gable,P.roof==='side',{mid});
  if(P.dormers)for(let k=0;k<P.dormers;k++){const x=-W2+w*(k+.5)/P.dormers;dormer(W,g,x,D2-.35,roofY,P,roofMat,gable,rand,mid);}
  if(P.chimney==='interior'){const cx=(P.seedC-.5)*w*.5,cz=-depth*.2,top=roofY+P.rise+.9;K.rbox(g,cx,(roofY+top)/2,cz,.9,top-roofY,.8,.03,brick);K.rbox(g,cx,top+.06,cz,1.02,.12,.92,.02,HOUSE.stone);K.cyl(g,cx+.18,top+.25,cz,.09,.3,0x5d5a55,8);}
- if(P.chimney==='exterior'){const cs=P.hasGarage?-P.gs:1,cz=-depth*.12,top=roofY+P.rise+.8,x=cs*(W2+.42);K.rbox(g,x,top/2-.2,cz,.78,top+.4,1.05,.03,brick);K.rbox(g,x,top+.06,cz,.9,.12,1.18,.02,HOUSE.stone);K.rbox(g,x,roofY*.55,cz,.95,.1,1.2,.02,HOUSE.stone);K.cyl(g,x,top+.25,cz+.2,.09,.3,0x5d5a55,8);}
+ if(P.chimney==='exterior'){const cs=P.hasGarage?-P.gs:1,cz=P.sneak?0:-depth*.12,top=roofY+P.rise+.8,x=cs*(W2+.42);K.rbox(g,x,top/2-.2,cz,.78,top+.4,1.05,.03,brick);K.rbox(g,x,top+.06,cz,.9,.12,1.18,.02,HOUSE.stone);K.rbox(g,x,roofY*.55,cz,.95,.1,1.2,.02,HOUSE.stone);K.cyl(g,x,top+.25,cz+.2,.09,.3,0x5d5a55,8);}
  if(P.hasGarage)buildGarage(W,P,g,rand,mid,siding,roofMat,gable);
  // Everyday things around the house.
  if(!mid){foundationBeds(W,P,g,rand);if(P.ac){const s=P.hasGarage?-P.gs:1;const ac=K.group(g,s*(W2+.55),P.sneak?D2*.3:-D2*.45);/* clear of a friend’s bedroom window */K.box(ac,0,.05,0,.9,.1,.9,HOUSE.step);K.rbox(ac,0,.45,0,.75,.72,.75,.04,HOUSE.acUnit);K.cyl(ac,0,.82,0,.28,.03,0x3a3c3c,14);}}
  buildRear(W,P,g,rand,mid);
+ if(P.key==='jamie'||P.key==='sam')friendLandmarks(W,P,g);
  if(P.interior==='foyer')buildFoyer(W,P,g);
  // Where people can stand: porch, steps, garage floor.
  const px0=P.doorX-P.porchW/2,px1=P.doorX+P.porchW/2;pad(px0,px1,front,front+P.pdep,P.floor);
@@ -201,6 +202,27 @@ export function buildHouse(W,P){
  const e=P.toWorld(P.doorX,front+P.pdep/2+.3*P.steps/2);W.space.rect(e.x,e.z,P.porchW/2+.3,P.pdep/2+.3*P.steps/2+.4,P.worldRot,'porch');
  if(P.frame===MAIN){const a=P.S(-W2-(P.hasGarage&&P.gs<0?P.gw:0)-.4,-D2-.4),b=P.S(W2+(P.hasGarage&&P.gs>0?P.gw:0)+.4,P.stepFront+.3);W.obstacles.push({d0:Math.min(a.d,b.d),d1:Math.max(a.d,b.d),l0:Math.min(a.lat,b.lat),l1:Math.max(a.lat,b.lat),house:true});}
  P.info=P;(P.far?W.farHouses:W.houses).push(P);return P;
+}
+// Permanent, ordinary landmarks: established on the ride and still legible after dark.
+function friendLandmarks(W,P,g){const {K}=W,sw=P.sneakWin,side=sw.s,x=side*(P.w/2+1.55);
+ if(P.key==='jamie'){
+  chair(K,g,P.doorX-side*.95,P.floor,P.front+1.1,0xab4635);
+  const planter=K.group(g,side*(P.w/2-.6),P.front+1.0,0,0);K.cyl(planter,0,.23,0,.29,.42,0xa97750,12);K.ball(planter,0,.48,0,.26,0x667149,[1,.7,1]);
+  // A garden path runs outside the AC unit, then inward toward the lit room.
+  for(let z=P.front+1.9;z>sw.z-.2;z-=.65){const stone=K.rbox(g,x,.105,z,.62,.025,.44,.035,HOUSE.walk);stone.name='jamie-side-yard-stone';}
+ }else{
+  const accent=K.mat(0x3c5966,{roughness:.8});
+  K.box(g,P.gx,2.52,P.gfront+.075,P.gw+.16,.22,.1,accent);
+  for(const sign of [-1,1]){K.box(g,P.gx+sign*(P.gw/2-.08),1.28,P.gfront+.065,.15,2.5,.1,accent);K.box(g,P.gx+sign*(P.gw/2-.3),2.16,P.gfront+.17,.12,.23,.14,P.porchMat);}
+  // The old driveway hoop remains visible whether the big door is open or shut.
+  K.rbox(g,P.gx,3.12,P.gfront+.2,1.32,.83,.06,.015,0xd5d5c9);K.box(g,P.gx,3.05,P.gfront+.24,.47,.32,.015,0x765945);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(.205,.014,5,18),K.mat(0x915a38));rim.rotation.x=Math.PI/2;rim.position.set(P.gx,2.85,P.gfront+.43);g.add(rim);
+  for(let z=P.front+1.8;z>sw.z-.2;z-=.68)K.rbox(g,x,.106,z,.58,.025,.43,.025,HOUSE.walk);
+ }
+ // Warm curtains frame only the working bedroom window; no exterior emissive outline.
+ for(const k of [-1,1])K.box(g,sw.s*(P.w/2-.12),sw.y,sw.z+k*(sw.w/2-.09),.06,sw.h,.16,0xb3a18a);
+ const a=P.toWorld(x,P.front+2.6),b=P.toWorld(x,sw.z);W.space.rect((a.x+b.x)/2,(a.z+b.z)/2,.75,Math.hypot(b.x-a.x,b.z-a.z)/2+.8,P.worldRot,'walk');
+ P.landmark=P.key==='jamie'?'red porch chair and stepping stones':'blue-trimmed garage and driveway hoop';
 }
 const seedFrom=x=>{let s=Math.floor(x*4294967296)>>>0||7;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};};
 
@@ -361,6 +383,8 @@ function buildRoom(W,P,g,SW,t){const {K}=W,G=P.dynamicGarage&&P.interior!=='foye
  K.box(g,x0-s*.3,fl+.3,zb+1.35,.36,.6,.36,0x6a4a30);K.cyl(g,x0-s*.3,fl+.72,zb+1.35,.09,.22,M.warm,10);
  K.box(g,x0-s*(depth-.02),fl+1.55,zc+.2,.01,.7,.5,0x2d5a8a);K.box(g,x0-s*(depth-.02),fl+1.56,zc+.2,.012,.5,.36,0xd8b04a);
  K.box(g,x0-s*(depth-.14),fl+1.1,zc+.95,.25,.03,.7,0x6d5a44);K.box(g,x0-s*(depth-.14),fl+1.22,zc+.8,.18,.2,.12,0xb03a2a);
+ K.box(g,x0-s*(depth-.4),fl+.71,zc-.2,.64,.06,.82,0x785f45);K.box(g,x0-s*(depth-.3),fl+.94,zc-.2,.09,.4,.49,0x2b3035);K.box(g,x0-s*(depth-.6),fl+.755,zc-.08,.18,.025,.3,0xc0b18d);
+ for(let i=0;i<4;i++)K.box(g,x0-s*(depth-.2),fl+1.23,zc+.54+i*.13,.2,.25,.065,[0x805643,0x68775b,0x344f69,0xafa084][i]);
  P.localPads.push({x0:Math.min(x0,x0-s*depth),x1:Math.max(x0,x0-s*depth),z0:zc-width/2,z1:zc+width/2,y:fl});
  W.interiors[P.key+'-room']={kind:'bedroom',room,depth,width,x0,zc};
 }
@@ -404,7 +428,8 @@ function buildGarageInterior(W,P,g,rand,doorW,dh){const {K}=W,{gx,gw,gd,gh,gfron
  K.cyl(g,gx-s*(gw/2-.45),.95,gz-gd/2+.45,.28,1.5,0xd8d6ce,12);
  if(!car){const mx=gx-s*(gw/2-.8),mz=gz+.2;K.rbox(g,mx,.42,mz,.55,.3,.6,.05,0x3a6a3a);K.rod(g,[mx,.5,mz+.3],[mx,1.05,mz+.8],.015,0x2b2b2b);for(const k of [-1,1])for(const kk of [-1,1])K.cyl(g,mx+k*.28,.3,mz+kk*.25,.09,.05,0x222222,10,[0,0,Math.PI/2]);}
  if(P.garageBike==='empty'){for(const k of [-.32,.32]){const hx=gx+s*(gw/2-.2);K.rod(g,[hx,1.92,gz+k],[hx-s*.16,1.92,gz+k],.012,0x8a8c88);K.rod(g,[hx-s*.16,1.92,gz+k],[hx-s*.16,1.99,gz+k],.012,0x8a8c88);}
-  K.box(g,gx+s*(gw/2-.06),1.95,gz,.02,.12,.9,0x7a7466);K.rod(g,[gx+s*(gw/2-.45),.22,gz+.9],[gx+s*(gw/2-.45),.78,gz+.9],.018,0x3a5a8a);}
+  K.box(g,gx+s*(gw/2-.06),1.95,gz,.02,.12,.9,0x7a7466);
+  for(const k of [-.32,.32]){const hx=gx+s*(gw/2-.2);K.box(g,hx,1.91,gz+k,.028,.18,.075,0x515653);for(let i=0;i<7;i++){const a=i*Math.PI/7,b=(i+1)*Math.PI/7;K.rod(g,[hx-s*(.14+.044*Math.sin(a)),1.93-.044*Math.cos(a),gz+k],[hx-s*(.14+.044*Math.sin(b)),1.93-.044*Math.cos(b),gz+k],.012,0x50524f,.012,6);}K.box(g,gx+s*(gw/2-.18),1.35,gz+k,.005,.26,.09,0x98958b);}K.rod(g,[gx+s*(gw/2-.45),.22,gz+.9],[gx+s*(gw/2-.45),.78,gz+.9],.018,0x3a5a8a);}
  else{for(const k of [-.3,.3]){const t=new THREE.Mesh(new THREE.TorusGeometry(.26,.025,5,16),K.mat(0x2b2b2b));t.position.set(gx+s*(gw/2-.28),1.7,gz+k);t.rotation.y=Math.PI/2;g.add(t);}
   K.rod(g,[gx+s*(gw/2-.28),1.7,gz-.3],[gx+s*(gw/2-.28),1.95,gz],.02,0xb03a2a);K.rod(g,[gx+s*(gw/2-.28),1.95,gz],[gx+s*(gw/2-.28),1.7,gz+.3],.02,0xb03a2a);}
  K.ball(g,gx-s*(gw/2-.6),.33,gz+1,.12,0xc2652f);

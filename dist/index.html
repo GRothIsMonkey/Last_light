@@ -55,19 +55,21 @@
  </div>
  <div id="fade"></div>
  <!-- The night after: the title, what you mean to do next -->
- <div id="title-card" aria-hidden="true"><h1>Last <em>Light</em></h1></div>
+ <div id="title-card" aria-hidden="true"><h1>LAST LIGHT</h1></div>
  <div id="objective" aria-live="polite"></div>
+ <div id="objective-note"></div>
+ <div id="stamina" aria-label="Stamina"><div id="stamina-fill"></div></div>
 
  <!-- Pause -->
  <section id="pause" hidden>
   <h2>Stay here a little.</h2>
   <nav class="menu" aria-label="Pause menu">
-   <button id="resume" class="primary">Keep riding</button>
+   <button id="resume" class="primary">Keep going</button>
    <button id="pause-settings" class="quiet">Settings</button>
    <button id="restart" class="quiet">Start over</button>
    <button id="to-title" class="quiet">Back to the title</button>
   </nav>
-  <p class="hint">Click the scene to look around with the mouse.</p>
+  <p class="hint">Mouse: look · W A S D: move<br>On foot: Shift sprint · Space jump · hold C crouch · T flashlight<br>F interact · On bike: Space bell</p>
  </section>
 
  <!-- Settings -->
@@ -79,7 +81,7 @@
    <label>Graphics
     <select id="set-quality"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
    </label>
-   <label class="toggle"><input id="set-captions" type="checkbox" checked> Show what your friends say</label>
+   <label class="toggle"><input id="set-captions" type="checkbox" checked> Show dialogue captions</label>
    <label class="toggle"><input id="set-memories" type="checkbox" checked> Show memory lines</label>
    <label class="toggle"><input id="set-fullscreen" type="checkbox"> Full screen</label>
   </form>

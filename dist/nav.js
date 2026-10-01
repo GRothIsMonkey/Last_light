@@ -28,6 +28,7 @@ export function createNav(world){
  const walls=createSpace(20);
  for(const P of new Set([...world.houses,...world.sidePlansAll])){if(!P.toWorld||P.far)continue;const box=(x0,x1,z0,z1)=>{const c=P.toWorld((x0+x1)/2,(z0+z1)/2);walls.rect(c.x,c.z,(x1-x0)/2,(z1-z0)/2,P.worldRot,'wall');};
   box(-P.w/2,P.w/2,-P.depth/2,P.depth/2);if(P.hasGarage)box(P.gx-P.gw/2,P.gx+P.gw/2,P.gfront-P.gd,P.gfront);
+  if(P.chimney==='exterior'){const s=P.hasGarage?-P.gs:1,x=s*(P.w/2+.42),z=P.sneak?0:-P.depth*.12;box(x-.4,x+.4,z-.54,z+.54);}
   if(P.ac&&P.lod==='full'){const s=P.hasGarage?-P.gs:1,x=s*(P.w/2+.55),z=P.sneak?P.depth*.15:-P.depth*.225;box(x-.42,x+.42,z-.42,z+.42);}}
  function nearFence(x,z,r){for(const s of fences.get(fk(Math.floor(x/FC),Math.floor(z/FC)))||[]){const [ax,az,bx,bz]=s,dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/l));if(Math.hypot(x-ax-dx*t,z-az-dz*t)<r)return true;}return false;}
 
@@ -74,6 +75,20 @@ export function createNav(world){
   const a=Math.abs(L.lat);return a<=CF||(a>=CF+XS.strip&&a<=CF+XS.walk)||L.d>=CUL&&Math.hypot(L.lat,L.d-1142)<11?'asphalt':'grass';}
  // Is there a house (or the far neighborhood) right here? For sound: walls between you and a siren.
  const FAR=new Set(['far-house']),wallAt=(x,z)=>!!walls.blocked(x,z,0,WALL)||!!world.space.blocked(x,z,0,FAR);
- return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,frame:B,junction:J,creek:C,
+ // Small local A* for a grown-up crossing a driveway. No destination knowledge for companions.
+ function walkPath(start,end,obstacles=[]){
+  const step=.65,pad=5,minX=Math.min(start.x,end.x)-pad,minZ=Math.min(start.z,end.z)-pad,maxX=Math.max(start.x,end.x)+pad,maxZ=Math.max(start.z,end.z)+pad;
+  const point=(i,j)=>({x:minX+i*step,z:minZ+j*step}),ix=p=>Math.round((p.x-minX)/step),iz=p=>Math.round((p.z-minZ)/step),key=(i,j)=>i+','+j;
+  const valid=p=>walkable(p.x,p.z,{r:.3})&&!obstacles.some(o=>Math.hypot(o.x-p.x,o.z-p.z)<o.r+.38);
+  const clear=(a,b)=>{const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.2);for(let i=1;i<=n;i++)if(!valid({x:a.x+(b.x-a.x)*i/n,z:a.z+(b.z-a.z)*i/n}))return false;return true;};
+  if(clear(start,end))return [[end.x,end.z]];
+  const root={i:ix(start),j:iz(start),g:0,p:start},open=[root],seen=new Map([[key(root.i,root.j),root]]);let done=null;
+  for(let n=0;n<5000&&open.length;n++){open.sort((a,b)=>(a.g+Math.hypot(a.p.x-end.x,a.p.z-end.z))-(b.g+Math.hypot(b.p.x-end.x,b.p.z-end.z)));const q=open.shift();if(q.closed)continue;q.closed=true;
+   if(Math.hypot(q.p.x-end.x,q.p.z-end.z)<step*1.5&&clear(q.p,end)){done=q;break;}
+   for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const i=q.i+di,j=q.j+dj,p=point(i,j);if(p.x<minX||p.x>maxX||p.z<minZ||p.z>maxZ||!clear(q.p,p))continue;const k=key(i,j),g=q.g+Math.hypot(di,dj)*step,old=seen.get(k);if(old&&old.g<=g)continue;const v={i,j,p,g,parent:q};seen.set(k,v);open.push(v);}}
+  if(!done)return [];const pts=[end];for(let q=done;q?.parent;q=q.parent)pts.unshift(q.p);pts.unshift(start);
+  const path=[];for(let i=0;i<pts.length-1;){let j=pts.length-1;while(j>i+1&&!clear(pts[i],pts[j]))j--;path.push([pts[j].x,pts[j].z]);i=j;}return path;
+ }
+ return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,walkPath,frame:B,junction:J,creek:C,
   side:(u,v)=>B.point(u,v),main:(d,lat)=>groundPoint(d,lat)};
 }

@@ -1,13 +1,17 @@
 // Browser release checks. npm install --no-save playwright; npx playwright install chromium.
 // BROWSER_PATH can select an existing Chromium. SOFTWARE_GL=1 uses SwiftShader.
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import http from 'node:http';
 import path from 'node:path';
 import assert from 'node:assert/strict';
+import {runAstraChecks} from './astra-browser.mjs';
+import {runSceneChecks} from './polish-scenes.mjs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 let playwright;try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
 const root=path.resolve('dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa');fs.mkdirSync(out,{recursive:true});
+const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(path.join(root,n)).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(path.join(root,n))).digest('hex')]));
 const server=http.createServer((req,res)=>{const file=path.join(root,decodeURIComponent(req.url.split('?')[0]).replace(/^\//,'')||'index.html');
  if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}try{res.setHeader('Content-Type',file.endsWith('.js')?'application/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(file));}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
@@ -19,7 +23,8 @@ const base=`http://127.0.0.1:${server.address().port}`;
 const check=(name,value)=>{assert.ok(value,name);checks.push(name);};
 const state=()=>page.evaluate(()=>lastLight.state);
 const snap=async(name,{clean=false}={})=>{if(clean)await page.evaluate(()=>{for(const el of document.querySelectorAll('header,#date,#ride-ui,#subtitle,#prompt,#reflection'))el.style.visibility='hidden';});
- const info=await page.evaluate(()=>({...lastLight.render()}));await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:90});frames.push({name,...info});console.log('Captured',name,JSON.stringify(info));
+ await page.evaluate(()=>{for(const id of ['title-card','objective','objective-note','ending','prompt','subtitle','reflection','fade'])for(const a of document.getElementById(id)?.getAnimations()||[])try{a.finish();}catch{}});
+ const info=await page.evaluate(()=>(()=>{const L=lastLight,r={...L.render()};let lights=0,shadowLights=0;L.scene.traverseVisible(o=>{if(o.isLight&&o.intensity>0){lights++;if(o.castShadow)shadowLights++;}});return {...r,activeLights:lights,shadowLights,geometries:L.renderer.info.memory.geometries,textures:L.renderer.info.memory.textures,programs:L.renderer.info.programs.length};})());await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:90});frames.push({name,...info});console.log('Captured',name,JSON.stringify(info));
  if(clean)await page.evaluate(()=>{for(const el of document.querySelectorAll('header,#date,#ride-ui,#subtitle,#prompt,#reflection'))el.style.visibility='';});};
 // Look somewhere for a moment, take a clean frame, then look ahead again (the ride keeps going only when stepped).
 const view=async(name,yaw,pitch=0)=>{await page.evaluate(([y,p])=>{lastLight.look(y,p);lastLight.step(.05);},[yaw,pitch]);await snap(name,{clean:true});await page.evaluate(()=>{lastLight.look(0,0);});};
@@ -218,11 +223,13 @@ try{
  await page.setViewportSize({width:1280,height:720});await page.waitForFunction(()=>Math.abs(lastLight.camera.aspect-1280/720)<.001);await page.evaluate(()=>{lastLight.toTitle();lastLight.step(.1);});await snap('polish-title-laptop');
  check('laptop title controls fit',await page.locator('.controls').evaluate(el=>el.getBoundingClientRect().bottom<=innerHeight&&lastLight.state.state==='intro'&&getComputedStyle(document.querySelector('#prompt')).visibility==='hidden'));await page.setViewportSize({width:1440,height:900});
 
+ await runAstraChecks({page,snap,check,camAt,state});
+ const sceneInventory=await runSceneChecks({page,snap,check,camAt,state});
  const gpu=await page.evaluate(()=>{const gl=lastLight.renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'unavailable';});
  // Real Web Audio renders of every important synthesized sound, retained for listening.
  const audioReport=await page.evaluate(async()=>{
   const {createAudio}=await import('./audio.js');const clips=[];
-  for(const name of ['rolling','grass','coasting','footstep-asphalt','footstep-grass','bell','curb','sprinkler','dribble','rim','doorOpen','doorSlam','garage','bikeDrop','kickstand','engineOff','dog','creak','bird','call','morning-neighborhood','evening-neighborhood','ending','tap','pebble','window','click','squelch','carDoor','callName','siren-near','siren-far-muffled','night-search','chapter-ending']){
+  for(const name of ['rolling','grass','coasting','footstep-asphalt','footstep-grass','bell','curb','sprinkler','dribble','rim','doorOpen','doorSlam','garage','bikeDrop','kickstand','engineOff','dog','creak','bird','call','morning-neighborhood','evening-neighborhood','ending','tap','pebble','window','click','squelch','carDoor','callName','siren-near','siren-far-muffled','night-search','chapter-ending','distant-final-bell']){
    const ctx=new OfflineAudioContext(2,48000*(name.includes('ending')?10:7),48000);let seed=2011;const audio=createAudio({context:ctx,random:()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}});audio.ensure();audio.setEnabled(true);
    const ready=ctx.suspend(.75),rendering=ctx.startRendering();await ready;
    const ride={speed:4.5,pedal:true,coasting:false,onBike:true,surface:'asphalt',p:.2,night:0,finale:0,listener:{x:0,y:1.5,z:0},forward:{x:0,z:-1},friendsLeft:3,state:'riding',crank:2,sources:[]};
@@ -231,6 +238,7 @@ try{
    else if(name==='morning-neighborhood'||name==='evening-neighborhood')audio.update(1/30,{...ride,p:name.startsWith('evening')?1:.1,night:name.startsWith('evening')?.8:0,speed:0,onBike:false,friendsLeft:name.startsWith('evening')?0:3,sources:name.startsWith('evening')?[]:[{kind:'mower',pos:{x:-25,y:0,z:-20},level:1},{kind:'engine',pos:{x:14,y:0,z:-10},level:.6}]});
    else if(name.startsWith('siren-')){const far=name.includes('far');for(let k=0;k<45;k++)audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,sources:[{id:'siren',kind:'siren',pos:{x:0,y:1,z:far?-420:-25},level:1,pitch:far?1.02:.96,mode:'wail',muffle:far?1:0}]});}
    else if(name==='night-search'){for(let k=0;k<45;k++)audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,state:'walking',sources:[{id:'radio',kind:'radio',pos:{x:4,y:1,z:-6},level:1},{id:'water',kind:'water',pos:{x:-3,y:0,z:-5},level:1},{id:'idle-a',kind:'idle',pos:{x:8,y:0,z:-12},level:.8},{id:'tv',kind:'tv',pos:{x:-2,y:1,z:-3},level:1}]});}
+   else if(name==='distant-final-bell'){audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,sources:[]});audio.bell({x:5,y:1,z:-47},1.8);}
    else if(name==='callName')audio.callName({x:-30,y:1.7,z:-60});else if(name==='chapter-ending')audio.ending('chapter');
    else if(['bell','call','ending'].includes(name))audio[name]();else audio.sfx(name,null);
    await ctx.resume();const b=await rendering,channels=[b.getChannelData(0),b.getChannelData(1)];let peak=0,sum=0,nonFinite=0,jump=0;
@@ -244,5 +252,5 @@ try{
  function wav(pcm){const b=Buffer.alloc(44+pcm.length);b.write('RIFF',0);b.writeUInt32LE(36+pcm.length,4);b.write('WAVEfmt ',8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(2,22);b.writeUInt32LE(48000,24);b.writeUInt32LE(192000,28);b.writeUInt16LE(4,32);b.writeUInt16LE(16,34);b.write('data',36);b.writeUInt32LE(pcm.length,40);pcm.copy(b,44);return b;}
  const audioDir=path.join(out,'audio');fs.mkdirSync(audioDir,{recursive:true});for(const c of audioReport){fs.writeFileSync(path.join(audioDir,c.name+'.wav'),wav(Buffer.from(c.pcm,'base64')));delete c.pcm;check('audio finite and unclipped: '+c.name,c.nonFinite===0&&c.peak<.95&&c.peak>1e-5);}
  fs.writeFileSync(path.join(out,'errors.json'),JSON.stringify(errors,null,2));check('no JavaScript or shader errors',errors.length===0);
- const report={browser:browser.version(),gpu,passed:checks.length,checks,frames,audio:audioReport,errors,audioLimitation:'Offline Web Audio signal checks and recorded clips; no claim of perceptual listening.'};fs.writeFileSync(path.join(out,'browser-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+ const report={runtimeHashes,browser:browser.version(),gpu,passed:checks.length,checks,frames,sceneInventory,audio:audioReport,errors,audioLimitation:'Offline Web Audio signal checks and recorded clips; no claim of perceptual listening.'};fs.writeFileSync(path.join(out,'browser-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
 }finally{await browser.close();server.close();}

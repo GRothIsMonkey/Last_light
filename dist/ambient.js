@@ -173,8 +173,12 @@ export function createAmbient(scene,world,hooks={}){
   if(world.farWindow)world.farWindow.emissiveIntensity=.05+smooth((p-.5)/.3)*1.1+n*.2;
   const scale=(hooks.renderer?.domElement?.height||900);lampGlow.material.uniforms.uScale.value=scale;porchGlow.material.uniforms.uScale.value=scale;}
 
- function updateLocalLights(dt,ctx){const nearest=lamps.map(l=>({l,p:l.at})).sort((a,b)=>Math.hypot(a.p.x-ctx.eye.x,a.p.z-ctx.eye.z)-Math.hypot(b.p.x-ctx.eye.x,b.p.z-ctx.eye.z));
-  localLights.forEach((light,i)=>{const {l,p}=nearest[i];light.position.set(p.x,p.y-.15,p.z);light.intensity=damp(light.intensity,l.level*19*smooth((ctx.p-.45)/.3),2,dt);});}
+ // Reuse the two local lights at the friends' homes: porch/garage and bedroom spill.
+ // Their permanent props are visible in the prologue as well as on the return at night.
+ const homeLamps=['jamie','sam'].flatMap(key=>{const h=world.homes[key],w=h.sneakWin,front=key==='jamie'?{x:h.porchLight.x,z:h.porchLight.z+.5,y:h.porchLight.y}:{x:h.gx,z:h.gfront+.65,y:2.35};return [front,{x:w.s*(h.w/2+.3),z:w.z,y:w.y}].map((a,i)=>{const q=h.toWorld(a.x,a.z);return {p:{x:q.x,y:q.ground+a.y,z:q.z},power:i?2.5:key==='jamie'?6:12,range:i?5:8};});});
+ function updateLocalLights(dt,ctx){const distance=p=>Math.hypot(p.x-ctx.eye.x,p.z-ctx.eye.z),nearHomes=homeLamps.filter(l=>distance(l.p)<27),nearest=lamps.map(l=>({p:l.at,power:l.level*19,range:19,score:distance(l.at)}));
+  for(const l of nearHomes)nearest.push({...l,score:distance(l.p)*.38});nearest.sort((a,b)=>a.score-b.score);
+  localLights.forEach((light,i)=>{const l=nearest[i],p=l.p;light.position.set(p.x,p.y-.15,p.z);light.distance=l.range;light.intensity=damp(light.intensity,l.power*smooth((ctx.p-.45)/.3),4,dt);});}
 
  // The tire swing at the lookout, and lights of the next town over -------------------------------------------
  const sw=LOOKOUT.swing,oak=LOOKOUT.oak,swingRoot=world.anchor(sw.d,sw.lat,world.groundY(sw.d,sw.lat)-groundPoint(sw.d,sw.lat).y+4.35);

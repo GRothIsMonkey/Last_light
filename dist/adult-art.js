@@ -64,10 +64,11 @@ export function refineAdult(person,spec,seed){
  const farB=builder();farB.ell(0,1.382,-.015,.088,.13,.091,skin);farB.ell(0,1.456,.006,.091,.065,.096,H.color);farB.box(0,1.031,0,.32,.445,.18,.045,cloth);
  for(const s of [-1,1]){farB.box(s*.088,.44,.0,.116,.77,.13,.04,c.pants);farB.box(s*.192,1.0,0,.087,.44,.09,.035,cloth);farB.box(s*.192,.756,-.004,.065,.19,.07,.028,skin);farB.box(s*.085,.045,-.054,.09,.09,.21,.018,c.shoes);}
  const far=new THREE.Mesh(farB.geo(),pr.head.material);far.name='adult-distance-silhouette';far.visible=false;person.group.add(far);
- const parts=Object.values(pr),mouthBase=mouth.scale.y;
+ const parts=Object.values(pr),mouthBase=mouth.scale.y,handInv=new THREE.Quaternion();
  return {mouth,brows,phone,far,near:true,update(dt,{talk=0,time=0,eye,gesture}={}){
   const distance=eye?eye.distanceTo(person.group.position):0;this.near=distance<(this.near?49:43);for(const m of parts)m.visible=this.near;far.visible=!this.near;
-  phone.visible=gesture==='phone';mouth.visible=distance<20;brows.forEach((m,i)=>{m.visible=distance<24;m.position.y=.033+(talk>0?.0015*Math.sin(time*3.1+i):0);});
+  phone.visible=gesture==='phone';if(phone.visible){handInv.copy(pr.rhand.quaternion).invert();phone.quaternion.copy(handInv).multiply(pr.head.quaternion);phone.position.set(.107,-.028,.005).applyQuaternion(pr.head.quaternion).add(pr.head.position).sub(pr.rhand.position).applyQuaternion(handInv);}
+  mouth.visible=distance<20;brows.forEach((m,i)=>{m.visible=distance<24;m.position.y=.033+(talk>0?.0015*Math.sin(time*3.1+i):0);});
   mouth.scale.y+=(mouthBase*(talk>0?1.6+1.3*Math.abs(Math.sin(time*8.3+seed)):1)-mouth.scale.y)*(1-Math.exp(-18*dt));
  }};
 }

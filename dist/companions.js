@@ -29,8 +29,9 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  const list={jamie:make(friends.list[0],{lag:3.1,side:1.05}),sam:make(friends.list[1],{lag:5.6,side:-1.05})},all=[list.jamie,list.sam];
  const KEYS=new Map();const keysFor=c=>{if(!KEYS.has(c.key))KEYS.set(c.key,dismountKeys(c.geom));return KEYS.get(c.key);};
  const vTmp=new THREE.Vector3();
- function reset(){for(const c of all)Object.assign(c,{active:false,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
-  bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false});trail.reset();}
+ const pebble=new THREE.Mesh(new THREE.IcosahedronGeometry(.016,0),new THREE.MeshStandardMaterial({color:0x969187,roughness:1}));scene.add(pebble);pebble.visible=false;
+ function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{active:false,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
+  bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side});trail.reset();}
  // Take a friend over from friends.js (they were inside, or their bike lying where they left it).
  function take(c){if(!c.active){// start from wherever friends.js left the bike
   const g=c.bike.group,f=c.f;c.bx=g.position.x;c.bz=g.position.z;c.ba=-g.rotation.y;c.fall=f.fall||0;c.lean=f.lean||0;c.kick=f.kick||0;c.wheel=f.wheel||0;c.crank=f.crank||0;c.steer=f.steer||0;c.speed=0;c.bikeY=null;}
@@ -68,13 +69,21 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   const found=T.nearest(c.bx,c.bz,c.sOn-6,c.sOn+10);if(found&&found.dist<6)c.sOn=found.s;else{const any=T.nearest(c.bx,c.bz,T.start(),T.end);if(any)c.sOn=any.s;}
   // If your path folded back past us (you turned round), take the short way to it.
   const cut=T.nearest(c.bx,c.bz,c.sOn+5,T.end-c.lag*.5);if(cut&&cut.dist<2.8)c.sOn=cut.s;
-  const gap=T.end-c.sOn-c.lag,pv=pl.riding?pl.speed:0;let vT=clamp(pv+gap*.5,0,6.6);if(gap<.4&&pv<.4)vT=Math.min(vT,Math.max(0,gap*.8));
+  const pv=pl.riding?pl.speed:0;
+  if(pv>.8&&ctx.clock>c.slotAt){c.slot=(c.slot+1)%4;c.slotAt=ctx.clock+9+(c.key==='sam'?3:0);}
+  const slots=c.key==='jamie'?[[.2,1.5],[-1.1,1.6],[2.6,-1.35],[.5,-1.55]]:[[2.8,-1.5],[.6,-1.65],[-.9,1.7],[2.4,1.5]];
+  const selected=slots[c.slot];c.formationLag=damp(c.formationLag,pv>.6?selected[0]:2.8,1.2,dt);c.formationSide=damp(c.formationSide,selected[1],.55,dt);
+  const gap=T.end-c.sOn-c.formationLag;let vT=clamp(pv+gap*.5,0,6.6);if(gap<.4&&pv<.4)vT=Math.min(vT,Math.max(0,gap*.8));
   const fx=Math.sin(c.ba),fz=-Math.cos(c.ba);
-  for(const o of [{x:pl.bx,z:pl.bz,r:.9},...(pl.walking?[{x:pl.x,z:pl.z,r:.5}]:[]),...all.filter(q=>q!==c&&q.active).map(q=>({x:q.mode==='ride'?q.bx:q.px,z:q.mode==='ride'?q.bz:q.pz,r:.8}))]){const dx=o.x-c.bx,dz=o.z-c.bz,ahead=dx*fx+dz*fz,side=Math.abs(dx*fz-dz*fx);if(ahead>0&&ahead<o.r+2.6&&side<o.r+.5)vT=Math.min(vT,Math.max(0,(ahead-o.r-.8)*1.2));}
+  for(const o of [{x:pl.bx,z:pl.bz,r:.9},...(pl.walking?[{x:pl.x,z:pl.z,r:.5}]:[]),...(ctx.obstacles||[]),...all.filter(q=>q!==c&&q.active).map(q=>({x:q.mode==='ride'?q.bx:q.px,z:q.mode==='ride'?q.bz:q.pz,r:.8}))]){const dx=o.x-c.bx,dz=o.z-c.bz,ahead=dx*fx+dz*fz,side=Math.abs(dx*fz-dz*fx);if(ahead>0&&ahead<o.r+2.6&&side<o.r+.5)vT=Math.min(vT,Math.max(0,(ahead-o.r-.8)*1.2));}
   const L=clamp(1.5+.45*c.speed,1.5,3.6),q=T.at(c.sOn+L),q2=T.at(c.sOn+L+6),bend=Math.abs(wrap(Math.atan2(q2.dx,-q2.dz)-Math.atan2(q.dx,-q.dz))),straight=1-smooth(bend/.7);
   // Check the whole wheel corridor, including the next corner, before using a side offset.
   const safe=(x,z,a)=>[-.54,0,.54].every(k=>nav.rideable(x+Math.sin(a)*k,z-Math.cos(a)*k,{r:.38}));
-  const off=c.side*.82*straight*smooth((T.end-c.sOn-1.5)/3);let tx=q.x-q.dz*off,tz=q.z+q.dx*off;
+  const off=c.formationSide*straight;let tx=q.x-q.dz*off,tz=q.z+q.dx*off;
+  // Close and on a straight: a slot relative to the player's heading lets a friend ride beside
+  // or briefly ahead. At turns or obstacles we return to the actual ridden trail.
+  if(pv>.6&&straight>.85&&Math.hypot(c.bx-pl.bx,c.bz-pl.bz)<10){const h=pl.a,lag=c.formationLag,ax=pl.bx-Math.sin(h)*lag+Math.cos(h)*off,az=pl.bz+Math.cos(h)*lag+Math.sin(h)*off;
+   const corridor=[0,.25,.5,.75,1].every(t=>safe(c.bx+(ax-c.bx)*t,c.bz+(az-c.bz)*t,h));if(corridor&&safe(ax+Math.sin(h)*2,az-Math.cos(h)*2,h)){tx=ax+Math.sin(h)*1.5;tz=az-Math.cos(h)*1.5;const along=(ax-c.bx)*Math.sin(h)-(az-c.bz)*Math.cos(h);vT=clamp(pv+along*.65,0,6.5);}}
   const qa=Math.atan2(q.dx,-q.dz);if(!safe(tx,tz,qa)||!safe(q2.x-q2.dz*off,q2.z+q2.dx*off,Math.atan2(q2.dx,-q2.dz)))tx=q.x,tz=q.z;
   const err=wrap(headingTo(c.bx,c.bz,tx,tz)-c.ba);
   if(c.speed<.6&&Math.abs(err)>1.2&&Math.hypot(tx-c.bx,tz-c.bz)>.8){c.omega=Math.sign(err)*1.15;vT=Math.min(vT,.15);}// a foot down, the bike walked round
@@ -84,25 +93,27 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   // Sweep both wheels. If an offset clips a fence or a curb corner, slide toward the
   // actual trail instead of letting the bicycle enter a non-rideable patch.
   const nx=c.bx+Math.sin(c.ba)*c.speed*dt,nz=c.bz-Math.cos(c.ba)*c.speed*dt;
-  if(safe(nx,nz,c.ba)){c.bx=nx;c.bz=nz;}
+  const peers=[{x:pl.bx,z:pl.bz,r:.95},...(ctx.obstacles||[]),...all.filter(q=>q!==c&&q.active).map(q=>({x:q.mode==='ride'?q.bx:q.px,z:q.mode==='ride'?q.bz:q.pz,r:.85}))];const open=(x,z)=>!peers.some(o=>{const d=Math.hypot(o.x-x,o.z-z);return d<o.r+.35&&d<Math.hypot(o.x-c.bx,o.z-c.bz);});
+  if(safe(nx,nz,c.ba)&&open(nx,nz)){c.bx=nx;c.bz=nz;}
   else{const center=T.at(c.sOn+Math.max(.45,c.speed*dt)),a=headingTo(c.bx,c.bz,center.x,center.z),sx=c.bx+Math.sin(a)*c.speed*dt,sz=c.bz-Math.cos(a)*c.speed*dt;
-   if(safe(sx,sz,a)){c.bx=sx;c.bz=sz;c.ba+=wrap(a-c.ba)*(1-Math.exp(-5*dt));}else c.speed=Math.max(0,c.speed-5*dt);}
-  // Never left behind: fallen far back where you cannot see, they catch up along your path.
-  if(T.end-c.sOn>c.lag+40&&!ctx.inView?.(c.bx,c.bz)){const q=T.at(T.end-c.lag-14);
-   if(!ctx.inView?.(q.x,q.z)&&safe(q.x,q.z,Math.atan2(q.dx,-q.dz))){c.bx=q.x;c.bz=q.z;c.ba=Math.atan2(q.dx,-q.dz);c.sOn=q.s;c.speed=Math.min(c.speed,pv);c.bikeY=null;}}
+   if(safe(sx,sz,a)&&open(sx,sz)){c.bx=sx;c.bz=sz;c.ba+=wrap(a-c.ba)*(1-Math.exp(-5*dt));}else c.speed=Math.max(0,c.speed-5*dt);}
+  // Catch-up is continuous at the bounded riding speed; no position reset.
   cycle(c,dt,vT<c.speed-.3);}
  // Walking after you on foot: stay a step or two behind and to one side.
  function followWalk(c,dt,ctx){const pl=ctx.player;if(!pl.walking){standStill(c,dt,ctx);return;}
-  const tx=pl.x-Math.sin(pl.a)*1.4+Math.cos(pl.a)*c.side*1.15,tz=pl.z+Math.cos(pl.a)*1.4+Math.sin(pl.a)*c.side*1.15;
-  const dist=Math.hypot(tx-c.px,tz-c.pz),near=Math.hypot(pl.x-c.px,pl.z-c.pz);let v=dist>2.2?1.35:dist>.6?.8:0;if(near<1.1&&dist<1.3)v=0;
+  const slot=Math.floor((ctx.clock+(c.key==='sam'?6:0))/11)%4,slots=c.key==='sam'?[[.4,-1.5],[-.7,-1.4],[1.7,1.5],[.3,1.55]]:[[.2,1.5],[1.8,1.3],[-.6,-1.4],[.3,-1.5]];
+  const [lag,side]=slots[slot];c.formationLag=damp(c.formationLag,lag,.7,dt);c.formationSide=damp(c.formationSide,side,.5,dt);
+  const tx=pl.x-Math.sin(pl.a)*c.formationLag+Math.cos(pl.a)*c.formationSide,tz=pl.z+Math.cos(pl.a)*c.formationLag+Math.sin(pl.a)*c.formationSide;
+  const dist=Math.hypot(tx-c.px,tz-c.pz),near=Math.hypot(pl.x-c.px,pl.z-c.pz);let v=dist>2.2?Math.min(3,Math.max(1.9,pl.speed+.3)):dist>.65?Math.min(1.5,dist):0;if(near<1.1&&dist<1.3)v=0;
   // Too close (you walked into them): a step back out of your way.
   if(near<.85){const k=1.2/(near||1);stepToward(c,dt,ctx,c.px+(c.px-pl.x)*k,c.pz+(c.pz-pl.z)*k,.7);return;}
   stepToward(c,dt,ctx,tx,tz,v);}
  function standStill(c,dt,ctx){c.walkV=damp(c.walkV||0,0,6,dt);standPose(c.tmp,ctx.clock+c.R.phase,{look:footLook(c,ctx)});blendPose(c.pose,c.pose,c.tmp,1-Math.exp(-6*dt));feet(c,c.pose);applyPose(c.person,c.pose);}
  function footLook(c,ctx){const at=c.lookAt||(c.lookPlayer||ctx.speaker===c.name||Math.hypot(ctx.eye.x-c.px,ctx.eye.z-c.pz)<6?ctx.eye:null);return at?clamp(-wrap(headingTo(c.px,c.pz,at.x,at.z)-c.pa),-1.3,1.3):0;}
  function stepToward(c,dt,ctx,tx,tz,v){c.walkV=damp(c.walkV||0,v,v>c.walkV?3:6,dt);const want=headingTo(c.px,c.pz,tx,tz),turn=wrap(want-c.pa);if(c.walkV>.05||Math.abs(turn)>.5)c.pa+=clamp(turn,-3*dt,3*dt);
-  const step=c.walkV*(Math.abs(turn)>1.2?.3:1)*dt,nx=c.px+Math.sin(c.pa)*step,nz=c.pz-Math.cos(c.pa)*step;if(nav.walkable(nx,nz,{r:.25})){c.px=nx;c.pz=nz;}else if(nav.walkable(nx,c.pz,{r:.25}))c.px=nx;else if(nav.walkable(c.px,nz,{r:.25}))c.pz=nz;
-  c.gait+=step/stride(Math.max(c.walkV,.8));const look=footLook(c,ctx);if(c.walkV>.08)walkPose(c.pose,c.gait,Math.max(c.walkV,.8),{look:look*.6});else{standPose(c.tmp,ctx.clock+c.R.phase,{look});blendPose(c.pose,c.pose,c.tmp,1-Math.exp(-6*dt));}
+  const step=c.walkV*(Math.abs(turn)>1.2?.3:1)*dt,nx=c.px+Math.sin(c.pa)*step,nz=c.pz-Math.cos(c.pa)*step;const oldX=c.px,oldZ=c.pz,peers=[{x:ctx.player.x,z:ctx.player.z,r:.7},...(ctx.obstacles||[]),...all.filter(q=>q!==c&&q.active&&q.mode==='foot').map(q=>({x:q.px,z:q.pz,r:.7}))],free=(x,z)=>nav.walkable(x,z,{r:.28})&&!peers.some(o=>Math.hypot(o.x-x,o.z-z)<o.r&&Math.hypot(o.x-x,o.z-z)<Math.hypot(o.x-c.px,o.z-c.pz));
+  if(free(nx,nz)){c.px=nx;c.pz=nz;}else{let moved=false;for(const off of [.6,-.6,1,-1]){const a=c.pa+off,x=c.px+Math.sin(a)*step,z=c.pz-Math.cos(a)*step;if(free(x,z)){c.px=x;c.pz=z;moved=true;break;}}if(!moved)c.walkV=0;}
+  c.gait+=Math.hypot(c.px-oldX,c.pz-oldZ)/stride(Math.max(c.walkV,.8));const look=footLook(c,ctx);if(c.walkV>.08)walkPose(c.pose,c.gait,Math.max(c.walkV,.8),{look:look*.6});else{standPose(c.tmp,ctx.clock+c.R.phase,{look});blendPose(c.pose,c.pose,c.tmp,1-Math.exp(-6*dt));}
   feet(c,c.pose);applyPose(c.person,c.pose);}
  // ---- scripted steps (each returns true when finished) -------------------------------------
  const S={
@@ -148,10 +159,10 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   idle(c,t,{wave=0,gesture=null}={}){let e=0;return (dt,ctx)=>{e+=dt;standPose(c.tmp,ctx.clock+c.R.phase,{look:footLook(c,ctx)});blendPose(c.pose,c.pose,c.tmp,1-Math.exp(-8*dt));
    if(wave)addWave(c.pose,e,smooth(e/.35)*(1-smooth((e-(t-.45))/.45))*wave);gesture?.(c.pose,e);feet(c,c.pose);applyPose(c.person,c.pose);c.posed=true;return e>=t;};},
   // A pebble tossed underhand at a window: crouch for it, wind up, let go (the click comes later).
-  pebble(c,target,{onHit=null}={}){let e=0,hit=false;return (dt,ctx)=>{e+=dt;if(e<.05)c.pa+=wrap(headingTo(c.px,c.pz,target.x,target.z)-c.pa);standPose(c.pose,e);
+  pebble(c,target,{onHit=null}={}){let e=0,hit=false,start=null;return (dt,ctx)=>{e+=dt;if(e<.05)c.pa+=wrap(headingTo(c.px,c.pz,target.x,target.z)-c.pa);standPose(c.pose,e);
    const dip=Math.sin(Math.PI*clamp(e/.7,0,1));c.pose[P.root+1]-=.28*dip;c.pose[P.lean]+=.45*dip;c.pose[P.rh+1]-=.45*dip;c.pose[P.rh+2]-=.2*dip;
    const sw=clamp((e-.8)/.45,0,1);if(sw>0){c.pose[P.rh]=.2;c.pose[P.rh+1]=.75+.75*Math.sin(sw*Math.PI*.8);c.pose[P.rh+2]=.2-.6*sw;c.pose[P.re]=1;c.pose[P.re+1]=-.3;c.pose[P.re+2]=.3;}
-   if(!hit&&e>1.75){hit=true;onHit?.();}feet(c,c.pose);applyPose(c.person,c.pose);c.posed=true;return e>=2.1;};},
+   if(e>=1.05&&e<1.75){if(!start){c.person.group.updateMatrixWorld(true);start=c.person.parts.rhand.getWorldPosition(new THREE.Vector3());}const u=clamp((e-1.05)/.7,0,1);pebble.visible=true;pebble.position.lerpVectors(start,target,u);pebble.position.y+=.42*4*u*(1-u);}if(!hit&&e>1.75){hit=true;pebble.visible=false;onHit?.();}feet(c,c.pose);applyPose(c.person,c.pose);c.posed=true;return e>=2.1;};},
   // Out through a ground-floor window: up onto the sill, legs out, down onto the grass.
   climb(c,win,{onOut=null}={}){let e=0,out=false;const a=headingTo(win.inside.x,win.inside.z,win.outside.x,win.outside.z),T=3.8,scale=c.person.scale||1;
    const floor=win.floorY,ground=nav.groundY(win.land.x,win.land.z),sill=win.sill.y,keys=[];

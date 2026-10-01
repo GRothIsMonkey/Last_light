@@ -19,7 +19,7 @@ export function buildCreek(W){
  const j=f.junction,C=j.creek,veg=W.veg,rand=seeded(2011+C.u);
  const gy=(u,v)=>f.point(u,v).y+W.sideSurface(j,u,v);// lawn level, following the dip
  const bank=(u,v)=>f.point(u,v).y-f.creek(u,v);// the ground as if the creek were not there
- const concrete=W.concrete,dark=K.mat(0x1d1f1f),steel=K.mat(0x9aa0a0),water=K.mat(0x30424a,{roughness:.22,metalness:.42});
+ const concrete=W.surfaceMaterial(K.mat(0x939282),'concrete'),dark=K.mat(0x1d1f1f),steel=K.mat(0x9aa0a0),water=W.surfaceMaterial(K.mat(0x344d55,{roughness:.23,metalness:.35}),'water');
  const side=W.bent(f),solid=(u,v,hw,hd,tag)=>{const p=f.point(u,v);W.space.rect(p.x,p.z,hw,hd,-f.heading(u),tag);};
  function mesh(p,idx,material,name){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(upward(p,idx));const m=new THREE.Mesh(g,material);if(name)m.name=name;side.add(m);return m;}
  // A strip along v between two values of u, at a height above the (dipped) ground.
@@ -71,10 +71,25 @@ export function buildCreek(W){
    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([-w,0,0,w,0,0,-w*.6,hgt*.55,bend*.3,w*.6,hgt*.55,bend*.3,bend*.35,hgt,bend],3));geo.setIndex([0,1,2,1,3,2,2,3,4]);geo.computeVertexNormals();
    const c=new THREE.Mesh(geo,tall);c.rotation.y=rand()*Math.PI*2;c.position.set((rand()-.5)*.25,0,(rand()-.5)*.25);g.add(c);}}
  // A worn dirt path on the inside bank: the kids' shortcut along the channel to the fence gap.
- {const pts=[[91.6,8.1],[93.6,11.5],[95.8,16],[96.8,21],[97.6,26.5],[98.9,31.4]],m=K.mat(0x7a7150,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),p=[],idx=[];
+ {const pts=[[91.6,8.1],[93.6,11.5],[95.8,16],[96.8,21],[97.6,26.5],[98.9,31.4]],m=W.surfaceMaterial(K.mat(0x7a7059,{roughness:.95,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),'earth'),p=[],idx=[];
   for(let i=0;i<pts.length;i++){const [u,v]=pts[i],n=pts[Math.min(i+1,pts.length-1)],q=pts[Math.max(i-1,0)],du=n[0]-q[0],dv=n[1]-q[1],l=Math.hypot(du,dv)||1,ou=-dv/l*.2,ov=du/l*.2;
    for(const k of [-1,1]){const uu=u+ou*k,vv=v+ov*k;p.push(vv,W.sideSurface(j,uu,vv)+.012,-uu);}}
   for(let i=0;i<pts.length-1;i++){const a=i*2;idx.push(a,a+2,a+1,a+1,a+2,a+3);}mesh(p,idx,m,'creek-path');}
+ // The reflector rests in a small exposed silt bed, continuous with the bank height.
+ {const u=98.65,v=15.45,p=[v,W.sideSurface(j,u,v)+.018,-u],idx=[],n=13;for(let k=0;k<=n;k++){const a=k/n*Math.PI*2,r=.72+.09*Math.sin(k*4.1),uu=u+Math.sin(a)*r,vv=v+Math.cos(a)*r*.8;p.push(vv,W.sideSurface(j,uu,vv)+.018,-uu);}for(let k=0;k<n;k++)idx.push(0,k+1,k+2);const mat=W.surfaceMaterial(K.mat(0x746953,{roughness:.97,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}),'earth'),center=f.point(u,v),compile=mat.onBeforeCompile;mat.onBeforeCompile=sh=>{compile(sh);sh.uniforms.siltCenter={value:new THREE.Vector2(center.x,center.z)};sh.fragmentShader='uniform vec2 siltCenter;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n float edge=length(vSurface.xz-siltCenter);diffuseColor.a*=1.-smoothstep(.32,.75,edge+softNoise(vSurface.xz*12.)*.13);');};mat.customProgramCacheKey=()=>'silt-edge';mesh(p,idx,mat,'clue-silt');}
+ // Close banks: damp silt, small washed stones, curled leaves and roots. Low pieces do not
+ // become new obstacles or change the existing walkable channel / story boundary.
+ const mud=W.surfaceMaterial(K.mat(0x706957,{roughness:.92,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),'earth');
+ const wet=W.surfaceMaterial(K.mat(0x485343,{roughness:.57,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}),'earth');
+ for(let i=0;i<42;i++){const u=91.7+rand()*17,v=9.5+rand()*19;if(Math.abs(u-C.u)<1||Math.hypot(u-98.65,v-15.45)<1.8)continue;
+  const g=W.place(f,u,v,{y:gy(u,v)+.011,rot:rand()*6});const patch=new THREE.Mesh(new THREE.CircleGeometry(.2+rand()*.6,9),i%3===0?wet:mud);patch.rotation.x=-Math.PI/2;patch.scale.y=.4+rand()*.6;g.add(patch);}
+ for(let i=0;i<125;i++){const u=94+rand()*11,v=10+rand()*18;if(Math.abs(u-C.u)<.32)continue;const g=W.place(f,u,v,{y:gy(u,v)+.025,rot:rand()*6}),r=.018+rand()*.055;
+  const stone=new THREE.Mesh(new THREE.IcosahedronGeometry(r,0),K.mat([0x8a8674,0x76766b,0xaaa393][i%3],{roughness:.92}));stone.scale.set(1.3,.45,1);g.add(stone);
+  if(i%3===0){const leaf=new THREE.Mesh(new THREE.PlaneGeometry(.06,.13),K.mat(0x736346,{roughness:1,side:THREE.DoubleSide}));leaf.rotation.set(-1.4,rand()*.2,rand()*6);leaf.position.set(.12,-.01,.03);g.add(leaf);}}
+ for(const [u,v] of [[95,22.7],[106.3,20.5],[94.4,27.2]]){const g=W.place(f,u,v,{y:gy(u,v)});for(let k=0;k<3;k++)K.rod(g,[-.2,.055,k*.1],[.65,.018,k*.13+.18],.025,0x635441,.012,6);}
+ // Algae gathers along the wet concrete edge; gravel stays out of the water's center.
+ for(let v=10;v<C.end-1;v+=.9)for(const sg of [-1,1]){const g=W.place(f,C.u+sg*.81,v,{y:gy(C.u+sg*.81,v)+.027});K.ball(g,0,0,0,.1+rand()*.035,wet,[1,.035,1.4+rand()]);}
+ {const g=W.place(f,103.2,18.8,{y:gy(103.2,18.8)+.045,rot:.6});K.cyl(g,0,0,0,.029,.12,0x8c999b,8,[Math.PI/2,0,0]);}
  const info={frame:f,junction:j,u:C.u,half:C.half,end:C.end,trees,
   // Where things are (Briarwood coordinates): the way down, the clue, the dark beyond the fence gap.
   spots:{track:[[91.2,7.55],[93.1,9.6],[95.2,11.6],[97.4,13.3]],clue:[98.65,15.45],bell:[C.u,62],grate:[C.u,C.end-.55],gap:[C.u+.2,31.5]}};
