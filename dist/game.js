@@ -416,7 +416,12 @@ function nightPrompt(){
 let auto=null;
 function autoDrive(){if(!auto||state!=='c1-ride')return;const p=auto.pts[auto.i];if(!p){for(const k of ['KeyW','KeyA','KeyD'])keys.delete(k);if(auto.stop!==false)keys.add('KeyS');auto.done=true;return;}
  const dx=p[0]-roam.x,dz=p[1]-roam.z;if(Math.hypot(dx,dz)<(auto.r||2.4)){auto.i++;return;}
- const err=wrap(Math.atan2(dx,-dz)-roam.a);keys.add('KeyW');keys.delete('KeyS');keys.delete('KeyA');keys.delete('KeyD');if(err>.05)keys.add('KeyD');else if(err<-.05)keys.add('KeyA');}
+ // Stuck against someone or something: swing the bike round to one side for a moment, as a rider would.
+ if(keys.has('KeyW')&&speed<.05)auto.stuck=(auto.stuck||0)+1/30;else if(speed>.5)auto.stuck=0;
+ if(auto.stuck>.5){auto.dodge=(auto.dodge||0)+1;auto.stuck=-1.2;}if(auto.stuck<0){auto.stuck+=1/30;keys.delete('KeyW');keys.delete('KeyS');keys.delete('KeyA');keys.add('KeyD');if(auto.stuck>-.15)keys.add('KeyW');return;}
+ const err=wrap(Math.atan2(dx,-dz)-roam.a),sharp=Math.abs(err)>.6;keys.delete('KeyS');keys.delete('KeyA');keys.delete('KeyD');
+ // Slow down for a sharp turn, as a rider would, instead of circling the point.
+ if(sharp&&speed>.3){keys.delete('KeyW');if(speed>1.2)keys.add('KeyS');}else if(sharp){keys.delete('KeyW');}else keys.add('KeyW');if(err>.05)keys.add('KeyD');else if(err<-.05)keys.add('KeyA');}
 function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDrive();
  if(answerBellAt>=0&&clock>=answerBellAt){answerBellAt=-1;const f=friends.answerer();if(f&&onBike())audio?.bell(f.bike.group.position,.55);}ctx.clock=clock;bellCooldown=Math.max(0,bellCooldown-dt);
  let bikeAudio={pedal:false,coasting:false};
@@ -492,6 +497,6 @@ if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(
  get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside})),
   roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state};},
  jump:jumpTo,chapter,roam,nav,drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},
- face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else{roam.a=a;}},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,contact,audio:()=>audio,renderer,scene,playerBike,self,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},
+ face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else{roam.a=a;}},placePlayer,start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,contact,audio:()=>audio,renderer,scene,playerBike,self,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},
  // QA only: put the bike somewhere on the street (screenshots of sidewalk riding etc.).
  place(d,lat,v=3){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;}};

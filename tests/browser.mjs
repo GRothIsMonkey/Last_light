@@ -67,12 +67,14 @@ try{
  await sequence('seq-friends-surge',4,.25,n=>camAt(n,'sam',[2.2,.2,-1.6],[0,.8,0]));await view('friends-04-answering-a-push',-.55,-.08);await page.evaluate(()=>{lastLight.release('ShiftLeft');lastLight.step(3);});
  await advanceTo(180);await snap('04-first-hill');await view('friends-01-left',.95,-.12);await view('friends-02-right',-.9,-.12);
  await advanceTo(250);await view('friends-03-alongside',1.25,-.18);await view('edge-04-backyards-left',1.6,.06);
- await advanceTo(396);await sequence('seq-jamie-goes-home',4,.55,n=>snap(n,{clean:true}));await camAt('house-01-jamie-entry',{door:'jamie',open:true,from:[.7,1.9,5.2],at:[0,1.4,-2.2]});
- for(const [name,d,look] of [['05-jamie-runs-home',398],['06-jamie-at-door',407],['edge-05-briarwood-ln',592,[-1.45,.02]],['edge-06-briarwood-down-the-street',597,[-1.57,.01]]]){await advanceTo(d);if(look)await view(name,...look);else await snap(name);}
- await advanceTo(664);await camAt('house-02-sam-garage-open',{garage:'sam',from:[.4,1.6,6.5],at:[0,1.0,'back']});
- await advanceTo(684);await sequence('seq-sam-rides-into-the-garage',4,.7,n=>camAt(n,{garage:'sam',from:[1.8,1.7,8.5],at:[-.2,1.0,'back']}));
- for(const [name,d,look] of [['07-sam-parks',690],['08-sam-garage-closes',698],['edge-07-summerfield-rd',867,[1.45,.02]],['edge-08-summerfield-down-the-street',872,[1.57,.01]],['09-alex-waves',967],['10-alex-porch',979],['house-03-alex-entry',984,'alex'],['11-alex-upstairs-light',1005],['edge-10-late-left',1030,[1.57,.03]],['edge-11-late-right',1034,[-1.57,.03]],['12-late-sunset',1060],['13-final-arrival',1136.5]]){await advanceTo(d);if(look==='alex')await camAt(name,{door:'alex',open:true,from:[.7,1.9,5.6],at:[0,1.4,-2.2]});else if(look)await view(name,...look);else await snap(name);}
- check('every friend is inside',(await state()).friends.every(f=>f.inside));check('no clue during main ride',!(await state()).clue);
+ // Alex says goodbye first and turns onto Briarwood; later Jamie runs inside; Sam rides into his garage last.
+ for(const [name,d,look] of [['09-alex-goodbye',560],['09b-alex-waves',584,[-.75,.02]],['edge-05-briarwood-ln',592,[-1.45,.02]],['10-alex-down-briarwood',600,[-1.57,.01]]]){await advanceTo(d);if(look)await view(name,...look);else await snap(name);}
+ await advanceTo(756);await sequence('seq-jamie-goes-home',4,.55,n=>snap(n,{clean:true}));await camAt('house-01-jamie-entry',{door:'jamie',open:true,from:[.7,1.9,5.2],at:[0,1.4,-2.2]});
+ for(const [name,d,look] of [['05-jamie-runs-home',762],['06-jamie-at-door',778],['edge-07-summerfield-rd',867,[1.45,.02]],['edge-08-summerfield-down-the-street',872,[1.57,.01]]]){await advanceTo(d);if(look)await view(name,...look);else await snap(name);}
+ await advanceTo(940);await camAt('house-02-sam-garage-open',{garage:'sam',from:[.4,1.6,6.5],at:[0,1.0,'back']});
+ await advanceTo(958);await sequence('seq-sam-rides-into-the-garage',4,.7,n=>camAt(n,{garage:'sam',from:[1.8,1.7,8.5],at:[-.2,1.0,'back']}));
+ for(const [name,d,look] of [['07-sam-parks',968],['08-sam-garage-closes',990],['house-03-alex-entry',1000,'alex'],['11-late-houses',1005],['edge-10-late-left',1030,[1.57,.03]],['edge-11-late-right',1034,[-1.57,.03]],['12-late-sunset',1060],['13-final-arrival',1136.5]]){await advanceTo(d);if(look==='alex')await camAt(name,{door:'alex',open:true,from:[.7,1.9,5.6],at:[0,1.4,-2.2]});else if(look)await view(name,...look);else await snap(name);}
+ check('Jamie and Sam are inside; Alex has gone on down Briarwood',(await state()).friends.filter(f=>f.name!=='ALEX').every(f=>f.inside)&&!(await state()).friends.find(f=>f.name==='ALEX').inside);check('no clue during main ride',!(await state()).clue);
  await page.evaluate(()=>{lastLight.release('KeyW');lastLight.step(2);});await view('body-06-stopped-looking-down',0,-1.1);await page.evaluate(()=>{lastLight.look(0,0);lastLight.step(.3);lastLight.key('KeyF');lastLight.step(.55);});await snap('body-07-getting-off',{clean:true});
  await page.evaluate(()=>lastLight.step(1.5));check('dismount reaches walking',(await state()).state==='walking');
  await page.evaluate(()=>{lastLight.press('KeyW');lastLight.step(12);lastLight.release('KeyW');lastLight.step(.4);lastLight.look(-.4,.12);});await snap('14-oak-and-bench');
@@ -91,19 +93,82 @@ try{
  await page.evaluate(L=>{lastLight.walkTo(L.swing.d-4,L.swing.lat-5,Math.atan2(-(L.oak.lat+.6-(L.swing.lat-5)),L.oak.d+.9-(L.swing.d-4)),-.15);lastLight.step(.1);},L);await snap('25-the-other-bike',{clean:true});
  // Return by walking; no teleport/set-distance hooks.
  await page.evaluate(()=>{for(let i=0;i<1400;i++){const s=lastLight.state;if(Math.hypot(s.walkD-s.distance,s.walkLat-s.lateral)<1.5)break;lastLight.look(Math.atan2(-(s.lateral+.75-s.walkLat),s.distance-s.walkD),0);lastLight.press('KeyW');lastLight.step(1/30);}lastLight.release('KeyW');lastLight.step(.3);lastLight.key('KeyF');lastLight.step(.5);});await snap('body-08-getting-back-on',{clean:true});await page.evaluate(()=>lastLight.step(1.1));
- check('return to bike starts leaving',(await state()).state==='leaving');await page.evaluate(()=>lastLight.step(.35));check('single clue appears only in last fade',(await state()).clue&&(await state()).fade>0);await snap('16-final-fade');
- // Diagnostic view of the same subtle mark, without altering gameplay state.
- await page.evaluate(async()=>{const T=await import('./three.module.js');lastLight.camera.position.add(new T.Vector3(1,1,-7));const p=lastLight.ending.clue.geometry.attributes.position;lastLight.camera.lookAt(p.getX(0),p.getY(0),p.getZ(0));});await snap('17-ending-clue-detail');
- await page.evaluate(()=>lastLight.step(6));
- // Simulation stepping does not advance the ending card's real-time CSS fade.
+ check('Go home starts the ride home instead of an end card',(await state()).state==='c1-ride'&&!(await page.locator('#ending').isVisible()));
+ await page.evaluate(()=>lastLight.press('KeyW'));let fadeClue=false;for(let i=0;i<40;i++){await page.evaluate(()=>lastLight.step(.3));const s=await state();if(s.clue&&s.fade>0)fadeClue=true;if(i===30)await snap('16-ride-home-transition');}
+ check('the chalk shows plainly only in the transition fade, with the last memory line',fadeClue);
+ // ---- Chapter One, played on from here the way a player would --------------------------------
+ // Page-side helpers: ride with the QA autopilot (W and A/D), stand where a player would stand.
+ await page.evaluate(()=>{const L=lastLight,B=L.world.sideFrames[0];
+  window.__c1={said:[],last:'',
+   M:async(d,l)=>{const {groundPoint}=await import('./route.js');const p=groundPoint(d,l);return [p.x,p.z];},S:(u,v)=>{const p=B.point(u,v);return [p.x,p.z];},
+   watch(){const s=L.state.chapter;if(s.line&&s.line!==this.last){this.last=s.line;this.said.push((s.speaker||'')+': '+s.line);}},
+   until(fn,max){for(let t=0;t<max;t+=1/30){L.step(1/30);this.watch();if(fn())return true;}return false;},
+   ride(pts,max=150){L.drive(pts,{r:2.6});const ok=this.until(()=>!L.driving,max);L.stopDriving();this.until(()=>false,1.2);return ok;},
+   off(){L.release('KeyW');L.press('KeyS');this.until(()=>L.state.speed<.05||L.state.state!=='c1-ride',6);L.release('KeyS');L.key('KeyF');this.until(()=>L.state.state==='c1-walk',4);},
+   standAt(q,face){const r=L.roam,a=Math.atan2(face[0]-q[0],-(face[1]-q[1]));L.placePlayer({x:q[0],z:q[1],a,mode:'walk',bike:{x:r.x,z:r.z,a:r.a}});this.until(()=>false,.3);},
+   on(){const r=L.roam;L.placePlayer({x:r.x,z:r.z,a:r.a,mode:'ride',speed:0});this.until(()=>false,.3);}};});
+ const c1=(fn,arg)=>page.evaluate(fn,arg),cstate=async()=>(await state()).chapter;
+ // The ride home: quiet, a siren, the car passing and turning onto Briarwood behind you, the title.
+ await c1(async()=>{const C=window.__c1,pts=[];for(let d=820;d>=540;d-=20)pts.push(await C.M(d,-2.1));lastLight.drive(pts,{r:2.6});});
+ let shots={};for(let i=0;i<900;i++){await page.evaluate(()=>{lastLight.step(1/6);window.__c1.watch();});const s=await state(),ch=s.chapter;
+  if(!shots.siren&&ch.siren&&ch.siren.active){shots.siren=1;await snap('c1-01-ride-home-siren');}
+  if(!shots.near&&ch.carA.active&&Math.hypot(ch.carA.x-s.roam.x,ch.carA.z-s.roam.z)<45&&!ch.carA.parked){shots.near=1;await snap('c1-02-police-approaching');}
+  if(!shots.pass&&shots.near&&ch.carA.active&&Math.hypot(ch.carA.x-s.roam.x,ch.carA.z-s.roam.z)<9){shots.pass=1;await snap('c1-03-police-passing');}
+  if(!shots.turn&&shots.pass&&Math.hypot(ch.carA.x-s.roam.x,ch.carA.z-s.roam.z)>30){shots.turn=1;await snap('c1-04-police-turning-onto-briarwood');}
+  if(!shots.title&&ch.phase==='title'&&ch.title>2.4){shots.title=1;await page.waitForTimeout(1800);await snap('c1-05-title-card');}
+  if(ch.phase==='briarwood')break;}
+ check('Chapter 1: the siren, the police car passing and turning, then the title card',shots.siren&&shots.near&&shots.pass&&shots.title&&(await cstate()).phase==='briarwood');
+ await page.evaluate(()=>lastLight.step(1.2));check('Chapter 1: objective after the title',(await state()).objective==='See what’s happening on Briarwood.');
+ await c1(async()=>{const C=window.__c1,L=lastLight;L.stopDriving();L.press('KeyS');C.until(()=>L.state.speed<.05,8);L.release('KeyS');const {groundPoint,heading}=await import('./route.js');const Lc=L.nav.locate(L.roam.x,L.roam.z),q=groundPoint(Lc.d,-1.8);L.placePlayer({x:q.x,z:q.z,a:heading(Lc.d),mode:'ride',speed:0});
+  const pts=[];for(let d=Lc.d+12;d<566;d+=20)pts.push(await C.M(d,-1.8));pts.push(await C.M(568,-1.6),await C.M(584,1),C.S(8,1.9),C.S(14,1.8),C.S(30,1.8),C.S(50,1.8),C.S(70,1.8),C.S(90,1.8));C.ride(pts,100);});
+ await snap('c1-06-briarwood-police-scene');
+ await c1(()=>{const C=window.__c1;C.ride([C.S(106,1.6),C.S(112,1.6)],30);lastLight.release('KeyW');C.until(()=>lastLight.state.chapter.line,20);});await snap('c1-07-officer-asks');
+ await c1(()=>window.__c1.until(()=>lastLight.state.chapter.phase==='friends',70));
+ check('Chapter 1: the conversation at Alex\'s house, as written',await c1(()=>['OFFICER: “You were with Alex tonight?”','YOU: “Yeah.”','OFFICER: “When did he leave you?”','YOU: “At Oak Hollow. He turned here.”','ALEX’S DAD: “He never came home.”','OFFICER: “Was anyone with him?”','YOU: “No.”'].every(l=>window.__c1.said.includes(l))));
+ await camAt('c1-08-alex-garage-empty',{garage:'alex',from:[.4,1.6,6],at:[0,1.2,'back']});
+ // Jamie's window.
+ await c1(async()=>{const C=window.__c1,pts=[C.S(100,1.8),C.S(70,1.8),C.S(40,-1.8),C.S(20,-2),await C.M(584,-2)];for(let d=604;d<=786;d+=20)pts.push(await C.M(d,-2.2));C.ride(pts,120);C.off();const w=lastLight.chapter.windows.jamie;C.standAt([w.stand.x,w.stand.z],[w.glass.x,w.glass.z]);});
+ check('Chapter 1: F taps on Jamie\'s window',(await state()).prompt==='F:Tap on the window');await snap('c1-09-jamie-window');
+ await c1(()=>{lastLight.key('KeyF');window.__c1.until(()=>lastLight.state.chapter.line==='“Ha. Nice try.”',20);});await snap('c1-10-jamie-nice-try');
+ await c1(()=>window.__c1.until(()=>lastLight.state.chapter.flags.jamieClosing,40));await snap('c1-11-jamie-climbed-out');
+ await c1(()=>window.__c1.until(()=>lastLight.state.chapter.jamie.follow==='ride',40));check('Chapter 1: Jamie gets his bike and comes along',(await cstate()).jamie.mode==='ride');
+ // Sam: pebbles, the window, the side door.
+ await c1(async()=>{const C=window.__c1;C.on();lastLight.press('KeyW');const pts=[];for(let d=800;d<=983;d+=20)pts.push(await C.M(d,-2.2));C.ride(pts,80);C.off();const w=lastLight.chapter.windows.sam;C.standAt([w.stand.x,w.stand.z],[w.glass.x,w.glass.z]);lastLight.key('KeyF');C.until(()=>lastLight.state.chapter.line==='“He sleeps with a fan on. He can’t hear anything. Watch.”',10);});
+ await snap('c1-12-jamie-pebbles');await c1(()=>window.__c1.until(()=>lastLight.state.chapter.line==='“That’s not funny.”',40));await snap('c1-13-sam-at-window');
+ await c1(()=>{const C=window.__c1;C.until(()=>lastLight.state.objective==='Wait by Sam’s garage.',40);const d=lastLight.chapter.sideDoor.outside;C.standAt([d.x+1.5,d.z+1],[d.x,d.z]);C.until(()=>lastLight.state.chapter.flags.samOut,30);C.until(()=>false,2.5);});await snap('c1-14-sam-side-door');
+ await c1(()=>window.__c1.until(()=>lastLight.state.chapter.sam.follow==='ride',40));check('Chapter 1: Sam sneaks out with his bike',(await cstate()).sam.mode==='ride');
+ // The oak, then back the way Alex went.
+ await c1(async()=>{const C=window.__c1;C.on();lastLight.press('KeyW');const pts=[];for(let d=1000;d<=1128;d+=16)pts.push(await C.M(d,-1.5));C.ride(pts,60);lastLight.release('KeyW');C.until(()=>lastLight.state.chapter.line==='“He stopped first.”',60);});
+ await view('c1-15-oak-he-stopped-first',.9,-.05);
+ await c1(()=>window.__c1.until(()=>lastLight.state.chapter.phase==='retrace',60));check('Chapter 1: the friends compare memories at the oak',await c1(()=>['SAM: “He stopped first.”','YOU: “No he didn’t.”','SAM: “Yeah, he did. For a second.”'].every(l=>window.__c1.said.includes(l))));
+ await c1(async()=>{const C=window.__c1;lastLight.press('KeyW');const pts=[await C.M(1138,3),await C.M(1134,4)];for(let d=1130;d>=606;d-=25)pts.push(await C.M(d,2));pts.push(await C.M(598,4),C.S(14,1.8),C.S(30,1.8),C.S(50,1.8));C.ride(pts,180);});
+ await snap('c1-16-retrace-briarwood-dark');
+ await c1(()=>{const C=window.__c1;C.ride([C.S(66,1.8),C.S(78,1.8)],30);lastLight.release('KeyW');C.until(()=>lastLight.state.chapter.phase==='creek',30);C.until(()=>false,8);C.off();});
+ await snap('c1-17-creek-flashlight');console.log('creek state',JSON.stringify({ch:(await cstate()).phase,flags:(await cstate()).flags,line:(await cstate()).line,roam:(await state()).roam,said:await c1(()=>window.__c1.said.slice(-6))}));check('Chapter 1: the police keep them back; the creek instead',(await cstate()).phase==='creek');
+ await c1(()=>{const C=window.__c1,c=lastLight.chapter.clue.position;C.standAt([c.x+1.2,c.z+.6],[c.x,c.z]);});check('Chapter 1: the reflector can be found',(await state()).prompt==='F:Look closer');await snap('c1-18-reflector-in-the-weeds');
+ await c1(()=>{lastLight.key('KeyF');window.__c1.until(()=>lastLight.state.chapter.line==='“That’s his.”',10);});await snap('c1-19-thats-his');
+ await c1(()=>window.__c1.until(()=>lastLight.state.chapter.line==='“Why would he come back here?”',10));await snap('c1-20-why-would-he-come-back');
+ await c1(()=>window.__c1.until(()=>lastLight.state.state==='ended',40));
  await page.waitForFunction(()=>!document.querySelector('#ending').hidden&&Number(getComputedStyle(document.querySelector('#ending')).opacity)>.99);
- await snap('18-ending');check('ending card shown',(await state()).state==='ended'&&await page.locator('#ending').isVisible());
- const ended=await state();await page.evaluate(()=>lastLight.step(20));check('ending clock does not advance',(await state()).finaleT===ended.finaleT);
+ await snap('c1-21-chapter-end');check('Chapter 1 ends on its own card after the bell and the fade',(await state()).state==='ended'&&await page.locator('#ending').isVisible());
+ const ended=await state();await page.evaluate(()=>lastLight.step(20));check('ending freezes the world',(await state()).finaleT===ended.finaleT&&JSON.stringify((await state()).roam)===JSON.stringify(ended.roam));
  await page.click('#again');await page.evaluate(()=>lastLight.step(.1));const replay=await state();check('replay resets story and clue',replay.distance===0&&!replay.clue&&replay.friends.every(f=>!f.inside&&f.mode==='ride'));
  check('replay resets environment',await page.evaluate(()=>lastLight.ambient.state.kidVisible&&lastLight.ambient.state.car==='wait'&&lastLight.ambient.state.sprinklers.every(v=>v>.99)&&!lastLight.friends.mom.slammed));
- await page.evaluate(()=>lastLight.press('KeyW'));await advanceTo(1136.5);await page.evaluate(()=>{lastLight.release('KeyW');lastLight.step(101);});check('idle route reveals same clue',(await state()).clue);await snap('19-idle-clue');await page.evaluate(()=>lastLight.step(8));check('second complete playthrough ends',(await state()).state==='ended');
- await page.click('#again');await page.evaluate(()=>{lastLight.press('KeyW');lastLight.step(4);lastLight.release('KeyW');});await page.keyboard.press('Escape');await page.click('#to-title');await page.evaluate(()=>lastLight.step(.5));
+ await page.evaluate(()=>lastLight.press('KeyW'));await advanceTo(1136.5);await page.evaluate(()=>{lastLight.release('KeyW');lastLight.step(101);});check('idle route reveals same clue',(await state()).clue);await snap('19-idle-clue');await page.evaluate(()=>lastLight.step(8));check('staying put fades and wakes into the ride home',(await state()).state==='c1-ride'&&(await state()).chapter.phase==='home');
+ await page.evaluate(()=>{lastLight.reset();lastLight.press('KeyW');lastLight.step(4);lastLight.release('KeyW');});await page.keyboard.press('Escape');await page.click('#to-title');await page.evaluate(()=>lastLight.step(.5));
  check('back to the title resets and waits',(await state()).state==='intro'&&(await state()).distance<.01&&await page.locator('#intro').isVisible());await snap('26-back-to-title');
+ // Chapter One QA jumps: every section reachable directly, rendered, without errors.
+ for(const sec of ['alex-departure','ride-home','police','title','alex-house','jamie','sam','oak','retrace','investigation','clue']){await page.evaluate(sec=>{lastLight.jump(sec);lastLight.step(2.5);},sec);await page.waitForTimeout(sec==='title'?1800:300);await snap('qa-jump-'+sec);
+  const s=await state();check('QA jump '+sec+' runs',sec==='alex-departure'?s.state==='riding':s.state.startsWith('c1-')&&s.chapter.phase!=='off');}
+ // Lingering: staying a long while in a scene changes nothing it should not.
+ for(const sec of ['title','alex-house','jamie','oak']){await page.evaluate(sec=>{lastLight.jump(sec);const r=lastLight.roam;if(lastLight.state.state==='c1-ride')lastLight.placePlayer({x:r.x,z:r.z,a:r.a,mode:'ride',speed:0});lastLight.step(150);},sec);const s=await state();await snap('linger-'+sec);
+  check('lingering 150 s at '+sec+' keeps the scene intact',s.state.startsWith('c1-')&&Number.isFinite(s.roam.x)&&(sec==='title'?s.chapter.phase==='briarwood':sec==='alex-house'?s.chapter.phase==='briarwood':sec==='jamie'?s.chapter.phase==='friends':s.chapter.phase==='oak'));}
+ // Unusual angles: straight up, straight down, behind, and from above the police scene and the creek.
+ await page.evaluate(()=>{lastLight.jump('alex-house');lastLight.step(3);});
+ for(const [name,yaw,pitch] of [['angle-up',0,.6],['angle-down',0,-1.2],['angle-behind',1.8,0],['angle-behind-other',-1.8,0]]){await page.evaluate(([y,p])=>{lastLight.look(y,p);lastLight.step(.1);},[yaw,pitch]);await snap(name);}
+ for(const [name,where] of [['angle-above-police',[124,6]],['angle-above-creek',[100,16]]])await page.evaluate(async w=>{const B=lastLight.world.sideFrames[0],p=B.point(...w);lastLight.camera.position.set(p.x+18,p.y+26,p.z+18);lastLight.camera.lookAt(p.x,p.y,p.z);lastLight.camera.updateMatrixWorld();},where).then(()=>snap(name));
+ check('unusual angles render without errors',errors.length===0);
+ await page.evaluate(()=>{lastLight.toTitle();lastLight.step(.2);});check('Continue is offered on the title after reaching the night',await page.locator('#continue').isVisible());await snap('c1-22-title-continue');
  // Character close-ups: the camera is set beside each person for a single rendered frame.
  const portrait=async(name,who,off)=>{await page.evaluate(async([who,off])=>{const T=await import('./three.module.js');const F=lastLight.friends.list;const person=who==='mom'?lastLight.friends.mom.person:F.find(f=>f.key===who).person;
   lastLight.scene.updateMatrixWorld(true);const p=person.parts.head.getWorldPosition(new T.Vector3()),q=person.group.getWorldQuaternion(new T.Quaternion());lastLight.camera.position.copy(p).add(new T.Vector3(...off).applyQuaternion(q));lastLight.camera.lookAt(p.x,p.y-.25,p.z);lastLight.scene.children.find(o=>o.isMesh&&o.geometry?.parameters?.radius===350)?.position.copy(lastLight.camera.position);lastLight.camera.updateMatrixWorld();},[who,off]);await snap(name,{clean:true});};
@@ -156,13 +221,16 @@ try{
  // Real Web Audio renders of every important synthesized sound, retained for listening.
  const audioReport=await page.evaluate(async()=>{
   const {createAudio}=await import('./audio.js');const clips=[];
-  for(const name of ['rolling','grass','coasting','footstep-asphalt','footstep-grass','bell','curb','sprinkler','dribble','rim','doorOpen','doorSlam','garage','bikeDrop','kickstand','engineOff','dog','creak','bird','call','morning-neighborhood','evening-neighborhood','ending']){
-   const ctx=new OfflineAudioContext(2,48000*(name==='ending'?10:7),48000);let seed=2011;const audio=createAudio({context:ctx,random:()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}});audio.ensure();audio.setEnabled(true);
+  for(const name of ['rolling','grass','coasting','footstep-asphalt','footstep-grass','bell','curb','sprinkler','dribble','rim','doorOpen','doorSlam','garage','bikeDrop','kickstand','engineOff','dog','creak','bird','call','morning-neighborhood','evening-neighborhood','ending','tap','pebble','window','click','squelch','carDoor','callName','siren-near','siren-far-muffled','night-search','chapter-ending']){
+   const ctx=new OfflineAudioContext(2,48000*(name.includes('ending')?10:7),48000);let seed=2011;const audio=createAudio({context:ctx,random:()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}});audio.ensure();audio.setEnabled(true);
    const ready=ctx.suspend(.75),rendering=ctx.startRendering();await ready;
    const ride={speed:4.5,pedal:true,coasting:false,onBike:true,surface:'asphalt',p:.2,night:0,finale:0,listener:{x:0,y:1.5,z:0},forward:{x:0,z:-1},friendsLeft:3,state:'riding',crank:2,sources:[]};
    if(name==='rolling'||name==='grass'||name==='coasting'){audio.update(1/30,{...ride,surface:name==='grass'?'grass':'asphalt',coasting:name==='coasting',pedal:name!=='coasting',p:1,night:0,finale:2});}
    else if(name.startsWith('footstep-'))audio.footstep(name.slice(9),1.1);
    else if(name==='morning-neighborhood'||name==='evening-neighborhood')audio.update(1/30,{...ride,p:name.startsWith('evening')?1:.1,night:name.startsWith('evening')?.8:0,speed:0,onBike:false,friendsLeft:name.startsWith('evening')?0:3,sources:name.startsWith('evening')?[]:[{kind:'mower',pos:{x:-25,y:0,z:-20},level:1},{kind:'engine',pos:{x:14,y:0,z:-10},level:.6}]});
+   else if(name.startsWith('siren-')){const far=name.includes('far');for(let k=0;k<45;k++)audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,sources:[{id:'siren',kind:'siren',pos:{x:0,y:1,z:far?-420:-25},level:1,pitch:far?1.02:.96,mode:'wail',muffle:far?1:0}]});}
+   else if(name==='night-search'){for(let k=0;k<45;k++)audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,state:'walking',sources:[{id:'radio',kind:'radio',pos:{x:4,y:1,z:-6},level:1},{id:'water',kind:'water',pos:{x:-3,y:0,z:-5},level:1},{id:'idle-a',kind:'idle',pos:{x:8,y:0,z:-12},level:.8},{id:'tv',kind:'tv',pos:{x:-2,y:1,z:-3},level:1}]});}
+   else if(name==='callName')audio.callName({x:-30,y:1.7,z:-60});else if(name==='chapter-ending')audio.ending('chapter');
    else if(['bell','call','ending'].includes(name))audio[name]();else audio.sfx(name,null);
    await ctx.resume();const b=await rendering,channels=[b.getChannelData(0),b.getChannelData(1)];let peak=0,sum=0,nonFinite=0,jump=0;
    for(const a of channels)for(let i=0;i<a.length;i++){peak=Math.max(peak,Math.abs(a[i]));sum+=a[i]*a[i];if(!Number.isFinite(a[i]))nonFinite++;if(i)jump=Math.max(jump,Math.abs(a[i]-a[i-1]));}
