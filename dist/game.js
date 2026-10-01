@@ -356,11 +356,13 @@ function updateNightRide(dt){
  roam.omega+=(wT-roam.omega)*(1-Math.exp(-6*dt));roam.a+=roam.omega*dt;
  // At a curb, a fence or the edge of a lawn the front wheel turns away and the bike runs along it.
  const nx=roam.x+Math.sin(roam.a)*speed*dt,nz=roam.z-Math.cos(roam.a)*speed*dt;
- if(nav.rideable(nx,nz))roam.x=nx,roam.z=nz;
+ // People, bikes and cars are solid from every side (moving away from one is always allowed).
+ const others=chapter.blockers(),ok=(x,z)=>nav.rideable(x,z)&&!others.some(o=>{const d=Math.hypot(o.x-x,o.z-z);return d<o.r+.38&&d<Math.hypot(o.x-roam.x,o.z-roam.z);});
+ if(ok(nx,nz))roam.x=nx,roam.z=nz;
  else if(speed>.02){// try the nearest direction that stays on rideable ground (round curbs too)
   let moved=false;const step=speed*dt;
   for(const k of [1,2,3,4,5])for(const sg of [1,-1]){if(moved)break;const h=roam.a+sg*k*.26,tx=Math.sin(h),tz=-Math.cos(h),c=Math.cos(k*.26),ax=roam.x+tx*step*c,az=roam.z+tz*step*c;
-   if(nav.rideable(ax,az)){roam.x=ax;roam.z=az;roam.a+=wrap(h-roam.a)*(1-Math.exp(-4*dt));roam.omega*=.5;speed=Math.max(0,speed-(1-c)*4*dt);moved=true;}}
+   if(ok(ax,az)){roam.x=ax;roam.z=az;roam.a+=wrap(h-roam.a)*(1-Math.exp(-4*dt));roam.omega*=.5;speed=Math.max(0,speed-(1-c)*4*dt);moved=true;}}
   if(!moved)speed=Math.max(0,speed-7*dt);}
  // Bars, lean, cranks and wheels follow the motion, exactly as on the ride.
  const yawRate=roam.omega,k=yawRate/Math.max(speed,.8);
@@ -446,8 +448,8 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  // At night the evening keeps going: the blue deepens toward dark (still readable) as the chapter goes on.
  const n1=night1(),p=Math.min(1,distance/LENGTH),night=n1?Math.max(Math.min(1,ctx.finale/80),chapter.night):Math.min(1,ctx.finale/80),deep=n1?chapter.deep:0;ctx.p=p;ctx.night=night;ctx.deep=deep;
  skyMat.uniforms.dusk.value=p;skyMat.uniforms.night.value=night;scene.fog.color.set(0xe0b294).lerp(_c1.set(0x9991af),p*.88).lerp(_c2.set(0x53678c),night*.75).lerp(_c1.set(0x2c3650),deep*.6);scene.fog.density=.0058+p*.004+night*.001+deep*.0015;
- hemi.intensity=(2.05-p*.56-night*.40)*(1-.36*deep);hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p).lerp(_c2.set(0x272a38),deep*.5);sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4)*(1-deep);
- const rf=n1?{x:roam.x,y:nav.groundY(roam.x,roam.z),z:roam.z}:roadFrame(Math.min(distance,1140));sunlight.position.set(rf.x+44,rf.y+30-p*21,rf.z-85);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=1.10-p*.06-night*.06-deep*.1;
+ hemi.intensity=(2.05-p*.56-night*.40)*(1-.26*deep);hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p).lerp(_c2.set(0x272a38),deep*.5);sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4)*(1-deep);
+ const rf=n1?{x:roam.x,y:nav.groundY(roam.x,roam.z),z:roam.z}:roadFrame(Math.min(distance,1140));sunlight.position.set(rf.x+44,rf.y+30-p*21,rf.z-85);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=1.10-p*.06-night*.06-deep*.06;
  if(onBike()||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
  else if(state==='walking')updateWalk(dt);

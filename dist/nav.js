@@ -28,7 +28,7 @@ export function createNav(world){
  const walls=createSpace(20);
  for(const P of new Set([...world.houses,...world.sidePlansAll])){if(!P.toWorld||P.far)continue;const box=(x0,x1,z0,z1)=>{const c=P.toWorld((x0+x1)/2,(z0+z1)/2);walls.rect(c.x,c.z,(x1-x0)/2,(z1-z0)/2,P.worldRot,'wall');};
   box(-P.w/2,P.w/2,-P.depth/2,P.depth/2);if(P.hasGarage)box(P.gx-P.gw/2,P.gx+P.gw/2,P.gfront-P.gd,P.gfront);
-  if(P.ac&&P.lod==='full'){const s=P.hasGarage?-P.gs:1,x=s*(P.w/2+.55),z=-P.depth*.225;box(x-.42,x+.42,z-.42,z+.42);}}
+  if(P.ac&&P.lod==='full'){const s=P.hasGarage?-P.gs:1,x=s*(P.w/2+.55),z=P.sneak?P.depth*.15:-P.depth*.225;box(x-.42,x+.42,z-.42,z+.42);}}
  function nearFence(x,z,r){for(const s of fences.get(fk(Math.floor(x/FC),Math.floor(z/FC)))||[]){const [ax,az,bx,bz]=s,dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/l));if(Math.hypot(x-ax-dx*t,z-az-dz*t)<r)return true;}return false;}
 
  // Which street owns a point: Briarwood past its first 24 m (it has its own ground and curve),

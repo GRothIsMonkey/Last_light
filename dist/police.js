@@ -93,7 +93,7 @@ export function createPolice(scene,world,nav,{sfx=()=>{}}={}){
   live.sort((p,q)=>p.dist-q.dist);const n=live.length;
   emergency.forEach((L,i)=>{const e=n?live[Math.min(i,n-1)]:null;if(!e||e.dist>150){L.intensity=0;return;}const c=e.c,alone=n===1||live[1].dist>60;const side=alone?(i===0?-1:1):0;
    const fx=Math.sin(c.a),fz=-Math.cos(c.a),rx=Math.cos(c.a),rz=Math.sin(c.a);L.position.set(c.x+rx*side*.45+fx*.1,c.y+1.9,c.z+rz*side*.45+fz*.1);
-   const on=alone?(i===0?e.r:e.b):Math.max(e.r,e.b);L.color.setHex(alone?(i===0?0xff2a1e:0x2c5cff):e.r?0xff2a1e:0x2c5cff);L.intensity=on*95;});
+   const on=alone?(i===0?e.r:e.b):Math.max(e.r,e.b);L.color.setHex(alone?(i===0?0xff2a1e:0x2c5cff):e.r?0xff2a1e:0x2c5cff);L.intensity=on*100;});
   // Headlights: the spot goes with the car that asked for it.
   if(spotUser.who&&spotUser.who.group){const c=spotUser.who,fx=Math.sin(c.a),fz=-Math.cos(c.a);head.position.set(c.x+fx*2.6,c.y+.75,c.z+fz*2.6);head.target.position.set(c.x+fx*20,c.y-.6,c.z+fz*20);head.angle=.5;head.penumbra=.6;head.distance=55;head.intensity=c.headlights?140:0;head.color.setHex(0xfff0d8);}
   else if(!spotUser.who)head.intensity=0;

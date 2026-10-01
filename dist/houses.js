@@ -189,7 +189,7 @@ export function buildHouse(W,P){
  if(P.chimney==='exterior'){const cs=P.hasGarage?-P.gs:1,cz=-depth*.12,top=roofY+P.rise+.8,x=cs*(W2+.42);K.rbox(g,x,top/2-.2,cz,.78,top+.4,1.05,.03,brick);K.rbox(g,x,top+.06,cz,.9,.12,1.18,.02,HOUSE.stone);K.rbox(g,x,roofY*.55,cz,.95,.1,1.2,.02,HOUSE.stone);K.cyl(g,x,top+.25,cz+.2,.09,.3,0x5d5a55,8);}
  if(P.hasGarage)buildGarage(W,P,g,rand,mid,siding,roofMat,gable);
  // Everyday things around the house.
- if(!mid){foundationBeds(W,P,g,rand);if(P.ac){const s=P.hasGarage?-P.gs:1;const ac=K.group(g,s*(W2+.55),-D2*.45);K.box(ac,0,.05,0,.9,.1,.9,HOUSE.step);K.rbox(ac,0,.45,0,.75,.72,.75,.04,HOUSE.acUnit);K.cyl(ac,0,.82,0,.28,.03,0x3a3c3c,14);}}
+ if(!mid){foundationBeds(W,P,g,rand);if(P.ac){const s=P.hasGarage?-P.gs:1;const ac=K.group(g,s*(W2+.55),P.sneak?D2*.3:-D2*.45);/* clear of a friend’s bedroom window */K.box(ac,0,.05,0,.9,.1,.9,HOUSE.step);K.rbox(ac,0,.45,0,.75,.72,.75,.04,HOUSE.acUnit);K.cyl(ac,0,.82,0,.28,.03,0x3a3c3c,14);}}
  buildRear(W,P,g,rand,mid);
  if(P.interior==='foyer')buildFoyer(W,P,g);
  // Where people can stand: porch, steps, garage floor.

@@ -86,7 +86,9 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  // Walking after you on foot: stay a step or two behind and to one side.
  function followWalk(c,dt,ctx){const pl=ctx.player;if(!pl.walking){standStill(c,dt,ctx);return;}
   const tx=pl.x-Math.sin(pl.a)*1.4+Math.cos(pl.a)*c.side*1.15,tz=pl.z+Math.cos(pl.a)*1.4+Math.sin(pl.a)*c.side*1.15;
-  const dist=Math.hypot(tx-c.px,tz-c.pz),near=Math.hypot(pl.x-c.px,pl.z-c.pz);let v=dist>2.2?1.35:dist>.6?.8:0;if(near<1.1)v=0;
+  const dist=Math.hypot(tx-c.px,tz-c.pz),near=Math.hypot(pl.x-c.px,pl.z-c.pz);let v=dist>2.2?1.35:dist>.6?.8:0;if(near<1.1&&dist<1.3)v=0;
+  // Too close (you walked into them): a step back out of your way.
+  if(near<.85){const k=1.2/(near||1);stepToward(c,dt,ctx,c.px+(c.px-pl.x)*k,c.pz+(c.pz-pl.z)*k,.7);return;}
   stepToward(c,dt,ctx,tx,tz,v);}
  function standStill(c,dt,ctx){c.walkV=damp(c.walkV||0,0,6,dt);standPose(c.tmp,ctx.clock+c.R.phase,{look:footLook(c,ctx)});blendPose(c.pose,c.pose,c.tmp,1-Math.exp(-6*dt));feet(c,c.pose);applyPose(c.person,c.pose);}
  function footLook(c,ctx){const at=c.lookAt||(c.lookPlayer||ctx.speaker===c.name||Math.hypot(ctx.eye.x-c.px,ctx.eye.z-c.pz)<6?ctx.eye:null);return at?clamp(-wrap(headingTo(c.px,c.pz,at.x,at.z)-c.pa),-1.3,1.3):0;}

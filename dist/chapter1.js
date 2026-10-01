@@ -48,11 +48,11 @@ export function createChapter1(o){
  // ---- small props of the night: the clue, a tire track, flashlight beams, fireflies ------------
  const clue=new THREE.Group();clue.name='alex-reflector';scene.add(clue);clue.visible=false;
  const lens=new THREE.MeshStandardMaterial({color:0x8a1a14,emissive:0xff2a18,emissiveIntensity:0,roughness:.3,metalness:.1});
- {const piece=new THREE.Mesh(new THREE.CylinderGeometry(.034,.034,.012,14,1,false,0,3.7),lens);clue.add(piece);
+ {const piece=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.014,16,1,false,0,3.7),lens);clue.add(piece);
   const bracket=new THREE.Mesh(new THREE.BoxGeometry(.03,.046,.01),new THREE.MeshStandardMaterial({color:0x9da09a,roughness:.5,metalness:.4}));bracket.position.set(.004,.006,-.03);bracket.rotation.set(Math.PI/2,0,.5);clue.add(bracket);
   const tape=new THREE.Mesh(new THREE.BoxGeometry(.036,.016,.02),new THREE.MeshStandardMaterial({color:0x161617,roughness:.6}));tape.position.set(.006,.008,-.042);tape.rotation.set(0,.5,0);clue.add(tape);
   const p=side(...spotsC.clue),gy=nav.groundY(p.x,p.z);clue.position.set(p.x,gy+.012,p.z);clue.rotation.set(.18,ha(spotsC.clue[0])+2.1,-.12);}
- const glint=new THREE.Sprite(new THREE.SpriteMaterial({map:police.cars[0].glowR.material.map,color:0xff3a22,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));glint.scale.setScalar(.22);glint.position.copy(clue.position).add(new THREE.Vector3(0,.03,0));scene.add(glint);glint.visible=false;
+ const glint=new THREE.Sprite(new THREE.SpriteMaterial({map:police.cars[0].glowR.material.map,color:0xff3a22,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));glint.scale.setScalar(.1);glint.position.copy(clue.position).add(new THREE.Vector3(0,.03,0));scene.add(glint);glint.visible=false;
  // A thin tire line in the soft ground of the path, going down toward the channel.
  const track=(()=>{const pts=[[91.5,7.95],[92.7,9.3],[94,10.6],[95.3,11.8],[96.6,13],[97.7,14.2]],p=[],idx=[];
   for(let i=0;i<pts.length;i++){const [u,v]=pts[i],n=pts[Math.min(i+1,pts.length-1)],q=pts[Math.max(i-1,0)],du=n[0]-q[0],dv=n[1]-q[1],l=Math.hypot(du,dv)||1,w=.028,wob=Math.sin(i*1.7)*.05;
@@ -241,8 +241,8 @@ export function createChapter1(o){
   comp.run(jamie,[comp.steps.rideTo(jamie,[[side(84,4.6).x,side(84,4.6).z],[side(88.6,6.6).x,side(88.6,6.6).z],[side(90.3,6.9).x,side(90.3,6.9).z]],{vmax:3.2}),comp.steps.brake(jamie,.3),comp.steps.dismount(jamie),comp.steps.drop(jamie),
    comp.steps.act(()=>{S.flashOn=true;sfx('click',jamie.person.group.position);torch.visible=true;}),comp.steps.walkTo(jamie,[[side(91.7,8.5).x,side(91.7,8.5).z],[side(93.5,11.2).x,side(93.5,11.2).z],[side(95.3,14.3).x,side(95.3,14.3).z]],{speed:.9})],{then:()=>{jamie.follow=null;S.flags.jamieSearching=true;}});
   comp.run(sam,[comp.steps.rideTo(sam,[[side(82,4).x,side(82,4).z],[side(86.2,6.5).x,side(86.2,6.5).z],[side(87.6,6.8).x,side(87.6,6.8).z]],{vmax:3}),comp.steps.brake(sam,.3),comp.steps.dismount(sam),comp.steps.kickstand(sam)],{then:()=>{sam.follow='walk';}});}
- function findClue(){go('clue');S.clueT=0;roam.walkLock=true;const c=clue.position,p=me(),a=headingTo(p.x,p.z,c.x,c.z),back={x:c.x-Math.sin(a)*.95,z:c.z+Math.cos(a)*.95};
-  S.pose={w:0,x:back.x,y:nav.groundY(back.x,back.z)+.78,z:back.z,yaw:a,pitch:-.72,from:p.a,fromPitch:p.pitch||0};api.pose=S.pose;
+ function findClue(){go('clue');S.clueT=0;roam.walkLock=true;const c=clue.position,p=me(),a=headingTo(p.x,p.z,c.x,c.z),back={x:c.x-Math.sin(a)*.5,z:c.z+Math.cos(a)*.5};
+  objective('');S.pose={w:0,x:back.x,y:nav.groundY(back.x,back.z)+.5,z:back.z,yaw:a,pitch:-.78,from:p.a,fromPitch:p.pitch||0};api.pose=S.pose;
   jamie.lookAt=c;sam.lookAt=c;S.lookTarget=c;
   talk([{wait:1.4},{who:'YOU',text:'“That’s his.”',time:2.6,gap:.8},{who:'SAM',text:'“Why would he come back here?”',from:sam,time:3},{wait:3.6},
    {act:()=>{S.bellAt=S.t;const b=side(...spotsC.bell);o.audio()?.bell({x:b.x,y:b.y+1,z:b.z},1.8);S.lookTarget=b;jamie.lookAt=b;sam.lookAt=b;},wait:3.4},
@@ -334,7 +334,7 @@ export function createChapter1(o){
    // Where Jamie points it: around the bank and the channel, at what you are looking at, at the sound.
    sweep+=dt;let target=S.lookTarget;if(!target){const k=Math.floor(sweep/3.2)%4,pts=[[97.2,14.8],[99.1,18.6],[98,12.6],[96.4,19.4]];target=side(...pts[k]);target.y=nav.groundY(target.x,target.z);}
    aim.set(target.x,(target.y??nav.groundY(target.x,target.z))+.05,target.z);aimS.lerp(aim,1-Math.exp(-2.4*dt));if(aimS.lengthSq()===0)aimS.copy(aim);jamie.lookAt={x:aimS.x,z:aimS.z,y:aimS.y};
-   H.position.copy(hand);H.target.position.copy(aimS);H.angle=.36;H.penumbra=.55;H.distance=20;H.decay=1.5;H.intensity=46;H.color.setHex(0xfff0d6);
+   H.position.copy(hand);H.target.position.copy(aimS);H.angle=.36;H.penumbra=.55;H.distance=20;H.decay=1.5;H.intensity=clamp(hand.distanceTo(aimS)*7,10,40);H.color.setHex(0xfff0d6);
    beamJ.visible=true;beamJ.position.copy(hand);beamJ.lookAt(aimS);beamJ.material.uniforms.uA.value=.11;}
   else{beamJ.visible=false;if(police.spotUser.who===jamie){police.spotUser.who=null;H.intensity=0;}}
   if(officer2.visible&&officer2.gesture==='flashlight'){officer2.person.parts.rhand.getWorldPosition(tmp);const a=officer2.a+Math.sin(S.t*.7)*.6+.5,dir=new THREE.Vector3(Math.sin(a),-.32,-Math.cos(a));
@@ -344,7 +344,7 @@ export function createChapter1(o){
   if(S.flashOn){const H=police.head,L=tmp.copy(clue.position).sub(H.position),dl=L.length();L.normalize();const beam=aim.copy(H.target.position).sub(H.position).normalize();const on=beam.dot(L);
    if(on>.94&&dl<14)g=Math.max(g,smooth((on-.94)/.05)*clamp(1.4-dl/12,0,1)*Math.max(.25,smooth((camera.position.distanceTo(H.position)<4?1:0))));}
   const dc=camera.position.distanceTo(clue.position);if(dc<4.5&&camLooksAt(clue.position,.9))g=Math.max(g,.35*(1-dc/4.5));
-  S.glintV=damp(S.glintV,g,8,dt);lens.emissiveIntensity=.15+S.glintV*3;glint.visible=S.glintV>.02;glint.material.opacity=S.glintV*.8;}
+  S.glintV=damp(S.glintV,g,8,dt);lens.emissiveIntensity=.1+S.glintV*(dc<1.6?1:3);glint.visible=S.glintV>.02&&dc>1.6;glint.material.opacity=S.glintV*.8*clamp(dc-1.6,0,1);}
  // ---- lifecycle ---------------------------------------------------------------------------------------------------------
  function reset(){fresh();api.pose=null;api.sources.length=0;api.deep=0;comp.reset();for(const c of comp.all)comp.release(c);police.reset();police.attach(false);
   for(const a of adults){a.show(false);a.lookAt=null;a.gest(null);a.mode='stand';a.path=null;}
@@ -369,7 +369,7 @@ export function createChapter1(o){
      else if(section==='retrace'){S.flags.oakTalk=true;const q=main(1128,-1.2);put(q,heading(1128)+Math.PI,'ride',2);ride(jamie,main(1131,-.2),heading(1131)+Math.PI);ride(sam,main(1133.5,-2),heading(1133.5)+Math.PI);go('retrace');objective('Go the way Alex went.');date('retrace');}
      else{S.flags.oakTalk=true;S.flags.cops=true;S.flags.r1=S.flags.r2=S.flags.r3=true;
       // At the creek: bikes left by the railing, Jamie down the bank with his flashlight, Sam with you.
-      const jb=side(89.9,7.4),sb=side(87.6,6.8);comp.putFoot(jamie,side(95.3,14.3).x,side(95.3,14.3).z,ha(95)+1.2,{bike:{x:jb.x,z:jb.z,a:ha(89.9),fall:-1.36}});comp.putFoot(sam,side(91.4,8.6).x,side(91.4,8.6).z,ha(91)+1,{bike:{x:sb.x,z:sb.z,a:ha(87.6),kick:1}});
+      const jb=side(89.9,7.4),sb=side(87.6,6.8);comp.putFoot(jamie,side(95.3,14.3).x,side(95.3,14.3).z,ha(95)+1.2,{bike:{x:jb.x,z:jb.z,a:ha(89.9),fall:-1.36}});comp.putFoot(sam,side(90.2,10.2).x,side(90.2,10.2).z,ha(91)+1,{bike:{x:sb.x,z:sb.z,a:ha(87.6),kick:1}});
       sam.follow='walk';S.flashOn=true;S.flags.jamieSearching=true;go('creek');objective('Look around the creek.');date('creek');
       const pb=side(86.5,5.6);
       if(section==='investigation'){const q=side(91.6,8.2);placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,side(95,13).x,side(95,13).z),mode:'walk',bike:{x:pb.x,z:pb.z,a:ha(86.5)}});}
