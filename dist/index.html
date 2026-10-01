@@ -24,6 +24,7 @@
   <p>It’s getting late.<br>But nobody wants to go home yet.</p>
   <nav class="menu" aria-label="Title menu">
    <button id="start" class="primary">Take the long way home <span>↗</span></button>
+   <button id="continue" class="quiet" hidden>Continue <small id="continue-where"></small></button>
    <button id="open-settings" class="quiet">Settings</button>
    <button id="open-credits" class="quiet">Credits</button>
   </nav>
@@ -53,6 +54,9 @@
   <button id="bell" aria-label="Ring bicycle bell">♩</button><button id="act" hidden></button>
  </div>
  <div id="fade"></div>
+ <!-- The night after: the title, what you mean to do next -->
+ <div id="title-card" aria-hidden="true"><h1>Last <em>Light</em></h1></div>
+ <div id="objective" aria-live="polite"></div>
 
  <!-- Pause -->
  <section id="pause" hidden>
@@ -90,14 +94,15 @@
   <button id="credits-back" class="primary">Back</button>
  </section>
 
- <!-- Ending -->
+ <!-- End of the chapter -->
  <section id="ending" hidden>
-  <div class="eyebrow">SOMEWHERE, IT’S STILL SUMMER.</div>
-  <h2>We thought we had<br><em>forever.</em></h2>
-  <p>You don’t remember the last time you rode together.<br>Only that, once, you did.</p>
-  <p class="mystery">I thought I remembered everyone.</p>
-  <button id="again" class="primary">One more summer <span>↻</span></button>
-  <span>A MEMORY OF AUGUST, 2011</span>
+  <div class="eyebrow">LAST LIGHT</div>
+  <h2>Chapter One<br><em>Briarwood</em></h2>
+  <p>August 21, 2011.</p>
+  <nav class="menu" aria-label="End of chapter">
+   <button id="again" class="primary">Start over <span>↻</span></button>
+   <button id="end-title" class="quiet">Back to the title</button>
+  </nav>
  </section>
  <div id="error" hidden><h2>This memory needs WebGL.</h2><p>Please enable hardware acceleration or try another browser.</p></div>
 </main>

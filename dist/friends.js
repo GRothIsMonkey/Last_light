@@ -221,6 +221,13 @@ export function createFriends(scene,world,hooks={}){
  function answerer(){return list.find(f=>f.mode==='ride')||null;}
  // Your bell: friends still riding nearby look back at you, each after their own moment.
  function hearBell(ctx){for(const f of list)if(f.mode==='ride'&&Math.abs(f.d-ctx.distance)<30)f.bellLook=1.6+.2+f.R.reaction*.6+f.rand()*.3;}
+ // QA jumps and checkpoints: where everyone is once the evening is over (Jamie and Sam inside,
+ // Jamie's bike on his lawn, Sam's in his closed garage, Alex gone), or riding along at a distance D.
+ function settle(){for(const f of list){f.mode='foot';f.script=null;f.step=0;f.speed=0;f.person.group.visible=false;f.inside=f.key!=='alex';f.gone=f.key==='alex';f.homeward=true;f.garageClosing=false;f.waveW=0;}
+  const J=list[0],h=J.home,s=h.side;Object.assign(J,{bd:h.drivD+3.6,blat:s*10.7,bpsi:Math.atan2(s*.6,1.2),fall:-1.36,lean:0,kick:0,steer:.55});J.bike.group.visible=true;placeBike(J);
+  list[1].bike.group.visible=false;list[2].bike.group.visible=false;world.garages.sam.set(0);world.doors.jamie.set(0);
+  Object.assign(mom,{mode:'gone',closeT:10,slammed:true});mom.person.group.visible=false;}
+ function warp(D){for(const f of list){const [lead,lat]=formation(f.keys,D);Object.assign(f,{d:D+lead,lat,bd:D+lead,blat:lat,bpsi:0,speed:4.6,seen:4.6,mode:'ride',script:null,step:0,prevYaw:null});placeBike(f);}}
  reset();
- return {list,mom,update,reset,answerer,attention,hearBell};
+ return {list,mom,update,reset,answerer,attention,hearBell,settle,warp};
 }

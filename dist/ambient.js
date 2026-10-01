@@ -53,7 +53,13 @@ export function createAmbient(scene,world,hooks={}){
  const ballMesh=new THREE.Mesh(new THREE.IcosahedronGeometry(.12,1),world.material(0xc2652f));ballMesh.castShadow=true;scene.add(ballMesh);
  const ringY=world.groundY(ring.d,ring.lat)+3.05;
  function kidToWorld(x,y,z,out){const s=localToStreet(kid.psi,x,z),p=groundPoint(kid.d+s.dd,kid.lat+s.dl);return out.set(p.x,world.groundY(kid.d,kid.lat)+y,p.z);}
- function updateKid(dt,ctx){const near=Math.abs(kid.d-ctx.distance);if(near>140&&kid.t>0){kid.person.group.visible=ballMesh.visible=ctx.distance<kid.d+140;if(!kid.person.group.visible)return;}
+ // Later that night none of the evening's own life is out: no hoops, no mower, the van in its garage.
+ let nightMode=false;
+ function night(on){nightMode=on;if(!on)return;kid.person.group.visible=ballMesh.visible=false;if(car.mode!=='parked'){car.mode='parked';carGroup.visible=false;cg.set(0);}screenPlayed=true;barks=[0,0,0];
+  for(const f of flocks){f.t=99;for(const b of f.birds)b.g.visible=false;}for(const sp of sprinklers){sp.on=0;sp.jet.visible=false;}}
+ // QA: the van already home if the ride is past the point where it came.
+ function skipTo(D){if(D>470&&car.mode!=='parked'){car.mode='parked';carGroup.visible=false;cg.set(0);}}
+ function updateKid(dt,ctx){if(nightMode)return;const near=Math.abs(kid.d-ctx.distance);if(near>140&&kid.t>0){kid.person.group.visible=ballMesh.visible=ctx.distance<kid.d+140;if(!kid.person.group.visible)return;}
   kid.t+=dt;const k=kid,p=k.pose,watching=ctx.distance>k.d-26&&ctx.distance<k.d+6&&ctx.state!=='intro';
   const g=k.person.group,gp=groundPoint(k.d,k.lat);g.position.set(gp.x,world.groundY(k.d,k.lat),gp.z);g.rotation.y=-(heading(k.d)+k.psi);
   standPose(p,k.t,{look:watching?clamp(-wrap(Math.atan2(ctx.eye.x-gp.x,-(ctx.eye.z-gp.z))-(heading(k.d)+k.psi)),-1.2,1.2):0});
@@ -194,11 +200,11 @@ export function createAmbient(scene,world,hooks={}){
  const SCREEN_AT=752,screenDoor=street.filter(h=>h.side<0).sort((a,b)=>Math.abs(a.dc-SCREEN_AT)-Math.abs(b.dc-SCREEN_AT))[1];let screenPlayed=false,barks=[418,472,655];
  function updateSounds(ctx){if(!screenPlayed&&ctx.distance>=SCREEN_AT){screenPlayed=true;const s=screenDoor.S(screenDoor.doorX,screenDoor.front),p=groundPoint(s.d,s.lat);sfx('doorSlam',tmp.set(p.x,p.y+1,p.z),{gain:.7});}
   for(let i=0;i<barks.length;i++)if(barks[i]&&ctx.distance>=barks[i]){barks[i]=0;const p=groundPoint(ctx.distance+60,(i%2?1:-1)*45);sfx('dog',tmp.set(p.x,p.y+.5,p.z));}
-  const mower=groundPoint(170,-48);sources.push({kind:'mower',pos:tmp.clone().set(mower.x,mower.y,mower.z),level:1-smooth((ctx.distance-150)/140)});}
+  const mower=groundPoint(170,-48);if(!nightMode)sources.push({kind:'mower',pos:tmp.clone().set(mower.x,mower.y,mower.z),level:1-smooth((ctx.distance-150)/140)});}
 
  function reset(){time.value=0;gust.value=0;sources.length=0;Object.assign(pend,{th:0,ph:0,wt:0,wp:0,creak:0,idle:false});
   for(const s of sprinklers){s.on=1;s.angle=0;s.dir=1;s.tick=0;s.jet.visible=true;}kid.t=0;kid.lastBounce=-1;kid.phase='dribble';kid.person.group.visible=ballMesh.visible=true;
-  car.mode='wait';car.u=0;car.v=0;car.t=0;car.opened=false;car.closing=false;car.path=car.path||carPath();cg.set(0);carParts.head.emissiveIntensity=1.2;for(const w of carParts.wheels)w.rotation.x=0;for(const s of carGlow)s.material.opacity=.9;placeCar();carGroup.visible=false;
+  nightMode=false;car.mode='wait';car.u=0;car.v=0;car.t=0;car.opened=false;car.closing=false;car.path=car.path||carPath();cg.set(0);carParts.head.emissiveIntensity=1.2;for(const w of carParts.wheels)w.rotation.x=0;for(const s of carGlow)s.material.opacity=.9;placeCar();carGroup.visible=false;
   for(const f of flocks){f.t=-1;for(const b of f.birds)b.g.visible=false;}for(const f of fData)f.d=0;for(const l of lamps){l.level=0;lampLevels[l.i]=0;}for(const light of localLights)light.intensity=0;screenPlayed=false;barks=[418,472,655];jamiePorch=0;jamieLit=false;}
  function update(dt,ctx){time.value+=dt;gust.value=damp(gust.value,.5+.5*Math.sin(time.value*.13)*Math.sin(time.value*.07),1,dt);hooksDistance=ctx.distance;sources.length=0;
   updateSprinklers(dt,ctx);updateKid(dt,ctx);updateCar(dt,ctx);updateBirds(dt,ctx);updateFireflies(dt,ctx);updateFlag();updateLights(dt,ctx);updateLocalLights(dt,ctx);updateLookout(dt,ctx);updateSounds(ctx);
@@ -206,5 +212,5 @@ export function createAmbient(scene,world,hooks={}){
  reset();
  // Things in the street a rider should not pass through.
  function blockers(){return carGroup.visible&&car.mode!=='parked'&&Math.abs(car.lat)<5?[{d:car.d,lat:car.lat,half:2.6,width:1.1,speed:car.mode==='drive'?car.v:0}]:[];}
- return {update,reset,sources,time,blockers,pushSwing,swingPosition,get swing(){return {...pend};},get state(){return {sprinklers:sprinklers.map(s=>s.on),kidVisible:kid.person.group.visible,car:car.mode,lamps:lamps.map(l=>l.level),swing:Math.abs(pend.th)+Math.abs(pend.ph)};}};
+ return {update,reset,sources,time,blockers,pushSwing,swingPosition,night,skipTo,get nightMode(){return nightMode;},get swing(){return {...pend};},get state(){return {sprinklers:sprinklers.map(s=>s.on),kidVisible:kid.person.group.visible,car:car.mode,lamps:lamps.map(l=>l.level),swing:Math.abs(pend.th)+Math.abs(pend.ph)};}};
 }

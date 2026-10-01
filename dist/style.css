@@ -60,3 +60,17 @@ h1{font-size:clamp(76px,8.4vw,130px);letter-spacing:-5px;color:#fff2d6;text-shad
 #ending .mystery{font:italic 17px/1.7 Georgia,serif;color:#dfd4c3a8;margin:3px 0 28px;animation:fadeIn 6s ease}
 @media(max-height:800px){#intro{top:22%}h1{margin:12px 0;font-size:88px}#intro p{margin-bottom:18px}.controls{margin-top:14px}#date{top:105px}.intro-note{font-size:10px}}
 @media(max-width:700px){#intro{left:7%;right:7%;top:20%}h1{font-size:76px}#intro .menu{gap:5px 16px}.controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px;font-size:10px}.controls div{gap:4px}.controls dt{min-width:40px}.controls small{display:none}#date{top:87px;font-size:10px}}
+
+/* ---- The night after (Chapter One): structural styling, Astra owns the final look ---- */
+#subtitle,#reflection{z-index:1}
+#title-card{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 1.6s ease;z-index:1}
+#title-card.on{opacity:1}
+#title-card h1{margin:0;font:normal clamp(64px,9vw,148px)/1 Georgia,serif;letter-spacing:-4px;color:#f7ead2;text-shadow:0 4px 50px #0b0d1a}
+#objective{position:absolute;top:137px;left:45px;margin-top:26px;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:#fff1d8d0;opacity:0;transition:opacity 1.2s ease;pointer-events:none;max-width:min(420px,70vw)}
+#objective.on{opacity:1}#objective::before{content:'';display:inline-block;width:14px;height:1px;background:currentColor;margin:0 10px 4px 0;opacity:.7}
+body.night1 .wordmark{opacity:0;transition:opacity 1.5s}
+#continue small{margin-left:10px;opacity:.6;font-size:11px;letter-spacing:.6px}
+#ending{background:#0f1118;animation:fadeIn 3s ease}#ending h2{font:normal clamp(40px,5vw,72px)/1.15 Georgia,serif;letter-spacing:-1px}#ending h2 em{color:#e9d3ae}
+#ending p{color:#cfc6b6;font-size:15px;margin:6px 0 34px}#ending .menu{align-items:center}
+@media(max-width:700px){#objective{top:87px;left:25px;font-size:11px}}
+@media(max-height:800px){#objective{top:105px}}

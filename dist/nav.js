@@ -54,6 +54,8 @@ export function createNav(world){
    if(sideDrives.some(dr=>dr.contains(L.u,L.v)))return !solid(x,z,r);return lawn&&a<16&&!solid(x,z,r);}
   const {d,lat}=L,a=Math.abs(lat);if(d<-300)return false;
   if(world.rideable(d,lat))return true;
+  // Briarwood's own first stretch, from Oak Hollow's curb to where its frame takes over.
+  if(Math.abs(d-J.d)<H+12&&lat*J.side>4){const q=B.project(x,z,Math.max(1,Math.min(30,lat*J.side)));if(q.u>3&&q.u<26&&Math.abs(q.v)<=H+XS.walk-.025)return !solid(x,z,r*.6);}
   if(world.obstacles.some(o=>!o.soft&&d>o.d0-.12&&d<o.d1+.12&&lat>o.l0-.12&&lat<o.l1+.12))return false;
   if(world.drivewayOpenings.some(dr=>dr.contains(d,lat)))return true;
   if(d>CUL-1)return false;// the cul-de-sac's lawns and the lookout are walked, not ridden
@@ -70,6 +72,8 @@ export function createNav(world){
  // Surface under a walker's feet, for footsteps.
  function surface(x,z,L=locate(x,z)){if(L.street==='side'){const a=Math.abs(L.v);return a<=H?'asphalt':a>=H+XS.strip&&a<=H+XS.walk?'asphalt':inCreek(L.u,L.v)?'grass':'grass';}
   const a=Math.abs(L.lat);return a<=CF||(a>=CF+XS.strip&&a<=CF+XS.walk)||L.d>=CUL&&Math.hypot(L.lat,L.d-1142)<11?'asphalt':'grass';}
- return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,frame:B,junction:J,creek:C,
+ // Is there a house (or the far neighborhood) right here? For sound: walls between you and a siren.
+ const FAR=new Set(['far-house']),wallAt=(x,z)=>!!walls.blocked(x,z,0,WALL)||!!world.space.blocked(x,z,0,FAR);
+ return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,frame:B,junction:J,creek:C,
   side:(u,v)=>B.point(u,v),main:(d,lat)=>groundPoint(d,lat)};
 }

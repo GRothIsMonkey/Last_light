@@ -87,16 +87,23 @@ function say(who,text,time){if(who&&!ui.settings.captions){captionTimer=time??7.
 function start(){if(state!=='intro')return;ui.closePanels();state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;cockpit.visible=true;self.group.visible=true;if(!audio)setSound(true);else if(!muted)setSound(true);showCaption('','There’s still a little light.',5.5);}
 function pause(){if(!active())return;resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();ui.prompt(null);$('pause').hidden=false;audio?.setEnabled(false);}
 function resume(){if(state!=='paused')return;ui.closePanels();state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
-function finish(){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();ui.clear();setAct('');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;audio?.ending();}
+function finish(kind){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();ui.clear();setAct('');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;$('objective')?.classList.remove('on');audio?.ending(kind);}
 // Everything a replay needs to start clean: the ride, the finale, the interface and the world's small stories.
 function resetState(){contact.reset();bellTime=-1;bellStruck=false;playerBike.bell.lever.rotation.x=0;glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
  finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
- friends.reset();ambient.reset();ending.reset();interact.reset();nostalgia.reset();ui.clear();setAct('');audio?.reset();$('ending').hidden=true;$('pause').hidden=true;$('subtitle').style.opacity=0;}
+ friends.reset();ambient.reset();ending.reset();interact.reset();nostalgia.reset();chapter.reset();auto=null;wx=wz=wa=0;walkPitch=0;ui.clear();setAct('');audio?.reset();$('ending').hidden=true;$('pause').hidden=true;$('subtitle').style.opacity=0;$('date').innerHTML='AUGUST 21, 2011 <i></i> 7:42 PM';}
 function reset(){resetState();state='intro';start();}
 // Back to the title: the evening waits, unstarted, behind the menu.
-function toTitle(){resetState();state='intro';ui.closePanels();document.body.classList.remove('riding');$('intro').hidden=false;$('ride-ui').hidden=true;$('mobile').hidden=true;if(document.pointerLockElement===canvas)document.exitPointerLock?.();audio?.setEnabled(false);placePlayerBike(0);}
+function toTitle(){resetState();state='intro';ui.closePanels();document.body.classList.remove('riding');$('intro').hidden=false;$('ride-ui').hidden=true;$('mobile').hidden=true;if(document.pointerLockElement===canvas)document.exitPointerLock?.();audio?.setEnabled(false);placePlayerBike(0);showContinue();}
+// Straight to a moment of the night (Continue on the title, and QA): the evening already over,
+// everyone home, the call heard. alex-departure is the one jump into the ride itself.
+function jumpTo(section){ui.closePanels();resetState();state='intro';start();captionTimer=0;$('subtitle').style.opacity=0;
+ if(section==='alex-departure'){friends.warp(528);ambient.skipTo(528);distance=528;lateral=-.4;speed=4.6;nextMemory=memories.findIndex(m=>m.at>528);if(nextMemory<0)nextMemory=memories.length;contact.reset();bikeY=null;prevYaw=null;return;}
+ friends.settle();ambient.skipTo(LOOKOUT.stop.d);nextMemory=memories.length;finaleT=40;ctx.finale=40;callDone=true;startNight('jump',section);}
+// Continue: back to the last place the night reached.
+function showContinue(){const b=$('continue');if(!b)return;const s=chapter.saved();b.hidden=!s;if(s){const w=$('continue-where');if(w)w.textContent=s.label;b.onclick=()=>jumpTo(s.section);}}
 
-$('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>action();
+$('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;if($('end-title'))$('end-title').onclick=toTitle;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>action();
 if($('restart'))$('restart').onclick=()=>{$('pause').hidden=true;reset();};if($('to-title'))$('to-title').onclick=toTitle;
 // Settings apply at once and are remembered in this browser.
 function applyQuality(q){const dpr=globalThis.devicePixelRatio||1,max=renderer.capabilities?.maxTextureSize||4096;
@@ -297,18 +304,30 @@ const nav=createNav(world);
 const roam={x:0,z:0,a:0,omega:0,lock:false,brake:0,walkLock:false,steer:null,fadeIn:0};
 let wx=0,wz=0,wa=0;// on foot at night: position and heading
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
-const chapter=createChapter1({scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,
- say:(who,text,time)=>showCaption(who,text,time),player:()=>playerState(),roam,setDate:html=>{$('date').innerHTML=html;},finish:()=>finish(),fade:v=>{fade=v;$('fade').style.opacity=v;}});
+const chapter=createChapter1({scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,$,renderer,
+ say:(who,text,time)=>say(who,text,time),player:()=>playerState(),roam,setDate:html=>{$('date').innerHTML=html;},finish:()=>finish('chapter'),fade:v=>{fade=v;$('fade').style.opacity=v;},
+ placePlayer,nightRendering});
 function playerState(){const walk=state==='c1-walk';
- return {state,x:walk?wx:roam.x,z:walk?wz:roam.z,a:walk?wa:roam.a,bike:roam,speed:state==='c1-ride'?speed:0,riding:state==='c1-ride',walking:walk,
+ return {state,x:walk?wx:roam.x,z:walk?wz:roam.z,a:walk?wa:roam.a,pitch:walk?walkPitch:headPitch,bike:roam,speed:state==='c1-ride'?speed:0,riding:state==='c1-ride',walking:walk,
   eye:camera.position,clock,manualLook,lookInputAt,look,captionBusy:captionTimer>0};}
+// The chapter puts you somewhere (after the fade on the ride home, and for QA jumps and Continue):
+// on the bike, or on foot with the bike standing where it says.
+function placePlayer({x,z,a,mode='ride',speed:v=0,bike=null}){contact.reset();bikeY=null;prevYaw=null;mouseYaw=mousePitch=look=headPitch=glance=0;manualLook=false;steerIn=0;kick=0;roam.omega=0;
+ if(mode==='walk'){const b=bike||{x:x+Math.cos(a)*.62,z:z+Math.sin(a)*.62,a};roam.x=b.x;roam.z=b.z;roam.a=b.a;speed=0;wx=x;wz=z;wa=a;walkPitch=0;gait=0;moveT=0;state='c1-walk';self.group.visible=false;kick=1;astride=1;placePlayer.walk=true;}
+ else{roam.x=x;roam.z=z;roam.a=a;speed=v;state='c1-ride';self.group.visible=true;astride=v>.2?0:1;}
+ cockpit.visible=true;placeNightRoot(0);if(mode==='walk'){updateNightWalk(0);}}
+// At night the sun is gone: its shadows switch off and the night's own lights (police lights,
+// headlights, a flashlight) join the scene. Done while the screen is dark, so the shader change
+// is never seen.
+function nightRendering(on){sunlight.castShadow=!on;chapter.police.attach(on);if(on&&!qa)try{renderer.compile?.(scene,camera);}catch{}}
 // Leaving the end of the street on the bike (still facing the field: first you turn round in the
 // cul-de-sac), or waking from the memory's fade already turned toward home.
-function startNight(how='ride'){
- if(how==='wake'){distance=LOOKOUT.stop.d;lateral=LOOKOUT.stop.lat;yawOffset=0;speed=0;}
+function startNight(how='ride',section=null){
+ if(how==='wake'||how==='jump'){distance=LOOKOUT.stop.d;lateral=LOOKOUT.stop.lat;yawOffset=0;speed=0;}
  const p=groundPoint(distance,lateral);roam.x=p.x;roam.z=p.z;roam.a=heading(distance)+yawOffset+(how==='wake'?Math.PI:0);roam.omega=0;roam.lock=false;roam.brake=0;roam.steer=null;
  contact.reset();bikeY=null;prevYaw=null;mouseYaw=mousePitch=look=headPitch=glance=0;manualLook=false;steerIn=0;kick=0;
  state='c1-ride';cockpit.visible=true;self.group.visible=true;$('ride-ui').hidden=true;
+ document.body.classList.add('riding');if(how==='jump'){chapter.jump(section);return;}
  nostalgia.mark('leaving',clock);if(how!=='wake')audio?.leaving();chapter.begin(how);}
 // Riding at night.
 function updateNightRide(dt){
@@ -328,7 +347,10 @@ function updateNightRide(dt){
  steerIn=damp(steerIn,input,input?4.5:2.4,dt);
  let wT=0;
  if(speed>.35){wT=steerIn*speed/(2.2+.9*speed);
-  if(!input){const sh=nav.streetHeading(roam.x,roam.z,L);for(const h of [sh,sh+Math.PI]){const diff=wrap(h-roam.a);if(Math.abs(diff)<.42){wT+=clamp(diff*1.3,-.35,.35)*(1-Math.abs(steerIn));break;}}}}
+  // Bars straight: the bike holds its line along the street, round its curves, as on the ride.
+  if(!input){const sh=nav.streetHeading(roam.x,roam.z,L);for(const k of [0,1]){const h=sh+k*Math.PI,diff=wrap(h-roam.a);if(Math.abs(diff)<.42){
+   const ax=roam.x+Math.sin(roam.a)*1.5,az=roam.z-Math.cos(roam.a)*1.5,curve=wrap(nav.streetHeading(ax,az)+k*Math.PI-h)/1.5*speed;
+   wT+=(clamp(diff*2.2,-.4,.4)+clamp(curve,-.3,.3))*(1-Math.abs(steerIn));break;}}}}
  else if(astride>.5)wT=input*.9;// stopped: walk the bike round with your feet
  if(roam.steer){const r=roam.steer(dt,{x:roam.x,z:roam.z,a:roam.a,speed});if(r!==null&&r!==undefined)wT=r;}
  roam.omega+=(wT-roam.omega)*(1-Math.exp(-6*dt));roam.a+=roam.omega*dt;
@@ -388,7 +410,12 @@ function nightPrompt(){
  if(state==='c1-walk'){const spot=chapter.spot();if(spot)return [['F',spot.label]];if(nearNightBike()&&chapter.canRemount())return [['F','Get on bike']];}
  return null;}
 
-function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;
+// QA only: ride the bike through world points, steering like a player would.
+let auto=null;
+function autoDrive(){if(!auto||state!=='c1-ride')return;const p=auto.pts[auto.i];if(!p){for(const k of ['KeyW','KeyA','KeyD'])keys.delete(k);if(auto.stop!==false)keys.add('KeyS');auto.done=true;return;}
+ const dx=p[0]-roam.x,dz=p[1]-roam.z;if(Math.hypot(dx,dz)<(auto.r||2.4)){auto.i++;return;}
+ const err=wrap(Math.atan2(dx,-dz)-roam.a);keys.add('KeyW');keys.delete('KeyS');keys.delete('KeyA');keys.delete('KeyD');if(err>.05)keys.add('KeyD');else if(err<-.05)keys.add('KeyA');}
+function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDrive();
  if(answerBellAt>=0&&clock>=answerBellAt){answerBellAt=-1;const f=friends.answerer();if(f&&onBike())audio?.bell(f.bike.group.position,.55);}ctx.clock=clock;bellCooldown=Math.max(0,bellCooldown-dt);
  let bikeAudio={pedal:false,coasting:false};
  if(state==='c1-ride'){bikeAudio=updateNightRide(dt);
@@ -427,7 +454,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;
  else if(state==='c1-dismount')updateNightTransition(dt,true);else if(state==='c1-remount')updateNightTransition(dt,false);else if(state==='c1-walk')updateNightWalk(dt);
  else{eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(camera.position);eyeRig.getWorldQuaternion(camera.quaternion);}
  camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=n1?clamp(nav.locate(camera.position.x,camera.position.z).d,-300,1140):distance;ctx.speed=n1?0:speed;ctx.lateral=lateral;ctx.state=state;
- friends.update(dt,ctx);ambient.update(dt,ctx);ending.update(dt,{callDone,fade,ended:state==='ended',camera,plain:chapter.arPlain});
+ friends.update(dt,ctx);ambient.update(dt,ctx);ending.update(dt,{callDone,fade,ended:state==='ended',camera,night:n1});
  if(n1){chapter.update(dt);if(roam.fadeIn>0){roam.fadeIn=Math.max(0,roam.fadeIn-dt/3.2);fade=roam.fadeIn;$('fade').style.opacity=fade;}}
  // Memory lines follow the evening (the first friend home, the ride home); prompts follow what you can do.
  if(!firstHome&&friends.list.some(f=>f.inside||f.homeward)){firstHome=true;nostalgia.mark('first-home',clock);}
@@ -452,12 +479,17 @@ function promptItems(){
  return null;
 }
 function frame(stamp){const dt=Math.min((stamp-lastStamp)/1000,.05);lastStamp=stamp;if(!qa){if(state!=='paused')update(dt);renderer.render(scene,camera);}requestAnimationFrame(frame);}
-// Saved settings take effect before the first frame.
-for(const k of ['sensitivity','quality'])applySetting(k,ui.settings[k]);
+// Saved settings take effect before the first frame; Continue appears if the night was begun.
+for(const k of ['sensitivity','quality'])applySetting(k,ui.settings[k]);showContinue();
+// QA: ?jump=<section> starts straight at a moment (see chapter1.js SECTIONS, plus alex-departure).
+const jumpParam=typeof location!=='undefined'&&(location.search||'').match(/[?&]jump=([\w-]+)/);if(jumpParam)$('start').onclick=()=>jumpTo(jumpParam[1]);
 requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
 if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);return renderer.info.render;},press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
- get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside}))};},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,contact,audio:()=>audio,renderer,scene,playerBike,self,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},
+ get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside})),
+  roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state};},
+ jump:jumpTo,chapter,roam,nav,drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},
+ face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else{roam.a=a;}},start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,contact,audio:()=>audio,renderer,scene,playerBike,self,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},
  // QA only: put the bike somewhere on the street (screenshots of sidewalk riding etc.).
  place(d,lat,v=3){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;}};

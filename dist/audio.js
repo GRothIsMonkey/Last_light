@@ -50,8 +50,16 @@ export function createAudio({context=null,random=Math.random}={}){
   engineOff(t,o){tone(55,t,.6,.08,'sawtooth',o,40);},
   dog(t,o){for(const k of [0,.32]){const c=shot(ctx.createOscillator()),b=filt('bandpass',720,2.2),g=gain();c.type='sawtooth';c.frequency.setValueAtTime(420,t+k);c.frequency.exponentialRampToValueAtTime(230,t+k+.12);env(g,t+k,.01,.16,.14);c.connect(b).connect(g).connect(o);c.start(t+k);c.stop(t+k+.25);burst(t+k,.08,.05,'bandpass',1200,1.5,o);}},
   creak(t,o){const c=shot(ctx.createOscillator()),b=filt('bandpass',850,12),g=gain();c.type='sawtooth';c.frequency.setValueAtTime(170,t);c.frequency.linearRampToValueAtTime(205,t+.45);env(g,t,.1,.05,.45,'lin');c.connect(b).connect(g).connect(o);c.start(t);c.stop(t+.6);},
+  // The night chapter: knuckles on a window, a pebble on glass, a sash sliding up, a flashlight,
+  // a radio's squelch and a car door.
+  tap(t,o){for(const k of [0,.19,.36]){burst(t+k,.035,.16,'bandpass',2100+random()*400,2.5,o);tone(190,t+k,.05,.05,'sine',o,120);}},
+  pebble(t,o){burst(t,.012,.12,'bandpass',4300,3,o);tone(3150+random()*300,t+.002,.07,.012,'sine',o);},
+  window(t,o){const s=shot(ctx.createBufferSource());s.buffer=noise;const b=filt('bandpass',680,2.2),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.15);g.gain.linearRampToValueAtTime(.04,t+.6);g.gain.linearRampToValueAtTime(0,t+.8);s.connect(b).connect(g).connect(o);s.start(t,random()*2);s.stop(t+.85);burst(t+.78,.04,.08,'lowpass',900,.8,o);},
+  click(t,o){burst(t,.008,.06,'bandpass',3200,3,o);burst(t+.05,.006,.04,'bandpass',2600,3,o);},
+  squelch(t,o){burst(t,.12,.035,'highpass',1600,.7,o);tone(1180,t,.06,.012,'square',o);},
+  carDoor(t,o){burst(t,.1,.3,'lowpass',650,.8,o);tone(88,t,.16,.14,'sine',o,60);burst(t+.02,.03,.05,'bandpass',2400,2,o);},
  };
- function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={garage:9,doorSlam:9,dog:30,dribble:7,sprinkler:5,rim:8};const o=spatial(pos,opts.gain??1,refs[name]||6);SFX[name](now()+.01,o);}
+ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={garage:9,doorSlam:9,dog:30,dribble:7,sprinkler:5,rim:8,tap:5,pebble:6,window:5,carDoor:12,squelch:7};const o=spatial(pos,opts.gain??1,refs[name]||6);SFX[name](now()+.01,o);}
  function bell(pos=null,g=1){if(!ctx||!enabled)return;const o=spatial(pos,g,pos?10:6),t=now();for(const k of [0,.16]){tone(1760,t+k,1.3,.12,'sine',o);tone(1760*2.76,t+k,.5,.03,'sine',o);tone(1760*5.4,t+k,.2,.012,'sine',o);}}
  function footstep(surface,v){if(!ctx||!enabled)return;const t=now();if(surface==='grass'){burst(t,.08,.05*v,'lowpass',850,.7);burst(t+.01,.05,.012*v,'highpass',4000,.7);}else{burst(t,.04,.06*v,'bandpass',1700,1.2);tone(80,t,.06,.04*v,'sine',bus,50);}}
  // A distant, ordinary two-syllable call. A soft harmonic source and changing
@@ -71,10 +79,22 @@ export function createAudio({context=null,random=Math.random}={}){
    burst(t+st-.035,.045,.015,'bandpass',1800,1,soft);
   }
  }
- function ending(){if(!ctx)return;const t=now()+.4;
+ // Someone calling a name down the street (two syllables, a grown man's voice by default).
+ function callName(pos,{f0=148,gain:g=.9,syllables=[[0,.24,1,1,760,1720],[.3,.62,1.04,.84,560,1820]]}={}){if(!ctx||!enabled)return;const t=now()+.05;
+  const out=spatial(pos,g,26),soft=filt('lowpass',1900,.55);soft.connect(out);
+  const real=new Float32Array(32),imag=new Float32Array(32);for(let n=1;n<32;n++)imag[n]=1/Math.pow(n,1.55);const voice=ctx.createPeriodicWave(real,imag);
+  for(const [st,dur,p0,p1,f1,f2] of syllables){const c=shot(ctx.createOscillator()),q=gain(),a=filt('bandpass',f1,2.2),b=filt('bandpass',f2,3),br=gain(.14);
+   c.setPeriodicWave(voice);c.frequency.setValueAtTime(f0*p0,t+st);c.frequency.linearRampToValueAtTime(f0*p0*1.04,t+st+.08);c.frequency.linearRampToValueAtTime(f0*p1,t+st+dur);
+   b.frequency.setValueAtTime(st>0?1050:f2,t+st);b.frequency.linearRampToValueAtTime(f2,t+st+.09);
+   q.gain.setValueAtTime(0,t+st);q.gain.linearRampToValueAtTime(.16,t+st+.06);q.gain.setValueAtTime(.13,t+st+dur-.12);q.gain.linearRampToValueAtTime(0,t+st+dur);
+   c.connect(a).connect(q);c.connect(b).connect(br).connect(q);q.connect(soft);c.start(t+st);c.stop(t+st+dur+.03);}
+  burst(t+.62,.06,.012,'highpass',4200,1,soft);}
+ function ending(kind){if(!ctx)return;const t=now()+.4;
   for(const x of Object.values(layers))if(x?.gain)x.gain.setTargetAtTime(0,now(),.8);
   for(const x of layers.cic)x.out.gain.setTargetAtTime(0,now(),.8);for(const l of loops.values())l.out.gain.setTargetAtTime(0,now(),.8);
-for(const [f,d] of [[220,0],[277.18,.5],[329.63,1.0],[440,1.6]])tone(f,t+d,6,.045);musicOn=false;}
+  // The chapter ends almost in silence: one low open fifth, held and let go.
+  if(kind==='chapter')for(const [f,d] of [[110,0],[164.81,.8]])tone(f,t+d,7,.03);
+  else for(const [f,d] of [[220,0],[277.18,.5],[329.63,1.0],[440,1.6]])tone(f,t+d,6,.045);musicOn=false;}
  function leaving(){if(!ctx||!enabled)return;const t=now();bell(null,.35);burst(t+.3,.05,.03,'bandpass',2000,2);}
  function reset(){musicOn=true;nextNote=0;note=0;nextBird=0;lastCrank=0;if(!ctx)return;
   for(const s of shots){try{s.stop();s.disconnect();}catch{}}shots.clear();
@@ -98,14 +118,33 @@ for(const [f,d] of [[220,0],[277.18,.5],[329.63,1.0],[440,1.6]])tone(f,t+d,6,.04
    for(let k=0;k<3;k++)tone(c.pitch,t+.02+k*.045,.022,.03,'sine',o);}}
   if(p<.55&&s.state==='riding'&&t>nextBird){nextBird=t+8+random()*13;sfx('bird',{x:listener.x+(random()<.5?-1:1)*18,y:listener.y+6,z:listener.z-22},{gain:1-p});}
   // Positional loops from the world (a mower early on, a car engine).
-  for(const src of s.sources||[]){let l=loops.get(src.kind);if(!l){l=makeLoop(src.kind);loops.set(src.kind,l);}const dx=src.pos.x-listener.x,dz=src.pos.z-listener.z,dist=Math.hypot(dx,dz);
-   const rx=-listener.fz,rz=listener.fx;l.pan.pan.setTargetAtTime(clamp((dx*rx+dz*rz)/(dist||1),-1,1)*.8,t,.1);set(l.out,src.level*l.vol*Math.min(1,l.ref/(dist+1))*(dist>260?0:1),.3);}
-  for(const [k,l] of loops)if(!(s.sources||[]).some(x=>x.kind===k))set(l.out,0,.3);
+  for(const src of s.sources||[]){const id=src.id||src.kind;let l=loops.get(id);if(!l){l=makeLoop(src.kind);loops.set(id,l);}const dx=src.pos.x-listener.x,dz=src.pos.z-listener.z,dist=Math.hypot(dx,dz);
+   const rx=-listener.fz,rz=listener.fx;l.pan.pan.setTargetAtTime(clamp((dx*rx+dz*rz)/(dist||1),-1,1)*.8,t,.1);set(l.out,src.level*l.vol*Math.min(1,l.ref/(dist+1))*(dist>(l.far||260)?0:1)*(1-.55*(src.muffle||0)),l.tc||.3);l.update?.(src,t,dist,dt);}
+  for(const [k,l] of loops)if(!(s.sources||[]).some(x=>(x.id||x.kind)===k))set(l.out,0,.3);
+  // Late at night: katydids in the trees, near and far.
+  if(s.night1){for(const k of katydids){if(t<k.next)continue;k.next=t+k.rate*(.85+random()*.3);const o=gain(k.vol),pn=ctx.createStereoPanner();pn.pan.value=k.pan;o.connect(pn).connect(bus);for(let j=0;j<k.n;j++)burst(t+.02+j*.075,.03,.05,'bandpass',k.pitch,6,o);}}
   // The old melody thins out through the ride and falls silent at the end of the street.
   if(musicOn&&s.finale<2&&t>nextNote){const notes=[220,329.63,440,493.88,369.99,329.63,293.66,220];tone(notes[note++%notes.length],t,4.5,.055*(1-p*.35));tone(110,t,5,.018);nextNote=t+3.5+random()*2+p*2.5;}
  }
+ const katydids=[...Array(4)].map((_,i)=>({pan:-.9+i*.6,next:0,rate:1.05+random()*.6,pitch:5600+random()*1600,vol:.12+random()*.1,n:2+(i%2)}));
+ // A speech-like on/off pattern for voices heard through a radio or a wall.
+ function chatter(g,base,t,state,dt){state.left-=dt;if(state.left<=0){state.on=!state.on;state.left=state.on?.7+random()*2.2:1.8+random()*4.5;if(!state.on&&state.squelch)burst(t,.12,.03,'highpass',1700,.7,state.squelch);}
+  const syll=state.on?.55+.45*Math.abs(Math.sin(t*(7+3*Math.sin(t*1.3)))):0;g.gain.setTargetAtTime(base*syll,t,.03);}
  function makeLoop(kind){const out=gain(0),pan=ctx.createStereoPanner();out.connect(pan).connect(bus);
+  if(kind==='siren'){// two detuned voices through a horn-like band, swept as a wail or a yelp
+   const o1=ctx.createOscillator(),o2=ctx.createOscillator();o1.type='sawtooth';o2.type='square';const mix=gain(.5),o2g=gain(.3),hp=filt('highpass',420,.7),pk=filt('peaking',1300,1.2),lp=filt('lowpass',6000,.5);pk.gain.value=6;
+   o1.connect(mix);o2.connect(o2g).connect(mix);mix.connect(hp).connect(pk).connect(lp).connect(out);o1.start();o2.start();let ph=0,down=0;
+   return {out,pan,vol:.15,ref:40,far:1600,tc:.12,update(src,t,dist,dt){ph+=dt;const w=ph%4.6/4.6,wail=w<.42?1-(1-w/.42)**2:1-((w-.42)/.58)**1.6,y=Math.abs(((ph*3.3)%1)*2-1);
+    down=src.mode==='down'?Math.min(1,down+dt/1.6):0;const f=(src.mode==='yelp'?650+800*y:620+780*wail)*(1-.45*down)*(src.pitch||1);
+    o1.frequency.setTargetAtTime(f,t,.012);o2.frequency.setTargetAtTime(f*1.004,t,.012);lp.frequency.setTargetAtTime(Math.max(450,9000*Math.exp(-dist/240))*(1-.75*(src.muffle||0))+200,t,.08);}};}
+  if(kind==='radio'){const n=src(),bp=filt('bandpass',1650,1.5),g=gain(0),sq=gain(.6);n.connect(bp).connect(g).connect(out);sq.connect(out);const st={on:false,left:1,squelch:sq};
+   return {out,pan,vol:.05,ref:6,far:60,update(s2,t,dist,dt){chatter(g,1,t,st,dt);}};}
+  if(kind==='tv'){const n=src(),bp=filt('bandpass',1050,.9),g=gain(0);n.connect(bp).connect(filt('lowpass',1800)).connect(g).connect(out);const st={on:false,left:.5};
+   return {out,pan,vol:.03,ref:4,far:30,update(s2,t,dist,dt){chatter(g,1,t,st,dt);}};}
+  if(kind==='water'){const a=src(),b=src(),ga=gain(.6),gb=gain(.3);a.connect(filt('bandpass',850,.5)).connect(ga).connect(out);b.connect(filt('bandpass',2600,1.1)).connect(gb).connect(out);let ph=random()*9;
+   return {out,pan,vol:.05,ref:7,far:70,update(s2,t,dist,dt){ph+=dt;ga.gain.setTargetAtTime(.45+.25*Math.sin(ph*.7)+.1*Math.sin(ph*2.3),t,.2);gb.gain.setTargetAtTime(.2+.15*Math.sin(ph*1.7+1),t,.15);}};}
+  if(kind==='idle'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=34;const lp=filt('lowpass',190);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('lowpass',380)).connect(gain(.18)).connect(out);return {out,pan,vol:.07,ref:7,far:90};}
   if(kind==='mower'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=96;const lp=filt('lowpass',650),am=gain(.6),lfo=ctx.createOscillator(),d=gain(.35);lfo.frequency.value=7;lfo.connect(d).connect(am.gain);o.connect(lp).connect(am).connect(out);o.start();lfo.start();const n=src();n.connect(filt('bandpass',400,.8)).connect(gain(.2)).connect(out);return {out,pan,vol:.09,ref:40};}
   const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=48;const lp=filt('lowpass',320);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('lowpass',500)).connect(gain(.25)).connect(out);return {out,pan,vol:.18,ref:10};}
- return {ensure,setEnabled,setVolume,sfx,bell,footstep,call,ending,leaving,reset,update,get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;}};
+ return {ensure,setEnabled,setVolume,sfx,bell,footstep,call,callName,ending,leaving,reset,update,get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;}};
 }

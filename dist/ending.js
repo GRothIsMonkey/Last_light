@@ -46,16 +46,19 @@ export function createEnding(scene,world){
  tag.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(tp,3)),tagMat));old.frame.add(tag);
  let bikeShown=false,fifthShown=false,faint=0;const _v=new THREE.Vector3(),_d=new THREE.Vector3();
  // Called every frame at the end of the street.
- function update(dt,{callDone,fade,ended,camera,near=false}){
+ let gone=false;
+ function update(dt,{callDone,fade,ended,camera,near=false,night=false}){
+  // That night the old bike is no longer under the oak; it goes the first time you are not looking.
+  if(night&&bikeShown&&!gone&&camera){camera.getWorldDirection(_d);_v.copy(oldPos).sub(camera.position);if(_v.normalize().dot(_d)<.2){gone=true;old.group.visible=false;}}
   // The chalk: faint once the call has come and you are close and looking down at it; plain in the fade.
   if(callDone&&camera){camera.getWorldDirection(_d);_v.set(cluePos.x,world.groundY(1149.7,1.9),cluePos.z).sub(camera.position);const dist=_v.length(),facing=_v.normalize().dot(_d);faint=Math.max(faint,(dist<3.2&&facing>.8?1:0)*.2);}
   const on=!ended&&(fade>0||faint>0)&&callDone;clue.visible=on;clue.material.opacity=on?Math.max(faint*.9,smooth(fade/.18)*.58):0;
   // The extra figure cannot be added while the drawing is visible.
   if(callDone&&bikeShown&&!fifthShown&&camera){camera.getWorldDirection(_d);_v.copy(drawing.position).sub(camera.position);if(_v.length()>3&&_v.normalize().dot(_d)<-.1){fifthShown=true;fifth.visible=true;}}
   // The other bike: only after the call, only when you are not looking toward the oak.
-  if(callDone&&!bikeShown&&camera){camera.getWorldDirection(_d);_v.copy(oldPos).sub(camera.position);const away=_v.normalize().dot(_d)<-.1,far=camera.position.distanceTo(oldPos)>6;if(away&&far){bikeShown=true;old.group.visible=true;}}
+  if(callDone&&!bikeShown&&camera&&!night){camera.getWorldDirection(_d);_v.copy(oldPos).sub(camera.position);const away=_v.normalize().dot(_d)<-.1,far=camera.position.distanceTo(oldPos)>6;if(away&&far){bikeShown=true;old.group.visible=true;}}
  }
- function reset(){clue.visible=false;clue.material.opacity=0;faint=0;bikeShown=false;fifthShown=false;fifth.visible=false;old.group.visible=false;}
+ function reset(){clue.visible=false;clue.material.opacity=0;faint=0;bikeShown=false;fifthShown=false;fifth.visible=false;old.group.visible=false;gone=false;}
  poseBike(old);
- return {update,reset,clue,drawing,fifth,carving:carve,otherBike:old.group,get state(){return {clue:clue.visible,faint,otherBike:bikeShown,fifthRider:fifthShown};}};
+ return {update,reset,clue,drawing,fifth,carving:carve,otherBike:old.group,get state(){return {clue:clue.visible,faint,otherBike:bikeShown,fifthRider:fifthShown,otherBikeGone:gone};}};
 }
