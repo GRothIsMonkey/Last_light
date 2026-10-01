@@ -4,6 +4,7 @@
 // radio, a flashlight, pointing, talking with one hand. Heading a: forward is (sin a, -cos a).
 import * as THREE from './three.module.js';
 import {createPerson,blinkPerson,newPose,standPose,walkPose,addWave,applyPose,copyPose,blendPose,P,smooth,stride,shoulderPos} from './rig.js';
+import {refineAdult} from './adult-art.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
 export const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
@@ -49,8 +50,9 @@ export const headingTo=(x,z,tx,tz)=>Math.atan2(tx-x,-(tz-z));
 // One grown-up. Modes: stand (with an optional gesture), walk (along a path), turn.
 export function createActor(scene,nav,spec,{seed=0}={}){
  const person=createPerson(spec);scene.add(person.group);person.group.visible=false;
+ const art=refineAdult(person,spec,seed);
  person.group.traverse(o=>{if(o.isMesh)o.castShadow=false;});
- const A={person,spec,name:spec.name,seed,x:0,z:0,a:0,y:null,pose:newPose(),from:newPose(),tmp:newPose(),t:0,e:0,gait:0,mode:'stand',
+ const A={person,art,spec,name:spec.name,seed,x:0,z:0,a:0,y:null,pose:newPose(),from:newPose(),tmp:newPose(),t:0,e:0,gait:0,mode:'stand',
   path:null,u:0,v:0,speed:1.2,onArrive:null,look:0,lookPitch:0,lookAt:null,gesture:null,gw:0,next:null,gtarget:null,talk:0,turnTo:null,visible:false,
   show(on=true){A.visible=on;person.group.visible=on;},
   place(x,z,a=A.a){A.x=x;A.z=z;A.a=a;A.y=null;A.mode='stand';A.path=null;A.turnTo=null;copyPose(A.from,A.pose);A.e=0;},
@@ -89,10 +91,11 @@ export function createActor(scene,nav,spec,{seed=0}={}){
    standPose(p,A.t+seed*3.1,{look:A.look,lookPitch:A.lookPitch});
    if(turning>.2){A.gait+=turning*dt*.35;const w=walkPose(A.tmp,A.gait,.8,{look:A.look});blendPose(p,p,w,clamp(turning*.5,0,.8));}
    if(A.e<.4)blendPose(p,A.from,p,smooth(A.e/.4));}
-  layer(p,A.gesture,A.gw,A.t);if(A.talk>0){A.talk-=dt;p[P.hp]+=Math.sin(A.t*7.3)*.025;p[P.hy]+=Math.sin(A.t*3.7)*.03;}
+  if(A.mode==='stand'){p[P.root]+=.008*Math.sin(A.t*.43+seed);p[P.twist]+=.014*Math.sin(A.t*.61+seed);p[P.root+1]-=.005*(1+Math.sin(A.t*.71+seed));}
+  layer(p,A.gesture,A.gw,A.t);if(A.talk>0){A.talk-=dt;p[P.hp]+=Math.sin(A.t*4.3)*.019;p[P.hy]+=Math.sin(A.t*2.7)*.026;}
   // Feet on the ground: each foot finds its own height relative to the ground under the body.
   const gy=nav.groundY(A.x,A.z);A.y=A.y===null?gy:damp(A.y,gy,12,dt);const s=spec.scale||1,c=Math.cos(A.a),sn=Math.sin(A.a);
   for(const o of [P.lf,P.rf]){const lx=p[o]*s,lz=p[o+2]*s,wx=A.x+lx*c-lz*sn,wz=A.z+lx*sn+lz*c;p[o+1]+=clamp((nav.groundY(wx,wz)-A.y)/s,-.25,.4);}
-  person.group.position.set(A.x,A.y,A.z);person.group.rotation.set(0,-A.a,0);applyPose(person,p);blinkPerson(person,A.t,seed+4);}
+  person.group.position.set(A.x,A.y,A.z);person.group.rotation.set(0,-A.a,0);applyPose(person,p);blinkPerson(person,A.t,seed+4);art.update(dt,{talk:A.talk,time:A.t,eye:ctx?.eye,gesture:A.gesture});}
  A.update=update;return A;
 }
