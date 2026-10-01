@@ -18,17 +18,23 @@ export function buildFurniture(W){
 
  // Streetlights: a tapered pole, a curved mast arm and a cobra head over the street -----------
  function lampPost(frame,u,v,armDir,ground){
-  const lm=new THREE.MeshStandardMaterial({color:0xe8d6b8,emissive:0xffb35c,emissiveIntensity:0});const g=W.place(frame,u,v,{y:ground});
+  // Every lamp head is drawn by one shared material (W.lampLit); this proxy only carries its index.
+  const lm=new THREE.MeshStandardMaterial({color:0xe8d6b8});lm.userData.lamp=W.streetLamps.length;const g=W.place(frame,u,v,{y:ground});
   K.lathe(g,[[.001,0],[.17,0],[.17,.08],[.13,.14],[.11,.5],[.075,7.1],[.06,7.25],[.001,7.25]],0,0,0,STREET.lampPost,8);
   K.rod(g,[0,6.7,0],[armDir*.9,7.2,0],.045,STREET.lampPost,.04,6);K.rod(g,[armDir*.9,7.2,0],[armDir*1.75,7.3,0],.04,STREET.lampPost,.035,6);
   K.rbox(g,armDir*2.05,7.27,0,.72,.17,.34,.07,0x5f5c56);K.rbox(g,armDir*2.08,7.18,0,.5,.05,.24,.02,lm);
-  const p=frame.point(u,v);W.space.circle(p.x,p.z,.45,'lamp');W.obstacles.push({d0:u-.3,d1:u+.3,l0:v-.3,l1:v+.3});
-  W.streetLamps.push({d:u,lat:v+armDir*2.08,y:ground-groundPoint(u,v+armDir*2.08).y+7.15,mat:lm});
+  const p=frame.point(u,v);W.space.circle(p.x,p.z,.45,'lamp');if(frame===MAIN)W.obstacles.push({d0:u-.3,d1:u+.3,l0:v-.3,l1:v+.3});
+  // World positions too: side-street lamps cannot be found from Oak Hollow coordinates.
+  const head=frame.point(u,v+armDir*2.08),pool=frame.point(u,(v+armDir*2.08)*.55);
+  W.streetLamps.push({d:u,lat:v+armDir*2.08,y:ground-groundPoint(u,v+armDir*2.08).y+7.15,mat:lm,frame:frame.id,x:head.x,z:head.z,top:ground+7.15,pool});
  }
  const onCut=(frameId,side,u,m=1.2)=>W.cuts.some(c=>c.frame===frameId&&c.side===side&&u>c.u0-m&&u<c.u1+m);
  const inMouth=(u,side,m=3)=>JUNCTIONS.some(j=>j.side===side&&Math.abs(u-j.d)<j.half+j.corner+m);
  for(let d=ROAD_START+5;d<1120;d+=70){let u=d;for(let k=0;k<8&&(onCut('main',1,u)||inMouth(u,1));k++)u+=3;lampPost(MAIN,u,5.62,-1,groundMain(u,5.62));}
  lampPost(MAIN,1150.2,8.9,-1,groundMain(1150.2,8.9));
+ // Briarwood's own two lamps: one by the first houses, one past the creek near Alex's house.
+ // The creek strip between them stays dark under its trees.
+ {const f=W.sideFrames[0],j=f.junction,gy=(u,v)=>f.point(u,v).y+W.sideSurface(j,u,v);for(let u of [40,116]){for(let k=0;k<6&&onCut(f.id,1,u,1);k++)u-=2;lampPost(f,u,j.half+1.42,-1,gy(u,j.half+1.42));}}
 
  // Utility poles ---------------------------------------------------------------------------
  const poles=[];
@@ -66,7 +72,7 @@ export function buildFurniture(W){
  JUNCTIONS.forEach((j,ji)=>{const f=W.sideFrames[ji],v=-(j.half+5.2),from=j.side<0?mainPoles.find(p=>Math.abs(p.u-cornerU)<.01):mainPoles.reduce((a,b)=>Math.abs(b.u-j.d)<Math.abs(a.u-j.d)?b:a);
   const branch=[];let prev=from;
   if(j.side>0){const u0=j.d+(j.half+j.corner+3),c=pole(MAIN,u0,CF+.9,{ground:groundMain(u0,CF+.9),arm:Math.PI/2});span(prev,c);prev=c;}
-  for(let u=j.corner+22;u<f.length+30;u+=42){let uu=u;for(let k=0;k<6&&onCut(f.id,-1,uu,1);k++)uu+=2.5;const p=f.point(uu,v),gy=p.y+LAWN;const pl=pole(f,uu,v,{ground:gy,transformer:branch.length%2===1});span(prev,pl);prev=pl;branch.push(pl);}
+  for(let u=j.corner+22;u<f.length+30;u+=42){let uu=u;if(j.creek&&Math.abs(uu-j.creek.u)<j.creek.half+2)uu=j.creek.u+j.creek.half+3;for(let k=0;k<6&&onCut(f.id,-1,uu,1);k++)uu+=2.5;const p=f.point(uu,v),gy=p.y+LAWN;const pl=pole(f,uu,v,{ground:gy,transformer:branch.length%2===1});span(prev,pl);prev=pl;branch.push(pl);}
  });
  // A sparse selection of service drops; the continuous pole network is unchanged.
  for(const h of [...W.plans,...W.sidePlans.filter(p=>p.lod==='full')]){

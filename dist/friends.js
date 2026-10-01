@@ -2,7 +2,7 @@
 // a small readable sequence: ride in, stop, get off, deal with the bike, walk inside.
 import * as THREE from './three.module.js';
 import {createPerson,blinkPerson,createBike,newPose,ridePose,walkPose,standPose,addWave,dismountKeys,samplePose,blendPose,copyPose,applyPose,poseBike,pushPose,PUSH_OFFSET,P,smooth,stride} from './rig.js';
-import {groundPoint,heading} from './route.js';
+import {groundPoint,heading,roadFrame} from './route.js';
 import {CAST,FORMATION} from './cast.js';
 import {seeded,hashSeed} from './kit.js';
 
@@ -28,7 +28,9 @@ function makePath(ctrl){const pts=[];for(let i=0;i<ctrl.length-1;i++){const p0=c
 }
 
 export function createFriends(scene,world,hooks={}){
- const sfx=hooks.sfx||(()=>{});
+ const sfx=hooks.sfx||(()=>{}),bell=hooks.bell||(()=>{});
+ // Jamie's mother comes out a little before he says goodbye.
+ const MOM_AT=FORMATION.jamie.leaveAt-15;
  const list=ORDER.map((key,slot)=>{const c=CAST[key],bike=createBike(c.bike),person=createPerson(c);scene.add(bike.group);bike.group.add(person.group);
   return {...FORMATION[key],key,name:c.name,cast:c,R:c.ride,slot,bike,person,pose:newPose(),tmp:newPose(),from:newPose(),rest:newPose(),home:world.homes[key]};});
  // Jamie's mother comes to the door; she is a small part of the scene, not a character.
@@ -48,11 +50,11 @@ export function createFriends(scene,world,hooks={}){
  function reset(){
   for(const f of list){const rand=seeded(hashSeed(21,f.slot));Object.assign(f,{d:f.keys[0][1],lat:f.keys[0][2],speed:0,latVel:0,crank:f.R.phase,wheel:0,steer:0,lean:0,fall:0,kick:0,spin:0,spinV:0,psi:0,mode:'ride',astride:1,stand:0,look:0,lookT:0,
     bd:0,blat:0,bpsi:0,pd:0,plat:0,ppsi:0,py:null,gait:0,script:null,step:0,prevYaw:null,inside:false,glance:1+rand()*4,garageClosing:false,windowOn:false,holding:false,waved:false,posed:false,
-    rand,seen:0,yield:0,effort:0,standHold:0,standWait:0,standDelay:.2+rand()*2.8,standRest:.4+rand()*1.6,rock:0,bellLook:0,weaveA:rand()*6.3,weaveB:rand()*6.3});
+    rand,seen:0,yield:0,effort:0,standHold:0,standWait:0,standDelay:.2+rand()*2.8,standRest:.4+rand()*1.6,rock:0,bellLook:0,weaveA:rand()*6.3,weaveB:rand()*6.3,gone:false,homeward:false,external:false,waveW:0,rang:false});
    f.bd=f.d;f.blat=f.lat;if(f.person.group.parent!==f.bike.group){f.bike.group.add(f.person.group);}f.person.group.position.set(0,0,0);f.person.group.rotation.set(0,0,0);
    f.person.group.visible=true;f.bike.group.visible=true;}
   Object.assign(mom,{mode:'waiting',t:0,pd:0,plat:0,ppsi:0,py:null,gait:0,look:0,slammed:false,closeT:0,u:0});mom.person.group.visible=false;
-  world.doors.jamie.set(0);world.doors.alex.set(0);world.garages.sam.set(1);world.alexWindow.emissiveIntensity=0;
+  world.doors.jamie.set(0);world.doors.alex.set(0);world.garages.sam.set(1);world.garages.alex?.set(0);world.alexWindow.emissiveIntensity=0;
  }
 
  // Group riding -----------------------------------------------------------------------
@@ -110,11 +112,11 @@ export function createFriends(scene,world,hooks={}){
  }
 
  // Scripted departure -------------------------------------------------------------------
- function rideIn(f,ctrl,{vmax=5,vend=0,decel=1.4}={}){let path=null,u=0;return (dt,ctx)=>{
+ function rideIn(f,ctrl,{vmax=5,vend=0,decel=1.4,each=null,cap=null}={}){let path=null,u=0;return (dt,ctx)=>{
    if(!path){path=makePath([[f.d,f.lat],...ctrl]);u=0;}
-   const remain=path.length-u,kappa=path.curv(u+1.5);let v=Math.max(Math.min(.3,remain*2),Math.min(vmax,Math.sqrt(vend*vend+2*decel*Math.max(0,remain-.1)),Math.sqrt(2.3/Math.max(kappa,.02))));
+   const remain=path.length-u,kappa=path.curv(u+1.5);let v=Math.max(Math.min(.3,remain*2),Math.min(vmax,cap?cap(f):vmax,Math.sqrt(vend*vend+2*decel*Math.max(0,remain-.1)),Math.sqrt(2.3/Math.max(kappa,.02))));
    f.speed=f.speed+clamp(v-f.speed,-2.6*dt,1.4*dt);u+=f.speed*dt;const q=path.at(u);f.d=f.bd=q.d;f.lat=f.blat=q.lat;f.bpsi+=wrapAngle(q.psi-f.bpsi)*(1-Math.exp(-10*dt));
-   f.effort=damp(f.effort||0,clamp((v-f.speed)/1.2,0,1),2.5,dt);f.stand=damp(f.stand,v-f.speed>1.2&&f.speed<4?1:0,3,dt);cycle(f,dt,v<f.speed-.3||remain<5);f.astride=damp(f.astride,f.speed<.35&&remain<.8?1:0,6,dt);
+   f.effort=damp(f.effort||0,clamp((v-f.speed)/1.2,0,1),2.5,dt);f.stand=damp(f.stand,v-f.speed>1.2&&f.speed<4?1:0,3,dt);cycle(f,dt,(v<f.speed-.3||remain<5)&&vend<1);f.astride=damp(f.astride,f.speed<.35&&remain<.8&&vend<1?1:0,6,dt);each?.(dt,ctx,u,path);
    if(remain<.05||(remain<.35&&f.speed<.12)){f.speed=0;return true;}}}
  function easeIn(f,e){if(e<.35)blendPose(f.pose,f.from,f.pose,smooth(e/.35));}
  function wait(t){let e=0;return dt=>(e+=dt)>=t;}
@@ -169,20 +171,25 @@ export function createFriends(scene,world,hooks={}){
     settleAstride(f,.2),dismount(f,1.55),kickstand(f),act(()=>{f.holding=false;}),turnTo(f,()=>worldPsiTo(f,ctx),.6),idle(f,1.6,{wave:1,look:lookPlayer(f)}),
     act(()=>{f.garageClosing=true;sfx('garage',gar.panel.getWorldPosition(tmpV));}),idle(f,.5,{look:lookPlayer(f)}),
     walkTo(f,[[gar.houseDoor.d,gar.houseDoor.lat],[gar.beyond.d,gar.beyond.lat]],{speed:1.15}),hide(f,'person'),until(()=>gar.open<.02),hide(f,'bike')];}
-  // Alex cuts across the lawn and leaves the bike standing at the foot of the porch steps.
-  const dr=h.drivD,door=world.doors.alex,stop=h.S(h.doorX-h.gs*1.3,h.stepFront+1.6),mid=h.S((h.doorX+h.drivX)/2,h.stepFront+2.4);
-  return [rideIn(f,[[dr-18,s*2.7],[dr-5,s*3.2],[dr-.6,s*5.7],[dr+.4,s*8],[mid.d,mid.lat],[stop.d,stop.lat]],{vmax:6.8,decel:1.9}),
-   settleAstride(f,.3),dismount(f,1.35),kickstand(f),act(()=>{f.holding=false;}),turnTo(f,()=>worldPsiTo(f,ctx),.7),idle(f,1.9,{wave:1,look:lookPlayer(f)}),
-   // Wait on the latch side, clear of the door's swing, then go in through the middle.
-   walkTo(f,[[door.steps.d,door.steps.lat],[door.latch.d,door.latch.lat]],{speed:1.4,look:lookPlayer(f)}),
-   idle(f,.25,{look:ctx2=>0}),doorOpen(door,.5),walkTo(f,[[door.porch.d,door.porch.lat],[door.inside.d,door.inside.lat]],{speed:1.25}),hide(f,'person'),doorClose(door,.1),wait(3.5),act(()=>{f.windowOn=true;})];
+  // Alex heads home first. He has said so; he eases off, turns onto Briarwood Lane, rings his
+  // bell and waves back over his shoulder, and rides on down his own street until its curve,
+  // by the creek and the trees, takes him out of sight. Nothing happens that anyone sees.
+  const B=world.sideFrames[0],J=B.junction,O=roadFrame(J.d),fx=Math.sin(O.heading),fz=-Math.cos(O.heading);
+  // Oak Hollow runs straight past the junction, so its coordinates stay exact well down Briarwood.
+  const flat=(u,v)=>{const p=B.point(u,v),dx=p.x-O.x,dz=p.z-O.z;return [J.d+dx*fx+dz*fz,dx*O.rightX+dz*O.rightZ];};
+  const lane=1.55,turn=[[J.d-9.6,2.85],[J.d-5.5,3.75],[J.d-2.7,6.1],[J.d-1.75,9.6]],down=[13,19,27,37,49,61,72,82,91,99,106].map(u=>flat(u,lane));
+  // Just inside his street he all but stops: a look back, a wave, two rings of the bell.
+  return [rideIn(f,[...turn,...down],{vmax:4.8,vend:4.4,decel:1.1,cap:f=>f.blat>7.6&&f.blat<11.2?1.3:4.8,each:(dt,ctx)=>{const u=f.blat;
+    if(!f.rang&&u>8.4){f.rang=true;bell(f.bike.group.position,.75);f.bellLook=1.55;}
+    f.waveW=damp(f.waveW,u>8.2&&u<17?1:0,u>8.2&&u<17?5:3,dt);if(u>40)f.homeward=true;}}),
+   ()=>{f.waveW=0;f.person.group.visible=false;f.bike.group.visible=false;f.gone=true;return true;}];
  }
 
  // Jamie's mother: opens the door and waits on the stoop, then follows Jamie inside.
  function updateMom(dt,ctx){const door=world.doors.jamie,h=world.homes.jamie,m=mom;m.t+=dt;
   const place=()=>{const g=m.person.group,p=groundPoint(m.pd,m.plat),gy=world.groundY(m.pd,m.plat);m.py=m.py===null?gy:damp(m.py,gy,14,dt);g.position.set(p.x,m.py,p.z);g.rotation.set(0,-(heading(m.pd)+m.ppsi),0);};
   const toward=(d,lat)=>Math.atan2(lat-m.plat,d-m.pd);const jamie=list[0];
-  if(m.mode==='waiting'){if(ctx.distance>=300){m.mode='opening';m.t=0;m.pd=door.inside.d;m.plat=door.inside.lat;m.ppsi=toward(door.porch.d,door.porch.lat);m.person.group.visible=true;sfx('doorOpen',door.pivot.getWorldPosition(tmpV));}else return;}
+  if(m.mode==='waiting'){if(ctx.distance>=MOM_AT){m.mode='opening';m.t=0;m.pd=door.inside.d;m.plat=door.inside.lat;m.ppsi=toward(door.porch.d,door.porch.lat);m.person.group.visible=true;sfx('doorOpen',door.pivot.getWorldPosition(tmpV));}else return;}
   if(m.mode==='opening'){door.set(smooth(m.t/.6));standPose(m.pose,m.t);if(m.t>.5){m.mode='out';m.t=0;m.path=makePath([[m.pd,m.plat],[door.outside.d,door.outside.lat],[door.outside.d-h.gs*h.side*-.55,door.outside.lat+0]]);m.u=0;}}
   else if(m.mode==='out'||m.mode==='in'){const step=1.1*dt;m.u+=step;const q=m.path.at(m.u);const want=Math.atan2(q.lat-m.plat,q.d-m.pd);if(m.path.length-m.u>.05)m.ppsi+=clamp(wrapAngle(want-m.ppsi),-3*dt,3*dt);m.pd=q.d;m.plat=q.lat;m.gait+=step/stride(1.1);walkPose(m.pose,m.gait,1.1,{});
    if(m.u>=m.path.length){if(m.mode==='out'){m.mode='porch';m.t=0;}else{m.person.group.visible=false;m.mode='gone';m.closeT=0;}}}
@@ -194,13 +201,13 @@ export function createFriends(scene,world,hooks={}){
 
  function update(dt,ctx){
   for(const f of list){
-   blinkPerson(f.person,ctx.clock,f.slot+1);
+   blinkPerson(f.person,ctx.clock,f.slot+1);if(f.external)continue;
    if(f.mode==='ride'&&ctx.distance>=f.leaveAt&&ctx.state!=='intro'){f.mode='leave';f.script=plan(f,ctx);f.step=0;}
    if(f.mode==='ride')ride(f,dt,ctx);
    f.posed=false;if(f.script&&f.step<f.script.length){if(f.script[f.step](dt,ctx))f.step++;}
    // Between explicit actions a person on foot settles into a relaxed stance.
    if(f.mode==='foot'&&!f.posed&&f.person.group.visible&&!f.holding){standPose(f.rest,ctx.clock);blendPose(f.pose,f.pose,f.rest,1-Math.exp(-6*dt));footGround(f,f.pose);applyPose(f.person,f.pose);}
-   if((f.mode==='leave'&&f.person.group.parent===f.bike.group)||f.mode==='ride'){const lp=rideLook(f,ctx,dt);ridePose(f.pose,f.crank,{...rideOpts(f),lookPitch:lp});applyPose(f.person,f.pose);}
+   if((f.mode==='leave'&&f.person.group.parent===f.bike.group)||f.mode==='ride'){const lp=rideLook(f,ctx,dt);ridePose(f.pose,f.crank,{...rideOpts(f),lookPitch:lp});if(f.waveW>.01)addWave(f.pose,ctx.clock,f.waveW*.9);applyPose(f.person,f.pose);}
    if(f.spinV>0){f.spin+=f.spinV*dt;f.spinV=Math.max(0,f.spinV-dt*1.6);}
    if(f.garageClosing){const g=world.garages.sam;g.set(Math.max(0,g.open-dt/3));}
    if(f.windowOn)world.alexWindow.emissiveIntensity=Math.min(.9,world.alexWindow.emissiveIntensity+dt*.5);
@@ -209,7 +216,7 @@ export function createFriends(scene,world,hooks={}){
   updateMom(dt,ctx);
  }
  // A friend on their way inside, worth a glance from the player.
- function attention(){for(const f of list){if(f.inside)continue;if(f.mode==='foot'&&f.person.group.visible)return f.person.group.position;if(f.mode==='leave'&&f.speed<2.2&&Math.abs(f.blat)>4.8)return f.bike.group.position;}return null;}
+ function attention(){for(const f of list){if(f.inside||f.gone||f.external)continue;if(f.key==='alex'&&f.mode==='leave'&&f.blat>4&&f.blat<42)return f.bike.group.position;if(f.mode==='foot'&&f.person.group.visible)return f.person.group.position;if(f.mode==='leave'&&f.speed<2.2&&Math.abs(f.blat)>4.8)return f.bike.group.position;}return null;}
  // Nearest friend still riding with you, for the answering bell.
  function answerer(){return list.find(f=>f.mode==='ride')||null;}
  // Your bell: friends still riding nearby look back at you, each after their own moment.

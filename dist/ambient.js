@@ -5,7 +5,7 @@ import {groundPoint,heading,roadFrame} from './route.js';
 import {createPerson,newPose,standPose,applyPose,P,smooth} from './rig.js';
 import {localToStreet} from './friends.js';
 import {LOOKOUT} from './world.js';
-import {CAST} from './cast.js';
+import {CAST,FORMATION} from './cast.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
 const hash=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
@@ -78,7 +78,7 @@ export function createAmbient(scene,world,hooks={}){
  const car={};
  // The parent's minivan comes down Briarwood Lane, turns onto Oak Hollow and pulls into its garage.
  const J1=world.sideFrames[0].junction,lane=J1.d+J1.side*2.1;
- function carPath(){const dr=ch.drivD,pts=[[lane,J1.side*72],[lane,J1.side*30],[lane,J1.side*12],[J1.d-3,J1.side*4],[J1.d-12,-2.2],[dr+14,-2.45],[dr+4.5,-2.7],[dr+.8,-5.4],[dr,-8.2],[cg.mouth.d,cg.mouth.lat],[ch.S(ch.gx,ch.gfront-3.4).d,ch.S(ch.gx,ch.gfront-3.4).lat]];
+ function carPath(){const dr=ch.drivD,pts=[[lane,J1.side*56],[lane,J1.side*30],[lane,J1.side*12],[J1.d-3,J1.side*4],[J1.d-12,-2.2],[dr+14,-2.45],[dr+4.5,-2.7],[dr+.8,-5.4],[dr,-8.2],[cg.mouth.d,cg.mouth.lat],[ch.S(ch.gx,ch.gfront-3.4).d,ch.S(ch.gx,ch.gfront-3.4).lat]];
   const P2=[];for(let i=0;i<pts.length-1;i++){const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];for(let k=0;k<14;k++){const t=k/14,t2=t*t,t3=t2*t;const f=(a,b,c,d)=>.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);P2.push([f(p0[0],p1[0],p2[0],p3[0]),f(p0[1],p1[1],p2[1],p3[1])]);}}P2.push(pts[pts.length-1]);
   const s=[0];for(let i=1;i<P2.length;i++){const a=groundPoint(...P2[i-1]),b=groundPoint(...P2[i]);s.push(s[i-1]+Math.hypot(b.x-a.x,b.z-a.z));}return {pts:P2,s,length:s[s.length-1]};}
  function carAt(u){const {pts,s}=car.path;u=clamp(u,0,car.path.length);let i=1;while(i<s.length-1&&s[i]<u)i++;const t=(u-s[i-1])/((s[i]-s[i-1])||1),a=pts[i-1],b=pts[i];return {d:a[0]+(b[0]-a[0])*t,lat:a[1]+(b[1]-a[1])*t,psi:Math.atan2(b[1]-a[1],b[0]-a[0])};}
@@ -135,7 +135,10 @@ export function createAmbient(scene,world,hooks={}){
 
  // Streetlights come on one by one; porch lights and windows fill in through the evening ------------------
  const lampGlowGeo=new THREE.BufferGeometry(),lampPos=[],lampLevel=[];
- const lamps=world.streetLamps.map((l,i)=>{const p=groundPoint(l.d,l.lat);lampPos.push(p.x,p.y+l.y-.08,p.z);lampLevel.push(0);return {...l,on:571+hash(i*3.3)*32,level:0,i};});
+ // Lamp heads in world space (side-street lamps carry their own; Oak Hollow's follow the street).
+ const lampAt=l=>{if(l.x!==undefined)return {x:l.x,y:l.top,z:l.z};const p=groundPoint(l.d,l.lat);return {x:p.x,y:p.y+l.y,z:p.z};};
+ const lamps=world.streetLamps.map((l,i)=>{const p=lampAt(l);lampPos.push(p.x,p.y-.08,p.z);lampLevel.push(0);return {...l,on:571+hash(i*3.3)*32,level:0,i,at:p};});
+ const lampLevels=world.lampLit.userData.uniforms.uLevel.value;
  lampGlowGeo.setAttribute('position',new THREE.Float32BufferAttribute(lampPos,3));lampGlowGeo.setAttribute('level',new THREE.Float32BufferAttribute(lampLevel,1));
  const glowMat=size=>new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,uniforms:{uScale:{value:600},uColor:{value:new THREE.Color(0xffb866)},uSize:{value:size}},
   vertexShader:'attribute float level;uniform float uScale,uSize;varying float vL;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vL=level*clamp(1.2-(-mv.z)/260.,0.,1.);gl_PointSize=uScale*uSize/-mv.z;gl_Position=projectionMatrix*mv;}',
@@ -144,19 +147,19 @@ export function createAmbient(scene,world,hooks={}){
  // Two local lamps light nearby pavement, bikes and people; distant lamps remain cheap glows.
  const localLights=Array.from({length:2},()=>{const light=new THREE.PointLight(0xffc58c,0,19,2);scene.add(light);return light;});
  const poolTex=glowTexture(),pools=lamps.map(l=>{const d=l.d,lat=l.lat;const m=new THREE.Mesh(new THREE.CircleGeometry(4.2,24),new THREE.MeshBasicMaterial({map:poolTex,color:0xffa65a,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4}));
-  const p=groundPoint(d,lat*.55);m.position.set(p.x,world.groundY(d,lat*.55)+.04,p.z);m.rotation.x=-Math.PI/2;scene.add(m);return m;});
+  if(l.pool)m.position.set(l.pool.x,l.pool.y+.09,l.pool.z);else{const p=groundPoint(d,lat*.55);m.position.set(p.x,world.groundY(d,lat*.55)+.04,p.z);}m.rotation.x=-Math.PI/2;scene.add(m);return m;});
  // Porch lights as one set of glows sharing the porch material groups.
  const porchGlowGeo=new THREE.BufferGeometry(),pp=[],pg=[];world.houses.forEach(h=>{const w=h.toWorld(h.porchLight.x,h.porchLight.z+.08);pp.push(w.x,w.ground+h.porchLight.y,w.z);pg.push(h.porchMat===world.homes.jamie?.porchMat?99:world.porchMats.indexOf(h.porchMat));});
  porchGlowGeo.setAttribute('position',new THREE.Float32BufferAttribute(pp,3));porchGlowGeo.setAttribute('level',new THREE.Float32BufferAttribute(new Float32Array(pg.length),1));
  const porchGlow=new THREE.Points(porchGlowGeo,glowMat(.9));porchGlow.material.uniforms.uColor.value.set(0xffc27a);porchGlow.frustumCulled=false;scene.add(porchGlow);
  const porchOn=world.porchMats.map((_,i)=>.2+hash(i*5.1)*.42),windowOn=world.windowMats.map((_,i)=>.08+hash(i*2.7)*.5);
- let jamiePorch=0;
+ let jamiePorch=0,jamieLit=false;const JAMIE_PORCH=FORMATION.jamie.leaveAt-29;
  function updateLights(dt,ctx){const p=ctx.p,n=ctx.night,lv=lampGlowGeo.attributes.level;
   for(const l of lamps){const since=ctx.distance-l.on;let target=0;if(since>0){const t=since/4.5;target=t<.25?(Math.sin(t*90+l.i)>.2?.5:.05):Math.min(1,.35+t*.9);}if(ctx.finale>0)target=1;l.level=damp(l.level,target,since>0&&since<1.2?30:2.2,dt);
-   l.mat.emissiveIntensity=l.level*2.4;l.mat.emissive.setRGB(1,.55+.2*l.level,.25+.1*l.level);lv.setX(l.i,l.level*(.35+.65*smooth((p-.4)/.3)));pools[l.i].material.opacity=l.level*(.14+.2*n)*smooth((p-.45)/.3);}
+   lampLevels[l.i]=l.level;lv.setX(l.i,l.level*(.35+.65*smooth((p-.4)/.3)));pools[l.i].material.opacity=l.level*(.14+.2*n)*smooth((p-.45)/.3);}
   lv.needsUpdate=true;
   world.porchMats.forEach((m,i)=>{const on=smooth((p-porchOn[i])/.06);m.emissiveIntensity=.05+on*1.6;});
-  const jp=world.homes.jamie.porchMat;jamiePorch=damp(jamiePorch,ctx.distance>=286?1:0,3,dt);jp.emissiveIntensity=.05+Math.max(jamiePorch,smooth((p-.3)/.06))*1.6;
+  const jp=world.homes.jamie.porchMat;if(ctx.distance>=JAMIE_PORCH)jamieLit=true;jamiePorch=damp(jamiePorch,jamieLit?1:0,3,dt);jp.emissiveIntensity=.05+Math.max(jamiePorch,smooth((p-.3)/.06))*1.6;
   const pl=porchGlowGeo.attributes.level;for(let i=0;i<pg.length;i++){const g=pg[i];const lvl=g===99?jamiePorch:smooth((p-porchOn[g])/.06);pl.setX(i,lvl*(.45+.55*smooth((p-.35)/.4)));}pl.needsUpdate=true;
   world.windowMats.forEach((m,i)=>{m.emissiveIntensity=.08+smooth((p-windowOn[i])/.25)*1.05+n*.15;});
   for(const lit of [world.glassLit,world.porchLit])if(lit){lit.userData.uniforms.uP.value=p;lit.userData.uniforms.uNight.value=n;}
@@ -164,8 +167,8 @@ export function createAmbient(scene,world,hooks={}){
   if(world.farWindow)world.farWindow.emissiveIntensity=.05+smooth((p-.5)/.3)*1.1+n*.2;
   const scale=(hooks.renderer?.domElement?.height||900);lampGlow.material.uniforms.uScale.value=scale;porchGlow.material.uniforms.uScale.value=scale;}
 
- function updateLocalLights(dt,ctx){const nearest=lamps.map(l=>({l,p:groundPoint(l.d,l.lat)})).sort((a,b)=>Math.hypot(a.p.x-ctx.eye.x,a.p.z-ctx.eye.z)-Math.hypot(b.p.x-ctx.eye.x,b.p.z-ctx.eye.z));
-  localLights.forEach((light,i)=>{const {l,p}=nearest[i];light.position.set(p.x,p.y+l.y-.15,p.z);light.intensity=damp(light.intensity,l.level*19*smooth((ctx.p-.45)/.3),2,dt);});}
+ function updateLocalLights(dt,ctx){const nearest=lamps.map(l=>({l,p:l.at})).sort((a,b)=>Math.hypot(a.p.x-ctx.eye.x,a.p.z-ctx.eye.z)-Math.hypot(b.p.x-ctx.eye.x,b.p.z-ctx.eye.z));
+  localLights.forEach((light,i)=>{const {l,p}=nearest[i];light.position.set(p.x,p.y-.15,p.z);light.intensity=damp(light.intensity,l.level*19*smooth((ctx.p-.45)/.3),2,dt);});}
 
  // The tire swing at the lookout, and lights of the next town over -------------------------------------------
  const sw=LOOKOUT.swing,oak=LOOKOUT.oak,swingRoot=world.anchor(sw.d,sw.lat,world.groundY(sw.d,sw.lat)-groundPoint(sw.d,sw.lat).y+4.35);
@@ -188,15 +191,15 @@ export function createAmbient(scene,world,hooks={}){
   townMat.uniforms.uScale.value=(hooks.renderer?.domElement?.height||900);const lv=smooth((ctx.p-.8)/.2)*.6+ctx.night*.5;town.visible=lv>.01;townMat.uniforms.uColor.value.setRGB(1*lv,.85*lv,.62*lv);}
 
  // Heard, not seen: a screen door somewhere, a mower early, a dog now and then.
- const screenDoor=street.filter(h=>h.side<0).sort((a,b)=>Math.abs(a.dc-700)-Math.abs(b.dc-700))[1];let screenPlayed=false,barks=[418,472,655];
- function updateSounds(ctx){if(!screenPlayed&&ctx.distance>=695){screenPlayed=true;const s=screenDoor.S(screenDoor.doorX,screenDoor.front),p=groundPoint(s.d,s.lat);sfx('doorSlam',tmp.set(p.x,p.y+1,p.z),{gain:.7});}
+ const SCREEN_AT=752,screenDoor=street.filter(h=>h.side<0).sort((a,b)=>Math.abs(a.dc-SCREEN_AT)-Math.abs(b.dc-SCREEN_AT))[1];let screenPlayed=false,barks=[418,472,655];
+ function updateSounds(ctx){if(!screenPlayed&&ctx.distance>=SCREEN_AT){screenPlayed=true;const s=screenDoor.S(screenDoor.doorX,screenDoor.front),p=groundPoint(s.d,s.lat);sfx('doorSlam',tmp.set(p.x,p.y+1,p.z),{gain:.7});}
   for(let i=0;i<barks.length;i++)if(barks[i]&&ctx.distance>=barks[i]){barks[i]=0;const p=groundPoint(ctx.distance+60,(i%2?1:-1)*45);sfx('dog',tmp.set(p.x,p.y+.5,p.z));}
   const mower=groundPoint(170,-48);sources.push({kind:'mower',pos:tmp.clone().set(mower.x,mower.y,mower.z),level:1-smooth((ctx.distance-150)/140)});}
 
  function reset(){time.value=0;gust.value=0;sources.length=0;Object.assign(pend,{th:0,ph:0,wt:0,wp:0,creak:0,idle:false});
   for(const s of sprinklers){s.on=1;s.angle=0;s.dir=1;s.tick=0;s.jet.visible=true;}kid.t=0;kid.lastBounce=-1;kid.phase='dribble';kid.person.group.visible=ballMesh.visible=true;
   car.mode='wait';car.u=0;car.v=0;car.t=0;car.opened=false;car.closing=false;car.path=car.path||carPath();cg.set(0);carParts.head.emissiveIntensity=1.2;for(const w of carParts.wheels)w.rotation.x=0;for(const s of carGlow)s.material.opacity=.9;placeCar();carGroup.visible=false;
-  for(const f of flocks){f.t=-1;for(const b of f.birds)b.g.visible=false;}for(const f of fData)f.d=0;for(const l of lamps){l.level=0;l.mat.emissiveIntensity=0;}for(const light of localLights)light.intensity=0;screenPlayed=false;barks=[418,472,655];jamiePorch=0;}
+  for(const f of flocks){f.t=-1;for(const b of f.birds)b.g.visible=false;}for(const f of fData)f.d=0;for(const l of lamps){l.level=0;lampLevels[l.i]=0;}for(const light of localLights)light.intensity=0;screenPlayed=false;barks=[418,472,655];jamiePorch=0;jamieLit=false;}
  function update(dt,ctx){time.value+=dt;gust.value=damp(gust.value,.5+.5*Math.sin(time.value*.13)*Math.sin(time.value*.07),1,dt);hooksDistance=ctx.distance;sources.length=0;
   updateSprinklers(dt,ctx);updateKid(dt,ctx);updateCar(dt,ctx);updateBirds(dt,ctx);updateFireflies(dt,ctx);updateFlag();updateLights(dt,ctx);updateLocalLights(dt,ctx);updateLookout(dt,ctx);updateSounds(ctx);
   const rf=roadFrame(Math.min(ctx.distance,1140));dust.position.set(rf.x,rf.y+Math.sin(time.value*.1)*.2,rf.z);dust.rotation.y=-rf.heading;dustMat.uniforms.uOpacity.value=.6*(1-smooth((ctx.p-.6)/.3));dustMat.uniforms.uScale.value=(hooks.renderer?.domElement?.height||900)*.9;}

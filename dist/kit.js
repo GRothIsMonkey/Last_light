@@ -87,5 +87,7 @@ export function createSpace(cell=40){
   const c=Math.cos(s.rot),sn=Math.sin(s.rot),dx=x-s.x,dz=z-s.z,lx=dx*c-dz*sn,lz=dx*sn+dz*c;return Math.abs(lx)<s.hw+r&&Math.abs(lz)<s.hd+r;}
  function free(x,z,r=0){for(let i=Math.floor((x-r)/cell)-1;i<=Math.floor((x+r)/cell)+1;i++)for(let j=Math.floor((z-r)/cell)-1;j<=Math.floor((z+r)/cell)+1;j++){for(const s of grid.get(key(i,j))||[])if(hits(s,x,z,r))return false;}return true;}
  const items=tag=>{const out=new Set();for(const list of grid.values())for(const s of list)if(s.tag===tag)out.add(s);return [...out];};
- return {rect:(x,z,hw,hd,rot=0,tag='')=>add({x,z,hw,hd,rot,tag}),circle:(x,z,r,tag='')=>add({x,z,r,tag}),free,items};
+ // Is anything with one of these tags within r of (x,z)? (navigation: houses, trunks, posts...)
+ function blocked(x,z,r,tags){for(let i=Math.floor((x-r)/cell)-1;i<=Math.floor((x+r)/cell)+1;i++)for(let j=Math.floor((z-r)/cell)-1;j<=Math.floor((z+r)/cell)+1;j++){for(const s of grid.get(key(i,j))||[])if(tags.has(s.tag)&&hits(s,x,z,r))return s;}return null;}
+ return {rect:(x,z,hw,hd,rot=0,tag='')=>add({x,z,hw,hd,rot,tag}),circle:(x,z,r,tag='')=>add({x,z,r,tag}),free,items,blocked};
 }

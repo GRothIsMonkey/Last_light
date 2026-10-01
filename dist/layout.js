@@ -5,8 +5,12 @@
 // Street names on every sign. The ride is on Oak Hollow Drive; the old oak waits at its end.
 export const STREETS={main:'OAK HOLLOW DR',mainFull:'Oak Hollow Drive'};
 // Both cross streets leave from straight stretches of the ride and continue out of sight.
+// Briarwood curves to the right a little past its first houses, where the creek (a concrete
+// storm channel in a strip of trees) passes under it; Alex lives just around that curve.
+// lots: side-street lot centers (default every 26 m from 46); creek: the drainage strip.
 export const JUNCTIONS=[
- {d:595,side:1,name:'BRIARWOOD LN',full:'Briarwood Lane',half:4.2,length:250,bend:.36,bendAt:112,rise:2.4,fall:1.8,corner:6.5},
+ {d:595,side:1,name:'BRIARWOOD LN',full:'Briarwood Lane',half:4.2,length:250,bend:.9,bendAt:62,bendLen:50,rise:2.4,fall:1.8,corner:6.5,
+  lots:[46,70,127,154,180,206],fullTo:160,farFrom:150,curbCars:[[44,-1],[150,-1]],creek:{u:100,half:12.6,depth:1.7,end:29.5}},
  {d:870,side:-1,name:'SUMMERFIELD RD',full:'Summerfield Road',half:4.2,length:250,bend:-.34,bendAt:122,rise:2.1,fall:1.6,corner:6.5},
 ];
 // The main street starts well behind the first frame and ends in a cul-de-sac.
@@ -18,13 +22,19 @@ export const LOOKOUT={stop:{d:1136.5,lat:-.9},fenceD:1173,bounds:{d0:1121,d1:117
 export const SECTION={curbFace:4.7,curbBack:5.0,walk0:6.35,walk1:7.85,lawnEnd:36,rearFence:33.5};
 // First-row lots: one every LOT_SPACING meters on each side, from LOT_FIRST to LOT_LAST.
 export const LOT_FIRST=-427,LOT_LAST=1116,LOT_SPACING=29;
-// Friends' homes and the two scripted neighbors. o = explicit house options.
+// Friends' homes on Oak Hollow and the two scripted neighbors. o = explicit house options.
+// Alex turns off first, onto Briarwood; Jamie and Sam live farther along, so they go home later.
+// sneak: the ground-floor bedroom window that opens later that night.
 export const FRIEND_HOMES={
- jamie:{dc:410,side:1,o:{style:'colonial',garageSide:'near',dynamicDoor:true,interior:'foyer',porch:'stoop',setback:18.4,w:10.6,gw:4,garage:true,fence:false,door:0x7a2f2a,wall:0xc6b28c,shutters:0x3a4a5a}},
- sam:{dc:704,side:-1,o:{style:'ranch',roof:'side',garageSide:'near',dynamicGarage:true,interior:'garage',porch:'stoop',setback:19,w:12.6,gw:4.4,garage:true,fence:false,wall:0x9ea9a2}},
- alex:{dc:994,side:1,o:{style:'colonial',garageSide:'near',dynamicDoor:true,interior:'foyer',porch:'porch',porchW:5.2,setback:19.2,w:11.4,gw:4,garage:true,fence:false,wall:0xd4cfc1,door:0x2f3d55,shutters:0x3a4a5a,alexWindow:true}},
+ jamie:{dc:791,side:1,o:{style:'colonial',garageSide:'near',dynamicDoor:true,interior:'foyer',porch:'stoop',setback:18.4,w:10.6,depth:9.7,gw:4,garage:true,fence:false,door:0x7a2f2a,wall:0xc6b28c,shutters:0x3a4a5a,sneak:'back'}},
+ sam:{dc:994,side:-1,o:{style:'ranch',roof:'side',garageSide:'far',dynamicGarage:true,interior:'garage',porch:'stoop',setback:19,w:12.6,depth:9.7,gw:4.4,garage:true,fence:false,wall:0x9ea9a2,sneak:'back',sideDoor:true}},
  car:{dc:522,side:-1,o:{style:'colonial',garageSide:'far',dynamicGarage:true,interior:'garage-car',gw:6.4,garage:true,porch:'porch',wall:0xb9ab92}},
  hoop:{dc:153,side:-1,o:{style:'ranch',garageSide:'near',gw:6.4,garage:true,porch:'stoop',wall:0xa9b2b6}},
+};
+// Alex's house, just around Briarwood's curve past the creek. The front door and the garage
+// both open for real; the garage keeps an empty hook where a bike would hang.
+export const SIDE_HOMES={
+ alex:{junction:0,u:127,side:1,o:{style:'colonial',garageSide:'near',dynamicDoor:true,dynamicGarage:true,interior:'foyer',garageBike:'empty',porch:'porch',porchW:5.2,setback:18.4,w:11.4,gw:4,garage:true,fence:false,wall:0xd4cfc1,door:0x2f3d55,shutters:0x3a4a5a,alexWindow:true}},
 };
 // Things that must stay clear of scattered props and trees (street coordinates).
 export const KEEP_CLEAR=[

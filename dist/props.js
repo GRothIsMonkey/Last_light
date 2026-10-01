@@ -11,6 +11,7 @@ import {pickFrom,seeded,hashSeed,smooth} from './kit.js';
 import {createVegetation} from './vegetation.js';
 import {gableRoof} from './houses.js';
 import {buildFurniture} from './furniture.js';
+import {buildCreek} from './creek.js';
 
 // A small chain-link cutout texture, generated locally.
 const chainTex=(()=>{const n=32,d=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const a=Math.abs(((x+y)%16)-8),b=Math.abs(((x-y+64)%16)-8),on=a<1.2||b<1.2;const i=(y*n+x)*4;d[i]=d[i+1]=d[i+2]=200;d[i+3]=on?255:0;}
@@ -65,7 +66,7 @@ export function buildYards(W){
  const occupy=(d,lat,r,tag)=>{const p=groundPoint(d,lat);W.space.circle(p.x,p.z,r,tag);W.obstacles.push({d0:d-r,d1:d+r,l0:lat-r,l1:lat+r});};
 
  // Mailboxes: the classic curbside box on a post, or a brick column.
- function mailbox(frame,u,v,side,y,rand){const g=W.place(frame,u,v,{y,rot:side>0?-Math.PI/2:Math.PI/2}),style=rand();
+ function mailbox(frame,u,v,side,y,rand,far=false){const g=W.place(frame,u,v,{y,rot:side>0?-Math.PI/2:Math.PI/2,far}),style=rand();
   if(style<.18){K.rbox(g,0,.66,0,.56,1.32,.56,.03,HOUSE.brick);K.rbox(g,0,1.36,0,.64,.08,.64,.02,0xb9b1a0);K.rbox(g,0,1.02,.28,.3,.22,.03,.02,0x2b2b2b);}
   else{const pc=style<.6?0xece6d8:0x6a5846,c=style<.5?0x2d2f31:pickFrom(rand)([0x3a4d63,0x5e3a33,0xd8d2c4]);K.rbox(g,0,.56,0,.1,1.12,.1,.015,pc);K.rbox(g,0,1.1,0,.14,.06,.4,.015,pc);
    const box=K.extrude(g,[[-.1,0],[.1,0],[.1,.12],...Array.from({length:7},(_,k)=>{const a=k/6*Math.PI;return [Math.cos(a)*.1,.12+Math.sin(a)*.1];}),[-.1,.12]],.46,.012,c,{curve:6});box.position.set(0,1.13,.04);
@@ -98,6 +99,7 @@ export function buildYards(W){
  const mats={wood:W.surfaceMaterial(K.mat(FENCE.wood),'fence'),dark:K.mat(FENCE.woodDark),picket:K.mat(FENCE.picket),post:K.mat(0x8a7456),chain:new THREE.MeshStandardMaterial({color:FENCE.chain,map:chainTex,alphaTest:.4,side:THREE.DoubleSide,roughness:.7,metalness:.3})};
  mats.net=new THREE.MeshStandardMaterial({color:0x222428,map:chainTex,alphaTest:.4,side:THREE.DoubleSide,roughness:.7,metalness:.3});
  function fenceRun(frame,pts,style,{lod='full',endPosts=true}={}){const g=W.bent(frame);
+  {const segs=W.fenceSegs||(W.fenceSegs=[]);for(let i=0;i<pts.length-1;i++){const a=frame.point(...pts[i]),b=frame.point(...pts[i+1]);segs.push([a.x,a.z,b.x,b.z]);}}
   const H=style==='privacy'?1.8:style==='chain'?1.2:style==='rail'?1.05:1.05,postC=style==='chain'?0x8e928f:style==='picket'?FENCE.picket:0x8a7456;
   for(let i=0;i<pts.length-1;i++){const [u0,v0]=pts[i],[u1,v1]=pts[i+1],L=Math.hypot(u1-u0,v1-v0),n=Math.max(1,Math.round(L/2.4));
    for(let k=0;k<n;k++){const a=k/n,b=(k+1)/n,ua=u0+(u1-u0)*a,va=v0+(v1-v0)*a,ub=u0+(u1-u0)*b,vb=v0+(v1-v0)*b,um=(ua+ub)/2,vm=(va+vb)/2,len=L/n,ang=Math.atan2(vb-va,-(ub-ua));
@@ -151,15 +153,18 @@ export function buildYards(W){
  }
  // Side-street lots: mailboxes, trees, a few cars.
  JUNCTIONS.forEach((j,i)=>{const f=W.sideFrames[i];for(const h of W.sidePlans.filter(p=>p.frame===f)){const rand=seeded(hashSeed(8,i,h.u)),s=h.side,gy=(u,v)=>f.point(u,v).y+W.sideSurface(j,u,v);const cut=W.cuts.find(c=>c.plan===h);
-  mailbox(f,cut.u1+.9,s*(j.half+.85),s,gy(cut.u1+.9,s*(j.half+.85)),rand);
+  mailbox(f,cut.u1+.9,s*(j.half+.85),s,gy(cut.u1+.9,s*(j.half+.85)),rand,!!h.far);
   // Parked nose-in near the garage, never over the sidewalk (these lots are shallower).
   const zc=Math.min(3.1,h.setback-h.drivEnd-2.45-(j.half+3.15+.45));
-  if(h.hasGarage&&rand()<.5&&zc>1.2){const w=h.toWorld(h.drivX,h.drivEnd+zc);makeCar(K,atHouse(h,h.drivX,h.drivEnd+zc,w.ground+.19,0),pickFrom(rand)(carKinds),pickFrom(rand)(CAR.colors));}
-  for(let k=0;k<2;k++){const u=h.u+(rand()<.5?-1:1)*(4+rand()*8),v=s*(j.half+5+rand()*3);veg.tree(f,u,v,gy(u,v),{size:.8+rand()*.4,kind:rand()<.2?'pine':'maple',lod:h.lod==='full'?'full':'mid',clearance:2.2});}
-  const bu=h.u+(rand()-.5)*8,bv=s*(h.setback+h.depth/2+5);veg.tree(f,bu,bv,gy(bu,bv),{size:1+rand()*.4,lod:'mid',clearance:2.4});}
+  // Alex's driveway stays empty: his dad is out driving the streets, looking.
+  if(h.hasGarage&&rand()<.5&&zc>1.2&&!h.far&&h.key!=='alex'){const w=h.toWorld(h.drivX,h.drivEnd+zc);makeCar(K,atHouse(h,h.drivX,h.drivEnd+zc,w.ground+.19,0),pickFrom(rand)(carKinds),pickFrom(rand)(CAR.colors));}
+  const tl=h.far&&h.u>175?'far':h.lod==='full'?'full':'mid';for(let k=0;k<2;k++){const u=h.u+(rand()<.5?-1:1)*(4+rand()*8),v=s*(j.half+5+rand()*3);veg.tree(f,u,v,gy(u,v),{size:.8+rand()*.4,kind:rand()<.2?'pine':'maple',lod:tl,clearance:2.2});}
+  const bu=h.u+(rand()-.5)*8,bv=s*(h.setback+h.depth/2+5);veg.tree(f,bu,bv,gy(bu,bv),{size:1+rand()*.4,lod:h.far&&h.u>175?'far':'mid',clearance:2.4});}
   // A parked car at the curb, a lamp, lamps down the street.
-  for(const [u,s] of [[70,1],[150,-1],[205,1]]){const v=s*(j.half-1.05),cg=W.place(f,u,v,{y:f.point(u,v).y+.03,rot:s>0?Math.PI:0});makeCar(K,cg,carKinds[(u+i)%carKinds.length],CAR.colors[(u/5+i)%CAR.colors.length|0]);}
+  for(const [u,s] of j.curbCars||[[70,1],[150,-1],[205,1]]){const v=s*(j.half-1.05),cg=W.place(f,u,v,{y:f.point(u,v).y+.03,rot:s>0?Math.PI:0});makeCar(K,cg,carKinds[(u+i)%carKinds.length],CAR.colors[(u/5+i)%CAR.colors.length|0]);}
  });
+ // Briarwood's creek strip: channel, culvert, railing, fences, trees and weeds.
+ buildCreek(W);
 
  // Chalk, the portable hoop, and a toy left near the curb -----------------------------------
  const chalk=(pts,c)=>K.line(mainG,pts,c);

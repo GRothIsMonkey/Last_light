@@ -7,7 +7,7 @@
 // back yards or down the side streets. Background silhouettes live in background.js.
 import * as THREE from './three.module.js';
 import {MAIN,LAWN,SIDEWALK} from './terrain.js';
-import {JUNCTIONS,FRIEND_HOMES,LOT_FIRST,LOT_LAST,LOT_SPACING,SECTION} from './layout.js';
+import {JUNCTIONS,FRIEND_HOMES,SIDE_HOMES,LOT_FIRST,LOT_LAST,LOT_SPACING,SECTION} from './layout.js';
 import {HOUSE,INTERIOR} from './palette.js';
 import {smooth,clamp,lerp,pickFrom} from './kit.js';
 
@@ -86,11 +86,14 @@ export function planLots(W){
  }
  for(const P of plans){const c=planCut(P,'main',CF);W.cuts.push(c);P.drivD=(c.u0+c.u1)/2;P.drivD0=c.u0;P.drivD1=c.u1;}
  // Side streets: houses face the side street on both sides, from past the corner lots outward.
+ // Briarwood leaves its creek strip open (trees, a storm channel) and has Alex's house past it.
  W.sidePlans=[];
- JUNCTIONS.forEach((j,i)=>{const f=W.sideFrames[i];
-  for(let u=46;u<f.length-10;u+=26)for(const ss of [-1,1]){const rand=W.lotRand(2,i,u,ss);
-   const P=planHouse(rand,{frame:f,frameId:f.id,u:u+rand()*4,side:ss,setback:16.6+rand()*2.2,lod:u<80?'full':'mid'});
-   W.sidePlans.push(P);W.cuts.push(planCut(P,f.id,j.half));}});
+ JUNCTIONS.forEach((j,i)=>{const f=W.sideFrames[i],lots=j.lots||[];if(!j.lots)for(let u=46;u<f.length-10;u+=26)lots.push(u);
+  for(const u of lots)for(const ss of [-1,1]){const rand=W.lotRand(2,i,u,ss);
+   const key=Object.keys(SIDE_HOMES).find(k=>SIDE_HOMES[k].junction===i&&SIDE_HOMES[k].side===ss&&Math.abs(SIDE_HOMES[k].u-u)<14);
+   const P=key?planHouse(rand,{frame:f,frameId:f.id,u:SIDE_HOMES[key].u,side:ss,key,lod:'full',...SIDE_HOMES[key].o})
+    :planHouse(rand,{frame:f,frameId:f.id,u:u+rand()*(j.lots?2:4),side:ss,setback:16.6+rand()*2.2,lod:u<(j.fullTo||80)?'full':'mid',far:u>=(j.farFrom||1e9)});
+   P.dc=P.u;W.sidePlans.push(P);W.cuts.push(planCut(P,f.id,j.half));}});
  return plans;
 }
 
@@ -100,7 +103,7 @@ export function buildHouses(W){
  W.alexWindow=new THREE.MeshStandardMaterial({color:0x5b6870,emissive:0xffc46a,emissiveIntensity:0,roughness:.35});
  W.interiors={};
  for(const P of W.plans){buildHouse(W,P);if(P.key){W.homes[P.key]=P;}}
- for(const P of W.sidePlans)buildHouse(W,P);
+ for(const P of W.sidePlans){buildHouse(W,P);if(P.key)W.homes[P.key]=P;}
  for(const P of [...W.plans,...W.sidePlans])buildDrive(W,P);
  W.makeDynamic=makeDynamic;
 }
@@ -118,11 +121,21 @@ export function buildHouse(W,P){
  // Foundation and walls. Friend homes with a working door get a real opening.
  K.rbox(g,0,-.05,0,w+.12,.86,depth+.12,.03,HOUSE.foundation);
  const opening=P.interior==='foyer';
- if(opening){const t=.2,dx=P.doorX,ow=1.02,oh=2.16;
-  K.box(g,0,h/2+.14,-D2+t/2,w,h-.28,t,siding);for(const s of [-1,1])K.box(g,s*(W2-t/2),h/2+.14,0,t,h-.28,depth,siding);
-  const l=dx-ow/2-(-W2),r=W2-(dx+ow/2);K.box(g,-W2+l/2,h/2+.14,D2-t/2,l,h-.28,t,siding);K.box(g,W2-r/2,h/2+.14,D2-t/2,r,h-.28,t,siding);
-  const top=P.floor+oh;K.box(g,dx,(top+h)/2,D2-t/2,ow,h-top,t,siding);K.box(g,dx,(.28+P.floor)/2,D2-t/2,ow,P.floor-.28,t,siding);
+ // A friend's ground-floor bedroom window that will open later that night: a real hole in
+ // the side wall away from the garage, a small lit room behind it (sash: makeDynamic).
+ const rows0=P.stories===2?1.6:1.55;
+ if(P.sneak){const s=P.hasGarage?-P.gs:-1;P.sneakWin={s,wall:s<0?'left':'right',z:P.sneak==='back'?-D2*.45:D2*.4,y:rows0,w:1,h:1.2};}
+ if(opening||P.sneak){const t=.2,dx=P.doorX,ow=1.02,oh=2.16,SW=P.sneakWin;
+  K.box(g,0,h/2+.14,-D2+t/2,w,h-.28,t,siding);
+  for(const s of [-1,1]){if(!SW||SW.s!==s){K.box(g,s*(W2-t/2),h/2+.14,0,t,h-.28,depth,siding);continue;}
+   const x=s*(W2-t/2),z0=SW.z-SW.w/2,z1=SW.z+SW.w/2,y0=SW.y-SW.h/2,y1=SW.y+SW.h/2;
+   K.box(g,x,h/2+.14,(z0-D2)/2,t,h-.28,z0+D2,siding);K.box(g,x,h/2+.14,(z1+D2)/2,t,h-.28,D2-z1,siding);
+   K.box(g,x,(.28+y0)/2,SW.z,t,y0-.28,SW.w,siding);K.box(g,x,(y1+h)/2,SW.z,t,h-y1,SW.w,siding);}
+  if(opening){const l=dx-ow/2-(-W2),r=W2-(dx+ow/2);K.box(g,-W2+l/2,h/2+.14,D2-t/2,l,h-.28,t,siding);K.box(g,W2-r/2,h/2+.14,D2-t/2,r,h-.28,t,siding);
+   const top=P.floor+oh;K.box(g,dx,(top+h)/2,D2-t/2,ow,h-top,t,siding);K.box(g,dx,(.28+P.floor)/2,D2-t/2,ow,P.floor-.28,t,siding);}
+  else K.box(g,0,h/2+.14,D2-t/2,w,h-.28,t,siding);
   K.box(g,0,h-.02,0,w,.04,depth,siding);
+  if(SW)buildRoom(W,P,g,SW,t);
  }else K.rbox(g,0,h/2+.14,0,w,h-.28,depth,.05,siding);
  // Brick: a low wainscot band or a full brick front.
  if(P.brick==='lower'&&!mid)K.rbox(g,0,.62,D2+.025,w+.03,1.05,.05,.015,brick);
@@ -156,7 +169,9 @@ export function buildHouse(W,P){
  rows.forEach((y,f)=>{for(let i=0;i<rearCount;i++){const x=-W2+w*(i+.5)/rearCount;if(f===0&&Math.abs(x+backDoorX)<1.5)continue;windowUnit(back,x,y,winW*.95,winH*.9,{simple:true});}});
  {const x=-backDoorX,bd=back;K.box(bd,x,1.2,0,1.7,2.0,.06,pick(W.windowMats));K.box(bd,x,1.2,.03,.05,2.0,.05,T);for(const s of [-1,1])K.box(bd,x+s*.88,1.2,.03,.08,2.1,.08,T);K.box(bd,x,2.24,.03,1.84,.08,.08,T);K.box(bd,x,.21,.12,1.9,.08,.3,HOUSE.step);}
  // Side windows, except where the garage covers the wall.
- for(const s of [-1,1]){if(P.hasGarage&&s===P.gs)continue;const wall=s<0?'left':'right';rows.forEach(y=>{for(const z of depth>9.4?[-D2*.45,D2*.4]:[0]){windowUnit(face(wall,z),0,y,1,1.2,{simple:true});}});}
+ for(const s of [-1,1]){if(P.hasGarage&&s===P.gs)continue;const wall=s<0?'left':'right';rows.forEach(y=>{for(const z of depth>9.4?[-D2*.45,D2*.4]:[0]){const SW=P.sneakWin;
+  if(SW&&SW.s===s&&Math.abs(SW.z-z)<.01&&Math.abs(SW.y-y)<.01){const fg=face(wall,z);for(const k of [-1,1])K.box(fg,k*(SW.w/2+.05),y,.02,.1,SW.h+.2,.07,T);K.box(fg,0,y+SW.h/2+.05,.02,SW.w+.2,.1,.07,T);K.box(fg,0,y-SW.h/2-.04,.05,SW.w+.3,.08,.14,T);continue;}
+  windowUnit(face(wall,z),0,y,1,1.2,{simple:true});}});}
  // Front door, porch light and the entry.
  if(!opening){const fd=face('front',P.doorX,P.floor);K.box(fd,0,1.08,.02,1.28,2.3,.07,T);K.rbox(fd,0,1.02,.04,.94,2.04,.05,.01,P.door);
   for(const yy of [.55,1.45])K.rbox(fd,0,yy,.07,.64,.62,.02,.01,P.door);K.ball(fd,-P.gs*.36,1.02,.09,.035,0xc9b27a);if(rand()<.4)K.box(fd,0,1.78,.071,.5,.22,.01,pick(W.windowMats));}
@@ -282,7 +297,11 @@ function chair(K,g,x,y,z,c){const cg=K.group(g,x,z,Math.PI,y);K.box(cg,0,.38,0,.
 // Attached garage: walls, roof, door (or a real opening with an interior shell for friends).
 function buildGarage(W,P,g,rand,mid,siding,roofMat,gable){const {K}=W,{gx,gw,gd,gh,gfront}=P,gz=gfront-gd/2,doorW=gw>5?5.1:2.75,dh=2.15,T=HOUSE.trim;P.garageInfo={x:gx,front:gfront,doorW,doorH:dh,depth:gd,y:.2};
  K.rbox(g,gx,-.05,gz,gw+.1,.86,gd+.1,.03,HOUSE.foundation);
- if(P.dynamicGarage){const t=.16;K.box(g,gx-P.gs*(gw/2-t/2),gh/2+.1,gz,t,gh-.2,gd,siding);K.box(g,gx+P.gs*(gw/2-t/2),gh/2+.1,gz,t,gh-.2,gd,siding);K.box(g,gx,gh/2+.1,gz-gd/2+t/2,gw,gh-.2,t,siding);
+ if(P.dynamicGarage){const t=.16,ox=gx+P.gs*(gw/2-t/2);K.box(g,gx-P.gs*(gw/2-t/2),gh/2+.1,gz,t,gh-.2,gd,siding);K.box(g,gx,gh/2+.1,gz-gd/2+t/2,gw,gh-.2,t,siding);
+  // A friend's garage can have a real side door (Sam slips out through it later that night).
+  if(P.sideDoor){const zd=gz+gd*.18,dw=.96,dh2=2.1,z0=zd-dw/2,z1=zd+dw/2,a=gz-gd/2,b=gz+gd/2;P.sideDoorAt={x:gx+P.gs*gw/2,z:zd,w:dw,h:dh2};
+   K.box(g,ox,gh/2+.1,(a+z0)/2,t,gh-.2,z0-a,siding);K.box(g,ox,gh/2+.1,(z1+b)/2,t,gh-.2,b-z1,siding);K.box(g,ox,(dh2+gh)/2,zd,t,gh-dh2,dw,siding);}
+  else K.box(g,ox,gh/2+.1,gz,t,gh-.2,gd,siding);
   const jw=(gw-doorW)/2;for(const s of [-1,1])K.box(g,gx+s*(doorW/2+jw/2),gh/2+.1,gfront-t/2,jw,gh-.2,t,siding);K.box(g,gx,dh+.2+(gh-dh-.2)/2,gfront-t/2,doorW,gh-dh-.2,t,siding);K.box(g,gx,gh-.02,gz,gw,.04,gd,siding);
   buildGarageInterior(W,P,g,rand,doorW,dh);}
  else{K.rbox(g,gx,gh/2+.1,gz,gw,gh-.2,gd,.04,siding);
@@ -300,7 +319,7 @@ function buildGarage(W,P,g,rand,mid,siding,roofMat,gable){const {K}=W,{gx,gw,gd,
  // Coach lights, a side window and a service door on the outer wall.
  if(rand()<.65)for(const s of [-1,1]){const lg=K.group(g,gx+s*(doorW/2+.45),gfront+.02,0,0);K.box(lg,0,2.35,.08,.14,.22,.14,P.porchMat);K.box(lg,0,2.48,.08,.18,.04,.18,0x2d2d2b);}
  const og=K.group(g,gx+P.gs*(gw/2),gz+gd*.18,P.gs>0?Math.PI/2:-Math.PI/2,0);
- K.box(og,0,1.02,0,.9,2.0,.05,P.door);K.box(og,0,2.08,.02,1.05,.08,.07,T);for(const s of [-1,1])K.box(og,s*.49,1.02,.02,.08,2.05,.07,T);K.ball(og,.33,1.0,.05,.03,0xc9b27a);
+ if(!P.sideDoor){K.box(og,0,1.02,0,.9,2.0,.05,P.door);K.ball(og,.33,1.0,.05,.03,0xc9b27a);}K.box(og,0,2.08,.02,1.05,.08,.07,T);for(const s of [-1,1])K.box(og,s*.49,1.02,.02,.08,2.05,.07,T);
  if(!mid){const wg=K.group(g,gx+P.gs*(gw/2),gz-gd*.25,P.gs>0?Math.PI/2:-Math.PI/2,0);K.box(wg,0,1.6,0,.9,.8,.06,W.darkGlass);K.box(wg,0,2.04,.03,1.05,.08,.08,T);K.rbox(wg,0,1.16,.05,1.1,.08,.13,.015,T);}
  // Driveway basketball hoop on some garages.
  if(!mid&&(P.key==='hoop'||(!P.key&&rand()<.16))){K.rbox(g,gx,3.28,gfront+.06,1.7,1.0,.06,.02,0xefeee8);K.box(g,gx,3.2,gfront+.1,.58,.42,.02,0xba5a44);K.box(g,gx,2.95,gfront+.18,.12,.05,.25,0x8a8c88);
@@ -323,11 +342,32 @@ function buildRear(W,P,g,rand,mid){const {K}=W,D2=P.depth/2,x0=(P.seedB-.5)*P.w*
    if(P.grill){const gr=K.group(g,x0-dw/2+.7,-D2-1,0,dy+.05);K.rbox(gr,0,.75,0,.6,.3,.45,.08,0x2b2b2d);for(const s of [-1,1])K.rod(gr,[s*.25,0,0],[s*.25,.62,0],.02,0x2b2b2d);}}}
 }
 
+// A lit garage's materials, made once per house (Sam's bedroom reuses them: no extra batches).
+function garageMats(P){return P.garageMats||(P.garageMats={wall:Object.assign(new THREE.MeshStandardMaterial({color:INTERIOR.garageWall,emissive:0xffe0a8,emissiveIntensity:.16,roughness:1,side:THREE.BackSide}),{userData:{keep:true}}),
+ lamp:new THREE.MeshStandardMaterial({color:0xfff4d8,emissive:0xffe0a0,emissiveIntensity:1}),glow:new THREE.MeshStandardMaterial({color:0xffe6b8,emissive:0xffc070,emissiveIntensity:.9})});}
+// Warm interiors seen through doors and windows share three materials, so they batch together.
+const interiorCache=new WeakMap();
+function interiorMats(W){if(interiorCache.has(W.scene))return interiorCache.get(W.scene);
+ const lit=new THREE.MeshStandardMaterial({color:INTERIOR.wall,emissive:0xffb070,emissiveIntensity:.34,roughness:.95,side:THREE.BackSide});lit.userData.keep=true;
+ const floor=new THREE.MeshStandardMaterial({color:INTERIOR.floor,emissive:0x5a3418,emissiveIntensity:.25,roughness:.7});floor.userData.keep=true;
+ const warm=new THREE.MeshStandardMaterial({color:INTERIOR.lamp,emissive:0xffd49a,emissiveIntensity:1.4});
+ const mats={lit,floor,warm};interiorCache.set(W.scene,mats);return mats;}
+// A friend's bedroom behind the window that opens later: shallow, warm, enough to read as a room.
+function buildRoom(W,P,g,SW,t){const {K}=W,G=P.dynamicGarage&&P.interior!=='foyer'?garageMats(P):null,M=G?{lit:G.wall,floor:K.mat(INTERIOR.floor),warm:G.lamp}:interiorMats(W),s=SW.s,W2=P.w/2,D2=P.depth/2,fl=P.floor,depth=2.7,width=2.8,top=fl+2.5;
+ const x0=s*(W2-t),x=x0-s*depth/2,zc=Math.max(-D2+t+width/2,Math.min(D2-t-width/2,SW.z)),zb=zc-width/2;
+ const room=K.box(g,x,(fl+top)/2,zc,depth,top-fl,width,M.lit);room.name='bedroom';K.box(g,x,fl+.01,zc,depth-.02,.02,width-.02,M.floor);
+ // A bed along the back wall, a nightstand lamp by the window, a poster and a shelf opposite.
+ K.box(g,x0-s*1.25,fl+.22,zb+.55,1.9,.3,1,0x6d5a44);K.box(g,x0-s*1.25,fl+.42,zb+.55,1.86,.12,.96,0x3c4a6a);K.box(g,x0-s*.55,fl+.52,zb+.55,.4,.12,.7,0xe8e2d4);
+ K.box(g,x0-s*.3,fl+.3,zb+1.35,.36,.6,.36,0x6a4a30);K.cyl(g,x0-s*.3,fl+.72,zb+1.35,.09,.22,M.warm,10);
+ K.box(g,x0-s*(depth-.02),fl+1.55,zc+.2,.01,.7,.5,0x2d5a8a);K.box(g,x0-s*(depth-.02),fl+1.56,zc+.2,.012,.5,.36,0xd8b04a);
+ K.box(g,x0-s*(depth-.14),fl+1.1,zc+.95,.25,.03,.7,0x6d5a44);K.box(g,x0-s*(depth-.14),fl+1.22,zc+.8,.18,.2,.12,0xb03a2a);
+ P.localPads.push({x0:Math.min(x0,x0-s*depth),x1:Math.max(x0,x0-s*depth),z0:zc-width/2,z1:zc+width/2,y:fl});
+ W.interiors[P.key+'-room']={kind:'bedroom',room,depth,width,x0,zc};
+}
+
 // Friend-home foyer: a real doorway into a warm, shallow entry hall -----------------------
 function buildFoyer(W,P,g){const {K}=W,{front,h}=P,dx=P.doorX,fl=P.floor,hinge=P.gs,z0=front-.2,depth=3.6,width=2.9,cx=dx-hinge*.25,top=fl+2.62;
- const lit=new THREE.MeshStandardMaterial({color:INTERIOR.wall,emissive:0xffb070,emissiveIntensity:.34,roughness:.95,side:THREE.BackSide});lit.userData.keep=true;
- const floorM=new THREE.MeshStandardMaterial({color:INTERIOR.floor,emissive:0x5a3418,emissiveIntensity:.25,roughness:.7});floorM.userData.keep=true;
- const warm=new THREE.MeshStandardMaterial({color:INTERIOR.lamp,emissive:0xffd49a,emissiveIntensity:1.4});
+ const {lit,floor:floorM,warm}=interiorMats(W);
  const room=K.box(g,cx,(fl+top)/2,z0-depth/2,width,top-fl,depth,lit);room.name='foyer';
  K.box(g,cx,fl+.01,z0-depth/2,width-.02,.02,depth-.02,floorM);
  for(let x=cx-width/2+.18;x<cx+width/2;x+=.18)K.box(g,x,fl+.022,z0-depth/2,.008,.003,depth-.04,0x68513c);
@@ -347,8 +387,9 @@ function buildFoyer(W,P,g){const {K}=W,{front,h}=P,dx=P.doorX,fl=P.floor,hinge=P
 }
 // Friend-home garage: a real opening, deep enough to drive into, full of ordinary things.
 function buildGarageInterior(W,P,g,rand,doorW,dh){const {K}=W,{gx,gw,gd,gh,gfront}=P,gz=gfront-gd/2,s=P.gs,car=P.interior==='garage-car';
- const wallM=new THREE.MeshStandardMaterial({color:INTERIOR.garageWall,emissive:0xffe0a8,emissiveIntensity:.16,roughness:1,side:THREE.BackSide});wallM.userData.keep=true;
- const lamp=new THREE.MeshStandardMaterial({color:0xfff4d8,emissive:0xffe0a0,emissiveIntensity:1});
+ // A house that also has a lit foyer (Alex's) reuses its interior set: one fewer batch per cell.
+ const M=P.interior==='foyer'?interiorMats(W):null;
+ const GM=M?null:garageMats(P),wallM=M?M.lit:GM.wall,lamp=M?M.warm:GM.lamp;
  const shell=K.box(g,gx,gh/2+.1,gz-.05,gw-.34,gh-.2,gd-.34,wallM);shell.name='garage-interior';
  K.box(g,gx,.21,gz,gw-.34,.02,gd-.3,W.surfaceMaterial(K.mat(INTERIOR.garageFloor),'concrete'));if(!car)K.box(g,gx+.3,.222,gz+.4,1.1,.004,1.6,0x6f6a62);
  K.box(g,gx,gh-.12,gz,.9,.05,.4,lamp);K.box(g,gx,gh-.25,gz-gd/2+1.2,.35,.18,.5,0x5a5a58);K.box(g,gx,gh-.22,gz+.4,.05,.05,gd-2.2,0x6a6a68);
@@ -362,16 +403,18 @@ function buildGarageInterior(W,P,g,rand,doorW,dh){const {K}=W,{gx,gw,gd,gh,gfron
  // Water heater, a lawn mower, a kid's bike on the wall, a basketball.
  K.cyl(g,gx-s*(gw/2-.45),.95,gz-gd/2+.45,.28,1.5,0xd8d6ce,12);
  if(!car){const mx=gx-s*(gw/2-.8),mz=gz+.2;K.rbox(g,mx,.42,mz,.55,.3,.6,.05,0x3a6a3a);K.rod(g,[mx,.5,mz+.3],[mx,1.05,mz+.8],.015,0x2b2b2b);for(const k of [-1,1])for(const kk of [-1,1])K.cyl(g,mx+k*.28,.3,mz+kk*.25,.09,.05,0x222222,10,[0,0,Math.PI/2]);}
- for(const k of [-.3,.3]){const t=new THREE.Mesh(new THREE.TorusGeometry(.26,.025,5,16),K.mat(0x2b2b2b));t.position.set(gx+s*(gw/2-.28),1.7,gz+k);t.rotation.y=Math.PI/2;g.add(t);}
- K.rod(g,[gx+s*(gw/2-.28),1.7,gz-.3],[gx+s*(gw/2-.28),1.95,gz],.02,0xb03a2a);K.rod(g,[gx+s*(gw/2-.28),1.95,gz],[gx+s*(gw/2-.28),1.7,gz+.3],.02,0xb03a2a);
+ if(P.garageBike==='empty'){for(const k of [-.32,.32]){const hx=gx+s*(gw/2-.2);K.rod(g,[hx,1.92,gz+k],[hx-s*.16,1.92,gz+k],.012,0x8a8c88);K.rod(g,[hx-s*.16,1.92,gz+k],[hx-s*.16,1.99,gz+k],.012,0x8a8c88);}
+  K.box(g,gx+s*(gw/2-.06),1.95,gz,.02,.12,.9,0x7a7466);K.rod(g,[gx+s*(gw/2-.45),.22,gz+.9],[gx+s*(gw/2-.45),.78,gz+.9],.018,0x3a5a8a);}
+ else{for(const k of [-.3,.3]){const t=new THREE.Mesh(new THREE.TorusGeometry(.26,.025,5,16),K.mat(0x2b2b2b));t.position.set(gx+s*(gw/2-.28),1.7,gz+k);t.rotation.y=Math.PI/2;g.add(t);}
+  K.rod(g,[gx+s*(gw/2-.28),1.7,gz-.3],[gx+s*(gw/2-.28),1.95,gz],.02,0xb03a2a);K.rod(g,[gx+s*(gw/2-.28),1.95,gz],[gx+s*(gw/2-.28),1.7,gz+.3],.02,0xb03a2a);}
  K.ball(g,gx-s*(gw/2-.6),.33,gz+1,.12,0xc2652f);
  // Door into the house, two steps up, left ajar with light behind it.
  const hx=gx-s*(gw/2-.2),hz=gz-gd/2+1.5;const dg=K.group(g,hx,hz,s>0?Math.PI/2:-Math.PI/2,0);
- K.box(dg,0,1.3,-.05,.95,2.05,.05,new THREE.MeshStandardMaterial({color:0xffe6b8,emissive:0xffc070,emissiveIntensity:.9}));for(const k of [0,1])K.box(dg,0,.2+.09+k*.18,.3-.3*k,1.1,.18,.3,HOUSE.step);
+ K.box(dg,0,1.3,-.05,.95,2.05,.05,M?M.warm:GM.glow);for(const k of [0,1])K.box(dg,0,.2+.09+k*.18,.3-.3*k,1.1,.18,.3,HOUSE.step);
  const leaf=K.box(dg,.3,1.3,.28,.05,2.04,.9,P.door);leaf.rotation.y=.3;
  P.localPads.push({x0:gx-gw/2+.2,x1:gx+gw/2-.2,z0:gfront-gd+.2,z1:gfront,y:.2});
  for(const [a,b,y] of [[.15,.45,.38],[-.15,.15,.56]])P.localPads.push({x0:Math.min(hx+s*a,hx+s*b),x1:Math.max(hx+s*a,hx+s*b),z0:hz-.55,z1:hz+.55,y});
- W.interiors[P.key]={kind:car?'garage-car':'garage',houseDoor:{x:hx+s*.6,z:hz},shell};
+ W.interiors[P.interior==='foyer'?P.key+'-garage':P.key]={kind:car?'garage-car':'garage',houseDoor:{x:hx+s*.6,z:hz},shell};
 }
 
 // Driveways and walks: bent at the curb and sidewalk, draped at the house -----------------------
@@ -403,7 +446,9 @@ function buildDrive(W,P){
  // Control joints.
  for(let v=walk1+3.2;v<lengthLat-.6;v+=3.4){const a=place(xa+.05,v),b=place(xb-.05,v),ya=f.point(a.u,a.v).y+profile(Math.abs(a.v))+.004,yb=f.point(b.u,b.v).y+profile(Math.abs(b.v))+.004;
   W.baked.push(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(a.x,ya,a.z),new THREE.Vector3(b.x,yb,b.z)]),new THREE.LineBasicMaterial({color:0x9d9585})));}
- if(P.frameId==='main'){const cut=W.cuts.find(c=>c.plan===P);W.drives.push({d:(cut.u0+cut.u1)/2,side:s,d0:cut.u0,d1:cut.u1,contains:(d,lat)=>Math.sign(lat)===s&&Math.abs(lat)>=cf-.05&&Math.abs(lat)<=lengthLat+.2&&(Math.abs(lat)<walk1+.4?d>=cut.u0&&d<=cut.u1:cut.inside(d,lat)),y:(d,lat)=>profile(Math.abs(lat))});}
+ {const cut=W.cuts.find(c=>c.plan===P),drive={d:(cut.u0+cut.u1)/2,side:s,d0:cut.u0,d1:cut.u1,plan:P,contains:(d,lat)=>Math.sign(lat)===s&&Math.abs(lat)>=cf-.05&&Math.abs(lat)<=lengthLat+.2&&(Math.abs(lat)<walk1+.4?d>=cut.u0&&d<=cut.u1:cut.inside(d,lat)),y:(d,lat)=>profile(Math.abs(lat))};
+  // Side-street drives are kept apart, in their own street's coordinates (u along, v across).
+  if(P.frameId==='main')W.drives.push(drive);else (W.sideDrives||(W.sideDrives=[])).push({...drive,frameId:P.frameId});}
  // Walk from the steps: along the house to the driveway, and on some lots out to the sidewalk.
  const {K:k2}=W,g=P.g,zc=P.stepFront+.55,x0=P.doorX,x1=P.drivX-(P.drivX>P.doorX?1:-1)*P.drivW/2;
  k2.box(g,(x0+x1)/2,.1,zc,Math.abs(x1-x0)+1.1,.12,1.05,HOUSE.walk);
@@ -423,13 +468,28 @@ function makeDynamic(W){const {K}=W,doors={},garages={};
   const open=h.S(D.x,D.front+.9),inside=h.S(D.x+D.hinge*.15,D.front-2.3),stepOut=h.S(D.x,h.stepFront+.5),porch=h.S(D.x,D.front+.45),latch=h.S(D.x+D.dirX*.42,D.front+Math.min(1.2,h.pdep-.2)),entry=h.S(D.x,D.front-.7);
   // Doors swing inward, about 85 degrees.
   return {pivot,d,lat,open:0,set(t){this.open=t;pivot.rotation.y=D.dirX*t*1.48;},threshold:h.S(D.x,D.front),outside:open,inside,entry,steps:stepOut,porch,latch,floor:D.y,house:h};}
- function makeGarage(h){const G=h.garageInfo,{g,d,lat}=W.houseAnchor(h,G.x,G.front-.1,G.y);const panel=new THREE.Group();g.add(panel);
+ function makeGarage(h){const G=h.garageInfo,I=W.interiors[h.key+'-garage']||W.interiors[h.key],{g,d,lat}=W.houseAnchor(h,G.x,G.front-.1,G.y);const panel=new THREE.Group();g.add(panel);
   const slab=new THREE.Mesh(K.boxGeo,K.mat(0xeeeae0));slab.scale.set(G.doorW-.04,G.doorH,.06);slab.castShadow=true;panel.add(slab);
   for(let k=1;k<4;k++){const gr=new THREE.Mesh(K.boxGeo,K.mat(0xb3ad9f));gr.scale.set(G.doorW-.04,.03,.02);gr.position.set(0,-G.doorH/2+k*G.doorH/4,.035);panel.add(gr);}
   const cols=G.doorW>3?8:4;for(let k=1;k<cols;k++){const gr=new THREE.Mesh(K.boxGeo,K.mat(0xc4beb0));gr.scale.set(.03,G.doorH,.02);gr.position.set(-G.doorW/2+G.doorW*k/cols,0,.035);panel.add(gr);}
   const gar={panel,d,lat,open:0,set(t){this.open=t;const H=G.doorH,by=t*H,tz=-H*Math.sqrt(Math.max(0,1-(1-t)**2));const bot=[by,0],top=[H,tz];panel.position.set(0,(bot[0]+top[0])/2,(bot[1]+top[1])/2);panel.rotation.x=Math.atan2(top[1]-bot[1],top[0]-bot[0])*-1;},
-   mouth:h.S(G.x,G.front+.6),inside:h.S(G.x,G.front-G.depth+1.6),back:h.S(G.x,G.front-G.depth+.9),house:h,doorW:G.doorW,houseDoor:W.interiors[h.key]?.houseDoor?h.S(W.interiors[h.key].houseDoor.x,W.interiors[h.key].houseDoor.z):null,
-   beyond:W.interiors[h.key]?.houseDoor?h.S(W.interiors[h.key].houseDoor.x-h.gs*1.1,W.interiors[h.key].houseDoor.z):null};gar.set(0);return gar;}
- for(const k of ['jamie','alex'])doors[k]=makeDoor(W.homes[k]);for(const k of ['sam','car'])garages[k]=makeGarage(W.homes[k]);
- return {doors,garages};
+   mouth:h.S(G.x,G.front+.6),inside:h.S(G.x,G.front-G.depth+1.6),back:h.S(G.x,G.front-G.depth+.9),house:h,doorW:G.doorW,houseDoor:I?.houseDoor?h.S(I.houseDoor.x,I.houseDoor.z):null,
+   beyond:I?.houseDoor?h.S(I.houseDoor.x-h.gs*1.1,I.houseDoor.z):null};gar.set(0);return gar;}
+ // A friend's bedroom window: the lower sash slides up behind the upper one. Warm, slightly
+ // see-through glass, so a shape moving in the room reads before the window opens.
+ const sashGlass=new THREE.MeshStandardMaterial({color:0xfff0d0,emissive:0xffb060,emissiveIntensity:.5,transparent:true,opacity:.62,roughness:.18,depthWrite:false});
+ function makeWindow(h){const SW=h.sneakWin,x=SW.s*(h.w/2),{root,g}=W.houseAnchor(h,x,SW.z,0);const fg=new THREE.Group();fg.position.y=SW.y;fg.rotation.y=SW.s<0?-Math.PI/2:Math.PI/2;g.add(fg);
+  const trim=K.mat(HOUSE.trim),sash=(z)=>{const s=new THREE.Group();s.position.z=z;fg.add(s);const gl=new THREE.Mesh(new THREE.PlaneGeometry(SW.w-.08,SW.h/2-.06),sashGlass);s.add(gl);
+   for(const k of [-1,1]){const v=new THREE.Mesh(K.boxGeo,trim);v.scale.set(.05,SW.h/2,.04);v.position.x=k*(SW.w/2-.025);s.add(v);const r=new THREE.Mesh(K.boxGeo,trim);r.scale.set(SW.w,.05,.04);r.position.y=k*(SW.h/4-.025);s.add(r);}return s;};
+  const upper=sash(-.05);upper.position.y=SW.h/4;const lower=sash(-.11);lower.position.y=-SW.h/4;
+  const out=h.S(x+SW.s*1.05,SW.z),stand=h.S(x+SW.s*1.25,SW.z),inside=h.S(x-SW.s*.55,SW.z),sill=h.toWorld(x,SW.z);
+  return {root,group:fg,upper,lower,open:0,set(t){this.open=t;lower.position.y=-SW.h/4+(SW.h/2-.04)*t;},house:h,outside:out,stand,inside,sill:{x:sill.x,z:sill.z,y:sill.ground+SW.y-SW.h/2},y:SW.y,s:SW.s,z:SW.z,wallX:x};}
+ // Sam's garage side door, hinged at its back edge and swinging in.
+ function makeSideDoor(h){const A=h.sideDoorAt,{g}=W.houseAnchor(h,A.x,A.z-A.w/2+.03,.38);const pivot=new THREE.Group();g.add(pivot);
+  const leaf=new THREE.Mesh(K.boxGeo,K.mat(h.door));leaf.scale.set(.05,1.98,A.w-.07);leaf.position.set(-h.gs*.03,.99,(A.w-.07)/2);leaf.castShadow=true;pivot.add(leaf);
+  const knob=new THREE.Mesh(K.sphereGeo,K.mat(0xc9b27a));knob.scale.setScalar(.03);knob.position.set(h.gs*.01,.95,A.w-.2);pivot.add(knob);
+  const o=h.gs;return {pivot,open:0,set(t){this.open=t;pivot.rotation.y=-o*t*1.35;},house:h,outside:h.S(A.x+o*1.0,A.z),inside:h.S(A.x-o*1.2,A.z),through:h.S(A.x,A.z)};}
+ for(const k of ['jamie','alex'])doors[k]=makeDoor(W.homes[k]);for(const k of ['sam','car','alex'])garages[k]=makeGarage(W.homes[k]);
+ const windows={},sideDoors={};for(const k of ['jamie','sam'])if(W.homes[k]?.sneakWin)windows[k]=makeWindow(W.homes[k]);if(W.homes.sam?.sideDoorAt)sideDoors.sam=makeSideDoor(W.homes.sam);
+ return {doors,garages,windows,sideDoors};
 }

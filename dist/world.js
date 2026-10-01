@@ -40,6 +40,7 @@ export function buildWorld(scene){
  W.windowOn=W.windowMats.map((_,i)=>.08+hashF(i*2.7)*.5);W.porchOn=W.porchMats.map((_,i)=>.2+hashF(i*5.1)*.42);
  W.glassLit=litMaterial(0x5b6870,0xffb45a,{rough:.35,metal:.1,span:.25,base:.08,gain:1.05,night:.15});
  W.porchLit=litMaterial(0xfff0c8,0xffc070,{rough:.9,metal:0,span:.06,base:.05,gain:1.6,night:0});
+ W.lampLit=lampMaterial();// all streetlight heads; each one's level comes from a uniform array
  W.bent=(frame=MAIN,opts={})=>{const g=new THREE.Group();W.layers.push({mode:'bent',frame,group:g,...opts});return g;};
  W.drape=(frame,u0,opts={})=>{const g=new THREE.Group();W.layers.push({mode:'drape',frame,u0,group:g,...opts});return g;};
  const rigidRoot=new THREE.Group(),farRoot=new THREE.Group();W.layers.push({mode:'rigid',group:rigidRoot},{mode:'rigid',group:farRoot,far:true});
@@ -76,12 +77,12 @@ export function buildWorld(scene){
  function anchor(d,lat,y=0){const g=new THREE.Group(),p=groundPoint(d,lat);g.position.set(p.x,p.y+y,p.z);g.rotation.y=-heading(d);scene.add(g);return g;}
  function houseAnchor(h,x,z,y=0){const w=h.toWorld(x,z),r=new THREE.Group(),root=new THREE.Group();root.position.set(w.x,w.ground+y,w.z);root.rotation.y=h.worldRot;scene.add(root);root.add(r);const s=h.S(x,z);return {root,g:r,d:s.d,lat:s.lat};}
  W.anchor=anchor;W.houseAnchor=houseAnchor;
- const {doors,garages}=W.makeDynamic(W);
+ const {doors,garages,windows,sideDoors}=W.makeDynamic(W);
 
  return {scene,road:W.named.road,originals,merged,windowMats:W.windowMats,porchMats:W.porchMats,streetLamps:W.streetLamps,foliage:W.foliage,grassMat:W.grassMat,grassMats:W.grassMats,
-  groundY,authoredY,rideable:W.rideable,obstacles:W.obstacles,homes:W.homes,doors,garages,anchor,houseAnchor,alexWindow:W.alexWindow,car:W.car,drivewayOpenings:W.drives,houses:W.houses,
-  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,lights:W.lights,hooks:W.hooks||{},terrainY,signs:W.signs||[],
-  poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space};
+  groundY,authoredY,rideable:W.rideable,obstacles:W.obstacles,homes:W.homes,doors,garages,windows,sideDoors,anchor,houseAnchor,alexWindow:W.alexWindow,car:W.car,drivewayOpenings:W.drives,sideDrives:W.sideDrives||[],houses:W.houses,sidePlansAll:W.sidePlans,surfaceY:W.surfaceY,sideSurface:W.sideSurface,junctions:W.junctions,creek:W.creekInfo||null,interiorMats:W.interiorMats,
+  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,lights:W.lights,hooks:W.hooks||{},terrainY,signs:W.signs||[],
+  poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space,fenceSegs:W.fenceSegs||[]};
 }
 
 // A material whose emissive level follows the evening: uP is the ride's progress (0..1),
@@ -96,15 +97,24 @@ function litMaterial(color,emissive,{rough,metal,span,base,gain,night}){
    #endif`);};
  m.customProgramCacheKey=()=>'lit'+span+gain;return m;
 }
+// Streetlight heads: one material for all of them. The vertex color's green channel holds the
+// lamp's index; its level (0..1, set by ambient.js as each lamp flickers on) is read from a
+// uniform array in the vertex shader, and the head warms from orange to white as it comes up.
+function lampMaterial(){const m=new THREE.MeshStandardMaterial({color:0xe8d6b8,emissive:0xffffff,vertexColors:true});
+ const u=m.userData.uniforms={uLevel:{value:new Float32Array(32)}};
+ m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,u);
+  sh.vertexShader='uniform float uLevel[32];\nvarying float vLamp;\n'+sh.vertexShader.replace('#include <color_vertex>','#include <color_vertex>\n #ifdef USE_COLOR\n vLamp=uLevel[int(color.g*255.+.5)];\n #endif');
+  sh.fragmentShader='varying float vLamp;\n'+sh.fragmentShader.replace('#include <color_fragment>','').replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance=vec3(1.,.55+.2*vLamp,.25+.1*vLamp)*vLamp*2.4;');};
+ m.customProgramCacheKey=()=>'lamp-heads';return m;}
 // Bake every layer into world space, then merge triangles by material and 110 m cell.
 // Shadows are drawn from one position-only proxy per cell (plus one for cut-out leaves),
 // which keeps the shadow pass to a few draw calls however many materials a cell holds.
 function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
  const colorMaterials=new Map(),batches=new Map(),lineBatches=new Map(),originals=[],merged=[],shadow=new Map(),shadowOnly=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false,side:THREE.DoubleSide});
  const castsShadow=(m,far)=>!far&&!W.grassMats.includes(m)&&m!==W.asphalt&&!m.userData.noShadow&&m!==W.glassLit&&m!==W.porchLit&&m.side!==THREE.BackSide&&!m.transparent;
- const plain=m=>m===W.glassLit||m===W.porchLit||W.grassMats.includes(m)||m===W.asphalt||m.emissive?.getHex()!==0||m.transparent||!m.isMeshStandardMaterial||m.userData.keep;
+ const plain=m=>m===W.glassLit||m===W.porchLit||m===W.lampLit||W.grassMats.includes(m)||m===W.asphalt||m.emissive?.getHex()!==0||m.transparent||!m.isMeshStandardMaterial||m.userData.keep;
  function batchMaterial(m){
-  if(W.windowMats.includes(m)||m===W.darkGlass||m===W.farWindow)return W.glassLit;if(W.porchMats.includes(m))return W.porchLit;
+  if(W.windowMats.includes(m)||m===W.darkGlass||m===W.farWindow)return W.glassLit;if(W.porchMats.includes(m))return W.porchLit;if(m.userData.lamp!==undefined)return W.lampLit;
   if(plain(m))return m;
   const isLeaf=W.foliage.includes(m),kind=m.userData.surface||'',key=[m.roughness,m.metalness,m.side,isLeaf?'leaf':kind,m.alphaTest,m.polygonOffset,m.polygonOffsetFactor,m.polygonOffsetUnits,m.map?.uuid||'none'].join(':');
   if(!colorMaterials.has(key)){const b=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:m.roughness,metalness:m.metalness,side:m.side,map:m.map,alphaTest:m.alphaTest,polygonOffset:m.polygonOffset,polygonOffsetFactor:m.polygonOffsetFactor,polygonOffsetUnits:m.polygonOffsetUnits});
@@ -145,7 +155,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
    if(o.isLine){const key=o.material.color.getHex();if(!lineBatches.has(key))lineBatches.set(key,new Buf());const arr=lineBatches.get(key),segs=o.isLineSegments;for(let i=0;i<pos.length/3-1;i+=segs?2:1)arr.push(pos[i*3],pos[i*3+1],pos[i*3+2]),arr.push(pos[i*3+3],pos[i*3+4],pos[i*3+5]);continue;}
    const material=batchMaterial(o.material),idx=o.geometry.index,uv=o.geometry.attributes.uv,far=!!layer.far||!!o.userData.far,cellSize=far?220:110;
    const wi=W.windowMats.indexOf(o.material),pi=W.porchMats.indexOf(o.material);
-   const col=o.material===W.darkGlass?{r:9,g:0,b:0}:wi>=0?{r:W.windowOn[wi],g:0,b:0}:pi>=0?{r:W.porchOn[pi],g:0,b:0}:o.material===W.farWindow?{r:.5+hashF(t0++)*.3,g:0,b:0}:o.material.color;
+   const col=o.material===W.darkGlass?{r:9,g:0,b:0}:wi>=0?{r:W.windowOn[wi],g:0,b:0}:pi>=0?{r:W.porchOn[pi],g:0,b:0}:o.material===W.farWindow?{r:.5+hashF(t0++)*.3,g:0,b:0}:o.material.userData.lamp!==undefined?{r:1,g:o.material.userData.lamp/255,b:0}:o.material.color;
    const tris=idx?idx.count/3:pos.length/9,local=new Map(),caster=castsShadow(material,far),leaf=caster&&!!material.map&&material.alphaTest>0,slocal=new Map();
    for(let t=0;t<tris;t++){const i0=idx?idx.getX(t*3):t*3,i1=idx?idx.getX(t*3+1):t*3+1,i2=idx?idx.getX(t*3+2):t*3+2;
     const cx=(pos[i0*3]+pos[i1*3]+pos[i2*3])/3,cz=(pos[i0*3+2]+pos[i1*3+2]+pos[i2*3+2])/3,cell=Math.floor(cx/cellSize)*1000+Math.floor(cz/cellSize);

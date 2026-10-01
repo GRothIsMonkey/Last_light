@@ -130,7 +130,7 @@ export function buildStreets(W){
   grid(sb,[-(h-.35),-.15],[CF+2.2,CF+2.65],(u,v)=>crown(u,v)+.006,mat(0xe8e4d8,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
   const sc=cutsFor(f.id,1).concat(cutsFor(f.id,-1));
   for(const ss of [-1,1]){const cuts=cutsFor(f.id,ss),brk=[];for(const c of cuts)brk.push(c.u0,c.u1);
-   const us=uniq([...range(5,L+24,2),u0,...brk]),vs=[h+.3,h+1,h+1.65,h+2.4,h+3.15,h+4,h+5,h+6.5,h+8,h+10,h+12,h+15,h+18,h+21,h+24,h+27,h+30,h+34,h+38,44].map(v=>v*ss).sort((a,b)=>a-b);
+   const ck=j.creek?range(j.creek.u-7,j.creek.u+7,.5):[],us=uniq([...range(5,L+24,2),u0,...brk,...ck]),vs=[h+.3,h+1,h+1.65,h+2.4,h+3.15,h+4,h+5,h+6.5,h+8,h+10,h+12,h+15,h+18,h+21,h+24,h+27,h+30,h+34,h+38,44,...(j.creek?[8.6,9,9.4,9.8,10.2,j.creek.end-1.2,j.creek.end-.4,j.creek.end+.4,j.creek.end+1.2]:[])].map(v=>v*ss).sort((a,b)=>a-b);
    grid(sb,vs,us,LAWN,grass,(v,u,va,vb,ua,ub)=>{if(u<u0&&Math.abs(v)<h+R)return true;for(const c of cuts)if(u>c.u0&&u<c.u1){if(Math.abs(v)<h+XS.walk)return true;if(c.inside(ua+.02,va)&&c.inside(ub-.02,va)&&c.inside(ua+.02,vb)&&c.inside(ub-.02,vb))return true;}return false;});}
   // Asphalt ends where the land beyond the crest takes over: finish it with a curb line.
   K.box(sb,0,.02,-(L+.15),2*h+.6,.1,.3,curbC);
@@ -150,8 +150,9 @@ export function buildStreets(W){
   if(j){const u=a,v=(j.d-d)*j.side,s=j.side;
    // Corner arcs.
    for(const sg of [-1,1]){const C=[j.d+sg*(j.half+j.R),s*(CF+j.R)];if(sg*(d-j.d)>=j.half-.01&&sg*(d-j.d)<=j.half+j.R&&a<=CF+j.R){const r=Math.hypot(d-C[0],lat-C[1]);if(r>=j.R)return .025;const o=j.R-r;if(o<XS.curb)return CURB_TOP;if(o>=XS.strip&&o<=XS.walk)return SIDEWALK;return LAWN;}}
+   // Past 24 m the side street has its own ground (and its own curve): measure in its frame.
+   if(u>24){const g=groundPoint(d,lat),q=u>j.bendAt-6?j.frame.project(g.x,g.z,u):{u,v},p=j.frame.point(q.u,q.v);return p.y-g.y+sideSurface(j,q.u,q.v);}
    if(Math.abs(d-j.d)<j.half+.01)return sideSurface(j,u,v);
-   if(u>24){const p=j.frame.point(u,v);return p.y-groundPoint(d,lat).y+sideSurface(j,u,v);}
   }
   if(a<CF+XS.curb){const cut=W.cuts.find(c=>c.frame==='main'&&c.side===Math.sign(lat)&&d>c.u0&&d<c.u1);return cut?.045:CURB_TOP;}
   if(a>=CF+XS.strip&&a<=CF+XS.walk)return SIDEWALK;

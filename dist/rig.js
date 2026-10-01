@@ -239,6 +239,8 @@ export function createBike(spec,{grips=0x2b2b2d}={}){
  if(extras.includes('pegs'))for(const s of [-1,1])fp.push({geo:new THREE.CylinderGeometry(.018,.018,.1,8),color:0x9da09a,matrix:M4(s*.09,rear.y,rear.z,1,1,1,0,0,Math.PI/2)});
  if(extras.includes('bottle')){const a=V(0,bb.y+.12,bb.z-.09),b=V(0,low.y-.08,low.z+.14);tube(fp,a,b,.028,0x3a86c8,10);}
  if(extras.includes('rack')){for(const s of [-1,1])tube(fp,V(s*.07,rear.y+.04,rear.z),V(s*.07,seat.y+.05,seat.z+.22),.008,0x9da09a);fp.push({geo:new THREE.BoxGeometry(.14,.012,.3),color:0x9da09a,matrix:M4(0,seat.y+.06,seat.z+.3)});}
+ // A round red reflector on the back of the rack, its cracked bracket held on with black tape.
+ if(extras.includes('rear-reflector')){const z=seat.z+.455,y=seat.y+.015;fp.push({geo:new THREE.CylinderGeometry(.034,.034,.012,14),color:0xb3261e,matrix:M4(0,y,z,1,1,1,Math.PI/2)},{geo:new THREE.BoxGeometry(.03,.05,.012),color:0x9da09a,matrix:M4(0,y+.035,z-.012)},{geo:new THREE.BoxGeometry(.036,.018,.02),color:0x161617,matrix:M4(0,y+.047,z-.01)});}
  const frameMesh=new THREE.Mesh(mergeParts(fp),vcMetal);frameMesh.castShadow=true;frame.add(frameMesh);
  const chainPts=[.06,bb.y+.085,bb.z,.06,rear.y+.04,rear.z,.06,bb.y-.085,bb.z,.06,rear.y-.04,rear.z],cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(chainPts,3));frame.add(new THREE.LineSegments(cg,new THREE.LineBasicMaterial({color:0x444440})));
  const tire=S.tire??0x2f3133,knobby=extras.includes('knobby');

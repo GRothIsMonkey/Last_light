@@ -66,7 +66,7 @@ wcheck('sidewalks are clear to ride: nothing parked or left standing on them',()
 wcheck('walkable ground height matches rendered lawns, walks, drives and the lookout',()=>{
  // Every point riders and walkers stand on must agree with the visible surface under it.
  const solid=W.merged.filter(m=>!m.material.transparent&&m.material.side!==THREE.BackSide);const spots=[];
- for(const home of Object.values(W.homes)){for(let u=0;u<=1;u+=.25){spots.push([home.drivD,home.side*(5.2+u*(home.endLat-6))]);}const door=home.S(home.doorX,home.front+.5);spots.push([door.d,door.lat]);const st=home.S(home.doorX,home.stepFront+.5);spots.push([st.d,st.lat]);}
+ for(const home of Object.values(W.homes).filter(h=>h.frameId==='main')){for(let u=0;u<=1;u+=.25){spots.push([home.drivD,home.side*(5.2+u*(home.endLat-6))]);}const door=home.S(home.doorX,home.front+.5);spots.push([door.d,door.lat]);const st=home.S(home.doorX,home.stepFront+.5);spots.push([st.d,st.lat]);}
  for(let d=40;d<1100;d+=97)for(const lat of [-12,-7,7,12])spots.push([d,lat]);for(let d=1124;d<1170;d+=5)for(const lat of [-9,-3,0,4,10])spots.push([d,lat]);
  let worst=0;for(const [d,lat] of spots){if(W.obstacles.some(o=>d>=o.d0&&d<=o.d1&&lat>=o.l0&&lat<=o.l1))continue;const p=groundPoint(d,lat);ray.set(new THREE.Vector3(p.x,W.groundY(d,lat)+.9,p.z),down);const hit=ray.intersectObjects(solid)[0];if(!hit)continue;const err=Math.abs(hit.point.y-W.groundY(d,lat));if(err>worst)worst=err;assert.ok(err<.06,`ground mismatch ${err.toFixed(3)} at ${d.toFixed(1)}, ${lat.toFixed(1)}`);}metrics.maxGroundMismatch=+worst.toFixed(3);});
 wcheck('no world edge: the ground reaches the horizon in every direction',()=>{
@@ -106,15 +106,15 @@ wcheck('houses are closed on all four sides, with windows front, back and on ope
  ray.far=Infinity;metrics.housesChecked=n;metrics.openSideWallsWithWindows=`${sideGlass}/${sides}`;assert.ok(sideGlass>=sides*.8,'side windows '+sideGlass+'/'+sides);});
 wcheck('front doors open inward into a lit room, never into a wall',()=>{for(const k of ['jamie','alex']){const door=W.doors[k],H=door.house,I=W.interiors[H.key];assert.equal(I.kind,'foyer');assert.ok(I.depth>=2.2&&I.width>=2,'room too small');
   // The door leaf swings into the house (not out over the porch) and the way in is clear.
-  door.set(1);door.pivot.updateMatrixWorld(true);const tip=door.pivot.children[0].getWorldPosition(new THREE.Vector3()),r=MAIN.project(tip.x,tip.z),q=H.localOf(r.u,r.v);
+  door.set(1);door.pivot.updateMatrixWorld(true);const tip=door.pivot.children[0].getWorldPosition(new THREE.Vector3()),r=H.frame.project(tip.x,tip.z,H.u),q=H.localOf(r.u,r.v);
   assert.ok(q.z<H.front-.2&&Math.abs(q.x-H.doorX)<1.3,`${k}'s door swings outside`);door.set(0);
-  const a=door.threshold,b=door.inside,pa=groundPoint(a.d,a.lat),pb=groundPoint(b.d,b.lat),y=W.groundY(a.d,a.lat)+1.2;ray.set(new THREE.Vector3(pa.x,y,pa.z),new THREE.Vector3(pb.x-pa.x,0,pb.z-pa.z).normalize());ray.far=Math.hypot(pb.x-pa.x,pb.z-pa.z)+.2;
+  const a=door.threshold,b=door.inside,pa=H.frame.point(a.d,a.lat),pb=H.frame.point(b.d,b.lat),y=H.toWorld(H.doorX,H.front).ground+H.floor+1.2;ray.set(new THREE.Vector3(pa.x,y,pa.z),new THREE.Vector3(pb.x-pa.x,0,pb.z-pa.z).normalize());ray.far=Math.hypot(pb.x-pa.x,pb.z-pa.z)+.2;
   const block=ray.intersectObjects(visible,false).filter(x=>x.object.material.side!==THREE.BackSide)[0];ray.far=Infinity;assert.ok(!block,`${k}'s entry is blocked at ${block?.distance?.toFixed(2)} m`);}});
 wcheck('Sam\'s garage has depth and clutter, and a door into the house',()=>{const g=W.garages.sam,I=W.interiors[g.house.key];assert.ok(I&&I.kind==='garage');assert.ok(g.houseDoor&&g.beyond,'no house door');
  const a=groundPoint(g.mouth.d,g.mouth.lat),b=groundPoint(g.back.d,g.back.lat);assert.ok(Math.hypot(a.x-b.x,a.z-b.z)>5,'shallow garage');
  const clutter=h.originals.filter(o=>o.name==='garage-interior');assert.ok(clutter.length>=1);});
 wcheck('rideable surfaces: road, full sidewalks and curbs yes; yards no',()=>{
- for(const home of Object.values(W.homes)){assert.ok(W.rideable(home.drivD,home.side*4.9),'driveway cut '+home.drivD);assert.ok(W.rideable(home.drivD,home.side*7.1),'sidewalk at drive');}
+ for(const home of Object.values(W.homes).filter(h=>h.frameId==='main')){assert.ok(W.rideable(home.drivD,home.side*4.9),'driveway cut '+home.drivD);assert.ok(W.rideable(home.drivD,home.side*7.1),'sidewalk at drive');}
  let walk=0,lawn=0,curb=0;for(let d=30;d<1100;d+=13)for(const s of [-1,1]){if(JUNCTIONS.some(j=>Math.abs(d-j.d)<16))continue;if(W.rideable(d,s*7.1))walk++;if(W.rideable(d,s*11,0))lawn++;if(W.rideable(d,s*4.95,0))curb++;}
  assert.equal(lawn,0,'rode onto a lawn');assert.ok(walk>150,'sidewalk rideable '+walk);assert.ok(curb>100,'curbs '+curb);});
 wcheck('trees stand clear of roads, sidewalks and driveways',()=>{const trees=W.space.items('tree');assert.ok(trees.length>300,'trees '+trees.length);const bad=[];
@@ -216,7 +216,7 @@ await Promise.resolve();canvas.events.get('pointerdown')({clientX:100,clientY:10
 
 // Full ride, holding W, as a first-time player might.
 function ride(label,{each}={}){
- const F=h.friends.list,last=new Map(),seen={},angles={};let repeatedPrompt='',observed=h.snapshot.nextMemory,maxEye=[9,0],maxJump=0,hiddenBad=[],minGroup=99,glanced=0,reflectionsSeen=[],lastReflection='',overlap=0,phases=[];const fwd=new THREE.Vector3();
+ const F=h.friends.list,last=new Map(),seen={},angles={},goneSeen=[];let repeatedPrompt='',observed=h.snapshot.nextMemory,maxEye=[9,0],maxJump=0,hiddenBad=[],minGroup=99,glanced=0,reflectionsSeen=[],lastReflection='',overlap=0,phases=[];const fwd=new THREE.Vector3();
  const mark=(f,tag,obj)=>{if(seen[f.name+tag])return;seen[f.name+tag]=true;h.camera.getWorldDirection(fwd);const p=obj.getWorldPosition(new THREE.Vector3()).sub(h.camera.position);angles[f.name+':'+tag]=Math.round(Math.acos(Math.max(-1,Math.min(1,(p.x*fwd.x+p.z*fwd.z)/Math.hypot(p.x,p.z)/Math.hypot(fwd.x,fwd.z))))*180/Math.PI);};
  let rideSeconds=0;const departures=Object.values(FORMATION).map(f=>f.leaveAt);
  while(['riding','arriving'].includes(h.snapshot.state)&&rideSeconds<400){advance(DT);rideSeconds+=DT;const s=h.snapshot;each?.(s);
@@ -231,26 +231,31 @@ function ride(label,{each}={}){
   for(const f of F){for(const [tag,obj] of [['bike',f.bike.group],['body',f.person.parts.pelvis]]){const p=obj.getWorldPosition(new THREE.Vector3()),k=f.name+tag,q=last.get(k);if(q&&f.person.group.visible&&(tag==='body'||obj.visible)){const jump=p.distanceTo(q);maxJump=Math.max(maxJump,jump);assert.ok(jump<.3,`${f.name} ${tag} jumped ${jump.toFixed(2)} m (step ${f.step})`);}last.set(k,p);}
    for(const v of Object.values(f.person.group.position))assert.ok(Number.isFinite(v));
    if(f.mode==='leave'&&f.step===1)mark(f,'stops',f.bike.group);if(f.mode==='foot'&&f.step>=3)mark(f,'on foot',f.person.group);if(f.inside)mark(f,'inside',f.person.group);
-   if(!f.person.group.visible&&!f.inside)hiddenBad.push(f.name);}
+   if(!f.person.group.visible&&!f.inside&&!f.gone)hiddenBad.push(f.name);
+   // Alex leaves the story out of sight: when he is gone, the place he was must not be in plain view.
+   if(f.gone&&!seen[f.name+'gone']){seen[f.name+'gone']=true;const p=f.bike.group.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0,.9,0)),e=h.camera.getWorldPosition(new THREE.Vector3()),dir=p.clone().sub(e),dist=dir.length();dir.normalize();
+    h.camera.updateMatrixWorld();const fr=new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(h.camera.projectionMatrix,h.camera.matrixWorldInverse));
+    ray.set(e,dir);ray.far=dist-.5;const block=ray.intersectObjects(visible,false)[0];ray.far=Infinity;goneSeen.push({who:f.name,inFrustum:fr.containsPoint(p),occluded:!!block,dist:+dist.toFixed(1)});}}
   if(s.state==='riding'&&s.distance>160&&h.ui.promptText&&h.ui.promptText!=='Space:Ring bell')repeatedPrompt=h.ui.promptText;
   assert.equal(h.ending.state.clue,false,'clue during the ride');assert.equal(h.ending.state.otherBike,false,'other bike during the ride');
  }
- check(`${label}: all 14 story triggers in order, eye height steady`,()=>{assert.equal(h.snapshot.nextMemory,14);assert.ok(maxEye[0]>1.35&&maxEye[1]<1.62,`eye ${maxEye}`);});
+ check(`${label}: all ${memories.length} story triggers in order, eye height steady`,()=>{assert.equal(h.snapshot.nextMemory,memories.length);assert.ok(maxEye[0]>1.35&&maxEye[1]<1.62,`eye ${maxEye}`);});
  check(`${label}: once learned, controls are not shown again during the ride`,()=>assert.equal(repeatedPrompt,''));
  check(`${label}: the group never brakes for a departure`,()=>assert.ok(minGroup>3.2,'group speed fell to '+minGroup));
  check(`${label}: friends pedal out of step with each other`,()=>{let apart=0;for(const c of phases){const w=c.map(a=>((a%(Math.PI*2))+Math.PI*2)%(Math.PI*2));let near=false;for(let i=0;i<w.length;i++)for(let j=i+1;j<w.length;j++){const d=Math.abs(w[i]-w[j]);if(Math.min(d,Math.PI*2-d)<.25)near=true;}if(!near)apart++;}
   assert.ok(phases.length>=60,'too few samples '+phases.length);metrics[label+' crank samples in step']=+(1-apart/phases.length).toFixed(3);assert.ok(apart/phases.length>.6,'in sync '+(1-apart/phases.length));});
  metrics[label+' ride seconds']=Math.round(rideSeconds);metrics[label+' departure view angles (deg)']=angles;metrics.maxFriendStepMeters=+maxJump.toFixed(3);metrics[label+' min group speed in departures']=+minGroup.toFixed(2);
- return {hiddenBad,glanced,reflectionsSeen,overlap};
+ return {hiddenBad,glanced,reflectionsSeen,overlap,goneSeen};
 }
 function friendsHome(label){
  check(`${label}: bike rolls to a stop at the end of the street, prompt offers F`,()=>{assert.equal(h.snapshot.state,'stopped');assert.ok(Math.abs(h.snapshot.distance-LOOKOUT.stop.d)<.05);assert.equal(h.ui.promptText,'F:Get off bike');});
- check(`${label}: every friend went home believably`,()=>{const F=h.friends.list;
-  for(const f of F){assert.ok(f.inside,`${f.name} not inside`);assert.equal(f.person.group.visible,false);}
-  const [jamie,sam,alex]=F;assert.ok(jamie.bike.group.visible&&Math.abs(jamie.fall)>1.2,'Jamie\'s bike lies on the lawn');assert.ok(alex.bike.group.visible&&alex.kick>.99,'Alex\'s bike stands on its kickstand');
+ check(`${label}: Jamie and Sam went home believably; Alex rode on down Briarwood and is gone`,()=>{const F=h.friends.list;const [jamie,sam,alex]=F;
+  for(const f of [jamie,sam]){assert.ok(f.inside,`${f.name} not inside`);assert.equal(f.person.group.visible,false);}
+  assert.ok(alex.gone&&!alex.inside,'Alex should be gone, not home');assert.equal(alex.person.group.visible,false);assert.equal(alex.bike.group.visible,false,'Alex\'s bike must be gone too');
+  assert.ok(jamie.bike.group.visible&&Math.abs(jamie.fall)>1.2,'Jamie\'s bike lies on the lawn');
   assert.equal(sam.bike.group.visible,false);assert.ok(W.garages.sam.open<.01,'Sam\'s garage closed');assert.ok(W.doors.jamie.open<.01&&W.doors.alex.open<.01,'doors closed');
   const behind=(f,door)=>{const g=f.person.group.position,th=door.threshold,o=door.outside,a=groundPoint(th.d,th.lat),b=groundPoint(o.d,o.lat);return ((g.x-a.x)*(b.x-a.x)+(g.z-a.z)*(b.z-a.z))<0;};
-  assert.ok(behind(jamie,W.doors.jamie),'Jamie hid outside');assert.ok(behind(alex,W.doors.alex),'Alex hid outside');});
+  assert.ok(behind(jamie,W.doors.jamie),'Jamie hid outside');});
 }
 const eyeAbove=()=>h.camera.position.y-W.groundY(h.snapshot.walkD,h.snapshot.walkLat);
 function finalStop(label){
@@ -288,7 +293,7 @@ const firstStart=simTime;
 const r1=ride('first ride');finalStop('first ride');metrics['first playthrough minutes']=+((simTime-firstStart)/60).toFixed(2);
 check('first ride: the head turns toward friends heading home when you are not looking around yourself',()=>assert.ok(r1.glanced>30));
 check('first ride: memory lines appear once each, never over a friend\'s line',()=>{const texts=reflections.filter(r=>r.id!=='last').map(r=>r.text);assert.ok(r1.reflectionsSeen.length>=3,'reflections '+r1.reflectionsSeen.length);assert.equal(new Set(r1.reflectionsSeen).size,r1.reflectionsSeen.length);for(const x of r1.reflectionsSeen)assert.ok(texts.includes(x));assert.equal(r1.overlap,0);metrics.reflectionsShown=r1.reflectionsSeen.length;});
-check('no friend was hidden before going inside',()=>assert.deepEqual(r1.hiddenBad,[]));
+check('no friend was hidden before going inside (Alex only once he is out of sight down Briarwood)',()=>{assert.deepEqual(r1.hiddenBad,[]);const g=r1.goneSeen.find(x=>x.who==='ALEX');assert.ok(g,'Alex never left the story');assert.ok(!g.inFrustum||g.occluded,'Alex vanished in plain view '+JSON.stringify(g));metrics.alexGoneView=g;});
 const frozen={clock:h.snapshot.clock,finale:h.snapshot.finaleT,position:h.camera.position.clone()};advance(8);
 check('ending freezes the world and clears prompts',()=>{assert.equal(h.snapshot.clock,frozen.clock);assert.equal(h.snapshot.finaleT,frozen.finale);assert.ok(h.camera.position.equals(frozen.position));assert.equal(h.ui.promptText,'');});
 element('again').onclick();advance(.1);
