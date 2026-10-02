@@ -50,7 +50,7 @@ export function createFriends(scene,world,hooks={}){
  function reset(){
   for(const f of list){const rand=seeded(hashSeed(21,f.slot));Object.assign(f,{d:f.keys[0][1],lat:f.keys[0][2],speed:0,latVel:0,crank:f.R.phase,wheel:0,steer:0,lean:0,fall:0,kick:0,spin:0,spinV:0,psi:0,mode:'ride',astride:1,stand:0,look:0,lookT:0,
     bd:0,blat:0,bpsi:0,pd:0,plat:0,ppsi:0,py:null,gait:0,script:null,step:0,prevYaw:null,inside:false,glance:1+rand()*4,garageClosing:false,windowOn:false,holding:false,waved:false,posed:false,
-    rand,seen:0,yield:0,effort:0,standHold:0,standWait:0,standDelay:.2+rand()*2.8,standRest:.4+rand()*1.6,rock:0,bellLook:0,weaveA:rand()*6.3,weaveB:rand()*6.3,gone:false,homeward:false,external:false,waveW:0,rang:false});
+    rand,seen:0,yield:0,effort:0,standHold:0,standWait:0,standDelay:.2+rand()*2.8,standRest:.4+rand()*1.6,rock:0,bellLook:0,weaveA:rand()*6.3,weaveB:rand()*6.3,gone:false,homeward:false,external:false,waveW:0,rang:false,pauseT:0,paused:false,lookWorld:null});
    f.bd=f.d;f.blat=f.lat;if(f.person.group.parent!==f.bike.group){f.bike.group.add(f.person.group);}f.person.group.position.set(0,0,0);f.person.group.rotation.set(0,0,0);
    f.person.group.visible=true;f.bike.group.visible=true;}
   Object.assign(mom,{mode:'waiting',t:0,pd:0,plat:0,ppsi:0,py:null,gait:0,look:0,slammed:false,closeT:0,u:0});mom.person.group.visible=false;
@@ -105,6 +105,8 @@ export function createFriends(scene,world,hooks={}){
  const rideOpts=f=>({stopSide:f.mode==='ride'?[-1,1,0][f.slot]:0,stand:f.stand,astride:f.astride,steer:f.steer,look:f.look,lookPitch:0,rock:f.rock,geom:f.bike.geom,posture:(f.cast.build.posture||0)+(f.effort||0)*.08,shoulder:f.rock*.14});
  function rideLook(f,ctx,dt){
   let target=0,pitch=0;f.glance-=dt;f.bellLook-=dt;
+  // Remembered detail: a long look at something off the street (see plan, hooks.detail).
+  if(f.lookWorld){f.look=damp(f.look,lookAt(f,f.bd,f.blat,f.bpsi,f.lookWorld.x,f.lookWorld.z),2.4,dt);return .05-(f.cast.build.hunch||0);}
   if(ctx.speaker===f.name||(f.bellLook>0&&f.bellLook<1.6)||(f.speed<.3&&f.mode==='ride')){target=lookAt(f,f.bd,f.blat,f.bpsi,ctx.eye.x,ctx.eye.z);}
   else if(f.glance<0){f.lookT=(f.rand()-.5)*1.2*f.R.look;f.glance=(3+f.rand()*6)/Math.max(.4,f.R.look);}
   if(f.glance>2.2&&ctx.speaker!==f.name)target=f.lookT;
@@ -179,9 +181,13 @@ export function createFriends(scene,world,hooks={}){
   const flat=(u,v)=>{const p=B.point(u,v),dx=p.x-O.x,dz=p.z-O.z;return [J.d+dx*fx+dz*fz,dx*O.rightX+dz*O.rightZ];};
   const lane=1.55,turn=[[J.d-9.6,2.85],[J.d-5.5,3.75],[J.d-2.7,6.1],[J.d-1.75,9.6]],down=[13,19,27,37,49,61,72,82,91,99,106].map(u=>flat(u,lane));
   // Just inside his street he all but stops: a look back, a wave, two rings of the bell.
-  return [rideIn(f,[...turn,...down],{vmax:4.8,vend:4.4,decel:1.1,cap:f=>f.blat>7.6&&f.blat<11.2?1.3:4.8,each:(dt,ctx)=>{const u=f.blat;
-    if(!f.rang&&u>8.4){f.rang=true;bell(f.bike.group.position,.75);f.bellLook=1.55;}
-    f.waveW=damp(f.waveW,u>8.2&&u<17?1:0,u>8.2&&u<17?5:3,dt);if(u>40)f.homeward=true;}}),
+  // Remembered later (Chapter Two, hooks.detail 'alex-glance'), there is a moment before that:
+  // he stops, and looks off toward the creek for a few seconds. The evening itself never shows it.
+  const glance=hooks.detail==='alex-glance'&&hooks.lookAt;
+  return [rideIn(f,[...turn,...down],{vmax:4.8,vend:4.4,decel:1.1,cap:f=>glance&&f.blat>6.4&&!f.paused?.3:f.blat>7.6&&f.blat<11.2?1.3:4.8,each:(dt,ctx)=>{const u=f.blat;
+    if(glance&&u>6.4&&!f.paused){f.pauseT+=dt;f.lookWorld=hooks.lookAt;if(f.pauseT>3.4){f.paused=true;f.lookWorld=null;}}
+    if(!f.rang&&u>8.4&&(!glance||f.paused)){f.rang=true;bell(f.bike.group.position,.75);f.bellLook=1.55;}
+    const waving=u>8.2&&u<17&&(!glance||f.paused);f.waveW=damp(f.waveW,waving?1:0,waving?5:3,dt);if(u>40)f.homeward=true;}}),
    ()=>{f.waveW=0;f.person.group.visible=false;f.bike.group.visible=false;f.gone=true;return true;}];
  }
 

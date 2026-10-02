@@ -175,8 +175,9 @@ export function buildYards(W){
  hopscotch(-6.8,88,-1);hopscotch(7.1,248,1);chalkSun(-7.1,120,.172,0xf2b5c4);chalkSun(7.2,318,.172,0xb6d7ef);
  for(let d=45;d<250;d+=55)for(let k=0;k<6;k++){const x=-7.1+(k%2)*.5,z=-d-Math.floor(k/2)*.6;chalk([[x,.17,z],[x+.42,.17,z],[x+.42,.17,z-.48],[x,.17,z-.48],[x,.17,z]],[0xedd0a5,0xe3a7b8,0xa8cbe0][k%3]);}
  {const h=W.homes.jamie;chalkSun(h.side*9.5,h.drivD+.4,.2,0xf5e08a);hook('chalk',null,{d:h.drivD,lat:h.side*9.5});}
- {const d=253,lat=5.4,g=put(d,lat,Math.PI);K.rbox(g,0,.16,-.45,.8,.3,1.1,.06,0x2c2d2f);K.rod(g,[0,.3,-.3],[0,3.3,-.3],.055,0x6e6f6c);K.rbox(g,0,3.25,0,1.8,1.05,.06,.02,0xefeee8);K.box(g,0,3.1,.04,.6,.45,.02,0xba5a44);
-  const ring=new THREE.Mesh(new THREE.TorusGeometry(.23,.02,5,16),K.mat(0xc05a33));ring.rotation.x=Math.PI/2;ring.position.set(0,3.05,.3);g.add(ring);occupy(d,lat,.8,'hoop');hook('portable-hoop',g);}
+ // A curbside portable hoop faces the street, where it is played: base and pole behind the board.
+ {const d=253,lat=5.3,g=put(d,lat,-Math.PI/2);K.rbox(g,0,.16,-.45,.8,.3,1.1,.06,0x2c2d2f);K.rod(g,[0,.3,-.3],[0,3.3,-.3],.055,0x6e6f6c);K.rbox(g,0,3.25,0,1.8,1.05,.06,.02,0xefeee8);K.box(g,0,3.1,.04,.6,.45,.02,0xba5a44);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(.23,.02,5,16),K.mat(0xc05a33));ring.rotation.x=Math.PI/2;ring.position.set(0,3.05,.3);g.add(ring);occupy(d,lat,.8,'hoop');g.userData.hoop={board:[0,3.25,0],rim:[0,3.05,.3],pole:[0,1.8,-.3],base:[0,.16,-.45]};(W.hoops||(W.hoops=[])).push({kind:'portable',group:g,d,lat});hook('portable-hoop',g);}
  {const d=372,lat=-5.3,g=put(d,lat,1.1);K.ball(g,0,.12,0,.12,0xc2652f,[1,1,1],true);hook('toy-at-curb',g);}
  // Dropped on its side in the grass beside the walk, where a kid lets go of it.
  {const d=458,lat=8.9,g=put(d,lat,2.2,ground(d,lat));const sc=scooter(g,0,0,0,0x3a8ad0);sc.rotation.z=1.4;sc.position.y=.055;hook('scooter-in-grass',g);}

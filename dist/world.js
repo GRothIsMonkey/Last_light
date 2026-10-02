@@ -18,6 +18,7 @@ import {buildStreets} from './streets.js';
 import {planLots,buildHouses} from './houses.js';
 import {buildYards} from './props.js';
 import {buildBackground} from './background.js';
+import {easementFrame,buildEasement} from './easement.js';
 
 export {JUNCTIONS,BULB,ROAD_END,LOOKOUT} from './layout.js';
 export {LAWN,SIDEWALK,CURB_TOP,knoll,roadCrown} from './terrain.js';
@@ -26,7 +27,7 @@ export function buildWorld(scene){
  const K=createKit(),rand=seeded(2011);
  const sideFrames=JUNCTIONS.map(makeSideFrame);
  // Build context shared by every builder.
- const W={K,scene,rand,surfaceMaterial,grassMats:[],lotRand:(...n)=>seeded(hashSeed(...n)),MAIN,sideFrames,space:createSpace(),
+ const W={K,scene,rand,surfaceMaterial,grassMats:[],hoops:[],lotRand:(...n)=>seeded(hashSeed(...n)),MAIN,sideFrames,space:createSpace(),
   pads:[],obstacles:[],drives:[],houses:[],farHouses:[],homes:{},streetLamps:[],foliage:[],lights:{},named:{},
   layers:[],windowMats:[...Array(8)].map(()=>new THREE.MeshStandardMaterial({color:0x5b6870,emissive:0xffb45a,emissiveIntensity:.08,roughness:.35,metalness:.1})),
   porchMats:[...Array(6)].map(()=>new THREE.MeshStandardMaterial({color:0xfff0c8,emissive:0xffc070,emissiveIntensity:.05})),
@@ -52,10 +53,12 @@ export function buildWorld(scene){
  W.reserve=(d0,d1,l0,l1)=>W.obstacles.push({d0:Math.min(d0,d1),d1:Math.max(d0,d1),l0:Math.min(l0,l1),l1:Math.max(l0,l1),soft:true});
  W.pad=(d0,d1,l0,l1,y)=>W.pads.push({d0:Math.min(d0,d1),d1:Math.max(d0,d1),l0:Math.min(l0,l1),l1:Math.max(l0,l1),y});
 
+ W.easement=easementFrame(W);// Chapter Two's drainage easement: its ground leaves holes in the older ground
  W.plans=planLots(W);// every first-row lot decided up front: streets need the driveway cuts
  buildStreets(W);// surfaces, curbs, sidewalks, junctions, cul-de-sac, lookout ground
  buildHouses(W);// first-row houses, friend homes and their interiors, driveways, walks
  buildYards(W);// trees, cars, yard props, fences, street furniture, utility network, signs
+ buildEasement(W);// behind the creek's back fence: channel, path, culvert, power line, brush
  buildBackground(W);// back yards, second row, side-street houses, far neighborhood and land
 
  const {merged,originals,shadowProxies}=bakeAndMerge(W,scene);
@@ -81,7 +84,7 @@ export function buildWorld(scene){
 
  return {scene,road:W.named.road,originals,merged,windowMats:W.windowMats,porchMats:W.porchMats,streetLamps:W.streetLamps,foliage:W.foliage,grassMat:W.grassMat,grassMats:W.grassMats,
   groundY,authoredY,rideable:W.rideable,obstacles:W.obstacles,homes:W.homes,doors,garages,windows,sideDoors,anchor,houseAnchor,alexWindow:W.alexWindow,car:W.car,drivewayOpenings:W.drives,sideDrives:W.sideDrives||[],houses:W.houses,sidePlansAll:W.sidePlans,surfaceY:W.surfaceY,sideSurface:W.sideSurface,junctions:W.junctions,creek:W.creekInfo||null,interiorMats:W.interiorMats,
-  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,lights:W.lights,hooks:W.hooks||{},terrainY,signs:W.signs||[],
+  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,lights:W.lights,hooks:W.hooks||{},hoops:W.hoops||[],easement:W.easement,terrainY,signs:W.signs||[],
   poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space,fenceSegs:W.fenceSegs||[]};
 }
 

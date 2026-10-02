@@ -31,7 +31,7 @@ globalThis.window={};globalThis.devicePixelRatio=2;globalThis.innerWidth=1440;gl
 globalThis.FakeRenderer=class{constructor(){this.shadowMap={};this.capabilities={maxTextureSize:8192};this.pixelRatio=1;}setPixelRatio(r){this.pixelRatio=r;}setSize(){}render(){}};
 let source=fs.readFileSync(root+'game.js','utf8').replaceAll(/'\.\/([\w.\-]+)\.js'/g,(_,name)=>JSON.stringify(pathToFileURL(root+name+'.js').href)).replace('new THREE.WebGLRenderer','new globalThis.FakeRenderer');
 source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,contact,selfPose,self,foot,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},place(d,lat,v=4.5){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;},get bikeY(){return bikeY;},
- jump:jumpTo,chapter,roam,nav,placePlayer,action:()=>action(),drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},get night(){return {state,wx,wz,wa,speed,fade,roam:{...roam}};}};`;
+ jump:jumpTo,chapter,chapter2,memory,get memCast(){return memCast;},skyMat,hemi,face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else roam.a=a;},look(y,p=0){mouseYaw=y;mousePitch=p;},get prompt(){return promptItems();},roam,nav,placePlayer,action:()=>action(),drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},get night(){return {state,wx,wz,wa,speed,fade,roam:{...roam}};}};`;
 const t0=Date.now();
 await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const buildMs=Date.now()-t0;
@@ -352,15 +352,18 @@ function chapterOne(label){
  check(`${label}: the police ahead stop them; they go to the creek instead`,()=>{assert.ok(said.includes('JAMIE: “Wait—stop. Cops.”'));assert.equal(C1().objective,'Look around the creek.');});
  advance(8,watch);off();const c=h.chapter.clue.position;standAt([c.x+1.2,c.z+.6],[c.x,c.z]);
  check(`${label}: the broken reflector is there to find`,()=>assert.equal(h.ui.promptText,'F:Look closer'));tap('KeyF');
- until(()=>h.snapshot.state==='ended',40);
- check(`${label}: "That’s his." / "Why would he come back here?", silence, a bell far off, then the chapter ends`,()=>{const i=said.indexOf('YOU: “That’s his.”'),j=said.indexOf('SAM: “Why would he come back here?”');assert.ok(i>=0&&j===i+1,'lines');assert.equal(said.length-1,j,'nothing said after');
-  assert.equal(h.snapshot.state,'ended');assert.equal(element('ending').hidden,false);assert.ok(element('ending').textContent!==undefined);});
- check(`${label}: the chapter ran through every phase in order`,()=>assert.deepEqual(phases,['home','cruiser','title','briarwood','friends','oak','retrace','creek','clue','end']));
+ for(let i=0;i<40/DT&&C1().phase!=='c2-black';i++){advance(DT);watch();}// stop right at the hand-over
+ // Chapter One no longer stops on an end card: the screen goes black, a quiet CHAPTER TWO, and the
+ // same creek a few seconds later (Chapter Two's own checks follow in chapter2-sim.mjs).
+ check(`${label}: "That’s his." / "Why would he come back here?", silence, a bell far off, then black and Chapter Two`,()=>{const i=said.indexOf('YOU: “That’s his.”'),j=said.indexOf('SAM: “Why would he come back here?”');assert.ok(i>=0&&j===i+1,'lines');assert.equal(said.length-1,j,'nothing said after: '+JSON.stringify(said.slice(j)));
+  assert.notEqual(h.snapshot.state,'ended');assert.equal(element('ending').hidden,true,'no end-of-chapter menu');assert.ok(h.snapshot.state.startsWith('c1-'));});
+ check(`${label}: the chapter ran through every phase in order, into Chapter Two`,()=>assert.deepEqual(phases.slice(0,phases.indexOf('c2-black')+1),['home','cruiser','title','briarwood','friends','oak','retrace','creek','clue','c2-black']));
  check(`${label}: nothing ever went missing or non-finite`,()=>assert.deepEqual(bad,[]));
  metrics['chapter1 lines spoken']=said.length;metrics['chapter1 objectives']=objectives;
 }
 const firstStart=simTime;
-const J1=JUNCTIONS[0];const r1=ride('first ride');finalStop('first ride');chapterOne('first ride');metrics['first playthrough minutes']=+((simTime-firstStart)/60).toFixed(2);
+const {playChapterTwo,runChapterTwoChecks}=await import('./chapter2-sim.mjs'),T2={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
+const J1=JUNCTIONS[0];const r1=ride('first ride');finalStop('first ride');chapterOne('first ride');playChapterTwo(T2,'first ride');metrics['first playthrough minutes']=+((simTime-firstStart)/60).toFixed(2);
 check('first ride: the head turns toward friends heading home when you are not looking around yourself',()=>assert.ok(r1.glanced>30));
 check('first ride: memory lines appear once each, never over a friend\'s line',()=>{const texts=reflections.filter(r=>r.id!=='last').map(r=>r.text);assert.ok(r1.reflectionsSeen.length>=3,'reflections '+r1.reflectionsSeen.length);assert.equal(new Set(r1.reflectionsSeen).size,r1.reflectionsSeen.length);for(const x of r1.reflectionsSeen)assert.ok(texts.includes(x));assert.equal(r1.overlap,0);metrics.reflectionsShown=r1.reflectionsSeen.length;});
 check('no friend was hidden before going inside (Alex only once he is out of sight down Briarwood)',()=>{assert.deepEqual(r1.hiddenBad,[]);const g=r1.goneSeen.find(x=>x.who==='ALEX');assert.ok(g,'Alex never left the story');assert.ok(!g.inFrustum||g.occluded,'Alex vanished in plain view '+JSON.stringify(g));metrics.alexGoneView=g;});
@@ -369,6 +372,7 @@ check('ending freezes the world and clears prompts',()=>{assert.equal(h.snapshot
 element('again').onclick();advance(.1);
 check('replay resets story, view, bike, friends, doors and controls',()=>{const s=h.snapshot;assert.equal(s.state,'riding');assert.ok(s.distance<.2);assert.equal(s.nextMemory,0);assert.equal(s.look,0);assert.equal(s.headPitch,0);assert.equal(s.finaleT,0);assert.equal(element('ending').hidden,true);
  for(const f of h.friends.list){assert.equal(f.mode,'ride');assert.ok(f.person.group.visible&&f.bike.group.visible);assert.equal(f.person.group.parent,f.bike.group);}assert.equal(W.garages.sam.open,1);assert.equal(W.doors.jamie.open,0);assert.equal(h.keys.size,0);assert.equal(s.push,0);assert.equal(s.stamina,1);assert.equal(s.yawOffset,0);});
+check('replay resets Chapter Two too: no card, no morning, no flyers, no found bike, no memory',()=>{const c2=h.chapter2.state;assert.equal(c2.day,0);assert.equal(c2.flyers,false);assert.equal(c2.foundVisible,false);assert.equal(c2.tape,false);assert.equal(c2.searchers,0);assert.equal(h.memory.active,false);assert.equal(element('chapter-card').classList.contains('on'),false);assert.equal(h.skyMat.uniforms.day.value,0);assert.ok(!document.body.classList.contains('remembering'));assert.equal(h.ambient.morningMode,false);});
 check('replay resets the environment, interactions, memory lines and the ending',()=>{assert.equal(h.friends.mom.slammed,false);assert.equal(h.ambient.state.kidVisible,true);assert.ok(h.ambient.time.value<.2);assert.ok(h.ambient.state.lamps.every(l=>l===0));assert.ok(h.ambient.state.sprinklers.every(l=>l>.99));assert.equal(h.ambient.state.car,'wait');assert.equal(W.alexWindow.emissiveIntensity,0);
  assert.equal(h.ambient.state.swing,0);assert.equal(h.interact.pose,null);assert.deepEqual(h.interact.used,[]);assert.deepEqual(h.nostalgia.shown,[]);assert.equal(h.ui.reflection,'');assert.deepEqual(h.ending.state,{clue:false,faint:0,otherBike:false,fifthRider:false,otherBikeGone:false});assert.equal(h.ending.otherBike.visible,false);assert.equal(h.ui.promptText,'Space:Ring bell');});
 
@@ -477,6 +481,12 @@ check('friend homes have distinct persistent prologue/night landmarks',()=>{asse
 {h.jump('jamie');const w=h.chapter.windows.sam;h.placePlayer({x:w.stand.x,z:w.stand.z,a:Math.atan2(w.glass.x-w.stand.x,-(w.glass.z-w.stand.z)),mode:'walk'});advance(.2);tap('KeyF');advance(.4);
  check('Sam first: gentle redirect preserves Jamie-first order',()=>{assert.equal(C1().objective,'Find Jamie.');assert.equal(C1().sam.active,false);assert.equal(C1().line,'I should get Jamie first.');});}
 for(const [section,label] of [['alex-house','Briarwood Lane'],['jamie','Jamie’s house'],['sam','Sam’s house'],['oak','The old oak'],['retrace','The way he went'],['investigation','The creek']]){localStorage.setItem('lastlight.chapter1',JSON.stringify({section}));element('to-title').onclick();element('continue').onclick();advance(.5);check('Continue restores '+label,()=>{assert.ok(h.snapshot.state.startsWith('c1-'));assert.ok(Number.isFinite(h.camera.position.y));});}
+
+// The four confirmed human-playtest bugs on the Chapter One release (fan, flag, hoop, old oak).
+{const {runPlaytestFixChecks}=await import('./playtest-fixes.mjs');runPlaytestFixChecks({h,advance,press,release,tap,check,element,metrics,W,groundPoint});}
+// Chapter Two, beat by beat: the bike, the reflector, the culvert and the bell, the morning, the memory,
+// every QA jump and checkpoint, Continue and Start over.
+await runChapterTwoChecks(T2);
 
 const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(root+n).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(root+n)).digest('hex')]));
 console.log(JSON.stringify({runtimeHashes,passed:checks.length,checks,metrics,testMethod:'Actual Three.js geometry and full state updates with a mocked WebGL renderer and DOM.'},null,2));

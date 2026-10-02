@@ -215,7 +215,8 @@ function friendLandmarks(W,P,g){const {K}=W,sw=P.sneakWin,side=sw.s,x=side*(P.w/
   K.box(g,P.gx,2.52,P.gfront+.075,P.gw+.16,.22,.1,accent);
   for(const sign of [-1,1]){K.box(g,P.gx+sign*(P.gw/2-.08),1.28,P.gfront+.065,.15,2.5,.1,accent);K.box(g,P.gx+sign*(P.gw/2-.3),2.16,P.gfront+.17,.12,.23,.14,P.porchMat);}
   // The old driveway hoop remains visible whether the big door is open or shut.
-  K.rbox(g,P.gx,3.12,P.gfront+.2,1.32,.83,.06,.015,0xd5d5c9);K.box(g,P.gx,3.05,P.gfront+.24,.47,.32,.015,0x765945);
+  K.rbox(g,P.gx,3.12,P.gfront+.2,1.32,.83,.06,.015,0xd5d5c9);K.box(g,P.gx,3.05,P.gfront+.24,.47,.32,.015,0x765945);for(const sx of [-.32,.32])K.box(g,P.gx+sx,3.02,P.gfront+.09,.07,.07,.18,0x6f716d);
+  (W.hoops||(W.hoops=[])).push({kind:'garage',plan:P,board:{x:P.gx,y:3.12,z:P.gfront+.2},rim:{x:P.gx,y:2.85,z:P.gfront+.43},mount:{x:P.gx,y:3.02,z:P.gfront},play:{x:P.gx,z:P.gfront+5}});
   const rim=new THREE.Mesh(new THREE.TorusGeometry(.205,.014,5,18),K.mat(0x915a38));rim.rotation.x=Math.PI/2;rim.position.set(P.gx,2.85,P.gfront+.43);g.add(rim);
   for(let z=P.front+1.8;z>sw.z-.2;z-=.68)K.rbox(g,x,.106,z,.58,.025,.43,.025,HOUSE.walk);
  }
@@ -346,7 +347,8 @@ function buildGarage(W,P,g,rand,mid,siding,roofMat,gable){const {K}=W,{gx,gw,gd,
  // Driveway basketball hoop on some garages.
  if(!mid&&(P.key==='hoop'||(!P.key&&rand()<.16))){K.rbox(g,gx,3.28,gfront+.06,1.7,1.0,.06,.02,0xefeee8);K.box(g,gx,3.2,gfront+.1,.58,.42,.02,0xba5a44);K.box(g,gx,2.95,gfront+.18,.12,.05,.25,0x8a8c88);
   const ring=new THREE.Mesh(new THREE.TorusGeometry(.23,.018,5,16),K.mat(0xc05a33));ring.rotation.x=Math.PI/2;ring.position.set(gx,3.05,gfront+.36);g.add(ring);
-  for(let k=0;k<8;k++){const a=k/8*Math.PI*2;K.rod(g,[gx+Math.cos(a)*.22,3.04,gfront+.36+Math.sin(a)*.22],[gx+Math.cos(a)*.13,2.62,gfront+.36+Math.sin(a)*.13],.004,0xe8e6e0,.004,3);}}
+  for(let k=0;k<8;k++){const a=k/8*Math.PI*2;K.rod(g,[gx+Math.cos(a)*.22,3.04,gfront+.36+Math.sin(a)*.22],[gx+Math.cos(a)*.13,2.62,gfront+.36+Math.sin(a)*.13],.004,0xe8e6e0,.004,3);}
+  (W.hoops||(W.hoops=[])).push({kind:'garage',plan:P,board:{x:gx,y:3.28,z:gfront+.06},rim:{x:gx,y:3.05,z:gfront+.36},mount:{x:gx,y:3.2,z:gfront},play:{x:gx,z:gfront+5}});}
 }
 function foundationBeds(W,P,g,rand){const {K}=W,pick=pickFrom(rand),{front,w}=P,W2=w/2;
  for(const [x0,x1] of [[-W2+.3,P.doorX-P.porchW/2-.2],[P.doorX+P.porchW/2+.2,W2-.3]]){if(x1-x0<1)continue;

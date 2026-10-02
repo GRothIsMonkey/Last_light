@@ -2,7 +2,7 @@
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 export function createAudio({context=null,random=Math.random}={}){
  const AC=typeof window!=='undefined'&&(window.AudioContext||window.webkitAudioContext);
- let ctx=null,master,bus,noise,enabled=false;
+ let ctx=null,master,bus,noise,enabled=false,memLP=null;
  const layers={},loops=new Map();let nextNote=0,note=0,crickets=[],lastCrank=0,musicOn=true,nextBird=0;
  const shots=new Set();
  function shot(node){shots.add(node);node.onended=()=>{shots.delete(node);node.disconnect();};return node;}
@@ -11,7 +11,7 @@ export function createAudio({context=null,random=Math.random}={}){
  function filt(type,f,q=1){const b=ctx.createBiquadFilter();b.type=type;b.frequency.value=f;b.Q.value=q;return b;}
  function gain(v=0){const g=ctx.createGain();g.gain.value=v;return g;}
  function ensure(){if(!AC&&!context)return;if(ctx){if(!context)ctx.resume?.();return;}
-  ctx=context||new AC();master=gain(0);const limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-8;limiter.knee.value=10;limiter.ratio.value=4;limiter.attack.value=.006;limiter.release.value=.22;master.connect(limiter).connect(ctx.destination);bus=gain(1);bus.connect(master);
+  ctx=context||new AC();master=gain(0);const limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-8;limiter.knee.value=10;limiter.ratio.value=4;limiter.attack.value=.006;limiter.release.value=.22;master.connect(limiter).connect(ctx.destination);bus=gain(1);memLP=filt('lowpass',20000,.5);bus.connect(memLP).connect(master);
   const len=ctx.sampleRate*3;noise=ctx.createBuffer(1,len,ctx.sampleRate);const data=noise.getChannelData(0);for(let i=0;i<len;i++)data[i]=random()*2-1;
   // Cicadas: bright noise, pulsed, in two slowly swelling choruses.
   layers.cic=[-.6,.5].map((pan,i)=>{const s=src(),b=filt('bandpass',4700+i*700,5),amp=gain(0),out=gain(0),p=ctx.createStereoPanner();p.pan.value=pan;const lfo=ctx.createOscillator();lfo.frequency.value=38+i*9;const depth=gain(.5);lfo.connect(depth).connect(amp.gain);amp.gain.value=.5;lfo.start();s.connect(b).connect(amp).connect(out).connect(p).connect(bus);return {out,rate:.07+i*.05,phase:i*2};});
@@ -60,7 +60,14 @@ export function createAudio({context=null,random=Math.random}={}){
   carDoor(t,o){burst(t,.1,.3,'lowpass',650,.8,o);tone(88,t,.16,.14,'sine',o,60);burst(t+.02,.03,.05,'bandpass',2400,2,o);},
  };
  function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={garage:9,doorSlam:9,dog:30,dribble:7,sprinkler:5,rim:8,tap:5,pebble:6,window:5,carDoor:12,squelch:7};const o=spatial(pos,opts.gain??1,refs[name]||6);SFX[name](now()+.01,o);}
- function bell(pos=null,g=1){if(!ctx||!enabled)return;const o=spatial(pos,g,pos?10:6),t=now();for(const k of [0,.16]){tone(1760,t+k,1.3,.12,'sine',o);tone(1760*2.76,t+k,.5,.03,'sine',o);tone(1760*5.4,t+k,.2,.012,'sine',o);}}
+ // An ordinary bicycle bell. tunnel: rung somewhere inside a concrete pipe, so a little duller, with
+ // the short hollow return of the pipe after it (still just a bell).
+ function bell(pos=null,g=1,{tunnel=false}={}){if(!ctx||!enabled)return;const o=spatial(pos,g,pos?10:6),t=now();let out=o;
+  if(tunnel){const lp=filt('lowpass',2900,.7),d1=ctx.createDelay(.6),d2=ctx.createDelay(.6),e1=gain(.3),e2=gain(.14);d1.delayTime.value=.09;d2.delayTime.value=.21;
+   lp.connect(o);lp.connect(d1).connect(e1).connect(o);lp.connect(d2).connect(e2).connect(o);out=lp;}
+  for(const k of [0,.16]){tone(1760,t+k,1.3,.12,'sine',out);tone(1760*2.76,t+k,.5,.03,'sine',out);tone(1760*5.4,t+k,.2,.012,'sine',out);}}
+ // Remembering: the whole mix goes soft at the top, as if heard from a little way off.
+ function memory(on){if(!ctx||!memLP)return;memLP.frequency.setTargetAtTime(on?1900:20000,now(),on?.5:.4);}
  function footstep(surface,v){if(!ctx||!enabled)return;const t=now();if(surface==='grass'){burst(t,.08,.05*v,'lowpass',850,.7);burst(t+.01,.05,.012*v,'highpass',4000,.7);}else{burst(t,.04,.06*v,'bandpass',1700,1.2);tone(80,t,.06,.04*v,'sine',bus,50);}}
  // A distant, ordinary two-syllable call. A soft harmonic source and changing
  // vowel resonances replace the old sawtooth/feedback echo. No second voice.
@@ -99,9 +106,10 @@ export function createAudio({context=null,random=Math.random}={}){
  function reset(){musicOn=true;nextNote=0;note=0;nextBird=0;lastCrank=0;if(!ctx)return;
   for(const s of shots){try{s.stop();s.disconnect();}catch{}}shots.clear();
   for(const c of crickets)c.next=0;
-  for(const x of Object.values(layers))if(x?.gain){x.gain.cancelScheduledValues(now());x.gain.setValueAtTime(0,now());}
-  for(const x of layers.cic){x.out.gain.cancelScheduledValues(now());x.out.gain.setValueAtTime(0,now());}
-  for(const l of loops.values()){l.out.gain.cancelScheduledValues(now());l.out.gain.setValueAtTime(0,now());}
+  // A very short fade rather than a cut, so a loop that is playing (the fan, water) never clicks.
+  for(const x of Object.values(layers))if(x?.gain){x.gain.cancelScheduledValues(now());x.gain.setTargetAtTime(0,now(),.02);}
+  for(const x of layers.cic){x.out.gain.cancelScheduledValues(now());x.out.gain.setTargetAtTime(0,now(),.02);}
+  for(const l of loops.values()){l.out.gain.cancelScheduledValues(now());l.out.gain.setTargetAtTime(0,now(),.02);}
  }
  // Continuous layers follow the ride; life thins out as friends go home.
  function update(dt,s){if(!ctx||!enabled)return;const t=now();listener.x=s.listener.x;listener.y=s.listener.y;listener.z=s.listener.z;const fl=Math.hypot(s.forward.x,s.forward.z)||1;listener.fx=s.forward.x/fl;listener.fz=s.forward.z/fl;
@@ -116,20 +124,24 @@ export function createAudio({context=null,random=Math.random}={}){
   // Crickets arrive as the light goes.
   const ck=smooth((p-.35)/.45)*.6+night*.25;for(const c of crickets){if(ck<.02)break;if(t>=c.next){c.next=t+1/c.rate*(.8+random()*.5);const o=gain(ck*c.vol*.9),pn=ctx.createStereoPanner();pn.pan.value=c.pan;o.connect(pn).connect(bus);
    for(let k=0;k<3;k++)tone(c.pitch,t+.02+k*.045,.022,.03,'sine',o);}}
-  if(p<.55&&s.state==='riding'&&t>nextBird){nextBird=t+8+random()*13;sfx('bird',{x:listener.x+(random()<.5?-1:1)*18,y:listener.y+6,z:listener.z-22},{gain:1-p});}
+  if(p<.55&&(s.state==='riding'||s.morning)&&t>nextBird){nextBird=t+8+random()*13;sfx('bird',{x:listener.x+(random()<.5?-1:1)*18,y:listener.y+6,z:listener.z-22},{gain:1-p});}
   // Positional loops from the world (a mower early on, a car engine).
   for(const src of s.sources||[]){const id=src.id||src.kind;let l=loops.get(id);if(!l){l=makeLoop(src.kind);loops.set(id,l);}const dx=src.pos.x-listener.x,dz=src.pos.z-listener.z,dist=Math.hypot(dx,dz);
-   const rx=-listener.fz,rz=listener.fx;l.pan.pan.setTargetAtTime(clamp((dx*rx+dz*rz)/(dist||1),-1,1)*.8,t,.1);set(l.out,src.level*l.vol*Math.min(1,l.ref/(dist+1))*(dist>(l.far||260)?0:1)*(1-.55*(src.muffle||0)),l.tc||.3);l.update?.(src,t,dist,dt);}
+   const rx=-listener.fz,rz=listener.fx;l.pan.pan.setTargetAtTime(clamp((dx*rx+dz*rz)/(dist||1),-1,1)*.8*(l.near?Math.min(1,dist/l.near):1),t,.1);set(l.out,src.level*l.vol*Math.min(1,l.ref/(dist+1))*(dist>(l.far||260)?0:1)*(1-.55*(src.muffle||0)),l.tc||.3);l.update?.(src,t,dist,dt);}
   for(const [k,l] of loops)if(!(s.sources||[]).some(x=>(x.id||x.kind)===k))set(l.out,0,.3);
   // Late at night: katydids in the trees, near and far.
-  if(s.night1){for(const k of katydids){if(t<k.next)continue;k.next=t+k.rate*(.85+random()*.3);const o=gain(k.vol),pn=ctx.createStereoPanner();pn.pan.value=k.pan;o.connect(pn).connect(bus);for(let j=0;j<k.n;j++)burst(t+.02+j*.075,.03,.05,'bandpass',k.pitch,6,o);}}
+  if(s.night1&&!s.morning){for(const k of katydids){if(t<k.next)continue;k.next=t+k.rate*(.85+random()*.3);const o=gain(k.vol),pn=ctx.createStereoPanner();pn.pan.value=k.pan;o.connect(pn).connect(bus);for(let j=0;j<k.n;j++)burst(t+.02+j*.075,.03,.05,'bandpass',k.pitch,6,o);}}
   // The old melody thins out through the ride and falls silent at the end of the street.
   if(musicOn&&s.finale<2&&t>nextNote){const notes=[220,329.63,440,493.88,369.99,329.63,293.66,220];tone(notes[note++%notes.length],t,4.5,.055*(1-p*.35));tone(110,t,5,.018);nextNote=t+3.5+random()*2+p*2.5;}
  }
  const katydids=[...Array(4)].map((_,i)=>({pan:-.9+i*.6,next:0,rate:1.05+random()*.6,pitch:5600+random()*1600,vol:.12+random()*.1,n:2+(i%2)}));
  // A speech-like on/off pattern for voices heard through a radio or a wall.
+ // The syllable phase is accumulated from a slowly wandering rate. (It used to be the clock times
+ // that rate, whose real frequency grows with the clock: by the time you reach the friends' windows
+ // the gain jumped about every frame, a stutter heard as a broken fan.)
  function chatter(g,base,t,state,dt){state.left-=dt;if(state.left<=0){state.on=!state.on;state.left=state.on?.7+random()*2.2:1.8+random()*4.5;if(!state.on&&state.squelch)burst(t,.12,.03,'highpass',1700,.7,state.squelch);}
-  const syll=state.on?.55+.45*Math.abs(Math.sin(t*(7+3*Math.sin(t*1.3)))):0;g.gain.setTargetAtTime(base*syll,t,.03);}
+  state.w=(state.w||0)+dt*1.3;state.ph=(state.ph||0)+dt*(7+3*Math.sin(state.w));
+  const syll=state.on?.55+.45*Math.abs(Math.sin(state.ph)):0;state.level=base*syll;g.gain.setTargetAtTime(state.level,t,.03);}
  function makeLoop(kind){const out=gain(0),pan=ctx.createStereoPanner();out.connect(pan).connect(bus);
   if(kind==='siren'){// two detuned voices through a horn-like band, swept as a wail or a yelp
    const o1=ctx.createOscillator(),o2=ctx.createOscillator();o1.type='sawtooth';o2.type='square';const mix=gain(.5),o2g=gain(.3),hp=filt('highpass',420,.7),pk=filt('peaking',1300,1.2),lp=filt('lowpass',6000,.5);pk.gain.value=6;
@@ -138,13 +150,22 @@ export function createAudio({context=null,random=Math.random}={}){
     down=src.mode==='down'?Math.min(1,down+dt/1.6):0;const f=(src.mode==='yelp'?650+800*y:620+780*wail)*(1-.45*down)*(src.pitch||1);
     o1.frequency.setTargetAtTime(f,t,.012);o2.frequency.setTargetAtTime(f*1.004,t,.012);lp.frequency.setTargetAtTime(Math.max(450,9000*Math.exp(-dist/240))*(1-.75*(src.muffle||0))+200,t,.08);}};}
   if(kind==='radio'){const n=src(),bp=filt('bandpass',1650,1.5),g=gain(0),sq=gain(.6);n.connect(bp).connect(g).connect(out);sq.connect(out);const st={on:false,left:1,squelch:sq};
-   return {out,pan,vol:.05,ref:6,far:60,update(s2,t,dist,dt){chatter(g,1,t,st,dt);}};}
+   return {out,pan,vol:.05,ref:6,far:60,gate:st,update(s2,t,dist,dt){chatter(g,1,t,st,dt);}};}
   if(kind==='tv'){const n=src(),bp=filt('bandpass',1050,.9),g=gain(0);n.connect(bp).connect(filt('lowpass',1800)).connect(g).connect(out);const st={on:false,left:.5};
-   return {out,pan,vol:.03,ref:4,far:30,update(s2,t,dist,dt){chatter(g,1,t,st,dt);}};}
+   return {out,pan,vol:.03,ref:4,far:30,near:2.5,gate:st,update(s2,t,dist,dt){chatter(g,1,t,st,dt);}};}
+  // An ordinary bedroom fan behind a closed window: steady air and a soft motor hum, never gated.
+  // The slight swell is the blades, far too slow and shallow to read as a pulse.
+  if(kind==='fan'){const n=src(),air=gain(.8);n.connect(filt('highpass',160,.6)).connect(filt('lowpass',1150,.5)).connect(air).connect(out);
+   const m=ctx.createOscillator();m.frequency.value=118;m.connect(filt('lowpass',240)).connect(gain(.06)).connect(out);m.start();
+   const lfo=ctx.createOscillator();lfo.frequency.value=.31;lfo.connect(gain(.05)).connect(air.gain);lfo.start();
+   return {out,pan,vol:.045,ref:3,far:30,near:2.5,steady:true};}
   if(kind==='water'){const a=src(),b=src(),ga=gain(.6),gb=gain(.3);a.connect(filt('bandpass',850,.5)).connect(ga).connect(out);b.connect(filt('bandpass',2600,1.1)).connect(gb).connect(out);let ph=random()*9;
    return {out,pan,vol:.05,ref:7,far:70,update(s2,t,dist,dt){ph+=dt;ga.gain.setTargetAtTime(.45+.25*Math.sin(ph*.7)+.1*Math.sin(ph*2.3),t,.2);gb.gain.setTargetAtTime(.2+.15*Math.sin(ph*1.7+1),t,.15);}};}
   if(kind==='idle'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=34;const lp=filt('lowpass',190);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('lowpass',380)).connect(gain(.18)).connect(out);return {out,pan,vol:.07,ref:7,far:90};}
+  // The big culvert: a low hollow air in the pipe, and now and then a drip echoing somewhere inside.
+  if(kind==='culvert'){const a=src(),b=src(),ga=gain(.7),gb=gain(0);a.connect(filt('lowpass',230,.8)).connect(ga).connect(out);b.connect(filt('bandpass',1250,7)).connect(gb).connect(out);let next=1+random()*3;
+   return {out,pan,vol:.06,ref:6,far:50,update(s2,t,dist,dt){next-=dt;if(next<=0){next=2.5+random()*4;gb.gain.setValueAtTime(0,t);gb.gain.linearRampToValueAtTime(.5,t+.01);gb.gain.exponentialRampToValueAtTime(.001,t+.5);}}};}
   if(kind==='mower'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=96;const lp=filt('lowpass',650),am=gain(.6),lfo=ctx.createOscillator(),d=gain(.35);lfo.frequency.value=7;lfo.connect(d).connect(am.gain);o.connect(lp).connect(am).connect(out);o.start();lfo.start();const n=src();n.connect(filt('bandpass',400,.8)).connect(gain(.2)).connect(out);return {out,pan,vol:.09,ref:40};}
   const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=48;const lp=filt('lowpass',320);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('lowpass',500)).connect(gain(.25)).connect(out);return {out,pan,vol:.18,ref:10};}
- return {ensure,setEnabled,setVolume,sfx,bell,footstep,call,callName,ending,leaving,reset,update,get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;}};
+ return {ensure,setEnabled,setVolume,sfx,bell,memory,footstep,call,callName,ending,leaving,reset,update,get loops(){return loops;},get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;}};
 }

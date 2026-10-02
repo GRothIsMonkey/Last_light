@@ -131,7 +131,9 @@ export function buildStreets(W){
   const sc=cutsFor(f.id,1).concat(cutsFor(f.id,-1));
   for(const ss of [-1,1]){const cuts=cutsFor(f.id,ss),brk=[];for(const c of cuts)brk.push(c.u0,c.u1);
    const ck=j.creek?range(j.creek.u-7,j.creek.u+7,.5):[],us=uniq([...range(5,L+24,2),u0,...brk,...ck]),vs=[h+.3,h+1,h+1.65,h+2.4,h+3.15,h+4,h+5,h+6.5,h+8,h+10,h+12,h+15,h+18,h+21,h+24,h+27,h+30,h+34,h+38,44,...(j.creek?[8.6,9,9.4,9.8,10.2,j.creek.end-1.2,j.creek.end-.4,j.creek.end+.4,j.creek.end+1.2]:[])].map(v=>v*ss).sort((a,b)=>a-b);
-   grid(sb,vs,us,LAWN,grass,(v,u,va,vb,ua,ub)=>{if(u<u0&&Math.abs(v)<h+R)return true;for(const c of cuts)if(u>c.u0&&u<c.u1){if(Math.abs(v)<h+XS.walk)return true;if(c.inside(ua+.02,va)&&c.inside(ub-.02,va)&&c.inside(ua+.02,vb)&&c.inside(ub-.02,vb))return true;}return false;});}
+   // (Cells that would roof over the easement's trench or culvert are left out; its own ground is there.)
+   const ez=W.easement,overTrench=(ua,ub,va,vb)=>ez&&ss>0&&Math.max(Math.abs(va),Math.abs(vb))>28&&[[ua,va],[ub,va],[ua,vb],[ub,vb],[(ua+ub)/2,(va+vb)/2]].some(([uu,vv])=>{const p=f.point(uu,vv);return ez.trench(p.x,p.z,1);})||(ez&&ss>0&&(()=>{const p=f.point((ua+ub)/2,(va+vb)/2);return ez.inside(p.x,p.z,-.3);})());
+   grid(sb,vs,us,LAWN,grass,(v,u,va,vb,ua,ub)=>{if(overTrench(ua,ub,va,vb))return true;if(u<u0&&Math.abs(v)<h+R)return true;for(const c of cuts)if(u>c.u0&&u<c.u1){if(Math.abs(v)<h+XS.walk)return true;if(c.inside(ua+.02,va)&&c.inside(ub-.02,va)&&c.inside(ua+.02,vb)&&c.inside(ub-.02,vb))return true;}return false;});}
   // Asphalt ends where the land beyond the crest takes over: finish it with a curb line.
   K.box(sb,0,.02,-(L+.15),2*h+.6,.1,.3,curbC);
  }

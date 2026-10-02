@@ -49,6 +49,8 @@ const ball=sphereGeo(2);
 function mesh(parent,geo,color,shadow=true){const m=new THREE.Mesh(geo,typeof color==='object'?color:material(color));m.castShadow=shadow;parent.add(m);return m;}
 // Merge rigid parts ({geo,color,matrix}) into one vertex-colored geometry.
 const _c=new THREE.Color();
+// Alex's rear reflector: the broken piece found by the creek is a large part of this lens.
+export const REFLECTOR={r:.049,color:0x8a1a14};
 export function mergeParts(parts){let n=0;const list=parts.map(({geo,color,matrix})=>{const g=(geo.index?geo.toNonIndexed():geo.clone()).applyMatrix4(matrix||new THREE.Matrix4());if(!g.attributes.normal)g.computeVertexNormals();n+=g.attributes.position.count;return {g,color};});
  const pos=new Float32Array(n*3),nor=new Float32Array(n*3),col=new Float32Array(n*3);let o=0;
  for(const {g,color} of list){_c.set(color);const P=g.attributes.position,N=g.attributes.normal;for(let i=0;i<P.count;i++,o++){pos[o*3]=P.getX(i);pos[o*3+1]=P.getY(i);pos[o*3+2]=P.getZ(i);nor[o*3]=N.getX(i);nor[o*3+1]=N.getY(i);nor[o*3+2]=N.getZ(i);col[o*3]=_c.r;col[o*3+1]=_c.g;col[o*3+2]=_c.b;}}
@@ -239,8 +241,15 @@ export function createBike(spec,{grips=0x2b2b2d}={}){
  if(extras.includes('pegs'))for(const s of [-1,1])fp.push({geo:new THREE.CylinderGeometry(.018,.018,.1,8),color:0x9da09a,matrix:M4(s*.09,rear.y,rear.z,1,1,1,0,0,Math.PI/2)});
  if(extras.includes('bottle')){const a=V(0,bb.y+.12,bb.z-.09),b=V(0,low.y-.08,low.z+.14);tube(fp,a,b,.028,0x3a86c8,10);}
  if(extras.includes('rack')){for(const s of [-1,1])tube(fp,V(s*.07,rear.y+.04,rear.z),V(s*.07,seat.y+.05,seat.z+.22),.008,0x9da09a);fp.push({geo:new THREE.BoxGeometry(.14,.012,.3),color:0x9da09a,matrix:M4(0,seat.y+.06,seat.z+.3)});}
- // A round red reflector on the back of the rack, its cracked bracket held on with black tape.
- if(extras.includes('rear-reflector')){const z=seat.z+.455,y=seat.y+.015;fp.push({geo:new THREE.CylinderGeometry(.034,.034,.012,14),color:0xb3261e,matrix:M4(0,y,z,1,1,1,Math.PI/2)},{geo:new THREE.BoxGeometry(.03,.05,.012),color:0x9da09a,matrix:M4(0,y+.035,z-.012)},{geo:new THREE.BoxGeometry(.036,.018,.02),color:0x161617,matrix:M4(0,y+.047,z-.01)});}
+ // A round red reflector on the back of the rack, its cracked bracket held on with black tape. Its
+ // size and red are the piece found at the creek (chapter1.js), so the two can be matched up.
+ // The same mount after the lens has broken away (Chapter Two): the bracket bent down a little,
+ // the black tape still round it, a jagged red sliver of the lens left in the clip.
+ if(extras.includes('rear-reflector-broken')){const z=seat.z+.455,y=seat.y+.015,bent=M4(0,y+.035,z-.012,1,1,1,.32);
+  fp.push({geo:new THREE.BoxGeometry(.03,.05,.012),color:0x9da09a,matrix:bent},{geo:new THREE.BoxGeometry(.036,.018,.02),color:0x161617,matrix:M4(0,y+.047,z-.006,1,1,1,.32)},
+   {geo:new THREE.CylinderGeometry(REFLECTOR.r,REFLECTOR.r,.012,14,1,false,.4,1.05),color:REFLECTOR.color,matrix:M4(0,y+.006,z-.004,1,1,1,Math.PI/2+.32)},
+   {geo:new THREE.BoxGeometry(.006,.012,.006),color:0x9da09a,matrix:M4(.009,y+.017,z-.008)});}
+ if(extras.includes('rear-reflector')){const z=seat.z+.455,y=seat.y+.015;fp.push({geo:new THREE.CylinderGeometry(REFLECTOR.r,REFLECTOR.r,.012,14),color:REFLECTOR.color,matrix:M4(0,y,z,1,1,1,Math.PI/2)},{geo:new THREE.BoxGeometry(.03,.05,.012),color:0x9da09a,matrix:M4(0,y+.035,z-.012)},{geo:new THREE.BoxGeometry(.036,.018,.02),color:0x161617,matrix:M4(0,y+.047,z-.01)});}
  const frameMesh=new THREE.Mesh(mergeParts(fp),vcMetal);frameMesh.castShadow=true;frame.add(frameMesh);
  const chainPts=[.06,bb.y+.085,bb.z,.06,rear.y+.04,rear.z,.06,bb.y-.085,bb.z,.06,rear.y-.04,rear.z],cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(chainPts,3));frame.add(new THREE.LineSegments(cg,new THREE.LineBasicMaterial({color:0x444440})));
  const tire=S.tire??0x2f3133,knobby=extras.includes('knobby');

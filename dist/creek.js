@@ -48,11 +48,13 @@ export function buildCreek(W){
   // Chain-link along both sides of the strip and across the back, pulled loose by the channel.
   const u0=C.u-C.half-.3,u1=C.u+C.half+.3,back=s*31.5;
   W.fenceRun(f,[[u0,s*8.7],[u0,back]],'chain');W.fenceRun(f,[[u1,s*8.7],[u1,back]],'chain');
-  W.fenceRun(f,[[u0,back],[C.u-1.5,back]],'chain');W.fenceRun(f,[[C.u+1.9,back],[u1,back]],'chain');
+  W.fenceRun(f,[[u0,back],[C.u-2.3,back]],'chain');W.fenceRun(f,[[C.u+2.7,back],[u1,back]],'chain');// a gap a kid (or a grown-up) can get through
  }
  // Trees along the banks and a wood behind the back fence, where the creek goes on in the dark.
  // The near bank on the inside of the curve stays open: that is the way down from the sidewalk.
- const trees=[];const tree=(u,v,o)=>{const t=veg.tree(f,u,v,gy(u,v),{clearance:1.6,...o});if(t)trees.push([u,v]);};
+ // (Nothing stands in the drainage easement beyond the back fence: it builds its own woods.)
+ const ez=W.easement,clear=(u,v,m=1.2)=>{if(!ez)return true;const p=f.point(u,v);return !ez.inside(p.x,p.z,m);};
+ const trees=[];const tree=(u,v,o)=>{if(!clear(u,v,2.5))return;const t=veg.tree(f,u,v,gy(u,v),{clearance:1.6,...o});if(t)trees.push([u,v]);};
  const open=(u,v)=>v>0&&u<101.5&&v<19;
  for(const s of [-1,1]){
   for(const [u,v,size,kind] of [[89.2,10.6,.95,'maple'],[90.2,22,1.05,'oak'],[89.6,28.2,.9,'maple'],[95.4,25.6,.8,'young'],[104.6,26.2,1,'maple'],[110.9,11.2,.95,'maple'],[111.6,19.6,1.1,'oak'],[110.2,27.6,.85,'pine'],[106.4,15.8,.75,'young'],[104.3,9.8,.7,'birch']]){
@@ -61,12 +63,12 @@ export function buildCreek(W){
   // Saplings and volunteer trees filling in the banks, the way an easement grows wild.
   for(let k=0;k<10;k++){const u=C.u-C.half+1.5+rand()*(2*C.half-3),v=s*(10.5+rand()*18);if(open(u,v)||Math.abs(u-C.u)<1.6)continue;tree(u,v,{size:.55+rand()*.4,kind:rand()<.5?'young':rand()<.5?'birch':'maple',lod:'full',clearance:1.3});}
   // Brush along the fences and around the grate.
-  for(let k=0;k<12;k++){const u=k<6?C.u-C.half+.9+rand()*1.2:C.u+C.half-2.1+rand()*1.2,v=s*(10+rand()*20);if(open(u,v))continue;veg.shrub(W.place(f,u,v,{y:gy(u,v)}),0,0,.55+rand()*.4,rand);}
+  for(let k=0;k<12;k++){const u=k<6?C.u-C.half+.9+rand()*1.2:C.u+C.half-2.1+rand()*1.2,v=s*(10+rand()*20);if(open(u,v)||!clear(u,v))continue;veg.shrub(W.place(f,u,v,{y:gy(u,v)}),0,0,.55+rand()*.4,rand);}
   for(let k=0;k<4;k++){const u=C.u+(rand()<.5?-1:1)*(2.6+rand()*1.6),v=s*(C.end-2-rand()*2);veg.shrub(W.place(f,u,v,{y:gy(u,v)}),0,0,.6+rand()*.3,rand);}
  }
  // Tall weeds on the banks: the same bent blades as the lookout field, swaying with the wind.
  const tall=K.mat(0x8a9263,{side:THREE.DoubleSide,roughness:1});if(!W.foliage.includes(tall))W.foliage.push(tall);
- for(let k=0;k<210;k++){const s=rand()<.5?-1:1,u=C.u-C.half+.6+rand()*(2*C.half-1.2),v=s*(9.4+rand()*(C.end-10.5));if(Math.abs(u-C.u)<1.05)continue;
+ for(let k=0;k<210;k++){const s=rand()<.5?-1:1,u=C.u-C.half+.6+rand()*(2*C.half-1.2),v=s*(9.4+rand()*(C.end-10.5));if(Math.abs(u-C.u)<1.05||!clear(u,v,.2))continue;
   const g=W.place(f,u,v,{y:gy(u,v)-.04,rot:rand()*3});for(let b=0;b<6;b++){const hgt=.35+rand()*.55,w=.016+rand()*.02,bend=.08+rand()*.16;
    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([-w,0,0,w,0,0,-w*.6,hgt*.55,bend*.3,w*.6,hgt*.55,bend*.3,bend*.35,hgt,bend],3));geo.setIndex([0,1,2,1,3,2,2,3,4]);geo.computeVertexNormals();
    const c=new THREE.Mesh(geo,tall);c.rotation.y=rand()*Math.PI*2;c.position.set((rand()-.5)*.25,0,(rand()-.5)*.25);g.add(c);}}

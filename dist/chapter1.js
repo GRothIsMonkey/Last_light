@@ -22,7 +22,7 @@ const SAVE='lastlight.chapter1';
 // QA jumps in story order (the prologue's own, alex-departure, is in game.js). Checkpoints are
 // the ones marked; Continue on the title menu goes back to the last one reached.
 export const SECTIONS=['ride-home','police','title','alex-house','jamie','sam','oak','retrace','investigation','clue'];
-const CHECKPOINT={'alex-house':'Briarwood Lane','jamie':'Jamie’s house','sam':'Sam’s house','oak':'The old oak','retrace':'The way he went','investigation':'The creek'};
+export const CHECKPOINT={'alex-house':'Briarwood Lane','jamie':'Jamie’s house','sam':'Sam’s house','oak':'The old oak','retrace':'The way he went','investigation':'The creek'};
 // The time on the date line as the night goes on.
 const CLOCK={home:'8:44',briarwood:'8:47',friends:'8:58',sam:'9:06',oak:'9:15',retrace:'9:22',creek:'9:31'};
 // How dark it has become (lighting reads this through game.js).
@@ -46,6 +46,7 @@ export function createChapter1(o){
  function windowInfo(h,w){const wall=h.toWorld(w.wallX,w.z),land=h.toWorld(w.wallX+w.s*.95,w.z+.95);return {stand:at(h,w.stand),inside:at(h,w.inside),outside:at(h,w.outside),sill:w.sill,wall:{x:wall.x,z:wall.z},land:{x:land.x,z:land.z},floorY:wall.ground+h.floor,glass:{x:w.sill.x,y:w.sill.y+.6,z:w.sill.z},win:w};}
  const JWin=windowInfo(JH,JW),SWin=windowInfo(SH,SW);
  const sideDoor={outside:at(SH,SD.outside),inside:at(SH,SD.inside),through:at(SH,SD.through)};
+ const samTV=(()=>{const p=SH.toWorld(-SW.s*SH.w*.22,SH.front-.4);return new THREE.Vector3(p.x,p.ground+SH.floor+1.1,p.z);})();
  // ---- small props of the night: the clue, a tire track, flashlight beams, fireflies ------------
  const clue=new THREE.Group();clue.name='alex-reflector';scene.add(clue);clue.visible=false;
  const lens=new THREE.MeshStandardMaterial({color:0x8a1a14,emissive:0xff2a18,emissiveIntensity:0,roughness:.3,metalness:.1});
@@ -269,13 +270,13 @@ export function createChapter1(o){
    {act:()=>{S.bellAt=S.t;const b=side(...spotsC.bell);o.audio()?.bell({x:b.x,y:b.y+1,z:b.z},1.8);S.lookTarget=b;jamie.lookAt=b;sam.lookAt=b;},wait:3.4},
    {act:()=>{S.endT=0;},wait:.1}]);}
  // ---- the spots F works on ---------------------------------------------------------------------------------
- function spots(){const out=[];const ph=S.phase;
+ function spots(){const out=[];const ph=S.phase;if(api.next?.owns(ph))return api.next.spots();
   if((ph==='friends')&&!S.flags.jamieTapped)out.push({id:'tap-jamie',label:'Tap on the window',at:JWin.stand,face:JWin.glass,r:2.6});
   if((ph==='friends')&&!S.flags.samSignal&&S.samTap<3)out.push({id:'tap-sam',label:'Tap on the window',at:SWin.stand,face:SWin.glass,r:2.5});
   if(ph==='creek'){const c=clue.position;out.push({id:'reflector',label:'Look closer',at:c,face:c,r:1.9});}
   return out;}
- function spot(){if(busy()&&S.phase==='friends'&&(S.flags.jamieTapped||S.flags.samSignal))return null;const p=me();if(!p.walking)return null;let best=null,bd=1e9;for(const s of spots()){const d=dist(p,s.at);if(d>s.r||d>bd)continue;const a=wrap(headingTo(p.x,p.z,s.face.x,s.face.z)-p.a);if(Math.abs(a)>1.25&&d>.8)continue;best=s;bd=d;}return best;}
- function act(id){if(id==='tap-jamie')tapJamie();else if(id==='tap-sam')tapSam();else if(id==='reflector'&&S.phase==='creek')findClue();}
+ function spot(){if(busy()&&S.phase==='friends'&&(S.flags.jamieTapped||S.flags.samSignal))return null;const p=me();if(!p.walking&&!(p.riding&&p.speed<.3))return null;let best=null,bd=1e9;for(const s of spots()){if(!p.walking&&!s.ride)continue;const d=dist(p,s.at);if(d>s.r||d>bd)continue;const a=wrap(headingTo(p.x,p.z,s.face.x,s.face.z)-p.a);if(Math.abs(a)>1.25&&d>.8)continue;best=s;bd=d;}return best;}
+ function act(id){if(api.next?.owns(S.phase)){api.next.act(id);return;}if(id==='tap-jamie')tapJamie();else if(id==='tap-sam')tapSam();else if(id==='reflector'&&S.phase==='creek')findClue();}
  // ---- every frame -----------------------------------------------------------------------------------------
  const eye=new THREE.Vector3();
  function update(dt){if(S.phase==='off')return;S.t+=dt;S.pt+=dt;const p=me();eye.copy(camera.position);P.x=p.x;P.z=p.z;
@@ -310,7 +311,8 @@ export function createChapter1(o){
    if(!S.flags.nervous&&S.searchT>9&&!busy()){S.flags.nervous=true;talk([{who:'SAM',text:'“This is a bad idea.”',from:sam,time:2.4}]);}
    if(!S.flags.trackSeen&&dist(p,trackMid)<2.4&&p.walking&&camLooksAt(trackMid,.5)&&!busy()){S.flags.trackSeen=true;talk([{who:'SAM',text:'“Somebody rode down here.”',from:sam,time:2.6}]);}
    if(!S.flags.pointed&&S.searchT>38&&!busy()){S.flags.pointed=true;S.lookTarget=clue.position;talk([{who:'JAMIE',text:'“Wait. What’s that?”',from:jamie,time:2.4}]);}}
-  if(S.phase==='clue'){S.clueT+=dt;S.pose.w=smooth(S.clueT/1.1);if(S.bellAt>=0){const b=side(...spotsC.bell),w=smooth((S.t-S.bellAt-.2)/1.6);S.pose.yaw=S.pose.baseYaw+wrap(headingTo(S.pose.x,S.pose.z,b.x,b.z)-S.pose.baseYaw)*w;S.pose.pitch=-.86+.82*w;S.pose.y=S.pose.baseY+.28*w;}if(S.endT>=0){S.endT+=dt;fade(smooth(S.endT/3.6));if(S.endT>4.2){go('end');finish();}}}
+  if(S.phase==='clue'){S.clueT+=dt;S.pose.w=smooth(S.clueT/1.1);if(S.bellAt>=0){const b=side(...spotsC.bell),w=smooth((S.t-S.bellAt-.2)/1.6);S.pose.yaw=S.pose.baseYaw+wrap(headingTo(S.pose.x,S.pose.z,b.x,b.z)-S.pose.baseYaw)*w;S.pose.pitch=-.86+.82*w;S.pose.y=S.pose.baseY+.28*w;}if(S.endT>=0){S.endT+=dt;fade(smooth(S.endT/3.6));if(S.endT>4.2){if(api.next){api.pose=null;S.pose=null;api.next.begin();}else{go('end');finish();}}}}
+  if(api.next&&api.next.owns(S.phase))api.next.update(dt);
   // Alex's dad, out at the end of the driveway, calling his name.
   // Ordinary search sounds, heard only near his street and never down at the creek.
   if(S.dadCall>0&&S.t>S.dadCall&&['friends','oak','retrace'].includes(S.phase)&&dist(me(),dad)<110){S.dadCall=S.t+38+Math.random()*12;const q=side(119.4,6.4);if(!dad.walking){dad.walk([[q.x,q.z]],{speed:1.1,then:a=>{a.face(ha(119.4)+Math.PI*.5);a.gest(null);
@@ -320,7 +322,7 @@ export function createChapter1(o){
   if(S.brakeT>0){S.brakeT-=dt;if(S.brakeT<=0)roam.brake=0;}
   // Cast and cars.
   for(const a of adults)a.update(dt,{eye});police.update(dt,eye);updateSiren(dt);
-  comp.update(dt,{player:{...p,bx:p.bike.x,bz:p.bike.z},eye,clock:S.t,speaker:speaking(),inView,obstacles:blockers().filter(b=>!comp.all.some(c=>Math.hypot(c.bx-b.x,c.bz-b.z)<.01||Math.hypot(c.px-b.x,c.pz-b.z)<.01))});
+  comp.update(dt,{player:{...p,bx:p.bike.x,bz:p.bike.z},eye,clock:S.t,speaker:speaking(),inView,poi:S.poiFor||null,obstacles:blockers().filter(b=>!comp.all.some(c=>Math.hypot(c.bx-b.x,c.bz-b.z)<.01||Math.hypot(c.px-b.x,c.pz-b.z)<.01))});
   updateFlashlights(dt);updateClue(dt);flyMat.uniforms.uTime.value=S.t;flyMat.uniforms.uScale.value=(o.renderer?.domElement?.height||900)*.9;
   for(let i=0;i<FN;i++){const h=flyHome[i],t=S.t*.3+i;fly[i*3]=h.x+Math.sin(t*.7)*1.2;fly[i*3+1]=nav.baseY?.(h.x,h.z)+.5+Math.sin(t*.5)*.4+(i%3)*.35;fly[i*3+2]=h.z+Math.cos(t*.6)*1.2;}flyGeo.attributes.position.needsUpdate=true;
   sources();attention();}
@@ -339,7 +341,11 @@ export function createChapter1(o){
   for(const c of [carA,carB])if(c.active)out.push({id:'idle-'+c.name,kind:'idle',pos:c.pos,level:c.parked?.8:1});
   if(officer2.visible)out.push({id:'radio',kind:'radio',pos:officer2.pos,level:1});
   if(S.flags.night){const w=side(CR.u,CR.end-6);out.push({id:'water',kind:'water',pos:new THREE.Vector3(w.x,w.y,w.z),level:1});}
-  if(S.phase==='friends'&&!S.samIn)out.push({id:'tv',kind:'tv',pos:SWin.glass,level:1});}
+  // Sam's fan, behind his bedroom window all night (he sleeps with it on), and his dad's TV at the
+  // front of the house while his dad is still up.
+  if(S.flags.night)out.push({id:'fan',kind:'fan',pos:SWin.glass,level:1});
+  if(S.phase==='friends'&&!S.samIn)out.push({id:'tv',kind:'tv',pos:samTV,level:1});
+  if(api.next?.owns(S.phase))api.next.sources(out);}
  // ---- where your eyes go (riding) ------------------------------------------------------------------------------------
  const att=new THREE.Vector3();
  function attention(){api.urgent=false;api.glanceMax=.85;let t=null;
@@ -347,14 +353,14 @@ export function createChapter1(o){
    if(d<150&&(L.street==='main'||L.u<70)){t=att.set(carA.x,carA.y+1,carA.z);api.urgent=d<45;api.glanceMax=1.75;S.cruiserSeen=true;
     if(d<14&&!S.flags.braked&&me().riding){S.flags.braked=true;roam.brake=.5;S.brakeT=1.5;}}}
   if(!t&&S.line&&S.line.from){const f=S.line.from;t=f.person?att.copy(f.person.group.position).setY(f.person.group.position.y+1.3):null;}
-  if(!t&&S.lookTarget&&S.phase==='clue')t=S.lookTarget;
+  if(!t&&S.lookTarget&&(S.phase==='clue'||api.next?.owns(S.phase)))t=S.lookTarget;
   api.target=t;}
  // ---- flashlights and the glint ------------------------------------------------------------------------------------
  const hand=new THREE.Vector3(),aim=new THREE.Vector3(),aimS=new THREE.Vector3(),tmp=new THREE.Vector3();let sweep=0;
  function updateFlashlights(dt){const H=police.head;
   if(S.flashOn&&jamie.active){police.spotUser.who=jamie;torch.visible=true;jamie.person.parts.rhand.getWorldPosition(hand);
    // Where Jamie points it: around the bank and the channel, at what you are looking at, at the sound.
-   sweep+=dt;let target=S.lookTarget;if(!target){const k=Math.floor(sweep/3.2)%4,pts=[[97.2,14.8],[99.1,18.6],[98,12.6],[96.4,19.4]];target=side(...pts[k]);target.y=nav.groundY(target.x,target.z);}
+   sweep+=dt;let target=S.jamieAim||S.lookTarget;if(!target&&api.next?.owns(S.phase))target=api.next.jamieSweep(sweep);if(!target){const k=Math.floor(sweep/3.2)%4,pts=[[97.2,14.8],[99.1,18.6],[98,12.6],[96.4,19.4]];target=side(...pts[k]);target.y=nav.groundY(target.x,target.z);}
    aim.set(target.x,(target.y??nav.groundY(target.x,target.z))+.05,target.z);if(!S.flags.aimReady){aimS.copy(aim);S.flags.aimReady=true;}else aimS.lerp(aim,1-Math.exp(-3.5*dt));jamie.lookAt={x:aimS.x,z:aimS.z,y:aimS.y};
    H.position.copy(hand);H.target.position.copy(aimS);H.angle=.31;H.penumbra=.8;H.distance=18;H.decay=2;H.intensity=clamp(hand.distanceTo(aimS)*3.3,8,25);H.color.setHex(0xfff0d6);
    beamJ.visible=true;beamJ.position.copy(hand);beamJ.lookAt(aimS);beamJ.material.uniforms.uA.value=.035;}
@@ -368,13 +374,13 @@ export function createChapter1(o){
   const pl=o.playerLight;if(pl?.intensity>0){const L=tmp.copy(clue.position).sub(pl.position),dl=L.length();L.normalize();const dir=aim.copy(pl.target.position).sub(pl.position).normalize();g=Math.max(g,smooth((dir.dot(L)-Math.cos(pl.angle))/.045)*clamp(1-dl/15,0,1));}const dc=camera.position.distanceTo(clue.position);
   S.glintV=damp(S.glintV,g,8,dt);lens.emissiveIntensity=.025+S.glintV*(dc<1.6?.32:.95);glint.visible=S.glintV>.02&&dc>1.6;glint.material.opacity=S.glintV*.8*clamp(dc-1.6,0,1);}
  // ---- lifecycle ---------------------------------------------------------------------------------------------------------
- function reset(){fresh();api.pose=null;api.sources.length=0;api.deep=0;comp.reset();for(const c of comp.all)comp.release(c);police.reset();police.attach(false);
+ function reset(){api.next?.reset();fresh();api.pose=null;api.sources.length=0;api.deep=0;api.night=1;api.day=0;comp.reset();for(const c of comp.all)comp.release(c);police.reset();police.attach(false);
   for(const a of adults){a.show(false);a.lookAt=null;a.gest(null);a.mode='stand';a.path=null;}
   JW.set(0);SW.set(0);SD.set(0);world.alexWindow.emissiveIntensity=0;AD.set(0);AG.set(0);title(false);objective('');const el=$('objective');if(el){el.textContent='';el.classList.remove('on');}
   clue.visible=false;track.visible=false;flies.visible=false;beamJ.visible=false;beamO.visible=false;torch.visible=false;glint.visible=false;lens.emissiveIntensity=0;
   document.body?.classList?.remove('night1');ambient.night?.(false);nightRendering?.(false);roam.lock=false;roam.walkLock=false;roam.brake=0;}
  // QA and Continue: put the night exactly at one of its moments.
- function jump(section){fresh();comp.reset();nightWorld();S.flags.night=true;const put=(q,a,mode='ride',speed=0)=>placePlayer({x:q.x,z:q.z,a,mode,speed});
+ function jump(section){if(api.next&&(api.next.SECTIONS.includes(section)||api.next.ALIAS?.[section])){api.next.jump(section);return;}fresh();comp.reset();nightWorld();S.flags.night=true;const put=(q,a,mode='ride',speed=0)=>placePlayer({x:q.x,z:q.z,a,mode,speed});
   const ride=(c,q,a)=>{comp.putRiding(c,q.x,q.z,a,0);c.follow='ride';};
   if(section==='ride-home'){toRideHome();go('home');}
   else if(section==='police'){const q=main(652,-2.1);put(q,heading(652)+Math.PI,'ride',4.4);date('home');go('home');S.flags.qaPolice=true;sendCruiser(300);}
@@ -398,13 +404,17 @@ export function createChapter1(o){
       else{const c=clue.position,q=side(97.6,14.1);placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,c.x,c.z),mode:'walk',bike:{x:pb.x,z:pb.z,a:ha(86.5)}});S.searchT=10;}}}}}
   if(!['ride-home','police','title'].includes(section))title(false);S.deep=DEEP[S.phase]??.4;api.deep=S.deep;}
  function saved(){try{const s=JSON.parse(localStorage.getItem(SAVE)||'null');return s&&CHECKPOINT[s.section]?{section:s.section,label:CHECKPOINT[s.section]}:null;}catch{return null;}}
+ function checkpointTo(id,label){CHECKPOINT[id]=label;checkpoint(id);}
  // Things the player should not ride or walk through.
- function blockers(walk=false){const out=comp.blockers();for(const a of adults)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});
+ function blockers(walk=false){const out=comp.blockers();for(const a of adults)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});if(api.next)for(const b of api.next.blockers())out.push(b);
   for(const c of [carA,carB])if(c.active){const fx=Math.sin(c.a),fz=-Math.cos(c.a);for(const k of [-1.55,0,1.55])out.push({x:c.x+fx*k,z:c.z+fz*k,r:1.05,speed:c.parked?0:c.v});}
   const f=jamie.f;if(!jamie.active&&f.bike.group.visible&&f.fall)out.push({x:f.bike.group.position.x,z:f.bike.group.position.z,r:.55,speed:0});return out;}
  Object.assign(api,{begin,update,reset,jump,saved,spot,act,blockers,
-  attention:()=>api.target||null,canDismount:()=>!roam.lock,canRemount:()=>S.phase!=='clue',onFoot(){},
+  attention:()=>api.target||null,canDismount:()=>!roam.lock&&(!api.next?.owns(S.phase)||api.next.canDismount()),canRemount:()=>S.phase!=='clue'&&(!api.next?.owns(S.phase)||api.next.canRemount()),onFoot(){},
   police,carA,carB,officer,officer2,dad,mom,neighbor,adults,companions:comp,clue,track,windows:{jamie:JWin,sam:SWin},sideDoor,SECTIONS});
+ // What Chapter Two (chapter2.js) works with: the night's state, cast, dialogue and small props.
+ api.kit={S,o,api,setPose:p=>{S.pose=p;api.pose=p;},talk,busy,objective,title,go,checkpointTo,side,main,ha,dist,me,mainD,onBriarwood,nightWorld,arrivedScene,approach,conversationalSpot,blockers,speaking,inView,camLooksAt,makeBeam,beamMat,
+  comp,jamie,sam,police,carA,carB,officer,officer2,dad,mom,neighbor,adults,torch,torchO,beamJ,beamO,glint,lens,clue,track,flies,CLOCK,DEEP,SAVE,CHECKPOINT};
  Object.defineProperty(api,'state',{get(){return {phase:S.phase,t:S.t,objective:S.objective,title:S.titleT,flags:{...S.flags},siren:S.siren?{active:!!S.siren.active,mode:S.siren.mode,pitch:+(S.siren.pitch||1).toFixed(3),muffle:+(S.siren.muffle||0).toFixed(2)}:null,
    carA:{active:carA.active,parked:carA.parked,x:carA.x,z:carA.z,v:carA.v,lights:carA.lights},carB:{active:carB.active},lights:police.emergency.map(l=>+l.intensity.toFixed(1)),attached:police.attached,
    line:S.line?.text||null,speaker:speaking(),queue:S.queue.length,jamie:{active:jamie.active,mode:jamie.mode,follow:jamie.follow,x:jamie.bx,z:jamie.bz,px:jamie.px,pz:jamie.pz,visible:jamie.person.group.visible},

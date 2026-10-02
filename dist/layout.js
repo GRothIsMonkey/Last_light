@@ -36,6 +36,20 @@ export const FRIEND_HOMES={
 export const SIDE_HOMES={
  alex:{junction:0,u:127,side:1,o:{style:'colonial',garageSide:'near',dynamicDoor:true,dynamicGarage:true,interior:'foyer',garageBike:'empty',porch:'porch',porchW:5.2,setback:18.4,w:11.4,gw:4,garage:true,fence:false,wall:0xd4cfc1,door:0x2f3d55,shutters:0x3a4a5a,alexWindow:true}},
 };
+// Chapter Two: behind the creek's back fence. Through the gap the stormwater comes out of its pipe into
+// an open concrete channel in a wooded utility easement between the back yards, and runs ~30 m to a big
+// box culvert set into a wooded rise, where it goes under the neighborhood. Its own straight frame:
+// s along the corridor from the fence gap, t across it (+t to the right looking in). turn: how far
+// the corridor angles off Briarwood's cross direction (it bends toward the deeper part of the woods).
+export const EASEMENT={gap:{u:100.2,v:31.5},turn:-.337,len:47,half:15,
+ channel:{s0:3.5,s1:33,bottom:.9,top:2.6,depth0:1.2,depth1:1.55},
+ path:{offset:-4.3,half:.85},
+ culvert:{s:33,w:2.4,h:2.05,inside:8},
+ hill:{s0:31.1,s1:34.3,s2:41,s3:46,h:2.8},
+ evidence:{mud:9.2,weeds:17,scrape:25.8},
+ bike:{s:30.6},bell:{s:52,y:1.1}};
+// The channel's gentle meander (t of its centerline at s).
+export const easementChannelT=s=>.85*Math.sin(s*.09)-.25;
 // Things that must stay clear of scattered props and trees (street coordinates).
 export const KEEP_CLEAR=[
  {d0:1118,d1:1180,l0:-16,l1:16}, // the cul-de-sac and the lookout

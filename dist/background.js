@@ -72,7 +72,7 @@ export function buildBackground(W){
   if(inSide(px,pz,8))continue;
   const rot=-heading(d)+(lat>0?-Math.PI/2:Math.PI/2)+(rand()<.5?Math.PI:0)+(rand()-.5)*.25;
   if(rand()<.62&&W.space.free(px,pz,9)){farHouse(px,pz,rot,rand);houses++;}
-  const nt=rand()<.7?1+Math.floor(rand()*2):0;for(let k=0;k<nt;k++){const tx=px+(rand()-.5)*26,tz=pz+(rand()-.5)*26;if(veg.treeWorld(tx,tz,T(tx,tz),{size:.9+rand()*.8,kind:rand()<.3?'pine':'maple',clearance:3}))trees++;}
+  const nt=rand()<.7?1+Math.floor(rand()*2):0;for(let k=0;k<nt;k++){const tx=px+(rand()-.5)*26,tz=pz+(rand()-.5)*26;if(W.easement?.inside(tx,tz,3))continue;if(veg.treeWorld(tx,tz,T(tx,tz),{size:.9+rand()*.8,kind:rand()<.3?'pine':'maple',clearance:3}))trees++;}
  }
  // Tree lines on the far rise, so the horizon is trees in haze rather than a bare edge.
  for(let x=minX;x<maxX;x+=14)for(let z=minZ;z<maxZ;z+=14){const {d,lat}=streetCoords(x,z),a=Math.abs(lat);if(a<R-60||a>R+10||d<ROAD_START-360||d>1700)continue;const rand=seeded(hashSeed(13,x,z));if(rand()<.62)continue;
@@ -88,7 +88,9 @@ export function buildBackground(W){
   keep[i*nz+j]=a>R+40||covered?0:1;}
  const pos=[],idx=[];const vid=new Int32Array(nx*nz).fill(-1);
  const v=(i,j)=>{const k=i*nz+j;if(vid[k]<0){vid[k]=pos.length/3;pos.push(x0+i*step,H[k],z0+j*step);}return vid[k];};
- for(let i=0;i<nx-1;i++)for(let j=0;j<nz-1;j++){if(!(keep[i*nz+j]||keep[(i+1)*nz+j]||keep[i*nz+j+1]||keep[(i+1)*nz+j+1]))continue;
+ // The drainage easement has its own ground; leave out far cells that would roof over its trench.
+ const ez=W.easement,overTrench=(i,j)=>{if(!ez)return false;for(let a=0;a<=4;a++)for(let b=0;b<=4;b++){const x=x0+(i+a/4)*step,z=z0+(j+b/4)*step;if(ez.trench(x,z,1.5))return true;}return false;};
+ for(let i=0;i<nx-1;i++)for(let j=0;j<nz-1;j++){if(!(keep[i*nz+j]||keep[(i+1)*nz+j]||keep[i*nz+j+1]||keep[(i+1)*nz+j+1]))continue;if(overTrench(i,j))continue;
   const a=v(i,j),b=v(i+1,j),c=v(i,j+1),e=v(i+1,j+1);idx.push(a,c,b,b,c,e);}
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
  const land=new THREE.Mesh(geo,W.grassMat);land.name='far-land';land.userData.far=true;W.baked.push(land);

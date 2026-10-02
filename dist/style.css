@@ -85,3 +85,11 @@ body.night1 .wordmark{opacity:0;transition:opacity 1.5s}
 #ending h2{font:400 clamp(42px,6vw,80px)/1.25 Georgia,serif;letter-spacing:-1px}#ending .eyebrow{letter-spacing:5px;color:#ebe2d2b3}#ending p{font-size:13px;letter-spacing:1.5px}
 @media(max-height:800px){#objective-note{top:158px}}
 @media(max-width:700px){#objective-note{top:141px;left:49px;font-size:12px;max-width:240px}}
+/* Chapter Two: the card between chapters (and the next morning's date), the remembered evening */
+#chapter-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;pointer-events:none;opacity:0;transition:opacity 1.8s ease;z-index:1}
+#chapter-card.on{opacity:1}
+#chapter-card h2{margin:0;font:400 clamp(30px,4.2vw,58px)/1.2 Georgia,serif;letter-spacing:.32em;padding-left:.32em;text-transform:uppercase;color:#efe4cf;text-shadow:0 2px 24px #05070fa0}
+#chapter-card .eyebrow{letter-spacing:4px;color:#e6dccab0}#chapter-card .eyebrow:empty{display:none}
+#fade.warm{background:#3b2f27}
+body.remembering #world{filter:sepia(.16) saturate(.9) contrast(.97) brightness(1.03);transition:filter 1.2s ease}
+body.remembering .vignette{box-shadow:inset 0 0 220px #2a1d1470}
