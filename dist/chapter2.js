@@ -145,7 +145,7 @@ export function createChapter2(o,k){
   S.lookTarget=SP.mouth;S.jamieAim=SP.mouth;S.samAim=SP.mouth;for(const c of [jamie,sam]){c.lookAt=SP.mouth;c.follow=null;}
   const p=me(),side={x:p.x+Math.cos(p.a)*.9-Math.sin(p.a)*.4,z:p.z+Math.sin(p.a)*.9+Math.cos(p.a)*.4};if(sam.mode==='foot'&&nav.walkable(side.x,side.z))comp.run(sam,[comp.steps.walkTo(sam,[[side.x,side.z]],{speed:1.1}),comp.steps.idle(sam,.4)],{then:()=>{sam.lookAt=SP.mouth;}});}
  function searchersComing(){go('c2-police');checkpoint('police-arrival');date(21,NIGHT_TIME.police,'PM');S.pose&&(S.pose.release=true);
-  const g=SP.gap,start=W2(-1.2,.2);officer2.show(true);officer2.place(start.x,start.z,F.heading);officer2.gest('flashlight');officer2.lookAt=null;
+  const g=SP.gap,start=W2(1.6,.1);/* just in through the gap behind them */officer2.show(true);officer2.place(start.x,start.z,F.heading);officer2.gest('flashlight');officer2.lookAt=null;
   o.audio()&&o.sfx('squelch',{x:g.x,y:g.y+1.5,z:g.z});C.callAt=C.t+1.1;C.copT=0;}
  function copApproach(){const p=me(),obs=k.blockers(true).filter(b=>Math.hypot(b.x-officer2.x,b.z-officer2.z)>.1),q=k.conversationalSpot(officer2,p,2.6),path=nav.walkPath(officer2,q,obs);
   officer2.walk(path.length?path:[[q.x,q.z]],{speed:1.45,then:a=>{a.faceTo(me().x,me().z);a.lookAt=camera.position;a.gest(null);C.flags.copThere=true;}});}
@@ -195,7 +195,7 @@ export function createChapter2(o,k){
   // Someone pinning the last flyer to a pole along Oak Hollow.
   {const f0=flyers.children[0],L=nav.locate(f0.position.x,f0.position.z),q=main(L.d+.45,L.lat+.7);put(vol[2],q,headingTo(q.x,q.z,f0.position.x,f0.position.z),'point');}
   {const a=put(vol[0],main(650,7.1),heading(650)),b=put(vol[1],main(651.4,7.5),heading(651.4));pairWalk(a,b,[[650,7.1],[752,7.1]],[[651.4,7.6],[753.4,7.6]]);}
-  put(vol[3],main(706,-15.2),heading(706)-Math.PI/2+.6,'talk');put(k.neighbor,main(707.6,-14.6),heading(707.6)+Math.PI/2-.4,'fold');
+  put(vol[3],main(705.8,-11.4),heading(706)-Math.PI/2+.6,'talk');put(k.neighbor,main(707.4,-10.8),heading(707.6)+Math.PI/2-.4,'fold');// on the lawn, clear of the porch steps
   put(vol[4],main(520,10.8),heading(520)+Math.PI/2+Math.PI,'fold');
   {const a=put(officer2,main(668,-11),heading(668)-Math.PI/2);yardCheck(a,[[668,-11],[668.5,-19],[672,-24],[668,-11]]);}
   // Jamie and Sam already at the oak, bikes beside them.

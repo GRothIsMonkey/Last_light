@@ -7,6 +7,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {runAstraChecks} from './astra-browser.mjs';
 import {runSceneChecks} from './polish-scenes.mjs';
+import {runChapterTwoBrowser,runChapterTwoJumps,runChapterTwoCloseups} from './chapter2-browser.mjs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 let playwright;try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
@@ -155,9 +156,11 @@ try{
  await c1(()=>{const C=window.__c1,c=lastLight.chapter.clue.position;C.standAt([c.x+1.2,c.z+.6],[c.x,c.z]);});check('Chapter 1: the reflector can be found',(await state()).prompt==='F:Look closer');await snap('c1-18-reflector-in-the-weeds');
  await c1(()=>{lastLight.key('KeyF');window.__c1.until(()=>lastLight.state.chapter.line==='“That’s his.”',10);});await snap('c1-19-thats-his');
  await c1(()=>window.__c1.until(()=>lastLight.state.chapter.line==='“Why would he come back here?”',10));await snap('c1-20-why-would-he-come-back');
- await c1(()=>window.__c1.until(()=>lastLight.state.state==='ended',40));
- await page.waitForFunction(()=>!document.querySelector('#ending').hidden&&Number(getComputedStyle(document.querySelector('#ending')).opacity)>.99);
- await snap('c1-21-chapter-end');check('Chapter 1 ends on its own card after the bell and the fade',(await state()).state==='ended'&&await page.locator('#ending').isVisible());
+ // Chapter One no longer ends on a card: black, CHAPTER TWO, and the same creek moments later.
+ await c1(()=>window.__c1.until(()=>lastLight.state.chapter.phase==='c2-black',40));
+ check('Chapter 1 hands over to Chapter Two after the bell and the fade (no end menu)',(await state()).state.startsWith('c1-')&&!(await page.locator('#ending').isVisible()));
+ await runChapterTwoBrowser({page,snap,check,state,errors});
+ check('Chapter Two ends on its own card',(await state()).state==='ended'&&await page.locator('#ending').isVisible());
  const ended=await state();await page.evaluate(()=>lastLight.step(20));check('ending freezes the world',(await state()).finaleT===ended.finaleT&&JSON.stringify((await state()).roam)===JSON.stringify(ended.roam));
  await page.click('#again');await page.evaluate(()=>lastLight.step(.1));const replay=await state();check('replay resets story and clue',replay.distance===0&&!replay.clue&&replay.friends.every(f=>!f.inside&&f.mode==='ride'));
  check('replay resets environment',await page.evaluate(()=>lastLight.ambient.state.kidVisible&&lastLight.ambient.state.car==='wait'&&lastLight.ambient.state.sprinklers.every(v=>v>.99)&&!lastLight.friends.mom.slammed));
@@ -175,6 +178,8 @@ try{
  for(const [name,yaw,pitch] of [['angle-up',0,.6],['angle-down',0,-1.2],['angle-behind',1.8,0],['angle-behind-other',-1.8,0]]){await page.evaluate(([y,p])=>{lastLight.look(y,p);lastLight.step(.1);},[yaw,pitch]);await snap(name);}
  for(const [name,where] of [['angle-above-police',[124,6]],['angle-above-creek',[100,16]]])await page.evaluate(async w=>{const B=lastLight.world.sideFrames[0],p=B.point(...w);lastLight.camera.position.set(p.x+18,p.y+26,p.z+18);lastLight.camera.lookAt(p.x,p.y,p.z);lastLight.camera.updateMatrixWorld();},where).then(()=>snap(name));
  check('unusual angles render without errors',errors.length===0);
+ await runChapterTwoJumps({page,snap,check,state,errors});
+ await runChapterTwoCloseups({page,snap,check,state,errors});
  await page.evaluate(()=>{lastLight.toTitle();lastLight.step(.2);});check('Continue is offered on the title after reaching the night',await page.locator('#continue').isVisible());await snap('c1-22-title-continue');
  // Character close-ups: the camera is set beside each person for a single rendered frame.
  const portrait=async(name,who,off)=>{await page.evaluate(async([who,off])=>{const T=await import('./three.module.js');const F=lastLight.friends.list;const person=who==='mom'?lastLight.friends.mom.person:F.find(f=>f.key===who).person;
@@ -230,7 +235,7 @@ try{
  // Real Web Audio renders of every important synthesized sound, retained for listening.
  const audioReport=await page.evaluate(async()=>{
   const {createAudio}=await import('./audio.js');const clips=[];
-  for(const name of ['rolling','grass','coasting','footstep-asphalt','footstep-grass','bell','curb','sprinkler','dribble','rim','doorOpen','doorSlam','garage','bikeDrop','kickstand','engineOff','dog','creak','bird','call','morning-neighborhood','evening-neighborhood','ending','tap','pebble','window','click','squelch','carDoor','callName','siren-near','siren-far-muffled','night-search','chapter-ending','distant-final-bell']){
+  for(const name of ['rolling','grass','coasting','footstep-asphalt','footstep-grass','bell','curb','sprinkler','dribble','rim','doorOpen','doorSlam','garage','bikeDrop','kickstand','engineOff','dog','creak','bird','call','morning-neighborhood','evening-neighborhood','ending','tap','pebble','window','click','squelch','carDoor','callName','siren-near','siren-far-muffled','night-search','chapter-ending','distant-final-bell','culvert-bell','culvert-loop','fan-window','morning-search','memory-muffled']){
    const ctx=new OfflineAudioContext(2,48000*(name.includes('ending')?10:7),48000);let seed=2011;const audio=createAudio({context:ctx,random:()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}});audio.ensure();audio.setEnabled(true);
    const ready=ctx.suspend(.75),rendering=ctx.startRendering();await ready;
    const ride={speed:4.5,pedal:true,coasting:false,onBike:true,surface:'asphalt',p:.2,night:0,finale:0,listener:{x:0,y:1.5,z:0},forward:{x:0,z:-1},friendsLeft:3,state:'riding',crank:2,sources:[]};
@@ -240,6 +245,11 @@ try{
    else if(name.startsWith('siren-')){const far=name.includes('far');for(let k=0;k<45;k++)audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,sources:[{id:'siren',kind:'siren',pos:{x:0,y:1,z:far?-420:-25},level:1,pitch:far?1.02:.96,mode:'wail',muffle:far?1:0}]});}
    else if(name==='night-search'){for(let k=0;k<45;k++)audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,state:'walking',sources:[{id:'radio',kind:'radio',pos:{x:4,y:1,z:-6},level:1},{id:'water',kind:'water',pos:{x:-3,y:0,z:-5},level:1},{id:'idle-a',kind:'idle',pos:{x:8,y:0,z:-12},level:.8},{id:'tv',kind:'tv',pos:{x:-2,y:1,z:-3},level:1}]});}
    else if(name==='distant-final-bell'){audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,sources:[]});audio.bell({x:5,y:1,z:-47},1.8);}
+   // Chapter Two: the bell from inside the culvert, the culvert and channel, Sam's fan through the window, the morning search, a memory.
+   else if(name==='culvert-bell'){audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,state:'walking',sources:[]});audio.bell({x:3,y:1,z:-25},1.5,{tunnel:true});}
+   else if(name==='culvert-loop'||name==='fan-window'){const src=name==='fan-window'?[{id:'fan',kind:'fan',pos:{x:2,y:1,z:-3},level:1}]:[{id:'culvert',kind:'culvert',pos:{x:2,y:.5,z:-6},level:1},{id:'channel',kind:'water',pos:{x:-1,y:0,z:-3},level:.7}];for(let k=0;k<45;k++)audio.update(1/30,{...ride,speed:0,onBike:false,p:1,night:1,night1:true,finale:40,state:'walking',sources:src});}
+   else if(name==='morning-search'){for(let k=0;k<45;k++)audio.update(1/30,{...ride,speed:0,onBike:false,p:0,night:0,night1:true,morning:true,finale:40,state:'walking',friendsLeft:0,sources:[{id:'radio-am',kind:'radio',pos:{x:6,y:1,z:-8},level:.8}]});}
+   else if(name==='memory-muffled'){audio.memory(true);for(let k=0;k<45;k++)audio.update(1/30,{...ride,p:.5});audio.bell({x:4,y:1,z:-12},.75);}
    else if(name==='callName')audio.callName({x:-30,y:1.7,z:-60});else if(name==='chapter-ending')audio.ending('chapter');
    else if(['bell','call','ending'].includes(name))audio[name]();else audio.sfx(name,null);
    await ctx.resume();const b=await rendering,channels=[b.getChannelData(0),b.getChannelData(1)];let peak=0,sum=0,nonFinite=0,jump=0;

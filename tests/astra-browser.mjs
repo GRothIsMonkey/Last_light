@@ -57,8 +57,8 @@ export async function runAstraChecks({page,snap,check,camAt,state}){
   await ev(()=>{const C=__astra,L=lastLight,q=(u,v)=>L.nav.side(u,v);C.walk(q(92,8.8));C.walk(q(95.5,12.8));C.walk(q(97.7,14.9),{face:q(98.65,15.45)});});
   check(`natural run ${pass}: creek clue reached with walking inputs`,(await state()).prompt==='F:Look closer');
   await ev(()=>{lastLight.key('KeyF');__astra.until(()=>lastLight.state.chapter.line==='“That’s his.”',10);});if(pass===1)await snap('astra-reflector-crouch');
-  await ev(()=>{if(!__astra.until(()=>lastLight.state.state==='ended',35))throw Error('end did not occur');});
-  check(`natural run ${pass}: complete prologue through Chapter One ending without a QA jump`,(await state()).chapter.phase==='end');
+  await ev(()=>{if(!__astra.until(()=>lastLight.state.chapter.phase==='c2-black',35))throw Error('hand-over to Chapter Two did not occur');});
+  check(`natural run ${pass}: complete prologue through the end of Chapter One (into Chapter Two) without a QA jump`,(await state()).chapter.phase==='c2-black');
  }
  const formations=await ev(()=>__astra.telemetry);console.log('Formation telemetry',JSON.stringify(formations));
  check('Jamie uses varied lateral formation on the journey to Sam and the oak',formations['jamie-ride']?.maxSide-formations['jamie-ride']?.minSide>1.5);
