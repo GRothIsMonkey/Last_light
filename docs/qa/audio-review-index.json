@@ -145,7 +145,7 @@
     "file": "audio/carDoor.mp3"
   },
   {
-    "name": "Chapter 1: Alex\u2019s dad calling his name, down the street",
+    "name": "Chapter 1: Alex’s dad calling his name, down the street",
     "seconds": 219.05,
     "file": "audio/callName.mp3"
   },
@@ -173,5 +173,30 @@
     "name": "Chapter One: distant final bicycle bell, two strikes",
     "seconds": 259.3,
     "file": "audio/distant-final-bell.mp3"
+  },
+  {
+    "name": "Chapter 2: the bell from deep inside the culvert (twice, darkened, short echo)",
+    "seconds": 266.75,
+    "file": "audio/culvert-bell.mp3"
+  },
+  {
+    "name": "Chapter 2: the culvert and the channel (positional loops)",
+    "seconds": 274.2,
+    "file": "audio/culvert-loop.mp3"
+  },
+  {
+    "name": "Chapter 2 fix: Sam’s bedroom fan through the window (steady loop)",
+    "seconds": 281.65,
+    "file": "audio/fan-window.mp3"
+  },
+  {
+    "name": "Chapter 2: the morning search (birds, cicadas, a police radio)",
+    "seconds": 289.1,
+    "file": "audio/morning-search.mp3"
+  },
+  {
+    "name": "Chapter 2: remembering (the evening ride, muffled; Alex’s bell)",
+    "seconds": 296.55,
+    "file": "audio/memory-muffled.mp3"
   }
 ]

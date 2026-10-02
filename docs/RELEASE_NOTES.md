@@ -1,3 +1,26 @@
+# Last Light — Chapter Two (structural pass)
+
+Built on `codex/astra-chapter1-final-polish` at `9c4b57698efeb7137de8a292b7662dac97a9a2d0`, on `claude/optimistic-tesla-obxiv5`. Chapter One's release history is untouched. This is a gameplay and story pass; the art pass is Astra's.
+
+- **Human-playtest fixes:**
+  - **Fan audio:** the bedroom fan/chatter no longer stutters over time.
+  - **Flag:** the porch flag flies the right way up and away from its pole.
+  - **Hoops:** every basketball hoop faces where it is played (all are checked).
+  - **Old oak:** Jamie and Sam follow on the first attempt in every way of leaving that was tried, including the captured failing configuration and a 120-trial randomized sweep.
+- **Chapter One → Two:** after the bell, black, a quiet CHAPTER TWO card, and the same creek moments later. There is no end menu in between, and Continue still works.
+- **The night:** the disagreement; through a widened gap in the back fence into a drainage easement behind the yards (concrete channel, outfall, power line, weeds and brush, a big culvert in a wooded rise). Along the way are a tire track in the mud, a lane of flattened weeds and a scrape over the channel lip. Alex's own green bicycle lies by the culvert with its rear reflector broken out of the clip; it matches the creek piece, and the two now share one size and color. The bell sounds twice from deep inside the culvert. The police arrive, tape goes up, volunteers come with lights, Alex's dad comes, and the kids are sent home.
+- **The morning:** August 22 in daylight: the same street, a search under way, missing-person flyers. At the oak the old bike isn't there; "What if he heard the bell?"
+- **Remembering:** a reusable, data-driven memory system (`dist/memory.js`). At the Briarwood corner, F replays the evening ride, warm and muffled, from your own eyes; Alex stops and looks off toward the creek. You come back to the morning exactly as you left it. The realization, then the end card **LAST LIGHT / Chapter Two**.
+- **Systems:**
+  - Chapter Two takes over Chapter One's phases (`c2-*`, `m-*`).
+  - On foot, companions now route round fences and through gaps, and stand across a clue from you when they look at it.
+  - The sky has a morning (`day`) uniform.
+  - Seven silent checkpoints with Continue labels.
+  - Ten QA jumps; full replay reset, including from inside a memory.
+- **Verification:** the simulation suite plays prologue → Chapter One → Chapter Two with inputs and checks every Chapter Two beat. The browser suite plays Chapter Two in Chromium/WebGL with captures of each beat, every QA jump, lingering, the wrong way, an alternate approach and Continue, and adds five new audio signal cases. Results: [TEST_REPORT.md](TEST_REPORT.md). Details and known issues: [ASTRA_CHAPTER2_HANDOFF.md](ASTRA_CHAPTER2_HANDOFF.md).
+
+---
+
 # Last Light — Astra Chapter One polish
 
 Continues the existing `codex/astra-chapter1-final-polish` branch from Claude Chapter One source `ed471c04b34bc083da10bdc876f20419246a08e6`. Completed interrupted work and all source ancestry are preserved. No merge to main and no Chapter Two content.

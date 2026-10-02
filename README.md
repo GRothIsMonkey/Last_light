@@ -2,7 +2,9 @@
 
 A short first-person bicycle memory set on August 21, 2011. Ride through a warm suburban neighborhood with three friends, who go home one at a time as sunset turns to dusk, until the street ends at a small grassy lookout where the evening runs out. Then, on the ride home, a police car turns onto Briarwood Lane, and the evening becomes the night Alex did not come home: **Chapter One**.
 
-The prologue takes about **5–6 minutes**. Chapter One runs about **12–15 minutes**, from the ride home to the first clue at the creek. Stopping anywhere extends it; nothing fails.
+The prologue takes about **5–6 minutes**. Chapter One runs about **12–15 minutes**, from the ride home to the first clue at the creek. Chapter Two takes about **10 minutes** played straight through (the scripted test run takes 9.7 minutes of game time), from the creek that night to the next morning on Briarwood; looking around takes longer. Stopping anywhere extends it; nothing fails.
+
+**Chapter Two (structural pass):** `claude/optimistic-tesla-obxiv5`, built on `codex/astra-chapter1-final-polish` at `9c4b57698efeb7137de8a292b7662dac97a9a2d0`. It fixes four human-playtest bugs (bedroom fan audio, porch flag, basketball hoops, friends stuck at the old oak) and continues the story through the night search behind the creek and the next morning. See **[docs/ASTRA_CHAPTER2_HANDOFF.md](docs/ASTRA_CHAPTER2_HANDOFF.md)** for the state machine, systems, QA jumps, checkpoints, known rough edges and what the art pass should polish.
 
 **Current Astra Chapter One polish:** `codex/astra-chapter1-final-polish`, continuing Claude source `ed471c04b34bc083da10bdc876f20419246a08e6`. See **[docs/ASTRA_CHAPTER1_FINAL_RELEASE.md](docs/ASTRA_CHAPTER1_FINAL_RELEASE.md)** for the final changes, human playtest navigation fixes, validation and limitations.
 
@@ -30,6 +32,7 @@ The title screen shows the controls. During play, only the key that matters righ
 - **Space on foot:** jump. **C / Ctrl:** hold to crouch.
 - **T:** toggle your flashlight after Jamie gives you the spare at the creek.
 - **Chapter One:** the same bike and body, free in the neighborhood. F gets off and back on the bike anywhere, taps on a window, or looks closer at something; A/D while stopped walks the bike round. The objective sits under the date line. **Continue** on the title menu returns to the last place the night reached.
+- **Chapter Two:** keep the flashlight (T) for the search behind the creek; F looks closer at what matters. The next morning, at the corner where Alex turned, **F: Remember** (on foot or stopped on the bike) brings the evening back for a minute; you can look around but not change it.
 - **Escape:** pause. From the pause menu: Keep going, Settings, Start over, Back to the title.
 - **Settings** (from the title or pause), remembered in this browser:
   - volume
@@ -54,6 +57,7 @@ There is no failure condition. Pedaling advances the story; stopping lets you st
 - **Now and then, a short memory line** appears in the voice of the one looking back.
 - **The street ends in a cul-de-sac.** Get off the bike and walk the small grassy rise: bench, old oak with a tire swing, chalk initials, a fence at the edge of the field. Look back at the lit street; someone far away calls you in. Ride home when you are ready.
 - **Chapter One.** Riding home alone, a siren; a police car passes and turns onto Briarwood behind you. LAST LIGHT. At Alex's house an officer asks when you last saw him. You wake Jamie at his window and get Sam out through his garage's side door, meet at the old oak, and go back the way Alex went, down to the creek, where the first thing anyone finds is the broken reflector off his bike. Far off, a bell. The chapter ends there.
+- **Chapter Two.** Seconds later: black, a quiet CHAPTER TWO, the same creek. The three of them argue and go a little farther, through the gap in the back fence into the drainage easement behind the yards: a tire track in the mud, weeds pressed flat, a scrape over the channel's lip, and Alex's green bicycle beside the big culvert, its rear reflector broken out of the clip. The bell again, twice, from deep inside the culvert. A flashlight behind them, the police, tape, Alex's dad; nobody takes the bell seriously, and they are sent home. "Oak. Tomorrow morning." August 22: the same street in bright daylight, people out searching, flyers on the poles. At the oak, the old bike from last night isn't there, and maybe never was. Back at the corner where Alex turned, remembering the evening shows what no one noticed: he stopped and looked off toward the creek. "He heard it before he left."
 
 ## Run locally
 
@@ -85,6 +89,7 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
 - **Space on foot:** jump. **C / Ctrl:** hold to crouch.
 - **T:** toggle your flashlight after Jamie gives you the spare at the creek.
 - **Chapter One:** `dist/chapter1.js` (the director: phases, objectives, dialogue, title, checkpoints, QA jumps), `dist/police.js` and `dist/patrol-art.js` (patrol cars, emergency lights), `dist/people.js` and `dist/adult-art.js` (grown-ups), `dist/companions.js` (Jamie and Sam at night), `dist/nav.js` (where you can ride and walk at night), `dist/creek.js` (the drainage strip).
+- **Chapter Two:** `dist/chapter2.js` (phases, dialogue, the found bike, police and search, the morning, checkpoints and QA jumps; it takes over Chapter One's phases that start `c2-`/`m-`), `dist/easement.js` (the drainage easement: ground, channel, culvert, evidence, its own walking surface), `dist/memory.js` (data-driven memories and their timeline; `game.js` hosts the remembered ride).
 - **People:**
   - `dist/cast.js`: who everyone is.
   - `dist/rig.js`: bodies, heads, bikes, poses, IK.
@@ -99,7 +104,7 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
   - `dist/ending.js`: the last minute's details.
 - **Tests:**
   - `tests/verify.mjs`: simulation and geometry regression checks.
-  - `tests/browser.mjs`: Chromium checks, screenshots and audio renders, including `tests/astra-browser.mjs` for two full input-driven Chapter One runs and new controls/staging.
+  - `tests/browser.mjs`: Chromium checks, screenshots and audio renders, including `tests/astra-browser.mjs` for two full input-driven Chapter One runs and new controls/staging, and `tests/chapter2-browser.mjs` for the Chapter Two playthrough, its QA jumps, lingering, the wrong way, Continue and close-up captures.
   - `tests/scene-browser.mjs`: targeted animation, property clearance, close-art captures and scene allocation inventory.
 - **QA material:** `docs/qa/`: screenshots, machine-readable results and listening clips.
 
@@ -116,6 +121,8 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
 - the title, settings and pause menus
 - riding, steering, head look, pushing and sidewalk riding
 - two complete playthroughs, ending both ways (riding home and staying until the fade)
+- the full prologue → Chapter One → Chapter Two story played with inputs (`tests/chapter2-sim.mjs`), plus every Chapter Two beat, QA jump, checkpoint, Continue and Start over
+- the four human-playtest regressions (`tests/playtest-fixes.mjs`), including the old-oak follow in its captured configuration and several natural ways of leaving
 - replay and back to the title
 - both sidewalk edges, curb up/down on both sides, speed-scaled impacts, feet-down stops and the actual bell hand/lever movement
 

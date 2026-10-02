@@ -1,3 +1,104 @@
+# Last Light — Chapter Two structural pass: verification
+
+Input `codex/astra-chapter1-final-polish` at `9c4b57698efeb7137de8a292b7662dac97a9a2d0`; branch `claude/optimistic-tesla-obxiv5`. Both full reports below were recorded against the same `dist/` (their `runtimeHashes` are identical and match the committed files).
+
+| Gate | Result |
+|---|---:|
+| Full simulation/geometry checks (`npm test`, `tests/verify.mjs`) | **226 passed** (Chapter One baseline: 156) |
+| Browser/WebGL/Web Audio checks (`tests/browser.mjs`) | **238 passed** (baseline 184) |
+| Rendered captures | **264** (baseline 219) |
+| Audio signal cases | **40 passed** (baseline 35) |
+| JavaScript / console / shader errors | **0** |
+| Static world triangles | **1,759,149** (baseline 1,716,635) |
+| Merged/static world meshes | **948** (baseline 935) |
+| Scene mesh instances incl. invisible (memory cast, Chapter Two actors, LODs) | 1,888 |
+| Scene triangle instances incl. invisible | 2,281,621 |
+| Unique geometry buffers | 258.6 MiB |
+| Renderer | Chromium 141.0.7390.37 / SwiftShader (software) |
+| Real-GPU FPS | Not measured |
+
+**What is covered**
+
+* **Simulation.**
+  * The full story, prologue → Chapter One → Chapter Two, played through with inputs (walking by
+    heading and W, riding with the QA autopilot, F where prompted). Chapter Two alone takes 9.7
+    minutes of game time.
+  * 19 Chapter Two story checks: transition, disagreement, gap, evidence, bike, inspection, second
+    bell, police, search, sent home, dawn, morning, oak, corner, memory, return, realization, end
+    card, phase order.
+  * 33 focused Chapter Two checks:
+    * the found bike is Alex's prologue bike (geometry and colors)
+    * reflector continuity
+    * the bike's placement
+    * the culvert is not explorable
+    * the bell's position and tunnel graph
+    * the police jump
+    * morning world unchanged, plus daylight
+    * search activity and flyers
+    * old bike gone
+    * companions riding again
+    * memory limits
+    * Start over from inside a memory
+    * all 10 QA jumps, including the night and morning setup
+    * all 7 checkpoints with Continue and labels after reload
+  * 17 human-playtest regression checks.
+* **Browser.**
+  * The same story in Chromium/WebGL, continuing from the input-driven Chapter One run, with 24
+    Chapter Two captures.
+  * Every Chapter Two QA jump, lingering 150 s in four places, the wrong way at night, an alternate
+    approach to the bike, sprint/jump/flashlight in the easement, Continue from a Chapter Two
+    checkpoint.
+  * Bug-fix captures (flag, curbside and garage hoops) and close-ups (the bike, the culvert mouth,
+    neighbors, the empty place where the old bike was).
+  * All Chapter One checks retained. The two natural Chapter One runs now end at the hand-over into
+    Chapter Two.
+
+**Old-oak follow:** the deterministic runs are in `simulation-report.json`
+(`oak follow runs`). Natural leaving sets both friends off in 0.2–2.1 s; the captured failing
+configuration in 2.3–4.0 s. A separate 120-trial randomized sweep had 0 stuck runs, with every
+friend setting off within 2.8 s.
+
+**Audio:** signal-only. Every clip is finite, unclipped and audible; new clips cover the culvert
+bell, the culvert/channel loops, the fixed bedroom fan, the morning search and the muffled memory.
+The fan/chatter fix is also checked over 5 s, 15 min and 1 h of simulated time. **No perceptual
+listening has been done**; a person needs to listen ([audio review](qa/audio-review.html)).
+
+**Rendered review:** the contact sheets and the Chapter Two frames were reviewed at full size for
+structural mistakes. That review caught and fixed:
+
+* evidence half-buried or blocky
+* the bike buried in the channel slope
+* friends standing inside the bike
+* grass poking through the channel lining
+* the officer's entrance accidentally disabled
+* a volunteer's foot lifted onto a porch step
+* an unreadable memory glance
+
+This is not the art pass ([gallery](qa/visual-review.html)).
+
+Representative rendered frames (1440 × 900, default medium quality):
+
+| Capture | Triangles | Draw calls | Active lights |
+|---|---:|---:|---:|
+| c2-02-same-creek-moments-later | 632,414 | 286 | 8 |
+| c2-04-easement-at-night | 632,175 | 283 | 6 |
+| c2-06-flattened-weeds | 727,468 | 345 | 6 |
+| c2-09-broken-reflector | 741,767 | 274 | 8 |
+| c2-10-second-bell-culvert | 740,604 | 320 | 6 |
+| c2-11-police-flashlight | 927,340 | 579 | 6 |
+| c2-12-tape-adults-dad | 698,795 | 356 | 7 |
+| c2-15-morning-home | 716,654 | 363 | 2 |
+| c2-16-morning-street-search | 838,953 | 415 | 2 |
+| c2-18-oak-morning | 99,447 | 150 | 2 |
+| c2-19-briarwood-corner | 678,699 | 364 | 2 |
+| c2-20-memory-evening | 851,293 | 478 | 2 |
+| c2-21-memory-alex-stops-and-looks | 752,308 | 349 | 2 |
+| c2-23-back-in-the-morning | 681,652 | 373 | 2 |
+
+Heaviest frames this run: **angle-above-police** at 954,626 triangles, and **c2-11-police-flashlight** at 579 draw calls. Both are well inside the updated guidance (about 600–700k triangles and about 300 draw calls ordinary; about 4M triangles / 1500 meshes in the static world normal). The old 1.7M/900 limits are obsolete and are not treated as failures.
+
+---
+
 # Last Light — Astra Chapter One final verification
 
 Input `claude/relaxed-heisenberg-gv002b` at `ed471c04b34bc083da10bdc876f20419246a08e6`; final branch `codex/astra-chapter1-final-polish`. Game/test commit `ec67022c9dfd99ede3d4de206b751e9fce93509a`. Both complete suites passed against the same runtime hashes. See [ASTRA_CHAPTER1_FINAL_RELEASE.md](ASTRA_CHAPTER1_FINAL_RELEASE.md) for changes and limits.
