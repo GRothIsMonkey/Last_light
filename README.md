@@ -4,9 +4,11 @@ A short first-person bicycle memory set on August 21, 2011. Ride through a warm 
 
 The prologue takes about **5–6 minutes**. Chapter One runs about **12–15 minutes**, from the ride home to the first clue at the creek. Chapter Two takes about **10 minutes** played straight through (the scripted test run takes 9.7 minutes of game time), from the creek that night to the next morning on Briarwood; looking around takes longer. Stopping anywhere extends it; nothing fails.
 
-**Chapter Two (structural pass):** `claude/optimistic-tesla-obxiv5`, built on `codex/astra-chapter1-final-polish` at `9c4b57698efeb7137de8a292b7662dac97a9a2d0`. It fixes four human-playtest bugs (bedroom fan audio, porch flag, basketball hoops, friends stuck at the old oak) and continues the story through the night search behind the creek and the next morning. See **[docs/ASTRA_CHAPTER2_HANDOFF.md](docs/ASTRA_CHAPTER2_HANDOFF.md)** for the state machine, systems, QA jumps, checkpoints, known rough edges and what the art pass should polish.
+**Current Chapter Two final polish:** `codex/astra-chapter2-final-polish`, continuing Claude source `3384204a42872ad0d3592b6647441582cb48531b` on `claude/optimistic-tesla-obxiv5`. Readable captions, clearer morning memory navigation, refined easement/bicycle/search art and warmer memory staging are verified by 230 simulation, 311 browser and 10 supplemental route checks, including two continuous full-story walkthroughs. See **[docs/ASTRA_CHAPTER2_FINAL_RELEASE.md](docs/ASTRA_CHAPTER2_FINAL_RELEASE.md)** and [docs/TEST_REPORT.md](docs/TEST_REPORT.md). Human audio listening and real-GPU FPS remain unmeasured.
 
-**Current Astra Chapter One polish:** `codex/astra-chapter1-final-polish`, continuing Claude source `ed471c04b34bc083da10bdc876f20419246a08e6`. See **[docs/ASTRA_CHAPTER1_FINAL_RELEASE.md](docs/ASTRA_CHAPTER1_FINAL_RELEASE.md)** for the final changes, human playtest navigation fixes, validation and limitations.
+**Chapter Two structural history:** built on `codex/astra-chapter1-final-polish` at `9c4b57698efeb7137de8a292b7662dac97a9a2d0`. Its four playtest fixes (bedroom fan audio, porch flag, basketball hoops, friends stuck at the old oak) remain covered. [docs/ASTRA_CHAPTER2_HANDOFF.md](docs/ASTRA_CHAPTER2_HANDOFF.md) preserves the original state-machine and systems handoff.
+
+**Earlier Astra Chapter One polish:** `codex/astra-chapter1-final-polish`, continuing Claude source `ed471c04b34bc083da10bdc876f20419246a08e6`. See **[docs/ASTRA_CHAPTER1_FINAL_RELEASE.md](docs/ASTRA_CHAPTER1_FINAL_RELEASE.md)** for the final changes, human playtest navigation fixes, validation and limitations.
 
 **Historical Chapter One source:** `claude/relaxed-heisenberg-gv002b`, based directly on `codex/astra-last-light-final-polish` at `9520b4f1d72759b27ac823671bdefae19ce27e55`. See **[docs/ASTRA_CHAPTER1_HANDOFF.md](docs/ASTRA_CHAPTER1_HANDOFF.md)** for what was built, where it lives, QA jumps, tuning knobs and known issues; [docs/TEST_REPORT.md](docs/TEST_REPORT.md) for verification; [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md) for history. [docs/ASTRA_FINAL_RELEASE.md](docs/ASTRA_FINAL_RELEASE.md) and [docs/ASTRA_HANDOFF.md](docs/ASTRA_HANDOFF.md) record the earlier passes.
 
@@ -32,13 +34,13 @@ The title screen shows the controls. During play, only the key that matters righ
 - **Space on foot:** jump. **C / Ctrl:** hold to crouch.
 - **T:** toggle your flashlight after Jamie gives you the spare at the creek.
 - **Chapter One:** the same bike and body, free in the neighborhood. F gets off and back on the bike anywhere, taps on a window, or looks closer at something; A/D while stopped walks the bike round. The objective sits under the date line. **Continue** on the title menu returns to the last place the night reached.
-- **Chapter Two:** keep the flashlight (T) for the search behind the creek; F looks closer at what matters. The next morning, at the corner where Alex turned, **F: Remember** (on foot or stopped on the bike) brings the evening back for a minute; you can look around but not change it.
+- **Chapter Two:** keep the flashlight (T) for the search behind the creek; F looks closer at what matters. The next morning, **Go back to where Alex turned.** points to Briarwood. At the corner, **F — Remember** (on foot or stopped on the bike) brings the evening back for a minute; you can look around but not change it. The prompt remains while you linger or look away.
 - **Escape:** pause. From the pause menu: Keep going, Settings, Start over, Back to the title.
 - **Settings** (from the title or pause), remembered in this browser:
   - volume
   - mouse sensitivity
   - graphics quality
-  - Show dialogue captions (all spoken lines)
+  - Show dialogue captions (all spoken lines; enabled by default; objectives remain visible when disabled)
   - memory lines on or off
   - full screen
 - **Touch devices:** hold the on-screen pedal and steering buttons, drag to look; the extra button does whatever F would do. Sprint, jump, crouch and flashlight currently use keyboard controls.
@@ -104,7 +106,8 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
   - `dist/ending.js`: the last minute's details.
 - **Tests:**
   - `tests/verify.mjs`: simulation and geometry regression checks.
-  - `tests/browser.mjs`: Chromium checks, screenshots and audio renders, including `tests/astra-browser.mjs` for two full input-driven Chapter One runs and new controls/staging, and `tests/chapter2-browser.mjs` for the Chapter Two playthrough, its QA jumps, lingering, the wrong way, Continue and close-up captures.
+  - `tests/browser.mjs`: Chromium checks, screenshots and audio renders, including `tests/astra-browser.mjs` for two continuous input-driven prologue-through-Chapter-Two-ending runs, `tests/chapter2-browser.mjs` for the Chapter Two walkthrough/jumps/lingering/Continue, and `tests/chapter2-polish.mjs` for caption, memory-prompt and art review fixtures.
+  - `tests/memory-usability-browser.mjs`: supplemental input-driven morning-oak-to-Briarwood route, with staged objective/prompt captures. This is scripted usability evidence, not an independent human playtest.
   - `tests/scene-browser.mjs`: targeted animation, property clearance, close-art captures and scene allocation inventory.
 - **QA material:** `docs/qa/`: screenshots, machine-readable results and listening clips.
 
@@ -122,7 +125,7 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
 - riding, steering, head look, pushing and sidewalk riding
 - two complete playthroughs, ending both ways (riding home and staying until the fade)
 - the full prologue → Chapter One → Chapter Two story played with inputs (`tests/chapter2-sim.mjs`), plus every Chapter Two beat, QA jump, checkpoint, Continue and Start over
-- the four human-playtest regressions (`tests/playtest-fixes.mjs`), including the old-oak follow in its captured configuration and several natural ways of leaving
+- the four human-playtest regressions (`tests/playtest-fixes.mjs`), including the old-oak follow in its captured configuration, natural ways of leaving and 120 seeded randomized departures
 - replay and back to the title
 - both sidewalk edges, curb up/down on both sides, speed-scaled impacts, feet-down stops and the actual bell hand/lever movement
 

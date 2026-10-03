@@ -1,201 +1,201 @@
 [
   {
-    "name": "Bicycle on asphalt",
-    "seconds": 0.0,
+    "name": "rolling",
+    "seconds": 0,
     "file": "audio/rolling.mp3"
   },
   {
-    "name": "Bicycle on grass",
+    "name": "grass",
     "seconds": 7.45,
     "file": "audio/grass.mp3"
   },
   {
-    "name": "Bicycle coasting",
+    "name": "coasting",
     "seconds": 14.9,
     "file": "audio/coasting.mp3"
   },
   {
-    "name": "Footstep on asphalt",
+    "name": "footstep-asphalt",
     "seconds": 22.35,
     "file": "audio/footstep-asphalt.mp3"
   },
   {
-    "name": "Footstep on grass",
+    "name": "footstep-grass",
     "seconds": 29.8,
     "file": "audio/footstep-grass.mp3"
   },
   {
-    "name": "Bell",
+    "name": "bell",
     "seconds": 37.25,
     "file": "audio/bell.mp3"
   },
   {
-    "name": "Curb",
+    "name": "curb",
     "seconds": 44.7,
     "file": "audio/curb.mp3"
   },
   {
-    "name": "Sprinkler",
+    "name": "sprinkler",
     "seconds": 52.15,
     "file": "audio/sprinkler.mp3"
   },
   {
-    "name": "Basketball dribble",
+    "name": "dribble",
     "seconds": 59.6,
     "file": "audio/dribble.mp3"
   },
   {
-    "name": "Basketball rim",
+    "name": "rim",
     "seconds": 67.05,
     "file": "audio/rim.mp3"
   },
   {
-    "name": "Door opening",
+    "name": "doorOpen",
     "seconds": 74.5,
     "file": "audio/doorOpen.mp3"
   },
   {
-    "name": "Door closing",
+    "name": "doorSlam",
     "seconds": 81.95,
     "file": "audio/doorSlam.mp3"
   },
   {
-    "name": "Garage door",
+    "name": "garage",
     "seconds": 89.4,
     "file": "audio/garage.mp3"
   },
   {
-    "name": "Bike dropped on the lawn",
+    "name": "bikeDrop",
     "seconds": 96.85,
     "file": "audio/bikeDrop.mp3"
   },
   {
-    "name": "Kickstand",
+    "name": "kickstand",
     "seconds": 104.3,
     "file": "audio/kickstand.mp3"
   },
   {
-    "name": "Engine off",
+    "name": "engineOff",
     "seconds": 111.75,
     "file": "audio/engineOff.mp3"
   },
   {
-    "name": "Distant dog",
+    "name": "dog",
     "seconds": 119.2,
     "file": "audio/dog.mp3"
   },
   {
-    "name": "Tire swing creak",
+    "name": "creak",
     "seconds": 126.65,
     "file": "audio/creak.mp3"
   },
   {
-    "name": "Bird",
+    "name": "bird",
     "seconds": 134.1,
     "file": "audio/bird.mp3"
   },
   {
-    "name": "Distant call home",
+    "name": "call",
     "seconds": 141.55,
     "file": "audio/call.mp3"
   },
   {
-    "name": "Early-evening neighborhood",
+    "name": "morning-neighborhood",
     "seconds": 149.0,
     "file": "audio/morning-neighborhood.mp3"
   },
   {
-    "name": "Late-evening neighborhood",
+    "name": "evening-neighborhood",
     "seconds": 156.45,
     "file": "audio/evening-neighborhood.mp3"
   },
   {
-    "name": "Prologue ending chord (no longer used at Go home)",
+    "name": "ending",
     "seconds": 163.9,
     "file": "audio/ending.mp3"
   },
   {
-    "name": "Chapter 1: knuckles on a window",
+    "name": "tap",
     "seconds": 174.35,
     "file": "audio/tap.mp3"
   },
   {
-    "name": "Chapter 1: pebble on glass",
+    "name": "pebble",
     "seconds": 181.8,
     "file": "audio/pebble.mp3"
   },
   {
-    "name": "Chapter 1: window sash sliding",
+    "name": "window",
     "seconds": 189.25,
     "file": "audio/window.mp3"
   },
   {
-    "name": "Chapter 1: flashlight switch",
+    "name": "click",
     "seconds": 196.7,
     "file": "audio/click.mp3"
   },
   {
-    "name": "Chapter 1: police radio squelch",
+    "name": "squelch",
     "seconds": 204.15,
     "file": "audio/squelch.mp3"
   },
   {
-    "name": "Chapter 1: car door",
+    "name": "carDoor",
     "seconds": 211.6,
     "file": "audio/carDoor.mp3"
   },
   {
-    "name": "Chapter 1: Alex’s dad calling his name, down the street",
+    "name": "callName",
     "seconds": 219.05,
     "file": "audio/callName.mp3"
   },
   {
-    "name": "Chapter 1: siren, near (excerpt)",
+    "name": "siren-near",
     "seconds": 226.5,
     "file": "audio/siren-near.mp3"
   },
   {
-    "name": "Chapter 1: siren, far off behind houses (excerpt)",
+    "name": "siren-far-muffled",
     "seconds": 233.95,
     "file": "audio/siren-far-muffled.mp3"
   },
   {
-    "name": "Chapter 1: night ambience (radio, creek, idling car, TV through a wall)",
+    "name": "night-search",
     "seconds": 241.4,
     "file": "audio/night-search.mp3"
   },
   {
-    "name": "Chapter 1: end of chapter",
+    "name": "chapter-ending",
     "seconds": 248.85,
     "file": "audio/chapter-ending.mp3"
   },
   {
-    "name": "Chapter One: distant final bicycle bell, two strikes",
+    "name": "distant-final-bell",
     "seconds": 259.3,
     "file": "audio/distant-final-bell.mp3"
   },
   {
-    "name": "Chapter 2: the bell from deep inside the culvert (twice, darkened, short echo)",
+    "name": "culvert-bell",
     "seconds": 266.75,
     "file": "audio/culvert-bell.mp3"
   },
   {
-    "name": "Chapter 2: the culvert and the channel (positional loops)",
+    "name": "culvert-loop",
     "seconds": 274.2,
     "file": "audio/culvert-loop.mp3"
   },
   {
-    "name": "Chapter 2 fix: Sam’s bedroom fan through the window (steady loop)",
+    "name": "fan-window",
     "seconds": 281.65,
     "file": "audio/fan-window.mp3"
   },
   {
-    "name": "Chapter 2: the morning search (birds, cicadas, a police radio)",
+    "name": "morning-search",
     "seconds": 289.1,
     "file": "audio/morning-search.mp3"
   },
   {
-    "name": "Chapter 2: remembering (the evening ride, muffled; Alex’s bell)",
+    "name": "memory-muffled",
     "seconds": 296.55,
     "file": "audio/memory-muffled.mp3"
   }

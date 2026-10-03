@@ -1,4 +1,20 @@
-# Last Light — Chapter Two (structural pass)
+# Last Light — Astra Chapter Two final polish
+
+Continues `claude/optimistic-tesla-obxiv5` at `3384204a42872ad0d3592b6647441582cb48531b` on `codex/astra-chapter2-final-polish`. Tested gameplay commit: `f9ef319d31b01f27a07ec8639c5db3106ce0f04f`. Earlier story and release history remain intact.
+
+- Readable dialogue captions across night and day, with compact charcoal backing and independent objectives/prompts.
+- **Go back to where Alex turned.** plus the Briarwood note; a persistent, distinct **F — Remember** interaction on foot or stopped on the bike, broad facing and one gentle reminder.
+- Refined culvert concrete, water/terrain joins, tunnel depth, evidence, bicycle dirt/hardware and broken reflector inspection.
+- Staggered second-bell reactions, attentive search/flashlight staging, sagging tape and a restrained gesture from Alex's dad.
+- Clearer morning light, illustrated missing-person flyers, neighborhood search activity and a warmer memory with improved coasting/glance posing.
+- All four prior playtest fixes preserved; 120 reproducible randomized oak departures completed without deadlocks.
+- **230 simulation + 311 browser + 10 supplemental route checks passed**, zero browser errors, two continuous full-story walkthroughs, 343 captures and 40 audio signal cases. Runtime hashes match all final evidence.
+
+Full details: [ASTRA_CHAPTER2_FINAL_RELEASE.md](ASTRA_CHAPTER2_FINAL_RELEASE.md), [TEST_REPORT.md](TEST_REPORT.md), [visual review](qa/visual-review.html). Audio validation is signal-only; human listening and real-GPU FPS remain outstanding. The supplemental navigation review is scripted, not an independent human usability study.
+
+---
+
+# Last Light — Chapter Two (historical structural pass)
 
 Built on `codex/astra-chapter1-final-polish` at `9c4b57698efeb7137de8a292b7662dac97a9a2d0`, on `claude/optimistic-tesla-obxiv5`. Chapter One's release history is untouched. This is a gameplay and story pass; the art pass is Astra's.
 
