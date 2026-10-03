@@ -91,5 +91,17 @@ body.night1 .wordmark{opacity:0;transition:opacity 1.5s}
 #chapter-card h2{margin:0;font:400 clamp(30px,4.2vw,58px)/1.2 Georgia,serif;letter-spacing:.32em;padding-left:.32em;text-transform:uppercase;color:#efe4cf;text-shadow:0 2px 24px #05070fa0}
 #chapter-card .eyebrow{letter-spacing:4px;color:#e6dccab0}#chapter-card .eyebrow:empty{display:none}
 #fade.warm{background:#3b2f27}
-body.remembering #world{filter:sepia(.16) saturate(.9) contrast(.97) brightness(1.03);transition:filter 1.2s ease}
-body.remembering .vignette{box-shadow:inset 0 0 220px #2a1d1470}
+body.remembering #world{filter:none}
+body.remembering .vignette{box-shadow:inset 0 0 180px #30291c35}
+
+/* Astra: quiet, opaque-enough surfaces keep type readable through headlights and sky. */
+#subtitle{width:max-content;max-width:min(760px,86vw);bottom:max(116px,17vh);padding:10px 22px 13px;border:1px solid #eee5d51f;border-radius:4px;background:rgba(17,20,25,.88);box-shadow:0 4px 20px #0003;color:#fff7e9;font:italic 22px/1.55 Georgia,serif;text-shadow:0 1px 2px #0008;transition:opacity .2s;pointer-events:none}
+#subtitle small{color:#f8dca9;font:11px/1.5 Arial,sans-serif;letter-spacing:1.7px;margin-bottom:4px}
+#objective-panel{position:absolute;top:163px;left:45px;max-width:min(450px,75vw);pointer-events:none;padding:11px 14px;border-radius:3px}
+#objective-panel:has(#objective.on){background:rgba(17,20,25,.8);box-shadow:0 3px 15px #0002}
+#objective{position:static;margin:0;max-width:none;color:#fff3df;line-height:1.6}
+#objective-note{position:static;max-width:350px;margin:5px 0 0 24px;color:#e8dfce;font:italic 13px/1.6 Georgia,serif}
+#objective-note:empty{display:none}
+#prompt .memory-action{background:#151a20eb;border-color:#e5d0a866;color:#fff3dc}
+@media(max-height:800px){#objective-panel{top:131px}}
+@media(max-width:700px){#objective-panel{top:113px;left:25px;padding:9px 11px}#subtitle{font-size:19px;padding:9px 15px;bottom:max(153px,22vh)}#objective-note{font-size:12px}}

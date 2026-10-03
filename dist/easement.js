@@ -47,7 +47,7 @@ export function buildEasement(W){
  const carveEnd=cu.s+.42;// the trench stops behind the headwall; the tunnel is its own piece
  function design(s,t){const p=F.world(s,t);let y=base(p.x,p.z)+.012+hill(s,t);
   const a=Math.abs(t-TC(s));
-  if(s>ch.s0-.4&&s<carveEnd){const bed=bedY(Math.min(s,cu.s)),prof=a<ch.bottom?1:a<ch.top?1-(a-ch.bottom)/(ch.top-ch.bottom):0,along=smooth((s-ch.s0+.4)/.4);y=lerp(y,bed,prof*along);}
+  if(s>ch.s0-.4&&s<cu.s+cu.inside+.8){const bed=bedY(Math.min(s,cu.s)),prof=a<ch.bottom?1:a<ch.top?1-(a-ch.bottom)/(ch.top-ch.bottom):0,along=smooth((s-ch.s0+.4)/.4);y=lerp(y,bed,prof*along);}
   // Round the edges of the patch down under the land around it.
   const edge=Math.min(E.half-Math.abs(t),E.len-s);y-=.14*(1-smooth(edge/1.8));// (it meets the creek strip's lawn level at the gap)
   return y;}
@@ -65,12 +65,27 @@ export function buildEasement(W){
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
   // Faces must point up (the frame's handedness decides the winding).
   {const n=geo.attributes.normal;let up=0;for(let k=0;k<n.count;k++)up+=n.getY(k);if(up<0){for(let k=0;k<idx.length;k+=3){const q=idx[k+1];idx[k+1]=idx[k+2];idx[k+2]=q;}geo.setIndex(idx);geo.computeVertexNormals();}}
+  if(name==='easement-culvert-cap'){
+   // Close the height-grid perimeter with earth. The roof cap must never float above its banks.
+   const skirt=[],ids=[];
+   const edge=(i,j,ii,jj)=>{const points=[[i,j],[ii,jj]],q=skirt.length/3;
+    for(const [a,b] of points){const ss=S0+a*DS,tt=T0+b*DT,p=F.world(ss,tt),top=yAt(a,b,ss,tt),bottom=ss<cu.s+.1?bedY(cu.s)+cu.h+.72:Hs[a*nt+b];skirt.push(p.x,bottom,p.z,p.x,top,p.z);}
+    ids.push(q,q+2,q+1,q+1,q+2,q+3);
+   };
+   for(let i=0;i<ns-1;i++)for(let j=0;j<nt-1;j++)if(cells(i,j)){
+    if(i===0||!cells(i-1,j))edge(i,j,i,j+1);
+    if(i===ns-2||!cells(i+1,j))edge(i+1,j+1,i+1,j);
+    if(j===0||!cells(i,j-1))edge(i+1,j,i,j);
+    if(j===nt-2||!cells(i,j+1))edge(i,j+1,i+1,j+1);
+   }
+   const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(skirt,3));sg.setIndex(ids);sg.computeVertexNormals();const skirtMesh=new THREE.Mesh(sg,W.surfaceMaterial(K.mat(0x685d43,{roughness:1,side:THREE.DoubleSide}),'earth'));skirtMesh.name='culvert-earth-retaining-edge';W.baked.push(skirtMesh);
+  }
   const m=new THREE.Mesh(geo,W.lawnTop);m.name=name;W.baked.push(m);return m;}
  const cellCap=(i,j)=>inCap(S0+(i+.5)*DS,T0+(j+.5)*DT);
  // Under the concrete lining there is no grass to show through it.
  const underLining=(i,j)=>{for(const [a,b] of [[i,j],[i+1,j],[i,j+1],[i+1,j+1]]){const ss=S0+a*DS,tt=T0+b*DT;if(ss<ch.s0+.3||ss>carveEnd-.1||Math.abs(tt-TC(ss))>ch.top-.25)return false;}return true;};
  ground((i,j)=>!cellCap(i,j)&&!underLining(i,j),(i,j)=>Hs[i*nt+j],'easement-ground');
- ground(cellCap,(i,j,s,t)=>hillTop(s,t)-.004,'easement-culvert-cap');
+ ground(cellCap,(i,j,s,t)=>Math.max(hillTop(s,t)-.004,bedY(cu.s)+cu.h+.91),'easement-culvert-cap');
  // A strip laid on the ground along a centerline [s,t] list: width w, lifted a little.
  function strip(pts,w,lift,material,name){const pos=[],idx=[];
   for(let k=0;k<pts.length;k++){const [s,t]=pts[k],[s2,t2]=pts[Math.min(k+1,pts.length-1)],[s0,t0]=pts[Math.max(k-1,0)],ds=s2-s0,dt=t2-t0,l=Math.hypot(ds,dt)||1,ns_=-dt/l,nt_=ds/l;
@@ -107,18 +122,42 @@ export function buildEasement(W){
  const mouth={s:cu.s,t:TC(cu.s),bed:bedY(cu.s)};
  {const g=place(cu.s,mouth.t,mouth.bed),W2=cu.w/2,H=cu.h,top=H+.78,wall=7.6;
   // Headwall face with its opening, a cap along the top, wingwalls retaining the rise.
-  K.box(g,-(W2+(wall/2-W2)/2),top/2,-.2,wall/2-W2,top,.42,darkConcrete).name='culvert-headwall';K.box(g,W2+(wall/2-W2)/2,top/2,-.2,wall/2-W2,top,.42,darkConcrete);
-  K.box(g,0,(H+top)/2,-.2,cu.w+.02,top-H,.42,darkConcrete);K.box(g,0,top+.08,-.32,wall+.3,.16,.75,concrete);
+  const headBox=(x,y,z,w,h,d)=>K.rbox(g,x,y,z,w,h,d,.035,concrete);
+  headBox(-(W2+(wall/2-W2)/2),top/2,-.2,wall/2-W2,top,.42).name='culvert-headwall';headBox(W2+(wall/2-W2)/2,top/2,-.2,wall/2-W2,top,.42);
+  headBox(0,(H+top)/2,-.2,cu.w+.02,top-H,.42);K.box(g,0,top+.08,-.32,wall+.3,.16,.75,concrete);
+  K.box(g,0,top+.28,-.72,wall,.42,.58,earth);
   // Wingwalls hold the trench's slopes beside the headwall, flaring out toward the channel.
-  for(const e of [-1,1]){const bank=height(cu.s-1,mouth.t+e*(ch.top+.15))-mouth.bed+.32;K.box(g,e*(ch.top+.15),bank/2-.05,1.05,.3,bank+.1,2.1,darkConcrete);solid(cu.s-1.05,mouth.t+e*(ch.top+.15),.2,1.05);}
+  for(const e of [-1,1]){const bank=height(cu.s-1,mouth.t+e*(ch.top+.15))-mouth.bed+.32;const wing=K.box(g,e*(ch.top+.15),bank/2-.05,1.05,.3,bank+.1,2.1,concrete);wing.rotation.y=-e*.12;const cap=K.box(g,e*(ch.top+.15),bank+.01,1.05,.39,.09,2.16,concrete);cap.rotation.y=-e*.12;solid(cu.s-1.05,mouth.t+e*(ch.top+.15),.3,1.12);}
   // The inside: walls, ceiling, a floor running on down into the dark, and darkness.
   const L=cu.inside;K.box(g,0,-.04,-L/2-.4,cu.w,.08,L,wetConcrete).name='culvert-floor';
-  for(const e of [-1,1])K.box(g,e*(W2+.1),H/2,-L/2-.4,.2,H,L,0x2a2b28);K.box(g,0,H+.1,-L/2-.4,cu.w+.4,.2,L,0x232421);
+  for(const e of [-1,1])K.box(g,e*(W2+.1),H/2,-L/2-.4,.2,H,L,wetConcrete);K.box(g,0,H+.1,-L/2-.4,cu.w+.4,.2,L,darkConcrete);
   const back=K.box(g,0,H/2,-L-.35,cu.w,H,.1,0x050506);back.material=new THREE.MeshBasicMaterial({color:0x040405});back.material.userData.keep=true;back.name='culvert-dark';
   // Standing water in the mouth, deepening inside; leaves and branches the last storm left.
   const pool=new THREE.Mesh(new THREE.PlaneGeometry(cu.w-.1,L+.6),W.surfaceMaterial(K.mat(0x1d2a2e,{roughness:.12,metalness:.45}),'water'));pool.rotation.x=-Math.PI/2;pool.position.set(0,.05,-L/2-.1);g.add(pool);
   for(const [x,z,a,l] of [[-.6,.6,.4,1.6],[.5,.2,-.3,1.2],[.1,-.9,.15,1.4],[-.9,-1.6,.6,.9]])K.rod(g,[x-Math.cos(a)*l/2,.1,z-Math.sin(a)*l/2],[x+Math.cos(a)*l/2,.16,z+Math.sin(a)*l/2],.035,0x4a3c2c,.02,5);
   solid(cu.s-.2,mouth.t-(W2+(wall/2-W2)/2),(wall/2-W2)/2,.3);solid(cu.s-.2,mouth.t+(W2+(wall/2-W2)/2),(wall/2-W2)/2,.3);}
+ // Weathering has physical scale: construction joints, mineral runs, exposed aggregate and
+ // receding collars. All use the existing static batch; no new lights or collision surfaces.
+ {const g=place(cu.s,mouth.t,mouth.bed),H=cu.h,W2=cu.w/2;
+  const stain=K.mat(0x676b60,{roughness:1}),lime=K.mat(0x898c7e,{roughness:1});
+  for(const side of [-1,1]){
+   for(const y of [.38,1.12,1.94])K.box(g,side*2.5,y,.017,2.5,.016,.008,0x373c36);
+   for(let j=0;j<19;j++){const x=side*(W2+.13+rand()*2.36),len=.12+rand()*.68;const w=.013+rand()*.052,geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([x-w,H+.68,.024,x+w,H+.68,.024,x+w*.7,H+.68-len*.45,.024,x-w*.35,H+.68-len,.024,x-w*.6,H+.68-len*.4,.024],3));geo.setIndex([0,2,1,0,4,2,4,3,2]);geo.computeVertexNormals();g.add(new THREE.Mesh(geo,j%3?stain:lime));}
+   for(let j=0;j<28;j++){const x=side*(W2+.04+rand()*2.48),y=.15+rand()*(H+.48);K.ball(g,x,y,.038,.013+rand()*.019,j%3?0x8b8c7d:0x3d413a,[1.4,.65,.3]);}
+   // A sediment tide line continues from the face into the tunnel.
+   K.box(g,side*2.5,.22,.03,2.54,.13,.012,stain);
+   K.box(g,side*(W2-.008),.22,-3.9,.015,.13,7.4,stain);
+   for(const z of [-1.7,-3.8,-6])K.box(g,side*(W2-.022),H/2,z,.045,H,.075,0x464b43);
+  }
+  for(const z of [-1.7,-3.8,-6])K.box(g,0,H-.025,z,cu.w,.05,.075,0x45483f);
+  // Chipped corners catch a little light without making a glowing outline.
+  for(const side of [-1,1])for(let j=0;j<9;j++)K.ball(g,side*(W2+.018),.15+j*.22,.03,.025+rand()*.018,0x828475,[.7,1.7,.5]);
+  // Washed gravel and a tangle beyond the allowed shallow step explain the wet boundary.
+  for(let j=0;j<45;j++){const z=.8-rand()*3,x=(rand()-.5)*(cu.w-.2);K.ball(g,x,.075,z,.025+rand()*.07,j%3?0x64665a:0x867d67,[1.5,.45,1]);}
+  for(let j=0;j<12;j++){const x=(rand()-.5)*2,z=-1.4-rand()*.5;K.rod(g,[x-.18,.12,z],[x+.25,.15,z-.18],.012,0x584a35,.006,4);}
+ }
+ // Expansion seams and irregular sediment accumulate in the ordinary drainage channel.
+ for(let ss=ch.s0+2;ss<cu.s-.7;ss+=3.8){strip([[ss,TC(ss)-ch.top+.12],[ss+.025,TC(ss)],[ss-.035,TC(ss)+ch.top-.12]],.017,.029,darkConcrete);}
  // ---- a power line overhead: two poles on the right bank and wires running on out of sight ----------
  const poles=[[7.5,6.4],[27.5,6.9]].map(([s,t])=>{const p=F.world(s,t),y=height(s,t),g=place(s,t,y);
   K.rod(g,[0,0,0],[0,9.4,0],.14,0x5a4a3a,.11,7).name='easement-pole';K.box(g,0,8.9,0,2.2,.12,.12,0x4e4234);for(const x of [-.95,0,.95])K.cyl(g,x,9.05,0,.045,.16,0x8e9a96,6);
@@ -142,13 +181,13 @@ export function buildEasement(W){
  {const s=ev.mud,t=F.pathT(s)+.2,p=F.world(s,t);blob(s,t,1.0,.62,mud,.022,'',1.3);blob(s+.1,t-.05,.55,.34,wetMud,.026,'',4.1);
   const track=[];for(let k=0;k<=18;k++){const ss=s-1.15+k*.13;track.push([ss,t+.05*Math.sin(ss*1.7)-.06*(ss-s)]);}
   strip(track,.05,.034,tread,'evidence-tire-mark');
-  for(let k=1;k<track.length-1;k++)for(const f of [.33,.66]){const [a,b]=[track[k],track[k+1]],ss=a[0]+(b[0]-a[0])*f,tt=a[1]+(b[1]-a[1])*f;strip([[ss,tt-.032],[ss,tt+.032]],.012,.036,tread);}
+  for(let k=1;k<track.length-1;k++)for(const f of [.33,.66]){const [a,b]=[track[k],track[k+1]],ss=a[0]+(b[0]-a[0])*f,tt=a[1]+(b[1]-a[1])*f;if(rand()>.2)strip([[ss-.013,tt-.031],[ss+.01,tt],[ss-.007,tt+.03]],.008,.036,tread);}
   spots.mud={s,t,x:p.x,z:p.z,y:height(s,t)};}
  // Weeds between the path and the channel, waist-high to a kid, with one lane pressed flat through them.
  {const s=ev.weeds,t0=F.pathT(s)+E.path.half+.15,t1=TC(s)-ch.top-.08,stand=K.mat(0x7c8752,{side:THREE.DoubleSide,roughness:1}),flat=K.mat(0x9d9a62,{side:THREE.DoubleSide,roughness:1});
   for(const m of [stand,flat])if(!W.foliage.includes(m))W.foliage.push(m);
   const blade=(g,len,w,bend,mat,lying,name='')=>{const geo=new THREE.BufferGeometry();
-   geo.setAttribute('position',new THREE.Float32BufferAttribute(lying?[-w,0,0,w,0,0,-w*.7,.045,len*.5,w*.7,.05,len*.5,0,.03,len]:[-w,0,0,w,0,0,-w*.6,len*.55,bend*.3,w*.6,len*.55,bend*.3,bend*.35,len,bend],3));geo.setIndex([0,1,2,1,3,2,2,3,4]);geo.computeVertexNormals();
+   const v=[],idx=[];for(let j=0;j<=5;j++){const u=j/5,ww=w*(1-u)*(.75+.25*Math.sin(u*3));for(const e of [-1,1])v.push(e*ww+bend*.2*u*u,lying?.016+Math.sin(u*Math.PI)*.055:len*u,lying?len*u:bend*u*u);if(j<5){const q=j*2;idx.push(q,q+1,q+2,q+1,q+3,q+2);}}geo.setAttribute('position',new THREE.Float32BufferAttribute(v,3));geo.setIndex(idx);geo.computeVertexNormals();
    const m=new THREE.Mesh(geo,mat);if(name)m.name=name;g.add(m);return m;};
   // Standing on both sides of the lane.
   for(const side of [-1,1])for(let k=0;k<34;k++){const ss=s+side*(.42+rand()*1.25),tt=t0+(t1-t0)*rand(),g=place(ss,tt,height(ss,tt)-.03,rand()*3);
@@ -177,8 +216,8 @@ export function buildEasement(W){
    const c=new THREE.Mesh(geo,tall);c.rotation.y=rand()*Math.PI*2;c.position.set((rand()-.5)*.25,0,(rand()-.5)*.25);g.add(c);}}
  // Brush lines just outside the walkable corridor, both sides, and round the culvert's rise.
  const walkLeft=s=>F.pathT(s)-1.7,walkRight=s=>TC(s)+4.4;
- for(let s=1.6;s<cu.s+2;s+=1.35){for(const [edge,dir] of [[walkLeft(s),-1],[walkRight(s),1]]){const t=edge+dir*(.7+rand()*.6),g=place(s,t,height(s,t));veg.shrub(g,0,0,.55+rand()*.45,rand);
-   if(rand()<.6){const t2=t+dir*(1.1+rand()*1.4),g2=place(s+rand()*.6,t2,height(s,t2));veg.shrub(g2,0,0,.6+rand()*.5,rand);}}}
+ for(let s=1.6;s<cu.s+2;s+=1.15+rand()*1.35){for(const [edge,dir] of [[walkLeft(s),-1],[walkRight(s),1]]){const t=edge+dir*(.7+rand()*.6),g=place(s,t,height(s,t));veg.shrub(g,0,0,.35+rand()*.48,rand);
+   if(rand()<.42){const t2=t+dir*(1.1+rand()*1.4),g2=place(s+rand()*.6,t2,height(s,t2));veg.shrub(g2,0,0,.6+rand()*.5,rand);}}}
  const trees=[];for(const [s,t,size,kind] of [[4,-9.5,1.05,'maple'],[11,-11.2,.95,'oak'],[16,-8.8,.8,'young'],[22,-10.6,1.1,'maple'],[29,-9.4,.9,'birch'],[35.5,-6.5,1,'maple'],[38,2,1.15,'oak'],[39,-3,.9,'pine'],[36,9.5,.95,'maple'],
   [12,10.6,.9,'maple'],[19,11.6,1,'oak'],[24.5,9.8,.75,'young'],[33.5,11,.95,'pine'],[42,6,1.05,'maple'],[43.5,-7,.9,'oak'],[6,12,.85,'birch']]){const p=F.world(s,t);if(veg.treeWorld(p.x,p.z,height(s,t)-.03,{size,kind,lod:'full',clearance:1.4}))trees.push([s,t]);}
  // Where the story needs things (easement frame, plus world positions).

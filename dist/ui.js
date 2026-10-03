@@ -26,7 +26,7 @@ export function createUI($,hooks={}){
  let promptKey='';
  function prompt(items){const key=items?items.map(i=>i.join(':')).join('|'):'';if(key===promptKey)return;promptKey=key;const el=$('prompt');
   if(!items||!items.length){el.classList?.remove('on');return;}
-  el.innerHTML=items.map(([k,label])=>`<span>${k.split('+').map(x=>`<kbd>${x}</kbd>`).join('')} ${label}</span>`).join('');el.classList?.add('on');}
+  el.innerHTML=items.map(([k,label])=>`<span class="${label==='Remember'?'memory-action':''}">${k.split('+').map(x=>`<kbd>${x}</kbd>`).join('')}${label==='Remember'?' — ': ' '}${label}</span>`).join('');el.classList?.add('on');}
  // Memory lines fade in, stay a moment, fade out.
  let reflectT=0,reflectHold=0;
  function reflect(text,hold=3.2){const el=$('reflection');el.textContent=text;el.classList?.add('on');reflectT=0;reflectHold=hold+1.8;}

@@ -1,6 +1,7 @@
 // Browser release checks. npm install --no-save playwright; npx playwright install chromium.
 // BROWSER_PATH can select an existing Chromium. SOFTWARE_GL=1 uses SwiftShader.
 import fs from 'node:fs';
+import {runChapterTwoPolish} from './chapter2-polish.mjs';
 import {createHash} from 'node:crypto';
 import http from 'node:http';
 import path from 'node:path';
@@ -229,8 +230,9 @@ try{
  await page.setViewportSize({width:1280,height:720});await page.waitForFunction(()=>Math.abs(lastLight.camera.aspect-1280/720)<.001);await page.evaluate(()=>{lastLight.toTitle();lastLight.step(.1);});await snap('polish-title-laptop');
  check('laptop title controls fit',await page.locator('.controls').evaluate(el=>el.getBoundingClientRect().bottom<=innerHeight&&lastLight.state.state==='intro'&&getComputedStyle(document.querySelector('#prompt')).visibility==='hidden'));await page.setViewportSize({width:1440,height:900});
 
- await runAstraChecks({page,snap,check,camAt,state});
+ await runAstraChecks({page,snap,check,camAt,state,errors});
  const sceneInventory=await runSceneChecks({page,snap,check,camAt,state});
+ await runChapterTwoPolish({page,snap,check});
  const gpu=await page.evaluate(()=>{const gl=lastLight.renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'unavailable';});
  // Real Web Audio renders of every important synthesized sound, retained for listening.
  const audioReport=await page.evaluate(async()=>{

@@ -19,7 +19,7 @@ import {groundPoint,heading} from './route.js';
 import {LOOKOUT,EASEMENT} from './layout.js';
 import {smooth} from './kit.js';
 import {createActor,ADULTS,headingTo,wrap} from './people.js';
-import {createBike,poseBike} from './rig.js';
+import {createBike,poseBike,mergeParts} from './rig.js';
 import {CAST} from './cast.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
@@ -42,10 +42,17 @@ export function createChapter2(o,k){
  // the lens of its rear reflector broken out of the clip: the piece found at the creek.
  const bikeSpec={...CAST.alex.bike,extras:CAST.alex.bike.extras.map(e=>e==='rear-reflector'?'rear-reflector-broken':e)};
  const found=createBike(bikeSpec);found.group.name='alex-bike-found';scene.add(found.group);found.group.visible=false;
- {const mud=new THREE.MeshStandardMaterial({color:0x4a3f2e,roughness:1}),g=found.group;
-  // Mud on both tyres, dirt along the down tube and chain stay, a scuff on the pedal.
-  for(const [x,y,z,s] of [[.03,.12,-.36,.07],[-.02,.18,-.42,.05],[.02,.12,.42,.08],[-.03,.2,.48,.05],[.04,.36,.05,.04],[-.04,.3,-.1,.035],[.05,.24,.2,.03]]){const m=new THREE.Mesh(new THREE.IcosahedronGeometry(s,0),mud);m.position.set(x,y,z);m.scale.set(.5,1,1.4);g.add(m);}
-  g.traverse(m=>{if(m.isMesh)m.castShadow=false;});}
+ {const mud=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1});
+  const dirt=(parent,parts,name)=>{const m=new THREE.Mesh(mergeParts(parts),mud);m.name=name;parent.add(m);};
+  // Fine deposits follow the actual wheel assemblies, including the turned front fork.
+  for(const [i,wheel] of [found.rearWheel,found.frontWheel].entries()){
+   const parts=[],r=found.geom.wheelR;
+   for(let j=0;j<13;j++){const a=j*2.399+i*.7;parts.push({geo:new THREE.IcosahedronGeometry(.007+(j%3)*.002,0),color:j%2?0x74644a:0x534936,matrix:new THREE.Matrix4().compose(new THREE.Vector3(.022,Math.cos(a)*r,Math.sin(a)*r),new THREE.Quaternion(),new THREE.Vector3(.45,1,1))});}
+   dirt(wheel,parts,'alex-bike-tire-dirt-'+i);
+  }
+  const G=found.geom,parts=[],seat=new THREE.Vector3(0,G.saddle[1]-.15,G.saddle[2]-.04),bb=new THREE.Vector3(...G.bb),rear=new THREE.Vector3(.05,G.wheelR,G.rear);
+  for(const [a,b] of [[bb,seat],[bb,rear]])for(let j=1;j<9;j++){const q=a.clone().lerp(b,j/9);q.x+=.026;parts.push({geo:new THREE.IcosahedronGeometry(.005+j%3*.002,0),color:0x75654c,matrix:new THREE.Matrix4().compose(q,new THREE.Quaternion(),new THREE.Vector3(.45,1.3,1))});}
+  dirt(found.frame,parts,'alex-bike-road-dirt');found.group.traverse(m=>{if(m.isMesh)m.castShadow=false;});}
  const bikeAt=(()=>{const p=SP.bike,a=F.heading+.32;return {x:p.x,z:p.z,y:p.y,a};})();
  function placeFound(){const g=found.group,p=bikeAt;g.position.set(p.x,nav.groundY(p.x,p.z)+.03,p.z);
   // On its side in the grass at the top of the bank, the bars turned a little, resting on its
@@ -57,14 +64,16 @@ export function createChapter2(o,k){
  const foundParts=[];
  placeFound();
  // Where the inspection looks: the broken reflector mount (world position, updated on demand).
- const mountWorld=new THREE.Vector3();function mountPoint(){found.group.updateMatrixWorld(true);return mountWorld.set(0,.86,.68).applyMatrix4(found.group.matrixWorld);}
+ const mountWorld=new THREE.Vector3();function mountPoint(){found.group.updateMatrixWorld(true);return mountWorld.set(0,found.geom.saddle[1]-.135,found.geom.saddle[2]+.415).applyMatrix4(found.group.matrixWorld);}
  // ---- tape round the bike (once the police are there) ------------------------------------------------
  const tape=new THREE.Group();tape.name='evidence-tape';scene.add(tape);tape.visible=false;
  {const yel=new THREE.MeshStandardMaterial({color:0xe2c23a,roughness:.7,side:THREE.DoubleSide}),stake=new THREE.MeshStandardMaterial({color:0x6a5a44,roughness:1});
   const corners=[[28.3,-6.1],[32.5,-6.3],[32.4,-2.85],[28.4,-2.8]].map(([s,t])=>W2(s,t));// round the bike, across the end of the path
   for(const c of corners){const m=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,1.1,6),stake);m.position.set(c.x,c.y+.55,c.z);tape.add(m);}
-  for(let i=0;i<corners.length;i++){const a=corners[i],b=corners[(i+1)%corners.length],len=Math.hypot(b.x-a.x,b.z-a.z),m=new THREE.Mesh(new THREE.PlaneGeometry(len,.07),yel);
-   m.position.set((a.x+b.x)/2,(a.y+b.y)/2+.95,(a.z+b.z)/2);m.rotation.y=-Math.atan2(b.z-a.z,b.x-a.x);tape.add(m);}}
+  for(let i=0;i<corners.length;i++){const a=corners[i],b=corners[(i+1)%corners.length],verts=[],idx=[];
+   for(let j=0;j<=16;j++){const u=j/16,y=a.y+(b.y-a.y)*u+.95-.14*4*u*(1-u);for(const dy of [-.035,.035])verts.push(a.x+(b.x-a.x)*u,y+dy,a.z+(b.z-a.z)*u);if(j<16){const q=j*2;idx.push(q,q+2,q+1,q+1,q+2,q+3);}}
+   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));geo.setIndex(idx);geo.computeVertexNormals();tape.add(new THREE.Mesh(geo,yel));
+   const tie=new THREE.Mesh(new THREE.TorusGeometry(.03,.006,4,8),yel);tie.position.set(a.x,a.y+.95,a.z);tie.rotation.x=Math.PI/2;tape.add(tie);}}
  // ---- more people out searching ------------------------------------------------------------------------
  const vol=['vol1','vol2','vol3','vol4','vol5'].map((key,i)=>createActor(scene,nav,ADULTS[key],{seed:11+i}));
  const extra=[...vol];
@@ -76,18 +85,19 @@ export function createChapter2(o,k){
  const flyers=new THREE.Group();flyers.name='missing-flyers';scene.add(flyers);flyers.visible=false;
  {const tex=(()=>{try{const c=document.createElement('canvas'),g=c.getContext?.('2d');if(!g)return null;c.width=170;c.height=220;
    g.fillStyle='#f4f1e8';g.fillRect(0,0,170,220);g.fillStyle='#161616';g.font='bold 34px Arial';g.textAlign='center';g.fillText('MISSING',85,40);
-   g.fillStyle='#8f8b84';g.fillRect(45,52,80,92);g.fillStyle='#c9c4ba';g.beginPath();g.arc(85,88,20,0,7);g.fill();g.fillRect(58,112,54,32);
-   g.fillStyle='#202020';g.font='bold 20px Arial';g.fillText('ALEX, 12',85,168);g.font='11px Arial';g.fillText('Last seen Sun. Aug 21, about 8 PM',85,186);g.fillText('Oak Hollow Dr & Briarwood Ln',85,199);g.fillText('Green bicycle. Please call.',85,212);
+   // A small, deliberately illustrated school-photo likeness of the fictional cast member.
+   g.save();g.beginPath();g.rect(45,52,80,92);g.clip();g.fillStyle='#a7b6ad';g.fillRect(45,52,80,92);g.fillStyle='#d4b25a';g.beginPath();g.ellipse(85,143,28,30,0,0,7);g.fill();g.fillStyle='#e1b38a';g.fillRect(79,102,12,17);g.beginPath();g.ellipse(85,87,18,23,0,0,7);g.fill();g.fillStyle='#7a5230';g.beginPath();g.ellipse(84,70,19,11,-.1,0,7);g.fill();g.fillRect(67,73,5,18);g.fillStyle='#3c3934';g.fillRect(77,87,3,2);g.fillRect(91,87,3,2);g.strokeStyle='#966e58';g.beginPath();g.moveTo(81,100);g.lineTo(90,101);g.stroke();g.restore();
+   g.fillStyle='#202020';g.font='bold 20px Arial';g.fillText('ALEX, 12',85,168);g.font='10px Arial';g.fillText('Last seen Sun. Aug 21, about 8 PM',85,186,156);g.fillText('Oak Hollow Dr & Briarwood Ln',85,199,156);g.fillText('Green bicycle. Please call.',85,212,156);
    const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}catch{return null;}})();
   const paper=new THREE.MeshStandardMaterial({color:0xf2efe6,map:tex,roughness:.92,side:THREE.DoubleSide});
   const poles=(world.poles||[]).filter(p=>(p.frame===world.MAIN||p.frame?.id==='main'||!p.frame?.junction)&&p.u>555&&p.u<760).slice(0,5);
   for(const p of [...poles,...(world.poles||[]).filter(p=>p.frame===B&&p.u<70).slice(0,2)]){const toward=p.frame===B?B.point(p.u,0):groundPoint(p.u,0),a=Math.atan2(toward.x-p.x,toward.z-p.z);
-   const m=new THREE.Mesh(new THREE.PlaneGeometry(.28,.36),paper);m.position.set(p.x+Math.sin(a)*.16,p.y+1.55,p.z+Math.cos(a)*.16);m.rotation.y=a;flyers.add(m);}
+   const m=new THREE.Mesh(new THREE.PlaneGeometry(.28,.36),paper);m.position.set(p.x+Math.sin(a)*.16,p.y+1.55,p.z+Math.cos(a)*.16);m.rotation.y=a;flyers.add(m);const tabMat=new THREE.MeshStandardMaterial({color:0xd5cbb4,roughness:1});for(const yy of [-.177,.177]){const tab=new THREE.Mesh(new THREE.PlaneGeometry(.055,.025),tabMat);tab.position.set(.015,yy,.002);tab.rotation.z=.12; m.add(tab);}}
   // One taped to the lookout's fence post, by the oak.
   {const q=groundPoint(LOOKOUT.fenceD-.6,-3.2),m=new THREE.Mesh(new THREE.PlaneGeometry(.28,.36),paper);m.position.set(q.x,world.groundY(LOOKOUT.fenceD-.6,-3.2)+.95,q.z);m.rotation.y=-heading(LOOKOUT.fenceD)+Math.PI;flyers.add(m);}}
  // ---- state --------------------------------------------------------------------------------------------
  const C={};
- function fresh(){Object.assign(C,{t:0,pt:0,flags:{},card:-1,fadeIn:-1,dawn:-1,endT:-1,memory:null,bellAt:-1,poi:null,lastS:0,lingerT:0,warned:0});}
+ function fresh(){Object.assign(C,{t:0,pt:0,flags:{},card:-1,fadeIn:-1,dawn:-1,endT:-1,memory:null,bellAt:-1,poi:null,lastS:0,lingerT:0,warned:0,rememberWait:0});}
  fresh();
  const api={SECTIONS:SECTIONS2,day:0,get state(){return {phase:S.phase,flags:{...C.flags},foundVisible:found.group.visible,tape:tape.visible,flyers:flyers.visible,day:api.day,bellAt:C.bellAt,memory:C.memory,
   searchers:extra.filter(a=>a.visible).length,beams:beams.filter(b=>b.on).length};}};
@@ -109,9 +119,9 @@ export function createChapter2(o,k){
    const hand=e.who.person.parts.rhand.getWorldPosition(new THREE.Vector3());let target=e.target?.();if(!target){const a=(e.who.a??e.who.pa??0)+Math.sin(C.t*.6+beams.indexOf(e))*.5;target={x:hand.x+Math.sin(a)*5,y:hand.y-1.4,z:hand.z-Math.cos(a)*5};}
    const aim=new THREE.Vector3(target.x,(target.y??nav.groundY(target.x,target.z))+.05,target.z);if(!e.ready){e.aim.copy(aim);e.ready=true;}else e.aim.lerp(aim,1-Math.exp(-3*dt));
    e.beam.position.copy(hand);e.beam.lookAt(e.aim);e.beam.material.uniforms.uA.value=.028;}}
- samBeam.target=()=>S.samAim||(C.flags.bell?SP.mouth:null)||W2(clamp((nav.locate(sam.px,sam.pz).s||0)+4,1,33),F.channelT(16)+2*Math.sin(C.t*.5));
+ samBeam.target=()=>S.samAim||(C.flags.bell?SP.mouth:null)||W2(clamp((nav.locate(sam.px,sam.pz).s||0)+4,1,33),F.channelT(16)+[1.8,-.5,2.5,.3][Math.floor(C.t/3.7)%4]);
  offBeam.target=()=>C.flags.reported?found.group.position:null;
- volBeams.forEach((e,i)=>{e.target=()=>W2(10+i*9+4*Math.sin(C.t*.3+i),F.pathT(12)+(i?4:-2));});
+ volBeams.forEach((e,i)=>{e.target=()=>W2(10+i*9+[0,2.5,-1,3][Math.floor((C.t+i)/4.1)%4],F.pathT(12)+(i?4:-2));});
  // ---- the night, picking up seconds later ------------------------------------------------------------
  function standAtCreek(){const c=k.clue.position,g=SP.gap,a=headingTo(c.x,c.z,g.x,g.z),q={x:c.x-Math.sin(a)*.9,z:c.z+Math.cos(a)*.9};
   o.placePlayer({x:q.x,z:q.z,a,mode:'walk',bike:{x:roam.x,z:roam.z,a:roam.a}});}
@@ -142,7 +152,8 @@ export function createChapter2(o,k){
    {wait:4.2},{act:searchersComing,wait:.1}]);}
  function secondBell(){C.bellAt=C.t;C.flags.bell=true;const b=SP.bell;o.audio()?.bell({x:b.x,y:b.y,z:b.z},1.5,{tunnel:true});
   // Everyone freezes and turns to it; the lights snap round; Sam steps in closer.
-  S.lookTarget=SP.mouth;S.jamieAim=SP.mouth;S.samAim=SP.mouth;for(const c of [jamie,sam]){c.lookAt=SP.mouth;c.follow=null;}
+  S.lookTarget=SP.mouth;for(const c of [jamie,sam])c.follow=null;
+  setTimeout0(.18,()=>{S.jamieAim=SP.mouth;jamie.lookAt=SP.mouth;});setTimeout0(.48,()=>{S.samAim=SP.mouth;sam.lookAt=SP.mouth;});
   const p=me(),side={x:p.x+Math.cos(p.a)*.9-Math.sin(p.a)*.4,z:p.z+Math.sin(p.a)*.9+Math.cos(p.a)*.4};if(sam.mode==='foot'&&nav.walkable(side.x,side.z))comp.run(sam,[comp.steps.walkTo(sam,[[side.x,side.z]],{speed:1.1}),comp.steps.idle(sam,.4)],{then:()=>{sam.lookAt=SP.mouth;}});}
  function searchersComing(){go('c2-police');checkpoint('police-arrival');date(21,NIGHT_TIME.police,'PM');S.pose&&(S.pose.release=true);
   const g=SP.gap,start=W2(1.6,.1);/* just in through the gap behind them */officer2.show(true);officer2.place(start.x,start.z,F.heading);officer2.gest('flashlight');officer2.lookAt=null;
@@ -168,11 +179,11 @@ export function createChapter2(o,k){
    dad.walk(path.length?path:[[q.x,q.z]],{speed:1.75,then:a=>{a.faceTo(found.group.position.x,found.group.position.z);C.flags.dadThere=true;}});
    // The officer steps across to meet him.
    const m=W2(27.4,F.pathT(27.4)+2.2),pp=nav.walkPath(officer2,m);officer2.walk(pp.length?pp:[[m.x,m.z]],{speed:1.3,then:a=>{a.faceTo(dad.x,dad.z);a.lookAt=dad.pos;}});});}
- function loopSearch(a,pts){const ws=pts.map(([s,t])=>W2(s,t)).map(q=>[q.x,q.z]);let i=0;const next=()=>{i=(i+1)%ws.length;a.walk([ws[i]],{speed:.7,then:()=>{a.t=0;setTimeout0(1.5+Math.random(),next);}});};next();}
+ function loopSearch(a,pts){const ws=pts.map(([s,t])=>W2(s,t)).map(q=>[q.x,q.z]);let i=0;const next=()=>{i=(i+1)%ws.length;a.walk([ws[i]],{speed:.7,then:()=>{a.t=0;const q=ws[(i+1)%ws.length];a.lookAt={x:q[0],y:nav.groundY(q[0],q[1])+.2,z:q[1]};setTimeout0(2.3+(i%3)*.7,next);}});};next();}
  // Small timers on the chapter clock (cleared by reset and jumps).
  let timers=[];function setTimeout0(sec,fn){timers.push({at:C.t+sec,fn});}
  function dadScene(){C.flags.dadTalk=true;
-  talk([{who:'ALEX’S DAD',text:'“That’s his bike. That’s Alex’s bike.”',from:dad,act:()=>dad.gest('head')},
+  talk([{who:'ALEX’S DAD',text:'“That’s his bike. That’s Alex’s bike.”',from:dad,act:()=>dad.gest('brace')},
    {who:'ALEX’S DAD',text:'“Was he here? Is he—”',from:dad,time:2.4},
    {who:'OFFICER',text:'“We don’t know yet. I need you to stay back, sir.”',from:officer2,gap:1.2},
    {who:'SAM',text:'“We heard a bell. In there.”',from:sam,time:2.4,act:()=>{sam.lookAt=officer2.pos;}},
@@ -193,9 +204,10 @@ export function createChapter2(o,k){
   const put=(a,q,face,gest=null)=>{a.show(true);a.place(q.x,q.z,face);a.gest(gest);return a;};
   put(officer,side(19.5,-5.4),k.ha(19.5)-Math.PI/2,'radio');
   // Someone pinning the last flyer to a pole along Oak Hollow.
-  {const f0=flyers.children[0],L=nav.locate(f0.position.x,f0.position.z),q=main(L.d+.45,L.lat+.7);put(vol[2],q,headingTo(q.x,q.z,f0.position.x,f0.position.z),'point');}
+  {const f0=flyers.children[0],L=nav.locate(f0.position.x,f0.position.z),q=main(L.d+.45,L.lat+.7);put(vol[2],q,headingTo(q.x,q.z,f0.position.x,f0.position.z),'point');vol[2].gtarget=f0.position;vol[2].lookAt=f0.position;}
   {const a=put(vol[0],main(650,7.1),heading(650)),b=put(vol[1],main(651.4,7.5),heading(651.4));pairWalk(a,b,[[650,7.1],[752,7.1]],[[651.4,7.6],[753.4,7.6]]);}
   put(vol[3],main(705.8,-11.4),heading(706)-Math.PI/2+.6,'talk');put(k.neighbor,main(707.4,-10.8),heading(707.6)+Math.PI/2-.4,'fold');// on the lawn, clear of the porch steps
+  vol[3].faceTo(k.neighbor.x,k.neighbor.z);k.neighbor.faceTo(vol[3].x,vol[3].z);vol[3].lookAt=k.neighbor.pos;k.neighbor.lookAt=vol[3].pos;
   put(vol[4],main(520,10.8),heading(520)+Math.PI/2+Math.PI,'fold');
   {const a=put(officer2,main(668,-11),heading(668)-Math.PI/2);yardCheck(a,[[668,-11],[668.5,-19],[672,-24],[668,-11]]);}
   // Jamie and Sam already at the oak, bikes beside them.
@@ -220,7 +232,7 @@ export function createChapter2(o,k){
    {who:'SAM',text:'“So?”',from:sam,time:1.4},
    {who:'JAMIE',text:'“What if he heard the bell?”',from:jamie,time:2.6,gap:2.6},
    {who:'JAMIE',text:'“Come on. Briarwood. Where he turned.”',from:jamie}],
-   {then:()=>{go('m-briarwood');objective('Return to Briarwood.');jamie.lookPlayer=false;sam.lookPlayer=false;
+   {then:()=>{go('m-briarwood');objective('Go back to where Alex turned.','Briarwood. Where he left us last night.');jamie.lookPlayer=false;sam.lookPlayer=false;
     // Back on their bikes and along with you.
     if(jamie.mode==='foot'){const jb={x:jamie.bx-Math.cos(jamie.ba)*.43,z:jamie.bz-Math.sin(jamie.ba)*.43};comp.run(jamie,[comp.steps.walkTo(jamie,[[jb.x,jb.z]],{speed:1.2}),comp.steps.turnTo(jamie,()=>jamie.ba,.5),comp.steps.act(()=>{jamie.kick=0;}),comp.steps.mount(jamie)],{then:()=>{jamie.follow='ride';}});}
     sam.follow='ride';}});}
@@ -268,7 +280,11 @@ export function createChapter2(o,k){
   if(ph==='c2-dawn'){if(C.pt>3.4&&C.cardOn)card(false);if(C.pt>4.6)wakeUp();}
   if(ph==='m-home'){if(C.fadeIn>=0){C.fadeIn+=dt;o.fade(1-smooth(C.fadeIn/3));if(C.fadeIn>=3){o.fade(0);C.fadeIn=-1;}}
    const L=where(p);if(L.street==='main'&&L.d>1124&&Math.hypot(jamie.px-p.x,jamie.pz-p.z)<19&&!busy())oakTalk();}
-  if(ph==='m-briarwood'){if(atCorner(p)&&!C.flags.corner){C.flags.corner=true;objective('Remember Alex leaving.');talk([{who:'JAMIE',text:'“This is where he turned.”',from:jamie,time:2.4}]);}}
+  if(ph==='m-briarwood'){
+   if(atCorner(p)&&!C.flags.corner){C.flags.corner=true;objective('Remember Alex leaving.');talk([{who:'JAMIE',text:'“This is where he turned.”',from:jamie,time:2.4}]);}
+   // Local, once-only help. Leaving the corner pauses the clock; it never nags along the route.
+   if(atCorner(p)&&C.flags.corner&&!C.memory){C.rememberWait+=dt;if(C.rememberWait>=12&&!C.flags.rememberReminder&&!busy()){C.flags.rememberReminder=true;talk([{who:'JAMIE',text:'“Try to remember exactly what he did.”',from:jamie,time:3.4}]);}}
+  }
   if(ph==='m-after'&&C.endT>=0){C.endT+=dt;o.fade(smooth(C.endT/3.4));if(C.endT>4){go('m-end');end();}}
   A.night=api.day?0:1;A.day=api.day;if(api.day){S.deep=A.deep=0;}}
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Two';if(pp)pp.textContent='August 22, 2011.';}o.finish();}
@@ -320,7 +336,7 @@ export function createChapter2(o,k){
  let hidden=null;
  // While remembering, the present is not there; afterwards it is exactly as it was.
  function presentVisible(on){if(!on){hidden=presentObjects().filter(g=>g.visible);for(const g of hidden)g.visible=false;}else{for(const g of hidden||[])g.visible=true;hidden=null;}}
- Object.assign(api,{owns,begin,update,spots,act,sources,blockers,reset,jump,memoryDone,presentVisible,jamieSweep,
+ Object.assign(api,{owns,begin,update,spots,act,sources,blockers,reset,jump,memoryDone,presentVisible,jamieSweep,officerAim:()=>{if(C.flags.reported)return found.group.position;if(C.flags.called){const p=me();return {x:p.x,y:nav.groundY(p.x,p.z)+.5,z:p.z};}const s=clamp((nav.locate(officer2.x,officer2.z).s||0)+4,1,32);return W2(s,F.pathT(s)+[.5,2,-1][Math.floor(C.t/3.6)%3]);},
   canDismount:()=>!['c2-bell','m-memory'].includes(S.phase),canRemount:()=>!S.phase.startsWith('c2-'),
   found,tape,flyers,extra,beams,homeHouse,corner,LABEL,ALIAS});
  return api;

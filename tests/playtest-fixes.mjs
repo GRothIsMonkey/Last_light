@@ -157,5 +157,16 @@ export function runPlaytestFixChecks({h,advance,press,release,tap,check,element,
  element('restart').onclick();advance(.2);
  check('human playtest (oak): Start over clears the companions\' trail and stall state',()=>{for(const c of h.chapter.companions.all){assert.equal(c.active,false);assert.equal(c.stall,0);assert.equal(c.unstick,0);}assert.equal(h.chapter.companions.trail.pts.length,0);});
  capturedOak();press('KeyD');advance(3.6);release('KeyD');{const r=rideOff();oakRuns['after replay']=r;check('human playtest (oak): after Start over, the captured configuration still follows on the first attempt',()=>followed(r,'replay'));}
+ // Deterministic randomized setup sweep; only the initial fixture is placed. Departure uses inputs.
+ const randomized=[];
+ for(const seed of [5,11,23,42]){const random=seeded(seed);for(let trial=0;trial<30;trial++){
+  capturedOak();const comp=h.chapter.companions,r=h.night.roam;
+  h.placePlayer({x:r.x+(random()-.5)*.4,z:r.z+(random()-.5)*.4,a:r.a+(random()-.5)*.3,mode:'ride',speed:0});
+  for(const c of comp.all)comp.putRiding(c,c.bx+(random()-.5)*.4,c.bz+(random()-.5)*.4,c.ba+(random()-.5)*.3,0);
+  advance(random()*8);const key=random()<.5?'KeyA':'KeyD';press(key);advance(3.2+random()*.7);release(key);
+  const r1=rideOff();followed(r1,'random seed '+seed+' trial '+trial);randomized.push({seed,trial,...r1});
+ }}
+ check('human playtest (oak): 120 seeded variations in starting position, heading, wait and turn leave without a deadlock',()=>assert.equal(randomized.length,120));
+ metrics['oak randomized sweep']={trials:randomized.length,seeds:[5,11,23,42],stuck:0,maxDepartureSeconds:Math.max(...randomized.flatMap(r=>r.set)),maxFinalGapMeters:Math.max(...randomized.flatMap(r=>r.gaps))};
  metrics['oak follow runs (seconds to set off, final gaps m)']=Object.fromEntries(Object.entries(oakRuns).map(([k,r])=>[k,{set:r.set,gaps:r.gaps,worst:r.worst}]));
 }

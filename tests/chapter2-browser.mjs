@@ -18,7 +18,7 @@ function installHelpers(){const L=lastLight,F=L.world.easement;
   async M(d,l){const {groundPoint}=await import('./route.js');const p=groundPoint(d,l);return [p.x,p.z];},
   async line(d0,d1,l,st=20){const o=[];const n=Math.ceil(Math.abs(d1-d0)/st);for(let i=1;i<=n;i++)o.push(await this.M(d0+(d1-d0)*i/n,l));return o;}};}
 
-export async function runChapterTwoBrowser({page,snap,check,state,errors}){
+export async function runChapterTwoBrowser({page,snap,check,state,errors,exploratory=false}){
  const ev=(fn,arg)=>page.evaluate(fn,arg),cstate=async()=>(await state()).chapter,c2=async()=>(await state()).chapter2;
  await ev(installHelpers);
  // Let CSS transitions (card, fade, objective) finish in real time before a capture.
@@ -36,6 +36,7 @@ export async function runChapterTwoBrowser({page,snap,check,state,errors}){
  await ev(()=>{const C=__c2,g=lastLight.world.easement.spots.gap;C.walkPath(g,{max:60});C.face(...C.path(3),-.05);C.until(()=>false,.4);});await snap('c2-03-fence-gap');
  await ev(()=>{const C=__c2;C.walk([.6,1.4,2.4,3.6,5,6.5].map(s=>C.path(s)),{max:30});});
  check('Chapter Two: through the gap into the drainage easement',(await cstate()).phase==='c2-easement');
+ if(exploratory){await ev(()=>{const L=lastLight,C=__c2;L.key('KeyT');C.until(()=>false,7);const m=C.me();L.face(m.a+Math.PI,.25);C.until(()=>false,6);L.key('KeyT');C.walk([C.path(5),C.E(6.2,L.world.easement.pathT(6.2)+.55),C.path(6.5)],{max:25});});check('exploratory run: linger, turn, oblique approach and flashlight toggle remain usable',await ev(()=>lastLight.foot.on&&lastLight.state.chapter.phase==='c2-easement'));}
  await ev(()=>{const C=__c2;C.face(...C.path(14),-.1);C.until(()=>false,.3);});await snap('c2-04-easement-at-night');
  // The marks on the way, each looked at as a player would (stop, look down at it with the light).
  for(const [name,id,s0,p] of [['c2-05-tire-mark','mud',6.8,-.75],['c2-06-flattened-weeds','weeds',14.8,-.55],['c2-07-scrape','scrape',23.8,-.6]]){
@@ -77,9 +78,20 @@ export async function runChapterTwoBrowser({page,snap,check,state,errors}){
  await ev(async()=>{const C=__c2;lastLight.press('KeyW');const L0=lastLight.nav.locate(C.me().x,C.me().z);C.ride([await C.M(L0.d+3,-2.2),...await C.line(L0.d+3,1128,-2.2)],200);C.brake();C.until(()=>lastLight.state.chapter2.flags.oakTalk,20);C.until(()=>lastLight.state.chapter.line==='“There was one right there.”',30);});await snap('c2-18-oak-morning');
  check('Chapter Two: at the oak the old bike is not there; "What old bike?"',await ev(()=>!lastLight.ending.otherBike.visible&&__c2.said.includes('SAM: “What old bike?”')));
  await ev(()=>__c2.until(()=>lastLight.state.chapter.phase==='m-briarwood',80));
- check('Chapter Two: "What if he heard the bell?"; back to Briarwood',await ev(()=>__c2.said.includes('JAMIE: “What if he heard the bell?”'))&&(await cstate()).objective==='Return to Briarwood.');
+ check('Chapter Two: "What if he heard the bell?"; back to Briarwood',await ev(()=>__c2.said.includes('JAMIE: “What if he heard the bell?”'))&&(await cstate()).objective==='Go back to where Alex turned.');
  await ev(async()=>{const C=__c2;lastLight.press('KeyW');C.ride([await C.M(1131,3),...await C.line(1131,600,2.2,25),await C.M(596,2.4)],200);C.brake();const q=lastLight.chapter2.corner.look;C.face(q.x,q.z);C.until(()=>lastLight.state.chapter2.flags.corner,10);C.until(()=>false,2.5);});
  await snap('c2-19-briarwood-corner');check('Chapter Two: at the corner where he turned, F: Remember',(await state()).prompt==='F:Remember');
+ check('Astra: memory objective is explicit at the intersection',(await cstate()).objective==='Remember Alex leaving.');
+ check('Astra: Remember prompt has a distinct readable key and label',await ev(()=>document.querySelector('#prompt .memory-action')?.textContent.includes('— Remember')));
+ if(exploratory){
+  await ev(()=>{const L=lastLight,C=__c2;L.face(L.roam.a+Math.PI,0);C.until(()=>false,14);});
+  check('Astra: Remember persists when facing away and lingering',(await state()).prompt==='F:Remember');
+  check('Astra: Jamie gives one local reminder',await ev(()=>__c2.said.filter(x=>x.includes('Try to remember exactly what he did.')).length===1));
+  // Walk outside the interaction, dismount normally, and return on foot; no placement/jump.
+  await ev(async()=>{const C=__c2,L=lastLight;C.ride([await C.M(616,2.4)],25);C.brake();L.key('KeyF');C.until(()=>L.state.state==='c1-walk',5);const q=L.chapter2.corner.at;C.walkPath(q,{max:40});C.until(()=>false,2);});
+  check('Astra: Remember works after leaving and returning on foot',(await state()).state==='c1-walk'&&(await state()).prompt==='F:Remember');
+  await snap('memory-on-foot-persistent');
+ }
  // ---- remembering ------------------------------------------------------------------------------
  const before=await ev(()=>({me:__c2.me(),j:[lastLight.state.chapter.jamie.x,lastLight.state.chapter.jamie.z]}));
  await ev(()=>{lastLight.key('KeyF');__c2.until(()=>lastLight.state.state==='memory'&&lastLight.state.memory?.phase==='play',12);__c2.until(()=>false,1);});await snap('c2-20-memory-evening');

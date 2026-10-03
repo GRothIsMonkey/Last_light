@@ -499,7 +499,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
   if(target){const dx=target.x-bikeRoot.position.x,dz=target.z-bikeRoot.position.z,fwd=-(heading(distance)+yawOffset);let a=Math.atan2(-dx,-dz)-fwd;a=Math.atan2(Math.sin(a),Math.cos(a));want=clamp(a,-.85,.85);}
   glance=damp(glance,want,target?1.1:.9,dt);
   look=damp(look,clamp(mouseYaw+keyLook+glance,-LOOK.yaw,LOOK.yaw),8,dt);headPitch=damp(headPitch,mousePitch,8,dt);}
- if(active()){captionTimer-=dt;if(captionTimer<1){$('subtitle').style.opacity=Math.max(0,captionTimer);if(captionTimer<=0)ctx.speaker=null;}}
+ if(active()){captionTimer-=dt;if(captionTimer<.35){$('subtitle').style.opacity=Math.max(0,captionTimer/.35);if(captionTimer<=0)ctx.speaker=null;}}
  if(['stopped','dismounting','walking','remounting','leaving'].includes(state))updateFinale(dt);
  if(['arriving','stopped','dismounting','walking','remounting','leaving'].includes(state))$('ride-ui').style.opacity=state==='arriving'?1:Math.max(0,1-finaleT/3);
  // Light and atmosphere follow the ride, then the last of the evening at the end of the street.
@@ -507,9 +507,10 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  // Chapter Two's morning is plain daylight (day 1): a high, white sun, a blue sky, clear air. A memory
  // brings back the evening's own light at that point of the ride.
  const n1=night1(),mem=state==='memory',day=n1?(chapter.day||0):0,p=Math.min(1,distance/LENGTH)*(1-day),night=mem?0:(n1?Math.max(Math.min(1,ctx.finale/80),chapter.night):Math.min(1,ctx.finale/80))*(1-day),deep=n1?chapter.deep*(1-day):0;ctx.p=p;ctx.night=night;ctx.deep=deep;ctx.day=day;
- skyMat.uniforms.dusk.value=p;skyMat.uniforms.night.value=night;skyMat.uniforms.day.value=day;scene.fog.color.set(0xe0b294).lerp(_c1.set(0x9991af),p*.88).lerp(_c2.set(0x53678c),night*.75).lerp(_c1.set(0x2c3650),deep*.6).lerp(_c2.set(0xc4d2de),day);scene.fog.density=(.0058+p*.004+night*.001+deep*.0015)*(1-day)+.0036*day;
- hemi.intensity=(2.05-p*.56-night*.40)*(1-.26*deep)+day*.2;hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2).lerp(_c2.set(0xe9efff),day*.6);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p).lerp(_c2.set(0x272a38),deep*.5);sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p).lerp(_c2.set(0xfff3e2),day);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4)*(1-deep)+day*.25;
+ skyMat.uniforms.dusk.value=p;skyMat.uniforms.night.value=night;skyMat.uniforms.day.value=day;scene.fog.color.set(0xe0b294).lerp(_c1.set(0x9991af),p*.88).lerp(_c2.set(0x53678c),night*.75).lerp(_c1.set(0x2c3650),deep*.6).lerp(_c2.set(0xc4d2de),day);scene.fog.density=(.0058+p*.004+night*.001+deep*.0015)*(1-day)+.0028*day;
+ hemi.intensity=(2.05-p*.56-night*.40)*(1-.26*deep)-day*.15;hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2).lerp(_c2.set(0xe9efff),day*.6);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p).lerp(_c2.set(0x272a38),deep*.5);sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p).lerp(_c2.set(0xfff3e2),day);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4)*(1-deep)+day*.25;
  const rf=n1?{x:roam.x,y:nav.groundY(roam.x,roam.z),z:roam.z}:roadFrame(Math.min(distance,1140));if(day>0)sunlight.position.set(rf.x-52,rf.y+60,rf.z-60);else sunlight.position.set(rf.x+44,rf.y+30-p*21,rf.z-85);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=(1.10-p*.06-night*.06-deep*.06)*(1-day)+1.02*day;
+ if(mem){scene.fog.color.lerp(_c1.set(0xe1bd9e),.22);scene.fog.density*=.88;hemi.color.lerp(_c1.set(0xf1e4ce),.18);sunlight.color.lerp(_c1.set(0xffdeb0),.2);renderer.toneMappingExposure+=.025;}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
  else if(state==='walking')updateWalk(dt);

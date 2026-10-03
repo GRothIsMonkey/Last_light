@@ -77,7 +77,7 @@ export function playChapterTwo(T,label){
  const ML=(d,l)=>{const p=T.groundPoint(d,l);return [p.x,p.z];},line=(d0,d1,l,st=20)=>{const o=[];const n=Math.ceil(Math.abs(d1-d0)/st);for(let i=1;i<=n;i++)o.push(ML(d0+(d1-d0)*i/n,l));return o;};
  const L0=h.nav.locate(me().x,me().z);rideTo([ML(L0.d+3,-2.4),...line(L0.d+3,1128,-2.2)],200);brake();until(()=>C2().flags.oakTalk,20);until(()=>C1().phase==='m-briarwood',80);
  check(`${label}: at the oak: the old bike is gone, and maybe was never there; "What if he heard the bell?"`,()=>{for(const l of ['JAMIE: “Wasn’t there an old bike here last night?”','SAM: “What old bike?”','YOU: “There was one right there.”','SAM: “No there wasn’t.”','JAMIE: “I… think there was.”','JAMIE: “What if he heard the bell?”'])assert.ok(said().includes(l),l);
-  assert.equal(h.ending.otherBike.visible,false);assert.equal(C1().objective,'Return to Briarwood.');});
+  assert.equal(h.ending.otherBike.visible,false);assert.equal(C1().objective,'Go back to where Alex turned.');});
  // Back along Oak Hollow to the corner where Alex turned.
  press('KeyW');rideTo([ML(1131,3),...line(1131,600,2.2,25),ML(596,2.4)],200);brake();faceTo(...(()=>{const q=h.chapter2.corner.look;return [q.x,q.z];})());until(()=>C2().flags.corner,10);wait(2.5);
  check(`${label}: at the corner, "Remember" (F)`,()=>{assert.ok(said().includes('JAMIE: “This is where he turned.”'));assert.equal(C1().objective,'Remember Alex leaving.');assert.equal(h.ui.promptText,'F:Remember');});
@@ -117,6 +117,10 @@ export async function runChapterTwoChecks(T){
   assert.ok(Math.abs(L.t-F.channelT(L.s))>1.2,'out of the channel');assert.ok(Math.abs(h.chapter2.found.group.rotation.z)>1.2,'on its side');});
  // ---- the culvert and the second bell ---------------------------------------------------------
  check('chapter two: the culvert is big and dark but not a place to go: a step inside at most',()=>{const at=(s,t)=>{const p=F.world(s,t);return h.nav.walkable(p.x,p.z,{r:.28});};const t=F.channelT(33.6);assert.ok(at(33.4,t),'the mouth');assert.ok(!at(35.5,t),'two metres in');assert.ok(!at(40,t));});
+ check('culvert opening has physical depth after batching; no headwall closes the aperture',()=>{
+  const origin=F.world(32,F.channelT(33)),dir=new THREE.Vector3(F.A.x,0,F.A.z);
+  for(const y of [.75,1.35]){const ray=new THREE.Raycaster(new THREE.Vector3(origin.x,F.mouth.bed+y,origin.z),dir,0,11),hits=ray.intersectObjects(h.world.merged,false);assert.ok(hits.length&&hits[0].distance>7,'unobstructed interior depth '+hits[0]?.distance);}
+ });
  const calls=[];const o=h.chapter.kit.o,orig=o.audio;o.audio=()=>new Proxy({},{get:(_,k)=>k==='bell'?(pos,g,opt)=>calls.push({pos,g,opt}):()=>{}});
  h.jump('second-bell');until(()=>C2().flags.bell,8);o.audio=orig;
  check('chapter two: the second bell comes from deep inside the culvert, away from the bike, with the tunnel on it',()=>{assert.equal(calls.length,1);const c=calls[0],b=h.chapter2.found.group.position,L=h.nav.locate(c.pos.x,c.pos.z),q=F.local(c.pos.x,c.pos.z);
@@ -142,6 +146,10 @@ export async function runChapterTwoChecks(T){
  // ---- the memory --------------------------------------------------------------------------------
  h.jump('memory-start');advance(1.5);
  check('QA jump memory-start: at the corner, on the bike, F: Remember',()=>{assert.equal(C1().phase,'m-briarwood');assert.equal(h.ui.promptText,'F:Remember');assert.equal(h.snapshot.state,'c1-ride');});
+ // Wide means facing is deliberately irrelevant for remembering a place.
+ h.face(h.night.roam.a+Math.PI);advance(14);
+ check('Astra memory: facing away and lingering preserve Remember and give one reminder',()=>{assert.equal(h.ui.promptText,'F:Remember');assert.equal(C2().flags.rememberReminder,true);});
+ advance(20);check('Astra memory: prompt remains after the once-only reminder',()=>{assert.equal(h.ui.promptText,'F:Remember');assert.equal(C1().phase,'m-briarwood');});
  // On foot works too.
  h.jump('memory-reconstruction');let sawMemory=false,maxYaw=0,headClamp=true;until(()=>{if(h.snapshot.state==='memory'){sawMemory=true;h.look(3,2);maxYaw=Math.max(maxYaw,Math.abs(h.snapshot.look));}return h.memory.state?.phase==='play';},12);
  advance(2);check('memory: first person, from the saddle, head look limited, no glitch effects',()=>{assert.ok(sawMemory);assert.equal(h.snapshot.state,'memory');assert.ok(document.body.classList.contains('remembering'));assert.ok(h.self.group.visible,'your own arms and bike');assert.ok(Math.abs(h.snapshot.look)<=1.351,'look '+h.snapshot.look);

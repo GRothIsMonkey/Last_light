@@ -91,7 +91,8 @@ export function createActor(scene,nav,spec,{seed=0}={}){
   else if(g==='phone'){set(R,.1,1.39,-.03);set(P.re,1,-.7,.2);set(L,.05,1.02,-.16);set(P.le,-1,-.5,0);p[P.hy]+=.12*w;}
   else if(g==='radio'){set(L,-.13,1.19,-.11);set(P.le,-1,-.6,.1);p[P.hy]-=.38*w;p[P.hp]+=.18*w;}
   else if(g==='head'){set(R,.08,1.47,-.03);set(P.re,1,.2,-.3);set(L,-.1,.98,-.12);set(P.le,-1,-.4,.2);p[P.hp]+=.12*w;}
-  else if(g==='flashlight'){set(R,.17,1.04,-.36);set(P.re,1,-.6,.3);}
+  else if(g==='brace'){set(L,.06,1.0,-.19);set(R,.17,.86,-.12);set(P.le,-1,-.5,.1);set(P.re,1,-.5,.2);p[P.hp]+=.14*w;p[P.twist]-=.025*w;}
+  else if(g==='flashlight'){const target=A.gtarget||A.lookAt,a=target?clamp(wrap(headingTo(A.x,A.z,target.x,target.z)-A.a),-.8,.8):0;set(R,.17+Math.sin(a)*.12,1.04,-.36);set(P.re,1,-.6,.3);}
   else if(g==='talk'){const s=Math.sin(t*3.1+seed)*.05,c=Math.cos(t*2.3+seed)*.03;set(R,.19+c,1.0+s,-.27);set(P.re,1,-.5,.3);}
   else if(g==='point'){const sh=shoulderPos(p,1,hand);let dx=0,dz=-1;if(A.gtarget){const a=headingTo(A.x,A.z,A.gtarget.x,A.gtarget.z)-A.a;dx=Math.sin(a);dz=-Math.cos(a);}
    set(R,sh.x+dx*.52,sh.y-.06,sh.z+dz*.52);set(P.re,1,-.3,.4);}

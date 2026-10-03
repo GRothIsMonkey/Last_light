@@ -1,6 +1,7 @@
+import {runChapterTwoBrowser} from './chapter2-browser.mjs';
 // Astra-specific visual, embodiment and navigation regression checks.
 // Routes follow street signs and permanent property landmarks; no jump/placePlayer calls.
-export async function runAstraChecks({page,snap,check,camAt,state}){
+export async function runAstraChecks({page,snap,check,camAt,state,errors}){
  const ev=(fn,arg)=>page.evaluate(fn,arg);
  await ev(()=>{const L=lastLight;window.__astra={
   tick(sec){L.step(sec);},
@@ -59,6 +60,8 @@ export async function runAstraChecks({page,snap,check,camAt,state}){
   await ev(()=>{lastLight.key('KeyF');__astra.until(()=>lastLight.state.chapter.line==='“That’s his.”',10);});if(pass===1)await snap('astra-reflector-crouch');
   await ev(()=>{if(!__astra.until(()=>lastLight.state.chapter.phase==='c2-black',35))throw Error('hand-over to Chapter Two did not occur');});
   check(`natural run ${pass}: complete prologue through the end of Chapter One (into Chapter Two) without a QA jump`,(await state()).chapter.phase==='c2-black');
+  await runChapterTwoBrowser({page,snap:(name,opts)=>snap('natural-'+pass+'-'+name,opts),check,state,errors,exploratory:pass===2});
+  check(`natural run ${pass}: complete prologue through Chapter Two ending without a QA jump`,(await state()).state==='ended');
  }
  const formations=await ev(()=>__astra.telemetry);console.log('Formation telemetry',JSON.stringify(formations));
  check('Jamie uses varied lateral formation on the journey to Sam and the oak',formations['jamie-ride']?.maxSide-formations['jamie-ride']?.minSide>1.5);

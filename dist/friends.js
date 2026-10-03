@@ -94,7 +94,7 @@ export function createFriends(scene,world,hooks={}){
  function cycle(f,dt,coast){
   const yaw=heading(f.bd)+f.bpsi;if(f.prevYaw===null)f.prevYaw=yaw;const yawRate=wrapAngle(yaw-f.prevYaw)/Math.max(dt,1e-3);f.prevYaw=yaw;
   const v=f.speed,k=yawRate/Math.max(v,.8),R=f.R||{cadence:1,sway:1};f.wheel+=v*dt/f.bike.geom.wheelR;
-  if(!coast&&v>.2)f.crank+=v*dt*RAD_PER_M*R.cadence*(1+.1*(f.effort||0));else{const level=Math.round((f.crank-Math.PI/2)/Math.PI)*Math.PI+Math.PI/2;f.crank=damp(f.crank,level,2.5,dt);}
+  if(!coast&&!f.lookWorld&&v>.2)f.crank+=v*dt*RAD_PER_M*R.cadence*(1+.1*(f.effort||0));else{const rest=f.lookWorld?0:Math.PI/2,level=Math.round((f.crank-rest)/Math.PI)*Math.PI+rest;f.crank=damp(f.crank,level,2.5,dt);}
   f.steer=damp(f.steer,v>.3?clamp(-Math.atan(k*1.0)+Math.sin(f.wheel*.35+(f.weaveA||0))*.012,-.55,.55):f.steer,6,dt);
   // Standing riders rock the bike under them with each stroke while the body stays nearly
   // upright (ridePose rolls the torso back against the bike); seated riders barely rock at all.
@@ -213,7 +213,7 @@ export function createFriends(scene,world,hooks={}){
    f.posed=false;if(f.script&&f.step<f.script.length){if(f.script[f.step](dt,ctx))f.step++;}
    // Between explicit actions a person on foot settles into a relaxed stance.
    if(f.mode==='foot'&&!f.posed&&f.person.group.visible&&!f.holding){standPose(f.rest,ctx.clock);blendPose(f.pose,f.pose,f.rest,1-Math.exp(-6*dt));footGround(f,f.pose);applyPose(f.person,f.pose);}
-   if((f.mode==='leave'&&f.person.group.parent===f.bike.group)||f.mode==='ride'){const lp=rideLook(f,ctx,dt);ridePose(f.pose,f.crank,{...rideOpts(f),lookPitch:lp});if(f.waveW>.01)addWave(f.pose,ctx.clock,f.waveW*.9);applyPose(f.person,f.pose);}
+   if((f.mode==='leave'&&f.person.group.parent===f.bike.group)||f.mode==='ride'){const lp=rideLook(f,ctx,dt);ridePose(f.pose,f.crank,{...rideOpts(f),lookPitch:lp});if(f.lookWorld)f.pose[P.twist]+=f.look*.11;if(f.waveW>.01)addWave(f.pose,ctx.clock,f.waveW*.9);applyPose(f.person,f.pose);}
    if(f.spinV>0){f.spin+=f.spinV*dt;f.spinV=Math.max(0,f.spinV-dt*1.6);}
    if(f.garageClosing){const g=world.garages.sam;g.set(Math.max(0,g.open-dt/3));}
    if(f.windowOn)world.alexWindow.emissiveIntensity=Math.min(.9,world.alexWindow.emissiveIntensity+dt*.5);

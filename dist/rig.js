@@ -240,18 +240,22 @@ export function createBike(spec,{grips=0x2b2b2d}={}){
  fp.push({geo:new THREE.BoxGeometry(.012,.05,.18),color:0x55575a,matrix:M4(.07,bb.y+.06,(bb.z+rear.z)/2)});// chain guard
  if(extras.includes('pegs'))for(const s of [-1,1])fp.push({geo:new THREE.CylinderGeometry(.018,.018,.1,8),color:0x9da09a,matrix:M4(s*.09,rear.y,rear.z,1,1,1,0,0,Math.PI/2)});
  if(extras.includes('bottle')){const a=V(0,bb.y+.12,bb.z-.09),b=V(0,low.y-.08,low.z+.14);tube(fp,a,b,.028,0x3a86c8,10);}
- if(extras.includes('rack')){for(const s of [-1,1])tube(fp,V(s*.07,rear.y+.04,rear.z),V(s*.07,seat.y+.05,seat.z+.22),.008,0x9da09a);fp.push({geo:new THREE.BoxGeometry(.14,.012,.3),color:0x9da09a,matrix:M4(0,seat.y+.06,seat.z+.3)});}
+ if(extras.includes('rack')){for(const s of [-1,1]){tube(fp,V(s*.07,rear.y+.04,rear.z),V(s*.07,seat.y+.05,seat.z+.22),.008,0x9da09a);tube(fp,V(s*.065,seat.y+.06,seat.z+.15),V(s*.065,seat.y+.06,seat.z+.45),.007,0x9da09a);}for(let j=0;j<5;j++)tube(fp,V(-.065,seat.y+.06,seat.z+.15+j*.075),V(.065,seat.y+.06,seat.z+.15+j*.075),.006,0x9da09a);}
+ // A closed chain loop and small dropout bolts survive both the ride and the found-bike view.
+ const ca=V(.06,bb.y+.085,bb.z),cb=V(.06,rear.y+.04,rear.z),cc=V(.06,rear.y-.04,rear.z),cd=V(.06,bb.y-.085,bb.z);
+ for(const [a,b] of [[ca,cb],[cb,cc],[cc,cd],[cd,ca]])tube(fp,a,b,.0035,0x444440,4);
+ for(const side of [-1,1])fp.push({geo:new THREE.CylinderGeometry(.013,.013,.012,6),color:0x92958d,matrix:M4(side*.059,rear.y,rear.z,1,1,1,0,0,Math.PI/2)});
  // A round red reflector on the back of the rack, its cracked bracket held on with black tape. Its
  // size and red are the piece found at the creek (chapter1.js), so the two can be matched up.
  // The same mount after the lens has broken away (Chapter Two): the bracket bent down a little,
  // the black tape still round it, a jagged red sliver of the lens left in the clip.
- if(extras.includes('rear-reflector-broken')){const z=seat.z+.455,y=seat.y+.015,bent=M4(0,y+.035,z-.012,1,1,1,.32);
+ if(extras.includes('rear-reflector-broken')){const shard=new THREE.Shape();shard.moveTo(.016,.045);shard.lineTo(.035,.034);shard.lineTo(.047,.008);shard.lineTo(.027,.016);shard.lineTo(.022,.009);shard.lineTo(.026,.031);shard.lineTo(.01,.028);shard.closePath();const z=seat.z+.455,y=seat.y+.015,bent=M4(0,y+.035,z-.012,1,1,1,.32);
   fp.push({geo:new THREE.BoxGeometry(.03,.05,.012),color:0x9da09a,matrix:bent},{geo:new THREE.BoxGeometry(.036,.018,.02),color:0x161617,matrix:M4(0,y+.047,z-.006,1,1,1,.32)},
-   {geo:new THREE.CylinderGeometry(REFLECTOR.r,REFLECTOR.r,.012,14,1,false,.4,1.05),color:REFLECTOR.color,matrix:M4(0,y+.006,z-.004,1,1,1,Math.PI/2+.32)},
+   {geo:new THREE.ExtrudeGeometry(shard,{depth:.012,bevelEnabled:false}),color:REFLECTOR.color,matrix:M4(0,y+.006,z-.004,1,1,1,.32)},
    {geo:new THREE.BoxGeometry(.006,.012,.006),color:0x9da09a,matrix:M4(.009,y+.017,z-.008)});}
  if(extras.includes('rear-reflector')){const z=seat.z+.455,y=seat.y+.015;fp.push({geo:new THREE.CylinderGeometry(REFLECTOR.r,REFLECTOR.r,.012,14),color:REFLECTOR.color,matrix:M4(0,y,z,1,1,1,Math.PI/2)},{geo:new THREE.BoxGeometry(.03,.05,.012),color:0x9da09a,matrix:M4(0,y+.035,z-.012)},{geo:new THREE.BoxGeometry(.036,.018,.02),color:0x161617,matrix:M4(0,y+.047,z-.01)});}
  const frameMesh=new THREE.Mesh(mergeParts(fp),vcMetal);frameMesh.castShadow=true;frame.add(frameMesh);
- const chainPts=[.06,bb.y+.085,bb.z,.06,rear.y+.04,rear.z,.06,bb.y-.085,bb.z,.06,rear.y-.04,rear.z],cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(chainPts,3));frame.add(new THREE.LineSegments(cg,new THREE.LineBasicMaterial({color:0x444440})));
+
  const tire=S.tire??0x2f3133,knobby=extras.includes('knobby');
  const rearWheel=new THREE.Group();rearWheel.position.copy(rear);frame.add(rearWheel);const rw=new THREE.Mesh(wheelGeometry(G,tire,knobby),vcMat);rw.castShadow=true;rearWheel.add(rw,spokes(G));
  // Steering assembly, rotating about the raked head tube.

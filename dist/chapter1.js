@@ -94,7 +94,7 @@ export function createChapter1(o){
  fresh();
  const api={night:1,deep:0,arPlain:false,sources:[],urgent:false,glanceMax:.85,hideBell:true,pose:null,phase:()=>S.phase};
  // ---- objective, title card, date ----------------------------------------------------------------
- function objective(text){const note=$('objective-note');if(note){note.textContent=text==='Find Jamie.'?'Back on Oak Hollow. The red chair on his porch.':text==='Find Sam.'?'Farther toward the oak. His garage with the old hoop.':'';note.style.opacity=note.textContent?'1':'0';}if(text===S.objective)return;S.objective=text;const el=$('objective');if(!el)return;el.classList.remove('on');S.objT=text?.9:0;if(!text)el.textContent='';}
+ function objective(text,noteText){const note=$('objective-note');if(note){note.textContent=noteText??(text==='Find Jamie.'?'Back on Oak Hollow. The red chair on his porch.':text==='Find Sam.'?'Farther toward the oak. His garage with the old hoop.':'');note.style.opacity=note.textContent?'1':'0';}if(text===S.objective)return;S.objective=text;const el=$('objective');if(!el)return;el.classList.remove('on');S.objT=text?.9:0;if(!text)el.textContent='';}
  function updateObjective(dt){if(S.objT>0){S.objT-=dt;if(S.objT<=0){const el=$('objective');if(el){el.textContent=S.objective;if(S.objective)el.classList.add('on');}}}}
  function title(on){const el=$('title-card');if(!el)return;if(on)el.classList.add('on');else el.classList.remove('on');S.titleOn=on;}
  const date=k=>setDate(`AUGUST 21, 2011 <i></i> ${CLOCK[k]} PM`);
@@ -275,7 +275,7 @@ export function createChapter1(o){
   if((ph==='friends')&&!S.flags.samSignal&&S.samTap<3)out.push({id:'tap-sam',label:'Tap on the window',at:SWin.stand,face:SWin.glass,r:2.5});
   if(ph==='creek'){const c=clue.position;out.push({id:'reflector',label:'Look closer',at:c,face:c,r:1.9});}
   return out;}
- function spot(){if(busy()&&S.phase==='friends'&&(S.flags.jamieTapped||S.flags.samSignal))return null;const p=me();if(!p.walking&&!(p.riding&&p.speed<.3))return null;let best=null,bd=1e9;for(const s of spots()){if(!p.walking&&!s.ride)continue;const d=dist(p,s.at);if(d>s.r||d>bd)continue;const a=wrap(headingTo(p.x,p.z,s.face.x,s.face.z)-p.a);if(Math.abs(a)>1.25&&d>.8)continue;best=s;bd=d;}return best;}
+ function spot(){if(busy()&&S.phase==='friends'&&(S.flags.jamieTapped||S.flags.samSignal))return null;const p=me();if(!p.walking&&!(p.riding&&p.speed<.3))return null;let best=null,bd=1e9;for(const s of spots()){if(!p.walking&&!s.ride)continue;const d=dist(p,s.at);if(d>s.r||d>bd)continue;const a=wrap(headingTo(p.x,p.z,s.face.x,s.face.z)-p.a);if(!s.wide&&Math.abs(a)>1.25&&d>.8)continue;best=s;bd=d;}return best;}
  function act(id){if(api.next?.owns(S.phase)){api.next.act(id);return;}if(id==='tap-jamie')tapJamie();else if(id==='tap-sam')tapSam();else if(id==='reflector'&&S.phase==='creek')findClue();}
  // ---- every frame -----------------------------------------------------------------------------------------
  const eye=new THREE.Vector3();
@@ -356,7 +356,7 @@ export function createChapter1(o){
   if(!t&&S.lookTarget&&(S.phase==='clue'||api.next?.owns(S.phase)))t=S.lookTarget;
   api.target=t;}
  // ---- flashlights and the glint ------------------------------------------------------------------------------------
- const hand=new THREE.Vector3(),aim=new THREE.Vector3(),aimS=new THREE.Vector3(),tmp=new THREE.Vector3();let sweep=0;
+ const hand=new THREE.Vector3(),aim=new THREE.Vector3(),aimS=new THREE.Vector3(),officerAimS=new THREE.Vector3(),tmp=new THREE.Vector3();let sweep=0,officerAimReady=false;
  function updateFlashlights(dt){const H=police.head;
   if(S.flashOn&&jamie.active){police.spotUser.who=jamie;torch.visible=true;jamie.person.parts.rhand.getWorldPosition(hand);
    // Where Jamie points it: around the bank and the channel, at what you are looking at, at the sound.
@@ -366,7 +366,7 @@ export function createChapter1(o){
    beamJ.visible=true;beamJ.position.copy(hand);beamJ.lookAt(aimS);beamJ.material.uniforms.uA.value=.035;}
   else{beamJ.visible=false;if(police.spotUser.who===jamie){police.spotUser.who=null;H.intensity=0;}}
   if(officer2.visible&&officer2.gesture==='flashlight'){officer2.person.parts.rhand.getWorldPosition(tmp);const a=officer2.a+Math.sin(S.t*.7)*.6+.5,dir=new THREE.Vector3(Math.sin(a),-.32,-Math.cos(a));
-   beamO.visible=true;beamO.position.copy(tmp);beamO.lookAt(tmp.x+dir.x*5,tmp.y+dir.y*5,tmp.z+dir.z*5);beamO.material.uniforms.uA.value=.03;}else beamO.visible=false;}
+   beamO.visible=true;beamO.position.copy(tmp);const target=api.next?.owns(S.phase)?api.next.officerAim():null;if(target){if(!officerAimReady){officerAimS.set(target.x,target.y+.08,target.z);officerAimReady=true;}else officerAimS.lerp(new THREE.Vector3(target.x,target.y+.08,target.z),1-Math.exp(-2.8*dt));officer2.gtarget=officerAimS;beamO.lookAt(officerAimS);}else beamO.lookAt(tmp.x+dir.x*5,tmp.y+dir.y*5,tmp.z+dir.z*5);beamO.material.uniforms.uA.value=.03;}else{beamO.visible=false;officerAimReady=false;}}
  function updateClue(dt){if(!clue.visible)return;let g=0;
   // Retroreflective: it lights up when a light shines on it from about where you are looking.
   if(S.flashOn){const H=police.head,L=tmp.copy(clue.position).sub(H.position),dl=L.length();L.normalize();const beam=aim.copy(H.target.position).sub(H.position).normalize();const on=beam.dot(L);
