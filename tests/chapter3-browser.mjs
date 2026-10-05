@@ -197,7 +197,9 @@ export async function runChapterThreeJumps({page,snap,check,state,errors,out,fs,
  // (it may change several times), but never flickers: each tone is held for most of a second at least.
  check('captions: sweeping the view sky → ground → sky follows the background without flicker ('+sweep.flips+' changes, at least '+sweep.minSecondsBetween+' s apart: '+sweep.trace+')',sweep.flips<=8&&(sweep.minSecondsBetween===null||sweep.minSecondsBetween>=.6));
  // The captions setting still hides spoken captions.
- const setting=await ev(()=>{const L=lastLight;L.jump('first-bell');L.step(.5);L.ui.settings.captions=false;L.chapter.kit.talk([{who:'JAMIE',text:'“Hidden by the setting.”',time:3}]);L.step(.6);const hidden=Number(getComputedStyle(document.getElementById('subtitle')).opacity)<.05;L.ui.settings.captions=true;L.chapter.kit.talk([{who:'JAMIE',text:'“Shown again.”',time:3}]);L.step(.8);const shown=Number(document.getElementById('subtitle').style.opacity||getComputedStyle(document.getElementById('subtitle')).opacity)>.5;return {hidden,shown};});
+ const setting=await ev(()=>{const L=lastLight,S=L.chapter.kit.S,el=document.getElementById('subtitle'),clear=()=>{S.queue.length=0;S.line=null;};L.jump('first-bell');L.step(.5);
+  clear();L.ui.settings.captions=false;L.chapter.kit.talk([{who:'JAMIE',text:'“Hidden by the setting.”',time:3}]);L.step(.6);const hidden=el.style.opacity==='0'&&L.state.chapter.line==='“Hidden by the setting.”';
+  clear();L.ui.settings.captions=true;L.chapter.kit.talk([{who:'JAMIE',text:'“Shown again.”',time:3}]);L.step(.6);const shown=el.style.opacity==='1'&&el.textContent.includes('Shown again');return {hidden,shown};});
  check('captions: turning them off in Settings still hides them; on again shows them',setting.hidden&&setting.shown);
  check('Chapter Three jumps and captions: no JavaScript or shader errors',errors.length===0);
  return {captions:caps,sweep};
