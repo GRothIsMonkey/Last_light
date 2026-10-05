@@ -50,6 +50,7 @@ export function createCaptionTone({renderer,el}){
   const key=col.join()+'|'+a;if(key===S.last)return;S.last=key;
   const vars={'--cap-color':`rgb(${col.join(',')})`,'--cap-shadow':`0 0 2px rgba(${sh},${sh},${sh},${a}),0 1px 3px rgba(${sh},${sh},${sh},${a}),0 0 14px rgba(${sh},${sh},${sh},${a2}),0 0 26px rgba(${sh},${sh},${sh},${(a2*.7).toFixed(2)})`,'--cap-label':`rgb(${lab.join(',')})`};
   S.vars=vars;if(el?.style){for(const [k,v] of Object.entries(vars)){if(el.style.setProperty)el.style.setProperty(k,v);else el.style[k]=v;}}}
- function reset(){S.source='estimate';S.samples=0;}
+ // A new scene (Start over, a jump, Continue): what was read from the old one is thrown away, unread.
+ function reset(){if(pending){try{gl?.deleteSync(pending.sync);}catch{}pending=null;}nextAt=0;S.source='estimate';S.samples=0;S.wantT=0;}
  return {sample,update,reset,estimate,region,get state(){return {lum:+S.lum.toFixed(4),lo:+S.lo.toFixed(4),hi:+S.hi.toFixed(4),mode:S.mode?'dark':'light',mix:+S.mix.toFixed(3),contrast:+(S.mode?S.cDark:S.cLight).toFixed(2),halo:+S.halo.toFixed(2),source:S.source,samples:S.samples,readback:S.readback};},S};
 }

@@ -34,7 +34,7 @@ export const FRIEND_HOMES={
 // Alex's house, just around Briarwood's curve past the creek. The front door and the garage
 // both open for real; the garage keeps an empty hook where a bike would hang.
 export const SIDE_HOMES={
- alex:{junction:0,u:127,side:1,o:{style:'colonial',garageSide:'near',dynamicDoor:true,dynamicGarage:true,interior:'foyer',garageBike:'empty',porch:'porch',porchW:5.2,setback:18.4,w:11.4,gw:4,garage:true,fence:false,wall:0xd4cfc1,door:0x2f3d55,shutters:0x3a4a5a,alexWindow:true,garageRoof:'front'}},
+ alex:{junction:0,u:127,side:1,o:{style:'colonial',garageSide:'near',dynamicDoor:true,dynamicGarage:true,interior:'foyer',garageBike:'empty',porch:'porch',porchW:5.2,setback:18.4,w:11.4,gw:4,garage:true,fence:false,wall:0xd4cfc1,door:0x2f3d55,shutters:0x3a4a5a,alexWindow:true,garageRoof:'front',garageRise:.55}},// (a low garage roof: from his side window you see over it to the trees and the creek)
 };
 // Chapter Two: behind the creek's back fence. Through the gap the stormwater comes out of its pipe into
 // an open concrete channel in a wooded utility easement between the back yards, and runs ~30 m to a big

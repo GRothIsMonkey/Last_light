@@ -189,8 +189,9 @@ export function createChapter3(o,k,ch2){
    {who:'JAMIE',text:'“His mom said they went through it and gave it back.”',from:jamie,time:3},{who:'JAMIE',text:'“Did they listen to his recordings?”',from:jamie,time:2.4},
    {who:'YOU',text:'“What recordings?”',time:1.8},{who:'JAMIE',text:'“He records dumb stuff on it. Noises. He made a fart my ringtone for a week.”',from:jamie,time:4}],
    {then:()=>{objective('Listen to Alex’s recordings.');C.flags.phoneReady=true;}});}
- function startPhone(){if(C.flags.phone)return;C.flags.phone=true;go('d3-phone');checkpoint('phone-recording');objective('');const ph=phone.position,p=me(),a=headingTo(p.x,p.z,ph.x,ph.z),at={x:ph.x-Math.sin(a)*.62,z:ph.z+Math.cos(a)*.62};
-  pose(at,{y:nav.groundY(at.x,at.z)+1.18,pitch:-.82,look:ph});jamie.lookAt=ph;sam.lookAt=ph;}
+ function startPhone(){if(C.flags.phone)return;C.flags.phone=true;go('d3-phone');checkpoint('phone-recording');objective('');const ph=phone.position,p=me(),a=headingTo(p.x,p.z,ph.x,ph.z),at={x:ph.x-Math.sin(a)*.4,z:ph.z+Math.cos(a)*.4};
+  // Leaning over the desk, close enough to read the little screen.
+  pose(at,{y:nav.groundY(at.x,at.z)+1.12,pitch:-.74,look:ph});jamie.lookAt=ph;sam.lookAt=ph;}
  function playRec(){if(C.recPlaying>=0)return;const i=C.recSel,R2=RECS[i];if(!R2)return;C.recPlaying=i;drawScreen();const dur=o.audio()?.recording?.(i,phone.position)||[8.6,9,8.2,9.4,23.5][i];C.recEnd=C.t+dur;C.heard.push(i);
   if(i===4){T?.set(.12,{rise:.05,why:'the last recording'});}
   talk(R2.lines.map(l=>l.mark?{...l,act:()=>{if(l.mark==='bell1'){T?.set(.24,{rise:.08,why:'recorded bell'});}else if(l.mark==='bell2')T?.set(.29,{rise:.08,why:'recorded bell again'});else T?.set(.31,{rise:.06,why:'“there it is again”'});}}:l),{interrupt:true});}

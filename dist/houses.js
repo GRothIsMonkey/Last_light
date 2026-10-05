@@ -45,7 +45,7 @@ export function planHouse(rand,o){
  P.garage??=rand()<.84;P.hasGarage=!!P.garage;
  P.gs=P.garageSide==='near'?P.side:P.garageSide==='far'?-P.side:(P.gs??(rand()<.5?1:-1));
  P.gw??=rand()<.5?4:6.4;P.gd=Math.min(P.depth,7);P.gh=2.9;P.gfront=P.front-(P.garageInset??(style==='colonial'&&rand()<.4?.8:0));P.gx=P.gs*(P.w/2+P.gw/2);
- P.garageRoof=o.garageRoof??(P.roof==='front'?'front':P.roof==='hip'?'hip':'side');
+ P.garageRoof=o.garageRoof??(P.roof==='front'?'front':P.roof==='hip'?'hip':'side');P.garageRise=o.garageRise;
  P.porch??=style==='colonial'?pick(['porch','portico','stoop']):style==='cape'?pick(['portico','stoop','stoop']):style==='frontgable'?'porch':pick(['stoop','stoop','porch']);
  // The front eave height decides how a porch roof can meet the house.
  P.eaveFront=P.roof==='front'?null:P.h-.45*P.rise/((P.roof==='hip'?Math.min(P.w,P.depth):P.depth)/2);
@@ -349,7 +349,7 @@ function buildGarage(W,P,g,rand,mid,siding,roofMat,gable){const {K}=W,{gx,gw,gd,
  // Roof matching the house: a lower side gable, a front gable, or a hip.
  const rg=K.group(g,gx,gz,0,0);
  if(P.garageRoof==='hip')hipRoof(W,rg,gw,gd,gh,1.3,.35,roofMat,{mid});
- else if(P.garageRoof==='front')gableRoof(W,rg,gw,gd,gh,1.35,.3,.35,roofMat,gable,false,{mid});
+ else if(P.garageRoof==='front')gableRoof(W,rg,gw,gd,gh,P.garageRise??1.35,.3,.35,roofMat,gable,false,{mid});
  else gableRoof(W,rg,gw,gd,gh,1.25,.3,.35,roofMat,gable,true,{mid,vent:false});
  // Coach lights, a side window and a service door on the outer wall.
  if(rand()<.65)for(const s of [-1,1]){const lg=K.group(g,gx+s*(doorW/2+.45),gfront+.02,0,0);K.box(lg,0,2.35,.08,.14,.22,.14,P.porchMat);K.box(lg,0,2.48,.08,.18,.04,.18,0x2d2d2b);}

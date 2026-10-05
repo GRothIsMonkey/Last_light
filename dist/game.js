@@ -75,7 +75,7 @@ const cockpit=playerBike.group;
 const contact=createRideContact();let bellTime=-1,bellStruck=false;
 
 let mouseYaw=0,mousePitch=0,headPitch=0,steerVelocity=0,lean=0,pedalPhase=0,lastMouse=null,lastPauseAt=-Infinity,yawOffset=0,steerAngle=0,astride=0,prevYaw=null,wheelTurn=0,kick=0,bikeLean=0;
-let lookInputAt=0,glance=0,manualLook=false,answerBellAt=-1,held=0,stamina=1,push=0,steerIn=0,psiVel=0,bikeY=null,bikePitch=0;
+let bodyBreath=0,lookInputAt=0,glance=0,manualLook=false,answerBellAt=-1,held=0,stamina=1,push=0,steerIn=0,psiVel=0,bikeY=null,bikePitch=0;
 let state='intro',distance=0,speed=0,lateral=-.3,look=0,clock=0,lastStamp=0,nextMemory=0,captionTimer=0,idleTime=0,bellCooldown=0,resumeState='riding';
 // Final stop: on foot the player is in street coordinates too.
 let tut={},walkHint=0,firstHome=false,finaleT=0,walkD=0,walkLat=0,walkYaw=0,walkPitch=0,gait=0,lastStep=0,moveT=0,transT=0,transFrom=null,callDone=false,callT=-1,lookedBack=0,fade=0,endHint=false,wHint=false,leaveT=0;
@@ -449,7 +449,11 @@ function updateNightWalk(dt){
  const moved=Math.hypot(wx-oldX,wz-oldZ);gait+=moved/1.45;foot.speed=dt>0?moved/dt:0;
  if(Math.floor(gait*2)!==lastStep&&moveT>.3&&foot.height===0){lastStep=Math.floor(gait*2);audio?.footstep(nav.surface(wx,wz),moveT);}
  const y=nav.groundY(wx,wz),bob=Math.abs(Math.sin(gait*Math.PI))*.028*moveT/1.35;
- camera.position.set(wx,y+1.42+bob-.014+foot.eyeOffset,wz);camera.rotation.set(walkPitch,-wa,Math.sin(gait*Math.PI)*.004*moveT,'YXZ');
+ // Frightened, the body shows it very slightly: the chest rises and falls with the breathing (a few millimetres)
+ // and, near panic, a faint unsteadiness. Nothing when calm.
+ const H=tension.value>.3||tension.exertion>.05?tension.heart:null;if(H){bodyBreath+=dt*Math.PI*2*H.breathRate/60;}else bodyBreath=0;
+ const heave=H?Math.sin(bodyBreath)*.006*H.breath:0,sway=H?Math.sin(bodyBreath*.37+1.3)*.0025*smooth((tension.value-.7)/.3):0;
+ camera.position.set(wx,y+1.42+bob-.014+foot.eyeOffset+heave,wz);camera.rotation.set(walkPitch+heave*.35,-wa,Math.sin(gait*Math.PI)*.004*moveT+sway,'YXZ');
  // A crouch or a look the chapter asks for: the eye eases into it and back; the mouse still looks around.
  const P=chapter.pose;if(P&&P.w>0){_e.set(clamp(P.pitch+walkPitch-(P.fromPitch||0),-1.3,.9),-(P.yaw+wa-P.from),0,'YXZ');_q.setFromEuler(_e);camera.position.lerp(_v.set(P.x,P.y,P.z),P.w);camera.quaternion.slerp(_q,P.w);}}
 // Getting off and back on at night.
