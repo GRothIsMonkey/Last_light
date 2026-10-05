@@ -1,6 +1,7 @@
 // Adaptive captions: no box behind the words. The text reads light (warm off-white) over dark scenes
 // and dark (charcoal) over bright ones, with a soft edge of the opposite tone that strengthens only when
-// the background is busy or in between.
+// the background is busy or in between, and (only where it is so mixed that neither tone can be read
+// well) a faint glow of the opposite tone behind the line that fades away again.
 //
 // What is behind the caption is measured cheaply: a few times a second, a small strip of the rendered
 // frame where the caption sits is read back asynchronously (WebGL2 pixel-pack buffer and a fence, so the
@@ -12,7 +13,7 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),lin=c=>{c/=255;return c<=.04045?c
 // Relative luminance of the two tones (WCAG): warm off-white #fff4e2, charcoal #1e1d1b.
 const LIGHT={rgb:[255,244,226],Y:.906,label:[248,220,169]},DARK={rgb:[30,29,27],Y:.0124,label:[92,62,26]};
 export function createCaptionTone({renderer,el}){
- const S={lum:.03,lo:.02,hi:.05,mode:0,mix:0,want:0,wantT:0,source:'estimate',samples:0,last:'',cLight:20,cDark:1.2,halo:.5,readback:false};
+ const S={lum:.03,lo:.02,hi:.05,mode:0,mix:0,want:0,wantT:0,source:'estimate',samples:0,last:'',cLight:20,cDark:1.2,halo:.5,scrim:0,readback:false};
  let gl=null,gl2=false,pbo=null,buf=null,pending=null,nextAt=0,pixels=null;
  try{gl=renderer?.getContext?.()||null;gl2=!!gl&&typeof WebGL2RenderingContext!=='undefined'&&gl instanceof WebGL2RenderingContext;}catch{gl=null;}
  // The strip behind the caption, in drawing-buffer pixels (bottom-left origin).
@@ -43,14 +44,17 @@ export function createCaptionTone({renderer,el}){
   S.cLight=(LIGHT.Y+.05)/(hi+.05);S.cDark=(lo+.05)/(DARK.Y+.05);const better=S.cDark>S.cLight*(S.mode?1/1.25:1.25)?1:0;
   if(better!==S.mode){S.wantT+=dt;if(S.wantT>.55){S.mode=better;S.wantT=0;}}else S.wantT=0;
   S.mix+=(S.mode-S.mix)*(1-Math.exp(-dt/.32));if(Math.abs(S.mode-S.mix)<.002)S.mix=S.mode;
-  const c=S.mode?S.cDark:S.cLight;S.halo+=(clamp((6-c)/4.5,.28,.95)-S.halo)*(1-Math.exp(-dt/.5));apply();}
+  const c=S.mode?S.cDark:S.cLight;S.halo+=(clamp((6-c)/4.5,.28,.95)-S.halo)*(1-Math.exp(-dt/.5));
+  // So mixed that neither tone reaches 2:1 (a lit shirt in the dark, a figure against pale siding): a soft
+  // glow of the opposite tone behind the line, eased in and out. Never a box, and nothing otherwise.
+  const need=clamp((2.2-c)/1.2,0,1);S.scrim+=(need*need*(3-2*need)-S.scrim)*(1-Math.exp(-dt/.6));if(S.scrim<.004)S.scrim=0;apply();}
  function apply(){const m=S.mix,col=LIGHT.rgb.map((v,i)=>Math.round(v+(DARK.rgb[i]-v)*m)),lab=LIGHT.label.map((v,i)=>Math.round(v+(DARK.label[i]-v)*m));
   // The edge is the opposite tone: a dark soft shadow under light words, a pale glow round dark ones.
   const sh=Math.round(14*(1-m)+236*m),a=(.35+.5*S.halo).toFixed(2),a2=(.18+.38*S.halo).toFixed(2);
-  const key=col.join()+'|'+a;if(key===S.last)return;S.last=key;
-  const vars={'--cap-color':`rgb(${col.join(',')})`,'--cap-shadow':`0 0 2px rgba(${sh},${sh},${sh},${a}),0 1px 3px rgba(${sh},${sh},${sh},${a}),0 0 14px rgba(${sh},${sh},${sh},${a2}),0 0 26px rgba(${sh},${sh},${sh},${(a2*.7).toFixed(2)})`,'--cap-label':`rgb(${lab.join(',')})`};
+  const sa=(.42*S.scrim).toFixed(2),key=col.join()+'|'+a+'|'+sa;if(key===S.last)return;S.last=key;
+  const vars={'--cap-scrim':+sa>0?`radial-gradient(closest-side,rgba(${sh},${sh},${sh},${sa}),rgba(${sh},${sh},${sh},${(sa*.55).toFixed(2)}) 62%,rgba(${sh},${sh},${sh},0))`:'none','--cap-color':`rgb(${col.join(',')})`,'--cap-shadow':`0 0 2px rgba(${sh},${sh},${sh},${a}),0 1px 3px rgba(${sh},${sh},${sh},${a}),0 0 14px rgba(${sh},${sh},${sh},${a2}),0 0 26px rgba(${sh},${sh},${sh},${(a2*.7).toFixed(2)})`,'--cap-label':`rgb(${lab.join(',')})`};
   S.vars=vars;if(el?.style){for(const [k,v] of Object.entries(vars)){if(el.style.setProperty)el.style.setProperty(k,v);else el.style[k]=v;}}}
  // A new scene (Start over, a jump, Continue): what was read from the old one is thrown away, unread.
- function reset(){if(pending){try{gl?.deleteSync(pending.sync);}catch{}pending=null;}nextAt=0;S.source='estimate';S.samples=0;S.wantT=0;}
- return {sample,update,reset,estimate,region,get state(){return {lum:+S.lum.toFixed(4),lo:+S.lo.toFixed(4),hi:+S.hi.toFixed(4),mode:S.mode?'dark':'light',mix:+S.mix.toFixed(3),contrast:+(S.mode?S.cDark:S.cLight).toFixed(2),halo:+S.halo.toFixed(2),source:S.source,samples:S.samples,readback:S.readback};},S};
+ function reset(){if(pending){try{gl?.deleteSync(pending.sync);}catch{}pending=null;}nextAt=0;S.source='estimate';S.samples=0;S.wantT=0;S.scrim=0;}
+ return {sample,update,reset,estimate,region,get state(){return {lum:+S.lum.toFixed(4),lo:+S.lo.toFixed(4),hi:+S.hi.toFixed(4),mode:S.mode?'dark':'light',mix:+S.mix.toFixed(3),contrast:+(S.mode?S.cDark:S.cLight).toFixed(2),halo:+S.halo.toFixed(2),scrim:+S.scrim.toFixed(2),source:S.source,samples:S.samples,readback:S.readback};},S};
 }

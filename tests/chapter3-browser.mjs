@@ -184,8 +184,8 @@ export async function runChapterThreeJumps({page,snap:rawSnap,check,state,errors
   await snap('caption-'+name);
   // Contrast is against the brightest (or darkest) sixth of the strip behind the words; where that is
   // low (a lit patch inside a dark strip), the opposite-tone edge round each letter is strengthened.
-  const ok=r.source==='frame'&&(r.contrast>=3||r.contrast>=2&&r.halo>=.7)&&/rgba\(0, 0, 0, 0\)|transparent/.test(r.bg)&&r.border==='0px'&&(!want||r.mode===want)&&r.shown;
-  check(`captions over ${name}: ${r.mode} words, worst-case contrast ${r.contrast}:1 measured from the frame (edge ${r.halo}), no box`+(ok?'':' '+JSON.stringify(r)),ok);await ev(()=>{const S=lastLight.chapter.kit.S;S.queue.length=0;S.line=null;});return {name,...r};};
+  const ok=r.source==='frame'&&(r.contrast>=3||r.contrast>=2&&r.halo>=.7||r.scrim>=.5)&&/rgba\(0, 0, 0, 0\)|transparent/.test(r.bg)&&r.border==='0px'&&(!want||r.mode===want)&&r.shown;
+  check(`captions over ${name}: ${r.mode} words, worst-case contrast ${r.contrast}:1 measured from the frame (edge ${r.halo}${r.scrim?', glow '+r.scrim:''}), no box`+(ok?'':' '+JSON.stringify(r)),ok);await ev(()=>{const S=lastLight.chapter.kit.S;S.queue.length=0;S.line=null;});return {name,...r};};
  const caps=[];
  caps.push(await capCase('night-asphalt',(L,C)=>{L.jump('night-start');L.step(4);L.face(L.roam.a,-.5);},'light'));
  caps.push(await capCase('day-grass',(L,C)=>{L.jump('neighbors');L.step(2);const AH=L.world.homes.alex,p=AH.toWorld(-AH.w/2-2.5,AH.front+3.5);C.face(p.x,p.z,-.6);L.step(.1);}));

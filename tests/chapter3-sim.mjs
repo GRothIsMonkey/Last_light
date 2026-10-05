@@ -256,6 +256,10 @@ export async function runChapterThreeChecks(T){
   check('captions: police lights or a flashlight sweeping behind the words never make them flicker',()=>assert.equal(flick,0));
   const border=run(12,t=>.18+.05*Math.sin(t*5));check('captions: a background hovering in between does not flip back and forth',()=>assert.ok(border<=1,border));
   run(2,.01);const ramp=run(8,t=>Math.min(.8,t/5*.8));check('captions: a slow change from night to bright day flips once',()=>assert.equal(ramp,1));
+  // A strip so mixed that neither tone reads (a lit shirt in the dark): a faint glow behind the line; gone again after.
+  const run2=(sec,lo,hi,dt=1/60)=>{for(let i=0;i<Math.round(sec/dt);i++){S.source='frame';S.lo=lo;S.hi=hi;S.lum=(lo+hi)/2;tone.update(dt);}};
+  run2(6,.01,.01);const before=tone.state.scrim;run2(3,.015,.9);const mixed=tone.state.scrim,mixedVar=el.style['--cap-scrim'];run2(6,.01,.012);
+  check('captions: only where the background is too mixed for either tone, a faint glow behind the line (not a box), easing away after',()=>{assert.equal(before,0,'before '+JSON.stringify(tone.state));assert.ok(mixed>.9,'mixed '+mixed);assert.match(mixedVar,/^radial-gradient/);assert.equal(tone.state.scrim,0);assert.equal(el.style['--cap-scrim'],'none');});
   const reg=tone.region();check('captions: what is read back is a small strip behind the words, never the frame',()=>{assert.ok(reg.w<=224&&reg.h<=40);assert.ok(reg.x>=0&&reg.y>=0&&reg.x+reg.w<=2880&&reg.y+reg.h<=1800);});}
  {globalThis.WebGL2RenderingContext??=class{};const calls=[];let signaled=false;const gl=Object.assign(Object.create(globalThis.WebGL2RenderingContext.prototype),{PIXEL_PACK_BUFFER:1,STREAM_READ:2,RGBA:3,UNSIGNED_BYTE:4,SYNC_GPU_COMMANDS_COMPLETE:5,ALREADY_SIGNALED:6,CONDITION_SATISFIED:7,WAIT_FAILED:8,TIMEOUT_EXPIRED:9,
    createBuffer:()=>({}),bindBuffer(){},bufferData(){},flush(){},deleteSync(){},fenceSync:()=>({}),readPixels:(...a)=>calls.push(['read',...a]),clientWaitSync:(s2,f,timeout)=>{calls.push(['wait',timeout]);return signaled?6:9;},getBufferSubData:(t,o2,buf,off,n)=>{calls.push(['get',n]);buf.fill(240,0,n);}});

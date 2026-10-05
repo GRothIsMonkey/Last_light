@@ -7,7 +7,10 @@ export async function runChapterTwoPolish({page,snap,check}){
   // A fixed diagnostic line gives identical contrast/line-wrap coverage at each real scene.
   // It is a capture fixture, not dialogue added to the game.
   await ev(()=>{const el=document.getElementById('subtitle');el.replaceChildren();const who=document.createElement('small');who.textContent='JAMIE';el.append(who,document.createTextNode('“Try to remember exactly what he did.”'));el.style.opacity='1';});
-  check('caption '+name+': structured, backed, high-contrast and clear of navigation',await ev(()=>{const el=document.getElementById('subtitle'),s=getComputedStyle(el),r=el.getBoundingClientRect(),o=document.getElementById('objective-panel').getBoundingClientRect(),p=document.getElementById('prompt').getBoundingClientRect();return el.classList.contains('dialogue-caption')&&el.querySelector('small')?.textContent==='JAMIE'&&s.backgroundColor==='rgba(17, 20, 25, 0.88)'&&s.color==='rgb(255, 247, 233)'&&r.top>o.bottom+12&&r.bottom<p.top-12&&r.left>=0&&r.right<=innerWidth;}));
+  // Since Chapter Three the charcoal backing is gone: the words take a light or dark tone from the picture
+  // behind them (captions.js). The tone is given a moment of drawn frames to measure this scene first.
+  await ev(()=>new Promise(res=>{const L=lastLight;let i=0;const f=()=>{L.render();L.captionTone.update(.15,{fade:L.state.fade||0});if(++i<12)requestAnimationFrame(f);else res();};requestAnimationFrame(f);}));
+  check('caption '+name+': structured, no box, legible against this scene and clear of navigation',await ev(()=>{const el=document.getElementById('subtitle'),s=getComputedStyle(el),r=el.getBoundingClientRect(),o=document.getElementById('objective-panel').getBoundingClientRect(),p=document.getElementById('prompt').getBoundingClientRect(),t=lastLight.captionTone.state;return el.classList.contains('dialogue-caption')&&el.querySelector('small')?.textContent==='JAMIE'&&/rgba\(0, 0, 0, 0\)|transparent/.test(s.backgroundColor)&&s.borderTopWidth==='0px'&&t.source==='frame'&&(t.contrast>=3||t.halo>=.7||t.scrim>=.5)&&r.top>o.bottom+12&&r.bottom<p.top-12&&r.left>=0&&r.right<=innerWidth;}));
   await snap('readability-'+name);
  }
  // Change only the view while keeping the caption: the worst bright/dark contrast backgrounds.
