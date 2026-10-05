@@ -31,7 +31,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  const vTmp=new THREE.Vector3();
  const pebble=new THREE.Mesh(new THREE.IcosahedronGeometry(.016,0),new THREE.MeshStandardMaterial({color:0x969187,roughness:1}));scene.add(pebble);pebble.visible=false;
  function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{active:false,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
-  bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side,stall:0,unstick:0,wayT:0,waySide:1,poi:null,gaze:null,route:null,routeT:0,turnHold:0,turnDir:0});trail.reset();}
+  bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side,stall:0,unstick:0,wayT:0,waySide:1,poi:null,gaze:null,route:null,routeT:0,turnHold:0,turnDir:0,tight:0});trail.reset();}
  // Take a friend over from friends.js (they were inside, or their bike lying where they left it).
  function take(c){if(!c.active){// start from wherever friends.js left the bike
   const g=c.bike.group,f=c.f;c.bx=g.position.x;c.bz=g.position.z;c.ba=-g.rotation.y;c.fall=f.fall||0;c.lean=f.lean||0;c.kick=f.kick||0;c.wheel=f.wheel||0;c.crank=f.crank||0;c.steer=f.steer||0;c.speed=0;c.bikeY=null;}
@@ -73,7 +73,8 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   if(pv>.8&&ctx.clock>c.slotAt){c.slot=(c.slot+1)%4;c.slotAt=ctx.clock+9+(c.key==='sam'?3:0);}
   const slots=c.key==='jamie'?[[.2,1.5],[-1.1,1.6],[2.6,-1.35],[.5,-1.55]]:[[2.8,-1.5],[.6,-1.65],[-.9,1.7],[2.4,1.5]];
   // Changing sides, a friend drops back and crosses behind you, never across your front wheel.
-  const selected=slots[c.slot],crossing=Math.sign(c.formationSide)!==Math.sign(selected[1])&&Math.abs(c.formationSide)>.25;
+  // (Tight: the woods at night in Chapter Three; they ride closer in, nearer behind you.)
+  const tight=c.tight||0,raw=slots[c.slot],selected=tight?[raw[0]*(1-.35*tight)+.4*tight,raw[1]*(1-.38*tight)]:raw,crossing=Math.sign(c.formationSide)!==Math.sign(selected[1])&&Math.abs(c.formationSide)>.25;
   c.formationLag=damp(c.formationLag,pv>.6?(crossing?Math.max(selected[0],2.8):selected[0]):2.8,1.2,dt);c.formationSide=damp(c.formationSide,crossing&&c.formationLag<2.3?c.formationSide:selected[1],.55,dt);
   const gap=T.end-c.sOn-c.formationLag;let vT=clamp(pv+gap*.5,0,6.6);if(gap<.4&&pv<.4)vT=Math.min(vT,Math.max(0,gap*.8));
   const want=vT,fx=Math.sin(c.ba),fz=-Math.cos(c.ba);
@@ -227,6 +228,19 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
    if(push){pushPose(c.pose,c.gait,Math.max(v,.8),{look:lk,geom:c.geom});const b=toWorld(c.px,c.pz,c.pa,PUSH_OFFSET.x,PUSH_OFFSET.z);c.bx=b.x;c.bz=b.z;c.ba=c.pa;c.speed=v*slow;c.wheel+=step/c.geom.wheelR;c.steer=damp(c.steer,clamp(turn*.6,-.4,.4),5,dt);c.holding=true;}
    else walkPose(c.pose,c.gait,Math.max(v,.8),{look:lk});
    if(e<.35)blendPose(c.pose,c.from,c.pose,smooth(e/.35));feet(c,c.pose);applyPose(c.person,c.pose);c.posed=true;if(remain<.04){if(push)c.speed=0;return true;}};},
+  // Walk (or run) toward a target the chapter moves every frame: {x, z, v? (pace), max?, look?, face?};
+  // null ends the step. Without a pace they keep up with it; arrived, they stand, turn to face where it
+  // says and look where it says.
+  toward(c,get){return (dt,ctx)=>{const q=get(ctx);if(!q)return true;c.gaze=q.look||null;const d=Math.hypot(q.x-c.px,q.z-c.pz);
+   // You walked into them: a step back out of your way first (as when following).
+   // (only when you are walking into them, in front of you: they sidestep off your line, not back into your way)
+   {const pl=ctx.player,dx=c.px-pl.x,dz=c.pz-pl.z,near=Math.hypot(dx,dz),fx=Math.sin(pl.a),fz=-Math.cos(pl.a),ahead=dx*fx+dz*fz,side=dx*Math.cos(pl.a)+dz*Math.sin(pl.a);
+    if(pl.walking&&(pl.speed||0)>.3&&near<.85&&ahead>.05&&Math.abs(side)<.55){const sg=Math.sign(side)||(c.key==='sam'?-1:1),h=pl.a+sg*Math.PI/2;stepToward(c,dt,ctx,c.px+Math.sin(h)*1.2,c.pz-Math.cos(h)*1.2,1);c.posed=true;return false;}}
+   const v=q.v!==undefined?(d>.3?q.v:0):d>2.5?Math.min(q.max||3.2,1.5+d*.4):d>.4?Math.min(1.4,d+.25):0;
+   if(v<=0){if(q.face!==undefined)c.pa+=clamp(wrap(q.face-c.pa),-3*dt*(q.turn||1),3*dt*(q.turn||1));standStill(c,dt,ctx);}
+   else{const [rx,rz]=routeTo(c,dt,q.x,q.z,ctx.player);stepToward(c,dt,ctx,rx,rz,v);}// (round walls and fence ends by a short path, as when following)
+   // (a gesture is drawn over the pose, never kept in it: next frame starts from the plain pose again)
+   if(q.gesture){copyPose(c.tmp,c.pose);q.gesture(c.tmp,ctx);feet(c,c.tmp);applyPose(c.person,c.tmp);}c.posed=true;return false;};},
   turnTo(c,getA,t=.8){let e=0,start=null;return (dt)=>{if(start===null){start=c.pa;copyPose(c.from,c.pose);}e+=dt;const goal=typeof getA==='function'?getA():getA,diff=wrap(goal-start),prev=c.pa;c.pa=start+diff*smooth(e/t);
    c.gait+=Math.abs(c.pa-prev)*.3;const w=walkPose(c.tmp,c.gait,.8,{}),st=standPose(c.pose,e);blendPose(c.pose,st,w,Math.min(1,Math.abs(diff)*.6)*Math.sin(Math.PI*smooth(e/t)));feet(c,c.pose);applyPose(c.person,c.pose);c.posed=true;return e>=t;};},
   idle(c,t,{wave=0,gesture=null}={}){let e=0;return (dt,ctx)=>{e+=dt;standPose(c.tmp,ctx.clock+c.R.phase,{look:footLook(c,ctx)});blendPose(c.pose,c.pose,c.tmp,1-Math.exp(-8*dt));
