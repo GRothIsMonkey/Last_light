@@ -50,20 +50,38 @@ export const EASEMENT={gap:{u:100.2,v:31.5},turn:-.337,len:47,half:15,
  bike:{s:30.6},bell:{s:52,y:1.1}};
 // The channel's gentle meander (t of its centerline at s).
 export const easementChannelT=s=>.85*Math.sin(s*.09)-.25;
-// Chapter Three: downstream, where the big culvert comes back out. Between Alex's house and the next
-// one an old city access drive ("the pond road") runs back past the yards, down the bank behind them,
-// to a fenced stormwater detention basin; the culvert from the easement empties into it through a
-// headwall on its west side, beside the same wooded rise. All of it in Briarwood's frame (u along
-// the street, v across it), which is straight here. The chained double gate stays shut; beside its
-// east post the chain-link has been bent back far enough for a kid to get through.
-export const BASIN={fence:{u0:138.8,u1:166,v0:42,v1:64},
- drive:{u:141.6,half:1.6,v0:7.4,v1:42.6,fence:1.95,fenceFrom:21},
- gap:{u0:142.2,u1:143.55},
- bottom:{u1:158.5,v0:49.5,v1:56.5,y:-1.5},slope:3,
- outlet:{u:146,v:53,w:2.4,h:2.05,inside:6,wall:19.6,north:7.8},
- riser:{u:157.6,v:51.6,size:1.8,h:1.65},
- bike:{u:140.45,v:41.72},
- zone:{u0:138.2,u1:168.6,v0:31,v1:66}};
+// Chapter Three: downstream. Briarwood Lane simply stops a little past its last house; beyond its end
+// curb an old municipal stormwater access road (barrier posts, a pipe gate, faded signs) runs off
+// through an overgrown field into the woods, winds down through them and comes out on the floor of a
+// creek valley, at the outfall where the neighborhood's storm sewer trunk (Chapter Two's culvert drains
+// into it) comes out of the hillside: a big concrete box, headwall, wingwalls, riprap.
+// World coordinates (x, z; z decreasing is north). road.pts: centerline control points after the two
+// that continue Briarwood's own line; profile: road height [s, y] along it (smoothly interpolated).
+// region: the outline of the land the woods answer for (older ground and the far neighborhood leave it).
+export const WOODS={startU:250.3,
+ road:{pts:[[372,-482],[402,-461],[426,-436],[440,-404],[454,-370],[482,-344],[525,-330],[570,-337],[604,-360],[624,-396],[631,-444],[637,-490],[643,-517],[646,-531]],
+  profile:[[0,2.36],[60,2.05],[150,1.3],[240,-.5],[327,-2.6],[369,-3.7],[410,-5.1],[460,-6.05],[506,-6.95],[9999,-7.75]],
+  half:[[0,2.75],[140,2.6],[260,2.3],[380,2.05],[9999,1.95]]},
+ gate:{s:13.5},signs:{flood:31,end:300},poles:{to:200},
+ // The creek on the valley floor (it runs north past the outfall); bed heights at z.
+ creek:{pts:[[672,-300],[664,-380],[660,-440],[661,-500],[660,-545],[655,-600],[648,-680],[640,-780]],bed:[[-300,-6.4],[-440,-7.45],[-545,-9.1],[-780,-10.6]],floor:26,side:.2},
+ sag:{x0:380,x1:620,depth:7},
+ region:[[301.4,-465.8],[349.4,-553.6],[385,-650],[470,-775],[835,-775],[835,-215],[470,-215],[385,-300],[335,-405]],
+ // The outfall. Outfall frame: a east from the portal face, b south (+z). The pad is the gravel
+ // turnaround where the road ends, in front of the mouth and a little south.
+ portal:{x:633.6,z:-545.5,floor:-8.45,w:4.6,h:3.6,cap:1.0,wing:6.3,flare:.58},
+ pad:{a:12.6,b:13.4,r:7.2},patch:{a0:-7,a1:31,b0:-15,b1:25}};
+// The storm sewer trunk behind the outfall: a reinforced concrete box under the woods, the oldest part
+// of it older still. s from the portal face; sections: [s0, s1, width, height, kind]. Heading changes:
+// [s0, s1, turn] (positive turns right, toward the north here). The floor rises gently upstream, with
+// one low spillway step where the older section meets the newer one.
+export const DRAIN={len:286,grade:.004,
+ sections:[[0,24,4.6,3.6,'mouth'],[24,72,4.6,3.6,'box'],[72,94,4.6,3.6,'bend'],[94,150,3.9,3.15,'old'],[150,214,4.4,3.6,'long'],[214,226,4.4,3.6,'bend'],[226,286,4.2,3.4,'far']],
+ turns:[[72,94,.62],[214,226,-.95]],
+ step:{s:148.4,len:1.6,h:.5},
+ ladder:{s:121},sidePipe:{s:136,r:.55,side:1},junction:{s0:270,s1:286,w:6.2,h:4.2,side:{s:279,w:2.4,h:2.05,sill:.85}},
+ evidence:{s0:100,s1:146},oldBike:{s:171,side:-1},figure:{s:220.3,t:-.5},
+ walkway:{s0:24,s1:72,side:1,w:.75,h:.32}};
 // Alex's room: upstairs, the front corner over the garage (his lit window from Chapter One is its
 // front window; a side window looks west over the garage roof toward the creek and the easement).
 // x/z in the house's own frame (x across its width, +z toward the street), heights above its ground.

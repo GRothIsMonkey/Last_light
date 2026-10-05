@@ -19,7 +19,8 @@ import {planLots,buildHouses} from './houses.js';
 import {buildYards} from './props.js';
 import {buildBackground} from './background.js';
 import {easementFrame,buildEasement} from './easement.js';
-import {basinFrame,buildBasin} from './basin.js';
+import {woodsFrame,buildWoods} from './woods.js';
+import {drainFrame,buildDrain} from './drain.js';
 
 export {JUNCTIONS,BULB,ROAD_END,LOOKOUT} from './layout.js';
 export {LAWN,SIDEWALK,CURB_TOP,knoll,roadCrown} from './terrain.js';
@@ -55,13 +56,15 @@ export function buildWorld(scene){
  W.pad=(d0,d1,l0,l1,y)=>W.pads.push({d0:Math.min(d0,d1),d1:Math.max(d0,d1),l0:Math.min(l0,l1),l1:Math.max(l0,l1),y});
 
  W.easement=easementFrame(W);// Chapter Two's drainage easement: its ground leaves holes in the older ground
- W.basin=basinFrame(W);// Chapter Three's access drive and detention basin, downstream of the culvert (same idea)
+ W.woods=woodsFrame(W);// Chapter Three: the old access road past Briarwood's end, the woods, the outfall (same idea)
+ W.drain=drainFrame(W);// ...and the storm sewer trunk behind the outfall
  W.plans=planLots(W);// every first-row lot decided up front: streets need the driveway cuts
  buildStreets(W);// surfaces, curbs, sidewalks, junctions, cul-de-sac, lookout ground
  buildHouses(W);// first-row houses, friend homes and their interiors, driveways, walks
  buildYards(W);// trees, cars, yard props, fences, street furniture, utility network, signs
  buildEasement(W);// behind the creek's back fence: channel, path, culvert, power line, brush
- buildBasin(W);// behind the yards past Alex's house: the old pond road, the gate, the basin and the outlet
+ buildWoods(W);// past Briarwood's end: the access road, the woods, the creek valley and the outfall
+ buildDrain(W);// the box culvert behind the outfall
  buildBackground(W);// back yards, second row, side-street houses, far neighborhood and land
 
  const {merged,originals,shadowProxies}=bakeAndMerge(W,scene);
@@ -87,7 +90,7 @@ export function buildWorld(scene){
 
  return {scene,road:W.named.road,originals,merged,windowMats:W.windowMats,porchMats:W.porchMats,streetLamps:W.streetLamps,foliage:W.foliage,grassMat:W.grassMat,grassMats:W.grassMats,
   groundY,authoredY,rideable:W.rideable,obstacles:W.obstacles,homes:W.homes,doors,garages,windows,sideDoors,anchor,houseAnchor,alexWindow:W.alexWindow,car:W.car,drivewayOpenings:W.drives,sideDrives:W.sideDrives||[],houses:W.houses,sidePlansAll:W.sidePlans,surfaceY:W.surfaceY,sideSurface:W.sideSurface,junctions:W.junctions,creek:W.creekInfo||null,interiorMats:W.interiorMats,
-  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,lights:W.lights,hooks:W.hooks||{},hoops:W.hoops||[],easement:W.easement,basin:W.basin,terrainY,signs:W.signs||[],
+  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,lights:W.lights,hooks:W.hooks||{},hoops:W.hoops||[],easement:W.easement,woods:W.woods,drain:W.drain,terrainY,signs:W.signs||[],
   poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space,fenceSegs:W.fenceSegs||[]};
 }
 
@@ -149,7 +152,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
   let guess=null;for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){const u=ua+i*step,v=va+j*step,x=L.cx+u*L.fx+v*L.rx,z=L.cz+u*L.fz+v*L.rz,q=f.project(x,z,guess??u0+u);guess=q.u;h[i*nv+j]=layer.groundFn?layer.groundFn(q.u,q.v,x,z):f.point(q.u,q.v).y;}
   return (u,v)=>{const fu=clamp((u-ua)/step,0,nu-1.001),fv=clamp((v-va)/step,0,nv-1.001),i=Math.floor(fu),j=Math.floor(fv),a=fu-i,b=fv-j;return (h[i*nv+j]*(1-a)+h[(i+1)*nv+j]*a)*(1-b)+(h[i*nv+j+1]*(1-a)+h[(i+1)*nv+j+1]*a)*b;};
  }
- const batchFor=(material,cell,far)=>{const key=material.uuid+':'+cell+(far?':f':'');let b=batches.get(key);if(!b){b={material,far,cell:cell+(far?':f':''),p:new Buf(),n:new Buf(),c:material.vertexColors?new Buf():null,uv:material.map?new Buf():null};batches.set(key,b);}return b;};
+ const batchFor=(material,cell,far,zone)=>{const key=material.uuid+':'+cell+(far?':f':'')+(zone?':'+zone:'');let b=batches.get(key);if(!b){b={material,far,zone,cell:cell+(far?':f':''),p:new Buf(),n:new Buf(),c:material.vertexColors?new Buf():null,uv:material.map?new Buf():null};batches.set(key,b);}return b;};
  const add=(b,pos,nor,col,uv,i)=>{b.p.push(pos[i*3],pos[i*3+1],pos[i*3+2]);b.n.push(nor[i*3],nor[i*3+1],nor[i*3+2]);if(b.c)b.c.push(col.r,col.g,col.b);if(b.uv)b.uv.push(uv?uv.getX(i):0,uv?uv.getY(i):0,0);};
  const layers=[...W.layers,{mode:'baked',group:{children:W.baked,updateMatrixWorld(){for(const m of W.baked)m.updateMatrixWorld(true);},traverse(fn){for(const m of W.baked)m.traverse(fn);}}}];
  for(const layer of layers){
@@ -159,20 +162,20 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
   for(const o of objs){const {pos,nor}=transform(o,layer,height);
    if(o.name&&o.isMesh){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));if(o.geometry.index)g.setIndex(o.geometry.index.clone());g.computeBoundingSphere();const m=new THREE.Mesh(g,o.material);m.name=o.name;m.userData={...o.userData};originals.push(m);if(o.userData.ref)W.named[o.userData.ref]=m;}
    if(o.isLine){const key=o.material.color.getHex();if(!lineBatches.has(key))lineBatches.set(key,new Buf());const arr=lineBatches.get(key),segs=o.isLineSegments;for(let i=0;i<pos.length/3-1;i+=segs?2:1)arr.push(pos[i*3],pos[i*3+1],pos[i*3+2]),arr.push(pos[i*3+3],pos[i*3+4],pos[i*3+5]);continue;}
-   const material=batchMaterial(o.material),idx=o.geometry.index,uv=o.geometry.attributes.uv,far=!!layer.far||!!o.userData.far,cellSize=far?220:110;
+   const material=batchMaterial(o.material),idx=o.geometry.index,uv=o.geometry.attributes.uv,far=!!layer.far||!!o.userData.far,zone=layer.zone||o.userData.zone||null,cellSize=zone==='woods'?(far?240:160):zone==='tunnel'?100:far?220:110;
    const wi=W.windowMats.indexOf(o.material),pi=W.porchMats.indexOf(o.material);
    const col=o.material===W.darkGlass?{r:9,g:0,b:0}:wi>=0?{r:W.windowOn[wi],g:0,b:0}:pi>=0?{r:W.porchOn[pi],g:0,b:0}:o.material===W.farWindow?{r:.5+hashF(t0++)*.3,g:0,b:0}:o.material.userData.lamp!==undefined?{r:1,g:o.material.userData.lamp/255,b:0}:o.material.color;
    const tris=idx?idx.count/3:pos.length/9,local=new Map(),caster=castsShadow(material,far),leaf=caster&&!!material.map&&material.alphaTest>0,slocal=new Map();
    for(let t=0;t<tris;t++){const i0=idx?idx.getX(t*3):t*3,i1=idx?idx.getX(t*3+1):t*3+1,i2=idx?idx.getX(t*3+2):t*3+2;
     const cx=(pos[i0*3]+pos[i1*3]+pos[i2*3])/3,cz=(pos[i0*3+2]+pos[i1*3+2]+pos[i2*3+2])/3,cell=Math.floor(cx/cellSize)*1000+Math.floor(cz/cellSize);
-    let b=local.get(cell);if(!b){b=batchFor(material,cell,far);local.set(cell,b);}add(b,pos,nor,col,uv,i0);add(b,pos,nor,col,uv,i1);add(b,pos,nor,col,uv,i2);
-    if(caster){const sc=(Math.floor(cx/50)*1000+Math.floor(cz/50))*2+(leaf?1:0);let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
+    let b=local.get(cell);if(!b){b=batchFor(material,cell,far,zone);local.set(cell,b);}add(b,pos,nor,col,uv,i0);add(b,pos,nor,col,uv,i1);add(b,pos,nor,col,uv,i2);
+    if(caster){const sz=zone==='woods'?110:50,sc=(zone==='woods'?'w':'')+((Math.floor(cx/sz)*1000+Math.floor(cz/sz))*2+(leaf?1:0));let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
      for(const i of [i0,i1,i2]){sp.p.push(pos[i*3],pos[i*3+1],pos[i*3+2]);if(leaf)sp.uv.push(uv?uv.getX(i):0,uv?uv.getY(i):0,0);}}}
   }
  }
  for(const b of batches.values()){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(b.p.view().slice(),3));g.setAttribute('normal',new THREE.BufferAttribute(b.n.view().slice(),3));
   if(b.c)g.setAttribute('color',new THREE.BufferAttribute(b.c.view().slice(),3));if(b.uv){const u3=b.uv.view(),u2=new Float32Array(u3.length/3*2);for(let i=0,j=0;i<u3.length;i+=3){u2[j++]=u3[i];u2[j++]=u3[i+1];}g.setAttribute('uv',new THREE.BufferAttribute(u2,2));}
-  g.computeBoundingSphere();const mesh=new THREE.Mesh(g,b.material);mesh.castShadow=false;mesh.receiveShadow=true;if(b.far)mesh.userData.far=true;scene.add(mesh);merged.push(mesh);
+  g.computeBoundingSphere();const mesh=new THREE.Mesh(g,b.material);mesh.castShadow=false;mesh.receiveShadow=true;if(b.far)mesh.userData.far=true;if(b.zone)mesh.userData.zone=b.zone;scene.add(mesh);merged.push(mesh);
 }
  const shadowProxies=[];
  for(const sp of shadow.values()){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(sp.p.view().slice(),3));

@@ -9,7 +9,8 @@ import {SECTION,LOOKOUT} from './layout.js';
 import {XS} from './streets.js';
 import {createSpace} from './kit.js';
 import {easementNav} from './easement.js';
-import {basinNav} from './basin.js';
+import {woodsNav} from './woods.js';
+import {drainNav} from './drain.js';
 
 const CF=SECTION.curbFace,CUL=1100;
 // Things a rider or walker cannot pass through (driveways and walks are registered too, but open).
@@ -38,29 +39,39 @@ export function createNav(world){
  // otherwise Oak Hollow (its lots, the junction mouth, the cul-de-sac and the lookout).
  // Behind the creek's back fence, the drainage easement answers for itself (Chapter Two).
  const EZ=world.easement?.height?world.easement:null,EN=EZ?easementNav(EZ):null;
- // Chapter Three: the old pond road and the detention basin past Alex's house answer for themselves
- // too, and so (only while the story has you up there) does Alex's room.
- const BZ=world.basin?.height?world.basin:null,BN=BZ?basinNav(BZ):null;let room=null;
+ // Chapter Three: past Briarwood's end the old access road and the woods answer for themselves, and
+ // inside the storm sewer behind the outfall the box does; so (only while the story has you up there)
+ // does Alex's room. (The woods and the box are far from Oak Hollow: a plain bounding test first.)
+ const WZ=world.woods?.ribbonY?world.woods:null,WN=WZ?woodsNav(WZ):null,DZ=world.drain?.spots?world.drain:null,DN=DZ?drainNav(DZ):null;let room=null;
+ const DB=DZ?(()=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(let i=0;i<DZ.n;i++){x0=Math.min(x0,DZ.X[i]);x1=Math.max(x1,DZ.X[i]);z0=Math.min(z0,DZ.Z[i]);z1=Math.max(z1,DZ.Z[i]);}return {x0:x0-5,x1:x1+5,z0:z0-5,z1:z1+5};})():null;
+ const sideEnd=WZ?WZ.U+.3:196;
+ // Briarwood's far end (past its bend) is out of reach of Oak Hollow's street coordinates: its own box.
+ const BF=WZ?(()=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(let u=150;u<=WZ.U+2;u+=4)for(const v of [-46,46]){const p=B.point(u,v);x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);z0=Math.min(z0,p.z);z1=Math.max(z1,p.z);}return {x0,x1,z0,z1};})():null;
  let lastU=40,lastD=1136;
- function locate(x,z){if(room&&room.inside(x,z))return {street:'room',d:0,lat:0};const m=streetCoords(x,z,lastD);lastD=m.d;
-  if(BZ&&BZ.inside(x,z)){const q=BZ.local(x,z);return {street:'basin',u:q.u,v:q.v,d:m.d,lat:m.lat};}
+ function locate(x,z){if(room&&room.inside(x,z))return {street:'room',d:0,lat:0};
+  if(DZ&&x>DB.x0&&x<DB.x1&&z>DB.z0&&z<DB.z1){const q=DZ.project(x,z);if(q&&q.s>=0&&q.s<=DZ.len+.5&&Math.abs(q.t)<DZ.sizeAt(Math.max(0,q.s)).w/2+.02)return {street:'drain',s:q.s,t:q.t,q,d:0,lat:0};}
+  if(WZ&&x>WZ.box.x0&&WZ.inside(x,z)){const w=WN.where(x,z);return {street:'woods',s:w.q?.s,t:w.q?.t,w,d:0,lat:0};}
+  const m=streetCoords(x,z,lastD);lastD=m.d;
   if(EZ&&EZ.inside(x,z)){const q=EZ.local(x,z);return {street:'easement',s:q.s,t:q.t,d:m.d,lat:m.lat};}
-  if(Math.abs(m.d-J.d)<70&&m.lat*J.side>20){const q=B.project(x,z,Math.max(5,Math.min(B.length,lastU)));if(q.u>24&&q.u<B.length+10&&Math.abs(q.v)<46){lastU=q.u;return {street:'side',u:q.u,v:q.v,d:m.d,lat:m.lat};}}
+  const far=BF&&x>BF.x0&&x<BF.x1&&z>BF.z0&&z<BF.z1;
+  if((Math.abs(m.d-J.d)<70&&m.lat*J.side>20)||far){let q=B.project(x,z,Math.max(5,Math.min(B.length,lastU)));
+   // (the guess is wherever the last question was; past the bend a wrong guess can land on the wrong side of it: check, else search)
+   if(far){const [cx,cz,a]=B.center(q.u);if(Math.hypot(cx+q.v*Math.cos(a)-x,cz+q.v*Math.sin(a)-z)>.25)q=B.project(x,z,null);}if(q.u>24&&q.u<B.length+10&&Math.abs(q.v)<46){lastU=q.u;return {street:'side',u:q.u,v:q.v,d:m.d,lat:m.lat};}}
   return {street:'main',d:m.d,lat:m.lat};}
  function sideAuthored(u,v){let best=null;
   for(const h of sideHouses){if(Math.abs(h.u-u)>16||Math.sign(v)!==h.side)continue;const q=h.localOf(u,v);for(const p of h.localPads)if(q.x>=p.x0&&q.x<=p.x1&&q.z>=p.z0&&q.z<=p.z1){const y=typeof p.y==='function'?p.y(q.x,q.z):p.y;if(best===null||y>best)best=y;}}
   if(best!==null)return best;for(const dr of sideDrives)if(dr.contains(u,v))return dr.y(u,v);return world.sideSurface(J,u,v);}
  // Ground height (the surface you stand on) and the bare ground under curbs and steps.
- function groundY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='basin')return BN.groundY(L.u,L.v);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y+sideAuthored(L.u,L.v):world.groundY(L.d,L.lat);}
- function baseY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='basin')return BN.groundY(L.u,L.v);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y:groundPoint(L.d,L.lat).y;}
+ function groundY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='drain')return DN.groundY(x,z,L.q);if(L.street==='woods')return WN.groundY(x,z,L.w);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y+sideAuthored(L.u,L.v):world.groundY(L.d,L.lat);}
+ function baseY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='drain')return DN.groundY(x,z,L.q);if(L.street==='woods')return WN.baseY(x,z,L.w);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y:groundPoint(L.d,L.lat).y;}
  // The street's direction here (for the bike's gentle settling along it), either way along.
- function streetHeading(x,z,L=locate(x,z)){if(L.street==='room')return room.heading||0;if(L.street==='basin')return BZ.heading;if(L.street==='easement')return EZ.heading;return L.street==='side'?B.heading(L.u):heading(Math.min(L.d,CUL));}
+ function streetHeading(x,z,L=locate(x,z)){if(L.street==='room')return room.heading||0;if(L.street==='drain')return DN.heading(x,z,L.q);if(L.street==='woods')return WN.heading(x,z,L.w);if(L.street==='easement')return EZ.heading;return L.street==='side'?B.heading(L.u):heading(Math.min(L.d,CUL));}
  const solid=(x,z,r)=>!!world.space.blocked(x,z,r,SOLID)||!!walls.blocked(x,z,r,WALL);
  const inCreek=(u,v)=>Math.abs(u-C.u)<C.half+.5&&Math.abs(v)>H+XS.walk+.15;
  // Bikes: streets, sidewalks and curbs as before, plus whole driveways and front lawns now.
- function rideable(x,z,{lawn=true,r=.3}={}){const L=locate(x,z);if(L.street==='easement'||L.street==='room')return false;// bikes stay on the street side of the fence
-  if(L.street==='basin')return BN.rideable(L.u,L.v)&&!solid(x,z,r*.6);// the drive, as far as the gate
-  if(L.street==='side'){const a=Math.abs(L.v);if(L.u<6||L.u>196)return false;if(BN&&BN.onDrive(L.u,L.v))return !solid(x,z,r*.6);
+ function rideable(x,z,{lawn=true,r=.3}={}){const L=locate(x,z);if(L.street==='easement'||L.street==='room'||L.street==='drain')return false;// bikes stay on the street side of the fence, and outside the drain
+  if(L.street==='woods')return WN.rideable(x,z,L.w)&&!solid(x,z,r*.6);// the old road, and the pad at its end
+  if(L.street==='side'){const a=Math.abs(L.v);if(L.u<6||L.u>sideEnd)return false;
    if(a<=H+XS.walk-.025)return !solid(x,z,r*.6);if(inCreek(L.u,L.v))return false;
    if(sideDrives.some(dr=>dr.contains(L.u,L.v)))return !solid(x,z,r);return lawn&&a<16&&!solid(x,z,r);}
   const {d,lat}=L,a=Math.abs(lat);if(d<-300)return false;
@@ -73,9 +84,10 @@ export function createNav(world){
   return lawn&&a>CF&&a<16.5&&!solid(x,z,r);}
  // Walkers: anywhere a kid could go without climbing a fence or walking into a house.
  function walkable(x,z,{r=.28}={}){const L=locate(x,z);if(L.street==='room')return room.walkable(x,z,r);if(nearFence(x,z,r))return false;
-  if(L.street==='basin')return BN.walkable(L.u,L.v)&&!solid(x,z,r*.8);
+  if(L.street==='drain')return DN.walkable(x,z,r,L.q);// (underground: the trees and posts on the hill above are not in here)
+  if(L.street==='woods')return WN.walkable(x,z,L.w)&&!solid(x,z,r*.8);
   if(L.street==='easement')return EN.walkable(L.s,L.t)&&!solid(x,z,r*.8);
-  if(L.street==='side'){if(L.u<6||L.u>196||Math.abs(L.v)>31.3)return false;return !solid(x,z,r);}
+  if(L.street==='side'){if(L.u<6||L.u>sideEnd||Math.abs(L.v)>31.3)return false;return !solid(x,z,r);}
   const {d,lat}=L,a=Math.abs(lat);
   if(d>LOOKOUT.bounds.d0){const b=LOOKOUT.bounds;if(d>b.d1||lat<b.l0||lat>b.l1)return false;}
   else if(a>31||d<-300)return false;// front, side and back yards, inside the rear fences
@@ -83,7 +95,7 @@ export function createNav(world){
   if(world.obstacles.some(o=>!o.house&&!o.soft&&d>o.d0-r&&d<o.d1+r&&lat>o.l0-r&&lat<o.l1+r))return false;
   return !solid(x,z,r*.8);}
  // Surface under a walker's feet, for footsteps.
- function surface(x,z,L=locate(x,z)){if(L.street==='room')return 'floor';if(L.street==='basin')return BN.surface(L.u,L.v);if(L.street==='easement')return EN.surface(L.s,L.t);if(L.street==='side'){const a=Math.abs(L.v);return a<=H?'asphalt':a>=H+XS.strip&&a<=H+XS.walk?'asphalt':inCreek(L.u,L.v)?'grass':'grass';}
+ function surface(x,z,L=locate(x,z)){if(L.street==='room')return 'floor';if(L.street==='drain')return DN.surface(x,z,L.q);if(L.street==='woods')return WN.surface(x,z,L.w);if(L.street==='easement')return EN.surface(L.s,L.t);if(L.street==='side'){const a=Math.abs(L.v);return a<=H?'asphalt':a>=H+XS.strip&&a<=H+XS.walk?'asphalt':inCreek(L.u,L.v)?'grass':'grass';}
   const a=Math.abs(L.lat);return a<=CF||(a>=CF+XS.strip&&a<=CF+XS.walk)||L.d>=CUL&&Math.hypot(L.lat,L.d-1142)<11?'asphalt':'grass';}
  // Is there a house (or the far neighborhood) right here? For sound: walls between you and a siren.
  const FAR=new Set(['far-house']),wallAt=(x,z)=>!!walls.blocked(x,z,0,WALL)||!!world.space.blocked(x,z,0,FAR);
@@ -103,6 +115,6 @@ export function createNav(world){
  }
  // A room you are inside for a while (Chapter Three: Alex's): {inside(x,z), walkable(x,z,r), floorY}; null to leave.
  function setRoom(r){room=r||null;}
- return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,walkPath,setRoom,get room(){return room;},frame:B,junction:J,creek:C,easement:EZ,basin:BZ,
+ return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,walkPath,setRoom,get room(){return room;},frame:B,junction:J,creek:C,easement:EZ,woods:WZ,woodsNav:WN,drain:DZ,drainNav:DN,
   side:(u,v)=>B.point(u,v),main:(d,lat)=>groundPoint(d,lat)};
 }

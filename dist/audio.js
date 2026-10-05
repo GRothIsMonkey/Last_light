@@ -56,6 +56,9 @@ export function createAudio({context=null,random=Math.random}={}){
   pebble(t,o){burst(t,.012,.12,'bandpass',4300,3,o);tone(3150+random()*300,t+.002,.07,.012,'sine',o);},
   window(t,o){const s=shot(ctx.createBufferSource());s.buffer=noise;const b=filt('bandpass',680,2.2),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.15);g.gain.linearRampToValueAtTime(.04,t+.6);g.gain.linearRampToValueAtTime(0,t+.8);s.connect(b).connect(g).connect(o);s.start(t,random()*2);s.stop(t+.85);burst(t+.78,.04,.08,'lowpass',900,.8,o);},
   click(t,o){burst(t,.008,.06,'bandpass',3200,3,o);burst(t+.05,.006,.04,'bandpass',2600,3,o);},
+  // Chapter Three placeholders (to be replaced by real assets): water breaking behind you, a drip.
+  splash(t,o){burst(t,.16,.08,'bandpass',900,.7,o);burst(t+.03,.12,.035,'highpass',2600,.6,o);},
+  drip(t,o){tone(1400+random()*500,t,.08,.02,'sine',o,900);},
   squelch(t,o){burst(t,.12,.035,'highpass',1600,.7,o);tone(1180,t,.06,.012,'square',o);},
   carDoor(t,o){burst(t,.1,.3,'lowpass',650,.8,o);tone(88,t,.16,.14,'sine',o,60);burst(t+.02,.03,.05,'bandpass',2400,2,o);},
  };
@@ -70,7 +73,7 @@ export function createAudio({context=null,random=Math.random}={}){
  function memory(on){if(!ctx||!memLP)return;memLP.frequency.setTargetAtTime(on?1900:20000,now(),on?.5:.4);}
  // Indoors (Alex's room): the street outside goes a little dull behind the walls.
  function indoors(on){if(!ctx||!memLP)return;memLP.frequency.setTargetAtTime(on?4200:20000,now(),.25);}
- function footstep(surface,v){if(!ctx||!enabled)return;const t=now();if(surface==='grass'){burst(t,.08,.05*v,'lowpass',850,.7);burst(t+.01,.05,.012*v,'highpass',4000,.7);}else{burst(t,.04,.06*v,'bandpass',1700,1.2);tone(80,t,.06,.04*v,'sine',bus,50);}}
+ function footstep(surface,v){if(!ctx||!enabled)return;const t=now();if(surface==='water'){burst(t,.12,.05*v,'bandpass',1300,.8);burst(t+.02,.09,.02*v,'highpass',3200,.6);return;}if(surface==='grass'){burst(t,.08,.05*v,'lowpass',850,.7);burst(t+.01,.05,.012*v,'highpass',4000,.7);}else{burst(t,.04,.06*v,'bandpass',1700,1.2);tone(80,t,.06,.04*v,'sine',bus,50);}}
  // A distant, ordinary two-syllable call. A soft harmonic source and changing
  // vowel resonances replace the old sawtooth/feedback echo. No second voice.
  function call(){if(!ctx||!enabled)return;const t=now()+.2;

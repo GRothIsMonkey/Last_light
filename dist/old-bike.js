@@ -1,5 +1,5 @@
 // The old bicycle that is not supposed to be there: under the oak after the call in the prologue, and
-// (Chapter Three) leaning on the detention basin's gate the next day. One build for both, so it is the
+// (Chapter Three) leaning against the wall far inside the storm drain the next night. One build for both, so it is the
 // same bike to the last detail: a faded sage-green kid's road bike from decades ago, swept bars, a
 // cracked brown saddle, grips worn pale, tires gone hard and grey, rust coming through at every joint,
 // a dull bell rusted solid, "AR" scratched into the top tube, and a city bicycle-license sticker on

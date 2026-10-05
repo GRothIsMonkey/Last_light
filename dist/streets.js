@@ -130,14 +130,16 @@ export function buildStreets(W){
   grid(sb,[-(h-.35),-.15],[CF+2.2,CF+2.65],(u,v)=>crown(u,v)+.006,mat(0xe8e4d8,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
   const sc=cutsFor(f.id,1).concat(cutsFor(f.id,-1));
   for(const ss of [-1,1]){const cuts=cutsFor(f.id,ss),brk=[];for(const c of cuts)brk.push(c.u0,c.u1);
-   const ck=j.creek?range(j.creek.u-7,j.creek.u+7,.5):[],us=uniq([...range(5,L+24,2),u0,...brk,...ck]),vs=[h+.3,h+1,h+1.65,h+2.4,h+3.15,h+4,h+5,h+6.5,h+8,h+10,h+12,h+15,h+18,h+21,h+24,h+27,h+30,h+34,h+38,44,...(j.creek?[8.6,9,9.4,9.8,10.2,j.creek.end-1.2,j.creek.end-.4,j.creek.end+.4,j.creek.end+1.2]:[])].map(v=>v*ss).sort((a,b)=>a-b);
+   const ck=j.creek?range(j.creek.u-7,j.creek.u+7,.5):[],us=uniq([...range(5,L+24,2),u0,...brk,...ck,...(W.woods&&f===W.sideFrames[0]?[W.woods.U]:[])]),vs=[h+.3,h+1,h+1.65,h+2.4,h+3.15,h+4,h+5,h+6.5,h+8,h+10,h+12,h+15,h+18,h+21,h+24,h+27,h+30,h+34,h+38,44,...(j.creek?[8.6,9,9.4,9.8,10.2,j.creek.end-1.2,j.creek.end-.4,j.creek.end+.4,j.creek.end+1.2]:[])].map(v=>v*ss).sort((a,b)=>a-b);
    // (Cells that would roof over the easement's trench or culvert are left out; its own ground is there.)
    const ez=W.easement,overTrench=(ua,ub,va,vb)=>ez&&ss>0&&Math.max(Math.abs(va),Math.abs(vb))>28&&[[ua,va],[ub,va],[ua,vb],[ub,vb],[(ua+ub)/2,(va+vb)/2]].some(([uu,vv])=>{const p=f.point(uu,vv);return ez.trench(p.x,p.z,1);})||(ez&&ss>0&&(()=>{const p=f.point((ua+ub)/2,(va+vb)/2);return ez.inside(p.x,p.z,-.3);})());
-   // (Chapter Three's access drive and basin lay their own ground over the cells they wholly cover.)
-   const bz=W.basin&&ss>0&&f===W.sideFrames[0]?W.basin:null,underBasin=(ua,ub,va,vb)=>!!bz&&([[ua,va],[ub,va],[ua,vb],[ub,vb]].every(([uu,vv])=>bz.covers(uu,vv,.05))||[[ua,va],[ub,va],[ua,vb],[ub,vb],[(ua+ub)/2,(va+vb)/2]].some(([uu,vv])=>bz.near(uu,vv)));
+   // (Chapter Three: past Briarwood's end the woods lay their own ground.)
+   const wz=W.woods&&f===W.sideFrames[0]?W.woods:null,underBasin=(ua,ub,va,vb)=>!!wz&&ua>=wz.U-.02;
    grid(sb,vs,us,LAWN,grass,(v,u,va,vb,ua,ub)=>{if(overTrench(ua,ub,va,vb)||underBasin(ua,ub,va,vb))return true;if(u<u0&&Math.abs(v)<h+R)return true;for(const c of cuts)if(u>c.u0&&u<c.u1){if(Math.abs(v)<h+XS.walk)return true;if(c.inside(ua+.02,va)&&c.inside(ub-.02,va)&&c.inside(ua+.02,vb)&&c.inside(ub-.02,vb))return true;}return false;});}
   // Asphalt ends where the land beyond the crest takes over: finish it with a curb line.
-  K.box(sb,0,.02,-(L+.15),2*h+.6,.1,.3,curbC);
+  // (On Briarwood the middle of it is left out: the old access road goes on from there; chapter three.)
+  if(W.woods&&f===W.sideFrames[0]){const gap=W.woods.halfW(0)+.12,len=h+.3-gap;for(const e of [-1,1])K.box(sb,e*(gap+len/2),.02,-(L+.15),len,.1,.3,curbC);}
+  else K.box(sb,0,.02,-(L+.15),2*h+.6,.1,.3,curbC);
  }
 
  // What surface is authored here (height above the street's ground)? -----------------------------

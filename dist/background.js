@@ -70,13 +70,14 @@ export function buildBackground(W){
   if(a<62&&d>ROAD_START-12&&d<1140)continue;// the street, its lots and the second row
   if(d>1100&&a<175)continue;// the open field in front of the lookout
   if(inSide(px,pz,8))continue;
+  if(W.woods?.inside(px,pz,14))continue;// Chapter Three's woods
   const rot=-heading(d)+(lat>0?-Math.PI/2:Math.PI/2)+(rand()<.5?Math.PI:0)+(rand()-.5)*.25;
   if(rand()<.62&&W.space.free(px,pz,9)){farHouse(px,pz,rot,rand);houses++;}
-  const nt=rand()<.7?1+Math.floor(rand()*2):0;for(let k=0;k<nt;k++){const tx=px+(rand()-.5)*26,tz=pz+(rand()-.5)*26;if(W.easement?.inside(tx,tz,3))continue;if(veg.treeWorld(tx,tz,T(tx,tz),{size:.9+rand()*.8,kind:rand()<.3?'pine':'maple',clearance:3}))trees++;}
+  const nt=rand()<.7?1+Math.floor(rand()*2):0;for(let k=0;k<nt;k++){const tx=px+(rand()-.5)*26,tz=pz+(rand()-.5)*26;if(W.easement?.inside(tx,tz,3)||W.woods?.inside(tx,tz,3))continue;if(veg.treeWorld(tx,tz,T(tx,tz),{size:.9+rand()*.8,kind:rand()<.3?'pine':'maple',clearance:3}))trees++;}
  }
  // Tree lines on the far rise, so the horizon is trees in haze rather than a bare edge.
  for(let x=minX;x<maxX;x+=14)for(let z=minZ;z<maxZ;z+=14){const {d,lat}=streetCoords(x,z),a=Math.abs(lat);if(a<R-60||a>R+10||d<ROAD_START-360||d>1700)continue;const rand=seeded(hashSeed(13,x,z));if(rand()<.62)continue;
-  const tx=x+(rand()-.5)*10,tz=z+(rand()-.5)*10;if(veg.treeWorld(tx,tz,T(tx,tz),{size:1.3+rand()*.9,kind:rand()<.35?'pine':'maple',clearance:3.5}))trees++;}
+  const tx=x+(rand()-.5)*10,tz=z+(rand()-.5)*10;if(W.woods?.inside(tx,tz,3))continue;if(veg.treeWorld(tx,tz,T(tx,tz),{size:1.3+rand()*.9,kind:rand()<.35?'pine':'maple',clearance:3.5}))trees++;}
 
  // The far ground itself, meeting the street's lawns under the rear fences --------------------
  const step=8,nx=Math.ceil((maxX-minX+40)/step)+1,nz=Math.ceil((maxZ-minZ+40)/step)+1,x0=minX-20,z0=minZ-20;
@@ -90,8 +91,8 @@ export function buildBackground(W){
  const v=(i,j)=>{const k=i*nz+j;if(vid[k]<0){vid[k]=pos.length/3;pos.push(x0+i*step,H[k],z0+j*step);}return vid[k];};
  // The drainage easement has its own ground; leave out far cells that would roof over its trench.
  const ez=W.easement,overTrench=(i,j)=>{if(!ez)return false;for(let a=0;a<=4;a++)for(let b=0;b<=4;b++){const x=x0+(i+a/4)*step,z=z0+(j+b/4)*step;if(ez.trench(x,z,1.5))return true;}return false;};
- // ...and of cells wholly under Chapter Three's basin patch.
- const bz=W.basin,underBasin=(i,j)=>{if(!bz)return false;for(let a=0;a<=4;a++)for(let b=0;b<=4;b++)if(bz.nearXZ(x0+(i+a/4)*step,z0+(j+b/4)*step))return true;return false;};
+ // ...and of cells wholly inside Chapter Three's woods (they have their own ground).
+ const wz=W.woods,underBasin=(i,j)=>{if(!wz)return false;for(const [a,b] of [[0,0],[1,0],[0,1],[1,1]])if(!wz.inside(x0+(i+a)*step,z0+(j+b)*step,-1))return false;return true;};
  for(let i=0;i<nx-1;i++)for(let j=0;j<nz-1;j++){if(!(keep[i*nz+j]||keep[(i+1)*nz+j]||keep[i*nz+j+1]||keep[(i+1)*nz+j+1]))continue;if(overTrench(i,j)||underBasin(i,j))continue;
   const a=v(i,j),b=v(i+1,j),c=v(i,j+1),e=v(i+1,j+1);idx.push(a,c,b,b,c,e);}
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();

@@ -35,6 +35,8 @@ export function buildFurniture(W){
  // Briarwood's own two lamps: one by the first houses, one past the creek near Alex's house.
  // The creek strip between them stays dark under its trees.
  {const f=W.sideFrames[0],j=f.junction,gy=(u,v)=>f.point(u,v).y+W.sideSurface(j,u,v);for(let u of [40,116]){for(let k=0;k<6&&onCut(f.id,1,u,1);k++)u-=2;lampPost(f,u,j.half+1.42,-1,gy(u,j.half+1.42));}}
+ // And one at the far end of Briarwood, where the street stops and the old access road goes on into the woods.
+ if(W.woods){const f=W.sideFrames[0],j=f.junction,u=238.5,v=j.half+1.42;lampPost(f,u,v,-1,f.point(u,v).y+W.sideSurface(j,u,v));}
 
  // Utility poles ---------------------------------------------------------------------------
  const poles=[];
