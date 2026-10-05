@@ -1,3 +1,18 @@
+# Last Light — Chapter Three (structural pass: the investigation and the basin)
+
+Built on the frozen Chapter Two release `codex/astra-chapter2-final-polish` at `68cc54396bdc2599cfa35b59ba6a4c981db6a8f3`, on `claude/chapter3-horror-investigation`. Tested runtime: `38ff68d309c71a0d3a6d9568fefd7a615940ceae` (later commits change tests and documentation only). Chapter Two's release history and QA evidence are untouched. This is a gameplay and story pass; the art pass is Astra's.
+
+- **Chapter Two → Three:** no end menu; black, a quiet CHAPTER THREE card, the same corner a few minutes later.
+- **The day:** Alex's house and his mother (he kept asking about a bike bell at night); his room, walked in first person; his flip phone's recorder: four ordinary recordings, then the night before he disappeared (fan, insects, a bell outside twice, "There it is again."); the view toward the creek; the neighbours; the old pond road (a municipal access drive to a stormwater detention basin, new geography downstream of Chapter Two's culvert); the old bike from the oak at its gate — the same model as the prologue's, its bell rusted silent, flattened grass and a tyre print where it was wheeled in; the plan.
+- **The night:** the ordinary street; the night sounds dropping away layer by layer down the pond road; the bike gone; a bell far off, a second bell that moves; at most one ambiguous 0.3 s glimpse; Alex's ordinary voice from inside the culvert, then from behind; the bell right behind you; a playable escape with no chaser; the street light; "That was him." "No." "You heard it." "I know." **LAST LIGHT / Chapter Three**.
+- **Systems:** reusable player tension (`tension.js`) driving a beat-scheduled heartbeat, breathing and a very subtle body response; adaptive captions without a box (`captions.js`, asynchronous strip readback with hysteresis; a faint glow only on backgrounds too mixed for either tone); HRTF-placed bells and a small formant voice; Alex's room as a nav zone; the basin's own ground and nav; 14 checkpoints and 15 QA jumps (plus aliases).
+- **Fixes found on the way:** companions on foot could wedge against a parked car (now they step along obstacles; the car is gone at night); a stale caption readback after a jump (now discarded); the basin wall's collision box was rotated (now along the wall); Alex's garage roof hid the creek from his window (lower pitch); Chapter Three state (bells heard, waits) survived Start over into a second playthrough (now cleared completely).
+- **Verification:** **339 simulation** checks (Chapter Two release 230; +109 Chapter Three, including 33 seeded randomized runs), **77** in the Chapter Three browser pass, **434** in the full release browser suite (two natural runs from the prologue through Chapter Three's end card without a QA jump), **0** JavaScript/shader errors; 60 Chapter Three captures and 19 audio signal renders in `docs/qa/chapter3/`. SwiftShader only; no human listening or playtest.
+
+Details, known roughness and what Astra should polish: [ASTRA_CHAPTER3_HANDOFF.md](ASTRA_CHAPTER3_HANDOFF.md). Results: [TEST_REPORT.md](TEST_REPORT.md). Audio is signal-tested only; nobody has listened. Real-GPU FPS has not been measured.
+
+---
+
 # Last Light — Astra Chapter Two final polish
 
 Continues `claude/optimistic-tesla-obxiv5` at `3384204a42872ad0d3592b6647441582cb48531b` on `codex/astra-chapter2-final-polish`. Tested gameplay commit: `f9ef319d31b01f27a07ec8639c5db3106ce0f04f`. Earlier story and release history remain intact.
