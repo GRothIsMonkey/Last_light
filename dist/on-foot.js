@@ -7,9 +7,9 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
  const light=new THREE.SpotLight(0xffefcf,0,17,.31,.8,2),torch=new THREE.Group();torch.name='player-flashlight';
  const shell=new THREE.Mesh(new THREE.CylinderGeometry(.026,.021,.17,12),new THREE.MeshStandardMaterial({color:0x33424a,roughness:.55,metalness:.35}));shell.rotation.x=Math.PI/2;torch.add(shell);
  const lens=new THREE.Mesh(new THREE.CylinderGeometry(.024,.024,.018,12),new THREE.MeshStandardMaterial({color:0xe9dfb9,roughness:.25}));lens.rotation.x=Math.PI/2;lens.position.z=-.091;torch.add(lens);scene.add(torch);torch.visible=false;
- const F={exposure:null,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,light,torch,pose,
+ const F={exposure:null,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,light,torch,pose,
   attach(on){if(on){scene.add(light,light.target);}else{light.removeFromParent();light.target.removeFromParent();}},
-  reset(){Object.assign(F,{stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1});F.ride();light.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
+  reset(){Object.assign(F,{stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
   ride(){if(self.group.parent!==bike.group)bike.group.add(self.group);self.group.position.set(0,0,0);self.group.rotation.set(0,0,0);torch.visible=false;},
   give(){F.owned=true;F.on=true;sfx('click',null,{gain:.45});},
   toggle(){if(F.owned){F.on=!F.on;sfx('click',null,{gain:.5});}},
@@ -22,7 +22,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    F.stamina=clamp(F.stamina+dt*(F.sprint?-F.drain/13:1/8),0,1);if(F.stamina<=.02)F.exhausted=true;
    if(F.height>0||F.vy>0){F.vy-=9.8*dt;F.height+=F.vy*dt;if(F.height<=0){F.height=F.vy=0;F.land=.045;F.cooldown=Math.max(F.cooldown,.23);landing?.();}}
    const el=$('stamina');if(el){el.style.opacity=F.sprint||F.stamina<.98?'.65':'0';$('stamina-fill').style.width=(F.stamina*100)+'%';}
-   return moving?(duck?.95:F.sprint?3.65:2.05):0;
+   return moving?(duck?.95:F.sprint?3.65:2.05*F.pace):0;
   },
   body(dt,{x,z,a,y,speed=0,scripted=false}){
    if(self.group.parent!==scene)scene.add(self.group);self.group.visible=true;

@@ -326,7 +326,7 @@ const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const tension=createTension();
 const chOpts={scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,$,renderer,tension,
  say:(who,text,time)=>say(who,text,time),player:()=>playerState(),roam,setDate:html=>{$('date').innerHTML=html;},finish:()=>finish('chapter'),fade:v=>{fade=v;$('fade').style.opacity=v;},
- placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},playerLight:foot.light,memory:null};
+ placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},playerLight:foot.light,memory:null};
 const chapter=createChapter1(chOpts);
 // Chapter Two picks up seconds after the first one stops, with the same people, systems and night,
 // and runs to the next morning (chapter2.js). Chapter One hands it the phases that begin c2- or m-.
@@ -461,7 +461,10 @@ function updateNightWalk(dt){
  wa-=turn*1.6*dt;
  const len=Math.hypot(f,s)||1,want=foot.update(dt,f||s,roam.walkLock||!!chapter.pose);moveT=damp(moveT,want,(f||s)?10:14,dt);
  const fx=Math.sin(wa),fz=-Math.cos(wa),rx=Math.cos(wa),rz=Math.sin(wa),step=moveT*dt/len,dx=(f*fx+s*rx)*step,dz=(f*fz+s*rz)*step;
- const oldX=wx,oldZ=wz;const free=(x,z)=>nav.walkable(x,z)&&!chapter.blockers(true).some(o=>Math.hypot(o.x-x,o.z-z)<o.r+.3)&&!(Math.hypot(roam.x-x,roam.z-z)<.5);
+ // (a person or bike blocks only steps that come closer to it: someone who has ended up overlapping one, a friend
+ // parking beside you as you get off, can always step away from it)
+ const oldX=wx,oldZ=wz,near=(ox,oz,r,x,z)=>{const d=Math.hypot(ox-x,oz-z);return d<r&&d<Math.hypot(ox-wx,oz-wz)-1e-6;};
+ const free=(x,z)=>nav.walkable(x,z)&&!chapter.blockers(true).some(o=>near(o.x,o.z,o.r+.3,x,z))&&!near(roam.x,roam.z,.5,x,z);
  if(free(wx+dx,wz+dz)){wx+=dx;wz+=dz;}else if(free(wx+dx,wz)){wx+=dx;}else if(free(wx,wz+dz)){wz+=dz;}
  const moved=Math.hypot(wx-oldX,wz-oldZ);gait+=moved/1.45;foot.speed=dt>0?moved/dt:0;
  if(Math.floor(gait*2)!==lastStep&&moveT>.3&&foot.height===0){lastStep=Math.floor(gait*2);audio?.footstep(nav.surface(wx,wz),moveT);}
@@ -575,15 +578,18 @@ const _c1=new THREE.Color(),_c2=new THREE.Color();
 // the way out cannot be seen) nothing outside it is drawn at all.
 const zoneState={cave:0,inDrain:false,s:-1,hidPlain:false};
 const zoned=world.merged.filter(m=>m.userData.zone),plainMerged=world.merged.filter(m=>!m.userData.zone),PORTAL=world.drain?.P;
+// Culling by where you are uses render layers (mask 0: not drawn, nor into shadows), never .visible, which stays what
+// the world contains (a culled batch is still there; the story's own hiding is untouched).
+function drawn(m,on){const u=m.userData;if(u.mask0===undefined)u.mask0=m.layers.mask;m.layers.mask=on?u.mask0:0;}
 function cullZones(){if(!zoned.length)return;const p=camera.position,L=night1()?nav.locate(p.x,p.z):null,inD=L?.street==='drain',deepIn=inD&&L.s>97,woods=L?.street==='woods';
  zoneState.inDrain=inD;zoneState.s=inD?L.s:-1;zoneState.cave=inD?smooth((L.s+1.2)/13):0;
  const nearPortal=!!PORTAL&&Math.hypot(p.x-PORTAL.x,p.z-PORTAL.z)<95,range=(ctx.night||0)>.5?280:420;
- for(const m of zoned){if(m.userData.zone==='tunnel'){m.visible=inD||(woods&&nearPortal);continue;}
-  if(deepIn){m.visible=false;continue;}const b=m.geometry.boundingSphere;m.visible=p.distanceTo(b.center)-b.radius<range;}
+ for(const m of zoned){if(m.userData.zone==='tunnel'){drawn(m,inD||(woods&&nearPortal));continue;}
+  if(deepIn){drawn(m,false);continue;}const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<range);}
  const far=deepIn||inD||(woods&&((L.s??0)>200||!!L.w?.patch));
  // ...and the view itself ends sooner there (the dark and the walls end it anyway), so nothing far is drawn.
  {const want=deepIn?70:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:390;if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(Math.min(1,want*.9/350));}}
- if(far||zoneState.hidPlain){for(const m of plainMerged){if(m.userData.off){m.visible=false;continue;}if(deepIn){m.visible=false;continue;}if(far){const b=m.geometry.boundingSphere;m.visible=p.distanceTo(b.center)-b.radius<300;}else m.visible=true;}zoneState.hidPlain=far;}}
+ if(far||zoneState.hidPlain){for(const m of plainMerged){if(deepIn){drawn(m,false);continue;}if(far){const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<300);}else drawn(m,true);}zoneState.hidPlain=far;}}
 // What the keys would do right now, shown only when it matters: a short riding tutorial,
 // then nothing until the end of the street.
 function promptItems(){

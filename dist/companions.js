@@ -82,18 +82,20 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   // round to follow you can each be "in front of" the other (the old oak, when you turn and ride
   // off): the one further along the ridden trail goes first (Jamie, if level) and the other waits
   // for him, instead of both waiting for each other forever.
-  for(const o of [{x:pl.bx,z:pl.bz,r:.9},...(pl.walking?[{x:pl.x,z:pl.z,r:.5}]:[]),...(ctx.obstacles||[]),...all.filter(q=>q!==c&&q.active).map(q=>({x:q.mode==='ride'?q.bx:q.px,z:q.mode==='ride'?q.bz:q.pz,r:.8,peer:q}))]){
-   if(o.peer&&(c.unstick>0||!yieldsTo(c,o.peer)))continue;
+  for(const o of [{x:pl.bx,z:pl.bz,r:.9},...(pl.walking?[{x:pl.x,z:pl.z,r:.5}]:[]),...(ctx.obstacles||[]).map(o=>o.speed>.3?o:{...o,still:true}),...all.filter(q=>q!==c&&q.active).map(q=>({x:q.mode==='ride'?q.bx:q.px,z:q.mode==='ride'?q.bz:q.pz,r:.8,peer:q}))]){
+   if(o.peer&&(c.unstick>0||!yieldsTo(c,o.peer)))continue;if(o.still&&c.unstick>0)continue;// (stuck behind a parked thing a while: work out along your line; the sweep below still never enters it)
    const dx=o.x-c.bx,dz=o.z-c.bz,ahead=dx*fx+dz*fz,side=Math.abs(dx*fz-dz*fx);if(ahead>0&&ahead<o.r+2.6&&side<o.r+.5)vT=Math.min(vT,Math.max(0,(ahead-o.r-.8)*1.2));}
   const L=clamp(1.5+.45*c.speed,1.5,3.6),q=T.at(c.sOn+L),q2=T.at(c.sOn+L+6),bend=Math.abs(wrap(Math.atan2(q2.dx,-q2.dz)-Math.atan2(q.dx,-q.dz))),straight=1-smooth(bend/.7);
   // Check the whole wheel corridor, including the next corner, before using a side offset.
   const safe=(x,z,a)=>[-.54,0,.54].every(k=>nav.rideable(x+Math.sin(a)*k,z-Math.cos(a)*k,{r:.38}));
-  const off=c.formationSide*straight;let tx=q.x-q.dz*off,tz=q.z+q.dx*off;
+  // A side slot next to something parked (a car at the curb) is not a slot: ride your line past it instead (you got by).
+  const clear=(x,z)=>!(ctx.obstacles||[]).some(o=>!(o.speed>.3)&&Math.hypot(o.x-x,o.z-z)<o.r+.65);
+  const off=c.unstick>0?0:c.formationSide*straight;let tx=q.x-q.dz*off,tz=q.z+q.dx*off;
   // Close and on a straight: a slot relative to the player's heading lets a friend ride beside
   // or briefly ahead. At turns or obstacles we return to the actual ridden trail.
   if(pv>.6&&straight>.85&&Math.hypot(c.bx-pl.bx,c.bz-pl.bz)<10){const h=pl.a,lag=c.formationLag,ax=pl.bx-Math.sin(h)*lag+Math.cos(h)*off,az=pl.bz+Math.cos(h)*lag+Math.sin(h)*off;
-   const corridor=[0,.25,.5,.75,1].every(t=>safe(c.bx+(ax-c.bx)*t,c.bz+(az-c.bz)*t,h));if(corridor&&safe(ax+Math.sin(h)*2,az-Math.cos(h)*2,h)){tx=ax+Math.sin(h)*1.5;tz=az-Math.cos(h)*1.5;const along=(ax-c.bx)*Math.sin(h)-(az-c.bz)*Math.cos(h);vT=clamp(pv+along*.65,0,6.5);}}
-  const qa=Math.atan2(q.dx,-q.dz);if(!safe(tx,tz,qa)||!safe(q2.x-q2.dz*off,q2.z+q2.dx*off,Math.atan2(q2.dx,-q2.dz)))tx=q.x,tz=q.z;
+   const corridor=[0,.25,.5,.75,1].every(t=>safe(c.bx+(ax-c.bx)*t,c.bz+(az-c.bz)*t,h)&&clear(c.bx+(ax-c.bx)*t,c.bz+(az-c.bz)*t));if(corridor&&safe(ax+Math.sin(h)*2,az-Math.cos(h)*2,h)&&clear(ax+Math.sin(h)*2,az-Math.cos(h)*2)){tx=ax+Math.sin(h)*1.5;tz=az-Math.cos(h)*1.5;const along=(ax-c.bx)*Math.sin(h)-(az-c.bz)*Math.cos(h);vT=clamp(pv+along*.65,0,6.5);}}
+  const qa=Math.atan2(q.dx,-q.dz);if(!safe(tx,tz,qa)||!clear(tx,tz)||!safe(q2.x-q2.dz*off,q2.z+q2.dx*off,Math.atan2(q2.dx,-q2.dz))||!clear(q2.x-q2.dz*off,q2.z+q2.dx*off))tx=q.x,tz=q.z;
   const err=wrap(headingTo(c.bx,c.bz,tx,tz)-c.ba);
   if(c.speed<.6&&Math.abs(err)>1.2&&Math.hypot(tx-c.bx,tz-c.bz)>.8){c.omega=Math.sign(err)*1.5;vT=Math.min(vT,.15);}// a foot down, the bike walked round
   else c.omega=damp(c.omega,clamp(err*2.4,-(c.speed/1.7+.25),c.speed/1.7+.25),8,dt);
