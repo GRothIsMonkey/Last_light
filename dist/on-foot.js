@@ -5,11 +5,14 @@ const clamp=THREE.MathUtils.clamp,damp=THREE.MathUtils.damp;
 export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
  const pose=newPose(),direction=new THREE.Vector3(),hand=new THREE.Vector3();
  const light=new THREE.SpotLight(0xffefcf,0,17,.31,.8,2),torch=new THREE.Group();torch.name='player-flashlight';
+ // A real flashlight has a hotspot and a dim, wide spill round it. The spill is used where the dark is total (the storm
+ // drain): it shows the walls and floor near you while the hotspot stays only as strong as whoever stands in it can take.
+ const spill=new THREE.SpotLight(0xffefcf,0,12,1.05,1,2);spill.name='player-flashlight-spill';
  const shell=new THREE.Mesh(new THREE.CylinderGeometry(.026,.021,.17,12),new THREE.MeshStandardMaterial({color:0x33424a,roughness:.55,metalness:.35}));shell.rotation.x=Math.PI/2;torch.add(shell);
  const lens=new THREE.Mesh(new THREE.CylinderGeometry(.024,.024,.018,12),new THREE.MeshStandardMaterial({color:0xe9dfb9,roughness:.25}));lens.rotation.x=Math.PI/2;lens.position.z=-.091;torch.add(lens);scene.add(torch);torch.visible=false;
- const F={exposure:null,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,light,torch,pose,
-  attach(on){if(on){scene.add(light,light.target);}else{light.removeFromParent();light.target.removeFromParent();}},
-  reset(){Object.assign(F,{stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
+ const F={exposure:null,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,spillLevel:6,light,spill,torch,pose,
+  attach(on){if(on){scene.add(light,light.target,spill,spill.target);}else{for(const o of [light,light.target,spill,spill.target])o.removeFromParent();}},
+  reset(){Object.assign(F,{stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;spill.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
   ride(){if(self.group.parent!==bike.group)bike.group.add(self.group);self.group.position.set(0,0,0);self.group.rotation.set(0,0,0);torch.visible=false;},
   give(){F.owned=true;F.on=true;sfx('click',null,{gain:.45});},
   toggle(){if(F.owned){F.on=!F.on;sfx('click',null,{gain:.5});}},
@@ -37,7 +40,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    self.group.position.set(x,y+F.height-F.land,z);self.group.rotation.set(0,-a,0);applyPose(self,pose);
   },
   lamp(dt,walking){
-   torch.visible=walking&&F.owned;light.intensity=walking&&F.on?24:0;
+   torch.visible=walking&&F.owned;light.intensity=walking&&F.on?24:0;spill.intensity=0;
    if(!torch.visible)return;self.group.updateMatrixWorld(true);self.parts.rhand.getWorldPosition(hand);
    // The beam is only as strong as what it lands on can take: a level of light on whatever is nearest
    // in it (the ground looked down at, a wall in the storm drain, a friend standing in it), so nothing
@@ -50,6 +53,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    if(F.on){light.intensity=near<Infinity?clamp(near*near*1.1,.7,max):max;if(ex?.person!==undefined)light.intensity=Math.min(light.intensity,Math.max(.7,ex.person*ex.person*2.2));}
    torch.position.copy(hand);torch.lookAt(hand.clone().sub(direction));
    light.position.copy(hand).addScaledVector(direction,.1);const aim=hand.clone().addScaledVector(direction,12);if(dt===0)light.target.position.copy(aim);else light.target.position.lerp(aim,1-Math.exp(-16*dt));
+   if(F.on&&ex?.reach){spill.intensity=ex.wide!==undefined?Math.min(F.spillLevel,Math.max(.15,ex.wide*ex.wide*1.2)):F.spillLevel;spill.position.copy(light.position);spill.target.position.copy(light.target.position);}
   },
   get eyeOffset(){return F.height-.54*F.crouch-F.land;},
  };

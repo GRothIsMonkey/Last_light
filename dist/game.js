@@ -315,8 +315,8 @@ const nav=createNav(world);
 // What the flashlight lands on (see on-foot.js): Jamie or Sam standing in the beam, and in the storm
 // drain its walls (and a longer reach there).
 {const _h=new THREE.Vector3();foot.exposure=(hand,dir)=>{const out={},K=chapter.kit;let pd=Infinity;
- for(const c of [K?.jamie,K?.sam]){if(!c?.active||!c.person.group.visible)continue;c.person.group.getWorldPosition(_h);_h.y+=1.05;const dx=_h.x-hand.x,dy=_h.y-hand.y,dz=_h.z-hand.z,d=Math.hypot(dx,dy,dz);if(d>4.6||d<.05)continue;if((dx*dir.x+dy*dir.y+dz*dir.z)/d>Math.cos(.31+Math.atan(.32/d)))pd=Math.min(pd,d);}
- if(pd<Infinity)out.person=pd;
+ let wd=Infinity;for(const c of [K?.jamie,K?.sam]){if(!c?.active||!c.person.group.visible)continue;c.person.group.getWorldPosition(_h);_h.y+=1.05;const dx=_h.x-hand.x,dy=_h.y-hand.y,dz=_h.z-hand.z,d=Math.hypot(dx,dy,dz);if(d>4.6||d<.05)continue;const cs=(dx*dir.x+dy*dir.y+dz*dir.z)/d;if(cs>Math.cos(.31+Math.atan(.32/d)))pd=Math.min(pd,d);if(cs>Math.cos(Math.min(1.5,1.05+Math.atan(.32/d))))wd=Math.min(wd,d);}
+ if(pd<Infinity)out.person=pd;if(wd<Infinity)out.wide=wd;// (wide: the nearest friend in the dim spill round the beam)
  if(world.drain?.inside(hand.x,hand.z,.05)){const d=world.drain.rayDist(hand,dir,44);out.d=Math.max(d,2.2);out.reach=46;out.max=d>15?150:80;out.angle=d>15?.34:.44;out.penumbra=.88;}// (a wider beam in there: the walls are close)
  return out;};}
 const roam={x:0,z:0,a:0,omega:0,lock:false,brake:0,walkLock:false,steer:null,fadeIn:0};
@@ -459,6 +459,7 @@ function updateNightWalk(dt){
  if(roam.walkLock||chapter.pose)f=s=0;
  const turn=(keys.has('KeyQ')?1:0)-(keys.has('KeyE')?1:0)+(touch||keys.has('ArrowLeft')||keys.has('ArrowRight')?(keys.has('ArrowLeft')||keys.has('KeyA')?1:0)-(keys.has('ArrowRight')||keys.has('KeyD')?1:0):0);
  wa-=turn*1.6*dt;
+ if(foot.owned&&foot.on&&!tut.flash)tut.flashT=(tut.flashT||0)+dt;
  const len=Math.hypot(f,s)||1,want=foot.update(dt,f||s,roam.walkLock||!!chapter.pose);moveT=damp(moveT,want,(f||s)?10:14,dt);
  const fx=Math.sin(wa),fz=-Math.cos(wa),rx=Math.cos(wa),rz=Math.sin(wa),step=moveT*dt/len,dx=(f*fx+s*rx)*step,dz=(f*fz+s*rz)*step;
  // (a person or bike blocks only steps that come closer to it: someone who has ended up overlapping one, a friend
@@ -466,6 +467,9 @@ function updateNightWalk(dt){
  const oldX=wx,oldZ=wz,near=(ox,oz,r,x,z)=>{const d=Math.hypot(ox-x,oz-z);return d<r&&d<Math.hypot(ox-wx,oz-wz)-1e-6;};
  const free=(x,z)=>nav.walkable(x,z)&&!chapter.blockers(true).some(o=>near(o.x,o.z,o.r+.3,x,z))&&!near(roam.x,roam.z,.5,x,z);
  if(free(wx+dx,wz+dz)){wx+=dx;wz+=dz;}else if(free(wx+dx,wz)){wx+=dx;}else if(free(wx,wz+dz)){wz+=dz;}
+ else{// inside someone's space and the way on passes them: slide round them (the part of the step toward them taken out)
+  let sx=dx,sz=dz;for(const o of [...chapter.blockers(true).map(b=>({x:b.x,z:b.z,r:b.r+.3})),{x:roam.x,z:roam.z,r:.5}]){const ox=wx-o.x,oz=wz-o.z,d=Math.hypot(ox,oz);if(d<o.r&&d>1e-4){const nx=ox/d,nz=oz/d,k=sx*nx+sz*nz;if(k<0){sx-=k*nx;sz-=k*nz;}}}
+  if(Math.hypot(sx,sz)>1e-5&&free(wx+sx,wz+sz)){wx+=sx;wz+=sz;}}
  const moved=Math.hypot(wx-oldX,wz-oldZ);gait+=moved/1.45;foot.speed=dt>0?moved/dt:0;
  if(Math.floor(gait*2)!==lastStep&&moveT>.3&&foot.height===0){lastStep=Math.floor(gait*2);audio?.footstep(nav.surface(wx,wz),moveT);}
  const y=nav.groundY(wx,wz),bob=Math.abs(Math.sin(gait*Math.PI))*.028*moveT/1.35;
@@ -494,7 +498,7 @@ function nightAction(){
 function nightPrompt(){
  if(state==='c1-ride'){if(roam.lock)return null;if(speed<.3){const spot=chapter.spot();if(spot)return [['F',spot.label]];}if(speed<.3&&chapter.canDismount())return [['F','Get off bike']];return chapter.hideBell?null:[['Space','Ring bell']];}
  if(state==='c1-walk'){const spot=chapter.spot();if(spot)return [['F',spot.label]];if(nearNightBike()&&chapter.canRemount()&&foot.height===0)return [['F','Get on bike']];}
- return state==='c1-walk'&&chapter.phase()!=='clue'&&!chapter.day&&foot.owned&&!tut.flash?[['T','Flashlight']]:null;}
+ return state==='c1-walk'&&chapter.phase()!=='clue'&&!chapter.day&&foot.owned&&!tut.flash&&!(foot.on&&(tut.flashT||0)>8)?[['T','Flashlight']]:null;}// (with the light already on, the hint shows for a while, then goes)
 
 // QA only: ride the bike through world points, steering like a player would.
 let auto=null;

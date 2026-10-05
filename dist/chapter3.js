@@ -666,7 +666,7 @@ export function createChapter3(o,k,ch2){
    if(section==='neighbors'){o.placePlayer({x:bp.x,z:bp.z,a:0,mode:'walk',bike:{x:bp.x+.8,z:bp.z,a:ba}});parkFoot(jamie,side(124,11),jb);parkFoot(sam,side(121,11),sb);exitRoom();return;}
    // the end of Briarwood, by day, riding up to it
    C.flags.okafor=true;for(const kk of ['huang','okafor'])C.talked.add(kk);const q=side(226,1.2);o.placePlayer({x:q.x,z:q.z,a:k.ha(226),mode:'ride',speed:2});ride(jamie,side(221.5,-.6),k.ha(221.5));ride(sam,side(219.5,2.2),k.ha(219.5));
-   go('d3-road');follow(true);objective('Find the old service road.','The end of Briarwood, past the last house.');return;}
+   go('d3-road');date(DAY.road,'AM');follow(true);objective('Find the old service road.','The end of Briarwood, past the last house.');return;}
   // The night.
   nightWorld();C.flags.met=true;S.flashOn=true;ch2.samBeam.on=true;o.setFlashlight?.(true,true);for(const kk in C.amb)C.amb[kk]=kk==='traffic'||kk==='life'?0:kk==='forest'?1:kk==='insects'?1:kk==='wind'?.8:0;
   if(section==='night-start'){nightStart();C.fadeIn=-1;S.flashOn=false;ch2.samBeam.on=false;o.setFlashlight?.(true,false);return;}
