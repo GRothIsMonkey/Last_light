@@ -186,8 +186,12 @@ export async function runChapterThreeChecks(T){
  // ---- Start over from inside -------------------------------------------------------------------------------
  for(const sec of ['recording','close-bell','escape']){h.jump(sec);advance(1.2);element('restart').onclick?.();advance(.3);
   check(`Start over from ${sec}: nothing of Chapter Three is left behind (room, phone, bike, heartbeat, quiet, pose)`,()=>{assert.equal(h.snapshot.state,'riding');assert.equal(h.nav.room,null);assert.ok(glass.every(m=>m.visible));assert.equal(C3().inRoom,false);assert.equal(h.chapter3.phone.visible,false);
-   assert.equal(h.chapter3.old.group.visible,false);assert.equal(h.tension.value,0);assert.equal(h.chapter.pose,null);assert.equal(h.night.roam.walkLock,false);assert.deepEqual(Object.values(h.chapter3.amb),[1,1,1,1]);assert.equal(h.audioRef?.phone??null,null);
+   assert.equal(h.chapter3.old.group.visible,false);assert.equal(h.tension.value,0);assert.deepEqual(C3().bells,[]);assert.deepEqual(C3().voices,[]);assert.equal(h.chapter.pose,null);assert.equal(h.night.roam.walkLock,false);assert.deepEqual(Object.values(h.chapter3.amb),[1,1,1,1]);assert.equal(h.audioRef?.phone??null,null);
    for(const c of h.chapter.companions.all)assert.equal(c.active,false);});}
+ // A jump after the scare: nothing heard before is still counted (bells, voices, waits).
+ h.jump('close-bell');until(()=>C3().flags.close,8);h.jump('first-bell');advance(.5);
+ check('a jump after the close bell starts clean: only the first bell has been heard, no voices, no old waits',()=>{assert.equal(C3().bells.length,1);assert.ok(C3().bells[0].tunnel);assert.deepEqual(C3().voices,[]);
+  for(const k of ['inT','waitFrom','closeWait','turnedAt','v1At','v2At','closeAt'])assert.equal(h.chapter3.C[k],undefined,k);});
  // ---- the tension system on its own ------------------------------------------------------------------------
  {const t=createTension(),trace=[];const step=(sec,dt=1/60)=>{for(let i=0;i<Math.round(sec/dt);i++){const a=t.value;t.update(dt);trace.push(t.value-a);}};
   check('tension: calm is silent (no heartbeat until it rises past a fifth); heart rate from 64 to 152 bpm',()=>{assert.equal(t.heart.gain,0);assert.equal(t.heart.bpm,HEART.rest);t.value=.19;assert.equal(t.heart.gain,0);t.value=1;assert.ok(Math.abs(t.heart.bpm-HEART.max)<.01);assert.ok(t.heart.gain>.99);

@@ -102,7 +102,8 @@ export function createChapter3(o,k,ch2){
   RECS.forEach((r,i)=>{const y=20+i*17,sel=i===C.recSel;if(sel){g.fillStyle='#24303a';g.fillRect(2,y,124,16);}g.fillStyle=sel?'#d8e4d4':'#24303a';g.font='9px Arial';g.fillText(`Rec ${r.date}  ${r.time}`,6,y+11);g.fillText(r.len,100,y+11);if(C.recPlaying===i){g.fillText('▶',90,y+11);}});t.needsUpdate=true;}
  // ---- state ------------------------------------------------------------------------------------------------
  const C={};
- function fresh(){Object.assign(C,{t:0,pt:0,flags:{},timers:[],inRoom:false,recSel:0,recPlaying:-1,recEnd:0,heard:[],talked:new Set(),cardT:-1,fadeIn:-1,fadeOut:-1,endT:-1,pose:null,rush:false,
+ // Everything transient goes (Start over, a jump, a replay): bells heard, voices, every timer and wait.
+ function fresh(){for(const key of Object.keys(C))delete C[key];Object.assign(C,{heardBells:[],voices:[],t:0,pt:0,flags:{},timers:[],inRoom:false,recSel:0,recPlaying:-1,recEnd:0,heard:[],talked:new Set(),cardT:-1,fadeIn:-1,fadeOut:-1,endT:-1,pose:null,rush:false,
   amb:{traffic:1,insects:1,wind:1,life:1},depth:0,lastEvent:0,nearT:0,glimpse:'off',glT:0,behind:null,want:null,wantT:0,loose:false,match:false,dogT:8,leftAt:null,bellTries:0,lagT:0,waitT:0});}
  fresh();
  const later=(sec,fn)=>C.timers.push({at:C.t+sec,fn});

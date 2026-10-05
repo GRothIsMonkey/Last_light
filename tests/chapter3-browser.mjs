@@ -37,8 +37,14 @@ const EXPECT={'chapter3-start':'d3-corner','c3-alex-house':'d3-street','alex-bed
  'old-bike-gone':'n3-gate','first-bell':'n3-bell','c3-second-bell':'n3-search','alex-voice':'n3-voice','close-bell':'n3-close','escape':'n3-run','chapter3-end':'n3-safe'};
 const ORDER=['c3-black','d3-corner','d3-street','d3-mom','d3-room','d3-phone','d3-window','d3-neighbors','d3-road','d3-oldbike','d3-plan','d3-home','c3-night','n3-home','n3-corner','n3-ride','n3-drive','n3-gate','n3-bell','n3-search','n3-voice','n3-close','n3-run','n3-safe','n3-end'];
 
+// The harness steps the game without drawing between captures; in play every frame is drawn and measured.
+// So before a capture the caption tone is given what play would have given it: a few drawn frames of the
+// current view, measured and fed to the tone (the story does not move meanwhile).
+const settled=(page,snap)=>async(name,o)=>{await page.evaluate(()=>new Promise(res=>{const L=lastLight;let i=0;const f=()=>{L.render();L.captionTone.update(.15,{fade:L.state.fade||0});if(++i<12)requestAnimationFrame(f);else res();};requestAnimationFrame(f);}));return snap(name,o);};
+
 // The continuous playthrough, from wherever Chapter Two handed over (c3-black) to the end card.
-export async function runChapterThreeBrowser({page,snap,check,state,errors,tag='c3'}){
+export async function runChapterThreeBrowser({page,snap:rawSnap,check,state,errors,tag='c3'}){
+ const snap=settled(page,rawSnap);
  const ev=(fn,arg)=>page.evaluate(fn,arg),c1=async()=>(await state()).chapter,c3=async()=>(await state()).chapter3,settle=ms=>page.waitForTimeout(ms);
  await ev(installHelpers);const said=l=>ev(l=>__c3.said.includes(l),l);
  // ---- the hand-over: black, CHAPTER THREE, the same corner a few minutes later ----------------------------------
@@ -125,7 +131,8 @@ export async function runChapterThreeBrowser({page,snap,check,state,errors,tag='
  await snap(tag+'-n07-basin-flashlight-search');
  await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter3.flags.bell2,40);C.until(()=>L.state.chapter.line==='“It moved.”',12);C.until(()=>false,.5);});
  await snap(tag+'-n07b-second-bell-it-moved');
- check('Chapter Three: a second bell, closer, then from somewhere else',await ev(()=>{const b=lastLight.state.chapter3.bells;return b.length>=3&&Math.hypot(b[1].pos.x-b[2].pos.x,b[1].pos.z-b[2].pos.z)>10;}));
+ {const r=await ev(()=>{__c3.until(()=>lastLight.state.chapter3.bells.length>=3,6);const b=lastLight.state.chapter3.bells;return {ok:b.length>=3&&Math.hypot(b[1].pos.x-b[2].pos.x,b[1].pos.z-b[2].pos.z)>10,bells:b.map(x=>[x.pos.x,x.pos.z,+x.at.toFixed(1),!!x.tunnel]),t:lastLight.chapter3.C.t,phase:lastLight.state.chapter.phase};});
+  check('Chapter Three: a second bell, closer, then from somewhere else'+(r.ok?'':' '+JSON.stringify(r)),r.ok);}
  await ev(()=>{const C=__c3,L=lastLight,SP=L.world.basin.spots,m=C.me();C.go({x:SP.apron.x+(m.x-SP.apron.x)*.15,z:SP.apron.z+(m.z-SP.apron.z)*.15},{max:30});C.face(SP.outlet.x,SP.outlet.z,-.1);C.until(()=>false,1);});
  await snap(tag+'-n08-culvert-approach');
  await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter3.flags.voice1,40);C.until(()=>false,.7);});
@@ -158,8 +165,8 @@ export async function runChapterThreeBrowser({page,snap,check,state,errors,tag='
 }
 
 // After the playthroughs: every QA jump rendered, Continue, the captions with real readback, the setting, the glimpse, audio.
-export async function runChapterThreeJumps({page,snap,check,state,errors,out,fs,path,tag='c3'}){
- const ev=(fn,arg)=>page.evaluate(fn,arg);await ev(installHelpers);
+export async function runChapterThreeJumps({page,snap:rawSnap,check,state,errors,out,fs,path,tag='c3'}){
+ const snap=settled(page,rawSnap),ev=(fn,arg)=>page.evaluate(fn,arg);await ev(installHelpers);
  for(const sec of SECTIONS){await ev(sec=>{lastLight.jump(sec);lastLight.step(2.5);},sec);await page.waitForTimeout(1600);await snap('qa-jump-'+sec);
   const s=await state();check('QA jump '+sec+' lands in '+EXPECT[sec],[EXPECT[sec],...(sec==='close-bell'?['n3-run']:[]),...(sec==='first-bell'?['n3-search']:[])].includes(s.chapter.phase)&&Number.isFinite(s.roam.x)&&s.state.startsWith('c1-')&&s.day===(EXPECT[sec].startsWith('d3-')?1:0));}
  // Continue from the title after a Chapter Three checkpoint.
