@@ -348,5 +348,7 @@ export function createChapter2(o,k){
   found,tape,flyers,extra,beams,samBeam,homeHouse,corner,LABEL,ALIAS});
  // Jamie's flashlight sweep and the officer's aim belong to whichever chapter has the phase.
  {const js=api.jamieSweep,oa=api.officerAim;api.jamieSweep=t=>later()?api.next.jamieSweep(t):js(t);api.officerAim=()=>later()?api.next.officerAim?.()??null:oa();}
+ // TEMPORARY (private playtest build): read-only access for the dev chapter selector (dev-chapters.js).
+ Object.defineProperty(api,'C',{get:()=>C});
  return api;
 }

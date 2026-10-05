@@ -111,3 +111,11 @@ body.remembering .vignette{box-shadow:inset 0 0 180px #30291c35}
 #subtitle{background:none;background-image:var(--cap-scrim,none);border:0;box-shadow:none;border-radius:0;padding:6px 18px 8px;color:var(--cap-color,#fff4e2);text-shadow:var(--cap-shadow,0 0 2px rgba(14,14,14,.6),0 1px 3px rgba(14,14,14,.6),0 0 14px rgba(14,14,14,.4));font:italic 23px/1.5 Georgia,serif;letter-spacing:.1px}
 #subtitle small{color:var(--cap-label,#f8dca9);text-shadow:inherit;font-weight:bold;letter-spacing:1.9px}
 @media(max-width:700px){#subtitle{font-size:20px;padding:5px 12px 7px}}
+
+/* TEMPORARY: private playtest build only — the developer chapter selector on the title screen. */
+#dev-chapters{position:fixed;right:16px;bottom:16px;z-index:5;display:flex;flex-wrap:wrap;gap:6px;max-width:min(360px,calc(100vw - 32px));padding:10px;border:1px dashed #ffb347;border-radius:6px;background:#1b1308e6;font:12px/1.3 ui-monospace,Menlo,Consolas,monospace;color:#ffcf8a}
+#dev-chapters .dev-title{flex-basis:100%;letter-spacing:.8px;font-weight:bold}
+#dev-chapters button{flex:1 1 40%;padding:7px 8px;border:1px solid #ffb34799;border-radius:4px;background:#2c1f0c;color:#ffe2b8;font:inherit}
+#dev-chapters button:hover,#dev-chapters button:focus-visible{background:#4a3312}
+#dev-chapters .dev-status{flex-basis:100%;min-height:1.3em;color:#ffe2b8}
+body.dev-starting #dev-chapters button{opacity:.5;pointer-events:none}

@@ -18,6 +18,7 @@ import {createChapter2} from './chapter2.js';
 import {createChapter3} from './chapter3.js';
 import {createTension} from './tension.js';
 import {createCaptionTone} from './captions.js';
+import {createDevChapters} from './dev-chapters.js';// TEMPORARY: private playtest build only
 import {createMemory,MEMORIES} from './memory.js';
 import {createOnFoot} from './on-foot.js';
 
@@ -566,11 +567,28 @@ function frame(stamp){const dt=Math.min((stamp-lastStamp)/1000,.05);lastStamp=st
 // Saved settings take effect before the first frame; Continue appears if the night was begun.
 for(const k of ['sensitivity','quality'])applySetting(k,ui.settings[k]);showContinue();
 // QA: ?jump=<section> starts straight at a moment (see chapter1.js SECTIONS, plus alex-departure).
+// ---- TEMPORARY (private playtest build only; not in the shipped game): DEV — START AT CHAPTER ----------------
+// Starts at the true beginning of a chapter through the game's own hand-over code (dev-chapters.js).
+const dev=createDevChapters({chapter,chapter2,chapter3,friends,ambient,ending,interact,memory,tension,captionTone,foot,ui,world,roam,skyMat,sunlight,hemi,$,update,jumpTo,leave,
+ audio:()=>audio,walk:()=>({x:+wx.toFixed(3),z:+wz.toFixed(3),a:+wa.toFixed(3)}),
+ resetGame:()=>{ui.closePanels();resetState();state='intro';start();},
+ // The last stretch of the street before the lookout: everyone already home (the game's own settlement, as
+ // its jump/Continue code uses), the evening where it is at that point; the game then rides the rest itself.
+ prologueApproach:()=>{const d=LOOKOUT.stop.d-30;friends.settle();ambient.skipTo(d);distance=d;lateral=LOOKOUT.stop.lat;speed=3.2;yawOffset=0;nextMemory=memories.findIndex(m=>m.at>d);if(nextMemory<0)nextMemory=memories.length;contact.reset();bikeY=null;prevYaw=null;},
+ press:c=>keys.add(c),release:c=>keys.delete(c),
+ game:()=>({state,distance:+distance.toFixed(3),lateral:+lateral.toFixed(3),speed:+speed.toFixed(3),finaleT:+finaleT.toFixed(2),callDone,callT:+callT.toFixed(2),nextMemory,currentChapter,fade:+fade.toFixed(3),captionTimer:+captionTimer.toFixed(2),yawOffset:+yawOffset.toFixed(3),muted})});
+function devStart(n){if(state==='paused')resume();ui.closePanels();const ph=dev.start(n);$('pause').hidden=true;return ph;}
+// The button: a word while it prepares (the hand-over runs for a moment), then the chapter. Still inside the
+// click's user activation, so the pointer lock and the sound start as they do for the title's start button.
+for(const b of document.querySelectorAll?.('[data-dev-chapter]')||[])b.onclick=()=>{const body=document.body,st=$('dev-status');if(body.classList.contains('dev-starting'))return;
+ body.classList.add('dev-starting');if(st)st.textContent=`Preparing ${b.textContent}…`;
+ const go=()=>{try{devStart(+b.dataset.devChapter);}finally{body.classList.remove('dev-starting');if(st)st.textContent='';}};
+ if(typeof requestAnimationFrame==='function'&&typeof setTimeout==='function')requestAnimationFrame(()=>setTimeout(go,0));else go();};
 const jumpParam=typeof location!=='undefined'&&(location.search||'').match(/[?&]jump=([\w-]+)/);if(jumpParam)$('start').onclick=()=>jumpTo(jumpParam[1]);
 requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
-if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
+if(qa)window.lastLight={dev,devStart,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
  get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside})),
   onFoot:{stamina:foot.stamina,crouch:foot.crouch,height:foot.height,sprint:foot.sprint,owned:foot.owned,on:foot.on},roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state,chapter2:chapter2.state,chapter3:chapter3.state,tension:tension.state,captionTone:captionTone.state,memory:memory.state,day:ctx.day||0};},
  jump:jumpTo,chapter,chapter2,memory,get memCast(){return memCast;},roam,nav,drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},

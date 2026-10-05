@@ -1,0 +1,721 @@
+{
+ "runtimeHashes": {
+  "dist/THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
+  "dist/adult-art.js": "07ab447ff682d430620a073814491b3a44e0f7c6603b685048e2b4c0ff1868a5",
+  "dist/alex-room.js": "2ea01ce738e8b2695b9091259da4cf0e875018954c2c179a861f9e740ead11dc",
+  "dist/ambient.js": "2c06fb0c50e164a6a2bf26f56b5574b6eab7dd9bf38e3a86843e42eb3191e9c8",
+  "dist/audio.js": "1e450cfd75664cbb3b2cf843c93aad1fb8c5ab75a5962a64aa87fc3816fc5a2d",
+  "dist/background.js": "887f843f8835b345dc8369228ed1eb0afccb9da23703ff162bdf68e76668038b",
+  "dist/basin.js": "0191d735e376860af8f8e5e5915539c8f3db0b209d3af86e29e757644e34fd6e",
+  "dist/captions.js": "f6046fac4026184397d6eb05e3efcdcf9eb12f42345099b79547783516daac06",
+  "dist/cast.js": "bfc977fc428a3860f648ad4f40a7eb6bd2e5424b3bdef2a1ebdbaf83e11c3ff9",
+  "dist/chapter1.js": "7cba9b85752dfd812bee64007508c9378c594c299d9726f5dd8926165ec18844",
+  "dist/chapter2.js": "34c805839548d73acc6a9666bc0a14e70ddf5eb956fa272d42db514dd20994ef",
+  "dist/chapter3.js": "fedcd49aec10a04100fd1befc6f99fff8a817bca70f14869e81b47ffe6aba1ac",
+  "dist/companions.js": "d5b0bc4304a1477837d41a095080f7ad0c54e9c75a1b252739889ea951c07acc",
+  "dist/creek.js": "f5cc5a7867f4c343e0ccf21818cd7bfff7a00ff2ea0c90bbed7b985df6889f0c",
+  "dist/dev-chapter-history.js": "802ab7d20ee997e33502b03375ff86127a03db0d89b44bddec450a69314d9805",
+  "dist/dev-chapters.js": "c8c973988bd2c5c2d07916f1b0669682c4901806e5cb96a4402b6dc1034302c4",
+  "dist/easement.js": "f47b2b0759848d58b1d5d07c35b725524aabf45ee9171c777c81ac424f67451d",
+  "dist/ending.js": "9b8242d059f65b4826f5ed4ff2fc4b053aad37ac0ff2059b81eac0592397c14a",
+  "dist/friends.js": "89e91d18af47e918491de8188e23ccf0f4a297894e6200fda9ddcdb16dbdee2a",
+  "dist/furniture.js": "70f5ffccac9c2cfd4505a3c74470aaafb15f235e6fad78db06664d3ad5de7661",
+  "dist/game.js": "b07e3cbef2234c89308d2e50b8465aaf2d476f3b6cf9be025d7b2ce5672521a7",
+  "dist/houses.js": "50f3df232bec31d29ab42e701f52bad6aa508fef580ceb1fb8ef8fc6f72c8b92",
+  "dist/index.html": "5371493c49cc2246a4eb1ec490b80b04c8170920d946c756a620f04159f2377e",
+  "dist/interactions.js": "d1f8b6e0859fb439d09cf3d634013a34c52242684a493be8892e9924bf65ccc1",
+  "dist/kit.js": "6ba15469732e2bd1f9ce798f97cd1650fec57973b63743eb5c8761fca26e14bd",
+  "dist/layout.js": "8cf98f3ebd55b006509ac9e70e7c48e9e5e4c5814f03cfefbd0167f14d2912ec",
+  "dist/materials.js": "3f2dbf86ec3b5d7858f02eb62a904acae36778555b369ec0ea2a4f2af7371a3c",
+  "dist/memory.js": "76498323db63e152db35e36f11b44b01543da4d5cdf44bdd3a1300ea7c1be5ab",
+  "dist/nav.js": "dba0255ae6dc009f4c1dd003d541aeaf84887f9e85decec19c500e43ad61a5df",
+  "dist/nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
+  "dist/old-bike.js": "343b8859f2b3f4a1def77f0b7dbaeeee5840b0914a1f7b630cede133b3b7fdb2",
+  "dist/on-foot.js": "ffb97efefe7fa5b07b6064d190e44c5459042ea710c555afa1b1e0cdda469c6f",
+  "dist/palette.js": "52a0632bb1e9c5363b8ecfbc34983d037ab09bd9f1018f52d32d1b0ccada6a65",
+  "dist/patrol-art.js": "9e3e70672fd5f9e320daadc09e6c6effc796c1bac0bdd62134d0267183534d76",
+  "dist/people.js": "19e40d3045863ef4171f7c0de1ad3677565aa892efe2ed6239a6c2cf2de73f88",
+  "dist/police.js": "f86bc84b8260e9adb58b985d19b391928b610017f02e4222fe570e326672a975",
+  "dist/props.js": "ed8786554db22138ffd825e6920cf260fa9fff0a270e2849829e9867a8f8aebe",
+  "dist/ride-contact.js": "c6a3af3649f04468258914e03c96ee72828d730f0387fe4a3db10de87cc25f42",
+  "dist/rig.js": "0ea645750eae57f550b5e0609876de1791083af5df76e4a6e9d23e51aeb6886d",
+  "dist/route.js": "f17de16440dbcb6101a0ea0b483d22ef55663934398613ab932fcf030412b3f5",
+  "dist/story.js": "c1f2bfccdace50fdb27d65786a86028b83d4e7c84ea9c8254fdd24ef361958e0",
+  "dist/streets.js": "7945c7d0dc6453981bd0b2ad8650f2769d261ff3e36865922a99d32981717d31",
+  "dist/style.css": "ec1dbde447137236f65f2deb3fd30916315377f48fc48d5db60cde63c0abce93",
+  "dist/tension.js": "7b0de410dc3b848232dfb4c49dff6dcb85c1dc1c1057e1e4b998993bc3806e04",
+  "dist/terrain.js": "ecc674f1b9d847c7d6e992b65b287cd65a425b237ee40c540fa4e2ea364d6902",
+  "dist/three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
+  "dist/ui.js": "342854a8172cbb454e063542af0c6484b4f5739def91e1f9f033a9237d9b2019",
+  "dist/vegetation.js": "afbdfe19822105f003277874648367cc16126f66d56f55b44e71916d4a4aa943",
+  "dist/world.js": "5397dc812f794ff28869f61b66d6c70f67ffc7eb46d9980a4f265280b9319354"
+ },
+ "browser": "141.0.7390.37",
+ "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+ "passed": 74,
+ "checks": [
+  "the title shows the DEV · PLAYTEST ONLY selector with Prologue, Chapter One, Two and Three",
+  "normal Start: the prologue begins; the DEV selector is not shown during play",
+  "title shows the DEV selector before choosing 0",
+  "the DEV button shows \"Preparing Prologue…\" while it prepares",
+  "DEV 0: mouse look is captured the same way as the title's start button (pointer lock granted, as for Start)",
+  "DEV 0: a real click starts at the true beginning (phase off), title and pause closed (1149 ms)",
+  "DEV 0: the same state as the natural arrival recorded in the simulation (flags, objective, date, lighting, companions, people, police, props, doors, flashlight, save; 0 differences)",
+  "DEV 0: player and companions where a natural arrival leaves them (within 15 m)",
+  "title shows the DEV selector before choosing 1",
+  "DEV 1: mouse look is captured the same way as the title's start button (pointer lock granted, as for Start)",
+  "DEV 1: a real click starts at the true beginning (phase leave), title and pause closed (1433 ms)",
+  "DEV 1: the same state as the natural arrival recorded in the simulation (flags, objective, date, lighting, companions, people, police, props, doors, flashlight, save; 0 differences)",
+  "DEV 1: player and companions where a natural arrival leaves them (within 15 m)",
+  "title shows the DEV selector before choosing 2",
+  "DEV 2: mouse look is captured the same way as the title's start button (pointer lock granted, as for Start)",
+  "DEV 2: a real click starts at the true beginning (phase c2-black), title and pause closed (1289 ms)",
+  "DEV 2: the same state as the natural arrival recorded in the simulation (flags, objective, date, lighting, companions, people, police, props, doors, flashlight, save; 0 differences)",
+  "DEV 2: player and companions where a natural arrival leaves them (within 15 m)",
+  "DEV 2: the opening scene after the card (c2-decide) matches the natural one (0 differences)",
+  "title shows the DEV selector before choosing 3",
+  "DEV 3: mouse look is captured the same way as the title's start button (pointer lock granted, as for Start)",
+  "DEV 3: a real click starts at the true beginning (phase c3-black), title and pause closed (1630 ms)",
+  "DEV 3: the same state as the natural arrival recorded in the simulation (flags, objective, date, lighting, companions, people, police, props, doors, flashlight, save; 0 differences)",
+  "DEV 3: player and companions where a natural arrival leaves them (within 15 m)",
+  "DEV 3: the opening scene after the card (d3-corner) matches the natural one (0 differences)",
+  "title shows the DEV selector before choosing 3",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 1",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 2",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 0",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 2",
+  "DEV switching 3→1→2→3→0→2 in one page via pause → Back to the title: every start identical to a clean start (no leaks)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 1",
+  "DEV start after Chapter Three's close bell (phase n3-run, tension 1): Chapter One starts clean",
+  "…no tension or heartbeat carried over",
+  "normal mode: DEV Chapter Three shows the CHAPTER THREE card over black (18540 ms after the click), title hidden, not paused",
+  "title shows the DEV selector before choosing 3",
+  "Chapter Three: black, then a quiet CHAPTER THREE card (no end menu)",
+  "Chapter Three: the Briarwood corner in daylight; \"Maybe yesterday wasn’t the first time.\"",
+  "Chapter Three: at Alex’s house: his mom on the porch, a cruiser out front",
+  "Chapter Three: his mom: he kept asking if she heard a bike bell outside",
+  "Chapter Three: \"Go inside\" at his front door",
+  "Chapter Three: in Alex’s room, on foot, first person, Jamie and Sam with you",
+  "Chapter Three: his phone on the desk: \"Listen to his recordings\"",
+  "Chapter Three: four ordinary recordings, then the night before: the bell twice, \"There it is again.\"",
+  "Chapter Three: \"Go back outside\" at his door",
+  "Chapter Three: the neighbors: earplugs, teenagers; Mr. Okafor knows the old pond road",
+  "Chapter Three: the old bike from the oak at the gate; Sam: \"I said I didn’t remember it.\"",
+  "Chapter Three: F looks at the bike",
+  "Chapter Three: the bell only clicks; somebody wheeled it in today; they will come back tonight",
+  "Chapter Three: that night, the same street, dark; \"Meet Jamie and Sam at the corner.\"",
+  "Chapter Three: down the pond road the night sounds go; Sam: \"Why’d everything stop?\"",
+  "Chapter Three: the bike is gone: \"It was right here.\" \"Okay. I saw it this time.\"",
+  "Chapter Three: a second bell, closer, then from somewhere else",
+  "Chapter Three: \"Jamie?\" from deep in the culvert, then \"Guys?\" from behind",
+  "Chapter Three: you turn: nothing; then the bell right behind you, nothing there either",
+  "Chapter Three: out under the street light; \"That was him.\" \"No.\"",
+  "Chapter Three: \"You heard it.\" \"I know.\" then LAST LIGHT / Chapter Three",
+  "Chapter Three: every phase in order in the browser",
+  "Chapter Three: Jamie and Sam stayed with you (max gap 15.9 m at n3-corner)",
+  "Chapter Three playthrough: no JavaScript or shader errors",
+  "no JavaScript or shader errors"
+ ],
+ "frames": [
+  {
+   "name": "dev-00-title-selector",
+   "frame": 1,
+   "calls": 276,
+   "triangles": 533189,
+   "points": 865,
+   "lines": 4043,
+   "phase": "off"
+  },
+  {
+   "name": "dev-01-start-chapter-0",
+   "frame": 1,
+   "calls": 361,
+   "triangles": 597479,
+   "points": 639,
+   "lines": 4079,
+   "phase": "off"
+  },
+  {
+   "name": "dev-02-start-chapter-1",
+   "frame": 1,
+   "calls": 126,
+   "triangles": 85413,
+   "points": 681,
+   "lines": 3079,
+   "phase": "leave"
+  },
+  {
+   "name": "dev-03-start-chapter-2",
+   "frame": 1,
+   "calls": 297,
+   "triangles": 678882,
+   "points": 707,
+   "lines": 3885,
+   "phase": "c2-decide"
+  },
+  {
+   "name": "dev-04-start-chapter-3",
+   "frame": 1,
+   "calls": 451,
+   "triangles": 890362,
+   "points": 639,
+   "lines": 3849,
+   "phase": "d3-corner"
+  },
+  {
+   "name": "dev-c3-00-chapter-three-card",
+   "frame": 13,
+   "calls": 536,
+   "triangles": 911836,
+   "points": 639,
+   "lines": 3871,
+   "phase": "c3-black"
+  },
+  {
+   "name": "dev-c3-d01-briarwood-opening",
+   "frame": 26,
+   "calls": 454,
+   "triangles": 892898,
+   "points": 639,
+   "lines": 3849,
+   "phase": "d3-corner"
+  },
+  {
+   "name": "dev-c3-d02-alex-house-exterior",
+   "frame": 39,
+   "calls": 454,
+   "triangles": 782359,
+   "points": 639,
+   "lines": 4015,
+   "phase": "d3-street"
+  },
+  {
+   "name": "dev-c3-d03-alex-mom",
+   "frame": 52,
+   "calls": 400,
+   "triangles": 758924,
+   "points": 639,
+   "lines": 3989,
+   "phase": "d3-mom"
+  },
+  {
+   "name": "dev-c3-d04-bedroom-first-person",
+   "frame": 65,
+   "calls": 540,
+   "triangles": 919204,
+   "points": 639,
+   "lines": 4005,
+   "phase": "d3-room"
+  },
+  {
+   "name": "dev-c3-d04b-bedroom-wide",
+   "frame": 78,
+   "calls": 462,
+   "triangles": 832536,
+   "points": 639,
+   "lines": 3963,
+   "phase": "d3-room"
+  },
+  {
+   "name": "dev-c3-d05a-phone-first-recording",
+   "frame": 91,
+   "calls": 204,
+   "triangles": 349354,
+   "points": 639,
+   "lines": 3823,
+   "phase": "d3-phone"
+  },
+  {
+   "name": "dev-c3-d05-phone-recording-the-bell",
+   "frame": 104,
+   "calls": 204,
+   "triangles": 349354,
+   "points": 639,
+   "lines": 3823,
+   "phase": "d3-phone"
+  },
+  {
+   "name": "dev-c3-d06-bedroom-window-view",
+   "frame": 117,
+   "calls": 383,
+   "triangles": 806362,
+   "points": 639,
+   "lines": 3849,
+   "phase": "d3-window"
+  },
+  {
+   "name": "dev-c3-d07-neighbor-across-the-street",
+   "frame": 130,
+   "calls": 266,
+   "triangles": 542677,
+   "points": 639,
+   "lines": 3824,
+   "phase": "d3-neighbors"
+  },
+  {
+   "name": "dev-c3-d07b-neighbor-okafor-the-pond-road",
+   "frame": 143,
+   "calls": 116,
+   "triangles": 190683,
+   "points": 639,
+   "lines": 3823,
+   "phase": "d3-neighbors"
+  },
+  {
+   "name": "dev-c3-d08-service-road",
+   "frame": 156,
+   "calls": 340,
+   "triangles": 669484,
+   "points": 639,
+   "lines": 3893,
+   "phase": "d3-road"
+  },
+  {
+   "name": "dev-c3-d09-old-bike-at-the-gate",
+   "frame": 169,
+   "calls": 328,
+   "triangles": 646221,
+   "points": 639,
+   "lines": 3989,
+   "phase": "d3-oldbike"
+  },
+  {
+   "name": "dev-c3-d09b-old-bike-close-sticker",
+   "frame": 182,
+   "calls": 330,
+   "triangles": 600961,
+   "points": 639,
+   "lines": 3989,
+   "phase": "d3-oldbike"
+  },
+  {
+   "name": "dev-c3-d10-broken-bell-pressed",
+   "frame": 195,
+   "calls": 330,
+   "triangles": 600961,
+   "points": 639,
+   "lines": 3989,
+   "phase": "d3-oldbike"
+  },
+  {
+   "name": "dev-c3-d10b-flattened-grass",
+   "frame": 208,
+   "calls": 340,
+   "triangles": 608768,
+   "points": 639,
+   "lines": 3989,
+   "phase": "d3-oldbike"
+  },
+  {
+   "name": "dev-c3-n00-that-night-home",
+   "frame": 221,
+   "calls": 397,
+   "triangles": 762360,
+   "points": 681,
+   "lines": 3841,
+   "phase": "n3-home"
+  },
+  {
+   "name": "dev-c3-n01-meeting-at-the-corner",
+   "frame": 234,
+   "calls": 435,
+   "triangles": 772439,
+   "points": 681,
+   "lines": 3904,
+   "phase": "n3-ride"
+  },
+  {
+   "name": "dev-c3-n02-night-ride-briarwood",
+   "frame": 247,
+   "calls": 180,
+   "triangles": 334299,
+   "points": 681,
+   "lines": 3841,
+   "phase": "n3-ride"
+  },
+  {
+   "name": "dev-c3-n03-pond-road-at-night",
+   "frame": 260,
+   "calls": 311,
+   "triangles": 655698,
+   "points": 681,
+   "lines": 3849,
+   "phase": "n3-drive"
+  },
+  {
+   "name": "dev-c3-n04-ambience-drop",
+   "frame": 273,
+   "calls": 302,
+   "triangles": 634300,
+   "points": 681,
+   "lines": 3945,
+   "phase": "n3-drive"
+  },
+  {
+   "name": "dev-c3-n05-empty-gate",
+   "frame": 286,
+   "calls": 303,
+   "triangles": 589235,
+   "points": 681,
+   "lines": 3945,
+   "phase": "n3-gate"
+  },
+  {
+   "name": "dev-c3-n06-first-bell-reaction",
+   "frame": 299,
+   "calls": 311,
+   "triangles": 594127,
+   "points": 681,
+   "lines": 3945,
+   "phase": "n3-bell"
+  },
+  {
+   "name": "dev-c3-n07-basin-flashlight-search",
+   "frame": 312,
+   "calls": 304,
+   "triangles": 776132,
+   "points": 681,
+   "lines": 3919,
+   "phase": "n3-search"
+  },
+  {
+   "name": "dev-c3-n07b-second-bell-it-moved",
+   "frame": 325,
+   "calls": 308,
+   "triangles": 777676,
+   "points": 681,
+   "lines": 3919,
+   "phase": "n3-search"
+  },
+  {
+   "name": "dev-c3-n08-culvert-approach",
+   "frame": 338,
+   "calls": 271,
+   "triangles": 667749,
+   "points": 681,
+   "lines": 3823,
+   "phase": "n3-search"
+  },
+  {
+   "name": "dev-c3-n09-alex-voice-from-the-culvert",
+   "frame": 351,
+   "calls": 271,
+   "triangles": 667749,
+   "points": 681,
+   "lines": 3823,
+   "phase": "n3-voice"
+  },
+  {
+   "name": "dev-c3-n10-impossible-direction-guys",
+   "frame": 364,
+   "calls": 270,
+   "triangles": 667640,
+   "points": 681,
+   "lines": 3823,
+   "phase": "n3-voice"
+  },
+  {
+   "name": "dev-c3-n10b-turned-nothing-there",
+   "frame": 377,
+   "calls": 110,
+   "triangles": 241237,
+   "points": 681,
+   "lines": 3823,
+   "phase": "n3-voice"
+  },
+  {
+   "name": "dev-c3-n11-close-bell",
+   "frame": 390,
+   "calls": 117,
+   "triangles": 242981,
+   "points": 681,
+   "lines": 3823,
+   "phase": "n3-close"
+  },
+  {
+   "name": "dev-c3-n12-escape-through-the-fence",
+   "frame": 403,
+   "calls": 378,
+   "triangles": 774855,
+   "points": 681,
+   "lines": 3849,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n12b-escape-down-the-pond-road",
+   "frame": 416,
+   "calls": 300,
+   "triangles": 637174,
+   "points": 681,
+   "lines": 3932,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n13-safe-street",
+   "frame": 429,
+   "calls": 271,
+   "triangles": 498444,
+   "points": 681,
+   "lines": 3932,
+   "phase": "n3-safe"
+  },
+  {
+   "name": "dev-c3-n14-chapter-three-end",
+   "frame": 442,
+   "calls": 271,
+   "triangles": 498444,
+   "points": 681,
+   "lines": 3932,
+   "phase": "n3-end"
+  }
+ ],
+ "timings": {
+  "0": 1149,
+  "1": 1433,
+  "2": 1289,
+  "3": 1630,
+  "normalMode3": 9977
+ },
+ "starts": {
+  "0": {
+   "phase": "off",
+   "ms": 1149,
+   "differences": [],
+   "far": [],
+   "summary": {
+    "player": {
+     "x": 0,
+     "z": 0,
+     "a": 0,
+     "lock": false,
+     "walkLock": false,
+     "brake": 0
+    },
+    "night": 0,
+    "day": 0,
+    "objective": "",
+    "date": "AUGUST 21, 2011 <i></i> 7:42 PM",
+    "companions": [
+     {
+      "key": "jamie",
+      "active": false,
+      "mode": "ride",
+      "visible": true
+     },
+     {
+      "key": "sam",
+      "active": false,
+      "mode": "ride",
+      "visible": true
+     }
+    ],
+    "foot": {
+     "owned": false,
+     "on": false,
+     "stamina": 1,
+     "crouch": 0,
+     "height": 0,
+     "exhausted": false,
+     "drain": 1,
+     "light": false
+    },
+    "save": null
+   }
+  },
+  "1": {
+   "phase": "leave",
+   "ms": 1433,
+   "differences": [],
+   "far": [],
+   "summary": {
+    "player": {
+     "x": 244.185,
+     "z": -1032.583,
+     "a": 0.08,
+     "lock": false,
+     "walkLock": false,
+     "brake": 0
+    },
+    "night": 1,
+    "day": 0,
+    "objective": "",
+    "date": "AUGUST, 2011 <i></i> AS YOU REMEMBER IT",
+    "companions": [
+     {
+      "key": "jamie",
+      "active": false,
+      "mode": "ride",
+      "visible": false
+     },
+     {
+      "key": "sam",
+      "active": false,
+      "mode": "ride",
+      "visible": false
+     }
+    ],
+    "foot": {
+     "owned": false,
+     "on": false,
+     "stamina": 1,
+     "crouch": 0,
+     "height": 0,
+     "exhausted": false,
+     "drain": 1,
+     "light": false
+    },
+    "save": null
+   }
+  },
+  "2": {
+   "phase": "c2-black",
+   "ms": 1289,
+   "differences": [],
+   "far": [],
+   "summary": {
+    "player": {
+     "x": 179.505,
+     "z": -578.6,
+     "a": 1.607,
+     "lock": false,
+     "walkLock": false,
+     "brake": 0
+    },
+    "night": 1,
+    "day": 0,
+    "objective": "",
+    "date": "AUGUST 21, 2011 <i></i> 9:34 PM",
+    "companions": [
+     {
+      "key": "jamie",
+      "active": true,
+      "mode": "foot",
+      "visible": true
+     },
+     {
+      "key": "sam",
+      "active": true,
+      "mode": "foot",
+      "visible": true
+     }
+    ],
+    "foot": {
+     "owned": true,
+     "on": true,
+     "stamina": 1,
+     "crouch": 0,
+     "height": 0,
+     "exhausted": false,
+     "drain": 1,
+     "light": true
+    },
+    "save": "investigation"
+   },
+   "opening": {
+    "phase": "c2-decide",
+    "differences": []
+   }
+  },
+  "3": {
+   "phase": "c3-black",
+   "ms": 1630,
+   "differences": [],
+   "far": [],
+   "summary": {
+    "player": {
+     "x": 100.887,
+     "z": -552.976,
+     "a": 0.5,
+     "lock": false,
+     "walkLock": false,
+     "brake": 0
+    },
+    "night": 0,
+    "day": 1,
+    "objective": "",
+    "date": "AUGUST 22, 2011 <i></i> 9:12 AM",
+    "companions": [
+     {
+      "key": "jamie",
+      "active": true,
+      "mode": "ride",
+      "visible": true
+     },
+     {
+      "key": "sam",
+      "active": true,
+      "mode": "ride",
+      "visible": true
+     }
+    ],
+    "foot": {
+     "owned": true,
+     "on": true,
+     "stamina": 1,
+     "crouch": 0,
+     "height": 0,
+     "exhausted": false,
+     "drain": 1,
+     "light": false
+    },
+    "save": "chapter2-end"
+   },
+   "opening": {
+    "phase": "d3-corner",
+    "differences": []
+   }
+  }
+ },
+ "switching": {
+  "order": "3→1→2→3→0→2",
+  "leaks": []
+ },
+ "startLock": true,
+ "chapterThree": {
+  "phases": [
+   "c3-black",
+   "d3-corner",
+   "d3-street",
+   "d3-mom",
+   "d3-room",
+   "d3-phone",
+   "d3-window",
+   "d3-neighbors",
+   "d3-road",
+   "d3-oldbike",
+   "d3-plan",
+   "d3-home",
+   "c3-night",
+   "n3-home",
+   "n3-corner",
+   "n3-ride",
+   "n3-drive",
+   "n3-gate",
+   "n3-bell",
+   "n3-search",
+   "n3-voice",
+   "n3-close",
+   "n3-run",
+   "n3-safe",
+   "n3-end"
+  ],
+  "gap": 15.9141937873665,
+  "gapAt": "n3-corner",
+  "peak": 1,
+  "said": 135
+ },
+ "errors": []
+}
