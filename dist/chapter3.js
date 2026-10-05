@@ -86,7 +86,14 @@ export function createChapter3(o,k,ch2){
     for(const e of [-1,1]){const x=q.x+rx*w/2*e,z=q.z+rz*w/2*e;pos.push(x,nav.groundY(x,z)+.012,z);}if(i<pts.length-1){const b=i*2;idx.push(b,b+2,b+1,b+1,b+2,b+3);}}
    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m2=new THREE.Mesh(g,m);marks.add(m2);return m2;};
   // One tire, wheeled (not ridden: it wanders), along the dusty edge of the asphalt from the gate on.
-  const pts=[];for(let s=10;s<=126;s+=.5){const hw=Wd.halfW(s);pts.push([s,hw-.32+.12*Math.sin(s*.31)+.06*Math.sin(s*1.3)]);}line(pts,.045,mud).name='old-road-tire-track';
+  const pts=[];for(let s=10;s<=126;s+=.5){const hw=Wd.halfW(s);pts.push([s,hw-.32+.12*Math.sin(s*.31)+.06*Math.sin(s*1.3)]);}line(pts,.06,mud).name='old-road-tire-track';
+  // ...where it shows: in the pale skin of road dust along the edge. And small shoes beside it, someone pushing the bike.
+  {const dust=new THREE.MeshStandardMaterial({color:0x9c907a,roughness:1,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
+   for(const [s0,s1,w] of [[8,70,.8],[70,114,.55]]){const dp=[];for(let s2=s0;s2<=s1;s2+=.5){const hw=Wd.halfW(s2);dp.push([s2,hw-.48+.05*Math.sin(s2*.23)]);}line(dp,w,dust).name='old-road-edge-dust';}
+   const shoe=new THREE.MeshStandardMaterial({color:0x5a5043,roughness:1,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6});
+   for(let s2=10.4,i=0;s2<66;s2+=.36,i++){if((i*7)%9===4)continue;const hw=Wd.halfW(s2),t=hw-.74+(i%2?.08:-.08)+.04*Math.sin(s2*.9),q=Wd.at(s2,t),g=new THREE.Group();g.position.set(q.x,nav.groundY(q.x,q.z)+.016,q.z);g.rotation.y=-(q.a+.05*Math.sin(i));marks.add(g);
+    for(const [z,r,l] of [[-.07,.042,.06],[.065,.036,.045]]){const e=new THREE.Mesh(new THREE.CircleGeometry(r,10),shoe);e.rotation.x=-Math.PI/2;e.scale.y=l/r*1.4;e.position.set(i%2?.005:-.005,0,z);g.add(e);}}
+   mergeChildren(marks,shoe,'old-road-shoeprints');}
   for(let k2=0;k2<40;k2++){const s=11.5+k2*.09,hw=Wd.halfW(s),q=Wd.at(s,hw+.65+Math.sin(k2)*.1),geo=new THREE.PlaneGeometry(.035,.3+((k2*7)%5)*.04);geo.rotateX(-Math.PI/2);const m2=new THREE.Mesh(geo,flat);m2.position.set(q.x,nav.groundY(q.x,q.z)+.03,q.z);m2.rotation.y=-q.a+.9+((k2*13)%7-3)*.08;marks.add(m2);}
   // A thin branch, snapped and hanging, where something went by close to the edge.
   {const q=Wd.at(92,Wd.halfW(92)+1.1),g=new THREE.Group();g.position.set(q.x,nav.groundY(q.x,q.z)+1.05,q.z);g.rotation.y=-q.a;const r=new THREE.Mesh(new THREE.CylinderGeometry(.012,.018,.9,5),new THREE.MeshStandardMaterial({color:0x8c7a5c,roughness:1}));r.position.set(-.2,-.3,0);r.rotation.z=.9;g.add(r);marks.add(g);}
@@ -157,7 +164,7 @@ export function createChapter3(o,k,ch2){
   floorAt(x,z){const q=B.project(x,z,127);return B.point(q.u,q.v).y+R.floor;},
   walkable(x,z,r=.28){const q=local(x,z);if(q.x<R.x0+r||q.x>R.x1-r||q.z<R.z0+r||q.z>R.z1-r)return false;return !R.blocks.some(([x0,x1,z0,z1])=>q.x>x0-r&&q.x<x1+r&&q.z>z0-r&&q.z<z1+r);},heading:0};
  const alexGlass=world.merged.filter(m=>m.material===world.alexWindow);
- function roomOn(on){nav.setRoom(on?roomZone:null);for(const m of alexGlass){m.visible=!on;m.userData.off=on;}o.audio()?.indoors?.(on);C.inRoom=on;}
+ function roomOn(on){nav.setRoom(on?roomZone:null);for(const m of alexGlass)m.visible=!on;o.audio()?.indoors?.(on);C.inRoom=on;}
  // The phone on his desk: an old clamshell, open, its screen showing the voice recorder.
  const phone=new THREE.Group();phone.name='alex-phone';scene.add(phone);phone.visible=false;
  const screen=(()=>{try{const c=document.createElement('canvas'),g=c.getContext?.('2d');if(!g)return null;c.width=128;c.height=112;const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return {c,g,t};}catch{return null;}})();
@@ -173,7 +180,7 @@ export function createChapter3(o,k,ch2){
  const C={};
  // Everything transient goes (Start over, a jump, a replay): bells heard, voices, every timer and wait.
  function fresh(){for(const key of Object.keys(C))delete C[key];Object.assign(C,{heardBells:[],voices:[],t:0,pt:0,flags:{},timers:[],inRoom:false,recSel:0,recPlaying:-1,recEnd:0,heard:[],talked:new Set(),cardT:-1,fadeIn:-1,fadeOut:-1,endT:-1,pose:null,
-  amb:{traffic:1,insects:1,wind:1,life:1,forest:0,tunnel:0,water:0},depth:0,lastEvent:0,leftAt:null,bellTries:0,want:null,wantT:0,loose:false,match:false,dogT:8,role:{jamie:null,sam:null},hold:{},glance:{},jit:0,
+  amb:{traffic:1,insects:1,wind:1,life:1,forest:0,tunnel:0,water:0},depth:0,lastEvent:0,leftAt:null,bellTries:0,want:null,wantT:0,loose:false,match:false,dogT:8,role:{jamie:null,sam:null},hold:{},glance:{},back:null,backs:0,maxDs:0,jit:0,
   fig:null,stage:null,waitT:0,runT:0,splashT:0,oldFallen:false,shade:0});}
  fresh();
  const later=(sec,fn)=>C.timers.push({at:C.t+sec,fn});
@@ -475,6 +482,8 @@ export function createChapter3(o,k,ch2){
  // ---- every frame ------------------------------------------------------------------------------------------
  function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase,p=me(),L=where(p),rs=L.street==='woods'?(L.s??Wd.L):L.street==='side'?L.u-Wd.U:L.street==='drain'?Wd.L+1:-999,ds=L.street==='drain'?L.s:-1;
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
+  // (in the drain you walk carefully: wet concrete, silt, the dark; running is as fast as ever)
+  o.setPace?.(ds>=0&&!C.flags.run?.72:1);
   for(const a of people)a.update(dt,{eye:camera.position});updatePose(dt);match(dt);updateAmb(dt);
   if(C.fadeIn>=0){C.fadeIn+=dt;o.fade(1-smooth(C.fadeIn/1.4));if(C.fadeIn>=1.4){o.fade(0);C.fadeIn=-1;}}
   if(C.fadeOut>=0){C.fadeOut+=dt;o.fade(smooth(C.fadeOut/.7));if(C.fadeOut>=.9){C.fadeOut=-1;const f=C.after;C.after=null;f?.();}}
@@ -496,9 +505,10 @@ export function createChapter3(o,k,ch2){
   else if(ph==='n3-ride'){if(rs>-22&&rs>-999)roadNight();}
   else if(ph==='n3-road')updateRoad(dt,rs);
   else if(ph==='n3-outfall'){if(C.flags.canEnter&&ds>=1.5)enterDrain();
-   if(C.flags.canEnter&&!p.riding&&!C.flags.jamieToMouth){C.flags.jamieToMouth=true;if(jamie.mode==='foot'){C.point={jamie:{...tq(.9,1.45),look:lookAhead(10,0,1.2),max:1.6,face:Dr.at(1).a}};role(jamie,'point');/* (to one side of the mouth, not in the way) */}}
+   if(C.flags.canEnter&&!p.riding&&!C.flags.jamieToMouth&&jamie.mode==='foot'){C.flags.jamieToMouth=true;C.point={jamie:{...tq(.9,1.45),look:lookAhead(10,0,1.2),max:1.6,face:Dr.at(1).a}};role(jamie,'point');}/* (once he is off his bike: to one side of the mouth, not in the way) */
    if(C.flags.jamieToMouth&&!C.flags.comeOn&&!busy()&&C.t-C.lastEvent>14&&ds<0){C.flags.comeOn=true;talk([{who:'JAMIE',text:'“Come on. Before I change my mind.”',from:jamie,time:2.2}]);}}
   if(tunnelPhase())updateTunnel(dt,ds);
+  turnBack(ds,p);
   // (whoever has a part to play and nothing running picks it up again; off the bike first, in the drain)
   if(/^n3-/.test(ph))for(const c of [jamie,sam]){const r=C.role[c.key];if(!r||r==='mounted'||c.script)continue;if(c.mode==='foot')role(c,r);else if(c.mode==='ride'&&tunnelPhase())comp.run(c,[comp.steps.brake(c,.3),comp.steps.dismount(c),comp.steps.kickstand(c)]);}
   if(ph==='n3-run'||ph==='n3-out'){C.runT+=dt;if(ph==='n3-run'&&ds<0&&rs>Wd.L-40)outOfDrain();if(p.riding&&ph==='n3-out')mounted();
@@ -516,7 +526,7 @@ export function createChapter3(o,k,ch2){
   if(rs>118&&!C.flags.noHouses&&!busy()){C.flags.noHouses=true;glance(jamie,Wd.spots.mouth,2.4);jamie.lookAt={x:Wd.spots.mouth.x,z:Wd.spots.mouth.z,y:4};later(2.4,()=>{jamie.lookAt=null;});
    talk([{who:'SAM',text:'“You can’t even see the houses anymore.”',from:sam,time:2.4}]);T?.set(.16,{why:'out of sight of the houses'});}
   // a branch, swinging back after you have gone by it
-  if(rs>BR.s+2.5&&BR.phase<0){BR.phase=0;later(.9,()=>{BR.phase=.001;const at={x:branch.position.x,z:branch.position.z,y:branch.position.y};sam.lookAt=at;S.samAim=at;later(2.6,()=>{sam.lookAt=null;S.samAim=null;});
+  if(rs>BR.s+2.5&&BR.phase===-1){BR.phase=0;later(.9,()=>{BR.phase=.001;const at={x:branch.position.x,z:branch.position.z,y:branch.position.y};sam.lookAt=at;S.samAim=at;later(2.6,()=>{sam.lookAt=null;S.samAim=null;});
     if(!busy())talk([{wait:.8},{who:'SAM',text:'“Did you guys hit that branch?”',from:sam,time:2},{who:'JAMIE',text:'“What branch?”',from:jamie,time:1.4}]);T?.jolt(.24,{rise:.4,hold:2,why:'a branch, behind'});});}
   // a reflector, flaring in your light
   if(!C.flags.glint&&rs>REF.s-28&&rs<REF.s){const L2=o.playerLight,v=new THREE.Vector3(REF.x-L2.position.x,REF.y-L2.position.y,REF.z-L2.position.z),d=v.length();v.normalize();const aim=L2.target.position.clone().sub(L2.position).normalize();
@@ -528,6 +538,20 @@ export function createChapter3(o,k,ch2){
    later(1.4,()=>talk([{who:'JAMIE',text:'“Deer.”',from:jamie,time:1.2,gap:1},{who:'SAM',text:'“Since when are there deer here?”',from:sam,time:2}]));}
   if(rs>420&&!C.flags.valley&&!busy()){C.flags.valley=true;talk([{who:'SAM',text:'“I can hear water.”',from:sam,time:1.8}]);T?.set(.22,{why:'the valley'});}
   if(rs>Wd.L-40||where(p).w?.patch){if(!p.riding||p.speed<.5||rs>Wd.L-14||Math.hypot(p.x-WS.pad.x,p.z-WS.pad.z)<9)arriveOutfall();}}// (in sight of it and stopped, or there)
+ // Turning back before it is over: Jamie will not come, Sam will not leave him, and the bikes stay where they are.
+ // (no wall, no arrow: two lights left behind you in the dark, and a quiet objective)
+ const BACK=/^n3-(tunnel|evidence|bell|bike|deeper|follow|search)$/;
+ const atYou=()=>{const q=me();return {x:q.x,z:q.z,y:camera.position.y};};
+ function turnBack(ds,p){if(ds>=0)C.maxDs=Math.max(C.maxDs||0,ds);
+  if(!BACK.test(S.phase)){if(C.back)backDone(false);return;}
+  const far=C.maxDs||0,B=C.back;
+  if(!B){if(far>40&&ds<far-30&&!busy()&&!C.pose){C.back={obj:S.objective,n:0,bike:false};C.backs=(C.backs||0)+1;hold(jamie,{look:atYou});hold(sam,{look:atYou});
+    talk(C.backs===1?[{who:'JAMIE',text:'“Where are you going?”',from:jamie,time:1.8},{who:'SAM',text:'“…Jamie. Come on. Let’s go.”',from:sam,time:2.2},{who:'JAMIE',text:'“I’m not leaving.”',from:jamie,time:1.6}]:[{who:'JAMIE',text:'“Hey!”',from:jamie,time:1}]);
+    objective('Go back to Jamie.');if(T)T.set(Math.max(T.value,.4),{why:'alone, going back'});}return;}
+  if(B.n===0&&(ds<0||ds<far-70||ds<14)&&!busy()){B.n=1;talk([{who:'JAMIE',text:'“I’m not leaving without him!”',from:jamie,time:2.2}]);}
+  if(!B.bike&&ds<0&&dist(p,o.roam)<4.5&&!busy()){B.bike=true;talk([{who:'YOU',text:'“I can’t leave them down there.”',time:2.2}]);}
+  if(dist(p,{x:jamie.px,z:jamie.pz})<9)backDone(true);}
+ function backDone(back){const B=C.back;C.back=null;C.hold.jamie=null;C.hold.sam=null;if(back){objective(B.obj||'');if(!busy())talk([{who:'SAM',text:'“Okay. Okay.”',from:sam,time:1.4}]);}}
  // In the drain, by where you are and what has happened.
  function updateTunnel(dt,ds){const ph=S.phase,p=me();
   if(ds>=97)deepIn();
@@ -622,11 +646,11 @@ export function createChapter3(o,k,ch2){
   if(C.amb.tunnel>.02){const s=Math.max(0,drainS()+10);out.push({id:'drain3',kind:'water',pos:new THREE.Vector3(Dr.at(Math.min(s,Dr.len-1)).x,Dr.floor(s)+.3,Dr.at(Math.min(s,Dr.len-1)).z),level:.35*C.amb.tunnel});}}
  function blockers(){const out=[];if(old.group.visible&&!C.oldFallen&&S.phase&&/^n3-/.test(S.phase))out.push(...oldParts());for(const a of people)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});return out;}
  // ---- lifecycle --------------------------------------------------------------------------------------------------
- function reset(){const hadPose=C.pose;fresh();card(false);roomOn(false);phone.visible=false;old.group.visible=false;evidence.visible=false;marks.visible=false;figure.group.visible=false;FG.state='off';glint.visible=false;
+ function reset(){const hadPose=C.pose;fresh();card(false);roomOn(false);phone.visible=false;old.group.visible=false;evidence.visible=false;marks.visible=false;figure.group.visible=false;Object.assign(FG,{s:DD.figure.s,t:DD.figure.t,v:0,gait:0,look:0,state:'off'});glint.visible=false;
   branch.visible=false;branch.children[0].rotation.z=0;BR.phase=-1;deer.visible=false;DR.phase=-1;cable.visible=false;CB.amp=0;wet.visible=false;leaf.visible=false;LF.s=-1;stone.visible=false;ST.t=-1;
   for(const r of ripple){r.t=-1;r.m.visible=false;}for(const d of drops){d.t=-1;d.m.visible=false;}
   releaseBounce();A.shade=0;A.barLight=false;A.remountRange=undefined;for(const c of [jamie,sam])c.tight=0;WN?.setLimit(null);o.flashShadow?.(false);
-  for(const a of people){a.show(false);a.lookAt=null;a.gest(null);a.mode='stand';a.path=null;}o.setDrain?.(1);T?.reset();o.audio()?.stopRecording?.();if(hadPose&&S.pose===hadPose){k.setPose(null);o.roam.walkLock=false;}}
+  for(const a of people){a.show(false);a.lookAt=null;a.gest(null);a.mode='stand';a.path=null;}o.setDrain?.(1);o.setPace?.(1);T?.reset();o.audio()?.stopRecording?.();if(hadPose&&S.pose===hadPose){k.setPose(null);o.roam.walkLock=false;}}
  // QA jumps and Continue: put the chapter at one of its moments, everything it needs set up.
  function jump(section){section=ALIAS3[section]||section;reset();fresh();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();
   const dayS=['chapter3-start','c3-alex-house','alex-bedroom','recording','neighbors','c3-road-day'];
@@ -694,7 +718,7 @@ export function createChapter3(o,k,ch2){
   if(section==='chapter3-end'){const q=side(241,1),j=side(238.6,-1.2),m=side(237.4,2.1);o.placePlayer({x:q.x,z:q.z,a:k.ha(241)+Math.PI,mode:'ride',speed:0});comp.putRiding(jamie,j.x,j.z,k.ha(238)+Math.PI,0);comp.putRiding(sam,m.x,m.z,k.ha(237)+Math.PI,0);
    for(const c of [jamie,sam])c.follow='ride';follow(true);placeOld(true);go('n3-flee');T.value=.9;T?.set(.9);for(const kk in C.amb)C.amb[kk]=kk==='forest'||kk==='tunnel'||kk==='water'?0:1;safeNow();return;}}
  Object.assign(A3,{SECTIONS:SECTIONS3,ALIAS:ALIAS3,LABEL:LABEL3,owns,handles,begin,update,spots,act,sources,blockers,reset,jump,jamieSweep,longThrow,officerAim:()=>null,
-  canDismount:()=>!C.pose&&!C.inRoom&&!['c3-black','c3-night'].includes(S.phase),canRemount:()=>!C.inRoom&&drainS()<0});
+  canDismount:()=>!C.pose&&!C.inRoom&&!['c3-black','c3-night'].includes(S.phase),canRemount:()=>!C.inRoom&&drainS()<0&&!/^n3-(outfall|tunnel|evidence|bell|bike|deeper|figure|follow|search|voice|behind|close|run)$/.test(S.phase)});// (the bikes wait at the mouth until you run)
  Object.defineProperties(A3,{amb:{get:()=>C.amb},state:{get:()=>({phase:S.phase,flags:{...C.flags},inRoom:C.inRoom,recSel:C.recSel,recPlaying:C.recPlaying,heard:[...C.heard],talked:[...C.talked],amb:Object.fromEntries(Object.entries(C.amb).map(([a,b])=>[a,+b.toFixed(3)])),
    bells:(C.heardBells||[]).map(b=>({...b,pos:{x:+b.pos.x.toFixed(2),y:+b.pos.y.toFixed(2),z:+b.pos.z.toFixed(2)}})),voices:(C.voices||[]).map(v=>({word:v.word,at:v.at,tunnel:!!v.tunnel,where:v.where,dot:v.dotFromView,pos:{x:+v.pos.x.toFixed(2),z:+v.pos.z.toFixed(2)}})),
    oldBike:old.group.visible,oldFallen:!!C.oldFallen,evidence:evidence.visible,marks:marks.visible,phone:phone.visible,figure:{state:FG.state,visible:figure.group.visible,s:+FG.s.toFixed(2),seenAt:C.fig?.seenAt??null,t0:C.fig?.t0??null},
