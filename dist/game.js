@@ -15,6 +15,9 @@ import {createRideContact} from './ride-contact.js';
 import {createNav} from './nav.js';
 import {createChapter1} from './chapter1.js';
 import {createChapter2} from './chapter2.js';
+import {createChapter3} from './chapter3.js';
+import {createTension} from './tension.js';
+import {createCaptionTone} from './captions.js';
 import {createMemory,MEMORIES} from './memory.js';
 import {createOnFoot} from './on-foot.js';
 
@@ -60,6 +63,8 @@ const ambient=createAmbient(scene,world,{sfx,camera,renderer,riders:()=>friends.
 const ending=createEnding(scene,world),interact=createInteractions({world,ambient,sfx});
 // Menus, settings, prompts and memory lines.
 const ui=createUI($,{onSetting:applySetting}),nostalgia=createNostalgia(ui);
+// Spoken captions read light over dark scenes and dark over bright ones (captions.js), with no box.
+const captionTone=createCaptionTone({renderer,el:$('subtitle')});
 
 // The player's bicycle and first-person body -----------------------------------------------------
 const bikeRoot=new THREE.Group();scene.add(bikeRoot);const playerBike=createBike(CAST.player.bike);bikeRoot.add(playerBike.group);
@@ -96,7 +101,7 @@ function finish(kind){state='ended';speed=0;if(document.pointerLockElement===can
 // Everything a replay needs to start clean: the ride, the finale, the interface and the world's small stories.
 function resetState(){foot.reset();contact.reset();bellTime=-1;bellStruck=false;playerBike.bell.lever.rotation.x=0;glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
  finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
- memory.reset();$('fade').classList.remove('warm');friends.reset();ambient.reset();ending.reset();interact.reset();nostalgia.reset();chapter.reset();auto=null;wx=wz=wa=0;walkPitch=0;ui.clear();setAct('');audio?.reset();$('ending').hidden=true;$('pause').hidden=true;$('subtitle').style.opacity=0;$('date').innerHTML='AUGUST 21, 2011 <i></i> 7:42 PM';}
+ memory.reset();tension.reset();captionTone.reset();$('fade').classList.remove('warm');friends.reset();ambient.reset();ending.reset();interact.reset();nostalgia.reset();chapter.reset();auto=null;wx=wz=wa=0;walkPitch=0;ui.clear();setAct('');audio?.reset();$('ending').hidden=true;$('pause').hidden=true;$('subtitle').style.opacity=0;$('date').innerHTML='AUGUST 21, 2011 <i></i> 7:42 PM';}
 function reset(){resetState();state='intro';start();}
 // Back to the title: the evening waits, unstarted, behind the menu.
 function toTitle(){resetState();state='intro';ui.closePanels();document.body.classList.remove('riding');$('intro').hidden=false;$('ride-ui').hidden=true;$('mobile').hidden=true;if(document.pointerLockElement===canvas)document.exitPointerLock?.();audio?.setEnabled(false);placePlayerBike(0);showContinue();}
@@ -309,13 +314,17 @@ const nav=createNav(world);
 const roam={x:0,z:0,a:0,omega:0,lock:false,brake:0,walkLock:false,steer:null,fadeIn:0};
 let wx=0,wz=0,wa=0;// on foot at night: position and heading
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
-const chOpts={scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,$,renderer,
+// How frightened your body is (tension.js): the story sets it; the heartbeat and breathing follow it.
+const tension=createTension();
+const chOpts={scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,$,renderer,tension,
  say:(who,text,time)=>say(who,text,time),player:()=>playerState(),roam,setDate:html=>{$('date').innerHTML=html;},finish:()=>finish('chapter'),fade:v=>{fade=v;$('fade').style.opacity=v;},
- placePlayer,nightRendering,giveFlashlight:()=>foot.give(),playerLight:foot.light,memory:null};
+ placePlayer,nightRendering,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},playerLight:foot.light,memory:null};
 const chapter=createChapter1(chOpts);
 // Chapter Two picks up seconds after the first one stops, with the same people, systems and night,
 // and runs to the next morning (chapter2.js). Chapter One hands it the phases that begin c2- or m-.
 const chapter2=createChapter2(chOpts,chapter.kit);chapter.next=chapter2;
+// Chapter Three picks up a few minutes after the second ends, the same morning (chapter3.js).
+const chapter3=createChapter3(chOpts,chapter.kit,chapter2);chapter2.next=chapter3;
 function playerState(){const walk=state==='c1-walk';
  return {state,x:walk?wx:roam.x,z:walk?wz:roam.z,a:walk?wa:roam.a,pitch:walk?walkPitch:headPitch,bike:roam,speed:state==='c1-ride'?speed:moveT,riding:state==='c1-ride',walking:walk,pushing:!roam.lock&&(keys.has('KeyW')||keys.has('ArrowUp')),
   eye:camera.position,clock,manualLook,lookInputAt,look,captionBusy:captionTimer>0};}
@@ -529,7 +538,11 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  ui.update(dt);
  sky.position.copy(camera.position);
  const minute=42+Math.floor(p*18);if(!n1)$('date').innerHTML=p>.83?'AUGUST, 2011 <i></i> AS YOU REMEMBER IT':`AUGUST 21, 2011 <i></i> ${minute<60?'7:':'8:'}${String(minute%60).padStart(2,'0')} PM`;
- if(audio&&!muted&&active()){camera.getWorldDirection(_v);audio.update(dt,{speed:state==='c1-walk'?0:speed,pedal:bikeAudio.pedal,coasting:bikeAudio.coasting,onBike:onBike()||mem,surface:n1?nav.surface(roam.x,roam.z):Math.abs(lateral)>4.7?'grass':'asphalt',p,night,deep,finale:ctx.finale,listener:camera.position,forward:_v,friendsLeft:n1?0:mem?3:friends.list.filter(f=>!f.inside&&!f.gone).length,state:state==='c1-walk'?'walking':mem?'riding':state,crank:pedalPhase,sources:n1?[...ambient.sources,...chapter.sources]:ambient.sources,night1:n1,morning:day>0});}
+ // The body: tension eases toward what the story set; a sprint only takes your breath once you are already scared.
+ tension.update(dt,{exertion:state==='c1-walk'&&foot.sprint&&tension.value>.15?1:0});
+ // Captions: what is behind them now (measured after each frame is drawn; estimated until then).
+ {camera.getWorldDirection(_v);captionTone.update(dt,{fade,fadeY:$('fade').classList.contains('warm')?.03:.011,est:{day:ctx.day||0,night:ctx.night||0,deep:ctx.deep||0,dusk:ctx.p||0,pitch:Math.asin(clamp(_v.y,-1,1))-.12,flash:foot.light.intensity>0?1:0}});}
+ if(audio&&!muted&&active()){camera.getWorldDirection(_v);audio.update(dt,{heart:tension.value>.001||tension.exertion>.01?tension.heart:null,amb:n1?chapter3.amb:null,speed:state==='c1-walk'?0:speed,pedal:bikeAudio.pedal,coasting:bikeAudio.coasting,onBike:onBike()||mem,surface:n1?nav.surface(roam.x,roam.z):Math.abs(lateral)>4.7?'grass':'asphalt',p,night,deep,finale:ctx.finale,listener:camera.position,forward:_v,friendsLeft:n1?0:mem?3:friends.list.filter(f=>!f.inside&&!f.gone).length,state:state==='c1-walk'?'walking':mem?'riding':state,crank:pedalPhase,sources:n1?[...ambient.sources,...chapter.sources]:ambient.sources,night1:n1,morning:day>0});}
 }
 const _c1=new THREE.Color(),_c2=new THREE.Color();
 // What the keys would do right now, shown only when it matters: a short riding tutorial,
@@ -545,7 +558,7 @@ function promptItems(){
  }
  return null;
 }
-function frame(stamp){const dt=Math.min((stamp-lastStamp)/1000,.05);lastStamp=stamp;if(!qa){if(state!=='paused')update(dt);renderer.render(scene,camera);}requestAnimationFrame(frame);}
+function frame(stamp){const dt=Math.min((stamp-lastStamp)/1000,.05);lastStamp=stamp;if(!qa){if(state!=='paused')update(dt);renderer.render(scene,camera);captionTone.sample();}requestAnimationFrame(frame);}
 // Saved settings take effect before the first frame; Continue appears if the night was begun.
 for(const k of ['sensitivity','quality'])applySetting(k,ui.settings[k]);showContinue();
 // QA: ?jump=<section> starts straight at a moment (see chapter1.js SECTIONS, plus alex-departure).
@@ -553,9 +566,9 @@ const jumpParam=typeof location!=='undefined'&&(location.search||'').match(/[?&]
 requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
-if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);return renderer.info.render;},press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
+if(qa)window.lastLight={step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
  get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside})),
-  onFoot:{stamina:foot.stamina,crouch:foot.crouch,height:foot.height,sprint:foot.sprint,owned:foot.owned,on:foot.on},roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state,chapter2:chapter2.state,memory:memory.state,day:ctx.day||0};},
+  onFoot:{stamina:foot.stamina,crouch:foot.crouch,height:foot.height,sprint:foot.sprint,owned:foot.owned,on:foot.on},roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state,chapter2:chapter2.state,chapter3:chapter3.state,tension:tension.state,captionTone:captionTone.state,memory:memory.state,day:ctx.day||0};},
  jump:jumpTo,chapter,chapter2,memory,get memCast(){return memCast;},roam,nav,drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},
  face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else{roam.a=a;}},placePlayer,start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,contact,audio:()=>audio,renderer,scene,playerBike,self,foot,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},
  // QA only: put the bike somewhere on the street (screenshots of sidewalk riding etc.).

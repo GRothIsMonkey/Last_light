@@ -184,7 +184,8 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  function footLook(c,ctx){const at=c.gaze||c.lookAt||(c.lookPlayer||ctx.speaker===c.name||Math.hypot(ctx.eye.x-c.px,ctx.eye.z-c.pz)<6?ctx.eye:null);return at?clamp(-wrap(headingTo(c.px,c.pz,at.x,at.z)-c.pa),-1.3,1.3):0;}
  function stepToward(c,dt,ctx,tx,tz,v){c.walkV=damp(c.walkV||0,v,v>c.walkV?3:6,dt);const want=headingTo(c.px,c.pz,tx,tz),turn=wrap(want-c.pa);if(c.walkV>.05||Math.abs(turn)>.5)c.pa+=clamp(turn,-3*dt,3*dt);
   const step=c.walkV*(Math.abs(turn)>1.2?.3:1)*dt,nx=c.px+Math.sin(c.pa)*step,nz=c.pz-Math.cos(c.pa)*step;const oldX=c.px,oldZ=c.pz,peers=[{x:ctx.player.x,z:ctx.player.z,r:.7},...(ctx.obstacles||[]),...all.filter(q=>q!==c&&q.active&&q.mode==='foot').map(q=>({x:q.px,z:q.pz,r:.7}))],free=(x,z)=>nav.walkable(x,z,{r:.28})&&!peers.some(o=>Math.hypot(o.x-x,o.z-z)<o.r&&Math.hypot(o.x-x,o.z-z)<Math.hypot(o.x-c.px,o.z-c.pz));
-  if(free(nx,nz)){c.px=nx;c.pz=nz;}else{let moved=false;for(const off of [.6,-.6,1,-1]){const a=c.pa+off,x=c.px+Math.sin(a)*step,z=c.pz-Math.cos(a)*step;if(free(x,z)){c.px=x;c.pz=z;moved=true;break;}}if(!moved)c.walkV=0;}
+  // Blocked: a step to either side, then (pressed against a parked car or a fence end) a step along it.
+  if(free(nx,nz)){c.px=nx;c.pz=nz;}else{let moved=false;for(const off of [.6,-.6,1,-1,1.6,-1.6]){const a=c.pa+off,x=c.px+Math.sin(a)*step,z=c.pz-Math.cos(a)*step;if(free(x,z)){c.px=x;c.pz=z;moved=true;break;}}if(!moved)c.walkV=0;}
   c.gait+=Math.hypot(c.px-oldX,c.pz-oldZ)/stride(Math.max(c.walkV,.8));const look=footLook(c,ctx);if(c.walkV>.08)walkPose(c.pose,c.gait,Math.max(c.walkV,.8),{look:look*.6});else{standPose(c.tmp,ctx.clock+c.R.phase,{look});blendPose(c.pose,c.pose,c.tmp,1-Math.exp(-6*dt));}
   feet(c,c.pose);applyPose(c.person,c.pose);}
  // ---- scripted steps (each returns true when finished) -------------------------------------

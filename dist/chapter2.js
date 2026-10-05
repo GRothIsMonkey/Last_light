@@ -101,7 +101,9 @@ export function createChapter2(o,k){
  fresh();
  const api={SECTIONS:SECTIONS2,day:0,get state(){return {phase:S.phase,flags:{...C.flags},foundVisible:found.group.visible,tape:tape.visible,flyers:flyers.visible,day:api.day,bellAt:C.bellAt,memory:C.memory,
   searchers:extra.filter(a=>a.visible).length,beams:beams.filter(b=>b.on).length};}};
- const owns=ph=>typeof ph==='string'&&(ph.startsWith('c2-')||ph.startsWith('m-'));
+ // Chapter Three (chapter3.js) follows straight on from this one: its phases are handed on to it.
+ const mine=ph=>typeof ph==='string'&&(ph.startsWith('c2-')||ph.startsWith('m-'));
+ const owns=ph=>mine(ph)||!!api.next?.owns(ph),later=()=>!mine(S.phase)&&!!api.next?.owns(S.phase);
  function card(on,{eyebrow='',title='Chapter Two'}={}){const el=$('chapter-card');if(!el)return;if(on){const e=el.querySelector?.('.eyebrow'),h=el.querySelector?.('h2');if(e)e.textContent=eyebrow;if(h)h.textContent=title;el.classList.add('on');}else el.classList.remove('on');C.cardOn=on;}
  const checkpoint=id=>k.checkpointTo(id,LABEL[id]);
  // Continue knows these from the start (after a reload too), not only once they have been reached.
@@ -253,6 +255,7 @@ export function createChapter2(o,k){
  function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase,p=me();
   for(let i=timers.length-1;i>=0;i--)if(C.t>=timers[i].at){const f=timers[i].fn;timers.splice(i,1);f();}
   for(const a of extra)a.update(dt,{eye:camera.position});updateBeams(dt);
+  if(later()){api.next.update(dt);return;}
   if(ph==='c2-black'){if(C.pt>.8&&C.card<0){C.card=0;card(true);}if(C.card>=0){C.card+=dt;if(C.card>4.3&&C.cardOn)card(false);}
    if(C.fadeIn>=0){C.fadeIn+=dt;o.fade(1-smooth(C.fadeIn/2.6));if(C.fadeIn>=2.6){o.fade(0);decide();}}}
   else if(ph==='c2-follow'){const L=inEase();if(L&&L.s>1.4){go('c2-easement');objective('Search beyond the fence.');}else{C.lingerT+=dt;if(C.lingerT>24&&!C.flags.nudge&&!busy()){C.flags.nudge=true;talk([{who:'JAMIE',text:'“Through the fence. Come on.”',from:jamie,time:2.2}]);}}}
@@ -287,24 +290,28 @@ export function createChapter2(o,k){
   }
   if(ph==='m-after'&&C.endT>=0){C.endT+=dt;o.fade(smooth(C.endT/3.4));if(C.endT>4){go('m-end');end();}}
   A.night=api.day?0:1;A.day=api.day;if(api.day){S.deep=A.deep=0;}}
- function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Two';if(pp)pp.textContent='August 22, 2011.';}o.finish();}
+ function end(){if(api.next){api.next.begin();return;}// no end card: Chapter Three picks up a few minutes later
+  const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Two';if(pp)pp.textContent='August 22, 2011.';}o.finish();}
  // ---- what F does here ---------------------------------------------------------------------------------
- function spots(){const out=[],ph=S.phase;
+ function spots(){if(later())return api.next.spots();const out=[],ph=S.phase;
   if(ph==='c2-bike'){const m=mountPoint();out.push({id:'c2-inspect',label:'Look closer',at:found.group.position,face:m,r:2.4});}
   if(ph==='m-briarwood'&&C.flags.corner&&!C.memory)out.push({id:'c2-remember',label:'Remember',at:corner.at,face:corner.look,r:11,ride:true,wide:true});
   return out;}
- function act(id){if(id==='c2-inspect')inspect();else if(id==='c2-remember')remember();}
- function sources(out){if(api.day){// a sprinkler or two, the mower far off, radio at the corner
+ function act(id){if(later()){api.next.act(id);return;}if(id==='c2-inspect')inspect();else if(id==='c2-remember')remember();}
+ function sources(out){if(later()){api.next.sources(out);return;}if(api.day){// a sprinkler or two, the mower far off, radio at the corner
    out.push({id:'radio-am',kind:'radio',pos:officer.pos,level:.8});return;}
   if(S.phase.startsWith('c2-')){const w=SP.water,m=SP.mouth;out.push({id:'channel',kind:'water',pos:new THREE.Vector3(w.x,w.y,w.z),level:.7},{id:'culvert',kind:'culvert',pos:new THREE.Vector3(m.x,m.bed+1,m.z),level:1});
    if(officer.visible)out.push({id:'radio2',kind:'radio',pos:officer.pos,level:.8});}}
- function blockers(){const out=[];if(found.group.visible)out.push(...foundParts);for(const a of extra)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});return out;}
+ function blockers(){const out=[];if(found.group.visible)out.push(...foundParts);for(const a of extra)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});if(api.next)out.push(...api.next.blockers());return out;}
  // ---- lifecycle ------------------------------------------------------------------------------------------
- function reset(){fresh();timers=[];card(false);found.group.visible=false;tape.visible=false;flyers.visible=false;for(const e of beams){e.on=false;e.beam.visible=false;e.torch.visible=false;e.ready=false;}
+ function reset(){api.next?.reset();fresh();timers=[];card(false);found.group.visible=false;tape.visible=false;flyers.visible=false;for(const e of beams){e.on=false;e.beam.visible=false;e.torch.visible=false;e.ready=false;}
   for(const a of extra){a.show(false);a.lookAt=null;a.gest(null);a.mode='stand';a.path=null;}S.jamieAim=null;S.samAim=null;api.day=A.day=0;ambient.morning?.(false);
   const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Two';if(pp)pp.textContent='August 22, 2011.';}}
  // QA jumps and Continue.
- function jump(section){section=ALIAS[section]||section;fresh();timers=[];card(false);const k1=k;
+ // Chapter Three's sections go to it, once this chapter's own state is cleared.
+ const handles=section=>SECTIONS2.includes(section)||!!ALIAS[section]||!!api.next?.handles?.(section);
+ function jump(section){if(api.next?.handles?.(section)&&!SECTIONS2.includes(section)&&!ALIAS[section]){fresh();timers=[];card(false);api.next.jump(section);return;}
+  api.next?.reset();section=ALIAS[section]||section;fresh();timers=[];card(false);const k1=k;
   if(['morning','morning-oak','memory-start','memory-reconstruction','chapter2-end'].includes(section)){k1.nightWorld();morningWorld();
    if(section==='morning'){wakeUp();C.fadeIn=-1;o.fade(0);return;}
    C.flags.oakTalk=true;
@@ -337,7 +344,9 @@ export function createChapter2(o,k){
  // While remembering, the present is not there; afterwards it is exactly as it was.
  function presentVisible(on){if(!on){hidden=presentObjects().filter(g=>g.visible);for(const g of hidden)g.visible=false;}else{for(const g of hidden||[])g.visible=true;hidden=null;}}
  Object.assign(api,{owns,begin,update,spots,act,sources,blockers,reset,jump,memoryDone,presentVisible,jamieSweep,officerAim:()=>{if(C.flags.reported)return found.group.position;if(C.flags.called){const p=me();return {x:p.x,y:nav.groundY(p.x,p.z)+.5,z:p.z};}const s=clamp((nav.locate(officer2.x,officer2.z).s||0)+4,1,32);return W2(s,F.pathT(s)+[.5,2,-1][Math.floor(C.t/3.6)%3]);},
-  canDismount:()=>!['c2-bell','m-memory'].includes(S.phase),canRemount:()=>!S.phase.startsWith('c2-'),
-  found,tape,flyers,extra,beams,homeHouse,corner,LABEL,ALIAS});
+  canDismount:()=>later()?api.next.canDismount():!['c2-bell','m-memory'].includes(S.phase),canRemount:()=>later()?api.next.canRemount():!S.phase.startsWith('c2-'),handles,morningWorld,
+  found,tape,flyers,extra,beams,samBeam,homeHouse,corner,LABEL,ALIAS});
+ // Jamie's flashlight sweep and the officer's aim belong to whichever chapter has the phase.
+ {const js=api.jamieSweep,oa=api.officerAim;api.jamieSweep=t=>later()?api.next.jamieSweep(t):js(t);api.officerAim=()=>later()?api.next.officerAim?.()??null:oa();}
  return api;
 }

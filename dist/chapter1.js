@@ -380,7 +380,7 @@ export function createChapter1(o){
   clue.visible=false;track.visible=false;flies.visible=false;beamJ.visible=false;beamO.visible=false;torch.visible=false;glint.visible=false;lens.emissiveIntensity=0;
   document.body?.classList?.remove('night1');ambient.night?.(false);nightRendering?.(false);roam.lock=false;roam.walkLock=false;roam.brake=0;}
  // QA and Continue: put the night exactly at one of its moments.
- function jump(section){if(api.next&&(api.next.SECTIONS.includes(section)||api.next.ALIAS?.[section])){api.next.jump(section);return;}fresh();comp.reset();nightWorld();S.flags.night=true;const put=(q,a,mode='ride',speed=0)=>placePlayer({x:q.x,z:q.z,a,mode,speed});
+ function jump(section){if(api.next&&(api.next.SECTIONS.includes(section)||api.next.ALIAS?.[section]||api.next.handles?.(section))){api.next.jump(section);return;}fresh();comp.reset();nightWorld();S.flags.night=true;const put=(q,a,mode='ride',speed=0)=>placePlayer({x:q.x,z:q.z,a,mode,speed});
   const ride=(c,q,a)=>{comp.putRiding(c,q.x,q.z,a,0);c.follow='ride';};
   if(section==='ride-home'){toRideHome();go('home');}
   else if(section==='police'){const q=main(652,-2.1);put(q,heading(652)+Math.PI,'ride',4.4);date('home');go('home');S.flags.qaPolice=true;sendCruiser(300);}
