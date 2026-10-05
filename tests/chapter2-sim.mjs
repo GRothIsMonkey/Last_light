@@ -89,10 +89,11 @@ export function playChapterTwo(T,label){
   assert.ok(log.captions.some(c=>c.includes('Alright, I’m this way…')));});
  check(`${label}: back in the morning exactly where you were; nothing in the present changed`,()=>{assert.ok(Math.hypot(after.x-before.x,after.z-before.z)<.05,'player moved');assert.ok(Math.abs(after.a-before.a)<.01);for(const k of ['jamie','sam'])assert.ok(Math.hypot(after[k][0]-before[k][0],after[k][1]-before[k][1])<.05,k+' moved');
   assert.equal(h.snapshot.state.startsWith('c1-'),true);assert.equal(h.memCast.list.some(f=>f.person.group.visible||f.bike.group.visible),false);assert.equal(C2().flyers,true);assert.ok(!document.body.classList.contains('remembering'));});
- until(()=>h.snapshot.state==='ended',40);
- check(`${label}: "Sam was right." ... "He heard it before he left." Then LAST LIGHT / Chapter Two`,()=>{for(const l of ['YOU: “Sam was right.”','JAMIE: “He stopped.”','YOU: “He was looking toward the creek.”','JAMIE: “And earlier he asked if we heard something.”','JAMIE: “He heard it before he left.”'])assert.ok(said().includes(l),l);
-  assert.equal(h.snapshot.state,'ended');assert.equal(element('ending').hidden,false);});
- check(`${label}: Chapter Two ran through its phases in order`,()=>assert.deepEqual(log.phases.filter(p=>p.startsWith('c2-')||p.startsWith('m-')),['c2-black','c2-decide','c2-follow','c2-easement','c2-bike','c2-bell','c2-police','c2-search','c2-home','c2-dawn','m-home','m-briarwood','m-memory','m-after','m-end']));
+ // Chapter Two no longer stops on an end card: the screen goes dark and Chapter Three picks up (chapter3-sim.mjs).
+ until(()=>C1().phase==='c3-black',40);
+ check(`${label}: "Sam was right." ... "He heard it before he left." Then the picture goes, and Chapter Three begins (no end menu)`,()=>{for(const l of ['YOU: “Sam was right.”','JAMIE: “He stopped.”','YOU: “He was looking toward the creek.”','JAMIE: “And earlier he asked if we heard something.”','JAMIE: “He heard it before he left.”'])assert.ok(said().includes(l),l);
+  assert.notEqual(h.snapshot.state,'ended');assert.equal(element('ending').hidden,true);assert.ok(+element('fade').style.opacity>.99,'black');});
+ check(`${label}: Chapter Two ran through its phases in order`,()=>assert.deepEqual(log.phases.filter(p=>p.startsWith('c2-')||p.startsWith('m-')),['c2-black','c2-decide','c2-follow','c2-easement','c2-bike','c2-bell','c2-police','c2-search','c2-home','c2-dawn','m-home','m-briarwood','m-memory','m-after']));// (m-end is now the same-frame hand-off to Chapter Three: c3-black)
  check(`${label}: nothing went missing or non-finite in Chapter Two`,()=>assert.deepEqual(log.bad,[]));
  metrics['chapter2 lines spoken']=log.said.length;metrics['chapter2 objectives']=log.objectives;
  return log;

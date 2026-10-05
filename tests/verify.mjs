@@ -31,7 +31,7 @@ globalThis.window={};globalThis.devicePixelRatio=2;globalThis.innerWidth=1440;gl
 globalThis.FakeRenderer=class{constructor(){this.shadowMap={};this.capabilities={maxTextureSize:8192};this.pixelRatio=1;}setPixelRatio(r){this.pixelRatio=r;}setSize(){}render(){}};
 let source=fs.readFileSync(root+'game.js','utf8').replaceAll(/'\.\/([\w.\-]+)\.js'/g,(_,name)=>JSON.stringify(pathToFileURL(root+name+'.js').href)).replace('new THREE.WebGLRenderer','new globalThis.FakeRenderer');
 source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,contact,selfPose,self,foot,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},place(d,lat,v=4.5){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;},get bikeY(){return bikeY;},
- jump:jumpTo,chapter,chapter2,memory,get memCast(){return memCast;},skyMat,hemi,face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else roam.a=a;},look(y,p=0){mouseYaw=y;mousePitch=p;},get prompt(){return promptItems();},roam,nav,placePlayer,action:()=>action(),drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},get night(){return {state,wx,wz,wa,speed,fade,roam:{...roam}};}};`;
+ jump:jumpTo,chapter,chapter2,chapter3,tension,captionTone,get audioRef(){return audio;},memory,get memCast(){return memCast;},skyMat,hemi,face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else roam.a=a;},look(y,p=0){mouseYaw=y;mousePitch=p;},get prompt(){return promptItems();},roam,nav,placePlayer,action:()=>action(),drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},get night(){return {state,wx,wz,wa,speed,fade,roam:{...roam}};}};`;
 const t0=Date.now();
 await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const buildMs=Date.now()-t0;
@@ -46,6 +46,9 @@ const drag=(dx,dy=0)=>{canvas.events.get('pointerdown')({clientX:0,clientY:0,poi
 const setField=(id,value)=>{const el=element(id);if(typeof value==='boolean')el.checked=value;else el.value=String(value);el.events.get('input')?.({target:el});};
 const W=h.world,visible=W.merged.filter(m=>m.visible!==false&&!m.material.transparent);
 advance(.05);
+// ONLY=chapter3: a quick loop for Chapter Three alone (from the end of Chapter Two), for development.
+if(process.env.ONLY==='chapter3'){const {playChapterThree,runChapterThreeChecks}=await import('./chapter3-sim.mjs');const T3={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
+ if(!process.env.SKIPPLAY){h.jump('chapter2-end');playChapterThree(T3,'chapter three alone');}if(!process.env.SKIPCHECKS)await runChapterThreeChecks(T3);console.log(JSON.stringify({passed:checks.length,checks,metrics},null,1));process.exit(0);}
 
 // ------------------------------------------------------------------------------------------
 // World: roads, ground, houses, continuity
@@ -363,7 +366,8 @@ function chapterOne(label){
 }
 const firstStart=simTime;
 const {playChapterTwo,runChapterTwoChecks}=await import('./chapter2-sim.mjs'),T2={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
-const J1=JUNCTIONS[0];const r1=ride('first ride');finalStop('first ride');chapterOne('first ride');playChapterTwo(T2,'first ride');metrics['first playthrough minutes']=+((simTime-firstStart)/60).toFixed(2);
+const {playChapterThree,runChapterThreeChecks}=await import('./chapter3-sim.mjs');
+const J1=JUNCTIONS[0];const r1=ride('first ride');finalStop('first ride');chapterOne('first ride');playChapterTwo(T2,'first ride');playChapterThree(T2,'first ride');metrics['first playthrough minutes']=+((simTime-firstStart)/60).toFixed(2);
 check('first ride: the head turns toward friends heading home when you are not looking around yourself',()=>assert.ok(r1.glanced>30));
 check('first ride: memory lines appear once each, never over a friend\'s line',()=>{const texts=reflections.filter(r=>r.id!=='last').map(r=>r.text);assert.ok(r1.reflectionsSeen.length>=3,'reflections '+r1.reflectionsSeen.length);assert.equal(new Set(r1.reflectionsSeen).size,r1.reflectionsSeen.length);for(const x of r1.reflectionsSeen)assert.ok(texts.includes(x));assert.equal(r1.overlap,0);metrics.reflectionsShown=r1.reflectionsSeen.length;});
 check('no friend was hidden before going inside (Alex only once he is out of sight down Briarwood)',()=>{assert.deepEqual(r1.hiddenBad,[]);const g=r1.goneSeen.find(x=>x.who==='ALEX');assert.ok(g,'Alex never left the story');assert.ok(!g.inFrustum||g.occluded,'Alex vanished in plain view '+JSON.stringify(g));metrics.alexGoneView=g;});
@@ -487,6 +491,9 @@ for(const [section,label] of [['alex-house','Briarwood Lane'],['jamie','Jamie’
 // Chapter Two, beat by beat: the bike, the reflector, the culvert and the bell, the morning, the memory,
 // every QA jump and checkpoint, Continue and Start over.
 await runChapterTwoChecks(T2);
+// Chapter Three on its own: every QA jump and checkpoint, Start over from inside, the heartbeat, voices,
+// bells and recordings as audio signals, the tension system, the caption tone, seeded randomized runs.
+await runChapterThreeChecks(T2);
 
 const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(root+n).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(root+n)).digest('hex')]));
 console.log(JSON.stringify({runtimeHashes,passed:checks.length,checks,metrics,testMethod:'Actual Three.js geometry and full state updates with a mocked WebGL renderer and DOM.'},null,2));
