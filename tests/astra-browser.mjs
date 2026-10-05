@@ -1,4 +1,5 @@
 import {runChapterTwoBrowser} from './chapter2-browser.mjs';
+import {runChapterThreeBrowser} from './chapter3-browser.mjs';
 // Astra-specific visual, embodiment and navigation regression checks.
 // Routes follow street signs and permanent property landmarks; no jump/placePlayer calls.
 export async function runAstraChecks({page,snap,check,camAt,state,errors}){
@@ -61,7 +62,9 @@ export async function runAstraChecks({page,snap,check,camAt,state,errors}){
   await ev(()=>{if(!__astra.until(()=>lastLight.state.chapter.phase==='c2-black',35))throw Error('hand-over to Chapter Two did not occur');});
   check(`natural run ${pass}: complete prologue through the end of Chapter One (into Chapter Two) without a QA jump`,(await state()).chapter.phase==='c2-black');
   await runChapterTwoBrowser({page,snap:(name,opts)=>snap('natural-'+pass+'-'+name,opts),check,state,errors,exploratory:pass===2});
-  check(`natural run ${pass}: complete prologue through Chapter Two ending without a QA jump`,(await state()).state==='ended');
+  // Chapter Two hands over to Chapter Three; the same run goes on to its end card.
+  await runChapterThreeBrowser({page,snap:(name,opts)=>snap('natural-'+pass+'-'+name,opts),check:(n,v)=>check(`natural run ${pass}: `+n,v),state,errors});
+  check(`natural run ${pass}: complete prologue through Chapter Three ending without a QA jump`,(await state()).state==='ended'&&(await page.locator('#ending h2').textContent())==='Chapter Three');
  }
  const formations=await ev(()=>__astra.telemetry);console.log('Formation telemetry',JSON.stringify(formations));
  check('Jamie uses varied lateral formation on the journey to Sam and the oak',formations['jamie-ride']?.maxSide-formations['jamie-ride']?.minSide>1.5);

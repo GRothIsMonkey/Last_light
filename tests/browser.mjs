@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 import {runAstraChecks} from './astra-browser.mjs';
 import {runSceneChecks} from './polish-scenes.mjs';
 import {runChapterTwoBrowser,runChapterTwoJumps,runChapterTwoCloseups} from './chapter2-browser.mjs';
+import {runChapterThreeBrowser,runChapterThreeJumps,runChapterThreeAudio} from './chapter3-browser.mjs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 let playwright;try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
@@ -161,7 +162,9 @@ try{
  await c1(()=>window.__c1.until(()=>lastLight.state.chapter.phase==='c2-black',40));
  check('Chapter 1 hands over to Chapter Two after the bell and the fade (no end menu)',(await state()).state.startsWith('c1-')&&!(await page.locator('#ending').isVisible()));
  await runChapterTwoBrowser({page,snap,check,state,errors});
- check('Chapter Two ends on its own card',(await state()).state==='ended'&&await page.locator('#ending').isVisible());
+ // Chapter Two hands over to Chapter Three, which this walkthrough plays to its own end card.
+ const chapter3Run=await runChapterThreeBrowser({page,snap,check,state,errors});
+ check('Chapter Three ends on its own card',(await state()).state==='ended'&&await page.locator('#ending').isVisible()&&(await page.locator('#ending h2').textContent())==='Chapter Three');
  const ended=await state();await page.evaluate(()=>lastLight.step(20));check('ending freezes the world',(await state()).finaleT===ended.finaleT&&JSON.stringify((await state()).roam)===JSON.stringify(ended.roam));
  await page.click('#again');await page.evaluate(()=>lastLight.step(.1));const replay=await state();check('replay resets story and clue',replay.distance===0&&!replay.clue&&replay.friends.every(f=>!f.inside&&f.mode==='ride'));
  check('replay resets environment',await page.evaluate(()=>lastLight.ambient.state.kidVisible&&lastLight.ambient.state.car==='wait'&&lastLight.ambient.state.sprinklers.every(v=>v>.99)&&!lastLight.friends.mom.slammed));
@@ -181,6 +184,7 @@ try{
  check('unusual angles render without errors',errors.length===0);
  await runChapterTwoJumps({page,snap,check,state,errors});
  await runChapterTwoCloseups({page,snap,check,state,errors});
+ const chapter3=await runChapterThreeJumps({page,snap,check,state,errors,out,fs,path});const chapter3Audio=await runChapterThreeAudio({page,check,out,fs,path});
  await page.evaluate(()=>{lastLight.toTitle();lastLight.step(.2);});check('Continue is offered on the title after reaching the night',await page.locator('#continue').isVisible());await snap('c1-22-title-continue');
  // Character close-ups: the camera is set beside each person for a single rendered frame.
  const portrait=async(name,who,off)=>{await page.evaluate(async([who,off])=>{const T=await import('./three.module.js');const F=lastLight.friends.list;const person=who==='mom'?lastLight.friends.mom.person:F.find(f=>f.key===who).person;
@@ -265,5 +269,5 @@ try{
  function wav(pcm){const b=Buffer.alloc(44+pcm.length);b.write('RIFF',0);b.writeUInt32LE(36+pcm.length,4);b.write('WAVEfmt ',8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(2,22);b.writeUInt32LE(48000,24);b.writeUInt32LE(192000,28);b.writeUInt16LE(4,32);b.writeUInt16LE(16,34);b.write('data',36);b.writeUInt32LE(pcm.length,40);pcm.copy(b,44);return b;}
  const audioDir=path.join(out,'audio');fs.mkdirSync(audioDir,{recursive:true});for(const c of audioReport){fs.writeFileSync(path.join(audioDir,c.name+'.wav'),wav(Buffer.from(c.pcm,'base64')));delete c.pcm;check('audio finite and unclipped: '+c.name,c.nonFinite===0&&c.peak<.95&&c.peak>1e-5);}
  fs.writeFileSync(path.join(out,'errors.json'),JSON.stringify(errors,null,2));check('no JavaScript or shader errors',errors.length===0);
- const report={runtimeHashes,browser:browser.version(),gpu,passed:checks.length,checks,frames,sceneInventory,audio:audioReport,errors,audioLimitation:'Offline Web Audio signal checks and recorded clips; no claim of perceptual listening.'};fs.writeFileSync(path.join(out,'browser-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+ const report={runtimeHashes,browser:browser.version(),gpu,passed:checks.length,checks,frames,sceneInventory,audio:audioReport,chapter3:{run:chapter3Run,captions:chapter3.captions,captionSweep:chapter3.sweep,audio:chapter3Audio},errors,audioLimitation:'Offline Web Audio signal checks and recorded clips; no claim of perceptual listening.'};fs.writeFileSync(path.join(out,'browser-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
 }finally{await browser.close();server.close();}

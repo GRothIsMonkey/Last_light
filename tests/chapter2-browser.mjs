@@ -102,12 +102,12 @@ export async function runChapterTwoBrowser({page,snap,check,state,errors,explora
  await ev(()=>__c2.until(()=>lastLight.state.chapter.phase==='m-after',40));await ev(()=>__c2.until(()=>lastLight.state.fade<.01,6));await snap('c2-23-back-in-the-morning');
  const after=await ev(()=>({me:__c2.me(),j:[lastLight.state.chapter.jamie.x,lastLight.state.chapter.jamie.z]}));
  check('Chapter Two: back in the morning exactly where you were',Math.hypot(after.me.x-before.me.x,after.me.z-before.me.z)<.05&&Math.hypot(after.j[0]-before.j[0],after.j[1]-before.j[1])<.05&&!(await ev(()=>document.body.classList.contains('remembering'))));
- await ev(()=>__c2.until(()=>lastLight.state.state==='ended',40));
- await page.waitForFunction(()=>!document.querySelector('#ending').hidden&&Number(getComputedStyle(document.querySelector('#ending')).opacity)>.99);
- await snap('c2-24-chapter-two-end');
- check('Chapter Two: "He heard it before he left." then LAST LIGHT / Chapter Two',await ev(()=>['YOU: “Sam was right.”','JAMIE: “He stopped.”','YOU: “He was looking toward the creek.”','JAMIE: “He heard it before he left.”'].every(l=>__c2.said.includes(l)))&&(await page.locator('#ending h2').textContent())==='Chapter Two'&&!(/to be continued/i.test(await page.locator('#ending').textContent())));
+ // Chapter Two no longer stops on an end card: the picture goes and Chapter Three begins (chapter3-browser.mjs).
+ await ev(()=>__c2.until(()=>lastLight.state.chapter.phase==='c3-black',40));await ev(()=>__c2.until(()=>lastLight.state.fade>.99,4));
+ await snap('c2-24-hand-over-to-chapter-three');
+ check('Chapter Two: "He heard it before he left." then the picture goes and Chapter Three begins (no end menu)',await ev(()=>['YOU: “Sam was right.”','JAMIE: “He stopped.”','YOU: “He was looking toward the creek.”','JAMIE: “He heard it before he left.”'].every(l=>__c2.said.includes(l)))&&!(await page.locator('#ending').isVisible())&&(await state()).state.startsWith('c1-'));
  const phases=await ev(()=>__c2.phases.filter(p=>p.startsWith('c2-')||p.startsWith('m-')));
- check('Chapter Two: every phase in order in the browser',JSON.stringify(phases)===JSON.stringify(['c2-black','c2-decide','c2-follow','c2-easement','c2-bike','c2-bell','c2-police','c2-search','c2-home','c2-dawn','m-home','m-briarwood','m-memory','m-after','m-end']));
+ check('Chapter Two: every phase in order in the browser',JSON.stringify(phases)===JSON.stringify(['c2-black','c2-decide','c2-follow','c2-easement','c2-bike','c2-bell','c2-police','c2-search','c2-home','c2-dawn','m-home','m-briarwood','m-memory','m-after']));// (m-end: the same-frame hand-off)
  check('Chapter Two playthrough: no JavaScript or shader errors',errors.length===0);
 }
 

@@ -32,7 +32,7 @@ export function chapterThreeTools(T){
 // From the end of Chapter Two (its final lines) to the end of Chapter Three.
 export function playChapterThree(T,label){
  const {h,press,release,tap,check,element,metrics}=T,X=chapterThreeTools(T),{C1,C3,log,until,wait,me,faceTo,walkTo,rideTo,brake,Q,SP,E,S1,sline,QW,offBike,clearBike,onBike,go,prompt,companionsFinite,companionGap}=X;
- const said=()=>log.said;const watchMax={gap:0,tension:[],amb:[],bad:0};
+ const said=()=>log.said;const watchMax={gap:0,tension:[],amb:[],bad:0},startClock=h.snapshot.clock;
  const sample=()=>{const c=C3(),g=companionGap(),ph=C1().phase;watchMax.byPhase??={};watchMax.byPhase[ph]=Math.max(watchMax.byPhase[ph]||0,+g.toFixed(1));
   // Apart only where the story parts them: the drive home in the afternoon, and home at night until the corner.
   if(!/^(c3-black|d3-home|c3-night|n3-home|n3-end)$/.test(ph)&&g>watchMax.gap){watchMax.gap=g;watchMax.worst={ph,me:h.nav.locate(me().x,me().z),c:h.chapter.companions.all.map(c=>[c.key,c.mode,c.follow,!!c.script,+c.speed.toFixed(2),h.nav.locate(c.mode==='ride'?c.bx:c.px,c.mode==='ride'?c.bz:c.pz)])};}if(!companionsFinite())watchMax.bad++;watchMax.tension.push([C1().phase,c.tension?.value??0,c.tension?.gain??0,c.tension?.bpm??0]);};
@@ -150,7 +150,7 @@ export function playChapterThree(T,label){
   assert.ok(h.tension.maxRate<=2.001,'no step in the heartbeat: '+h.tension.maxRate);});
  check(`${label}: Jamie and Sam stayed with you all chapter (never lost, never non-finite)`,()=>{assert.equal(watchMax.bad,0);assert.ok(watchMax.gap<30,'max gap '+watchMax.gap.toFixed(1)+' '+JSON.stringify(watchMax.byPhase)+' '+JSON.stringify(watchMax.worst));});
  check(`${label}: nothing went missing or non-finite in Chapter Three`,()=>assert.deepEqual(log.bad,[]));
- metrics['chapter3 lines spoken']=log.said.length;metrics['chapter3 tension curve']=curve;metrics['chapter3 escape seconds']=escape;metrics['chapter3 ambience order (seconds down the pond road when each layer passed half)']=ambOrder;metrics['chapter3 max companion gap']=+watchMax.gap.toFixed(1);
+ metrics['chapter3 lines spoken']=log.said.length;metrics['chapter3 tension curve']=curve;metrics['chapter3 escape seconds']=escape;metrics['chapter3 ambience order (seconds down the pond road when each layer passed half)']=ambOrder;metrics['chapter3 max companion gap']=+watchMax.gap.toFixed(1);metrics['chapter3 played minutes (scripted run, game time)']=+((h.snapshot.clock-startClock)/60).toFixed(1);
  return log;
 }
 
