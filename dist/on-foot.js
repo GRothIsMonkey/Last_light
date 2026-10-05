@@ -7,7 +7,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
  const light=new THREE.SpotLight(0xffefcf,0,17,.31,.8,2),torch=new THREE.Group();torch.name='player-flashlight';
  const shell=new THREE.Mesh(new THREE.CylinderGeometry(.026,.021,.17,12),new THREE.MeshStandardMaterial({color:0x33424a,roughness:.55,metalness:.35}));shell.rotation.x=Math.PI/2;torch.add(shell);
  const lens=new THREE.Mesh(new THREE.CylinderGeometry(.024,.024,.018,12),new THREE.MeshStandardMaterial({color:0xe9dfb9,roughness:.25}));lens.rotation.x=Math.PI/2;lens.position.z=-.091;torch.add(lens);scene.add(torch);torch.visible=false;
- const F={stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,light,torch,pose,
+ const F={exposure:null,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,light,torch,pose,
   attach(on){if(on){scene.add(light,light.target);}else{light.removeFromParent();light.target.removeFromParent();}},
   reset(){Object.assign(F,{stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1});F.ride();light.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
   ride(){if(self.group.parent!==bike.group)bike.group.add(self.group);self.group.position.set(0,0,0);self.group.rotation.set(0,0,0);torch.visible=false;},
@@ -39,7 +39,15 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
   lamp(dt,walking){
    torch.visible=walking&&F.owned;light.intensity=walking&&F.on?24:0;
    if(!torch.visible)return;self.group.updateMatrixWorld(true);self.parts.rhand.getWorldPosition(hand);
-   camera.getWorldDirection(direction);if(F.on&&direction.y<-.2){const distance=Math.max(.5,(hand.y-self.group.position.y)/-direction.y);light.intensity=clamp(distance*distance*1.1,.7,24);}
+   // The beam is only as strong as what it lands on can take: a level of light on whatever is nearest
+   // in it (the ground looked down at, a wall in the storm drain, a friend standing in it), so nothing
+   // close ever flares white. In the drain the beam reaches farther (the dark there is total).
+   camera.getWorldDirection(direction);let near=Infinity,max=24;light.distance=17;
+   if(F.on&&direction.y<-.2)near=Math.max(.5,(hand.y-self.group.position.y)/-direction.y);
+   const ex=F.on&&F.exposure?F.exposure(hand,direction):null;
+   light.angle=ex?.angle??.31;light.penumbra=ex?.penumbra??.8;
+   if(ex){if(ex.d!==undefined)near=Math.min(near,Math.max(.35,ex.d));if(ex.reach){light.distance=ex.reach;max=ex.max||max;}}
+   if(F.on){light.intensity=near<Infinity?clamp(near*near*1.1,.7,max):max;if(ex?.person!==undefined)light.intensity=Math.min(light.intensity,Math.max(.7,ex.person*ex.person*2.2));}
    torch.position.copy(hand);torch.lookAt(hand.clone().sub(direction));
    light.position.copy(hand).addScaledVector(direction,.1);const aim=hand.clone().addScaledVector(direction,12);if(dt===0)light.target.position.copy(aim);else light.target.position.lerp(aim,1-Math.exp(-16*dt));
   },

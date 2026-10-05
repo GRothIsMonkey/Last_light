@@ -363,6 +363,8 @@ export function createChapter1(o){
    sweep+=dt;let target=S.jamieAim||S.lookTarget;if(!target&&api.next?.owns(S.phase))target=api.next.jamieSweep(sweep);if(!target){const k=Math.floor(sweep/3.2)%4,pts=[[97.2,14.8],[99.1,18.6],[98,12.6],[96.4,19.4]];target=side(...pts[k]);target.y=nav.groundY(target.x,target.z);}
    aim.set(target.x,(target.y??nav.groundY(target.x,target.z))+.05,target.z);if(!S.flags.aimReady){aimS.copy(aim);S.flags.aimReady=true;}else aimS.lerp(aim,1-Math.exp(-3.5*dt));jamie.lookAt={x:aimS.x,z:aimS.z,y:aimS.y};
    H.position.copy(hand);H.target.position.copy(aimS);H.angle=.31;H.penumbra=.8;H.distance=18;H.decay=2;H.intensity=clamp(hand.distanceTo(aimS)*3.3,8,25);H.color.setHex(0xfff0d6);
+   // (Chapter Three, in the storm drain: a longer throw, as strong as the nearest wall in the beam allows.)
+   const lt=api.next?.owns(S.phase)?api.next.longThrow?.(hand,aimS):null;if(lt){H.distance=lt.reach;H.intensity=clamp(lt.d*lt.d*1.05,3,lt.max);H.angle=lt.angle||.31;}
    beamJ.visible=true;beamJ.position.copy(hand);beamJ.lookAt(aimS);beamJ.material.uniforms.uA.value=.035;}
   else{beamJ.visible=false;if(police.spotUser.who===jamie){police.spotUser.who=null;H.intensity=0;}}
   if(officer2.visible&&officer2.gesture==='flashlight'){officer2.person.parts.rhand.getWorldPosition(tmp);const a=officer2.a+Math.sin(S.t*.7)*.6+.5,dir=new THREE.Vector3(Math.sin(a),-.32,-Math.cos(a));

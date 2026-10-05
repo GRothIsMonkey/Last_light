@@ -95,7 +95,8 @@ export function createPolice(scene,world,nav,{sfx=()=>{}}={}){
    if(c.lights)live.push({c,dist,r,b});}
   // The two emergency lights go to the nearest flashing cars (both to one car if it is alone nearby).
   live.sort((p,q)=>p.dist-q.dist);const n=live.length;
-  emergency.forEach((L,i)=>{const e=n?live[Math.min(i,n-1)]:null;if(!e||e.dist>150){L.intensity=0;return;}const c=e.c,alone=n===1||live[1].dist>60;const side=alone?(i===0?-1:1):0;
+  emergency.forEach((L,i)=>{if(L.userData.borrowed)return;// (lent out for a moment: chapter3.js, the light a flashlight throws back off the walls of the drain)
+   const e=n?live[Math.min(i,n-1)]:null;if(!e||e.dist>150){L.intensity=0;return;}const c=e.c,alone=n===1||live[1].dist>60;const side=alone?(i===0?-1:1):0;
    const fx=Math.sin(c.a),fz=-Math.cos(c.a),rx=Math.cos(c.a),rz=Math.sin(c.a);L.position.set(c.x+rx*side*.45+fx*.1,c.y+1.9,c.z+rz*side*.45+fz*.1);
    const on=alone?(i===0?e.r:e.b):Math.max(e.r,e.b);L.color.setHex(alone?(i===0?0xff5441:0x527eff):e.r?0xff5441:0x527eff);L.intensity=on*29;});
   // Headlights: the spot goes with the car that asked for it.
@@ -103,6 +104,6 @@ export function createPolice(scene,world,nav,{sfx=()=>{}}={}){
   else if(!spotUser.who)head.intensity=0;
  }
  function reset(){for(const c of cars){c.show(false);c.lights=false;c.siren=false;c.headlights=true;c.path=null;c.parked=true;c.v=0;c.red.emissiveIntensity=0;c.blue.emissiveIntensity=0;}
-  for(const L of emergency)L.intensity=0;head.intensity=0;spotUser.who=null;}
+  for(const L of emergency){L.intensity=0;L.userData.borrowed=false;}head.intensity=0;spotUser.who=null;}
  return {makeCar,cars,update,reset,attach,emergency,head,spotUser,get attached(){return attached;}};
 }

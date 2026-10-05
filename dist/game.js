@@ -312,6 +312,13 @@ function updateFinale(dt){
 // the ride. Turning is a real turn rate now; with the bars straight the bike still settles along
 // the street it is on, and when stopped you can walk it round with your feet.
 const nav=createNav(world);
+// What the flashlight lands on (see on-foot.js): Jamie or Sam standing in the beam, and in the storm
+// drain its walls (and a longer reach there).
+{const _h=new THREE.Vector3();foot.exposure=(hand,dir)=>{const out={},K=chapter.kit;let pd=Infinity;
+ for(const c of [K?.jamie,K?.sam]){if(!c?.active||!c.person.group.visible)continue;c.person.group.getWorldPosition(_h);_h.y+=1.05;const dx=_h.x-hand.x,dy=_h.y-hand.y,dz=_h.z-hand.z,d=Math.hypot(dx,dy,dz);if(d>4.6||d<.05)continue;if((dx*dir.x+dy*dir.y+dz*dir.z)/d>Math.cos(.31+Math.atan(.32/d)))pd=Math.min(pd,d);}
+ if(pd<Infinity)out.person=pd;
+ if(world.drain?.inside(hand.x,hand.z,.05)){const d=world.drain.rayDist(hand,dir,44);out.d=Math.max(d,2.2);out.reach=46;out.max=d>15?150:80;out.angle=d>15?.34:.44;out.penumbra=.88;}// (a wider beam in there: the walls are close)
+ return out;};}
 const roam={x:0,z:0,a:0,omega:0,lock:false,brake:0,walkLock:false,steer:null,fadeIn:0};
 let wx=0,wz=0,wa=0;// on foot at night: position and heading
 const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
@@ -319,7 +326,7 @@ const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const tension=createTension();
 const chOpts={scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,$,renderer,tension,
  say:(who,text,time)=>say(who,text,time),player:()=>playerState(),roam,setDate:html=>{$('date').innerHTML=html;},finish:()=>finish('chapter'),fade:v=>{fade=v;$('fade').style.opacity=v;},
- placePlayer,nightRendering,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},playerLight:foot.light,memory:null};
+ placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},playerLight:foot.light,memory:null};
 const chapter=createChapter1(chOpts);
 // Chapter Two picks up seconds after the first one stops, with the same people, systems and night,
 // and runs to the next morning (chapter2.js). Chapter One hands it the phases that begin c2- or m-.
@@ -338,6 +345,15 @@ function placePlayer({x,z,a,mode='ride',speed:v=0,bike=null}){contact.reset();bi
 // At night the sun is gone: its shadows switch off and the night's own lights (police lights,
 // headlights, a flashlight) join the scene. Done while the screen is dark, so the shader change
 // is never seen.
+// Chapter Three at night: a flashlight taped to your handlebars while you ride (the same light you carry
+// on foot), and that light casts shadows (people, bikes, the walls of the drain).
+function barLamp(){const L=foot.light,riding=night1()&&state==='c1-ride'&&chapter.barLight&&foot.owned&&foot.on,near=riding?1.15:.25;
+ if(L.castShadow&&L.shadow.camera.near!==near){L.shadow.camera.near=near;L.shadow.camera.updateProjectionMatrix();}// (the bike's own front end casts no shadow into its light)
+ if(!riding)return;bikeRoot.updateMatrixWorld(true);_v.set(0,1.0,-.66);bikeRoot.localToWorld(_v);L.position.copy(_v);
+ const fx=Math.sin(roam.a),fz=-Math.cos(roam.a);L.target.position.set(_v.x+fx*11,_v.y-1.5,_v.z+fz*11);L.angle=.4;L.distance=28;L.intensity=34;}
+function flashShadow(on){const L=foot.light;if(L.castShadow===on)return;L.castShadow=on;
+ // (your own hand, arm and flashlight never shadow the light they hold; by day your shadow is the sun's again)
+ for(const g of [self.group,foot.torch])g.traverse(o=>{if(!o.isMesh)return;if(o.userData.castShadow0===undefined)o.userData.castShadow0=o.castShadow;o.castShadow=on?false:o.userData.castShadow0;});if(on){L.shadow.mapSize.set(512,512);Object.assign(L.shadow.camera,{near:.25,far:30});L.shadow.bias=-.0006;L.shadow.normalBias=.035;}if(!qa)try{renderer.compile?.(scene,camera);}catch{}}
 function nightRendering(on){foot.attach(on);sunlight.castShadow=!on;chapter.police.attach(on);if(on&&!qa)try{renderer.compile?.(scene,camera);}catch{}}
 // Remembering (Chapter Two, memory.js): the morning stops and you are back on the evening ride for
 // a minute, seeing it again from where you were. It runs on the evening's own ride, light and
@@ -465,7 +481,7 @@ function updateNightTransition(dt,down){transT+=dt;const T=down?1.35:1.05,u=smoo
   if(transT>=T){state='c1-walk';wx=st.x;wz=st.z;wa=-transFrom.yaw;walkPitch=transFrom.pitch;gait=0;moveT=0;chapter.onFoot?.(true);}}
  else{eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(_v);camera.position.lerpVectors(transFrom.pos,_v,u);eyeRig.getWorldQuaternion(_q);_e.set(transFrom.pitch,-wa,0,'YXZ');camera.quaternion.setFromEuler(_e).slerp(_q,u);
   kick=1-smooth((transT-.5)/.5);if(transT>.45)self.group.visible=true;if(transT>=T){mouseYaw=0;mousePitch=0;look=0;headPitch=0;kick=0;state='c1-ride';chapter.onFoot?.(false);}}}
-function nearNightBike(){return Math.hypot(wx-roam.x,wz-roam.z)<1.9;}
+function nearNightBike(){return Math.hypot(wx-roam.x,wz-roam.z)<(chapter.remountRange||1.9);}
 function nightAction(){
  // A few things can be done from the saddle once stopped (remembering, at the corner in Chapter Two).
  if(state==='c1-ride'){if(speed<.3&&!roam.lock){const spot=chapter.spot();if(spot){chapter.act(spot.id);return;}}if(speed<.3&&chapter.canDismount()){camera.updateMatrixWorld();speed=0;state='c1-dismount';transT=0;transFrom={pos:camera.position.clone(),yaw:-roam.a+look,pitch:headPitch};self.group.visible=false;sfx('kickstand',bikeRoot.position);}return;}
@@ -525,6 +541,10 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  hemi.intensity=(2.05-p*.56-night*.40)*(1-.26*deep)-day*.15;hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2).lerp(_c2.set(0xe9efff),day*.6);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p).lerp(_c2.set(0x272a38),deep*.5);sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p).lerp(_c2.set(0xfff3e2),day);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4)*(1-deep)+day*.25;
  const rf=n1?{x:roam.x,y:nav.groundY(roam.x,roam.z),z:roam.z}:roadFrame(Math.min(distance,1140));if(day>0)sunlight.position.set(rf.x-52,rf.y+60,rf.z-60);else sunlight.position.set(rf.x+44,rf.y+30-p*21,rf.z-85);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=(1.10-p*.06-night*.06-deep*.06)*(1-day)+1.02*day;
  if(mem){scene.fog.color.lerp(_c1.set(0xe1bd9e),.22);scene.fog.density*=.88;hemi.color.lerp(_c1.set(0xf1e4ce),.18);sunlight.color.lerp(_c1.set(0xffdeb0),.2);renderer.toneMappingExposure+=.025;}
+ // Chapter Three: under the trees on the old road the night closes in; inside the storm drain there is no
+ // light at all past its first few meters but what you carry (a faint blue at the mouth, then nothing).
+ if(n1){const cv=zoneState.cave,sh=chapter.shade||0;if(cv>0||sh>0){hemi.intensity*=(1-.86*cv)*(1-.42*sh);hemi.groundColor.lerp(_c1.set(0x0b0c10),Math.max(cv,sh*.5));sunlight.intensity*=1-cv;
+  scene.fog.color.lerp(_c1.set(0x040506),cv*.92).lerp(_c2.set(0x161a24),sh*.5*(1-cv));scene.fog.density=scene.fog.density*(1-cv)+.021*cv+.0045*sh*(1-cv);renderer.toneMappingExposure+=.32*cv;}}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
  else if(state==='walking')updateWalk(dt);
@@ -532,7 +552,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  else{eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(camera.position);eyeRig.getWorldQuaternion(camera.quaternion);}
  if(state==='walking'){const p=groundPoint(walkD,walkLat);foot.body(dt,{x:p.x,z:p.z,a:heading(walkD)-walkYaw,y:groundY(walkD,walkLat),speed:foot.speed||0,scripted:!!interact.pose});}
  if(state==='c1-walk')foot.body(dt,{x:chapter.pose?camera.position.x:wx,z:chapter.pose?camera.position.z:wz,a:chapter.pose?chapter.pose.yaw+wa-chapter.pose.from:wa,y:nav.groundY(wx,wz),speed:foot.speed||0,scripted:!!chapter.pose});
- foot.lamp(dt,state==='c1-walk');camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=n1?clamp(nav.locate(camera.position.x,camera.position.z).d,-300,1140):distance;ctx.speed=n1?0:speed;ctx.lateral=lateral;ctx.state=mem?'riding':state;
+ foot.lamp(dt,state==='c1-walk');barLamp();camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=n1?clamp(nav.locate(camera.position.x,camera.position.z).d,-300,1140):distance;ctx.speed=n1?0:speed;ctx.lateral=lateral;ctx.state=mem?'riding':state;
  friends.update(dt,ctx);if(mem&&memCast)memCast.update(dt,ctx);ambient.update(dt,ctx);ending.update(dt,{callDone,fade,ended:state==='ended',camera,night:n1||mem});
  if(n1){chapter.update(dt);if(roam.fadeIn>0){roam.fadeIn=Math.max(0,roam.fadeIn-dt/3.2);fade=roam.fadeIn;$('fade').style.opacity=fade;}}
  memory.update(dt);
@@ -541,7 +561,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  if(active()&&!mem)nostalgia.update(dt,{distance,clock},{captionBusy:captionTimer>0,enabled:ui.settings.memories});
  if(state!=='intro'){if(state==='walking')walkHint+=dt;const items=promptItems();ui.prompt(touch?null:items);setAct(items?.find(i=>i[0]==='F')?.[1]||'');}
  ui.update(dt);
- sky.position.copy(camera.position);
+ sky.position.copy(camera.position);cullZones();
  const minute=42+Math.floor(p*18);if(!n1)$('date').innerHTML=p>.83?'AUGUST, 2011 <i></i> AS YOU REMEMBER IT':`AUGUST 21, 2011 <i></i> ${minute<60?'7:':'8:'}${String(minute%60).padStart(2,'0')} PM`;
  // The body: tension eases toward what the story set; a sprint only takes your breath once you are already scared.
  tension.update(dt,{exertion:state==='c1-walk'&&foot.sprint&&tension.value>.15?1:0});
@@ -550,6 +570,20 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  if(audio&&!muted&&active()){camera.getWorldDirection(_v);audio.update(dt,{heart:tension.value>.001||tension.exertion>.01?tension.heart:null,amb:n1?chapter3.amb:null,speed:state==='c1-walk'?0:speed,pedal:bikeAudio.pedal,coasting:bikeAudio.coasting,onBike:onBike()||mem,surface:n1?nav.surface(roam.x,roam.z):Math.abs(lateral)>4.7?'grass':'asphalt',p,night,deep,finale:ctx.finale,listener:camera.position,forward:_v,friendsLeft:n1?0:mem?3:friends.list.filter(f=>!f.inside&&!f.gone).length,state:state==='c1-walk'?'walking':mem?'riding':state,crank:pedalPhase,sources:n1?[...ambient.sources,...chapter.sources]:ambient.sources,night1:n1,morning:day>0});}
 }
 const _c1=new THREE.Color(),_c2=new THREE.Color();
+// Chapter Three's woods and storm drain are far from Oak Hollow and drawn only near them: the woods by
+// distance, the drain only from its mouth or inside it. Deep in the drain (past its first bend, where
+// the way out cannot be seen) nothing outside it is drawn at all.
+const zoneState={cave:0,inDrain:false,s:-1,hidPlain:false};
+const zoned=world.merged.filter(m=>m.userData.zone),plainMerged=world.merged.filter(m=>!m.userData.zone),PORTAL=world.drain?.P;
+function cullZones(){if(!zoned.length)return;const p=camera.position,L=night1()?nav.locate(p.x,p.z):null,inD=L?.street==='drain',deepIn=inD&&L.s>97,woods=L?.street==='woods';
+ zoneState.inDrain=inD;zoneState.s=inD?L.s:-1;zoneState.cave=inD?smooth((L.s+1.2)/13):0;
+ const nearPortal=!!PORTAL&&Math.hypot(p.x-PORTAL.x,p.z-PORTAL.z)<95,range=(ctx.night||0)>.5?280:420;
+ for(const m of zoned){if(m.userData.zone==='tunnel'){m.visible=inD||(woods&&nearPortal);continue;}
+  if(deepIn){m.visible=false;continue;}const b=m.geometry.boundingSphere;m.visible=p.distanceTo(b.center)-b.radius<range;}
+ const far=deepIn||inD||(woods&&((L.s??0)>200||!!L.w?.patch));
+ // ...and the view itself ends sooner there (the dark and the walls end it anyway), so nothing far is drawn.
+ {const want=deepIn?70:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:390;if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(Math.min(1,want*.9/350));}}
+ if(far||zoneState.hidPlain){for(const m of plainMerged){if(m.userData.off){m.visible=false;continue;}if(deepIn){m.visible=false;continue;}if(far){const b=m.geometry.boundingSphere;m.visible=p.distanceTo(b.center)-b.radius<300;}else m.visible=true;}zoneState.hidPlain=far;}}
 // What the keys would do right now, shown only when it matters: a short riding tutorial,
 // then nothing until the end of the street.
 function promptItems(){
