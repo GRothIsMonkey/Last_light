@@ -10,6 +10,7 @@ import {groundPoint,heading} from './route.js';
 import {LOOKOUT} from './layout.js';
 import {smooth} from './kit.js';
 import {createBike,poseBike} from './rig.js';
+import {makeOldBike} from './old-bike.js';
 
 export function createEnding(scene,world){
  // Chalk "AR" next to the old initials.
@@ -25,7 +26,7 @@ export function createEnding(scene,world){
   for(const s of letters)for(let i=0;i<s.length-1;i++)for(const [x,y] of [s[i],s[i+1]]){const a=(x-.13)/R;cut.push(-Math.sin(a)*R,y,-Math.cos(a)*R);/* reads left to right from the swing side */}
   carve.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(cut,3)),new THREE.LineBasicMaterial({color:0x2e2620})));}
  // The bike that was not there.
- const old=createBike({style:'road-kid',frame:0x7a8a6e,bars:'swept',wheelR:.3,saddle:0x3a2e26,grips:0x8a8272,tire:0x3a3a38,extras:[]});
+ const old=makeOldBike();// one build for every appearance (old-bike.js)
  const bd=o.d+.9,blat=o.lat-1.9,bp=groundPoint(bd,blat);old.group.position.set(bp.x,world.groundY(bd,blat)+.03,bp.z);old.group.rotation.set(0,-heading(bd)+2.2,1.42,'YXZ');old.wheel=1.3;old.steerAngle=.5;old.crankAngle=.8;
  old.group.traverse(m=>{if(m.isMesh)m.castShadow=true;});scene.add(old.group);old.group.visible=false;old.group.name='the-other-bike';
  const oldPos=new THREE.Vector3(bp.x,world.groundY(bd,blat),bp.z);
@@ -39,11 +40,7 @@ export function createEnding(scene,world){
   for(const [a,b] of [[[x,.24,0],[x,.11,0]],[[x-.07,.20,0],[x+.07,.20,0]],[[x,.11,0],[x-.06,0,0]],[[x,.11,0],[x+.06,0,0]]])stroke(group,a,b);
  }
  drawing.add(fifth);const dp=groundPoint(1149.1,.65);drawing.position.set(dp.x,world.groundY(1149.1,.65)+.012,dp.z);drawing.rotation.set(-Math.PI/2,0,-heading(1149.1));scene.add(drawing);fifth.visible=false;
- // The same initials are scratched on the old bicycle's frame, tying the anomaly to AR.
- const tag=new THREE.Group();tag.name='other-bike-initials';tag.position.set(.029,.67,-.03);tag.rotation.y=Math.PI/2;
- const tagMat=new THREE.LineBasicMaterial({color:0xd9d3b9});const tp=[];
- for(const line of [[[0,0],[.022,.052],[.043,0]],[[.010,.023],[.033,.023]],[[.055,0],[.055,.052],[.086,.052],[.092,.033],[.055,.027],[.093,0]]])for(let i=0;i<line.length-1;i++)for(const [x,y] of [line[i],line[i+1]])tp.push(x,y,0);
- tag.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(tp,3)),tagMat));old.frame.add(tag);
+ // The same initials are scratched on the old bicycle's frame, tying the anomaly to AR (old-bike.js).
  let bikeShown=false,fifthShown=false,faint=0;const _v=new THREE.Vector3(),_d=new THREE.Vector3();
  // Called every frame at the end of the street.
  let gone=false;

@@ -270,7 +270,7 @@ export function createBike(spec,{grips=0x2b2b2d}={}){
   if(S.bars==='bmx'){tube(sp,toSteer(G,-.13,gr[1]-.02,gr[2]),toSteer(G,.13,gr[1]-.02,gr[2]),.01,barC);if(extras.includes('pad'))tube(sp,toSteer(G,-.1,gr[1]-.02,gr[2]),toSteer(G,.1,gr[1]-.02,gr[2]),.024,0x2d4a7a,10);}}
  else tube(sp,toSteer(G,-(gr[0]-.05),gr[1],gr[2]),toSteer(G,gr[0]-.05,gr[1],gr[2]),.012,barC);
  for(const s of [-1,1])tube(sp,toSteer(G,s*(gr[0]-.07),gr[1],gr[2]),toSteer(G,s*(gr[0]+.045),gr[1],gr[2]),.019,S.grips??grips,8);
- if(extras.includes('bell')||!S.style)sp.push({geo:ball,color:0xc8c6bc,matrix:new THREE.Matrix4().compose(toSteer(G,-.15,gr[1]+.025,gr[2]),new THREE.Quaternion(),V(.026,.018,.026))});
+ if(extras.includes('bell')||!S.style)sp.push({geo:ball,color:S.bellColor??0xc8c6bc,matrix:new THREE.Matrix4().compose(toSteer(G,-.15,gr[1]+.025,gr[2]),new THREE.Quaternion(),V(.026,.018,.026))});
  if(extras.includes('reflector'))sp.push({geo:new THREE.BoxGeometry(.05,.07,.012),color:0xe8e4d8,matrix:new THREE.Matrix4().setPosition(toSteer(G,0,G.pivot[1]+.12,G.pivot[2]-.06))});
  // Brake levers and curved cable housings follow the steering assembly.
  for(const s of [-1,1]){

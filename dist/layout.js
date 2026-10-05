@@ -10,7 +10,7 @@ export const STREETS={main:'OAK HOLLOW DR',mainFull:'Oak Hollow Drive'};
 // lots: side-street lot centers (default every 26 m from 46); creek: the drainage strip.
 export const JUNCTIONS=[
  {d:595,side:1,name:'BRIARWOOD LN',full:'Briarwood Lane',half:4.2,length:250,bend:.9,bendAt:62,bendLen:50,rise:2.4,fall:1.8,corner:6.5,
-  lots:[46,70,127,154,180,206],fullTo:160,farFrom:150,curbCars:[[44,-1],[150,-1]],creek:{u:100,half:12.6,depth:1.7,end:29.5}},
+  lots:[46,70,127,154,180,206],fullTo:160,farFrom:160,curbCars:[[44,-1],[150,-1]],creek:{u:100,half:12.6,depth:1.7,end:29.5}},
  {d:870,side:-1,name:'SUMMERFIELD RD',full:'Summerfield Road',half:4.2,length:250,bend:-.34,bendAt:122,rise:2.1,fall:1.6,corner:6.5},
 ];
 // The main street starts well behind the first frame and ends in a cul-de-sac.
@@ -34,7 +34,7 @@ export const FRIEND_HOMES={
 // Alex's house, just around Briarwood's curve past the creek. The front door and the garage
 // both open for real; the garage keeps an empty hook where a bike would hang.
 export const SIDE_HOMES={
- alex:{junction:0,u:127,side:1,o:{style:'colonial',garageSide:'near',dynamicDoor:true,dynamicGarage:true,interior:'foyer',garageBike:'empty',porch:'porch',porchW:5.2,setback:18.4,w:11.4,gw:4,garage:true,fence:false,wall:0xd4cfc1,door:0x2f3d55,shutters:0x3a4a5a,alexWindow:true}},
+ alex:{junction:0,u:127,side:1,o:{style:'colonial',garageSide:'near',dynamicDoor:true,dynamicGarage:true,interior:'foyer',garageBike:'empty',porch:'porch',porchW:5.2,setback:18.4,w:11.4,gw:4,garage:true,fence:false,wall:0xd4cfc1,door:0x2f3d55,shutters:0x3a4a5a,alexWindow:true,garageRoof:'front'}},
 };
 // Chapter Two: behind the creek's back fence. Through the gap the stormwater comes out of its pipe into
 // an open concrete channel in a wooded utility easement between the back yards, and runs ~30 m to a big
@@ -50,6 +50,24 @@ export const EASEMENT={gap:{u:100.2,v:31.5},turn:-.337,len:47,half:15,
  bike:{s:30.6},bell:{s:52,y:1.1}};
 // The channel's gentle meander (t of its centerline at s).
 export const easementChannelT=s=>.85*Math.sin(s*.09)-.25;
+// Chapter Three: downstream, where the big culvert comes back out. Between Alex's house and the next
+// one an old city access drive ("the pond road") runs back past the yards, down the bank behind them,
+// to a fenced stormwater detention basin; the culvert from the easement empties into it through a
+// headwall on its west side, beside the same wooded rise. All of it in Briarwood's frame (u along
+// the street, v across it), which is straight here. The chained double gate stays shut; beside its
+// east post the chain-link has been bent back far enough for a kid to get through.
+export const BASIN={fence:{u0:138.8,u1:166,v0:42,v1:64},
+ drive:{u:141.6,half:1.6,v0:7.4,v1:42.6,fence:1.95,fenceFrom:21},
+ gap:{u0:142.2,u1:143.55},
+ bottom:{u1:158.5,v0:49.5,v1:56.5,y:-1.5},slope:3,
+ outlet:{u:146,v:53,w:2.4,h:2.05,inside:6,wall:19.6,north:7.8},
+ riser:{u:157.6,v:51.6,size:1.8,h:1.65},
+ bike:{u:140.45,v:41.72},
+ zone:{u0:138.2,u1:168.6,v0:31,v1:66}};
+// Alex's room: upstairs, the front corner over the garage (his lit window from Chapter One is its
+// front window; a side window looks west over the garage roof toward the creek and the easement).
+// x/z in the house's own frame (x across its width, +z toward the street), heights above its ground.
+export const ALEX_ROOM={floor:2.86,height:2.42,x0:.95,front:.22,depth:3.95,side:{y:4.3,w:1,h:1.2}};
 // Things that must stay clear of scattered props and trees (street coordinates).
 export const KEEP_CLEAR=[
  {d0:1118,d1:1180,l0:-16,l1:16}, // the cul-de-sac and the lookout

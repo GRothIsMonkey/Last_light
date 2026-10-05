@@ -7,7 +7,8 @@
 // back yards or down the side streets. Background silhouettes live in background.js.
 import * as THREE from './three.module.js';
 import {MAIN,LAWN,SIDEWALK} from './terrain.js';
-import {JUNCTIONS,FRIEND_HOMES,SIDE_HOMES,LOT_FIRST,LOT_LAST,LOT_SPACING,SECTION} from './layout.js';
+import {JUNCTIONS,FRIEND_HOMES,SIDE_HOMES,LOT_FIRST,LOT_LAST,LOT_SPACING,SECTION,ALEX_ROOM} from './layout.js';
+import {buildAlexRoom} from './alex-room.js';
 import {HOUSE,INTERIOR} from './palette.js';
 import {smooth,clamp,lerp,pickFrom} from './kit.js';
 
@@ -44,7 +45,7 @@ export function planHouse(rand,o){
  P.garage??=rand()<.84;P.hasGarage=!!P.garage;
  P.gs=P.garageSide==='near'?P.side:P.garageSide==='far'?-P.side:(P.gs??(rand()<.5?1:-1));
  P.gw??=rand()<.5?4:6.4;P.gd=Math.min(P.depth,7);P.gh=2.9;P.gfront=P.front-(P.garageInset??(style==='colonial'&&rand()<.4?.8:0));P.gx=P.gs*(P.w/2+P.gw/2);
- P.garageRoof=P.roof==='front'?'front':P.roof==='hip'?'hip':'side';
+ P.garageRoof=o.garageRoof??(P.roof==='front'?'front':P.roof==='hip'?'hip':'side');
  P.porch??=style==='colonial'?pick(['porch','portico','stoop']):style==='cape'?pick(['portico','stoop','stoop']):style==='frontgable'?'porch':pick(['stoop','stoop','porch']);
  // The front eave height decides how a porch roof can meet the house.
  P.eaveFront=P.roof==='front'?null:P.h-.45*P.rise/((P.roof==='hip'?Math.min(P.w,P.depth):P.depth)/2);
@@ -127,15 +128,21 @@ export function buildHouse(W,P){
  if(P.sneak){const s=P.hasGarage?-P.gs:-1;P.sneakWin={s,wall:s<0?'left':'right',z:P.sneak==='back'?-D2*.45:D2*.4,y:rows0,w:1,h:1.2};}
  if(opening||P.sneak){const t=.2,dx=P.doorX,ow=1.02,oh=2.16,SW=P.sneakWin;
   K.box(g,0,h/2+.14,-D2+t/2,w,h-.28,t,siding);
-  for(const s of [-1,1]){if(!SW||SW.s!==s){K.box(g,s*(W2-t/2),h/2+.14,0,t,h-.28,depth,siding);continue;}
+  // Alex's room (Chapter Three) looks out through real openings: his lit front window and a side window
+  // over the garage roof. (Elsewhere these walls stay solid boxes.)
+  const AR=P.alexWindow?alexOpenings(P):null;
+  for(const s of [-1,1]){if(AR&&s===AR.side.s){holed(K,g,s*(W2-t/2),0,depth,t,'z',[AR.side.z-AR.side.w/2,AR.side.z+AR.side.w/2,AR.side.y-AR.side.h/2,AR.side.y+AR.side.h/2],h,siding);continue;}
+   if(!SW||SW.s!==s){K.box(g,s*(W2-t/2),h/2+.14,0,t,h-.28,depth,siding);continue;}
    const x=s*(W2-t/2),z0=SW.z-SW.w/2,z1=SW.z+SW.w/2,y0=SW.y-SW.h/2,y1=SW.y+SW.h/2;
    K.box(g,x,h/2+.14,(z0-D2)/2,t,h-.28,z0+D2,siding);K.box(g,x,h/2+.14,(z1+D2)/2,t,h-.28,D2-z1,siding);
    K.box(g,x,(.28+y0)/2,SW.z,t,y0-.28,SW.w,siding);K.box(g,x,(y1+h)/2,SW.z,t,h-y1,SW.w,siding);}
-  if(opening){const l=dx-ow/2-(-W2),r=W2-(dx+ow/2);K.box(g,-W2+l/2,h/2+.14,D2-t/2,l,h-.28,t,siding);K.box(g,W2-r/2,h/2+.14,D2-t/2,r,h-.28,t,siding);
+  if(opening){const l=dx-ow/2-(-W2),r=W2-(dx+ow/2);K.box(g,-W2+l/2,h/2+.14,D2-t/2,l,h-.28,t,siding);
+   if(AR)holed(K,g,W2-r/2,D2-t/2,r,t,'x',[AR.win.x-AR.win.w/2-(W2-r/2),AR.win.x+AR.win.w/2-(W2-r/2),AR.win.y-AR.win.h/2,AR.win.y+AR.win.h/2],h,siding);else K.box(g,W2-r/2,h/2+.14,D2-t/2,r,h-.28,t,siding);
    const top=P.floor+oh;K.box(g,dx,(top+h)/2,D2-t/2,ow,h-top,t,siding);K.box(g,dx,(.28+P.floor)/2,D2-t/2,ow,P.floor-.28,t,siding);}
   else K.box(g,0,h/2+.14,D2-t/2,w,h-.28,t,siding);
   K.box(g,0,h-.02,0,w,.04,depth,siding);
   if(SW)buildRoom(W,P,g,SW,t);
+  if(AR)buildAlexRoom(W,P,g,{t,win:AR.win,side:AR.side});
  }else K.rbox(g,0,h/2+.14,0,w,h-.28,depth,.05,siding);
  // Brick: a low wainscot band or a full brick front.
  if(P.brick==='lower'&&!mid)K.rbox(g,0,.62,D2+.025,w+.03,1.05,.05,.015,brick);
@@ -168,6 +175,11 @@ export function buildHouse(W,P){
  const back=face('back',0),rearCount=Math.max(2,Math.round(w/3.8)),backDoorX=(P.seedB-.5)*w*.4;
  rows.forEach((y,f)=>{for(let i=0;i<rearCount;i++){const x=-W2+w*(i+.5)/rearCount;if(f===0&&Math.abs(x+backDoorX)<1.5)continue;windowUnit(back,x,y,winW*.95,winH*.9,{simple:true});}});
  {const x=-backDoorX,bd=back;K.box(bd,x,1.2,0,1.7,2.0,.06,pick(W.windowMats));K.box(bd,x,1.2,.03,.05,2.0,.05,T);for(const s of [-1,1])K.box(bd,x+s*.88,1.2,.03,.08,2.1,.08,T);K.box(bd,x,2.24,.03,1.84,.08,.08,T);K.box(bd,x,.21,.12,1.9,.08,.3,HOUSE.step);}
+ // Alex's side window, upstairs over the garage roof, glazed like his front one (it lights with his room).
+ if(P.alexWindow){const A=alexOpenings(P),fg=face(A.side.s<0?'left':'right',A.side.z),{w:ww,h:wh,y}=A.side,t=.08;
+  K.box(fg,0,y,0,ww,wh,.06,W.alexWindow);P.glassList.push(W.alexWindow);// framed open in the middle: you can see out of this one
+  K.box(fg,0,y+wh/2+t/2,.03,ww+.22,t,.08,T);K.box(fg,0,y-wh/2-t/2,.05,ww+.32,t,.14,T);for(const s of [-1,1])K.box(fg,s*(ww/2+t/2),y,.03,t,wh,.08,T);
+  K.box(fg,0,y,.035,.035,wh,.025,T);K.box(fg,0,y+wh*.08,.035,ww,.035,.025,T);K.box(fg,0,y+wh/2+.13,.045,ww+.3,.05,.12,T);}
  // Side windows, except where the garage covers the wall.
  for(const s of [-1,1]){if(P.hasGarage&&s===P.gs)continue;const wall=s<0?'left':'right';rows.forEach(y=>{for(const z of depth>9.4?[-D2*.45,D2*.4]:[0]){const SW=P.sneakWin;
   if(SW&&SW.s===s&&Math.abs(SW.z-z)<.01&&Math.abs(SW.y-y)<.01){const fg=face(wall,z);for(const k of [-1,1])K.box(fg,k*(SW.w/2+.05),y,.02,.1,SW.h+.2,.07,T);K.box(fg,0,y+SW.h/2+.05,.02,SW.w+.2,.1,.07,T);K.box(fg,0,y-SW.h/2-.04,.05,SW.w+.3,.08,.14,T);continue;}
@@ -369,6 +381,14 @@ function buildRear(W,P,g,rand,mid){const {K}=W,D2=P.depth/2,x0=(P.seedB-.5)*P.w*
 // A lit garage's materials, made once per house (Sam's bedroom reuses them: no extra batches).
 function garageMats(P){return P.garageMats||(P.garageMats={wall:Object.assign(new THREE.MeshStandardMaterial({color:INTERIOR.garageWall,emissive:0xffe0a8,emissiveIntensity:.16,roughness:1,side:THREE.BackSide}),{userData:{keep:true}}),
  lamp:new THREE.MeshStandardMaterial({color:0xfff4d8,emissive:0xffe0a0,emissiveIntensity:1}),glow:new THREE.MeshStandardMaterial({color:0xffe6b8,emissive:0xffc070,emissiveIntensity:.9})});}
+// Where Alex's two window openings are (house frame): the last upper front window, and one on the garage side.
+function alexOpenings(P){const W2=P.w/2,D2=P.depth/2,count=Math.max(2,Math.round(P.w/3.3)),t=.2,zf=D2-t;
+ return {win:{x:-W2+P.w*(count-.5)/count,y:4.3,w:1.1,h:1.35},side:{s:P.hasGarage?P.gs:1,z:zf-1.75,y:ALEX_ROOM.side.y,w:ALEX_ROOM.side.w,h:ALEX_ROOM.side.h}};}
+// A straight wall with one rectangular opening: axis 'x' runs along x (thickness along z), 'z' along z.
+// hole: [a0,a1,y0,y1], a measured along the wall from its center.
+function holed(K,g,cx,cz,len,t,axis,[a0,a1,y0,y1],h,m){const yb=.28,yt=h,piece=(a,b,ya,yb2)=>{if(b-a<.005||yb2-ya<.005)return;const mid=(a+b)/2,L=b-a,H=yb2-ya,y=(ya+yb2)/2;
+  if(axis==='x')K.box(g,cx+mid,y,cz,L,H,t,m);else K.box(g,cx,y,cz+mid,t,H,L,m);};
+ piece(-len/2,a0,yb,yt);piece(a1,len/2,yb,yt);piece(a0,a1,yb,y0);piece(a0,a1,y1,yt);}
 // Warm interiors seen through doors and windows share three materials, so they batch together.
 const interiorCache=new WeakMap();
 function interiorMats(W){if(interiorCache.has(W.scene))return interiorCache.get(W.scene);

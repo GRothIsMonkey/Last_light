@@ -90,7 +90,9 @@ export function buildBackground(W){
  const v=(i,j)=>{const k=i*nz+j;if(vid[k]<0){vid[k]=pos.length/3;pos.push(x0+i*step,H[k],z0+j*step);}return vid[k];};
  // The drainage easement has its own ground; leave out far cells that would roof over its trench.
  const ez=W.easement,overTrench=(i,j)=>{if(!ez)return false;for(let a=0;a<=4;a++)for(let b=0;b<=4;b++){const x=x0+(i+a/4)*step,z=z0+(j+b/4)*step;if(ez.trench(x,z,1.5))return true;}return false;};
- for(let i=0;i<nx-1;i++)for(let j=0;j<nz-1;j++){if(!(keep[i*nz+j]||keep[(i+1)*nz+j]||keep[i*nz+j+1]||keep[(i+1)*nz+j+1]))continue;if(overTrench(i,j))continue;
+ // ...and of cells wholly under Chapter Three's basin patch.
+ const bz=W.basin,underBasin=(i,j)=>{if(!bz)return false;for(let a=0;a<=4;a++)for(let b=0;b<=4;b++)if(bz.nearXZ(x0+(i+a/4)*step,z0+(j+b/4)*step))return true;return false;};
+ for(let i=0;i<nx-1;i++)for(let j=0;j<nz-1;j++){if(!(keep[i*nz+j]||keep[(i+1)*nz+j]||keep[i*nz+j+1]||keep[(i+1)*nz+j+1]))continue;if(overTrench(i,j)||underBasin(i,j))continue;
   const a=v(i,j),b=v(i+1,j),c=v(i,j+1),e=v(i+1,j+1);idx.push(a,c,b,b,c,e);}
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
  const land=new THREE.Mesh(geo,W.grassMat);land.name='far-land';land.userData.far=true;W.baked.push(land);
