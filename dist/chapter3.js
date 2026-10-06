@@ -505,6 +505,7 @@ export function createChapter3(o,k,ch2){
   else if(ph==='n3-ride'){if(rs>-22&&rs>-999)roadNight();}
   else if(ph==='n3-road')updateRoad(dt,rs);
   else if(ph==='n3-outfall'){if(C.flags.canEnter&&ds>=1.5)enterDrain();
+   if(C.flags.canEnter&&!p.riding&&!C.flags.samBack&&sam.mode==='foot'){C.flags.samBack=true;role(sam,'behind');}/* (Sam hangs back behind you, not at your elbow among the bikes) */
    if(C.flags.canEnter&&!p.riding&&!C.flags.jamieToMouth&&jamie.mode==='foot'){C.flags.jamieToMouth=true;C.point={jamie:{...tq(.9,1.45),look:lookAhead(10,0,1.2),max:1.6,face:Dr.at(1).a}};role(jamie,'point');}/* (once he is off his bike: to one side of the mouth, not in the way) */
    if(C.flags.jamieToMouth&&!C.flags.comeOn&&!busy()&&C.t-C.lastEvent>14&&ds<0){C.flags.comeOn=true;talk([{who:'JAMIE',text:'“Come on. Before I change my mind.”',from:jamie,time:2.2}]);}}
   if(tunnelPhase())updateTunnel(dt,ds);
@@ -523,6 +524,7 @@ export function createChapter3(o,k,ch2){
   A.night=day()?0:1;A.day=day()?1:0;if(A.day){S.deep=A.deep=0;}}
  // The old road at night: a few small things, none of them anything.
  function updateRoad(dt,rs){const p=me();
+  if(rs>Wd.L-70)for(const c of [jamie,sam])c.tight=0;// (near the end they spread out again, so nobody parks round you at the outfall)
   if(rs>118&&!C.flags.noHouses&&!busy()){C.flags.noHouses=true;glance(jamie,Wd.spots.mouth,2.4);jamie.lookAt={x:Wd.spots.mouth.x,z:Wd.spots.mouth.z,y:4};later(2.4,()=>{jamie.lookAt=null;});
    talk([{who:'SAM',text:'“You can’t even see the houses anymore.”',from:sam,time:2.4}]);T?.set(.16,{why:'out of sight of the houses'});}
   // a branch, swinging back after you have gone by it

@@ -467,8 +467,8 @@ function updateNightWalk(dt){
  const oldX=wx,oldZ=wz,near=(ox,oz,r,x,z)=>{const d=Math.hypot(ox-x,oz-z);return d<r&&d<Math.hypot(ox-wx,oz-wz)-1e-6;};
  const free=(x,z)=>nav.walkable(x,z)&&!chapter.blockers(true).some(o=>near(o.x,o.z,o.r+.3,x,z))&&!near(roam.x,roam.z,.5,x,z);
  if(free(wx+dx,wz+dz)){wx+=dx;wz+=dz;}else if(free(wx+dx,wz)){wx+=dx;}else if(free(wx,wz+dz)){wz+=dz;}
- else{// inside someone's space and the way on passes them: slide round them (the part of the step toward them taken out)
-  let sx=dx,sz=dz;for(const o of [...chapter.blockers(true).map(b=>({x:b.x,z:b.z,r:b.r+.3})),{x:roam.x,z:roam.z,r:.5}]){const ox=wx-o.x,oz=wz-o.z,d=Math.hypot(ox,oz);if(d<o.r&&d>1e-4){const nx=ox/d,nz=oz/d,k=sx*nx+sz*nz;if(k<0){sx-=k*nx;sz-=k*nz;}}}
+ else{// a person or a bike in the way (or you are already in its space): slide along it, the part of the step toward it taken out
+  let sx=dx,sz=dz;for(const o of [...chapter.blockers(true).map(b=>({x:b.x,z:b.z,r:b.r+.3})),{x:roam.x,z:roam.z,r:.5}]){const ox=wx-o.x,oz=wz-o.z,d=Math.hypot(ox,oz);if(d>1e-4&&(d<o.r||Math.hypot(wx+sx-o.x,wz+sz-o.z)<o.r)){const nx=ox/d,nz=oz/d,k=sx*nx+sz*nz;if(k<0){sx-=k*nx;sz-=k*nz;}}}
   if(Math.hypot(sx,sz)>1e-5&&free(wx+sx,wz+sz)){wx+=sx;wz+=sz;}}
  const moved=Math.hypot(wx-oldX,wz-oldZ);gait+=moved/1.45;foot.speed=dt>0?moved/dt:0;
  if(Math.floor(gait*2)!==lastStep&&moveT>.3&&foot.height===0){lastStep=Math.floor(gait*2);audio?.footstep(nav.surface(wx,wz),moveT);}
