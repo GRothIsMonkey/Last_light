@@ -81,17 +81,17 @@ export function createChapter3(o,k,ch2){
   const m=new THREE.Mesh(geo,material);m.name=name;group.add(m);return m;}
  // ---- the day's marks on the old road: a narrow tire track in the dust, weeds pushed flat ---------------------
  const marks=new THREE.Group();marks.name='old-road-tracks';scene.add(marks);marks.visible=false;
- {const mud=new THREE.MeshStandardMaterial({color:0x4b4134,roughness:.95,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6}),flat=new THREE.MeshStandardMaterial({color:0x98965f,roughness:1,side:THREE.DoubleSide});
+ {const mud=new THREE.MeshStandardMaterial({color:0x362e25,roughness:.95,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6}),flat=new THREE.MeshStandardMaterial({color:0x98965f,roughness:1,side:THREE.DoubleSide});
   const line=(pts,w,m)=>{const pos=[],idx=[];for(let i=0;i<pts.length;i++){const [s,t]=pts[i],q=Wd.at(s,t),q2=Wd.at(Math.min(s+.5,Wd.L),t);const a=Math.atan2(q2.x-q.x,-(q2.z-q.z)),rx=Math.cos(a),rz=Math.sin(a);
     for(const e of [-1,1]){const x=q.x+rx*w/2*e,z=q.z+rz*w/2*e;pos.push(x,nav.groundY(x,z)+.012,z);}if(i<pts.length-1){const b=i*2;idx.push(b,b+2,b+1,b+1,b+2,b+3);}}
    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m2=new THREE.Mesh(g,m);marks.add(m2);return m2;};
   // One tire, wheeled (not ridden: it wanders), along the dusty edge of the asphalt from the gate on.
   const pts=[];for(let s=10;s<=126;s+=.5){const hw=Wd.halfW(s);pts.push([s,hw-.32+.12*Math.sin(s*.31)+.06*Math.sin(s*1.3)]);}line(pts,.06,mud).name='old-road-tire-track';
   // ...where it shows: in the pale skin of road dust along the edge. And small shoes beside it, someone pushing the bike.
-  {const dust=new THREE.MeshStandardMaterial({color:0x9c907a,roughness:1,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
-   for(const [s0,s1,w] of [[8,70,.8],[70,114,.55]]){const dp=[];for(let s2=s0;s2<=s1;s2+=.5){const hw=Wd.halfW(s2);dp.push([s2,hw-.48+.05*Math.sin(s2*.23)]);}line(dp,w,dust).name='old-road-edge-dust';}
-   const shoe=new THREE.MeshStandardMaterial({color:0x5a5043,roughness:1,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6});
-   for(let s2=10.4,i=0;s2<66;s2+=.36,i++){if((i*7)%9===4)continue;const hw=Wd.halfW(s2),t=hw-.74+(i%2?.08:-.08)+.04*Math.sin(s2*.9),q=Wd.at(s2,t),g=new THREE.Group();g.position.set(q.x,nav.groundY(q.x,q.z)+.016,q.z);g.rotation.y=-(q.a+.05*Math.sin(i));marks.add(g);
+  {const dust=new THREE.MeshStandardMaterial({color:0x6d6556,roughness:1,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
+   for(const [s0,s1,w] of [[8,70,.62],[70,114,.42]]){const dp=[];for(let s2=s0;s2<=s1;s2+=.5){const hw=Wd.halfW(s2);dp.push([s2,hw-.48+.05*Math.sin(s2*.23)]);}line(dp,w,dust).name='old-road-edge-dust';}
+   const shoe=new THREE.MeshStandardMaterial({color:0x3e362c,roughness:1,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6});
+   for(let s2=10.4,i=0;s2<66;s2+=.36,i++){if((i*7)%9===4)continue;const hw=Wd.halfW(s2),t=hw-.66+(i%2?.07:-.07)+.04*Math.sin(s2*.9),q=Wd.at(s2,t),g=new THREE.Group();g.position.set(q.x,nav.groundY(q.x,q.z)+.016,q.z);g.rotation.y=-(q.a+.05*Math.sin(i));marks.add(g);
     for(const [z,r,l] of [[-.07,.042,.06],[.065,.036,.045]]){const e=new THREE.Mesh(new THREE.CircleGeometry(r,10),shoe);e.rotation.x=-Math.PI/2;e.scale.y=l/r*1.4;e.position.set(i%2?.005:-.005,0,z);g.add(e);}}
    mergeChildren(marks,shoe,'old-road-shoeprints');}
   for(let k2=0;k2<40;k2++){const s=11.5+k2*.09,hw=Wd.halfW(s),q=Wd.at(s,hw+.65+Math.sin(k2)*.1),geo=new THREE.PlaneGeometry(.035,.3+((k2*7)%5)*.04);geo.rotateX(-Math.PI/2);const m2=new THREE.Mesh(geo,flat);m2.position.set(q.x,nav.groundY(q.x,q.z)+.03,q.z);m2.rotation.y=-q.a+.9+((k2*13)%7-3)*.08;marks.add(m2);}
@@ -101,7 +101,7 @@ export function createChapter3(o,k,ch2){
  const tracksAt=Wd.spots.gate;
  // ---- in the drain: silt on the old floor with footprints and a tire line in it ---------------------------------
  const evidence=new THREE.Group();evidence.name='drain-evidence';scene.add(evidence);evidence.visible=false;
- {const E=DD.evidence,silt=new THREE.MeshStandardMaterial({color:0x5d4f3c,roughness:1,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}),dark=new THREE.MeshStandardMaterial({color:0x332a20,roughness:.85,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6});
+ {const E=DD.evidence,silt=new THREE.MeshStandardMaterial({color:0x5d4f3c,roughness:1,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}),dark=new THREE.MeshStandardMaterial({color:0x332a20,roughness:.85,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6});// (double-sided: the strips below are wound facing down)
   // The bar: a low ridge of silt down the left side of the old stretch, just out of the water.
   {const pos=[],idx=[];let n=0;for(let s=E.s0-2;s<=E.s1+1;s+=.5){const {w}=Dr.sizeAt(s),edge=-(w/2-.05),inner=-(w/2-1.2-.25*Math.sin(s*.4));for(const t of [edge,(edge+inner)/2,inner]){const q=Dr.at(s,t);pos.push(q.x,Dr.floorAt(s,t)+(t===inner?.03:.065),q.z);}n++;}
    for(let i=0;i<n-1;i++)for(let j=0;j<2;j++){const a=i*3+j;idx.push(a,a+1,a+3,a+1,a+4,a+3);}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
