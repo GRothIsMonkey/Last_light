@@ -71,16 +71,25 @@ export const WOODS={startU:250.3,
  // turnaround where the road ends, in front of the mouth and a little south.
  portal:{x:633.6,z:-545.5,floor:-8.45,w:4.6,h:3.6,cap:1.0,wing:6.3,flare:.58},
  pad:{a:12.6,b:13.4,r:7.2},patch:{a0:-7,a1:31,b0:-15,b1:25}};
-// The storm sewer trunk behind the outfall: a reinforced concrete box under the woods, the oldest part
-// of it older still. s from the portal face; sections: [s0, s1, width, height, kind]. Heading changes:
-// [s0, s1, turn] (positive turns right, toward the north here). The floor rises gently upstream, with
-// one low spillway step where the older section meets the newer one.
+// The storm sewer trunk behind the outfall: a reinforced concrete box under the woods, the deeper parts of it
+// older and smaller. s from the portal face; sections: [s0, s1, width, height, kind]. Heading changes:
+// [s0, s1, turn] (positive turns right, toward the north here). The floor rises gently upstream, with one
+// spillway step where the oldest stretch meets the low deep box. Big at the mouth, then past the first bend
+// lower and narrower, and past the step a box you could touch both walls of, the ceiling just over your head.
 export const DRAIN={len:286,grade:.004,
- sections:[[0,24,4.6,3.6,'mouth'],[24,72,4.6,3.6,'box'],[72,94,4.6,3.6,'bend'],[94,150,3.9,3.15,'old'],[150,214,4.4,3.6,'long'],[214,226,4.4,3.6,'bend'],[226,286,4.2,3.4,'far']],
+ sections:[[0,24,4.6,3.6,'mouth'],[24,72,4.6,3.6,'box'],[72,94,4.4,3.3,'bend'],[94,150,3.7,2.7,'old'],[150,214,3.1,2.3,'deep'],[214,226,3.1,2.3,'deep'],[226,286,3.2,2.4,'far']],
  turns:[[72,94,.62],[214,226,-.95]],
  step:{s:148.4,len:1.6,h:.5},
- ladder:{s:121},sidePipe:{s:136,r:.55,side:1},junction:{s0:270,s1:286,w:6.2,h:4.2,side:{s:279,w:2.4,h:2.05,sill:.85}},
- evidence:{s0:100,s1:146},oldBike:{s:171,side:-1},figure:{s:220.3,t:-.5},
+ // Standing water (m over the floor): across the old stretch and the deep box (all but its ledge), and the chamber.
+ wet:{old:.1,deep:.09,junction:.06},
+ ladder:{s:121},sidePipe:{s:136,r:.55,side:1},junction:{s0:270,s1:286,w:5.2,h:3.5,side:{s:279,w:2.2,h:1.9,sill:.8}},
+ evidence:{s0:100,s1:134},item:{s:141,t:-1.05},oldBike:{s:163,side:-1},figure:{s:212.2,t:-.25},relocate:{s:83.5},
+ // Dry ledges along one wall: the maintenance walkway by the mouth, a narrow lip in the deep box (broken in one place).
+ ledges:[{s0:24,s1:72,side:1,w:.75,h:.32},{s0:151.5,s1:195.6,side:1,w:.55,h:.24},{s0:199.4,s1:212,side:1,w:.55,h:.24}],
+ // Openings in the walls: black (pipes and side drains nobody has been up in years). The two at 264 face each other.
+ openings:[{s:108,side:-1,shape:'round',r:.38,y:.55},{s:129.5,side:-1,shape:'box',w:.9,h:.6,y:.12},{s:176,side:1,shape:'round',r:.3,y:1.05},{s:194,side:-1,shape:'box',w:.75,h:1,y:.06},
+  {s:239,side:1,shape:'round',r:.45,y:.5},{s:264,side:-1,shape:'box',w:1.05,h:1.62,y:-.03,cross:true},{s:264,side:1,shape:'box',w:1.05,h:1.62,y:-.03,cross:true}],
+ hatch:{s:187,side:-1},pipes:[180,203],
  walkway:{s0:24,s1:72,side:1,w:.75,h:.32}};
 // Alex's room: upstairs, the front corner over the garage (his lit window from Chapter One is its
 // front window; a side window looks west over the garage roof toward the creek and the easement).
