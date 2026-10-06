@@ -82,7 +82,7 @@ export async function runChapterThreeBrowser({page,snap:rawSnap,check,state,erro
  await ev(()=>__c3.until(()=>lastLight.state.chapter.objective==='Find the old service road.',60));
  check('Chapter Three: Mr. Okafor: the old city road at the end of Briarwood, down to the storm drain in the woods',await said('MR. OKAFOR: “End of Briarwood, past the last house. There’s a gate. An old city road goes down from there.”'));
  // ---- the end of Briarwood by day: posts, the gate, signs, the track going in; the road bends into the woods -------
- await ev(()=>{const C=__c3,L=lastLight;C.onBike();L.press('KeyW');const u=L.nav.locate(C.me().x,C.me().z).u||130;C.ride(C.sl(Math.max(30,u)+4,240,1.2,10),120);C.until(()=>L.state.chapter3.flags.roadDay,15);C.brake();C.face(...C.R(14,0),0);C.until(()=>false,.5);});
+ await ev(()=>{const C=__c3,L=lastLight;C.onBike();C.until(()=>L.chapter.companions.all.filter(c=>c.active).every(c=>c.mode==='ride'),10);/* (a calm day: you let them get back on their bikes before riding off; riding off at once they are briefly 30 m back while they do) */L.press('KeyW');const u=L.nav.locate(C.me().x,C.me().z).u||130;C.ride(C.sl(Math.max(30,u)+4,240,1.2,10),120);C.until(()=>L.state.chapter3.flags.roadDay,15);C.brake();C.face(...C.R(14,0),0);C.until(()=>false,.5);});
  await snap(tag+'-d08-end-of-briarwood-gate');
  await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.objective==='Go through the gate.',20);L.press('KeyW');C.ride([C.R(4,.4),C.R(12,.6),C.R(18,.4)],40);C.brake();C.until(()=>L.state.chapter3.flags.tracks,20);const q=L.world.woods.at(30,L.world.woods.halfW(30)-.45);C.face(q.x,q.z,-.32);C.until(()=>false,1.5);});
  await snap(tag+'-d09-tire-track-in-the-dust');
