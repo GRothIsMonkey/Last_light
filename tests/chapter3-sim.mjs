@@ -189,6 +189,11 @@ export async function runChapterThreeChecks(T){
  if(process.env.DEBUG_STUCK){h.jump('c3-tunnel-entrance');advance(.4);const o2=h.chapter.kit.o,rb=h.night.roam,at={x:sam.bx+.3,z:sam.bz+.2};o2.placePlayer({x:at.x,z:at.z,a:0,mode:'walk',bike:{x:rb.x,z:rb.z,a:rb.a}});advance(.2);
   const lg=t=>console.log(t,JSON.stringify({me:me(),st:h.night.state,lock:h.night.roam.walkLock,pose:!!h.chapter.pose,c3pose:!!h.chapter3.C.pose,rb:[rb.x,rb.z],sam:[sam.bx,sam.bz,sam.px,sam.pz,sam.mode],walk:h.nav.walkable(me().x,me().z),blk:h.chapter.blockers(true).filter(o=>Math.hypot(o.x-me().x,o.z-me().z)<1.5).map(o=>[+o.x.toFixed(2),+o.z.toFixed(2),o.r,+Math.hypot(o.x-me().x,o.z-me().z).toFixed(2)])}));
   lg('start');faceTo(O1(9,4)[0],O1(9,4)[1]);press('KeyW');for(let i=0;i<60;i++)advance(1/30);lg('after 2s W');release('KeyW');return;}
+ if(process.env.DEBUG_WEDGE){h.jump('c3-tunnel-entrance');advance(.4);const o2=h.chapter.kit.o,comp=h.chapter.companions;comp.putFoot(sam,645.34,-525.08,0,{bike:{x:644.51,z:-526.29,a:0,kick:1}});
+  o2.placePlayer({x:645.24,z:-525.94,a:-.84,mode:'walk',bike:{x:645.80,z:-526.11,a:0}});advance(.1);until(()=>false,2);const samFrom=Math.hypot(sam.px-me().x,sam.pz-me().z);walkTo([[me().x+.3,me().z+1.2]],{r:.3,max:4});
+  const obs=[...h.chapter.blockers(true).map(b=>({x:b.x,z:b.z,r:b.r})),{x:h.night.roam.x,z:h.night.roam.z,r:.4}],path=h.nav.walkPath({x:me().x,z:me().z},{x:634.8,z:-545.5},obs);walkTo(path.length?path:[[634.8,-545.5]],{r:.25,max:40});
+  {const a=[639.97,-539.04],b=[634.8,-545.5],o=[];for(let i=0;i<=12;i++){const t=i/12,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;o.push([+x.toFixed(2),+z.toFixed(2),h.nav.walkable(x,z),h.nav.walkable(x,z,{r:.3}),+h.nav.groundY(x,z).toFixed(2),JSON.stringify(h.nav.locate(x,z).w||{}).slice(0,60)]);}console.log('SEG',JSON.stringify(o));}
+  const m=me();console.log('WEDGE',JSON.stringify({samFrom:+samFrom.toFixed(2),samRole:c3.C.role.sam,path,me:[+m.x.toFixed(2),+m.z.toFixed(2)],ph:C1().phase,walk:h.nav.walkable(m.x,m.z),loc:h.nav.locate(m.x,m.z).street,blk:h.chapter.blockers(true).filter(o=>Math.hypot(o.x-m.x,o.z-m.z)<2).map(o=>[+o.x.toFixed(2),+o.z.toFixed(2),o.r]),roam:[+h.night.roam.x.toFixed(2),+h.night.roam.z.toFixed(2)],sam:[+sam.px.toFixed(2),+sam.pz.toFixed(2)],jamie:[+jamie.px.toFixed(2),+jamie.pz.toFixed(2)],got:+Math.hypot(m.x-634.8,m.z+545.5).toFixed(2)}));return;}
  if(process.env.DEBUG_SEG){const [jn,a,b]=process.env.DEBUG_SEG.split(':');h.jump(jn);advance(.4);let tt=0;const lg=()=>{const L=Dr.project(me().x,me().z);console.log((h.snapshot.clock|0),C1().phase,'me',L?.s?.toFixed(1),L?.t?.toFixed(2),'J',c3.C.role.jamie,cs(jamie).toFixed(1),Dr.project(jamie.px,jamie.pz)?.t?.toFixed(2),jamie.walkV?.toFixed(2),!!c3.C.hold.jamie,jamie.script?.roleStep?'R':jamie.script?'s':'-','S',c3.C.role.sam,cs(sam).toFixed(1),sam.walkV?.toFixed(2),!!c3.C.hold.sam);};const tick=()=>{tt+=1/30;if(tt>1){tt=0;lg();}return false;};
   walkTo(dline(+a,+b,.2,3),{r:.6,max:200,stop:tick});for(let i=0;i<5*30;i++){advance(1/30);tick();}return;}
  if(process.env.DEBUG_IN){h.jump('c3-tunnel-entrance');advance(.4);let tt=0;const lg=()=>{const L=Dr.project(me().x,me().z);console.log((h.snapshot.clock|0),C1().phase,'me',where().street,L?.s?.toFixed(1),'J',c3.C.role.jamie,cs(jamie).toFixed(1),jamie.walkV?.toFixed(2),!!c3.C.hold.jamie,'S',c3.C.role.sam,cs(sam).toFixed(1),sam.walkV?.toFixed(2));};const tick=()=>{tt+=1/30;if(tt>1){tt=0;lg();}return false;};
@@ -278,6 +283,16 @@ export async function runChapterThreeChecks(T){
   o2.placePlayer({x:at.x,z:at.z,a:0,mode:'walk',bike:{x:rb.x,z:rb.z,a:rb.a}});advance(.2);const p0={...me()},inside=Math.hypot(p0.x-sam.bx,p0.z-sam.bz);
   walkTo([O1(9,4)],{r:.8,max:25});const moved=Math.hypot(me().x-p0.x,me().z-p0.z);
   check('getting off right beside a parked bike: you can always step away from it (never stuck)',()=>{assert.ok(sam.bike.group.visible);assert.ok(inside<.6,'started inside '+inside.toFixed(2));assert.ok(moved>3,'moved '+moved.toFixed(2));});}
+ // ...and wedged between the parked bikes and Sam (the exact spot a long browser run logged).
+ {h.jump('c3-tunnel-entrance');advance(.4);const o2=h.chapter.kit.o,comp=h.chapter.companions;comp.putFoot(sam,645.34,-525.08,0,{bike:{x:644.51,z:-526.29,a:0,kick:1}});
+  o2.placePlayer({x:645.24,z:-525.94,a:-.84,mode:'walk',bike:{x:645.80,z:-526.11,a:0}});advance(.1);const p0={...me()};
+  // Sam had stood at your elbow there, closing the pocket between his bike and yours; now he hangs back behind you.
+  // The way straight at the mouth passes between the two bikes, too close to pass, so you step back out and walk
+  // round them (the path below sees the bikes, as you would).
+  until(()=>false,2);const samFrom=Math.hypot(sam.px-me().x,sam.pz-me().z);walkTo([[me().x+.3,me().z+1.2]],{r:.3,max:4});
+  const obs=[...h.chapter.blockers(true).map(b=>({x:b.x,z:b.z,r:b.r})),{x:h.night.roam.x,z:h.night.roam.z,r:.4}],path=h.nav.walkPath({x:me().x,z:me().z},{x:634.8,z:-545.5},obs);
+  walkTo(path.length?path:[[634.8,-545.5]],{r:.25,max:40});const got=Math.hypot(me().x-634.8,me().z+545.5);// (corners taken close, round the wingwall's end, not across it)
+  check('wedged between parked bikes and a friend at the outfall: Sam steps back, no trap, you walk round them to the drain',()=>{assert.ok(samFrom>1.3,'Sam still at your elbow '+samFrom.toFixed(2));assert.ok(path.length>0,'no way round');assert.ok(got<1.5,'still '+got.toFixed(1)+' m away, moved '+Math.hypot(me().x-p0.x,me().z-p0.z).toFixed(2));});}
  // Turning back before it is over: Jamie stays, Sam stays with him, the bikes do not take you away, and going back
  // to them picks the night up where it was. (No wall: you can walk all the way out.)
  turnBack();
