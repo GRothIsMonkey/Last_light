@@ -50,7 +50,7 @@ advance(.05);
 const {installNaturalCapture,runDevChapterChecks,diff:devDiff,normalize:devNorm}=await import('./dev-chapters-sim.mjs');const devCapture=installNaturalCapture(h,element);
 // ONLY=chapter3: a quick loop for Chapter Three alone (from the end of Chapter Two), for development.
 if(process.env.ONLY==='chapter3'){const {playChapterThree,runChapterThreeChecks}=await import('./chapter3-sim.mjs');const T3={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
- if(!process.env.SKIPPLAY){h.jump('chapter2-end');playChapterThree(T3,'chapter three alone');}if(!process.env.SKIPCHECKS)await runChapterThreeChecks(T3);console.log(JSON.stringify({passed:checks.length,checks,metrics},null,1));process.exit(0);}
+ if(!process.env.SKIPPLAY){h.jump('chapter2-end');playChapterThree(T3,'chapter three alone');for(let n=2;n<=+(process.env.REPLAYS||1);n++){h.jump('chapter2-end');playChapterThree(T3,'replay '+n);}}if(!process.env.SKIPCHECKS)await runChapterThreeChecks(T3);console.log(JSON.stringify({passed:checks.length,checks,metrics},null,1));process.exit(0);}
 
 // ------------------------------------------------------------------------------------------
 // World: roads, ground, houses, continuity
@@ -501,6 +501,9 @@ await runChapterTwoChecks(T2);
 // Chapter Three on its own: every QA jump and checkpoint, Start over from inside, the heartbeat, voices,
 // bells and recordings as audio signals, the tension system, the caption tone, seeded randomized runs.
 await runChapterThreeChecks(T2);
+// Chapter Three again, twice, in the same page, after all those jumps and Start overs (Continue from Chapter Two's last
+// checkpoint, then the whole chapter with inputs): every beat as the first time, nothing carried over.
+for(const n of [2,3]){h.jump('chapter2-end');playChapterThree(T2,'Chapter Three replay '+n);}
 // TEMPORARY (private playtest build): the dev chapter selector equals natural arrival; switching leaks nothing.
 await runDevChapterChecks(T2,devCapture);
 

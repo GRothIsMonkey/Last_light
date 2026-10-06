@@ -48,7 +48,7 @@ const camAt=async(name,target,off=[2.4,.1,.6],look=[0,.75,0])=>{await page.evalu
 const sequence=async(name,n,dt,frame)=>{for(let i=1;i<=n;i++){await page.evaluate(dt=>lastLight.step(dt),dt);await frame(name+'-'+i);}};
 const advanceTo=async d=>{await page.evaluate(d=>{let frames=0;while(lastLight.state.distance<d&&frames++<14000)lastLight.step(1/30);},d);check('reached '+d,(await state()).distance>=d);};
 try{
- await page.goto(base+'/index.html?qa');await page.waitForFunction(()=>window.lastLight);await page.evaluate(()=>lastLight.step(.04));await snap('01-opening');
+ await page.goto(base+'/index.html?qa',{timeout:120000});await page.waitForFunction(()=>window.lastLight);await page.evaluate(()=>lastLight.step(.04));await snap('01-opening');
  // Title menu: Settings and Credits open over it and come back.
  await page.click('#open-settings');check('settings panel opens from the title',await page.locator('#settings').isVisible()&&!(await page.locator('#intro').isVisible()));await snap('01b-settings');
  await page.selectOption('#set-quality','high');check('graphics setting changes the shadow map',await page.evaluate(()=>lastLight.scene.children.find(o=>o.isDirectionalLight).shadow.mapSize.x===3072));await page.selectOption('#set-quality','medium');

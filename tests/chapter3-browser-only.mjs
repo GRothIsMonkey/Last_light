@@ -1,11 +1,11 @@
 // Chapter Three alone in Chromium (SwiftShader unless BROWSER_GPU=1): from the Chapter Two end checkpoint,
 // the hand-over and the whole chapter played with inputs, every QA jump, Continue, the captions, the audio
 // signals. For iterating on Chapter Three without the full release suite (tests/browser.mjs runs it too).
-// QA_OUTPUT (default docs/qa/chapter3) receives captures, WAV renders and chapter3-browser-report.json.
+// QA_OUTPUT (default docs/qa/chapter3-rebuild) receives captures, WAV renders and chapter3-browser-report.json.
 import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';import {createRequire} from 'node:module';
 import {runChapterThreeBrowser,runChapterThreeJumps,runChapterThreeAudio} from './chapter3-browser.mjs';
 const require=createRequire(import.meta.url);let pw;try{pw=require('playwright');}catch{pw=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
-const root=path.resolve('dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa/chapter3');fs.mkdirSync(out,{recursive:true});
+const root=path.resolve('dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa/chapter3-rebuild');fs.mkdirSync(out,{recursive:true});
 const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(path.join(root,n)).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(path.join(root,n))).digest('hex')]));
 const server=http.createServer((req,res)=>{if(req.url.split('?')[0]==='/favicon.ico'){res.writeHead(204);return res.end();}
  const file=path.join(root,decodeURIComponent(req.url.split('?')[0]).replace(/^\//,'')||'index.html');if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}
@@ -24,7 +24,7 @@ const snap=async(name,{clean=false}={})=>{if(clean)await page.evaluate(h=>{for(c
  await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:88});frames.push({name,...info});console.log('Captured',name,info.triangles,info.calls);
  if(clean)await page.evaluate(h=>{for(const el of document.querySelectorAll(h))el.style.visibility='';},HUD);};
 try{
- await page.goto(`http://127.0.0.1:${server.address().port}/index.html?qa`);await page.waitForFunction(()=>window.lastLight);await page.click('#start');await page.evaluate(()=>lastLight.step(.4));
+ await page.goto(`http://127.0.0.1:${server.address().port}/index.html?qa`,{timeout:120000});await page.waitForFunction(()=>window.lastLight);await page.click('#start');await page.evaluate(()=>lastLight.step(.4));
  // From the Chapter Two end checkpoint: its last lines, then the hand-over.
  await page.evaluate(()=>{lastLight.jump('chapter2-end');let n=0;while(lastLight.state.chapter.phase!=='c3-black'&&n++<3000)lastLight.step(1/30);});
  check('Chapter Two hands over to Chapter Three (no end menu)',(await state()).chapter.phase==='c3-black'&&!(await page.locator('#ending').isVisible()));

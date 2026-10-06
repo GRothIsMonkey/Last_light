@@ -129,16 +129,16 @@ export async function runDevChapterChecks(T,cap){
  check('DEV start at the prologue: the same state as a new game on a fresh page',()=>assert.deepEqual(d0,[],JSON.stringify(d0.slice(0,20))));
  // Switching in one session, in a mixed order: each start equals that chapter's first, clean start, exactly.
  const clean={};for(const n of [0,1,2,3])clean[n]=devAt(n).snap;
- const order=[3,1,2,3,0,2,1,3],leaks=[];for(const n of order){const d=strict(clean[n],devAt(n).snap,n);if(d.length)leaks.push({n,d:d.slice(0,10)});}
- check(`DEV switching ${order.join('→')} in one session: no state carried over (each start identical to a clean one)`,()=>assert.deepEqual(leaks,[],JSON.stringify(leaks)));
+ const switching=[];for(const order of [[3,1,3,0,3],[3,1,2,3,0,2,1,3]]){const leaks=[];switching.push({order:order.join('→'),leaks:leaks});for(const n of order){const d=strict(clean[n],devAt(n).snap,n);if(d.length)leaks.push({n,d:d.slice(0,10)});}
+  check(`DEV switching ${order.join('→')} in one session: no state carried over (each start identical to a clean one)`,()=>assert.deepEqual(leaks,[],JSON.stringify(leaks)));}
  // After a chapter has been played for a while (bells heard, voices, tension up, a recording playing), a switch still starts clean.
- h.devStart(3);advance(1);h.jump('close-bell');advance(8);const busy={tension:h.tension.state.value,phase:S().phase};h.jump('recording');advance(3);
+ h.devStart(3);advance(1);h.jump('c3-close-bell');advance(8);const busy={tension:h.tension.state.value,phase:S().phase};h.jump('recording');advance(3);
  const after=[];for(const n of [1,2,3,0]){const d=strict(clean[n],devAt(n).snap,n);if(d.length)after.push({n,d:d.slice(0,10)});}
  check(`DEV start after playing Chapter Three for a while (the close bell, tension ${busy.tension?.toFixed?.(2)}, a recording playing): every chapter starts clean`,()=>assert.deepEqual(after,[],JSON.stringify(after)));
  // Normal play is untouched: Start over still starts the prologue.
  element('restart').onclick?.();advance(.5);check('after the selector, Start over still begins the prologue normally',()=>{assert.equal(h.snapshot.state,'riding');assert.equal(h.chapter.state.phase,'off');});
  metrics['dev chapter selector']=Object.fromEntries(Object.entries(report).filter(([k])=>/^\d$/.test(k)).map(([k,v])=>[k,{phase:v.phase,naturalHow:v.naturalHow,differences:v.differences.length,opening:v.opening?{phase:v.opening.phase,differences:v.opening.differences.length}:undefined}]));
- metrics['dev chapter selector'].switching={order:order.join('→'),leaks:leaks.length,afterPlaying:after.length};
+ metrics['dev chapter selector'].switching={orders:switching.map(x=>({order:x.order,leaks:x.leaks.length})),afterPlaying:after.length};
  return report;
 }
 
