@@ -21,7 +21,7 @@ const HUD='header,#date,#ride-ui,#subtitle,#prompt,#reflection';
 const snap=async(name,{clean=false}={})=>{if(clean)await page.evaluate(h=>{for(const el of document.querySelectorAll(h))el.style.visibility='hidden';},HUD);
  await page.evaluate(()=>{for(const id of ['title-card','objective','objective-note','ending','prompt','subtitle','reflection','fade','chapter-card'])for(const a of document.getElementById(id)?.getAnimations()||[])try{a.finish();}catch{}});
  const info=await page.evaluate(()=>{const L=lastLight,r={...L.render()};let lights=0;L.scene.traverseVisible(o=>{if(o.isLight&&o.intensity>0)lights++;});return {...r,activeLights:lights,phase:L.state.chapter.phase,caption:L.captionTone.state};});
- await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:88});frames.push({name,...info});console.log('Captured',name,info.triangles,info.calls);
+ await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:88,timeout:120000});frames.push({name,...info});console.log('Captured',name,info.triangles,info.calls);
  if(clean)await page.evaluate(h=>{for(const el of document.querySelectorAll(h))el.style.visibility='';},HUD);};
 try{
  await page.goto(`http://127.0.0.1:${server.address().port}/index.html?qa`,{timeout:120000});await page.waitForFunction(()=>window.lastLight);await page.click('#start');await page.evaluate(()=>lastLight.step(.4));

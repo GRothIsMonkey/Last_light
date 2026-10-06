@@ -29,7 +29,7 @@ async function openPage(q='?qa'){const page=tab;await page.goto('about:blank');
  await page.goto(url(q),{timeout:120000});if(q.includes('qa'))await page.waitForFunction(()=>window.lastLight);else await page.waitForSelector('#start');return page;}
 const snapOf=page=>page.evaluate(()=>lastLight.dev.snapshot());
 const shot=async(page,name)=>{await page.evaluate(()=>{for(const id of ['title-card','objective','objective-note','ending','prompt','subtitle','reflection','fade','chapter-card'])for(const a of document.getElementById(id)?.getAnimations()||[])try{a.finish();}catch{}});
- const info=await page.evaluate(()=>{const L=lastLight,r={...L.render()};return {...r,phase:L.state.chapter.phase};});await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:86});frames.push({name,...info});};
+ const info=await page.evaluate(()=>{const L=lastLight,r={...L.render()};return {...r,phase:L.state.chapter.phase};});await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:86,timeout:120000});frames.push({name,...info});};
 // A real click on a DEV button (the title must be showing), timed.
 async function clickDev(page,n){check(`title shows the DEV selector before choosing ${n}`,await page.locator('#dev-chapters').isVisible());
  const t0=Date.now();await page.click(`[data-dev-chapter="${n}"]`);
@@ -97,7 +97,7 @@ try{
   check(`normal mode: DEV Chapter Three shows the CHAPTER THREE card over black (${Date.now()-t0} ms after the click), title hidden, not paused`,await page.locator('#intro').isHidden()&&await page.locator('#pause').isHidden());
   // (Real time under software rendering runs at about one frame a second here, so the scene itself is
   // played in QA stepping below; this only shows the button works for a player.)
-  await page.screenshot({path:path.join(out,'dev-05-normal-mode-chapter-three.jpg'),type:'jpeg',quality:86});
+  await page.screenshot({path:path.join(out,'dev-05-normal-mode-chapter-three.jpg'),type:'jpeg',quality:86,timeout:120000});
   }
  // ---- Chapter Three, from the DEV start, played to its end card with inputs (no QA jump) --------------------------
  {const page=await openPage();await clickDev(page,3);
