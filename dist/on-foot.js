@@ -10,9 +10,9 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
  const spill=new THREE.SpotLight(0xffefcf,0,12,1.05,1,2);spill.name='player-flashlight-spill';
  const shell=new THREE.Mesh(new THREE.CylinderGeometry(.026,.021,.17,12),new THREE.MeshStandardMaterial({color:0x33424a,roughness:.55,metalness:.35}));shell.rotation.x=Math.PI/2;torch.add(shell);
  const lens=new THREE.Mesh(new THREE.CylinderGeometry(.024,.024,.018,12),new THREE.MeshStandardMaterial({color:0xe9dfb9,roughness:.25}));lens.rotation.x=Math.PI/2;lens.position.z=-.091;torch.add(lens);scene.add(torch);torch.visible=false;
- const F={exposure:null,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,spillLevel:6,light,spill,torch,pose,
+ const F={exposure:null,runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,spillLevel:6,light,spill,torch,pose,
   attach(on){if(on){scene.add(light,light.target,spill,spill.target);}else{for(const o of [light,light.target,spill,spill.target])o.removeFromParent();}},
-  reset(){Object.assign(F,{stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;spill.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
+  reset(){Object.assign(F,{runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;spill.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
   ride(){if(self.group.parent!==bike.group)bike.group.add(self.group);self.group.position.set(0,0,0);self.group.rotation.set(0,0,0);torch.visible=false;},
   give(){F.owned=true;F.on=true;sfx('click',null,{gain:.45});},
   toggle(){if(F.owned){F.on=!F.on;sfx('click',null,{gain:.5});}},
@@ -36,6 +36,8 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    for(const p of [P.lh,P.rh]){pose[p+1]-=.22*crouch;pose[p+2]-=.16*crouch;}
    if(F.height>0){pose[P.root+1]-=.07;pose[P.lf+1]+=.035;pose[P.rf+1]+=.06;pose[P.lf+2]=-.09;pose[P.rf+2]=.08;}
    if(F.owned){pose[P.rh]=.2;pose[P.rh+1]=.98-.25*crouch;pose[P.rh+2]=-.34;pose[P.re]=1;pose[P.re+1]=-.5;pose[P.re+2]=.2;}
+   // Running hard the light goes with the arm: the beam swings and jolts with every stride.
+   F.runK=scripted?0:clamp((speed-3)/2,0,1);if(F.owned&&F.runK>0){const ph=F.phase*Math.PI*2;pose[P.rh+1]+=.04*F.runK*Math.sin(ph*2);pose[P.rh+2]+=.06*F.runK*Math.sin(ph);}
    if(scripted){pose[P.root+1]=.30;pose[P.lean]=1.04;pose[P.root+2]=0;pose[P.lf]=-.17;pose[P.rf]=.17;pose[P.lf+2]=-.10;pose[P.rf+2]=.06;pose[P.lh+1]=.25;pose[P.lh+2]=-.07;pose[P.rh+1]=.42;pose[P.rh+2]=-.45;const hp=headPos(pose,new THREE.Vector3());x=camera.position.x-hp.x*Math.cos(a)+hp.z*Math.sin(a);z=camera.position.z-hp.x*Math.sin(a)-hp.z*Math.cos(a);y=camera.position.y-hp.y-.015;}
    self.group.position.set(x,y+F.height-F.land,z);self.group.rotation.set(0,-a,0);applyPose(self,pose);
   },
@@ -45,7 +47,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    // The beam is only as strong as what it lands on can take: a level of light on whatever is nearest
    // in it (the ground looked down at, a wall in the storm drain, a friend standing in it), so nothing
    // close ever flares white. In the drain the beam reaches farther (the dark there is total).
-   camera.getWorldDirection(direction);let near=Infinity,max=24;light.distance=17;
+   camera.getWorldDirection(direction);if(F.runK>0){const ph=F.phase*Math.PI*2;direction.x+=Math.sin(ph)*.045*F.runK;direction.z+=Math.cos(ph*.5)*.03*F.runK;direction.y+=Math.sin(ph*2)*.04*F.runK;direction.normalize();}let near=Infinity,max=24;light.distance=17;
    if(F.on&&direction.y<-.2)near=Math.max(.5,(hand.y-self.group.position.y)/-direction.y);
    const ex=F.on&&F.exposure?F.exposure(hand,direction):null;
    light.angle=ex?.angle??.31;light.penumbra=ex?.penumbra??.8;

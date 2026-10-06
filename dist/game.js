@@ -79,7 +79,7 @@ let mouseYaw=0,mousePitch=0,headPitch=0,steerVelocity=0,lean=0,pedalPhase=0,last
 let bodyBreath=0,lookInputAt=0,glance=0,manualLook=false,answerBellAt=-1,held=0,stamina=1,push=0,steerIn=0,psiVel=0,bikeY=null,bikePitch=0;
 let state='intro',distance=0,speed=0,lateral=-.3,look=0,clock=0,lastStamp=0,nextMemory=0,captionTimer=0,idleTime=0,bellCooldown=0,resumeState='riding';
 // Final stop: on foot the player is in street coordinates too.
-let tut={},walkHint=0,firstHome=false,finaleT=0,walkD=0,walkLat=0,walkYaw=0,walkPitch=0,gait=0,lastStep=0,moveT=0,transT=0,transFrom=null,callDone=false,callT=-1,lookedBack=0,fade=0,endHint=false,wHint=false,leaveT=0;
+let tut={},escFov=0,escWant=0,escDir=null,walkHint=0,firstHome=false,finaleT=0,walkD=0,walkLat=0,walkYaw=0,walkPitch=0,gait=0,lastStep=0,moveT=0,transT=0,transFrom=null,callDone=false,callT=-1,lookedBack=0,fade=0,endHint=false,wHint=false,leaveT=0;
 const keys=new Set();const touch=matchMedia('(pointer:coarse)').matches;if(touch)document.body.classList.add('touch');
 const qa=typeof location!=='undefined'&&/[?&]qa\b/.test(location.search||'');
 let muted=true;
@@ -100,7 +100,7 @@ function pause(){if(!active())return;resumeState=state;state='paused';lastPauseA
 function resume(){if(state!=='paused')return;ui.closePanels();state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
 function finish(kind){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();ui.clear();setAct('');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;$('objective')?.classList.remove('on');audio?.ending(kind);}
 // Everything a replay needs to start clean: the ride, the finale, the interface and the world's small stories.
-function resetState(){foot.reset();contact.reset();bellTime=-1;bellStruck=false;playerBike.bell.lever.rotation.x=0;glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
+function resetState(){foot.reset();contact.reset();escFov=0;escWant=0;escDir=null;if(camera.fov!==64){camera.fov=64;camera.updateProjectionMatrix();}bellTime=-1;bellStruck=false;playerBike.bell.lever.rotation.x=0;glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
  finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
  memory.reset();tension.reset();captionTone.reset();$('fade').classList.remove('warm');friends.reset();ambient.reset();ending.reset();interact.reset();nostalgia.reset();chapter.reset();auto=null;wx=wz=wa=0;walkPitch=0;ui.clear();setAct('');audio?.reset();$('ending').hidden=true;$('pause').hidden=true;$('subtitle').style.opacity=0;$('date').innerHTML='AUGUST 21, 2011 <i></i> 7:42 PM';}
 function reset(){resetState();state='intro';start();}
@@ -326,7 +326,7 @@ const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const tension=createTension();
 const chOpts={scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,$,renderer,tension,
  say:(who,text,time)=>say(who,text,time),player:()=>playerState(),roam,setDate:html=>{$('date').innerHTML=html;},finish:()=>finish('chapter'),fade:v=>{fade=v;$('fade').style.opacity=v;},
- placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},playerLight:foot.light,memory:null};
+ placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},setSpill:k=>{foot.spillLevel=k;},playerLight:foot.light,memory:null};
 const chapter=createChapter1(chOpts);
 // Chapter Two picks up seconds after the first one stops, with the same people, systems and night,
 // and runs to the next morning (chapter2.js). Chapter One hands it the phases that begin c2- or m-.
@@ -410,7 +410,7 @@ function updateNightRide(dt){
  const lock=roam.lock,pedal=!lock&&(keys.has('KeyW')||keys.has('ArrowUp')),brake=(!lock&&(keys.has('KeyS')||keys.has('ArrowDown')))||roam.brake>0,hard=pedal&&(keys.has('ShiftLeft')||keys.has('ShiftRight'));
  const fx=Math.sin(roam.a),fz=-Math.cos(roam.a),L=nav.locate(roam.x,roam.z),grass=nav.surface(roam.x,roam.z,L)==='grass';
  const grade=clamp((nav.groundY(roam.x+fx*.6,roam.z+fz*.6)-nav.groundY(roam.x-fx*.6,roam.z-fz*.6))/1.2,-.12,.12);
- const cruise=CRUISE*clamp(1-3.5*grade,.84,1.12)*(grass?.62:1);
+ const cruise=CRUISE*clamp(1-3.5*grade,.84,1.12)*(grass?.62:1)*(chapter.rideBoost||1);escWant=(chapter.rideFov||0)*smooth((speed-2)/3);
  held=pedal?held+dt:0;const want=!pedal?0:hard?1:smooth((held-5)/5)*.45;
  stamina=clamp(stamina+(want>.35?-(want-.35)*dt/7:dt/6),0,1);
  push=damp(push,want*(.35+.65*smooth(stamina*2.2)),2.2,dt);ctx.push=push;
@@ -460,24 +460,39 @@ function updateNightWalk(dt){
  const turn=(keys.has('KeyQ')?1:0)-(keys.has('KeyE')?1:0)+(touch||keys.has('ArrowLeft')||keys.has('ArrowRight')?(keys.has('ArrowLeft')||keys.has('KeyA')?1:0)-(keys.has('ArrowRight')||keys.has('KeyD')?1:0):0);
  wa-=turn*1.6*dt;
  if(foot.owned&&foot.on&&!tut.flash)tut.flashT=(tut.flashT||0)+dt;
- const len=Math.hypot(f,s)||1,want=foot.update(dt,f||s,roam.walkLock||!!chapter.pose);moveT=damp(moveT,want,(f||s)?10:14,dt);
- const fx=Math.sin(wa),fz=-Math.cos(wa),rx=Math.cos(wa),rz=Math.sin(wa),step=moveT*dt/len,dx=(f*fx+s*rx)*step,dz=(f*fz+s*rz)*step;
+ // Running for your life (Chapter Three): the chapter says which way out is (along the tunnel, then to your bike);
+ // W runs that way whatever you are looking at, A/D move you across it, S stops you. The mouse looks anywhere,
+ // back over your shoulder too. A story sprint: no stamina to run out of; it ends when the chapter says.
+ const E=!roam.walkLock&&!chapter.pose?chapter.escape?.():null;
+ const len=Math.hypot(f,s)||1,want=E?(f>0||(s&&f>=0)?E.speed:0):foot.update(dt,f||s,roam.walkLock||!!chapter.pose);if(E)foot.update(dt,0,true);moveT=damp(moveT,want,(f||s)?(E?5:10):14,dt);
+ let fx=Math.sin(wa),fz=-Math.cos(wa),rx=Math.cos(wa),rz=Math.sin(wa),step=moveT*dt/len,dx=(f*fx+s*rx)*step,dz=(f*fz+s*rz)*step;
+ if(E){const gx=Math.sin(E.dir),gz=-Math.cos(E.dir),lx=Math.cos(E.dir),lz=Math.sin(E.dir),ahead=smooth((fx*gx+fz*gz-.2)/.6);
+  // (looking roughly the way out, W also steers toward where you look; looking back, it just runs)
+  const lat=clamp(s*.75+Math.max(0,f)*ahead*(fx*lx+fz*lz)*1.1+(E.lat||0),-.9,.9),mx=gx+lx*lat,mz=gz+lz*lat,ml=Math.hypot(mx,mz)||1;step=moveT*dt;dx=mx/ml*step;dz=mz/ml*step;fx=gx;fz=gz;}
  // (a person or bike blocks only steps that come closer to it: someone who has ended up overlapping one, a friend
  // parking beside you as you get off, can always step away from it)
- const oldX=wx,oldZ=wz,near=(ox,oz,r,x,z)=>{const d=Math.hypot(ox-x,oz-z);return d<r&&d<Math.hypot(ox-wx,oz-wz)-1e-6;};
- const free=(x,z)=>nav.walkable(x,z)&&!chapter.blockers(true).some(o=>near(o.x,o.z,o.r+.3,x,z))&&!near(roam.x,roam.z,.5,x,z);
- if(free(wx+dx,wz+dz)){wx+=dx;wz+=dz;}else if(free(wx+dx,wz)){wx+=dx;}else if(free(wx,wz+dz)){wz+=dz;}
+ // (something low lying in the way, a bike on its side, can be jumped: in the air it is not in the way)
+ const oldX=wx,oldZ=wz,near=(ox,oz,r,x,z)=>{const d=Math.hypot(ox-x,oz-z);return d<r&&d<Math.hypot(ox-wx,oz-wz)-1e-6;},over=foot.height>.18;
+ const free=(x,z)=>nav.walkable(x,z)&&!chapter.blockers(true).some(o=>!(o.low&&over)&&near(o.x,o.z,o.r+.3,x,z))&&!near(roam.x,roam.z,.5,x,z);
+ if(free(wx+dx,wz+dz)){wx+=dx;wz+=dz;}
+ else if(E&&[.3,-.3,.6,-.6,.9,-.9].some(k=>{const c=Math.cos(k),sn=Math.sin(k),ex=dx*c-dz*sn,ez=dx*sn+dz*c;if(free(wx+ex,wz+ez)){wx+=ex;wz+=ez;return true;}return false;})){}// (running: veer round it, the way anyone would)
+ else if(E&&!over&&nav.walkable(wx+dx,wz+dz)&&!chapter.blockers(true).some(o=>!o.low&&near(o.x,o.z,o.r+.3,wx+dx,wz+dz))&&!near(roam.x,roam.z,.5,wx+dx,wz+dz))foot.jump(true);// (running and only something low in the way: you vault it)
+ else if(free(wx+dx,wz)){wx+=dx;}else if(free(wx,wz+dz)){wz+=dz;}
  else{// a person or a bike in the way (or you are already in its space): slide along it, the part of the step toward it taken out
   let sx=dx,sz=dz;for(const o of [...chapter.blockers(true).map(b=>({x:b.x,z:b.z,r:b.r+.3})),{x:roam.x,z:roam.z,r:.5}]){const ox=wx-o.x,oz=wz-o.z,d=Math.hypot(ox,oz);if(d>1e-4&&(d<o.r||Math.hypot(wx+sx-o.x,wz+sz-o.z)<o.r)){const nx=ox/d,nz=oz/d,k=sx*nx+sz*nz;if(k<0){sx-=k*nx;sz-=k*nz;}}}
   if(Math.hypot(sx,sz)>1e-5&&free(wx+sx,wz+sz)){wx+=sx;wz+=sz;}}
  const moved=Math.hypot(wx-oldX,wz-oldZ);gait+=moved/1.45;foot.speed=dt>0?moved/dt:0;
  if(Math.floor(gait*2)!==lastStep&&moveT>.3&&foot.height===0){lastStep=Math.floor(gait*2);audio?.footstep(nav.surface(wx,wz),moveT);}
- const y=nav.groundY(wx,wz),bob=Math.abs(Math.sin(gait*Math.PI))*.028*moveT/1.35;
+ const y=nav.groundY(wx,wz),bob=E?Math.abs(Math.sin(gait*Math.PI))*.045*smooth(moveT/2):Math.abs(Math.sin(gait*Math.PI))*.028*moveT/1.35;
+ // (running flat out the view widens a little, and back again after; see update())
+ escWant=E&&moveT>2?(E.fov||0):0;escDir=E&&moveT>.6?E.dir:null;
+ // At the bike, running: on it (no prompt to find in a panic).
+ if(E?.bike&&moveT>1&&Math.hypot(wx-roam.x,wz-roam.z)<1.35&&chapter.canRemount()&&foot.height===0){state='c1-remount';transT=0;transFrom={pos:camera.position.clone(),yaw:-wa,pitch:walkPitch};mouseYaw=mousePitch=look=headPitch=0;}
  // Frightened, the body shows it very slightly: the chest rises and falls with the breathing (a few millimetres)
  // and, near panic, a faint unsteadiness. Nothing when calm.
  const H=tension.value>.3||tension.exertion>.05?tension.heart:null;if(H){bodyBreath+=dt*Math.PI*2*H.breathRate/60;}else bodyBreath=0;
  const heave=H?Math.sin(bodyBreath)*.006*H.breath:0,sway=H?Math.sin(bodyBreath*.37+1.3)*.0025*smooth((tension.value-.7)/.3):0;
- camera.position.set(wx,y+1.42+bob-.014+foot.eyeOffset+heave,wz);camera.rotation.set(walkPitch+heave*.35,-wa,Math.sin(gait*Math.PI)*.004*moveT+sway,'YXZ');
+ camera.position.set(wx,y+1.42+bob-.014+foot.eyeOffset+heave,wz);camera.rotation.set(walkPitch+heave*.35,-wa,(E?Math.sin(gait*Math.PI)*.009*smooth(moveT/2):Math.sin(gait*Math.PI)*.004*moveT)+sway,'YXZ');
  // A crouch or a look the chapter asks for: the eye eases into it and back; the mouse still looks around.
  const P=chapter.pose;if(P&&P.w>0){_e.set(clamp(P.pitch+walkPitch-(P.fromPitch||0),-1.3,.9),-(P.yaw+wa-P.from),0,'YXZ');_q.setFromEuler(_e);camera.position.lerp(_v.set(P.x,P.y,P.z),P.w);camera.quaternion.slerp(_q,P.w);}}
 // Getting off and back on at night.
@@ -497,7 +512,7 @@ function nightAction(){
  if(nearNightBike()&&chapter.canRemount()&&foot.height===0){state='c1-remount';transT=0;transFrom={pos:camera.position.clone(),yaw:-wa,pitch:walkPitch};mouseYaw=mousePitch=look=headPitch=0;}}
 function nightPrompt(){
  if(state==='c1-ride'){if(roam.lock)return null;if(speed<.3){const spot=chapter.spot();if(spot)return [['F',spot.label]];}if(speed<.3&&chapter.canDismount())return [['F','Get off bike']];return chapter.hideBell?null:[['Space','Ring bell']];}
- if(state==='c1-walk'){const spot=chapter.spot();if(spot)return [['F',spot.label]];if(nearNightBike()&&chapter.canRemount()&&foot.height===0)return [['F','Get on bike']];}
+ if(state==='c1-walk'){const spot=chapter.spot();if(spot)return [['F',spot.label]];if(nearNightBike()&&chapter.canRemount()&&foot.height===0)return [['F','Get on bike']];const h=chapter.hint?.();if(h)return h;}
  return state==='c1-walk'&&chapter.phase()!=='clue'&&!chapter.day&&foot.owned&&!tut.flash&&!(foot.on&&(tut.flashT||0)>8)?[['T','Flashlight']]:null;}// (with the light already on, the hint shows for a while, then goes)
 
 // QA only: ride the bike through world points, steering like a player would.
@@ -558,7 +573,9 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  else if(state==='c1-dismount')updateNightTransition(dt,true);else if(state==='c1-remount')updateNightTransition(dt,false);else if(state==='c1-walk')updateNightWalk(dt);
  else{eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(camera.position);eyeRig.getWorldQuaternion(camera.quaternion);}
  if(state==='walking'){const p=groundPoint(walkD,walkLat);foot.body(dt,{x:p.x,z:p.z,a:heading(walkD)-walkYaw,y:groundY(walkD,walkLat),speed:foot.speed||0,scripted:!!interact.pose});}
- if(state==='c1-walk')foot.body(dt,{x:chapter.pose?camera.position.x:wx,z:chapter.pose?camera.position.z:wz,a:chapter.pose?chapter.pose.yaw+wa-chapter.pose.from:wa,y:nav.groundY(wx,wz),speed:foot.speed||0,scripted:!!chapter.pose});
+ if(state==='c1-walk')foot.body(dt,{x:chapter.pose?camera.position.x:wx,z:chapter.pose?camera.position.z:wz,a:chapter.pose?chapter.pose.yaw+wa-chapter.pose.from:escDir??wa,y:nav.groundY(wx,wz),speed:foot.speed||0,scripted:!!chapter.pose});
+ if(state!=='c1-walk'&&state!=='c1-ride')escWant=0;if(state!=='c1-walk')escDir=null;
+ if(state!=='memory'){escFov=damp(escFov,escWant,escWant>escFov?1.6:1,dt);if(escFov<.01&&!escWant)escFov=0;if(Math.abs(camera.fov-(64+escFov))>.02){camera.fov=64+escFov;camera.updateProjectionMatrix();}}
  foot.lamp(dt,state==='c1-walk');barLamp();camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=n1?clamp(nav.locate(camera.position.x,camera.position.z).d,-300,1140):distance;ctx.speed=n1?0:speed;ctx.lateral=lateral;ctx.state=mem?'riding':state;
  friends.update(dt,ctx);if(mem&&memCast)memCast.update(dt,ctx);ambient.update(dt,ctx);ending.update(dt,{callDone,fade,ended:state==='ended',camera,night:n1||mem});
  if(n1){chapter.update(dt);if(roam.fadeIn>0){roam.fadeIn=Math.max(0,roam.fadeIn-dt/3.2);fade=roam.fadeIn;$('fade').style.opacity=fade;}}
@@ -592,7 +609,9 @@ function cullZones(){if(!zoned.length)return;const p=camera.position,L=night1()?
   if(deepIn){drawn(m,false);continue;}const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<range);}
  const far=deepIn||inD||(woods&&((L.s??0)>200||!!L.w?.patch));
  // ...and the view itself ends sooner there (the dark and the walls end it anyway), so nothing far is drawn.
- {const want=deepIn?70:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:390;if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(Math.min(1,want*.9/350));}}
+ // (deep in the drain the long straights run past the old view distance: the view reaches down them, and the sky is not drawn
+ // at all, so the far end of a straight is black, never sky)
+ {const want=deepIn?150:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:390;if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(Math.min(1,want*.9/350));}sky.visible=!deepIn;}
  if(far||zoneState.hidPlain){for(const m of plainMerged){if(deepIn){drawn(m,false);continue;}if(far){const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<300);}else drawn(m,true);}zoneState.hidPlain=far;}}
 // What the keys would do right now, shown only when it matters: a short riding tutorial,
 // then nothing until the end of the street.

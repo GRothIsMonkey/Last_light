@@ -10,6 +10,20 @@ import * as THREE from './three.module.js';
 import {ALEX_ROOM as R} from './layout.js';
 import {seeded} from './kit.js';
 
+// Alex's bike helmet: the same one on his desk in the morning and, that night, somewhere it cannot be (chapter3.js).
+// Red shell, a white stripe down the middle, black vents, his number (17) in white on both sides, the straps hanging.
+let helmetTex=null;
+export function makeHelmet(){const g=new THREE.Group();g.name='alex-helmet';const red=new THREE.MeshStandardMaterial({color:0xc2321f,roughness:.42,metalness:.05}),black=new THREE.MeshStandardMaterial({color:0x18181a,roughness:.7}),white=new THREE.MeshStandardMaterial({color:0xece8de,roughness:.5});
+ const shell=new THREE.Mesh(new THREE.SphereGeometry(.135,20,10,0,Math.PI*2,0,Math.PI/2),red);shell.scale.set(1,.86,1.24);g.add(shell);
+ const rim=new THREE.Mesh(new THREE.TorusGeometry(.135,.012,6,24),black);rim.rotation.x=Math.PI/2;rim.scale.set(1,1.24,1);rim.position.y=.004;g.add(rim);
+ const stripe=new THREE.Mesh(new THREE.SphereGeometry(.137,6,10,Math.PI/2-.11,.22,0,Math.PI/2),white);stripe.scale.set(1,.86,1.24);g.add(stripe);
+ for(const x of [-.07,.07])for(const z of [-.05,.06]){const v=new THREE.Mesh(new THREE.BoxGeometry(.022,.02,.075),black);v.position.set(x*.8,.104,z);v.rotation.z=-x*2.2;g.add(v);}
+ const peak=new THREE.Mesh(new THREE.BoxGeometry(.17,.012,.05),black);peak.position.set(0,.03,-.17);peak.rotation.x=-.25;g.add(peak);
+ if(helmetTex===undefined||helmetTex===null){try{const c=document.createElement('canvas'),x=c.getContext?.('2d');if(x){c.width=64;c.height=64;x.clearRect(0,0,64,64);x.fillStyle='#f1ede2';x.beginPath();x.arc(32,32,29,0,7);x.fill();x.fillStyle='#1c1c1e';x.font='bold 34px Arial';x.textAlign='center';x.fillText('17',32,44);
+   helmetTex=new THREE.CanvasTexture(c);helmetTex.colorSpace=THREE.SRGBColorSpace;}else helmetTex=false;}catch{helmetTex=false;}}
+ for(const e of [-1,1]){const d=new THREE.Mesh(new THREE.CircleGeometry(.045,16),helmetTex?new THREE.MeshStandardMaterial({map:helmetTex,transparent:true,roughness:.5}):white);d.position.set(e*.118,.06,0);d.rotation.y=e*Math.PI/2;d.rotation.x=0;g.add(d);
+  const strap=new THREE.Mesh(new THREE.BoxGeometry(.008,.11,.014),black);strap.position.set(e*.11,-.05,.01);strap.rotation.z=e*.2;g.add(strap);}
+ return g;}
 export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,rand=seeded(1919),W2=P.w/2,D2=P.depth/2,F=R.floor,H=R.height;
  const x0=R.x0,x1=W2-t,zf=D2-t,zb=zf-R.depth,y0=F,y1=F+H;
  // Paint and carpet carry a little light of their own: the room is in the house's shadow, lit by the sky
@@ -97,8 +111,8 @@ export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,rand=seeded(1919),
  box(bx0-.2,y0+.03,bz1+.75,.55,.05,.2,0x2f4a6a).rotation.y=.4;
  for(const [x,z,a] of [[x0+.35,zb+1.3,.3],[x0+.52,zb+1.42,.1]]){const s=K.group(g,x,z,a,y0);rbox(0,.045,0,.11,.09,.27,.03,0xe8e6de);box(0,.012,0,.115,.025,.28,0x9a9a96);box(0,.07,.05,.09,.02,.12,0x3a5a8a);}
  {const p=rbox(x0+.2,y0+.25,zb+1.85,.3,.45,.18,.06,0x2f4f7a);p.rotation.y=.2;p.rotation.z=-.15;box(x0+.32,y0+.33,zb+1.85,.04,.25,.12,0x24405f);}
- {const hx=rx0+.75,hz=rz1-.15;const m=new THREE.Mesh(new THREE.SphereGeometry(.14,12,6,0,Math.PI*2,0,Math.PI/2),K.mat(0xc23f2c,{roughness:.5}));m.position.set(hx,y0,hz);m.scale.set(1,.9,1.25);m.rotation.y=.7;g.add(m);
-  for(let k=0;k<3;k++)box(hx+(k-1)*.05,y0+.1,hz,.02,.06,.2,0x1d1d1f);}
+ // His bike helmet, on the desk beside the phone: red, a white stripe down the middle, his number on the sides.
+ {const hm=makeHelmet();hm.position.set(win.x-.13,dy+.002,dz0+.24);hm.rotation.y=2.5;g.add(hm);}
  for(let k=0;k<6;k++)box(dx0-.25,y0+.01+k*.012,dz0-.25,.2,.01,.28,[0xd84a2a,0x3a6aa8,0xe8d23a,0x5a8a3a,0xd84a2a,0xe6e2d6][k]).rotation.y=rand()*.4;
  K.ball(g,dx1-.3,y0+.12,dz0+.25,.12,0xc8642a,[1,1,1],true);
  K.ball(g,x0+1.2,y0+.02,zb+2.4,.05,0xe6e2d8,[1.6,.3,.8]);
@@ -116,7 +130,7 @@ export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,rand=seeded(1919),
  W.interiors['alex-room']={P,x0,x1,z0:zb,z1:zf,floor:F,height:H,blocks,
   door:{x:x0+.55,z:door.z,face:{x:x0,z:door.z}},phone:{x:win.x-.42,y:dy+.012,z:dz0+.3},
   sideWindow:{x:x1-.62,z:side.z,look:{x:x1+8,z:side.z-3,y:side.y-.6},glass:{x:x1,z:side.z,y:side.y}},frontWindow:{x:win.x,z:dz0-.55,glass:{x:win.x,z:zf,y:win.y}},
-  standJamie:{x:dx0-.3,z:dz0-.55},standSam:{x:x0+.75,z:zb+1.9},enter:{x:x0+.7,z:door.z+.1},deskStand:{x:win.x+.55,z:dz0-.45}};
+  standJamie:{x:dx0-.3,z:dz0-.55},standSam:{x:x0+.75,z:zb+1.9},enter:{x:x0+.7,z:door.z+.1},deskStand:{x:win.x+.55,z:dz0-.45},helmet:{x:win.x-.13,z:dz0+.24,y:dy-F}};
 }
 
 function canvas(w,h,draw){try{const c=document.createElement('canvas'),g=c.getContext?.('2d');if(!g)return null;c.width=w;c.height=h;draw(g,w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}catch{return null;}}

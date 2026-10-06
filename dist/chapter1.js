@@ -360,7 +360,7 @@ export function createChapter1(o){
  function updateFlashlights(dt){const H=police.head;
   if(S.flashOn&&jamie.active){police.spotUser.who=jamie;torch.visible=true;jamie.person.parts.rhand.getWorldPosition(hand);
    // Where Jamie points it: around the bank and the channel, at what you are looking at, at the sound.
-   sweep+=dt;let target=S.jamieAim||S.lookTarget;if(!target&&api.next?.owns(S.phase))target=api.next.jamieSweep(sweep);if(!target){const k=Math.floor(sweep/3.2)%4,pts=[[97.2,14.8],[99.1,18.6],[98,12.6],[96.4,19.4]];target=side(...pts[k]);target.y=nav.groundY(target.x,target.z);}
+   sweep+=dt;let target=(typeof S.jamieAim==='function'?S.jamieAim():S.jamieAim)||S.lookTarget;if(!target&&api.next?.owns(S.phase))target=api.next.jamieSweep(sweep);if(!target){const k=Math.floor(sweep/3.2)%4,pts=[[97.2,14.8],[99.1,18.6],[98,12.6],[96.4,19.4]];target=side(...pts[k]);target.y=nav.groundY(target.x,target.z);}
    aim.set(target.x,(target.y??nav.groundY(target.x,target.z))+.05,target.z);if(!S.flags.aimReady){aimS.copy(aim);S.flags.aimReady=true;}else aimS.lerp(aim,1-Math.exp(-3.5*dt));jamie.lookAt={x:aimS.x,z:aimS.z,y:aimS.y};
    H.position.copy(hand);H.target.position.copy(aimS);H.angle=.31;H.penumbra=.8;H.distance=18;H.decay=2;H.intensity=clamp(hand.distanceTo(aimS)*3.3,8,25);H.color.setHex(0xfff0d6);
    // (Chapter Three, in the storm drain: a longer throw, as strong as the nearest wall in the beam allows.)

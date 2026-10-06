@@ -30,7 +30,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  const KEYS=new Map();const keysFor=c=>{if(!KEYS.has(c.key))KEYS.set(c.key,dismountKeys(c.geom));return KEYS.get(c.key);};
  const vTmp=new THREE.Vector3();
  const pebble=new THREE.Mesh(new THREE.IcosahedronGeometry(.016,0),new THREE.MeshStandardMaterial({color:0x969187,roughness:1}));scene.add(pebble);pebble.visible=false;
- function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{active:false,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
+ function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{active:false,boost:1,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
   bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side,stall:0,unstick:0,wayT:0,waySide:1,poi:null,gaze:null,route:null,routeT:0,turnHold:0,turnDir:0,tight:0});trail.reset();}
  // Take a friend over from friends.js (they were inside, or their bike lying where they left it).
  function take(c){if(!c.active){// start from wherever friends.js left the bike
@@ -76,7 +76,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   // (Tight: the woods at night in Chapter Three; they ride closer in, nearer behind you.)
   const tight=c.tight||0,raw=slots[c.slot],selected=tight?[raw[0]*(1-.35*tight)+.4*tight,raw[1]*(1-.38*tight)]:raw,crossing=Math.sign(c.formationSide)!==Math.sign(selected[1])&&Math.abs(c.formationSide)>.25;
   c.formationLag=damp(c.formationLag,pv>.6?(crossing?Math.max(selected[0],2.8):selected[0]):2.8,1.2,dt);c.formationSide=damp(c.formationSide,crossing&&c.formationLag<2.3?c.formationSide:selected[1],.55,dt);
-  const gap=T.end-c.sOn-c.formationLag;let vT=clamp(pv+gap*.5,0,6.6);if(gap<.4&&pv<.4)vT=Math.min(vT,Math.max(0,gap*.8));
+  const gap=T.end-c.sOn-c.formationLag;let vT=clamp(pv+gap*.5,0,6.6*(c.boost||1));if(gap<.4&&pv<.4)vT=Math.min(vT,Math.max(0,gap*.8));
   const want=vT,fx=Math.sin(c.ba),fz=-Math.cos(c.ba);
   // Ease off behind whatever is in the way. Two friends stopped close together and both turning
   // round to follow you can each be "in front of" the other (the old oak, when you turn and ride
@@ -94,7 +94,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   // Close and on a straight: a slot relative to the player's heading lets a friend ride beside
   // or briefly ahead. At turns or obstacles we return to the actual ridden trail.
   if(pv>.6&&straight>.85&&Math.hypot(c.bx-pl.bx,c.bz-pl.bz)<10){const h=pl.a,lag=c.formationLag,ax=pl.bx-Math.sin(h)*lag+Math.cos(h)*off,az=pl.bz+Math.cos(h)*lag+Math.sin(h)*off;
-   const corridor=[0,.25,.5,.75,1].every(t=>safe(c.bx+(ax-c.bx)*t,c.bz+(az-c.bz)*t,h)&&clear(c.bx+(ax-c.bx)*t,c.bz+(az-c.bz)*t));if(corridor&&safe(ax+Math.sin(h)*2,az-Math.cos(h)*2,h)&&clear(ax+Math.sin(h)*2,az-Math.cos(h)*2)){tx=ax+Math.sin(h)*1.5;tz=az-Math.cos(h)*1.5;const along=(ax-c.bx)*Math.sin(h)-(az-c.bz)*Math.cos(h);vT=clamp(pv+along*.65,0,6.5);}}
+   const corridor=[0,.25,.5,.75,1].every(t=>safe(c.bx+(ax-c.bx)*t,c.bz+(az-c.bz)*t,h)&&clear(c.bx+(ax-c.bx)*t,c.bz+(az-c.bz)*t));if(corridor&&safe(ax+Math.sin(h)*2,az-Math.cos(h)*2,h)&&clear(ax+Math.sin(h)*2,az-Math.cos(h)*2)){tx=ax+Math.sin(h)*1.5;tz=az-Math.cos(h)*1.5;const along=(ax-c.bx)*Math.sin(h)-(az-c.bz)*Math.cos(h);vT=clamp(pv+along*.65,0,6.5*(c.boost||1));}}
   const qa=Math.atan2(q.dx,-q.dz);if(!safe(tx,tz,qa)||!clear(tx,tz)||!safe(q2.x-q2.dz*off,q2.z+q2.dx*off,Math.atan2(q2.dx,-q2.dz))||!clear(q2.x-q2.dz*off,q2.z+q2.dx*off))tx=q.x,tz=q.z;
   const err=wrap(headingTo(c.bx,c.bz,tx,tz)-c.ba);
   if(c.speed<.6&&Math.abs(err)>1.2&&Math.hypot(tx-c.bx,tz-c.bz)>.8){c.omega=Math.sign(err)*1.5;vT=Math.min(vT,.15);}// a foot down, the bike walked round
@@ -109,7 +109,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
    if(c.turnHold>.7&&!c.turnDir)c.turnDir=Math.sign(wrap(headingTo(c.bx,c.bz,pl.bx,pl.bz)-c.ba))||1;if(c.turnHold<=.7)c.turnDir=0;
    c.omega=want>.3&&Math.abs(err)>.06?Math.sign(err)*Math.min(1.5,Math.abs(err)*2.4):c.turnHold>.7?c.turnDir*1.2:0;}
   else{c.turnHold=0;c.turnDir=0;}
-  c.ba+=c.omega*dt;c.effort=damp(c.effort,clamp((vT-c.speed)/1.2,0,1),2.5,dt);c.speed+=clamp(vT-c.speed,-3.2*dt,1.5*dt);c.speed=Math.max(0,c.speed);
+  c.ba+=c.omega*dt;c.effort=damp(c.effort,clamp((vT-c.speed)/1.2,0,1),2.5,dt);c.speed+=clamp(vT-c.speed,-3.2*dt,1.5*dt*(c.boost||1));c.speed=Math.max(0,c.speed);
   // You are pushing your bike at me and I am standing in its way: feet down, I shuffle my bike
   // sideways out of your line (instead of each of us waiting for the other).
   {const pfx=Math.sin(pl.a),pfz=-Math.cos(pl.a),ox=c.bx-pl.bx,oz=c.bz-pl.bz,pa=ox*pfx+oz*pfz,ps=ox*Math.cos(pl.a)+oz*Math.sin(pl.a);// ahead of you, and to your right
