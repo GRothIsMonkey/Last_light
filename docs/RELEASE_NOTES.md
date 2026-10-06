@@ -1,3 +1,21 @@
+# Last Light — Chapter Three horror escalation (the deep drain, the boy, the pursuit)
+
+Built from `claude/chapter3-horror-rebuild` at `26304a9dbc30ce66dcdc0a5e65f4082fc53a55e0` (unchanged), on `claude/chapter3-horror-escalation`. A structural horror pass answering the muted human playtest of the rebuild ("better but not great"; the run was jogging; the figure was never seen; the tunnel was not ominous). Not an art pass.
+
+- **The drain closes in.** Past the first bend it lowers and narrows in steps to a deep box about 3.1 × 2.3 m (7½ ft of headroom): older concrete, flood lines, spalls with rebar, ankle-deep water, a narrow dry ledge, black side drains and pipe openings, a rusted ladder, a sealed hatch, brackets, conduit and pipes overhead, debris and stencilled municipal markings. One way through; no changing geometry.
+- **His helmet.** On his desk in the morning ("His helmet's still here." "He never rides without it."); that night, upside down in the silt deep in the drain. Jamie goes to it; Sam turns toward the way out: "We need to tell somebody. Right now."
+- **The bike from the oak**, found by the light from a distance; its bell only clicks. Farther on it is no longer where it was (never seen moving). During the run it lies across the way out ahead of them.
+- **The boy cannot be missed.** Jamie and Sam stop either side of you with both lights down the tunnel; at the end of them, about 22 m (72 ft) away, a boy in Alex's clothes. He waits until you have actually looked at him (cues, never a turned camera; a 40-second fallback), stays well after (≥ 12.3 s in every trial), turns slowly and walks round the bend. Nobody there. Later someone crosses the tunnel ahead. Voices ahead and behind are acted by Jamie and Sam; a search behind; the bell beside them; "RUN!"
+- **A real escape:** a story sprint (no stamina failure, a wider view, splashes, faster companions); he is seen running after them about 16–17 m back, then about 10 m; Jamie goes down and gets up; water bursts from a side pipe; the bike in the way (veer, jump or vault it); the exit glowing ahead; straight onto the bike. 55 s from the bell to the bikes. He never catches anyone.
+- **The ride out is faster**, and at a bend he is standing in the road ahead (about 14 m); he walks off into the trees; nobody stops. The streetlight, then "That was him." "No." "You saw him." "…I know."
+- **Readability fixes from reviewing the renders:** the reveal framing is measured from you (your line of sight to him runs clear between them); in the drain a friend in your beam no longer leaves the tunnel past him black; the water is a wet sheen rather than a black void; the boy and the bike catch a little more of their own colour when far off in a beam (never a glow).
+- **QA:** 33 Chapter Three jumps, including all 18 the escalation lists (old names kept as aliases); checkpoints `c3-tunnel-deep`, `c3-old-bike`, `c3-figure`, `c3-escape`, `c3-road-escape`, `chapter3-end`; the DEV selector kept and still canonically equivalent.
+- **Verification:** **475** simulation checks (Chapters 0–2 regression, Chapter Three three times in one session), **79** Chapter Three browser checks (a muted natural walkthrough with no QA jump, 104 captures), **74** DEV-selector browser checks, 0 JavaScript or shader errors.
+
+Details: [ASTRA_CHAPTER3_HORROR_ESCALATION_HANDOFF.md](ASTRA_CHAPTER3_HORROR_ESCALATION_HANDOFF.md). Results: [TEST_REPORT.md](TEST_REPORT.md). Audio is placeholder and deferred: hooks checked only, no offline renders in this pass, nobody has listened. SwiftShader only; real-GPU frame rate not measured.
+
+---
+
 # Last Light — Chapter Three horror rebuild (the access road and the drain)
 
 Rebuilt from `claude/chapter3-horror-investigation` at `8f06b2bb3b8f545243c75f3644627cb8a217d7ec` (unchanged), on `claude/chapter3-horror-rebuild`. A structural rebuild of Chapter Three's horror so that it frightens with the sound off; not an art pass. Chapter Two and the structural pass's own history and evidence are untouched (the section below this one describes the structural pass as it was).

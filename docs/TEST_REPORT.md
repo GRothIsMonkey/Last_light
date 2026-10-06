@@ -1,3 +1,180 @@
+# Last Light — Chapter Three horror escalation: verification
+
+Source: `claude/chapter3-horror-rebuild` at `26304a9dbc30ce66dcdc0a5e65f4082fc53a55e0` (unchanged). Branch: `claude/chapter3-horror-escalation`. Tested runtime: `dist/` at `43b71e6` (later commits change only tests, QA evidence and documentation). Chromium 141.0.7390.37, ANGLE/SwiftShader (software rendering).
+
+| Gate | Result |
+|---|---:|
+| Full simulation / geometry suite (`npm test`, no `QUICK`) | **475 passed**, 0 failed (rebuild: 436) |
+| Chapter Three Chromium pass (`tests/chapter3-browser-only.mjs`): muted natural walkthrough (no QA jump), every jump, Continue, captions, audio hooks | **79 passed** |
+| DEV selector, Chromium (`tests/dev-chapters-browser.mjs`): real clicks, natural-equivalence, switching, Chapter Three played to its end card from the DEV start | **74 passed** |
+| JavaScript / console / shader errors | **0** |
+| The boy's reveal | facing forward, left, right, away, never looking, and 14 randomized: never missed; present ≥ 12.3 s after first seen; Jamie and Sam never within 0.81 m of your line of sight to him |
+| Randomized runs (seeded) | **24** escapes, **12** road rides, **12** drain walks, **10** road-figure rides, **14** reveals: all completed, nobody stuck |
+| Chapter Three in one session | **3** full playthroughs in the simulation (the first, then two more after every jump and Start over); in Chromium, the walkthrough then all 33 jumps and Continue in one page, and the DEV run switching chapters in one page before playing Chapter Three through |
+| Captures | **104** in `docs/qa/chapter3-escalation/` (gallery `index.html`), and 63 in `docs/qa/dev-chapters-escalation/`; inspected |
+| Audio | **hooks only** (placeholders; no offline renders, no HRTF rendering; nobody has listened) |
+| Full release browser suite (`npm run test:browser`) | **not rerun** for this pass (see below) |
+
+## What was run
+
+**Simulation** (`tests/verify.mjs`: real modules and Three.js geometry, mocked renderer and DOM). The prologue, Chapter One and Chapter Two are played with inputs as before, and the same run goes on through Chapter Three with inputs only (`tests/chapter3-sim.mjs`): walking, looking, F where the prompt says, holding W through the run, riding. The night is checked beat by beat:
+
+- the drain closing in (mouth 4.6 × 3.6 m, the old stretch ≤ 3.8 × 2.8 m, the deep box ≤ 3.2 × 2.35 m with water and a dry ledge);
+- the bend, the prints, the knock, the first bell;
+- **the helmet**: the line in his room this morning, the four lines in the drain, Sam turned to the way out;
+- **the bike**: found by the light, a click and no ring, then gone while unwatched and noticed;
+- **the boy**: they stop either side of you (a step ahead, more than 0.6 m out, neither within 0.45 m of your sightline) at 17–28 m; he stays ≥ 4 s after being seen; he turns and walks round the bend; past it, nobody;
+- the wet footprint, a pause of ≥ 10 s, the crossing seen;
+- "Jamie?" ahead, "Guys?" behind, the search behind, the close bell, "RUN!";
+- **the run**: median speed ≥ 4.8 m/s, the view ≥ 69°, no exhaustion, 40–95 s; he is seen at 14–22 m and later at 6.5–11.5 m, never closer than 6 m; Jamie goes down; the pipe bursts; the bike lies across the way out and is seen; the exit is seen; you are on the bike without a prompt;
+- **the road**: he is seen in the road at 8–16 m, steps off, nobody stops;
+- the streetlight and the four last lines; the end card; every phase in order; the tension curve.
+
+Then the focused checks:
+
+- all 33 QA jumps (date, time of day, phase, everyone somewhere a person can be, the bike's state, the boy's state);
+- the six drain/escape checkpoints and Continue (after a reload too);
+- Start over from inside Chapter Three clearing everything, including field of view, escape state, boosts and the pursuit;
+- the boy from four facings, never looking, and 14 randomized reveals;
+- the bike staying while watched, going only while unwatched;
+- the pursuit perceived: far, near, and stopping dead (he slows and stands, never closer than 8.2 m);
+- the bike in the way: run straight at it (vault), and jump it;
+- 10 road-figure rides with glances, two of them never looking at the road;
+- muted reactions on Jamie and Sam for each sound;
+- captions for every sound that matters;
+- the audio hooks: each called a handful of times, no errors;
+- 24 randomized escapes, 12 road rides and 12 drain walks;
+- turning back in the drain;
+- culling deep in the drain (only the tunnel's 69 merged meshes drawn, far plane 150 m, no sky).
+
+Chapter Three is then played twice more in the same page, and the DEV selector's equivalence checks run last: 0 differences for Chapters 0–3, and 0 leaks switching 3→1→3→0→3 and 3→1→2→3→0→2→1→3, also after playing.
+
+**Chapters 0–2 regression** is the same suite as before and passed in full: the playtest fixes (fan and TV chatter steady over an hour, the flag, the hoops, the old oak with its 120-trial randomized sweep: 0 stuck), the Chapter One and Two walkthroughs, their jumps, checkpoints, Continue, companions, the flashlight and captions.
+
+**Browser** (`tests/chapter3-browser-only.mjs`): from the Chapter Two end checkpoint, the hand-over, then the whole of Chapter Three **with the sound off (M) and no QA jump**, played with inputs, a capture at each beat the brief lists (below). Then every QA jump rendered, Continue, the captions measured with the real frame readback, the captions setting, and the audio hooks. `tests/dev-chapters-browser.mjs` clicks the title's DEV buttons, compares each start with the natural snapshots (`docs/qa/dev-chapters-escalation/natural-snapshots.json`), switches chapters repeatedly in one page, and plays Chapter Three from the DEV start to its end card, muted, with the same walkthrough.
+
+**One browser run failed and was rerun** (recorded here, not hidden). The first full walkthrough on the final runtime passed every night check (the reveal 22.2 m with a clear sightline, 12.3 s after seen, the crossing after 11 s, the run 54 s, the pursuer 17.3 m then 10 m, the road figure 14.1 m, every phase in order), but failed "Jamie and Sam stayed with you": **31.2 m** at the start of the *day* road ride (limit 30; the rebuild's run measured 23.8). The day sequence is unchanged; the walkthrough now also stops at Alex's desk for the helmet, so the test rode off from Mr. Okafor's at full speed while Jamie and Sam were still walking back to their bikes (they caught up). The walkthrough now lets them get back on their bikes first, and the 30 m limit is unchanged.
+
+**Not rerun:** the full release browser suite (`npm run test:browser`, several hours on SwiftShader). Chapters 0–2 are unchanged except for code paths that are inert outside Chapter Three's drain and escape (verified by the simulation regression above and by the DEV selector's browser starts of every chapter). Its last results are the rebuild's (420 passed).
+
+## Durations (scripted, direct; a person exploring will take longer)
+
+| | Simulation | Browser |
+|---|---:|---:|
+| Night ride, end of Briarwood to the outfall | 102 s | |
+| In the drain, entering to the run | 6.2 min | |
+| The run (bell to the bikes) | 52.8 s (randomized: 56–76 s) | 55.1 s |
+| The ride out to the streetlight | 105.1 s | |
+| The boy when first seen | 22.2 m (73 ft) | 22.2 m |
+| The boy present after being seen | 10.7 s (trials ≥ 12.3 s) | 12.3 s |
+| The pursuer, far, when seen / looked at | 19.1 m / 16.3 m | 17.2 m |
+| The pursuer, near, when seen | 10.5 m | 10 m |
+| Closest he came | 9 m in the run; 7.7 m in randomized escapes; 8.2 m standing still | |
+| The boy in the road, when seen | 14.4 m | 14.3 m |
+| Chapter Three, all of it (game time) | 23.7 min | |
+
+The rebuild's drain took 3.7 minutes; it is 6.2 now because more happens (the helmet, the bike gone, the stop and the wait for him, the search, the pause before the crossing, the search behind), not because it was padded. The run is shorter (rebuild: 73.7 s) and dense: something every 5–10 s.
+
+## Captures (all inspected)
+
+Every shot the brief lists, from the muted natural walkthrough (no QA jump), in `docs/qa/chapter3-escalation/`:
+
+| The brief | Capture(s) |
+|---|---|
+| Tunnel mood: entrance | `c3-n07-the-outfall`, `c3-n08-the-mouth` |
+| loss of entrance visibility | `c3-n10-after-the-bend-no-way-out` |
+| lower-ceiling section; ankle water | `c3-n18-deep-low-ceiling-ankle-water` (also `c3-n16`, `c3-n19`) |
+| side-drain darkness | `c3-n13-side-drain-black` |
+| Alex's item | `c3-d05-his-helmet-on-the-desk` (morning), `c3-n14-his-helmet-in-the-silt`, `c3-n15-sam-wants-out` |
+| old bike reveal; the bell; gone | `c3-n16-the-bike-in-the-light`, `c3-n17-try-the-bell-click`, `c3-n19-the-bike-is-gone` |
+| Figure: first reveal, eye height | `c3-n20-figure-from-eye-height` |
+| first reveal, wide | `c3-n21-qa-wide-reveal` (a review camera behind the three of them; not a story frame) |
+| framed by Jamie's and Sam's lights | `c3-n22-framed-by-their-lights` |
+| turning; walking behind the bend | `c3-n23-he-turns`, `c3-n24-walking-round-the-bend` |
+| empty bend | `c3-n25-the-bend-empty`, `c3-n26-a-wet-footprint` |
+| second presence; voices; search; bell | `c3-n27-someone-crosses-ahead`, `c3-n28`, `c3-n29`, `c3-n30-searching-behind-nothing`, `c3-n31-the-bell-beside-them` |
+| Pursuit: RUN start | `c3-n32-run` |
+| companion look-back | `c3-n33-they-look-back` |
+| far figure running behind | `c3-n34-he-is-running-after-them` |
+| Jamie goes down; the side pipe | `c3-n35-jamie-goes-down`, `c3-n36-water-bursts-from-a-side-pipe` |
+| old bike suddenly ahead | `c3-n37-the-bike-ahead-of-them` |
+| near figure | `c3-n38-closer` |
+| exit light ahead | `c3-n39-the-way-out` |
+| Road: remount | `c3-n40-straight-onto-the-bike` |
+| dark forest escape | `c3-n41-flight-up-the-dark-road` |
+| figure standing in the road; stepping into the trees | `c3-n42-him-in-the-road-ahead`, `c3-n43-he-steps-into-the-trees` |
+| neighbourhood lights returning | `c3-n44-the-first-streetlight`, `c3-n45-under-the-streetlight`, `c3-n46-chapter-three-end` |
+
+Plus all 33 QA jumps (`qa-jump-*`), Continue (`c3-title-continue`), a narrowed review view of the boy (`c3-qa-figure-zoomed-for-review`) and the caption fixtures (`caption-*`). The DEV selector run adds its own walkthrough (`dev-c3-*`) and the chapter starts in `docs/qa/dev-chapters-escalation/`.
+
+Reviewing these renders is what found the problems fixed in `43b71e6`. Jamie stood almost in front of you at the reveal. The deep box went black whenever Jamie was in your beam. The water was a black void. The pursuer at 18 m was a dim 45-pixel shape. The bike ahead was two glinting rims. Answers to the brief's review questions, from the final frames:
+
+- **A person down there?** Yes: a lit child at the centre of two beams (`n22`).
+- **A child, not a polygon; like Alex?** Yes: Alex's build, mustard shirt, green shorts, brown hair.
+- **Can I see the pursuer while running?** Yes, when you look back: far (`n34`), near (`n38`).
+- **Does the tunnel feel oppressive?** The low wet box (`n18`); judged by eye, not measured.
+- **Does the exit look like safety?** A pale opening at the end (`n39`).
+- **Is the relocated bike obvious?** Yes: across the floor, both of them swerving (`n37`).
+- **Does the road figure read instantly?** Yes: a boy standing in the road in the lights (`n42`).
+
+## Captions
+
+| Background | Words | Worst-case contrast | Opposite-tone edge | Mean luminance behind |
+|---|---|---:|---:|---:|
+| night asphalt | light | 12.91:1 | 0.28 | 0.0241 |
+| day grass | light | 2.72:1 | 0.72 | 0.1738 |
+| day field end of briarwood | light | 4.2:1 | 0.41 | 0.1685 |
+| woods road night | light | 15.43:1 | 0.31 | 0.0064 |
+| drain darkness | light | 19.12:1 | 0.29 | 0.0000 |
+| drain flashlight on the wall | light | 3.9:1 | 0.48 | 0.0993 |
+| drain flashlight floor | light | 19:1 | 0.31 | 0.0003 |
+| bright house siding | dark | 6.47:1 | 0.32 | 0.4187 |
+| streetlight | light | 9.17:1 | 0.28 | 0.0446 |
+| daylight sky | dark | 5.32:1 | 0.32 | 0.2839 |
+| memory | light | 5.9:1 | 0.28 | 0.0494 |
+| police lights | light | 12.01:1 | 0.28 | 0.0268 |
+
+The sky → ground → sky sweep changed tone once, never a flicker. Where contrast is below 3:1 the opposite-tone edge round each letter is strengthened (≥ 0.7).
+
+## Audio
+
+Placeholder and deferred, per the brief. This pass checked only that the story still calls each hook (the bells far, clean and beside them, his voice ahead and behind, the click, splashes) a sensible number of times and without errors (simulation and Chromium). **No offline renders and no HRTF rendering were run**; `C3_AUDIO_RENDER=1` brings the old signal renders back. Nobody has listened.
+
+## Performance (SwiftShader; no real-GPU frame rate was measured)
+
+Static world: **2,514,058 triangles / 1,131 meshes** (rebuild 2,505,240 / 1,124), far under the pass's soft targets (~6 M / ~2,000). The drain's new detail is merged into its zone, so it adds draw calls only where it is drawn. Culling: deep in the drain only the tunnel's batches are drawn (69 merged meshes), the far plane drops to 150 m and the sky is not drawn; the neighbourhood views of Chapters 0–2 never draw the tunnel.
+
+| Moment | Capture | Triangles | Draw calls |
+|---|---|---:|---:|
+| Briarwood corner (day, the neighbourhood) | `c3-00-chapter-three-card.jpg` | 1,348,041 | 563 |
+| his room: the helmet | `c3-d05-his-helmet-on-the-desk.jpg` | 896,690 | 289 |
+| the old road at night | `c3-n06-road-deep.jpg` | 477,722 | 65 |
+| the drain mouth | `c3-n08-the-mouth.jpg` | 660,951 | 217 |
+| the deep box | `c3-n18-deep-low-ceiling-ankle-water.jpg` | 36,834 | 74 |
+| the reveal | `c3-n22-framed-by-their-lights.jpg` | 55,992 | 100 |
+| looking back in the run | `c3-n34-he-is-running-after-them.jpg` | 35,836 | 124 |
+| the bike ahead (near the first bend) | `c3-n37-the-bike-ahead-of-them.jpg` | 557,024 | 187 |
+| the near pursuer | `c3-n38-closer.jpg` | 605,018 | 233 |
+| the boy in the road | `c3-n42-him-in-the-road-ahead.jpg` | 418,053 | 93 |
+| the first streetlight | `c3-n44-the-first-streetlight.jpg` | 963,120 | 462 |
+
+Ranges over the walkthrough captures: the drain 26,700–660,951 triangles, 58–233 draw calls (33 frames; the top of the range is the mouth with the woods behind); the day 570,929–1,348,041, 129–563 (11); the woods road at night 337,148–823,338, 57–368 (10); back in the street 730,264–963,120, 327–462 (3). Every frame is under the pass's 1.5–1.8 M hero ceiling; the deep drain sits far under the 800 k–1.2 M normal band (it is small and enclosed, and culled to itself). The only frames over ~450 draw calls are the day neighbourhood's (the Briarwood corner card at 563), which this pass did not change.
+
+## Where
+
+- [chapter3-escalation/](qa/chapter3-escalation/) (gallery `index.html`, `chapter3-browser-report.json`, `simulation-report.json`)
+- [dev-chapters-escalation/](qa/dev-chapters-escalation/) (`dev-chapters-browser-report.json`, captures, `natural-snapshots.json`)
+
+To rerun:
+
+```
+npm test
+BROWSER_PATH=/path/to/chromium node tests/chapter3-browser-only.mjs
+BROWSER_PATH=/path/to/chromium node tests/dev-chapters-browser.mjs
+```
+
+---
+
 # Last Light — Chapter Three horror rebuild: verification
 
 Source: `claude/chapter3-horror-investigation` at `8f06b2bb3b8f545243c75f3644627cb8a217d7ec` (unchanged). Branch: `claude/chapter3-horror-rebuild`. Tested runtime: commit `8e30cbeac758f53be2d68c13a5fa5b83870c8e1b` (later commits change tests and documentation only); the runtime hashes in each report match the committed `dist/` files. The structural pass's verification below this section is historical: its basin, pond road and culvert are gone.
