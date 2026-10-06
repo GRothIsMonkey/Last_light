@@ -1,5 +1,9 @@
 # Last Light — Chapter Three structural handoff (for Astra)
 
+> **On `claude/chapter3-horror-rebuild` this chapter's second half was rebuilt.** The pond road, basin, fence gap
+> and culvert described below are gone; see [ASTRA_CHAPTER3_REBUILD_HANDOFF.md](ASTRA_CHAPTER3_REBUILD_HANDOFF.md).
+> This document is kept as the structural pass's record.
+
 This is the structural, gameplay and story pass for Chapter Three. It is **not** an art pass. Everything
 here works and is tested; it is deliberately plain wherever art direction belongs to Astra.
 

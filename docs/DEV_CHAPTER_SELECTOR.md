@@ -4,6 +4,11 @@ Branch `claude/chapter3-private-playtest`, made from the finished Chapter Three 
 `8f06b2bb3b8f545243c75f3644627cb8a217d7ec` (`claude/chapter3-horror-investigation`, unchanged).
 Nothing here belongs in the shipped game. The finished Chapter Three branch does not contain it.
 
+**Carried on `claude/chapter3-horror-rebuild`** (the Chapter Three horror rebuild) as its first commit, so the
+rebuild can be playtested from any chapter. Everything below applies there unchanged, except that the
+rebuild's evidence is in `docs/qa/dev-chapters-rebuild/` (the files in `docs/qa/dev-chapters/` are the
+playtest build's, kept as they were).
+
 ## Using it
 
 The title screen has a dashed box in the bottom-right corner: **DEV · PLAYTEST ONLY — START AT CHAPTER**,
@@ -54,12 +59,14 @@ caption mode, audio, date, objective, title card, fade, body classes, prompt, an
 Result: **0 differences** outside the list below for Chapters One, Two and Three, at the hand-over and at
 the opening scene. The prologue equals a new game on a fresh page. Switching 3→1→2→3→0→2→1→3 in one
 session, and switching after playing Chapter Three to its close bell with a recording playing, gives
-every start **identical** to a clean start of that chapter.
+every start **identical** to a clean start of that chapter. On the rebuild the simulation also switches
+**3→1→3→0→3**, with the same result (and found one leak on the way, now fixed: the figure's position along
+the drain survived Start over).
 
 **Browser** (`tests/dev-chapters-browser.mjs`, Chromium): real clicks on the title buttons, each start
 compared with the simulation's natural snapshots (`docs/qa/dev-chapters/natural-snapshots.json`) with
-the same rules; pointer lock as for the title's start button; switching 3→1→2→3→0→2 through Esc → Back
-to the title with no leaks; normal (non-QA) mode; then Chapter Three played from the DEV start to its end
+the same rules; pointer lock as for the title's start button; switching 3→1→2→3→0→2 (on the rebuild:
+3→1→3→0→3→2) through Esc → Back to the title with no leaks; normal (non-QA) mode; then Chapter Three played from the DEV start to its end
 card with inputs and no QA jump. Report: `docs/qa/dev-chapters/dev-chapters-browser-report.json`.
 
 ### Differences that are intentional (not compared, and why)
@@ -89,7 +96,7 @@ card with inputs and no QA jump. Report: `docs/qa/dev-chapters/dev-chapters-brow
 ## Removing it
 
 Delete `dist/dev-chapters.js`, `dist/dev-chapter-history.js`, `tests/dev-chapters-sim.mjs`,
-`tests/dev-chapters-browser.mjs`, `docs/qa/dev-chapters/` and this file; remove the blocks marked
+`tests/dev-chapters-browser.mjs`, `docs/qa/dev-chapters/` (and `docs/qa/dev-chapters-rebuild/`) and this file; remove the blocks marked
 `TEMPORARY` in `dist/game.js`, `dist/index.html`, `dist/style.css`, `dist/chapter2.js` (a read-only
 accessor) and `tests/verify.mjs`. Or simply never merge this branch.
 

@@ -1,3 +1,211 @@
+# Last Light — Chapter Three horror rebuild: verification
+
+Source: `claude/chapter3-horror-investigation` at `8f06b2bb3b8f545243c75f3644627cb8a217d7ec` (unchanged). Branch: `claude/chapter3-horror-rebuild`. Tested runtime: commit `8e30cbeac758f53be2d68c13a5fa5b83870c8e1b` (later commits change tests and documentation only); the runtime hashes in each report match the committed `dist/` files. The structural pass's verification below this section is historical: its basin, pond road and culvert are gone.
+
+| Gate | Result |
+|---|---:|
+| Full simulation / geometry suite (`npm test`, no `QUICK`) | **436 passed**, 0 failed (structural pass: 339) |
+| Chapter Three Chromium pass (`tests/chapter3-browser-only.mjs`): muted walkthrough, every jump, Continue, captions, audio signals | **81 passed** |
+| DEV selector, Chromium (`tests/dev-chapters-browser.mjs`) | **65 passed** |
+| Full release browser suite (`npm run test:browser`, SwiftShader) | **420 passed, 479 captures** |
+| JavaScript / console / shader errors | **0** |
+| Randomized runs (seeded) | **24** escapes, **12** road rides, **12** drain walks: all completed, nobody stuck |
+| Figure trials | facing **forward, left, right, away**, and never looking: seen in every case, view never turned |
+| Chapter Three replays in one session | **3** full playthroughs (the first and two more after every jump and Start over): same beats, nothing carried over |
+| Captures | **73** in `docs/qa/chapter3-rebuild/` (gallery: `index.html`), inspected |
+| Audio signal cases | **21** offline renders (signal checks only; nobody has listened) |
+
+## What was run
+
+**Simulation** (`tests/verify.mjs`: real modules and Three.js geometry, mocked renderer and DOM).
+- The prologue, Chapter One and Chapter Two are played with inputs, as before. The same run continues through the rebuilt Chapter Three with inputs only (`tests/chapter3-sim.mjs`): riding, walking, looking, F where the prompt says, the recordings, the window, the neighbours, the end of Briarwood by day, home, the night ride down the old road, the outfall, the drain on foot, the old bike and its bell, the figure, following Jamie, the voices, the wait, the bell, the run, the remount, the ride out, the last four lines and the end card.
+- The checks follow the story beat by beat: dialogue, objectives, phases in order; the tension curve (calm at home, rising down the road, peak at the bell); each road event said once; Jamie a few steps ahead and Sam a step or two behind in the drain; nobody lost or non-finite.
+- Then the focused checks:
+  - all 23 QA jumps, each landing in its phase with the right date and time of day and everyone where people can be;
+  - all 15 checkpoints saved silently and returned to through Continue, labels known before they are reached;
+  - Start over from six places leaving nothing of Chapter Three behind;
+  - the figure from four facings and when never looked at;
+  - the muted reactions (first bell, "Guys?", the close bell, the run);
+  - captions for every sound that matters;
+  - the randomized runs;
+  - turning back in the drain;
+  - getting off right beside a parked bike;
+  - culling (deep in the drain only the drain is drawn; from the neighbourhood the drain never is).
+- Chapter Three is then played twice more in the same page after all of that. The DEV selector's equivalence checks run last.
+
+The Chapter Zero to Two regression is the same suite as before and passed in full: the four human-playtest fixes (fan and TV chatter, flag, hoops, old oak with its randomized sweep), the Chapter One and Two walkthroughs, jumps, checkpoints and Continue, and Chapter Two's "the morning is the same neighbourhood as the night". That check caught the first version of the zone culling, which toggled `visible`; culling now uses render layers.
+
+**Browser** (Chromium 141.0.7390.37, ANGLE/SwiftShader). `tests/chapter3-browser-only.mjs` starts at Chapter Two's end. It checks the hand-over, then plays the whole of Chapter Three **with the sound off (M) and no QA jump**, and captures each beat. It also renders every QA jump, checks Continue from the title, renders a zoomed review view of the figure, measures the captions from the real frame over twelve backgrounds plus a sky-to-ground sweep, checks the captions setting, and renders the Chapter Three sounds offline. `npm run test:browser` runs the whole release suite, whose main walkthrough and two natural runs go from the prologue through Chapter Three's end card.
+
+## Durations (scripted, direct; a person exploring will take longer)
+
+| | |
+|---|---:|
+| Night ride, end of Briarwood to the outfall | 103 s |
+| In the drain, entering to the run (walking at drain pace, every beat) | 3.7 min |
+| The run out of the drain | 73.7 s |
+| The ride out to the streetlight | 123.5 s |
+| Distance to the figure when he is first seen | 24.9 m (82 ft) |
+| The figure visible after being seen | 2.37 s |
+| Chapter Three, all of it (scripted, game time) | 23.1 min |
+
+The scripted run walks the shortest line at the drain's careful pace, so 3.7 minutes is a floor. Someone looking around, stopping at each sound and turning back once will be in the drain for the brief's five to ten minutes; that has not been measured with a person.
+
+## Captions (measured from the rendered frame)
+
+| Background | Words | Worst-case contrast | Opposite-tone edge | Mean luminance behind |
+|---|---|---:|---:|---:|
+| night asphalt | light | 12.91:1 | 0.28 | 0.0241 |
+| day grass | light | 2.72:1 | 0.72 | 0.1738 |
+| day field end of briarwood | light | 4.2:1 | 0.41 | 0.1682 |
+| woods road night | light | 12.25:1 | 0.3 | 0.0174 |
+| drain darkness | light | 19.12:1 | 0.29 | 0 |
+| drain flashlight on the wall | light | 2.61:1 | 0.74 | 0.2014 |
+| drain flashlight floor | light | 19:1 | 0.31 | 0.0003 |
+| bright house siding | dark | 6.47:1 | 0.32 | 0.4187 |
+| streetlight | light | 9.17:1 | 0.28 | 0.0446 |
+| daylight sky | dark | 5.32:1 | 0.32 | 0.2839 |
+| memory | light | 5.9:1 | 0.28 | 0.0494 |
+| police lights | light | 12.38:1 | 0.28 | 0.0247 |
+
+The sky → ground → sky sweep changed tone 1 time(s), never a flicker. Where contrast is below 3:1 the opposite-tone edge round each letter is strengthened (≥ 0.7).
+
+## Audio (signal validation only)
+
+| Case | Peak | RMS | Beats |
+|---|---:|---:|---:|
+| c3-heartbeat-calm | 0.0000 | 0.00000 |  |
+| c3-heartbeat-uneasy | 0.0392 | 0.00557 | 21 |
+| c3-heartbeat-afraid | 0.2445 | 0.03635 | 27 |
+| c3-heartbeat-panic | 0.3316 | 0.05577 | 37 |
+| c3-heartbeat-rising | 0.3337 | 0.04381 | 22 |
+| c3-night-ambience-full | 0.0292 | 0.00332 |  |
+| c3-night-ambience-gone | 0.0048 | 0.00100 |  |
+| c3-bell-far-in-the-drain | 0.0102 | 0.00085 |  |
+| c3-bell-clear-ahead | 0.0133 | 0.00111 |  |
+| c3-bell-right-beside | 0.0510 | 0.00342 |  |
+| c3-bell-far-behind-on-the-road | 0.0166 | 0.00122 |  |
+| c3-voice-jamie-ahead-in-the-drain | 0.0130 | 0.00122 |  |
+| c3-voice-guys-behind-in-the-drain | 0.0067 | 0.00043 |  |
+| c3-recording-1 | 0.1124 | 0.01039 |  |
+| c3-recording-2 | 0.0710 | 0.00519 |  |
+| c3-recording-3 | 0.0452 | 0.00434 |  |
+| c3-recording-4 | 0.0505 | 0.00366 |  |
+| c3-recording-5-the-night-before | 0.1066 | 0.00609 |  |
+| c3-old-bell-lever-click | 0.0065 | 0.00007 |  |
+| c3-splash-behind-placeholder | 0.0245 | 0.00051 |  |
+| c3-knock-up-the-shaft | 0.0337 | 0.00122 |  |
+
+All 21 finite and unclipped (the calm heartbeat is silent, as intended).
+
+Rendered offline (48 kHz, the game's own audio module driven frame by frame) in a plain Chromium instance of their own, with HRTF placement. A long software-rendered session once left Chromium's shared HRTF loader stuck, so the runner now separates these renders from the game session and keeps one tiny HRTF render alive for the stage; equal-power panning would be used, and recorded, if HRTF stalled.
+
+**No perceptual listening has been done by anyone.** Every Chapter Three drain sound is a synthesized placeholder. The renders in `docs/qa/chapter3-rebuild/audio/` exist so that someone can listen.
+
+## Performance
+
+Static world: **2,505,240 triangles / 1,124 meshes** (structural pass: 1,813,219 / 986), under the 4,000,000 / 1,500 normal targets. The woods are about 106 merged meshes / ~706,000 triangles, the drain about 59 / ~45,000.
+
+Per-frame submissions in Chapter Three captures (SwiftShader):
+
+| Capture | Triangles | Draw calls | Active lights |
+|---|---:|---:|---:|
+| c3-00-chapter-three-card | 1,347,311 | 559 | 2 |
+| c3-d01-briarwood-opening | 962,928 | 458 | 2 |
+| c3-d02-alex-house-exterior | 1,139,975 | 436 | 2 |
+| c3-d03-alex-mom | 1,101,144 | 377 | 2 |
+| c3-d04-bedroom-first-person | 856,671 | 536 | 2 |
+| c3-d06-window-to-the-creek | 647,291 | 322 | 2 |
+| c3-d07-mr-okafor | 757,663 | 190 | 2 |
+| c3-d08-end-of-briarwood-gate | 626,911 | 134 | 2 |
+| c3-d09-tire-track-in-the-dust | 828,136 | 227 | 2 |
+| c3-d10-the-road-into-the-woods | 619,465 | 171 | 2 |
+| c3-n01-night-home | 881,484 | 370 | 4 |
+| c3-n02-corner-at-night | 399,434 | 170 | 4 |
+| c3-n03-end-of-briarwood-at-night | 577,388 | 114 | 6 |
+| c3-n04-road-early | 461,509 | 85 | 6 |
+| c3-n05-road-middle | 402,741 | 61 | 6 |
+| c3-n06-road-deep | 477,722 | 65 | 6 |
+| c3-n07-the-outfall | 645,906 | 182 | 6 |
+| c3-n08-the-mouth | 652,713 | 193 | 6 |
+| c3-n09-first-stretch | 572,723 | 144 | 8 |
+| c3-n10-after-the-bend-no-way-out | 30,457 | 45 | 8 |
+| c3-n11-footprints-in-the-silt | 39,543 | 54 | 8 |
+| c3-n12-first-bell-they-freeze | 49,103 | 85 | 8 |
+| c3-n13-the-bike-down-here | 32,229 | 68 | 8 |
+| c3-n14-try-the-bell-click | 24,151 | 54 | 8 |
+| c3-n15-the-boy-down-the-tunnel | 41,901 | 79 | 8 |
+| c3-n16-the-bend-empty | 28,893 | 59 | 8 |
+| c3-n17-search-wet-footprint | 31,277 | 62 | 8 |
+| c3-n18-voice-ahead | 28,475 | 56 | 8 |
+| c3-n19-voice-behind-they-turn | 28,475 | 56 | 8 |
+| c3-n20-nothing-there | 26,584 | 65 | 8 |
+| c3-n21-the-bell-beside-them | 26,992 | 66 | 8 |
+| c3-n22-run-looking-back | 45,885 | 92 | 8 |
+| c3-n23-back-on-the-bikes | 382,030 | 218 | 6 |
+| c3-n24-flight-up-the-road | 714,803 | 173 | 6 |
+| c3-n25-under-the-streetlight | 948,099 | 449 | 6 |
+| c3-n26-chapter-three-end | 720,727 | 298 | 6 |
+| c3-title-continue | 600,339 | 356 | 2 |
+| c3-qa-figure-zoomed-for-review | 33,515 | 55 | 8 |
+
+Peak in Chapter Three (outside the title card, which renders the street behind black): 1,139,975 triangles and 536 draw calls. In the drain: 24,151–49,103 triangles, 45–92 draw calls.
+
+**Culling.**
+- Deep in the drain only the drain's own batches are drawn and the view ends at 70 m. Inside it ends at 170 m; in the night woods past 200 m, 260 m.
+- The drain is drawn only from inside it or within 95 m of the outfall, and never from the neighbourhood.
+- The woods' batches are drawn within 280 m at night (420 m by day).
+- Culling switches render layers, so a culled batch is neither drawn nor shadowed.
+
+**Cost to earlier views.** Compared capture by capture with the structural pass's release-suite captures (335 views of Chapters 0–2): median change +0 draw calls / +0 triangles; largest increase +22 draw calls (astra-face-officer), largest triangle increase +432,425 (c2-15-morning-home); largest decrease -34 draw calls (polish-sign-04). Peak frame in the whole suite: natural-1-c2-11-police-flashlight (592 draw calls). Both natural runs (prologue to Chapter Three's end card, inputs only) reached the end card; their Chapter Three captures are in [qa/chapter3-rebuild/release-natural/](qa/chapter3-rebuild/release-natural/). Scene allocation including invisible objects: 2,321 mesh instances / 3,191,604 triangle instances (structural pass: 2,138 / 2,495,099; ceiling 6,000,000).
+
+**The woods by day (a real cost).** 97 of these 335 views gain more than 50,000 triangles: views toward the end of Briarwood, the creek and the easement, which now also draw the new woods behind them (within 420 m by day, 280 m at night). They gain at most +432,425 triangles (a morning view) and +22 draw calls. Compared by eye with the earlier captures (c2-15-morning-home, c2-04-easement-at-night), the scenes are the same apart from a few more trees on the horizon by day; at night the extra trees are lost in the dark. The heaviest Chapter 0–2 frame went from 997,711 triangles (astra-sam-garage-side-exit) to 1,203,265 (c2-15-morning-home). Instanced or impostor far trees (Astra) would remove most of this; a tighter daytime cull would too, at the cost of trees appearing on the horizon.
+
+**Build time (a real cost).** Built back to back on the same machine under the same load, the structural pass's world took 8.6–9.1 s and the rebuild's 13.7–15.4 s. That is about 60 % longer, some 5 s more before the title can start. Nearly all of it is baking the woods' ~4,100 trees, which reuse the neighbourhood's tree builder (several meshes each). Instanced far trees or a lighter far forest would win most of it back; that is left for Astra's art pass, with the woods' look. (The full simulation run reports 38,178 ms because several other jobs shared the machine.)
+
+All rendering was **SwiftShader (software)**. **No real-GPU frame rate was measured, and none is claimed.**
+
+## Visual review
+
+Every Chapter Three capture was inspected (contact sheets and full size). Fixed as a result:
+- The day tire track, its dust and the drain's tire line never rendered: their strips faced down and their materials were single-sided.
+- With Jamie in your beam the drain round him was black: the flashlight now has a dim spill round its hotspot.
+- The "T Flashlight" hint stayed on screen through the drain. (This one is shared code: the light is handed over already on in Chapter One as well, so there too the hint now goes after eight seconds of walking with the light on, instead of staying until T, which switched the light off. In the earlier capture of c2-04-easement-at-night the hint is on screen; now it is not. Nothing else in Chapters 0–2 is meant to look different.)
+- The `c3-road-day` jump showed Chapter One's date.
+- The test's outfall view looked into a companion; it is now taken on foot from the apron.
+
+The browser and simulation runs also found:
+- the branch on the night road repeating every six seconds;
+- a player who could be boxed in by a friend's parked bike;
+- a companion stopping dead behind the cruiser at Alex's curb;
+- Jamie never taking his place at the drain mouth if he was still riding when you stepped off;
+- the figure's position surviving Start over.
+
+All are fixed and covered by checks.
+
+## Reproduce
+
+```sh
+npm test                                                 # full simulation
+QUICK=1 ONLY=chapter3 node tests/verify.mjs              # Chapter Three alone, from Chapter Two's end
+QUICK=1 ONLY=chapter3 SKIPCHECKS=1 REPLAYS=3 node tests/verify.mjs   # the chapter three times in one page
+QUICK=1 ONLY=dev node tests/verify.mjs                   # DEV selector equivalence
+BROWSER_PATH=/path/to/chromium node tests/chapter3-browser-only.mjs
+BROWSER_PATH=/path/to/chromium node tests/dev-chapters-browser.mjs
+BROWSER_PATH=/path/to/chromium SOFTWARE_GL=1 QA_OUTPUT=/path/to/qa npm run test:browser
+```
+
+Machine-readable evidence:
+- [simulation](qa/chapter3-rebuild/simulation-report.json)
+- [Chapter Three browser](qa/chapter3-rebuild/chapter3-browser-report.json)
+- [release browser suite](qa/chapter3-rebuild/release-suite-browser-report.json) (of its 479 captures, the two natural runs' 72 Chapter Three frames are committed in [release-natural/](qa/chapter3-rebuild/release-natural/))
+- [DEV selector browser](qa/dev-chapters-rebuild/dev-chapters-browser-report.json)
+
+Gallery: [qa/chapter3-rebuild/index.html](qa/chapter3-rebuild/index.html).
+
+---
+
+
 # Last Light — Chapter Three verification (structural pass)
 
 Source: the frozen Chapter Two release, `codex/astra-chapter2-final-polish` at `68cc54396bdc2599cfa35b59ba6a4c981db6a8f3`. Branch: `claude/chapter3-horror-investigation`. Tested runtime: commit `38ff68d309c71a0d3a6d9568fefd7a615940ceae` (every later commit changes tests or documentation only); the runtime hashes in each report below match the committed `dist/` files.
