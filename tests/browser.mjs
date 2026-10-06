@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import {runAstraChecks} from './astra-browser.mjs';
 import {runSceneChecks} from './polish-scenes.mjs';
 import {runChapterTwoBrowser,runChapterTwoJumps,runChapterTwoCloseups} from './chapter2-browser.mjs';
-import {runChapterThreeBrowser,runChapterThreeJumps,runChapterThreeAudio} from './chapter3-browser.mjs';
+import {runChapterThreeBrowser,runChapterThreeJumps,runChapterThreeAudio,runChapterThreeAudioHooks} from './chapter3-browser.mjs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 let playwright;try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
@@ -184,7 +184,8 @@ try{
  check('unusual angles render without errors',errors.length===0);
  await runChapterTwoJumps({page,snap,check,state,errors});
  await runChapterTwoCloseups({page,snap,check,state,errors});
- const chapter3=await runChapterThreeJumps({page,snap,check,state,errors,out,fs,path});const ab=await playwright.chromium.launch({executablePath:process.env.BROWSER_PATH||undefined,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']}),apg=await ab.newPage();await apg.goto(base+'/style.css');const chapter3Audio=await runChapterThreeAudio({page:apg,check,out,fs,path});await ab.close();// (Chapter Three's audio signal renders in a plain browser of their own)
+ const chapter3=await runChapterThreeJumps({page,snap,check,state,errors,out,fs,path});let chapter3Audio=await runChapterThreeAudioHooks({page,check,errors});// (Chapter Three's audio is placeholder and deferred: hooks only; C3_AUDIO_RENDER=1 renders the old signal checks in a plain browser of their own)
+ if(process.env.C3_AUDIO_RENDER){const ab=await playwright.chromium.launch({executablePath:process.env.BROWSER_PATH||undefined,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']}),apg=await ab.newPage();await apg.goto(base+'/style.css');chapter3Audio={hooks:chapter3Audio,renders:await runChapterThreeAudio({page:apg,check,out,fs,path})};await ab.close();}
  await page.evaluate(()=>{lastLight.toTitle();lastLight.step(.2);});check('Continue is offered on the title after reaching the night',await page.locator('#continue').isVisible());await snap('c1-22-title-continue');
  // Character close-ups: the camera is set beside each person for a single rendered frame.
  const portrait=async(name,who,off)=>{await page.evaluate(async([who,off])=>{const T=await import('./three.module.js');const F=lastLight.friends.list;const person=who==='mom'?lastLight.friends.mom.person:F.find(f=>f.key===who).person;

@@ -1,17 +1,17 @@
 // TEMPORARY (private playtest build): the developer chapter selector in Chromium (SwiftShader unless
 // BROWSER_GPU=1). Real clicks on the title's DEV buttons; each start compared with the state the simulation
-// recorded while playing into that chapter naturally (docs/qa/dev-chapters-rebuild/natural-snapshots.json, written by
+// recorded while playing into that chapter naturally (docs/qa/dev-chapters-escalation/natural-snapshots.json, written by
 // `DEV_NATURAL_OUT=… ONLY=dev node tests/verify.mjs`), with the same normalization and documented exceptions
 // (tests/dev-chapters-sim.mjs). Then switching chapters repeatedly in one page through the pause menu's
 // "Back to the title", the selector in normal (non-QA) mode, and Chapter Three played from the DEV start to
-// its end card with inputs (no QA jump). QA_OUTPUT (default docs/qa/dev-chapters-rebuild) receives captures and
+// its end card with inputs (no QA jump). QA_OUTPUT (default docs/qa/dev-chapters-escalation) receives captures and
 // dev-chapters-browser-report.json.
 import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';import {createRequire} from 'node:module';
 import {compare,far,strict,NEAR,OPENING_TIME_TOL} from './dev-chapters-sim.mjs';
 import {runChapterThreeBrowser} from './chapter3-browser.mjs';
 const require=createRequire(import.meta.url);let pw;try{pw=require('playwright');}catch{pw=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
-const root=path.resolve('dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa/dev-chapters-rebuild');fs.mkdirSync(out,{recursive:true});
-const NAT=JSON.parse(fs.readFileSync(path.resolve(process.env.DEV_NATURAL||'docs/qa/dev-chapters-rebuild/natural-snapshots.json'),'utf8'));
+const root=path.resolve('dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa/dev-chapters-escalation');fs.mkdirSync(out,{recursive:true});
+const NAT=JSON.parse(fs.readFileSync(path.resolve(process.env.DEV_NATURAL||'docs/qa/dev-chapters-escalation/natural-snapshots.json'),'utf8'));
 const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(path.join(root,n)).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(path.join(root,n))).digest('hex')]));
 const server=http.createServer((req,res)=>{if(req.url.split('?')[0]==='/favicon.ico'){res.writeHead(204);return res.end();}
  const file=path.join(root,decodeURIComponent(req.url.split('?')[0]).replace(/^\//,'')||'index.html');if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}

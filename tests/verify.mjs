@@ -48,6 +48,8 @@ const W=h.world,visible=W.merged.filter(m=>m.visible!==false&&!m.material.transp
 advance(.05);
 // TEMPORARY (private playtest build): record the state at each natural chapter arrival for the dev chapter selector checks.
 const {installNaturalCapture,runDevChapterChecks,diff:devDiff,normalize:devNorm}=await import('./dev-chapters-sim.mjs');const devCapture=installNaturalCapture(h,element);
+// ONLY=script SCRIPT=<file>: run a development script against the same harness (nothing is checked or reported).
+if(process.env.ONLY==='script'){const m=await import(pathToFileURL(process.env.SCRIPT).href);await m.default({h,advance,press,release,tap,check,element,metrics,W,THREE,groundPoint,buildMs});process.exit(0);}
 // ONLY=chapter3: a quick loop for Chapter Three alone (from the end of Chapter Two), for development.
 if(process.env.ONLY==='chapter3'){const {playChapterThree,runChapterThreeChecks}=await import('./chapter3-sim.mjs');const T3={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
  if(!process.env.SKIPPLAY){h.jump('chapter2-end');playChapterThree(T3,'chapter three alone');for(let n=2;n<=+(process.env.REPLAYS||1);n++){h.jump('chapter2-end');playChapterThree(T3,'replay '+n);}}if(!process.env.SKIPCHECKS)await runChapterThreeChecks(T3);console.log(JSON.stringify({passed:checks.length,checks,metrics},null,1));process.exit(0);}
