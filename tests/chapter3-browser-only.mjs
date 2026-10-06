@@ -30,7 +30,9 @@ try{
  check('Chapter Two hands over to Chapter Three (no end menu)',(await state()).chapter.phase==='c3-black'&&!(await page.locator('#ending').isVisible()));
  const run=process.env.C3_SKIP_RUN?null:await runChapterThreeBrowser({page,snap,check,state,errors});
  const jumps=await runChapterThreeJumps({page,snap,check,state,errors,out,fs,path});
- const audio=await runChapterThreeAudio({page,check,out,fs,path});
+ // (the audio signal renders run in a plain browser of their own: see runChapterThreeAudio)
+ const ab=await pw.chromium.launch({executablePath:process.env.BROWSER_PATH||undefined,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']}),apg=await ab.newPage();await apg.goto(`http://127.0.0.1:${server.address().port}/style.css`);
+ const audio=await runChapterThreeAudio({page:apg,check,out,fs,path});await ab.close();
  const gpu=await page.evaluate(()=>{const gl=lastLight.renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'unavailable';});
  check('no JavaScript or shader errors',errors.length===0);
  const report={runtimeHashes,browser:browser.version(),gpu,passed:checks.length,checks,frames,run,captions:jumps.captions,captionSweep:jumps.sweep,audio,errors,

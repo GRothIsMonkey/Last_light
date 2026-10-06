@@ -95,10 +95,13 @@ export async function runChapterThreeBrowser({page,snap:rawSnap,check,state,erro
  await ev(()=>{const C=__c3;C.ride(C.rl(240,380,0,9),60);});await snap(tag+'-n06-road-deep');
  await ev(()=>{const C=__c3,L=lastLight;C.ride(C.rl(380,L.world.woods.L-6,0,9),70);C.until(()=>L.state.chapter.phase==='n3-outfall',20);C.brake();const m=L.world.drain.spots.mouth;C.face(m.x,m.z,.05);C.until(()=>false,1.5);});
  // ---- the drain ------------------------------------------------------------------------------------------------
- await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.objective==='Enter the drain.',40);C.offBike();C.go({x:C.O(9,4)[0],z:C.O(9,4)[1]},{max:40});const m=L.world.drain.spots.mouth;C.face(m.x,m.z,.1);C.until(()=>false,1.2);});
+ await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.objective==='Enter the drain.',40);C.offBike();{const W=L.world.woods,q=W.project(C.me().x,C.me().z);if(q&&!q.out&&q.s<W.L-8)C.walk(C.rl(q.s,W.L-3,0,5),{r:1,max:60});}/* (stopped short, up the road: walk down it, as you would) */if(L.state.state!=='c1-walk')throw new Error('could not get off the bike at the outfall: '+JSON.stringify({state:L.state.state,speed:L.state.speed,prompt:L.state.prompt,lock:L.roam.lock,phase:L.state.chapter.phase,me:C.me(),at:L.nav.locate(C.me().x,C.me().z)}));C.go({x:C.O(9,4)[0],z:C.O(9,4)[1]},{max:40});const m=L.world.drain.spots.mouth;C.face(m.x,m.z,.1);C.until(()=>false,1.2);});
  await snap(tag+'-n07-the-outfall');// (on foot on the apron, the headwall and the black mouth ahead)
  check('Chapter Three: the outfall: "That’s where the creek goes. Behind Alex’s."',await said('JAMIE: “That’s where the creek goes. Behind Alex’s. All of it comes out here.”'));
- await ev(()=>{const C=__c3;C.walk([C.O(6,0),C.O(1.2,0)],{r:.5,max:30});C.face(...C.D(10,0),0);C.until(()=>false,.6);});
+ await ev(()=>{const C=__c3,L=lastLight;C.walk([C.O(6,0),C.O(1.2,0)],{r:.5,max:30});C.face(...C.D(10,0),0);C.until(()=>false,.6);
+  // (if the way in is not reached, say exactly where and why, instead of failing later on a missing drain position)
+  const m=C.me(),near=L.chapter.blockers?L.chapter.blockers(true).filter(o=>Math.hypot(o.x-m.x,o.z-m.z)<3).map(o=>[+o.x.toFixed(2),+o.z.toFixed(2),o.r]):null;
+  if(Math.hypot(m.x-C.O(1.2,0)[0],m.z-C.O(1.2,0)[1])>2)throw new Error('did not reach the drain mouth: '+JSON.stringify({me:m,state:L.state.state,phase:L.state.chapter.phase,obj:L.state.chapter.objective,speed:L.state.speed,roam:{x:L.roam.x,z:L.roam.z,lock:L.roam.lock},at:L.nav.locate(m.x,m.z),walk:L.nav.walkable(m.x,m.z),target:C.O(9,4),walkTarget:L.nav.walkable(...C.O(9,4)),path:L.nav.walkPath({x:m.x,z:m.z},{x:C.O(1.2,0)[0],z:C.O(1.2,0)[1]}),near,prompt:L.state.prompt,comps:L.chapter.companions.all.map(c=>[c.key,c.mode,+c.px.toFixed(1),+c.pz.toFixed(1),+c.bx.toFixed(1),+c.bz.toFixed(1)])}));});
  await snap(tag+'-n08-the-mouth');
  await ev(()=>{const C=__c3,L=lastLight;C.walk([C.D(3,0),...C.dl(3,44,.3,4)],{r:.6,max:60});C.until(()=>false,.4);});
  await snap(tag+'-n09-first-stretch');
@@ -162,10 +165,10 @@ export async function runChapterThreeJumps({page,snap:rawSnap,check,state,errors
  await ev(()=>{const L=lastLight;L.jump('c3-figure');L.step(.9);L.camera.fov=18;L.camera.updateProjectionMatrix();const f=L.chapter3.figure.group.position;L.camera.lookAt(f.x,f.y+.9,f.z);L.camera.updateMatrixWorld();});
  await snap(tag+'-qa-figure-zoomed-for-review',{clean:true});await ev(()=>{const L=lastLight;L.camera.fov=64;L.camera.updateProjectionMatrix();});
  // ---- captions: measured with the frame's own pixels behind the words ---------------------------------------------
- const capCase=async(name,setup,want=null)=>{const r=await ev(async([setup])=>{const L=lastLight;await (0,eval)('('+setup+')')(L,__c3);const S=L.chapter.kit.S;S.queue.length=0;S.line=null;L.chapter.kit.talk([{who:'JAMIE',text:'“Can you read this? It should be easy to read here.”',time:40}]);
+ const capCase=async(name,setup,want=null,{still=false}={})=>{const r=await ev(async([setup,still])=>{const L=lastLight;await (0,eval)('('+setup+')')(L,__c3);const S=L.chapter.kit.S;S.queue.length=0;S.line=null;L.chapter.kit.talk([{who:'JAMIE',text:'“Can you read this? It should be easy to read here.”',time:40}]);
    // Frames driven by the browser's own animation frames, as in play: the readback is asynchronous (a fence
    // the browser resolves between frames), a few times a second; four fresh measurements at least.
-   const n0=L.captionTone.state.samples;await new Promise(res=>{let i=0;const f=()=>{L.render();L.step(.12);if(++i<60&&(i<14||L.captionTone.state.samples<n0+4))requestAnimationFrame(f);else res();};requestAnimationFrame(f);});const st=L.captionTone.state,el=document.getElementById('subtitle'),cs=getComputedStyle(el);return {...st,bg:cs.backgroundColor,border:cs.borderTopWidth,color:cs.color,shown:parseFloat(el.style.opacity||'0')>=.75&&(el.textContent||'').length>3/* (a memory's own lines are drawn at 0.8) */,text:(el.textContent||'').slice(0,60),opacity:cs.opacity,styleOpacity:el.style.opacity};},[setup.toString()]);
+   const n0=L.captionTone.state.samples;await new Promise(res=>{let i=0;const f=()=>{L.render();if(!still)L.step(.12);if(++i<60&&(i<14||L.captionTone.state.samples<n0+4))requestAnimationFrame(f);else res();};requestAnimationFrame(f);});const st=L.captionTone.state,el=document.getElementById('subtitle'),cs=getComputedStyle(el);return {...st,bg:cs.backgroundColor,border:cs.borderTopWidth,color:cs.color,shown:parseFloat(el.style.opacity||'0')>=.75&&(el.textContent||'').length>3/* (a memory's own lines are drawn at 0.8) */,text:(el.textContent||'').slice(0,60),opacity:cs.opacity,styleOpacity:el.style.opacity};},[setup.toString(),still]);
   await snap('caption-'+name);
   // Contrast is against the brightest (or darkest) sixth of the strip behind the words; where that is
   // low (a lit patch inside a dark strip), the opposite-tone edge round each letter is strengthened.
@@ -182,7 +185,7 @@ export async function runChapterThreeJumps({page,snap:rawSnap,check,state,errors
  caps.push(await capCase('bright-house-siding',(L,C)=>{L.jump('neighbors');L.step(1);const AH=L.world.homes.alex,p=AH.toWorld(-AH.w/4,AH.front),m=C.me();C.go({x:p.x+(m.x-p.x)*.35,z:p.z+(m.z-p.z)*.35},{max:20});C.face(p.x,p.z,.12);L.step(.2);}));
  caps.push(await capCase('streetlight',(L,C)=>{L.jump('chapter3-end');L.step(2);L.face(L.state.roam.a,.05);}));
  caps.push(await capCase('daylight-sky',(L,C)=>{L.jump('neighbors');L.step(1);L.face(L.state.walk.a,1.1);L.step(.1);},'dark'));// (on foot, so the view can look up)
- caps.push(await capCase('memory',(L,C)=>{L.jump('memory-reconstruction');L.step(6);}));
+ caps.push(await capCase('memory',(L,C)=>{L.jump('memory-reconstruction');L.step(4.7);},null,{still:true}));// (the memory's own subtitles: held on "…tomorrow…")
  caps.push(await capCase('police-lights',(L,C)=>{L.jump('alex-house');L.step(3);}));
  // Sweeping from bright sky down to dark ground and back: one change of tone each way at most, never a flicker.
  const sweep=await ev(async()=>{const L=lastLight;L.jump('c3-road-day');L.step(1);L.chapter.kit.talk([{who:'SAM',text:'“Okay. Sweeping the view.”',time:60}]);const a=L.state.walk.a;let prev=null;const trace=[],flips=[],lums=[];
@@ -203,9 +206,16 @@ export async function runChapterThreeJumps({page,snap:rawSnap,check,state,errors
 // Offline renders of the sounds Chapter Three adds. Signal checks only: finite, not clipped, present
 // where they should be, silent where they should be; the heartbeat measured against tension.
 export async function runChapterThreeAudio({page,check,out,fs,path}){
+ // Run on a page of a plain browser of its own (the runners pass one): these checks are about the synthesized signals,
+ // not the game session.
  // Each per-frame step resumes the render even if it throws, and a case that does not finish in two minutes fails
- // with what went wrong instead of waiting for ever (a long software-rendered session once stalled here).
- const clips=await page.evaluate(async()=>{const {createAudio}=await import('./audio.js'),{createTension}=await import('./tension.js');const res=[];
+ // with what went wrong instead of waiting for ever. First one tiny HRTF render is made and kept alive for the whole
+ // stage: Chromium shares its HRTF loader between contexts, and in this headless container an HRTF render could wait
+ // for ever on it (intermittently; reproduced in a plain browser). If even that first render stalls for 20 s, these
+ // signal checks are rendered with equal-power panning instead, and the report says so.
+ const clips=await page.evaluate(async()=>{{const w=new OfflineAudioContext(2,4800,48000),p=w.createPanner();p.panningModel='HRTF';const o=w.createOscillator();o.connect(p).connect(w.destination);o.start();
+   window.__hrtf=await Promise.race([w.startRendering().then(()=>true),new Promise(r=>setTimeout(()=>r(false),20000))]);window.__hrtfKeep=w;
+   if(!window.__hrtf){const cp=OfflineAudioContext.prototype.createPanner;OfflineAudioContext.prototype.createPanner=function(){const q=cp.call(this);Object.defineProperty(q,'panningModel',{configurable:true,get:()=>'equalpower',set:()=>{}});return q;};}}const {createAudio}=await import('./audio.js'),{createTension}=await import('./tension.js');const res=[];
   const night={speed:0,pedal:false,coasting:false,onBike:false,surface:'grass',p:1,night:1,deep:.4,finale:40,friendsLeft:0,state:'c1-walk',crank:0,night1:true,listener:{x:0,y:1.5,z:0},forward:{x:0,z:-1},sources:[]};
   // (The body and the one-shots are rendered with the night's layers off, so each is measured on its own.)
   const quiet={traffic:0,insects:0,wind:0,life:0};
@@ -224,7 +234,7 @@ export async function runChapterThreeAudio({page,check,out,fs,path}){
    let beats=0;if(name.startsWith('c3-heartbeat')){const win=2400,e=[];for(let i=0;i+win<=b.length;i+=win){let s=0;for(let j=i;j<i+win;j+=8)s+=ch[0][j]*ch[0][j];e.push(s);}const mx=Math.max(...e);for(let i=1;i<e.length;i++)if(e[i]>mx*.25&&e[i-1]<=mx*.25)beats++;}
    const pcm=new Int16Array(b.length*2);for(let i=0;i<b.length;i++)for(let k=0;k<2;k++)pcm[i*2+k]=Math.round(Math.max(-1,Math.min(1,ch[k][i]))*32767);const bytes=new Uint8Array(pcm.buffer);let bin='';for(let i=0;i<bytes.length;i+=8192)bin+=String.fromCharCode(...bytes.subarray(i,i+8192));
    res.push({name,peak,rms:Math.sqrt(sum/(b.length*2)),nonFinite,maxSampleJump:jump,beats,seconds:dur,pcm:btoa(bin)});}
-  if(errs.length)throw new Error('audio steps threw: '+JSON.stringify(errs.slice(0,5)));return res;});
+  if(errs.length)throw new Error('audio steps threw: '+JSON.stringify(errs.slice(0,5)));window.__hrtfKeep=null;for(const r of res)r.panning=window.__hrtf?'HRTF':'equalpower (HRTF stalled)';return res;});
  // Signal-validation renders, kept small: 24 kHz (pairs of samples averaged), stereo only where placement matters.
  const wav=(raw,stereo)=>{const src=new Int16Array(Uint8Array.from(raw).buffer),frames=Math.floor(src.length/4),ch=stereo?2:1,pcm=Buffer.alloc(frames*ch*2);
   for(let i=0;i<frames;i++){const l=(src[i*4]+src[i*4+2])/2,r=(src[i*4+1]+src[i*4+3])/2;if(stereo){pcm.writeInt16LE(Math.round(l),i*4);pcm.writeInt16LE(Math.round(r),i*4+2);}else pcm.writeInt16LE(Math.round((l+r)/2),i*2);}
