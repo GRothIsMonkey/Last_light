@@ -127,7 +127,7 @@ export function createChapter3(o,k,ch2){
  helmet.position.set(itemAt.x,itemAt.y+.085,itemAt.z);helmet.rotation.set(Math.PI-.32,-itemAt.a+.7,.22,'YXZ');
  // ---- the old bike: the same one as under the oak. First leaning on the wall far inside; then not there; then lying ----
  // across the way out, near the first bend, where nobody could have put it. (C.bike: none, tunnel, removed, relocated)
- const old=makeOldBike();old.group.name='old-bike-in-drain';scene.add(old.group);old.group.visible=false;
+ const old=makeOldBike();old.group.name='old-bike-in-drain';scene.add(old.group);old.group.visible=false;let oldCatch=null;// (see catchable: set up once the boy's are)
  const OB=DD.oldBike,oldAt=(()=>{const {w}=Dr.sizeAt(OB.s),t=OB.side*(w/2-.34),q=Dr.at(OB.s,t);return {x:q.x,z:q.z,a:q.a,t};})();
  const RL=DD.relocate,relAt=(()=>{const q=Dr.at(RL.s,-.85);return {x:q.x,z:q.z,a:q.a,t:-.85,h:q.a-.95};})();
  function placeOld(where){const g=old.group;C.bike=where;C.oldFallen=where==='relocated';g.visible=where==='tunnel'||where==='relocated';if(!g.visible)return;
@@ -144,6 +144,12 @@ export function createChapter3(o,k,ch2){
  // pursuit-near, pursuit-watch, road-block, road-leave, gone. In the drain his place is (s,t) and a yaw from its heading
  // (0: facing deeper, PI: facing back toward the way out); on the old road it is FG.road.
  const figure=createPerson({...CAST.alex});figure.group.name='figure';scene.add(figure.group);figure.group.visible=false;
+ // He catches the light: his own copies of the materials, and when a beam is on him far down the tunnel (or the road) a
+ // little more of their own colour, as a flashlight's hotspot gives. Nothing at all when no light is on him: never a glow.
+ const catchable=(group,key)=>{const u={value:0};group.traverse(o2=>{if(!o2.isMesh||!o2.material||Array.isArray(o2.material))return;const m=o2.material.clone();
+  m.onBeforeCompile=sh=>{sh.uniforms.uCatch=u;sh.fragmentShader='uniform float uCatch;\n'+sh.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n\ttotalEmissiveRadiance+=diffuseColor.rgb*uCatch;');};
+  m.customProgramCacheKey=()=>key;o2.material=m;});return u;};
+ const figCatch=catchable(figure.group,'figure-catch');oldCatch=catchable(old.group,'old-bike-catch');
  const FG={s:DD.figure.s,t:DD.figure.t,v:0,gait:0,yaw:Math.PI,look:0,state:'off',road:null,turnV:0,turnFrom:Math.PI,turnT:0,stepPh:0,hidden:0,lastStride:0,pose:newPose()};
  const FG0={...FG,pose:null};
  function placeFigure(dt=0){let x,z,y,h;
@@ -504,8 +510,11 @@ export function createChapter3(o,k,ch2){
  function startReveal(){if(C.flags.figure)return;C.flags.figure=true;go('n3-figure');checkpoint('c3-figure');mark('someone down there');objective('');
   if(FG.state!=='unseen')figureReady();FG.state='first-reveal';
   const ps=Math.max(drainS(),2),a=Dr.at(ps).a,fc=figChest;C.fig={t0:C.t,seenT:0,seenAt:null,nudge:0,alexAt:null,unseenGo:false,distAtSeen:null};
-  // (each on the side he was already walking: Jamie ahead on the right, Sam coming up on the left)
-  C.frame={jamie:{...tq(ps+1.75,.76),face:a,look:fc},sam:{...tq(ps+1.3,-.78),face:a,look:fc}};role(jamie,'frame');later(.4,()=>role(sam,'frame'));
+  // (either side of you, a step ahead, about a metre out: Jamie on your right, Sam on your left, so your own line down the
+  // tunnel to him stays clear between them; against a wall, the one with no room goes to the other side, a step deeper)
+  const pq=Dr.project(me().x,me().z),pt=pq?pq.t:0,lim=Dr.sizeAt(ps).w/2-.38;let tJ=Math.min(pt+.85,lim),tS=Math.max(pt-.85,-lim),sJ=ps+1.5,sS=ps+1.35;
+  if(tJ-pt<.7){tJ=Math.max(pt-1.05,-lim);tS=Math.max(pt-.75,-lim);sJ=ps+2.1;sS=ps+1.1;}else if(pt-tS<.7){tS=Math.min(pt+1.05,lim);tJ=Math.min(pt+.75,lim);sS=ps+2.1;sJ=ps+1.1;}
+  C.frame={jamie:{...tq(sJ,tJ),face:a,look:fc},sam:{...tq(sS,tS),face:a,look:fc}};role(jamie,'frame');later(.4,()=>role(sam,'frame'));
   S.jamieAim=fc;later(.55,()=>{S.samAim=fc;});C.hold.jamie=null;C.hold.sam=null;
   T?.jolt(.76,{rise:1,hold:10,why:'someone, down the tunnel'});}
  function startTurn(){FG.state='turning';FG.turnFrom=FG.yaw;FG.turnT=0;FG.turnV=1;mark('he turns away');}
@@ -583,7 +592,7 @@ export function createChapter3(o,k,ch2){
   C.glanceT-=dt;if(C.glanceT<=0&&ps>=0){C.glanceT=1.8+Math.random()*1.8;const c=Math.random()<.5?jamie:sam,cs2=cS(c);if(cs2>0&&C.t>(C.glance[c.key]?.until||0))glance(c,figure.group.visible?figChest():lookAhead(cs2+10,0,1.2),.75);}
   // 1: once you are round the second bend, on the long straight, he comes round it behind you, running
   if(P2.stage==='start'&&ps>=0&&ps<=204){P2.stage='far';P2.farAt=C.t;spawnBehind(ps+20,ps+48,'pursuit-far');}
-  if(P2.stage==='far'){if(ps>136)chase(dt,ps,pv,18.5,7.8);else{FG.v=damp(FG.v,0,3,dt);FG.s-=FG.v*dt;}const ch=figChest(),vis=Dr.sees(camera.position,ch,.02);
+  if(P2.stage==='far'){if(ps>136)chase(dt,ps,pv,16.5,7.8);else{FG.v=damp(FG.v,0,3,dt);FG.s-=FG.v*dt;}const ch=figChest(),vis=Dr.sees(camera.position,ch,.02);
    const gapF=FG.s-ps;if(vis&&gapF<24&&P2.farVisAt===null){P2.farVisAt=C.t;cueBehind('far');}
    if(vis&&gapF<24&&k.camLooksAt(ch,.9)){P2.farSeenT+=dt;if(P2.farSeenAt===null&&P2.farSeenT>.25){P2.farSeenAt=C.t;P2.farDist=+(FG.s-ps).toFixed(1);mark('he is running after them');T?.jolt(1,{hold:24,why:'he is chasing them'});}}
    if(P2.farVisAt!==null&&P2.farSeenAt===null&&C.t-P2.farVisAt>2.8&&P2.cue<2)cueBehind('again');
@@ -597,7 +606,7 @@ export function createChapter3(o,k,ch2){
     for(let i=0;i<4;i++)later(i*.14,()=>gushAt(SPp.x,SPp.y,SPp.z,dx,dz,16));later(.35,()=>{const q=Dr.at(DD.sidePipe.s,.9*DD.sidePipe.side);rippleAt(q.x,Dr.waterAt(DD.sidePipe.s)??Dr.floor(DD.sidePipe.s),q.z,1.4,2);});
     o.sfx('splash',{x:SPp.x,y:SPp.y,z:SPp.z},{gain:1});glance(sam,{x:SPp.x,y:SPp.y,z:SPp.z},1.2);C.hold.sam=null;T?.jolt(1,{hold:16,why:'the side pipe'});}
    // 4: the bike, lying across the way out in the first bend (Jamie sees it first)
-   if(C.bike==='relocated'&&P2.bikeJamieAt===null&&cS(jamie)>0&&cS(jamie)<=RL.s+9){P2.bikeJamieAt=C.t;const b={x:relAt.x,y:Dr.floorAt(RL.s,-.85)+.3,z:relAt.z};glance(jamie,b,1.4);S.jamieAim=b;later(1.5,()=>{S.jamieAim=null;});
+   if(C.bike==='relocated'&&P2.bikeJamieAt===null&&cS(jamie)>0&&cS(jamie)<=RL.s+9){P2.bikeJamieAt=C.t;const b={x:relAt.x,y:Dr.floorAt(RL.s,-.85)+.3,z:relAt.z};glance(jamie,b,1.4);S.jamieAim=b;later(.3,()=>{glance(sam,b,1.2);S.samAim=b;});later(2.4,()=>{if(S.jamieAim===b)S.jamieAim=null;if(S.samAim===b)S.samAim=null;});
     talk([{who:'JAMIE',text:'“WHAT—”',from:jamie,time:.9,gap:.2},{who:'SAM',text:'“That’s the bike— that’s the BIKE—”',from:sam,time:1.6}],{interrupt:true});T?.jolt(1,{hold:20,why:'the bike, in front of them'});}
    if(C.bike==='relocated'&&P2.bikeSeenAt===null&&ps>0){const b={x:relAt.x,y:Dr.floorAt(RL.s,-.85)+.25,z:relAt.z};if(Math.hypot(b.x-camera.position.x,b.z-camera.position.z)<16&&k.camLooksAt(b,.85)&&Dr.sees(camera.position,b,.02))P2.bikeSeenAt=C.t;}
    // 5: past the bend, on the straight to the mouth, a breath; then he comes round the bend behind you, much closer
@@ -772,7 +781,19 @@ export function createChapter3(o,k,ch2){
   // the way out, seen from inside (a little stronger when you are running for it)
   {const cs2=Dr.project(camera.position.x,camera.position.z),inD=Dr.inside(camera.position.x,camera.position.z,.1)&&cs2&&cs2.s>1.2;GL.want=inD&&A.night?(C.flags.run?.5:.3)*smooth((cs2.s-1.2)/5)*(1-smooth((cs2.s-110)/30)):0;
    GL.o=damp(GL.o,GL.want,2,dt);glow.material.opacity=GL.o;glow.visible=GL.o>.004;}
-  updateFigure(dt);}
+  updateFigure(dt);catchLight(dt);}
+ // How much light he catches (see figCatch): your beam (where you look) and Jamie's or Sam's when it is on him, more the
+ // farther he is (up close the lights themselves are enough).
+ const _cf=new THREE.Vector3();
+ function catchLight(dt){let want=0;if(figure.group.visible&&A.night){const ch=figChest(),cp=camera.position,dx=ch.x-cp.x,dy=ch.y-cp.y,dz=ch.z-cp.z,d=Math.hypot(dx,dy,dz)||1;camera.getWorldDirection(_cf);
+   const cs=(dx*_cf.x+dy*_cf.y+dz*_cf.z)/d,mine=S.flashOn||FG.road?smooth((cs-Math.cos(.42))/(Math.cos(.1)-Math.cos(.42))):0,on=a=>a===figChest||(a&&typeof a==='object'&&Math.hypot(a.x-ch.x,a.z-ch.z)<1.2);
+   const theirs=(on(S.jamieAim)?.5:0)+(on(S.samAim)?.5:0);want=Math.min(.5,(.42*mine+.22*theirs)*smooth((d-7)/12));}
+  figCatch.value=damp(figCatch.value,want,8,dt);
+  // The bike from the oak, in the drain: the same, so it stands out in a beam far off (and lying across the way out ahead).
+  let wb=0;if(old.group.visible&&A.night&&C.bike!=='none'){const b=old.group.position,bc={x:b.x,y:b.y+.45,z:b.z},cp=camera.position,dx=bc.x-cp.x,dy=bc.y-cp.y,dz=bc.z-cp.z,d=Math.hypot(dx,dy,dz)||1;camera.getWorldDirection(_cf);
+   const cs=(dx*_cf.x+dy*_cf.y+dz*_cf.z)/d,mine=S.flashOn?smooth((cs-Math.cos(.45))/(Math.cos(.12)-Math.cos(.45))):0,on=a=>a&&typeof a==='object'&&Math.hypot(a.x-bc.x,a.z-bc.z)<1.2;
+   wb=Math.min(.45,(.36*mine+.2*((on(S.jamieAim)?1:0)+(on(S.samAim)?1:0)))*smooth((d-4)/9));}
+  oldCatch.value=damp(oldCatch.value,wb,8,dt);}
  // The boy: what he does in each state (the pursuit and the road move him in their own functions).
  function updateFigure(dt){const st=FG.state;if(st==='off'||st==='gone'||st==='hidden'||st==='pursuit-hidden'||!figure.group.visible){if(!figure.group.visible)return;}
   if(st==='first-reveal'||st==='first-seen'){const F=C.fig,ch=figChest(),seen=camSees(ch,.94)||camSees(figHead(),.94);if(seen)F.seenT+=dt;
@@ -846,7 +867,7 @@ export function createChapter3(o,k,ch2){
   if(C.amb.tunnel>.02){const s=Math.max(0,drainS()+10);out.push({id:'drain3',kind:'water',pos:new THREE.Vector3(Dr.at(Math.min(s,Dr.len-1)).x,Dr.floor(s)+.3,Dr.at(Math.min(s,Dr.len-1)).z),level:.35*C.amb.tunnel});}}
  function blockers(){const out=[];if(old.group.visible&&S.phase&&/^n3-/.test(S.phase))out.push(...oldParts());for(const a of people)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});return out;}
  // ---- lifecycle --------------------------------------------------------------------------------------------------
- function reset(){const hadPose=C.pose;fresh();card(false);roomOn(false);phone.visible=false;old.group.visible=false;helmet.visible=false;evidence.visible=false;marks.visible=false;figure.group.visible=false;Object.assign(FG,{...FG0,pose:FG.pose});glint.visible=false;
+ function reset(){const hadPose=C.pose;fresh();figCatch.value=0;oldCatch.value=0;card(false);roomOn(false);phone.visible=false;old.group.visible=false;helmet.visible=false;evidence.visible=false;marks.visible=false;figure.group.visible=false;Object.assign(FG,{...FG0,pose:FG.pose});glint.visible=false;
   branch.visible=false;branch.children[0].rotation.z=0;BR.phase=-1;deer.visible=false;DR.phase=-1;cable.visible=false;CB.amp=0;wet.visible=false;leaf.visible=false;LF.s=-1;stone.visible=false;ST.t=-1;glow.visible=false;glow.material.opacity=0;GL.o=0;GL.want=0;
   for(const r of ripple){r.t=-1;r.m.visible=false;}for(const d of drops){d.t=-1;d.m.visible=false;}
   releaseBounce();A.shade=0;A.barLight=false;A.remountRange=undefined;A.escape=null;A.rideBoost=undefined;A.rideFov=0;for(const c of [jamie,sam]){c.tight=0;c.boost=1;}WN?.setLimit(null);o.flashShadow?.(false);

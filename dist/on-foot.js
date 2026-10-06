@@ -52,7 +52,10 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    const ex=F.on&&F.exposure?F.exposure(hand,direction):null;
    light.angle=ex?.angle??.31;light.penumbra=ex?.penumbra??.8;
    if(ex){if(ex.d!==undefined)near=Math.min(near,Math.max(.35,ex.d));if(ex.reach){light.distance=ex.reach;max=ex.max||max;}}
-   if(F.on){light.intensity=near<Infinity?clamp(near*near*1.1,.7,max):max;if(ex?.person!==undefined)light.intensity=Math.min(light.intensity,Math.max(.7,ex.person*ex.person*2.2));}
+   if(F.on){light.intensity=near<Infinity?clamp(near*near*1.1,.7,max):max;if(ex?.person!==undefined){let k=ex.personK||2.2;
+     // (in the drain: only as much as the beam actually puts on him; a friend at the edge of the cone barely dims it)
+     if(ex.personK&&ex.personCos!==undefined){const th=Math.max(0,Math.acos(clamp(ex.personCos,-1,1))-Math.atan(.32/ex.person)),c0=Math.cos(light.angle),c1=Math.cos(light.angle*(1-light.penumbra)),u=clamp((Math.cos(th)-c0)/Math.max(1e-4,c1-c0),0,1);k/=Math.max(.04,u*u*(3-2*u));}
+     light.intensity=Math.min(light.intensity,Math.max(.7,ex.person*ex.person*k));}}
    torch.position.copy(hand);torch.lookAt(hand.clone().sub(direction));
    light.position.copy(hand).addScaledVector(direction,.1);const aim=hand.clone().addScaledVector(direction,12);if(dt===0)light.target.position.copy(aim);else light.target.position.lerp(aim,1-Math.exp(-16*dt));
    if(F.on&&ex?.reach){spill.intensity=ex.wide!==undefined?Math.min(F.spillLevel,Math.max(.15,ex.wide*ex.wide*1.2)):F.spillLevel;spill.position.copy(light.position);spill.target.position.copy(light.target.position);}

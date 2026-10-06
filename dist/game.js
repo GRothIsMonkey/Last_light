@@ -315,9 +315,9 @@ const nav=createNav(world);
 // What the flashlight lands on (see on-foot.js): Jamie or Sam standing in the beam, and in the storm
 // drain its walls (and a longer reach there).
 {const _h=new THREE.Vector3();foot.exposure=(hand,dir)=>{const out={},K=chapter.kit;let pd=Infinity;
- let wd=Infinity;for(const c of [K?.jamie,K?.sam]){if(!c?.active||!c.person.group.visible)continue;c.person.group.getWorldPosition(_h);_h.y+=1.05;const dx=_h.x-hand.x,dy=_h.y-hand.y,dz=_h.z-hand.z,d=Math.hypot(dx,dy,dz);if(d>4.6||d<.05)continue;const cs=(dx*dir.x+dy*dir.y+dz*dir.z)/d;if(cs>Math.cos(.31+Math.atan(.32/d)))pd=Math.min(pd,d);if(cs>Math.cos(Math.min(1.5,1.05+Math.atan(.32/d))))wd=Math.min(wd,d);}
- if(pd<Infinity)out.person=pd;if(wd<Infinity)out.wide=wd;// (wide: the nearest friend in the dim spill round the beam)
- if(world.drain?.inside(hand.x,hand.z,.05)){const d=world.drain.rayDist(hand,dir,44);out.d=Math.max(d,2.2);out.reach=46;out.max=d>15?150:80;out.angle=d>15?.34:.44;out.penumbra=.88;}// (a wider beam in there: the walls are close)
+ let wd=Infinity,pc=1;for(const c of [K?.jamie,K?.sam]){if(!c?.active||!c.person.group.visible)continue;c.person.group.getWorldPosition(_h);_h.y+=1.05;const dx=_h.x-hand.x,dy=_h.y-hand.y,dz=_h.z-hand.z,d=Math.hypot(dx,dy,dz);if(d>4.6||d<.05)continue;const cs=(dx*dir.x+dy*dir.y+dz*dir.z)/d;if(cs>Math.cos(.31+Math.atan(.32/d))&&d<pd){pd=d;pc=cs;}if(cs>Math.cos(Math.min(1.5,1.05+Math.atan(.32/d))))wd=Math.min(wd,d);}
+ if(pd<Infinity){out.person=pd;out.personCos=pc;}if(wd<Infinity)out.wide=wd;// (wide: the nearest friend in the dim spill round the beam)
+ if(world.drain?.inside(hand.x,hand.z,.05)){const d=world.drain.rayDist(hand,dir,44);out.d=Math.max(d,2.2);out.reach=46;out.max=d>15?150:80;out.angle=d>15?.34:.44;out.penumbra=.88;out.personK=8;}// (a wider beam in there: the walls are close; a friend walking ahead in it takes more light here, so the tunnel past him is not left black)
  return out;};}
 const roam={x:0,z:0,a:0,omega:0,lock:false,brake:0,walkLock:false,steer:null,fadeIn:0};
 let wx=0,wz=0,wa=0;// on foot at night: position and heading

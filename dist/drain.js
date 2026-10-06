@@ -76,7 +76,7 @@ export function buildDrain(W){
  const wall=mat(0x6b6a61,{roughness:.88}),floorM=mat(0x55554d,{roughness:.62}),oldWall=mat(0x6c6458,{roughness:.96}),oldFloor=mat(0x4d4a42,{roughness:.55});
  const seam=mat(0x2c2c29,{roughness:1,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2},null),stain=mat(0x47463f,{roughness:1,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2},null);
  const silt=mat(0x5b4d3a,{roughness:1,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2},'earth'),white=mat(0x8f8c80,{roughness:1,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3},null);
- const water=mat(0x1b2629,{roughness:.08,metalness:.45,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4},'water');
+ const water=mat(0x34403e,{roughness:.3,metalness:.08,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4},'water');
  const rust=K.mat(0x6e4430,{roughness:.85,metalness:.3}),steel=K.mat(0x5d5c56,{roughness:.6,metalness:.5}),dark=new THREE.MeshBasicMaterial({color:0x030304});dark.userData.keep=true;dark.userData.noShadow=true;
  const meshOf=(pos,idx,m,name='',inward=null)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
   if(inward){const nn=g.attributes.normal,p=g.attributes.position;let ok=0;for(let k=0;k<nn.count;k+=7){const c=inward(p.getX(k),p.getY(k),p.getZ(k));ok+=nn.getX(k)*c.x+nn.getY(k)*c.y+nn.getZ(k)*c.z;}
