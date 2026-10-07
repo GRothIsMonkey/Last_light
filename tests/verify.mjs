@@ -31,11 +31,13 @@ globalThis.window={};globalThis.devicePixelRatio=2;globalThis.innerWidth=1440;gl
 globalThis.FakeRenderer=class{constructor(){this.shadowMap={};this.capabilities={maxTextureSize:8192};this.pixelRatio=1;}setPixelRatio(r){this.pixelRatio=r;}setSize(){}render(){}};
 let source=fs.readFileSync(root+'game.js','utf8').replaceAll(/'\.\/([\w.\-]+)\.js'/g,(_,name)=>JSON.stringify(pathToFileURL(root+name+'.js').href)).replace('new THREE.WebGLRenderer','new globalThis.FakeRenderer');
 source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,contact,selfPose,self,foot,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},place(d,lat,v=4.5){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;},get bikeY(){return bikeY;},
- jump:jumpTo,dev,devStart,chapter,chapter2,chapter3,tension,captionTone,get audioRef(){return audio;},memory,get memCast(){return memCast;},skyMat,hemi,face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else roam.a=a;},look(y,p=0){mouseYaw=y;mousePitch=p;},get prompt(){return promptItems();},roam,nav,placePlayer,action:()=>action(),drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},get night(){return {state,wx,wz,wa,speed,fade,roam:{...roam}};}};`;
+ jump:jumpTo,dev,devStart,devScene,chapter,chapter2,chapter3,tension,captionTone,get audioRef(){return audio;},memory,get memCast(){return memCast;},skyMat,hemi,face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else roam.a=a;},look(y,p=0){mouseYaw=y;mousePitch=p;},get prompt(){return promptItems();},roam,nav,placePlayer,action:()=>action(),drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},get night(){return {state,wx,wz,wa,speed,fade,roam:{...roam}};}};`;
 const t0=Date.now();
 await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const buildMs=Date.now()-t0;
 const h=globalThis.harness,key=code=>({code,preventDefault(){},repeat:false});let t=0,simTime=0;
+// (the Chapter Three creature loads in the background, as in a browser; here it is read from dist/assets with node:fs)
+await h.chapter3?.creature?.ready;
 const DT=1/30;const advance=(seconds,each)=>{for(let i=0;i<Math.ceil(seconds/DT-1e-9);i++){t+=DT*1000;tick(t);simTime+=DT;each?.();}};
 const press=code=>events.get('keydown')(key(code)),release=code=>events.get('keyup')(key(code)),tap=code=>{press(code);release(code);};
 const checks=[],metrics={};function check(name,fn){try{fn();}catch(e){e.message=name+': '+e.message;throw e;}checks.push(name);}
@@ -372,10 +374,11 @@ const firstStart=simTime;
 const {playChapterTwo,runChapterTwoChecks}=await import('./chapter2-sim.mjs'),T2={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
 const {playChapterThree,runChapterThreeChecks}=await import('./chapter3-sim.mjs');
 const J1=JUNCTIONS[0];const r1=ride('first ride');finalStop('first ride');chapterOne('first ride');playChapterTwo(T2,'first ride');playChapterThree(T2,'first ride');
-if(process.env.ONLY==='dev-record'){const {recordHistory}=await import('./dev-chapters-sim.mjs');console.log(JSON.stringify(recordHistory(h,devCapture,fs,root+'dev-chapter-history.js'),null,1));process.exit(0);}
+if(process.env.ONLY==='dev-record'){const {recordHistory}=await import('./dev-chapters-sim.mjs');console.log(JSON.stringify(recordHistory(h,devCapture,fs,root+'dev-chapter-history.js',advance),null,1));process.exit(0);}
 if(process.env.ONLY==='dev'){if(process.env.DEV_RAW)for(const n of [1,2,3]){const d=devDiff(devNorm(devCapture.natural[n]),devNorm((h.devStart(n),h.dev.snapshot())));console.log('RAW',n,JSON.stringify({how:devCapture.how[n]}));for(const x of d)console.log('RAW',n,JSON.stringify(x));
   const S=h.chapter.kit.S,ph=S.phase;for(let i=0;i<900&&S.phase===ph;i++)advance(1/30);const o=h.dev.snapshot();o.phase=S.phase;for(const x of devDiff(devNorm(devCapture.opened[n]),devNorm(o)))console.log('OPEN',n,JSON.stringify(x));}
  const rep=await runDevChapterChecks(T2,devCapture);console.log(JSON.stringify({passed:checks.length,dev:rep,metrics:metrics['dev chapter selector']},null,1));process.exit(0);}
+devCapture.off=true;// (natural means the first playthrough above; the jumps and replays below are not natural arrivals)
 metrics['first playthrough minutes']=+((simTime-firstStart)/60).toFixed(2);
 check('first ride: the head turns toward friends heading home when you are not looking around yourself',()=>assert.ok(r1.glanced>30));
 check('first ride: memory lines appear once each, never over a friend\'s line',()=>{const texts=reflections.filter(r=>r.id!=='last').map(r=>r.text);assert.ok(r1.reflectionsSeen.length>=3,'reflections '+r1.reflectionsSeen.length);assert.equal(new Set(r1.reflectionsSeen).size,r1.reflectionsSeen.length);for(const x of r1.reflectionsSeen)assert.ok(texts.includes(x));assert.equal(r1.overlap,0);metrics.reflectionsShown=r1.reflectionsSeen.length;});

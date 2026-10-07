@@ -7,13 +7,15 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';
 
 export function installNaturalCapture(h,element){
- const cap={natural:{},opened:{},how:{},armed:null,waiting:null,off:false,shots:{}},S=()=>h.chapter.kit.S;
+ const cap={natural:{},opened:{},how:{},armed:null,waiting:null,off:false,shots:{},scenes:{}},S=()=>h.chapter.kit.S;
  const render=h.renderer.render.bind(h.renderer);
  // The frame's render follows its update: a snapshot here is "the state at the end of that frame".
  // A second snapshot is taken when the chapter's first phase gives way to the next (the title card over
  // black ends and the chapter's opening scene is set): the first moment the player sees the chapter.
  h.renderer.render=(...a)=>{
   if(cap.waiting&&S().phase!==cap.waiting.phase){cap.opened[cap.waiting.n]=h.dev.snapshot();cap.opened[cap.waiting.n].phase=S().phase;cap.waiting=null;}
+  // (the scenes: the first frame a natural run is at each one; see SCENE_REACH)
+  if(!cap.off)for(const [k,reached] of Object.entries(SCENE_REACH))if(!cap.scenes[k]){let ok=false;try{ok=reached(h,S());}catch{}if(ok){cap.scenes[k]=h.dev.snapshot();cap.scenes[k].at=+h.snapshot.clock.toFixed(2);}}
   if(cap.armed!=null){const k=cap.armed;cap.armed=null;cap.shots[k]=h.dev.snapshot();if(typeof k==='number'){cap.natural[k]=cap.shots[k];if(k)cap.waiting={n:k,phase:S().phase};}}
   return render(...a);};
  // The prologue: the first frame after the title's start button on a fresh page (a new game).
@@ -21,6 +23,52 @@ export function installNaturalCapture(h,element){
  for(const [n,api] of [[1,h.chapter],[2,h.chapter2],[3,h.chapter3]]){const b=api.begin;api.begin=function(...a){const r=b.apply(this,a);if(!cap.off&&!(n in cap.natural)){cap.armed=n;cap.how[n]=a[0]??null;}return r;};}
  return cap;
 }
+
+// ---- scenes (DEV_SCENES): where a natural run is first at each one, and what has to be the same ---------------
+// The moment each scene's DEV start stands for, recognised in the natural run (the first frame it is true).
+const c3=h=>h.chapter3,c3C=h=>h.chapter3.C;
+export const SCENE_REACH={
+ '0/alex-departure':(h,S)=>h.snapshot.state==='riding'&&!S.phase?.startsWith?.('c')&&h.snapshot.distance>=528,
+ '0/jamie-departure':(h)=>h.snapshot.state==='riding'&&h.snapshot.distance>=670,
+ '0/sam-departure':(h)=>h.snapshot.state==='riding'&&h.snapshot.distance>=870,
+ '1/title':(h,S)=>S.phase==='title','1/alex-house':(h,S)=>S.phase==='briarwood'&&h.snapshot.state==='c1-ride',
+ '1/jamie':(h,S)=>S.phase==='friends'&&S.objective==='Find Jamie.'&&h.snapshot.state==='c1-walk','1/sam':(h,S)=>S.phase==='friends'&&S.objective==='Find Sam.'&&h.snapshot.state==='c1-walk',
+ '1/oak':(h,S)=>S.phase==='oak'&&S.objective==='Go to the old oak.'&&h.snapshot.state==='c1-ride'&&h.chapter.companions.all.every(c=>c.mode==='ride'),'1/retrace':(h,S)=>S.phase==='retrace'&&h.snapshot.state==='c1-ride'&&!!S.flags.patrol,
+ '1/investigation':(h,S)=>S.phase==='creek'&&S.objective==='Look around the creek.'&&h.snapshot.state==='c1-walk',
+ '2/chapter2-start':(h,S)=>S.phase==='c2-decide','2/easement':(h,S)=>S.phase==='c2-easement'&&S.objective==='Check the drainage path.','2/alex-bike':(h,S)=>S.phase==='c2-bike','2/second-bell':(h,S)=>S.phase==='c2-bell','2/police-find':(h,S)=>S.phase==='c2-police',
+ '2/morning':(h,S)=>S.phase==='m-home','2/memory-start':(h,S)=>S.phase==='m-briarwood'&&!!h.chapter2.C.flags?.corner&&S.objective==='Remember Alex leaving.','2/memory-reconstruction':(h,S)=>S.phase==='m-memory','2/chapter2-end':(h,S)=>S.phase==='m-after'&&S.objective==='Remember Alex leaving.',
+ '3/c3-alex-house':(h,S)=>S.phase==='d3-street'&&!!c3C(h).flags.atHouse,'3/alex-bedroom':(h,S)=>S.phase==='d3-room','3/recording':(h,S)=>S.phase==='d3-phone','3/neighbors':(h,S)=>S.phase==='d3-neighbors',
+ '3/c3-road-day':(h,S)=>S.phase==='d3-road'&&h.snapshot.state==='c1-ride'&&c3(h).state.roadS>-20,'3/night-start':(h,S)=>S.phase==='n3-home','3/c3-road-night':(h,S)=>S.phase==='n3-road','3/c3-forest-deep':(h,S)=>S.phase==='n3-road'&&c3(h).state.roadS>=332,
+ '3/c3-tunnel-entrance':(h,S)=>S.phase==='n3-outfall'&&!!c3C(h).flags.canEnter&&h.snapshot.state==='c1-walk'&&h.chapter.companions.all.every(c=>c.mode==='foot'),'3/c3-tunnel-deep':h=>!!c3C(h).flags.deep,
+ '3/c3-alex-item':(h,S)=>S.phase==='n3-item','3/c3-old-bike':(h,S)=>S.phase==='n3-bike','3/c3-bike-gone':h=>!!c3C(h).flags.bikeGone,'3/c3-figure-reveal':(h,S)=>S.phase==='n3-figure','3/c3-follow-alex':(h,S)=>S.phase==='n3-follow',
+ '3/c3-second-sighting':h=>c3(h).FG.state==='lure-wait','3/c3-creature-reveal':h=>c3(h).FG.state==='lure-walk','3/c3-creature-chase-start':h=>c3(h).CRT.state==='drop','3/c3-creature-far':h=>c3C(h).purs?.stage==='far',
+ '3/c3-creature-side':h=>c3C(h).purs?.stage==='lost'&&c3C(h).purs.stumbleAt!=null&&c3(h).state.drainS<=190,'3/c3-bike-block':h=>c3C(h).purs?.stage==='side'&&c3(h).CRT.state==='chase'&&c3(h).state.drainS<=110,
+ '3/c3-creature-near':h=>c3C(h).purs?.stage==='near'&&c3C(h).purs.bikeJamieAt!=null,'3/c3-creature-barrier':h=>c3C(h).purs?.gateHoldAt!=null,'3/c3-tunnel-exit':h=>c3C(h).purs?.stage==='after',
+ '3/c3-bike-remount':(h,S)=>S.phase==='n3-out','3/c3-road-escape':(h,S)=>S.phase==='n3-flee'&&h.chapter.companions.all.every(c=>c.mode==='ride'),'3/c3-final-lure':h=>c3C(h).roadFig!=null,'3/chapter3-end':(h,S)=>S.phase==='n3-safe'};
+// What a scene start must share with the natural moment: the chapter's place in the story (phase, objective, the
+// saved checkpoint), day or night, the player's mode and flashlight, who is with you and how, and every story flag
+// (Chapters One, Two and Three: what has happened), and in Chapter Three the bike, the boy, the creature, the gate and
+// the chase. Positions, clocks and timers are not part of it (they depend on how it was played).
+// Flags that only record optional things a player may or may not have done on the way are listed (OPTIONAL) with why.
+export const OPTIONAL={
+ chapter1:[],
+ chapter2:[],
+ // Chapter Three: lines and looks that depend on where you walked or looked (the wet print, the swinging cable,
+ // Sam's "come back" if you lingered, Jamie's "come on" at the mouth, the turn-back exchange, the helmet line in
+ // his room if you looked at it, an older recording heard), the neighbors you chose to ask, and per-frame
+ // bookkeeping of where companions were sent (samBack, jamieToMouth).
+ chapter3:['wetSeen','cableSeen','leaveHint','comeOn','comeOn2','samBack','jamieToMouth','helmetLine','wander','dayHint','window','okaforHint','glint','valley','noHouses','bellBehind','crossLight']};
+export function meaning(snap,n){const s=JSON.parse(JSON.stringify(snap)),S=s.chapter1||{},C3=s.chapter3?.C||{},st=s.chapter3?.state||{};
+ const flags=(o,skip)=>Object.fromEntries(Object.entries(o||{}).filter(([k,v])=>!skip.includes(k)&&v!==false&&v!=null&&v!==0));
+ const m={phase:S.phase??null,objective:S.objective||'',game:s.game?.state,day:S.api?.day??null,night:S.api?.night??null,foot:s.player?.foot?{owned:s.player.foot.owned,on:s.player.foot.on}:null,flash:!!S.flashOn,
+  companions:(s.companions||[]).map(c=>({key:c.key,active:c.active,mode:c.mode})),ch1:{flags:flags(S.flags,OPTIONAL.chapter1),jamieIn:!!S.jamieIn,samIn:!!S.samIn}};
+ if(n>=1)m.save=s.save;
+ if(n===0){m.prologue={friends:(s.prologue?.friends||[]).map(f=>({key:f.key,mode:f.gone?'(gone)':f.mode,inside:f.inside,gone:f.gone})),nextMemory:s.game?.nextMemory};}
+ if(n>=2)m.ch2={flags:flags(s.chapter2?.C?.flags,OPTIONAL.chapter2)};
+ if(n===3){const P=C3.purs||null;m.ch3={flags:flags(C3.flags,OPTIONAL.chapter3),bike:C3.bike,figure:st.figure?.state,creature:P?.stage==='mouth'&&/^(chase|watch)$/.test(st.creature?.state)?'at the mouth':st.creature?.state,creatureVisible:!!st.creature?.visible,gate:st.gate?{burst:st.gate.burst,want:st.gate.want}:null,
+   lure:C3.lure?{seen:C3.lure.seenAt!=null,walk:C3.lure.walkAt!=null,gone:C3.lure.goneAt!=null,voice:C3.lure.voiceAt!=null}:null,crt:C3.crt?{seen:C3.crt.seenAt!=null,drop:C3.crt.dropAt!=null}:null,
+   chase:P?{stage:P.stage,...Object.fromEntries(['farAt','lostAt','stumbleAt','sideAt','pipeAt','bikeJamieAt','nearAt','gateHoldAt','gateShutAt','gateHitAt','gateBurstAt','mouthAt'].map(k=>[k,P[k]!=null]))}:null};}
+ return m;}
 
 // Before comparing, both snapshots are normalized the same way (normalize()):
 //  * timestamps measured on a chapter clock become "seconds before now" on that clock (the clocks themselves
@@ -31,6 +79,7 @@ export function installNaturalCapture(h,element){
 //  * a parked, inactive police car's stored position is whatever it was the last time it drove (it is placed
 //    when activated), so a car's position is compared only while it is active (police.carA/carB);
 //  * a prologue friend who has gone (Alex) keeps the mode label they left in; it is never read again.
+//  * a companion's hidden bike has no place to compare; Chapter One's silent siren has no doppler or muffling to compare.
 import {TIMESTAMPS} from '../dist/dev-chapter-history.js';
 export function normalize(snap){const s=JSON.parse(JSON.stringify(snap));
  const rebase=(o,keys,clock)=>{if(!o)return;for(const k of keys)if(typeof o[k]==='number'&&o[k]!==-1)o[k]=Math.round((clock-o[k])*1000)/1000;};
@@ -38,6 +87,12 @@ export function normalize(snap){const s=JSON.parse(JSON.stringify(snap));
  for(const c of s.companions||[])if(c.mode==='ride'){delete c.p;delete c.pa;}
  if(s.chapter1?.state){delete s.chapter1.state.jamie;delete s.chapter1.state.sam;for(const k of ['carA','carB'])if(s.chapter1.state[k]&&typeof s.chapter1.state[k]==='object'){delete s.chapter1.state[k].x;delete s.chapter1.state[k].z;}}
  for(const f of s.prologue?.friends||[])if(f.gone)f.mode='(gone)';
+ // (a companion's bike that is not there, hidden, has no meaningful place: whatever it was when last used)
+ for(const c of s.companions||[])if(!c.bikeVisible){delete c.b;delete c.ba;}
+ // (Chapter One's siren, silent: its doppler and muffling bookkeeping follow a parked, inactive car's last spot;
+ //  they reach the audio only while it sounds)
+ const sr=s.chapter1?.siren;if(sr&&!sr.active){delete sr.lastDist;delete sr.vr;delete sr.pitch;delete sr.muffle;}
+ const ss=s.chapter1?.state?.siren;if(ss&&!ss.active){delete ss.pitch;delete ss.muffle;}
  return s;}
 
 // What may still differ between a natural arrival and the selector, and why. Everything else must be equal.
@@ -105,7 +160,7 @@ export const strict=(a,b,n)=>{const A=normalize(a),B=normalize(b);for(const X of
 export async function runDevChapterChecks(T,cap){
  const {h,advance,check,metrics,element}=T;cap.off=true;
  // The natural snapshots, for the browser test to compare its selector starts against (tests/dev-chapters-browser.mjs).
- if(process.env.DEV_NATURAL_OUT){fs.mkdirSync(path.dirname(process.env.DEV_NATURAL_OUT),{recursive:true});fs.writeFileSync(process.env.DEV_NATURAL_OUT,JSON.stringify({note:'Snapshots taken in the simulation while playing naturally (tests/dev-chapters-sim.mjs).',natural:cap.natural,opened:cap.opened},null,0));}
+ if(process.env.DEV_NATURAL_OUT){fs.mkdirSync(path.dirname(process.env.DEV_NATURAL_OUT),{recursive:true});fs.writeFileSync(process.env.DEV_NATURAL_OUT,JSON.stringify({note:'Snapshots taken in the simulation while playing naturally (tests/dev-chapters-sim.mjs).',natural:cap.natural,opened:cap.opened,scenes:cap.scenes},null,0));}
  const DT=1/30,S=()=>h.chapter.kit.S;
  // A selector start, and the snapshot at the same point a natural arrival is measured: the end of the frame
  // in which begin() ran (naturally every chapter's begin() runs inside a frame's update: Chapter One's when
@@ -132,13 +187,43 @@ export async function runDevChapterChecks(T,cap){
  const switching=[];for(const order of [[3,1,3,0,3],[3,1,2,3,0,2,1,3]]){const leaks=[];switching.push({order:order.join('→'),leaks:leaks});for(const n of order){const d=strict(clean[n],devAt(n).snap,n);if(d.length)leaks.push({n,d:d.slice(0,10)});}
   check(`DEV switching ${order.join('→')} in one session: no state carried over (each start identical to a clean one)`,()=>assert.deepEqual(leaks,[],JSON.stringify(leaks)));}
  // After a chapter has been played for a while (bells heard, voices, tension up, a recording playing), a switch still starts clean.
- h.devStart(3);advance(1);h.jump('c3-close-bell');advance(8);const busy={tension:h.tension.state.value,phase:S().phase};h.jump('recording');advance(3);
+ h.devStart(3);advance(1);h.jump('c3-creature-chase-start');advance(8);const busy={tension:h.tension.state.value,phase:S().phase};h.jump('recording');advance(3);
  const after=[];for(const n of [1,2,3,0]){const d=strict(clean[n],devAt(n).snap,n);if(d.length)after.push({n,d:d.slice(0,10)});}
- check(`DEV start after playing Chapter Three for a while (the close bell, tension ${busy.tension?.toFixed?.(2)}, a recording playing): every chapter starts clean`,()=>assert.deepEqual(after,[],JSON.stringify(after)));
+ check(`DEV start after playing Chapter Three for a while (the creature chasing, tension ${busy.tension?.toFixed?.(2)}, a recording playing): every chapter starts clean`,()=>assert.deepEqual(after,[],JSON.stringify(after)));
  // Normal play is untouched: Start over still starts the prologue.
  element('restart').onclick?.();advance(.5);check('after the selector, Start over still begins the prologue normally',()=>{assert.equal(h.snapshot.state,'riding');assert.equal(h.chapter.state.phase,'off');});
+ // ---- scenes: every one starts, before its event; the important ones match a natural arrival; switching leaks nothing --
+ const SC=h.dev.SCENES,scenes={starts:{},compare:{},switching:null},DTs=1/30;
+ const startScene=(n,id)=>{const ph=h.devScene(n,id);advance(DTs);return {ph,snap:h.dev.snapshot()};};
+ const c3=h.chapter3,st3=()=>c3.state,nScenes=Object.values(SC).flat().length;
+ // (what "shortly before the event" means for the scenes that matter most: the event has not happened yet)
+ const BEFORE={'3/c3-figure-reveal':()=>c3.C.fig?.seenAt==null,'3/c3-creature-reveal':()=>!c3.creature.group.visible&&!c3.C.crt&&/^lure-(walk|step|in)$/.test(c3.FG.state),
+  '3/c3-creature-chase-start':()=>!c3.C.purs&&c3.CRT.state==='drop','3/c3-creature-far':()=>c3.C.purs.farSeenAt==null,'3/c3-creature-side':()=>c3.C.purs.sideAt==null&&!c3.creature.group.visible,
+  '3/c3-bike-block':()=>c3.C.purs.bikeSeenAt==null,'3/c3-creature-barrier':()=>c3.C.purs.gateShutAt==null&&c3.GA.want===1,'3/c3-bike-remount':()=>h.night.state==='c1-walk',
+  '3/c3-final-lure':()=>!c3.C.roadFig?.seenAt,'3/recording':()=>!c3.C.flags.recorded,'3/neighbors':()=>!c3.C.flags.okafor,
+  '0/alex-departure':()=>h.friends.list.find(f=>f.key==='alex').mode==='ride','0/jamie-departure':()=>h.friends.list.find(f=>f.key==='jamie').mode==='ride'&&h.friends.list.find(f=>f.key==='alex').mode!=='ride',
+  '0/sam-departure':()=>h.friends.list.find(f=>f.key==='sam').mode==='ride'&&h.friends.list.find(f=>f.key==='jamie').mode!=='ride'};
+ const notBefore=[];
+ for(const n of [0,1,2,3])for(const sc of SC[n]){const k=n+'/'+sc.id;let r;try{const {ph}=startScene(n,sc.id);r={ok:true,phase:ph,game:h.snapshot.state,save:h.dev.sceneSave()};if(BEFORE[k]&&!BEFORE[k]())notBefore.push(k);}catch(e){r={ok:false,err:String(e).slice(0,200)};}scenes.starts[k]=r;}
+ check(`DEV scenes: all ${nScenes} scenes (Prologue ${SC[0].length}, One ${SC[1].length}, Two ${SC[2].length}, Three ${SC[3].length}) start without an error`,()=>{const bad=Object.entries(scenes.starts).filter(([,r])=>!r.ok);assert.deepEqual(bad,[]);});
+ check(`DEV scenes: each of the ${Object.keys(BEFORE).length} key scenes starts shortly BEFORE its event (the reveal, RUN, the gate, the road figure, a departure… not yet happened)`,()=>assert.deepEqual(notBefore,[]));
+ // Natural arrival vs DEV start, for every scene the natural run recorded: the same story state (see meaning()).
+ assert.ok(Object.keys(cap.scenes).length>=20,'natural scene snapshots recorded: '+Object.keys(cap.scenes).length);
+ for(const [k,nat] of Object.entries(cap.scenes)){const [n,id]=k.split('/');const {snap}=startScene(+n,id),A=meaning(nat,+n),B=meaning(snap,+n);if(+n<=IGNORE_SAVE_UNTIL&&A.save==null){delete A.save;delete B.save;}const d=diff(A,B,'',[]);scenes.compare[k]={differences:d,naturalAt:nat.at};
+  if(process.env.DEV_SCENE_REPORT){console.log('SCENE',k,'nat@'+nat.at,JSON.stringify(d));continue;}
+  check(`DEV scene ${k}: the same story state as playing to it naturally (phase ${A.phase}; ${d.length} differences)`,()=>assert.deepEqual(d,[],JSON.stringify(d.slice(0,20))));}
+ if(process.env.DEV_SCENE_REPORT)process.exit(0);
+ // Switching scenes in one session, playing a little each time; each start identical to a clean start of that scene.
+ const order=[[3,'c3-creature-reveal'],[1,'oak'],[3,'c3-creature-chase-start'],[0,'alex-departure'],[2,'alex-bike'],[3,'c3-creature-reveal'],[3,'chapter3-end'],[2,'memory-reconstruction'],[3,'c3-creature-chase-start']];
+ const cleanS={};for(const [n,id] of order){const k=n+'/'+id;if(cleanS[k])continue;element('restart').onclick?.();advance(.2);cleanS[k]=startScene(n,id).snap;}
+ const leaks=[];for(const [n,id] of order){const s2=startScene(n,id).snap,d=strict(cleanS[n+'/'+id],s2,n);if(d.length)leaks.push({k:n+'/'+id,d:d.slice(0,8)});advance(n===3?8:4);}
+ scenes.switching={order:order.map(([n,id])=>n+'/'+id).join(' → '),leaks};
+ check(`DEV scene switching in one session (${scenes.switching.order}), playing on a little each time: every start identical to a clean start (no leaks)`,()=>assert.deepEqual(leaks,[],JSON.stringify(leaks)));
+ element('restart').onclick?.();advance(.5);check('after the scene selector, Start over still begins the prologue normally',()=>{assert.equal(h.snapshot.state,'riding');assert.equal(h.chapter.state.phase,'off');});
+ report.scenes=scenes;
  metrics['dev chapter selector']=Object.fromEntries(Object.entries(report).filter(([k])=>/^\d$/.test(k)).map(([k,v])=>[k,{phase:v.phase,naturalHow:v.naturalHow,differences:v.differences.length,opening:v.opening?{phase:v.opening.phase,differences:v.opening.differences.length}:undefined}]));
  metrics['dev chapter selector'].switching={orders:switching.map(x=>({order:x.order,leaks:x.leaks.length})),afterPlaying:after.length};
+ metrics['dev scene selector']={scenes:nScenes,started:Object.values(scenes.starts).filter(r=>r.ok).length,beforeTheEvent:Object.keys(BEFORE).length-notBefore.length+'/'+Object.keys(BEFORE).length,naturalComparisons:Object.fromEntries(Object.entries(scenes.compare).map(([k,v])=>[k,v.differences.length])),switching:{order:scenes.switching.order,leaks:leaks.length}};
  return report;
 }
 
@@ -148,8 +233,8 @@ export async function runDevChapterChecks(T,cap){
 // creek lens, the Continue save). Clocks are not recorded; timestamps are recorded relative to their clock.
 const CLOCK_STAMPS={chapter1:['sirenOff','bellAt','dadCall','samWait'],chapter2:['bellAt','warned','arrive','callAt','homeAt']};
 const NOT_CARRIED=['t','pt','queue','line','pose','api','state','lookTarget','jamieAim','samAim','poiFor','timers'];
-export function recordHistory(h,cap,fs,file){
- const out={},same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+export function recordHistory(h,cap,fs,file,advance){
+ const out={},same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),scenes={};
  for(const n of [2,3]){h.dev.start(n,{history:false});const dev=h.dev.snapshot(),nat=cap.natural[n],H={};
   for(const [part,natObj,devObj] of [['chapter1',nat.chapter1,dev.chapter1],['chapter2',nat.chapter2.C,dev.chapter2.C]]){
    if(part==='chapter2'&&n<3)continue;const vals={},stamps={};
@@ -162,11 +247,24 @@ export function recordHistory(h,cap,fs,file){
   if(!same(nat.props.lens,dev.props.lens))H.lens=nat.props.lens;
   if(nat.save)H.save=nat.save;
   out[n]=H;}
+ // Each scene the natural run reached: start it from the selector WITHOUT its scene history and record what the
+ // natural moment had that the start does not: Chapter One's story flags and who had joined you, Chapter Two's
+ // story flags, the flashlight, the Continue save. (Measured as the checks measure: one frame after the start, so
+// whatever the start's own first frame sets is not recorded.)
+ for(const [key,nat] of Object.entries(cap.scenes)){const [n,id]=key.split('/');h.dev.startScene(+n,id,{sceneHistory:false});advance?.(1/30);const dev=h.dev.snapshot(),H={};
+  const flagDiff=(a,b)=>{const o={};for(const k of new Set([...Object.keys(a||{}),...Object.keys(b||{})]))if(!same(a?.[k],b?.[k]))o[k]=a?.[k]===undefined?null:a[k];return o;};
+  if(+n>=1){const f=flagDiff(nat.chapter1.flags,dev.chapter1.flags);if(Object.keys(f).length)H.chapter1Flags=f;const c1={};for(const k of ['jamieIn','samIn','alexScene','committed'])if(!same(nat.chapter1[k],dev.chapter1[k]))c1[k]=nat.chapter1[k]??null;if(Object.keys(c1).length)H.chapter1=c1;}
+  if(+n>=2){const f=flagDiff(nat.chapter2.C.flags,dev.chapter2.C.flags);if(Object.keys(f).length)H.chapter2Flags=f;}
+  if(+n>=1&&(!same(nat.player.foot.owned,dev.player.foot.owned)||!same(nat.player.foot.on,dev.player.foot.on)))H.foot={owned:nat.player.foot.owned,on:nat.player.foot.on};
+  if(+n>=1&&nat.save)H.save=nat.save;scenes[key]=H;}
  fs.writeFileSync(file,`// GENERATED — do not edit by hand. TEMPORARY (private playtest build only).
 // Recorded by \`ONLY=dev-record node tests/verify.mjs\` from a natural playthrough: what the earlier beats leave
 // in the shared story state at each chapter's real beginning that the checkpoint scenes do not set.
 // chapterNClock values are seconds before the chapter clock at that moment (re-based when applied).
 export const HISTORY=${JSON.stringify(out,null,1)};
 export const TIMESTAMPS=${JSON.stringify(CLOCK_STAMPS)};
+// What the natural playthrough had at each DEV scene's moment that the scene's checkpoint start does not set
+// (Chapter One's and Two's story flags, who had joined you, the flashlight, the Continue save).
+export const SCENE_HISTORY=${JSON.stringify(scenes,null,1)};
 `);
- return out;}
+ return {chapters:out,scenes};}

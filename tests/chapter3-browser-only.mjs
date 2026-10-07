@@ -1,11 +1,11 @@
 // Chapter Three alone in Chromium (SwiftShader unless BROWSER_GPU=1): from the Chapter Two end checkpoint,
 // the hand-over and the whole chapter played with inputs, every QA jump, Continue, the captions, the audio
 // signals. For iterating on Chapter Three without the full release suite (tests/browser.mjs runs it too).
-// QA_OUTPUT (default docs/qa/chapter3-escalation) receives captures and chapter3-browser-report.json (WAV renders only with C3_AUDIO_RENDER=1).
+// QA_OUTPUT (default docs/qa/chapter3-creature) receives captures and chapter3-browser-report.json (WAV renders only with C3_AUDIO_RENDER=1).
 import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';import {createRequire} from 'node:module';
 import {runChapterThreeBrowser,runChapterThreeJumps,runChapterThreeAudio,runChapterThreeAudioHooks} from './chapter3-browser.mjs';
 const require=createRequire(import.meta.url);let pw;try{pw=require('playwright');}catch{pw=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
-const root=path.resolve('dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa/chapter3-escalation');fs.mkdirSync(out,{recursive:true});
+const root=path.resolve('dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa/chapter3-creature');fs.mkdirSync(out,{recursive:true});
 const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(path.join(root,n)).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(path.join(root,n))).digest('hex')]));
 const server=http.createServer((req,res)=>{if(req.url.split('?')[0]==='/favicon.ico'){res.writeHead(204);return res.end();}
  const file=path.join(root,decodeURIComponent(req.url.split('?')[0]).replace(/^\//,'')||'index.html');if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}

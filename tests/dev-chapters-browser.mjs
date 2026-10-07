@@ -1,17 +1,17 @@
-// TEMPORARY (private playtest build): the developer chapter selector in Chromium (SwiftShader unless
-// BROWSER_GPU=1). Real clicks on the title's DEV buttons; each start compared with the state the simulation
-// recorded while playing into that chapter naturally (docs/qa/dev-chapters-escalation/natural-snapshots.json, written by
+// TEMPORARY (private playtest build): the developer chapter → scene selector in Chromium (SwiftShader unless
+// BROWSER_GPU=1). Real clicks on the title's DEV panel (a chapter, a scene, START SCENE); each start compared with the state the simulation
+// recorded while playing into that chapter naturally (docs/qa/dev-scenes-creature/natural-snapshots.json, written by
 // `DEV_NATURAL_OUT=… ONLY=dev node tests/verify.mjs`), with the same normalization and documented exceptions
 // (tests/dev-chapters-sim.mjs). Then switching chapters repeatedly in one page through the pause menu's
 // "Back to the title", the selector in normal (non-QA) mode, and Chapter Three played from the DEV start to
-// its end card with inputs (no QA jump). QA_OUTPUT (default docs/qa/dev-chapters-escalation) receives captures and
+// its end card with inputs (no QA jump). QA_OUTPUT (default docs/qa/dev-scenes-creature) receives captures and
 // dev-chapters-browser-report.json.
 import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';import {createRequire} from 'node:module';
-import {compare,far,strict,NEAR,OPENING_TIME_TOL} from './dev-chapters-sim.mjs';
+import {compare,far,strict,diff,meaning,NEAR,OPENING_TIME_TOL} from './dev-chapters-sim.mjs';
 import {runChapterThreeBrowser} from './chapter3-browser.mjs';
 const require=createRequire(import.meta.url);let pw;try{pw=require('playwright');}catch{pw=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
-const root=path.resolve('dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa/dev-chapters-escalation');fs.mkdirSync(out,{recursive:true});
-const NAT=JSON.parse(fs.readFileSync(path.resolve(process.env.DEV_NATURAL||'docs/qa/dev-chapters-escalation/natural-snapshots.json'),'utf8'));
+const root=path.resolve('dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa/dev-scenes-creature');fs.mkdirSync(out,{recursive:true});
+const NAT=JSON.parse(fs.readFileSync(path.resolve(process.env.DEV_NATURAL||'docs/qa/dev-scenes-creature/natural-snapshots.json'),'utf8'));
 const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(path.join(root,n)).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(path.join(root,n))).digest('hex')]));
 const server=http.createServer((req,res)=>{if(req.url.split('?')[0]==='/favicon.ico'){res.writeHead(204);return res.end();}
  const file=path.join(root,decodeURIComponent(req.url.split('?')[0]).replace(/^\//,'')||'index.html');if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}
@@ -30,9 +30,13 @@ async function openPage(q='?qa'){const page=tab;await page.goto('about:blank');
 const snapOf=page=>page.evaluate(()=>lastLight.dev.snapshot());
 const shot=async(page,name)=>{await page.evaluate(()=>{for(const id of ['title-card','objective','objective-note','ending','prompt','subtitle','reflection','fade','chapter-card'])for(const a of document.getElementById(id)?.getAnimations()||[])try{a.finish();}catch{}});
  const info=await page.evaluate(()=>{const L=lastLight,r={...L.render()};return {...r,phase:L.state.chapter.phase};});await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:86,timeout:120000});frames.push({name,...info});};
-// A real click on a DEV button (the title must be showing), timed.
-async function clickDev(page,n){check(`title shows the DEV selector before choosing ${n}`,await page.locator('#dev-chapters').isVisible());
- const t0=Date.now();await page.click(`[data-dev-chapter="${n}"]`);
+// Real clicks on the DEV panel (the title must be showing): a chapter, then a scene in its list, then START SCENE; timed.
+// A chapter's own start: the first scene of its list (Chapter One's real hand-over, the ride home, is the prologue
+// list's "Solo Ride Home").
+const CHAPTER_START={0:[0,'start'],1:[0,'ride-home'],2:[2,'chapter2'],3:[3,'chapter3']};
+async function clickDev(page,n,id){if(id===undefined)[n,id]=CHAPTER_START[n];check(`title shows the DEV selector before choosing ${n}/${id}`,await page.locator('#dev-chapters').isVisible());
+ await page.click(`[data-dev-chapter="${n}"]`);await page.selectOption('#dev-scene',id);
+ const t0=Date.now();await page.click('#dev-start');
  // The button shows "Preparing …" while the hand-over runs, then the chapter begins.
  const shown=await page.evaluate(()=>document.getElementById('dev-status')?.textContent||'');
  await page.waitForFunction(()=>!document.body.classList.contains('dev-starting'),null,{timeout:120000});const ms=Date.now()-t0;
@@ -47,9 +51,11 @@ const openScene=page=>page.evaluate(()=>{const ph=lastLight.state.chapter.phase;
 try{
  // ---- the selector on the title; hidden during play --------------------------------------------------------
  {const page=await openPage();
-  check('the title shows the DEV · PLAYTEST ONLY selector with Prologue, Chapter One, Two and Three',await page.locator('#dev-chapters').isVisible()&&(await page.locator('#dev-chapters .dev-title').textContent()).includes('DEV')&&
-   JSON.stringify(await page.locator('[data-dev-chapter]').allTextContents())===JSON.stringify(['Prologue','Chapter One','Chapter Two','Chapter Three']));
-  await shot(page,'dev-00-title-selector');
+  check('the title shows the DEV · PLAYTEST · TEMPORARY panel: Prologue, Chapter One, Two and Three; a scene list; START SCENE',await page.locator('#dev-chapters').isVisible()&&/DEV.*PLAYTEST.*TEMPORARY/.test(await page.locator('#dev-chapters .dev-title').textContent())&&
+   JSON.stringify(await page.locator('[data-dev-chapter]').allTextContents())===JSON.stringify(['Prologue','Chapter One','Chapter Two','Chapter Three'])&&await page.locator('#dev-scene').isVisible()&&(await page.locator('#dev-start').textContent())==='START SCENE');
+  const lists={};for(const n of [0,1,2,3]){await page.click(`[data-dev-chapter="${n}"]`);lists[n]=await page.locator('#dev-scene option').allTextContents();if(n===3)await shot(page,'dev-00-title-selector-chapter-three');else if(n===1)await shot(page,'dev-00-title-selector-chapter-one');}
+  report.sceneLists=lists;const want=await page.evaluate(()=>Object.fromEntries(Object.entries(lastLight.DEV_SCENES).map(([n,l])=>[n,l.map(x=>x.label)])));
+  check(`step 2: choosing a chapter lists its scenes (Prologue ${lists[0].length}, One ${lists[1].length}, Two ${lists[2].length}, Three ${lists[3].length}), in story order`,JSON.stringify(lists)===JSON.stringify(want)&&lists[3].includes('Creature Reveal')&&lists[3].includes('Creature Chase — Barrier (the gate)'),{lists});
   await page.click('#start');await page.waitForTimeout(150);report.startLock=await page.evaluate(()=>!!document.pointerLockElement);await step(page,.4);
   check('normal Start: the prologue begins; the DEV selector is not shown during play',(await page.evaluate(()=>lastLight.state.state))==='riding'&&!(await page.locator('#dev-chapters').isVisible()));
   }
@@ -60,7 +66,7 @@ try{
   await page.waitForTimeout(150);const lock=await page.evaluate(()=>!!document.pointerLockElement);
   check(`DEV ${n}: mouse look is captured the same way as the title's start button (pointer lock ${lock?'granted':'not granted'}, as for Start)`,lock===report.startLock);
   const st=await page.evaluate(()=>({state:lastLight.state.state,phase:lastLight.state.chapter.phase,intro:!document.getElementById('intro').hidden,pause:!document.getElementById('pause').hidden}));
-  check(`DEV ${n}: a real click starts at the true beginning (phase ${EXPECT[n].phase}), title and pause closed (${ms} ms)`,st.phase===EXPECT[n].phase&&!st.intro&&!st.pause&&(n?true:st.state==='riding'),st);
+  check(`DEV ${n}: real clicks (chapter, scene, START SCENE) start at the true beginning (phase ${EXPECT[n].phase}), title and pause closed (${ms} ms)`,st.phase===EXPECT[n].phase&&!st.intro&&!st.pause&&(n?true:st.state==='riding'),st);
   const nat=NAT.natural[n],d=compare(nat,s,n),f=far(nat,s);report.starts[n]={phase:st.phase,ms,differences:d,far:f};
   check(`DEV ${n}: the same state as the natural arrival recorded in the simulation (flags, objective, date, lighting, companions, people, police, props, doors, flashlight, save; ${d.length} differences)`,d.length===0,d.slice(0,15));
   check(`DEV ${n}: player and companions where a natural arrival leaves them (within ${NEAR} m)`,f.length===0,f);
@@ -83,15 +89,28 @@ try{
   report.switching={order:order.join('→'),leaks};
   check(`DEV switching ${order.join('→')} in one page via pause → Back to the title: every start identical to a clean start (no leaks)`,leaks.length===0,leaks);
   // After the night's horror beats have been running (QA jumps used here only to make the noise), a switch is clean.
-  await page.evaluate(()=>{lastLight.jump('c3-close-bell');lastLight.step(8);});const busy=await page.evaluate(()=>({phase:lastLight.state.chapter.phase,tension:lastLight.tension?.state?.value}));
+  await page.evaluate(()=>{lastLight.jump('c3-creature-chase-start');lastLight.step(8);});const busy=await page.evaluate(()=>({phase:lastLight.state.chapter.phase,tension:lastLight.tension?.state?.value}));
   await backToTitle(page);await clickDev(page,1);const d1=strict(clean[1],await snapOf(page),1);
-  check(`DEV start after Chapter Three's close bell (phase ${busy.phase}, tension ${busy.tension}): Chapter One starts clean`,d1.length===0,d1.slice(0,10));
+  check(`DEV start after Chapter Three's chase (phase ${busy.phase}, tension ${busy.tension}): Chapter One starts clean`,d1.length===0,d1.slice(0,10));
   const audio=await page.evaluate(()=>({tension:lastLight.tension?.state?.value??0,heart:lastLight.tension?.state?.gain??0,caption:document.getElementById('subtitle')?.textContent||''}));
   check('…no tension or heartbeat carried over',audio.tension===0&&audio.heart===0,audio);
   }
+ // ---- scenes: real clicks; the important ones compared with the natural moment the simulation recorded ------------
+ {const page=await openPage(),res={};for(const k of ['0/alex-departure','1/oak','2/alex-bike','3/recording','3/c3-figure-reveal','3/c3-creature-reveal','3/c3-creature-chase-start','3/c3-creature-barrier','3/c3-road-escape','3/chapter3-end']){
+   if(Object.keys(res).length)await backToTitle(page);const [n,id]=k.split('/');const ms=await clickDev(page,+n,id);await step(page,1/30);const s=await snapOf(page),nat=NAT.scenes?.[k];
+   const A=meaning(nat,+n),B=meaning(s,+n);if(+n<=1&&A.save==null){delete A.save;delete B.save;}const d=diff(A,B,'',[]);res[k]={ms,phase:B.phase,differences:d};
+   check(`DEV scene ${k}: real clicks start it (${ms} ms); the same story state as playing to it naturally (${d.length} differences)`,!!nat&&d.length===0,d.slice(0,12));
+   if(['3/c3-creature-reveal','3/c3-creature-chase-start','3/c3-creature-barrier','0/alex-departure','1/oak','2/alex-bike'].includes(k)){await step(page,k==='3/c3-creature-reveal'?10:1.2);await shot(page,'dev-scene-'+k.replace('/','-'));}}
+  report.scenes=res;}
+ {const page=await openPage(),order=[[3,'c3-creature-reveal'],[1,'oak'],[3,'c3-creature-chase-start'],[0,'alex-departure'],[2,'alex-bike'],[3,'c3-creature-reveal'],[3,'chapter3-end'],[2,'memory-reconstruction'],[3,'c3-creature-chase-start']],cleanS={},leaks=[];let first=true;
+  for(const [n,id] of order){if(!first)await backToTitle(page);first=false;await clickDev(page,n,id);await step(page,1/30);const s=await snapOf(page),k=n+'/'+id;
+   if(!cleanS[k])cleanS[k]=s;else{const d=strict(cleanS[k],s,n);if(d.length)leaks.push({k,d:d.slice(0,10)});}
+   await step(page,n===3?8:4);}// (play on a while, so the next switch has something to clear)
+  report.sceneSwitching={order:order.map(([n,id])=>n+'/'+id).join(' → '),leaks};
+  check(`DEV scene switching in one page via pause → Back to the title (${report.sceneSwitching.order}): each repeat identical to its first start (no leaks)`,leaks.length===0,leaks);}
  // ---- normal (non-QA) mode: the selector works for a player ----------------------------------------------------
  {const page=await openPage('');await page.waitForTimeout(500);
-  const t0=Date.now();await page.click('[data-dev-chapter="3"]');const ms=Date.now()-t0;report.timings.normalMode3=ms;
+  const t0=Date.now();await page.click('[data-dev-chapter="3"]');await page.selectOption('#dev-scene','chapter3');await page.click('#dev-start');const ms=Date.now()-t0;report.timings.normalMode3=ms;
   await page.waitForFunction(()=>!document.body.classList.contains('dev-starting'),null,{timeout:120000});report.timings.normalMode3=Date.now()-t0;
   await page.waitForFunction(()=>document.querySelector('#chapter-card.on h2')?.textContent==='Chapter Three',null,{timeout:60000});
   check(`normal mode: DEV Chapter Three shows the CHAPTER THREE card over black (${Date.now()-t0} ms after the click), title hidden, not paused`,await page.locator('#intro').isHidden()&&await page.locator('#pause').isHidden());

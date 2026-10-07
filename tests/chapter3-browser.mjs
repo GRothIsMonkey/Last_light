@@ -12,7 +12,7 @@ async function installHelpers(){const L=lastLight,Wd=L.world.woods,Dr=L.world.dr
   watch(){const s=L.state,c=s.chapter;if(c.line&&c.line!==this.last){this.last=c.line;this.said.push((c.speaker||'')+': '+c.line);}if(this.phases[this.phases.length-1]!==c.phase)this.phases.push(c.phase);
    if(s.caption&&this.caps[this.caps.length-1]!==s.caption)this.caps.push(s.caption);
    if(/^n3-/.test(c.phase))this.tension.push(s.tension.value);
-   if(/^(d3-(street|mom|room|phone|window|neighbors|road|tracks|plan)|n3-(corner|ride|road|outfall|tunnel|evidence|bell|item|bike|deeper|figure|follow|search|cross|voice|behind|close|flee|safe))$/.test(c.phase)){const m=this.me();for(const k of L.chapter.companions.all){if(!k.active)continue;const d=Math.hypot((k.mode==='ride'?k.bx:k.px)-m.x,(k.mode==='ride'?k.bz:k.pz)-m.z);if(d>this.gap){this.gap=d;this.gapAt=c.phase;}}}},
+   if(/^(d3-(street|mom|room|phone|window|neighbors|road|tracks|plan)|n3-(corner|ride|road|outfall|tunnel|evidence|bell|item|bike|deeper|figure|follow|lure|creature|flee|safe))$/.test(c.phase)){const m=this.me();for(const k of L.chapter.companions.all){if(!k.active)continue;const d=Math.hypot((k.mode==='ride'?k.bx:k.px)-m.x,(k.mode==='ride'?k.bz:k.pz)-m.z);if(d>this.gap){this.gap=d;this.gapAt=c.phase;}}}},
   until(fn,max){for(let t=0;t<max;t+=1/30){L.step(1/30);this.watch();if(fn())return true;}return false;},
   me(){const s=L.state;return s.state==='c1-walk'?s.walk:s.roam;},
   face(x,z,p=0){const m=this.me();L.face(Math.atan2(x-m.x,-(z-m.z)),p);},
@@ -33,13 +33,13 @@ async function installHelpers(){const L=lastLight,Wd=L.world.woods,Dr=L.world.dr
 
 // (every Chapter Three QA jump, in story order; each held 1.5 s, so a moment that moves on by itself may be in its next phase)
 const SECTIONS=['chapter3-start','c3-alex-house','alex-bedroom','recording','neighbors','c3-road-day','night-start','c3-road-night','c3-forest-deep','c3-tunnel-entrance','c3-tunnel-inside',
- 'c3-tunnel-deep','c3-evidence','c3-first-bell','c3-alex-item','c3-old-bike','c3-broken-bell','c3-bike-gone','c3-figure-reveal','c3-after-figure','c3-figure-crossing','c3-voice-ahead','c3-voice-behind','c3-close-bell',
- 'c3-run-start','c3-pursuit-far','c3-bike-block','c3-pursuit-near','c3-tunnel-exit','c3-bike-remount','c3-road-pursuit','c3-road-figure','chapter3-end'];
+ 'c3-tunnel-deep','c3-evidence','c3-first-bell','c3-alex-item','c3-old-bike','c3-broken-bell','c3-bike-gone','c3-figure-reveal','c3-follow-alex','c3-second-sighting','c3-creature-reveal','c3-creature-advance',
+ 'c3-creature-chase-start','c3-creature-far','c3-creature-side','c3-bike-block','c3-creature-near','c3-creature-barrier','c3-tunnel-exit','c3-bike-remount','c3-road-escape','c3-final-lure','chapter3-end'];
 const EXPECT={'chapter3-start':'d3-corner','c3-alex-house':'d3-street','alex-bedroom':'d3-room','recording':'d3-phone','neighbors':'d3-neighbors','c3-road-day':['d3-road','d3-tracks'],'night-start':'n3-home','c3-road-night':'n3-road','c3-forest-deep':'n3-road',
  'c3-tunnel-entrance':'n3-outfall','c3-tunnel-inside':'n3-tunnel','c3-tunnel-deep':'n3-tunnel','c3-evidence':['n3-tunnel','n3-evidence'],'c3-first-bell':['n3-bell','n3-tunnel'],'c3-alex-item':'n3-item','c3-old-bike':'n3-bike','c3-broken-bell':'n3-bike','c3-bike-gone':'n3-deeper',
- 'c3-figure-reveal':'n3-figure','c3-after-figure':['n3-follow','n3-search'],'c3-figure-crossing':['n3-cross','n3-voice'],'c3-voice-ahead':['n3-voice','n3-behind'],'c3-voice-behind':['n3-behind','n3-close'],'c3-close-bell':['n3-close','n3-run'],
- 'c3-run-start':'n3-run','c3-pursuit-far':'n3-run','c3-bike-block':'n3-run','c3-pursuit-near':'n3-run','c3-tunnel-exit':'n3-run','c3-bike-remount':['n3-out','n3-flee'],'c3-road-pursuit':'n3-flee','c3-road-figure':'n3-flee','chapter3-end':'n3-safe'};
-const ORDER=['c3-black','d3-corner','d3-street','d3-mom','d3-room','d3-phone','d3-window','d3-neighbors','d3-road','d3-tracks','d3-plan','d3-home','c3-night','n3-home','n3-corner','n3-ride','n3-road','n3-outfall','n3-tunnel','n3-evidence','n3-tunnel','n3-bell','n3-tunnel','n3-item','n3-tunnel','n3-bike','n3-deeper','n3-figure','n3-follow','n3-search','n3-cross','n3-voice','n3-behind','n3-close','n3-run','n3-out','n3-flee','n3-safe','n3-end'];
+ 'c3-figure-reveal':'n3-figure','c3-follow-alex':['n3-follow','n3-lure'],'c3-second-sighting':['n3-follow','n3-lure'],'c3-creature-reveal':['n3-lure','n3-creature'],'c3-creature-advance':['n3-creature','n3-run'],
+ 'c3-creature-chase-start':'n3-run','c3-creature-far':'n3-run','c3-creature-side':'n3-run','c3-bike-block':'n3-run','c3-creature-near':'n3-run','c3-creature-barrier':'n3-run','c3-tunnel-exit':'n3-run','c3-bike-remount':['n3-out','n3-flee'],'c3-road-escape':'n3-flee','c3-final-lure':'n3-flee','chapter3-end':'n3-safe'};
+const ORDER=['c3-black','d3-corner','d3-street','d3-mom','d3-room','d3-phone','d3-window','d3-neighbors','d3-road','d3-tracks','d3-plan','d3-home','c3-night','n3-home','n3-corner','n3-ride','n3-road','n3-outfall','n3-tunnel','n3-evidence','n3-tunnel','n3-bell','n3-tunnel','n3-item','n3-tunnel','n3-bike','n3-deeper','n3-figure','n3-follow','n3-lure','n3-creature','n3-run','n3-out','n3-flee','n3-safe','n3-end'];
 
 // The harness steps the game without drawing between captures; in play every frame is drawn and measured.
 // So before a capture the caption tone is given what play would have given it: a few drawn frames of the
@@ -71,23 +71,26 @@ export async function runChapterThreeBrowser({page,snap:rawSnap,check,state,erro
  await snap(tag+'-d04-bedroom-first-person');
  await ev(()=>{const C=__c3,L=lastLight,R=L.world.interiors['alex-room'],RW=L.chapter3.RW,ph=L.chapter3.phone.position;C.go(RW(R.deskStand.x,R.deskStand.z),{r:.25,max:20});const hp=RW(R.helmet.x,R.helmet.z,R.helmet.y);C.face(hp.x,hp.z,-.62);C.until(()=>__c3.said.includes('SAM: “His helmet’s still here.”'),40);C.until(()=>false,1.2);});
  await snap(tag+'-d05-his-helmet-on-the-desk');
- await ev(()=>{const C=__c3,L=lastLight,ph=L.chapter3.phone.position;C.face(ph.x,ph.z,-.6);C.until(()=>L.state.chapter.objective==='Listen to Alex’s recordings.',40);C.until(()=>false,.3);L.key('KeyF');C.until(()=>L.state.chapter.phase==='d3-phone',4);C.until(()=>false,1.4);
-  for(let i=0;i<5;i++){C.until(()=>/^F:(Play|Next recording)$/.test(L.state.prompt),40);L.key('KeyF');C.until(()=>L.state.chapter3.recPlaying<0&&!L.state.chapter.line,45);C.until(()=>false,.6);}});
+ await ev(()=>{const C=__c3,L=lastLight,ph=L.chapter3.phone.position;C.face(ph.x,ph.z,-.6);C.until(()=>L.state.chapter.objective==='Listen to Alex’s recordings.',40);C.until(()=>L.state.prompt==='F:Listen to his recordings',20);L.key('KeyF');C.until(()=>L.state.chapter.phase==='d3-phone',4);C.until(()=>L.state.prompt==='F:Play the last one',15);L.key('KeyF');C.until(()=>false,3.5);});
+ await snap(tag+'-d06-the-last-recording');
+ await ev(()=>__c3.until(()=>lastLight.state.chapter3.flags.recorded,60));
+ check('Chapter Three: the phone opens on his last recording; one press plays it: a bell outside, twice, "There it is again."',(await c3()).heard.join()==='4'&&await ev(()=>__c3.caps.join('\n').includes('There it is again')));
  await ev(()=>{const C=__c3,L=lastLight,R=L.world.interiors['alex-room'],RW=L.chapter3.RW,sw=RW(R.sideWindow.x,R.sideWindow.z),lk=RW(R.sideWindow.look.x,R.sideWindow.look.z);C.until(()=>L.state.chapter.objective==='Look out his window.',60);C.go(sw,{r:.3,max:20});C.face(lk.x,lk.z,-.1);C.until(()=>L.state.chapter3.flags.window,6);if(!L.state.chapter3.flags.window)L.key('KeyF');C.until(()=>false,2.5);});
- await snap(tag+'-d06-window-to-the-creek');
- await ev(()=>{const C=__c3,L=lastLight,R=L.world.interiors['alex-room'],RW=L.chapter3.RW;C.until(()=>L.state.chapter.objective==='Ask the neighbors.',50);C.until(()=>false,1.5);const d=RW(R.door.x,R.door.z),f=RW(R.door.face.x,R.door.face.z);C.go(d,{r:.3,max:20});C.face(f.x,f.z);C.until(()=>false,.2);L.key('KeyF');C.until(()=>L.state.chapter.phase==='d3-neighbors'&&!L.state.chapter3.inRoom,6);});
+ await snap(tag+'-d07-window-to-the-creek');
+ check('Chapter Three: at his window, nothing holds the camera',await ev(()=>!lastLight.chapter.pose||!!lastLight.chapter.pose.release));
+ await ev(()=>{const C=__c3,L=lastLight,R=L.world.interiors['alex-room'],RW=L.chapter3.RW;C.until(()=>L.state.chapter.objective==='Ask Mr. Okafor.',50);C.until(()=>false,1.5);const d=RW(R.door.x,R.door.z),f=RW(R.door.face.x,R.door.face.z);C.go(d,{r:.3,max:20});C.face(f.x,f.z);C.until(()=>false,.2);L.key('KeyF');C.until(()=>L.state.chapter.phase==='d3-neighbors'&&!L.state.chapter3.inRoom,6);});
  const talkTo=async(key,shot)=>{await ev(key=>{const C=__c3,L=lastLight,a=L.chapter3.people[key];C.go(C.near(a,1.8),{r:.6,max:60});C.face(a.x,a.z);C.until(()=>false,.4);L.key('KeyF');C.until(()=>!!L.state.chapter.line,4);C.until(()=>false,1.2);},key);
   if(shot)await snap(shot);await ev(key=>__c3.until(()=>lastLight.state.chapter3.talked.includes(key)&&!lastLight.state.chapter.line,40),key);};
- await talkTo('huang');await talkTo('delaney');await talkTo('okafor',tag+'-d07-mr-okafor');
+ await talkTo('okafor',tag+'-d08-mr-okafor');
  await ev(()=>__c3.until(()=>lastLight.state.chapter.objective==='Find the old service road.',60));
- check('Chapter Three: Mr. Okafor: the old city road at the end of Briarwood, down to the storm drain in the woods',await said('MR. OKAFOR: “End of Briarwood, past the last house. There’s a gate. An old city road goes down from there.”'));
+ check('Chapter Three: one neighbor who knows: Mr. Okafor: the gate at the end of Briarwood, the old city road down to the big storm drain',await said('MR. OKAFOR: “End of Briarwood, past the last house, there’s a gate. An old city road goes down from there to the big storm drain.”'));
  // ---- the end of Briarwood by day: posts, the gate, signs, the track going in; the road bends into the woods -------
  await ev(()=>{const C=__c3,L=lastLight;C.onBike();C.until(()=>L.chapter.companions.all.filter(c=>c.active).every(c=>c.mode==='ride'),10);/* (a calm day: you let them get back on their bikes before riding off; riding off at once they are briefly 30 m back while they do) */L.press('KeyW');const u=L.nav.locate(C.me().x,C.me().z).u||130;C.ride(C.sl(Math.max(30,u)+4,240,1.2,10),120);C.until(()=>L.state.chapter3.flags.roadDay,15);C.brake();C.face(...C.R(14,0),0);C.until(()=>false,.5);});
- await snap(tag+'-d08-end-of-briarwood-gate');
+ await snap(tag+'-d09-end-of-briarwood-gate');
  await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.objective==='Go through the gate.',20);L.press('KeyW');C.ride([C.R(4,.4),C.R(12,.6),C.R(18,.4)],40);C.brake();C.until(()=>L.state.chapter3.flags.tracks,20);const q=L.world.woods.at(30,L.world.woods.halfW(30)-.45);C.face(q.x,q.z,-.32);C.until(()=>false,1.5);});
- await snap(tag+'-d09-tire-track-in-the-dust');
+ await snap(tag+'-d10-tire-track-in-the-dust');
  await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.objective==='See where the tracks lead.',30);L.press('KeyW');C.ride(C.rl(18,104,.5,10),60);C.brake();C.face(...C.R(135,0),0);C.until(()=>false,.8);});
- await snap(tag+'-d10-the-road-into-the-woods');
+ await snap(tag+'-d11-the-road-into-the-woods');
  await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.objective==='Go home.',120);});
  check('Chapter Three: where the road bends into the woods: back tonight; Sam reluctant',await said('JAMIE: “We have to come back tonight.”')&&await said('SAM: “…If anything happens, we leave. Right away. I’m serious.”')&&(await c3()).oldBike===false);
  // ---- that night --------------------------------------------------------------------------------------------------
@@ -162,70 +165,76 @@ export async function runChapterThreeBrowser({page,snap:rawSnap,check,state,erro
  await snap(tag+'-n24-walking-round-the-bend');
  const gone=await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter3.figure.state==='hidden',20);return {t:L.state.chapter3.t,seenAt:L.state.chapter3.figure.seenAt};});
  check('Chapter Three: he stays until you have seen him, and well after ('+(gone.t-gone.seenAt).toFixed(1)+' s); "…Alex?"; he turns slowly and walks round the bend',gone.t-gone.seenAt>=4&&await said('JAMIE: “…Alex?”'));
- // ---- round the bend: nobody. A pause. Then someone crosses ahead --------------------------------------------------
- await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.objective==='Follow Jamie.',10);C.walk(C.dl(C.ds()+1,232,.2,3),{r:.6,max:60});C.until(()=>L.state.chapter3.flags.search,10);const q=C.D(262,0);C.face(q[0],q[1],0);C.until(()=>false,1.2);});
+ // ---- after him: past the bend, nobody; then him again, at the junction, by the side culvert ----------------------
+ await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.objective==='Follow him.',10);C.walk(C.dl(C.ds()+1,230,.2,3),{r:.6,max:60});const q=C.D(262,0);C.face(q[0],q[1],0);C.until(()=>false,1.0);});
  await snap(tag+'-n25-the-bend-empty');
- await ev(()=>{const C=__c3,L=lastLight;C.walk(C.dl(232,251,.6,3),{r:.6,max:60,stop:()=>L.state.chapter3.flags.wetSeen});C.until(()=>__c3.said.includes('JAMIE: “It’s wet.”'),25);C.until(()=>false,.3);const f=L.world.drain.at(252,.95);C.face(f.x,f.z,-.36);C.until(()=>false,.4);});
- await snap(tag+'-n26-a-wet-footprint');
- // (then, as you would, you look on down the tunnel, where his light has gone: and wait)
- await ev(()=>{const C=__c3,L=lastLight;C.until(()=>!!L.chapter3.C.wetDone,20);C.walk(C.dl(C.ds()+.5,251,.6,3),{r:.6,max:20,stop:()=>L.state.chapter3.flags.cross});});
- const cross=await ev(()=>{const C=__c3,L=lastLight,q=C.D(264,0);C.face(q[0],q[1],0);C.until(()=>L.state.chapter3.flags.cross,45);let seen=0;C.until(()=>{if(L.state.chapter3.figure.state==='second-presence'&&L.chapter.kit.camLooksAt(L.chapter3.figure.group.position,.9))seen+=1/30;return seen>.45;},4);return {seen};});
- await snap(tag+'-n27-someone-crosses-ahead');
- await ev(()=>__c3.until(()=>__c3.said.includes('SAM: “Somebody just—”'),8));
- const pause=await ev(()=>+(lastLight.chapter3.C.crossAt-lastLight.chapter3.C.wetDone).toFixed(1));
- check('Chapter Three: after a long pause ('+pause+' s), a person crosses the tunnel ahead from one black opening to the other (in view '+cross.seen.toFixed(2)+' s)',pause>=10&&cross.seen>.4&&await said('SAM: “Somebody just—”'));
- await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter3.flags.voice1,40);C.until(()=>false,1.6);});
- await snap(tag+'-n28-voice-ahead-jamie-steps-toward-it');
- await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter3.flags.voice2,30);C.until(()=>false,.9);});
- await snap(tag+'-n29-voice-behind-they-whip-round');
- await ev(()=>{const C=__c3,L=lastLight,q=L.state.chapter3.voices[1].pos;C.face(q.x,q.z,0);C.until(()=>L.chapter3.C.flags.searchBack,8);C.until(()=>false,2.2);});
- await snap(tag+'-n30-searching-behind-nothing');
- await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter3.flags.close,20);C.until(()=>false,.3);});
- await snap(tag+'-n31-the-bell-beside-them');
- check('Chapter Three: "Jamie?" ahead, "Guys?" behind, they search behind (nothing), the bell beside them: "RUN!"',(await c3()).voices.length===2&&(await c3()).bells.some(b=>b.close)&&await ev(()=>lastLight.chapter3.C.flags.searchBack===true));
+ await ev(()=>{const C=__c3,L=lastLight;C.walk(C.dl(C.ds()+1,250,.3,3),{r:.6,max:60,stop:()=>L.state.chapter3.flags.lure});L.release('KeyW');C.until(()=>L.state.chapter3.flags.lure,12);const f=L.chapter3.figure.group.position;C.face(f.x,f.z,-.01);C.until(()=>false,.8);});
+ await snap(tag+'-n26-him-again-by-the-culvert');
+ const lure=await ev(()=>{const C=__c3,L=lastLight;C.walk(C.dl(C.ds()+1,259,.3,2),{r:.6,max:40,stop:()=>L.state.chapter3.figure.state==='lure-step'||L.state.chapter3.flags.creature});L.release('KeyW');C.until(()=>/^lure-(step|in|gone)$/.test(L.state.chapter3.figure.state),20);const f=L.chapter3.figure.group.position;C.face(f.x,f.z,-.02);C.until(()=>false,.5);return {...L.state.chapter3.lure};});
+ await snap(tag+'-n27-he-climbs-into-the-culvert');
+ check('Chapter Three: him again, farther in ('+lure.distAtSeen+' m), his back to them; "There!"; he does not stop: he walks to the side culvert and climbs up into it',lure.seenAt!=null&&await said('JAMIE: “There!”'));
+ await ev(()=>{const C=__c3,L=lastLight;C.walk(C.dl(C.ds()+1,259,.3,2),{r:.6,max:40,stop:()=>L.state.chapter3.flags.creature&&C.ds()>=257});L.release('KeyW');C.until(()=>L.state.chapter3.flags.creature,20);const lip=L.chapter3.culvertAt(-.3,.5);C.face(lip.x,lip.z,-.05);C.until(()=>L.state.chapter3.crt?.t0!=null,10);C.until(()=>false,.3);});
+ await snap(tag+'-n28-something-at-the-lip');
+ const crt=await ev(()=>{const C=__c3,L=lastLight,lip=L.chapter3.culvertAt(-.3,.5);C.until(()=>{C.face(lip.x,lip.z,-.05);return L.state.chapter3.crt?.seenAt!=null;},45);C.until(()=>false,1.2);return {...L.state.chapter3.crt};});
+ await snap(tag+'-n29-that-is-not-alex');
+ await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter3.creature.state==='drop',8);C.until(()=>false,.35);});
+ await snap(tag+'-n30-it-drops-into-the-water');
+ check('Chapter Three: from the culvert, his voice ("Jamie?"); then something at its lip, head and arms out, seen at '+crt.distAtSeen+' m; "That’s not Alex."; it drops into the water',crt.seenAt!=null&&!crt.unseenGo&&crt.distAtSeen>=9&&crt.distAtSeen<=30&&await said('FROM THE CULVERT: “Jamie?”')&&await said('SAM: “That’s not Alex.”'));
  // ---- RUN: W only; the view a little wider; looking back when they shout ------------------------------------------
- await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.phase==='n3-run',8);C.runT0=L.state.chapter3.t;C.fov=[];C.run(()=>L.state.chapter3.t-C.runT0>1.4,4);});
- await snap(tag+'-n32-run');
- await ev(()=>{const C=__c3,L=lastLight;C.run(()=>L.state.chapter3.purs?.farVisAt!==null,30);C.run(()=>false,.5);});
- await snap(tag+'-n33-they-look-back');
- const far=await ev(()=>{const C=__c3,L=lastLight,f=L.chapter3.figure.group.position;C.face(f.x,f.z,0);C.until(()=>{L.press('KeyW');C.face(f.x,f.z,0);C.fov.push(L.camera.fov);return false;},.5);const cp=L.camera.position;return {d:+Math.hypot(f.x-cp.x,f.z-cp.z).toFixed(1),vis:L.chapter3.figure.group.visible,state:L.state.chapter3.figure.state};});
- await snap(tag+'-n34-he-is-running-after-them');
- await ev(()=>{const C=__c3,L=lastLight;C.run(()=>L.state.chapter3.purs.stumbleAt!==null,20);C.run(()=>false,.3);});
- await snap(tag+'-n35-jamie-goes-down');
- await ev(()=>{const C=__c3,L=lastLight;C.run(()=>L.state.chapter3.purs.pipeAt!==null,30);C.run(()=>false,.25);const q=C.D(136,1.4);C.face(q[0],q[1],-.05);C.until(()=>{L.press('KeyW');return false;},.2);});
+ await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.phase==='n3-run',8);C.runT0=L.state.chapter3.t;C.fov=[];const f=L.chapter3.creature.group.position;C.face(f.x,f.z,-.03);C.until(()=>false,.3);});
+ await snap(tag+'-n31-run');
+ const look=async(name,until,max=30)=>{await ev(([until,max])=>{const C=__c3,L=lastLight;C.run(()=>(0,eval)('('+until+')')(L),max);},[until.toString(),max]);
+  const r=await ev(()=>{const C=__c3,L=lastLight,f=L.chapter3.creature.group.position;C.face(f.x,f.z,-.02);C.until(()=>{L.press('KeyW');C.face(f.x,f.z,-.02);C.fov.push(L.camera.fov);return false;},.45);const cp=L.camera.position;return {d:+Math.hypot(f.x-cp.x,f.z-cp.z).toFixed(1),vis:L.chapter3.creature.group.visible};});
+  await snap(name);return r;};
+ const far=await look(tag+'-n32-it-is-coming',L=>L.state.chapter3.purs?.farVisAt!=null);
+ await ev(()=>{const C=__c3,L=lastLight;C.run(()=>L.state.chapter3.purs.lostAt!=null,30);C.run(()=>false,.6);const q=C.D(C.ds()+14,0);C.face(q[0],q[1],-.02);C.until(()=>{L.press('KeyW');return false;},.25);});
+ await snap(tag+'-n33-round-the-bend-nothing');
+ await ev(()=>{const C=__c3,L=lastLight;C.run(()=>L.state.chapter3.purs.stumbleAt!=null,20);C.run(()=>false,.3);});
+ await snap(tag+'-n34-jamie-goes-down');
+ const side=await look(tag+'-n35-out-of-the-wall',L=>L.state.chapter3.purs.sideAt!=null&&L.state.chapter3.creature.state==='chase');
+ await ev(()=>{const C=__c3,L=lastLight;C.run(()=>L.state.chapter3.purs.pipeAt!=null,30);C.run(()=>false,.25);const q=C.D(136,1.4);C.face(q[0],q[1],-.05);C.until(()=>{L.press('KeyW');return false;},.2);});
  await snap(tag+'-n36-water-bursts-from-a-side-pipe');
  await ev(()=>{const C=__c3,L=lastLight;C.run(()=>C.ds()<=94,30);const r=L.chapter3.relAt;C.face(r.x,r.z,-.12);C.until(()=>{L.press('KeyW');C.face(r.x,r.z,-.12);return false;},.25);});
  await snap(tag+'-n37-the-bike-ahead-of-them');
- await ev(()=>{const C=__c3,L=lastLight;C.run(()=>L.state.chapter3.purs.nearVisAt!==null,30);C.run(()=>false,.15);const f=L.chapter3.figure.group.position;C.face(f.x,f.z,0);C.until(()=>{L.press('KeyW');C.face(f.x,f.z,0);return false;},.3);});
- await snap(tag+'-n38-closer');
- const near=await ev(()=>{const L=lastLight,f=L.chapter3.figure.group.position,cp=L.camera.position;return {d:+Math.hypot(f.x-cp.x,f.z-cp.z).toFixed(1),vis:L.chapter3.figure.group.visible};});
+ const near=await look(tag+'-n38-right-behind-them',L=>L.state.chapter3.purs.nearVisAt!=null);
+ await ev(()=>{const C=__c3,L=lastLight;C.run(()=>L.state.chapter3.purs.gateHitAt!=null,20);C.run(()=>false,.5);const g=L.chapter3.gate.position;C.face(g.x,g.z,-.02);C.until(()=>{L.press('KeyW');C.face(g.x,g.z,-.02);return false;},.4);});
+ await snap(tag+'-n39-it-claws-at-the-gate');
  await ev(()=>{const C=__c3,L=lastLight;C.run(()=>C.ds()<44,20);const q=C.D(0,0);C.face(q[0],q[1],0);C.until(()=>{L.press('KeyW');return false;},.2);});
- await snap(tag+'-n39-the-way-out');
+ await snap(tag+'-n40-the-way-out');
  const run=await ev(()=>{const C=__c3,L=lastLight;C.run(()=>L.state.state==='c1-ride'||L.state.state==='c1-remount',40);L.release('KeyW');C.until(()=>L.state.state==='c1-ride',4);const P=L.state.chapter3.purs;return {secs:+(L.state.chapter3.t-C.runT0).toFixed(1),fov:Math.max(...C.fov),P,stamina:L.state.onFoot?.stamina};});
  await ev(()=>{__c3.until(()=>false,.8);});
- await snap(tag+'-n40-straight-onto-the-bike');
- check('Chapter Three: RUN is a real escape: '+run.secs+' s from the bell to the bikes (45–90), the view wider (fov '+run.fov.toFixed(1)+'), no stamina to run out',run.secs>=40&&run.secs<=95&&run.fov>=68);
- check('Chapter Three: looking back, he is running after them '+far.d+' m behind (50–70 ft), and later '+near.d+' m (25–35 ft); never catches them',far.vis&&far.d>=13&&far.d<=23&&near.vis&&near.d>=6.5&&near.d<=12&&run.P.minGap>=6);
- check('Chapter Three: Jamie goes down and gets up; water bursts from a side pipe; the bike lies across the way out ahead of them; the way out seen',!!run.P.stumbleAt&&!!run.P.pipeAt&&!!run.P.bikeSeenAt&&!!run.P.exitSeenAt&&(await c3()).bike==='relocated');
- // ---- the road out, fast; at a bend, him, in the road ahead; they ride on ------------------------------------------
- await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.phase==='n3-flee',8);L.press('KeyW');C.ride(C.rl(L.world.woods.L-8,445,0,9),80);});
- await snap(tag+'-n41-flight-up-the-dark-road');
+ await snap(tag+'-n41-straight-onto-the-bike');
+ // (a review camera on the apron, turned back to the mouth: it, low in the dark just inside, watching; not a story frame)
+ await ev(()=>{const L=lastLight,c=L.camera,Dr=L.world.drain,o=L.world.woods.fromA(9,6),g=L.chapter3.creature.group.position;window.__camKeep={p:c.position.clone(),q:c.quaternion.clone()};c.position.set(o.x,L.nav.groundY(o.x,o.z)+1.5,o.z);c.lookAt(g.x,g.y+.5,g.z);c.updateMatrixWorld();});
+ await snap(tag+'-n42-qa-watching-from-the-mouth',{clean:true});
+ await ev(()=>{const c=lastLight.camera,k=window.__camKeep;c.position.copy(k.p);c.quaternion.copy(k.q);c.updateMatrixWorld();});
+ check('Chapter Three: RUN is a real escape: '+run.secs+' s from "RUN!" to the bikes (45–90), the view wider (fov '+run.fov.toFixed(1)+'), no stamina to run out',run.secs>=45&&run.secs<=90&&run.fov>=68);
+ check('Chapter Three: looking back, it is coming '+far.d+' m behind, out of the wall '+side.d+' m behind, then '+near.d+' m; never closer than '+run.P.minGapRun+' m running',far.vis&&far.d>=12&&far.d<=27&&side.vis&&side.d>=7&&side.d<=17&&near.vis&&near.d>=5.5&&near.d<=11.5&&run.P.minGapRun>=6);
+ check('Chapter Three: Jamie goes down; water bursts from a side pipe; the bike across the way out; the gate slammed, it held there '+(run.P.gateBurstAt-run.P.gateHitAt).toFixed(1)+' s; the way out seen',!!run.P.stumbleAt&&!!run.P.pipeAt&&!!run.P.bikeSeenAt&&!!run.P.gateShutAt&&run.P.gateBurstAt-run.P.gateHitAt>=2.5&&!!run.P.exitSeenAt&&(await c3()).bike==='relocated');
+ // ---- the road out, fast: a look back; it at the treeline ahead; at a bend, him, in the road; they ride on ---------
+ await ev(()=>{const C=__c3,L=lastLight;C.until(()=>L.state.chapter.phase==='n3-flee',8);L.press('KeyW');C.ride(C.rl(L.world.woods.L-8,L.world.woods.L-34,0,9),40);L.look(1.8,0);C.until(()=>false,1.2);L.look(0,0);});
+ const tree=await ev(()=>{const C=__c3,L=lastLight;L.drive(C.rl(L.world.woods.L-34,445,0,9),{r:2.6});C.until(()=>L.state.chapter3.purs.treeSeenAt!=null||!L.driving,20);C.until(()=>false,.4);return {...L.state.chapter3.purs};});
+ await snap(tag+'-n43-it-at-the-treeline-ahead');
+ await ev(()=>{const C=__c3,L=lastLight;C.until(()=>!L.driving,60);L.stopDriving();});
+ check('Chapter Three: a look back over your shoulder on the road; facing front, it is low at the edge of the trees ahead ('+tree.treeDist+' m); then gone',tree.treeSeenAt!=null&&(await c3()).creature.visible===false);
+ await snap(tag+'-n44-flight-up-the-dark-road');
  const rf=await ev(()=>{const C=__c3,L=lastLight;L.drive(C.rl(445,300,0,9),{r:2.6});C.until(()=>!L.driving||L.state.chapter3.roadFig?.seenAt!=null,60);C.until(()=>false,.15);return L.state.chapter3.roadFig;});
- await snap(tag+'-n42-him-in-the-road-ahead');
+ await snap(tag+'-n45-him-in-the-road-ahead');
  await ev(()=>{const C=__c3,L=lastLight;C.until(()=>!L.driving||L.state.chapter3.roadFig?.stage==='leave',6);C.until(()=>false,.7);});
- await snap(tag+'-n43-he-steps-into-the-trees');
- check('Chapter Three: up the road, at a bend, the same boy standing in the road ahead ('+(rf?.seenDist??'?')+' m); he walks off into the trees; nobody stops',!!rf&&rf.seenAt!==null&&rf.seenDist>=8&&rf.seenDist<=16&&await said('JAMIE: “DON’T STOP!”'));
+ await snap(tag+'-n46-he-steps-into-the-trees');
+ await ev(()=>{const C=__c3;C.until(()=>C.said.includes('JAMIE: “Don’t stop. DON’T STOP.”'),5);});// (Sam's line first, then Jamie's, still riding)
+ check('Chapter Three: up the road, at a bend, the Alex-like boy standing in the road ahead ('+(rf?.seenDist??'?')+' m); he walks off into the trees; nobody stops',!!rf&&rf.seenAt!==null&&rf.seenDist>=8&&rf.seenDist<=16&&await said('JAMIE: “Don’t stop. DON’T STOP.”'));
  await ev(()=>{const C=__c3,L=lastLight;C.until(()=>!L.driving,60);L.stopDriving();C.ride(C.rl(300,4,0,9),120);C.until(()=>false,.2);});
- await snap(tag+'-n44-the-first-streetlight');
- await ev(()=>{const C=__c3,L=lastLight;C.ride([C.S(244,1.2),C.S(238,1.2)],60);C.brake();C.until(()=>L.state.chapter.phase==='n3-safe',20);C.until(()=>L.state.chapter.line==='“That was him.”',30);C.until(()=>false,.6);});
- await snap(tag+'-n45-under-the-streetlight');
- check('Chapter Three: out under the streetlight at the end of Briarwood; "That was him." "No."',(await c1()).phase==='n3-safe'&&await said('SAM: “That was him.”'));
+ await snap(tag+'-n47-the-first-streetlight');
+ await ev(()=>{const C=__c3,L=lastLight;C.ride([C.S(244,1.2),C.S(238,1.2)],60);C.brake();C.until(()=>L.state.chapter.phase==='n3-safe',20);C.until(()=>L.state.chapter.line==='“That wasn’t Alex.”',30);C.until(()=>false,.6);});
+ await snap(tag+'-n48-under-the-streetlight');
+ check('Chapter Three: out under the streetlight at the end of Briarwood; "That wasn’t Alex."',(await c1()).phase==='n3-safe'&&await said('SAM: “That wasn’t Alex.”'));
  await ev(()=>__c3.until(()=>lastLight.state.state==='ended',70));
  await page.waitForFunction(()=>!document.querySelector('#ending').hidden&&Number(getComputedStyle(document.querySelector('#ending')).opacity)>.99);
- await snap(tag+'-n46-chapter-three-end');
- check('Chapter Three: "You saw him." "…I know." then LAST LIGHT / Chapter Three',await said('SAM: “You saw him.”')&&await said('JAMIE: “…I know.”')&&(await page.locator('#ending h2').textContent())==='Chapter Three');
+ await snap(tag+'-n49-chapter-three-end');
+ check('Chapter Three: "…I know." "Then what did we follow?" (Jamie does not answer) then LAST LIGHT / Chapter Three',await said('JAMIE: “…I know.”')&&await said('SAM: “Then what did we follow?”')&&!(await ev(()=>{const s=__c3.said,i=s.indexOf('SAM: “Then what did we follow?”');return s.slice(i+1).some(l=>l.startsWith('JAMIE'));}))&&(await page.locator('#ending h2').textContent())==='Chapter Three');
  const res=await ev(()=>({phases:__c3.phases.filter(p=>/^(c3|d3|n3)-/.test(p)),gap:__c3.gap,gapAt:__c3.gapAt,peak:Math.max(...__c3.tension),said:__c3.said.length,captions:__c3.caps.length}));
- Object.assign(res,{figureRevealDist:reveal.dist,figurePresentAfterSeen:+(gone.t-gone.seenAt).toFixed(1),pursuitFar:far.d,pursuitNear:near.d,minGap:+run.P.minGap.toFixed(1),runSeconds:run.secs,roadFigureSeen:rf?.seenDist,bikeFoundFrom:bikeFar});
+ Object.assign(res,{figureRevealDist:reveal.dist,figurePresentAfterSeen:+(gone.t-gone.seenAt).toFixed(1),lureSeen:lure.distAtSeen,creatureSeen:crt.distAtSeen,chaseFar:far.d,chaseSide:side.d,chaseNear:near.d,minGapRunning:run.P.minGapRun,gateHeld:+(run.P.gateBurstAt-run.P.gateHitAt).toFixed(1),treeGlimpse:tree.treeDist,runSeconds:run.secs,roadFigureSeen:rf?.seenDist,bikeFoundFrom:bikeFar});
  check('Chapter Three: every phase in order in the browser',JSON.stringify(res.phases)===JSON.stringify(ORDER));
  check('Chapter Three: Jamie and Sam stayed with you (max gap '+res.gap.toFixed(1)+' m at '+res.gapAt+')',res.gap<30);
  check('Chapter Three: the whole chapter played with the sound off',await page.locator('#sound').getAttribute('aria-pressed')==='false');
@@ -291,10 +300,10 @@ export async function runChapterThreeAudioHooks({page,check,errors}){
  const r=await page.evaluate(()=>{const L=lastLight,A=L.audio(),o=L.chapter.kit.o,calls={},count=k=>calls[k]=(calls[k]||0)+1,keep={sfx:o.sfx};
   o.sfx=(n,...a)=>{count('sfx:'+n);return keep.sfx(n,...a);};for(const k of ['bell3','voice'])if(A&&typeof A[k]==='function'){keep[k]=A[k];A[k]=(...a)=>{count(k);return keep[k].apply(A,a);};}
   const err=[];try{L.jump('c3-first-bell');L.step(6);L.jump('c3-broken-bell');L.step(.3);L.key('KeyF');L.step(1.6);L.key('KeyF');L.step(8);
-   L.jump('c3-voice-ahead');for(let t=0;t<45&&!L.state.chapter3.flags.close;t+=1/30)L.step(1/30);L.step(1.5);L.press('KeyW');L.step(6);L.release('KeyW');}catch(e){err.push(String(e));}
+   L.jump('c3-creature-reveal');const lip=L.chapter3.culvertAt(-.3,.5);for(let t=0;t<45&&L.state.chapter.phase!=='n3-run';t+=1/30){__c3.face(lip.x,lip.z,-.05);L.step(1/30);}L.step(1.5);L.press('KeyW');L.step(6);L.release('KeyW');}catch(e){err.push(String(e));}
   o.sfx=keep.sfx;for(const k of ['bell3','voice'])if(keep[k])A[k]=keep[k];return {calls,err,hooks:{bell3:typeof A?.bell3,voice:typeof A?.voice,sfx:typeof o.sfx}};});
- check('audio hooks (placeholders, not rendered): the bells, both of his voices, the click and the splashes are still called, without errors '+JSON.stringify(r.calls),r.err.length===0&&r.hooks.bell3==='function'&&r.hooks.voice==='function'&&(r.calls.bell3||0)>=2&&(r.calls.voice||0)>=2&&(r.calls['sfx:click']||0)>=1);
- check('audio hooks: no runaway repeats (every hook called a handful of times at most)',Object.values(r.calls).every(n=>n<=40)&&(r.calls.voice||0)<=4&&(r.calls.bell3||0)<=6);
+ check('audio hooks (placeholders, not rendered): the bells, his voice from the culvert, the click, its movement and impacts, the splashes are still called, without errors '+JSON.stringify(r.calls),r.err.length===0&&r.hooks.bell3==='function'&&r.hooks.voice==='function'&&(r.calls.bell3||0)>=1&&(r.calls.voice||0)>=1&&(r.calls['sfx:click']||0)>=1&&(r.calls['sfx:tap']||0)>=1&&(r.calls['sfx:splash']||0)>=5);
+ check('audio hooks: no runaway repeats (a handful each; its footfalls a few a second)',Object.entries(r.calls).every(([k,n])=>n<=(k==='sfx:splash'?120:40))&&(r.calls.voice||0)<=4&&(r.calls.bell3||0)<=6);
  check('audio hooks: no JavaScript errors',errors.length===0);
  return {mode:'hooks only (placeholders; offline renders skipped by design)',calls:r.calls};}
 
