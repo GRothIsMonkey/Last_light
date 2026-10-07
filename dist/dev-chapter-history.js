@@ -59,7 +59,7 @@ export const HISTORY={
   "chapter1Clock": {
    "sirenOff": 1084.966,
    "bellAt": 8.066,
-   "dadCall": 92.046,
+   "dadCall": 86.146,
    "samWait": 474.6
   },
   "save": "investigation"
@@ -124,7 +124,7 @@ export const HISTORY={
   "chapter1Clock": {
    "sirenOff": 1645.033,
    "bellAt": 568.133,
-   "dadCall": 652.113,
+   "dadCall": 646.213,
    "samWait": 1034.667
   },
   "chapter2": {
@@ -205,3 +205,376 @@ export const HISTORY={
  }
 };
 export const TIMESTAMPS={"chapter1":["sirenOff","bellAt","dadCall","samWait"],"chapter2":["bellAt","warned","arrive","callAt","homeAt"]};
+// What the natural playthrough had at each DEV scene's moment that the scene's checkpoint start does not set
+// (Chapter One's and Two's story flags, who had joined you, the flashlight, the Continue save).
+export const SCENE_HISTORY={
+ "0/alex-departure": {},
+ "0/jamie-departure": {},
+ "0/sam-departure": {},
+ "1/title": {
+  "chapter1Flags": {
+   "moved": true,
+   "braked": true
+  },
+  "chapter1": {
+   "alexScene": false,
+   "committed": true
+  }
+ },
+ "1/alex-house": {
+  "chapter1Flags": {
+   "moved": true,
+   "braked": true
+  },
+  "chapter1": {
+   "committed": true
+  },
+  "save": "alex-house"
+ },
+ "1/jamie": {
+  "chapter1Flags": {
+   "moved": true,
+   "braked": true,
+   "approaching": false,
+   "dadJoining": true,
+   "dadBack": 0
+  },
+  "chapter1": {
+   "committed": true
+  },
+  "save": "jamie"
+ },
+ "1/sam": {
+  "chapter1Flags": {
+   "moved": true,
+   "braked": true,
+   "approaching": false,
+   "dadJoining": true,
+   "dadBack": 0,
+   "jamieWindow": true,
+   "jamieClosing": true
+  },
+  "chapter1": {
+   "committed": true
+  },
+  "save": "sam"
+ },
+ "1/oak": {
+  "chapter1Flags": {
+   "moved": true,
+   "braked": true,
+   "approaching": false,
+   "dadJoining": true,
+   "dadBack": 0,
+   "jamieWindow": true,
+   "jamieClosing": true,
+   "samWindow": false,
+   "sideDoorOpen": true,
+   "sideDoorClosing": true
+  },
+  "chapter1": {
+   "committed": true
+  },
+  "save": "oak"
+ },
+ "1/retrace": {
+  "chapter1Flags": {
+   "moved": true,
+   "braked": true,
+   "approaching": false,
+   "dadJoining": true,
+   "dadBack": 0,
+   "jamieWindow": true,
+   "jamieClosing": true,
+   "samWindow": false,
+   "sideDoorOpen": true,
+   "sideDoorClosing": true
+  },
+  "chapter1": {
+   "committed": true
+  },
+  "save": "retrace"
+ },
+ "1/investigation": {
+  "chapter1Flags": {
+   "moved": true,
+   "braked": true,
+   "approaching": false,
+   "dadJoining": true,
+   "dadBack": 0,
+   "jamieWindow": true,
+   "jamieClosing": true,
+   "samWindow": false,
+   "sideDoorOpen": true,
+   "sideDoorClosing": true,
+   "nervous": true,
+   "pointed": true
+  },
+  "chapter1": {
+   "committed": true
+  },
+  "save": "investigation"
+ },
+ "2/chapter2-start": {
+  "chapter1": {
+   "jamieIn": true,
+   "samIn": true,
+   "alexScene": true
+  },
+  "save": "chapter2-start"
+ },
+ "2/easement": {
+  "chapter1": {
+   "jamieIn": true,
+   "samIn": true,
+   "alexScene": true
+  },
+  "save": "chapter2-start"
+ },
+ "2/alex-bike": {
+  "chapter1": {
+   "jamieIn": true,
+   "samIn": true,
+   "alexScene": true
+  },
+  "chapter2Flags": {
+   "saidMud": true,
+   "path": true,
+   "poi-mud": true,
+   "saidWeeds": true
+  },
+  "save": "bike-found"
+ },
+ "2/second-bell": {
+  "chapter1": {
+   "jamieIn": true,
+   "samIn": true,
+   "alexScene": true
+  },
+  "chapter2Flags": {
+   "saidMud": true,
+   "path": true,
+   "poi-mud": true,
+   "saidWeeds": true,
+   "poi-weeds": true,
+   "poi-scrape": true
+  },
+  "save": "bike-found"
+ },
+ "2/police-find": {
+  "chapter1": {
+   "jamieIn": true,
+   "samIn": true,
+   "alexScene": true
+  },
+  "chapter2Flags": {
+   "saidMud": true,
+   "path": true,
+   "poi-mud": true,
+   "saidWeeds": true,
+   "poi-weeds": true,
+   "poi-scrape": true
+  },
+  "save": "police-arrival"
+ },
+ "2/morning": {
+  "chapter1": {
+   "jamieIn": true,
+   "samIn": true,
+   "alexScene": true
+  },
+  "chapter2Flags": {
+   "saidMud": true,
+   "path": true,
+   "poi-mud": true,
+   "saidWeeds": true,
+   "found": true,
+   "poi-weeds": true,
+   "poi-scrape": true,
+   "inspected": true,
+   "bell": true,
+   "called": true,
+   "copThere": true,
+   "told": true,
+   "reported": true,
+   "dadThere": true,
+   "dadTalk": true,
+   "plan": true,
+   "leaving": true,
+   "dateCard": true
+  },
+  "foot": {
+   "owned": true,
+   "on": true
+  },
+  "save": "morning"
+ },
+ "2/memory-start": {
+  "chapter1": {
+   "jamieIn": true,
+   "samIn": true,
+   "alexScene": true
+  },
+  "chapter2Flags": {
+   "saidMud": true,
+   "path": true,
+   "poi-mud": true,
+   "saidWeeds": true,
+   "found": true,
+   "poi-weeds": true,
+   "poi-scrape": true,
+   "inspected": true,
+   "bell": true,
+   "called": true,
+   "copThere": true,
+   "told": true,
+   "reported": true,
+   "dadThere": true,
+   "dadTalk": true,
+   "plan": true,
+   "leaving": true,
+   "dateCard": true
+  },
+  "foot": {
+   "owned": true,
+   "on": true
+  },
+  "save": "morning-oak"
+ },
+ "2/memory-reconstruction": {
+  "chapter1": {
+   "jamieIn": true,
+   "samIn": true,
+   "alexScene": true
+  },
+  "chapter2Flags": {
+   "saidMud": true,
+   "path": true,
+   "poi-mud": true,
+   "saidWeeds": true,
+   "found": true,
+   "poi-weeds": true,
+   "poi-scrape": true,
+   "inspected": true,
+   "bell": true,
+   "called": true,
+   "copThere": true,
+   "told": true,
+   "reported": true,
+   "dadThere": true,
+   "dadTalk": true,
+   "plan": true,
+   "leaving": true,
+   "dateCard": true
+  },
+  "foot": {
+   "owned": true,
+   "on": true
+  },
+  "save": "briarwood-memory"
+ },
+ "3/c3-alex-house": {
+  "foot": {
+   "owned": true,
+   "on": true
+  },
+  "save": "c3-alex-house"
+ },
+ "3/alex-bedroom": {
+  "foot": {
+   "owned": true,
+   "on": true
+  },
+  "save": "alex-bedroom"
+ },
+ "3/recording": {
+  "foot": {
+   "owned": true,
+   "on": true
+  },
+  "save": "phone-recording"
+ },
+ "3/neighbors": {
+  "foot": {
+   "owned": true,
+   "on": true
+  },
+  "save": "neighbor-investigation"
+ },
+ "3/c3-road-day": {
+  "foot": {
+   "owned": true,
+   "on": true
+  },
+  "save": "neighbor-investigation"
+ },
+ "3/night-start": {
+  "save": "night-start"
+ },
+ "3/c3-road-night": {
+  "save": "c3-road-night"
+ },
+ "3/c3-forest-deep": {
+  "save": "c3-road-night"
+ },
+ "3/c3-tunnel-entrance": {
+  "save": "c3-tunnel-entrance"
+ },
+ "3/c3-tunnel-deep": {
+  "save": "c3-tunnel-deep"
+ },
+ "3/c3-alex-item": {
+  "save": "c3-tunnel-deep"
+ },
+ "3/c3-old-bike": {
+  "save": "c3-old-bike"
+ },
+ "3/c3-bike-gone": {
+  "save": "c3-old-bike"
+ },
+ "3/c3-figure-reveal": {
+  "save": "c3-alex-lure"
+ },
+ "3/c3-follow-alex": {
+  "save": "c3-alex-lure"
+ },
+ "3/c3-second-sighting": {
+  "save": "c3-alex-lure"
+ },
+ "3/c3-creature-reveal": {
+  "save": "c3-alex-lure"
+ },
+ "3/c3-creature-chase-start": {
+  "save": "c3-creature-reveal"
+ },
+ "3/c3-creature-far": {
+  "save": "c3-creature-chase"
+ },
+ "3/c3-creature-side": {
+  "save": "c3-creature-chase"
+ },
+ "3/c3-bike-block": {
+  "save": "c3-creature-chase"
+ },
+ "3/c3-creature-near": {
+  "save": "c3-creature-chase"
+ },
+ "3/c3-creature-barrier": {
+  "save": "c3-creature-chase"
+ },
+ "3/c3-tunnel-exit": {
+  "save": "c3-creature-chase"
+ },
+ "3/c3-bike-remount": {
+  "save": "c3-creature-chase"
+ },
+ "3/c3-road-escape": {
+  "save": "c3-road-escape"
+ },
+ "3/c3-final-lure": {
+  "save": "c3-road-escape"
+ },
+ "3/chapter3-end": {
+  "save": "chapter3-end"
+ }
+};

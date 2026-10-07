@@ -9,6 +9,54 @@ rebuild can be playtested from any chapter. Everything below applies there uncha
 rebuild's evidence is in `docs/qa/dev-chapters-rebuild/` (the files in `docs/qa/dev-chapters/` are the
 playtest build's, kept as they were).
 
+## On `claude/chapter3-creature-chase`: Chapter → Scene
+
+The box is now a two-step picker, still TEMPORARY and still only on the title: **DEV · PLAYTEST · TEMPORARY**,
+**1 · Chapter** (Prologue, Chapter One, Two, Three), **2 · Scene** (the important scenes of that chapter, in story
+order), then **START SCENE**. Each chapter's own start is a scene in its list (Chapter One's real hand-over, the ride
+home from the lookout, is the prologue list's *Solo Ride Home*, as the story runs). To switch: Esc, **Back to the
+title**, pick again. Every scene starts **shortly before** its event, so it can be played through.
+
+| Chapter | Scenes (how each starts) |
+|---|---|
+| Prologue (9) | Start (new game) · Group Ride (warp 150 m) · Alex Before Briarwood (warp 355 m, before "Did you guys hear that?") · Alex Departure (warp 528 m, the existing QA jump) · Jamie Departure and Sam Departure (warp 528 m, then the game rides on with W held, muted, to 670 m / 870 m, through the departures before them) · Old Oak / Chalk (the last 30 m of the street to the lookout) · Solo Ride Home (Chapter One's hand-over) · Police Cruiser / Title (QA jump `police`) |
+| Chapter One (9) | Chapter One Start (title) · Alex's House (Briarwood) · Recruit Jamie · Recruit Sam · Old Oak Regroup · The Way Alex Went (retrace) · Creek / Utility Strip · Reflector Discovery · Final Bell / Chapter End (`clue`, then the real F at the reflector) |
+| Chapter Two (11) | Chapter Two Start (hand-over) · Follow the Sound · Easement · Alex's Bike · Second Bell / Culvert · Police Arrival · Morning · Morning Old Oak · Return to Briarwood · Memory Reconstruction · Chapter Two Ending |
+| Chapter Three (29) | Chapter Three Start (hand-over) · Alex's House (his mom) · Alex's Bedroom · Flip Phone (the recording) · Neighbor / Storm Road · Day Road Entrance · Night Start · Night Ride to the Road · Forest Road · Tunnel Entrance · Deep Tunnel · Alex Evidence (his helmet) · Old Bike · Old Bike Gone · Alex-Like Figure: First Reveal · Follow Alex · Second Alex Sighting · Creature Reveal · RUN / Chase Start · Creature Chase — Far · Creature Chase — Side Channel · Old Bike Relocated (in the way) · Creature Chase — Near · Creature Chase — Barrier (the gate) · Tunnel Exit · Bike Remount · Forest Escape · Final Alex-Like Road Figure · Chapter Three End |
+
+Prologue scenes after Alex has left are not warped to (a warp puts every friend back on a bike): they warp to just
+before Alex leaves and let the game ride the rest.
+
+**State equivalence** (`dist/dev-chapters.js`, `startScene`). No scene has coordinates and flags of its own. A scene
+is one of the game's ways in: a chapter hand-over (above), or the QA/Continue checkpoint initializer (`jumpTo`: Start
+over's reset, then the chapter's own `jump()`), after `clear()` has emptied everything transient (as for chapters).
+Then what the earlier chapters leave behind (`HISTORY[n]`, as at the chapter's start), and then `SCENE_HISTORY[scene]`:
+what a natural playthrough had at that very moment that the checkpoint initializer does not set (Chapter One's and
+Two's story flags of the earlier beats, who had joined you, the flashlight, the Continue save). Like `HISTORY` it is
+**generated** by `ONLY=dev-record node tests/verify.mjs` from the natural playthrough, never written by hand.
+Chapter Three's own jumps were completed instead (they now set every flag of the chapter's earlier beats).
+
+**Verification** (`tests/dev-chapters-sim.mjs`, `tests/dev-chapters-browser.mjs`). The natural run records a snapshot
+the first frame it is at each of 46 scenes (`SCENE_REACH`: the predicate for "the moment this scene stands for"). Each
+DEV start is compared one frame after starting on its story state (`meaning()`: phase, objective, game state, day or
+night, the flashlight, who is with you and how, every Chapter One/Two/Three story flag, the Continue save, and in
+Chapter Three the bike, the boy, the creature, the gate, the lure and the chase's events). Result: **0 differences in
+all 46**. All 58 scenes start without error; 14 key scenes are checked to start *before* their event (the reveals,
+RUN, the gate, the road figure, each departure…). Switching in one session, playing a little each time —
+Creature Reveal → Old Oak → Chase Start → Alex Departure → Alex's Bike → Creature Reveal → Chapter Three End → Memory
+Reconstruction → Chase Start — gives every start identical to a clean start of that scene (**0 leaks**). The browser
+test does the same with real clicks (chapter, scene, START SCENE) against the simulation's natural snapshots
+(`docs/qa/dev-scenes-creature/natural-snapshots.json`).
+
+Not compared, and why (in addition to the chapter-level list below): Chapter Three flags that only record optional
+things a player may or may not have done on the way (the wet print, the swinging cable, lines that depend on where
+you walked or looked, an older recording heard, the neighbors you chose to ask; `OPTIONAL` in the test); a hidden
+companion bike's stored position; the Chapter One siren's doppler bookkeeping while it is silent.
+
+Found and fixed on the way: Chapter Three's QA jumps did not set the flags of the chapter's earlier beats; after a
+jump or Start over out of the drain, the first frame was lit with the drain's darkness (the darkness factor is now
+taken from where you are that frame).
+
 ## Using it
 
 The title screen has a dashed box in the bottom-right corner: **DEV · PLAYTEST ONLY — START AT CHAPTER**,
@@ -96,7 +144,7 @@ card with inputs and no QA jump. Report: `docs/qa/dev-chapters/dev-chapters-brow
 ## Removing it
 
 Delete `dist/dev-chapters.js`, `dist/dev-chapter-history.js`, `tests/dev-chapters-sim.mjs`,
-`tests/dev-chapters-browser.mjs`, `docs/qa/dev-chapters/` (and `docs/qa/dev-chapters-rebuild/`) and this file; remove the blocks marked
+`tests/dev-chapters-browser.mjs`, `docs/qa/dev-chapters/` (and `docs/qa/dev-chapters-rebuild/`, `docs/qa/dev-chapters-escalation/`, `docs/qa/dev-scenes-creature/`) and this file; remove the blocks marked
 `TEMPORARY` in `dist/game.js`, `dist/index.html`, `dist/style.css`, `dist/chapter2.js` (a read-only
 accessor) and `tests/verify.mjs`. Or simply never merge this branch.
 

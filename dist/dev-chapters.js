@@ -29,12 +29,15 @@
 //   * jump: the QA/Continue checkpoint initializer for that moment (the same jumpTo() Continue uses: Start
 //     over's reset, then the chapter's own jump(), which sets the story flags of every earlier beat in that
 //     chapter), then the earlier chapters' history from HISTORY (what Chapters One and Two leave behind, as
-//     at the chapter's start) and the Continue save a player has by then (`save`: the last checkpoint passed);
+//     at the chapter's start), then SCENE_HISTORY[scene]: what a natural playthrough had at that very moment that
+//     the jump does not set (the story flags of the earlier beats of Chapters One and Two, who has joined you, the
+//     flashlight, the Continue save), GENERATED like HISTORY (`ONLY=dev-record`), never written by hand; scenes
+//     the natural run does not reach exactly get the Continue save a player has by then (`save`);
 //   * warp: the prologue's own mid-ride warp (as its alex-departure jump), only before anyone has left;
 //   * ride: that warp, then the game itself rides on (W held, muted, nothing drawn) to just before the
 //     moment, through the departures in between, as a player would;
 //   * approach: the last stretch of the street to the lookout (the game rides the rest when you do).
-import {HISTORY,TIMESTAMPS} from './dev-chapter-history.js';
+import {HISTORY,TIMESTAMPS,SCENE_HISTORY} from './dev-chapter-history.js';
 export const DEV_CHAPTERS=[{n:0,label:'Prologue',phase:null},{n:1,label:'Chapter One',phase:'leave'},{n:2,label:'Chapter Two',phase:'c2-black'},{n:3,label:'Chapter Three',phase:'c3-black'}];
 // The scenes of each chapter, in story order. The first of each list is the chapter's own start.
 export const DEV_SCENES={
@@ -96,11 +99,11 @@ export function createDevChapters(g){
   if(!done())throw new Error('dev start: the hand-over did not happen');return t;}
  const phase=()=>K.S.phase,G=()=>g.game();
  // What the earlier beats left behind, from the natural playthrough (see the header).
- function applyHistory(n,{save=true}={}){const H=HISTORY[n];if(!H)return;
+ function applyHistory(n,{save=true,foot=true}={}){const H=HISTORY[n];if(!H)return;
   const put=(obj,vals,clock,stamps)=>{if(!obj||!vals)return;for(const [k,v] of Object.entries(vals)){if(v===null)delete obj[k];else obj[k]=JSON.parse(JSON.stringify(v));}
    for(const [k,off] of Object.entries(stamps||{}))obj[k]=off===null?undefined:(obj[clock]??0)-off;};
   put(K.S,H.chapter1,'t',H.chapter1Clock);put(chapter2.C,H.chapter2,'t',H.chapter2Clock);
-  if(H.foot){g.foot.owned=H.foot.owned;g.foot.on=H.foot.on;}
+  if(foot&&H.foot){g.foot.owned=H.foot.owned;g.foot.on=H.foot.on;}
   if(H.lens!=null&&K.lens)K.lens.emissiveIntensity=H.lens;
   if(save&&H.save)K.checkpointTo(H.save,K.CHECKPOINT[H.save]);}
  function start(n,{history=true}={}){
@@ -117,12 +120,15 @@ export function createDevChapters(g){
   return phase();}
  // ---- a scene (DEV_SCENES): see the header for how each kind is made canonical ---------------------------
  const SAVE_KEY='lastlight.chapter1';
- function startScene(n,id){const sc=(DEV_SCENES[n]||[]).find(x=>x.id===id);if(!sc)throw new Error('dev scene: no scene '+n+'/'+id);
+ function applySceneHistory(key){const H=SCENE_HISTORY?.[key];if(!H)return false;const merge=(o,vals)=>{if(!o||!vals)return;for(const [k,v] of Object.entries(vals)){if(v===null)delete o[k];else o[k]=JSON.parse(JSON.stringify(v));}};
+  if(H.chapter1Flags){K.S.flags||={};merge(K.S.flags,H.chapter1Flags);}merge(K.S,H.chapter1);if(H.chapter2Flags){chapter2.C.flags||={};merge(chapter2.C.flags,H.chapter2Flags);}
+  if(H.foot){g.foot.owned=H.foot.owned;g.foot.on=H.foot.on;}if(H.save)K.checkpointTo(H.save,K.CHECKPOINT[H.save]);return true;}
+ function startScene(n,id,{sceneHistory=true}={}){const sc=(DEV_SCENES[n]||[]).find(x=>x.id===id);if(!sc)throw new Error('dev scene: no scene '+n+'/'+id);
   if(sc.chapter!=null)return start(sc.chapter);
   if(sc.jump){clear({restart:false});
    // (the save a player has by then: the jump's own checkpoints, if it reaches any, come after it)
    if(sc.save)K.checkpointTo(sc.save,K.CHECKPOINT[sc.save]);
-   g.jumpTo(sc.jump);if(sc.act)chapter.act(sc.act);if(n>=2)applyHistory(n,{save:false});return phase();}
+   g.jumpTo(sc.jump);if(sc.act)chapter.act(sc.act);if(n>=2)applyHistory(n,{save:false,foot:false});if(sceneHistory)applySceneHistory(n+'/'+id);return phase();}
   clear();// (Start over: a new game, on the street)
   if(sc.warp!=null)g.prologueAt(sc.warp);
   else if(sc.ride!=null){g.prologueAt(528);g.press('KeyW');try{runUntil(()=>G().distance>=sc.ride,120);}finally{g.release('KeyW');}}
