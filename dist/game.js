@@ -565,7 +565,9 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  if(mem){scene.fog.color.lerp(_c1.set(0xe1bd9e),.22);scene.fog.density*=.88;hemi.color.lerp(_c1.set(0xf1e4ce),.18);sunlight.color.lerp(_c1.set(0xffdeb0),.2);renderer.toneMappingExposure+=.025;}
  // Chapter Three: under the trees on the old road the night closes in; inside the storm drain there is no
  // light at all past its first few meters but what you carry (a faint blue at the mouth, then nothing).
- if(n1){const cv=zoneState.cave,sh=chapter.shade||0;if(cv>0||sh>0){hemi.intensity*=(1-.86*cv)*(1-.42*sh);hemi.groundColor.lerp(_c1.set(0x0b0c10),Math.max(cv,sh*.5));sunlight.intensity*=1-cv;
+ // (how far into the drain you are, from where you are this frame: right after a jump or a Start over the culling's
+ // own record of it is still the last frame's)
+ if(n1){const pp=state==='c1-walk'?{x:wx,z:wz}:{x:roam.x,z:roam.z},Lz=nav.locate(pp.x,pp.z),cv=Lz?.street==='drain'?smooth((Lz.s+1.2)/13):0,sh=chapter.shade||0;if(cv>0||sh>0){hemi.intensity*=(1-.86*cv)*(1-.42*sh);hemi.groundColor.lerp(_c1.set(0x0b0c10),Math.max(cv,sh*.5));sunlight.intensity*=1-cv;
   scene.fog.color.lerp(_c1.set(0x040506),cv*.92).lerp(_c2.set(0x161a24),sh*.5*(1-cv));scene.fog.density=scene.fog.density*(1-cv)+.021*cv+.0045*sh*(1-cv);renderer.toneMappingExposure+=.32*cv;}}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
