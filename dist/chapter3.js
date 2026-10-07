@@ -50,7 +50,7 @@ export const LABEL3={'chapter3-start':'Where he turned, later','c3-alex-house':'
  'c3-road-day':'The end of Briarwood','night-start':'That night','c3-road-night':'The old road','c3-tunnel-entrance':'The outfall','c3-tunnel-deep':'Inside','c3-old-bike':'The bike, down there',
  'c3-alex-lure':'Down the tunnel','c3-creature-reveal':'The junction','c3-creature-chase':'Run','c3-road-escape':'The old road, back','chapter3-end':'Briarwood, after',
  'c3-figure':'Down the tunnel','c3-voice':'Farther in','c3-escape':'Run'};
-const DAY={start:'9:16',house:'9:24',room:'9:31',street:'9:58',road:'10:21',leave:'10:41'},NIGHT={home:'11:12',corner:'11:20',road:'11:26',outfall:'11:31',inside:'11:34',bike:'11:41',lure:'11:45',voice:'11:47',creature:'11:47',run:'11:48',safe:'11:54'};
+const DAY={start:'9:16',house:'9:24',room:'9:29',street:'9:41',road:'9:55',leave:'10:12'},NIGHT={home:'11:12',corner:'11:20',road:'11:26',outfall:'11:31',inside:'11:34',bike:'11:41',lure:'11:45',voice:'11:47',creature:'11:47',run:'11:48',safe:'11:54'};
 // What the recordings say (captions; the audio is in audio.js, timed to match).
 const RECS=[
  {date:'08/07',time:'2:14P',len:'0:08',lines:[{wait:.4},{who:'RECORDING',text:'[Jamie and Sam, cracking up]',time:3.6},{who:'SAM, ON THE PHONE',text:'“Dude, do it again—”',time:2.2},{wait:2}],react:[{who:'SAM',text:'“Oh my God. I forgot about that.”',time:2.4,by:'sam'}]},
@@ -259,7 +259,7 @@ export function createChapter3(o,k,ch2){
   const scr=new THREE.Mesh(new THREE.PlaneGeometry(.038,.034),new THREE.MeshBasicMaterial({color:screen?0xffffff:0x6a8aa8,map:screen?.t||null}));scr.rotation.x=-Math.PI/2;scr.position.set(0,.0095,-.05);scr.name='alex-phone-screen';lid.add(scr);
   const p=RW(R.phone.x,R.phone.z,.74+.002);phone.position.set(p.x,p.y,p.z);phone.rotation.y=-(AH.worldRot)+.35;}
  function drawScreen(){if(!screen)return;const {g,t}=screen;g.fillStyle='#b7c8b4';g.fillRect(0,0,128,112);g.fillStyle='#24303a';g.fillRect(0,0,128,16);g.fillStyle='#d8e4d4';g.font='bold 10px Arial';g.fillText('VOICE RECORDER',6,12);
-  RECS.forEach((r,i)=>{const y=20+i*17,sel=i===C.recSel;if(sel){g.fillStyle='#24303a';g.fillRect(2,y,124,16);}g.fillStyle=sel?'#d8e4d4':'#24303a';g.font='9px Arial';g.fillText(`Rec ${r.date}  ${r.time}`,6,y+11);g.fillText(r.len,100,y+11);if(C.recPlaying===i){g.fillText('▶',90,y+11);}});t.needsUpdate=true;}
+  RECS.map((r,i)=>[r,i]).reverse().forEach(([r,i],row)=>{const y=20+row*17,sel=i===C.recSel;if(sel){g.fillStyle='#24303a';g.fillRect(2,y,124,16);}g.fillStyle=sel?'#d8e4d4':'#24303a';g.font='9px Arial';g.fillText(`Rec ${r.date}  ${r.time}`,6,y+11);g.fillText(r.len,100,y+11);if(C.recPlaying===i){g.fillText('▶',90,y+11);}});t.needsUpdate=true;}
  // ---- state ------------------------------------------------------------------------------------------------
  const C={};
  // Everything transient goes (Start over, a jump, a replay): bells heard, voices, every timer and wait.
@@ -365,76 +365,71 @@ export function createChapter3(o,k,ch2){
  function begin(){fresh();go('c3-black');C.cardT=0;o.fade(1);dayWorld();S.lookTarget=null;S.jamieAim=null;S.samAim=null;objective('');T?.reset();
   for(const c of [jamie,sam]){c.lookAt=null;c.lookPlayer=false;}}
  function opening(){go('d3-corner');date(DAY.start,'AM');C.fadeIn=0;
-  talk([{wait:2.6},{who:'JAMIE',text:'“If Alex heard it before he left…”',from:jamie,time:2.6,gap:.9},{who:'SAM',text:'“What?”',from:sam,time:1.4,gap:1},
-   {who:'JAMIE',text:'“Maybe yesterday wasn’t the first time.”',from:jamie,time:2.8,gap:1.6},
-   {who:'SAM',text:'“Like… he heard it other nights?”',from:sam,time:2.4},{who:'JAMIE',text:'“I don’t know.”',from:jamie,time:1.6,gap:.8},
-   {who:'YOU',text:'“His mom would know.”',time:2},{who:'SAM',text:'“We can’t just go bug his mom right now.”',from:sam,time:2.6},
-   {who:'JAMIE',text:'“She knows us. Come on.”',from:jamie,time:2}],
+  talk([{wait:1.6},{who:'JAMIE',text:'“If Alex heard it before he left…”',from:jamie,time:2.4,gap:.7},{who:'SAM',text:'“What?”',from:sam,time:1.2,gap:.7},
+   {who:'JAMIE',text:'“Maybe yesterday wasn’t the first time.”',from:jamie,time:2.6,gap:.9},
+   {who:'YOU',text:'“His mom would know.”',time:1.8,gap:.5},{who:'JAMIE',text:'“She knows us. Come on.”',from:jamie,time:1.8}],
    {then:()=>{go('d3-street');objective('Talk to Alex’s mom.','Down Briarwood, around the bend past the creek.');checkpoint('chapter3-start');follow(true);}});}
  const momSpot=()=>mom.pos;
  function momTalk(){if(C.flags.momTalk)return;C.flags.momTalk=true;go('d3-mom');objective('');const p=me();mom.gest(null);mom.faceTo(p.x,p.z);mom.lookAt=camera.position;
   for(const c of [jamie,sam])c.lookAt=mom.pos;
-  talk([{who:'ALEX’S MOM',text:'“Hi, boys.”',from:mom,time:1.8,gap:.9},{who:'JAMIE',text:'“Hi.”',from:jamie,time:1.2,gap:1.2},
-   {who:'ALEX’S MOM',text:'“I keep thinking he’s going to come around that corner.”',from:mom,time:3.4,gap:1.8,act:()=>{mom.lookAt=side(100,2);}},
-   {who:'JAMIE',text:'“Did Alex ever say anything about… hearing stuff? At night?”',from:jamie,time:3.4,act:()=>{mom.lookAt=camera.position;}},
-   {who:'ALEX’S MOM',text:'“Hearing what?”',from:mom,time:1.6},{who:'YOU',text:'“Like a bike bell.”',time:1.8,gap:2},
-   {who:'ALEX’S MOM',text:'“…He asked me that.”',from:mom,time:2.2,gap:.6,act:()=>{T?.set(.08,{why:'his mom: he asked me that'});}},
-   {who:'ALEX’S MOM',text:'“He kept asking if I heard a bike bell outside. At night.”',from:mom,time:3.4},
-   {who:'ALEX’S MOM',text:'“Thursday, I think. And again Friday. Maybe Saturday.”',from:mom,time:3.2},
-   {who:'ALEX’S MOM',text:'“I figured it was one of the neighbor kids riding around late. I told him to go to sleep.”',from:mom,time:4.6,gap:1.2,act:()=>{jamie.lookAt=sam.pos;sam.lookAt=jamie.pos;}},
-   {who:'ALEX’S MOM',text:'“Why?”',from:mom,time:1.4,gap:1.4},{who:'JAMIE',text:'“…No reason.”',from:jamie,time:1.8,gap:1.4,act:()=>{for(const c of [jamie,sam])c.lookAt=mom.pos;}},
-   {who:'ALEX’S MOM',text:'“You can go up to his room, if you want. I keep going in there.”',from:mom,time:3.6,act:()=>{mom.lookAt=AH.porchLight?RW(AH.doorX,AH.front):null;}},
-   {who:'ALEX’S MOM',text:'“Just don’t move anything. The detective might come back.”',from:mom,time:3.2,act:()=>{mom.lookAt=camera.position;}}],
+  talk([{who:'ALEX’S MOM',text:'“Hi, boys.”',from:mom,time:1.6,gap:.7},
+   {who:'ALEX’S MOM',text:'“I keep thinking he’s going to come around that corner.”',from:mom,time:3.2,gap:1.2,act:()=>{mom.lookAt=side(100,2);}},
+   {who:'JAMIE',text:'“Did Alex ever say anything about hearing stuff? At night? Like a bike bell?”',from:jamie,time:3.4,act:()=>{mom.lookAt=camera.position;}},
+   {who:'ALEX’S MOM',text:'“He kept asking if I heard a bike bell outside. At night.”',from:mom,time:3.4,gap:.5,act:()=>{T?.set(.08,{why:'his mom: he asked me that'});}},
+   {who:'ALEX’S MOM',text:'“Thursday, Friday. Maybe Saturday. I told him it was the neighbor kids, and to go to sleep.”',from:mom,time:4.4,gap:1,act:()=>{jamie.lookAt=sam.pos;sam.lookAt=jamie.pos;}},
+   {who:'ALEX’S MOM',text:'“Why?”',from:mom,time:1.2,gap:1.1},{who:'JAMIE',text:'“…No reason.”',from:jamie,time:1.6,gap:.8,act:()=>{for(const c of [jamie,sam])c.lookAt=mom.pos;}},
+   {who:'ALEX’S MOM',text:'“Go on up to his room, if you want. Just don’t move anything.”',from:mom,time:3.2,act:()=>{mom.lookAt=AH.porchLight?RW(AH.doorX,AH.front):camera.position;}}],
    {then:()=>{T?.ease(0,{fall:.05});go('d3-mom');C.flags.invited=true;objective('Go up to Alex’s room.','The front door.');world.doors.alex?.set(.55);mom.gest('fold');}});}
  // Into the house (a short fade) and up to his room; out again the same way.
  function toRoom(){if(C.fadeOut>=0)return;C.fadeOut=0;C.after=()=>{enterRoom();C.fadeIn=0;};}
  function enterRoom(){roomOn(true);go('d3-room');date(DAY.room,'AM');checkpoint('alex-bedroom');objective('Look around Alex’s room.');mom.show(false);world.doors.alex?.set(0);
   const e=RW(R.enter.x,R.enter.z),c0=RW((R.x0+R.x1)/2,(R.z0+R.z1)/2),r=o.roam;o.placePlayer({x:e.x,z:e.z,a:headingTo(e.x,e.z,c0.x,c0.z),mode:'walk',bike:{x:r.x,z:r.z,a:r.a}});
   const jq=RW(R.standJamie.x,R.standJamie.z),sq=RW(R.standSam.x,R.standSam.z);putFoot(jamie,jq,headingTo(jq.x,jq.z,c0.x,c0.z));putFoot(sam,sq,headingTo(sq.x,sq.z,c0.x,c0.z));follow(false);
-  jamie.py=null;sam.py=null;phone.visible=true;C.recSel=0;C.recPlaying=-1;drawScreen();C.roomT=0;
-  talk([{wait:3.2},{who:'SAM',text:'“It’s weird being in here without him.”',from:sam,time:2.8,gap:1}]);}
- function phoneNoticed(){if(C.flags.phoneSeen)return;C.flags.phoneSeen=true;const ph=phone.position;jamie.lookAt=ph;sam.lookAt=ph;
-  talk([{who:'JAMIE',text:'“His phone.”',from:jamie,time:1.6},{who:'SAM',text:'“The cops didn’t take it?”',from:sam,time:2},
-   {who:'JAMIE',text:'“His mom said they went through it and gave it back.”',from:jamie,time:3},
-   {who:'SAM',text:'“His helmet’s still here.”',from:sam,time:1.8,act:()=>{const hp=RW(R.helmet.x,R.helmet.z,R.helmet.y+.08);sam.lookAt=hp;jamie.lookAt=hp;}},{who:'JAMIE',text:'“He never rides without it. His mom makes him.”',from:jamie,time:2.6,gap:1,act:()=>{later(2.4,()=>{jamie.lookAt=phone.position;sam.lookAt=phone.position;});}},{who:'JAMIE',text:'“Did they listen to his recordings?”',from:jamie,time:2.4},
-   {who:'YOU',text:'“What recordings?”',time:1.8},{who:'JAMIE',text:'“He records dumb stuff on it. Noises. He made a fart my ringtone for a week.”',from:jamie,time:4}],
-   {then:()=>{objective('Listen to Alex’s recordings.');C.flags.phoneReady=true;}});}
- function startPhone(){if(C.flags.phone)return;C.flags.phone=true;go('d3-phone');checkpoint('phone-recording');objective('');const ph=phone.position,p=me(),a=headingTo(p.x,p.z,ph.x,ph.z),at={x:ph.x-Math.sin(a)*.4,z:ph.z+Math.cos(a)*.4};
+  jamie.py=null;sam.py=null;phone.visible=true;C.recSel=RECS.length-1;C.recPlaying=-1;drawScreen();C.roomT=0;
+  talk([{wait:1.2},{who:'SAM',text:'“It’s weird being in here without him.”',from:sam,time:2.6,gap:.6}]);}
+ function phoneNoticed(){if(C.flags.phoneSeen)return;C.flags.phoneSeen=true;const ph=phone.position;jamie.lookAt=ph;sam.lookAt=ph;C.flags.phoneReady=true;objective('Listen to Alex’s recordings.');
+  talk([{who:'JAMIE',text:'“His phone. The cops went through it and gave it back.”',from:jamie,time:2.8,gap:.5},
+   {who:'JAMIE',text:'“He records stuff on it. Noises. Check the last one.”',from:jamie,time:2.6}]);}
+ // His helmet on the desk: when you look at it (or, if you never do, once the recording has been heard).
+ function helmetLines(){if(C.flags.helmetLine)return;C.flags.helmetLine=true;const hp=RW(R.helmet.x,R.helmet.z,R.helmet.y+.08);sam.lookAt=hp;jamie.lookAt=hp;
+  talk([{who:'SAM',text:'“His helmet’s still here.”',from:sam,time:1.8},{who:'JAMIE',text:'“He never rides without it. His mom makes him.”',from:jamie,time:2.6,act:()=>{later(2.4,()=>{if(jamie.lookAt===hp)jamie.lookAt=null;if(sam.lookAt===hp)sam.lookAt=null;});}}]);}
+ function startPhone(){if(C.flags.phone)return;C.flags.phone=true;go('d3-phone');checkpoint('phone-recording');objective('');C.recSel=RECS.length-1;drawScreen();const ph=phone.position,p=me(),a=headingTo(p.x,p.z,ph.x,ph.z),at={x:ph.x-Math.sin(a)*.4,z:ph.z+Math.cos(a)*.4};
   pose(at,{y:nav.groundY(at.x,at.z)+1.12,pitch:-.74,look:ph});jamie.lookAt=ph;sam.lookAt=ph;}
  function playRec(){if(C.recPlaying>=0)return;const i=C.recSel,R2=RECS[i];if(!R2)return;C.recPlaying=i;drawScreen();const dur=o.audio()?.recording?.(i,phone.position)||[8.6,9,8.2,9.4,23.5][i];C.recEnd=C.t+dur;C.heard.push(i);
   if(i===4){T?.set(.12,{rise:.05,why:'the last recording'});}
   talk(R2.lines.map(l=>l.mark?{...l,act:()=>{if(l.mark==='bell1'){T?.set(.24,{rise:.08,why:'recorded bell'});}else if(l.mark==='bell2')T?.set(.29,{rise:.08,why:'recorded bell again'});else T?.set(.31,{rise:.06,why:'“there it is again”'});}}:l),{interrupt:true});}
- function recDone(){const i=C.recPlaying;C.recPlaying=-1;C.recSel=Math.min(RECS.length-1,i+1);drawScreen();const R2=RECS[i];
-  if(i<4){if(R2.react.length)talk(R2.react.map(l=>({...l,from:l.by==='sam'?sam:jamie})));if(i===3)C.recSel=4;drawScreen();return;}
-  C.flags.recorded=true;T?.ease(.14,{fall:.02,hold:6});
-  talk([{wait:2.2},{who:'SAM',text:'“That’s a bike bell.”',from:sam,time:2},{who:'JAMIE',text:'“That’s the same one. That’s exactly what we heard.”',from:jamie,time:3},
-   {who:'YOU',text:'“‘There it is again.’”',time:2.4,gap:1.2},{who:'JAMIE',text:'“He’d heard it before. Like, a bunch of times.”',from:jamie,time:3,gap:1.6},
-   {who:'SAM',text:'“Where was he when he recorded that?”',from:sam,time:2.6,gap:.8},
-   {who:'JAMIE',text:'“…Right there.”',from:jamie,time:1.8,act:()=>{const w=RW(R.sideWindow.glass.x,R.sideWindow.glass.z,1.4);jamie.lookAt=w;sam.lookAt=w;}}],
-   {then:()=>{unpose();go('d3-window');objective('Look out his window.');}});}
- function lookOut(){if(C.flags.window)return;C.flags.window=true;const st=RW(R.sideWindow.x,R.sideWindow.z),lk=RW(R.sideWindow.look.x,R.sideWindow.look.z);lk.y=nav.groundY(st.x,st.z)+.6;
-  pose(st,{y:nav.groundY(st.x,st.z)+1.42,pitch:-.16,look:lk});
-  const creek=side(100,26);
-  talk([{wait:1.6},{who:'JAMIE',text:'“That’s the creek. Behind the trees.”',from:jamie,time:2.6,act:()=>{jamie.lookAt=creek;}},{who:'YOU',text:'“Where his bike was.”',time:2.2,gap:1},
-   {who:'SAM',text:'“So that’s where it was coming from.”',from:sam,time:2.6,gap:2.2},{who:'JAMIE',text:'“Every night. And he just… listened to it.”',from:jamie,time:3.2,gap:1.8},
-   {who:'SAM',text:'“Can we go? I don’t like being in here.”',from:sam,time:2.6},{who:'JAMIE',text:'“Somebody else on his street had to hear it.”',from:jamie,time:2.8}],
-   {then:()=>{unpose();objective('Ask the neighbors.','His street. Somebody else had to hear it.');C.flags.canLeave=true;}});}
+ function recDone(){const i=C.recPlaying;C.recPlaying=-1;const R2=RECS[i];
+  // (then the next older one not yet heard, if you want it)
+  let n=-1;for(let k2=RECS.length-1;k2>=0;k2--)if(!C.heard.includes(k2)){n=k2;break;}C.recSel=n;drawScreen();
+  if(i<RECS.length-1){if(R2.react.length)talk(R2.react.map(l=>({...l,from:l.by==='sam'?sam:jamie})));return;}
+  // the one that matters: you put the phone down while they talk
+  C.flags.recorded=true;T?.ease(.14,{fall:.02,hold:6});unpose();go('d3-window');C.flags.canLeave=true;
+  talk([{wait:1.2},{who:'SAM',text:'“That’s a bike bell.”',from:sam,time:1.8},{who:'JAMIE',text:'“That’s the same one. That’s exactly what we heard.”',from:jamie,time:2.8,gap:.8},
+   {who:'YOU',text:'“‘There it is again.’ He’d heard it before.”',time:2.6,gap:.9},
+   {who:'JAMIE',text:'“He recorded it right there. At his window.”',from:jamie,time:2.6,act:()=>{const w=RW(R.sideWindow.glass.x,R.sideWindow.glass.z,1.4);jamie.lookAt=w;sam.lookAt=w;}}],
+   {then:()=>{objective('Look out his window.');}});}
+ function lookOut(){if(C.flags.window)return;C.flags.window=true;const creek=side(100,26);
+  talk([{wait:.6},{who:'JAMIE',text:'“That’s the creek. Behind the trees.”',from:jamie,time:2.4,act:()=>{jamie.lookAt=creek;}},{who:'YOU',text:'“Where his bike was.”',time:2,gap:.8},
+   {who:'SAM',text:'“So that’s where it was coming from. Every night.”',from:sam,time:2.8,gap:1},
+   {who:'JAMIE',text:'“Somebody else on his street had to hear it. Mr. Okafor’s up all night.”',from:jamie,time:3.4}],
+   {then:()=>{jamie.lookAt=null;sam.lookAt=null;okaforNext();C.flags.canLeave=true;}});}
+ // Who on his street would have heard it: the man next door, who is up all night.
+ function okaforNext(){C.flags.okaforHint=true;objective('Ask Mr. Okafor.','Next door to Alex’s. He’s up all night.');}
  function leaveRoom(){if(C.fadeOut>=0)return;C.fadeOut=0;C.after=()=>{exitRoom();C.fadeIn=0;};}
  function exitRoom(){roomOn(false);phone.visible=false;if(C.recPlaying>=0){C.recPlaying=-1;o.audio()?.stopRecording?.();}go('d3-neighbors');date(DAY.street,'AM');checkpoint('neighbor-investigation');
   const out=AH.toWorld(AH.doorX,AH.stepFront+1.3),street=side(127,0),a=headingTo(out.x,out.z,street.x,street.z),r=o.roam;o.placePlayer({x:out.x,z:out.z,a,mode:'walk',bike:{x:r.x,z:r.z,a:r.a}});
   const j=AH.toWorld(AH.doorX-1.4,AH.stepFront+1.1),s2=AH.toWorld(AH.doorX+1.3,AH.stepFront+.9);putFoot(jamie,j,a);putFoot(sam,s2,a);follow(true);
-  objective('Ask the neighbors.','His street. Somebody else had to hear it.');}
+  if(!C.flags.okaforHint)talk([{wait:.8},{who:'JAMIE',text:'“Somebody else on his street had to hear it. Mr. Okafor’s up all night.”',from:jamie,time:3.4}]);okaforNext();}
  // ---- asking around ---------------------------------------------------------------------------------------------
- const SAY={huang:[['MR. HUANG','“Morning, boys. Any news?”'],['JAMIE','“No.”'],['YOU','“Did you ever hear a bike bell? At night, the last few nights?”'],['MR. HUANG','“A bell? No. I’m asleep by ten. Earplugs.”'],['MR. HUANG','“I hope they find him. I really do.”']],
-  delaney:[['MRS. DELANEY','“You boys shouldn’t be out riding around today.”'],['YOU','“Did you hear a bike bell at night? Like, late?”'],['MRS. DELANEY','“There’s always somebody out there late. Teenagers, cutting through by the creek.”'],['MRS. DELANEY','“I’ve called the city about it twice.”'],['SAM','“Okay. Thanks.”']],
-  pruitt:[['MR. PRUITT','“Hey, guys.”'],['JAMIE','“Did you hear anything Saturday night? Like a bike bell?”'],['MR. PRUITT','“A bell, no. The dogs were going nuts around midnight, though. Every dog on the street.”'],['MR. PRUITT','“Probably a raccoon.”']],
-  okafor:[['MR. OKAFOR','“You’re Alex’s friends.”'],['YOU','“Did you ever hear a bike bell at night?”'],['MR. OKAFOR','“…Yes. A few nights this week. Late. Down the street, toward the end.”'],['MR. OKAFOR','“I figured it was some kid out on the old drainage road.”'],['JAMIE','“The what?”'],
-   ['MR. OKAFOR','“End of Briarwood, past the last house. There’s a gate. An old city road goes down from there.”','point'],['MR. OKAFOR','“Down to the big storm drain in the woods. Your creek ends up down there. All of it does.”'],['MR. OKAFOR','“Nobody’s used it in years. You boys stay off it.”']]};
+ const SAY={huang:[['MR. HUANG','“Morning, boys. I hope they find him. I really do.”']],
+  delaney:[['MRS. DELANEY','“You boys shouldn’t be out riding around today.”']],
+  pruitt:[['MR. PRUITT','“The dogs were going nuts Saturday night. Every dog on the street.”']],
+  okafor:[['MR. OKAFOR','“You’re Alex’s friends.”'],['YOU','“Did you ever hear a bike bell at night?”'],['MR. OKAFOR','“…Yes. A few nights this week. Late. Down toward the end of the street.”'],
+   ['MR. OKAFOR','“End of Briarwood, past the last house, there’s a gate. An old city road goes down from there to the big storm drain.”','point'],['MR. OKAFOR','“Your creek ends up down there. All of it does. You boys stay off it.”']]};
  function askNeighbor(key){if(C.talked.has(key)||busy())return;C.talked.add(key);const a=N[key],p=me();a.gest(null);a.faceTo(p.x,p.z);a.lookAt=camera.position;for(const c of [jamie,sam])c.lookAt=a.pos;
   const by={JAMIE:jamie,SAM:sam,YOU:null};
   talk(SAY[key].map(([who,text,g])=>({who,text,from:by[who]===undefined?a:by[who],act:g==='point'?()=>{a.gest('point',side(250,0));}:null,gap:.5})),{range:9,from:a,then:()=>{a.lookAt=null;a.gest(NSPOT[key].gest);for(const c of [jamie,sam])c.lookAt=null;
-   if(key==='okafor'){C.flags.okafor=true;go('d3-road');objective('Find the old service road.','The end of Briarwood, past the last house.');}
-   else if(!C.flags.okafor&&C.talked.size>=2&&!C.flags.nudgeOkafor){C.flags.nudgeOkafor=true;talk([{wait:1.2},{who:'JAMIE',text:'“What about Mr. Okafor? Next door. He’s always up late.”',from:jamie,time:3}]);objective('Ask the neighbors.','Mr. Okafor, next door to Alex.');}}});}
+   if(key==='okafor'){C.flags.okafor=true;go('d3-road');objective('Find the old service road.','The end of Briarwood, past the last house.');}}});}
  // ---- the end of Briarwood, by day -----------------------------------------------------------------------------
  function roadDay(){if(C.flags.roadDay)return;C.flags.roadDay=true;go('d3-tracks');checkpoint('c3-road-day');date(DAY.road,'AM');objective('');
   talk([{who:'JAMIE',text:'“There.”',from:jamie,time:1.2,gap:.8},{who:'SAM',text:'“That’s not a road. That’s a gate into the woods.”',from:sam,time:2.6,gap:1},
@@ -446,7 +441,6 @@ export function createChapter3(o,k,ch2){
   talk([{wait:.6},{who:'SAM',text:'“Okay. That’s far enough.”',from:sam,time:2},{who:'JAMIE',text:'“It just keeps going. Down into the woods.”',from:jamie,time:2.6,gap:1.4},
    {who:'JAMIE',text:'“We have to come back tonight.”',from:jamie,time:2.2},{who:'SAM',text:'“No.”',from:sam,time:1.2,gap:.8},
    {who:'JAMIE',text:'“He heard it at night. We heard it at night. Whatever it is, it’s not out here in the daytime.”',from:jamie,time:4},
-   {who:'SAM',text:'“There are cops everywhere today. Somebody sees us, we’re dead.”',from:sam,time:3},{who:'JAMIE',text:'“That’s why. Tonight nobody’s looking.”',from:jamie,time:2.6,gap:1.2},
    {who:'SAM',text:'“Alex is missing. Like, actually missing. And you want to come back here in the dark?”',from:sam,time:4.2,gap:1.2},
    {who:'JAMIE',text:'“You don’t have to come.”',from:jamie,time:1.8,gap:2.6},{who:'SAM',text:'“…If anything happens, we leave. Right away. I’m serious.”',from:sam,time:3.4},
    {who:'JAMIE',text:'“Eleven. The corner. Bring a flashlight.”',from:jamie,time:2.6}],
@@ -782,12 +776,11 @@ export function createChapter3(o,k,ch2){
   if(C.fadeOut>=0){C.fadeOut+=dt;o.fade(smooth(C.fadeOut/.7));if(C.fadeOut>=.9){C.fadeOut=-1;const f=C.after;C.after=null;f?.();}}
   if(ph==='c3-black'){C.cardT+=dt;if(C.cardT>.4&&C.cardT<4.4&&!C.cardOn)card(true);if(C.cardT>4.4&&C.cardOn)card(false);if(C.cardT>5.6)opening();}
   else if(ph==='d3-street'){if(L.street==='side'&&L.u>104&&dist(p,momSpot())<22&&!C.flags.atHouse){C.flags.atHouse=true;checkpoint('c3-alex-house');date(DAY.house,'AM');mom.lookAt=camera.position;}
-   if(C.flags.atHouse&&dist(p,momSpot())<6&&!busy()){C.nearMom=(C.nearMom||0)+dt;if(C.nearMom>7)momTalk();}}
-  else if(ph==='d3-room'){C.roomT+=dt;const ph2=phone.position;if(!C.flags.phoneSeen&&!busy()&&(C.roomT>18||(dist(p,ph2)<1.9&&C.roomT>4)||(C.roomT>5&&k.camLooksAt({x:ph2.x,y:ph2.y,z:ph2.z},.92))))phoneNoticed();}
-  else if(ph==='d3-phone'){if(C.recPlaying>=0&&C.t>=C.recEnd&&!busy())recDone();}
+   if(C.flags.atHouse&&dist(p,momSpot())<6&&!busy()){C.nearMom=(C.nearMom||0)+dt;if(C.nearMom>2.5)momTalk();}}// (close to her and she speaks first)
+  else if(ph==='d3-room'){C.roomT+=dt;const ph2=phone.position;if(!C.flags.phoneSeen&&!busy()&&(C.roomT>8||(dist(p,ph2)<1.9&&C.roomT>2)||(C.roomT>2.5&&k.camLooksAt({x:ph2.x,y:ph2.y,z:ph2.z},.92))))phoneNoticed();}
   else if(ph==='d3-window'){const st=RW(R.sideWindow.x,R.sideWindow.z),lk=RW(R.sideWindow.look.x,R.sideWindow.look.z);
    if(!C.flags.window&&dist(p,st)<1.1&&k.camLooksAt({x:lk.x,y:st.y+.2,z:lk.z},.82)){C.winT=(C.winT||0)+dt;if(C.winT>1.1)lookOut();}else C.winT=0;}
-  else if(ph==='d3-neighbors'){if(!C.flags.wander&&!busy()&&L.street==='main'&&dist(p,side(20,0))>60){C.flags.wander=true;talk([{who:'JAMIE',text:'“His street. Somebody on his street.”',from:jamie,time:2.4}]);}}
+  else if(ph==='d3-neighbors'){if(!C.flags.wander&&!busy()&&L.street==='main'&&dist(p,side(20,0))>60){C.flags.wander=true;talk([{who:'JAMIE',text:'“Mr. Okafor. Next door to Alex’s.”',from:jamie,time:2}]);}}
   else if(ph==='d3-road'){if(rs>-16&&rs>-999)roadDay();}
   else if(ph==='d3-tracks'){if(!C.flags.tracks&&!busy()&&(rs>6||(rs>-4&&k.camLooksAt({x:tracksAt.x,y:tracksAt.y,z:tracksAt.z},.9))))tracksSeen();
    if(C.flags.tracks&&rs>100&&!busy())dayStop();
@@ -801,6 +794,9 @@ export function createChapter3(o,k,ch2){
    if(C.flags.canEnter&&!p.riding&&!C.flags.samBack&&sam.mode==='foot'){C.flags.samBack=true;role(sam,'behind');}/* (Sam hangs back behind you, not at your elbow among the bikes) */
    if(C.flags.canEnter&&!p.riding&&!C.flags.jamieToMouth&&jamie.mode==='foot'){C.flags.jamieToMouth=true;C.point={jamie:{...tq(.9,1.45),look:lookAhead(10,0,1.2),max:1.6,face:Dr.at(1).a}};role(jamie,'point');}/* (once he is off his bike: to one side of the mouth, not in the way) */
    if(C.flags.jamieToMouth&&!C.flags.comeOn&&!busy()&&C.t-C.lastEvent>14&&ds<0){C.flags.comeOn=true;talk([{who:'JAMIE',text:'“Come on. Before I change my mind.”',from:jamie,time:2.2}]);}}
+  // (a recording finishing, wherever you are in his room: the last one with the phone in your hands, older ones not)
+  if(C.inRoom&&C.recPlaying>=0&&C.t>=C.recEnd&&!busy())recDone();
+  if(C.inRoom&&C.flags.phoneSeen&&!C.flags.helmetLine&&C.recPlaying<0&&!busy()&&!(C.pose&&!C.pose.release)){const hp=RW(R.helmet.x,R.helmet.z,R.helmet.y+.05);if((dist(p,hp)<3.5&&k.camLooksAt(hp,.9))||C.flags.recorded)helmetLines();}
   if(tunnelPhase())updateTunnel(dt,ds);
   turnBack(ds,p);
   // (whoever has a part to play and nothing running picks it up again; off the bike first, in the drain)
@@ -981,7 +977,8 @@ export function createChapter3(o,k,ch2){
   if(ph==='d3-street')if(mom.visible&&!C.flags.momTalk)out.push({id:'c3-mom',label:'Talk to Alex’s mom',at:mom.pos,face:mom.pos,r:3.6,ride:true,wide:true});
   if(ph==='d3-mom'&&C.flags.invited){const d=AH.toWorld(AH.doorX,AH.stepFront+.5);out.push({id:'c3-in',label:'Go inside',at:{x:d.x,z:d.z},face:{x:d.x,z:d.z},r:3,wide:true});}
   if(ph==='d3-room'&&C.flags.phoneReady)out.push({id:'c3-phone',label:'Listen to his recordings',at:phone.position,face:phone.position,r:2.3,wide:true});
-  if(ph==='d3-phone'&&C.recPlaying<0&&!busy()&&C.recSel<RECS.length&&!C.flags.recorded)out.push({id:'c3-play',label:C.heard.length?'Next recording':'Play',at:phone.position,face:phone.position,r:3,wide:true});
+  if(ph==='d3-phone'&&C.recPlaying<0&&!busy()&&!C.flags.recorded)out.push({id:'c3-play',label:'Play the last one',at:phone.position,face:phone.position,r:3,wide:true});
+  if(C.inRoom&&ph!=='d3-phone'&&C.flags.recorded&&C.recPlaying<0&&C.recSel>=0&&!busy())out.push({id:'c3-play',label:'Play an older recording',at:phone.position,face:phone.position,r:1.8,wide:true});
   if(ph==='d3-window'&&!C.flags.window){const st=RW(R.sideWindow.x,R.sideWindow.z),gl=RW(R.sideWindow.glass.x,R.sideWindow.glass.z);out.push({id:'c3-window',label:'Look outside',at:st,face:gl,r:1.5,wide:true});}
   if(C.inRoom&&C.flags.canLeave){const d=RW(R.door.x,R.door.z);out.push({id:'c3-out',label:'Go back outside',at:d,face:RW(R.door.face.x,R.door.face.z),r:1.4,wide:true});}
   if(ph==='d3-neighbors')for(const [key,a] of Object.entries(N))if(a.visible&&!C.talked.has(key))out.push({id:'c3-ask-'+key,label:'Talk to '+a.name.replace('MR. ','Mr. ').replace('MRS. ','Mrs. ').replace(/(\w)(\w*)$/,(m,x,y)=>x+y.toLowerCase()),at:a.pos,face:a.pos,r:3.4,ride:true,wide:true});
@@ -1016,7 +1013,7 @@ export function createChapter3(o,k,ch2){
    const bp=side(122.6,9.2),ba=k.ha(122.6);const jb=side(124.2,9.6),sb=side(120.8,9.4);
    const parkFoot=(c,q,b)=>{comp.putFoot(c,q.x,q.z,0,{bike:{x:b.x,z:b.z,a:ba,kick:1}});c.follow=null;};
    if(section==='alex-bedroom'||section==='recording'){o.placePlayer({x:bp.x,z:bp.z,a:0,mode:'walk',bike:{x:bp.x+.8,z:bp.z,a:ba}});parkFoot(jamie,side(124,11),jb);parkFoot(sam,side(121,11),sb);
-    C.flags.momTalk=true;C.flags.invited=true;enterRoom();if(section==='recording'){C.flags.phoneSeen=true;C.flags.phoneReady=true;S.queue.length=0;S.line=null;startPhone();C.recSel=4;C.heard=[0,1,2,3];drawScreen();}return;}
+    C.flags.momTalk=true;C.flags.invited=true;enterRoom();if(section==='recording'){C.flags.phoneSeen=true;C.flags.phoneReady=true;S.queue.length=0;S.line=null;startPhone();}return;}
    C.flags.momTalk=true;C.flags.invited=true;mom.show(false);
    if(section==='neighbors'){o.placePlayer({x:bp.x,z:bp.z,a:0,mode:'walk',bike:{x:bp.x+.8,z:bp.z,a:ba}});parkFoot(jamie,side(124,11),jb);parkFoot(sam,side(121,11),sb);exitRoom();return;}
    // the end of Briarwood, by day, riding up to it
