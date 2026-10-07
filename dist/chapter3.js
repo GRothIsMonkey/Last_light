@@ -372,7 +372,7 @@ export function createChapter3(o,k,ch2){
  const momSpot=()=>mom.pos;
  function momTalk(){if(C.flags.momTalk)return;C.flags.momTalk=true;go('d3-mom');objective('');const p=me();mom.gest(null);mom.faceTo(p.x,p.z);mom.lookAt=camera.position;
   for(const c of [jamie,sam])c.lookAt=mom.pos;
-  talk([{who:'ALEX’S MOM',text:'“Hi, boys.”',from:mom,time:1.6,gap:.7},
+  talk([{who:'ALEX’S MOM',text:'“Hi, boys.”',from:mom,time:1.6,gap:.6},{who:'JAMIE',text:'“Hi.”',from:jamie,time:1.1,gap:.9},
    {who:'ALEX’S MOM',text:'“I keep thinking he’s going to come around that corner.”',from:mom,time:3.2,gap:1.2,act:()=>{mom.lookAt=side(100,2);}},
    {who:'JAMIE',text:'“Did Alex ever say anything about hearing stuff? At night? Like a bike bell?”',from:jamie,time:3.4,act:()=>{mom.lookAt=camera.position;}},
    {who:'ALEX’S MOM',text:'“He kept asking if I heard a bike bell outside. At night.”',from:mom,time:3.4,gap:.5,act:()=>{T?.set(.08,{why:'his mom: he asked me that'});}},
@@ -592,19 +592,20 @@ export function createChapter3(o,k,ch2){
  function updateCreatureReveal(dt){const R2=C.crt;if(!R2)return;const w=culW(),cp=camera.position,hp=creature.headPos?.(_crh)||crChest();
   // (seen: its head, out over the lip, in front of you and nothing in between)
   const seen=creature.group.visible&&Dr.sees(cp,culvertAt(-.3,.5),.02)&&Dr.sees(cp,hp,.02)&&k.camLooksAt(hp,.94);
-  if(CRT.state==='emerge'){CRT.t=Math.min(-(w/2+.35),CRT.t+.9*dt);CRT.v=.9;CRT.pose={crouch:.55};if(CRT.t>=-(w/2+.35)-1e-6){CRT.state='reveal';CRT.v=0;R2.t0=C.t;mark('something at the lip of the culvert');}}
+  if(CRT.state==='emerge'){CRT.t=Math.min(-(w/2+.12),CRT.t+.9*dt);CRT.v=.9;CRT.pose={crouch:.55};if(CRT.t>=-(w/2+.12)-1e-6){CRT.state='reveal';CRT.v=0;R2.t0=C.t;mark('something at the lip of the culvert');}}
   if(CRT.state==='reveal'||CRT.state==='creep')if(seen)R2.seenT+=dt;
   if(CRT.state==='reveal'){CRT.v=0;CRT.pose={crouch:1};
    if(R2.seenAt===null){const since=C.t-R2.t0;
     if(R2.seenT>.4){R2.distAtSeen=+Math.hypot(hp.x-cp.x,hp.z-cp.z).toFixed(1);creatureSeen();}
-    else{if(!busy()){if(since>2.5&&R2.nudge===0){R2.nudge=1;talk([{who:'SAM',text:'“Jamie.”',from:sam,time:1}]);}
+    else{const canSee=Dr.sees(cp,culvertAt(-.3,.5),.02);if(!canSee&&!R2.callUp&&since>1.5&&!busy()){R2.callUp=C.t;talk([{who:'JAMIE',text:'“Come here. Look— in the pipe.”',from:jamie,time:2}]);}
+     if(!busy()){if(since>2.5&&R2.nudge===0){R2.nudge=1;talk([{who:'SAM',text:'“Jamie.”',from:sam,time:1}]);}
       else if(since>6&&R2.nudge===1){R2.nudge=2;talk([{who:'SAM',text:'“Jamie. The pipe. Look at the pipe.”',from:sam,time:2.2}]);}
       else if(since>12&&R2.nudge===2){R2.nudge=3;talk([{who:'JAMIE',text:'“Something’s in there.”',from:jamie,time:1.8}]);}
       else if(R2.nudge>=3&&R2.nudge<6&&since>19+(R2.nudge-3)*7){R2.nudge++;talk([{who:'SAM',text:'“The pipe. On the left.”',from:sam,time:1.6}]);}}
      // generous, never silent: never looked at all, after a long while, it comes anyway
      if(since>40){R2.unseenGo=true;creatureSeen();}}}
    else if(C.t-R2.seenAt>1){CRT.state='creep';R2.creepAt=C.t;}}
-  if(CRT.state==='creep'){const goal=-(w/2+.1);CRT.t=Math.min(goal,CRT.t+.5*dt);CRT.v=CRT.t<goal-.01?.5:0;CRT.pose={crouch:.7};if(C.t-R2.seenAt>3.8)creatureDrop();}
+  if(CRT.state==='creep'){const goal=-(w/2-.15);CRT.t=Math.min(goal,CRT.t+.5*dt);CRT.v=CRT.t<goal-.01?.5:0;CRT.pose={crouch:.7};if(C.t-R2.seenAt>3.8)creatureDrop();}
   if(CRT.state==='drop'){CRT.phT+=dt;const u=clamp(CRT.phT/.6,0,1),f=CRT.from,to=CRT.to;CRT.t=f.t+(to.t-f.t)*smooth(u);CRT.y=Math.max(0,f.y*(1-u)+to.y*u+.28*Math.sin(Math.PI*u));CRT.v=2.4;CRT.pose={rear:.25*(1-u)};
    if(u>=1){CRT.y=0;R2.landedAt=C.t;creatureLanded();}}
   if(CRT.state==='turn'){CRT.phT+=dt;const u=smooth(clamp(CRT.phT/.6,0,1));CRT.h=CRT.from.h+Math.PI/2*u;CRT.v=1.4;CRT.pose=null;if(CRT.phT>=.6){CRT.state='chase';CRT.v=2.5;}}}
@@ -659,7 +660,7 @@ export function createChapter3(o,k,ch2){
  function cue(kind){const P2=C.purs;P2.cue++;glance(sam,crChest(),2.4);S.samAim=crChest;later(2.4,()=>{if(S.samAim===crChest)S.samAim=null;});later(.35,()=>glance(jamie,crChest(),1.1));
   const L={far:[{who:'SAM',text:'“It’s coming! IT’S COMING!”',from:sam,time:1.6}],again:[{who:'SAM',text:'“BEHIND US!”',from:sam,time:1.1}],
    side:[{who:'SAM',text:'“It came out of the wall— it’s behind us!”',from:sam,time:2}],near:[{who:'SAM',text:'“It’s RIGHT THERE!”',from:sam,time:1.2}]}[kind];
-  if(L&&(!busy()||kind==='side'||kind==='near'))talk(L,{interrupt:true});}
+  if(L&&(!busy()||kind==='side'||kind==='near')){talk(L,{interrupt:true});return true;}return false;}
  function stumble(){const P2=C.purs;P2.stumbleAt=C.t;C.stumble={c:jamie,at:C.t};const q={x:jamie.px,z:jamie.pz};splashAt(q.x,Dr.floorAt(Math.max(cS(jamie),0),0)+.05,q.z,10,1.2);T?.jolt(1,{hold:12,why:'Jamie goes down'});
   later(.9,()=>glance(jamie,creature.group.visible?crChest():lookAhead(cS(jamie)+10,0,1.2),1));}
  // The gate at the first bend: whoever is through it first waits at it, holding a leaf; you through; he slams it.
@@ -676,10 +677,13 @@ export function createChapter3(o,k,ch2){
  // Out of a hole low in the wall behind them, much closer (it went round, through the side drains).
  function crFromWall(){const P2=C.purs,w=Dr.sizeAt(SIDE.s).w;P2.stage='side';P2.sideAt=C.t;Object.assign(CRT,{...CRT0,state:'side-out',s:SIDE.s,t:-(w/2+.95),y:.05,h:Dr.at(SIDE.s).a+Math.PI/2,v:1.5});creature.show(true);placeCreature();
   const q=Dr.at(SIDE.s,-(w/2-.1)),pos={x:q.x,y:Dr.floor(SIDE.s)+.5,z:q.z};crSound('impact',pos,1);later(.25,()=>crSound('splash',pos,1));later(.5,()=>cue('side'));mark('something in the wall behind them');}
- // Riding away: once it is out of sight at the mouth, it is at the edge of the trees behind them, for anyone who looks back.
- function crToTrees(rs){const P2=C.purs,s=Math.min(Wd.L-2,rs+22),t=Wd.halfW(s)+2.8,q=Wd.at(s,t),c=Wd.at(s,0),y=nav.groundY(q.x,q.z);
-  if(k.camLooksAt({x:q.x,y:y+.7,z:q.z},.5))return;
-  P2.stage='tree';P2.treeAt=C.t;P2.treeS=+s.toFixed(1);CRT.state='tree';CRT.v=0;CRT.road={x:q.x,y,z:q.z};CRT.h=headingTo(q.x,q.z,c.x,c.z);CRT.pose={crouch:1};creature.show(true);placeCreature();}
+ // Riding away and looking back over your shoulder for it (nothing at the mouth to see from here): when you turn
+ // round again it is at the edge of the trees ahead, low, beside the road you are about to ride past. (Placed only
+ // while nobody is looking that way; never on the road; a glimpse anyone who does not look back never has.)
+ function crToTrees(rs){const P2=C.purs,s=Math.max(4,rs-26),cd=new THREE.Vector3();camera.getWorldDirection(cd);const fw=Wd.at(s,0),rt={x:Math.cos(fw.a),z:Math.sin(fw.a)},side=(cd.x*rt.x+cd.z*rt.z)>0?-1:1;
+  const t=side*(Wd.halfW(s)+1.6),q=Wd.at(s,t),c=Wd.at(s,0),y=nav.groundY(q.x,q.z);
+  if(k.camLooksAt({x:q.x,y:y+.7,z:q.z},.4))return;
+  P2.stage='tree';P2.treeAt=C.t;P2.treeS=+s.toFixed(1);CRT.state='tree';CRT.v=0;CRT.road={x:q.x,y,z:q.z};CRT.h=headingTo(q.x,q.z,c.x,c.z);CRT.pose={rear:.5};creature.show(true);placeCreature();}
  function updateChase(dt,rs){const P2=C.purs;if(!P2)return;const p=me(),ps=drainS(p),pv=p.walking?(p.speed||0):0;
   // a look back now and then, at whatever is behind (it, if it is there)
   C.glanceT-=dt;if(C.glanceT<=0&&ps>=0){C.glanceT=1.8+Math.random()*1.8;const c=Math.random()<.5?jamie:sam,cs2=cS(c);if(cs2>0&&C.t>(C.glance[c.key]?.until||0))glance(c,creature.group.visible?crChest():lookAhead(cs2+10,0,1.2),.75);}
@@ -687,7 +691,9 @@ export function createChapter3(o,k,ch2){
   if(P2.stage==='start'&&CRT.state==='chase'){P2.stage='far';P2.farAt=C.t;P2.farWant=clamp(CRT.s-Math.max(ps,0),13,21);}
   // 1: back down the far stretch, about 20 m behind them
   if(P2.stage==='far'){if(CRT.state==='chase')crChase(dt,ps,pv,P2.farWant,8.4);
-   if(seesIt&&gap<27&&P2.farVisAt===null&&C.t-P2.farAt>1.2){P2.farVisAt=C.t;cue('far');}
+   if(seesIt&&gap<27&&P2.farVisAt===null&&C.t-P2.farAt>1.2){P2.farVisAt=C.t;P2.farLine=cue('far');}
+   // (if they were still shouting RUN, Sam's line comes as soon as there is a breath for it)
+   if(P2.farVisAt!==null&&!P2.farLine&&!busy()&&C.t-P2.farVisAt<6){P2.farLine=true;talk([{who:'SAM',text:'“It’s coming! IT’S COMING!”',from:sam,time:1.6}]);}
    if(looked(.9)&&gap<27){P2.farSeenT+=dt;if(P2.farSeenAt===null&&P2.farSeenT>.25){P2.farSeenAt=C.t;P2.farDist=+gap.toFixed(1);mark('it is coming after them');T?.jolt(1,{hold:24,why:'it is coming after them'});}}
    if(P2.farVisAt!==null&&P2.farSeenAt===null&&C.t-P2.farVisAt>2.8&&P2.cue<2)cue('again');
    if(P2.farVisAt!==null&&P2.farSeenAt===null&&C.t-P2.farVisAt>2.2&&P2.hintAt===null)P2.hintAt=C.t;
@@ -727,10 +733,14 @@ export function createChapter3(o,k,ch2){
   // 6: at the mouth it stops, low in the dark just inside, and watches them go (it does not come out)
   if(P2.stage==='mouth'){const goal=ps>=0?Math.max(9,ps+12):9,s0=CRT.s;if(s0>goal){CRT.v=damp(CRT.v,clamp((s0-goal)*1.4,0,9),4,dt);CRT.s=Math.max(goal,s0-CRT.v*dt);CRT.v=dt>0?(s0-CRT.s)/dt:0;}else CRT.v=0;
    CRT.t=damp(CRT.t,-.3,1.2,dt);CRT.h=Dr.at(clamp(CRT.s,0,Dr.len)).a+Math.PI;CRT.pose={crouch:1-smooth(CRT.v/3)};if(CRT.state==='chase'&&CRT.v<.2)CRT.state='watch';
-   if(C.flags.flee&&rs>0&&rs<Wd.L-30&&!crInView())crToTrees(rs);}
+   // (riding away: once you are well off and not looking, it is no longer at the mouth)
+   if(C.flags.flee&&rs>0){const g=creature.group.position,cp=camera.position;if(Math.hypot(g.x-cp.x,g.z-cp.z)>28&&!crInView()){crHide('away');P2.stage='away';P2.awayAt=C.t;}}}
+  if(P2.stage==='away'&&C.flags.flee){const cd=new THREE.Vector3();camera.getWorldDirection(cd);const fw=Wd.at(Math.max(0,rs),0),back=cd.x*Math.sin(fw.a)-cd.z*Math.cos(fw.a);
+   // (looking back for it, over your shoulder: see crToTrees; far enough down the road and that is the last of it)
+   if(rs>Wd.L-150&&rs<Wd.L-25&&back>.05)crToTrees(rs);else if(rs<Wd.L-150)P2.stage='done';}
   if(P2.stage==='tree'){const sp=crChest(),cp=camera.position,d=Math.hypot(sp.x-cp.x,sp.z-cp.z);
    if(P2.treeSeenAt===null&&creature.group.visible&&k.camLooksAt(sp,.9)&&d<45){P2.treeSeenAt=C.t;P2.treeDist=+d.toFixed(1);mark('it, at the edge of the trees behind them');T?.jolt(.9,{hold:8,why:'it, at the edge of the trees'});glance(sam,sp,1.4);}
-   if((rs<P2.treeS-38||(P2.treeSeenAt!==null&&C.t-P2.treeSeenAt>2.5))&&!crInView(.5)){crHide('gone');P2.stage='done';}}
+   if((rs<P2.treeS-6||C.t-P2.treeAt>14)&&!crInView(.5)){crHide('gone');P2.stage='done';}}
   // the side pipe bursts as you pass it (something has moved, somewhere up it)
   if(P2.pipeAt===null&&ps>0&&ps<=141&&/^(side|near)$/.test(P2.stage)){P2.pipeAt=C.t;const SPp=Dr.sidePipe,a=Dr.at(DD.sidePipe.s).a,dx=-Math.cos(a)*DD.sidePipe.side,dz=-Math.sin(a)*DD.sidePipe.side;
    for(let i=0;i<4;i++)later(i*.14,()=>gushAt(SPp.x,SPp.y,SPp.z,dx,dz,16));later(.35,()=>{const q=Dr.at(DD.sidePipe.s,.9*DD.sidePipe.side);rippleAt(q.x,Dr.waterAt(DD.sidePipe.s)??Dr.floor(DD.sidePipe.s),q.z,1.4,2);});
@@ -978,8 +988,10 @@ export function createChapter3(o,k,ch2){
   if(ph==='d3-mom'&&C.flags.invited){const d=AH.toWorld(AH.doorX,AH.stepFront+.5);out.push({id:'c3-in',label:'Go inside',at:{x:d.x,z:d.z},face:{x:d.x,z:d.z},r:3,wide:true});}
   if(ph==='d3-room'&&C.flags.phoneReady)out.push({id:'c3-phone',label:'Listen to his recordings',at:phone.position,face:phone.position,r:2.3,wide:true});
   if(ph==='d3-phone'&&C.recPlaying<0&&!busy()&&!C.flags.recorded)out.push({id:'c3-play',label:'Play the last one',at:phone.position,face:phone.position,r:3,wide:true});
-  if(C.inRoom&&ph!=='d3-phone'&&C.flags.recorded&&C.recPlaying<0&&C.recSel>=0&&!busy())out.push({id:'c3-play',label:'Play an older recording',at:phone.position,face:phone.position,r:1.8,wide:true});
-  if(ph==='d3-window'&&!C.flags.window){const st=RW(R.sideWindow.x,R.sideWindow.z),gl=RW(R.sideWindow.glass.x,R.sideWindow.glass.z);out.push({id:'c3-window',label:'Look outside',at:st,face:gl,r:1.5,wide:true});}
+  if(C.inRoom&&ph!=='d3-phone'&&C.flags.recorded&&C.recPlaying<0&&C.recSel>=0&&!busy())out.push({id:'c3-play',label:'Play an older recording',at:phone.position,face:phone.position,r:2.6,wide:true});
+  if(ph==='d3-window'&&!C.flags.window){const st=RW(R.sideWindow.x,R.sideWindow.z),gl=RW(R.sideWindow.glass.x,R.sideWindow.glass.z),p=me(),off=q=>Math.abs(wrap(headingTo(p.x,p.z,q.x,q.z)-p.a));
+   // (the desk is beside the window: facing the phone, F is the phone's)
+   if(!(C.flags.recorded&&C.recSel>=0&&dist(p,phone.position)<2.6&&off(phone.position)<off(gl)))out.push({id:'c3-window',label:'Look outside',at:st,face:gl,r:1.5,wide:true});}
   if(C.inRoom&&C.flags.canLeave){const d=RW(R.door.x,R.door.z);out.push({id:'c3-out',label:'Go back outside',at:d,face:RW(R.door.face.x,R.door.face.z),r:1.4,wide:true});}
   if(ph==='d3-neighbors')for(const [key,a] of Object.entries(N))if(a.visible&&!C.talked.has(key))out.push({id:'c3-ask-'+key,label:'Talk to '+a.name.replace('MR. ','Mr. ').replace('MRS. ','Mrs. ').replace(/(\w)(\w*)$/,(m,x,y)=>x+y.toLowerCase()),at:a.pos,face:a.pos,r:3.4,ride:true,wide:true});
   if(ph==='n3-bike'&&C.flags.canInspect&&!C.flags.inspected)out.push({id:'c3-inspect',label:'Look at the bike',at:old.group.position,face:old.group.position,r:2.8,wide:true});
@@ -1013,15 +1025,18 @@ export function createChapter3(o,k,ch2){
    const bp=side(122.6,9.2),ba=k.ha(122.6);const jb=side(124.2,9.6),sb=side(120.8,9.4);
    const parkFoot=(c,q,b)=>{comp.putFoot(c,q.x,q.z,0,{bike:{x:b.x,z:b.z,a:ba,kick:1}});c.follow=null;};
    if(section==='alex-bedroom'||section==='recording'){o.placePlayer({x:bp.x,z:bp.z,a:0,mode:'walk',bike:{x:bp.x+.8,z:bp.z,a:ba}});parkFoot(jamie,side(124,11),jb);parkFoot(sam,side(121,11),sb);
-    C.flags.momTalk=true;C.flags.invited=true;enterRoom();if(section==='recording'){C.flags.phoneSeen=true;C.flags.phoneReady=true;S.queue.length=0;S.line=null;startPhone();}return;}
-   C.flags.momTalk=true;C.flags.invited=true;mom.show(false);
+    C.flags.atHouse=true;C.flags.momTalk=true;C.flags.invited=true;enterRoom();if(section==='recording'){C.flags.phoneSeen=true;C.flags.phoneReady=true;S.queue.length=0;S.line=null;
+     const dsk=RW(R.deskStand.x,R.deskStand.z),ph=phone.position,r=o.roam;o.placePlayer({x:dsk.x,z:dsk.z,a:headingTo(dsk.x,dsk.z,ph.x,ph.z),mode:'walk',bike:{x:r.x,z:r.z,a:r.a}});startPhone();}return;}
+   Object.assign(C.flags,{atHouse:true,momTalk:true,invited:true,phoneSeen:true,phoneReady:true,phone:true,recorded:true,canLeave:true});mom.show(false);
    if(section==='neighbors'){o.placePlayer({x:bp.x,z:bp.z,a:0,mode:'walk',bike:{x:bp.x+.8,z:bp.z,a:ba}});parkFoot(jamie,side(124,11),jb);parkFoot(sam,side(121,11),sb);exitRoom();return;}
    // the end of Briarwood, by day, riding up to it
    C.flags.okafor=true;for(const kk of ['huang','okafor'])C.talked.add(kk);const q=side(226,1.2);o.placePlayer({x:q.x,z:q.z,a:k.ha(226),mode:'ride',speed:2});ride(jamie,side(221.5,-.6),k.ha(221.5));ride(sam,side(219.5,2.2),k.ha(219.5));
    go('d3-road');date(DAY.road,'AM');follow(true);objective('Find the old service road.','The end of Briarwood, past the last house.');return;}
   // The night.
+  // (the whole day behind them)
+  Object.assign(C.flags,{atHouse:true,momTalk:true,invited:true,phoneSeen:true,phoneReady:true,phone:true,recorded:true,canLeave:true,okafor:true,roadDay:true,tracks:true,dayStop:true,leaving:true});
   nightWorld();C.flags.met=true;S.flashOn=true;ch2.samBeam.on=true;o.setFlashlight?.(true,true);for(const kk in C.amb)C.amb[kk]=kk==='traffic'||kk==='life'?0:kk==='forest'?1:kk==='insects'?1:kk==='wind'?.8:0;
-  if(section==='night-start'){nightStart();C.fadeIn=-1;S.flashOn=false;ch2.samBeam.on=false;o.setFlashlight?.(true,false);return;}
+  if(section==='night-start'){C.flags.met=false;nightStart();C.fadeIn=-1;S.flashOn=false;ch2.samBeam.on=false;o.setFlashlight?.(true,false);return;}
   const rideRoad=(s,t=0,v=3)=>{const q=Wd.at(s,t);o.placePlayer({x:q.x,z:q.z,a:q.a,mode:'ride',speed:v});const j=Wd.at(Math.max(0,s-3.4),.9),m=Wd.at(Math.max(0,s-5.8),-.9);comp.putRiding(jamie,j.x,j.z,j.a,v);comp.putRiding(sam,m.x,m.z,m.a,v);for(const c of [jamie,sam]){c.follow='ride';c.tight=1;}follow(true);};
   if(section==='c3-road-night'){const q=side(240,1.2),j=side(236,-.4),m=side(234.4,1.8);for(const kk in C.amb)C.amb[kk]=kk==='forest'||kk==='tunnel'||kk==='water'?0:1;o.placePlayer({x:q.x,z:q.z,a:k.ha(240),mode:'ride',speed:2.5});comp.putRiding(jamie,j.x,j.z,k.ha(236),2.5);comp.putRiding(sam,m.x,m.z,k.ha(234.4),2.5);
    for(const c of [jamie,sam])c.follow='ride';follow(true);go('n3-ride');T.value=.08;T?.set(.08);roadNight();return;}
@@ -1051,12 +1066,12 @@ export function createChapter3(o,k,ch2){
   C.flags.oldBike=true;
   if(section==='c3-broken-bell'){const b=old.group.position;inTunnel(OB.s-1.5,{j:2.4,m:-1.6});const p=me();o.placePlayer({x:p.x,z:p.z,a:headingTo(p.x,p.z,b.x,b.z),mode:'walk',bike:{x:bikes.you.x,z:bikes.you.z,a:ba}});
    go('n3-bike');date(NIGHT.bike,'PM');T.value=.55;T?.set(.55);C.flags.canInspect=true;C.flags.inspected=true;C.flags.canBell=true;C.bellWait=0;objective('Try the bell.');hold(jamie,{look:{x:b.x,y:b.y+.7,z:b.z},until:C.t+20});hold(sam,{look:{x:b.x,y:b.y+.7,z:b.z},until:C.t+20});tryBell();return;}
-  C.flags.inspected=true;C.flags.belled=true;C.flags.bell2=true;C.bellTries=2;date(NIGHT.bike,'PM');
+  C.flags.canInspect=true;C.flags.inspected=true;C.flags.belled=true;C.flags.bell2=true;C.bellTries=2;date(NIGHT.bike,'PM');
   if(section==='c3-bike-gone'){inTunnel(OB.s+15,{j:3.2,m:-1.6,back:true});go('n3-deeper');T.value=.62;T?.set(.62);placeOld('removed');C.bikeGoneAt=C.t-10;
    const p=me();o.placePlayer({x:p.x,z:p.z,a:headingTo(p.x,p.z,oldSpot.x,oldSpot.z),mode:'walk',bike:{x:bikes.you.x,z:bikes.you.z,a:ba}});C.bikeLookT=1;bikeGoneNoticed('you');return;}
   placeOld('removed');C.flags.bikeGone=true;C.bikeGoneAt=C.t-20;
   if(section==='c3-figure-reveal'){inTunnel(193.5,{j:3,m:-1.6});go('n3-deeper');T.value=.62;T?.set(.62);figureReady();startReveal();return;}
-  C.flags.figure=true;C.flags.figGone=true;C.fig={t0:C.t-40,seenT:5,seenAt:C.t-37,nudge:0,alexAt:C.t-35,unseenGo:false,distAtSeen:19};
+  C.flags.canInspect=true;C.flags.figure=true;C.flags.figGone=true;C.fig={t0:C.t-40,seenT:5,seenAt:C.t-37,nudge:0,alexAt:C.t-35,unseenGo:false,distAtSeen:19};
   if(section==='c3-follow-alex'){inTunnel(212,{j:5,m:-1.4});go('n3-figure');T.value=.72;T?.set(.72);C.flags.figGone=false;figureGone();return;}
   wet.visible=true;C.wetT=20;cable.visible=true;CB.amp=.14;CB.t=20;C.followAt=C.t-30;C.flags.leaveHint=true;
   if(section==='c3-second-sighting'){inTunnel(240,{j:3.4,m:-1.4});go('n3-follow');objective('Follow him.');T.value=.72;T?.set(.72);
@@ -1073,13 +1088,13 @@ export function createChapter3(o,k,ch2){
    Object.assign(C.crt,{t0:C.t-8,emergeAt:C.t-11,seenT:2,seenAt:C.t-4.4,creepAt:C.t-3.4,dropAt:C.t-.6,distAtSeen:17});
    Object.assign(CRT,{state:'drop',t:-(w/2+.1),y:CUL.sill,phT:.5,from:{t:-(w/2+.1),y:CUL.sill},to:{t:-(w/2-1.1),y:0},v:2.4});placeCreature();
    hold(jamie,{look:crChest,until:null});hold(sam,{look:crChest,until:null});S.jamieAim=crChest;S.samAim=crChest;return;}
-  C.flags.creature=true;C.lure={t0:C.t-60,seenT:2,seenAt:C.t-58,nudge:0,walkAt:C.t-55,stepAt:C.t-50,goneAt:C.t-49,voiceAt:C.t-48,distAtSeen:18,bySight:true,unseenGo:false};
+  C.flags.creature=true;C.flags.lure=true;C.lure={t0:C.t-60,seenT:2,seenAt:C.t-58,nudge:0,walkAt:C.t-55,stepAt:C.t-50,goneAt:C.t-49,voiceAt:C.t-48,distAtSeen:18,bySight:true,unseenGo:false};
   C.voices=[{word:'jamie',pos:culvertAt(2.6,.7),at:C.t-48,tunnel:true,where:'culvert'}];
   C.crt={t0:C.t-44,emergeAt:C.t-47,seenT:2,seenAt:C.t-40,nudge:0,creepAt:C.t-39,dropAt:C.t-36.2,landedAt:C.t-35.6,unseenGo:false,distAtSeen:17};
   // the run, further on: everyone already running for the way out (and it, where it would be by then)
   const running=(s,{j=-3.6,m=-1.6,stage='far',cr=null}={})=>{const q=Dr.at(s,0),a=q.a+Math.PI;youFoot({x:q.x,z:q.z},a);footAt(jamie,tq(s+j,.4),a);footAt(sam,tq(s+m,-.5),a);C.flags.inside=true;C.flags.jamieToMouth=true;C.maxDs=279;
    for(const kk in C.amb)C.amb[kk]=kk==='tunnel'?1:kk==='water'?.6:0;T.value=.98;T?.jolt(1,{hold:30});run();const P2=C.purs;P2.stage=stage;
-   if(cr!==null)crAt(cr,'chase',5);else crHide();for(const c of [jamie,sam]){c.walkV=4.5;}C.runT=10;C.flags.comeOn2=true;return P2;};
+   FG.state='hidden';if(cr!==null)crAt(cr,'chase',5);else crHide();for(const c of [jamie,sam]){c.walkV=4.5;}C.runT=10;C.flags.comeOn2=true;return P2;};
   const farDone=P2=>Object.assign(P2,{farAt:C.t-12,farWant:19,farVisAt:C.t-11,farSeenT:2,farSeenAt:C.t-10.5,farDist:19,cue:1});
   const sideDone=P2=>{farDone(P2);Object.assign(P2,{lostAt:C.t-8,lostLine:true,stumbleAt:C.t-7,sideAt:C.t-5,sideSeenT:1,sideSeenAt:C.t-4.4,sideDist:12.2,cue:2});};
   const gateDone=P2=>{Object.assign(P2,{pipeAt:C.t-20,bikeJamieAt:C.t-14,bikeSeenAt:C.t-13,nearAt:C.t-13,nearVisAt:C.t-12,nearSeenT:1,nearSeenAt:C.t-11.8,nearDist:8.8,gateHolder:'jamie',gateHoldAt:C.t-10,gateShutAt:C.t-9,gateHitAt:C.t-8.4,gateBurstAt:C.t-5.2,gateHits:6,minGap:8.2,minGapRun:8.2,cue:3});
@@ -1091,7 +1106,7 @@ export function createChapter3(o,k,ch2){
   if(section==='c3-creature-barrier'){const P2=running(78.5,{stage:'near',cr:87.5,m:-6.4});sideDone(P2);Object.assign(P2,{pipeAt:C.t-14,bikeJamieAt:C.t-5,bikeSeenAt:C.t-4,nearAt:C.t-4,nearVisAt:C.t-3,nearSeenT:1,nearSeenAt:C.t-2.8,nearDist:9.1});
    const jq=tq(GT.s-1.1,1.35);footAt(jamie,jq,Dr.at(GT.s).a);gateHold(jamie);return;}
   if(section==='c3-tunnel-exit'){const P2=running(40,{stage:'after',cr:57,j:-3.4,m:-1.4});sideDone(P2);gateDone(P2);return;}
-  C.flags.run=true;C.flags.out=true;o.setDrain?.(0);placeOld('relocated');GA.burst=true;GA.want=1;GA.open=1;poseGate(10);
+  C.flags.run=true;C.flags.out=true;C.flags.inside=true;FG.state='hidden';o.setDrain?.(0);placeOld('relocated');GA.burst=true;GA.want=1;GA.open=1;poseGate(10);
   // (out of the drain: it, low at the mouth, watching)
   const outPurs=stage=>{const P2=C.purs=newPurs();sideDone(P2);gateDone(P2);Object.assign(P2,{stage,mouthAt:C.t-6,mouthLine:true,exitSeenAt:C.t-8,cue:4});crAt(9,'watch',0);CRT.t=-.3;CRT.pose={crouch:1};placeCreature();return P2;};
   if(section==='c3-bike-remount'){const r=bikes.you,q=Wd.fromA(5.5,6.5);o.placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,r.x,r.z),mode:'walk',bike:{x:r.x,z:r.z,a:ba}});
@@ -1101,7 +1116,7 @@ export function createChapter3(o,k,ch2){
    const j=fin?Wd.at(s0-4,.8):Wd.fromA(10.4,9.8),m=fin?Wd.at(s0+3,-.8):Wd.fromA(12.6,10.6);comp.putRiding(jamie,j.x,j.z,pq.a+Math.PI,fin?5.5:0);comp.putRiding(sam,m.x,m.z,pq.a+Math.PI,fin?5.5:0);for(const c of [jamie,sam]){c.follow='ride';c.tight=1;}
    go('n3-out');date(NIGHT.run,'PM');T.value=.95;T?.jolt(1,{hold:20});C.flags.out=true;const P2=outPurs(fin?'done':'mouth');mounted();for(const kk in C.amb)C.amb[kk]=kk==='forest'?1:kk==='water'?1:kk==='insects'?1:0;
    if(fin){crHide('gone');Object.assign(P2,{treeAt:C.t-20,treeS:Wd.L-12});C.flags.bellBehind=true;C.heardBells.push({pos:{x:Dr.P.x+8,y:Dr.P.floor+1.5,z:Dr.P.z},at:C.t-8,behind:true});}return;}
-  C.flags.flee=true;C.flags.bellBehind=true;C.roadFig={stage:'gone',seenT:2,seenAt:C.t-30,reactAt:C.t-30,leaveAt:C.t-29,goneAt:C.t-27};{const P2=outPurs('done');crHide('gone');Object.assign(P2,{treeAt:C.t-60,treeS:Wd.L-12});}
+  C.flags.flee=true;C.flags.bellBehind=true;FG.state='gone';C.roadFig={stage:'gone',seenT:2,seenAt:C.t-30,reactAt:C.t-30,leaveAt:C.t-29,goneAt:C.t-27};{const P2=outPurs('done');crHide('gone');Object.assign(P2,{treeAt:C.t-60,treeS:Wd.L-12});}
   if(section==='chapter3-end'){const q=side(241,1),j=side(238.6,-1.2),m=side(237.4,2.1);o.placePlayer({x:q.x,z:q.z,a:k.ha(241)+Math.PI,mode:'ride',speed:0});comp.putRiding(jamie,j.x,j.z,k.ha(238)+Math.PI,0);comp.putRiding(sam,m.x,m.z,k.ha(237)+Math.PI,0);
    for(const c of [jamie,sam])c.follow='ride';follow(true);go('n3-flee');T.value=.9;T?.set(.9);for(const kk in C.amb)C.amb[kk]=kk==='forest'||kk==='tunnel'||kk==='water'?0:1;safeNow();return;}}
  Object.assign(A3,{SECTIONS:SECTIONS3,ALIAS:ALIAS3,LABEL:LABEL3,owns,handles,begin,update,spots,act,sources,blockers,reset,jump,jamieSweep,longThrow,hint,officerAim:()=>null,

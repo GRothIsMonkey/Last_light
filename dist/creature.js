@@ -94,7 +94,7 @@ export function createCreature({scene}){
   // the bob of each bound (the group's own height is the story's; this rides on it)
   // never through the floor: if a hand or foot has swung below where it rests on the ground, the body rides up on it
   group.updateMatrixWorld(true);let low=0;for(const [k,y0] of contacts){bones[k].getWorldPosition(_hv);const y=_hv.y-group.position.y-(inner.position.y-api.baseY);low=Math.min(low,y-y0);}
-  api.bob=.05*run*(1-Math.cos(2*ph))/2;inner.position.y=api.baseY+api.bob-low;};
+  api.bob=.05*run*(1-Math.cos(2*ph))/2;api.lift=-low;inner.position.y=api.baseY+api.bob-low;};
  const performanceNow=()=>clock0;
  api.reset=()=>{group.visible=false;api.phase=0;api.headYaw=0;api.headPitch=0;catchU.value=0;clock0=0;Object.assign(api.drive,{speed:0,rear:0,claw:0,crouch:0,look:null,lift:0});};
  return api;}
