@@ -6,7 +6,7 @@ Source: `claude/chapter3-horror-escalation` at `e575f069c2f1bec4641253632a3d670c
 |---|---:|
 | Full simulation / geometry suite (`npm test`, no `QUICK`) | **551 passed**, 0 failed (escalation: 475) |
 | Chapter Three Chromium pass (`tests/chapter3-browser-only.mjs`): muted natural walkthrough (no QA jump), every jump, Continue, captions, audio hooks | **83 passed**, 0 failed (109 captures) |
-| DEV Chapter → Scene selector, Chromium (`tests/dev-chapters-browser.mjs`): real clicks, every scene, natural-equivalence, switching, Chapter Three played from the DEV start | **112 passed** (every scene, the natural comparisons, the switching order); then a page-load timeout under load (see "Found and fixed"; rerun in progress at the time of writing) |
+| DEV Chapter → Scene selector, Chromium (`tests/dev-chapters-browser.mjs`): real clicks, every scene, natural-equivalence, switching, Chapter Three played from the DEV start | **142 passed**, 0 failed (74 captures) |
 | DEV selector, simulation: 58 scenes start; 46 compared with a natural playthrough | **0 differences**; switching **0 leaks** |
 | JavaScript / console / shader errors | **0** |
 | The creature at the culvert | facing forward, left, right, behind, the light 16° off it, never looked at, and 14 randomized: never missed, never before it is seen, seen at ≥ 21.2 m; it drops 3.8 s after being seen |
@@ -14,7 +14,7 @@ Source: `claude/chapter3-horror-escalation` at `e575f069c2f1bec4641253632a3d670c
 | Visible teleports (it moving > 1.2 m in one frame while in view) | **0** |
 | Randomized (seeded) | **24** chases, **12** road rides, **12** drain walks, **10** road-figure rides, **14** boy reveals, **14** creature reveals: all completed, nobody stuck, nobody caught |
 | Chapter Three in one session | **3** full playthroughs in the simulation (the first, then two more after every jump and Start over); in Chromium the walkthrough, then all 34 jumps and Continue in one page; the DEV run switches scenes in one page and then plays Chapter Three through |
-| Captures | **109** in `docs/qa/chapter3-creature/` (gallery `index.html`) and 12 in `docs/qa/dev-scenes-creature/`; inspected |
+| Captures | **109** in `docs/qa/chapter3-creature/` (gallery `index.html`) and 74 in `docs/qa/dev-scenes-creature/`; inspected |
 | Audio | **hooks only** (placeholders; no new voices, no heartbeat tuning, no offline or HRTF renders; nobody has listened) |
 | Full release browser suite (`npm run test:browser`) | **not rerun** for this pass (see below) |
 
@@ -57,7 +57,7 @@ Chapter Three is then played twice more in the same page (52.8 and 53.0 s runs),
 - The treeline glimpse rendered as a few pixels at 24 m (crouched 3.2 m beyond the verge, unlit). It is now half risen at the road's edge, about 20 m ahead (19.4–19.8 m when seen).
 - The road figure check ran before Jamie's "Don't stop. DON'T STOP." (Sam's line comes first); the script now waits for it.
 - The full suite's DEV comparison picked up a Chapter Two scene captured during a later QA jump, not the natural playthrough; natural capture now stops after the first playthrough.
-- In Chromium, switching DEV scenes in one page showed Chapter One's **silent** siren carrying a muffling value (0.058) into a later start; like the silent siren's doppler values it never reaches the audio, and it is now excluded from the comparison (`tests/dev-chapters-sim.mjs`). Not a game change.
+- In Chromium, switching DEV scenes in one page showed Chapter One's **silent** siren carrying a muffling value (0.058) into a later start; like the silent siren's doppler values it never reaches the audio, and it is now excluded from the comparison (`tests/dev-chapters-sim.mjs`). Not a game change. (The full 551-check suite ran before this change; the simulation's DEV checks, `ONLY=dev`, were rerun after it: 221 passed, 0 differences, 0 leaks.)
 - The browser's audio-hook check still asked for two bells in its stretch; this pass replaced the escalation's bell beside them before RUN with the lure and the creature, so there is one (the simulation's check already asked for one). It now asks for one.
 - One DEV browser run timed out loading a fresh page (120 s) while two other test runs shared the machine's 4 cores; the browser runs were then made one after the other.
 - On the first frame after a jump out of the drain the cave lighting was taken from the previous frame's zone (a real bug, shared code): fixed in `730b5d0`.

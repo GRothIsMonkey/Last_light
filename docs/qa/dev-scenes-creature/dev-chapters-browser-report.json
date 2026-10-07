@@ -1,0 +1,1247 @@
+{
+ "runtimeHashes": {
+  "dist/THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
+  "dist/adult-art.js": "07ab447ff682d430620a073814491b3a44e0f7c6603b685048e2b4c0ff1868a5",
+  "dist/alex-room.js": "609b4292c854747f6379f9cdb379ef596fd846a2ff684aedc8b76ff4aeaea651",
+  "dist/ambient.js": "2c06fb0c50e164a6a2bf26f56b5574b6eab7dd9bf38e3a86843e42eb3191e9c8",
+  "dist/audio.js": "f47e4a8bbf9aa92c9125119471f054b5a2f31d774af3650751e08cc85cc099e0",
+  "dist/background.js": "da5c320314a83bc542576b3c1f45ea6bdd2dc0cf4ab37020c65878d696481c3f",
+  "dist/captions.js": "f6046fac4026184397d6eb05e3efcdcf9eb12f42345099b79547783516daac06",
+  "dist/cast.js": "bfc977fc428a3860f648ad4f40a7eb6bd2e5424b3bdef2a1ebdbaf83e11c3ff9",
+  "dist/chapter1.js": "5aae6471ad0ad240f241c28a5ffb1c949af20a2d7e53ecd42a921ca6865e8f2e",
+  "dist/chapter2.js": "01b61485854de3cc30f9f5d56e649bd90ff6e9234300a77ef09435b0cdba137f",
+  "dist/chapter3.js": "f4ab3d1585e982191f01da8314d0aacca5e9adf9339bc8008b89d8ab79f61d90",
+  "dist/companions.js": "ccb8d8894467683a08a64d7c413f40771ad574a42be1fb50bb20d5447647115c",
+  "dist/creature-asset.js": "cfd431397910ec8b899c38fff6d498299cc631c22e735aeb3ea8b811b8bf2be4",
+  "dist/creature.js": "2641ce3efca031f970a892dcd9338ae7dfa2fb66c7d4a28f605422f36bc4ce82",
+  "dist/creek.js": "f5cc5a7867f4c343e0ccf21818cd7bfff7a00ff2ea0c90bbed7b985df6889f0c",
+  "dist/dev-chapter-history.js": "07996a3d75cf7f8386ef999b751467fc501310a934cf2e9e117953fe9a64c560",
+  "dist/dev-chapters.js": "26bbfa489200d30bc8192b4e671c2bac178b3ff200729f8c745cbc16cfa19ddd",
+  "dist/drain.js": "aa491be7af51f5dd525eba0c660f9fe5b570820053707bf4ed3281e911986885",
+  "dist/easement.js": "f47b2b0759848d58b1d5d07c35b725524aabf45ee9171c777c81ac424f67451d",
+  "dist/ending.js": "9b8242d059f65b4826f5ed4ff2fc4b053aad37ac0ff2059b81eac0592397c14a",
+  "dist/friends.js": "89e91d18af47e918491de8188e23ccf0f4a297894e6200fda9ddcdb16dbdee2a",
+  "dist/furniture.js": "630b5dceb9da07cbe2af49c6826615e98caccfd404d0d22a1a46b4fea92fe0dc",
+  "dist/game.js": "c263d599fe5576c8179f088c0c92dea0fff03a39468a175a1e4a3f0673bf7934",
+  "dist/houses.js": "50f3df232bec31d29ab42e701f52bad6aa508fef580ceb1fb8ef8fc6f72c8b92",
+  "dist/index.html": "b8d2de91f52a050079e53f2f123063498206cf04493d41e8043ddd555b9bfa96",
+  "dist/interactions.js": "d1f8b6e0859fb439d09cf3d634013a34c52242684a493be8892e9924bf65ccc1",
+  "dist/kit.js": "6ba15469732e2bd1f9ce798f97cd1650fec57973b63743eb5c8761fca26e14bd",
+  "dist/layout.js": "fc7e6ee21e8cf1b6ff9c8f9b888bcee57b7f2422ad3a2b27c13d57798414099c",
+  "dist/materials.js": "3f2dbf86ec3b5d7858f02eb62a904acae36778555b369ec0ea2a4f2af7371a3c",
+  "dist/memory.js": "76498323db63e152db35e36f11b44b01543da4d5cdf44bdd3a1300ea7c1be5ab",
+  "dist/nav.js": "2cad100b9206e2b83b18911a01b879c41d3b111f288fa4770b106176c52d8114",
+  "dist/nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
+  "dist/old-bike.js": "df1f0e9344338cb74ac00bcae7904f1e312ee2d93f450cda21772811e81a7605",
+  "dist/on-foot.js": "d9a33013a86d72aefd77ec59465efb6ba2dfb5f23d4b12027b9de8f12faa3866",
+  "dist/palette.js": "52a0632bb1e9c5363b8ecfbc34983d037ab09bd9f1018f52d32d1b0ccada6a65",
+  "dist/patrol-art.js": "9e3e70672fd5f9e320daadc09e6c6effc796c1bac0bdd62134d0267183534d76",
+  "dist/people.js": "19e40d3045863ef4171f7c0de1ad3677565aa892efe2ed6239a6c2cf2de73f88",
+  "dist/police.js": "4c2acdbb1bdb3935ee576b562f9be0dd4342abfe294e6cd4eea7de1766d33091",
+  "dist/props.js": "ed8786554db22138ffd825e6920cf260fa9fff0a270e2849829e9867a8f8aebe",
+  "dist/ride-contact.js": "c6a3af3649f04468258914e03c96ee72828d730f0387fe4a3db10de87cc25f42",
+  "dist/rig.js": "0ea645750eae57f550b5e0609876de1791083af5df76e4a6e9d23e51aeb6886d",
+  "dist/route.js": "f17de16440dbcb6101a0ea0b483d22ef55663934398613ab932fcf030412b3f5",
+  "dist/story.js": "c1f2bfccdace50fdb27d65786a86028b83d4e7c84ea9c8254fdd24ef361958e0",
+  "dist/streets.js": "8d591c2fe9638e5393625d96a24125e2c35db0a722a5e6410183c9058870a1eb",
+  "dist/style.css": "0c1ecc8056b4836c34844424bb3dd02053b05a3583b8ca49ea91f0ac92fc78f5",
+  "dist/tension.js": "7b0de410dc3b848232dfb4c49dff6dcb85c1dc1c1057e1e4b998993bc3806e04",
+  "dist/terrain.js": "ecc674f1b9d847c7d6e992b65b287cd65a425b237ee40c540fa4e2ea364d6902",
+  "dist/three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
+  "dist/ui.js": "342854a8172cbb454e063542af0c6484b4f5739def91e1f9f033a9237d9b2019",
+  "dist/vegetation.js": "afbdfe19822105f003277874648367cc16126f66d56f55b44e71916d4a4aa943",
+  "dist/woods.js": "2de5d489ed2903e778f57e182dc9e2a58512cdfa842f763921c125684407c80f",
+  "dist/world.js": "2f3a83e20d3dbc1240bfb3ec78542ff357a2f33be52cb5f0d816f98a9b079ee8"
+ },
+ "browser": "141.0.7390.37",
+ "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+ "passed": 142,
+ "checks": [
+  "the title shows the DEV · PLAYTEST · TEMPORARY panel: Prologue, Chapter One, Two and Three; a scene list; START SCENE",
+  "step 2: choosing a chapter lists its scenes (Prologue 9, One 9, Two 11, Three 29), in story order",
+  "normal Start: the prologue begins; the DEV selector is not shown during play",
+  "title shows the DEV selector before choosing 0/start",
+  "the DEV button shows \"Preparing Start (new game)…\" while it prepares",
+  "DEV 0: mouse look is captured the same way as the title's start button (pointer lock granted, as for Start)",
+  "DEV 0: real clicks (chapter, scene, START SCENE) start at the true beginning (phase off), title and pause closed (331 ms)",
+  "DEV 0: the same state as the natural arrival recorded in the simulation (flags, objective, date, lighting, companions, people, police, props, doors, flashlight, save; 0 differences)",
+  "DEV 0: player and companions where a natural arrival leaves them (within 15 m)",
+  "title shows the DEV selector before choosing 0/ride-home",
+  "DEV 1: mouse look is captured the same way as the title's start button (pointer lock granted, as for Start)",
+  "DEV 1: real clicks (chapter, scene, START SCENE) start at the true beginning (phase leave), title and pause closed (1011 ms)",
+  "DEV 1: the same state as the natural arrival recorded in the simulation (flags, objective, date, lighting, companions, people, police, props, doors, flashlight, save; 0 differences)",
+  "DEV 1: player and companions where a natural arrival leaves them (within 15 m)",
+  "title shows the DEV selector before choosing 2/chapter2",
+  "DEV 2: mouse look is captured the same way as the title's start button (pointer lock granted, as for Start)",
+  "DEV 2: real clicks (chapter, scene, START SCENE) start at the true beginning (phase c2-black), title and pause closed (855 ms)",
+  "DEV 2: the same state as the natural arrival recorded in the simulation (flags, objective, date, lighting, companions, people, police, props, doors, flashlight, save; 0 differences)",
+  "DEV 2: player and companions where a natural arrival leaves them (within 15 m)",
+  "DEV 2: the opening scene after the card (c2-decide) matches the natural one (0 differences)",
+  "title shows the DEV selector before choosing 3/chapter3",
+  "DEV 3: mouse look is captured the same way as the title's start button (pointer lock granted, as for Start)",
+  "DEV 3: real clicks (chapter, scene, START SCENE) start at the true beginning (phase c3-black), title and pause closed (1133 ms)",
+  "DEV 3: the same state as the natural arrival recorded in the simulation (flags, objective, date, lighting, companions, people, police, props, doors, flashlight, save; 0 differences)",
+  "DEV 3: player and companions where a natural arrival leaves them (within 15 m)",
+  "DEV 3: the opening scene after the card (d3-corner) matches the natural one (0 differences)",
+  "title shows the DEV selector before choosing 3/chapter3",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 0/ride-home",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/chapter3",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 0/start",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/chapter3",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 2/chapter2",
+  "DEV switching 3→1→3→0→3→2 in one page via pause → Back to the title: every start identical to a clean start (no leaks)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 0/ride-home",
+  "DEV start after Chapter Three's chase (phase n3-run, tension 1): Chapter One starts clean",
+  "…no tension or heartbeat carried over",
+  "title shows the DEV selector before choosing 0/alex-departure",
+  "DEV scene 0/alex-departure: real clicks start it (295 ms); the same story state as playing to it naturally (0 differences)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 1/oak",
+  "DEV scene 1/oak: real clicks start it (683 ms); the same story state as playing to it naturally (0 differences)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 2/alex-bike",
+  "DEV scene 2/alex-bike: real clicks start it (391 ms); the same story state as playing to it naturally (0 differences)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/recording",
+  "DEV scene 3/recording: real clicks start it (644 ms); the same story state as playing to it naturally (0 differences)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/c3-figure-reveal",
+  "DEV scene 3/c3-figure-reveal: real clicks start it (469 ms); the same story state as playing to it naturally (0 differences)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/c3-creature-reveal",
+  "DEV scene 3/c3-creature-reveal: real clicks start it (560 ms); the same story state as playing to it naturally (0 differences)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/c3-creature-chase-start",
+  "DEV scene 3/c3-creature-chase-start: real clicks start it (293 ms); the same story state as playing to it naturally (0 differences)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/c3-creature-barrier",
+  "DEV scene 3/c3-creature-barrier: real clicks start it (714 ms); the same story state as playing to it naturally (0 differences)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/c3-road-escape",
+  "DEV scene 3/c3-road-escape: real clicks start it (761 ms); the same story state as playing to it naturally (0 differences)",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/chapter3-end",
+  "DEV scene 3/chapter3-end: real clicks start it (632 ms); the same story state as playing to it naturally (0 differences)",
+  "title shows the DEV selector before choosing 3/c3-creature-reveal",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 1/oak",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/c3-creature-chase-start",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 0/alex-departure",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 2/alex-bike",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/c3-creature-reveal",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/chapter3-end",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 2/memory-reconstruction",
+  "Esc opens the pause menu (with \"Back to the title\")",
+  "\"Back to the title\" shows the title with the DEV selector again",
+  "title shows the DEV selector before choosing 3/c3-creature-chase-start",
+  "DEV scene switching in one page via pause → Back to the title (3/c3-creature-reveal → 1/oak → 3/c3-creature-chase-start → 0/alex-departure → 2/alex-bike → 3/c3-creature-reveal → 3/chapter3-end → 2/memory-reconstruction → 3/c3-creature-chase-start): each repeat identical to its first start (no leaks)",
+  "normal mode: DEV Chapter Three shows the CHAPTER THREE card over black (33122 ms after the click), title hidden, not paused",
+  "title shows the DEV selector before choosing 3/chapter3",
+  "Chapter Three browser walkthrough: sound off (the muted playtest)",
+  "Chapter Three: black, then a quiet CHAPTER THREE card (no end menu)",
+  "Chapter Three: the Briarwood corner in daylight; \"Maybe yesterday wasn’t the first time.\"",
+  "Chapter Three: the phone opens on his last recording; one press plays it: a bell outside, twice, \"There it is again.\"",
+  "Chapter Three: at his window, nothing holds the camera",
+  "Chapter Three: one neighbor who knows: Mr. Okafor: the gate at the end of Briarwood, the old city road down to the big storm drain",
+  "Chapter Three: where the road bends into the woods: back tonight; Sam reluctant",
+  "Chapter Three: the old road at night: your light on the handlebars, Jamie’s and Sam’s lights on",
+  "Chapter Three: the outfall: \"That’s where the creek goes. Behind Alex’s.\"",
+  "Chapter Three: deep in, his helmet, the one from his desk this morning; Sam: \"We need to tell somebody.\"",
+  "Chapter Three: the bike from the oak found by your light from 15 m; its bell only clicks",
+  "Chapter Three: farther in, the bike is no longer where it was (nobody saw it go)",
+  "Chapter Three: they stop dead either side of you, both lights down the tunnel, your view to him clear between them ({\"jamie\":0.92,\"sam\":0.85} m); at the end of them, 22.2 m away, a boy",
+  "Chapter Three: he stays until you have seen him, and well after (12.3 s); \"…Alex?\"; he turns slowly and walks round the bend",
+  "Chapter Three: him again, farther in (42.1 m), his back to them; \"There!\"; he does not stop: he walks to the side culvert and climbs up into it",
+  "Chapter Three: from the culvert, his voice (\"Jamie?\"); then something at its lip, head and arms out, seen at 22.2 m; \"That’s not Alex.\"; it drops into the water",
+  "Chapter Three: RUN is a real escape: 56 s from \"RUN!\" to the bikes (45–90), the view wider (fov 71.0), no stamina to run out",
+  "Chapter Three: looking back, it is coming 21.1 m behind, out of the wall 14.1 m behind, then 8.3 m; never closer than 8.3 m running",
+  "Chapter Three: Jamie goes down; water bursts from a side pipe; the bike across the way out; the gate slammed, it held there 3.2 s; the way out seen",
+  "Chapter Three: a look back over your shoulder on the road; facing front, it is low at the edge of the trees ahead (19.8 m); then gone",
+  "Chapter Three: up the road, at a bend, the Alex-like boy standing in the road ahead (14.3 m); he walks off into the trees; nobody stops",
+  "Chapter Three: out under the streetlight at the end of Briarwood; \"That wasn’t Alex.\"",
+  "Chapter Three: \"…I know.\" \"Then what did we follow?\" (Jamie does not answer) then LAST LIGHT / Chapter Three",
+  "Chapter Three: every phase in order in the browser",
+  "Chapter Three: Jamie and Sam stayed with you (max gap 21.0 m at n3-follow)",
+  "Chapter Three: the whole chapter played with the sound off",
+  "Chapter Three playthrough: no JavaScript or shader errors",
+  "no JavaScript or shader errors"
+ ],
+ "frames": [
+  {
+   "name": "dev-00-title-selector-chapter-one",
+   "frame": 1,
+   "calls": 290,
+   "triangles": 771942,
+   "points": 866,
+   "lines": 4043,
+   "phase": "off"
+  },
+  {
+   "name": "dev-00-title-selector-chapter-three",
+   "frame": 2,
+   "calls": 290,
+   "triangles": 771942,
+   "points": 866,
+   "lines": 4043,
+   "phase": "off"
+  },
+  {
+   "name": "dev-01-start-chapter-0",
+   "frame": 1,
+   "calls": 360,
+   "triangles": 602651,
+   "points": 640,
+   "lines": 4079,
+   "phase": "off"
+  },
+  {
+   "name": "dev-02-start-chapter-1",
+   "frame": 1,
+   "calls": 126,
+   "triangles": 85413,
+   "points": 682,
+   "lines": 3079,
+   "phase": "leave"
+  },
+  {
+   "name": "dev-03-start-chapter-2",
+   "frame": 1,
+   "calls": 285,
+   "triangles": 643441,
+   "points": 708,
+   "lines": 3885,
+   "phase": "c2-decide"
+  },
+  {
+   "name": "dev-04-start-chapter-3",
+   "frame": 1,
+   "calls": 563,
+   "triangles": 1294661,
+   "points": 640,
+   "lines": 3871,
+   "phase": "d3-corner"
+  },
+  {
+   "name": "dev-scene-0-alex-departure",
+   "frame": 1,
+   "calls": 458,
+   "triangles": 823434,
+   "points": 820,
+   "lines": 3958,
+   "phase": "off"
+  },
+  {
+   "name": "dev-scene-1-oak",
+   "frame": 2,
+   "calls": 138,
+   "triangles": 100762,
+   "points": 708,
+   "lines": 3450,
+   "phase": "oak"
+  },
+  {
+   "name": "dev-scene-2-alex-bike",
+   "frame": 3,
+   "calls": 293,
+   "triangles": 749863,
+   "points": 708,
+   "lines": 3981,
+   "phase": "c2-bike"
+  },
+  {
+   "name": "dev-scene-3-c3-creature-reveal",
+   "frame": 4,
+   "calls": 59,
+   "triangles": 50520,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-creature"
+  },
+  {
+   "name": "dev-scene-3-c3-creature-chase-start",
+   "frame": 5,
+   "calls": 71,
+   "triangles": 50976,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-scene-3-c3-creature-barrier",
+   "frame": 6,
+   "calls": 172,
+   "triangles": 542332,
+   "points": 682,
+   "lines": 3931,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-00-chapter-three-card",
+   "frame": 13,
+   "calls": 563,
+   "triangles": 1348041,
+   "points": 640,
+   "lines": 3871,
+   "phase": "c3-black"
+  },
+  {
+   "name": "dev-c3-d01-briarwood-opening",
+   "frame": 26,
+   "calls": 459,
+   "triangles": 962902,
+   "points": 640,
+   "lines": 3849,
+   "phase": "d3-corner"
+  },
+  {
+   "name": "dev-c3-d02-alex-house-exterior",
+   "frame": 39,
+   "calls": 440,
+   "triangles": 1140705,
+   "points": 640,
+   "lines": 3971,
+   "phase": "d3-street"
+  },
+  {
+   "name": "dev-c3-d03-alex-mom",
+   "frame": 52,
+   "calls": 376,
+   "triangles": 1100976,
+   "points": 640,
+   "lines": 3945,
+   "phase": "d3-mom"
+  },
+  {
+   "name": "dev-c3-d04-bedroom-first-person",
+   "frame": 65,
+   "calls": 541,
+   "triangles": 857533,
+   "points": 640,
+   "lines": 4005,
+   "phase": "d3-room"
+  },
+  {
+   "name": "dev-c3-d05-his-helmet-on-the-desk",
+   "frame": 78,
+   "calls": 294,
+   "triangles": 898758,
+   "points": 640,
+   "lines": 3823,
+   "phase": "d3-room"
+  },
+  {
+   "name": "dev-c3-d06-the-last-recording",
+   "frame": 91,
+   "calls": 227,
+   "triangles": 772596,
+   "points": 640,
+   "lines": 3823,
+   "phase": "d3-phone"
+  },
+  {
+   "name": "dev-c3-d07-window-to-the-creek",
+   "frame": 104,
+   "calls": 325,
+   "triangles": 648857,
+   "points": 640,
+   "lines": 3823,
+   "phase": "d3-window"
+  },
+  {
+   "name": "dev-c3-d08-mr-okafor",
+   "frame": 117,
+   "calls": 196,
+   "triangles": 801359,
+   "points": 640,
+   "lines": 3823,
+   "phase": "d3-neighbors"
+  },
+  {
+   "name": "dev-c3-d09-end-of-briarwood-gate",
+   "frame": 130,
+   "calls": 129,
+   "triangles": 570929,
+   "points": 640,
+   "lines": 3823,
+   "phase": "d3-tracks"
+  },
+  {
+   "name": "dev-c3-d10-tire-track-in-the-dust",
+   "frame": 143,
+   "calls": 197,
+   "triangles": 813732,
+   "points": 640,
+   "lines": 3945,
+   "phase": "d3-tracks"
+  },
+  {
+   "name": "dev-c3-d11-the-road-into-the-woods",
+   "frame": 156,
+   "calls": 173,
+   "triangles": 639232,
+   "points": 640,
+   "lines": 3955,
+   "phase": "d3-plan"
+  },
+  {
+   "name": "dev-c3-n01-night-home",
+   "frame": 169,
+   "calls": 368,
+   "triangles": 823338,
+   "points": 682,
+   "lines": 3868,
+   "phase": "n3-home"
+  },
+  {
+   "name": "dev-c3-n02-corner-at-night",
+   "frame": 182,
+   "calls": 170,
+   "triangles": 399398,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-ride"
+  },
+  {
+   "name": "dev-c3-n03-end-of-briarwood-at-night",
+   "frame": 195,
+   "calls": 114,
+   "triangles": 576640,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-road"
+  },
+  {
+   "name": "dev-c3-n04-road-early",
+   "frame": 208,
+   "calls": 86,
+   "triangles": 528738,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-road"
+  },
+  {
+   "name": "dev-c3-n05-road-middle",
+   "frame": 221,
+   "calls": 62,
+   "triangles": 437366,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-road"
+  },
+  {
+   "name": "dev-c3-n06-road-deep",
+   "frame": 234,
+   "calls": 65,
+   "triangles": 477722,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-road"
+  },
+  {
+   "name": "dev-c3-n07-the-outfall",
+   "frame": 247,
+   "calls": 212,
+   "triangles": 653958,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-outfall"
+  },
+  {
+   "name": "dev-c3-n08-the-mouth",
+   "frame": 260,
+   "calls": 219,
+   "triangles": 659039,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-outfall"
+  },
+  {
+   "name": "dev-c3-n09-first-stretch",
+   "frame": 273,
+   "calls": 173,
+   "triangles": 581156,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-tunnel"
+  },
+  {
+   "name": "dev-c3-n10-after-the-bend-no-way-out",
+   "frame": 286,
+   "calls": 92,
+   "triangles": 39310,
+   "points": 682,
+   "lines": 3931,
+   "phase": "n3-tunnel"
+  },
+  {
+   "name": "dev-c3-n11-footprints-in-the-silt",
+   "frame": 299,
+   "calls": 69,
+   "triangles": 51241,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-evidence"
+  },
+  {
+   "name": "dev-c3-n12-first-bell-they-freeze",
+   "frame": 312,
+   "calls": 124,
+   "triangles": 61241,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-bell"
+  },
+  {
+   "name": "dev-c3-n13-side-drain-black",
+   "frame": 325,
+   "calls": 105,
+   "triangles": 53779,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-tunnel"
+  },
+  {
+   "name": "dev-c3-n14-his-helmet-in-the-silt",
+   "frame": 338,
+   "calls": 74,
+   "triangles": 45903,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-item"
+  },
+  {
+   "name": "dev-c3-n15-sam-wants-out",
+   "frame": 351,
+   "calls": 112,
+   "triangles": 50816,
+   "points": 682,
+   "lines": 3931,
+   "phase": "n3-item"
+  },
+  {
+   "name": "dev-c3-n16-the-bike-in-the-light",
+   "frame": 364,
+   "calls": 96,
+   "triangles": 44052,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-bike"
+  },
+  {
+   "name": "dev-c3-n17-try-the-bell-click",
+   "frame": 377,
+   "calls": 81,
+   "triangles": 37411,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-bike"
+  },
+  {
+   "name": "dev-c3-n18-deep-low-ceiling-ankle-water",
+   "frame": 390,
+   "calls": 74,
+   "triangles": 36834,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-deeper"
+  },
+  {
+   "name": "dev-c3-n19-the-bike-is-gone",
+   "frame": 403,
+   "calls": 112,
+   "triangles": 61677,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-deeper"
+  },
+  {
+   "name": "dev-c3-n20-figure-from-eye-height",
+   "frame": 416,
+   "calls": 97,
+   "triangles": 53648,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-figure"
+  },
+  {
+   "name": "dev-c3-n21-qa-wide-reveal",
+   "frame": 429,
+   "calls": 126,
+   "triangles": 67840,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-figure"
+  },
+  {
+   "name": "dev-c3-n22-framed-by-their-lights",
+   "frame": 442,
+   "calls": 100,
+   "triangles": 55992,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-figure"
+  },
+  {
+   "name": "dev-c3-n23-he-turns",
+   "frame": 455,
+   "calls": 100,
+   "triangles": 55992,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-figure"
+  },
+  {
+   "name": "dev-c3-n24-walking-round-the-bend",
+   "frame": 468,
+   "calls": 100,
+   "triangles": 55992,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-figure"
+  },
+  {
+   "name": "dev-c3-n25-the-bend-empty",
+   "frame": 481,
+   "calls": 69,
+   "triangles": 29173,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-follow"
+  },
+  {
+   "name": "dev-c3-n26-him-again-by-the-culvert",
+   "frame": 494,
+   "calls": 73,
+   "triangles": 34621,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-lure"
+  },
+  {
+   "name": "dev-c3-n27-he-climbs-into-the-culvert",
+   "frame": 507,
+   "calls": 88,
+   "triangles": 42453,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-lure"
+  },
+  {
+   "name": "dev-c3-n28-something-at-the-lip",
+   "frame": 520,
+   "calls": 38,
+   "triangles": 39292,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-creature"
+  },
+  {
+   "name": "dev-c3-n29-that-is-not-alex",
+   "frame": 533,
+   "calls": 38,
+   "triangles": 39292,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-creature"
+  },
+  {
+   "name": "dev-c3-n30-it-drops-into-the-water",
+   "frame": 546,
+   "calls": 38,
+   "triangles": 39292,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-creature"
+  },
+  {
+   "name": "dev-c3-n31-run",
+   "frame": 559,
+   "calls": 64,
+   "triangles": 39956,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n32-it-is-coming",
+   "frame": 572,
+   "calls": 82,
+   "triangles": 50180,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n33-round-the-bend-nothing",
+   "frame": 585,
+   "calls": 58,
+   "triangles": 20890,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n34-jamie-goes-down",
+   "frame": 598,
+   "calls": 139,
+   "triangles": 67008,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n35-out-of-the-wall",
+   "frame": 611,
+   "calls": 66,
+   "triangles": 49274,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n36-water-bursts-from-a-side-pipe",
+   "frame": 624,
+   "calls": 195,
+   "triangles": 79382,
+   "points": 682,
+   "lines": 3975,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n37-the-bike-ahead-of-them",
+   "frame": 637,
+   "calls": 173,
+   "triangles": 562239,
+   "points": 682,
+   "lines": 3975,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n38-right-behind-them",
+   "frame": 650,
+   "calls": 171,
+   "triangles": 378677,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n39-it-claws-at-the-gate",
+   "frame": 663,
+   "calls": 188,
+   "triangles": 586297,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n40-the-way-out",
+   "frame": 676,
+   "calls": 130,
+   "triangles": 369049,
+   "points": 682,
+   "lines": 3931,
+   "phase": "n3-run"
+  },
+  {
+   "name": "dev-c3-n41-straight-onto-the-bike",
+   "frame": 689,
+   "calls": 242,
+   "triangles": 397792,
+   "points": 682,
+   "lines": 3903,
+   "phase": "n3-flee"
+  },
+  {
+   "name": "dev-c3-n42-qa-watching-from-the-mouth",
+   "frame": 702,
+   "calls": 218,
+   "triangles": 681592,
+   "points": 682,
+   "lines": 3867,
+   "phase": "n3-flee"
+  },
+  {
+   "name": "dev-c3-n43-it-at-the-treeline-ahead",
+   "frame": 715,
+   "calls": 91,
+   "triangles": 625593,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-flee"
+  },
+  {
+   "name": "dev-c3-n44-flight-up-the-dark-road",
+   "frame": 728,
+   "calls": 71,
+   "triangles": 487617,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-flee"
+  },
+  {
+   "name": "dev-c3-n45-him-in-the-road-ahead",
+   "frame": 741,
+   "calls": 93,
+   "triangles": 418053,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-flee"
+  },
+  {
+   "name": "dev-c3-n46-he-steps-into-the-trees",
+   "frame": 754,
+   "calls": 96,
+   "triangles": 423213,
+   "points": 682,
+   "lines": 3823,
+   "phase": "n3-flee"
+  },
+  {
+   "name": "dev-c3-n47-the-first-streetlight",
+   "frame": 767,
+   "calls": 562,
+   "triangles": 923833,
+   "points": 682,
+   "lines": 3897,
+   "phase": "n3-flee"
+  },
+  {
+   "name": "dev-c3-n48-under-the-streetlight",
+   "frame": 780,
+   "calls": 435,
+   "triangles": 840884,
+   "points": 682,
+   "lines": 3849,
+   "phase": "n3-safe"
+  },
+  {
+   "name": "dev-c3-n49-chapter-three-end",
+   "frame": 793,
+   "calls": 348,
+   "triangles": 752834,
+   "points": 682,
+   "lines": 3885,
+   "phase": "n3-end"
+  }
+ ],
+ "timings": {
+  "0": 331,
+  "1": 1011,
+  "2": 855,
+  "3": 1133,
+  "normalMode3": 16456
+ },
+ "starts": {
+  "0": {
+   "phase": "off",
+   "ms": 331,
+   "differences": [],
+   "far": [],
+   "summary": {
+    "player": {
+     "x": 0,
+     "z": 0,
+     "a": 0,
+     "lock": false,
+     "walkLock": false,
+     "brake": 0
+    },
+    "night": 0,
+    "day": 0,
+    "objective": "",
+    "date": "AUGUST 21, 2011 <i></i> 7:42 PM",
+    "companions": [
+     {
+      "key": "jamie",
+      "active": false,
+      "mode": "ride",
+      "visible": true
+     },
+     {
+      "key": "sam",
+      "active": false,
+      "mode": "ride",
+      "visible": true
+     }
+    ],
+    "foot": {
+     "owned": false,
+     "on": false,
+     "stamina": 1,
+     "crouch": 0,
+     "height": 0,
+     "exhausted": false,
+     "drain": 1,
+     "light": false
+    },
+    "save": null
+   }
+  },
+  "1": {
+   "phase": "leave",
+   "ms": 1011,
+   "differences": [],
+   "far": [],
+   "summary": {
+    "player": {
+     "x": 244.185,
+     "z": -1032.583,
+     "a": 0.08,
+     "lock": false,
+     "walkLock": false,
+     "brake": 0
+    },
+    "night": 1,
+    "day": 0,
+    "objective": "",
+    "date": "AUGUST, 2011 <i></i> AS YOU REMEMBER IT",
+    "companions": [
+     {
+      "key": "jamie",
+      "active": false,
+      "mode": "ride",
+      "visible": false
+     },
+     {
+      "key": "sam",
+      "active": false,
+      "mode": "ride",
+      "visible": false
+     }
+    ],
+    "foot": {
+     "owned": false,
+     "on": false,
+     "stamina": 1,
+     "crouch": 0,
+     "height": 0,
+     "exhausted": false,
+     "drain": 1,
+     "light": false
+    },
+    "save": null
+   }
+  },
+  "2": {
+   "phase": "c2-black",
+   "ms": 855,
+   "differences": [],
+   "far": [],
+   "summary": {
+    "player": {
+     "x": 179.505,
+     "z": -578.6,
+     "a": 1.607,
+     "lock": false,
+     "walkLock": false,
+     "brake": 0
+    },
+    "night": 1,
+    "day": 0,
+    "objective": "",
+    "date": "AUGUST 21, 2011 <i></i> 9:34 PM",
+    "companions": [
+     {
+      "key": "jamie",
+      "active": true,
+      "mode": "foot",
+      "visible": true
+     },
+     {
+      "key": "sam",
+      "active": true,
+      "mode": "foot",
+      "visible": true
+     }
+    ],
+    "foot": {
+     "owned": true,
+     "on": true,
+     "stamina": 1,
+     "crouch": 0,
+     "height": 0,
+     "exhausted": false,
+     "drain": 1,
+     "light": true
+    },
+    "save": "investigation"
+   },
+   "opening": {
+    "phase": "c2-decide",
+    "differences": []
+   }
+  },
+  "3": {
+   "phase": "c3-black",
+   "ms": 1133,
+   "differences": [],
+   "far": [],
+   "summary": {
+    "player": {
+     "x": 100.887,
+     "z": -552.976,
+     "a": 0.5,
+     "lock": false,
+     "walkLock": false,
+     "brake": 0
+    },
+    "night": 0,
+    "day": 1,
+    "objective": "",
+    "date": "AUGUST 22, 2011 <i></i> 9:12 AM",
+    "companions": [
+     {
+      "key": "jamie",
+      "active": true,
+      "mode": "ride",
+      "visible": true
+     },
+     {
+      "key": "sam",
+      "active": true,
+      "mode": "ride",
+      "visible": true
+     }
+    ],
+    "foot": {
+     "owned": true,
+     "on": true,
+     "stamina": 1,
+     "crouch": 0,
+     "height": 0,
+     "exhausted": false,
+     "drain": 1,
+     "light": false
+    },
+    "save": "chapter2-end"
+   },
+   "opening": {
+    "phase": "d3-corner",
+    "differences": []
+   }
+  }
+ },
+ "switching": {
+  "order": "3→1→3→0→3→2",
+  "leaks": []
+ },
+ "sceneLists": {
+  "0": [
+   "Start (new game)",
+   "Group Ride",
+   "Alex Before Briarwood (“Did you guys hear that?”)",
+   "Alex Departure",
+   "Jamie Departure",
+   "Sam Departure",
+   "Old Oak / Chalk (the lookout)",
+   "Solo Ride Home",
+   "Police Cruiser / Title"
+  ],
+  "1": [
+   "Chapter One Start (title)",
+   "Alex’s House (Briarwood)",
+   "Recruit Jamie",
+   "Recruit Sam",
+   "Old Oak Regroup",
+   "The Way Alex Went (retrace)",
+   "Creek / Utility Strip",
+   "Reflector Discovery",
+   "Final Bell / Chapter End"
+  ],
+  "2": [
+   "Chapter Two Start",
+   "Follow the Sound",
+   "Easement",
+   "Alex’s Bike",
+   "Second Bell / Culvert",
+   "Police Arrival",
+   "Morning",
+   "Morning Old Oak",
+   "Return to Briarwood",
+   "Memory Reconstruction",
+   "Chapter Two Ending"
+  ],
+  "3": [
+   "Chapter Three Start",
+   "Alex’s House (his mom)",
+   "Alex’s Bedroom",
+   "Flip Phone (the recording)",
+   "Neighbor / Storm Road",
+   "Day Road Entrance",
+   "Night Start",
+   "Night Ride to the Road",
+   "Forest Road",
+   "Tunnel Entrance",
+   "Deep Tunnel",
+   "Alex Evidence (his helmet)",
+   "Old Bike",
+   "Old Bike Gone",
+   "Alex-Like Figure: First Reveal",
+   "Follow Alex",
+   "Second Alex Sighting",
+   "Creature Reveal",
+   "RUN / Chase Start",
+   "Creature Chase — Far",
+   "Creature Chase — Side Channel",
+   "Old Bike Relocated (in the way)",
+   "Creature Chase — Near",
+   "Creature Chase — Barrier (the gate)",
+   "Tunnel Exit",
+   "Bike Remount",
+   "Forest Escape",
+   "Final Alex-Like Road Figure",
+   "Chapter Three End"
+  ]
+ },
+ "startLock": true,
+ "scenes": {
+  "0/alex-departure": {
+   "ms": 295,
+   "phase": "off",
+   "differences": []
+  },
+  "1/oak": {
+   "ms": 683,
+   "phase": "oak",
+   "differences": []
+  },
+  "2/alex-bike": {
+   "ms": 391,
+   "phase": "c2-bike",
+   "differences": []
+  },
+  "3/recording": {
+   "ms": 644,
+   "phase": "d3-phone",
+   "differences": []
+  },
+  "3/c3-figure-reveal": {
+   "ms": 469,
+   "phase": "n3-figure",
+   "differences": []
+  },
+  "3/c3-creature-reveal": {
+   "ms": 560,
+   "phase": "n3-lure",
+   "differences": []
+  },
+  "3/c3-creature-chase-start": {
+   "ms": 293,
+   "phase": "n3-creature",
+   "differences": []
+  },
+  "3/c3-creature-barrier": {
+   "ms": 714,
+   "phase": "n3-run",
+   "differences": []
+  },
+  "3/c3-road-escape": {
+   "ms": 761,
+   "phase": "n3-flee",
+   "differences": []
+  },
+  "3/chapter3-end": {
+   "ms": 632,
+   "phase": "n3-safe",
+   "differences": []
+  }
+ },
+ "sceneSwitching": {
+  "order": "3/c3-creature-reveal → 1/oak → 3/c3-creature-chase-start → 0/alex-departure → 2/alex-bike → 3/c3-creature-reveal → 3/chapter3-end → 2/memory-reconstruction → 3/c3-creature-chase-start",
+  "leaks": []
+ },
+ "chapterThree": {
+  "phases": [
+   "c3-black",
+   "d3-corner",
+   "d3-street",
+   "d3-mom",
+   "d3-room",
+   "d3-phone",
+   "d3-window",
+   "d3-neighbors",
+   "d3-road",
+   "d3-tracks",
+   "d3-plan",
+   "d3-home",
+   "c3-night",
+   "n3-home",
+   "n3-corner",
+   "n3-ride",
+   "n3-road",
+   "n3-outfall",
+   "n3-tunnel",
+   "n3-evidence",
+   "n3-tunnel",
+   "n3-bell",
+   "n3-tunnel",
+   "n3-item",
+   "n3-tunnel",
+   "n3-bike",
+   "n3-deeper",
+   "n3-figure",
+   "n3-follow",
+   "n3-lure",
+   "n3-creature",
+   "n3-run",
+   "n3-out",
+   "n3-flee",
+   "n3-safe",
+   "n3-end"
+  ],
+  "gap": 20.962696791829487,
+  "gapAt": "n3-follow",
+  "peak": 1,
+  "said": 146,
+  "captions": 147,
+  "figureRevealDist": 22.2,
+  "figurePresentAfterSeen": 12.3,
+  "lureSeen": 42.1,
+  "creatureSeen": 22.2,
+  "chaseFar": 21.1,
+  "chaseSide": 14.1,
+  "chaseNear": 8.3,
+  "minGapRunning": 8.3,
+  "gateHeld": 3.2,
+  "treeGlimpse": 19.8,
+  "runSeconds": 56,
+  "roadFigureSeen": 14.3,
+  "bikeFoundFrom": 15
+ },
+ "errors": []
+}
