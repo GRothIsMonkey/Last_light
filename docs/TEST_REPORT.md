@@ -1,3 +1,154 @@
+# Last Light — Chapter Three creature chase: verification
+
+Source: `claude/chapter3-horror-escalation` at `e575f069c2f1bec4641253632a3d670ce68c45e3` (unchanged). Branch: `claude/chapter3-creature-chase`. Tested runtime: `dist/` at `28dd30e` (`dist/chapter3.js` SHA-256 `f4ab3d15…1d90`; later commits change only tests, QA evidence and documentation). Chromium 141.0.7390.37, ANGLE/SwiftShader (software rendering).
+
+| Gate | Result |
+|---|---:|
+| Full simulation / geometry suite (`npm test`, no `QUICK`) | **551 passed**, 0 failed (escalation: 475) |
+| Chapter Three Chromium pass (`tests/chapter3-browser-only.mjs`): muted natural walkthrough (no QA jump), every jump, Continue, captions, audio hooks | **79 passed**; then the audio-hook check failed on a stale threshold (fixed; see "Found and fixed"; rerun in progress at the time of writing) |
+| DEV Chapter → Scene selector, Chromium (`tests/dev-chapters-browser.mjs`): real clicks, every scene, natural-equivalence, switching, Chapter Three played from the DEV start | **112 passed** (every scene, the natural comparisons, the switching order); then a page-load timeout under load (see "Found and fixed"; rerun in progress at the time of writing) |
+| DEV selector, simulation: 58 scenes start; 46 compared with a natural playthrough | **0 differences**; switching **0 leaks** |
+| JavaScript / console / shader errors | **0** |
+| The creature at the culvert | facing forward, left, right, behind, the light 16° off it, never looked at, and 14 randomized: never missed, never before it is seen, seen at ≥ 21.2 m; it drops 3.8 s after being seen |
+| The boy and the creature on screen together | **0 frames** (every frame of every Chapter Three test) |
+| Visible teleports (it moving > 1.2 m in one frame while in view) | **0** |
+| Randomized (seeded) | **24** chases, **12** road rides, **12** drain walks, **10** road-figure rides, **14** boy reveals, **14** creature reveals: all completed, nobody stuck, nobody caught |
+| Chapter Three in one session | **3** full playthroughs in the simulation (the first, then two more after every jump and Start over); in Chromium the walkthrough, then all 34 jumps and Continue in one page; the DEV run switches scenes in one page and then plays Chapter Three through |
+| Captures | **109** in `docs/qa/chapter3-creature/` (gallery `index.html`) and 12 in `docs/qa/dev-scenes-creature/`; inspected |
+| Audio | **hooks only** (placeholders; no new voices, no heartbeat tuning, no offline or HRTF renders; nobody has listened) |
+| Full release browser suite (`npm run test:browser`) | **not rerun** for this pass (see below) |
+
+## What was run
+
+**Simulation** (`tests/verify.mjs`: real modules and Three.js geometry, mocked renderer and DOM). The prologue, Chapter One and Chapter Two are played with inputs, and the same run goes on through Chapter Three with inputs only (`tests/chapter3-sim.mjs`): walking, looking, F where the prompt says, holding W through the run, riding. Checked beat by beat:
+
+- **the day, shorter**: his mom's scene ≤ 60 s (30.1 s); the phone ready as soon as it is noticed (3 s) and opening on the last recording, one F (27.9 s), the older ones optional and nothing held; the window with no camera lock; Mr. Okafor (28.1 s) the one neighbour who matters;
+- the night as before up to the first reveal (the boy at 22.2 m, present ≥ 10.7 s after seen);
+- **the lure**: him again by the culvert at 42.1 m, his back to them, into the culvert; his voice from inside;
+- **the creature**: at the lip, seen (27.7 m in the walkthrough), "That's not Alex.", the drop, RUN;
+- **the chase**: seen far back (25.4 m), out of the wall (12.1 m), right behind (10.4 m), never closer than 8.3 m while running; Jamie goes down; the pipe bursts; the bike across the way out; the gate held 3.2 s; the exit; the bike without a prompt; 52.8 s from "RUN!" to the bike;
+- **the road**: the look back, it at the treeline ahead (19.4 m); the boy in the road (14.4 m); nobody stops;
+- the ending lines ("That wasn't Alex." "…I know." "Then what did we follow?", no answer); the end card; every phase in order; the tension curve.
+
+Then the focused checks:
+
+- all 34 QA jumps (phase, date and time of day, everyone somewhere a person can be, the bike's, the boy's and the creature's state, never both on screen) and the aliases;
+- the 16 checkpoints and Continue (after a reload too);
+- Start over from inside Chapter Three clearing everything, now including the creature, the gate, the lure and their colliders;
+- the creature at the culvert from four facings, with the light off it, never looked at, and 14 randomized;
+- the chase perceived: far (18.9 m when looked at), side (14.8 m), near (10.3 m), standing still (it rears up at 4.6 m), the gate (Jamie holds it; 6 blows, 1.28 m back from the bars; 3.2 s), the gate after stalling (4.7 m), the bike in the way (straight at it 5.4 s, jumping 5.3 s), the treeline (19.2 m);
+- its body through a chase (915 frames): float 0 m, foot-speed error median 0.004 m/s (p95 0.111), heading error p95 0.003 rad, lift ≤ 0.194 m, the gait cycling, 0 jumps;
+- 10 road-figure rides (seen at 6.5–14.5 m; one rider never looked);
+- muted reactions, captions, audio hooks;
+- 24 randomized chases (56–78 s; closest 6.2 m, 6.3 m while running; the gate held in 23 of 24; in the other it was not shut, and the run still ended at the bikes), 12 road rides and 12 drain walks;
+- turning back in the drain; culling deep in the drain (only the tunnel's 69 merged meshes drawn).
+
+Chapter Three is then played twice more in the same page (52.8 and 53.0 s runs), and the DEV selector checks run last (below).
+
+**DEV Chapter → Scene** (simulation): all 58 scenes start; the 14 key scenes start before their event (the boy's reveal, the creature's reveal, RUN, the far sighting, the side, the bike, the gate, the remount, the road figure, the recording, the neighbours, the three departures); each of the 46 scenes a natural playthrough reaches is compared with it (the meaning of the state: phase, flags, objective, date, the boy, the creature, the chase, the bike, the gate, people, props, lighting, save): **0 differences**; the brief's switching order (3/c3-creature-reveal → 1/oak → 3/c3-creature-chase-start → 0/alex-departure → 2/alex-bike → 3/c3-creature-reveal → 3/chapter3-end → 2/memory-reconstruction → 3/c3-creature-chase-start), playing a little each time: **0 leaks**; chapter-level starts as before (0 differences; 0 leaks switching 3→1→3→0→3 and 3→1→2→3→0→2→1→3, also after playing); Start over afterwards begins the prologue normally.
+
+**Chapters 0–2 regression** is the same suite as before and passed in full.
+
+**Browser** (`tests/chapter3-browser-only.mjs`): from the Chapter Two end checkpoint, the hand-over, then the whole of Chapter Three **with the sound off (M) and no QA jump**, played with inputs, a capture at each beat. Then every QA jump rendered, Continue, the captions measured with the real frame readback, the captions setting, and the audio hooks. `tests/dev-chapters-browser.mjs` clicks the title's DEV panel (chapter, scene, START SCENE) for every scene, compares the starts with the natural snapshots (`docs/qa/dev-scenes-creature/natural-snapshots.json`), switches scenes in one page through the pause menu, and plays Chapter Three from the DEV start to its end card, muted.
+
+**Found and fixed during this verification** (recorded, not hidden):
+
+- In Chromium the walkthrough first stood where the culvert's lip cannot be seen (it stopped walking when the boy began to climb); Jamie called it up as designed, but the script did not move, and the reveal came by the 40 s fallback (the check failed: "seen at null m"). The script now walks on as the simulation does (seen at 22.2 m).
+- The treeline glimpse rendered as a few pixels at 24 m (crouched 3.2 m beyond the verge, unlit). It is now half risen at the road's edge, about 20 m ahead (19.4–19.8 m when seen).
+- The road figure check ran before Jamie's "Don't stop. DON'T STOP." (Sam's line comes first); the script now waits for it.
+- The full suite's DEV comparison picked up a Chapter Two scene captured during a later QA jump, not the natural playthrough; natural capture now stops after the first playthrough.
+- In Chromium, switching DEV scenes in one page showed Chapter One's **silent** siren carrying a muffling value (0.058) into a later start; like the silent siren's doppler values it never reaches the audio, and it is now excluded from the comparison (`tests/dev-chapters-sim.mjs`). Not a game change.
+- The browser's audio-hook check still asked for two bells in its stretch; this pass replaced the escalation's bell beside them before RUN with the lure and the creature, so there is one (the simulation's check already asked for one). It now asks for one.
+- One DEV browser run timed out loading a fresh page (120 s) while two other test runs shared the machine's 4 cores; the browser runs were then made one after the other.
+- On the first frame after a jump out of the drain the cave lighting was taken from the previous frame's zone (a real bug, shared code): fixed in `730b5d0`.
+
+**Not rerun:** the full release browser suite (`npm run test:browser`, several hours on SwiftShader). Chapters 0–2 are unchanged except for code paths that are inert outside Chapter Three (the cave-light fix applies only where the drain is), verified by the simulation regression and by the DEV selector's browser starts of every chapter and scene.
+
+## Durations and distances (scripted, direct; a person exploring will take longer)
+
+| | Simulation | Browser |
+|---|---:|---:|
+| The day, Chapter Three's start to the plan for tonight | 306 s (escalation 554 s) | |
+| His mom's scene | 30.1 s (escalation 50.4 s of talk) | |
+| The phone ready / the last recording played | 3 s / 27.9 s | one F |
+| Mr. Okafor | 28.1 s | |
+| In the drain, entering to the run | 5.5 min (escalation 6.2) | |
+| The boy, first reveal | 22.2 m, present 10.7 s after seen (trials ≥ 12.3 s) | 22.2 m, 12.3 s |
+| The lure by the culvert, when seen | 42.1 m | 42.1 m |
+| The creature at the lip, when seen | 27.7 m (trials 21.2 m) | 22.2 m |
+| It, far, when seen / looked at | 25.4 m / 18.9 m | 21.1 m |
+| It, out of the wall | 12.1 m / 14.8 m | 14.1 m |
+| It, near | 10.4 m / 10.3 m | 8.3 m |
+| Closest it came | 8.3 m running in the walkthrough; 6.3 m running, 6.2 m overall in 24 randomized runs; 4.6 m standing still | 8.3 m running |
+| The gate | held 3.2 s, 6 blows, 1.28 m back from the bars | held 3.2 s |
+| The run ("RUN!" to the bike) | 52.8 s (replays 52.8, 53.0; randomized 56–78 s) | 56 s |
+| The treeline glimpse | 19.4 m (focused 19.2 m) | 19.8 m |
+| The boy in the road | 14.4 m (10 rides: 6.5–14.5 m) | 14.3 m |
+| The ride out to the streetlight | 94.1 s | |
+| Chapter Three, all of it (game time) | 19.1 min (escalation 23.7) | |
+
+## Captures (inspected)
+
+From the muted natural walkthrough (no QA jump), in `docs/qa/chapter3-creature/`:
+
+| | Capture(s) |
+|---|---|
+| The day: the corner, his mom, his room, the phone, the window, Mr. Okafor, the gate, the road | `c3-d01` … `c3-d11` (`c3-d03-alex-mom`, `c3-d06-the-last-recording`, `c3-d07-window-to-the-creek`, `c3-d08-mr-okafor`) |
+| The night road and the drain, unchanged beats | `c3-n01` … `c3-n25` |
+| The lure: him again by the culvert; climbing in | `c3-n26-him-again-by-the-culvert`, `c3-n27-he-climbs-into-the-culvert` |
+| The creature: at the lip; "That's not Alex."; the drop | `c3-n28-something-at-the-lip`, `c3-n29-that-is-not-alex`, `c3-n30-it-drops-into-the-water` |
+| The chase: RUN; it is coming; round the bend, nothing; Jamie goes down; out of the wall; the pipe; the bike ahead; right behind; the gate; the way out | `c3-n31` … `c3-n40` (`c3-n32-it-is-coming`, `c3-n35-out-of-the-wall`, `c3-n38-right-behind-them`, `c3-n39-it-claws-at-the-gate`) |
+| The remount; it watching from the mouth (a review camera, not a story frame) | `c3-n41-straight-onto-the-bike`, `c3-n42-qa-watching-from-the-mouth` |
+| The forest: it at the treeline ahead; the flight; the boy in the road; into the trees | `c3-n43-it-at-the-treeline-ahead`, `c3-n44` … `c3-n46` |
+| The end: the streetlight; the four lines; the card | `c3-n47` … `c3-n49` |
+
+Plus all 34 QA jumps (`qa-jump-*`), Continue (`c3-title-continue`), a narrowed review view of the boy and the caption fixtures (`caption-*`). The DEV run adds the panel (`dev-00-title-selector-*`), the chapter starts and the scene starts (`dev-scene-*`) in `docs/qa/dev-scenes-creature/`.
+
+What the renders answer: the creature reads at the lip as a pale hunched shape in the beam at about 20 m (`n28`); far behind it is small but clear when you look back (`n32`, partly behind a friend in that frame); out of the wall and right behind it is unmistakable (`n35`, `n38`); at the gate it is up on its hind legs at the bars (`n39`); at the treeline it is a pale figure half risen at the road's edge (`n43`, after the restaging above); the boy and it are never in the same frame.
+
+## Performance (SwiftShader; no real-GPU frame rate was measured)
+
+Static world: **2,514,058 triangles / 1,131 merged meshes** (unchanged from the escalation). The creature is one skinned mesh of **23,820 triangles** (not decimated), one draw call (plus its shadow where shadows are drawn), drawn only while it is shown (hidden otherwise; while shown it is not frustum-culled, since a skinned mesh's bounds do not follow its pose); the gate is 6 meshes, 468 triangles. Deep in the drain only the tunnel's 69 merged meshes are drawn (plus the creature, the gate and the people), the far plane drops to 150 m and the sky is not drawn.
+
+| Moment | Capture | Triangles | Draw calls |
+|---|---|---:|---:|
+| Briarwood corner (day, the neighbourhood) | `c3-00-chapter-three-card` | 1,348,041 | 563 |
+| his room: the helmet | `c3-d05-his-helmet-on-the-desk` | 896,690 | 289 |
+| the old road at night | `c3-n06-road-deep` | 477,722 | 65 |
+| the drain mouth | `c3-n08-the-mouth` | 659,039 | 219 |
+| the deep box | `c3-n18-deep-low-ceiling-ankle-water` | 36,834 | 74 |
+| the lure by the culvert | `c3-n26-him-again-by-the-culvert` | 34,621 | 73 |
+| **it at the lip** | `c3-n28-something-at-the-lip` | 39,292 | 38 |
+| **it coming, far** | `c3-n32-it-is-coming` | 50,180 | 82 |
+| **out of the wall** | `c3-n35-out-of-the-wall` | 49,274 | 66 |
+| **right behind** (near the first bend, the way out in view) | `c3-n38-right-behind-them` | 378,677 | 171 |
+| **the gate** | `c3-n39-it-claws-at-the-gate` | 586,297 | 188 |
+| **the treeline** | `c3-n43-it-at-the-treeline-ahead` | 625,593 | 91 |
+| the boy in the road | `c3-n45-him-in-the-road-ahead` | 418,053 | 93 |
+| the first streetlight | `c3-n47-the-first-streetlight` | 923,833 | 562 |
+
+Ranges over the walkthrough captures: inside the drain past the first bend 20,890–79,382 triangles, 38–195 draw calls; near the first bend and the way out, where the mouth and the woods beyond are in view, 369,049–681,592 and 130–242; the woods road at night 418,053–653,958 and 62–212; the day 570,929–1,348,041 and 129–563 (unchanged by this pass); the street at night 399,398–923,833 and 170–562. Every frame is under the 1.5–1.8 M hero ceiling; the creature adds 23,820 triangles and one or two draw calls to the frames it is in (in the deep drain that is roughly half of a frame's triangles, at 20–80 k in total).
+
+## Audio
+
+Placeholder and deferred, per the brief. Its movement (a splash or a step per bound), its impacts (the gate, the culvert), the gate's clangs and the voice from the culvert reuse the existing synthesized placeholders; the simulation and Chromium check only that each hook is called a bounded number of times without errors (one stretch in the simulation: its movement 57, steps 29, impacts 9, the gate 9). **No new voices, no heartbeat tuning, no offline renders, no HRTF rendering.** Nobody has listened.
+
+## Where
+
+- [chapter3-creature/](qa/chapter3-creature/) (gallery `index.html`, `chapter3-browser-report.json`, `simulation-report.json`)
+- [dev-scenes-creature/](qa/dev-scenes-creature/) (`dev-chapters-browser-report.json`, captures, `natural-snapshots.json`)
+
+To rerun:
+
+```
+npm test
+DEV_NATURAL_OUT=docs/qa/dev-scenes-creature/natural-snapshots.json npm test
+BROWSER_PATH=/path/to/chromium node tests/chapter3-browser-only.mjs
+BROWSER_PATH=/path/to/chromium node tests/dev-chapters-browser.mjs
+```
+
+---
+
 # Last Light — Chapter Three horror escalation: verification
 
 Source: `claude/chapter3-horror-rebuild` at `26304a9dbc30ce66dcdc0a5e65f4082fc53a55e0` (unchanged). Branch: `claude/chapter3-horror-escalation`. Tested runtime: `dist/` at `43b71e6` (later commits change only tests, QA evidence and documentation). Chromium 141.0.7390.37, ANGLE/SwiftShader (software rendering).
