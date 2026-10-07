@@ -30,6 +30,7 @@ import {smooth} from './kit.js';
 import {createActor,ADULTS,headingTo,wrap} from './people.js';
 import {createPerson,newPose,standPose,walkPose,applyPose,poseBike,stride,P as PI} from './rig.js';
 import {CAST} from './cast.js';
+import {createCreature} from './creature.js';
 import {makeOldBike} from './old-bike.js';
 import {makeHelmet} from './alex-room.js';
 import {leafGeometrySmall,leafTexture} from './materials.js';
@@ -37,15 +38,19 @@ import {leafGeometrySmall,leafTexture} from './materials.js';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
 // QA jumps, in story order (names already used by Chapters One and Two get a c3- prefix).
 export const SECTIONS3=['chapter3-start','c3-alex-house','alex-bedroom','recording','neighbors','c3-road-day','night-start','c3-road-night','c3-forest-deep','c3-tunnel-entrance','c3-tunnel-inside',
- 'c3-tunnel-deep','c3-evidence','c3-first-bell','c3-alex-item','c3-old-bike','c3-broken-bell','c3-bike-gone','c3-figure-reveal','c3-after-figure','c3-figure-crossing','c3-voice-ahead','c3-voice-behind','c3-close-bell',
- 'c3-run-start','c3-pursuit-far','c3-bike-block','c3-pursuit-near','c3-tunnel-exit','c3-bike-remount','c3-road-pursuit','c3-road-figure','chapter3-end'];
-const ALIAS3={'phone-recording':'recording','neighbor-investigation':'neighbors','c3-old-bike-tunnel':'c3-old-bike','c3-figure':'c3-figure-reveal','c3-figure-bend':'c3-after-figure','c3-voice':'c3-voice-ahead',
- 'c3-escape':'c3-run-start','c3-tunnel-escape':'c3-run-start','c3-bike-escape':'c3-bike-remount','c3-road-escape':'c3-road-pursuit','alex-house-day':'c3-alex-house'};
-// Checkpoints (silent; Continue on the title menu returns to the last one). ('c3-voice' is no longer saved, but an older save still continues.)
+ 'c3-tunnel-deep','c3-evidence','c3-first-bell','c3-alex-item','c3-old-bike','c3-broken-bell','c3-bike-gone','c3-figure-reveal','c3-follow-alex','c3-second-sighting','c3-creature-reveal','c3-creature-advance',
+ 'c3-creature-chase-start','c3-creature-far','c3-creature-side','c3-bike-block','c3-creature-near','c3-creature-barrier','c3-tunnel-exit','c3-bike-remount','c3-road-escape','c3-final-lure','chapter3-end'];
+// (older names, and the escalation build's, still work)
+const ALIAS3={'phone-recording':'recording','neighbor-investigation':'neighbors','c3-old-bike-tunnel':'c3-old-bike','alex-house-day':'c3-alex-house','c3-figure':'c3-figure-reveal','c3-alex-lure':'c3-figure-reveal',
+ 'c3-after-figure':'c3-follow-alex','c3-figure-bend':'c3-follow-alex','c3-figure-crossing':'c3-second-sighting','c3-voice':'c3-second-sighting','c3-voice-ahead':'c3-second-sighting','c3-voice-behind':'c3-creature-reveal',
+ 'c3-close-bell':'c3-creature-reveal','c3-run-start':'c3-creature-chase-start','c3-escape':'c3-creature-chase-start','c3-tunnel-escape':'c3-creature-chase-start','c3-creature-chase':'c3-creature-chase-start',
+ 'c3-pursuit-far':'c3-creature-far','c3-pursuit-near':'c3-creature-near','c3-bike-escape':'c3-bike-remount','c3-road-pursuit':'c3-road-escape','c3-road-figure':'c3-final-lure'};
+// Checkpoints (silent; Continue on the title menu returns to the last one). (Older saves at 'c3-figure', 'c3-voice' or 'c3-escape' still continue.)
 export const LABEL3={'chapter3-start':'Where he turned, later','c3-alex-house':'Alex’s house','alex-bedroom':'Alex’s room','phone-recording':'His recordings','neighbor-investigation':'Asking around',
  'c3-road-day':'The end of Briarwood','night-start':'That night','c3-road-night':'The old road','c3-tunnel-entrance':'The outfall','c3-tunnel-deep':'Inside','c3-old-bike':'The bike, down there',
- 'c3-figure':'Down the tunnel','c3-voice':'His voice','c3-escape':'Run','c3-road-escape':'The old road, back','chapter3-end':'Briarwood, after'};
-const DAY={start:'9:16',house:'9:24',room:'9:31',street:'9:58',road:'10:21',leave:'10:41'},NIGHT={home:'11:12',corner:'11:20',road:'11:26',outfall:'11:31',inside:'11:34',bike:'11:41',voice:'11:47',run:'11:49',safe:'11:54'};
+ 'c3-alex-lure':'Down the tunnel','c3-creature-reveal':'The junction','c3-creature-chase':'Run','c3-road-escape':'The old road, back','chapter3-end':'Briarwood, after',
+ 'c3-figure':'Down the tunnel','c3-voice':'Farther in','c3-escape':'Run'};
+const DAY={start:'9:16',house:'9:24',room:'9:31',street:'9:58',road:'10:21',leave:'10:41'},NIGHT={home:'11:12',corner:'11:20',road:'11:26',outfall:'11:31',inside:'11:34',bike:'11:41',lure:'11:45',voice:'11:47',creature:'11:47',run:'11:48',safe:'11:54'};
 // What the recordings say (captions; the audio is in audio.js, timed to match).
 const RECS=[
  {date:'08/07',time:'2:14P',len:'0:08',lines:[{wait:.4},{who:'RECORDING',text:'[Jamie and Sam, cracking up]',time:3.6},{who:'SAM, ON THE PHONE',text:'“Dude, do it again—”',time:2.2},{wait:2}],react:[{who:'SAM',text:'“Oh my God. I forgot about that.”',time:2.4,by:'sam'}]},
@@ -60,7 +65,7 @@ export function createChapter3(o,k,ch2){
  const Wd=world.woods,Dr=world.drain,WS=Wd.spots,DS=Dr.spots,WN=nav.woodsNav,DD=Dr.D,AH=world.homes.alex,R=world.interiors['alex-room'],B=nav.frame,side=k.side,main=k.main,dist=k.dist,me=k.me,talk=k.talk,busy=k.busy,objective=k.objective,go=k.go;
  for(const [p,v] of Object.entries({'c3-black':0,'d3-corner':0,'d3-street':0,'d3-mom':0,'d3-room':0,'d3-phone':0,'d3-window':0,'d3-neighbors':0,'d3-road':0,'d3-tracks':0,'d3-plan':0,'d3-home':0,
   'c3-night':.82,'n3-home':.78,'n3-corner':.79,'n3-ride':.82,'n3-road':.86,'n3-outfall':.88,'n3-tunnel':.88,'n3-evidence':.88,'n3-bell':.88,'n3-item':.88,'n3-bike':.88,'n3-deeper':.88,'n3-figure':.88,'n3-follow':.88,
-  'n3-search':.88,'n3-cross':.88,'n3-voice':.88,'n3-behind':.88,'n3-close':.88,'n3-run':.88,'n3-out':.88,'n3-flee':.86,'n3-safe':.82,'n3-end':.82}))k.DEEP[p]=v;
+  'n3-lure':.88,'n3-creature':.88,'n3-run':.88,'n3-out':.88,'n3-flee':.86,'n3-safe':.82,'n3-end':.82}))k.DEEP[p]=v;
  const date=(t,ampm)=>o.setDate(`AUGUST 22, 2011 <i></i> ${t} ${ampm}`);
  const checkpoint=id=>k.checkpointTo(id,LABEL3[id]);if(k.CHECKPOINT)Object.assign(k.CHECKPOINT,LABEL3);
  const where=(p=me())=>nav.locate(p.x,p.z);
@@ -140,8 +145,8 @@ export function createChapter3(o,k,ch2){
  const oldSpot={x:oldAt.x,z:oldAt.z,y:Dr.floorAt(OB.s,oldAt.t)+.6};
  // ---- the boy: Alex's size, Alex's clothes, Alex's hair. Nothing about him is wrong. -----------------------------------
  // FG.state: off, unseen (standing far down the deep box), first-reveal (they have stopped; you have not seen him yet),
- // first-seen, turning, leaving-bend, hidden, second-presence (crossing the tunnel ahead), pursuit-far, pursuit-hidden,
- // pursuit-near, pursuit-watch, road-block, road-leave, gone. In the drain his place is (s,t) and a yaw from its heading
+ // first-seen, turning, leaving-bend, hidden, lure-wait (at the junction, his back to them), lure-walk, lure-step (up
+ // into the side culvert), lure-in, lure-gone, road-block, road-leave, gone. In the drain his place is (s,t) and a yaw from its heading
  // (0: facing deeper, PI: facing back toward the way out); on the old road it is FG.road.
  const figure=createPerson({...CAST.alex});figure.group.name='figure';scene.add(figure.group);figure.group.visible=false;
  // He catches the light: his own copies of the materials, and when a beam is on him far down the tunnel (or the road) a
@@ -150,11 +155,43 @@ export function createChapter3(o,k,ch2){
   m.onBeforeCompile=sh=>{sh.uniforms.uCatch=u;sh.fragmentShader='uniform float uCatch;\n'+sh.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n\ttotalEmissiveRadiance+=diffuseColor.rgb*uCatch;');};
   m.customProgramCacheKey=()=>key;o2.material=m;});return u;};
  const figCatch=catchable(figure.group,'figure-catch');oldCatch=catchable(old.group,'old-bike-catch');
- const FG={s:DD.figure.s,t:DD.figure.t,v:0,gait:0,yaw:Math.PI,look:0,state:'off',road:null,turnV:0,turnFrom:Math.PI,turnT:0,stepPh:0,hidden:0,lastStride:0,pose:newPose()};
+ // ---- the thing in the drain (creature.js): loaded in the background, shown only when the story needs it ----------
+ const creature=createCreature({scene});
+ // Where it is along the drain (s, t), how high above the floor there (y: up in the side culvert), which way it faces (h).
+ const CRT0={state:'off',s:0,t:0,y:0,h:0,v:0,phT:0,hidden:0,stride:0,from:null,to:null,pose:null,road:null,lastPh:0},CRT={...CRT0};
+ const CUL=DD.junction.side,culW=()=>Dr.sizeAt(CUL.s).w;
+ // the side culvert's mouth (d metres in from the junction wall; up: above its sill)
+ const culvertAt=(d=0,up=0)=>{const q=Dr.at(CUL.s,-(culW()/2+d));return {x:q.x,z:q.z,y:Dr.floor(CUL.s)+CUL.sill+up,a:q.a};};
+ function placeCreature(){if(CRT.road){creature.place(CRT.road.x,CRT.road.y,CRT.road.z,CRT.h);return;}const s=clamp(CRT.s,0,Dr.len),q=Dr.at(s,CRT.t),y=CRT.y>0?Dr.floor(s)+CRT.y:Dr.floorAt(s,CRT.t,{ledge:false});creature.place(q.x,y,q.z,CRT.h);}
+ const crChest=()=>{const g=creature.group.position;return {x:g.x,y:g.y+.75,z:g.z};};
+ // ---- the maintenance gate at the first bend: a steel bar screen across the drain, two leaves in the middle ---------
+ // Open (swung back) on the way in; Jamie slams it behind them on the way out; it holds it for a few seconds.
+ const GT={s:74,half:1.1},gate=new THREE.Group();gate.name='drain-gate';scene.add(gate);gate.visible=false;
+ const GA={open:1,want:1,rattle:0,burst:false};
+ const gateLeaves=[];
+ {const q=Dr.at(GT.s,0),{w}=Dr.sizeAt(GT.s),fl=Dr.floor(GT.s),H=2.36;gate.position.set(q.x,fl,q.z);gate.rotation.y=-q.a;
+  const steel=new THREE.MeshStandardMaterial({color:0x5b4b3c,roughness:.72,metalness:.45}),rust=new THREE.MeshStandardMaterial({color:0x6e4a32,roughness:.85,metalness:.2});
+  const bar=(g,x,y,z,sx,sy,sz,m)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),m);b.position.set(x,y,z);g.add(b);return b;};
+  const fixed=new THREE.Group();gate.add(fixed);
+  for(const e of [-1,1]){bar(fixed,e*GT.half,H/2,0,.1,H,.1,steel);bar(fixed,e*(w/2-.04),H/2,0,.08,H,.08,steel);// posts
+   for(let x=GT.half+.16;x<w/2-.06;x+=.17)bar(fixed,e*x,H/2,0,.03,H,.03,rust);bar(fixed,e*(GT.half+w/2)/2,.12,0,w/2-GT.half,.07,.07,steel);bar(fixed,e*(GT.half+w/2)/2,H-.06,0,w/2-GT.half,.07,.07,steel);}
+  bar(fixed,0,H+.05,0,w,.12,.14,steel);// header
+  mergeChildren(fixed,rust,'drain-gate-bars');mergeChildren(fixed,steel,'drain-gate-frame');
+  for(const e of [-1,1]){const pv=new THREE.Group();pv.position.set(e*GT.half,0,0);gate.add(pv);const leaf=new THREE.Group();pv.add(leaf);
+   for(let x=.12;x<GT.half-.04;x+=.17)bar(leaf,-e*x,H/2-.04,0,.03,H-.16,.03,rust);bar(leaf,-e*GT.half/2,.14,0,GT.half,.07,.06,steel);bar(leaf,-e*GT.half/2,H-.12,0,GT.half,.07,.06,steel);bar(leaf,-e*(GT.half-.03),H/2,0,.06,H-.1,.06,steel);
+   mergeChildren(leaf,rust,'drain-gate-leaf-bars');mergeChildren(leaf,steel,'drain-gate-leaf-frame');gateLeaves.push({pv,e});}}
+ // (open: each leaf swung back flat along the drain, deeper side; closed: across the middle)
+ function poseGate(dt){const k2=GA.burst?9:5;GA.open=damp(GA.open,GA.want,k2,dt);for(const L of gateLeaves){const ang=L.e*(GA.burst?Math.PI/2*.94+.05*L.e:-Math.PI/2)*GA.open;L.pv.rotation.y=ang+(GA.rattle>0?GA.rattle*.06*Math.sin(C.t*31+L.e*1.7):0);}GA.rattle=Math.max(0,GA.rattle-dt*1.6);}
+ function gateBlockers(out){const q=Dr.at(GT.s,0),{w}=Dr.sizeAt(GT.s),a=q.a,rx=Math.cos(a),rz=Math.sin(a),fx=Math.sin(a),fz=-Math.cos(a);
+  const put=(t,ds2=0)=>out.push({x:q.x+rx*t+fx*ds2,z:q.z+rz*t+fz*ds2,r:.11,speed:0,gate:true});
+  for(const e of [-1,1])for(let t=GT.half;t<=w/2;t+=.24)put(e*t);
+  for(const e of [-1,1])for(let k3=.24;k3<=GT.half+.01;k3+=.24){const lx=-e*k3*Math.cos(Math.PI/2*GA.open),lf=(GA.burst?-1:1)*k3*Math.sin(Math.PI/2*GA.open);put(e*GT.half+lx,lf);}}
+ // a little more of its own colour where a beam lands on it far off (the material is patched in creature.js)
+ const FG={s:DD.figure.s,t:DD.figure.t,v:0,gait:0,yaw:Math.PI,look:0,state:'off',road:null,turnV:0,turnFrom:Math.PI,turnT:0,stepPh:0,hidden:0,lastStride:0,dy:0,pose:newPose()};
  const FG0={...FG,pose:null};
  function placeFigure(dt=0){let x,z,y,h;
   if(FG.road){const q=Wd.at(FG.road.s,FG.road.t);x=q.x;z=q.z;y=nav.groundY(x,z);h=FG.road.h;}
-  else{const q=Dr.at(clamp(FG.s,0,Dr.len),FG.t);x=q.x;z=q.z;y=Dr.floorAt(clamp(FG.s,0,Dr.len),FG.t);h=q.a+FG.yaw;}
+  else{const q=Dr.at(clamp(FG.s,0,Dr.len),FG.t);x=q.x;z=q.z;y=FG.dy?Dr.floor(clamp(FG.s,0,Dr.len))+FG.dy:Dr.floorAt(clamp(FG.s,0,Dr.len),FG.t);h=q.a+FG.yaw;}
   figure.group.position.set(x,y,z);figure.group.rotation.set(0,-h,0);
   if(FG.v>.05){FG.gait+=FG.v*dt/stride(Math.max(FG.v,.8));walkPose(FG.pose,FG.gait,Math.max(FG.v,.8),{look:FG.look});}
   else if(FG.turnV){FG.stepPh+=dt*1.15;walkPose(FG.pose,FG.stepPh,.8,{look:FG.look});}// (small steps, turning round on the spot)
@@ -236,7 +273,7 @@ export function createChapter3(o,k,ch2){
  const owns=ph=>typeof ph==='string'&&/^(c3|d3|n3)-/.test(ph);
  const handles=sec=>SECTIONS3.includes(sec)||!!ALIAS3[sec];
  const day=()=>/^(c3-black|d3-)/.test(S.phase);
- const tunnelPhase=()=>/^n3-(tunnel|evidence|bell|item|bike|deeper|figure|follow|search|cross|voice|behind|close|run)$/.test(S.phase);
+ const tunnelPhase=()=>/^n3-(tunnel|evidence|bell|item|bike|deeper|figure|follow|lure|creature|run)$/.test(S.phase);
  // ---- poses (a closer look, the window, listening at the desk) -----------------------------------------------
  function pose(at,{y,pitch=0,yaw=null,look=null}){const p=me(),a=yaw??headingTo(at.x,at.z,look.x,look.z);C.pose={w:0,x:at.x,y,z:at.z,yaw:a,pitch,from:p.a,fromPitch:p.pitch||0,baseYaw:a,baseY:y,release:false};k.setPose(C.pose);o.roam.walkLock=true;}
  function unpose(){if(C.pose)C.pose.release=true;}
@@ -507,7 +544,7 @@ export function createChapter3(o,k,ch2){
    {then:()=>{S.jamieAim=null;S.samAim=null;}});}
  // The boy at the end of the light. Jamie stops dead; Sam stops beside you; both lights go to the far end of the straight,
  // and he is standing there. He does not go until you have seen him, and seen him for a while.
- function startReveal(){if(C.flags.figure)return;C.flags.figure=true;go('n3-figure');checkpoint('c3-figure');mark('someone down there');objective('');
+ function startReveal(){if(C.flags.figure)return;C.flags.figure=true;go('n3-figure');checkpoint('c3-alex-lure');mark('someone down there');objective('');
   if(FG.state!=='unseen')figureReady();FG.state='first-reveal';
   const ps=Math.max(drainS(),2),a=Dr.at(ps).a,fc=figChest;C.fig={t0:C.t,seenT:0,seenAt:null,nudge:0,alexAt:null,unseenGo:false,distAtSeen:null};
   // (either side of you, a step ahead, about a metre out: Jamie on your right, Sam on your left, so your own line down the
@@ -518,109 +555,197 @@ export function createChapter3(o,k,ch2){
   S.jamieAim=fc;later(.55,()=>{S.samAim=fc;});C.hold.jamie=null;C.hold.sam=null;
   T?.jolt(.76,{rise:1,hold:10,why:'someone, down the tunnel'});}
  function startTurn(){FG.state='turning';FG.turnFrom=FG.yaw;FG.turnT=0;FG.turnV=1;mark('he turns away');}
- function figureGone(){if(C.flags.figGone)return;C.flags.figGone=true;hideFigure('hidden');go('n3-follow');objective('Follow Jamie.');mark('he walked around the bend');
-  S.jamieAim=null;S.samAim=null;C.hold.jamie=null;C.hold.sam=null;T?.set(.72,{why:'after him'});
-  C.point={jamie:{...tq(229,.4),look:lookAhead(250,0,1.2),max:2.6,face:Dr.at(229).a}};role(jamie,'point');role(sam,'beside');
-  talk([{who:'JAMIE',text:'“Alex! ALEX!”',from:jamie,time:1.6,gap:.4},{who:'SAM',text:'“Jamie, wait! Jamie!”',from:sam,time:1.6}],{interrupt:true});C.followAt=C.t;}
- // Past the bend: nobody. Another long stretch, no way out of it he could have reached. Things that have just been moved.
- function searchF(){if(C.flags.search)return;C.flags.search=true;go('n3-search');objective('');mark('nobody there');T?.set(.74,{why:'nobody there'});C.searchAt=C.t;
-  CB.amp=.32;CB.t=0;cable.visible=true;for(let i=0;i<3;i++)later(i*.55,()=>{const q=Dr.at(250,0);rippleAt(q.x,Dr.floor(250)-.07,q.z,1.1,2.6);});LF.s=262;leaf.visible=true;
-  wet.visible=true;wetMat.opacity=.9;C.wetT=0;
-  C.point={jamie:{...tq(258,.6),look:lookAhead(268,0,1),max:1.3}};role(jamie,'point');role(sam,'beside');
-  talk([{who:'JAMIE',text:'“He was right here.”',from:jamie,time:1.8,gap:1.4},{who:'SAM',text:'“There’s nobody down here.”',from:sam,time:2},{wait:2.4},{who:'JAMIE',text:'“There’s nowhere to go.”',from:jamie,time:2}]);}
- // Then, ahead, across the tunnel, from one black side drain to the other: someone. Clearly a person. Gone.
- const CR={s:DD.openings.find(o2=>o2.cross)?.s??264},crossW=()=>Dr.sizeAt(CR.s).w,crossMid=()=>lookAhead(CR.s,0,1);
- const crossL=()=>{const O=Dr.openings.find(o2=>o2.cross&&o2.side<0);return {x:O.x,z:O.z,y:O.y};};
- function crossing(){if(C.flags.cross)return;C.flags.cross=true;go('n3-cross');mark('someone crossing ahead');C.crossAt=C.t;
-  FG.road=null;FG.state='second-presence';FG.s=CR.s;FG.t=crossW()/2+.3;FG.yaw=-Math.PI/2;FG.v=1.65;FG.look=.3;FG.turnV=0;figure.group.visible=true;placeFigure(0);
-  T?.jolt(.86,{rise:1,hold:8,why:'someone crossing, ahead'});
-  later(.55,()=>{hold(jamie,{look:figChest,gesture:t=>GEST.recoil(.45*smooth(t/.2)),until:C.t+3.2,turn:2});S.jamieAim=figChest;hold(sam,{look:crossMid,gesture:t=>GEST.recoil(smooth(t/.2)),until:C.t+3.6,turn:2.4});S.samAim=crossMid();});
-  later(1.8,()=>talk([{who:'SAM',text:'“Somebody just—”',from:sam,time:1.3,gap:.3},{who:'JAMIE',text:'“I saw.”',from:jamie,time:1.2,gap:1.4},{who:'JAMIE',text:'“…Alex?”',from:jamie,time:1.4}],
-   {interrupt:true,then:()=>{S.jamieAim=null;S.samAim=null;C.crossDone=C.t;}}));}
- // From ahead, out of the side drain he went into: "Jamie?" Jamie looks, and takes a step toward it; Sam looks too.
- const VA=()=>({...crossL(),y:crossL().y+.2});
- function voiceAhead(){if(C.flags.voice1)return;C.flags.voice1=true;go('n3-voice');date(NIGHT.voice,'PM');mark('his voice, ahead');const q=VA();C.v1At=C.t;
-  o.audio()?.voice?.('jamie',q,{gain:1,tunnel:true,ref:3});C.voices=[{word:'jamie',pos:q,at:C.t,tunnel:true,where:'ahead'}];T?.jolt(.88,{rise:1,hold:8,why:'Alex’s voice, ahead'});
-  S.jamieAim=q;later(.4,()=>{S.samAim=q;});
-  hold(jamie,{look:q,until:C.t+1.4,turn:2});later(1.4,()=>{C.point={jamie:{...tq(CR.s-1.7,-.75),look:q,max:.9}};role(jamie,'point');});hold(sam,{look:q,gesture:t=>GEST.recoil(.5*smooth(t/.4)),until:null});
-  talk([{who:'ALEX’S VOICE, AHEAD',text:'“Jamie?”',time:1.6,gap:2.2},{who:'JAMIE',text:'“…Alex?”',from:jamie,time:1.6,gap:1},{who:'SAM',text:'“Don’t. Jamie, don’t.”',from:sam,time:1.8}],{interrupt:true,then:()=>{C.waitV2=0;}});}
- // Then from behind them, back the way they came: "Guys?"
- const VB=()=>lookAhead(224,0,1.3);
- function voiceBehind(){if(C.flags.voice2)return;C.flags.voice2=true;go('n3-behind');mark('his voice, behind them');const q=VB();C.v2At=C.t;
-  const f=new THREE.Vector3();camera.getWorldDirection(f);const dx=q.x-camera.position.x,dz=q.z-camera.position.z,l=Math.hypot(dx,dz)||1;const dot=(dx*f.x+dz*f.z)/l/(Math.hypot(f.x,f.z)||1);
-  o.audio()?.voice?.('guys',q,{gain:1.05,tunnel:true,ref:4});C.voices.push({word:'guys',pos:q,at:C.t,tunnel:true,where:'behind',dotFromView:dot});T?.jolt(.95,{rise:1.4,hold:10,why:'his voice, behind them'});
-  // Sam whips round first, his light swinging back; Jamie turns hard a moment later. Both lights snap behind them.
-  C.hold.sam={face:headingTo(sam.px,sam.pz,q.x,q.z),look:q,gesture:t=>GEST.recoil(smooth(t/.25)),until:null,at:C.t,turn:3.4};S.samAim=q;
-  later(.45,()=>{C.hold.jamie={face:headingTo(jamie.px,jamie.pz,q.x,q.z),look:q,gesture:t=>GEST.tense(1),until:null,at:C.t,turn:3};S.jamieAim=q;});
-  talk([{who:'ALEX’S VOICE, BEHIND THEM',text:'“Guys?”',time:1.4}],{interrupt:true,then:()=>{go('n3-close');C.waitT=0;}});}
- // A bell, a few feet away. Nothing there.
- function closeBell(){if(C.flags.close)return;C.flags.close=true;mark('the bell, right beside them');const f=new THREE.Vector3();camera.getWorldDirection(f);f.y=0;f.normalize();
-  const p=camera.position,r=new THREE.Vector3(Math.cos(Math.atan2(f.x,-f.z)),0,Math.sin(Math.atan2(f.x,-f.z)));
-  // just behind your shoulder, on the side away from the nearer wall
-  const q0=Dr.project(p.x,p.z),sd=q0&&q0.t>0?-1:1;let q={x:p.x-f.x*1.0+r.x*.7*sd,y:p.y-.2,z:p.z-f.z*1.0+r.z*.7*sd};if(!Dr.inside(q.x,q.z,-.2)){q={x:p.x-f.x*1.2,y:p.y-.2,z:p.z-f.z*1.2};}
-  C.closeAt=q;C.closeT=C.t;o.audio()?.bell3?.(q,.62,{tunnel:true,ref:1});C.heardBells.push({pos:q,at:C.t,close:true});
-  T?.jolt(1,{rise:2,hold:30,why:'the bell, right beside them'});
-  for(const c of [jamie,sam])C.hold[c.key]={face:headingTo(c.px,c.pz,q.x,q.z),look:q,gesture:t=>GEST.recoil(smooth(t/.18)),until:null,at:C.t,turn:3.6};S.jamieAim=q;S.samAim=q;
-  talk([{who:'',text:'[A bicycle bell. Right beside them.]',time:1.6},{wait:.15},{who:'SAM',text:'“RUN!”',from:sam,time:1},{who:'JAMIE',text:'“GO! GO!”',from:jamie,time:1.2,act:run}],{interrupt:true});}
- // ---- the escape ------------------------------------------------------------------------------------------------
+ function figureGone(){if(C.flags.figGone)return;C.flags.figGone=true;hideFigure('hidden');go('n3-follow');objective('Follow him.');mark('he walked around the bend');
+  wet.visible=true;C.wetT=0;cable.visible=true;CB.amp=.14;CB.t=0;// (a print on the ledge, just now; a hanging cable, still swinging)
+  S.jamieAim=null;S.samAim=null;C.hold.jamie=null;C.hold.sam=null;T?.set(.7,{why:'after him'});
+  C.point={jamie:{...tq(232,.4),look:lookAhead(252,0,1.2),max:3.2,face:Dr.at(232).a}};role(jamie,'point');role(sam,'beside');
+  talk([{who:'JAMIE',text:'“Alex! ALEX! Wait!”',from:jamie,time:1.6,gap:.4},{who:'SAM',text:'“Jamie— wait for us!”',from:sam,time:1.6}],{interrupt:true});C.followAt=C.t;}
+ // ---- following him: past the bend, the long last stretch; then him again, farther in, at the junction ------------------
+ // He stands by the black side culvert, his back to them. He does not answer. He steps up into it, into the dark.
+ const LURE={s:274.6,t:-1.15};
+ function lureReady(){FG.road=null;FG.state='lure-wait';FG.s=LURE.s;FG.t=LURE.t;FG.v=0;FG.yaw=0;FG.look=0;FG.turnV=0;FG.hidden=0;FG.dy=0;figure.group.visible=true;placeFigure(0);
+  C.lure={t0:C.t,seenT:0,seenAt:null,nudge:0,walkAt:null,stepAt:null,goneAt:null,distAtSeen:null,unseenGo:false};}
+ function lureSighted(){if(C.flags.lure)return;C.flags.lure=true;go('n3-lure');date(NIGHT.lure,'PM');
+  {const L2=C.lure,ch=figChest();L2.seenAt=C.t;L2.bySight=L2.seenT>.35;L2.distAtSeen=+Math.hypot(ch.x-camera.position.x,ch.z-camera.position.z).toFixed(1);}mark('him again, farther in');objective('');T?.jolt(.8,{rise:1,hold:10,why:'him again, farther in'});
+  const fc=figChest;S.jamieAim=fc;later(.5,()=>{S.samAim=fc;});C.hold.jamie=null;C.hold.sam=null;
+  C.point={jamie:{...tq(Math.max(cS(jamie)+1.2,252),.35),look:fc,max:1.6}};role(jamie,'point');role(sam,'beside');
+  talk([{who:'JAMIE',text:'“There!”',from:jamie,time:1.2,gap:.5},{who:'JAMIE',text:'“ALEX! It’s us! It’s Jamie!”',from:jamie,time:2.4}],{interrupt:true});}
+ function lureWalk(){if(!C.lure||C.lure.walkAt!==null)return;C.lure.walkAt=C.t;FG.state='lure-walk';FG.v=0;mark('he walks away from them, to the side culvert');
+  C.point={jamie:{...tq(265,.95),look:figChest,max:1.7}};role(jamie,'point');
+  talk([{wait:.8},{who:'SAM',text:'“Why isn’t he stopping?”',from:sam,time:1.8,gap:.6},{who:'JAMIE',text:'“He wants us to follow him.”',from:jamie,time:2,gap:.8},{who:'SAM',text:'“Jamie. I don’t like this.”',from:sam,time:1.8}]);}
+ // ---- the junction: where he went, something else -----------------------------------------------------------------
+ // In the culvert he stepped into, crouched in the dark on the sill: a long pale thing, on all fours. It does not move
+ // until you have seen it (Jamie's light is on it; they cue you); then it crawls to the lip, drops into the water, turns
+ // to them, and comes. Nothing says what it is, or what it has to do with him.
+ function creatureReveal(){if(C.flags.creature)return;C.flags.creature=true;go('n3-creature');checkpoint('c3-creature-reveal');date(NIGHT.creature,'PM');mark('something in the culvert, where he went');objective('');
+  // (it comes up out of the dark of the culvert, where nobody down the tunnel can see into it, to the lip)
+  Object.assign(CRT,{...CRT0,state:'emerge',s:CUL.s,t:-(culW()/2+3.3),y:CUL.sill,h:Dr.at(CUL.s).a+Math.PI/2,v:.9});creature.show(true);placeCreature();
+  C.crt={t0:null,emergeAt:C.t,seenT:0,seenAt:null,nudge:0,creepAt:null,dropAt:null,landedAt:null,unseenGo:false,distAtSeen:null};
+  const cm=culvertAt(-.2,.45);S.jamieAim=cm;later(.7,()=>{S.samAim=cm;});hold(jamie,{look:cm,until:null});hold(sam,{look:cm,until:null});
+  talk([{who:'JAMIE',text:'“Alex? …Alex, come out. It’s okay.”',from:jamie,time:2.6}],{interrupt:true});T?.set(.8,{why:'the culvert he went into'});}
+ function creatureSeen(){const R2=C.crt;if(!R2||R2.seenAt!==null)return;R2.seenAt=C.t;mark('it is there, in the culvert');T?.jolt(1,{rise:1.2,hold:14,why:'something in the culvert'});
+  const cc=crChest;S.jamieAim=cc;S.samAim=cc;hold(jamie,{look:cc,gesture:t=>GEST.recoil(.7*smooth(t/.3)),until:null,turn:2});hold(sam,{look:cc,gesture:t=>GEST.recoil(smooth(t/.25)),until:null,turn:2.4});
+  talk([{wait:.7},{who:'JAMIE',text:'“…That’s not—”',from:jamie,time:1.4,gap:.5},{who:'SAM',text:'“That’s not Alex.”',from:sam,time:1.6}],{interrupt:true});}
+ function creatureDrop(){const R2=C.crt;if(!R2||R2.dropAt!==null)return;R2.dropAt=C.t;CRT.state='drop';CRT.phT=0;CRT.from={t:CRT.t,y:CRT.y};CRT.to={t:-(culW()/2-1.1),y:0};mark('it drops into the water, toward them');}
+ function creatureLanded(){const q=Dr.at(CUL.s,CRT.t),wy=Dr.waterAt(CUL.s);splashAt(q.x,(wy??Dr.floor(CUL.s)-.07)+.01,q.z,22,1.6);rippleAt(q.x,(wy??Dr.floor(CUL.s))-.01,q.z,2,2.4);crSound('impact',{x:q.x,y:Dr.floor(CUL.s)+.3,z:q.z},1);
+  CRT.state='turn';CRT.phT=0;CRT.from={h:CRT.h};
+  talk([{who:'SAM',text:'“RUN!”',from:sam,time:1},{who:'JAMIE',text:'“GO! GO!”',from:jamie,time:1.2}],{interrupt:true});later(.15,run);}
+ // From in there, his voice. (Nobody says whose.)
+ function lureVoice(){const L2=C.lure;if(!L2||L2.voiceAt!=null)return;L2.voiceAt=C.t;const q=culvertAt(2.6,.7);o.audio()?.voice?.('jamie',q,{gain:.85,tunnel:true,ref:3});
+  (C.voices||=[]).push({word:'jamie',pos:q,at:C.t,tunnel:true,where:'culvert'});T?.jolt(.86,{rise:1,hold:8,why:'his voice, from the culvert'});
+  talk([{who:'FROM THE CULVERT',text:'“Jamie?”',time:1.4,gap:.6}],{interrupt:true});}
+ const _crh=new THREE.Vector3();
+ function updateCreatureReveal(dt){const R2=C.crt;if(!R2)return;const w=culW(),cp=camera.position,hp=creature.headPos?.(_crh)||crChest();
+  // (seen: its head, out over the lip, in front of you and nothing in between)
+  const seen=creature.group.visible&&Dr.sees(cp,culvertAt(-.3,.5),.02)&&Dr.sees(cp,hp,.02)&&k.camLooksAt(hp,.94);
+  if(CRT.state==='emerge'){CRT.t=Math.min(-(w/2+.35),CRT.t+.9*dt);CRT.v=.9;CRT.pose={crouch:.55};if(CRT.t>=-(w/2+.35)-1e-6){CRT.state='reveal';CRT.v=0;R2.t0=C.t;mark('something at the lip of the culvert');}}
+  if(CRT.state==='reveal'||CRT.state==='creep')if(seen)R2.seenT+=dt;
+  if(CRT.state==='reveal'){CRT.v=0;CRT.pose={crouch:1};
+   if(R2.seenAt===null){const since=C.t-R2.t0;
+    if(R2.seenT>.4){R2.distAtSeen=+Math.hypot(hp.x-cp.x,hp.z-cp.z).toFixed(1);creatureSeen();}
+    else{if(!busy()){if(since>2.5&&R2.nudge===0){R2.nudge=1;talk([{who:'SAM',text:'“Jamie.”',from:sam,time:1}]);}
+      else if(since>6&&R2.nudge===1){R2.nudge=2;talk([{who:'SAM',text:'“Jamie. The pipe. Look at the pipe.”',from:sam,time:2.2}]);}
+      else if(since>12&&R2.nudge===2){R2.nudge=3;talk([{who:'JAMIE',text:'“Something’s in there.”',from:jamie,time:1.8}]);}
+      else if(R2.nudge>=3&&R2.nudge<6&&since>19+(R2.nudge-3)*7){R2.nudge++;talk([{who:'SAM',text:'“The pipe. On the left.”',from:sam,time:1.6}]);}}
+     // generous, never silent: never looked at all, after a long while, it comes anyway
+     if(since>40){R2.unseenGo=true;creatureSeen();}}}
+   else if(C.t-R2.seenAt>1){CRT.state='creep';R2.creepAt=C.t;}}
+  if(CRT.state==='creep'){const goal=-(w/2+.1);CRT.t=Math.min(goal,CRT.t+.5*dt);CRT.v=CRT.t<goal-.01?.5:0;CRT.pose={crouch:.7};if(C.t-R2.seenAt>3.8)creatureDrop();}
+  if(CRT.state==='drop'){CRT.phT+=dt;const u=clamp(CRT.phT/.6,0,1),f=CRT.from,to=CRT.to;CRT.t=f.t+(to.t-f.t)*smooth(u);CRT.y=Math.max(0,f.y*(1-u)+to.y*u+.28*Math.sin(Math.PI*u));CRT.v=2.4;CRT.pose={rear:.25*(1-u)};
+   if(u>=1){CRT.y=0;R2.landedAt=C.t;creatureLanded();}}
+  if(CRT.state==='turn'){CRT.phT+=dt;const u=smooth(clamp(CRT.phT/.6,0,1));CRT.h=CRT.from.h+Math.PI/2*u;CRT.v=1.4;CRT.pose=null;if(CRT.phT>=.6){CRT.state='chase';CRT.v=2.5;}}}
+ // It, every frame it is shown: where the story has put it and what it is doing; its footfalls in the water.
+ const crLook={x:0,y:0,z:0};
+ function updateCreature(dt){if(!creature.group.visible)return;const D=creature.drive,W=CRT.pose||{};
+  D.speed=CRT.v;D.rear=damp(D.rear,W.rear||0,6,dt);D.claw=damp(D.claw,W.claw||0,8,dt);D.crouch=damp(D.crouch,W.crouch||0,3,dt);
+  crLook.x=camera.position.x;crLook.y=camera.position.y;crLook.z=camera.position.z;D.look=W.look||crLook;placeCreature();creature.update(dt);
+  if(CRT.v>1.6&&creature.phase<CRT.lastPh){const g=creature.group.position,wy=CRT.road?null:Dr.waterAt(clamp(CRT.s,0,Dr.len));if(wy!==null&&CRT.y<=0)splashAt(g.x,wy+.01,g.z,6,1.1);crSound(wy!==null?'move':'step',{x:g.x,y:g.y+.2,z:g.z},.7);}
+  CRT.lastPh=creature.phase;}
+ // the placeholder sound hooks for it (future real audio): its movement in the water, its impacts (the gate)
+ function crSound(kind,pos,gain=1){C.crSounds=(C.crSounds||0)+1;(C.crKinds||={})[kind]=(C.crKinds[kind]||0)+1;o.sfx(kind==='impact'?'tap':'splash',pos,{gain:kind==='impact'?Math.min(1.4,gain*1.3):gain});}
+ // ---- the run -------------------------------------------------------------------------------------------------------
  // A story sprint (game.js asks escapeDir() which way out is): faster than any running, no stamina to lose, the view a
- // little wider; Jamie and Sam flat out ahead of you, looking back. Behind you, at first, only water. Then him.
- function run(){if(C.flags.run)return;C.flags.run=true;go('n3-run');checkpoint('c3-escape');date(NIGHT.run,'PM');objective('Run.');S.jamieAim=null;S.samAim=null;o.setDrain?.(0);C.runT=0;C.splashT=.6;
-  for(const c of [jamie,sam]){C.hold[c.key]=null;c.lookAt=null;}role(sam,'run');later(.25,()=>role(jamie,'run'));
+ // little wider; Jamie and Sam flat out ahead of you, looking back. Behind you, it: about 20 m back down the far stretch;
+ // gone round the second bend; then out of a hole in the wall much closer; right behind you at the first bend, where the
+ // old gate is slammed on it and holds it a few seconds; then at the mouth, low in the dark, watching. It never reaches
+ // anyone. (No mesh collision anywhere: it follows the drain's own line, and stops itself.)
+ const SIDE={s:194,gap:9},NEAR_S=96,STALL=4.6;
+ const newPurs=()=>({stage:'start',farAt:null,farWant:20,farVisAt:null,farSeenT:0,farSeenAt:null,farDist:null,lostAt:null,lostLine:false,sideAt:null,sideSkipped:false,sideSeenT:0,sideSeenAt:null,sideDist:null,
+  nearAt:null,nearVisAt:null,nearSeenT:0,nearSeenAt:null,nearDist:null,bikeJamieAt:null,bikeSeenAt:null,stumbleAt:null,pipeAt:null,gateHolder:null,gateHoldAt:null,gateShutAt:null,gateHitAt:null,gateBurstAt:null,gateHits:0,gateSkipped:false,
+  mouthAt:null,mouthLine:false,treeAt:null,treeS:null,treeSeenAt:null,treeDist:null,stallT:0,stalls:0,stallMin:99,cue:0,hintAt:null,minGap:99,minGapRun:99,exitSeenAt:null});
+ function run(){if(C.flags.run)return;C.flags.run=true;go('n3-run');checkpoint('c3-creature-chase');date(NIGHT.run,'PM');objective('Run.');S.jamieAim=null;S.samAim=null;o.setDrain?.(0);C.runT=0;C.splashT=.6;
+  for(const c of [jamie,sam]){C.hold[c.key]=null;c.lookAt=null;}role(sam,'run');later(.25,()=>{if(!C.purs?.gateHoldAt)role(jamie,'run');});
   // (the bike is no longer anywhere they left it: it is lying across the way out, back at the first bend)
   if(C.bike!=='relocated')placeOld('relocated');if(FG.state!=='off')hideFigure('hidden');FG.road=null;
-  C.purs={stage:'start',farAt:null,farVisAt:null,farSeenT:0,farSeenAt:null,nearAt:null,nearVisAt:null,nearSeenT:0,nearSeenAt:null,bikeJamieAt:null,bikeSeenAt:null,stumbleAt:null,pipeAt:null,cue:0,hintAt:null,minGap:99,exitSeenAt:null};
-  A.remountRange=6;A.escape=escapeDir;}
+  C.purs=newPurs();A.remountRange=6;A.escape=escapeDir;GA.want=1;GA.burst=false;}
  function escapeDir(){if(!C.flags.run||C.flags.flee||!/^n3-(run|out)$/.test(S.phase||''))return null;const p=me();if(p.riding)return null;const ds=drainS(p);
-  if(ds>=0){const s=clamp(ds,0,Dr.len-.5),q=Dr.at(s),{w}=Dr.sizeAt(s),pq=Dr.project(p.x,p.z),lim=w/2-.75,ex=pq?pq.t-clamp(pq.t,-lim,lim):0;
-   return {dir:q.a+Math.PI,speed:5.25,fov:7,lat:clamp(ex*1.3,-.5,.5)};}
+  if(ds>=0){const s=clamp(ds,0,Dr.len-.5),q=Dr.at(s),{w}=Dr.sizeAt(s),pq=Dr.project(p.x,p.z),
+    // (coming up to the gate, the way through is its middle: you are drawn to it, as anyone would be)
+    lim=gate.visible&&s>GT.s-1.2&&s<GT.s+7?.35:w/2-.75,ex=pq?pq.t-clamp(pq.t,-lim,lim):0;
+   return {dir:q.a+Math.PI,speed:5.25,fov:7,lat:clamp(ex*1.3,-.55,.55)};}
   const b=o.roam;return {dir:headingTo(p.x,p.z,b.x,b.z),speed:4.8,fov:5,bike:true};}
- // Where along the drain someone could stand and not be seen from where you are (behind a bend), between s0 and s1.
- function hiddenSpot(s0,s1){const cp=camera.position;for(let s=s0;s<=s1;s+=1){const q=Dr.at(clamp(s,1,Dr.len-1)),pt={x:q.x,y:Dr.floor(s)+1,z:q.z};if(!Dr.sees(cp,pt,.02))return clamp(s,1,Dr.len-1);}return clamp(s1,1,Dr.len-1);}
- function spawnBehind(s0,s1,state){FG.road=null;FG.s=hiddenSpot(s0,s1);FG.t=0;FG.yaw=Math.PI;FG.v=5;FG.look=0;FG.turnV=0;FG.state=state;figure.group.visible=true;placeFigure(0);}
- // He keeps a distance behind you (closing it fast if he is farther; never closer: he never catches anyone).
- function chase(dt,ps,pv,want,vmax){const gap=FG.s-ps;let v=clamp(pv+(gap-want)*1.15,0,vmax);if(pv<.4)v=Math.max(0,Math.min(v,(gap-want*.85)*.9));
-  FG.v=damp(FG.v,v,4,dt);FG.s=Math.max(ps+want*.7,FG.s-FG.v*dt);FG.t=damp(FG.t,.32*Math.sin(C.t*.9),1.2,dt);FG.yaw=Math.PI;C.purs.minGap=Math.min(C.purs.minGap,FG.s-ps);}
+ // Can you see it (the drain's walls in the way; outside, only how far)?
+ const crSees=()=>{if(!creature.group.visible)return false;const cp=camera.position,q=crChest();return Dr.inside(cp.x,cp.z,.2)?Dr.sees(cp,q,.02):Math.hypot(q.x-cp.x,q.z-cp.z)<45;};
+ const crInView=(cos=.55)=>crSees()&&k.camLooksAt(crChest(),cos);
+ function crHide(state='hidden'){CRT.state=state;CRT.v=0;CRT.road=null;CRT.pose=null;creature.show(false);}
+ function crAt(s,state='chase',v=5){Object.assign(CRT,{...CRT0,state,s,t:0,y:0,h:Dr.at(clamp(s,0,Dr.len)).a+Math.PI,v});creature.show(true);placeCreature();}
+ // It keeps a distance behind you that it chooses (closing it fast if it is farther; never nearer: it catches nobody).
+ // Stop, and after a moment it comes on, to a few metres, and rears up there.
+ function crChase(dt,ps,pv,want,vmax){const P2=C.purs;P2.stallT=pv<.4?P2.stallT+dt:0;const stall=P2.stallT>1.2;if(stall&&P2.stallT-dt<=1.2)P2.stalls++;
+  const w=stall?Math.max(STALL,want-(P2.stallT-1.2)*4):want,gap=CRT.s-ps;
+  let v=clamp(pv+(gap-w)*1.15,0,vmax);if(pv<.4)v=Math.max(0,Math.min(v,(gap-w)*.9));
+  let lo=ps+Math.max(STALL,w*.75);if(GA.want<.5&&!GA.burst&&CRT.s>GT.s)lo=Math.max(lo,GT.s+1.2);// (the gate shut: no nearer than its bars)
+  const s0=CRT.s;CRT.v=damp(CRT.v,v,4,dt);let s1=Math.max(lo,s0-CRT.v*dt);if(s1>s0)s1=Math.min(s1,s0+1.5*dt);CRT.s=s1;CRT.v=dt>0?Math.max(0,(s0-s1)/dt):0;
+  // (across the drain a little as it comes; round the bike on its open side; through the middle of the gate)
+  const sc=clamp(CRT.s,0,Dr.len);let tw=.35*Math.sin(C.t*.9);if(C.bike==='relocated'&&Math.abs(CRT.s-RL.s)<3.5)tw=1.15;if(Math.abs(CRT.s-GT.s)<3)tw=0;
+  const lim=Dr.sizeAt(sc).w/2-.6;tw=clamp(tw,-lim,lim);const t0=CRT.t;CRT.t=damp(CRT.t,tw,1.6,dt);const vt=dt>0?(CRT.t-t0)/dt:0;
+  CRT.h=Dr.at(sc).a+Math.PI-Math.atan2(vt,Math.max(CRT.v,.6));CRT.pose=stall&&CRT.s-ps<want-1?{rear:.65*smooth((P2.stallT-1.6)/.8)}:null;
+  const g=+(CRT.s-ps).toFixed(2);P2.minGap=Math.min(P2.minGap,g);if(stall)P2.stallMin=Math.min(P2.stallMin,g);else P2.minGapRun=Math.min(P2.minGapRun,g);}
  // Someone looks back over a shoulder (and his light goes back with him) and shouts.
- function cueBehind(kind){const fc=figChest,P2=C.purs;P2.cue++;glance(sam,fc(),2.4);S.samAim=fc;later(2.4,()=>{if(S.samAim===fc)S.samAim=null;});later(.35,()=>glance(jamie,fc(),1.1));
-  if(busy())return;if(kind==='far')talk([{who:'SAM',text:'“He’s behind us!”',from:sam,time:1.4}],{interrupt:true});else if(kind==='again')talk([{who:'SAM',text:'“He’s COMING!”',from:sam,time:1.2}],{interrupt:true});
-  else if(kind==='near')talk([{who:'SAM',text:'“He’s right there— he’s RIGHT THERE!”',from:sam,time:1.8},{who:'JAMIE',text:'“DON’T STOP!”',from:jamie,time:1.2}],{interrupt:true});}
- function stumble(){const P2=C.purs;P2.stumbleAt=C.t;C.stumble={c:jamie,at:C.t};const q={x:jamie.px,z:jamie.pz};splashAt(q.x,Dr.floorAt(cS(jamie),0)+.05,q.z,10,1.2);T?.jolt(1,{hold:12,why:'Jamie goes down'});
-  later(.9,()=>glance(jamie,figure.group.visible?figChest():lookAhead(cS(jamie)+10,0,1.2),1));}
- function updatePursuit(dt){const P2=C.purs;if(!P2)return;const p=me(),ps=drainS(p),pv=p.walking?(p.speed||0):0;
-  // a look back now and then, at whatever is behind (him, if he is there)
-  C.glanceT-=dt;if(C.glanceT<=0&&ps>=0){C.glanceT=1.8+Math.random()*1.8;const c=Math.random()<.5?jamie:sam,cs2=cS(c);if(cs2>0&&C.t>(C.glance[c.key]?.until||0))glance(c,figure.group.visible?figChest():lookAhead(cs2+10,0,1.2),.75);}
-  // 1: once you are round the second bend, on the long straight, he comes round it behind you, running
-  if(P2.stage==='start'&&ps>=0&&ps<=204){P2.stage='far';P2.farAt=C.t;spawnBehind(ps+20,ps+48,'pursuit-far');}
-  if(P2.stage==='far'){if(ps>136)chase(dt,ps,pv,16.5,7.8);else{FG.v=damp(FG.v,0,3,dt);FG.s-=FG.v*dt;}const ch=figChest(),vis=Dr.sees(camera.position,ch,.02);
-   const gapF=FG.s-ps;if(vis&&gapF<24&&P2.farVisAt===null){P2.farVisAt=C.t;cueBehind('far');}
-   if(vis&&gapF<24&&k.camLooksAt(ch,.9)){P2.farSeenT+=dt;if(P2.farSeenAt===null&&P2.farSeenT>.25){P2.farSeenAt=C.t;P2.farDist=+(FG.s-ps).toFixed(1);mark('he is running after them');T?.jolt(1,{hold:24,why:'he is chasing them'});}}
-   if(P2.farVisAt!==null&&P2.farSeenAt===null&&C.t-P2.farVisAt>2.8&&P2.cue<2)cueBehind('again');
+ function cue(kind){const P2=C.purs;P2.cue++;glance(sam,crChest(),2.4);S.samAim=crChest;later(2.4,()=>{if(S.samAim===crChest)S.samAim=null;});later(.35,()=>glance(jamie,crChest(),1.1));
+  const L={far:[{who:'SAM',text:'“It’s coming! IT’S COMING!”',from:sam,time:1.6}],again:[{who:'SAM',text:'“BEHIND US!”',from:sam,time:1.1}],
+   side:[{who:'SAM',text:'“It came out of the wall— it’s behind us!”',from:sam,time:2}],near:[{who:'SAM',text:'“It’s RIGHT THERE!”',from:sam,time:1.2}]}[kind];
+  if(L&&(!busy()||kind==='side'||kind==='near'))talk(L,{interrupt:true});}
+ function stumble(){const P2=C.purs;P2.stumbleAt=C.t;C.stumble={c:jamie,at:C.t};const q={x:jamie.px,z:jamie.pz};splashAt(q.x,Dr.floorAt(Math.max(cS(jamie),0),0)+.05,q.z,10,1.2);T?.jolt(1,{hold:12,why:'Jamie goes down'});
+  later(.9,()=>glance(jamie,creature.group.visible?crChest():lookAhead(cS(jamie)+10,0,1.2),1));}
+ // The gate at the first bend: whoever is through it first waits at it, holding a leaf; you through; he slams it.
+ const gateSound=(g=1)=>{const q=gate.position;C.gateSounds=(C.gateSounds||0)+1;o.sfx('tap',{x:q.x,y:q.y+1.2,z:q.z},{gain:Math.min(1.4,g)});};
+ function gateHold(c){const P2=C.purs;P2.gateHoldAt=C.t;P2.gateHolder=c.key;C.point={...(C.point||{}),[c.key]:{...tq(GT.s-1.1,c===jamie?1.35:-1.35),look:atYou,max:5.6,face:Dr.at(GT.s).a}};role(c,'point');
+  talk([c===jamie?{who:'JAMIE',text:'“THROUGH! GET THROUGH!”',from:jamie,time:1.4}:{who:'SAM',text:'“THROUGH! GO!”',from:sam,time:1.2}],{interrupt:true});}
+ function gateRelease(){const P2=C.purs,c=P2.gateHolder==='sam'?sam:jamie;if(C.role[c.key]==='point')role(c,'run');}
+ function gateShut(){const P2=C.purs,c=P2.gateHolder==='sam'?sam:jamie;P2.gateShutAt=C.t;GA.want=0;GA.rattle=.5;gateSound(1.2);mark('the gate slammed shut behind them');T?.jolt(1,{hold:10,why:'the gate'});
+  hold(c,{face:Dr.at(GT.s).a,look:crChest,gesture:()=>GEST.tense(1),until:C.t+.8,turn:3});later(.8,gateRelease);}
+ function gateHit(){const P2=C.purs;P2.gateHitAt=C.t;P2.stage='gate';CRT.state='gate';CRT.phT=0;CRT.v=0;GA.rattle=1;gateSound(1.3);mark('it hits the gate');T?.jolt(1,{hold:14,why:'it is at the gate'});
+  talk([{who:'SAM',text:'“It’s at the gate—”',from:sam,time:1.2,gap:.2},{who:'JAMIE',text:'“It won’t hold! GO! GO!”',from:jamie,time:1.6}],{interrupt:true});}
+ function gateBurst(){const P2=C.purs;P2.gateBurstAt=C.t;P2.stage='after';GA.burst=true;GA.want=1;gateSound(1.4);crSound('impact',{x:gate.position.x,y:gate.position.y+1,z:gate.position.z},1.2);CRT.state='chase';CRT.v=3;CRT.pose=null;
+  mark('it is through the gate');T?.jolt(1,{hold:16,why:'it is through the gate'});}
+ // Out of a hole low in the wall behind them, much closer (it went round, through the side drains).
+ function crFromWall(){const P2=C.purs,w=Dr.sizeAt(SIDE.s).w;P2.stage='side';P2.sideAt=C.t;Object.assign(CRT,{...CRT0,state:'side-out',s:SIDE.s,t:-(w/2+.95),y:.05,h:Dr.at(SIDE.s).a+Math.PI/2,v:1.5});creature.show(true);placeCreature();
+  const q=Dr.at(SIDE.s,-(w/2-.1)),pos={x:q.x,y:Dr.floor(SIDE.s)+.5,z:q.z};crSound('impact',pos,1);later(.25,()=>crSound('splash',pos,1));later(.5,()=>cue('side'));mark('something in the wall behind them');}
+ // Riding away: once it is out of sight at the mouth, it is at the edge of the trees behind them, for anyone who looks back.
+ function crToTrees(rs){const P2=C.purs,s=Math.min(Wd.L-2,rs+22),t=Wd.halfW(s)+2.8,q=Wd.at(s,t),c=Wd.at(s,0),y=nav.groundY(q.x,q.z);
+  if(k.camLooksAt({x:q.x,y:y+.7,z:q.z},.5))return;
+  P2.stage='tree';P2.treeAt=C.t;P2.treeS=+s.toFixed(1);CRT.state='tree';CRT.v=0;CRT.road={x:q.x,y,z:q.z};CRT.h=headingTo(q.x,q.z,c.x,c.z);CRT.pose={crouch:1};creature.show(true);placeCreature();}
+ function updateChase(dt,rs){const P2=C.purs;if(!P2)return;const p=me(),ps=drainS(p),pv=p.walking?(p.speed||0):0;
+  // a look back now and then, at whatever is behind (it, if it is there)
+  C.glanceT-=dt;if(C.glanceT<=0&&ps>=0){C.glanceT=1.8+Math.random()*1.8;const c=Math.random()<.5?jamie:sam,cs2=cS(c);if(cs2>0&&C.t>(C.glance[c.key]?.until||0))glance(c,creature.group.visible?crChest():lookAhead(cs2+10,0,1.2),.75);}
+  const seesIt=crSees(),gap=CRT.s-ps,looked=c2=>seesIt&&k.camLooksAt(crChest(),c2);
+  if(P2.stage==='start'&&CRT.state==='chase'){P2.stage='far';P2.farAt=C.t;P2.farWant=clamp(CRT.s-Math.max(ps,0),13,21);}
+  // 1: back down the far stretch, about 20 m behind them
+  if(P2.stage==='far'){if(CRT.state==='chase')crChase(dt,ps,pv,P2.farWant,8.4);
+   if(seesIt&&gap<27&&P2.farVisAt===null&&C.t-P2.farAt>1.2){P2.farVisAt=C.t;cue('far');}
+   if(looked(.9)&&gap<27){P2.farSeenT+=dt;if(P2.farSeenAt===null&&P2.farSeenT>.25){P2.farSeenAt=C.t;P2.farDist=+gap.toFixed(1);mark('it is coming after them');T?.jolt(1,{hold:24,why:'it is coming after them'});}}
+   if(P2.farVisAt!==null&&P2.farSeenAt===null&&C.t-P2.farVisAt>2.8&&P2.cue<2)cue('again');
    if(P2.farVisAt!==null&&P2.farSeenAt===null&&C.t-P2.farVisAt>2.2&&P2.hintAt===null)P2.hintAt=C.t;
-   if(P2.stumbleAt===null&&ps<=184)stumble();
-   // 2: down the step into the old stretch: once you are not looking, he is not there
-   if(ps<=150&&!figInView()){hideFigure('pursuit-hidden');P2.stage='hidden';}}
-  if(P2.stage==='hidden'){
-   // 3: water bursts out of the side pipe as you pass it (something has moved, somewhere up it)
-   if(P2.pipeAt===null&&ps>0&&ps<=141){P2.pipeAt=C.t;const SPp=Dr.sidePipe,a=Dr.at(DD.sidePipe.s).a,dx=-Math.cos(a)*DD.sidePipe.side,dz=-Math.sin(a)*DD.sidePipe.side;
-    for(let i=0;i<4;i++)later(i*.14,()=>gushAt(SPp.x,SPp.y,SPp.z,dx,dz,16));later(.35,()=>{const q=Dr.at(DD.sidePipe.s,.9*DD.sidePipe.side);rippleAt(q.x,Dr.waterAt(DD.sidePipe.s)??Dr.floor(DD.sidePipe.s),q.z,1.4,2);});
-    o.sfx('splash',{x:SPp.x,y:SPp.y,z:SPp.z},{gain:1});glance(sam,{x:SPp.x,y:SPp.y,z:SPp.z},1.2);C.hold.sam=null;T?.jolt(1,{hold:16,why:'the side pipe'});}
-   // 4: the bike, lying across the way out in the first bend (Jamie sees it first)
-   if(C.bike==='relocated'&&P2.bikeJamieAt===null&&cS(jamie)>0&&cS(jamie)<=RL.s+9){P2.bikeJamieAt=C.t;const b={x:relAt.x,y:Dr.floorAt(RL.s,-.85)+.3,z:relAt.z};glance(jamie,b,1.4);S.jamieAim=b;later(.3,()=>{glance(sam,b,1.2);S.samAim=b;});later(2.4,()=>{if(S.jamieAim===b)S.jamieAim=null;if(S.samAim===b)S.samAim=null;});
-    talk([{who:'JAMIE',text:'“WHAT—”',from:jamie,time:.9,gap:.2},{who:'SAM',text:'“That’s the bike— that’s the BIKE—”',from:sam,time:1.6}],{interrupt:true});T?.jolt(1,{hold:20,why:'the bike, in front of them'});}
-   if(C.bike==='relocated'&&P2.bikeSeenAt===null&&ps>0){const b={x:relAt.x,y:Dr.floorAt(RL.s,-.85)+.25,z:relAt.z};if(Math.hypot(b.x-camera.position.x,b.z-camera.position.z)<16&&k.camLooksAt(b,.85)&&Dr.sees(camera.position,b,.02))P2.bikeSeenAt=C.t;}
-   // 5: past the bend, on the straight to the mouth, a breath; then he comes round the bend behind you, much closer
-   if(ps>=0&&ps<=64){P2.stage='near';P2.nearAt=C.t;spawnBehind(ps+10,ps+32,'pursuit-near');}}
-  if(P2.stage==='near'){chase(dt,ps,pv,9.2,10.5);const ch=figChest(),vis=Dr.sees(camera.position,ch,.02),gapN=FG.s-ps;
-   if(vis&&gapN<11.2&&P2.nearVisAt===null){P2.nearVisAt=C.t;cueBehind('near');}
-   if(vis&&gapN<11.2&&k.camLooksAt(ch,.9)){P2.nearSeenT+=dt;if(P2.nearSeenAt===null&&P2.nearSeenT>.2){P2.nearSeenAt=C.t;P2.nearDist=+(FG.s-ps).toFixed(1);mark('he is close behind them');}}
-   // 6: near the mouth he stops, and stands there in the dark, watching them go
-   if(ps<=15){P2.stage='watch';FG.state='pursuit-watch';}}
-  if(P2.stage==='watch'){FG.v=damp(FG.v,0,2.5,dt);FG.s=Math.max(24,FG.s-FG.v*dt);FG.yaw=Math.PI;FG.t=damp(FG.t,0,1,dt);
-   if(ps<0&&!figInView()){FG.hidden+=dt;if(FG.hidden>1.2){hideFigure('gone');P2.stage='done';}}else FG.hidden=0;}
-  if(P2.exitSeenAt===null&&ps>=0&&ps<62&&glow.visible&&k.camLooksAt(glow.position,.9))P2.exitSeenAt=C.t;
-  // his feet in the water, running
-  if(figure.group.visible&&FG.v>2&&!FG.road){const fl=Math.floor(FG.gait*2);if(fl!==FG.lastStride){FG.lastStride=fl;const s=clamp(FG.s,0,Dr.len),wy=Dr.waterAt(s);if(wy!==null||Math.abs(FG.t)<.4){const q=Dr.at(s,FG.t);splashAt(q.x,(wy??Dr.floor(s)-.07)+.01,q.z,6,1.1);}}}}
+   // 2: round the second bend: the moment nobody can see it, it is not there
+   if(ps>=0&&ps<=211&&CRT.state==='chase'&&!crInView()){crHide();P2.stage='lost';P2.lostAt=C.t;mark('round the bend, nothing behind them');}
+   else if(ps>=0&&ps<=SIDE.s-SIDE.gap){P2.stage='side';P2.sideAt=C.t;P2.sideSkipped=true;}}// (watched all the way: it simply keeps coming)
+  if(P2.stage==='lost'){
+   if(!P2.lostLine&&ps>=0&&ps<=205&&!busy()){P2.lostLine=true;talk([{who:'SAM',text:'“Where is it? WHERE IS IT?”',from:sam,time:1.6,gap:.2},{who:'JAMIE',text:'“Just GO!”',from:jamie,time:1.1}]);}
+   if(P2.stumbleAt===null&&ps>=0&&ps<=198)stumble();
+   // 3: out of the wall behind them, about 12 m back
+   if(ps>=0&&ps<=SIDE.s-SIDE.gap)crFromWall();}
+  if(P2.stage==='side'){
+   if(CRT.state==='side-out'){CRT.phT+=dt;const w=Dr.sizeAt(SIDE.s).w,u=clamp(CRT.phT/.75,0,1);CRT.t=-(w/2+.95)+1.75*u;CRT.y=CRT.t<-w/2+.1?.05:0;CRT.v=2.3;CRT.h=Dr.at(SIDE.s).a+Math.PI/2;CRT.pose={crouch:.5};
+    if(u>=1){CRT.state='side-turn';CRT.phT=0;CRT.y=0;}}
+   else if(CRT.state==='side-turn'){CRT.phT+=dt;const u=smooth(clamp(CRT.phT/.32,0,1));CRT.h=Dr.at(SIDE.s).a+Math.PI/2+Math.PI/2*u;CRT.v=1.6;CRT.pose=null;if(CRT.phT>=.32){CRT.state='chase';CRT.v=4;}}
+   else if(CRT.state==='chase')crChase(dt,ps,pv,12.5,9.4);
+   if(looked(.9)&&gap<17){P2.sideSeenT+=dt;if(P2.sideSeenAt===null&&P2.sideSeenT>.2){P2.sideSeenAt=C.t;P2.sideDist=+gap.toFixed(1);mark('it came out of the wall behind them');T?.jolt(1,{hold:20,why:'it came out of the wall'});}}
+   // 4: at the first bend, right behind them
+   if(ps>=0&&ps<=NEAR_S){P2.stage='near';P2.nearAt=C.t;if(CRT.state!=='chase'){CRT.state='chase';CRT.y=0;CRT.pose=null;}}}
+  if(P2.stage==='near'){if(CRT.state==='chase')crChase(dt,ps,pv,8.5,10.2);
+   if(seesIt&&gap<11&&P2.nearVisAt===null&&(P2.bikeJamieAt===null||C.t-P2.bikeJamieAt>2.4)){P2.nearVisAt=C.t;cue('near');}
+   if(looked(.9)&&gap<11.5){P2.nearSeenT+=dt;if(P2.nearSeenAt===null&&P2.nearSeenT>.2){P2.nearSeenAt=C.t;P2.nearDist=+gap.toFixed(1);mark('it is right behind them');T?.jolt(1,{hold:20,why:'it is right behind them'});}}
+   if(P2.gateShutAt!==null&&P2.gateHitAt===null&&CRT.s<=GT.s+1.35)gateHit();
+   else if(P2.gateShutAt===null&&ps>=0&&ps<GT.s-6&&(P2.gateSkipped||CRT.s<GT.s+1))P2.stage='after';}
+  // 5: the gate. Whoever is through first waits at it; you through, and it is slammed (everyone through, it still back)
+  if(gate.visible&&!GA.burst&&P2.gateShutAt===null&&ps>=0&&/^(side|near)$/.test(P2.stage)){
+   if(P2.gateHoldAt===null&&ps>GT.s&&ps<GT.s+14){const c=[jamie,sam].find(c2=>{const q=cS(c2);return q>=0&&q<=GT.s-.2&&q<ps;});if(c)gateHold(c);}
+   if(P2.gateHoldAt!==null&&!P2.gateSkipped){const behind=[jamie,sam].some(c2=>cS(c2)>GT.s-.9);
+    if(ps<=GT.s-1.3&&!behind&&CRT.s>GT.s+2.5)gateShut();else if(CRT.s<=GT.s+2.5||ps<GT.s-12){P2.gateSkipped=true;gateRelease();}}}
+  if(P2.stage==='gate'){CRT.phT+=dt;CRT.v=0;CRT.t=damp(CRT.t,0,3,dt);CRT.h=Dr.at(GT.s).a+Math.PI;CRT.pose={rear:.7,claw:1};
+   // (each blow: the bars ring and shake)
+   const n=Math.floor(CRT.phT/.48);if(n>P2.gateHits){P2.gateHits=n;GA.rattle=1;gateSound(.9+.3*Math.random());crSound('impact',{x:gate.position.x,y:gate.position.y+1.1,z:gate.position.z},.8);}
+   if(CRT.phT>3.2||ps<GT.s-28)gateBurst();}
+  if(P2.stage==='after'){if(CRT.state==='chase')crChase(dt,ps,pv,16,10);
+   if(!P2.mouthLine&&ps>=0&&ps<34&&!busy()){P2.mouthLine=true;talk([{who:'JAMIE',text:'“The bikes! GET TO THE BIKES!”',from:jamie,time:1.6}]);}
+   if(ps<9){P2.stage='mouth';P2.mouthAt=C.t;}}
+  // 6: at the mouth it stops, low in the dark just inside, and watches them go (it does not come out)
+  if(P2.stage==='mouth'){const goal=ps>=0?Math.max(9,ps+12):9,s0=CRT.s;if(s0>goal){CRT.v=damp(CRT.v,clamp((s0-goal)*1.4,0,9),4,dt);CRT.s=Math.max(goal,s0-CRT.v*dt);CRT.v=dt>0?(s0-CRT.s)/dt:0;}else CRT.v=0;
+   CRT.t=damp(CRT.t,-.3,1.2,dt);CRT.h=Dr.at(clamp(CRT.s,0,Dr.len)).a+Math.PI;CRT.pose={crouch:1-smooth(CRT.v/3)};if(CRT.state==='chase'&&CRT.v<.2)CRT.state='watch';
+   if(C.flags.flee&&rs>0&&rs<Wd.L-30&&!crInView())crToTrees(rs);}
+  if(P2.stage==='tree'){const sp=crChest(),cp=camera.position,d=Math.hypot(sp.x-cp.x,sp.z-cp.z);
+   if(P2.treeSeenAt===null&&creature.group.visible&&k.camLooksAt(sp,.9)&&d<45){P2.treeSeenAt=C.t;P2.treeDist=+d.toFixed(1);mark('it, at the edge of the trees behind them');T?.jolt(.9,{hold:8,why:'it, at the edge of the trees'});glance(sam,sp,1.4);}
+   if((rs<P2.treeS-38||(P2.treeSeenAt!==null&&C.t-P2.treeSeenAt>2.5))&&!crInView(.5)){crHide('gone');P2.stage='done';}}
+  // the side pipe bursts as you pass it (something has moved, somewhere up it)
+  if(P2.pipeAt===null&&ps>0&&ps<=141&&/^(side|near)$/.test(P2.stage)){P2.pipeAt=C.t;const SPp=Dr.sidePipe,a=Dr.at(DD.sidePipe.s).a,dx=-Math.cos(a)*DD.sidePipe.side,dz=-Math.sin(a)*DD.sidePipe.side;
+   for(let i=0;i<4;i++)later(i*.14,()=>gushAt(SPp.x,SPp.y,SPp.z,dx,dz,16));later(.35,()=>{const q=Dr.at(DD.sidePipe.s,.9*DD.sidePipe.side);rippleAt(q.x,Dr.waterAt(DD.sidePipe.s)??Dr.floor(DD.sidePipe.s),q.z,1.4,2);});
+   o.sfx('splash',{x:SPp.x,y:SPp.y,z:SPp.z},{gain:1});glance(sam,{x:SPp.x,y:SPp.y,z:SPp.z},1.2);C.hold.sam=null;T?.jolt(1,{hold:16,why:'the side pipe'});}
+  // the bike, lying across the way out at the first bend (Jamie sees it first)
+  if(C.bike==='relocated'&&P2.bikeJamieAt===null&&cS(jamie)>0&&cS(jamie)<=RL.s+9){P2.bikeJamieAt=C.t;const b={x:relAt.x,y:Dr.floorAt(RL.s,-.85)+.3,z:relAt.z};glance(jamie,b,1.4);S.jamieAim=b;later(.3,()=>{glance(sam,b,1.2);S.samAim=b;});later(2.4,()=>{if(S.jamieAim===b)S.jamieAim=null;if(S.samAim===b)S.samAim=null;});
+   talk([{who:'JAMIE',text:'“WHAT—”',from:jamie,time:.9,gap:.2},{who:'SAM',text:'“That’s the bike— that’s the BIKE—”',from:sam,time:1.6}],{interrupt:true});T?.jolt(1,{hold:20,why:'the bike, in front of them'});}
+  if(C.bike==='relocated'&&P2.bikeSeenAt===null&&ps>0){const b={x:relAt.x,y:Dr.floorAt(RL.s,-.85)+.25,z:relAt.z};if(Math.hypot(b.x-camera.position.x,b.z-camera.position.z)<16&&k.camLooksAt(b,.85)&&Dr.sees(camera.position,b,.02))P2.bikeSeenAt=C.t;}
+  if(P2.exitSeenAt===null&&ps>=0&&ps<62&&glow.visible&&k.camLooksAt(glow.position,.9))P2.exitSeenAt=C.t;}
  function outOfDrain(){if(C.flags.out)return;C.flags.out=true;go('n3-out');objective('Get back to the bikes.');T?.set(.94,{hold:20});
   for(const c of [jamie,sam]){if(c.mode==='foot'&&!(c.script&&!c.script.roleStep))role(c,'run');}}
  // On the bikes: the road back up through the woods, faster than anyone has ever ridden it.
@@ -629,11 +754,11 @@ export function createChapter3(o,k,ch2){
   for(const c of [jamie,sam]){c.tight=1;c.lookAt=null;c.boost=1.42;}follow(true);C.fleeAt=C.t;C.rideGlanceT=3;if(FG.state!=='off'&&FG.state!=='gone'&&!FG.road)hideFigure('gone');}
  // At a bend, in their lights: him. Standing in the road. They do not stop. He walks off it, into the trees.
  function updateRoadFigure(dt,rs){let R=C.roadFig;
-  if(!R&&rs>RF.s+22&&rs<=RF.s+58){R=C.roadFig={stage:'wait',seenT:0,seenAt:null,reactAt:null,leaveAt:null,goneAt:null,spawnRs:+rs.toFixed(1)};FG.road={s:RF.s,t:RF.t,h:Wd.at(RF.s).a};FG.state='road-block';FG.v=0;FG.yaw=0;FG.look=0;FG.turnV=0;FG.hidden=0;figure.group.visible=true;placeFigure(0);}
+  if(!R&&rs>RF.s+22&&rs<=RF.s+58&&!creature.group.visible){R=C.roadFig={stage:'wait',seenT:0,seenAt:null,reactAt:null,leaveAt:null,goneAt:null,spawnRs:+rs.toFixed(1)};FG.road={s:RF.s,t:RF.t,h:Wd.at(RF.s).a};FG.state='road-block';FG.v=0;FG.yaw=0;FG.look=0;FG.turnV=0;FG.hidden=0;figure.group.visible=true;placeFigure(0);}
   if(!R)return;const ch=figChest(),d=rs-FG.road.s;
   if(figure.group.visible&&camSees(ch,.9)&&d<15.5){R.seenT+=dt;if(R.seenAt===null&&R.seenT>.2){R.seenAt=C.t;R.seenDist=+Math.hypot(ch.x-camera.position.x,ch.z-camera.position.z).toFixed(1);mark('him, in the road ahead');}}
-  if(R.stage==='wait'&&(d<=14.5||R.seenT>.5)){R.stage='react';R.reactAt=C.t;T?.jolt(1,{hold:20,why:'him, in the road ahead'});jamie.speed*=.62;S.jamieAim=figChest;later(.3,()=>{S.samAim=figChest;});
-   for(const c of [jamie,sam])c.lookAt=ch;talk([{who:'SAM',text:'“No— no no no—”',from:sam,time:1.4,gap:.2},{who:'JAMIE',text:'“DON’T STOP!”',from:jamie,time:1.2}],{interrupt:true});}
+  if(R.stage==='wait'&&(d<=14.5||R.seenT>.5)){R.stage='react';R.reactAt=C.t;T?.jolt(1,{hold:20,why:'him, in the road ahead'});jamie.speed*=.85;S.jamieAim=figChest;later(.3,()=>{S.samAim=figChest;});
+   for(const c of [jamie,sam])c.lookAt=ch;talk([{who:'SAM',text:'“No— no no no—”',from:sam,time:1.4,gap:.2},{who:'JAMIE',text:'“Don’t stop. DON’T STOP.”',from:jamie,time:1.8}],{interrupt:true});}
   if(R.stage==='react'&&(d<=10.5||C.t-R.reactAt>1.4)){R.stage='leave';R.leaveAt=C.t;R.h0=FG.road.h;FG.state='road-leave';FG.turnT=0;}
   // (off the road and into the trees, half turned away from them: his back, never his face, as they go by)
   if(R.stage==='leave'){FG.turnT+=dt;const side=Math.sign(RF.t)||1,toward=R.h0+side*(Math.PI/2+.5);FG.road.h=FG.road.h+clamp(wrap(toward-FG.road.h),-2.6*dt,2.6*dt);
@@ -644,15 +769,14 @@ export function createChapter3(o,k,ch2){
  function safeNow(){if(C.flags.safe)return;C.flags.safe=true;go('n3-safe');date(NIGHT.safe,'PM');checkpoint('chapter3-end');objective('');o.setDrain?.(1);A.remountRange=undefined;A.escape=null;A.rideBoost=undefined;A.rideFov=0;
   T?.ease(.42,{fall:.035,hold:5,why:'the street, the light'});for(const c of [jamie,sam]){c.tight=0;c.boost=1;}
   const gate=Wd.spots.gate,back={x:gate.x,z:gate.z,y:gate.y+1.2};
-  talk([{wait:4.6},{who:'SAM',text:'“That was him.”',from:sam,time:2,gap:1.4},{who:'JAMIE',text:'“No.”',from:jamie,time:1.2,gap:1.6},{who:'SAM',text:'“You saw him.”',from:sam,time:1.8,gap:2},
-   {who:'JAMIE',text:'“…I know.”',from:jamie,time:1.6,gap:3.2},
+  talk([{wait:4.6},{who:'SAM',text:'“That wasn’t Alex.”',from:sam,time:2,gap:1.6},{who:'JAMIE',text:'“…I know.”',from:jamie,time:1.6,gap:2.2},{who:'SAM',text:'“Then what did we follow?”',from:sam,time:2.2,gap:3.6},
    {act:()=>{S.lookTarget=back;for(const c of [jamie,sam])c.lookAt=back;S.jamieAim=null;},wait:4.6},{act:()=>{C.endT=0;},wait:.1}]);}
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Three';if(pp)pp.textContent='August 22, 2011.';}o.finish();}
  // ---- every frame ------------------------------------------------------------------------------------------
  function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase,p=me(),L=where(p),rs=L.street==='woods'?(L.s??Wd.L):L.street==='side'?L.u-Wd.U:L.street==='drain'?Wd.L+1:-999,ds=L.street==='drain'?L.s:-1;
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
   // (in the drain you walk carefully: wet concrete, silt, the dark; running for your life is another thing: game.js)
-  o.setPace?.(ds>=0&&!C.flags.run?.72:1);
+  o.setPace?.(ds>=0&&!C.flags.run?.72*(/^n3-(lure|creature)$/.test(ph)?1-.86*smooth((ds-264)/6):1):1);// (and near the culvert, slower and slower: nobody walks up to that)
   for(const a of people)a.update(dt,{eye:camera.position});updatePose(dt);match(dt);updateAmb(dt);
   if(C.fadeIn>=0){C.fadeIn+=dt;o.fade(1-smooth(C.fadeIn/1.4));if(C.fadeIn>=1.4){o.fade(0);C.fadeIn=-1;}}
   if(C.fadeOut>=0){C.fadeOut+=dt;o.fade(smooth(C.fadeOut/.7));if(C.fadeOut>=.9){C.fadeOut=-1;const f=C.after;C.after=null;f?.();}}
@@ -681,9 +805,9 @@ export function createChapter3(o,k,ch2){
   turnBack(ds,p);
   // (whoever has a part to play and nothing running picks it up again; off the bike first, in the drain)
   if(/^n3-/.test(ph))for(const c of [jamie,sam]){const r=C.role[c.key];if(!r||r==='mounted'||c.script)continue;if(c.mode==='foot')role(c,r);else if(c.mode==='ride'&&tunnelPhase())comp.run(c,[comp.steps.brake(c,.3),comp.steps.dismount(c),comp.steps.kickstand(c)]);}
-  if(ph==='n3-run'||ph==='n3-out'){C.runT+=dt;updatePursuit(dt);if(ph==='n3-run'&&ds<0&&rs>Wd.L-40)outOfDrain();if(p.riding&&(ph==='n3-out'||ph==='n3-run')){if(ph==='n3-run')outOfDrain();mounted();}
+  if(ph==='n3-run'||ph==='n3-out'){C.runT+=dt;updateChase(dt,rs);if(ph==='n3-run'&&ds<0&&rs>Wd.L-40)outOfDrain();if(p.riding&&(ph==='n3-out'||ph==='n3-run')){if(ph==='n3-run')outOfDrain();mounted();}
    if(!C.flags.comeOn2&&C.runT>9&&ds>=0&&!busy()&&p.walking&&(p.speed||0)<1){C.flags.comeOn2=true;talk([{who:'JAMIE',text:'“Come ON!”',from:jamie,time:1.2}]);}}
-  if(ph==='n3-flee'){if(!C.flags.bellBehind&&rs<Wd.L-110&&rs>0){C.flags.bellBehind=true;const q={x:Dr.P.x+8,y:Dr.P.floor+1.5,z:Dr.P.z};o.audio()?.bell3?.(q,.9,{ref:30});C.heardBells.push({pos:q,at:C.t,behind:true});
+  if(ph==='n3-flee'){updateChase(dt,rs);if(!C.flags.bellBehind&&rs<Wd.L-110&&rs>0){C.flags.bellBehind=true;const q={x:Dr.P.x+8,y:Dr.P.floor+1.5,z:Dr.P.z};o.audio()?.bell3?.(q,.9,{ref:30});C.heardBells.push({pos:q,at:C.t,behind:true});
     talk([{who:'',text:'[A bell. Far behind them.]',time:2.2}]);glance(sam,q,2);sam.lookAt={...q};later(2,()=>{sam.lookAt=null;});T?.jolt(.9,{hold:6,why:'a bell, behind them'});}
    updateRoadFigure(dt,rs);
    // riding hard: now and then one of them looks back over his shoulder
@@ -714,7 +838,7 @@ export function createChapter3(o,k,ch2){
   if(rs>Wd.L-40||where(p).w?.patch){if(!p.riding||p.speed<.5||rs>Wd.L-14||Math.hypot(p.x-WS.pad.x,p.z-WS.pad.z)<9)arriveOutfall();}}// (in sight of it and stopped, or there)
  // Turning back before it is over: Jamie will not come, Sam will not leave him, and the bikes stay where they are.
  // (no wall, no arrow: two lights left behind you in the dark, and a quiet objective)
- const BACK=/^n3-(tunnel|evidence|bell|item|bike|deeper|follow|search|cross)$/;
+ const BACK=/^n3-(tunnel|evidence|bell|item|bike|deeper|follow)$/;
  const atYou=()=>{const q=me();return {x:q.x,z:q.z,y:camera.position.y};};
  function turnBack(ds,p){if(ds>=0)C.maxDs=Math.max(C.maxDs||0,ds);
   if(!BACK.test(S.phase)){if(C.back)backDone(false);return;}
@@ -746,25 +870,18 @@ export function createChapter3(o,k,ch2){
   if(ph==='n3-deeper'&&FG.state==='off'&&ds>=186){const sp=lookAhead(DD.figure.s,DD.figure.t,1);if(!k.camLooksAt(sp,.55)||ds>=190)figureReady();}
   if(ph==='n3-deeper'&&FG.state==='unseen'){const ch=figChest(),near=Math.hypot(ch.x-camera.position.x,ch.z-camera.position.z)<27;
    if((ds>=194||cS(jamie)>=197.5||(near&&camSees(ch,.97)))&&(C.flags.bikeGone||ds>=198||!busy()))startReveal();}
-  if(ph==='n3-follow'){if(ds>=225)searchF();if(!C.flags.leaveHint&&!busy()&&C.t-(C.followAt||0)>14&&ds<200){C.flags.leaveHint=true;talk([{who:'SAM',text:'“We can’t just leave him down there. Jamie! Come back!”',from:sam,time:2.8}]);}}
-  if(ph==='n3-search'){const sinceS=C.t-C.searchAt;
-   if(!C.flags.cableSeen&&ds>238&&k.camLooksAt({x:Dr.cable.x,y:Dr.cable.y-.8,z:Dr.cable.z},.95)&&!busy()){C.flags.cableSeen=true;talk([{who:'SAM',text:'“That’s moving.”',from:sam,time:1.4}]);glance(sam,{x:Dr.cable.x,y:Dr.cable.y-.8,z:Dr.cable.z},2);}
-   if(!C.flags.wetSeen&&(Math.hypot(p.x-wetAt.x,p.z-wetAt.z)<4.5||sinceS>14)&&!busy()){C.flags.wetSeen=true;S.jamieAim=wetAt;C.point={jamie:{...tq(WET.s-.6,.3),look:wetAt,max:1.6}};role(jamie,'point');
-    later(1.4,()=>hold(jamie,{look:wetAt,gesture:t=>GEST.crouch(smooth(t/.6)),until:C.t+4.5}));talk([{wait:1.8},{who:'JAMIE',text:'“It’s wet.”',from:jamie,time:1.4,gap:1},{who:'YOU',text:'“That’s from just now.”',time:2}],{then:()=>{S.jamieAim=null;C.point={jamie:{...tq(256,-.3),look:lookAhead(272,0,1.1),max:1.1}};role(jamie,'point');C.wetDone=C.t;}});}
-   // (a pause: they look round, lights into the side drains, the water. Then, ahead, someone crosses.)
-   if(C.wetDone&&!C.flags.cross){const since=C.t-C.wetDone,cm=crossMid(),looking=k.camLooksAt(cm,.9)&&Math.hypot(p.x-cm.x,p.z-cm.z)<24&&Dr.sees(camera.position,cm,.02);
-    if(since>2&&since<9&&!S.samAim){S.samAim=lookAhead(239,1.4,.6);}if(since>9&&since<11)S.samAim=null;
-    if(since>11&&!C.flags.crossLight){C.flags.crossLight=true;S.jamieAim=crossMid();}// (his light goes back down the tunnel ahead)
-    if((since>11&&looking)||since>36)crossing();}}
-  if(ph==='n3-cross'&&C.crossDone&&!C.flags.voice1&&!busy()&&C.t-C.crossDone>4.5)voiceAhead();
-  if(ph==='n3-voice'&&C.waitV2!==undefined&&!busy()){C.waitV2+=dt;if(C.waitV2>5.5&&(k.camLooksAt(VA(),.35)||C.waitV2>9))voiceBehind();}
-  if(ph==='n3-close'){C.waitT+=dt;const q=VB(),ps=Math.max(drainS(),226);
-   // they search behind them first: Jamie a few steps back toward the bend, both lights sweeping it; nothing
-   if(C.waitT>.9&&!C.flags.searchBack){C.flags.searchBack=true;C.hold.jamie=null;C.point={jamie:{...tq(ps-2.6,-.45),look:()=>lookAhead(226+3*Math.sin(C.t*1.3),1.1*Math.sin(C.t*.9),1),max:1.2}};role(jamie,'point');S.jamieAim=()=>lookAhead(225+4*Math.sin(C.t*1.1),1.2*Math.sin(C.t*1.7),.9+.5*Math.sin(C.t*.7));S.samAim=()=>lookAhead(228+3*Math.sin(C.t*.8+1),1.1*Math.sin(C.t*1.3+2),.8);}
-   if(C.waitT>5.4&&!C.flags.cluster){C.flags.cluster=true;S.jamieAim=q;S.samAim=q;role(sam,'beside');glance(sam,q,9);later(.6,()=>{role(jamie,'beside');glance(jamie,q,9);});}
-   if(!C.flags.close&&C.waitT>9.4)closeBell();}
+  // after him: the last stretch (a wet print on the ledge, a cable still swinging); then him again, at the junction
+  if(ph==='n3-follow'){if(FG.state==='hidden'&&ds>=232)lureReady();
+   if(!C.flags.leaveHint&&!busy()&&C.t-(C.followAt||0)>14&&ds<200){C.flags.leaveHint=true;talk([{who:'SAM',text:'“We can’t just leave him down there. Jamie! Come back!”',from:sam,time:2.8}]);}
+   if(!C.flags.wetSeen&&wet.visible&&!busy()&&Math.hypot(p.x-wetAt.x,p.z-wetAt.z)<4.2){C.flags.wetSeen=true;glance(jamie,wetAt,2.4);talk([{who:'JAMIE',text:'“It’s wet.”',from:jamie,time:1.4,gap:.8},{who:'YOU',text:'“That’s from just now.”',time:1.8}]);}
+   if(!C.flags.cableSeen&&cable.visible&&ds>238&&!busy()&&k.camLooksAt({x:Dr.cable.x,y:Dr.cable.y-.8,z:Dr.cable.z},.95)){C.flags.cableSeen=true;talk([{who:'SAM',text:'“That’s moving.”',from:sam,time:1.4}]);glance(sam,{x:Dr.cable.x,y:Dr.cable.y-.8,z:Dr.cable.z},2);}
+   if(FG.state==='lure-wait'){const L2=C.lure,ch=figChest();if(camSees(ch,.94)||camSees(figHead(),.94))L2.seenT+=dt;if(L2.seenT>.35||ds>=254||cS(jamie)>=256)lureSighted();}}
+  // he walks to the culvert and goes up into it; his voice from in there; then something at its lip
+  if(ph==='n3-lure'){const L2=C.lure;if(L2.walkAt===null&&C.t-L2.seenAt>2.6)lureWalk();
+   if(L2.goneAt!==null&&L2.voiceAt==null&&C.t-L2.goneAt>.8)lureVoice();
+   if(L2.goneAt!==null&&C.t-L2.goneAt>2.6)creatureReveal();}
   // the run: water breaking behind you (until he is there to be seen: then it is his feet)
-  if(ph==='n3-run'&&ds>=0&&!(figure.group.visible&&/^pursuit/.test(FG.state))){C.splashT-=dt;if(C.splashT<=0){C.splashT=.42+Math.random()*.38;const s=Math.max(0,ds+(8.5+Math.random()*4.5)),{w}=Dr.sizeAt(Math.min(s,Dr.len)),t=(Math.random()-.5)*(w-1),q=Dr.at(Math.min(s,Dr.len-.5),t),wy=Dr.waterAt(Math.min(s,Dr.len));
+  if(ph==='n3-run'&&ds>=0&&!creature.group.visible){C.splashT-=dt;if(C.splashT<=0){C.splashT=.42+Math.random()*.38;const s=Math.max(0,ds+(8.5+Math.random()*4.5)),{w}=Dr.sizeAt(Math.min(s,Dr.len)),t=(Math.random()-.5)*(w-1),q=Dr.at(Math.min(s,Dr.len-.5),t),wy=Dr.waterAt(Math.min(s,Dr.len));
     if(s<Dr.len-.5){if(wy!==null||Math.abs(t)<.4)splashAt(q.x,(wy??Dr.floor(s)-.07)+.01,q.z,wy!==null?8:4,wy!==null?1:.6);else rippleAt(q.x,Dr.floor(s)-.07,q.z,.8,1.2);o.sfx('splash',{x:q.x,y:Dr.floor(s)+.2,z:q.z},{gain:wy!==null?.9:.5});C.splashes=(C.splashes||0)+1;
      if(C.splashes<=3||Math.random()<.3){const c=C.splashes%2?sam:jamie;glance(c,{x:q.x,z:q.z,y:Dr.floor(s)+.6},.8);}}}}}
  function updateProps(dt,p,rs,ds){
@@ -781,7 +898,10 @@ export function createChapter3(o,k,ch2){
   // the way out, seen from inside (a little stronger when you are running for it)
   {const cs2=Dr.project(camera.position.x,camera.position.z),inD=Dr.inside(camera.position.x,camera.position.z,.1)&&cs2&&cs2.s>1.2;GL.want=inD&&A.night?(C.flags.run?.5:.3)*smooth((cs2.s-1.2)/5)*(1-smooth((cs2.s-110)/30)):0;
    GL.o=damp(GL.o,GL.want,2,dt);glow.material.opacity=GL.o;glow.visible=GL.o>.004;}
-  updateFigure(dt);catchLight(dt);}
+  // the gate at the first bend (there at night, in the drain and in sight of it)
+  gate.visible=!!A.night&&/^n3-(outfall|tunnel|evidence|bell|item|bike|deeper|figure|follow|lure|creature|run|out|flee)$/.test(S.phase||'')&&(ds>=0||rs>Wd.L-80);if(gate.visible)poseGate(dt);
+  if(/^(emerge|reveal|creep|drop|turn)$/.test(CRT.state))updateCreatureReveal(dt);
+  updateFigure(dt);updateCreature(dt);catchLight(dt);}
  // How much light he catches (see figCatch): your beam (where you look) and Jamie's or Sam's when it is on him, more the
  // farther he is (up close the lights themselves are enough).
  const _cf=new THREE.Vector3();
@@ -793,7 +913,12 @@ export function createChapter3(o,k,ch2){
   let wb=0;if(old.group.visible&&A.night&&C.bike!=='none'){const b=old.group.position,bc={x:b.x,y:b.y+.45,z:b.z},cp=camera.position,dx=bc.x-cp.x,dy=bc.y-cp.y,dz=bc.z-cp.z,d=Math.hypot(dx,dy,dz)||1;camera.getWorldDirection(_cf);
    const cs=(dx*_cf.x+dy*_cf.y+dz*_cf.z)/d,mine=S.flashOn?smooth((cs-Math.cos(.45))/(Math.cos(.12)-Math.cos(.45))):0,on=a=>a&&typeof a==='object'&&Math.hypot(a.x-bc.x,a.z-bc.z)<1.2;
    wb=Math.min(.45,(.36*mine+.2*((on(S.jamieAim)?1:0)+(on(S.samAim)?1:0)))*smooth((d-4)/9));}
-  oldCatch.value=damp(oldCatch.value,wb,8,dt);}
+  oldCatch.value=damp(oldCatch.value,wb,8,dt);
+  // It: the same (a beam on it far off; never a glow of its own)
+  let wc=0;if(creature.group.visible&&A.night){const ch=crChest(),cp=camera.position,dx=ch.x-cp.x,dy=ch.y-cp.y,dz=ch.z-cp.z,d=Math.hypot(dx,dy,dz)||1;camera.getWorldDirection(_cf);
+   const cs=(dx*_cf.x+dy*_cf.y+dz*_cf.z)/d,mine=S.flashOn||CRT.road?smooth((cs-Math.cos(.42))/(Math.cos(.1)-Math.cos(.42))):0,on=a=>a===crChest||(a&&typeof a==='object'&&Math.hypot(a.x-ch.x,a.z-ch.z)<1.4);
+   wc=Math.min(.42,(.36*mine+.2*((on(S.jamieAim)?1:0)+(on(S.samAim)?1:0)))*smooth((d-6)/12));}
+  creature.catch.value=damp(creature.catch.value,wc,8,dt);}
  // The boy: what he does in each state (the pursuit and the road move him in their own functions).
  function updateFigure(dt){const st=FG.state;if(st==='off'||st==='gone'||st==='hidden'||st==='pursuit-hidden'||!figure.group.visible){if(!figure.group.visible)return;}
   if(st==='first-reveal'||st==='first-seen'){const F=C.fig,ch=figChest(),seen=camSees(ch,.94)||camSees(figHead(),.94);if(seen)F.seenT+=dt;
@@ -811,7 +936,15 @@ export function createChapter3(o,k,ch2){
   if(st==='leaving-bend'){FG.v=Math.min(1.25,FG.v+dt*2.4);FG.s+=FG.v*dt;FG.look=damp(FG.look,0,1.2,dt);FG.t=damp(FG.t,-.55,.5,dt);
    if(FG.s>216){const vis=Dr.sees(camera.position,figHead(),.02)||Dr.sees(camera.position,figChest(),.02);if(!vis){FG.hidden+=dt;if(FG.hidden>.2)figureGone();}else FG.hidden=0;}
    if(FG.s>234&&FG.state!=='hidden')figureGone();}
-  if(st==='second-presence'){FG.t-=FG.v*dt;FG.look=damp(FG.look,.3,2,dt);if(FG.t<-(crossW()/2+.32)){hideFigure('hidden');}}
+  // at the junction: his back to them; then to the side culvert, up over its sill, in, gone into the dark
+  if(st==='lure-wait'){FG.v=0;FG.yaw=0;FG.look=damp(FG.look,0,2,dt);}
+  if(st==='lure-walk'){const gt=-(culW()/2-.4),d2s=CUL.s-FG.s,d2t=gt-FG.t,d=Math.hypot(d2s,d2t);FG.v=damp(FG.v,d>.15?1.05:0,3,dt);FG.yaw+=clamp(wrap(Math.atan2(d2t,d2s)-FG.yaw),-2*dt,2*dt);
+   FG.s+=FG.v*Math.cos(FG.yaw)*dt;FG.t+=FG.v*Math.sin(FG.yaw)*dt;FG.look=damp(FG.look,0,2,dt);if(d<.2){FG.state='lure-step';FG.turnT=0;FG.v=0;C.lure.stepAt=C.t;mark('he steps up into the culvert');}}
+  if(st==='lure-step'){FG.turnT+=dt;FG.v=0;FG.yaw+=clamp(wrap(-Math.PI/2-FG.yaw),-3*dt,3*dt);FG.turnV=1;
+   if(FG.turnT>.5){const c=smooth(clamp((FG.turnT-.5)/.7,0,1));FG.dy=.8*c;FG.t=-(culW()/2-.4)-.6*c;}
+   if(FG.turnT>=1.2){FG.state='lure-in';FG.turnV=0;FG.v=.6;FG.yaw=-Math.PI/2;}}
+  if(st==='lure-in'){FG.v=damp(FG.v,1.05,3,dt);FG.t-=FG.v*dt;FG.yaw=-Math.PI/2;const deep=-(FG.t+culW()/2);
+   if((deep>1.7&&!k.camLooksAt(figChest(),.55))||deep>4.1){hideFigure('lure-gone');C.lure.goneAt=C.t;}}
   if(figure.group.visible&&FG.state!=='hidden'&&!FG.road)placeFigure(dt);
   // the two lights stay on him while he is there to be seen (and narrow on him: see longThrow)
   if(/^(first-|turning|leaving)/.test(FG.state)&&S.phase==='n3-figure'){S.jamieAim=figChest;if(S.samAim)S.samAim=figChest;}}
@@ -841,7 +974,7 @@ export function createChapter3(o,k,ch2){
  // A longer throw in the drain (and at its mouth): what the beam lands on sets how strong it can be.
  function longThrow(hand,aim){if(!Dr.inside(hand.x,hand.z,.05))return null;const dir=new THREE.Vector3(aim.x-hand.x,aim.y-hand.y,aim.z-hand.z),d0=dir.length();dir.normalize();const d=Math.min(d0,Dr.rayDist(hand,dir,44));
   // (aimed far down the tunnel at him he narrows the beam, and it reaches: an adjustable flashlight)
-  const focus=figure.group.visible&&/^(first-|turning|leaving|pursuit|second)/.test(FG.state);
+  const focus=(figure.group.visible&&/^(first-|turning|leaving|lure)/.test(FG.state))||(creature.group.visible&&/^(emerge|reveal|creep)$/.test(CRT.state));
   return d>12?{d,reach:46,max:focus?300:150,angle:focus?.15:.2}:{d,reach:42,max:72,angle:.31};}
  // ---- what F does here ----------------------------------------------------------------------------------------
  function spots(){const out=[],ph=S.phase;if(C.fadeOut>=0||C.pose&&!C.pose.release&&ph!=='d3-phone'&&ph!=='n3-bike')return out;
@@ -865,9 +998,10 @@ export function createChapter3(o,k,ch2){
   out.push({id:'tv3',kind:'tv',pos:new THREE.Vector3(loopsAt.tv.x,loopsAt.tv.y+1.2,loopsAt.tv.z),level:lf},{id:'sprinkler3',kind:'sprinkler',pos:new THREE.Vector3(loopsAt.sprinkler.x,loopsAt.sprinkler.y+.3,loopsAt.sprinkler.z),level:lf});
   if(C.amb.water>.02)out.push({id:'outfall3',kind:'culvert',pos:new THREE.Vector3(Dr.P.x+4,Dr.P.floor+.6,Dr.P.z),level:.8*C.amb.water});
   if(C.amb.tunnel>.02){const s=Math.max(0,drainS()+10);out.push({id:'drain3',kind:'water',pos:new THREE.Vector3(Dr.at(Math.min(s,Dr.len-1)).x,Dr.floor(s)+.3,Dr.at(Math.min(s,Dr.len-1)).z),level:.35*C.amb.tunnel});}}
- function blockers(){const out=[];if(old.group.visible&&S.phase&&/^n3-/.test(S.phase))out.push(...oldParts());for(const a of people)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});return out;}
+ function blockers(){const out=[];if(old.group.visible&&S.phase&&/^n3-/.test(S.phase))out.push(...oldParts());if(gate.visible)gateBlockers(out);out.push(...creature.colliders());for(const a of people)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});return out;}
  // ---- lifecycle --------------------------------------------------------------------------------------------------
  function reset(){const hadPose=C.pose;fresh();figCatch.value=0;oldCatch.value=0;card(false);roomOn(false);phone.visible=false;old.group.visible=false;helmet.visible=false;evidence.visible=false;marks.visible=false;figure.group.visible=false;Object.assign(FG,{...FG0,pose:FG.pose});glint.visible=false;
+  creature.reset();Object.assign(CRT,CRT0);gate.visible=false;Object.assign(GA,{open:1,want:1,rattle:0,burst:false});poseGate(10);
   branch.visible=false;branch.children[0].rotation.z=0;BR.phase=-1;deer.visible=false;DR.phase=-1;cable.visible=false;CB.amp=0;wet.visible=false;leaf.visible=false;LF.s=-1;stone.visible=false;ST.t=-1;glow.visible=false;glow.material.opacity=0;GL.o=0;GL.want=0;
   for(const r of ripple){r.t=-1;r.m.visible=false;}for(const d of drops){d.t=-1;d.m.visible=false;}
   releaseBounce();A.shade=0;A.barLight=false;A.remountRange=undefined;A.escape=null;A.rideBoost=undefined;A.rideFov=0;for(const c of [jamie,sam]){c.tight=0;c.boost=1;}WN?.setLimit(null);o.flashShadow?.(false);
@@ -925,48 +1059,66 @@ export function createChapter3(o,k,ch2){
    const p=me();o.placePlayer({x:p.x,z:p.z,a:headingTo(p.x,p.z,oldSpot.x,oldSpot.z),mode:'walk',bike:{x:bikes.you.x,z:bikes.you.z,a:ba}});C.bikeLookT=1;bikeGoneNoticed('you');return;}
   placeOld('removed');C.flags.bikeGone=true;C.bikeGoneAt=C.t-20;
   if(section==='c3-figure-reveal'){inTunnel(193.5,{j:3,m:-1.6});go('n3-deeper');T.value=.62;T?.set(.62);figureReady();startReveal();return;}
-  C.flags.figure=true;C.flags.figGone=true;
-  if(section==='c3-after-figure'){inTunnel(212,{j:5,m:-1.4});go('n3-figure');T.value=.72;T?.set(.72);C.fig={t0:C.t-12,seenT:5,seenAt:C.t-9,nudge:0,alexAt:C.t-7,unseenGo:false,distAtSeen:19};C.flags.figGone=false;figureGone();return;}
-  C.flags.search=true;C.searchAt=C.t-30;C.flags.wetSeen=true;C.wetDone=C.t-20;C.flags.cableSeen=true;cable.visible=true;wet.visible=true;C.wetT=30;
-  if(section==='c3-figure-crossing'){inTunnel(252,{j:3.2,m:-1.4});go('n3-search');date(NIGHT.voice,'PM');T.value=.74;T?.set(.74);C.flags.crossLight=true;S.jamieAim=crossMid();crossing();return;}
-  C.flags.cross=true;C.crossDone=C.t-10;
-  if(section==='c3-voice-ahead'){inTunnel(258,{j:2.6,m:-1.6});go('n3-cross');date(NIGHT.voice,'PM');T.value=.8;T?.set(.8);C.lastEvent=C.t-10;voiceAhead();return;}
-  C.flags.voice1=true;C.voices=[{word:'jamie',pos:VA(),at:C.t-8,tunnel:true,where:'ahead'}];date(NIGHT.voice,'PM');
-  if(section==='c3-voice-behind'){inTunnel(258,{j:2.6,m:-1.6});go('n3-voice');T.value=.86;T?.set(.86);C.waitV2=10;voiceBehind();return;}
-  C.flags.voice2=true;C.voices.push({word:'guys',pos:VB(),at:C.t-2,tunnel:true,where:'behind'});
-  if(section==='c3-close-bell'){inTunnel(258,{j:2.2,m:-1.2});go('n3-close');T.value=.93;T?.set(.93);C.waitT=9.3;C.flags.searchBack=true;C.flags.cluster=true;role(sam,'beside');role(jamie,'beside');return;}
-  C.flags.close=true;C.flags.searchBack=true;C.flags.cluster=true;
-  if(section==='c3-run-start'){inTunnel(256,{j:2,m:-1.2,back:true});T.value=.98;T?.jolt(1,{hold:30});run();return;}
-  // the run, further on: everyone already running for the way out
-  const running=(s,{j=-3.6,m=-1.6,stage='start',vis=false}={})=>{const q=Dr.at(s,0),a=q.a+Math.PI;youFoot({x:q.x,z:q.z},a);footAt(jamie,tq(s+j,.4),a);footAt(sam,tq(s+m,-.5),a);C.flags.inside=true;C.flags.jamieToMouth=true;C.maxDs=260;
-   for(const kk in C.amb)C.amb[kk]=kk==='tunnel'?1:kk==='water'?.6:0;T.value=.98;T?.jolt(1,{hold:30});run();C.purs.stage=stage;if(vis){C.purs.farVisAt=C.t-6;C.purs.farSeenAt=C.t-5;C.purs.farSeenT=2;C.purs.stumbleAt=C.t-4;}
-   for(const c of [jamie,sam]){c.walkV=4.5;}C.runT=10;C.flags.comeOn2=true;};
-  if(section==='c3-pursuit-far'){running(205);return;}
-  if(section==='c3-bike-block'){running(102,{stage:'hidden',vis:true});C.purs.pipeAt=C.t-6;return;}
-  if(section==='c3-pursuit-near'){running(67,{stage:'hidden',vis:true});C.purs.pipeAt=C.t-12;C.purs.bikeJamieAt=C.t-6;C.purs.bikeSeenAt=C.t-5;return;}
-  if(section==='c3-tunnel-exit'){running(30,{stage:'near',vis:true,j:-3.4,m:-1.4});C.purs.pipeAt=C.t-20;C.purs.bikeJamieAt=C.t-14;C.purs.bikeSeenAt=C.t-13;C.purs.nearAt=C.t-3;C.purs.nearVisAt=C.t-2.5;C.purs.nearSeenAt=C.t-2;C.purs.nearSeenT=1;spawnBehind(39,48,'pursuit-near');return;}
-  C.flags.run=true;C.flags.out=true;o.setDrain?.(0);placeOld('relocated');
+  C.flags.figure=true;C.flags.figGone=true;C.fig={t0:C.t-40,seenT:5,seenAt:C.t-37,nudge:0,alexAt:C.t-35,unseenGo:false,distAtSeen:19};
+  if(section==='c3-follow-alex'){inTunnel(212,{j:5,m:-1.4});go('n3-figure');T.value=.72;T?.set(.72);C.flags.figGone=false;figureGone();return;}
+  wet.visible=true;C.wetT=20;cable.visible=true;CB.amp=.14;CB.t=20;C.followAt=C.t-30;C.flags.leaveHint=true;
+  if(section==='c3-second-sighting'){inTunnel(240,{j:3.4,m:-1.4});go('n3-follow');objective('Follow him.');T.value=.72;T?.set(.72);
+   C.point={jamie:{...tq(244,.4),look:lookAhead(262,0,1.2),max:2.2,face:Dr.at(244).a}};role(jamie,'point');role(sam,'beside');lureReady();return;}
+  C.flags.wetSeen=true;C.flags.cableSeen=true;
+  // at the junction, him walking away from them to the culvert (the reveal and the run start from here)
+  const atJunction=s=>{inTunnel(s,{j:3.4,m:-1.3});go('n3-lure');date(NIGHT.lure,'PM');T.value=.8;T?.set(.8);C.flags.lure=true;lureReady();Object.assign(C.lure,{seenT:2,seenAt:C.t-6,distAtSeen:18,bySight:true});
+   C.point={jamie:{...tq(265,.95),look:figChest,max:1.7}};role(jamie,'point');role(sam,'beside');};
+  const lureDone=()=>{Object.assign(C.lure,{walkAt:C.t-14,stepAt:C.t-10,goneAt:C.t-9,voiceAt:C.t-8});hideFigure('lure-gone');(C.voices||=[]).push({word:'jamie',pos:culvertAt(2.6,.7),at:C.t-8,tunnel:true,where:'culvert'});};
+  if(section==='c3-creature-reveal'){atJunction(258);C.lure.walkAt=C.t-4.5;FG.state='lure-walk';FG.s=CUL.s-1.6;FG.t=-1.9;FG.yaw=-.3;FG.v=1;figure.group.visible=true;placeFigure(0);S.jamieAim=figChest;S.samAim=figChest;return;}
+  if(section==='c3-creature-advance'){atJunction(260);lureDone();creatureReveal();S.queue.length=0;S.line=null;CRT.state='reveal';CRT.t=-(culW()/2+.35);CRT.v=0;placeCreature();
+   Object.assign(C.crt,{t0:C.t-4,emergeAt:C.t-7,seenT:.5,distAtSeen:17});creatureSeen();return;}
+  if(section==='c3-creature-chase-start'){atJunction(260);lureDone();creatureReveal();S.queue.length=0;S.line=null;const w=culW();
+   Object.assign(C.crt,{t0:C.t-8,emergeAt:C.t-11,seenT:2,seenAt:C.t-4.4,creepAt:C.t-3.4,dropAt:C.t-.6,distAtSeen:17});
+   Object.assign(CRT,{state:'drop',t:-(w/2+.1),y:CUL.sill,phT:.5,from:{t:-(w/2+.1),y:CUL.sill},to:{t:-(w/2-1.1),y:0},v:2.4});placeCreature();
+   hold(jamie,{look:crChest,until:null});hold(sam,{look:crChest,until:null});S.jamieAim=crChest;S.samAim=crChest;return;}
+  C.flags.creature=true;C.lure={t0:C.t-60,seenT:2,seenAt:C.t-58,nudge:0,walkAt:C.t-55,stepAt:C.t-50,goneAt:C.t-49,voiceAt:C.t-48,distAtSeen:18,bySight:true,unseenGo:false};
+  C.voices=[{word:'jamie',pos:culvertAt(2.6,.7),at:C.t-48,tunnel:true,where:'culvert'}];
+  C.crt={t0:C.t-44,emergeAt:C.t-47,seenT:2,seenAt:C.t-40,nudge:0,creepAt:C.t-39,dropAt:C.t-36.2,landedAt:C.t-35.6,unseenGo:false,distAtSeen:17};
+  // the run, further on: everyone already running for the way out (and it, where it would be by then)
+  const running=(s,{j=-3.6,m=-1.6,stage='far',cr=null}={})=>{const q=Dr.at(s,0),a=q.a+Math.PI;youFoot({x:q.x,z:q.z},a);footAt(jamie,tq(s+j,.4),a);footAt(sam,tq(s+m,-.5),a);C.flags.inside=true;C.flags.jamieToMouth=true;C.maxDs=279;
+   for(const kk in C.amb)C.amb[kk]=kk==='tunnel'?1:kk==='water'?.6:0;T.value=.98;T?.jolt(1,{hold:30});run();const P2=C.purs;P2.stage=stage;
+   if(cr!==null)crAt(cr,'chase',5);else crHide();for(const c of [jamie,sam]){c.walkV=4.5;}C.runT=10;C.flags.comeOn2=true;return P2;};
+  const farDone=P2=>Object.assign(P2,{farAt:C.t-12,farWant:19,farVisAt:C.t-11,farSeenT:2,farSeenAt:C.t-10.5,farDist:19,cue:1});
+  const sideDone=P2=>{farDone(P2);Object.assign(P2,{lostAt:C.t-8,lostLine:true,stumbleAt:C.t-7,sideAt:C.t-5,sideSeenT:1,sideSeenAt:C.t-4.4,sideDist:12.2,cue:2});};
+  const gateDone=P2=>{Object.assign(P2,{pipeAt:C.t-20,bikeJamieAt:C.t-14,bikeSeenAt:C.t-13,nearAt:C.t-13,nearVisAt:C.t-12,nearSeenT:1,nearSeenAt:C.t-11.8,nearDist:8.8,gateHolder:'jamie',gateHoldAt:C.t-10,gateShutAt:C.t-9,gateHitAt:C.t-8.4,gateBurstAt:C.t-5.2,gateHits:6,minGap:8.2,minGapRun:8.2,cue:3});
+   GA.burst=true;GA.want=1;GA.open=1;poseGate(10);};
+  if(section==='c3-creature-far'){const P2=running(238,{stage:'far',cr:257});P2.farAt=C.t-3;P2.farWant=19;return;}
+  if(section==='c3-creature-side'){const P2=running(188,{stage:'lost'});farDone(P2);Object.assign(P2,{lostAt:C.t-3,lostLine:true,stumbleAt:C.t-2});return;}
+  if(section==='c3-bike-block'){const P2=running(104,{stage:'side',cr:116.5});sideDone(P2);P2.pipeAt=C.t-7;return;}
+  if(section==='c3-creature-near'){const P2=running(92,{stage:'near',cr:103.5});sideDone(P2);Object.assign(P2,{pipeAt:C.t-10,bikeJamieAt:C.t-2.6,nearAt:C.t-.3});return;}
+  if(section==='c3-creature-barrier'){const P2=running(78.5,{stage:'near',cr:87.5,m:-6.4});sideDone(P2);Object.assign(P2,{pipeAt:C.t-14,bikeJamieAt:C.t-5,bikeSeenAt:C.t-4,nearAt:C.t-4,nearVisAt:C.t-3,nearSeenT:1,nearSeenAt:C.t-2.8,nearDist:9.1});
+   const jq=tq(GT.s-1.1,1.35);footAt(jamie,jq,Dr.at(GT.s).a);gateHold(jamie);return;}
+  if(section==='c3-tunnel-exit'){const P2=running(40,{stage:'after',cr:57,j:-3.4,m:-1.4});sideDone(P2);gateDone(P2);return;}
+  C.flags.run=true;C.flags.out=true;o.setDrain?.(0);placeOld('relocated');GA.burst=true;GA.want=1;GA.open=1;poseGate(10);
+  // (out of the drain: it, low at the mouth, watching)
+  const outPurs=stage=>{const P2=C.purs=newPurs();sideDone(P2);gateDone(P2);Object.assign(P2,{stage,mouthAt:C.t-6,mouthLine:true,exitSeenAt:C.t-8,cue:4});crAt(9,'watch',0);CRT.t=-.3;CRT.pose={crouch:1};placeCreature();return P2;};
   if(section==='c3-bike-remount'){const r=bikes.you,q=Wd.fromA(5.5,6.5);o.placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,r.x,r.z),mode:'walk',bike:{x:r.x,z:r.z,a:ba}});
-   footAt(jamie,Wd.fromA(7.6,9.8),ba);footAt(sam,Wd.fromA(8.8,7.4),ba);go('n3-out');date(NIGHT.run,'PM');objective('Get back to the bikes.');T.value=.95;T?.jolt(1,{hold:20});
-   C.purs={stage:'done',farAt:C.t-40,farVisAt:C.t-38,farSeenT:2,farSeenAt:C.t-37,nearAt:C.t-12,nearVisAt:C.t-11,nearSeenT:1,nearSeenAt:C.t-10,bikeJamieAt:C.t-20,bikeSeenAt:C.t-19,stumbleAt:C.t-34,pipeAt:C.t-26,cue:3,hintAt:null,minGap:9,exitSeenAt:C.t-8};
+   footAt(jamie,Wd.fromA(7.6,9.8),ba);footAt(sam,Wd.fromA(8.8,7.4),ba);go('n3-out');date(NIGHT.run,'PM');objective('Get back to the bikes.');T.value=.95;T?.jolt(1,{hold:20});outPurs('mouth');
    A.remountRange=6;A.escape=escapeDir;for(const c of [jamie,sam])role(c,'run');for(const kk in C.amb)C.amb[kk]=kk==='forest'?1:kk==='water'?1:kk==='insects'?1:0;return;}
-  if(section==='c3-road-pursuit'||section==='c3-road-figure'){const s0=section==='c3-road-figure'?RF.s+42:Wd.L-4,pq=Wd.at(s0,0);o.placePlayer({x:pq.x,z:pq.z,a:pq.a+Math.PI,mode:'ride',speed:section==='c3-road-figure'?5.5:0});
-   const j=section==='c3-road-figure'?Wd.at(s0-4,.8):Wd.fromA(10.4,9.8),m=section==='c3-road-figure'?Wd.at(s0+3,-.8):Wd.fromA(12.6,10.6);comp.putRiding(jamie,j.x,j.z,pq.a+Math.PI,section==='c3-road-figure'?5.5:0);comp.putRiding(sam,m.x,m.z,pq.a+Math.PI,section==='c3-road-figure'?5.5:0);for(const c of [jamie,sam]){c.follow='ride';c.tight=1;}
-   go('n3-out');date(NIGHT.run,'PM');T.value=.95;T?.jolt(1,{hold:20});C.flags.out=true;mounted();for(const kk in C.amb)C.amb[kk]=kk==='forest'?1:kk==='water'?1:kk==='insects'?1:0;
-   if(section==='c3-road-figure'){C.flags.bellBehind=true;C.heardBells.push({pos:{x:Dr.P.x+8,y:Dr.P.floor+1.5,z:Dr.P.z},at:C.t-8,behind:true});}return;}
-  C.flags.flee=true;C.flags.bellBehind=true;C.roadFig={stage:'gone',seenT:2,seenAt:C.t-30,reactAt:C.t-30,leaveAt:C.t-29,goneAt:C.t-27};
+  if(section==='c3-road-escape'||section==='c3-final-lure'){const fin=section==='c3-final-lure',s0=fin?RF.s+42:Wd.L-4,pq=Wd.at(s0,0);o.placePlayer({x:pq.x,z:pq.z,a:pq.a+Math.PI,mode:'ride',speed:fin?5.5:0});
+   const j=fin?Wd.at(s0-4,.8):Wd.fromA(10.4,9.8),m=fin?Wd.at(s0+3,-.8):Wd.fromA(12.6,10.6);comp.putRiding(jamie,j.x,j.z,pq.a+Math.PI,fin?5.5:0);comp.putRiding(sam,m.x,m.z,pq.a+Math.PI,fin?5.5:0);for(const c of [jamie,sam]){c.follow='ride';c.tight=1;}
+   go('n3-out');date(NIGHT.run,'PM');T.value=.95;T?.jolt(1,{hold:20});C.flags.out=true;const P2=outPurs(fin?'done':'mouth');mounted();for(const kk in C.amb)C.amb[kk]=kk==='forest'?1:kk==='water'?1:kk==='insects'?1:0;
+   if(fin){crHide('gone');Object.assign(P2,{treeAt:C.t-20,treeS:Wd.L-12});C.flags.bellBehind=true;C.heardBells.push({pos:{x:Dr.P.x+8,y:Dr.P.floor+1.5,z:Dr.P.z},at:C.t-8,behind:true});}return;}
+  C.flags.flee=true;C.flags.bellBehind=true;C.roadFig={stage:'gone',seenT:2,seenAt:C.t-30,reactAt:C.t-30,leaveAt:C.t-29,goneAt:C.t-27};{const P2=outPurs('done');crHide('gone');Object.assign(P2,{treeAt:C.t-60,treeS:Wd.L-12});}
   if(section==='chapter3-end'){const q=side(241,1),j=side(238.6,-1.2),m=side(237.4,2.1);o.placePlayer({x:q.x,z:q.z,a:k.ha(241)+Math.PI,mode:'ride',speed:0});comp.putRiding(jamie,j.x,j.z,k.ha(238)+Math.PI,0);comp.putRiding(sam,m.x,m.z,k.ha(237)+Math.PI,0);
    for(const c of [jamie,sam])c.follow='ride';follow(true);go('n3-flee');T.value=.9;T?.set(.9);for(const kk in C.amb)C.amb[kk]=kk==='forest'||kk==='tunnel'||kk==='water'?0:1;safeNow();return;}}
  Object.assign(A3,{SECTIONS:SECTIONS3,ALIAS:ALIAS3,LABEL:LABEL3,owns,handles,begin,update,spots,act,sources,blockers,reset,jump,jamieSweep,longThrow,hint,officerAim:()=>null,
-  canDismount:()=>!C.pose&&!C.inRoom&&!['c3-black','c3-night'].includes(S.phase),canRemount:()=>!C.inRoom&&drainS()<0&&!/^n3-(outfall|tunnel|evidence|bell|item|bike|deeper|figure|follow|search|cross|voice|behind|close)$/.test(S.phase)});// (the bikes wait at the mouth until you run)
+  canDismount:()=>!C.pose&&!C.inRoom&&!['c3-black','c3-night'].includes(S.phase),canRemount:()=>!C.inRoom&&drainS()<0&&!/^n3-(outfall|tunnel|evidence|bell|item|bike|deeper|figure|follow|lure|creature)$/.test(S.phase)});// (the bikes wait at the mouth until you run)
  Object.defineProperties(A3,{amb:{get:()=>C.amb},state:{get:()=>({phase:S.phase,flags:{...C.flags},inRoom:C.inRoom,recSel:C.recSel,recPlaying:C.recPlaying,heard:[...C.heard],talked:[...C.talked],amb:Object.fromEntries(Object.entries(C.amb).map(([a,b])=>[a,+b.toFixed(3)])),
    bells:(C.heardBells||[]).map(b=>({...b,pos:{x:+b.pos.x.toFixed(2),y:+b.pos.y.toFixed(2),z:+b.pos.z.toFixed(2)}})),voices:(C.voices||[]).map(v=>({word:v.word,at:v.at,tunnel:!!v.tunnel,where:v.where,dot:v.dotFromView,pos:{x:+v.pos.x.toFixed(2),z:+v.pos.z.toFixed(2)}})),
    oldBike:old.group.visible,bike:C.bike,oldFallen:!!C.oldFallen,helmet:helmet.visible,evidence:evidence.visible,marks:marks.visible,phone:phone.visible,
    figure:{state:FG.state,visible:figure.group.visible,s:+FG.s.toFixed(2),t:+FG.t.toFixed(2),v:+FG.v.toFixed(2),road:FG.road?{s:+FG.road.s.toFixed(2),t:+FG.road.t.toFixed(2)}:null,seenAt:C.fig?.seenAt??null,seenT:+(C.fig?.seenT??0).toFixed(2),t0:C.fig?.t0??null,alexAt:C.fig?.alexAt??null,unseenGo:!!C.fig?.unseenGo,distAtSeen:C.fig?.distAtSeen??null},
-   purs:C.purs?{...C.purs}:null,roadFig:C.roadFig?{...C.roadFig}:null,
+   purs:C.purs?{...C.purs}:null,roadFig:C.roadFig?{...C.roadFig}:null,lure:C.lure?{...C.lure}:null,crt:C.crt?{...C.crt}:null,
+   creature:{state:CRT.state,visible:creature.group.visible,loaded:creature.loaded,error:creature.error?String(creature.error).slice(0,300):null,s:+CRT.s.toFixed(2),t:+CRT.t.toFixed(2),y:+CRT.y.toFixed(2),v:+CRT.v.toFixed(2),road:!!CRT.road},
+   gate:{visible:gate.visible,open:+GA.open.toFixed(3),want:GA.want,burst:GA.burst},crSounds:C.crSounds||0,crKinds:{...(C.crKinds||{})},gateSounds:C.gateSounds||0,
    tension:T?.state,pose:!!C.pose,lastEvent:C.lastEvent,t:C.t,roadS:+roadS().toFixed(1),drainS:+drainS().toFixed(1),shade:+C.shade.toFixed(3),splashes:C.splashes||0,roles:{...C.role}})}});
  A.hint=()=>owns(S.phase)?hint():null;
- Object.assign(A3,{old,evidence,marks,phone,figure,helmet,glow,people:N,roomZone,RW,RECS,C,FG,placeOld,itemAt,oldSpot,relAt,RF});
+ Object.assign(A3,{old,evidence,marks,phone,figure,helmet,glow,people:N,roomZone,RW,RECS,C,FG,placeOld,itemAt,oldSpot,relAt,RF,creature,CRT,GT,GA,LURE,CUL,SIDE,NEAR_S,gate,crChest,culvertAt});
  Object.defineProperty(A3,'glimpseBike',{get:()=>null});
  return A3;
 }

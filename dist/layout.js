@@ -87,7 +87,7 @@ export const DRAIN={len:286,grade:.004,
  // Dry ledges along one wall: the maintenance walkway by the mouth, a narrow lip in the deep box (broken in one place).
  ledges:[{s0:24,s1:72,side:1,w:.75,h:.32},{s0:151.5,s1:195.6,side:1,w:.55,h:.24},{s0:199.4,s1:212,side:1,w:.55,h:.24}],
  // Openings in the walls: black (pipes and side drains nobody has been up in years). The two at 264 face each other.
- openings:[{s:108,side:-1,shape:'round',r:.38,y:.55},{s:129.5,side:-1,shape:'box',w:.9,h:.6,y:.12},{s:176,side:1,shape:'round',r:.3,y:1.05},{s:194,side:-1,shape:'box',w:.75,h:1,y:.06},
+ openings:[{s:108,side:-1,shape:'round',r:.38,y:.55},{s:129.5,side:-1,shape:'box',w:.9,h:.6,y:.12},{s:176,side:1,shape:'round',r:.3,y:1.05},{s:194,side:-1,shape:'box',w:1.4,h:1.4,y:.03},
   {s:239,side:1,shape:'round',r:.45,y:.5},{s:264,side:-1,shape:'box',w:1.05,h:1.62,y:-.03,cross:true},{s:264,side:1,shape:'box',w:1.05,h:1.62,y:-.03,cross:true}],
  hatch:{s:187,side:-1},pipes:[180,203],
  walkway:{s0:24,s1:72,side:1,w:.75,h:.32}};
