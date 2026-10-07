@@ -40,9 +40,13 @@
   </dl>
   <div class="intro-note">A 5-MINUTE MEMORY · BEST WITH HEADPHONES</div>
   <!-- TEMPORARY: private playtest build only. Not part of the shipped game. -->
-  <div id="dev-chapters" role="group" aria-label="Developer: start at chapter (temporary playtest tool)">
-   <div class="dev-title">DEV · PLAYTEST ONLY — START AT CHAPTER</div>
-   <button data-dev-chapter="0">Prologue</button><button data-dev-chapter="1">Chapter One</button><button data-dev-chapter="2">Chapter Two</button><button data-dev-chapter="3">Chapter Three</button>
+  <div id="dev-chapters" role="group" aria-label="Developer: start at a chapter or scene (temporary playtest tool)">
+   <div class="dev-title">DEV · PLAYTEST · TEMPORARY</div>
+   <div class="dev-step">1 · Chapter</div>
+   <button data-dev-chapter="0" aria-pressed="false">Prologue</button><button data-dev-chapter="1" aria-pressed="false">Chapter One</button><button data-dev-chapter="2" aria-pressed="false">Chapter Two</button><button data-dev-chapter="3" aria-pressed="true">Chapter Three</button>
+   <label class="dev-step" for="dev-scene">2 · Scene</label>
+   <select id="dev-scene" size="7"></select>
+   <button id="dev-start" class="dev-go">START SCENE</button>
    <div id="dev-status" class="dev-status" aria-live="polite"></div>
   </div>
  </section>

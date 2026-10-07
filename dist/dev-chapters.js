@@ -1,8 +1,9 @@
 // TEMPORARY — private playtest build only (branch claude/chapter3-private-playtest). NOT part of the
 // shipped game: the finished Chapter Three branch does not contain this file, and the release will not.
 //
-// DEV — START AT CHAPTER: begin at the true beginning of the prologue or of Chapter One, Two or Three,
-// in the same state a player reaches by playing everything before it.
+// DEV — CHAPTER → SCENE: begin at the true beginning of the prologue or of Chapter One, Two or Three, or at
+// one of the important scenes inside them (DEV_SCENES), in the same state a player reaches by playing
+// everything before it. Each scene starts shortly BEFORE its event, so it can be played through.
 //
 // How the state is made canonical. Each chapter is entered by the game's own code path for entering it:
 //   * Prologue: Start over (resetState + start), exactly what a new game does.
@@ -21,8 +22,46 @@
 // the chapter clock and re-based. The simulation test compares every start with a natural arrival.
 // Before any of it, everything transient is cleared (clear()), so switching chapters any number of times in
 // one session leaves nothing behind.
+//
+// How a scene is made canonical (startScene). Never coordinates and approximate flags of its own: each
+// scene is one of the game's existing ways in, chosen to be reliable:
+//   * chapter: the chapter's own start, above;
+//   * jump: the QA/Continue checkpoint initializer for that moment (the same jumpTo() Continue uses: Start
+//     over's reset, then the chapter's own jump(), which sets the story flags of every earlier beat in that
+//     chapter), then the earlier chapters' history from HISTORY (what Chapters One and Two leave behind, as
+//     at the chapter's start) and the Continue save a player has by then (`save`: the last checkpoint passed);
+//   * warp: the prologue's own mid-ride warp (as its alex-departure jump), only before anyone has left;
+//   * ride: that warp, then the game itself rides on (W held, muted, nothing drawn) to just before the
+//     moment, through the departures in between, as a player would;
+//   * approach: the last stretch of the street to the lookout (the game rides the rest when you do).
 import {HISTORY,TIMESTAMPS} from './dev-chapter-history.js';
 export const DEV_CHAPTERS=[{n:0,label:'Prologue',phase:null},{n:1,label:'Chapter One',phase:'leave'},{n:2,label:'Chapter Two',phase:'c2-black'},{n:3,label:'Chapter Three',phase:'c3-black'}];
+// The scenes of each chapter, in story order. The first of each list is the chapter's own start.
+export const DEV_SCENES={
+ 0:[{id:'start',label:'Start (new game)',chapter:0},{id:'group-ride',label:'Group Ride',warp:150},{id:'alex-hears',label:'Alex Before Briarwood (“Did you guys hear that?”)',warp:355},
+  {id:'alex-departure',label:'Alex Departure',warp:528},{id:'jamie-departure',label:'Jamie Departure',ride:670},{id:'sam-departure',label:'Sam Departure',ride:870},
+  {id:'lookout',label:'Old Oak / Chalk (the lookout)',approach:true},{id:'ride-home',label:'Solo Ride Home',chapter:1},{id:'police',label:'Police Cruiser / Title',jump:'police'}],
+ 1:[{id:'title',label:'Chapter One Start (title)',jump:'title'},{id:'alex-house',label:'Alex’s House (Briarwood)',jump:'alex-house'},{id:'jamie',label:'Recruit Jamie',jump:'jamie'},
+  {id:'sam',label:'Recruit Sam',jump:'sam'},{id:'oak',label:'Old Oak Regroup',jump:'oak'},{id:'retrace',label:'The Way Alex Went (retrace)',jump:'retrace'},
+  {id:'investigation',label:'Creek / Utility Strip',jump:'investigation'},{id:'clue',label:'Reflector Discovery',jump:'clue'},{id:'final-bell',label:'Final Bell / Chapter End',jump:'clue',act:'reflector'}],
+ 2:[{id:'chapter2',label:'Chapter Two Start',chapter:2},{id:'chapter2-start',label:'Follow the Sound',jump:'chapter2-start'},{id:'easement',label:'Easement',jump:'easement'},
+  {id:'alex-bike',label:'Alex’s Bike',jump:'alex-bike'},{id:'second-bell',label:'Second Bell / Culvert',jump:'second-bell'},{id:'police-find',label:'Police Arrival',jump:'police-find'},
+  {id:'morning',label:'Morning',jump:'morning'},{id:'morning-oak',label:'Morning Old Oak',jump:'morning-oak'},{id:'memory-start',label:'Return to Briarwood',jump:'memory-start'},
+  {id:'memory-reconstruction',label:'Memory Reconstruction',jump:'memory-reconstruction'},{id:'chapter2-end',label:'Chapter Two Ending',jump:'chapter2-end'}],
+ 3:[{id:'chapter3',label:'Chapter Three Start',chapter:3},{id:'c3-alex-house',label:'Alex’s House (his mom)',jump:'c3-alex-house',save:'chapter3-start'},
+  {id:'alex-bedroom',label:'Alex’s Bedroom',jump:'alex-bedroom'},{id:'recording',label:'Flip Phone (the recording)',jump:'recording'},
+  {id:'neighbors',label:'Neighbor / Storm Road',jump:'neighbors'},{id:'c3-road-day',label:'Day Road Entrance',jump:'c3-road-day',save:'neighbor-investigation'},
+  {id:'night-start',label:'Night Start',jump:'night-start'},{id:'c3-road-night',label:'Night Ride to the Road',jump:'c3-road-night'},{id:'c3-forest-deep',label:'Forest Road',jump:'c3-forest-deep',save:'c3-road-night'},
+  {id:'c3-tunnel-entrance',label:'Tunnel Entrance',jump:'c3-tunnel-entrance',save:'c3-tunnel-entrance'},{id:'c3-tunnel-deep',label:'Deep Tunnel',jump:'c3-tunnel-deep',save:'c3-tunnel-entrance'},
+  {id:'c3-alex-item',label:'Alex Evidence (his helmet)',jump:'c3-alex-item',save:'c3-tunnel-deep'},{id:'c3-old-bike',label:'Old Bike',jump:'c3-old-bike',save:'c3-tunnel-deep'},
+  {id:'c3-bike-gone',label:'Old Bike Gone',jump:'c3-bike-gone',save:'c3-old-bike'},{id:'c3-figure-reveal',label:'Alex-Like Figure: First Reveal',jump:'c3-figure-reveal',save:'c3-old-bike'},
+  {id:'c3-follow-alex',label:'Follow Alex',jump:'c3-follow-alex',save:'c3-alex-lure'},{id:'c3-second-sighting',label:'Second Alex Sighting',jump:'c3-second-sighting',save:'c3-alex-lure'},
+  {id:'c3-creature-reveal',label:'Creature Reveal',jump:'c3-creature-reveal',save:'c3-alex-lure'},{id:'c3-creature-chase-start',label:'RUN / Chase Start',jump:'c3-creature-chase-start'},
+  {id:'c3-creature-far',label:'Creature Chase — Far',jump:'c3-creature-far'},{id:'c3-creature-side',label:'Creature Chase — Side Channel',jump:'c3-creature-side'},
+  {id:'c3-bike-block',label:'Old Bike Relocated (in the way)',jump:'c3-bike-block'},{id:'c3-creature-near',label:'Creature Chase — Near',jump:'c3-creature-near'},
+  {id:'c3-creature-barrier',label:'Creature Chase — Barrier (the gate)',jump:'c3-creature-barrier'},{id:'c3-tunnel-exit',label:'Tunnel Exit',jump:'c3-tunnel-exit'},
+  {id:'c3-bike-remount',label:'Bike Remount',jump:'c3-bike-remount',save:'c3-creature-chase'},{id:'c3-road-escape',label:'Forest Escape',jump:'c3-road-escape'},
+  {id:'c3-final-lure',label:'Final Alex-Like Road Figure',jump:'c3-final-lure'},{id:'chapter3-end',label:'Chapter Three End',jump:'chapter3-end'}]};
 
 export function createDevChapters(g){
  const {chapter,chapter2,chapter3}=g,comp=chapter.companions,K=chapter.kit;
@@ -57,13 +96,13 @@ export function createDevChapters(g){
   if(!done())throw new Error('dev start: the hand-over did not happen');return t;}
  const phase=()=>K.S.phase,G=()=>g.game();
  // What the earlier beats left behind, from the natural playthrough (see the header).
- function applyHistory(n){const H=HISTORY[n];if(!H)return;
+ function applyHistory(n,{save=true}={}){const H=HISTORY[n];if(!H)return;
   const put=(obj,vals,clock,stamps)=>{if(!obj||!vals)return;for(const [k,v] of Object.entries(vals)){if(v===null)delete obj[k];else obj[k]=JSON.parse(JSON.stringify(v));}
    for(const [k,off] of Object.entries(stamps||{}))obj[k]=off===null?undefined:(obj[clock]??0)-off;};
   put(K.S,H.chapter1,'t',H.chapter1Clock);put(chapter2.C,H.chapter2,'t',H.chapter2Clock);
   if(H.foot){g.foot.owned=H.foot.owned;g.foot.on=H.foot.on;}
   if(H.lens!=null&&K.lens)K.lens.emissiveIntensity=H.lens;
-  if(H.save)K.checkpointTo(H.save,K.CHECKPOINT[H.save]);}
+  if(save&&H.save)K.checkpointTo(H.save,K.CHECKPOINT[H.save]);}
  function start(n,{history=true}={}){
   clear({restart:n<2});
   if(n===1){g.prologueApproach();g.press('KeyW');runUntil(()=>G().state==='arriving',60);g.release('KeyW');
@@ -76,6 +115,20 @@ export function createDevChapters(g){
   else if(n!==0)throw new Error('dev start: no chapter '+n);
   if(history)applyHistory(n);
   return phase();}
+ // ---- a scene (DEV_SCENES): see the header for how each kind is made canonical ---------------------------
+ const SAVE_KEY='lastlight.chapter1';
+ function startScene(n,id){const sc=(DEV_SCENES[n]||[]).find(x=>x.id===id);if(!sc)throw new Error('dev scene: no scene '+n+'/'+id);
+  if(sc.chapter!=null)return start(sc.chapter);
+  if(sc.jump){clear({restart:false});
+   // (the save a player has by then: the jump's own checkpoints, if it reaches any, come after it)
+   if(sc.save)K.checkpointTo(sc.save,K.CHECKPOINT[sc.save]);
+   g.jumpTo(sc.jump);if(sc.act)chapter.act(sc.act);if(n>=2)applyHistory(n,{save:false});return phase();}
+  clear();// (Start over: a new game, on the street)
+  if(sc.warp!=null)g.prologueAt(sc.warp);
+  else if(sc.ride!=null){g.prologueAt(528);g.press('KeyW');try{runUntil(()=>G().distance>=sc.ride,120);}finally{g.release('KeyW');}}
+  else if(sc.approach)g.prologueApproach();
+  return G().state;}
+ const sceneSave=()=>{try{return JSON.parse(localStorage.getItem(SAVE_KEY)||'null')?.section??null;}catch{return null;}};
 
  // ---- a snapshot of everything that makes up the game's state, for comparing two ways of arriving ---------
  const r=v=>Number.isFinite(v)?Math.round(v*1000)/1000:v;
@@ -113,5 +166,5 @@ export function createDevChapters(g){
     ending:!!el('ending')?.hidden,fade:r(+(el('fade')?.style.opacity||0)),warm:!!el('fade')?.classList.contains('warm'),
     body:['riding','night1','remembering'].filter(c=>body?.contains(c)),prompt:g.ui.promptText||''},
    save:(()=>{try{return JSON.parse(localStorage.getItem('lastlight.chapter1')||'null')?.section??null;}catch{return null;}})()};}
- return {start,snapshot,clear,applyHistory,CHAPTERS:DEV_CHAPTERS};
+ return {start,startScene,snapshot,clear,applyHistory,sceneSave,CHAPTERS:DEV_CHAPTERS,SCENES:DEV_SCENES};
 }
