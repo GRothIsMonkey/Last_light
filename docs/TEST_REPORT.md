@@ -5,7 +5,7 @@ Source: `claude/chapter3-horror-escalation` at `e575f069c2f1bec4641253632a3d670c
 | Gate | Result |
 |---|---:|
 | Full simulation / geometry suite (`npm test`, no `QUICK`) | **551 passed**, 0 failed (escalation: 475) |
-| Chapter Three Chromium pass (`tests/chapter3-browser-only.mjs`): muted natural walkthrough (no QA jump), every jump, Continue, captions, audio hooks | **79 passed**; then the audio-hook check failed on a stale threshold (fixed; see "Found and fixed"; rerun in progress at the time of writing) |
+| Chapter Three Chromium pass (`tests/chapter3-browser-only.mjs`): muted natural walkthrough (no QA jump), every jump, Continue, captions, audio hooks | **83 passed**, 0 failed (109 captures) |
 | DEV Chapter → Scene selector, Chromium (`tests/dev-chapters-browser.mjs`): real clicks, every scene, natural-equivalence, switching, Chapter Three played from the DEV start | **112 passed** (every scene, the natural comparisons, the switching order); then a page-load timeout under load (see "Found and fixed"; rerun in progress at the time of writing) |
 | DEV selector, simulation: 58 scenes start; 46 compared with a natural playthrough | **0 differences**; switching **0 leaks** |
 | JavaScript / console / shader errors | **0** |
