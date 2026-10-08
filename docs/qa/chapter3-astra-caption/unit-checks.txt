@@ -1,0 +1,7 @@
+PASS dark scene uses light text without backing
+PASS measured flashlight-wall fixture below 2:1 gets useful backing
+PASS backing is a transparent-edge radial treatment, not a box
+PASS just below 2:1 also receives backing
+PASS backing fades away again in clear darkness
+PASS bright scene changes to dark text without backing
+{"passed":6}

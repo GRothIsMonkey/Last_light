@@ -1,0 +1,280 @@
+{
+  "inventory": {
+    "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "staticTriangles": 2514058,
+    "staticMeshes": 1161
+  },
+  "frames": [
+    {
+      "name": "00-dev-scenes",
+      "frame": 1,
+      "calls": 290,
+      "triangles": 771942,
+      "points": 866,
+      "lines": 4043,
+      "phase": "off"
+    },
+    {
+      "name": "01-dev-bedroom",
+      "frame": 2,
+      "calls": 522,
+      "triangles": 852437,
+      "points": 640,
+      "lines": 3951,
+      "phase": "d3-room"
+    },
+    {
+      "name": "chapter3-start",
+      "frame": 3,
+      "calls": 437,
+      "triangles": 929004,
+      "points": 640,
+      "lines": 3849,
+      "phase": "d3-corner"
+    },
+    {
+      "name": "c3-alex-house",
+      "frame": 4,
+      "calls": 284,
+      "triangles": 912370,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-street"
+    },
+    {
+      "name": "alex-bedroom",
+      "frame": 5,
+      "calls": 522,
+      "triangles": 852437,
+      "points": 640,
+      "lines": 3951,
+      "phase": "d3-room"
+    },
+    {
+      "name": "recording",
+      "frame": 6,
+      "calls": 342,
+      "triangles": 939200,
+      "points": 640,
+      "lines": 3895,
+      "phase": "d3-phone"
+    },
+    {
+      "name": "neighbors",
+      "frame": 7,
+      "calls": 302,
+      "triangles": 675649,
+      "points": 640,
+      "lines": 3824,
+      "phase": "d3-neighbors"
+    },
+    {
+      "name": "c3-road-day",
+      "frame": 8,
+      "calls": 140,
+      "triangles": 710233,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-road"
+    },
+    {
+      "name": "c3-road-night",
+      "frame": 9,
+      "calls": 112,
+      "triangles": 576383,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-forest-deep",
+      "frame": 10,
+      "calls": 63,
+      "triangles": 479522,
+      "points": 682,
+      "lines": 3727,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-tunnel-entrance",
+      "frame": 11,
+      "calls": 230,
+      "triangles": 508138,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-outfall"
+    },
+    {
+      "name": "c3-tunnel-inside",
+      "frame": 12,
+      "calls": 180,
+      "triangles": 591061,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-tunnel-deep",
+      "frame": 13,
+      "calls": 122,
+      "triangles": 60281,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-evidence",
+      "frame": 14,
+      "calls": 122,
+      "triangles": 60281,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-alex-item",
+      "frame": 15,
+      "calls": 119,
+      "triangles": 58775,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-item"
+    },
+    {
+      "name": "c3-old-bike",
+      "frame": 16,
+      "calls": 93,
+      "triangles": 43751,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-broken-bell",
+      "frame": 17,
+      "calls": 78,
+      "triangles": 36987,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-figure-reveal",
+      "frame": 18,
+      "calls": 84,
+      "triangles": 45262,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-figure"
+    },
+    {
+      "name": "c3-second-sighting",
+      "frame": 19,
+      "calls": 87,
+      "triangles": 42147,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-lure"
+    },
+    {
+      "name": "c3-creature-advance",
+      "frame": 20,
+      "calls": 59,
+      "triangles": 50520,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-creature"
+    },
+    {
+      "name": "c3-creature-far",
+      "frame": 21,
+      "calls": 114,
+      "triangles": 99219,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-side",
+      "frame": 22,
+      "calls": 149,
+      "triangles": 77841,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-bike-block",
+      "frame": 23,
+      "calls": 145,
+      "triangles": 89948,
+      "points": 682,
+      "lines": 3975,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-near",
+      "frame": 24,
+      "calls": 190,
+      "triangles": 570218,
+      "points": 682,
+      "lines": 3975,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-barrier",
+      "frame": 25,
+      "calls": 172,
+      "triangles": 542332,
+      "points": 682,
+      "lines": 3931,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-tunnel-exit",
+      "frame": 26,
+      "calls": 153,
+      "triangles": 381388,
+      "points": 682,
+      "lines": 3931,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-bike-remount",
+      "frame": 27,
+      "calls": 133,
+      "triangles": 522582,
+      "points": 682,
+      "lines": 3835,
+      "phase": "n3-out"
+    },
+    {
+      "name": "c3-road-escape",
+      "frame": 28,
+      "calls": 94,
+      "triangles": 626562,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "c3-final-lure",
+      "frame": 29,
+      "calls": 118,
+      "triangles": 357293,
+      "points": 682,
+      "lines": 3859,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "chapter3-end",
+      "frame": 30,
+      "calls": 514,
+      "triangles": 934364,
+      "points": 682,
+      "lines": 3921,
+      "phase": "n3-safe"
+    }
+  ],
+  "errors": []
+}

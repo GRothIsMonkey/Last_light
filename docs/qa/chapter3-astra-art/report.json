@@ -1,0 +1,1093 @@
+{
+  "inventory": {
+    "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "staticTriangles": 2723522,
+    "staticMeshes": 1361
+  },
+  "frames": [
+    {
+      "name": "00-dev-scenes",
+      "frame": 1,
+      "calls": 288,
+      "triangles": 602331,
+      "points": 866,
+      "lines": 4043,
+      "phase": "off"
+    },
+    {
+      "name": "01-dev-bedroom",
+      "frame": 2,
+      "calls": 195,
+      "triangles": 329120,
+      "points": 640,
+      "lines": 3877,
+      "phase": "d3-room"
+    },
+    {
+      "name": "chapter3-start",
+      "frame": 3,
+      "calls": 429,
+      "triangles": 831376,
+      "points": 640,
+      "lines": 3849,
+      "phase": "d3-corner"
+    },
+    {
+      "name": "chapter3-start-left",
+      "frame": 4,
+      "calls": 374,
+      "triangles": 781674,
+      "points": 640,
+      "lines": 3850,
+      "phase": "d3-corner"
+    },
+    {
+      "name": "chapter3-start-right",
+      "frame": 5,
+      "calls": 428,
+      "triangles": 920066,
+      "points": 640,
+      "lines": 3841,
+      "phase": "d3-corner"
+    },
+    {
+      "name": "chapter3-start-detail",
+      "frame": 6,
+      "calls": 458,
+      "triangles": 873227,
+      "points": 640,
+      "lines": 3868,
+      "phase": "d3-corner"
+    },
+    {
+      "name": "c3-alex-house",
+      "frame": 7,
+      "calls": 320,
+      "triangles": 644888,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-street"
+    },
+    {
+      "name": "c3-alex-house-left",
+      "frame": 8,
+      "calls": 235,
+      "triangles": 533879,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-street"
+    },
+    {
+      "name": "c3-alex-house-right",
+      "frame": 9,
+      "calls": 518,
+      "triangles": 1074642,
+      "points": 640,
+      "lines": 3971,
+      "phase": "d3-street"
+    },
+    {
+      "name": "c3-alex-house-detail",
+      "frame": 10,
+      "calls": 308,
+      "triangles": 641975,
+      "points": 640,
+      "lines": 3841,
+      "phase": "d3-street"
+    },
+    {
+      "name": "alex-bedroom",
+      "frame": 11,
+      "calls": 195,
+      "triangles": 329120,
+      "points": 640,
+      "lines": 3877,
+      "phase": "d3-room"
+    },
+    {
+      "name": "alex-bedroom-left",
+      "frame": 12,
+      "calls": 214,
+      "triangles": 308823,
+      "points": 640,
+      "lines": 3931,
+      "phase": "d3-room"
+    },
+    {
+      "name": "alex-bedroom-right",
+      "frame": 13,
+      "calls": 200,
+      "triangles": 353670,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-room"
+    },
+    {
+      "name": "alex-bedroom-detail",
+      "frame": 14,
+      "calls": 221,
+      "triangles": 341268,
+      "points": 640,
+      "lines": 3895,
+      "phase": "d3-room"
+    },
+    {
+      "name": "recording",
+      "frame": 15,
+      "calls": 250,
+      "triangles": 325712,
+      "points": 640,
+      "lines": 3895,
+      "phase": "d3-phone"
+    },
+    {
+      "name": "recording-left",
+      "frame": 16,
+      "calls": 211,
+      "triangles": 316405,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-phone"
+    },
+    {
+      "name": "recording-right",
+      "frame": 17,
+      "calls": 191,
+      "triangles": 269255,
+      "points": 640,
+      "lines": 3931,
+      "phase": "d3-phone"
+    },
+    {
+      "name": "recording-detail",
+      "frame": 18,
+      "calls": 155,
+      "triangles": 257195,
+      "points": 640,
+      "lines": 3895,
+      "phase": "d3-phone"
+    },
+    {
+      "name": "neighbors",
+      "frame": 19,
+      "calls": 303,
+      "triangles": 608877,
+      "points": 640,
+      "lines": 3824,
+      "phase": "d3-neighbors"
+    },
+    {
+      "name": "neighbors-left",
+      "frame": 20,
+      "calls": 230,
+      "triangles": 433540,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-neighbors"
+    },
+    {
+      "name": "neighbors-right",
+      "frame": 21,
+      "calls": 405,
+      "triangles": 775003,
+      "points": 640,
+      "lines": 3922,
+      "phase": "d3-neighbors"
+    },
+    {
+      "name": "neighbors-detail",
+      "frame": 22,
+      "calls": 313,
+      "triangles": 648080,
+      "points": 640,
+      "lines": 3824,
+      "phase": "d3-neighbors"
+    },
+    {
+      "name": "c3-road-day",
+      "frame": 23,
+      "calls": 241,
+      "triangles": 779010,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-road"
+    },
+    {
+      "name": "c3-road-day-left",
+      "frame": 24,
+      "calls": 210,
+      "triangles": 705910,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-road"
+    },
+    {
+      "name": "c3-road-day-right",
+      "frame": 25,
+      "calls": 222,
+      "triangles": 670404,
+      "points": 640,
+      "lines": 3823,
+      "phase": "d3-road"
+    },
+    {
+      "name": "c3-road-day-detail",
+      "frame": 26,
+      "calls": 250,
+      "triangles": 786995,
+      "points": 640,
+      "lines": 3841,
+      "phase": "d3-road"
+    },
+    {
+      "name": "c3-road-night",
+      "frame": 27,
+      "calls": 153,
+      "triangles": 351531,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-road-night-left",
+      "frame": 28,
+      "calls": 159,
+      "triangles": 347494,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-road-night-right",
+      "frame": 29,
+      "calls": 185,
+      "triangles": 445938,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-road-night-detail",
+      "frame": 30,
+      "calls": 156,
+      "triangles": 334330,
+      "points": 682,
+      "lines": 3841,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-forest-deep",
+      "frame": 31,
+      "calls": 94,
+      "triangles": 427332,
+      "points": 682,
+      "lines": 3727,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-forest-deep-left",
+      "frame": 32,
+      "calls": 146,
+      "triangles": 465315,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-forest-deep-right",
+      "frame": 33,
+      "calls": 58,
+      "triangles": 216141,
+      "points": 682,
+      "lines": 3727,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-forest-deep-detail",
+      "frame": 34,
+      "calls": 103,
+      "triangles": 431364,
+      "points": 682,
+      "lines": 3841,
+      "phase": "n3-road"
+    },
+    {
+      "name": "c3-tunnel-entrance",
+      "frame": 35,
+      "calls": 307,
+      "triangles": 401084,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-outfall"
+    },
+    {
+      "name": "c3-tunnel-entrance-left",
+      "frame": 36,
+      "calls": 104,
+      "triangles": 251833,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-outfall"
+    },
+    {
+      "name": "c3-tunnel-entrance-right",
+      "frame": 37,
+      "calls": 310,
+      "triangles": 639452,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-outfall"
+    },
+    {
+      "name": "c3-tunnel-entrance-detail",
+      "frame": 38,
+      "calls": 311,
+      "triangles": 401582,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-outfall"
+    },
+    {
+      "name": "c3-tunnel-inside",
+      "frame": 39,
+      "calls": 259,
+      "triangles": 380171,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-tunnel-inside-left",
+      "frame": 40,
+      "calls": 234,
+      "triangles": 259789,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-tunnel-inside-right",
+      "frame": 41,
+      "calls": 144,
+      "triangles": 470778,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-tunnel-inside-detail",
+      "frame": 42,
+      "calls": 278,
+      "triangles": 423534,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-tunnel-deep",
+      "frame": 43,
+      "calls": 167,
+      "triangles": 100337,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-tunnel-deep-left",
+      "frame": 44,
+      "calls": 149,
+      "triangles": 96526,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-tunnel-deep-right",
+      "frame": 45,
+      "calls": 149,
+      "triangles": 84929,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-tunnel-deep-detail",
+      "frame": 46,
+      "calls": 178,
+      "triangles": 105019,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-evidence",
+      "frame": 47,
+      "calls": 167,
+      "triangles": 100337,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-evidence-left",
+      "frame": 48,
+      "calls": 149,
+      "triangles": 96526,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-evidence-right",
+      "frame": 49,
+      "calls": 149,
+      "triangles": 84929,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-evidence-detail",
+      "frame": 50,
+      "calls": 178,
+      "triangles": 105019,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-tunnel"
+    },
+    {
+      "name": "c3-alex-item",
+      "frame": 51,
+      "calls": 166,
+      "triangles": 99189,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-item"
+    },
+    {
+      "name": "c3-alex-item-left",
+      "frame": 52,
+      "calls": 109,
+      "triangles": 80396,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-item"
+    },
+    {
+      "name": "c3-alex-item-right",
+      "frame": 53,
+      "calls": 169,
+      "triangles": 102703,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-item"
+    },
+    {
+      "name": "c3-alex-item-detail",
+      "frame": 54,
+      "calls": 173,
+      "triangles": 104369,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-item"
+    },
+    {
+      "name": "c3-old-bike",
+      "frame": 55,
+      "calls": 131,
+      "triangles": 83957,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-old-bike-left",
+      "frame": 56,
+      "calls": 87,
+      "triangles": 60690,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-old-bike-right",
+      "frame": 57,
+      "calls": 106,
+      "triangles": 70103,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-old-bike-detail",
+      "frame": 58,
+      "calls": 137,
+      "triangles": 87073,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-broken-bell",
+      "frame": 59,
+      "calls": 108,
+      "triangles": 70769,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-broken-bell-left",
+      "frame": 60,
+      "calls": 123,
+      "triangles": 79691,
+      "points": 682,
+      "lines": 3849,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-broken-bell-right",
+      "frame": 61,
+      "calls": 47,
+      "triangles": 40151,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-broken-bell-detail",
+      "frame": 62,
+      "calls": 116,
+      "triangles": 75435,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-bike"
+    },
+    {
+      "name": "c3-figure-reveal",
+      "frame": 63,
+      "calls": 107,
+      "triangles": 65288,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-figure"
+    },
+    {
+      "name": "c3-figure-reveal-left",
+      "frame": 64,
+      "calls": 85,
+      "triangles": 58505,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-figure"
+    },
+    {
+      "name": "c3-figure-reveal-right",
+      "frame": 65,
+      "calls": 86,
+      "triangles": 51794,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-figure"
+    },
+    {
+      "name": "c3-figure-reveal-detail",
+      "frame": 66,
+      "calls": 113,
+      "triangles": 68404,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-figure"
+    },
+    {
+      "name": "c3-second-sighting",
+      "frame": 67,
+      "calls": 93,
+      "triangles": 52144,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-lure"
+    },
+    {
+      "name": "c3-second-sighting-left",
+      "frame": 68,
+      "calls": 78,
+      "triangles": 45384,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-lure"
+    },
+    {
+      "name": "c3-second-sighting-right",
+      "frame": 69,
+      "calls": 67,
+      "triangles": 36936,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-lure"
+    },
+    {
+      "name": "c3-second-sighting-detail",
+      "frame": 70,
+      "calls": 99,
+      "triangles": 55260,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-lure"
+    },
+    {
+      "name": "c3-creature-advance",
+      "frame": 71,
+      "calls": 63,
+      "triangles": 54033,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-creature"
+    },
+    {
+      "name": "c3-creature-advance-left",
+      "frame": 72,
+      "calls": 61,
+      "triangles": 50857,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-creature"
+    },
+    {
+      "name": "c3-creature-advance-right",
+      "frame": 73,
+      "calls": 41,
+      "triangles": 37279,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-creature"
+    },
+    {
+      "name": "c3-creature-advance-detail",
+      "frame": 74,
+      "calls": 70,
+      "triangles": 58411,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-creature"
+    },
+    {
+      "name": "c3-creature-far",
+      "frame": 75,
+      "calls": 161,
+      "triangles": 132661,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-far-left",
+      "frame": 76,
+      "calls": 187,
+      "triangles": 146074,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-far-right",
+      "frame": 77,
+      "calls": 52,
+      "triangles": 51064,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-far-detail",
+      "frame": 78,
+      "calls": 161,
+      "triangles": 135219,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-side",
+      "frame": 79,
+      "calls": 202,
+      "triangles": 123227,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-side-left",
+      "frame": 80,
+      "calls": 171,
+      "triangles": 116196,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-side-right",
+      "frame": 81,
+      "calls": 180,
+      "triangles": 104489,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-side-detail",
+      "frame": 82,
+      "calls": 210,
+      "triangles": 126347,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-bike-block",
+      "frame": 83,
+      "calls": 180,
+      "triangles": 133704,
+      "points": 682,
+      "lines": 3975,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-bike-block-left",
+      "frame": 84,
+      "calls": 98,
+      "triangles": 93223,
+      "points": 682,
+      "lines": 3849,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-bike-block-right",
+      "frame": 85,
+      "calls": 160,
+      "triangles": 115944,
+      "points": 682,
+      "lines": 3975,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-bike-block-detail",
+      "frame": 86,
+      "calls": 187,
+      "triangles": 137092,
+      "points": 682,
+      "lines": 3975,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-near",
+      "frame": 87,
+      "calls": 260,
+      "triangles": 568586,
+      "points": 682,
+      "lines": 3975,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-near-left",
+      "frame": 88,
+      "calls": 159,
+      "triangles": 547868,
+      "points": 682,
+      "lines": 3867,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-near-right",
+      "frame": 89,
+      "calls": 237,
+      "triangles": 439668,
+      "points": 682,
+      "lines": 3975,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-near-detail",
+      "frame": 90,
+      "calls": 269,
+      "triangles": 590400,
+      "points": 682,
+      "lines": 3975,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-barrier",
+      "frame": 91,
+      "calls": 207,
+      "triangles": 443386,
+      "points": 682,
+      "lines": 3931,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-barrier-left",
+      "frame": 92,
+      "calls": 154,
+      "triangles": 546068,
+      "points": 682,
+      "lines": 3841,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-barrier-right",
+      "frame": 93,
+      "calls": 191,
+      "triangles": 341990,
+      "points": 682,
+      "lines": 3931,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-creature-barrier-detail",
+      "frame": 94,
+      "calls": 210,
+      "triangles": 433578,
+      "points": 682,
+      "lines": 3931,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-tunnel-exit",
+      "frame": 95,
+      "calls": 180,
+      "triangles": 380192,
+      "points": 682,
+      "lines": 3931,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-tunnel-exit-left",
+      "frame": 96,
+      "calls": 179,
+      "triangles": 507476,
+      "points": 682,
+      "lines": 3931,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-tunnel-exit-right",
+      "frame": 97,
+      "calls": 113,
+      "triangles": 274449,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-tunnel-exit-detail",
+      "frame": 98,
+      "calls": 186,
+      "triangles": 383308,
+      "points": 682,
+      "lines": 3931,
+      "phase": "n3-run"
+    },
+    {
+      "name": "c3-bike-remount",
+      "frame": 99,
+      "calls": 159,
+      "triangles": 444356,
+      "points": 682,
+      "lines": 3835,
+      "phase": "n3-out"
+    },
+    {
+      "name": "c3-bike-remount-left",
+      "frame": 100,
+      "calls": 172,
+      "triangles": 648399,
+      "points": 682,
+      "lines": 3895,
+      "phase": "n3-out"
+    },
+    {
+      "name": "c3-bike-remount-right",
+      "frame": 101,
+      "calls": 101,
+      "triangles": 278574,
+      "points": 682,
+      "lines": 3799,
+      "phase": "n3-out"
+    },
+    {
+      "name": "c3-bike-remount-detail",
+      "frame": 102,
+      "calls": 164,
+      "triangles": 447181,
+      "points": 682,
+      "lines": 3835,
+      "phase": "n3-out"
+    },
+    {
+      "name": "c3-road-escape",
+      "frame": 103,
+      "calls": 136,
+      "triangles": 621553,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "c3-road-escape-left",
+      "frame": 104,
+      "calls": 90,
+      "triangles": 446781,
+      "points": 682,
+      "lines": 3727,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "c3-road-escape-right",
+      "frame": 105,
+      "calls": 193,
+      "triangles": 709941,
+      "points": 682,
+      "lines": 3823,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "c3-road-escape-detail",
+      "frame": 106,
+      "calls": 141,
+      "triangles": 623713,
+      "points": 682,
+      "lines": 3841,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "c3-final-lure",
+      "frame": 107,
+      "calls": 158,
+      "triangles": 387828,
+      "points": 682,
+      "lines": 3859,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "c3-final-lure-left",
+      "frame": 108,
+      "calls": 62,
+      "triangles": 222741,
+      "points": 682,
+      "lines": 3745,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "c3-final-lure-right",
+      "frame": 109,
+      "calls": 206,
+      "triangles": 552144,
+      "points": 682,
+      "lines": 3859,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "c3-final-lure-detail",
+      "frame": 110,
+      "calls": 122,
+      "triangles": 342259,
+      "points": 682,
+      "lines": 3841,
+      "phase": "n3-flee"
+    },
+    {
+      "name": "chapter3-end",
+      "frame": 111,
+      "calls": 507,
+      "triangles": 927498,
+      "points": 682,
+      "lines": 3921,
+      "phase": "n3-safe"
+    },
+    {
+      "name": "chapter3-end-left",
+      "frame": 112,
+      "calls": 489,
+      "triangles": 1013263,
+      "points": 682,
+      "lines": 3981,
+      "phase": "n3-safe"
+    },
+    {
+      "name": "chapter3-end-right",
+      "frame": 113,
+      "calls": 345,
+      "triangles": 708312,
+      "points": 682,
+      "lines": 3885,
+      "phase": "n3-safe"
+    },
+    {
+      "name": "chapter3-end-detail",
+      "frame": 114,
+      "calls": 492,
+      "triangles": 850497,
+      "points": 682,
+      "lines": 3939,
+      "phase": "n3-safe"
+    }
+  ],
+  "errors": [],
+  "runtimeHashes": {
+    "dist/THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
+    "dist/adult-art.js": "07ab447ff682d430620a073814491b3a44e0f7c6603b685048e2b4c0ff1868a5",
+    "dist/alex-room.js": "f14a81330045bc8c1f4c91d25e8e949dad8d5f9b29c2178efd5c1fbfb94df686",
+    "dist/ambient.js": "2c06fb0c50e164a6a2bf26f56b5574b6eab7dd9bf38e3a86843e42eb3191e9c8",
+    "dist/art-surfaces.js": "d34973c059b7af63b1f1c7b9668966751e0141e17aecb01e0d503ae4982de2c0",
+    "dist/audio.js": "f47e4a8bbf9aa92c9125119471f054b5a2f31d774af3650751e08cc85cc099e0",
+    "dist/background.js": "da5c320314a83bc542576b3c1f45ea6bdd2dc0cf4ab37020c65878d696481c3f",
+    "dist/captions.js": "f6046fac4026184397d6eb05e3efcdcf9eb12f42345099b79547783516daac06",
+    "dist/cast.js": "bfc977fc428a3860f648ad4f40a7eb6bd2e5424b3bdef2a1ebdbaf83e11c3ff9",
+    "dist/chapter1.js": "5aae6471ad0ad240f241c28a5ffb1c949af20a2d7e53ecd42a921ca6865e8f2e",
+    "dist/chapter2.js": "01b61485854de3cc30f9f5d56e649bd90ff6e9234300a77ef09435b0cdba137f",
+    "dist/chapter3-art.js": "e4a259f4320c101a39ec9241c08ed60db47e10746fd96d4bf8e4b98fa79e348d",
+    "dist/chapter3-props.js": "4ba5446b792d82adf49f7a0f055035e7310378f28c94f28d668bbdad55bb2b6f",
+    "dist/chapter3.js": "7ebc8480faabc31790e3c6f310e4c2e102dbd9373817eca9837d094f2610be3a",
+    "dist/companions.js": "ccb8d8894467683a08a64d7c413f40771ad574a42be1fb50bb20d5447647115c",
+    "dist/creature-asset.js": "cfd431397910ec8b899c38fff6d498299cc631c22e735aeb3ea8b811b8bf2be4",
+    "dist/creature.js": "2641ce3efca031f970a892dcd9338ae7dfa2fb66c7d4a28f605422f36bc4ce82",
+    "dist/creek.js": "f5cc5a7867f4c343e0ccf21818cd7bfff7a00ff2ea0c90bbed7b985df6889f0c",
+    "dist/dev-chapter-history.js": "07996a3d75cf7f8386ef999b751467fc501310a934cf2e9e117953fe9a64c560",
+    "dist/dev-chapters.js": "26bbfa489200d30bc8192b4e671c2bac178b3ff200729f8c745cbc16cfa19ddd",
+    "dist/drain.js": "b17b28ccb702c011cd1d46dcea7b92a5f0f39d5f1ca1f12004e861f72e6c8823",
+    "dist/easement.js": "f47b2b0759848d58b1d5d07c35b725524aabf45ee9171c777c81ac424f67451d",
+    "dist/ending.js": "9b8242d059f65b4826f5ed4ff2fc4b053aad37ac0ff2059b81eac0592397c14a",
+    "dist/friends.js": "89e91d18af47e918491de8188e23ccf0f4a297894e6200fda9ddcdb16dbdee2a",
+    "dist/furniture.js": "630b5dceb9da07cbe2af49c6826615e98caccfd404d0d22a1a46b4fea92fe0dc",
+    "dist/game.js": "c2ec5bacb5fe2265028bfab27dcb101ab0394cdac27839ae34a5f39135aef44f",
+    "dist/houses.js": "7dc3230d0f6924da908b0b38a3041bb174522b087a14dc0f92dcc94d6d1c7dfc",
+    "dist/index.html": "b8d2de91f52a050079e53f2f123063498206cf04493d41e8043ddd555b9bfa96",
+    "dist/interactions.js": "d1f8b6e0859fb439d09cf3d634013a34c52242684a493be8892e9924bf65ccc1",
+    "dist/kit.js": "6ba15469732e2bd1f9ce798f97cd1650fec57973b63743eb5c8761fca26e14bd",
+    "dist/layout.js": "fc7e6ee21e8cf1b6ff9c8f9b888bcee57b7f2422ad3a2b27c13d57798414099c",
+    "dist/materials.js": "9d31af0e9c6df4304162b69d757d9e6eed8a0c8c4f802407a809791aefbc92dc",
+    "dist/memory.js": "76498323db63e152db35e36f11b44b01543da4d5cdf44bdd3a1300ea7c1be5ab",
+    "dist/nav.js": "2cad100b9206e2b83b18911a01b879c41d3b111f288fa4770b106176c52d8114",
+    "dist/nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
+    "dist/old-bike.js": "df1f0e9344338cb74ac00bcae7904f1e312ee2d93f450cda21772811e81a7605",
+    "dist/on-foot.js": "d9a33013a86d72aefd77ec59465efb6ba2dfb5f23d4b12027b9de8f12faa3866",
+    "dist/palette.js": "52a0632bb1e9c5363b8ecfbc34983d037ab09bd9f1018f52d32d1b0ccada6a65",
+    "dist/patrol-art.js": "9e3e70672fd5f9e320daadc09e6c6effc796c1bac0bdd62134d0267183534d76",
+    "dist/people.js": "19e40d3045863ef4171f7c0de1ad3677565aa892efe2ed6239a6c2cf2de73f88",
+    "dist/police.js": "4c2acdbb1bdb3935ee576b562f9be0dd4342abfe294e6cd4eea7de1766d33091",
+    "dist/props.js": "ed8786554db22138ffd825e6920cf260fa9fff0a270e2849829e9867a8f8aebe",
+    "dist/ride-contact.js": "c6a3af3649f04468258914e03c96ee72828d730f0387fe4a3db10de87cc25f42",
+    "dist/rig.js": "0ea645750eae57f550b5e0609876de1791083af5df76e4a6e9d23e51aeb6886d",
+    "dist/route.js": "f17de16440dbcb6101a0ea0b483d22ef55663934398613ab932fcf030412b3f5",
+    "dist/story.js": "c1f2bfccdace50fdb27d65786a86028b83d4e7c84ea9c8254fdd24ef361958e0",
+    "dist/streets.js": "8d591c2fe9638e5393625d96a24125e2c35db0a722a5e6410183c9058870a1eb",
+    "dist/style.css": "0c1ecc8056b4836c34844424bb3dd02053b05a3583b8ca49ea91f0ac92fc78f5",
+    "dist/tension.js": "7b0de410dc3b848232dfb4c49dff6dcb85c1dc1c1057e1e4b998993bc3806e04",
+    "dist/terrain.js": "ecc674f1b9d847c7d6e992b65b287cd65a425b237ee40c540fa4e2ea364d6902",
+    "dist/three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
+    "dist/ui.js": "342854a8172cbb454e063542af0c6484b4f5739def91e1f9f033a9237d9b2019",
+    "dist/vegetation.js": "7458d0e1523f0c6d3a65614f0082704dd2510cecfca6365014d9bd9ae29f08de",
+    "dist/woods.js": "33a239b92fb291ba86d2da232a99840ec36ed66f9e8d6120c9c9a89a7691ccc7",
+    "dist/world.js": "8fd8253fe6aaedc824dd830e40ba53fd466f38e6ba45b7ec71110d233be30db4"
+  }
+}
