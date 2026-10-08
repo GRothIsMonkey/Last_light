@@ -1,3 +1,4 @@
+import {createChapterThreeArt} from './chapter3-art.js';
 import * as THREE from './three.module.js';
 import {LENGTH,chapters,memories,chapterAt,finale} from './story.js';
 import {LATERAL_LIMIT,roadFrame,groundPoint,roadGrade,heading} from './route.js';
@@ -317,7 +318,7 @@ const nav=createNav(world);
 {const _h=new THREE.Vector3();foot.exposure=(hand,dir)=>{const out={},K=chapter.kit;let pd=Infinity;
  let wd=Infinity,pc=1;for(const c of [K?.jamie,K?.sam]){if(!c?.active||!c.person.group.visible)continue;c.person.group.getWorldPosition(_h);_h.y+=1.05;const dx=_h.x-hand.x,dy=_h.y-hand.y,dz=_h.z-hand.z,d=Math.hypot(dx,dy,dz);if(d>4.6||d<.05)continue;const cs=(dx*dir.x+dy*dir.y+dz*dir.z)/d;if(cs>Math.cos(.31+Math.atan(.32/d))&&d<pd){pd=d;pc=cs;}if(cs>Math.cos(Math.min(1.5,1.05+Math.atan(.32/d))))wd=Math.min(wd,d);}
  if(pd<Infinity){out.person=pd;out.personCos=pc;}if(wd<Infinity)out.wide=wd;// (wide: the nearest friend in the dim spill round the beam)
- if(world.drain?.inside(hand.x,hand.z,.05)){const d=world.drain.rayDist(hand,dir,44);out.d=Math.max(d,2.2);out.reach=46;out.max=d>15?150:80;out.angle=d>15?.34:.44;out.penumbra=.88;out.personK=8;}// (a wider beam in there: the walls are close; a friend walking ahead in it takes more light here, so the tunnel past him is not left black)
+ if(world.drain?.inside(hand.x,hand.z,.05)){const d=world.drain.rayDist(hand,dir,44);out.d=Math.max(d,2.2);out.reach=46;out.max=d>15?150:80;out.angle=d>15?.34:.44;out.penumbra=.88;out.personK=3.5;}// (a wider beam in there: the walls are close; a friend walking ahead in it takes more light here, so the tunnel past him is not left black)
  return out;};}
 const roam={x:0,z:0,a:0,omega:0,lock:false,brake:0,walkLock:false,steer:null,fadeIn:0};
 let wx=0,wz=0,wa=0;// on foot at night: position and heading
@@ -333,6 +334,7 @@ const chapter=createChapter1(chOpts);
 const chapter2=createChapter2(chOpts,chapter.kit);chapter.next=chapter2;
 // Chapter Three picks up a few minutes after the second ends, the same morning (chapter3.js).
 const chapter3=createChapter3(chOpts,chapter.kit,chapter2);chapter2.next=chapter3;
+const chapter3Art=createChapterThreeArt({scene,world,chapter,chapter3,camera,nav,foot});
 function playerState(){const walk=state==='c1-walk';
  return {state,x:walk?wx:roam.x,z:walk?wz:roam.z,a:walk?wa:roam.a,pitch:walk?walkPitch:headPitch,bike:roam,speed:state==='c1-ride'?speed:moveT,riding:state==='c1-ride',walking:walk,pushing:!roam.lock&&(keys.has('KeyW')||keys.has('ArrowUp')),
   eye:camera.position,clock,manualLook,lookInputAt,look,captionBusy:captionTimer>0};}
@@ -567,8 +569,8 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  // light at all past its first few meters but what you carry (a faint blue at the mouth, then nothing).
  // (how far into the drain you are, from where you are this frame: right after a jump or a Start over the culling's
  // own record of it is still the last frame's)
- if(n1){const pp=state==='c1-walk'?{x:wx,z:wz}:{x:roam.x,z:roam.z},Lz=nav.locate(pp.x,pp.z),cv=Lz?.street==='drain'?smooth((Lz.s+1.2)/13):0,sh=chapter.shade||0;if(cv>0||sh>0){hemi.intensity*=(1-.86*cv)*(1-.42*sh);hemi.groundColor.lerp(_c1.set(0x0b0c10),Math.max(cv,sh*.5));sunlight.intensity*=1-cv;
-  scene.fog.color.lerp(_c1.set(0x040506),cv*.92).lerp(_c2.set(0x161a24),sh*.5*(1-cv));scene.fog.density=scene.fog.density*(1-cv)+.021*cv+.0045*sh*(1-cv);renderer.toneMappingExposure+=.32*cv;}}
+ if(n1){const pp=state==='c1-walk'?{x:wx,z:wz}:{x:roam.x,z:roam.z},Lz=nav.locate(pp.x,pp.z),cv=Lz?.street==='drain'?smooth((Lz.s+1.2)/13):0,sh=chapter.shade||0;if(cv>0||sh>0){hemi.intensity*=(1-.80*cv)*(1-.42*sh);hemi.groundColor.lerp(_c1.set(0x0b0c10),Math.max(cv,sh*.5));sunlight.intensity*=1-cv;
+  scene.fog.color.lerp(_c1.set(0x040506),cv*.92).lerp(_c2.set(0x161a24),sh*.5*(1-cv));scene.fog.density=scene.fog.density*(1-cv)+.021*cv+.0045*sh*(1-cv);renderer.toneMappingExposure+=.24*cv;}}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
  else if(state==='walking')updateWalk(dt);
@@ -581,6 +583,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  foot.lamp(dt,state==='c1-walk');barLamp();camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=n1?clamp(nav.locate(camera.position.x,camera.position.z).d,-300,1140):distance;ctx.speed=n1?0:speed;ctx.lateral=lateral;ctx.state=mem?'riding':state;
  friends.update(dt,ctx);if(mem&&memCast)memCast.update(dt,ctx);ambient.update(dt,ctx);ending.update(dt,{callDone,fade,ended:state==='ended',camera,night:n1||mem});
  if(n1){chapter.update(dt);if(roam.fadeIn>0){roam.fadeIn=Math.max(0,roam.fadeIn-dt/3.2);fade=roam.fadeIn;$('fade').style.opacity=fade;}}
+ chapter3Art.update(dt);
  memory.update(dt);
  // Memory lines follow the evening (the first friend home, the ride home); prompts follow what you can do.
  if(!firstHome&&friends.list.some(f=>f.inside||f.homeward)){firstHome=true;nostalgia.mark('first-home',clock);}
@@ -604,17 +607,25 @@ const zoned=world.merged.filter(m=>m.userData.zone),plainMerged=world.merged.fil
 // Culling by where you are uses render layers (mask 0: not drawn, nor into shadows), never .visible, which stays what
 // the world contains (a culled batch is still there; the story's own hiding is untouched).
 function drawn(m,on){const u=m.userData;if(u.mask0===undefined)u.mask0=m.layers.mask;m.layers.mask=on?u.mask0:0;}
+const cullCache={x:Infinity,y:Infinity,z:Infinity,key:''};
 function cullZones(){if(!zoned.length)return;const p=camera.position,L=night1()?nav.locate(p.x,p.z):null,inD=L?.street==='drain',deepIn=inD&&L.s>97,woods=L?.street==='woods';
  zoneState.inDrain=inD;zoneState.s=inD?L.s:-1;zoneState.cave=inD?smooth((L.s+1.2)/13):0;
- const nearPortal=!!PORTAL&&Math.hypot(p.x-PORTAL.x,p.z-PORTAL.z)<95,range=(ctx.night||0)>.5?280:420;
+ const room=!!chapter3.C.inRoom,nearPortal=!!PORTAL&&Math.hypot(p.x-PORTAL.x,p.z-PORTAL.z)<95,range=room?85:(ctx.night||0)>.5?230:360;
+ const key=[room,inD,deepIn,woods,nearPortal,range,woods&&((L.s??0)>200||!!L.w?.patch)].join(':');
+ // Distance masks do not depend on where the camera looks. Frustum culling still runs each render.
+ if(key===cullCache.key&&Math.hypot(p.x-cullCache.x,p.y-cullCache.y,p.z-cullCache.z)<.5)return;
+ Object.assign(cullCache,{x:p.x,y:p.y,z:p.z,key});
  for(const m of zoned){if(m.userData.zone==='tunnel'){drawn(m,inD||(woods&&nearPortal));continue;}
+  if(m.userData.zone==='alex-room'){const b=m.geometry.boundingSphere;drawn(m,room||(!inD&&p.distanceTo(b.center)-b.radius<45));continue;}
   if(deepIn){drawn(m,false);continue;}const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<range);}
- const far=deepIn||inD||(woods&&((L.s??0)>200||!!L.w?.patch));
+ // Shadow-only forest batches must leave the render workload with their scenery.
+ for(const m of world.shadowProxies){const b=m.geometry.boundingSphere;drawn(m,!deepIn&&p.distanceTo(b.center)-b.radius<(room?22:inD?85:135));}
+ const far=room||deepIn||inD||(woods&&((L.s??0)>200||!!L.w?.patch));
  // ...and the view itself ends sooner there (the dark and the walls end it anyway), so nothing far is drawn.
  // (deep in the drain the long straights run past the old view distance: the view reaches down them, and the sky is not drawn
  // at all, so the far end of a straight is black, never sky)
- {const want=deepIn?150:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:390;if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(Math.min(1,want*.9/350));}sky.visible=!deepIn;}
- if(far||zoneState.hidPlain){for(const m of plainMerged){if(deepIn){drawn(m,false);continue;}if(far){const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<300);}else drawn(m,true);}zoneState.hidPlain=far;}}
+ {const want=room?140:deepIn?150:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:390;if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(Math.min(1,want*.9/350));}sky.visible=!deepIn;}
+ if(far||zoneState.hidPlain){for(const m of plainMerged){if(deepIn){drawn(m,false);continue;}if(far){const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<(room?80:300));}else drawn(m,true);}zoneState.hidPlain=far;}}
 // What the keys would do right now, shown only when it matters: a short riding tutorial,
 // then nothing until the end of the street.
 function promptItems(){

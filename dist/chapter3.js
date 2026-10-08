@@ -975,7 +975,7 @@ export function createChapter3(o,k,ch2){
    L.userData.borrowed=true;_bd.copy(src.target.position).sub(src.position).normalize();const d=Dr.rayDist(src.position,_bd,40);_bh.copy(src.position).addScaledVector(_bd,Math.max(.3,d-.45));
    L.position.copy(_bh);L.color.setHex(0xffe4c0);L.distance=16;L.decay=2;L.intensity=Math.min(7,src.intensity*.11)/(1+d*.04)*deep;});
   // the flashlight's dim spill, too: wide near the mouth, less and less of it past the first bend
-  o.setSpill?.(6*(cq?1-.5*smooth((cq.s-90)/70):1));}
+  o.setSpill?.(8*(cq?1-.35*smooth((cq.s-90)/70):1));}
  const releaseBounce=()=>{for(const L of BOUNCE){if(L.userData.borrowed){L.userData.borrowed=false;L.intensity=0;}}o.setSpill?.(6);};
  // A longer throw in the drain (and at its mouth): what the beam lands on sets how strong it can be.
  function longThrow(hand,aim){if(!Dr.inside(hand.x,hand.z,.05))return null;const dir=new THREE.Vector3(aim.x-hand.x,aim.y-hand.y,aim.z-hand.z),d0=dir.length();dir.normalize();const d=Math.min(d0,Dr.rayDist(hand,dir,44));
