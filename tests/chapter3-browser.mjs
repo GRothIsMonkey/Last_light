@@ -42,9 +42,26 @@ const EXPECT={'chapter3-start':'d3-corner','c3-alex-house':'d3-street','alex-bed
 const ORDER=['c3-black','d3-corner','d3-street','d3-mom','d3-room','d3-phone','d3-window','d3-neighbors','d3-road','d3-tracks','d3-plan','d3-home','c3-night','n3-home','n3-corner','n3-ride','n3-road','n3-outfall','n3-tunnel','n3-evidence','n3-tunnel','n3-bell','n3-tunnel','n3-item','n3-tunnel','n3-bike','n3-deeper','n3-figure','n3-follow','n3-lure','n3-creature','n3-run','n3-out','n3-flee','n3-safe','n3-end'];
 
 // The harness steps the game without drawing between captures; in play every frame is drawn and measured.
-// So before a capture the caption tone is given what play would have given it: a few drawn frames of the
-// current view, measured and fed to the tone (the story does not move meanwhile).
-const settled=(page,snap)=>async(name,o)=>{await page.evaluate(()=>new Promise(res=>{const L=lastLight;let i=0;const f=()=>{L.render();L.captionTone.update(.15,{fade:L.state.fade||0});if(++i<12)requestAnimationFrame(f);else res();};requestAnimationFrame(f);}));return snap(name,o);};
+// Before a capture, read the actual frozen view and settle the tone for the same 12 × .15 s as before.
+// Waiting for GPU readback is appropriate in this offline capture helper, never in game code. It avoids
+// queuing twelve identical expensive SwiftShader frames just to poll the asynchronous caption readback.
+// The moving-view caption fixtures below still render every frame and retain all their original assertions.
+const settled=(page,snap)=>async(name,o)=>{await page.evaluate(async()=>{
+ const L=lastLight,tone=L.captionTone;
+ // WebGL fences become observable only after yielding to the browser. Poll the queued read without
+ // drawing again or queuing a read from a canvas the compositor may already have cleared.
+ for(let pass=0;pass<2;pass++){
+  await new Promise(res=>setTimeout(res,240)); // allow the normal 220 ms sampling interval to elapse
+  const before=tone.state.samples,deadline=performance.now()+300000;L.render();
+  while(tone.state.samples<=before){
+   await new Promise(requestAnimationFrame);tone.sample(-1); // drain only; do not schedule another read
+   if(performance.now()>deadline)throw new Error('Capture timed out waiting for a fresh rendered caption sample');
+  }
+ }
+ // The first pass may drain a previous view's pending read; the second is necessarily this frozen view.
+ if(tone.state.source!=='frame')throw new Error('Capture requires a fresh rendered caption sample');
+ for(let i=0;i<12;i++)tone.update(.15,{fade:L.state.fade||0});
+ });return snap(name,o);};
 
 // The continuous playthrough, from wherever Chapter Two handed over (c3-black) to the end card, sound off.
 export async function runChapterThreeBrowser({page,snap:rawSnap,check,state,errors,tag='c3'}){
