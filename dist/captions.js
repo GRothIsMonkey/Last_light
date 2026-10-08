@@ -45,9 +45,9 @@ export function createCaptionTone({renderer,el}){
   if(better!==S.mode){S.wantT+=dt;if(S.wantT>.55){S.mode=better;S.wantT=0;}}else S.wantT=0;
   S.mix+=(S.mode-S.mix)*(1-Math.exp(-dt/.32));if(Math.abs(S.mode-S.mix)<.002)S.mix=S.mode;
   const c=S.mode?S.cDark:S.cLight;S.halo+=(clamp((6-c)/4.5,.28,.95)-S.halo)*(1-Math.exp(-dt/.5));
-  // So mixed that neither tone reaches 2:1 (a lit shirt in the dark, a figure against pale siding): a soft
-  // glow of the opposite tone behind the line, eased in and out. Never a box, and nothing otherwise.
-  const need=clamp((2.2-c)/1.2,0,1);S.scrim+=(need*need*(3-2*need)-S.scrim)*(1-Math.exp(-dt/.6));if(S.scrim<.004)S.scrim=0;apply();}
+  // Begin the soft backing before contrast falls below 2:1, so its eased response is
+  // already useful over a flashlight hotspot. It fades out again; never a solid box.
+  const need=clamp((2.7-c)/1.2,0,1);S.scrim+=(need*need*(3-2*need)-S.scrim)*(1-Math.exp(-dt/.6));if(S.scrim<.004)S.scrim=0;apply();}
  function apply(){const m=S.mix,col=LIGHT.rgb.map((v,i)=>Math.round(v+(DARK.rgb[i]-v)*m)),lab=LIGHT.label.map((v,i)=>Math.round(v+(DARK.label[i]-v)*m));
   // The edge is the opposite tone: a dark soft shadow under light words, a pale glow round dark ones.
   const sh=Math.round(14*(1-m)+236*m),a=(.35+.5*S.halo).toFixed(2),a2=(.18+.38*S.halo).toFixed(2);
