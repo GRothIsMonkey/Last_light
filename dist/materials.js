@@ -1,10 +1,12 @@
 // Restrained, world-space surface detail: no asset downloads or texture seams.
 import * as THREE from './three.module.js';
+import {artSurface} from './art-surfaces.js';
 const noise=`
 float hsh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float softNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hsh(i),hsh(i+vec2(1,0)),f.x),mix(hsh(i+vec2(0,1)),hsh(i+1.),f.x),f.y);}
 `;
 export function surfaceMaterial(material,kind){
+ if(['culvert','mineral','litter','roadwear','timber','bark3','textile','carpet','plaster','oxidized','drainwater'].includes(kind))return artSurface(material,kind);
  if(material.userData.surface)return material;material.userData.surface=kind;
  material.onBeforeCompile=sh=>{
   sh.vertexShader='varying vec3 vSurface;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvSurface=position;');
@@ -26,12 +28,12 @@ export function surfaceMaterial(material,kind){
 }
 // A small cutout spray of leaves, generated locally. Intersecting cards make
 // airy tree silhouettes at a lower triangle count than solid polygon crowns.
-const size=64,pixels=new Uint8Array(size*size*4);
+const size=128,pixels=new Uint8Array(size*size*4);
 const leaflets=Array.from({length:15},(_,i)=>({x:.5+Math.sin(i*2.4)*(.12+i*.014),y:.18+(i%5)*.14,a:i*2.1,rx:.115,ry:.055}));
 for(let y=0;y<size;y++)for(let x=0;x<size;x++){
  const u=x/size,v=y/size;let alpha=0,shade=.8;
  for(const l of leaflets){const dx=u-l.x,dy=v-l.y,c=Math.cos(l.a),s=Math.sin(l.a),xx=(dx*c+dy*s)/l.rx,yy=(-dx*s+dy*c)/l.ry,r=xx*xx+yy*yy;
-  if(r<1){alpha=255;shade=.72+.25*(1-r);}}
+  if(r<1){alpha=255;shade=.63+.29*(1-r)+.07*Math.sin(xx*18.)*Math.exp(-yy*yy*4.);}}
  const i=(y*size+x)*4;pixels[i]=pixels[i+1]=pixels[i+2]=shade*255;pixels[i+3]=alpha;
 }
 export const leafTexture=new THREE.DataTexture(pixels,size,size);leafTexture.colorSpace=THREE.SRGBColorSpace;leafTexture.magFilter=THREE.LinearFilter;leafTexture.minFilter=THREE.LinearMipmapLinearFilter;leafTexture.generateMipmaps=true;leafTexture.needsUpdate=true;

@@ -10,18 +10,20 @@ import {pickFrom,seeded,hashSeed} from './kit.js';
 export function createVegetation(W){
  const {K}=W,leaf=c=>W.foliageMat(c,true,leafTexture),solid=c=>W.foliageMat(c,false);
  const blob=new THREE.IcosahedronGeometry(1,1),flat=new THREE.IcosahedronGeometry(1,0);
- function crown(g,x,y,z,R,c,rand,lod,a){
+ function crown(g,x,y,z,R,c,rand,lod,a,natural=false){
+  if(lod==='far'&&natural){const cr=new THREE.Mesh(leafGeometrySmall,leaf(c));cr.position.set(x,y,z);cr.scale.set(R*1.3,R,R*1.3);cr.rotation.y=a;g.add(cr);return;}
   if(lod==='far'){const m=new THREE.Mesh(flat,solid(c));m.position.set(x,y,z);m.scale.set(R*1.05,R*.85,R*1.05);m.rotation.y=a;g.add(m);return;}
   const cr=new THREE.Mesh(lod==='full'?leafGeometry:leafGeometrySmall,leaf(c));cr.position.set(x,y,z);cr.scale.set(R*(.9+rand()*.2),R*(.85+rand()*.3),R*(.9+rand()*.2));cr.rotation.set(Math.sin(a)*.20,a,Math.cos(a)*.16);g.add(cr);
   const tufts=lod==='full'?2:1;for(let j=0;j<tufts;j++){const b=a+j*2.1+rand(),t=new THREE.Mesh(leafGeometrySmall,leaf(c));t.position.set(x+Math.cos(b)*R*.72,y+Math.sin(b*2)*R*.3,z+Math.sin(b)*R*.72);t.scale.set(R*.45,R*.38,R*.45);t.rotation.y=b;g.add(t);}
  }
  // Build a tree in local coordinates (ground at y = 0) under group g.
- function build(g,rand,{size=1,kind='maple',lod='full'}){
-  const pick=pickFrom(rand),bark=pick(FOLIAGE.bark),leafC=pick(FOLIAGE.leaves);
+ function build(g,rand,{size=1,kind='maple',lod='full',natural=false}){
+  const pick=pickFrom(rand),barkC=pick(FOLIAGE.bark),bark=natural?W.surfaceMaterial(K.mat(barkC).clone(),'bark3'):barkC,leafC=pick(FOLIAGE.leaves);
   // Far trees: a trunk and two or three low-poly masses, enough for a skyline in haze.
   if(lod==='far'){const H=(kind==='pine'?6.5:4)*size;K.cyl(g,0,H/2-.3,0,.2*size,H+.6,bark,5);
-   if(kind==='pine'){const c=pick(FOLIAGE.pines);for(let k=0;k<3;k++){const m=new THREE.Mesh(new THREE.ConeGeometry((2.2-k*.55)*size,2.6*size,6),solid(c));m.position.y=(2+k*1.6)*size;g.add(m);}return {trunk:.2*size,crown:2.2*size};}
-   const c=pick(FOLIAGE.far);crown(g,0,H+1.2*size,0,2.1*size,c,rand,'far',rand()*3);crown(g,(rand()-.5)*2*size,H+.3*size,(rand()-.5)*2*size,1.6*size,c,rand,'far',rand()*3);return {trunk:.2*size,crown:2.2*size};}
+   if(kind==='pine'&&!natural){const c=pick(FOLIAGE.pines);for(let k=0;k<3;k++){const m=new THREE.Mesh(new THREE.ConeGeometry((2.2-k*.55)*size,2.6*size,6),solid(c));m.position.y=(2+k*1.6)*size;g.add(m);}return {trunk:.2*size,crown:2.2*size};}
+   const c=pick(FOLIAGE.far);crown(g,0,H+1.2*size,0,2.1*size,c,rand,'far',rand()*3,natural);crown(g,(rand()-.5)*2*size,H+.3*size,(rand()-.5)*2*size,1.6*size,c,rand,'far',rand()*3,natural);return {trunk:.2*size,crown:2.2*size};}
+  if(kind==='pine'&&natural){const H=7.5*size;K.rod(g,[0,-.2,0],[.12*size,H,0],.22*size,bark,.035*size,10);for(let k=0;k<7;k++){const y=(1.8+k*.79)*size,r=(2.2-k*.26)*size;for(let j=0;j<4;j++){const a=j*1.57+k*1.1,end=[Math.cos(a)*r,y-.15,Math.sin(a)*r];K.rod(g,[0,y+.2,0],end,.03*size,bark,.008*size,5);const cr=new THREE.Mesh(leafGeometrySmall,leaf(pick(FOLIAGE.pines)));cr.position.set(end[0]*.68,y,end[2]*.68);cr.scale.set(r*.7,.42*size,r*.7);cr.rotation.set(.2,a,.15);g.add(cr);}}return {trunk:.24*size,crown:2.4*size};}
   if(kind==='pine'){const H=7.5*size;K.lathe(g,[[.001,-.3],[.26*size,-.3],[.22*size,.2],[.17*size,.6],[.07*size,H]],0,0,0,bark,lod==='far'?5:7);
    const c=pick(FOLIAGE.pines),tiers=lod==='far'?3:5;for(let k=0;k<tiers;k++){const r=(2.4-k*(1.9/tiers))*size,m=new THREE.Mesh(new THREE.ConeGeometry(r,2.5*size,lod==='far'?6:8),solid(c));m.position.set(0,(1.9+k*(5.2/tiers))*size,0);m.rotation.y=rand()*3;g.add(m);}
    return {trunk:.26*size,crown:2.4*size};}
@@ -34,7 +36,8 @@ export function createVegetation(W){
    return {trunk:.1,crown:1*size};}
   // Maple and oak: flared trunk, forked limbs, a crown cluster at the end of every limb.
   const oak=kind==='oak',wide=oak?1.35:1,trunkH=(oak?3.2:4.2)*size,tr=(oak?.36:.28)*size;
-  const sides=oak?14:10;K.lathe(g,[[.001,-.35],[tr*1.9,-.35],[tr*1.45,-.05],[tr*1.12,.25],[tr,.7],[tr*.8,trunkH*.75],[tr*.62,trunkH]],0,0,0,bark,sides);
+  const sides=natural?16:oak?14:10;K.lathe(g,[[.001,-.35],[tr*1.9,-.35],[tr*1.45,-.05],[tr*1.12,.25],[tr,.7],[tr*.8,trunkH*.75],[tr*.62,trunkH]],0,0,0,bark,sides);
+  if(natural)for(let k=0;k<5;k++){const a=k*1.26+rand();K.rod(g,[Math.cos(a)*tr*.5,.21,Math.sin(a)*tr*.5],[Math.cos(a)*tr*3.7,-.025,Math.sin(a)*tr*3.7],tr*.29,bark,.012,7);}
   const n=oak?6:3,top=[0,trunkH,0];
   crown(g,0,trunkH+1.5*size,0,(1.6+rand()*.4)*size*(oak?1.15:1),leafC,rand,lod,0);
   for(let k=0;k<n;k++){const a=k/n*Math.PI*2+rand()*.8,reach=(1.7+rand()*.9)*size*wide,rise=(oak?.8:1.3+rand()*.8)*size,start=[0,trunkH*(.72+rand()*.2),0],end=[Math.cos(a)*reach,trunkH+rise,Math.sin(a)*reach];

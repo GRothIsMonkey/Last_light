@@ -16,6 +16,7 @@
 // The static pieces bake into the merged world under the zone 'woods' (culled by distance, game.js);
 // the evidence and everything else the story moves are Chapter Three's own (chapter3.js).
 import * as THREE from './three.module.js';
+import {leafGeometrySmall,leafTexture} from './materials.js';
 import {WOODS as E,DRAIN} from './layout.js';
 import {LAWN,terrainY} from './terrain.js';
 import {smooth,clamp,lerp,seeded,hashSeed} from './kit.js';
@@ -110,15 +111,15 @@ export function buildWoods(W){
  const bake=m=>{m.userData.zone=zone;W.baked.push(m);return m;};
  // ---- materials -------------------------------------------------------------------------------------------
  const mat=(c,o={},kind=null)=>{const m=K.mat(c,o);return kind?W.surfaceMaterial(m,kind):m;};
- const litter=mat(0x5a5038,{},'earth'),meadow=mat(0x7c7f4c,{},'earth'),ditch=mat(0x3f3a2c,{roughness:.95},'earth');
+ const litter=mat(0x5a5038,{},'litter'),meadow=mat(0x7c7f4c,{},'litter'),ditch=mat(0x3f3a2c,{roughness:.95},'litter');
  // The overgrown field at the street's end (grass), and the woods past it (leaf litter): by distance from the end of Briarwood.
  const P0=road.X[0],Z0=road.Z[0],fieldR=(x,z)=>Math.hypot(x-P0,z-Z0)-(14*Math.sin(x*.05+1)+9*Math.sin(z*.07));const inField=(x,z)=>fieldR(x,z)<100;void ditch;
- const asphalt=mat(0x57554f,{roughness:.96,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2},'asphalt');
- const patchA=mat(0x3f3e3b,{roughness:.9,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3},'asphalt');
- const crack=mat(0x34322e,{roughness:1,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4},'asphalt');
- const gravel=mat(0x7e7666,{roughness:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1},'earth');
- const rut=mat(0x645a49,{roughness:.92,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3},'earth');
- const concrete=mat(0x8a897d,{},'concrete'),oldConcrete=mat(0x6f6e64,{},'concrete'),stained=mat(0x5b5c54,{},'concrete');
+ const asphalt=mat(0x57554f,{roughness:.96,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2},'roadwear');
+ const patchA=mat(0x3f3e3b,{roughness:.9,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3},'roadwear');
+ const crack=mat(0x34322e,{roughness:1,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4},'roadwear');
+ const gravel=mat(0x7e7666,{roughness:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1},'litter');
+ const rut=mat(0x645a49,{roughness:.92,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3},'litter');
+ const concrete=mat(0x8a897d,{},'mineral'),oldConcrete=mat(0x6f6e64,{},'mineral'),stained=mat(0x5b5c54,{},'mineral');
  const water=mat(0x26343a,{roughness:.18,metalness:.4,polygonOffset:true,polygonOffsetFactor:-5,polygonOffsetUnits:-5},'water');
  const steel=K.mat(0x6b6a62,{roughness:.6,metalness:.5}),rust=K.mat(0x734a30,{roughness:.9,metalness:.25}),yellow=K.mat(0xb59a3a,{roughness:.8,metalness:.2});
  const flipUp=(geo,idx)=>{geo.setIndex(idx);geo.computeVertexNormals();const n=geo.attributes.normal;let up=0;for(let k=0;k<n.count;k++)up+=n.getY(k);if(up<0){for(let k=0;k<idx.length;k+=3){const q=idx[k+1];idx[k+1]=idx[k+2];idx[k+2]=q;}geo.setIndex(idx);geo.computeVertexNormals();}};
@@ -192,7 +193,10 @@ export function buildWoods(W){
   for(let k=0;k<70;k++){const s=10+rand()*(S1+40),t=(rand()-.5)*2*halfW(s)*.85,a=[[s,t]];for(let m=0;m<3;m++)a.push([a[m][0]+(rand()-.3)*.7,a[m][1]+(rand()-.5)*.5]);crackLine(a,.02);}
   for(let k=0;k<16;k++){const s=20+rand()*(S1+60),t=(rand()-.5)*halfW(s),l=.8+rand()*1.6,w=.6+rand()*1.1;band(s,s+l,t-w/2,t+w/2,patchA,{lift:.028,step:l/2});}}
  // Ruts and the grass strip between them, where the road is only gravel.
- for(const e of [-1,1])band(S2-25,L-1,(s,hw)=>e*.82-.22+.08*Math.sin(s*.3),(s,hw)=>e*.82+.22+.08*Math.sin(s*.3),rut,{lift:.02,step:1.5});
+ // Wheels compact the same earth; irregular edges, leaf-filled gaps, no painted ribbons.
+ rut.color.setHex(0x726b5d);
+ for(const e of [-1,1])for(let s=S2-25;s<L-1;){const len=6+rand()*13,sw=.15+rand()*.1;
+  band(s,Math.min(s+len,L-1),ss=>e*.82-sw+.035*Math.sin(ss*3.7)+.035*Math.sin(ss*.3),ss=>e*.82+sw+.045*Math.sin(ss*4.3)+.035*Math.sin(ss*.3),rut,{lift:.014,step:.35});s+=len+.5+rand()*1.8;}
  // ---- grass, weeds and brush along the edges -----------------------------------------------------------------
  const weed=K.mat(0x75804c,{side:THREE.DoubleSide,roughness:1}),dry=K.mat(0x9a9566,{side:THREE.DoubleSide,roughness:1}),fern=K.mat(0x3f5a32,{side:THREE.DoubleSide,roughness:1});for(const m of [weed,dry,fern])if(!W.foliage.includes(m))W.foliage.push(m);
  const tuft=(x,z,y,s,m,blades=5)=>{const g=placeAt(x,z,y-.02,rand()*6);for(let k=0;k<blades;k++){const h=(.18+rand()*.45)*s,w=.014+rand()*.014,bend=.05+rand()*.14,geo=new THREE.BufferGeometry();
@@ -254,13 +258,13 @@ export function buildWoods(W){
   const last=tops[tops.length-1];if(last){for(let k=0;k<7;k++){const a=k/7*Math.PI*2;K.rod(gw2,[last.x+.15+Math.cos(a)*.25,last.y-6.4+Math.sin(a)*.25,last.z],[last.x+.15+Math.cos(a+.9)*.25,last.y-6.4+Math.sin(a+.9)*.25,last.z],.008,0x1c1d1e,.008,3);}}}
  // ---- the forest -----------------------------------------------------------------------------------------------
  // Near the road: real trees (mid detail) that close over it as it goes in; beyond, a wall of far trees.
- const trees=[],treeAt=(x,z,opts)=>{const y=groundAt(x,z)-.04;const t=veg.treeWorld(x,z,y,opts);if(t){t.removeFromParent();(opts.lod==='far'?farRoot:root).add(t);trees.push({x,z});}return t;};
+ const trees=[],treeAt=(x,z,opts)=>{const y=groundAt(x,z)-.04;const t=veg.treeWorld(x,z,y,{...opts,natural:true});if(t){t.removeFromParent();(opts.lod==='far'?farRoot:root).add(t);trees.push({x,z});}return t;};
  const kinds=s=>{const r=rand();if(s<90)return r<.5?'young':r<.75?'maple':'birch';return r<.38?'oak':r<.72?'maple':r<.84?'young':r<.94?'pine':'birch';};
  let nearCount=0;
  for(let s=8;s<L-4;s+=1.1){const hw=halfW(s),dens=s<60?.18:s<130?.18+.5*smooth((s-60)/70):.72;
   for(const e of [-1,1]){if(rand()>dens)continue;const close=s>110&&rand()<.45,t=e*(hw+(close?2.7+rand()*2.6:5.2+rand()*17)),p=at(s,t);
    if(!Wd.inside(p.x,p.z,-2))continue;const {a,b}=toA(p.x,p.z);if(Math.hypot(a-E.pad.a,b-E.pad.b)<E.pad.r+2||(a>-2&&a<16&&Math.abs(b)<wingB(Math.min(a,P.wing))+3))continue;
-   const big=s>150&&rand()<.4,kind=kinds(s);if(treeAt(p.x,p.z,{size:(big?1.25+rand()*.4:.85+rand()*.4)*(kind==='young'?1.2:1),kind,lod:'mid',clearance:big?2.4:1.6}))nearCount++;}}
+   const big=s>150&&rand()<.4,kind=kinds(s);if(treeAt(p.x,p.z,{size:(big?1.25+rand()*.4:.85+rand()*.4)*(kind==='young'?1.2:1),kind,lod:close?'full':'mid',clearance:big?2.4:1.6}))nearCount++;}}
  // Round the pad and along the creek.
  for(let k=0;k<70;k++){const a=-6+rand()*36,b=-14+rand()*38,p=fromA(a,b);if(Math.hypot(a-E.pad.a,b-E.pad.b)<E.pad.r+1.5||(a>-3&&a<17&&Math.abs(b)<wingB(Math.min(a,P.wing))+2.5)||Math.abs(a-26.4)<3||(Math.abs(b)<7&&a>-1&&a<28))continue;
   const q=Wd.project(p.x,p.z);if(q&&q.s>0&&Math.abs(q.t)<halfW(q.s)+2.6)continue;if(treeAt(p.x,p.z,{size:1+rand()*.5,kind:rand()<.4?'oak':'maple',lod:'mid',clearance:2}))nearCount++;}
@@ -272,7 +276,7 @@ export function buildWoods(W){
  for(let k=0;k<1500;k++){const a=rand()*Math.PI*2,r=8+rand()*105,x=P0+Math.cos(a)*r,z=Z0+Math.sin(a)*r;if(!Wd.inside(x,z,-1)||!inField(x,z))continue;const q=Wd.project(x,z);if(q&&Math.abs(q.t)<halfW(q.s)+1.2)continue;
   tuft(x,z,groundAt(x,z),1.3+rand()*1.3,rand()<.4?dry:weed,6);}
  // Brush and fallen wood among the near trees.
- for(let k=0;k<520;k++){const s=10+rand()*(L-14),hw=halfW(s),t=(rand()<.5?-1:1)*(hw+2.2+rand()*14),p=at(s,t);if(!W.space.free(p.x,p.z,.6))continue;const y=groundAt(p.x,p.z),g=placeAt(p.x,p.z,y-.05,rand()*6);veg.shrub(g,0,0,.35+rand()*.55,rand);}
+ for(let k=0;k<520;k++){const s=10+rand()*(L-14),hw=halfW(s),t=(rand()<.5?-1:1)*(hw+2.2+rand()*14),p=at(s,t);if(!W.space.free(p.x,p.z,.6))continue;const y=groundAt(p.x,p.z),g=placeAt(p.x,p.z,y-.05,rand()*6);const r=.35+rand()*.55;for(let j=0;j<3;j++){const a=j*2.1+rand(),leaf=new THREE.Mesh(leafGeometrySmall,W.foliageMat(0x556b3d,true,leafTexture));leaf.position.set(Math.cos(a)*r*.35,r*.64,Math.sin(a)*r*.35);leaf.scale.set(r,r*.72,r);leaf.rotation.y=a;g.add(leaf);K.rod(g,[0,0,0],[Math.cos(a)*r*.3,r*.75,Math.sin(a)*r*.3],.016,0x4b4532,.006,5);}}
  for(let k=0;k<46;k++){const s=120+rand()*(L-130),hw=halfW(s),e=rand()<.5?-1:1,t=e*(hw+3+rand()*10),p=at(s,t);if(!W.space.free(p.x,p.z,1.4))continue;const y=groundAt(p.x,p.z),len=2.5+rand()*4,a=rand()*6,r=.12+rand()*.16,g=placeAt(p.x,p.z,y,a);
   K.rod(g,[-len/2,r*.8,0],[len/2,r*.7,0],r,0x4a3e30,r*.85,7);if(rand()<.5)K.rod(g,[len*.2,r,0],[len*.35,r+.5,.4],.04,0x4a3e30,.02,5);W.space.circle(p.x,p.z,.5,'log');}
  // ---- the outfall: headwall, wingwalls, apron, riprap, a rusted rail along the top ---------------------------------
@@ -293,6 +297,10 @@ export function buildWoods(W){
   for(let j=0;j<48;j++){const sd=j%2?1:-1,x=sd*(W2+.25+rand()*(headW/2-W2-.4)),len=.3+rand()*1.6;box(x,top-len/2-.05,wallT+.006,.04+rand()*.08,len,.008,j%3?0x4e5048:0x6a5a44);}
   box(0,.45,wallT+.007,headW,.5,.008,0x2f3a2e).name='outfall-waterline';
   // The rail along the cap: pipe posts and two rails, rusted, one post bent.
+  // Form ties and chipped edges give the portal a human construction scale.
+  for(const sd of [-1,1])for(const y of [.8,1.8,2.8])for(const xx of [.43,1.19]){const x=sd*(W2+xx);K.cyl(g,x,y,-.012,.029,.013,0x4d5048,12,[Math.PI/2,0,0]);}
+  for(const sd of [-1,1]){for(let k=0;k<12;k++){const y=.25+k*(H-.3)/12;K.rbox(g,sd*(W2+.012),y,-.016,.06,.09,.055,.016,stained);}
+   const x=sd*(headW/2-.25);K.rbox(g,x,top+.15,wallT/2,.18,.035,.18,.012,steel);for(const off of [-.06,.06])K.cyl(g,x+off,top+.18,wallT/2,.015,.016,rust,6);}
   for(let k=0;k<=8;k++){const x=-headW/2+.2+k*(headW-.4)/8,lean=k===6?.25:0;K.rod(g,[x,top+.14,wallT/2],[x+lean*.3,top+1.1,wallT/2-lean*.1],.024,rust,.022,6);}
   for(const y of [.62,1.08])K.rod(g,[-headW/2+.2,top+y,wallT/2],[headW/2-.2,top+y-(y>1?.06:0),wallT/2],.02,rust,.02,6);
   // The apron: a concrete slab out from the mouth, cracked, silt and leaves on it; the low flow down its middle.

@@ -9,12 +9,14 @@
 import * as THREE from './three.module.js';
 import {ALEX_ROOM as R} from './layout.js';
 import {seeded} from './kit.js';
+import {artSurface} from './art-surfaces.js';
 
 // Alex's bike helmet: the same one on his desk in the morning and, that night, somewhere it cannot be (chapter3.js).
 // Red shell, a white stripe down the middle, black vents, his number (17) in white on both sides, the straps hanging.
 let helmetTex=null;
 export function makeHelmet(){const g=new THREE.Group();g.name='alex-helmet';const red=new THREE.MeshStandardMaterial({color:0xc2321f,roughness:.42,metalness:.05}),black=new THREE.MeshStandardMaterial({color:0x18181a,roughness:.7}),white=new THREE.MeshStandardMaterial({color:0xece8de,roughness:.5});
- const shell=new THREE.Mesh(new THREE.SphereGeometry(.135,20,10,0,Math.PI*2,0,Math.PI/2),red);shell.scale.set(1,.86,1.24);g.add(shell);
+ const shell=new THREE.Mesh(new THREE.SphereGeometry(.135,40,20,0,Math.PI*2,0,Math.PI/2),red);shell.scale.set(1,.86,1.24);g.add(shell);
+ const foam=new THREE.Mesh(new THREE.SphereGeometry(.123,32,16,0,Math.PI*2,0,Math.PI/2),new THREE.MeshStandardMaterial({color:0x353637,roughness:1,side:THREE.BackSide}));foam.scale.copy(shell.scale);g.add(foam);
  const rim=new THREE.Mesh(new THREE.TorusGeometry(.135,.012,6,24),black);rim.rotation.x=Math.PI/2;rim.scale.set(1,1.24,1);rim.position.y=.004;g.add(rim);
  const stripe=new THREE.Mesh(new THREE.SphereGeometry(.137,6,10,Math.PI/2-.11,.22,0,Math.PI/2),white);stripe.scale.set(1,.86,1.24);g.add(stripe);
  for(const x of [-.07,.07])for(const z of [-.05,.06]){const v=new THREE.Mesh(new THREE.BoxGeometry(.022,.02,.075),black);v.position.set(x*.8,.104,z);v.rotation.z=-x*2.2;g.add(v);}
@@ -23,14 +25,16 @@ export function makeHelmet(){const g=new THREE.Group();g.name='alex-helmet';cons
    helmetTex=new THREE.CanvasTexture(c);helmetTex.colorSpace=THREE.SRGBColorSpace;}else helmetTex=false;}catch{helmetTex=false;}}
  for(const e of [-1,1]){const d=new THREE.Mesh(new THREE.CircleGeometry(.045,16),helmetTex?new THREE.MeshStandardMaterial({map:helmetTex,transparent:true,roughness:.5}):white);d.position.set(e*.118,.06,0);d.rotation.y=e*Math.PI/2;d.rotation.x=0;g.add(d);
   const strap=new THREE.Mesh(new THREE.BoxGeometry(.008,.11,.014),black);strap.position.set(e*.11,-.05,.01);strap.rotation.z=e*.2;g.add(strap);}
+ const buckle=new THREE.Mesh(new THREE.BoxGeometry(.033,.014,.021),black);buckle.position.set(.073,-.097,.011);g.add(buckle);
+ for(const e of [-1,1]){const pad=new THREE.Mesh(new THREE.SphereGeometry(.03,16,10),black);pad.position.set(e*.065,.035,.019);pad.scale.set(.35,.45,2.9);g.add(pad);}
  return g;}
-export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,rand=seeded(1919),W2=P.w/2,D2=P.depth/2,F=R.floor,H=R.height;
+export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,roomBefore=new Set(g.children),rand=seeded(1919),W2=P.w/2,D2=P.depth/2,F=R.floor,H=R.height;
  const x0=R.x0,x1=W2-t,zf=D2-t,zb=zf-R.depth,y0=F,y1=F+H;
  // Paint and carpet carry a little light of their own: the room is in the house's shadow, lit by the sky
  // through two windows; this stands in for that bounce until the art pass lights it properly.
- const paint=new THREE.MeshStandardMaterial({color:0xb7c3c8,emissive:0x8d969a,emissiveIntensity:.2,roughness:.95});paint.userData.keep=true;
- const ceiling=new THREE.MeshStandardMaterial({color:0xe8e4da,emissive:0xb8b4aa,emissiveIntensity:.22,roughness:.95});ceiling.userData.keep=true;
- const carpet=new THREE.MeshStandardMaterial({color:0x7d7462,emissive:0x4a453a,emissiveIntensity:.22,roughness:1});carpet.userData.keep=true;
+ const paint=new THREE.MeshStandardMaterial({color:0xb7c3c8,emissive:0x8d969a,emissiveIntensity:.065,roughness:.95});paint.userData.keep=true;artSurface(paint,'plaster');
+ const ceiling=new THREE.MeshStandardMaterial({color:0xe8e4da,emissive:0xb8b4aa,emissiveIntensity:.09,roughness:.95});ceiling.userData.keep=true;
+ const carpet=new THREE.MeshStandardMaterial({color:0x7d7462,emissive:0x4a453a,emissiveIntensity:.065,roughness:1});carpet.userData.keep=true;artSurface(carpet,'carpet');
  const quad=(a,b,c,d,m,name='')=>{const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([...a,...b,...c,...a,...c,...d],3));geo.computeVertexNormals();const mesh=new THREE.Mesh(geo,m);if(name)mesh.name=name;g.add(mesh);return mesh;};
  // A wall facing into the room with one rectangular opening: up to four quads round it. (u: along the
  // wall from a to b, measured in meters; v: height.) Normal faces `into`.
@@ -60,7 +64,8 @@ export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,rand=seeded(1919),
  // Blinds pulled most of the way up, bunched under the head of each window; the side one hangs a little crooked.
  for(let k=0;k<6;k++){K.box(g,win.x,win.y+win.h/2-.05-k*.024,zf-.03,win.w-.04,.018,.05,0xe2ddcf);K.box(g,x1-.03,side.y+side.h/2-.05-k*.024-k*.004,side.z,.05,.018,side.w-.04,0xe2ddcf);}
  K.rod(g,[win.x+.4,win.y+win.h/2-.18,zf-.05],[win.x+.4,win.y-.2,zf-.05],.003,0xd8d2c4,.003,3);
- K.cyl(g,(x0+x1)/2,y1-.03,(zb+zf)/2,.22,.05,0xf1ece0,16);
+ K.cyl(g,(x0+x1)/2,y1-.025,(zb+zf)/2,.23,.05,0xb8b9b3,40);
+ K.ball(g,(x0+x1)/2,y1-.055,(zb+zf)/2,.215,0xf1ece0,[1,.18,1],true);
  // ---- furniture ------------------------------------------------------------------------------------
  const wood=0x5f4a36,box=(x,y,z,w,h,d,c)=>K.box(g,x,y,z,w,h,d,c),rbox=(x,y,z,w,h,d,r,c)=>K.rbox(g,x,y,z,w,h,d,r,c);
  // The bed, along the back wall with its head against the outside wall; sheets kicked down, the
@@ -69,9 +74,20 @@ export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,rand=seeded(1919),
  box((bx0+bx1)/2,y0+.17,(bz0+bz1)/2,bx1-bx0,.24,bz1-bz0,wood);box(bx1-.03,y0+.45,(bz0+bz1)/2,.06,.78,bz1-bz0+.04,wood);
  rbox((bx0+bx1)/2-.02,y0+.36,(bz0+bz1)/2,bx1-bx0-.1,.16,bz1-bz0-.06,.05,0xd8d3c6);
  rbox(bx1-.33,y0+.5,bz0+.35,.5,.13,.36,.05,0xeae5d8).rotation.y=.35;
- for(const [x,z,w,d,ry,c] of [[-.15,.06,1.1,.82,.08,0x34507a],[.3,-.12,.62,.5,-.3,0x34507a],[-.62,.18,.5,.42,.5,0x2e4669]])rbox((bx0+bx1)/2+x,y0+.48+rand()*.05,(bz0+bz1)/2+z,w,.09+rand()*.04,d,.04,c).rotation.y=ry;
- rbox(bx0+.55,y0+.22,bz1+.12,.75,.28,.26,.05,0x34507a).rotation.z=.25;// the comforter slid over the edge
- rbox((bx0+bx1)/2+.1,y0+.465,(bz0+bz1)/2-.1,.95,.03,.7,.01,0xc9cfd6);
+ // A continuous cloth surface: kicked-down duvet, folded sheet, a weighted hem.
+ const fabric=artSurface(new THREE.MeshStandardMaterial({color:0x3c5578,roughness:.98,side:THREE.DoubleSide}),'textile');fabric.userData.keep=true;
+ const cloth=(xa,xb,za,zb2,height,drop,material)=>{const nx=48,nz=32,pts=[],uv=[],idx=[];
+  for(let i=0;i<=nx;i++)for(let j=0;j<=nz;j++){const u=i/nx,v=j/nz,x=xa+(xb-xa)*u,z=za+(zb2-za)*v;
+   const fold=(material===linen?.08:1)*(.018*Math.sin(u*23+v*8)+.012*Math.sin(u*47-v*19)+.009*Math.sin(v*38+u*7));
+   const hang=Math.max(0,z-bz1+.015)/Math.max(.01,zb2-bz1+.015);
+   pts.push(x+.007*Math.sin(v*21),height+fold-.31*hang*hang*drop,z);uv.push(u,v);
+   if(i<nx&&j<nz){const a=i*(nz+1)+j,b=a+nz+1;idx.push(a,b,a+1,a+1,b,b+1);}}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(idx);geo.computeVertexNormals();const m=new THREE.Mesh(geo,material);m.name='alex-room-draped-bedding';g.add(m);
+  const edge=[];for(let i=0;i<=nx;i++){const k=(i*(nz+1)+nz)*3;edge.push(new THREE.Vector3(pts[k],pts[k+1]+.004,pts[k+2]));}
+  const hem=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(edge),60,.004,5,false),material);g.add(hem);};
+ const linen=artSurface(new THREE.MeshStandardMaterial({color:0xd6dce0,roughness:1,side:THREE.DoubleSide}),'textile');linen.userData.keep=true;
+ cloth(bx0+.05,bx1-.06,bz0+.04,bz1+.09,y0+.452,.4,linen);
+ cloth(bx0+.03,bx1-.58,bz0+.025,bz1+.32,y0+.515,1,fabric);
  // Nightstand: a lamp, a cheap alarm clock, a glass with a little water in it.
  {const nx=bx0-.28,nz=zb+.3;box(nx,y0+.28,nz,.44,.56,.4,0x6b5236);box(nx,y0+.4,nz+.205,.36,.01,.01,0x3a2d22);
   K.cyl(g,nx-.1,y0+.6,nz-.05,.06,.06,0x3a3a3a,10);K.rod(g,[nx-.1,y0+.6,nz-.05],[nx-.1,y0+.86,nz-.05],.01,0x8a8a86,.01,5);K.cyl(g,nx-.1,y0+.92,nz-.05,.12,.14,0xe9dfc4,12);
@@ -82,7 +98,12 @@ export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,rand=seeded(1919),
  const dx0=win.x-.95,dx1=win.x+.75,dz0=zf-.6,dz1=zf-.02,dy=y0+.74;
  box((dx0+dx1)/2,dy-.02,(dz0+dz1)/2,dx1-dx0,.04,dz1-dz0,0x7a6248);for(const [x,z] of [[dx0+.04,dz0+.04],[dx1-.04,dz0+.04],[dx0+.04,dz1-.04],[dx1-.04,dz1-.04]])box(x,y0+.36,z,.04,.72,.04,0x6b5539);
  box(dx1-.22,y0+.42,(dz0+dz1)/2,.38,.6,dz1-dz0-.04,0x6b5539);
- {const cx=win.x-.15,cz=dz0-.45;K.cyl(g,cx,y0+.05,cz,.28,.03,0x2a2a2c,5);K.cyl(g,cx,y0+.25,cz,.025,.4,0x3a3a3c,8);rbox(cx,y0+.48,cz,.46,.08,.44,.03,0x2d2f33).rotation.y=.4;const back=rbox(cx-.08,y0+.82,cz-.2,.42,.5,.06,.03,0x2d2f33);back.rotation.y=.4;}
+ {const cx=win.x-.15,cz=dz0-.45,chair=K.group(g,cx,cz,.4,y0),cloth=artSurface(new THREE.MeshStandardMaterial({color:0x343b43,roughness:.93}),'textile');cloth.userData.keep=true;
+  K.cyl(chair,0,.27,0,.024,.39,0x727979,20);K.cyl(chair,0,.15,0,.041,.18,0x282d30,20);
+  for(let k=0;k<5;k++){const a=k*1.257,x=Math.sin(a)*.26,z=Math.cos(a)*.26;K.rod(chair,[0,.09,0],[x,.055,z],.018,0x33383a,.012,10);K.cyl(chair,x,.033,z,.03,.032,0x202426,14,[Math.PI/2,a,0]);}
+  K.rbox(chair,0,.47,0,.45,.08,.42,.037,cloth);K.rod(chair,[0,.43,-.16],[0,.76,-.22],.018,0x33383a,.014,12);
+  K.rbox(chair,0,.78,-.215,.39,.39,.07,.033,cloth).rotation.x=-.09;
+  for(const e of [-1,1]){K.rod(chair,[e*.21,.46,-.09],[e*.235,.65,-.06],.011,0x343a3e,.011,10);K.rbox(chair,e*.235,.65,0,.045,.031,.22,.013,0x292e32);}}
  // On the desk: a spiral notebook, pencils in a cup, a stack of game cases, a sports-drink bottle, a
  // desk lamp, a charger cord running off the back, a jar of coins. (The phone is the story's: chapter3.js.)
  box(win.x+.3,dy+.006,dz0+.28,.22,.012,.28,0xe6e1d4);box(win.x+.3-.11,dy+.012,dz0+.28,.01,.014,.28,0x9a9a96);
@@ -100,16 +121,24 @@ export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,rand=seeded(1919),
  {const tz=(rz0+rz1)/2+.1;rbox(rx0+.26,y0+1.17,tz,.44,.44,.48,.04,0x2b2c2e);const scr=box(rx0+.485,y0+1.18,tz,.01,.32,.38,0x1c2226);scr.name='alex-room-tv';
   box(rx0+.26,y0+.985,rz0+.22,.25,.07,.3,0xe8e7e1);box(rx0+.395,y0+.99,rz0+.22,.005,.02,.12,0x6aa84a);}
  // The controller on the bed with its cord trailing to the console.
- {const cx=bx0+.5,cz=bz1-.2,cy=y0+.47;rbox(cx,cy,cz,.15,.04,.1,.02,0xe6e6e0).rotation.y=.6;for(const e of [-1,1])K.ball(g,cx+e*.05,cy+.005,cz+.04,.035,0xe6e6e0,[1,.6,1]);
+ {const cx=bx0+.5,cz=bz1-.2,cy=y0+.555;rbox(cx,cy,cz,.15,.04,.1,.02,0xe6e6e0).rotation.y=.6;for(const e of [-1,1])K.ball(g,cx+e*.05,cy+.005,cz+.04,.035,0xe6e6e0,[1,.6,1]);
+  for(const e of [-1,1])K.cyl(g,cx+e*.029,cy+.027,cz+.012,.009,.009,0x414548,12);
+  box(cx-.043,cy+.023,cz-.018,.025,.004,.007,0x414548);box(cx-.043,cy+.023,cz-.018,.007,.004,.025,0x414548);
+  for(let k=0;k<4;k++){const a=k*Math.PI/2;K.cyl(g,cx+.045+Math.cos(a)*.01,cy+.023,cz-.018+Math.sin(a)*.01,.0038,.004,[0x92a952,0xa94f48,0x5593b5,0xcbba58][k],8);}
   const pts=[[cx-.05,cy,cz],[bx0-.02,y0+.3,cz+.2],[bx0-.2,y0+.02,cz+.6],[rx0+.6,y0+.02,rz0+.2],[rx0+.5,y0+.95,rz0+.22]];for(let k=0;k<pts.length-1;k++)K.rod(g,pts[k],pts[k+1],.004,0x2a2a2a,.004,3);}
  // The box fan on the floor by the side window, turned toward the bed.
- {const f=K.group(g,x1-.42,(side.z-side.w/2-.45),-2.3,y0);rbox(0,.28,0,.52,.52,.13,.02,0xd9d4c6);const grill=box(0,.28,.068,.44,.44,.005,0x4a4c4c);grill.name='alex-room-fan';
-  for(let k=0;k<5;k++)K.box(f,0,.12+k*.08,.072,.44,.006,.004,0x9a9a96);K.cyl(f,0,.28,.07,.05,.01,0x9a9a96,10,[Math.PI/2,0,0]);K.box(f,.17,.53,0,.1,.03,.08,0x6a6a66);}
+ {const f=K.group(g,x1-.42,(side.z-side.w/2-.45),-2.3,y0);K.rbox(f,0,.28,0,.52,.52,.13,.025,0xd9d4c6);const grill=K.box(f,0,.28,.068,.44,.44,.005,0x4a4c4c);grill.name='alex-room-fan';
+  for(let k=0;k<19;k++){K.box(f,0,.07+k*.023,.079,.44,.003,.004,0xc6c6bd);K.box(f,-.21+k*.023,.28,.080,.003,.44,.004,0xc6c6bd);}for(let k=0;k<3;k++){const a=k*2.094,b=K.ball(f,Math.sin(a)*.11,.28+Math.cos(a)*.11,.075,.105,0xaaa99f,[.5,1,.08],true);b.rotation.z=-a;}K.box(f,-.16,.017,0,.075,.035,.22,0xaaa99f);K.box(f,.16,.017,0,.075,.035,.22,0xaaa99f);K.cyl(f,0,.28,.07,.05,.01,0x9a9a96,10,[Math.PI/2,0,0]);K.box(f,.17,.53,0,.1,.03,.08,0x6a6a66);}
  // Floor: jeans and t-shirts by the bed, sneakers by the door, a backpack against the wall, his
  // helmet, a stack of comics, socks, a basketball under the desk.
- for(const [x,z,s,c] of [[bx0-.05,bz1+.5,.22,0x3e5f8a],[bx0+.2,bz1+.62,.18,0x6c6c6a],[bx0-.3,bz1+.35,.16,0x8a2f2a],[bx0+.05,bz1+.32,.14,0xd8d4c4]])K.ball(g,x,y0+s*.25,z,s,c,[1.6,.45,1.2]);
- box(bx0-.2,y0+.03,bz1+.75,.55,.05,.2,0x2f4a6a).rotation.y=.4;
- for(const [x,z,a] of [[x0+.35,zb+1.3,.3],[x0+.52,zb+1.42,.1]]){const s=K.group(g,x,z,a,y0);rbox(0,.045,0,.11,.09,.27,.03,0xe8e6de);box(0,.012,0,.115,.025,.28,0x9a9a96);box(0,.07,.05,.09,.02,.12,0x3a5a8a);}
+ for(const [x,z,a,c] of [[bx0-.05,bz1+.5,.7,0x3e5f8a],[bx0-.3,bz1+.35,-.4,0x8a2f2a]]){
+  const garment=K.group(g,x,z,a,y0+.025),mat=artSurface(new THREE.MeshStandardMaterial({color:c,roughness:1,side:THREE.DoubleSide}),'textile');mat.userData.keep=true;
+  const pos=[],idx=[],nx=24,nz=28;for(let i=0;i<=nx;i++)for(let j=0;j<=nz;j++){const u=i/nx,v=j/nz,xx=(u-.5)*.46,zz=(v-.5)*.48;pos.push(xx,.016+.012*Math.sin(u*19+v*7)+.009*Math.sin(v*23),zz);}
+  for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const u=(i+.5)/nx,v=(j+.5)/nz;if((u<.2||u>.8)&&v>.32)continue;if(Math.abs(u-.5)<.11&&v<.12)continue;const a=i*(nz+1)+j,b=a+nz+1;idx.push(a,a+1,b,a+1,b+1,b);}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();garment.add(new THREE.Mesh(geo,mat));}
+ {const jeans=K.group(g,bx0+.2,bz1+.72,-.3,y0+.024);K.rbox(jeans,0,.026,0,.26,.038,.2,.012,0x344f70);
+  for(const e of [-1,1]){K.rbox(jeans,e*.066,.017,.2,.12,.032,.33,.014,0x2f4a6a).rotation.y=e*.12;K.rod(jeans,[e*.062,.037,.07],[e*.088,.035,.35],.0017,0x8290a0,.0017,5);}}
+ for(const [x,z,a] of [[x0+.35,zb+1.3,.3],[x0+.52,zb+1.42,.1]]){const s=K.group(g,x,z,a,y0);K.rbox(s,0,.045,0,.11,.09,.27,.03,0xe8e6de);K.box(s,0,.012,0,.115,.025,.28,0x9a9a96);K.box(s,0,.07,.05,.09,.02,.12,0x3a5a8a);for(let j=0;j<4;j++)K.rod(s,[-.035,.09,-.045+j*.023],[.035,.09,-.035+j*.023],.003,0xcac7bd,.003,5);}
  {const p=rbox(x0+.2,y0+.25,zb+1.85,.3,.45,.18,.06,0x2f4f7a);p.rotation.y=.2;p.rotation.z=-.15;box(x0+.32,y0+.33,zb+1.85,.04,.25,.12,0x24405f);}
  // His bike helmet, on the desk beside the phone: red, a white stripe down the middle, his number on the sides.
  {const hm=makeHelmet();hm.position.set(win.x-.13,dy+.002,dz0+.24);hm.rotation.y=2.5;g.add(hm);}
@@ -125,6 +154,19 @@ export function buildAlexRoom(W,P,g,{t,win,side}){const {K}=W,rand=seeded(1919),
  // The door to the hall, shut, on the inside wall near the bed.
  const door={z:zb+1.08,w:.86};box(x0+.012,y0+1.02,door.z,.03,2.04,door.w,0xe6e1d4);for(const e of [-1,1])box(x0+.02,y0+1.04,door.z+e*(door.w/2+.03),.035,2.1,.05,trim);box(x0+.02,y0+2.1,door.z,.035,.05,door.w+.1,trim);
  K.ball(g,x0+.05,y0+.98,door.z+door.w/2-.1,.03,0xc9b27a);
+ // Small construction detail at eye height: door panels, outlets, furniture joinery.
+ for(const z of [door.z-.22,door.z+.22])for(const yy of [.5,1.42]){K.rbox(g,x0+.032,y0+yy,z,.016,yy<1?.62:.79,.34,.008,0xd2cec3);}
+ for(const z of [zb+2.6,zf-.5]){K.rbox(g,x0+.018,y0+.3,z,.022,.11,.073,.008,0xe5e1d7);for(const y of [-.025,.025])for(const dz of [-.012,.012])K.box(g,x0+.032,y0+.3+y,z+dz,.002,.014,.004,0x686761);}
+ for(const x of [dx0+.03,dx1-.03])K.box(g,x,dy-.075,(dz0+dz1)/2,.025,.12,dz1-dz0-.04,0x5f4a36);
+ for(let i=0;i<3;i++){const z=(dz0+dz1)/2;K.box(g,dx1-.22,y0+.22+i*.17,z-.27,.32,.145,.022,0x7a6248);K.rod(g,[dx1-.29,y0+.22+i*.17,z-.286],[dx1-.15,y0+.22+i*.17,z-.286],.007,0xa6a49a,.007,8);}
+ // Pin heads and curled paper corners keep the corkboard from reading as four coloured squares.
+ for(const [z,y] of [[side.z+side.w/2+.48,y0+1.55],[side.z+side.w/2+.69,y0+1.52],[side.z+side.w/2+.79,y0+1.39]])K.ball(g,x1-.033,y,z,.009,0xa83324,[.4,1,1],true);
+ const woodColors=new Set([0x5f4a36,0x6b5236,0x7a6248,0x6b5539,0x8a6c4a]),clothColors=new Set([0xeae5d8,0x3e5f8a,0x6c6c6a,0x8a2f2a,0xd8d4c4,0x2f4a6a,0x2f4f7a]);
+ const materials=new Map();for(const obj of g.children){if(roomBefore.has(obj))continue;obj.traverse(o=>{if(!o.isMesh||o.material.userData.artSurface)return;const color=o.material.color?.getHex(),kind=woodColors.has(color)?'timber':clothColors.has(color)?'textile':null;if(kind){const key=color+kind;if(!materials.has(key)){const m=o.material.clone();m.userData.keep=true;artSurface(m,kind);materials.set(key,m);}o.material=materials.get(key);}});}
+ // Soft baked contact under furniture. The feathered edge only darkens the carpet.
+ const shadowTex=roomShadow();const contact=(x,z,w,d,opacity)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),new THREE.MeshBasicMaterial({map:shadowTex,transparent:true,opacity,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));m.rotation.x=-Math.PI/2;m.position.set(x,y0+.004,z);m.name='alex-room-contact';g.add(m);};
+ contact((bx0+bx1)/2,(bz0+bz1)/2,2.35,1.32,.34);contact((dx0+dx1)/2,(dz0+dz1)/2,1.9,.85,.25);contact(win.x-.15,dz0-.45,.85,.8,.24);contact(rx0+.25,(rz0+rz1)/2,.85,1.5,.3);
+ for(const obj of g.children)if(!roomBefore.has(obj))obj.traverse(o=>{if(o.isMesh)o.userData.zone='alex-room';});
  // Things you cannot walk through (house frame rectangles), and where the story's moments happen.
  const blocks=[[bx0-.05,x1,zb,bz1+.06],[bx0-.53,bx0-.05,zb,zb+.52],[dx0-.04,dx1+.04,dz0-.04,zf],[win.x-.55,win.x+.25,dz0-.72,dz0-.15],[rx0-.05,rx0+.56,rz0-.03,rz1+.03],[x1-.72,x1,side.z-side.w/2-.62,side.z-side.w/2-.24]];
  W.interiors['alex-room']={P,x0,x1,z0:zb,z1:zf,floor:F,height:H,blocks,
@@ -145,3 +187,6 @@ function posterTexture(kind){return canvas(128,176,(g,w,h)=>{
  else{g.fillStyle='#f4f1e8';g.fillRect(0,0,w,h);g.fillStyle='#2a5a8a';g.fillRect(0,0,w,40);g.fillStyle='#f4f1e8';g.font='bold 17px Arial';g.textAlign='center';g.fillText('AUGUST 2011',64,27);
   g.fillStyle='#3a3a3a';g.font='9px Arial';const days='SMTWTFS';for(let i=0;i<7;i++)g.fillText(days[i],10+i*18,54);let d=1;for(let r=0;r<5;r++)for(let c=0;c<7;c++){if(r===0&&c<1)continue;if(d>31)break;g.fillText(String(d++),10+c*18,72+r*20);}
   g.strokeStyle='#bbb';g.lineWidth=1;for(let r=0;r<6;r++){g.beginPath();g.moveTo(2,60+r*20);g.lineTo(126,60+r*20);g.stroke();}}});}
+
+let shadowTexture=null;
+function roomShadow(){if(shadowTexture)return shadowTexture;const n=64,a=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.max(Math.abs(x/(n-1)*2-1),Math.abs(y/(n-1)*2-1)),i=(y*n+x)*4;a[i]=a[i+1]=a[i+2]=12;a[i+3]=255*Math.pow(Math.max(0,1-r*r),1.8);}shadowTexture=new THREE.DataTexture(a,n,n);shadowTexture.magFilter=THREE.LinearFilter;shadowTexture.needsUpdate=true;return shadowTexture;}

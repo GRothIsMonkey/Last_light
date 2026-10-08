@@ -73,10 +73,10 @@ export function buildDrain(W){
  const placeAt=(s,t,y,turn=0)=>{const p=at(s,t),g=new THREE.Group();g.position.set(p.x,y,p.z);g.rotation.y=-p.a+turn;root.add(g);return g;};// local -z upstream (deeper), +x to the right
  // (its own materials, kept out of the merge's shared ones: no fog in here, so from outside its depths stay black)
  const mat=(c,o={},kind='culvert')=>{const m=new THREE.MeshStandardMaterial({color:c,roughness:.9,fog:false,...o});m.userData.noShadow=true;m.userData.keep=true;return kind?W.surfaceMaterial(m,kind):m;};
- const wall=mat(0x6b6a61,{roughness:.88}),floorM=mat(0x55554d,{roughness:.62}),oldWall=mat(0x6c6458,{roughness:.96}),oldFloor=mat(0x4d4a42,{roughness:.55});
+ const wall=mat(0x96988e,{roughness:.88}),floorM=mat(0x55554d,{roughness:.62}),oldWall=mat(0x969084,{roughness:.96}),oldFloor=mat(0x4d4a42,{roughness:.55});
  const seam=mat(0x2c2c29,{roughness:1,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2},null),stain=mat(0x47463f,{roughness:1,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2},null);
  const silt=mat(0x5b4d3a,{roughness:1,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2},'earth'),white=mat(0x8f8c80,{roughness:1,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3},null);
- const water=mat(0x34403e,{roughness:.3,metalness:.08,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4},'water');
+ const water=mat(0x59635d,{roughness:.48,metalness:0,transparent:true,opacity:.83,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4},'drainwater');
  const rust=K.mat(0x6e4430,{roughness:.85,metalness:.3}),steel=K.mat(0x5d5c56,{roughness:.6,metalness:.5}),dark=new THREE.MeshBasicMaterial({color:0x030304});dark.userData.keep=true;dark.userData.noShadow=true;
  const meshOf=(pos,idx,m,name='',inward=null)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
   if(inward){const nn=g.attributes.normal,p=g.attributes.position;let ok=0;for(let k=0;k<nn.count;k+=7){const c=inward(p.getX(k),p.getY(k),p.getZ(k));ok+=nn.getX(k)*c.x+nn.getY(k)*c.y+nn.getZ(k)*c.z;}
@@ -93,7 +93,7 @@ export function buildDrain(W){
  const shell=(w,h)=>{const a=Math.min(SJ.sill,h-.6),b=Math.min(SJ.sill+SJ.h,h-.4);return [[-w/2,-.15],[-w/2,a],[-w/2,b],[-w/2,h-.24],[-w/2+.24,h],[-.2,h],[w/2-1.15,h],[w/2-.24,h],[w/2,h-.24],[w/2,Math.min(1.3,h-.5)],[w/2,.2],[w/2,-.15]];};
  const holes=(s0,s1,seg)=>{const m=(s0+s1)/2;if(seg===1&&m>SJ.s-SJ.w/2&&m<SJ.s+SJ.w/2)return true;if(seg===9&&m>SP.s-.55&&m<SP.s+.55)return true;if(seg===6&&m>LD.s-.45&&m<LD.s+.45)return true;return false;};
  // Three ages of concrete: the newer precast (mouth, first bend, the far stretch), the old cast-in-place, the oldest box.
- const deepWall=mat(0x5a554c,{roughness:.97}),deepFloor=mat(0x413e37,{roughness:.5});
+ const deepWall=mat(0x85847a,{roughness:.97}),deepFloor=mat(0x413e37,{roughness:.5});
  const age=s=>{const k=kindAt(s);return k==='old'?'old':k==='deep'?'deep':'new';},WALL={new:wall,old:oldWall,deep:deepWall},FLOOR={new:floorM,old:oldFloor,deep:deepFloor};
  const groups={};const G=k=>groups[k]||(groups[k]={fp:[],fi:[],wp:[],wi:[]});
  for(let r=0;r<rows.length-1;r++){const s0=rows[r],s1=rows[r+1],kind=age((s0+s1)/2),g=G(kind);
@@ -172,7 +172,9 @@ export function buildDrain(W){
   T.hatch={s:H.s,x:at(H.s,tc).x,z:at(H.s,tc).z,y:f+h};}
  const spall=(s,e,y,pw,ph,ceiling=false)=>{const {w,h}=sizeAt(s),g=ceiling?placeAt(s,e,floor(s)+h-.008):placeAt(s,e*(w/2-.02),floor(s)+y,e>0?-Math.PI/2:Math.PI/2);
   if(ceiling){K.box(g,0,0,0,pw,.016,ph,0x4a4339);for(let j=0;j<4;j++)K.rod(g,[-pw/2+.05,-.012,-ph/2+.08+j*ph/4],[pw/2-.05,-.014,-ph/2+.09+j*ph/4],.008,rust,.008,4);for(let j=0;j<3;j++)K.rod(g,[-pw/2+.1+j*pw/3,-.02,-ph/2+.04],[-pw/2+.1+j*pw/3,-.02,ph/2-.04],.007,rust,.007,4);return;}
-  K.box(g,0,0,0,pw,ph,.03,0x4a4339);for(let j=0;j<3;j++)K.rod(g,[-pw/2+.05,-ph/2+.1+j*ph/3,.025],[pw/2-.05,-ph/2+.12+j*ph/3,.025],.008,rust,.008,4);for(let j=0;j<2;j++)K.rod(g,[-pw/2+.15+j*pw/2,-ph/2+.05,.03],[-pw/2+.15+j*pw/2,ph/2-.05,.03],.007,rust,.007,4);};
+  const outline=Array.from({length:13},(_,i)=>{const a=i/13*Math.PI*2,r=.79+rand()*.21;return [Math.cos(a)*pw*.5*r,Math.sin(a)*ph*.5*r];});
+  K.extrude(g,outline,.033,.007,mat(0x585247,{},'mineral'));for(let j=0;j<3;j++)K.rod(g,[-pw*.28,-ph*.27+j*ph*.27,.025],[pw*.29,-ph*.26+j*ph*.27,.025],.008,rust,.008,8);
+  for(let i=0;i<outline.length;i+=2){const [x,y]=outline[i];K.ball(g,x,y,.014,.023,oldWall,[1.2,.7,.45],true);}};
  for(let k=0;k<14;k++){const s=153+rand()*58,e=rand()<.5?-1:1,{h}=sizeAt(s);spall(s,e,.6+rand()*(h-1.1),.35+rand()*.5,.25+rand()*.4);}
  for(let k=0;k<7;k++){const s=154+rand()*56;spall(s,(rand()-.5)*1.4,0,.4+rand()*.5,.3+rand()*.5,true);}
  for(let k=0;k<16;k++){const s=169+rand()*5,{w}=sizeAt(s),t=-(w/2-.2-rand()*.55),g=placeAt(s,t,floorAt(s,t)+.06,rand()*6);K.box(g,0,0,0,.2+rand()*.35,.12+rand()*.2,.18+rand()*.3,k%3?deepFloor:oldWall).rotation.set(rand()*.6,0,rand()*.6);}
@@ -230,6 +232,12 @@ export function buildDrain(W){
  // ---- the cable: an old phone cable come loose from its clips, hanging in section F (it can swing) ------------
  {const s=246,{w,h}=sizeAt(s);T.cable={s,x:at(s,1).x,z:at(s,1).z,y:floor(s)+h-.05,len:1.5};}
  // ---- where the story needs things ---------------------------------------------------------------------
+ // Concrete form ties, irregular repairs and hardware stay flat to the shell; navigation is unchanged.
+ const repair=mat(0xaaa99c,{roughness:.9},'culvert'),bolt=mat(0x766e5e,{roughness:.72,metalness:.15},'oxidized');
+ for(let s=10;s<D.len-5;s+=11.7){const {w,h}=sizeAt(s);for(const e of [-1,1]){const g=placeAt(s,e*(w/2-.012),floor(s),e>0?-Math.PI/2:Math.PI/2);
+   for(const y of [.65,Math.min(h-.42,1.9)]){const recess=new THREE.Mesh(new THREE.CircleGeometry(.022,12),stain);recess.position.set(0,y,.003);g.add(recess);K.cyl(g,0,y,.006,.006,.009,bolt,6,[Math.PI/2,0,0]);}
+   if(s>95&&Math.sin(s*7+e)>.45){const shape=[[-.31,-.18],[-.27,.18],[-.03,.23],[.29,.13],[.25,-.21],[-.12,-.24]],p=K.extrude(g,shape,.012,.004,repair);p.position.set(.7,h*.59,.004);}}
+ }
  const spot=(s,t=0)=>{const p=at(s,t);return {s,t,x:p.x,z:p.z,y:floorAt(s,t),a:p.a};};
  T.spots={mouth:spot(1),inside:spot(12),ledge:spot(40,1.6),bend1:spot(83),old:spot(100),ladder:spot(LD.s),pipe:spot(SP.s),step:spot(D.step.s-1),stepTop:spot(D.step.s+D.step.len+.6),bike:spot(D.oldBike.s,D.oldBike.side*1.6),
   long:spot(185),item:spot(D.item.s,D.item.t),relocate:spot(D.relocate.s),deep:spot(151),figure:spot(D.figure.s,D.figure.t),bend2:spot(220),far:spot(240),search:spot(255),junction:spot(SJ.s),screen:spot(D.len-1)};

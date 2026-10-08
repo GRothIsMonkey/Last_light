@@ -203,6 +203,19 @@ export function buildHouse(W,P){
  // Everyday things around the house.
  if(!mid){foundationBeds(W,P,g,rand);if(P.ac){const s=P.hasGarage?-P.gs:1;const ac=K.group(g,s*(W2+.55),P.sneak?D2*.3:-D2*.45);/* clear of a friend’s bedroom window */K.box(ac,0,.05,0,.9,.1,.9,HOUSE.step);K.rbox(ac,0,.45,0,.75,.72,.75,.04,HOUSE.acUnit);K.cyl(ac,0,.82,0,.28,.03,0x3a3c3c,14);}}
  buildRear(W,P,g,rand,mid);
+ if(P.alexWindow){
+  // Close-view construction and household details at Alex's unchanged front elevation.
+  const detail=K.group(g,0,0),metal=0x9da3a1;
+  for(const x of [-W2+.09,W2-.09]){for(let y=.55;y<h-.15;y+=.7)K.rbox(detail,x,y,D2+.018,.032,.05,.025,.004,metal);}
+  const x=P.doorX-P.gs*.79;K.rbox(detail,x,P.floor+1.31,D2+.043,.075,.14,.035,.012,0xbab7aa);K.ball(detail,x,P.floor+1.32,D2+.065,.016,0x686b60,[1,1,.4],true);
+  for(const e of [-1,1]){const gx=e*(W2-.09),gz=D2+.05;
+   K.rbox(detail,gx,.09,gz+.19,.24,.045,.48,.018,0x98988a);K.box(detail,gx,.11,gz+.18,.12,.012,.32,0x6f7368);
+   for(let k=0;k<4;k++)K.rbox(detail,gx,.014,gz+.45+k*.12,.18,.018,.085,.004,0x818679);}
+  // A coiled hose belongs beside the foundation, away from the doorway and walking route.
+  const hoseX=-P.gs*(W2-.32),hoseZ=D2+.028;
+  for(let k=0;k<5;k++){const m=new THREE.Mesh(new THREE.TorusGeometry(.16+k*.008,.009,6,32),K.mat(0x4c6753));m.position.set(hoseX,.52,hoseZ+k*.014);detail.add(m);}
+  K.rbox(detail,hoseX,.71,hoseZ+.028,.23,.05,.08,.013,0x676d67);
+ }
  if(P.key==='jamie'||P.key==='sam')friendLandmarks(W,P,g);
  if(P.interior==='foyer')buildFoyer(W,P,g);
  // Where people can stand: porch, steps, garage floor.
