@@ -28,7 +28,16 @@ try{
  // From the Chapter Two end checkpoint: its last lines, then the hand-over.
  await page.evaluate(()=>{lastLight.jump('chapter2-end');let n=0;while(lastLight.state.chapter.phase!=='c3-black'&&n++<3000)lastLight.step(1/30);});
  check('Chapter Two hands over to Chapter Three (no end menu)',(await state()).chapter.phase==='c3-black'&&!(await page.locator('#ending').isVisible()));
- const run=process.env.C3_SKIP_RUN?null:await runChapterThreeBrowser({page,snap,check,state,errors});
+ let run=null;
+ if(process.env.C3_RESUME_RUN){
+  const saved=JSON.parse(fs.readFileSync(process.env.C3_RESUME_RUN,'utf8'));
+  assert.equal(saved.stage,'walkthrough-complete');assert.deepEqual(saved.runtimeHashes,runtimeHashes,'resume requires the exact same runtime');assert.deepEqual(saved.errors,[]);
+  assert.equal(saved.checks[0],checks[0]);for(const frame of saved.frames)assert.ok(fs.existsSync(path.join(out,frame.name+'.jpg')),'missing saved frame: '+frame.name);
+  run=saved.run;checks.push(...saved.checks.slice(1));frames.push(...saved.frames);console.log('RESUMED completed walkthrough with matching runtime hashes');
+ }else if(!process.env.C3_SKIP_RUN){
+  run=await runChapterThreeBrowser({page,snap,check,state,errors});
+  fs.writeFileSync(path.join(out,'walkthrough-checkpoint.json'),JSON.stringify({stage:'walkthrough-complete',runtimeHashes,run,checks,frames,errors},null,2));
+ }
  const jumps=await runChapterThreeJumps({page,snap,check,state,errors,out,fs,path});
  // (the audio signal renders run in a plain browser of their own: see runChapterThreeAudio)
  // (audio is placeholder and deferred: hooks only, unless C3_AUDIO_RENDER=1 asks for the old offline signal renders)
