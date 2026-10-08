@@ -1,4 +1,19 @@
-# Last Light — Chapter Three: the creature, the chase, the lure
+# Last Light — Astra Chapter Three visual polish
+
+From `claude/chapter3-creature-chase` at `6edcad0bb44426ba29da61fd83d2f35cc94fad5c`, on `codex/astra-chapter3-final-polish`. Runtime commit `797bf62382d5ad5760d13ecb1a4d70eb73cb1a38`; final QA and documentation follow it. No merge to `main` or change to the accepted source branch.
+
+- New filtered material detail for the existing Chapter Three: aged concrete, dampness, wood, fabric, plaster, carpet, road aggregate, leaf litter, bark, shallow rippling water and restrained weathering of the original suburb palette.
+- Alex's bedroom: better bedding/clothes silhouettes, fan/chair/controller/shoe details, matching helmet identity, refined phone shell/hardware and room-only daylight/bounce. Alex's exterior gains small construction/household details without changing the street.
+- Forest canopy/roots/shrubs and access-road ruts are less geometric. Tunnel spalls, ties, rail/gate hardware and water/flashlight response improve close inspection and navigation readability.
+- Jamie/Sam and the Alex-like lure gain refined heads/shirts. NPC fabric response, bicycle hardware, worn old-bike details and grounded contact shadows improve integration. Existing locomotion, character identities and clue interactions remain.
+- Room/outside-shadow culling, smaller forest/tunnel batches and cached distance masks reduce unnecessary submission in selected views. Static detail rises to 2,723,522 triangles / 1,361 browser merged meshes. This is a quality/culling tradeoff, not an FPS claim; several draw counts increase.
+- Adaptive captions now bring in their temporary soft backing earlier over mixed flashlight backgrounds, fixing a rendered contrast-check failure. Tone changes, fading and the transparent no-box treatment remain.
+- Creature assets, skeleton, scale and accepted animation/reveal/chase code are unchanged. Story, navigation, dimensions, controls, chase timings, final lure and ending are preserved. No Chapter Four or audio-production work.
+- Validation completed: 551 simulation checks, 83 main-browser checks, 142 DEV-browser checks, two complete muted Chapter Three walkthroughs, 304 QA captures, and zero JavaScript/shader errors in the completed reports. Focused restoration and caption checks also pass. Evidence manifests preserve the fact that art/restoration captures precede only the final caption fix.
+
+See [the full polish report](ASTRA_CHAPTER3_FINAL_VISUAL_POLISH.md) and [current verification](TEST_REPORT.md). Remaining stylized anatomy/animation, dark-screen legibility, material/shadow behaviour and performance require human review on a real GPU. Automated runs here use SwiftShader; audio checks cover hooks only.
+
+## Historical source release — creature chase
 
 Built from `claude/chapter3-horror-escalation` at `e575f069c2f1bec4641253632a3d670ce68c45e3` (unchanged), on `claude/chapter3-creature-chase`. The climax rebuilt around a real creature; the Alex-like boy is now the lure. Chapter Four and Astra's art pass are not started.
 

@@ -1,0 +1,66 @@
+{
+  "runtimeFilesVerified": 55,
+  "reports": {
+    "simulation": {
+      "file": "docs/qa/chapter3-astra-simulation/report.json",
+      "sha256": "76575f0c3601e84aa3bf68c9d650e0ff5da220a970151714f8767ef0278909d1",
+      "passed": 551,
+      "recordedFrames": 0,
+      "differences": []
+    },
+    "restoration": {
+      "file": "docs/qa/chapter3-astra-regression/report.json",
+      "sha256": "7f985bfdf1d3dbd9612b47b7dd91a1842c0d3502a441da878ed9abbb3b91e47e",
+      "passed": 13,
+      "recordedFrames": 6,
+      "differences": [
+        {
+          "file": "dist/captions.js",
+          "recorded": "f6046fac4026184397d6eb05e3efcdcf9eb12f42345099b79547783516daac06",
+          "current": "6e31b76593a62d1362cf00259ff5a75ac3bcfb33a1f70db0d22280e1e1643a99",
+          "reason": "Caption backing only; covered by final browser runs and the targeted rendered/unit checks."
+        }
+      ]
+    },
+    "art": {
+      "file": "docs/qa/chapter3-astra-art/report.json",
+      "sha256": "1dfbb10051c07df1fefe937496671f000be15f471a4529721e865d9102cd82dc",
+      "passed": null,
+      "recordedFrames": 114,
+      "differences": [
+        {
+          "file": "dist/captions.js",
+          "recorded": "f6046fac4026184397d6eb05e3efcdcf9eb12f42345099b79547783516daac06",
+          "current": "6e31b76593a62d1362cf00259ff5a75ac3bcfb33a1f70db0d22280e1e1643a99",
+          "reason": "Caption backing only; covered by final browser runs and the targeted rendered/unit checks."
+        }
+      ]
+    },
+    "walkthrough": {
+      "file": "docs/qa/chapter3-astra-walkthrough/chapter3-browser-report.json",
+      "sha256": "6feaa9bd5dd0c4cebb28126216512af8f0357105b8a8d226d0574b2b386bca60",
+      "passed": 83,
+      "recordedFrames": 109,
+      "differences": []
+    },
+    "dev": {
+      "file": "docs/qa/chapter3-astra-dev/dev-chapters-browser-report.json",
+      "sha256": "dd623463e42b3f208d32cae0632fe2c637776e09ef2949bf69f595b10c8c4e21",
+      "passed": 142,
+      "recordedFrames": 73,
+      "differences": []
+    },
+    "captionWall": {
+      "file": "docs/qa/chapter3-astra-caption/report.json",
+      "sha256": "8facace930db16b221c4cfcefd7f79bc637a8ca4d4862b1cb5922e43d0f4ed46",
+      "passed": 1,
+      "recordedFrames": 0,
+      "differences": []
+    }
+  },
+  "preservedAssets": {
+    "assets/source/creature/smily_horror_monster.glb": "85c2969d61e1c0bcad4934be43a070be4d80384d6924455f509e11584def0529",
+    "dist/assets/creature/creature.glb": "e86b69df95ce1a96519f0eb720f3dc58cb15d07f3848e35c5f8891047add51b3"
+  },
+  "note": "Simulation, both full browser runs and the caption-wall regression match the final runtime. Art/restoration evidence predates only the documented caption-backing fix; all other files match. This validates archived evidence, not rendering speed or subjective visual quality."
+}

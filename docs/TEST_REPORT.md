@@ -1,4 +1,26 @@
-# Last Light — Chapter Three creature chase: verification
+# Last Light — Astra Chapter Three visual polish: verification
+
+Accepted source: `claude/chapter3-creature-chase` at `6edcad0bb44426ba29da61fd83d2f35cc94fad5c`. Work branch: `codex/astra-chapter3-final-polish`. Final runtime commit: `797bf62382d5ad5760d13ecb1a4d70eb73cb1a38`; later commits are QA/documentation only. Current evidence is under `docs/qa/chapter3-astra-*`; the older report below is retained as historical source evidence, not counted as this pass's validation. The art/restoration reports predate only the final caption-backing fix; every other runtime hash in them matches exactly.
+
+| Gate | Result |
+|---|---|
+| Full simulation / geometry and progression suite | **551 passed** |
+| Complete muted Chapter Three from Chapter Two hand-over; all 34 jumps, Continue, captions and audio hooks | **83 passed; 109 captures** |
+| DEV chapter starts, 10 key natural-state scene comparisons, chapter/scene switching, normal-mode selector, complete muted Chapter Three from DEV | **142 passed; 74 captures** |
+| Simulation DEV coverage | **58/58 scenes start; 46 natural comparisons, zero differences; zero switching leaks** |
+| Multi-angle art review | **114 captures** |
+| Earlier-chapter art restoration / cleanup / culling / water | **13 passed; 6 captures** |
+| Rendered caption-wall regression + focused caption unit cases | **1 + 6 passed; 1 capture** |
+| Completed browser reports: JavaScript / shader errors | **0** |
+| Evidence validation | **55 runtime files across six reports; only the documented earlier caption hash differs in art/restoration** |
+
+**304 QA captures** total, excluding source references, the derived comparison and failure diagnostics. Both natural browser walkthroughs reach the ending with sound off: 56 s chase, 3.2 s gate hold, 8.3 m minimum running gap, 14.3 m final road figure. The DEV browser switching checks record no leaks. Chromium 153.0.8010.0 with ANGLE/Vulkan SwiftShader; no real-GPU FPS claim. Audio hooks only, no offline/HRTF renders or listening claims.
+
+The real flashlight-wall failure was fixed without weakening its assertion: contrast 1.96:1, soft-backing response **0.11 → 0.68**, transparent background, zero border. Capture timeouts/interruptions are recorded separately in the polish report; they are not counted as passing runs. The frozen-view QA capture helper now waits for actual readback instead of redrawing the same view twelve times. Moving-background fixtures keep their original assertions. The several-hour full release browser suite was not rerun; earlier chapters are covered by full simulation, rendered DEV starts/switching and focused restoration checks.
+
+Full details, scope, limitations and per-frame source/final inventories: [ASTRA_CHAPTER3_FINAL_VISUAL_POLISH.md](ASTRA_CHAPTER3_FINAL_VISUAL_POLISH.md).
+
+## Historical source report — creature chase
 
 Source: `claude/chapter3-horror-escalation` at `e575f069c2f1bec4641253632a3d670ce68c45e3` (unchanged). Branch: `claude/chapter3-creature-chase`. Tested runtime: `dist/` at `28dd30e` (`dist/chapter3.js` SHA-256 `f4ab3d15…1d90`; later commits change only tests, QA evidence and documentation). Chromium 141.0.7390.37, ANGLE/SwiftShader (software rendering).
 
