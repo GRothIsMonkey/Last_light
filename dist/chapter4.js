@@ -121,17 +121,20 @@ export function createChapter4(o,k,ch2,ch3){
  const texOf=cv=>{if(!cv)return null;const t=new THREE.CanvasTexture(cv.c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;};
  const plane=(parent,w,h,{map=null,color=0xffffff,basic=false,alpha=false}={})=>{const m=basic?new THREE.MeshBasicMaterial({color,map,transparent:alpha,alphaTest:alpha?.45:0,toneMapped:!basic||!!map}):new THREE.MeshStandardMaterial({color,map,roughness:.9,transparent:alpha,alphaTest:alpha?.45:0});
   const q=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m);parent.add(q);return q;};
+ // (a picture placed on a building, kept out of the bake: it moves to the live root, at the same place, as the TV screens do)
+ const toLive=q=>{q.parent.updateMatrixWorld(true);const m=new THREE.Matrix4().copy(T4.live.matrixWorld).invert().multiply(q.matrixWorld);q.removeFromParent();m.decompose(q.position,q.quaternion,q.scale);T4.live.add(q);return q;};
  // The poster in Mason's window: a green bicycle, sun-faded nearly white.
+ let masonPoster=null;
  {const P2=D.masonPoster;if(P2){const cv=canvas(384,520);if(cv){const g=cv.g;g.fillStyle='#e8e0cc';g.fillRect(0,0,384,520);g.fillStyle='#b8b49a';g.fillRect(14,14,356,492);g.fillStyle='#efe8d4';g.fillRect(22,22,340,476);
-    g.fillStyle='#8a9a86';g.font='bold 54px Georgia';g.textAlign='center';g.fillText('MEADOWLARK',192,92);g.font='22px Georgia';g.fillText('BUILT TO LAST · RIDE THE HOLLOW',192,124);
+    g.fillStyle='#8a9a86';g.font='bold 46px Georgia';g.textAlign='center';g.fillText('MEADOWLARK',192,92);g.font='22px Georgia';g.fillText('BUILT TO LAST · RIDE THE HOLLOW',192,124);
     g.strokeStyle='#9aab92';g.lineWidth=7;g.beginPath();g.arc(110,330,62,0,7);g.arc(276,330,62,0,7);g.stroke();g.beginPath();g.moveTo(110,330);g.lineTo(170,250);g.lineTo(250,250);g.lineTo(276,330);g.moveTo(170,250);g.lineTo(192,330);g.lineTo(110,330);g.moveTo(192,330);g.lineTo(250,250);g.moveTo(170,250);g.lineTo(160,226);g.moveTo(140,226);g.lineTo(180,226);g.moveTo(250,250);g.lineTo(244,214);g.quadraticCurveTo(262,200,284,214);g.stroke();
     g.font='20px Georgia';g.fillStyle='#a49a82';g.fillText('MASON CYCLE & SPORT · 214 MAIN',192,446);g.fillText('SALES · SERVICE',192,472);
     g.fillStyle='rgba(255,250,235,.35)';g.fillRect(0,0,384,520);}
-   const q=plane(P2.group,P2.w,P2.h,{map:texOf(cv),color:cv?0xffffff:0xd8d2c0});q.position.set(P2.x,P2.y,P2.z+.03);q.name='mason-poster';}}
+   const q=plane(P2.group,P2.w,P2.h,{map:texOf(cv),color:cv?0xffffff:0xd8d2c0});q.position.set(P2.x,P2.y,P2.z+.03);q.name='mason-poster';masonPoster=toLive(q);}}
  // The microfilm reader's screen (what is on it is drawn on demand), and the room's framed pictures, and the
  // community board's flyers (one is Alex's).
  const reel=canvas(1024,768),reelTex=texOf(reel);let readerScreen=null;
- if(D.reader){const R=D.reader;readerScreen=plane(R.group,R.w,R.h,{map:reelTex,color:reel?0xffffff:0x2a2a28,basic:true});readerScreen.position.set(R.x,R.y,R.z+.005);readerScreen.name='microfilm-screen';readerScreen.material.toneMapped=false;}
+ if(D.reader){const R=D.reader;readerScreen=plane(R.group,R.w,R.h,{map:reelTex,color:reel?0xffffff:0x2a2a28,basic:true});readerScreen.position.set(R.x,R.y,.335);readerScreen.name='microfilm-screen';readerScreen.material.toneMapped=false;toLive(readerScreen);}
  const frames=new THREE.Group();frames.name='history-frames';scene.add(frames);
  for(const [i,F] of (D.historyFrames||[]).entries()){const cv=canvas(320,240);if(cv){const g=cv.g;g.fillStyle='#d8ccb0';g.fillRect(0,0,320,240);g.fillStyle='#6a5a44';
    if(i===0){g.fillRect(20,90,280,110);for(let x=30;x<300;x+=34)g.fillRect(x,60,24,30);g.font='bold 22px Georgia';g.fillText('MAIN ST. 1952',90,40);}
@@ -144,8 +147,8 @@ export function createChapter4(o,k,ch2,ch3){
  // The theater's upper windows: someone standing in each (a shape against the faint light inside; no more than that).
  const SIL=[];{const cv=canvas(128,256);if(cv){const g=cv.g;g.clearRect(0,0,128,256);g.fillStyle='#000';g.beginPath();g.ellipse(64,38,13,17,.08,0,7);g.fill();
    g.beginPath();g.moveTo(52,58);g.quadraticCurveTo(64,52,76,58);g.lineTo(86,74);g.lineTo(90,190);g.lineTo(82,190);g.lineTo(80,96);g.lineTo(76,250);g.lineTo(52,250);g.lineTo(48,96);g.lineTo(46,190);g.lineTo(38,190);g.lineTo(42,74);g.closePath();g.fill();}
-  const tex=texOf(cv);for(const s of D.silhouettes||[]){const q=plane(s.group,s.w*.82,s.h*.96,{map:tex,color:0x070505,basic:true,alpha:!!tex});q.position.set(s.x,s.y,s.z-.1);q.rotation.y=Math.PI;q.visible=false;q.name='lyric-window-figure';
-   const wp=new THREE.Vector3();s.group.updateMatrixWorld(true);q.getWorldPosition(wp);SIL.push({q,pos:wp,state:'off',seenT:0,t:0});}}
+  const tex=texOf(cv);for(const s of D.silhouettes||[]){const q=plane(s.group,s.w*.82,s.h*.96,{map:tex,color:0x070505,basic:true,alpha:!!tex});q.position.set(s.x,s.y,s.z+.05);q.visible=false;q.name='lyric-window-figure';toLive(q);
+   const wp=new THREE.Vector3();q.updateMatrixWorld(true);q.getWorldPosition(wp);SIL.push({q,pos:wp,state:'off',seenT:0,t:0});}}
  // Alex (or what looks like him): his own clothes, his own walk. No more than a boy across the street.
  const AX={person:createPerson(CAST.alex),talk:0,pose:newPose(),x:0,z:0,a:0,v:0,gait:0,state:'off',t:0,path:null};scene.add(AX.person.group);AX.person.group.visible=false;AX.person.group.name='alex-across';
  AX.person.group.traverse(q=>{if(q.isMesh)q.castShadow=true;});
@@ -299,8 +302,9 @@ export function createChapter4(o,k,ch2,ch3){
  function atMason(){C.flags.mason=true;C.masonAt=C.t;mark('Mason’s');const w=SPOT.masonWindow;
   stand(jamie,{u:132.4,v:-9.4},{look:at(131,-11.4,TY+1.2)});stand(sam,{u:137.2,v:-9.2},{look:at(134.4,-11.6,TY+1.6)});
   say([{who:'SAM',text:'“This is it. This is where he took it.”',by:'sam'},{who:'JAMIE',text:'“It was right there. By the door.”',by:'jamie'}],{then:()=>{if(!C.flags.window)objective('Look in the window.');}});void w;}
- function lookWindow(){if(C.flags.window)return;C.flags.window=true;objective('');const w=SPOT.masonWindow,st=at(w.u,w.v+.15),lk=at(w.look.u,w.look.v,TY+w.look.y);
-  pose(st,{y:TY+.15+1.38,pitch:-.04,yaw:headingTo(st.x,st.z,lk.x,lk.z)});
+ function lookWindow(){if(C.flags.window)return;C.flags.window=true;objective('');const w=SPOT.masonWindow;let pu=w.look.u,pv=w.look.v,py=TY+w.look.y;
+  /* (a step back from the glass, square to the poster: the room behind it, and the poster in the middle) */if(masonPoster){const wp=new THREE.Vector3();masonPoster.getWorldPosition(wp);({u:pu,v:pv}=UV(wp));py=wp.y;}
+  const st=at(pu,pv+1.75),lk=at(pu,pv,py),ey=TY+.15+1.38;pose(st,{y:ey,pitch:Math.atan2(py-ey,1.75)*.8,yaw:headingTo(st.x,st.z,lk.x,lk.z)});
   say([{wait:1.2},{who:'',text:'[Dust. Empty hooks on the wall. A counter. A poster, faded almost white.]',time:3.4},{who:'JAMIE',text:'“Nobody’s been in there in years.”',by:'jamie'},{who:'SAM',text:'“Look. The poster.”',by:'sam'},{who:'YOU',text:'“That’s the bike.”'}],
    {then:()=>{unpose();later(1.2,florist);}});}
  function florist(){if(C.flags.florist)return;C.flags.florist=true;const f=P4('florist');
@@ -326,7 +330,7 @@ export function createChapter4(o,k,ch2,ch3){
   talk(L2.map(l=>l.from===a&&a?{...l,time:l.time??Math.max(1.6,l.text.length*.052)}:by(l)),{then:()=>{if(a)a.lookAt=null;C.flags.reel=true;objective('Use the microfilm reader.','The local history room, in the back.');}});}
  // The reader: a hood, a screen, a crank. A/D winds the film to the next thing on it.
  function startArchive(){if(C.view==='reader')return;go('d4-archive');C.view='reader';C.flags.reader=true;const R=SPOT.reader,st=at(R.u,R.v),lk=at(R.look.u,R.look.v,TY+R.look.y);
-  pose(st,{y:TY+.75+1.12,pitch:-.12,yaw:headingTo(st.x,st.z,lk.x,lk.z)});o.roam.walkLock=true;C.recT=0;C.recIdle=0;showRecord(C.rec||0);checkpoint('c4-historical-clue');objective('');
+  {const e=at(R.u,60.0);pose(e,{y:TY+.75+1.5,pitch:.29,yaw:HN});}o.roam.walkLock=true;/* standing at it, close: the page fills the view */C.recT=0;C.recIdle=0;showRecord(C.rec||0);checkpoint('c4-historical-clue');objective('');
   stand(jamie,{u:147.4,v:58.4},{look:lk});stand(sam,{u:150.3,v:58.2},{look:lk});
   // (while you read, Jamie walked the bikes to the rack out front)
   bikesTo('rack');}
@@ -383,7 +387,7 @@ export function createChapter4(o,k,ch2,ch3){
  const LAUNDRY=[shopIdx('laundry'),LV.neon+NEON.laundrySign,...fixIdx(D.laundryFix)].filter(i=>i>=0);
  const lampsWhere=f=>D.lamps.filter(f).map(L=>LV.lamp+L.id);
  const LAUNDRY_LAMP=lampsWhere(L=>L.kind==='wall'&&Math.abs(L.u-163.75)<.5),VIDEO_LAMP=lampsWhere(L=>L.kind==='wall'&&Math.abs(L.u-103.75)<.5);
- const posU=i=>lights.posOf(i)?.u;
+ const posU=i=>lights.posOf(i)?.u;const TV_HOLD=60;/* (where the dark waits: just past the TV shop) */
  const EAST=[...lampsWhere(L=>L.u<98||L.u===undefined),...BUILDINGS.filter(b=>b.lit>=0&&b.u1<98).map(b=>LV.shop+b.lit),...['dinerSign','dinerOpen','tapNeon','pizzaNeon','drugNeon','barberPole','vending','gasPrice','clock'].map(n=>LV.neon+NEON[n]).filter(i=>(posU(i)??0)<98)];
  const KEEP=new Set([...LYRIC,...VIDEO,...LAUNDRY,...LAUNDRY_LAMP,...VIDEO_LAMP]);
  const WEST=[...lampsWhere(L=>!(L.u<98)),...BUILDINGS.filter(b=>b.lit>=0&&!(b.u1<98)).map(b=>LV.shop+b.lit),...Object.keys(NEON).map(n=>LV.neon+NEON[n])].filter(i=>!KEEP.has(i)&&!EAST.includes(i));
@@ -391,7 +395,7 @@ export function createChapter4(o,k,ch2,ch3){
  // out goes out at once, quietly).
  function cascade(list,{from,dir=null,speed=6,delay=.8,skip=0,quiet=false}){const now=lights.S.t,t0=now+delay-skip;let last=now;
   const items=list.map(i=>{const q=lights.posOf(i);if(!q)return {i,d:0};const du=q.u-from.u,dv=q.v-from.v;return {i,d:dir?du*dir.u+dv*dir.v:Math.hypot(du,dv)};}).sort((a,b)=>a.d-b.d);
-  for(const q of items){const t=t0+Math.max(0,q.d)/speed;if(t<=now){lights.hold[q.i]=0;lights.mask[q.i]=0;}else{lights.kill(q.i,t,{quiet});last=Math.max(last,t);}}return last;}
+  for(const q of items){const t=t0+(dir?q.d:Math.max(0,q.d))/speed;/* (behind the start of a directed wave: already out) */if(t<=now){lights.hold[q.i]=0;lights.mask[q.i]=0;}else{lights.kill(q.i,t,{quiet});last=Math.max(last,t);}}return last;}
  const outNow=list=>{for(const i of list){lights.hold[i]=0;lights.mask[i]=0;}};
  // ---- dusk: out of the library ------------------------------------------------------------------------------------------------
  function updateClosing(dt){const p=me(),{v}=UV(p);if(!inside('library',p,.3)&&v<44.3&&!C.flags.outside)outside();}
@@ -442,7 +446,7 @@ export function createChapter4(o,k,ch2,ch3){
   if(C.crt&&C.crt.stage!=='gone'&&S.phase.startsWith('e4-')){const R2=C.crt;R2.t+=dt;let sp=0,look=camera.position;
    creature.headPos?.(crHead);if(!creature.loaded){const q=at(R2.u,R2.v);crHead.set(q.x,R2.y+.9,q.z);}
    if(R2.stage==='watch'){D2.crouch=damp(D2.crouch,.7,3,dt);if(k.camLooksAt(crHead,.985)){R2.seenT+=dt;if(R2.seenAt===null&&R2.seenT>.4)R2.seenAt=C.t;}if(R2.seenT>1.2&&R2.t>2.2||R2.t>6.5)crStage('stalk');}
-   else if(R2.stage==='stalk'){sp=1.15;D2.crouch=damp(D2.crouch,.25,3,dt);R2.v+=sp*dt;if(R2.v>=-40.5||R2.t>9.5)crStage('freeze');}
+   else if(R2.stage==='stalk'){sp=1.3;D2.crouch=damp(D2.crouch,.25,3,dt);R2.v+=sp*dt;if(R2.v>=-29||R2.t>16)crStage('freeze');}
    else if(R2.stage==='freeze'){if(R2.t<dt*1.5)say([{who:'YOU',text:'“What’s it doing?”',time:1.6}]);sp=0;look=at(-30,1,TY+4);R2.a=damp(R2.a,HN+.32,3,dt);D2.crouch=damp(D2.crouch,.15,4,dt);if(R2.t>2.7)crStage('fear');}
    else if(R2.stage==='fear'){if(R2.t<dt*1.5)say([{who:'JAMIE',text:'“It’s looking at something.”',by:'jamie',time:1.8}]);look=at(-30,1,TY+3);D2.cower=damp(D2.cower||0,1,5,dt);D2.back=1;sp=.85;R2.v-=sp*dt;if(R2.t>2.3){D2.back=0;crStage('turn');}}
    else if(R2.stage==='turn'){R2.a=damp(R2.a,HS,9,dt);D2.cower=damp(D2.cower||0,.4,6,dt);sp=1.5;if(R2.t>.45)crStage('flee');}
@@ -452,13 +456,16 @@ export function createChapter4(o,k,ch2,ch3){
   else if(C.esc?.pass&&C.esc.pass.stage!=='gone')updatePass(dt);}
  // ---- the streetlights ----------------------------------------------------------------------------------------------------------
  function cascadeStart(skip=0){if(C.flags.cascade)return;C.flags.cascade=true;go('e4-cascade');checkpoint('c4-presence');C.hMin=Math.max(C.hMin||0,HOUR.cascade);
-  C.cas={t:skip,start:lights.S.t+.8-skip,speed:6,tvAt:null,nearAt:null,darkT:0,pulled:false};cascade(EAST,{from:{u:-80,v:0},dir:{u:1,v:0},speed:6,skip});
+  /* (it goes as far as the TV shop and waits there while the sets in its window are on; the rest goes when it moves on) */
+  C.cas={t:skip,start:lights.S.t+.8-skip,speed:6,tvAt:null,nearAt:null,darkT:0,pulled:false,watch:0,saidAt:null,resumeT:null,rest:EAST.filter(i=>posU(i)>=TV_HOLD+2)};cascade(EAST.filter(i=>!(posU(i)>=TV_HOLD+2)),{from:{u:-80,v:0},dir:{u:1,v:0},speed:6,skip});
   mark('the lights going out');T?.set?.(.55,{rise:.04,why:'the lights going out, coming closer'});C.amb.traffic=0;
   for(const c of [jamie,sam]){if(c.mode==='ride'&&!c.script)c.follow=null;c.lookAt=at(-10,2,TY+4);}
   if(!skip)say([{who:'JAMIE',text:'“Why would it—”',by:'jamie',time:1.2},{wait:1.6},{who:'',text:'[Far up Main Street, a streetlight goes out. Then the next one.]',time:3.4}]);}
- function updateCascade(dt){const X=C.cas;if(!X)return;X.t+=dt;const p=me(),{u}=UV(p),front=-80+X.speed*Math.max(0,lights.S.t-X.start);X.front=front;
+ function updateCascade(dt){const X=C.cas;if(!X)return;X.t+=dt;const p=me(),{u}=UV(p),front=X.resumeT===null?Math.min(TV_HOLD,-80+X.speed*Math.max(0,lights.S.t-X.start)):TV_HOLD+X.speed*Math.max(0,lights.S.t-X.resumeT);X.front=front;
   C.darkTo=.55*smooth((front-(u-34))/30);
-  if(X.tvAt===null&&front>=60)tvWindow();
+  if(X.tvAt===null&&front>=TV_HOLD)tvWindow();
+  if(X.tvAt!==null&&X.resumeT===null){const w=at(72.8,-11.6,TY+1.6);if(Math.hypot(p.x-w.x,p.z-w.z)<13&&k.camLooksAt(w,.94))X.watch+=dt;
+   if(X.saidAt===null&&((X.watch>1.2&&!busy())||C.t-X.tvAt>16)){X.saidAt=C.t;say([{who:'SAM',text:'“That’s us. That’s us, right now.”',by:'sam',time:2.2}],{interrupt:true,then:()=>later(1.4,()=>{if(X.resumeT===null){X.resumeT=lights.S.t;cascade(X.rest,{from:{u:TV_HOLD,v:0},dir:{u:1,v:0},speed:X.speed,delay:.2});}})});}}
   if(X.nearAt===null&&front>=u-16){X.nearAt=C.t;C.flags.hurry=true;objective('Get inside.','The video store. It’s still lit.');for(const c of [jamie,sam])c.lookAt=null;
    say([{who:'JAMIE',text:'“The video store. Go. GO!”',by:'jamie',time:1.6}],{interrupt:true});for(const [c,i] of [[jamie,1],[sam,2]])runToStore(c,i);}
   if(front>u+2&&!inside('video',p)){X.darkT+=dt;if(X.darkT>8&&!C.flags.d1){C.flags.d1=true;say([{who:'SAM',text:'“Come on!”',by:'sam',time:1.2}]);}
@@ -472,7 +479,7 @@ export function createChapter4(o,k,ch2,ch3){
   else comp.run(c,inside2,{then:()=>{stand(c,{u:i===1?103.6:102.6,v:i===1?-17.9:-13.5},{look:()=>tvPos()});}});}
  // The TV shop's window, closed since six: every set comes on at once, and shows the three of them from high above.
  function tvWindow(){if(C.cas.tvAt!==null)return;C.cas.tvAt=C.t;tvShow('acetv','live-high');mark('the TVs in the window');sound('static',at(72.8,-11.6,TY+1.4),{gain:.6});
-  say([{who:'JAMIE',text:'“Look. The TVs.”',by:'jamie',time:1.6},{who:'SAM',text:'“That’s us. That’s us, right now.”',by:'sam',time:2.2}],{interrupt:true});}
+  for(const c of [jamie,sam])c.lookAt=at(72.8,-11.6,TY+1.4);say([{who:'JAMIE',text:'“Look. The TVs.”',by:'jamie',time:1.6}],{interrupt:true});}
  // ---- the televisions --------------------------------------------------------------------------------------------------------------
  const TVS={video:{tv:D.tvs.video,share:[]},laundry:{tv:D.tvs.laundry,share:[]},acetv:{tv:D.tvs.acetv?.[0],share:D.tvs.acetv?.slice(1)||[]}};
  for(const T2 of Object.values(TVS))Object.assign(T2,{on:0,shot:null,t:0,stat:1,rt:0,frames:0});
@@ -485,7 +492,7 @@ export function createChapter4(o,k,ch2,ch3){
  function updateTVs(dt){const tl=[];for(const T2 of Object.values(TVS)){if(!T2.tv)continue;T2.t+=dt;
    T2.stat=T2.shot?Math.max(.0,T2.stat-dt*1.4):1;const sets=[T2.tv,...T2.share];T2.tv.screen.getWorldPosition(_tv);const near=_tv.distanceTo(camera.position)<45&&(T2.frames===0||k.camLooksAt(_tv,.15));/* (drawn only while it can be seen) */
    if(T2.on&&T2.shot&&near){T2.rt-=dt;if(T2.rt<=0){T2.rt=1/12;T2.frames++;footage.render(T2.tv,T2.shot,shotT(T2),meNow(),T2.share.map(q=>q.screen));const u0=T2.tv.mat.uniforms;for(const s of T2.share){s.mat.uniforms.uTex.value=u0.uTex.value;s.mat.uniforms.uHas.value=u0.uHas.value;}}}
-   for(const tv of sets){const U=tv.mat.uniforms;U.uOn.value=damp(U.uOn.value,T2.on,12,dt);U.uStatic.value=T2.shot?T2.stat*.9+.06*Math.random()*T2.on:1;U.uRoll.value=T2.stat>.3?(U.uRoll.value+dt*.8)%1:damp(U.uRoll.value,0,6,dt);U.uBright.value=1.25;}
+   for(const tv of sets){const U=tv.mat.uniforms;U.uOn.value=damp(U.uOn.value,T2.on,12,dt);U.uStatic.value=T2.shot?T2.stat*.9+.06*Math.random()*T2.on:1;U.uRoll.value=T2.stat>.3?(U.uRoll.value+dt*.8)%1:damp(U.uRoll.value,0,6,dt);U.uBright.value=footage.SHOTS[T2.shot]?.live?2.2:1.3;}
    if(T2.on){const {u,v}=TL(_tv.x,_tv.z);tl.push({u,v,y:_tv.y,lv:1,k:2.6,r:6.5,c:TVC});}}
   lights.S.tvLights=tl;}
  const TVC=new THREE.Color(.62,.72,1);
@@ -517,7 +524,7 @@ export function createChapter4(o,k,ch2,ch3){
  function storeShot(id){const X=C.store;X.shot=id;X.shotAt=C.t;tvShow('video',id);if(SHOT_LINES[id]&&!X.lines.has(id)){X.lines.add(id);say(SHOT_LINES[id],{interrupt:id==='alex-room'});}mark('the TV: '+id);}
  function updateStore(dt){const X=C.store;if(!X)return;X.t+=dt;const p=me(),inS=inside('video',p,-.2);
   // the front door, once all three are in
-  if(X.doorShut===null&&inS&&((inside('video',{x:jamie.px,z:jamie.pz})&&inside('video',{x:sam.px,z:sam.pz}))||X.t>7)){X.doorShut=C.t;DOORS['video-front'].open=0;sound('door',at(106.5,-11.4,TY+1),{gain:.7});
+  if(X.doorShut===null&&inS&&UV(p).v<-12.9/* (past the doorway: it never shuts on you) */&&((inside('video',{x:jamie.px,z:jamie.pz})&&inside('video',{x:sam.px,z:sam.pz}))||X.t>7)){X.doorShut=C.t;DOORS['video-front'].open=0;sound('door',at(106.5,-11.4,TY+1),{gain:.7});
    for(const c of [jamie,sam])if(!inside('video',{x:c.px,z:c.pz})&&c.mode==='foot'){const q=at(c===jamie?103.6:102.6,c===jamie?-17.9:-13.5);comp.putFoot(c,q.x,q.z,HS,{bike:c.bike.group.visible?{x:c.bx,z:c.bz,a:c.ba,kick:0,fall:-1.3}:null});stand(c,{u:c===jamie?103.6:102.6,v:c===jamie?-17.9:-13.5},{look:()=>tvPos()});}}
   // the tape: one shot after another (the picture of the sign holds until it is photographed)
   if(X.shot===null&&X.t>4.2)storeShot(SEQ[0]);

@@ -10,7 +10,7 @@ import * as THREE from './three.module.js';
 import {createKit,seeded} from './kit.js';
 import {standPose,walkPose,ridePose,applyPose,poseBike,newPose,createPerson,P} from './rig.js';
 import {CAST} from './cast.js';
-import {TW,TY} from './town-plan.js';
+import {TW,TL,TY} from './town-plan.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 export const SHOTS={'alex-ride':{len:7,label:'ALEX, RIDING, FROM ABOVE'},'alex-yard':{len:5.5,label:'ALEX IN HIS YARD, FROM ACROSS THE STREET'},'pine-ridge':{len:8,hold:true,label:'ALEX AT A SIGN: PINE RIDGE RECREATION AREA'},
@@ -58,7 +58,7 @@ export function createFootage({scene,camera,world,nav,shoot,photo,town,renderer,
   const c=cams.pine,k=smooth((t-1.5)/5.5);c.position.set(9.5-3.1*k,4.2-2.1*k,6.5-7.4*k);c.lookAt(3.4+1.2*k,1.2+.55*k,-6.5-.4*k);}
  // Where the live views look from (no camera anywhere near): the store's far corner, high over Main, right behind you.
  function liveCam(id,me){if(id==='live-store'){const p=TW(115.1,-26.8),t=TW(101,-16.4);cam.position.set(p.x,TY+.18+3.15,p.z);cam.lookAt(t.x,TY+1.1,t.z);cam.fov=62;}
-  else if(id==='live-high'){cam.position.set(me.x+6,me.y+16,me.z+5);cam.lookAt(me.x,me.y,me.z);cam.fov=44;}
+  else if(id==='live-high'){const q=TL(me.x,me.z),p=TW(q.u+5,Math.max(-3,Math.min(3,q.v*.3+2.5)));cam.position.set(p.x,me.y+8.4,p.z);cam.lookAt(me.x,me.y-.5,me.z);cam.fov=30;}/* (high over the middle of Main, close enough that it is plainly the three of them) */
   else{const a=me.a;cam.position.set(me.x-Math.sin(a)*3.4,me.y+1.9,me.z+Math.cos(a)*3.4);cam.lookAt(me.x+Math.sin(a)*3,me.y+1.1,me.z-Math.cos(a)*3);cam.fov=58;}cam.updateProjectionMatrix();}
  // the double: where you are, the way you stand (the first-person body has no head)
  function placeDouble(){if(!self?.group)return;dbl.group.visible=true;self.group.updateMatrixWorld(true);dbl.group.position.setFromMatrixPosition(self.group.matrixWorld);dbl.group.quaternion.setFromRotationMatrix(self.group.matrixWorld);if(foot?.pose)applyPose(dbl,foot.pose);}

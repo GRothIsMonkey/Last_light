@@ -141,7 +141,7 @@ export function createAlexCamera({scene,camera,world,nav,shoot,readPixels,render
  function guide(){const p=photos[V.i];if(!p.bikeAt)return;V.zt=2.6;V.px=p.bikeAt.x;V.py=p.bikeAt.y;}
  function update(dt){const p=photos[V.i];V.raise=clamp(V.raise+(V.open?dt/.45:-dt/.35),0,1);G.visible=V.raise>0;const r=smooth(V.raise);
   // in the hands, below the eye; raised up in front of it to look at the screen
-  G.position.set(.004-.016*r,-.2+.194*r,-.24+.135*r);G.rotation.set(-.6*(1-r)+.02,Math.PI,.04*(1-r));
+  G.position.set(.004-.016*r,-.2+.214*r,-.24+.135*r);G.rotation.set(-.6*(1-r)+.02,Math.PI,.04*(1-r));
   if(V.open&&p){p.seen+=dt;V.dwell+=dt;const z0=V.zoom;V.zoom+=(V.zt-V.zoom)*(1-Math.exp(-9*dt));if(Math.abs(V.zoom-z0)>1e-4)V.dirty=true;}
   if(V.shutter>0){V.shutter=Math.max(0,V.shutter-dt*2.4);V.dirty=true;}
   if(V.dirty&&V.raise>0)draw();}

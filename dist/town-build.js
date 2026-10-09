@@ -327,7 +327,7 @@ export function buildTown(W){
   sign(g,{text:'FOR LEASE',sub:'COMMERCIAL · 1,850 SQ FT · 555-0143',bg:'#e8e4d8',fg:'#a01a10',font:'block',border:false},1.2,.8,{x:-w/2+2.4,y:1.6,z:-.33});
   D.masonPoster={group:g,x:1.6,y:1.7,z:-.34,w:.96,h:1.3};}
  // ---- the hardware store's goods out front, the drugstore's PHARMACY, ACE TV's window of televisions ----
- {const b=BLD.acetv,w=b.u1-b.u0,g=b.group;const tvs=[];for(const [x,y,s] of [[-2.2,1.05,.62],[-.9,1.05,.62],[.5,1.05,.7],[-1.55,1.82,.55],[-.2,1.86,.6]])tvs.push(tvSet(g,x,y,-.62,s,{ry:-.32}));D.tvs.acetv=tvs;
+ {const b=BLD.acetv,w=b.u1-b.u0,g=b.group;const tvs=[];for(const [x,y,s] of [[-2.7,1.2,1.0],[-1.25,1.2,1.0],[.3,1.2,1.1],[-2.0,2.25,.85],[-.55,2.3,.9],[.95,2.25,.85]])tvs.push(tvSet(g,x,y,-.68,s,{ry:0}));D.tvs.acetv=tvs;
   sign(g,{text:'WE BUY GOLD · TVs · VCRs · GUITARS',bg:'#121417',fg:'#e8c040',font:'block',border:false},2.6,.34,{x:w/2-2.8,y:2.7,z:-.33});}
  {const g=BLD.drug.group;sign(g,{text:'PHARMACY',bg:'',fg:'#7ad0ff',font:'sans',neon:true,border:false},2,.5,{x:2.4,y:3.3,z:-.32,lit:true,lvl:LV.neon+NEON.drugNeon});}
  {const g=BLD.hardware.group,w=BLD.hardware.u1-BLD.hardware.u0;for(const x of [-w/2+1.5,-w/2+2.7]){B(g,x,.45,.9,.9,.7,.6,metal(0x2a6a3a));B(g,x,.12,.9,.92,.08,.62,dull(0x2a2a2a));}B(g,w/2-2,.4,.8,1.2,.8,.8,metal(0x8a2a22));}
@@ -566,8 +566,8 @@ export function buildTown(W){
    const uvB=signs.add(160,1024,(gg,w,h)=>{gg.fillStyle='#8a2a1e';gg.fillRect(0,0,w,h);gg.fillStyle='#fff0c0';gg.textAlign='center';gg.textBaseline='middle';gg.shadowColor='#ffd070';gg.shadowBlur=18;gg.font=`bold ${w*.8}px ${FAM.serif}`;[...'LYRIC'].forEach((ch,i)=>gg.fillText(ch,w/2,h*(.12+i*.19)));});
    for(const s of [-1,1])quadInto(quads.lit,b,uvB,1.3,6.6,{x:s*.26,y:9.6,z:.9,ry:s*Math.PI/2,lvl:LV.neon+NEON.blade});}
   D.bulbMesh=liveMesh(bulbs,lvMat({color:0xfff2d0,roughness:.3,emissive:0xffd890,emissiveIntensity:2.6},{chase:true}),'town-marquee-bulbs');}
- // the theater's upper windows (faint warm light inside, for the silhouettes to stand against)
- {const T={pos:[],nor:[],lvl:[]},pl=new THREE.PlaneGeometry(1,1);for(const s of D.silhouettes){s.group.updateMatrixWorld(true);M4.copy(live.matrixWorld).invert().multiply(s.group.matrixWorld).multiply(new THREE.Matrix4().compose(new THREE.Vector3(s.x,s.y,s.z-.12),new THREE.Quaternion(),new THREE.Vector3(s.w,s.h,1)));addGeo(T,pl,M4,LV.neon+NEON.lyricUpper);}
+ // the theater's upper windows (faint warm light inside, for the silhouettes to stand against: just over the dark glass)
+ {const T={pos:[],nor:[],lvl:[]},pl=new THREE.PlaneGeometry(1,1);for(const s of D.silhouettes){s.group.updateMatrixWorld(true);M4.copy(live.matrixWorld).invert().multiply(s.group.matrixWorld).multiply(new THREE.Matrix4().compose(new THREE.Vector3(s.x,s.y,s.z+.04),new THREE.Quaternion(),new THREE.Vector3(s.w,s.h,1)));addGeo(T,pl,M4,LV.neon+NEON.lyricUpper);}
   D.upperGlow=liveMesh(T,lvMat({color:0x1a1410,roughness:1,emissive:0x8a5a34,emissiveIntensity:1}),'lyric-upper-glow');}
  // ---- every textured quad, now that the atlases are drawn ----
  signs.finish();covers.finish();rooms.finish();
