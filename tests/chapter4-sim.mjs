@@ -35,7 +35,7 @@ export function playChapterFour(T,label,{fromCard=true}={}){
  const M2=/replay/.test(label)?{}:metrics,said=()=>log.said,saidIdx=l=>log.said.indexOf(l);
  const watch={streets:[],jumps:0,maxStep:0,lampsLit:[],dayDrop:0,lastDay:null,boysToGangway:99,crMin:99,passMin:99,cower:0,claw:0,carGap:99,people:0,cars:0,moving:0,bad:0,kills:[],lastP:null,sky:[]};
  const sample=()=>{const s=C4(),p=me(),w=where();if(watch.streets[watch.streets.length-1]!==w)watch.streets.push(w);
-  if(watch.lastP){const d=Math.hypot(p.x-watch.lastP.x,p.z-watch.lastP.z);if(d>1.2&&!A4.C.fadeOut&&A4.C.fadeOut!==0)watch.jumps++;watch.maxStep=Math.max(watch.maxStep,d);}watch.lastP={x:p.x,z:p.z};
+  const ns=h.night.state,clk=h.snapshot.clock;if(watch.lastP&&watch.lastP.state===ns&&clk-watch.lastP.clk<.05){const d=Math.hypot(p.x-watch.lastP.x,p.z-watch.lastP.z);if(d>1.2&&A4.C.fadeOut<0)watch.jumps++;if(d>watch.maxStep){watch.maxStep=d;watch.maxAt={phase:s.phase,state:ns,from:watch.lastP,to:{x:+p.x.toFixed(2),z:+p.z.toFixed(2)},where:w,clock:+h.snapshot.clock.toFixed(2)};}}watch.lastP={x:+p.x.toFixed(2),z:+p.z.toFixed(2),state:ns,clk};
   if(!companionsFinite())watch.bad++;
   const ph=s.phase;if(/^(d4-closing|e4-)/.test(ph)){watch.lampsLit.push(s.presence.lampsLit);const d=h.chapter4.sky().day;if(watch.lastDay!==null&&d>watch.lastDay+1e-6)watch.dayDrop++;watch.lastDay=d;}
   if(ph==='e4-alex'){const g=at(126.8,-11);for(const c of h.chapter.companions.all)if(c.active)watch.boysToGangway=Math.min(watch.boysToGangway,Math.hypot((c.mode==='ride'?c.bx:c.px)-g.x,(c.mode==='ride'?c.bz:c.pz)-g.z));}
@@ -71,11 +71,11 @@ export function playChapterFour(T,label,{fromCard=true}={}){
  U(()=>C4().phase==='d4-ride',40);tap('KeyV');U(()=>false,.8);onBike();
  check(`${label}: "Ride downtown." — on the bike, Jamie and Sam with you`,()=>{assert.equal(C1().objective,'Ride downtown.');assert.equal(h.night.state,'c1-ride');});
  // ---- the ride downtown --------------------------------------------------------------------------------------------------
- const rideStart=h.snapshot.clock,s0=watch.streets.length;rideTo(routeDown(),300,3,()=>C4().phase==='d4-town');
+ const rideStart=h.snapshot.clock,s0=Math.max(0,watch.streets.length-1);rideTo(routeDown(),300,3,()=>C4().phase==='d4-town');
  const rideTime=h.snapshot.clock-rideStart;
  check(`${label}: a real ride downtown: Oak Hollow, Summerfield Road, Old Mill Road, Main Street; no teleport`,()=>{const seq=watch.streets.slice(s0);assert.equal(C4().phase,'d4-town',JSON.stringify(seq));
   for(const s of ['main','side2','town-conn','town-core'])assert.ok(seq.includes(s),s+' '+JSON.stringify(seq));assert.ok(seq.indexOf('side2')<seq.indexOf('town-conn')&&seq.indexOf('town-conn')<seq.indexOf('town-core'));assert.ok(rideTime>80,'ride time '+rideTime);
-  assert.ok(watch.maxStep<1.2,'max step '+watch.maxStep);});
+  assert.ok(watch.maxStep<1.2,'max step '+watch.maxStep+' '+JSON.stringify(watch.maxAt));});
  M2['chapter4 ride downtown seconds']=+rideTime.toFixed(1);
  // ---- Main Street by day -----------------------------------------------------------------------------------------------------
  rideTo([[-20,-3.4],[20,-3.4],[60,-3.4],[100,-3.4],[126,-4.2],[131,-5]].map(([u,v])=>X.TP(u,v)),140,2.4);X.brake();offBike();U(()=>C4().flags.mason,12);
@@ -102,9 +102,10 @@ export function playChapterFour(T,label,{fromCard=true}={}){
  check(`${label}: the streetlights came on one by one at dusk, the sky darkened steadily`,()=>{const lit=watch.lampsLit,steps=new Set(lit).size;assert.ok(steps>=8,'distinct counts '+steps);assert.ok(lit[lit.length-1]>=40,'lit '+lit[lit.length-1]);assert.equal(watch.dayDrop,0,'the light never came back up');});
  check(`${label}: at the end of Second Street: it watches, comes a little way, stops dead, looks past them, cowers, backs away, runs`,()=>{const st=A4.C.crt.stageAt;for(const k of ['watch','stalk','freeze','fear','turn','flee','gone'])assert.ok(st[k]!==undefined,k);
   assert.ok(st.watch<st.stalk&&st.stalk<st.freeze&&st.freeze<st.fear&&st.fear<st.flee);assert.ok(watch.cower>.5,'cowered '+watch.cower);assert.ok(watch.crMin>25,'closest '+watch.crMin);assert.equal(watch.claw,0,'never rears or claws');});
- U(()=>C4().cascade?.nearAt!=null,60);
- check(`${label}: the lights go out one after another, up Main toward them; the TV shop’s window shows them from above, now`,()=>{const log2=C4().presence.log;assert.ok(C4().presence.kills>20,'kills '+C4().presence.kills);
-  const us=A4.lights.S.log.filter(e=>e.kind==='kill').map(e=>A4.lights.posOf(e.i)?.u).filter(u=>u!==undefined);let back=0;for(let i=1;i<us.length;i++)if(us[i]<us[i-1]-8)back++;assert.ok(back<=2,'out of order '+back);
+ U(()=>C4().cascade?.tvAt!=null,40);rideTo([[82,-3.5],[76.5,-7.2]].map(([u,v])=>X.TP(u,v)),30,1.4);X.brake();{const w=at(72.8,-11.6,1.5);faceTo(w.x,w.z,-.04);}U(()=>A4.C.cas.saidAt!=null,18);
+ const tvSeen={watch:A4.C.cas.watch,front:C4().cascade.front,said:A4.C.cas.saidAt};U(()=>C4().cascade?.nearAt!=null,60);
+ check(`${label}: the lights go out one after another, up Main toward them; the dark waits at the TV shop, whose window shows them from above, now (seen up close)`,()=>{assert.ok(tvSeen.watch>1&&tvSeen.said!==null,JSON.stringify(tvSeen));assert.equal(tvSeen.front,60,'held at the TV shop');const log2=C4().presence.log;assert.ok(C4().presence.kills>20,'kills '+C4().presence.kills);
+  const us=A4.lights.S.log.filter(e=>e.kind==='kill').map(e=>A4.lights.posOf(e.i)?.u).filter(u=>u!==undefined);let back=0;for(let i=1;i<us.length;i++)if(us[i]<us[i-1]-8)back++;assert.ok(back<=2,'out of order '+back+' '+JSON.stringify(A4.lights.S.log.filter(e=>e.kind==='kill').map(e=>[e.i,+(A4.lights.posOf(e.i)?.u??NaN).toFixed(1),+(e.t??0).toFixed(2)])));
   assert.equal(C4().tvs.acetv.shot,'live-high');assert.ok(said().includes('SAM: “That’s us. That’s us, right now.”'));void log2;});
  rideTo([[100,-2],[108,-6.6]].map(([u,v])=>X.TP(u,v)),20,1.6);X.brake();offBike();goUV(106.5,-10.2,{r:.6});goUV(106.5,-14,{r:.8});U(()=>C4().phase==='n4-store',8);
  // ---- the video store ------------------------------------------------------------------------------------------------------------
@@ -120,7 +121,7 @@ export function playChapterFour(T,label,{fromCard=true}={}){
  check(`${label}: the narrow way: it comes from behind and runs past them, and does not look at them`,()=>{const ps=C4().creature.pass;assert.ok(ps.passedAt!==null,'passed');assert.ok(watch.passMin>.8,'closest '+watch.passMin);assert.equal(watch.claw,0);
   assert.ok(said().includes('SAM: “It didn’t even look at us.”'));});
  goUV(163.75,-38.2,{r:.6});goUV(163.75,-35,{r:.6});U(()=>C4().phase==='n4-laundry',5);goUV(169,-27,{r:.6});goUV(173,-26.75,{r:.6});U(()=>C4().phase==='n4-depot',5);
- const first=[...A4.SIL].sort((a,b)=>a.t-b.t)[0];if(first){faceTo(first.pos.x,first.pos.z,.42);U(()=>A4.SIL.some(s=>s.state==='gone'),8);}
+ U(()=>A4.SIL.some(s=>s.state==='on'),8);/* look up at the one standing there (as a player would: straight at it) */U(()=>{const on=A4.SIL.find(s=>s.state==='on');if(on){const c=h.camera.position;faceTo(on.pos.x,on.pos.z,Math.atan2(on.pos.y-c.y,Math.hypot(on.pos.x-c.x,on.pos.z-c.z)));}return A4.SIL.some(s=>s.state==='gone');},8);
  check(`${label}: the theater’s upper windows: someone standing in one; looked at, the window is empty`,()=>{assert.ok(A4.SIL.some(s=>s.state==='gone'),JSON.stringify(C4().silhouettes));assert.ok(said().includes('SAM: “Jamie. The windows.”'));});
  goUV(179.4,-20);goUV(179.4,-10.8);U(()=>C4().phase==='n4-marquee',6);const ax2=A4.AX.person.group.position;faceTo(ax2.x,ax2.z);U(()=>C4().phase==='n4-return',45);
  check(`${label}: under the marquee: "Jamie." "Where is he?" "I know where he is." "Don’t listen to him." "Come find him." — dark — gone; the lights come back`,()=>{
@@ -128,7 +129,7 @@ export function playChapterFour(T,label,{fromCard=true}={}){
   assert.equal(C4().alex.visible,false);U(()=>C4().presence.lampsLit>40,6);assert.ok(C4().presence.lampsLit>40,'lit again '+C4().presence.lampsLit);assert.ok(C4().presence.restores>40);});
  goUV(150,-9);goUV(118,-8.6);const r=h.night.roam;go(r,{r:2});U(()=>C4().phase==='n4-clue',10);U(()=>C4().phase==='n4-ride',45);
  check(`${label}: the picture of the screen on Alex’s camera: PINE RIDGE RECREATION AREA (the next lead)`,()=>{assert.ok(said().includes('SAM: “Pine Ridge Recreation Area.”'));assert.equal(P.photos[C4().photos.lead].id,'pine-ridge-tv');assert.equal(C1().objective,'Go home.');});
- tap('KeyV');U(()=>false,.6);onBike();const h1=watch.streets.length;rideTo(routeHome(118),340,3,()=>C4().phase==='n4-oak');X.brake();
+ tap('KeyV');U(()=>false,.6);onBike();const h1=Math.max(0,watch.streets.length-1);rideTo(routeHome(118),340,3,()=>C4().phase==='n4-oak');X.brake();
  U(()=>h.snapshot.state==='ended',60);
  check(`${label}: home the way they came, to the old oak: "That thing in the tunnel…" "It was scared." "Of what?" — Chapter Four`,()=>{const seq=watch.streets.slice(h1);for(const s of ['town-core','town-conn','side2','main'])assert.ok(seq.includes(s),s);
   const lines=['JAMIE: “That thing in the tunnel…”','SAM: “It was scared.”','YOU: “Of what?”'],ix=lines.map(saidIdx);assert.ok(ix.every((v,i)=>v>=0&&(!i||v===ix[i-1]+1)),JSON.stringify(ix));assert.ok((A4.C.blink??-1)>=0,'a streetlight blinked');

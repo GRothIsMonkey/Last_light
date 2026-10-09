@@ -90,13 +90,14 @@ try{
  await snap('17-creature-end-of-second-street');
  await stage('fear',()=>__d.until(()=>__d.s4().creature.stage==='fear',8)&&__d.until(()=>false,1));await snap('18-creature-afraid');
  await stage('cascade',()=>{__d.until(()=>__d.s4().phase==='e4-cascade',30);const q=__d.at(-10,2);__d.face(q.x,q.z,.05);__d.until(()=>false,8);});await snap('19-the-lights-going');
- await stage('tv window',()=>{__d.until(()=>__d.s4().cascade?.tvAt!=null,40);const q=__d.at(72.8,-11.6);__d.face(q.x,q.z,-.05);__d.until(()=>false,1.5);});await snap('20-tv-window-live');
- await stage('to store',()=>{__d.until(()=>__d.s4().cascade?.nearAt!=null,30);__d.ride([[100,-2],[108,-6.6]].map(([u,v])=>{const q=__d.at(u,v);return [q.x,q.z];}),20,1.6);__d.brake();__d.off();__d.goUV(106.5,-10.2,{r:.6});__d.goUV(106.5,-14,{r:.8});__d.goUV(103,-15.4,{r:.6});__d.faceUV(99.35,-18,2.3,.12);return __d.until(()=>__d.s4().phase==='n4-store',8);});
+ const tvw=await stage('tv window',()=>{__d.until(()=>__d.s4().cascade?.tvAt!=null,40);__d.ride([[82,-3.5],[76.5,-7.2]].map(([u,v])=>{const q=__d.at(u,v);return [q.x,q.z];}),30,1.4);__d.brake();const q=__d.at(72.8,-11.6,1.5);__d.face(q.x,q.z,-.04);__d.until(()=>__d.A4.C.cas.saidAt!=null,18);__d.until(()=>false,.6);return {said:__d.A4.C.cas.saidAt!=null,watch:+__d.A4.C.cas.watch.toFixed(1),shot:__d.s4().tvs.acetv.shot};});await snap('20-tv-window-live');
+ check('the TV shop’s window: the dark waits there; up close, the sets show the three of them live from above ("That’s us.")',tvw.said&&tvw.watch>1&&tvw.shot==='live-high',JSON.stringify(tvw));
+ await stage('to store',()=>{__d.until(()=>__d.s4().cascade?.nearAt!=null,30);__d.ride([[100,-2],[108,-6.6]].map(([u,v])=>{const q=__d.at(u,v);return [q.x,q.z];}),20,1.6);__d.brake();__d.off();__d.goUV(106.5,-10.2,{r:.6});__d.goUV(106.5,-14,{r:.8});__d.goUV(103,-15.4,{r:.5,max:20});__d.faceUV(99.35,-18,2.3,.12);return __d.until(()=>__d.s4().phase==='n4-store',8);});
  // ---- the video store ------------------------------------------------------------------------------------------------------------
  await stage('tv alex',()=>{__d.until(()=>__d.s4().store?.shot==='alex-ride',20);__d.faceUV(99.35,-18,2.3,.12);__d.until(()=>false,2.5);});await snap('21-store-tv-alex-from-above');
  await stage('pine',()=>{__d.until(()=>__d.s4().store?.shot==='pine-ridge',40);__d.until(()=>false,4);__d.faceUV(99.35,-18,2.3,.15);__d.tap('KeyV');__d.until(()=>false,1);__d.faceUV(99.35,-18,2.3,.18);__d.L.step(.4);});
  await snap('22-store-pine-ridge-viewfinder');
- const pic=await stage('picture',()=>{__d.tap('KeyF');__d.until(()=>__d.s4().inv.lead,6);__d.until(()=>false,1.5);return {lead:__d.s4().inv.lead,by:__d.A4.C.leadBy};});
+ const pic=await stage('picture',()=>{for(let k=0;k<30&&!__d.A4.C.aim;k++){__d.faceUV(99.35,-18,2.3,.14+(k%5)*.03);__d.L.step(.1);}__d.tap('KeyF');__d.until(()=>__d.s4().inv.lead,6);__d.until(()=>false,1.5);return {lead:__d.s4().inv.lead,by:__d.A4.C.leadBy};});
  check('the picture of the PINE RIDGE screen taken with Alex’s camera',pic.lead&&pic.by==='you',JSON.stringify(pic));
  await stage('room',()=>{__d.until(()=>__d.s4().store?.shot==='alex-room',30);__d.faceUV(99.35,-18,2.3,.12);__d.until(()=>false,2.5);});await snap('23-store-tv-alex-room-ceiling');
  await stage('phone',()=>{__d.until(()=>__d.s4().store?.ring,60);__d.goUV(102.2,-19.3,{r:.6});__d.faceUV(101,-19.4,1.1);__d.L.step(.3);__d.tap('KeyF');__d.until(()=>/Jamie\?/.test(document.getElementById('subtitle').textContent),12);});await snap('24-store-phone-jamie');
