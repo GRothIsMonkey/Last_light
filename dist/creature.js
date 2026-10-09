@@ -33,8 +33,9 @@ export function createCreature({scene}){
  const catchU={value:0};
  const api={group,loaded:false,error:null,catch:catchU,info:null,mesh:null,triangles:0,
   // what it is doing (set by the story every frame): speed m/s along its heading, rear 0–1 (up on its hind legs), claw
-  // 0–1 (striking at something in front of it), crouch 0–1 (low and still), look (a point it turns its head to)
-  drive:{speed:0,rear:0,claw:0,crouch:0,look:null,lift:0},phase:0,bob:0};
+  // 0–1 (striking at something in front of it), crouch 0–1 (low and still), look (a point it turns its head to);
+  // Chapter Four adds cower 0–1 (pulled in low, head down, shivering) and back (1: the gait runs backwards, for backing away)
+  drive:{speed:0,rear:0,claw:0,crouch:0,look:null,lift:0,cower:0,back:0},phase:0,bob:0};
  let mixer=null,bones=null,rest=null,clipAction=null,clock0=0;const contacts=[];
  api.ready=(async()=>{const C=await parseCreature(await loadBytes());
   inner.add(C.root);api.mesh=C.mesh;C.mesh.frustumCulled=false;C.mesh.castShadow=true;C.mesh.receiveShadow=true;C.mesh.name='drain-creature-skin';
@@ -74,7 +75,7 @@ export function createCreature({scene}){
   group.updateMatrixWorld(true);
   const a=api.heading||0;fwd.set(Math.sin(a),0,-Math.cos(a));right.set(Math.cos(a),0,Math.sin(a));
   // the gait: cadence from speed; arms together-ish, legs half a cycle later (a bounding scramble)
-  const v=Math.max(0,D.speed),run=clamp(v/1.2,0,1),f=.9+v*.34;api.phase=(api.phase+dt*f*Math.max(run,.0001))%1;const ph=api.phase*2*Math.PI;
+  const v=Math.max(0,D.speed),run=clamp(v/1.2,0,1),f=.9+v*.34;api.phase=D.back>.5?(api.phase-dt*f*Math.max(run,.0001)+1)%1:(api.phase+dt*f*Math.max(run,.0001))%1;const ph=api.phase*2*Math.PI;
   const A=(.34+.26*clamp(v/6,0,1))*run,B=(.55+.25*clamp(v/6,0,1))*run;
   const limb=(upper,lower,off,dir)=>{const s=Math.sin(ph+off*2*Math.PI),c=Math.cos(ph+off*2*Math.PI);rotWorld(upper,right,A*s*dir);rotWorld(lower,right,-B*Math.max(0,c)*dir);};
   // body: pitch with the bound, a little lower and longer the faster it goes
@@ -91,10 +92,13 @@ export function createCreature({scene}){
    api.headYaw=damp(api.headYaw||0,-dyaw,6,dt);api.headPitch=damp(api.headPitch||0,pitch,6,dt);rotWorld(bones.neck,_up,api.headYaw*.4);rotWorld(bones.head,_up,api.headYaw*.6);_ax.copy(right);rotWorld(bones.head,_ax,api.headPitch);}
   // crouched and waiting: the head tilts, slowly
   if(D.crouch>0)rotWorld(bones.head,fwd,.28*D.crouch*Math.sin(performanceNow()*.7));
+  // cowering: the body pulled back and low, the head down and turned aside, a fast shiver through it
+  if(D.cower>0){const c=D.cower,sh=Math.sin(performanceNow()*31)*.035*c;rotWorld(bones.hips,right,-.22*c);rotWorld(bones.chest,right,.32*c+sh);rotWorld(bones.neck,right,.35*c);rotWorld(bones.head,_up,.4*c);rotWorld(bones.head,fwd,sh*1.5);
+   rotWorld(bones.armL,right,-.25*c);rotWorld(bones.armR,right,-.25*c);}
   // the bob of each bound (the group's own height is the story's; this rides on it)
   // never through the floor: if a hand or foot has swung below where it rests on the ground, the body rides up on it
   group.updateMatrixWorld(true);let low=0;for(const [k,y0] of contacts){bones[k].getWorldPosition(_hv);const y=_hv.y-group.position.y-(inner.position.y-api.baseY);low=Math.min(low,y-y0);}
   api.bob=.05*run*(1-Math.cos(2*ph))/2;api.lift=-low;inner.position.y=api.baseY+api.bob-low;};
  const performanceNow=()=>clock0;
- api.reset=()=>{group.visible=false;api.phase=0;api.headYaw=0;api.headPitch=0;catchU.value=0;clock0=0;Object.assign(api.drive,{speed:0,rear:0,claw:0,crouch:0,look:null,lift:0});};
+ api.reset=()=>{group.visible=false;api.phase=0;api.headYaw=0;api.headPitch=0;catchU.value=0;clock0=0;Object.assign(api.drive,{speed:0,rear:0,claw:0,crouch:0,look:null,lift:0,cower:0,back:0});};
  return api;}

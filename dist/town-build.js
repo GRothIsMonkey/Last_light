@@ -31,7 +31,7 @@ function crtMaterial(){return new THREE.ShaderMaterial({uniforms:{uTex:{value:nu
  float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
  void main(){vec2 c=vUv-.5;float r2=dot(c,c);vec2 uv=.5+c*(1.+.09*r2);float edge=smoothstep(.0,.03,min(min(uv.x,1.-uv.x),min(uv.y,1.-uv.y)));
   vec3 off=vec3(.05,.065,.06)+vec3(.08)*smoothstep(.5,0.,length(c-vec2(-.18,.2)));
-  vec2 st=uv;st.y=fract(st.y+uRoll);vec3 pic=uHas>.5?texture2D(uTex,st).rgb*uTint:vec3(.0);
+  vec2 st=uv;st.y=fract(st.y+uRoll);vec3 pic=uHas>.5?texture2D(uTex,st).rgb*uTint:vec3(.0);pic=1.-exp(-pic*1.7);pic=pow(pic,vec3(.4545));// (the picture is rendered linear and untoned: tone it and encode it here)
   float n=h(floor(uv*vec2(180.,140.))+floor(uT*24.));vec3 snow=vec3(n*.9);
   vec3 col=mix(pic,snow,uStatic);float scan=.82+.18*sin(uv.y*560.);col*=scan*uBright;col*=1.-.35*r2*2.;
   col+=vec3(.9)*smoothstep(.985,1.,fract(uv.y*.5-uT*.11+uRoll))*.05*uOn;
@@ -414,7 +414,7 @@ export function buildTown(W){
   D.libraryFix={};troffers(119.5,151,45,61,y+4.6,3.4,3.2,(u,v)=>{const k=u>142.5&&v>54.5?'history':u<128?'east':u>141?'west':'center';return D.libraryFix[k]??=nextFix();});
   for(const s of SOLIDS.filter(s=>s.inside==='library')){const cu=(s.u0+s.u1)/2,cv=(s.v0+s.v1)/2,w=s.u1-s.u0,d=s.v1-s.v0;
    if(s.kind==='stack'){const hgt=s.wall?2.4:2.1;B(inn,cu,y+hgt/2,cv,w,hgt,d,wood);for(let k=0;k<5;k++){const yy=y+.15+k*.42;for(const side of s.wall?[1]:[-1,1]){let u=s.u0+.05;const r2=seeded(hashSeed(k,cu,cv,side));while(u<s.u1-.1){const bw=.025+r2()*.04,bh=.24+r2()*.12,n=Math.max(1,Math.round(.3/bw));B(inn,u+bw*n/2,yy+bh/2,cv+side*(d/2+.005)-side*.12,bw*n,bh,.22,dull(books[Math.floor(r2()*books.length)]));u+=bw*n+.004;}}}}
-   else if(s.kind==='desk-circ'){B(inn,cu,y+.55,cv,w,1.1,d,wood);B(inn,cu,y+1.12,cv,w+.06,.05,d+.06,paint(0xc8b490));}
+   else if(s.kind==='desk-circ'){B(inn,cu,y+.5,cv,w,1,d,wood);B(inn,cu,y+1.02,cv,w+.06,.05,d+.06,paint(0xc8b490));}
    else if(s.kind==='table'){B(inn,cu,y+.74,cv,w,.06,d,wood);for(const [a,c] of [[s.u0+.1,s.v0+.1],[s.u1-.1,s.v0+.1],[s.u0+.1,s.v1-.1],[s.u1-.1,s.v1-.1]])B(inn,a,y+.37,c,.07,.74,.07,wood);for(let u=s.u0+.6;u<s.u1;u+=1.2)for(const e of [-1,1]){B(inn,u,y+.45,cv+e*(d/2+.35),.42,.05,.42,wood);B(inn,u,y+.85,cv+e*(d/2+.55),.42,.8,.05,wood);}}
    else if(s.kind==='computers'){B(inn,cu,y+.72,cv,w,.06,d,paint(0xd8d0c0));B(inn,cu,y+.36,cv,w,.7,d*.9,paint(0xb8b0a0));for(let u=s.u0+1.2;u<s.u1;u+=3.6){B(inn,u,y+1.03,cv+.05,.44,.38,.4,paint(0xd8d2c4));B(inn,u,y+1.03,cv-.16,.34,.27,.02,glassDark);B(inn,u,y+.77,cv-.18,.42,.03,.16,paint(0xd0c8b8));B(inn,u+.5,y+.95,cv,.18,.4,.4,paint(0xd8d2c4));}}
    else if(s.kind==='microfilm'){B(inn,cu,y+.74,cv,w,.06,d,wood);B(inn,cu,y+.37,cv,w,.74,d*.9,wood);const mg=at(inn,148.8,y+.77,60.95,Math.PI);B(mg,0,.32,0,.95,.64,.7,paint(0xc8c2b0));B(mg,0,.9,.05,.85,.62,.55,paint(0xbcb6a4));B(mg,0,1.3,-.05,.7,.28,.4,paint(0xc8c2b0));for(const x of [-.32,.32])K.cyl(mg,x,.68,-.32,.07,.04,dull(0x2a2a2a),12,[Math.PI/2,0,0]);
@@ -428,7 +428,7 @@ export function buildTown(W){
   D.historyFrames=[[151.4,57,-Math.PI/2],[151.4,59.2,-Math.PI/2],[145,61.4,Math.PI]].map(([u,v,ry])=>({u,v,y:y+1.9,ry}));
   B(inn,129.5,y+1.9,44.56,2.4,1.3,.04,timber(0x8a6a44));B(inn,129.5,y+1.9,44.58,2.2,1.1,.02,dull(0xb89a6a));D.bulletin={u:129.5,v:44.62,y:y+1.9};
   {const gl=at(inn,150,y+1.1,46.6,0);const ball=new THREE.Mesh(new THREE.SphereGeometry(.22,16,12),paint(0x4a7aaa));ball.position.y=.25;gl.add(ball);B(gl,0,-.2,0,.06,.6,.06,timber(0x3a2a1e));}
-  sign(inn,{text:'PLEASE SIGN IN AT THE DESK',bg:'#f2eee4',fg:'#3a3a3a',font:'sans',border:false},.9,.2,{x:135,y:y+1.25,z:48.47,ry:Math.PI});}
+  sign(inn,{text:'PLEASE SIGN IN AT THE DESK',bg:'#f2eee4',fg:'#3a3a3a',font:'sans',border:false},.9,.2,{x:135,y:y+1.15,z:48.47,ry:Math.PI});}
  // ---- the video store ----
  {const I=INTERIORS.video,y=roomShell('video',{ceil:3.4,wallC:0x3a3e5a,ceilC:0xd8d6d0,trim:0x1a1a2a,skip:['v1']}),rackM=paint(0x2a2a30),shelfM=paint(0x8a8a90);
   // ceiling lights, in three sections from the front (the street) to the back, and the back room's
