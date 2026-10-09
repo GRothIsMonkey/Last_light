@@ -21,15 +21,15 @@ import {WOODS as E,DRAIN} from './layout.js';
 import {LAWN,terrainY} from './terrain.js';
 import {smooth,clamp,lerp,seeded,hashSeed} from './kit.js';
 
-const smin=(a,b,k)=>{const h=clamp(.5+.5*(b-a)/k,0,1);return lerp(b,a,h)-k*h*(1-h);};
+export const smin=(a,b,k)=>{const h=clamp(.5+.5*(b-a)/k,0,1);return lerp(b,a,h)-k*h*(1-h);};
 // Monotone cubic through [x,y] keys (no overshoot between them).
-function pchip(keys){const n=keys.length,xs=keys.map(k=>k[0]),ys=keys.map(k=>k[1]),d=[],m=[];
+export function pchip(keys){const n=keys.length,xs=keys.map(k=>k[0]),ys=keys.map(k=>k[1]),d=[],m=[];
  for(let i=0;i<n-1;i++)d.push((ys[i+1]-ys[i])/(xs[i+1]-xs[i]));
  for(let i=0;i<n;i++){if(i===0)m.push(d[0]);else if(i===n-1)m.push(d[n-2]);else m.push(d[i-1]*d[i]<=0?0:2/(1/d[i-1]+1/d[i]));}
  return x=>{if(x<=xs[0])return ys[0];if(x>=xs[n-1])return ys[n-1];let i=0;while(i<n-2&&x>xs[i+1])i++;const h=xs[i+1]-xs[i],t=(x-xs[i])/h,t2=t*t,t3=t2*t;
   return (2*t3-3*t2+1)*ys[i]+(t3-2*t2+t)*h*m[i]+(-2*t3+3*t2)*ys[i+1]+(t3-t2)*h*m[i+1];};}
 // A Catmull-Rom curve through world points, resampled every `step` meters: x, z, s, heading.
-function curve(P,step){const Q=[[2*P[0][0]-P[1][0],2*P[0][1]-P[1][1]],...P,[2*P[P.length-1][0]-P[P.length-2][0],2*P[P.length-1][1]-P[P.length-2][1]]],raw=[];
+export function curve(P,step){const Q=[[2*P[0][0]-P[1][0],2*P[0][1]-P[1][1]],...P,[2*P[P.length-1][0]-P[P.length-2][0],2*P[P.length-1][1]-P[P.length-2][1]]],raw=[];
  for(let i=1;i<Q.length-2;i++){const [a,b,c,d]=[Q[i-1],Q[i],Q[i+1],Q[i+2]];for(let k=0;k<40;k++){const t=k/40,t2=t*t,t3=t2*t;raw.push([0,1].map(j=>.5*((2*b[j])+(-a[j]+c[j])*t+(2*a[j]-5*b[j]+4*c[j]-d[j])*t2+(-a[j]+3*b[j]-3*c[j]+d[j])*t3)));}}
  raw.push(P[P.length-1]);const acc=[0];for(let i=1;i<raw.length;i++)acc.push(acc[i-1]+Math.hypot(raw[i][0]-raw[i-1][0],raw[i][1]-raw[i-1][1]));
  const L=acc[acc.length-1],n=Math.floor(L/step)+1,X=new Float64Array(n),Z=new Float64Array(n),A=new Float64Array(n);let j=0;
@@ -37,7 +37,7 @@ function curve(P,step){const Q=[[2*P[0][0]-P[1][0],2*P[0][1]-P[1][1]],...P,[2*P[
  for(let i=0;i<n;i++){const a=Math.max(0,i-1),b=Math.min(n-1,i+1);A[i]=Math.atan2(X[b]-X[a],-(Z[b]-Z[a]));}
  return {X,Z,A,n,step,length:(n-1)*step};}
 // Nearest point on a sampled curve (a coarse hash of its samples, then the two segments either side).
-function nearest(C,cell=8,reach=3){const grid=new Map(),key=(i,j)=>i*100003+j;
+export function nearest(C,cell=8,reach=3){const grid=new Map(),key=(i,j)=>i*100003+j;
  for(let i=0;i<C.n;i++){const k=key(Math.floor(C.X[i]/cell),Math.floor(C.Z[i]/cell));if(!grid.has(k))grid.set(k,[]);grid.get(k).push(i);}
  return (x,z,r=reach)=>{const ci=Math.floor(x/cell),cj=Math.floor(z/cell);let bi=-1,bd=1e18;
   for(let i=ci-r;i<=ci+r;i++)for(let j=cj-r;j<=cj+r;j++)for(const k of grid.get(key(i,j))||[]){const d=(C.X[k]-x)**2+(C.Z[k]-z)**2;if(d<bd){bd=d;bi=k;}}
@@ -47,8 +47,8 @@ function nearest(C,cell=8,reach=3){const grid=new Map(),key=(i,j)=>i*100003+j;
    if(!best||d<best.d){const a=C.A[k]+(((C.A[k+1]-C.A[k]+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI)*f,out=(k===0&&fr<0)||(k===C.n-2&&fr>1);best={s:(k+(out?fr:f))*C.step,d,px,pz,a,out,t:(x-px)*Math.cos(a)+(z-pz)*Math.sin(a)};}}
   if(!best){const k=bi;best={s:k*C.step,d:Math.sqrt(bd),px:C.X[k],pz:C.Z[k],a:C.A[k],t:(x-C.X[k])*Math.cos(C.A[k])+(z-C.Z[k])*Math.sin(C.A[k])};}
   return best;};}
-const inPoly=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const [xi,zi]=P[i],[xj,zj]=P[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)c=!c;}return c;};
-const polyDist=(P,x,z)=>{let best=1e18;for(let i=0,j=P.length-1;i<P.length;j=i++){const [ax,az]=P[j],[bx,bz]=P[i],dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz||1,f=clamp(((x-ax)*dx+(z-az)*dz)/l,0,1);best=Math.min(best,Math.hypot(x-ax-dx*f,z-az-dz*f));}return best;};
+export const inPoly=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const [xi,zi]=P[i],[xj,zj]=P[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)c=!c;}return c;};
+export const polyDist=(P,x,z)=>{let best=1e18;for(let i=0,j=P.length-1;i<P.length;j=i++){const [ax,az]=P[j],[bx,bz]=P[i],dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz||1,f=clamp(((x-ax)*dx+(z-az)*dz)/l,0,1);best=Math.min(best,Math.hypot(x-ax-dx*f,z-az-dz*f));}return best;};
 
 // The frame alone: needed before the streets and the background are built (they leave room for it),
 // and by walking. Builds nothing.
