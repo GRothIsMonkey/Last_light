@@ -20,7 +20,7 @@ export function installNaturalCapture(h,element){
   return render(...a);};
  // The prologue: the first frame after the title's start button on a fresh page (a new game).
  const st=element('start'),go=st.onclick;st.onclick=function(...a){const r=go.apply(this,a);if(!cap.off&&!(0 in cap.natural)){cap.armed=0;cap.how[0]='start';}return r;};
- for(const [n,api] of [[1,h.chapter],[2,h.chapter2],[3,h.chapter3]]){const b=api.begin;api.begin=function(...a){const r=b.apply(this,a);if(!cap.off&&!(n in cap.natural)){cap.armed=n;cap.how[n]=a[0]??null;}return r;};}
+ for(const [n,api] of [[1,h.chapter],[2,h.chapter2],[3,h.chapter3],...(h.chapter4?[[4,h.chapter4]]:[])]){const b=api.begin;api.begin=function(...a){const r=b.apply(this,a);if(!cap.off&&!(n in cap.natural)){cap.armed=n;cap.how[n]=a[0]??null;}return r;};}
  return cap;
 }
 

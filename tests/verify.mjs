@@ -31,7 +31,7 @@ globalThis.window={};globalThis.devicePixelRatio=2;globalThis.innerWidth=1440;gl
 globalThis.FakeRenderer=class{constructor(){this.shadowMap={};this.capabilities={maxTextureSize:8192};this.pixelRatio=1;}setPixelRatio(r){this.pixelRatio=r;}setSize(){}render(){}};
 let source=fs.readFileSync(root+'game.js','utf8').replaceAll(/'\.\/([\w.\-]+)\.js'/g,(_,name)=>JSON.stringify(pathToFileURL(root+name+'.js').href)).replace('new THREE.WebGLRenderer','new globalThis.FakeRenderer');
 source+=`\nglobalThis.harness={get snapshot(){return {state,distance,speed,lateral,look,headPitch,pedalPhase,steerVelocity,nextMemory,currentChapter,finaleT,callDone,walkD,walkLat,walkYaw,walkPitch,fade,clock,manualLook,glance,yawOffset,push,stamina,captionTimer,sens}},road,scene,camera,bikeRoot,playerBike,friends,originals,keys,world,ambient,contact,selfPose,self,foot,ui,interact,ending,nostalgia,renderer,sunlight,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},place(d,lat,v=4.5){contact.reset();distance=d;lateral=lat;speed=v;yawOffset=0;psiVel=0;steerIn=0;bikeY=null;prevYaw=null;},get bikeY(){return bikeY;},
- jump:jumpTo,dev,devStart,devScene,chapter,chapter2,chapter3,tension,captionTone,get audioRef(){return audio;},memory,get memCast(){return memCast;},skyMat,hemi,face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else roam.a=a;},look(y,p=0){mouseYaw=y;mousePitch=p;},get prompt(){return promptItems();},roam,nav,placePlayer,action:()=>action(),drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},get night(){return {state,wx,wz,wa,speed,fade,roam:{...roam}};}};`;
+ jump:jumpTo,dev,devStart,devScene,chapter,chapter2,chapter3,chapter4,nextChapter,tension,captionTone,get audioRef(){return audio;},memory,get memCast(){return memCast;},skyMat,hemi,face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else roam.a=a;},look(y,p=0){mouseYaw=y;mousePitch=p;},get prompt(){return promptItems();},roam,nav,placePlayer,action:()=>action(),drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},get night(){return {state,wx,wz,wa,speed,fade,roam:{...roam}};}};`;
 const t0=Date.now();
 await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const buildMs=Date.now()-t0;
@@ -52,6 +52,10 @@ advance(.05);
 const {installNaturalCapture,runDevChapterChecks,diff:devDiff,normalize:devNorm}=await import('./dev-chapters-sim.mjs');const devCapture=installNaturalCapture(h,element);
 // ONLY=script SCRIPT=<file>: run a development script against the same harness (nothing is checked or reported).
 if(process.env.ONLY==='script'){const m=await import(pathToFileURL(process.env.SCRIPT).href);await m.default({h,advance,press,release,tap,check,element,metrics,W,THREE,groundPoint,buildMs});process.exit(0);}
+// ONLY=chapter4: Chapter Four alone (from its own start, or from Chapter Three's end card with FROMCARD=1), for development.
+if(process.env.ONLY==='chapter4'){const {playChapterFour,runChapterFourChecks}=await import('./chapter4-sim.mjs');const T4={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
+ if(!process.env.SKIPPLAY){if(process.env.FROMCARD){h.jump('chapter3-end');for(let i=0;i<2400&&h.snapshot.state!=='ended';i++)advance(1/30);}playChapterFour(T4,'chapter four alone',{fromCard:!!process.env.FROMCARD});}
+ if(!process.env.SKIPCHECKS)await runChapterFourChecks(T4,devCapture);console.log(JSON.stringify({passed:checks.length,checks,metrics},null,1));process.exit(0);}
 // ONLY=chapter3: a quick loop for Chapter Three alone (from the end of Chapter Two), for development.
 if(process.env.ONLY==='chapter3'){const {playChapterThree,runChapterThreeChecks}=await import('./chapter3-sim.mjs');const T3={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
  if(!process.env.SKIPPLAY){h.jump('chapter2-end');playChapterThree(T3,'chapter three alone');for(let n=2;n<=+(process.env.REPLAYS||1);n++){h.jump('chapter2-end');playChapterThree(T3,'replay '+n);}}if(!process.env.SKIPCHECKS)await runChapterThreeChecks(T3);console.log(JSON.stringify({passed:checks.length,checks,metrics},null,1));process.exit(0);}
@@ -372,8 +376,10 @@ function chapterOne(label){
 }
 const firstStart=simTime;
 const {playChapterTwo,runChapterTwoChecks}=await import('./chapter2-sim.mjs'),T2={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
-const {playChapterThree,runChapterThreeChecks}=await import('./chapter3-sim.mjs');
+const {playChapterThree,runChapterThreeChecks}=await import('./chapter3-sim.mjs');const {playChapterFour,runChapterFourChecks}=await import('./chapter4-sim.mjs');
 const J1=JUNCTIONS[0];const r1=ride('first ride');finalStop('first ride');chapterOne('first ride');playChapterTwo(T2,'first ride');playChapterThree(T2,'first ride');
+// Chapter Four, on from Chapter Three's end card (its "Chapter Four" button), the next afternoon to the old oak.
+if(!process.env.NO_CHAPTER4)playChapterFour(T2,'first ride');
 if(process.env.ONLY==='dev-record'){const {recordHistory}=await import('./dev-chapters-sim.mjs');console.log(JSON.stringify(recordHistory(h,devCapture,fs,root+'dev-chapter-history.js',advance),null,1));process.exit(0);}
 if(process.env.ONLY==='dev'){if(process.env.DEV_RAW)for(const n of [1,2,3]){const d=devDiff(devNorm(devCapture.natural[n]),devNorm((h.devStart(n),h.dev.snapshot())));console.log('RAW',n,JSON.stringify({how:devCapture.how[n]}));for(const x of d)console.log('RAW',n,JSON.stringify(x));
   const S=h.chapter.kit.S,ph=S.phase;for(let i=0;i<900&&S.phase===ph;i++)advance(1/30);const o=h.dev.snapshot();o.phase=S.phase;for(const x of devDiff(devNorm(devCapture.opened[n]),devNorm(o)))console.log('OPEN',n,JSON.stringify(x));}
@@ -509,6 +515,9 @@ await runChapterThreeChecks(T2);
 // Chapter Three again, twice, in the same page, after all those jumps and Start overs (Continue from Chapter Two's last
 // checkpoint, then the whole chapter with inputs): every beat as the first time, nothing carried over.
 for(const n of [2,3]){h.jump('chapter2-end');playChapterThree(T2,'Chapter Three replay '+n);}
+// Chapter Four on its own: every jump, alias and checkpoint, Continue, Start over from inside, switching away, seeded
+// randomized runs through its fallbacks, and the DEV selector's Chapter Four against arriving naturally.
+if(!process.env.NO_CHAPTER4){await runChapterFourChecks(T2,devCapture);h.jump('chapter4-start');playChapterFour(T2,'Chapter Four replay',{fromCard:false});}
 // TEMPORARY (private playtest build): the dev chapter selector equals natural arrival; switching leaks nothing.
 await runDevChapterChecks(T2,devCapture);
 
