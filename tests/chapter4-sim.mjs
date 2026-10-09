@@ -102,7 +102,7 @@ export function playChapterFour(T,label,{fromCard=true}={}){
  check(`${label}: the streetlights came on one by one at dusk, the sky darkened steadily`,()=>{const lit=watch.lampsLit,steps=new Set(lit).size;assert.ok(steps>=8,'distinct counts '+steps);assert.ok(lit[lit.length-1]>=40,'lit '+lit[lit.length-1]);assert.equal(watch.dayDrop,0,'the light never came back up');});
  check(`${label}: at the end of Second Street: it watches, comes a little way, stops dead, looks past them, cowers, backs away, runs`,()=>{const st=A4.C.crt.stageAt;for(const k of ['watch','stalk','freeze','fear','turn','flee','gone'])assert.ok(st[k]!==undefined,k);
   assert.ok(st.watch<st.stalk&&st.stalk<st.freeze&&st.freeze<st.fear&&st.fear<st.flee);assert.ok(watch.cower>.5,'cowered '+watch.cower);assert.ok(watch.crMin>25,'closest '+watch.crMin);assert.equal(watch.claw,0,'never rears or claws');});
- U(()=>C4().cascade?.tvAt!=null,40);rideTo([[82,-3.5],[76.5,-7.2]].map(([u,v])=>X.TP(u,v)),30,1.4);X.brake();{const w=at(72.8,-11.6,1.5);faceTo(w.x,w.z,-.04);}U(()=>A4.C.cas.saidAt!=null,18);
+ U(()=>C4().cascade?.tvAt!=null,40);rideTo([[82,-3.5],[76,-6.4],[73.4,-8.4]].map(([u,v])=>X.TP(u,v)),30,1.4);X.brake();{const w=at(72.8,-11.6,1.5);faceTo(w.x,w.z,-.04);}U(()=>A4.C.cas.saidAt!=null,18);
  const tvSeen={watch:A4.C.cas.watch,front:C4().cascade.front,said:A4.C.cas.saidAt};U(()=>C4().cascade?.nearAt!=null,60);
  check(`${label}: the lights go out one after another, up Main toward them; the dark waits at the TV shop, whose window shows them from above, now (seen up close)`,()=>{assert.ok(tvSeen.watch>1&&tvSeen.said!==null,JSON.stringify(tvSeen));assert.equal(tvSeen.front,60,'held at the TV shop');const log2=C4().presence.log;assert.ok(C4().presence.kills>20,'kills '+C4().presence.kills);
   const us=A4.lights.S.log.filter(e=>e.kind==='kill').map(e=>A4.lights.posOf(e.i)?.u).filter(u=>u!==undefined);let back=0;for(let i=1;i<us.length;i++)if(us[i]<us[i-1]-8)back++;assert.ok(back<=2,'out of order '+back+' '+JSON.stringify(A4.lights.S.log.filter(e=>e.kind==='kill').map(e=>[e.i,+(A4.lights.posOf(e.i)?.u??NaN).toFixed(1),+(e.t??0).toFixed(2)])));
@@ -117,7 +117,7 @@ export function playChapterFour(T,label,{fromCard=true}={}){
  check(`${label}: the phone: "…Jamie?"; the TV: the three of them, now ("That’s us."); the lights go from the front`,()=>{assert.equal(C4().store.answered,'you');assert.ok(said().includes('ON THE PHONE: “…Jamie?”'));assert.ok(said().includes('SAM: “That’s us.”'));assert.equal(C4().tvs.video.shot,'live-store');});
  U(()=>false,5);goUV(111.2,-26,{r:.6});goUV(111.2,-30,{r:.6});goUV(104.2,-33.2,{r:.6});faceUV(103.75,-35.6,1);U(()=>false,.3);tap('KeyF');U(()=>false,1);goUV(103.75,-36.8,{r:.5});U(()=>C4().phase==='n4-alley',5);
  // ---- out the back -----------------------------------------------------------------------------------------------------------------
- goUV(118,-38.8);goUV(140,-39);goUV(150,-38.2);U(()=>C4().creature.pass?.stage==='gone',20);
+ goUV(118,-38.8);goUV(140,-39);goUV(150,-38.2);U(()=>C4().creature.pass?.stage==='gone',20);U(()=>said().includes('SAM: “It didn’t even look at us.”'),8);
  check(`${label}: the narrow way: it comes from behind and runs past them, and does not look at them`,()=>{const ps=C4().creature.pass;assert.ok(ps.passedAt!==null,'passed');assert.ok(watch.passMin>.8,'closest '+watch.passMin);assert.equal(watch.claw,0);
   assert.ok(said().includes('SAM: “It didn’t even look at us.”'));});
  goUV(163.75,-38.2,{r:.6});goUV(163.75,-35,{r:.6});U(()=>C4().phase==='n4-laundry',5);goUV(169,-27,{r:.6});goUV(173,-26.75,{r:.6});U(()=>C4().phase==='n4-depot',5);
@@ -136,7 +136,7 @@ export function playChapterFour(T,label,{fromCard=true}={}){
   assert.equal(h.snapshot.state,'ended');assert.equal(element('ending').querySelector?.('h2')?.innerHTML??'Chapter Four','Chapter Four');assert.equal(element('next-chapter').hidden,true);});
  check(`${label}: nobody and nothing went missing or non-finite; every line was a caption; the placeholder sound hooks fired`,()=>{assert.equal(watch.bad,0);assert.deepEqual(log.bad,[]);
   for(const k of ['relay','phone','shutter','flash','door','step'])assert.ok((A4.C.sounds?.[k]||0)>0||((C4().sounds||{})[k]||0)>0,k);});
- const minutes=(h.snapshot.clock-t0)/60;M2['chapter4 natural minutes']=+minutes.toFixed(2);M2['chapter4 lines spoken']=said().length;M2['chapter4 objectives']=[...new Set(log.objectives)].filter(o=>o).length;
+ const minutes=A4.C.t/60;/* (the chapter's own time since its card: the game clock restarts with the hand-over) */void t0;M2['chapter4 natural minutes']=+minutes.toFixed(2);M2['chapter4 lines spoken']=said().length;M2['chapter4 objectives']=[...new Set(log.objectives)].filter(o=>o).length;
  check(`${label}: the chapter takes ${minutes.toFixed(1)} minutes played straight through (a player who stops to look takes longer)`,()=>assert.ok(minutes>14&&minutes<45,minutes));
  return {minutes,said:said().length};
 }

@@ -465,7 +465,7 @@ export function createChapter4(o,k,ch2,ch3){
   C.darkTo=.55*smooth((front-(u-34))/30);
   if(X.tvAt===null&&front>=TV_HOLD)tvWindow();
   if(X.tvAt!==null&&X.resumeT===null){const w=at(72.8,-11.6,TY+1.6);if(Math.hypot(p.x-w.x,p.z-w.z)<13&&k.camLooksAt(w,.94))X.watch+=dt;
-   if(X.saidAt===null&&((X.watch>1.2&&!busy())||C.t-X.tvAt>16)){X.saidAt=C.t;say([{who:'SAM',text:'“That’s us. That’s us, right now.”',by:'sam',time:2.2}],{interrupt:true,then:()=>later(1.4,()=>{if(X.resumeT===null){X.resumeT=lights.S.t;cascade(X.rest,{from:{u:TV_HOLD,v:0},dir:{u:1,v:0},speed:X.speed,delay:.2});}})});}}
+   if(X.saidAt===null&&((X.watch>1.5&&!busy())||C.t-X.tvAt>16)){X.saidAt=C.t;say([{who:'SAM',text:'“That’s us. That’s us, right now.”',by:'sam',time:2.2}],{interrupt:true,then:()=>later(3,()=>{if(X.resumeT===null){X.resumeT=lights.S.t;cascade(X.rest,{from:{u:TV_HOLD,v:0},dir:{u:1,v:0},speed:X.speed,delay:.2});}})});}}
   if(X.nearAt===null&&front>=u-16){X.nearAt=C.t;C.flags.hurry=true;objective('Get inside.','The video store. It’s still lit.');for(const c of [jamie,sam])c.lookAt=null;
    say([{who:'JAMIE',text:'“The video store. Go. GO!”',by:'jamie',time:1.6}],{interrupt:true});for(const [c,i] of [[jamie,1],[sam,2]])runToStore(c,i);}
   if(front>u+2&&!inside('video',p)){X.darkT+=dt;if(X.darkT>8&&!C.flags.d1){C.flags.d1=true;say([{who:'SAM',text:'“Come on!”',by:'sam',time:1.2}]);}
@@ -479,14 +479,15 @@ export function createChapter4(o,k,ch2,ch3){
   else comp.run(c,inside2,{then:()=>{stand(c,{u:i===1?103.6:102.6,v:i===1?-17.9:-13.5},{look:()=>tvPos()});}});}
  // The TV shop's window, closed since six: every set comes on at once, and shows the three of them from high above.
  function tvWindow(){if(C.cas.tvAt!==null)return;C.cas.tvAt=C.t;tvShow('acetv','live-high');mark('the TVs in the window');sound('static',at(72.8,-11.6,TY+1.4),{gain:.6});
-  for(const c of [jamie,sam])c.lookAt=at(72.8,-11.6,TY+1.4);say([{who:'JAMIE',text:'“Look. The TVs.”',by:'jamie',time:1.6}],{interrupt:true});}
+  for(const c of [jamie,sam])c.lookAt=at(72.8,-11.6,TY+1.4);say([{who:'JAMIE',text:'“Look. The TVs.”',by:'jamie',time:1.6}],{interrupt:true});
+  /* (the two of them roll slowly up to the window, and stop there looking in) */for(const [c,u,v] of [[jamie,75.8,-7.9],[sam,77.9,-7.4]])if(c.mode==='ride'&&!c.script){const q=at(u,v);comp.run(c,[comp.steps.rideTo(c,[[q.x,q.z]],{vmax:4.5}),comp.steps.brake(c,.3)],{then:()=>{c.lookAt=at(72.8,-11.6,TY+1.4);}});}}
  // ---- the televisions --------------------------------------------------------------------------------------------------------------
  const TVS={video:{tv:D.tvs.video,share:[]},laundry:{tv:D.tvs.laundry,share:[]},acetv:{tv:D.tvs.acetv?.[0],share:D.tvs.acetv?.slice(1)||[]}};
  for(const T2 of Object.values(TVS))Object.assign(T2,{on:0,shot:null,t:0,stat:1,rt:0,frames:0});
  const tvPos=()=>{const q=SPOT.videoTV;return at(q.u,q.v,TY+.18+2.32);};
  function tvShow(key,shot){const T2=TVS[key];if(!T2?.tv)return;T2.on=1;T2.shot=shot;T2.t=0;T2.stat=shot?1:1;T2.rt=0;(C.shots||=[]).push({key,shot,at:+C.t.toFixed(2)});}
  function tvOff(key){const T2=TVS[key];if(T2){T2.on=0;T2.shot=null;}}
- const meNow=()=>{const p=me();return {x:p.x,z:p.z,a:p.a,y:nav.groundY(p.x,p.z)??TY};};
+ const meNow=()=>{const p=me();return {x:p.x,z:p.z,a:p.a,y:nav.groundY(p.x,p.z)??TY,with:[jamie,sam].filter(c=>c.active).map(c=>c.mode==='ride'?{x:c.bx,z:c.bz}:{x:c.px,z:c.pz})};};
  const _tv=new THREE.Vector3();
  function shotT(T2){const S2=footage.SHOTS[T2.shot];if(!S2)return T2.t;if(S2.hold)return Math.min(T2.t,S2.len);return T2.t;}
  function updateTVs(dt){const tl=[];for(const T2 of Object.values(TVS)){if(!T2.tv)continue;T2.t+=dt;

@@ -58,7 +58,8 @@ export function createFootage({scene,camera,world,nav,shoot,photo,town,renderer,
   const c=cams.pine,k=smooth((t-1.5)/5.5);c.position.set(9.5-3.1*k,4.2-2.1*k,6.5-7.4*k);c.lookAt(3.4+1.2*k,1.2+.55*k,-6.5-.4*k);}
  // Where the live views look from (no camera anywhere near): the store's far corner, high over Main, right behind you.
  function liveCam(id,me){if(id==='live-store'){const p=TW(115.1,-26.8),t=TW(101,-16.4);cam.position.set(p.x,TY+.18+3.15,p.z);cam.lookAt(t.x,TY+1.1,t.z);cam.fov=62;}
-  else if(id==='live-high'){const q=TL(me.x,me.z),p=TW(q.u+5,Math.max(-3,Math.min(3,q.v*.3+2.5)));cam.position.set(p.x,me.y+8.4,p.z);cam.lookAt(me.x,me.y-.5,me.z);cam.fov=30;}/* (high over the middle of Main, close enough that it is plainly the three of them) */
+  else if(id==='live-high'){const pts=[me,...(me.with||[]).filter(q=>Math.hypot(q.x-me.x,q.z-me.z)<14)],cx=pts.reduce((a,q)=>a+q.x,0)/pts.length,cz=pts.reduce((a,q)=>a+q.z,0)/pts.length,sp=Math.max(...pts.map(q=>Math.hypot(q.x-cx,q.z-cz)));
+   /* (high over the middle of Main, as close as it can be with all three of them in it) */const q=TL(cx,cz),p=TW(q.u+3+sp*.8,q.v+Math.max(-3.2,Math.min(3.2,-q.v*.45)));cam.position.set(p.x,me.y+5.6+sp*.8,p.z);cam.lookAt(cx,me.y-.5,cz);cam.fov=30;}
   else{const a=me.a;cam.position.set(me.x-Math.sin(a)*3.4,me.y+1.9,me.z+Math.cos(a)*3.4);cam.lookAt(me.x+Math.sin(a)*3,me.y+1.1,me.z-Math.cos(a)*3);cam.fov=58;}cam.updateProjectionMatrix();}
  // the double: where you are, the way you stand (the first-person body has no head)
  function placeDouble(){if(!self?.group)return;dbl.group.visible=true;self.group.updateMatrixWorld(true);dbl.group.position.setFromMatrixPosition(self.group.matrixWorld);dbl.group.quaternion.setFromRotationMatrix(self.group.matrixWorld);if(foot?.pose)applyPose(dbl,foot.pose);}
