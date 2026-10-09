@@ -17,6 +17,7 @@ import {createNav} from './nav.js';
 import {createChapter1} from './chapter1.js';
 import {createChapter2} from './chapter2.js';
 import {createChapter3} from './chapter3.js';
+import {createChapter4} from './chapter4.js';
 import {createTension} from './tension.js';
 import {createCaptionTone} from './captions.js';
 import {createDevChapters,DEV_SCENES} from './dev-chapters.js';// TEMPORARY: private playtest build only
@@ -115,6 +116,9 @@ function jumpTo(section){ui.closePanels();resetState();state='intro';start();cap
 // Continue: back to the last place the night reached.
 function showContinue(){const b=$('continue');if(!b)return;const s=chapter.saved();b.hidden=!s;if(s){const w=$('continue-where');if(w)w.textContent=s.label;b.onclick=()=>jumpTo(s.section);}}
 
+// The end of Chapter Three leads on: Chapter Four, from its own beginning (the next afternoon).
+function nextChapter(){if(state!=='ended')return;ui.closePanels();resetState();state='intro';start();captionTimer=0;$('subtitle').style.opacity=0;friends.settle();ambient.skipTo(LOOKOUT.stop.d);nextMemory=memories.length;finaleT=40;ctx.finale=40;callDone=true;startNight('chapter4');}
+if($('next-chapter'))$('next-chapter').onclick=nextChapter;
 $('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;if($('end-title'))$('end-title').onclick=toTitle;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>action();
 if($('restart'))$('restart').onclick=()=>{$('pause').hidden=true;reset();};if($('to-title'))$('to-title').onclick=toTitle;
 // Settings apply at once and are remembered in this browser.
@@ -147,7 +151,7 @@ function leave(){if(state!=='stopped'&&state!=='remounting')return;startNight('r
 addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ControlLeft','ControlRight'].includes(e.code))e.preventDefault();
  if(e.code==='KeyM'&&!e.repeat){setSound(muted);return;}
  if(e.code==='Escape'){if(e.repeat)return;if(ui.closePanels())return;if(active())pause();else if(state==='paused'&&performance.now()-lastPauseAt>180)resume();return;}
- if(active()){keys.add(e.code);if(e.code==='KeyR'){mouseYaw=0;mousePitch=0;lookInputAt=clock;glance=0;manualLook=false;}if(e.code==='Space'&&!e.repeat){if(state==='walking'||state==='c1-walk')foot.jump(!interact.pose&&!chapter.pose&&!roam.walkLock);else{tut.bell=true;bell();}}if(e.code==='KeyT'&&!e.repeat&&state==='c1-walk'){foot.toggle();tut.flash=true;}if(e.code==='KeyF'&&!e.repeat)action();if(e.code.startsWith('Shift'))tut.shift=true;if(['KeyA','KeyD','ArrowLeft','ArrowRight'].includes(e.code))tut.steered=true;
+ if(active()){if(night1()&&chapter4.key(e.code,e.repeat))return;keys.add(e.code);if(e.code==='KeyR'){mouseYaw=0;mousePitch=0;lookInputAt=clock;glance=0;manualLook=false;}if(e.code==='Space'&&!e.repeat){if(state==='walking'||state==='c1-walk')foot.jump(!interact.pose&&!chapter.pose&&!roam.walkLock);else{tut.bell=true;bell();}}if(e.code==='KeyT'&&!e.repeat&&state==='c1-walk'){foot.toggle();tut.flash=true;}if(e.code==='KeyF'&&!e.repeat)action();if(e.code.startsWith('Shift'))tut.shift=true;if(['KeyA','KeyD','ArrowLeft','ArrowRight'].includes(e.code))tut.steered=true;
   if((e.code==='KeyW'||e.code==='ArrowUp')&&!e.repeat&&state==='stopped'){if(callDone)leave();else if(!endHint&&captionTimer<1){endHint=true;showCaption('','The street ends here.',4);}}}});
 addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 // Pointer lock is optional. Mouse-drag works if the browser declines it.
@@ -161,13 +165,15 @@ canvas.addEventListener('pointerdown',e=>{if(!active())return;if(e.pointerType!=
 canvas.addEventListener('pointerup',()=>{dragging=false;lastMouse=null;});canvas.addEventListener('pointercancel',()=>{dragging=false;lastMouse=null;});canvas.addEventListener('lostpointercapture',()=>{dragging=false;lastMouse=null;});
 // Head-look limits on the bike: a good look over each shoulder, never all the way round.
 const LOOK={yaw:1.85,down:1.2,up:.6};let sens=.0022;
-function turnView(dx,dy){if(!dx&&!dy)return;manualLook=true;lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else if(state==='c1-walk'){wa+=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else{const L=state==='memory'?MEMLOOK:LOOK;mouseYaw=clamp(mouseYaw-dx*sens,-L.yaw,L.yaw);mousePitch=clamp(mousePitch-dy*sens,-L.down,L.up);}}
+function turnView(dx,dy){if(!dx&&!dy)return;if(night1()&&chapter4.pan(dx,dy))return;// (a magnified picture on Alex's camera moves under the mouse instead)
+ manualLook=true;lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else if(state==='c1-walk'){wa+=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else{const L=state==='memory'?MEMLOOK:LOOK;mouseYaw=clamp(mouseYaw-dx*sens,-L.yaw,L.yaw);mousePitch=clamp(mousePitch-dy*sens,-L.down,L.up);}}
 addEventListener('mousemove',e=>{if(!active()||touch)return;let dx=0,dy=0;
  if(document.pointerLockElement===canvas){dx=e.movementX||0;dy=e.movementY||0;
   // Chromium can report one huge jump right after the lock engages; ignore it.
   if(clock-lockAt<.25&&(Math.abs(dx)>60||Math.abs(dy)>60))return;if(Math.abs(dx)>400||Math.abs(dy)>400)return;}
  else if(dragging){if(lastMouse){dx=e.clientX-lastMouse.x;dy=e.clientY-lastMouse.y;}lastMouse={x:e.clientX,y:e.clientY};}else return;turnView(dx,dy);});
 canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='touch'||!dragging||!active())return;if(lastMouse)turnView((e.clientX-lastMouse.x)*1.4,(e.clientY-lastMouse.y)*1.4);lastMouse={x:e.clientX,y:e.clientY};});
+addEventListener('wheel',e=>{if(active()&&night1()&&chapter4.wheel(e.deltaY))e.preventDefault?.();},{passive:false});
 document.addEventListener('pointerlockchange',()=>{lastMouse=null;lockAt=clock;if(!document.pointerLockElement&&active())pause();});
 for(const [id,key]of [['pedal','KeyW'],['left','KeyA'],['right','KeyD']]){const b=$(id);b.addEventListener('pointerdown',e=>{if(active()){b.setPointerCapture(e.pointerId);keys.add(key);if(key==='KeyW'&&state==='stopped'&&callDone)leave();}});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>keys.delete(key));}
 function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);}addEventListener('resize',resize);
@@ -327,13 +333,16 @@ const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const tension=createTension();
 const chOpts={scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,$,renderer,tension,
  say:(who,text,time)=>say(who,text,time),player:()=>playerState(),roam,setDate:html=>{$('date').innerHTML=html;},finish:()=>finish('chapter'),fade:v=>{fade=v;$('fade').style.opacity=v;},
- placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},setSpill:k=>{foot.spillLevel=k;},playerLight:foot.light,memory:null};
+ placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},setSpill:k=>{foot.spillLevel=k;},playerLight:foot.light,memory:null,
+ foot,self,shoot:(o2)=>shoot(o2),readPixels:(t,w,h)=>readPixels(t,w,h)};
 const chapter=createChapter1(chOpts);
 // Chapter Two picks up seconds after the first one stops, with the same people, systems and night,
 // and runs to the next morning (chapter2.js). Chapter One hands it the phases that begin c2- or m-.
 const chapter2=createChapter2(chOpts,chapter.kit);chapter.next=chapter2;
 // Chapter Three picks up a few minutes after the second ends, the same morning (chapter3.js).
 const chapter3=createChapter3(chOpts,chapter.kit,chapter2);chapter2.next=chapter3;
+// Chapter Four is the next afternoon and evening, downtown (chapter4.js); Chapter Three's end card leads to it.
+const chapter4=createChapter4(chOpts,chapter.kit,chapter2,chapter3);chapter3.next=chapter4;
 const chapter3Art=createChapterThreeArt({scene,world,chapter,chapter3,camera,nav,foot});
 function playerState(){const walk=state==='c1-walk';
  return {state,x:walk?wx:roam.x,z:walk?wz:roam.z,a:walk?wa:roam.a,pitch:walk?walkPitch:headPitch,bike:roam,speed:state==='c1-ride'?speed:moveT,riding:state==='c1-ride',walking:walk,pushing:!roam.lock&&(keys.has('KeyW')||keys.has('ArrowUp')),
@@ -405,7 +414,7 @@ function startNight(how='ride',section=null){
  const p=groundPoint(distance,lateral);roam.x=p.x;roam.z=p.z;roam.a=heading(distance)+yawOffset+(how==='wake'?Math.PI:0);roam.omega=0;roam.lock=false;roam.brake=0;roam.steer=null;
  contact.reset();bikeY=null;prevYaw=null;mouseYaw=mousePitch=look=headPitch=glance=0;manualLook=false;steerIn=0;kick=0;
  state='c1-ride';cockpit.visible=true;self.group.visible=true;$('ride-ui').hidden=true;
- document.body.classList.add('riding');if(how==='jump'){chapter.jump(section);return;}
+ document.body.classList.add('riding');if(how==='jump'){chapter.jump(section);return;}if(how==='chapter4'){chapter4.begin();return;}
  nostalgia.mark('leaving',clock);if(how!=='wake')audio?.leaving();chapter.begin(how);}
 // Riding at night.
 function updateNightRide(dt){
@@ -460,7 +469,7 @@ function updateNightWalk(dt){
  let f=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0),s=touch?0:(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0);
  if(roam.walkLock||chapter.pose)f=s=0;
  const turn=(keys.has('KeyQ')?1:0)-(keys.has('KeyE')?1:0)+(touch||keys.has('ArrowLeft')||keys.has('ArrowRight')?(keys.has('ArrowLeft')||keys.has('KeyA')?1:0)-(keys.has('ArrowRight')||keys.has('KeyD')?1:0):0);
- wa-=turn*1.6*dt;
+ wa-=(chapter4.viewing?0:turn)*1.6*dt;
  if(foot.owned&&foot.on&&!tut.flash)tut.flashT=(tut.flashT||0)+dt;
  // Running for your life (Chapter Three): the chapter says which way out is (along the tunnel, then to your bike);
  // W runs that way whatever you are looking at, A/D move you across it, S stops you. The mouse looks anywhere,
@@ -560,10 +569,11 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  // At night the evening keeps going: the blue deepens toward dark (still readable) as the chapter goes on.
  // Chapter Two's morning is plain daylight (day 1): a high, white sun, a blue sky, clear air. A memory
  // brings back the evening's own light at that point of the ride.
- const n1=night1(),mem=state==='memory',day=n1?(chapter.day||0):0,p=Math.min(1,distance/LENGTH)*(1-day),night=mem?0:(n1?Math.max(Math.min(1,ctx.finale/80),chapter.night):Math.min(1,ctx.finale/80))*(1-day),deep=n1?chapter.deep*(1-day):0;ctx.p=p;ctx.night=night;ctx.deep=deep;ctx.day=day;
+ // Chapter Four keeps its own clock: a white afternoon, gold, dusk at eight, night (chapter4.js sky()).
+ const n1=night1(),mem=state==='memory',L4=n1?chapter4.light():null,day=L4?L4.day:n1?(chapter.day||0):0,p=L4?L4.p:Math.min(1,distance/LENGTH)*(1-day),night=L4?L4.night:mem?0:(n1?Math.max(Math.min(1,ctx.finale/80),chapter.night):Math.min(1,ctx.finale/80))*(1-day),deep=L4?L4.deep:n1?chapter.deep*(1-day):0;ctx.p=p;ctx.night=night;ctx.deep=deep;ctx.day=day;
  skyMat.uniforms.dusk.value=p;skyMat.uniforms.night.value=night;skyMat.uniforms.day.value=day;scene.fog.color.set(0xe0b294).lerp(_c1.set(0x9991af),p*.88).lerp(_c2.set(0x53678c),night*.75).lerp(_c1.set(0x2c3650),deep*.6).lerp(_c2.set(0xc4d2de),day);scene.fog.density=(.0058+p*.004+night*.001+deep*.0015)*(1-day)+.0028*day;
  hemi.intensity=(2.05-p*.56-night*.40)*(1-.26*deep)-day*.15;hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2).lerp(_c2.set(0xe9efff),day*.6);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p).lerp(_c2.set(0x272a38),deep*.5);sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p).lerp(_c2.set(0xfff3e2),day);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4)*(1-deep)+day*.25;
- const rf=n1?{x:roam.x,y:nav.groundY(roam.x,roam.z),z:roam.z}:roadFrame(Math.min(distance,1140));if(day>0)sunlight.position.set(rf.x-52,rf.y+60,rf.z-60);else sunlight.position.set(rf.x+44,rf.y+30-p*21,rf.z-85);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=(1.10-p*.06-night*.06-deep*.06)*(1-day)+1.02*day;
+ const rf=n1?{x:roam.x,y:nav.groundY(roam.x,roam.z),z:roam.z}:roadFrame(Math.min(distance,1140));if(L4)sunlight.position.set(rf.x+44-96*day,rf.y+(30-p*21)*(1-day)+60*day,rf.z-85+25*day);else if(day>0)sunlight.position.set(rf.x-52,rf.y+60,rf.z-60);else sunlight.position.set(rf.x+44,rf.y+30-p*21,rf.z-85);sunlight.target.position.set(rf.x,rf.y,rf.z-12);renderer.toneMappingExposure=(1.10-p*.06-night*.06-deep*.06)*(1-day)+1.02*day;
  if(mem){scene.fog.color.lerp(_c1.set(0xe1bd9e),.22);scene.fog.density*=.88;hemi.color.lerp(_c1.set(0xf1e4ce),.18);sunlight.color.lerp(_c1.set(0xffdeb0),.2);renderer.toneMappingExposure+=.025;}
  // Chapter Three: under the trees on the old road the night closes in; inside the storm drain there is no
  // light at all past its first few meters but what you carry (a faint blue at the mouth, then nothing).
@@ -571,6 +581,8 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  // own record of it is still the last frame's)
  if(n1){const pp=state==='c1-walk'?{x:wx,z:wz}:{x:roam.x,z:roam.z},Lz=nav.locate(pp.x,pp.z),cv=Lz?.street==='drain'?smooth((Lz.s+1.2)/13):0,sh=chapter.shade||0;if(cv>0||sh>0){hemi.intensity*=(1-.80*cv)*(1-.42*sh);hemi.groundColor.lerp(_c1.set(0x0b0c10),Math.max(cv,sh*.5));sunlight.intensity*=1-cv;
   scene.fog.color.lerp(_c1.set(0x040506),cv*.92).lerp(_c2.set(0x161a24),sh*.5*(1-cv));scene.fog.density=scene.fog.density*(1-cv)+.021*cv+.0045*sh*(1-cv);renderer.toneMappingExposure+=.24*cv;}}
+ // (Chapter Four, inside a lit shop or the library: the room's own lights, as much as are still on)
+ if(L4?.fill>0){const f=L4.fill;hemi.intensity+=(Math.max(hemi.intensity,1.55)-hemi.intensity)*f;hemi.color.lerp(_c1.set(0xf2f1ea),.6*f);hemi.groundColor.lerp(_c2.set(0x6e685c),.7*f);}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
  else if(state==='walking')updateWalk(dt);
@@ -599,6 +611,27 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  if(audio&&!muted&&active()){camera.getWorldDirection(_v);audio.update(dt,{heart:tension.value>.001||tension.exertion>.01?tension.heart:null,amb:n1?chapter3.amb:null,speed:state==='c1-walk'?0:speed,pedal:bikeAudio.pedal,coasting:bikeAudio.coasting,onBike:onBike()||mem,surface:n1?nav.surface(roam.x,roam.z):Math.abs(lateral)>4.7?'grass':'asphalt',p,night,deep,finale:ctx.finale,listener:camera.position,forward:_v,friendsLeft:n1?0:mem?3:friends.list.filter(f=>!f.inside&&!f.gone).length,state:state==='c1-walk'?'walking':mem?'riding':state,crank:pedalPhase,sources:n1?[...ambient.sources,...chapter.sources]:ambient.sources,night1:n1,morning:day>0});}
 }
 const _c1=new THREE.Color(),_c2=new THREE.Color();
+// Chapter Four's pictures and televisions: the world seen from another camera into a render target (and read back as
+// pixels for a photograph). The light can be set to a moment of a day for it; everything is put back afterwards, so the
+// frame being drawn is untouched. Far from where you are, the zones the culling has put away are drawn for it too.
+const _shot={fog:new THREE.Color(),hc:new THREE.Color(),hg:new THREE.Color(),sc:new THREE.Color(),sp:new THREE.Vector3(),st:new THREE.Vector3(),sky:new THREE.Vector3()};
+function lightFor({day=0,dusk=0,night=0},at,sun){skyMat.uniforms.dusk.value=dusk;skyMat.uniforms.night.value=night;skyMat.uniforms.day.value=day;const p=dusk;
+ scene.fog.color.set(0xe0b294).lerp(_c1.set(0x9991af),p*.88).lerp(_c2.set(0x53678c),night*.75).lerp(_c2.set(0xc4d2de),day);scene.fog.density=(.0058+p*.004+night*.001)*(1-day)+.0028*day;
+ hemi.intensity=(2.05-p*.56-night*.40)-day*.15;hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2).lerp(_c2.set(0xe9efff),day*.6);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p);
+ sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p).lerp(_c2.set(0xfff3e2),day);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4)+day*.25;
+ if(at){const s=sun||[-52,60,-60];sunlight.position.set(at.x+s[0],(at.y??0)+s[1],at.z+s[2]);sunlight.target.position.set(at.x,at.y??0,at.z);sunlight.target.updateMatrixWorld();}}
+function shoot({cam,target,scene:sc=null,preset=null,sun=null,at=null}={}){if(typeof renderer.setRenderTarget!=='function'||!target||!cam)return false;
+ if(sc){renderer.setRenderTarget(target);try{renderer.render(sc,cam);}finally{renderer.setRenderTarget(null);}return true;}
+ const keep={d:skyMat.uniforms.dusk.value,n:skyMat.uniforms.night.value,y:skyMat.uniforms.day.value,fd:scene.fog.density,hi:hemi.intensity,si:sunlight.intensity,skyVis:sky.visible,skyS:sky.scale.x};
+ _shot.fog.copy(scene.fog.color);_shot.hc.copy(hemi.color);_shot.hg.copy(hemi.groundColor);_shot.sc.copy(sunlight.color);_shot.sp.copy(sunlight.position);_shot.st.copy(sunlight.target.position);_shot.sky.copy(sky.position);
+ const far=cam.position.distanceTo(camera.position)>60,masks=far?world.merged.map(m=>m.layers.mask):null;if(far)for(const m of world.merged)if(m.userData.mask0!==undefined)m.layers.mask=m.userData.mask0;
+ if(preset)lightFor(preset,at,sun);sky.position.copy(cam.position);sky.visible=true;sky.scale.setScalar(Math.min(1,(cam.far||390)*.9/350));
+ try{renderer.setRenderTarget(target);renderer.render(scene,cam);}finally{renderer.setRenderTarget(null);
+  skyMat.uniforms.dusk.value=keep.d;skyMat.uniforms.night.value=keep.n;skyMat.uniforms.day.value=keep.y;scene.fog.density=keep.fd;scene.fog.color.copy(_shot.fog);hemi.intensity=keep.hi;hemi.color.copy(_shot.hc);hemi.groundColor.copy(_shot.hg);
+  sunlight.intensity=keep.si;sunlight.color.copy(_shot.sc);sunlight.position.copy(_shot.sp);sunlight.target.position.copy(_shot.st);sunlight.target.updateMatrixWorld();sky.position.copy(_shot.sky);sky.visible=keep.skyVis;sky.scale.setScalar(keep.skyS);
+  if(masks)world.merged.forEach((m,i)=>{m.layers.mask=masks[i];});}
+ return true;}
+function readPixels(target,w,h){if(typeof renderer.readRenderTargetPixels!=='function')return null;try{const px=new Uint8Array(w*h*4);renderer.readRenderTargetPixels(target,0,0,w,h,px);return px;}catch{return null;}}
 // Chapter Three's woods and storm drain are far from Oak Hollow and drawn only near them: the woods by
 // distance, the drain only from its mouth or inside it. Deep in the drain (past its first bend, where
 // the way out cannot be seen) nothing outside it is drawn at all.
@@ -617,6 +650,7 @@ function cullZones(){if(!zoned.length)return;const p=camera.position,L=night1()?
  Object.assign(cullCache,{x:p.x,y:p.y,z:p.z,key});
  for(const m of zoned){if(m.userData.zone==='tunnel'){drawn(m,inD||(woods&&nearPortal));continue;}
   if(m.userData.zone==='alex-room'){const b=m.geometry.boundingSphere;drawn(m,room||(!inD&&p.distanceTo(b.center)-b.radius<45));continue;}
+  if(m.userData.zone==='town-int'){const b=m.geometry.boundingSphere;drawn(m,!inD&&p.distanceTo(b.center)-b.radius<55);continue;}// (the rooms downtown: seen only from close by, through their windows)
   if(deepIn){drawn(m,false);continue;}const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<range);}
  // Shadow-only forest batches must leave the render workload with their scenery.
  for(const m of world.shadowProxies){const b=m.geometry.boundingSphere;drawn(m,!deepIn&&p.distanceTo(b.center)-b.radius<(room?22:inD?85:135));}
@@ -646,7 +680,7 @@ for(const k of ['sensitivity','quality'])applySetting(k,ui.settings[k]);showCont
 // ---- TEMPORARY (private playtest build only; not in the shipped game): DEV — CHAPTER → SCENE ------------------
 // Starts at the true beginning of a chapter through the game's own hand-over code, or at one of its scenes
 // through the game's own checkpoint/QA initializers (dev-chapters.js).
-const dev=createDevChapters({chapter,chapter2,chapter3,friends,ambient,ending,interact,memory,tension,captionTone,foot,ui,world,roam,skyMat,sunlight,hemi,$,update,jumpTo,leave,
+const dev=createDevChapters({chapter,chapter2,chapter3,chapter4,nextChapter,friends,ambient,ending,interact,memory,tension,captionTone,foot,ui,world,roam,skyMat,sunlight,hemi,$,update,jumpTo,leave,
  audio:()=>audio,walk:()=>({x:+wx.toFixed(3),z:+wz.toFixed(3),a:+wa.toFixed(3)}),
  resetGame:()=>{ui.closePanels();resetState();state='intro';start();},
  // The last stretch of the street before the lookout: everyone already home (the game's own settlement, as
@@ -676,9 +710,9 @@ const jumpParam=typeof location!=='undefined'&&(location.search||'').match(/[?&]
 requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
-if(qa)window.lastLight={dev,devStart,devScene,DEV_SCENES,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
+if(qa)window.lastLight={dev,devStart,devScene,DEV_SCENES,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,chapter4,nextChapter,shoot,readPixels,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
  get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside})),
-  onFoot:{stamina:foot.stamina,crouch:foot.crouch,height:foot.height,sprint:foot.sprint,owned:foot.owned,on:foot.on},roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state,chapter2:chapter2.state,chapter3:chapter3.state,tension:tension.state,captionTone:captionTone.state,memory:memory.state,day:ctx.day||0};},
+  onFoot:{stamina:foot.stamina,crouch:foot.crouch,height:foot.height,sprint:foot.sprint,owned:foot.owned,on:foot.on},roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state,chapter2:chapter2.state,chapter3:chapter3.state,chapter4:chapter4.state,tension:tension.state,captionTone:captionTone.state,memory:memory.state,day:ctx.day||0};},
  jump:jumpTo,chapter,chapter2,memory,get memCast(){return memCast;},roam,nav,drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},
  face(a,pitch=0){if(state==='c1-walk'){wa=a;walkPitch=pitch;}else{roam.a=a;}},placePlayer,start,look(y,p=0){mouseYaw=y;mousePitch=p;look=y;headPitch=p;walkYaw=y;walkPitch=p;},world,friends,camera,ambient,contact,audio:()=>audio,renderer,scene,playerBike,self,foot,reset,toTitle,pause,resume,action,ui,interact,ending,nostalgia,walkTo(d,lat,yaw=0,pitch=0){walkD=d;walkLat=lat;walkYaw=yaw;walkPitch=pitch;},
  // QA only: put the bike somewhere on the street (screenshots of sidewalk riding etc.).

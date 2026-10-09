@@ -15,6 +15,8 @@
 //     ending calls chapter2.begin().
 //   * Chapter Three: Chapter Two's last scene (the chapter2-end checkpoint), then the game runs, muted and
 //     behind black, until Chapter Two's own end() calls chapter3.begin().
+//   * Chapter Four: Chapter Three's last scene (the chapter3-end checkpoint), the game runs, muted, until Chapter
+//     Three's own ending card, then the card's own "Chapter Four" button (nextChapter → chapter4.begin()).
 // The checkpoint scenes cannot know what earlier beats left behind (which windows were tapped, the
 // flashlight Jamie gave you, the siren, Chapter Two's evidence and police flags…). That history comes from
 // HISTORY (dev-chapter-history.js), which is GENERATED from a natural playthrough
@@ -38,7 +40,7 @@
 //     moment, through the departures in between, as a player would;
 //   * approach: the last stretch of the street to the lookout (the game rides the rest when you do).
 import {HISTORY,TIMESTAMPS,SCENE_HISTORY} from './dev-chapter-history.js';
-export const DEV_CHAPTERS=[{n:0,label:'Prologue',phase:null},{n:1,label:'Chapter One',phase:'leave'},{n:2,label:'Chapter Two',phase:'c2-black'},{n:3,label:'Chapter Three',phase:'c3-black'}];
+export const DEV_CHAPTERS=[{n:0,label:'Prologue',phase:null},{n:1,label:'Chapter One',phase:'leave'},{n:2,label:'Chapter Two',phase:'c2-black'},{n:3,label:'Chapter Three',phase:'c3-black'},{n:4,label:'Chapter Four',phase:'c4-black'}];
 // The scenes of each chapter, in story order. The first of each list is the chapter's own start.
 export const DEV_SCENES={
  0:[{id:'start',label:'Start (new game)',chapter:0},{id:'group-ride',label:'Group Ride',warp:150},{id:'alex-hears',label:'Alex Before Briarwood (“Did you guys hear that?”)',warp:355},
@@ -64,10 +66,29 @@ export const DEV_SCENES={
   {id:'c3-bike-block',label:'Old Bike Relocated (in the way)',jump:'c3-bike-block'},{id:'c3-creature-near',label:'Creature Chase — Near',jump:'c3-creature-near'},
   {id:'c3-creature-barrier',label:'Creature Chase — Barrier (the gate)',jump:'c3-creature-barrier'},{id:'c3-tunnel-exit',label:'Tunnel Exit',jump:'c3-tunnel-exit'},
   {id:'c3-bike-remount',label:'Bike Remount',jump:'c3-bike-remount',save:'c3-creature-chase'},{id:'c3-road-escape',label:'Forest Escape',jump:'c3-road-escape'},
-  {id:'c3-final-lure',label:'Final Alex-Like Road Figure',jump:'c3-final-lure'},{id:'chapter3-end',label:'Chapter Three End',jump:'chapter3-end'}]};
+  {id:'c3-final-lure',label:'Final Alex-Like Road Figure',jump:'c3-final-lure'},{id:'chapter3-end',label:'Chapter Three End',jump:'chapter3-end'}],
+ 4:[{id:'chapter4',label:'Chapter Four Start',chapter:4},{id:'c4-sam-house',label:'Sam’s House (his mom)',jump:'c4-sam-house',save:'chapter4-start'},
+  {id:'c4-backpack',label:'Alex’s Backpack',jump:'c4-backpack',save:'chapter4-start'},{id:'c4-camera',label:'Alex’s Camera (the pictures)',jump:'c4-camera'},
+  {id:'c4-photo-bike',label:'Old Bike in a Photo',jump:'c4-photo-bike'},{id:'c4-photo-mason',label:'The Mason Cycle Photo',jump:'c4-photo-mason'},
+  {id:'c4-ride',label:'Ride Downtown',jump:'c4-ride',save:'c4-camera'},{id:'c4-old-mill-road',label:'Old Mill Road',jump:'c4-old-mill-road',save:'c4-camera'},
+  {id:'c4-downtown-arrival',label:'Downtown Arrival',jump:'c4-downtown-arrival'},{id:'c4-main-street',label:'Main Street by Day',jump:'c4-main-street',save:'c4-downtown-arrival'},
+  {id:'c4-mason',label:'Mason Cycle & Sport',jump:'c4-mason',save:'c4-downtown-arrival'},{id:'c4-florist',label:'The Florist',jump:'c4-florist',save:'c4-downtown-arrival'},
+  {id:'c4-library',label:'The Library',jump:'c4-library'},{id:'c4-microfilm',label:'Microfilm Room',jump:'c4-microfilm',save:'c4-library'},
+  {id:'c4-historical-clue',label:'Microfilm: the Records',jump:'c4-historical-clue'},{id:'c4-closing',label:'Library Closing',jump:'c4-closing'},
+  {id:'c4-dusk',label:'Dusk (out of the library)',jump:'c4-dusk'},{id:'c4-alex-across',label:'Alex Across the Street',jump:'c4-alex-across',save:'c4-dusk'},
+  {id:'c4-creature',label:'Creature at Dusk (afraid)',jump:'c4-creature',save:'c4-dusk'},{id:'c4-presence',label:'Streetlight Cascade',jump:'c4-presence'},
+  {id:'c4-tv-window',label:'TV Window (live)',jump:'c4-tv-window'},{id:'c4-video-store',label:'Video Store',jump:'c4-video-store'},
+  {id:'c4-store-footage',label:'Store TV: Alex Footage',jump:'c4-store-footage'},{id:'c4-pine-ridge',label:'Store TV: Pine Ridge (the picture)',jump:'c4-pine-ridge'},
+  {id:'c4-store-phone',label:'The Phone (“Jamie?”)',jump:'c4-store-phone'},{id:'c4-store-live',label:'“That’s us.”',jump:'c4-store-live'},
+  {id:'c4-back-door',label:'Back Door',jump:'c4-back-door'},{id:'c4-escape',label:'Alley Escape',jump:'c4-escape'},
+  {id:'c4-alley-creature',label:'Creature Passes (narrow alley)',jump:'c4-alley-creature'},{id:'c4-laundromat',label:'Laundromat',jump:'c4-laundromat'},
+  {id:'c4-depot-st',label:'Depot Street',jump:'c4-depot-st'},{id:'c4-theater',label:'Theater Windows (silhouettes)',jump:'c4-theater'},
+  {id:'c4-marquee',label:'Alex Under the Marquee',jump:'c4-marquee'},{id:'c4-power-returns',label:'Blackout / Power Returns',jump:'c4-power-returns'},
+  {id:'c4-final-clue',label:'Final Clue (the Pine Ridge picture)',jump:'c4-final-clue'},{id:'c4-ride-home',label:'Ride Home',jump:'c4-ride-home',save:'c4-final-clue'},
+  {id:'c4-oak',label:'Back on Oak Hollow',jump:'c4-oak',save:'c4-final-clue'},{id:'chapter4-end',label:'Old Oak Ending',jump:'chapter4-end'}]};
 
 export function createDevChapters(g){
- const {chapter,chapter2,chapter3}=g,comp=chapter.companions,K=chapter.kit;
+ const {chapter,chapter2,chapter3,chapter4}=g,comp=chapter.companions,K=chapter.kit;
  // Every per-run state object emptied completely before the chapters' own reset()/fresh() refill them
  // (their fresh() functions refill a fixed list of keys; anything else would otherwise survive).
  function clearObject(o,keep=[]){if(!o)return;for(const k of Object.keys(o))if(!keep.includes(k))delete o[k];}
@@ -86,7 +107,7 @@ export function createDevChapters(g){
  // over's resetState() + start() as its first step): one start(), so the pointer lock is requested once per click.
  function clear({restart=true}={}){
   g.audio()?.stopRecording?.();
-  clearObject(chapter3.C);clearObject(chapter2.C);
+  if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
   // Chapter One's shared state: the dialogue queue array is kept as the same array (other code holds it).
   const q=K.S.queue;clearObject(K.S);K.S.queue=q;q.length=0;
   rebirth();
@@ -115,6 +136,7 @@ export function createDevChapters(g){
    runUntil(()=>G().callDone&&G().finaleT>=G().callT+12&&g.skyMat.uniforms.night.value>=.9995,95);g.leave();}
   else if(n===2){g.jumpTo('clue');chapter.act('reflector');runUntil(()=>phase()==='c2-black');}
   else if(n===3){g.jumpTo('chapter2-end');runUntil(()=>phase()==='c3-black');}
+  else if(n===4){g.jumpTo('chapter3-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n!==0)throw new Error('dev start: no chapter '+n);
   if(history)applyHistory(n);
   return phase();}
@@ -156,6 +178,7 @@ export function createDevChapters(g){
    chapter2:{C:plain(chapter2.C),day:chapter2.day,state:plain(chapter2.state),found:chapter2.found.group.visible,tape:chapter2.tape.visible,flyers:chapter2.flyers.visible,
     extra:chapter2.extra.map(person),beams:chapter2.beams.map(b=>({on:!!b.on,visible:!!b.beam?.visible}))},
    chapter3:{C:plain(chapter3.C),state:plain(chapter3.state),old:chapter3.old.group.visible,evidence:chapter3.evidence.visible,phone:chapter3.phone.visible,figure:chapter3.figure.group.visible,amb:plain(chapter3.amb)},
+   chapter4:chapter4?{C:plain(chapter4.C),state:(st=>{if(st?.photos)delete st.photos.rendered;return st;})(plain(chapter4.state))}:null,// (which of Alex's pictures are already rendered is a cache, not state)
    companions:comp.all.map(c=>({key:c.key,active:c.active,mode:c.mode,follow:c.follow||null,script:!!c.script,visible:!!c.person?.group?.visible,bikeVisible:!!c.bike?.group?.visible,
     p:pos({x:c.px,z:c.pz}),b:pos({x:c.bx,z:c.bz}),pa:r(c.pa),ba:r(c.ba),speed:r(c.speed),flash:!!c.flash,lookAt:!!c.lookAt,lookPlayer:!!c.lookPlayer,hidden:!!c.hidden,poi:!!c.poi})),
    people:{officer:person(chapter.officer),officer2:person(chapter.officer2),dad:person(chapter.dad),mom:person(chapter.mom),neighbor:person(chapter.neighbor),adults:(chapter.adults||[]).map(person),

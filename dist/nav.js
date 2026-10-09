@@ -60,7 +60,8 @@ export function createNav(world){
   if(WZ&&x>WZ.box.x0&&WZ.inside(x,z)){const w=WN.where(x,z);return {street:'woods',s:w.q?.s,t:w.q?.t,w,d:0,lat:0};}
   if(townOpen&&TN&&x<TN.box.x1+1&&z<TN.box.z1+1&&x>TN.box.x0-1&&z>TN.box.z0-1){const w=TN.where(x,z);if(w)return {street:'town',w,d:0,lat:0};}
   if(townOpen&&BF2&&x>BF2.x0&&x<BF2.x1&&z>BF2.z0&&z<BF2.z1){let q=B2.project(x,z,Math.max(5,Math.min(B2.length,lastU2)));const [cx,cz,a]=B2.center(q.u);if(Math.hypot(cx+q.v*Math.cos(a)-x,cz+q.v*Math.sin(a)-z)>.25)q=B2.project(x,z,null);
-   if(q.u>24&&q.u<B2.length+12&&Math.abs(q.v)<46){lastU2=q.u;return {street:'side2',u:q.u,v:q.v,d:0,lat:0};}}
+   // (from just past Oak Hollow's own edge on the road and its sidewalks; farther out, lawns, from where Oak Hollow's yards end)
+   if((q.u>24||(q.u>12&&Math.abs(q.v)<J2.half+XS.walk+.5))&&q.u<B2.length+12&&Math.abs(q.v)<46){lastU2=q.u;return {street:'side2',u:q.u,v:q.v,d:0,lat:0};}}
   const m=streetCoords(x,z,lastD);lastD=m.d;
   if(EZ&&EZ.inside(x,z)){const q=EZ.local(x,z);return {street:'easement',s:q.s,t:q.t,d:m.d,lat:m.lat};}
   const far=BF&&x>BF.x0&&x<BF.x1&&z>BF.z0&&z<BF.z1;

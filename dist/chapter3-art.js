@@ -61,7 +61,7 @@ export function createChapterThreeArt({scene,world,chapter,chapter3,camera,nav,f
  const w=C.RW(room.frontWindow.glass.x,room.frontWindow.glass.z-.08,1.95),target=C.RW((room.x0+room.x1)/2,(room.z0+room.z1)/2,.45),f=C.RW(room.sideWindow.glass.x-.12,room.sideWindow.glass.z,1.65);
  key.position.set(w.x,w.y,w.z);key.target.position.set(target.x,target.y,target.z);fill.position.set(f.x,f.y,f.z);
  let active=false,inRoom=false;
- return {update(dt){artTime.value=C.C.t||0;const on=/^(c3|d3|n3)-/.test(chapter.phase());
+ return {update(dt){artTime.value=C.C.t||0;const on=/^(c3|d3|n3|c4|d4|e4|n4)-/.test(chapter.phase());// (the same look carries into Chapter Four)
   if(on!==active){active=on;for(const s of swaps){if(s.vector)s.o[s.prop].copy(on?s.next:s.old);else s.o[s.prop]=on?s.next:s.old;}for(const d of details)d.visible=on;}
   const roomOn=on&&C.C.inRoom;if(roomOn!==inRoom){inRoom=roomOn;if(roomOn)scene.add(key,key.target,fill);else{key.removeFromParent();key.target.removeFromParent();fill.removeFromParent();}}
   for(const {m,group} of contacts){let visible=on&&!!group.parent;for(let a=group;a;a=a.parent)visible=visible&&a.visible;group.getWorldPosition(contactPos);m.visible=visible&&camera.position.distanceTo(contactPos)<55;if(!m.visible)continue;const p=contactPos,q=world.drain.project(p.x,p.z),inside=world.drain.inside(p.x,p.z,.05);let y=nav.groundY(p.x,p.z)+.008;if(inside)y=Math.max(y,(world.drain.waterAt(q.s)??y)+.007);m.position.set(p.x,y,p.z);group.getWorldQuaternion(contactRot);m.rotation.z=new THREE.Euler().setFromQuaternion(contactRot,'YXZ').y;m.material.opacity=inside?.48:.38;}

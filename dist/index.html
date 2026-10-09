@@ -43,7 +43,7 @@
   <div id="dev-chapters" role="group" aria-label="Developer: start at a chapter or scene (temporary playtest tool)">
    <div class="dev-title">DEV · PLAYTEST · TEMPORARY</div>
    <div class="dev-step">1 · Chapter</div>
-   <button data-dev-chapter="0" aria-pressed="false">Prologue</button><button data-dev-chapter="1" aria-pressed="false">Chapter One</button><button data-dev-chapter="2" aria-pressed="false">Chapter Two</button><button data-dev-chapter="3" aria-pressed="true">Chapter Three</button>
+   <button data-dev-chapter="0" aria-pressed="false">Prologue</button><button data-dev-chapter="1" aria-pressed="false">Chapter One</button><button data-dev-chapter="2" aria-pressed="false">Chapter Two</button><button data-dev-chapter="3" aria-pressed="true">Chapter Three</button><button data-dev-chapter="4" aria-pressed="false">Chapter Four</button>
    <label class="dev-step" for="dev-scene">2 · Scene</label>
    <select id="dev-scene" size="7"></select>
    <button id="dev-start" class="dev-go">START SCENE</button>
@@ -81,7 +81,7 @@
    <button id="restart" class="quiet">Start over</button>
    <button id="to-title" class="quiet">Back to the title</button>
   </nav>
-  <p class="hint">Mouse: look · W A S D: move<br>On foot: Shift sprint · Space jump · hold C crouch · T flashlight<br>F interact · On bike: Space bell</p>
+  <p class="hint">Mouse: look · W A S D: move<br>On foot: Shift sprint · Space jump · hold C crouch · T flashlight<br>F interact · On bike: Space bell · V Alex’s camera (Chapter Four)</p>
  </section>
 
  <!-- Settings -->
@@ -114,6 +114,7 @@
   <h2>Chapter Two</h2>
   <p>August 22, 2011.</p>
   <nav class="menu" aria-label="End of chapter">
+   <button id="next-chapter" class="primary" hidden>Chapter Four <span>→</span></button>
    <button id="again" class="primary">Start over <span>↻</span></button>
    <button id="end-title" class="quiet">Back to the title</button>
   </nav>

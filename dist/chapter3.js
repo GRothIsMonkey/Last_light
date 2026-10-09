@@ -270,8 +270,10 @@ export function createChapter3(o,k,ch2){
  const later=(sec,fn)=>C.timers.push({at:C.t+sec,fn});
  const mark=why=>{C.lastEvent=C.t;if(why)T?.note(why);};
  function card(on,title='Chapter Three',eyebrow=''){const el=$('chapter-card');if(!el)return;if(on){const e=el.querySelector?.('.eyebrow'),h=el.querySelector?.('h2');if(e)e.textContent=eyebrow;if(h)h.textContent=title;el.classList.add('on');}else el.classList.remove('on');C.cardOn=on;}
- const owns=ph=>typeof ph==='string'&&/^(c3|d3|n3)-/.test(ph);
- const handles=sec=>SECTIONS3.includes(sec)||!!ALIAS3[sec];
+ const mine=ph=>typeof ph==='string'&&/^(c3|d3|n3)-/.test(ph);
+ // (Chapter Four picks up the next afternoon: chapter4.js has its phases, sections and everything in them)
+ const owns=ph=>mine(ph)||!!A3.next?.owns(ph),nextOwns=()=>!!A3.next?.owns(S.phase);
+ const handles=sec=>SECTIONS3.includes(sec)||!!ALIAS3[sec]||!!A3.next?.handles?.(sec);
  const day=()=>/^(c3-black|d3-)/.test(S.phase);
  const tunnelPhase=()=>/^n3-(tunnel|evidence|bell|item|bike|deeper|figure|follow|lure|creature|run)$/.test(S.phase);
  // ---- poses (a closer look, the window, listening at the desk) -----------------------------------------------
@@ -775,9 +777,9 @@ export function createChapter3(o,k,ch2){
   const gate=Wd.spots.gate,back={x:gate.x,z:gate.z,y:gate.y+1.2};
   talk([{wait:4.6},{who:'SAM',text:'“That wasn’t Alex.”',from:sam,time:2,gap:1.6},{who:'JAMIE',text:'“…I know.”',from:jamie,time:1.6,gap:2.2},{who:'SAM',text:'“Then what did we follow?”',from:sam,time:2.2,gap:3.6},
    {act:()=>{S.lookTarget=back;for(const c of [jamie,sam])c.lookAt=back;S.jamieAim=null;},wait:4.6},{act:()=>{C.endT=0;},wait:.1}]);}
- function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Three';if(pp)pp.textContent='August 22, 2011.';}o.finish();}
+ function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Three';if(pp)pp.textContent='August 22, 2011.';}const nb=$('next-chapter');if(nb)nb.hidden=!A3.next;o.finish();}
  // ---- every frame ------------------------------------------------------------------------------------------
- function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase,p=me(),L=where(p),rs=L.street==='woods'?(L.s??Wd.L):L.street==='side'?L.u-Wd.U:L.street==='drain'?Wd.L+1:-999,ds=L.street==='drain'?L.s:-1;
+ function update(dt){if(nextOwns()){A3.next.update(dt);return;}C.t+=dt;C.pt+=dt;const ph=S.phase,p=me(),L=where(p),rs=L.street==='woods'?(L.s??Wd.L):L.street==='side'?L.u-Wd.U:L.street==='drain'?Wd.L+1:-999,ds=L.street==='drain'?L.s:-1;
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
   // (in the drain you walk carefully: wet concrete, silt, the dark; running for your life is another thing: game.js)
   o.setPace?.(ds>=0&&!C.flags.run?.72*(/^n3-(lure|creature)$/.test(ph)?1-.86*smooth((ds-264)/6):1):1);// (and near the culvert, slower and slower: nobody walks up to that)
@@ -956,12 +958,12 @@ export function createChapter3(o,k,ch2){
   if(/^(first-|turning|leaving)/.test(FG.state)&&S.phase==='n3-figure'){S.jamieAim=figChest;if(S.samAim)S.samAim=figChest;}}
  // Jamie's light: where the chapter points it, or ahead of him (along the road, or the tunnel) with a slow sweep.
  const sweepTmp={x:0,y:0,z:0};
- function jamieSweep(t){const c=jamie,x=c.mode==='foot'?c.px:c.bx,z=c.mode==='foot'?c.pz:c.bz,a=c.mode==='foot'?c.pa:c.ba;const s=cS(c);
+ function jamieSweep(t){if(nextOwns())return A3.next.jamieSweep?.(t)??null;const c=jamie,x=c.mode==='foot'?c.px:c.bx,z=c.mode==='foot'?c.pz:c.bz,a=c.mode==='foot'?c.pa:c.ba;const s=cS(c);
   if(s>=0){const run=C.flags.run&&!C.flags.flee,ahead=run?-7:6,q=Dr.at(clamp(s+ahead+2*Math.sin(t*.37),.5,Dr.len-.5),(run?.6:1.3)*Math.sin(t*(run?1.7:.53))),y=Dr.floor(s+ahead)+.15+1.2*(.5+.5*Math.sin(t*(run?2.3:.29)));sweepTmp.x=q.x;sweepTmp.z=q.z;sweepTmp.y=y;return sweepTmp;}
   const d=c.mode==='ride'?10:5+Math.sin(t*.4)*1.5,s2=Math.sin(t*.7)*(c.mode==='ride'?.25:.55);sweepTmp.x=x+Math.sin(a+s2)*d;sweepTmp.z=z-Math.cos(a+s2)*d;sweepTmp.y=nav.groundY(sweepTmp.x,sweepTmp.z);return sweepTmp;}
  // Sam's light: ahead of him, lower and closer than Jamie's; shaking a little when he is scared.
  const samTmp={x:0,y:0,z:0},origSam=ch2.samBeam.target;
- ch2.samBeam.target=()=>{if(!owns(S.phase))return origSam();const jit=T&&T.value>.6?(T.value-.6)*.25:0,n=()=>(Math.random()-.5)*jit;
+ ch2.samBeam.target=()=>{if(!mine(S.phase))return origSam();const jit=T&&T.value>.6?(T.value-.6)*.25:0,n=()=>(Math.random()-.5)*jit;
   if(S.samAim){const q=typeof S.samAim==='function'?S.samAim():S.samAim;samTmp.x=q.x+n();samTmp.z=q.z+n();samTmp.y=(q.y??nav.groundY(q.x,q.z))+n();return samTmp;}
   const c=sam,s=cS(c),t=C.t;if(s>=0){const run=C.flags.run&&!C.flags.flee,ahead=run?-4.5:4.5,q=Dr.at(clamp(s+ahead,.5,Dr.len-.5),.9*Math.sin(t*(run?1.9:.61)+1)),y=Dr.floor(s+ahead)+.1+.8*(.5+.5*Math.sin(t*(run?2.6:.43)));samTmp.x=q.x+n();samTmp.z=q.z+n();samTmp.y=y;return samTmp;}
   const x=c.mode==='foot'?c.px:c.bx,z=c.mode==='foot'?c.pz:c.bz,a=c.mode==='foot'?c.pa:c.ba,d=c.mode==='ride'?8:4.5;samTmp.x=x+Math.sin(a+.25*Math.sin(t*.5))*d;samTmp.z=z-Math.cos(a+.25*Math.sin(t*.5))*d;samTmp.y=nav.groundY(samTmp.x,samTmp.z);return samTmp;};
@@ -978,12 +980,12 @@ export function createChapter3(o,k,ch2){
   o.setSpill?.(8*(cq?1-.35*smooth((cq.s-90)/70):1));}
  const releaseBounce=()=>{for(const L of BOUNCE){if(L.userData.borrowed){L.userData.borrowed=false;L.intensity=0;}}o.setSpill?.(6);};
  // A longer throw in the drain (and at its mouth): what the beam lands on sets how strong it can be.
- function longThrow(hand,aim){if(!Dr.inside(hand.x,hand.z,.05))return null;const dir=new THREE.Vector3(aim.x-hand.x,aim.y-hand.y,aim.z-hand.z),d0=dir.length();dir.normalize();const d=Math.min(d0,Dr.rayDist(hand,dir,44));
+ function longThrow(hand,aim){if(nextOwns())return A3.next.longThrow?.(hand,aim)??null;if(!Dr.inside(hand.x,hand.z,.05))return null;const dir=new THREE.Vector3(aim.x-hand.x,aim.y-hand.y,aim.z-hand.z),d0=dir.length();dir.normalize();const d=Math.min(d0,Dr.rayDist(hand,dir,44));
   // (aimed far down the tunnel at him he narrows the beam, and it reaches: an adjustable flashlight)
   const focus=(figure.group.visible&&/^(first-|turning|leaving|lure)/.test(FG.state))||(creature.group.visible&&/^(emerge|reveal|creep)$/.test(CRT.state));
   return d>12?{d,reach:46,max:focus?300:150,angle:focus?.15:.2}:{d,reach:42,max:72,angle:.31};}
  // ---- what F does here ----------------------------------------------------------------------------------------
- function spots(){const out=[],ph=S.phase;if(C.fadeOut>=0||C.pose&&!C.pose.release&&ph!=='d3-phone'&&ph!=='n3-bike')return out;
+ function spots(){if(nextOwns())return A3.next.spots();const out=[],ph=S.phase;if(C.fadeOut>=0||C.pose&&!C.pose.release&&ph!=='d3-phone'&&ph!=='n3-bike')return out;
   if(ph==='d3-street')if(mom.visible&&!C.flags.momTalk)out.push({id:'c3-mom',label:'Talk to Alex’s mom',at:mom.pos,face:mom.pos,r:3.6,ride:true,wide:true});
   if(ph==='d3-mom'&&C.flags.invited){const d=AH.toWorld(AH.doorX,AH.stepFront+.5);out.push({id:'c3-in',label:'Go inside',at:{x:d.x,z:d.z},face:{x:d.x,z:d.z},r:3,wide:true});}
   if(ph==='d3-room'&&C.flags.phoneReady)out.push({id:'c3-phone',label:'Listen to his recordings',at:phone.position,face:phone.position,r:2.3,wide:true});
@@ -997,26 +999,26 @@ export function createChapter3(o,k,ch2){
   if(ph==='n3-bike'&&C.flags.canInspect&&!C.flags.inspected)out.push({id:'c3-inspect',label:'Look at the bike',at:old.group.position,face:old.group.position,r:2.8,wide:true});
   if(ph==='n3-bike'&&C.flags.canBell&&!C.flags.belled)out.push({id:'c3-bell',label:'Try the bell',at:old.group.position,face:old.group.position,r:2.6,wide:true});
   return out;}
- function act(id){if(id==='c3-mom')momTalk();else if(id==='c3-in')toRoom();else if(id==='c3-phone')startPhone();else if(id==='c3-play'){playRec();}else if(id==='c3-window')lookOut();else if(id==='c3-out')leaveRoom();
+ function act(id){if(nextOwns()){A3.next.act(id);return;}if(id==='c3-mom')momTalk();else if(id==='c3-in')toRoom();else if(id==='c3-phone')startPhone();else if(id==='c3-play'){playRec();}else if(id==='c3-window')lookOut();else if(id==='c3-out')leaveRoom();
   else if(id.startsWith('c3-ask-'))askNeighbor(id.slice(7));else if(id==='c3-inspect')inspectOld();else if(id==='c3-bell')tryBell();}
  // A control hint when it matters: running, and he is behind you, and you have not looked.
- function hint(){const P2=C.purs;if(S.phase==='n3-run'&&P2&&P2.hintAt!==null&&P2.farSeenAt===null&&C.t-P2.hintAt<5)return [['Mouse','Look back']];return null;}
+ function hint(){if(nextOwns())return A3.next.hint?.()??null;const P2=C.purs;if(S.phase==='n3-run'&&P2&&P2.hintAt!==null&&P2.farSeenAt===null&&C.t-P2.hintAt<5)return [['Mouse','Look back']];return null;}
  // Sounds placed in the world (positional loops). (Placeholders for the forest, the tunnel, the creek: hooks.)
- function sources(out){if(day()){out.push({id:'radio-am',kind:'radio',pos:officer.pos,level:.8});return;}
+ function sources(out){if(nextOwns()){A3.next.sources(out);return;}if(day()){out.push({id:'radio-am',kind:'radio',pos:officer.pos,level:.8});return;}
   const lf=C.amb.life;for(const [i,q] of loopsAt.ac.entries())out.push({id:'ac'+i,kind:'ac',pos:new THREE.Vector3(q.x,(q.ground??q.y??0)+.5,q.z),level:lf});
   out.push({id:'tv3',kind:'tv',pos:new THREE.Vector3(loopsAt.tv.x,loopsAt.tv.y+1.2,loopsAt.tv.z),level:lf},{id:'sprinkler3',kind:'sprinkler',pos:new THREE.Vector3(loopsAt.sprinkler.x,loopsAt.sprinkler.y+.3,loopsAt.sprinkler.z),level:lf});
   if(C.amb.water>.02)out.push({id:'outfall3',kind:'culvert',pos:new THREE.Vector3(Dr.P.x+4,Dr.P.floor+.6,Dr.P.z),level:.8*C.amb.water});
   if(C.amb.tunnel>.02){const s=Math.max(0,drainS()+10);out.push({id:'drain3',kind:'water',pos:new THREE.Vector3(Dr.at(Math.min(s,Dr.len-1)).x,Dr.floor(s)+.3,Dr.at(Math.min(s,Dr.len-1)).z),level:.35*C.amb.tunnel});}}
- function blockers(){const out=[];if(old.group.visible&&S.phase&&/^n3-/.test(S.phase))out.push(...oldParts());if(gate.visible)gateBlockers(out);out.push(...creature.colliders());for(const a of people)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});return out;}
+ function blockers(){if(nextOwns())return A3.next.blockers();const out=[];if(old.group.visible&&S.phase&&/^n3-/.test(S.phase))out.push(...oldParts());if(gate.visible)gateBlockers(out);out.push(...creature.colliders());for(const a of people)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});return out;}
  // ---- lifecycle --------------------------------------------------------------------------------------------------
- function reset(){const hadPose=C.pose;fresh();figCatch.value=0;oldCatch.value=0;card(false);roomOn(false);phone.visible=false;old.group.visible=false;helmet.visible=false;evidence.visible=false;marks.visible=false;figure.group.visible=false;Object.assign(FG,{...FG0,pose:FG.pose});glint.visible=false;
+ function reset(){A3.next?.reset();const hadPose=C.pose;fresh();figCatch.value=0;oldCatch.value=0;card(false);roomOn(false);phone.visible=false;old.group.visible=false;helmet.visible=false;evidence.visible=false;marks.visible=false;figure.group.visible=false;Object.assign(FG,{...FG0,pose:FG.pose});glint.visible=false;
   creature.reset();Object.assign(CRT,CRT0);gate.visible=false;Object.assign(GA,{open:1,want:1,rattle:0,burst:false});poseGate(10);
   branch.visible=false;branch.children[0].rotation.z=0;BR.phase=-1;deer.visible=false;DR.phase=-1;cable.visible=false;CB.amp=0;wet.visible=false;leaf.visible=false;LF.s=-1;stone.visible=false;ST.t=-1;glow.visible=false;glow.material.opacity=0;GL.o=0;GL.want=0;
   for(const r of ripple){r.t=-1;r.m.visible=false;}for(const d of drops){d.t=-1;d.m.visible=false;}
   releaseBounce();A.shade=0;A.barLight=false;A.remountRange=undefined;A.escape=null;A.rideBoost=undefined;A.rideFov=0;for(const c of [jamie,sam]){c.tight=0;c.boost=1;}WN?.setLimit(null);o.flashShadow?.(false);
   for(const a of people){a.show(false);a.lookAt=null;a.gest(null);a.mode='stand';a.path=null;}o.setDrain?.(1);o.setPace?.(1);T?.reset();o.audio()?.stopRecording?.();if(hadPose&&S.pose===hadPose){k.setPose(null);o.roam.walkLock=false;}}
  // QA jumps and Continue: put the chapter at one of its moments, everything it needs set up.
- function jump(section){section=ALIAS3[section]||section;reset();fresh();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();
+ function jump(section){if(A3.next?.handles?.(section)&&!SECTIONS3.includes(section)&&!ALIAS3[section]){reset();fresh();A3.next.jump(section);return;}section=ALIAS3[section]||section;reset();fresh();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();
   const dayS=['chapter3-start','c3-alex-house','alex-bedroom','recording','neighbors','c3-road-day'];
   if(dayS.includes(section)){k.nightWorld();ch2.morningWorld();dayWorld();ch2.flyers.visible=true;
    const ride=(c,q,a)=>{comp.putRiding(c,q.x,q.z,a,0);c.follow='ride';};
@@ -1119,9 +1121,9 @@ export function createChapter3(o,k,ch2){
   C.flags.flee=true;C.flags.bellBehind=true;FG.state='gone';C.roadFig={stage:'gone',seenT:2,seenAt:C.t-30,reactAt:C.t-30,leaveAt:C.t-29,goneAt:C.t-27};{const P2=outPurs('done');crHide('gone');Object.assign(P2,{treeAt:C.t-60,treeS:Wd.L-12});}
   if(section==='chapter3-end'){const q=side(241,1),j=side(238.6,-1.2),m=side(237.4,2.1);o.placePlayer({x:q.x,z:q.z,a:k.ha(241)+Math.PI,mode:'ride',speed:0});comp.putRiding(jamie,j.x,j.z,k.ha(238)+Math.PI,0);comp.putRiding(sam,m.x,m.z,k.ha(237)+Math.PI,0);
    for(const c of [jamie,sam])c.follow='ride';follow(true);go('n3-flee');T.value=.9;T?.set(.9);for(const kk in C.amb)C.amb[kk]=kk==='forest'||kk==='tunnel'||kk==='water'?0:1;safeNow();return;}}
- Object.assign(A3,{SECTIONS:SECTIONS3,ALIAS:ALIAS3,LABEL:LABEL3,owns,handles,begin,update,spots,act,sources,blockers,reset,jump,jamieSweep,longThrow,hint,officerAim:()=>null,
-  canDismount:()=>!C.pose&&!C.inRoom&&!['c3-black','c3-night'].includes(S.phase),canRemount:()=>!C.inRoom&&drainS()<0&&!/^n3-(outfall|tunnel|evidence|bell|item|bike|deeper|figure|follow|lure|creature)$/.test(S.phase)});// (the bikes wait at the mouth until you run)
- Object.defineProperties(A3,{amb:{get:()=>C.amb},state:{get:()=>({phase:S.phase,flags:{...C.flags},inRoom:C.inRoom,recSel:C.recSel,recPlaying:C.recPlaying,heard:[...C.heard],talked:[...C.talked],amb:Object.fromEntries(Object.entries(C.amb).map(([a,b])=>[a,+b.toFixed(3)])),
+ Object.assign(A3,{SECTIONS:SECTIONS3,ALIAS:ALIAS3,LABEL:LABEL3,owns,handles,begin,update,spots,act,sources,blockers,reset,jump,jamieSweep,longThrow,hint,officerAim:()=>nextOwns()?A3.next.officerAim?.()??null:null,
+  canDismount:()=>nextOwns()?A3.next.canDismount():!C.pose&&!C.inRoom&&!['c3-black','c3-night'].includes(S.phase),canRemount:()=>nextOwns()?A3.next.canRemount():!C.inRoom&&drainS()<0&&!/^n3-(outfall|tunnel|evidence|bell|item|bike|deeper|figure|follow|lure|creature)$/.test(S.phase)});// (the bikes wait at the mouth until you run)
+ Object.defineProperties(A3,{amb:{get:()=>nextOwns()?A3.next.amb:C.amb},state:{get:()=>({phase:S.phase,flags:{...C.flags},inRoom:C.inRoom,recSel:C.recSel,recPlaying:C.recPlaying,heard:[...C.heard],talked:[...C.talked],amb:Object.fromEntries(Object.entries(C.amb).map(([a,b])=>[a,+b.toFixed(3)])),
    bells:(C.heardBells||[]).map(b=>({...b,pos:{x:+b.pos.x.toFixed(2),y:+b.pos.y.toFixed(2),z:+b.pos.z.toFixed(2)}})),voices:(C.voices||[]).map(v=>({word:v.word,at:v.at,tunnel:!!v.tunnel,where:v.where,dot:v.dotFromView,pos:{x:+v.pos.x.toFixed(2),z:+v.pos.z.toFixed(2)}})),
    oldBike:old.group.visible,bike:C.bike,oldFallen:!!C.oldFallen,helmet:helmet.visible,evidence:evidence.visible,marks:marks.visible,phone:phone.visible,
    figure:{state:FG.state,visible:figure.group.visible,s:+FG.s.toFixed(2),t:+FG.t.toFixed(2),v:+FG.v.toFixed(2),road:FG.road?{s:+FG.road.s.toFixed(2),t:+FG.road.t.toFixed(2)}:null,seenAt:C.fig?.seenAt??null,seenT:+(C.fig?.seenT??0).toFixed(2),t0:C.fig?.t0??null,alexAt:C.fig?.alexAt??null,unseenGo:!!C.fig?.unseenGo,distAtSeen:C.fig?.distAtSeen??null},

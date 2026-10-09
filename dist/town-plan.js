@@ -38,7 +38,7 @@ export const TL=(x,z)=>({u:T0.x-x,v:T0.z-z});
 export const HU=-Math.PI/2,HV=0;// headings of +u (west) and +v (north)
 // Old Mill Road: where along it, and across it.
 export function connAt(s,t=0){const i=clamp(s/ROAD.step,0,ROAD.n-1.0001),k=Math.floor(i),f=i-k,x=ROAD.X[k]+(ROAD.X[k+1]-ROAD.X[k])*f,z=ROAD.Z[k]+(ROAD.Z[k+1]-ROAD.Z[k])*f,a=ROAD.A[k]+(ROAD.A[k+1]-ROAD.A[k])*f;return {x:x+Math.cos(a)*t,z:z+Math.sin(a)*t,a};}
-export function connProject(x,z){const q=roadNear(x,z);return q&&q.d<60&&q.s<=CONN.len+.01&&!(q.out&&q.s<0)?q:null;}
+export function connProject(x,z){const q=roadNear(x,z);return q&&q.d<60&&q.s<=CONN.len+1.5&&!(q.out&&q.s<0)?q:null;}// (a little past its end: the seam with Main Street overlaps)
 // Its height: first exactly Summerfield's own (it is Summerfield, there), then up over the rise and down into town.
 const climb=pchip([[CONN.straight,S2.point(CONN.u0+CONN.straight,0).y+.025],[44,-.62],[78,1.35],[104,2.62],[128,2.86],[150,2.45],[CONN.len,1.9]]);
 export function connBase(s){if(s<=CONN.straight)return S2.point(CONN.u0+Math.max(0,s),0).y+.025;return climb(s);}
@@ -265,8 +265,8 @@ export function landY(x,z){const nat=T0land(x,z),{u,v}=TL(x,z);
 export function townNav(){
  const REACH_T=CONN_X.lawn+2;
  function where(x,z){if(!inRegion(x,z))return null;const {u,v}=TL(x,z);
-  if(u>=MAIN.u0&&inCore(u,v))return {zone:'core',u,v};
-  const q=connProject(x,z);if(q&&q.s>=-.01&&q.s<=CONN.len+.01&&Math.abs(q.t)<60)return {zone:'conn',s:q.s,t:q.t,q,u,v};
+  if(u>=MAIN.u0+1&&inCore(u,v))return {zone:'core',u,v};
+  const q=connProject(x,z);if(q&&q.s>=-.01&&q.s<=CONN.len+1.5&&Math.abs(q.t)<60)return {zone:'conn',s:q.s,t:q.t,q,u,v};
   return {zone:'land',u,v};}
  const connSolid=(s,t,r)=>{for(const h of CONN_HOUSES){if(Math.abs(s-h.s)>h.w/2+3)continue;const tc=h.side*(h.set+h.d/2);if(Math.abs(t-tc)<h.d/2+r&&Math.abs(s-h.s)<h.w/2+r)return true;if(h.porch&&Math.abs(t-h.side*(h.set-1.2))<1.3+r&&Math.abs(s-h.s)<h.w*.36+r)return true;}
   // street trees in the grass strip and the poles
