@@ -810,7 +810,7 @@ export function createChapter4(o,k,ch2,ch3){
    ensureLead();X.gotIt=C.t-10;X.t=34;X.shot='static';X.shotAt=C.t-1;tvShow('video',null);
    if(section==='c4-store-phone')return;
    X.ringAt=C.t-4;X.answered='you';X.callDone=true;
-   if(section==='c4-store-live')return;
+   if(section==='c4-store-live'){X.callDone=false;later(1.6,()=>{if(C.store===X)X.callDone=true;});return;}/* (a moment after the line goes dead) */
    X.live=C.t-8;tvShow('video','live-store');X.dark=C.t-6;C.darkTo=C.dark=.72;outNow([shopIdx('video'),LV.neon+NEON.videoOpen,LV.neon+NEON.videoSign,D.videoFix?.front,D.videoFix?.middle,D.videoFix?.rear].filter(i=>i!==undefined&&i>=0));
    objective('Get out the back.','Through the back room.');youFoot(104.4,-31.6,HS,STORE[0]);bikesTo('store');stand(jamie,{u:103.2,v:-33},{look:at(103.75,-35,TY+1.2)});stand(sam,{u:105.6,v:-32.6},{look:()=>camera.position});return;}
   ff('store','out');ensureLead();

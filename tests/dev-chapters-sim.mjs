@@ -195,7 +195,7 @@ export async function runDevChapterChecks(T,cap){
  // ---- scenes: every one starts, before its event; the important ones match a natural arrival; switching leaks nothing --
  const SC=h.dev.SCENES,scenes={starts:{},compare:{},switching:null},DTs=1/30;
  const startScene=(n,id)=>{const ph=h.devScene(n,id);advance(DTs);return {ph,snap:h.dev.snapshot()};};
- const c3=h.chapter3,st3=()=>c3.state,nScenes=Object.values(SC).flat().length;
+ const c3=h.chapter3,st3=()=>c3.state,nScenes=[0,1,2,3].reduce((a,n)=>a+SC[n].length,0);/* (Chapter Four's scenes: tests/chapter4-sim.mjs) */
  // (what "shortly before the event" means for the scenes that matter most: the event has not happened yet)
  const BEFORE={'3/c3-figure-reveal':()=>c3.C.fig?.seenAt==null,'3/c3-creature-reveal':()=>!c3.creature.group.visible&&!c3.C.crt&&/^lure-(walk|step|in)$/.test(c3.FG.state),
   '3/c3-creature-chase-start':()=>!c3.C.purs&&c3.CRT.state==='drop','3/c3-creature-far':()=>c3.C.purs.farSeenAt==null,'3/c3-creature-side':()=>c3.C.purs.sideAt==null&&!c3.creature.group.visible,
