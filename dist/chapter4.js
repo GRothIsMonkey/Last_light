@@ -189,6 +189,22 @@ export function createChapter4(o,k,ch2,ch3){
   if(c.mode!=='foot'||c.script?.spot4)return;
   comp.run(c,[comp.steps.toward(c,()=>{const s=C.spot[c.key];if(!s)return null;const w=typeof s.q==='function'?s.q():at(s.q.u,s.q.v);const lk=typeof s.look==='function'?s.look():s.look;
    return {x:w.x,z:w.z,look:lk,face:typeof s.face==='function'?s.face():s.face??undefined,max:s.max,gesture:s.gesture};})],{then:()=>{if(C.match&&c.mode==='foot')c.follow='walk';}});c.script.spot4=true;}
+ // Jamie and Sam stay with you: Chapter Four never loses them. They run to keep up when you run (footBoost); a place
+ // the scene gave one to stand that you have since left far behind is let go (he comes after you); a path that has
+ // stopped getting anywhere is looked for again; and only when one is truly stuck, far behind and out of sight, is he
+ // put, unseen, a little way back along the way you came (C.guardLog keeps a count of each, for the tests).
+ const GUARD={jamie:{x:0,z:0,t:0,stuck:0},sam:{x:0,z:0,t:0,stuck:0}},TRAIL=[];
+ const occluded=(x0,z0,x1,z1)=>{const n=Math.ceil(Math.hypot(x1-x0,z1-z0)/.6);for(let i=2;i<n-1;i++){const x=x0+(x1-x0)*i/n,z=z0+(z1-z0)*i/n;if(!nav.walkable(x,z,{r:.05})&&!nav.rideable?.(x,z))return true;}return false;};
+ const seenAt=q=>{const e=camera.position,f=new THREE.Vector3();camera.getWorldDirection(f);const dx=q.x-e.x,dz=q.z-e.z,l=Math.hypot(dx,dz)||1;return (dx*f.x+dz*f.z)/l/(Math.hypot(f.x,f.z)||1)>.3&&l<45&&!occluded(e.x,e.z,q.x,q.z);};
+ function guard(dt){const ph=S.phase;if(!C.guardLog){C.guardLog={released:0,unstuck:0,recovered:0};TRAIL.length=0;for(const g of Object.values(GUARD))Object.assign(g,{x:0,z:0,t:0,stuck:0});}if(!/^(d4-town|d4-library|d4-closing|e4-|n4-)/.test(ph)||C.fadeOut>=0)return;const p=me();
+  const tl=TRAIL[TRAIL.length-1];if(!tl||Math.hypot(tl.x-p.x,tl.z-p.z)>1){TRAIL.push({x:p.x,z:p.z});if(TRAIL.length>40)TRAIL.shift();}
+  for(const c of [jamie,sam]){if(!c.active)continue;const g=GUARD[c.key],q=c.mode==='ride'?{x:c.bx,z:c.bz}:{x:c.px,z:c.pz},d=Math.hypot(q.x-p.x,q.z-p.z);
+   c.footBoost=C.flags.hurry?1.45:1.2;
+   const sp=C.spot[c.key];if(sp&&!sp.keep&&c.mode==='foot'&&p.walking&&d>(sp.leash||12)){stand(c,null);C.guardLog.released++;}
+   g.t+=dt;if(g.t>=2.5){const mv=Math.hypot(q.x-g.x,q.z-g.z);g.x=q.x;g.z=q.z;g.t=0;g.stuck=d>6&&mv<.4&&c.mode==='foot'&&!sp?g.stuck+2.5:0;if(g.stuck===2.5){c.route=null;C.guardLog.unstuck++;}}
+   if(g.stuck>=7.5&&d>9&&c.mode==='foot'&&!c.script&&p.walking&&!C.view&&!seenAt(q)){
+    for(let i=TRAIL.length-1;i>=0;i--){const t=TRAIL[i],b=Math.hypot(t.x-p.x,t.z-p.z);if(b<5)continue;if(b>12)break;
+     if(nav.walkable(t.x,t.z,{r:.3})&&!seenAt(t)){comp.putFoot(c,t.x,t.z,headingTo(t.x,t.z,p.x,p.z),{bike:c.bike.group.visible?{x:c.bx,z:c.bz,a:c.ba,kick:c.kick,fall:c.fall}:null});if(C.match)c.follow='walk';g.stuck=0;C.guardLog.recovered++;mark('caught up: '+c.key);break;}}}}}
  function standAll(){for(const c of [jamie,sam]){const s=C.spot[c.key];if(s&&c.mode==='foot'&&!c.script)stand(c,s.q,s);}}
  // a short look at something, then back
  function glance(c,q,secs=2){c.lookAt=q;later(secs,()=>{if(c.lookAt===q)c.lookAt=null;});}
@@ -480,7 +496,7 @@ export function createChapter4(o,k,ch2,ch3){
  // The TV shop's window, closed since six: every set comes on at once, and shows the three of them from high above.
  function tvWindow(){if(C.cas.tvAt!==null)return;C.cas.tvAt=C.t;tvShow('acetv','live-high');mark('the TVs in the window');sound('static',at(72.8,-11.6,TY+1.4),{gain:.6});
   for(const c of [jamie,sam])c.lookAt=at(72.8,-11.6,TY+1.4);say([{who:'JAMIE',text:'“Look. The TVs.”',by:'jamie',time:1.6}],{interrupt:true});
-  /* (the two of them roll slowly up to the window, and stop there looking in) */for(const [c,u,v] of [[jamie,75.8,-7.9],[sam,77.9,-7.4]])if(c.mode==='ride'&&!c.script){const q=at(u,v);comp.run(c,[comp.steps.rideTo(c,[[q.x,q.z]],{vmax:4.5}),comp.steps.brake(c,.3)],{then:()=>{c.lookAt=at(72.8,-11.6,TY+1.4);}});}}
+  /* (they stay with you, wherever you go now; they look at it) */}
  // ---- the televisions --------------------------------------------------------------------------------------------------------------
  const TVS={video:{tv:D.tvs.video,share:[]},laundry:{tv:D.tvs.laundry,share:[]},acetv:{tv:D.tvs.acetv?.[0],share:D.tvs.acetv?.slice(1)||[]}};
  for(const T2 of Object.values(TVS))Object.assign(T2,{on:0,shot:null,t:0,stat:1,rt:0,frames:0});
@@ -716,7 +732,7 @@ export function createChapter4(o,k,ch2,ch3){
   if(C.lightsOn){lights.S.fixOn={...Object.fromEntries(fixIdx(D.libraryFix).map(i=>[i,C.h<20.02?1:0]))};lights.update(dt,C.h);lights.lights(dt,camera.position,{indoors:inside('library')||inside('video')||inside('laundry')});}
   if(C.townLife)life.update(dt,C.h,{eye:camera.position,others:others()});
   if(samMom.visible)samMom.update(dt,{eye:camera.position});
-  updatePose(dt);match(dt);standAll();updateDoors(dt);photo.update(dt);updateView(dt);updateTVs(dt);updateCrt(dt);updateAX(dt);updateSil(dt);updateFlash(dt);updateDark(dt);updateAmb(dt);
+  updatePose(dt);match(dt);guard(dt);standAll();updateDoors(dt);photo.update(dt);updateView(dt);updateTVs(dt);updateCrt(dt);updateAX(dt);updateSil(dt);updateFlash(dt);updateDark(dt);updateAmb(dt);
   // Alex's pictures, rendered a few at a time while nobody is looking at them
   if(C.renderQ?.length&&!C.view){C.renderT=(C.renderT||0)-dt;if(C.renderT<=0){C.renderT=.15;const i=C.renderQ.shift();if(!photo.photos[i].rendered)photo.take(i);}}
   if(C.fadeIn>=0){C.fadeIn+=dt;o.fade(1-smooth(C.fadeIn/1.6));if(C.fadeIn>=1.6){o.fade(0);C.fadeIn=-1;}}

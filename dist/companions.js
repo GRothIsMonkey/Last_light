@@ -30,7 +30,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  const KEYS=new Map();const keysFor=c=>{if(!KEYS.has(c.key))KEYS.set(c.key,dismountKeys(c.geom));return KEYS.get(c.key);};
  const vTmp=new THREE.Vector3();
  const pebble=new THREE.Mesh(new THREE.IcosahedronGeometry(.016,0),new THREE.MeshStandardMaterial({color:0x969187,roughness:1}));scene.add(pebble);pebble.visible=false;
- function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{active:false,boost:1,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
+ function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{active:false,boost:1,footBoost:1,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
   bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side,stall:0,unstick:0,wayT:0,waySide:1,poi:null,gaze:null,route:null,routeT:0,turnHold:0,turnDir:0,tight:0});trail.reset();}
  // Take a friend over from friends.js (they were inside, or their bike lying where they left it).
  function take(c){if(!c.active){// start from wherever friends.js left the bike
@@ -151,6 +151,8 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   const [lag,side]=slots[slot];c.formationLag=damp(c.formationLag,lag,.7,dt);c.formationSide=damp(c.formationSide,side,.5,dt);
   const tx=pl.x-Math.sin(pl.a)*c.formationLag+Math.cos(pl.a)*c.formationSide,tz=pl.z+Math.cos(pl.a)*c.formationLag+Math.sin(pl.a)*c.formationSide;
   const dist=Math.hypot(tx-c.px,tz-c.pz),near=Math.hypot(pl.x-c.px,pl.z-c.pz);let v=dist>2.2?Math.min(3,Math.max(1.9,pl.speed+.3)):dist>.65?Math.min(1.5,dist):0;if(near<1.1&&dist<1.3)v=0;
+  // (a chapter may let them run to keep up: footBoost > 1 lifts the top speed, the more the farther behind they are)
+  if((c.footBoost||1)>1&&dist>2.2){const top=3*c.footBoost;v=Math.min(top,Math.max(v,pl.speed+.25)+(top-3)*clamp((dist-4)/6,0,1));}
   // Too close (you walked into them): a step back out of your way.
   if(near<.85){const k=1.2/(near||1);stepToward(c,dt,ctx,c.px+(c.px-pl.x)*k,c.pz+(c.pz-pl.z)*k,.7);return;}
   const [rx,rz]=routeTo(c,dt,tx,tz,pl);stepToward(c,dt,ctx,rx,rz,v);}
