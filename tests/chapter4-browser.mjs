@@ -55,7 +55,7 @@ try{
  await stage('mom',()=>{__d.until(()=>__d.s4().flags.bagReady,60);return __d.s4().objective;});await snap('01-sams-house-mom');
  // ---- the backpack, the camera, the pictures --------------------------------------------------------------------------------
  await stage('bag',()=>{const b=__d.A4.bag.position;__d.go(b,{r:1.6,max:20});__d.face(b.x,b.z,-.6);__d.L.step(.3);__d.tap('KeyF');__d.until(()=>false,2.4);});await snap('02-backpack');
- await stage('camera',()=>__d.until(()=>__d.s4().view==='camera',30));await snap('03-camera-first-picture');
+ await stage('camera',()=>__d.until(()=>__d.s4().view==='camera',30)&&__d.until(()=>false,1.2));await snap('03-camera-first-picture');
  const found=await stage('pictures',()=>{const P=__d.A4.photo,out=[];for(const id of ['oak-sunset','briarwood','creek','mason']){const i=P.photos.findIndex(p=>p.id===id);let n=0;while(__d.s4().photos.index<i&&n++<20){__d.tap('KeyD');__d.until(()=>false,.4);}__d.until(()=>false,1.2);__d.tap('KeyF');if(__d.until(()=>__d.s4().found.includes(id),8))out.push(id);
    if(id!=='mason')__d.until(()=>__d.quiet(),12);else break;}return out;});
  await snap('04-picture-mason-old-bike-zoomed');
@@ -106,7 +106,9 @@ try{
  await stage('back door',()=>{__d.goUV(111.2,-26,{r:.6});__d.goUV(111.2,-30,{r:.6});__d.goUV(104.2,-33.2,{r:.6});__d.faceUV(103.75,-35.6,1);__d.L.step(.3);__d.tap('KeyF');__d.until(()=>false,1);__d.goUV(103.75,-36.8,{r:.5});return __d.until(()=>__d.s4().phase==='n4-alley',5);});
  await snap('27-out-the-back-alley');
  // ---- out the back ---------------------------------------------------------------------------------------------------------------
- await stage('narrow',()=>{__d.goUV(118,-38.8);__d.goUV(140,-39);__d.goUV(150,-38.2);__d.until(()=>__d.s4().creature.pass?.stage==='run',6);const q=__d.at(138,-39);__d.face(q.x,q.z,.0);const seen=__d.until(()=>{const R=__d.A4.C.esc.pass,pu=__d.at(0,0).x-__d.pos().x;if(R?.stage==='run'){const c=__d.at(R.u,R.v,1.2+(R.y||0));__d.face(c.x,c.z,.05+(R.y||0)*.12);}return !R||R.stage==='gone'||(R.stage==='run'&&R.u>pu-6);},6);const R=__d.A4.C.esc.pass;return {seen,stage:R?.stage,roof:!!R?.roof,u:+(R?.u??0).toFixed(1)};});
+ await stage('narrow',()=>{__d.goUV(118,-38.8);const {L,at}=__d,P=(a,b)=>{const p=L.nav.walkPath({x:a.x,z:a.z},{x:b.x,z:b.z});return p.length?p:[[b.x,b.z]];},a1=at(140,-39),a2=at(150,-38.2),q0=__d.pos(),pts=[...P(q0,a1),...P(a1,a2)];let i=0;
+  /* (walking the narrow way; the moment it comes, stop and turn to it, as anyone would) */const seen=__d.until(()=>{const R=__d.A4.C.esc.pass,q=__d.pos();if(R&&R.stage!=='coming'){L.release('KeyW');if(R.stage==='run'){const c=at(R.u,R.v,1.2+(R.y||0));__d.face(c.x,c.z,.05+(R.y||0)*.12);}const pu=at(0,0).x-q.x;return R.stage==='gone'||(R.stage==='run'&&R.u>pu-6);}
+   while(i<pts.length&&Math.hypot(pts[i][0]-q.x,pts[i][1]-q.z)<.6)i++;if(i<pts.length){__d.face(pts[i][0],pts[i][1]);L.press('KeyW');}else L.release('KeyW');return false;},45);L.release('KeyW');const R=__d.A4.C.esc.pass;return {seen,stage:R?.stage,roof:!!R?.roof,u:+(R?.u??0).toFixed(1)};});
  await snap('28-it-runs-past');
  await stage('laundromat',()=>{__d.until(()=>__d.s4().creature.pass?.stage==='gone',20);__d.goUV(163.75,-38.2,{r:.6});__d.goUV(163.75,-35,{r:.6});__d.until(()=>__d.s4().phase==='n4-laundry',5);__d.goUV(165,-30,{r:.6});__d.until(()=>false,1);});await snap('29-laundromat');
  await stage('depot',()=>{__d.goUV(169,-27,{r:.6});__d.goUV(173,-26.75,{r:.6});__d.until(()=>__d.s4().phase==='n4-depot',5);const s=[...__d.A4.SIL].sort((a,b)=>a.t-b.t)[0];__d.face(s.pos.x,s.pos.z,.4);__d.until(()=>__d.A4.SIL.some(x=>x.state==='on'),6);});
