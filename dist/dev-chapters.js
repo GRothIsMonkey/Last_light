@@ -123,7 +123,7 @@ export function createDevChapters(g){
  function applyHistory(n,{save=true,foot=true}={}){const H=HISTORY[n];if(!H)return;
   const put=(obj,vals,clock,stamps)=>{if(!obj||!vals)return;for(const [k,v] of Object.entries(vals)){if(v===null)delete obj[k];else obj[k]=JSON.parse(JSON.stringify(v));}
    for(const [k,off] of Object.entries(stamps||{}))obj[k]=off===null?undefined:(obj[clock]??0)-off;};
-  put(K.S,H.chapter1,'t',H.chapter1Clock);put(chapter2.C,H.chapter2,'t',H.chapter2Clock);
+  put(K.S,H.chapter1,'t',H.chapter1Clock);put(chapter2.C,H.chapter2,'t',H.chapter2Clock);put(chapter3.C,H.chapter3,'t',H.chapter3Clock);
   if(foot&&H.foot){g.foot.owned=H.foot.owned;g.foot.on=H.foot.on;}
   if(H.lens!=null&&K.lens)K.lens.emissiveIntensity=H.lens;
   if(save&&H.save)K.checkpointTo(H.save,K.CHECKPOINT[H.save]);}

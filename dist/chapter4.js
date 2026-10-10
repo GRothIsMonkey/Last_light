@@ -607,7 +607,7 @@ export function createChapter4(o,k,ch2,ch3){
  // ---- the marquee ----------------------------------------------------------------------------------------------------------------------
  function marquee(){if(C.flags.mq)return;C.flags.mq=true;go('n4-marquee');C.hMin=Math.max(C.hMin||0,HOUR.marquee);C.darkTo=.88;
   outNow(D.lamps.map(L=>LV.lamp+L.id).filter(i=>!KEEP.has(i)));// (whatever was still on along Main)
-  C.mq={t:0,out:null,back:null,rush:false};placeAX(200,-9.6,HE);AX.state='stand';AX.t=0;S.lookTarget=axHead;
+  C.mq={t:0,out:null,back:null,rush:false};placeAX(195.6,-9.6,HE);/* (under the near end of the marquee, in its light) */AX.state='stand';AX.t=0;S.lookTarget=axHead;
   for(const [c,q] of [[jamie,{u:179.8,v:-7.0}],[sam,{u:179.6,v:-10.2}]])stand(c,q,{look:()=>axHead,max:2.4});
   talk([{wait:1.4},{who:'ALEX',text:'“Jamie.”',from:AX,time:1.6,gap:1.6},{who:'JAMIE',text:'“…Where is he?”',from:jamie,time:1.8,gap:1.2},{who:'ALEX',text:'“I know where he is.”',from:AX,time:2.2,gap:1},
    {who:'SAM',text:'“Don’t listen to him.”',from:sam,time:1.8,gap:1.1},{who:'ALEX',text:'“Come find him.”',from:AX,time:2.2,gap:1.6}],{interrupt:true,then:blackout});mark('Alex under the marquee');}

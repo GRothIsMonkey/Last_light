@@ -202,6 +202,62 @@ export const HISTORY={
   },
   "lens": 0.025,
   "save": "chapter2-end"
+ },
+ "4": {
+  "chapter1": {
+   "lastDp": 1003.511,
+   "dpRate": 0.193,
+   "approachT": 36.267,
+   "talkOrigin": {
+    "x": 200.065,
+    "z": -575.931
+   }
+  },
+  "chapter1Clock": {},
+  "chapter2": {
+   "discT": 8.233,
+   "copT": 43.933,
+   "homeFrom": {
+    "state": "c1-walk",
+    "x": 184.351,
+    "z": -522.89,
+    "a": -2.877,
+    "pitch": -0.4,
+    "bike": {
+     "x": 216.892,
+     "z": -905.823,
+     "a": 2.065,
+     "omega": 0,
+     "lock": false,
+     "brake": 0,
+     "walkLock": false,
+     "steer": null,
+     "fadeIn": 0
+    },
+    "speed": 0,
+    "riding": false,
+    "walking": true,
+    "pushing": false,
+    "eye": {
+     "x": 213.966,
+     "z": -906.719
+    },
+    "clock": 1700.3,
+    "manualLook": false,
+    "lookInputAt": 330.067,
+    "look": 0,
+    "captionBusy": true
+   }
+  },
+  "chapter2Clock": {
+   "warned": 0.033,
+   "callAt": -99.334,
+   "arrive": -142.167,
+   "homeAt": -209.4
+  },
+  "chapter3": {},
+  "chapter3Clock": {},
+  "save": "chapter3-end"
  }
 };
 export const TIMESTAMPS={"chapter1":["sirenOff","bellAt","dadCall","samWait"],"chapter2":["bellAt","warned","arrive","callAt","homeAt"]};

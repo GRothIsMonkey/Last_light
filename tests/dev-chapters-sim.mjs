@@ -235,11 +235,11 @@ const CLOCK_STAMPS={chapter1:['sirenOff','bellAt','dadCall','samWait'],chapter2:
 const NOT_CARRIED=['t','pt','queue','line','pose','api','state','lookTarget','jamieAim','samAim','poiFor','timers'];
 export function recordHistory(h,cap,fs,file,advance){
  const out={},same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),scenes={};
- for(const n of [2,3]){h.dev.start(n,{history:false});const dev=h.dev.snapshot(),nat=cap.natural[n],H={};
-  for(const [part,natObj,devObj] of [['chapter1',nat.chapter1,dev.chapter1],['chapter2',nat.chapter2.C,dev.chapter2.C]]){
-   if(part==='chapter2'&&n<3)continue;const vals={},stamps={};
+ for(const n of [2,3,4]){if(!cap.natural[n])continue;h.dev.start(n,{history:false});const dev=h.dev.snapshot(),nat=cap.natural[n],H={};
+  for(const [part,natObj,devObj] of [['chapter1',nat.chapter1,dev.chapter1],['chapter2',nat.chapter2.C,dev.chapter2.C],['chapter3',nat.chapter3?.C,dev.chapter3?.C]]){
+   if((part==='chapter2'&&n<3)||(part==='chapter3'&&n<4)||!natObj||!devObj)continue;const vals={},stamps={};
    for(const k of new Set([...Object.keys(natObj),...Object.keys(devObj)])){if(NOT_CARRIED.includes(k))continue;const v=natObj[k];
-    if(CLOCK_STAMPS[part].includes(k)&&typeof v==='number'&&v>=0){stamps[k]=Math.round((natObj.t-v)*1000)/1000;continue;}
+    if((CLOCK_STAMPS[part]||[]).includes(k)&&typeof v==='number'&&v>=0){stamps[k]=Math.round((natObj.t-v)*1000)/1000;continue;}
     if(typeof v==='string'&&(v.startsWith('companion:')||v==='{…}'))continue;
     if(!same(v,devObj[k]))vals[k]=v===undefined?null:v;}
    H[part]=vals;H[part+'Clock']=stamps;}
