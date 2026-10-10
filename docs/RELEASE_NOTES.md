@@ -1,3 +1,28 @@
+# Last Light — Chapter Four: Main Street (structural pass)
+
+From `codex/astra-chapter3-final-polish` at `5be68143c13dfdb24ccec24afbd7ec0b4769f469` (the accepted Astra Chapter Three release, unchanged), on `claude/chapter4-main-street`. A complete, playable Chapter Four: story, places, systems, checkpoints, DEV scenes and tests. Not an art pass; audio is hooks only. No merge, and no change to `main` or any release branch.
+
+- **The hand-over.** Chapter Three's end card gains a **Chapter Four** button: black, a quiet CHAPTER FOUR · MAIN STREET card, then Tuesday, August 23, 2011, 1:52 PM, at Sam's. Sam's mother, tired and careful: the police called, nothing new; Alex's backpack was in their garage; home before the streetlights.
+- **Alex's camera.** In the backpack's front pocket. Playback in your hands: A/D through 13 pictures, W/S or the wheel to magnify, the mouse to look round a magnified picture, V to lower it. Each picture is rendered from a camera placed in this world. The old bike from the oak is in the background of four, in four places; the last puts it outside **Mason Cycle & Sport**, downtown, last Wednesday.
+- **The ride downtown.** One continuous ride: Oak Hollow, all of Summerfield Road, then the new **Old Mill Road** over a rise and down into town (about 630 m). Jamie and Sam ride with you.
+- **Downtown Oak Hollow by day.** Main Street and three cross streets (Mill, Second, Depot), alleys, a square, 27 buildings; people about their business and cars that park, leave and stop for you. Mason's window and its faded poster of the bike, the florist who remembers Roy Mason, the Carnegie library and Mrs. Albright.
+- **The microfilm.** Five fictional records from the township's paper (1988, three from 1991, 1966), read on a reader that fills the view, each also a caption. The afternoon goes by a reel at a time until the library closes at ten to eight.
+- **Dusk.** The sky goes from gold to violet; the streetlights come on one by one, each on its own photocell. Alex across Main, at the mouth of the gangway by Mason's. He walks off; the boys don't follow.
+- **The creature, in the open.** At the end of Second Street by the creek: it watches, comes a little way, stops dead, looks past them up Main, cowers, backs away and runs. It never comes close and never rears or claws (two optional drive values on the existing creature, both 0 by default; Chapter Three's creature, its asset, attribution and source copy are unchanged).
+- **The streetlights go out**, one after another, up Main toward them. The darkness is never shown or named and has no model (in code: `dist/presence.js`). It waits just past the TV shop while every set in its window shows the three of them from high above, live, then comes on again.
+- **The Lantern Video.** Nobody there. The TV over the counter shows Alex from impossible places (from forty feet up, from behind a hedge, in his room from the ceiling) and a brown sign the picture holds on: **PINE RIDGE RECREATION AREA**. V raises Alex's camera as a viewfinder and F takes the picture (if you don't, Jamie does). The phone: "…Jamie?" The TV: the three of them in the store, now ("That's us."). The lights go from the front to the back; the back door.
+- **Out the back.** The alley, the lot, the narrow way where the creature comes from behind and runs past them without looking at them, the laundromat, Depot Street and the Lyric's upper windows, where someone stands in each until you look straight at it.
+- **The marquee.** Alex under the Lyric's chasing bulbs: "Jamie." "Where is he?" "I know where he is." "Don't listen to him." "Come find him." Every light goes out. When they come back, he is gone. On Alex's camera, the picture of the screen: Pine Ridge Recreation Area, the next lead.
+- **Home.** The same roads back to the old oak: "That thing in the tunnel…" "It was scared." "Of what?" LAST LIGHT / Chapter Four / August 23, 2011. Chapter Five is not begun.
+- **Fair and quiet.** No combat, no failure, no forced camera; every beat has a fallback (a friend's hint, then a gentle carry-on) and every line is a caption, so the chapter plays fully muted. About 20 minutes played straight through in the simulation.
+- **QA.** 12 checkpoints (`chapter4-start`, `c4-camera`, `c4-downtown-arrival`, `c4-library`, `c4-historical-clue`, `c4-dusk`, `c4-presence`, `c4-video-store`, `c4-escape`, `c4-theater`, `c4-final-clue`, `chapter4-end`) with Continue; 38 QA jumps (plus aliases); the picture of the screen is made again after a Continue.
+- **DEV selector.** Chapter Four with its 38 scenes added after Chapters 0–3, whose 58 scenes are unchanged.
+- **Verification:** **593** simulation checks (Chapters 0–3 as before, Chapter Four played on from Chapter Three's end card and again after its jumps, 18 seeded randomized runs, 38 jumps, 12 checkpoints with Continue, the DEV selector's Chapters 0–4: Chapter Four's start equal to the natural arrival, 0 leaks); in Chromium the chapter played muted by inputs from Chapter Three's ending to Chapter Four's end card, and all 38 DEV scenes from the panel (11 checks, 76 captures); 0 JavaScript or shader errors.
+
+Details: [CHAPTER4_MAIN_STREET_HANDOFF.md](CHAPTER4_MAIN_STREET_HANDOFF.md). Results: [TEST_REPORT.md](TEST_REPORT.md). Automated renders use SwiftShader; no real-GPU frame rate is claimed. Audio is deferred: hooks only, nobody has listened.
+
+---
+
 # Last Light — Astra Chapter Three visual polish
 
 From `claude/chapter3-creature-chase` at `6edcad0bb44426ba29da61fd83d2f35cc94fad5c`, on `codex/astra-chapter3-final-polish`. Runtime commit `797bf62382d5ad5760d13ecb1a4d70eb73cb1a38`; final QA and documentation follow it. No merge to `main` or change to the accepted source branch.

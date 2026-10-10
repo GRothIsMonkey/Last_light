@@ -1,3 +1,102 @@
+# Last Light — Chapter Four: Main Street: verification
+
+Source: `codex/astra-chapter3-final-polish` at `5be68143c13dfdb24ccec24afbd7ec0b4769f469` (unchanged). Branch: `claude/chapter4-main-street`. Tested runtime: `dist/` at `62dc7e3`; the browser report records the SHA-256 of every runtime file it served (`docs/qa/chapter4-main-street/chapter4-browser-report.json`). Chromium 141.0.7390.37 with ANGLE/SwiftShader (software rendering): no real-GPU frame rate is claimed.
+
+| Gate | Result |
+|---|---|
+| Full simulation suite (`QUICK=1 node tests/verify.mjs`): prologue, Chapters One–Three as before, then Chapter Four played on from Chapter Three's end card, Chapter Four's focused checks, the DEV selector (Chapters 0–4) | **593 passed**, 0 failed |
+| Chapter Four alone (`QUICK=1 ONLY=chapter4 node tests/verify.mjs`) | **33 passed**, 0 failed |
+| Chapter Four in Chromium (`tests/chapter4-browser.mjs`): muted walkthrough from Chapter Three's ending with real clicks and inputs, no QA jump inside it; then all 38 DEV Chapter Four scenes started from the selector with real clicks | **11 passed**, 0 failed; **76 captures** (38 walkthrough, 38 DEV) |
+| JavaScript / console / WebGL or shader warnings in the browser run | **0 / 0** |
+| Chapter Four played straight through (simulation, scripted, direct) | **20.4 and 20.8 minutes** of game time (from the end card; again after all the jumps); the ride downtown 121 s; 140 lines spoken, every one a caption |
+| QA jumps / aliases / checkpoints | **38 / 13 / 12**, each started and checked; Continue returns to each checkpoint; past the store the picture of the screen is on the camera again |
+| Seeded randomized runs through the fallbacks | **18**, all reach the next beat (idling, wandering, missing the picture, letting the phone ring); Jamie takes the picture, Sam answers the phone, the carry-on fades are used where a player stands still |
+| Start over and jumps back into Chapters 0–3 from inside Chapter Four | nothing of it left behind (town navigation, lights, people, cars, TV pictures, doors, the creature, the camera) |
+| DEV selector | Chapters 0–3 and their 58 scenes unchanged; Chapter Four's **38** start without error; the DEV start equals the natural arrival from Chapter Three's end card (**0 differences**); 10 key scenes start before their event; switching 4→1→4→3→4→0→2→4 leaks nothing |
+| Audio | **hooks only**: the placeholder sound events fire at the right beats (relay, phone, shutter, flash, door, steps); nothing was rendered or listened to |
+
+## What was run
+
+**Simulation** (`tests/verify.mjs` with `tests/chapter4-sim.mjs`: the real modules and Three.js geometry with a mocked renderer and DOM). After Chapter Three, the same session presses the end card's **Chapter Four** button and plays the chapter with inputs only (walking, looking, riding, F, V, A/D, the wheel). Checked beat by beat:
+
+- the CHAPTER FOUR card over black, then Tuesday, August 23, 1:52 PM, at Sam's; Sam's mother's three things (the police called, the backpack, home before the streetlights); F at the backpack; his camera in playback;
+- the old bike found by magnifying four of Alex's pictures, the last at Mason's;
+- a real ride downtown: Oak Hollow, Summerfield Road, Old Mill Road, Main Street in that order, every frame continuous (no step over 1.2 m between frames);
+- an ordinary Tuesday downtown: at least 8 people and 6 cars, moving cars stopping for the boys (closest approach measured);
+- Mason's window, the poster, the florist; the library; the five microfilm records read in order as the clock runs to ten to eight;
+- dusk: Alex across Main, nobody follows; the streetlights coming on one by one (8 or more distinct steps), the sky never brightening again;
+- the creature at the end of Second Street: watch, stalk, freeze, fear, turn, flee, gone in that order, more than 25 m away at its closest, cowering, never rearing or clawing;
+- the lights going out in order up Main toward them; the dark waiting at the TV shop until its window has been looked at up close (1.5 s), the sets showing them live from above, then "GO";
+- the video store: Alex from impossible places, the PINE RIDGE sign photographed through the viewfinder, his room from the ceiling, the phone ("…Jamie?"), "That's us", the lights going from the front;
+- the narrow way: it passes from behind without looking at them (closest more than 0.8 m), never clawing; the laundromat; the Lyric's windows (a figure in one, gone when looked at straight on);
+- the marquee's five lines in order, the blackout, the lights back, Alex gone; the picture of the sign on Alex's camera; the ride home; the oak's three lines; the end card;
+- nobody and nothing missing or non-finite at any frame; every spoken line a caption; the sound hooks fired.
+
+Then the focused checks: all 38 jumps and 13 aliases, the 12 checkpoints with Continue, the picture remade after a Continue, Start over and jumps back into earlier chapters leaving nothing behind, 18 seeded randomized runs, and the DEV selector's Chapter Four (start compared with the natural arrival, switching, all scenes, 10 key scenes before their event). The whole Chapter Four is then played a second time in the same session.
+
+**Browser** (`tests/chapter4-browser.mjs`, Chromium, SwiftShader, sound off): Chapter Three's end checkpoint played to its card; the card's **Chapter Four** button clicked; the chapter played with keys, look, F and V only, captured at each beat (`00`–`37`); then the DEV panel: **Chapter Four** chosen and each of its 38 scenes started with **START SCENE**, captured (`dev-*`). Gallery: `docs/qa/chapter4-main-street/index.html`.
+
+## Found and fixed in this pass (by the rendered walkthrough and the full suite)
+
+- An inline `//` comment had swallowed the start of the first microfilm record and the `c4-historical-clue` checkpoint (the simulation caught it: record 0 unread).
+- The microfilm reader's screen, the poster in Mason's window and the figures in the Lyric's windows were parented to building groups that are baked into merged meshes, so they never drew; they now live on the town's live root, as the TV screens already did.
+- Looking in Mason's window faced the door, not the poster; the Lyric's window glow and figures sat behind opaque glass (and the figures faced inward).
+- The TV window lasted about two seconds at about 22 m before "GO" and its live view (16 m up) showed specks; the dark now waits there, and the view is close enough to be plainly them.
+- The video store's front door could shut on you while you stood in the doorway (you were stuck until the fallback); it now waits until you are past it.
+- A directed light cascade put the lamps behind its start point out backwards (far side first).
+- The DEV Chapter Four start did not carry what Chapters 0–3 leave behind (`HISTORY[4]` had never been generated); it is now generated from the natural playthrough, Chapter Three's leftovers included, and the start equals the natural arrival.
+- The `c4-store-live` jump (and its DEV scene) began with the live view already on; it now begins 1.6 s before it.
+- The full suite measured the chapter's length on the game clock, which restarts at the hand-over; it now uses the chapter's own clock.
+
+## Captures (inspected)
+
+**38** walkthrough captures (`00`–`37`, one per beat) and **38** DEV-scene captures (`dev-*`, one per Chapter Four scene) in `docs/qa/chapter4-main-street/` (gallery `index.html`), all inspected. Rendered problems they showed are listed above and were fixed before this run; what remains is the art (see Not done).
+
+- `00`…: Chapter Three ends (its end card, the button)
+- `01`…: Sam’s house: his mom, the backpack, the camera, the old bike in the pictures
+- `05`…: the ride: Summerfield, Old Mill Road, into town
+- `08`…: Main Street by day: Mason’s window, the florist, the library, the microfilm, closing
+- `15`…: dusk: the square, Alex across the street, the creature afraid, the lights going, the TV window
+- `21`…: the video store: the TV’s shots, the viewfinder, his room, the phone, “That’s us”, the lights going
+- `27`…: out the back: the alley, it running past, the laundromat, the Lyric’s windows
+- `31`…: the marquee: Alex, the blackout, the lights back, the picture of the sign
+- `35`…: home: Old Mill Road, the old oak, the end card
+
+## Performance (SwiftShader; no real-GPU frame rate was measured)
+
+Every capture records the renderer's own count for that frame (`chapter4-browser-report.json`). Over all 76 captures: **60,343–961,819 triangles** and **89–1047 draw calls**. The heaviest frames are on Old Mill Road's crest and arriving on Main (the whole downtown and the neighbourhood behind in view: about 1,000 draw calls) and the rides home; inside the library, the store and the laundromat (`town-int` drawn only within 55 m) frames are 60–420 k triangles. The TVs and the camera render the scene again into small targets (a TV at 12 Hz only while it is on, near and in view; Alex's pictures a few at a time while nobody looks at them), which these counts do not include.
+
+| Capture | Phase | Triangles | Draw calls |
+|---|---|---:|---:|
+| `01-sams-house-mom` | d4-sam | 464,519 | 253 |
+| `03-camera-first-picture` | d4-photos | 376,220 | 230 |
+| `06-old-mill-road-crest` | d4-ride | 211,342 | 939 |
+| `07-main-street-arrival` | d4-town | 206,022 | 1047 |
+| `08-main-street-by-day` | d4-town | 188,583 | 606 |
+| `12-microfilm-1988-mason` | d4-archive | 60,343 | 91 |
+| `15-dusk-the-square` | e4-dusk | 191,386 | 293 |
+| `17-creature-end-of-second-street` | e4-creature | 364,398 | 180 |
+| `19-the-lights-going` | e4-cascade | 333,532 | 497 |
+| `20-tv-window-live` | e4-cascade | 118,773 | 154 |
+| `25-store-thats-us` | n4-store | 418,784 | 473 |
+| `28-it-runs-past` | n4-alley | 207,304 | 358 |
+| `30-theater-upper-windows` | n4-depot | 89,036 | 185 |
+| `31-alex-under-the-marquee` | n4-marquee | 96,338 | 194 |
+| `34-the-picture-pine-ridge` | n4-clue | 422,131 | 440 |
+| `35-ride-home-old-mill-road` | n4-ride | 961,819 | 536 |
+| `36-the-old-oak-it-was-scared` | n4-oak | 104,236 | 137 |
+
+## Not done / limits
+
+- **Audio** is deferred: every sound is a placeholder hook (`sound(...)` events), nothing was rendered offline and nobody has listened.
+- **Real GPU**: not measured. Software rendering times say nothing about frame rate.
+- **Art**: Chapter Four is a structural pass. People, buildings, interiors and props are deliberately plain (see the handoff's *Future targets for Astra*).
+- The several-hour full release browser suite (`npm run test:browser`) was **not rerun**; Chapters 0–3 are covered by the full simulation suite here and their DEV starts are unchanged.
+- A natural walkthrough by a person has not been done; the walkthroughs here are scripted inputs.
+- The in-game Credits screen does not name the creature's author (true since Chapter Three; the attribution is in `docs/THIRD_PARTY_ASSETS.md` and inside the model file). The private playable copy adds the CC BY credit to its Credits screen; the repository's runtime was left as tested.
+
+---
+
 # Last Light — Astra Chapter Three visual polish: verification
 
 Accepted source: `claude/chapter3-creature-chase` at `6edcad0bb44426ba29da61fd83d2f35cc94fad5c`. Work branch: `codex/astra-chapter3-final-polish`. Final runtime commit: `797bf62382d5ad5760d13ecb1a4d70eb73cb1a38`; later commits are QA/documentation only. Current evidence is under `docs/qa/chapter3-astra-*`; the older report below is retained as historical source evidence, not counted as this pass's validation. The art/restoration reports predate only the final caption-backing fix; every other runtime hash in them matches exactly.
