@@ -1,3 +1,67 @@
+# Last Light — Chapter Four: horror revision: verification
+
+Source: `claude/chapter4-main-street` at `8cc59e26111c4c2032a2893c69b67fafc548612a` (unchanged). Branch: `claude/chapter4-horror-revision`. Renders are software (SwiftShader); no real-GPU frame rate is claimed. Sound off throughout: audio is placeholder hooks only.
+
+| Gate | Result |
+|---|---|
+| Full simulation suite (`QUICK=1 node tests/verify.mjs`): the prologue and Chapters One–Three played naturally, then Chapter Four played on from Chapter Three's end card with no QA jump (the **natural muted walkthrough**), Chapter Four's focused checks, the Chapter Four replay, then **all of Chapter Four again from the DEV selector's Chapter Four Start**, then the DEV selector checks | ⟨FULL⟩ |
+| Chapter Four alone (`QUICK=1 ONLY=chapter4 node tests/verify.mjs`) | **35 passed**, 0 failed |
+| Chapter Three alone (`QUICK=1 ONLY=chapter3 node tests/verify.mjs`; the creature's code is shared) | **156 passed**, 0 failed |
+| Chapter Four in Chromium (`QA_OUTPUT=docs/qa/chapter4-horror-revision node tests/chapter4-browser.mjs`): the walkthrough from Chapter Three's end card by inputs alone, then all 42 DEV Chapter Four scenes by real clicks | ⟨BROWSER⟩ |
+| JavaScript / console / WebGL or shader warnings in the browser run | ⟨ERRORS⟩ |
+
+## What was checked, by problem
+
+**1. The creature's animation.** Lab renders of every motion from four sides (`docs/qa/chapter4-horror-revision/creature-lab/`): foot slip 0 in the gallop, stalk and turn, ≤ 0.07 m in the trot's blend, ≤ 0.17 m in the last frames of a hard stop. In the chapter: foot slip ⟨SLIP⟩ m at most through the whole Second Street encounter (was 2.2 m where it left the creek bank: it now falls on an arc and its feet go with it), 1.6 m from anyone at its closest in the narrow way, never rearing or clawing. Chapter Three's chase with the new gait: 156 checks; floating 0, speed error median 0.004, heading error p95 0.003.
+
+**2. The greater evil.** The encounter's stages in order — watch, stalk, freeze, look, back, scurry, **hide**, flinch, flee, gone — with the corner's lights dying after it looks there and before it backs away, the cascade beginning far up Main while it hides and before it runs; at its closest ⟨CLOSEST⟩ m (readable; was 26–48 m); "It's hiding." and "There's nothing there." said; nothing spoken names or ranks it ("controls", "servant", "in charge", "created" never appear).
+
+**3. The escape.** Every way out of the video store, walking and running, reaches the Lyric with no carry-on:
+
+| Way | Walking | Running | The creature | Closest it came | The dark: nearest / farthest | Boys, farthest |
+|---|---|---|---|---|---|---|
+| laundromat | 51 s | 30 s | narrow way | 1.5 m | 4.2 / 27 m | 8.0 / 13.5 m |
+| narrow way to Depot Street | 49 s | — | narrow way | 1.5 m | 4.2 / 30 m | 8.0 m |
+| passage to Main | 49 s | 33 s | Main | 3.1–3.5 m | 2.9 / 23 m | 12.8 / 14.0 m |
+| gangway to Main | 48 s | — | Main | 3.5 m | 2.9 / 32 m | 5.5 m |
+| along the creek | 57 s | — | the creek | 2.4 m | 3.8 / 21 m | 4.4 m |
+
+The narrow-way pass in the natural walkthrough: come, stop, look (1.9 s), afraid, bolt, gone; "[Behind them, a light goes out.]" and the far end's light both went out; "It didn't even look at us." Seeded randomized runs (idle and walking out the back, idling on Depot Street, never going back for the bikes) all reach the next beat.
+
+**4. Jamie and Sam.** Stress runs on the final code (worst distance from the player; time spent more than 14–16 m away):
+
+| Run | Jamie | Sam | Lost |
+|---|---|---|---|
+| sprinting the whole escape | 12.6 m | 12.0 m | 0 s |
+| walking with long stops | 7.7 m | 5.5 m | 0 s |
+| narrow way to Depot Street | 7.9 m | 6.6 m | 0 s |
+| passage to Main | 5.3 m | 5.7 m | 0 s |
+| turning back toward the store, then on | 7.7 m | 6.8 m | 0 s |
+| lingering 70 s in the alley | 12.4 m | 3.7 m | 0 s |
+| sprinting through the cascade to the store | 5.6 m | 6.7 m | 0 s |
+| the ride home, fast | 5.4 m | 5.1 m | 0 s |
+| wandering at dusk | 6.1 m | 5.7 m | 0 s |
+
+Before the fix: sprinting 14.4 / 18.1 m (Sam lost 12 s), the cascade 28.6 / 26.4 m, the ride home 17.3 / 14.4 m, any route but the laundromat stranded them. Neither boy was hidden in any sample; in the route runs the unseen recovery (`guardLog.recovered`) never fired.
+
+**5. The Lyric.** In order: "…Alex?" "Jamie. Don't." "Did you guys hear that?" "…Hear what?" "Never mind." "That's what he said. On the hill. That's exactly—" "Don't run. Don't run." "…That's what I said." "Alright, I'm this way." "See you tomorrow." While he is there the town's sound is 0, nothing goes out, nothing holds the player or turns the camera; none of the generic threats is said; the blackout, his disappearance, the lights' return and the Pine Ridge picture on the camera follow.
+
+**The video store.** Turned away from the TV, its first shot held 16 s (its length is 7 s; watched, 7 s); walking to the corner the live picture was from, the picture moved to another corner and Sam said so.
+
+**DEV selector.** 42 Chapter Four scenes start without an error (14 checked to start shortly before their event, the new ones included); the DEV start equals the natural arrival from Chapter Three's end card (0 differences); in the revision's switching order (C4 Creature Fear → C3 Chase → C4 Downtown Escape → C1 Old Oak → C4 Theater → C2 Briarwood → C4 Video Store → C4 Ending) every Chapter Four scene is identical to a clean start of it and nothing of Chapter Four is left in the others (this found the creature keeping its last pose between scenes; fixed).
+
+## Performance (software rendering: counts are real, times are not GPU measurements)
+
+| | |
+|---|---|
+| The creature | 1 skinned mesh, 23,820 triangles: one draw call per pass; its animation costs about **0.16 ms** of CPU per update (Node, galloping or cowering) |
+| Downtown (Chromium, 1440×900) | 136–1,047 draw calls, 83–417 k triangles across the walkthrough's frames (Main Street arriving by day is the most; the escape 136–191; the marquee 174–194) |
+| Chapter Three's tunnel, with the creature | 65–74 draw calls, 54–70 k triangles |
+| Renderer | ⟨GPU⟩ |
+| JavaScript / shader errors | ⟨ERRORS⟩ |
+
+---
+
 # Last Light — Chapter Four: Main Street: verification
 
 Source: `codex/astra-chapter3-final-polish` at `5be68143c13dfdb24ccec24afbd7ec0b4769f469` (unchanged). Branch: `claude/chapter4-main-street`. Tested runtime: `dist/` at `62dc7e3`; the browser report records the SHA-256 of every runtime file it served (`docs/qa/chapter4-main-street/chapter4-browser-report.json`). Chromium 141.0.7390.37 with ANGLE/SwiftShader (software rendering): no real-GPU frame rate is claimed.

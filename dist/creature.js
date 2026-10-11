@@ -6,10 +6,14 @@
 // is modelled in centimetres. So, here:
 //  * it is turned to face +Z exactly, scaled to metres ×1.35 (a little bigger than a man on all fours: about 1 m to the
 //    top of the head crouched, 1.3 m long), and set with its lowest point on the ground at the group's origin;
-//  * the idle clip keeps playing (the jaw, the fingers), and on top of it the limbs, spine and head are moved
-//    procedurally: a low, fast, four-limbed scramble whose cadence follows its speed (arms and legs swing about the
-//    body's own side axis, elbows and knees fold as they come forward, the body pitches and bobs with each bound),
-//    rearing up and clawing (at a gate), and the head turning to whatever it is looking at;
+//  * the idle clip keeps playing (the jaw, the fingers), and on top of it the body moves on its own skeleton: the
+//    gait comes from how fast it really moved since the last frame (a walk, a trot, a bounding gallop, blended by
+//    speed), each hand and foot is planted where it lands and stays there while the body passes over it, then swings
+//    (in the body's frame) to where it will next land, by two-bone IK on the shoulder/elbow and hip/knee with the
+//    rest pose's own bend as the pole; the body bobs, pitches against acceleration, rolls into turns and flexes its
+//    spine with the bound; crouching, cowering (limbs drawn in, a fine shiver), backing away, alertness (the chest
+//    and head up) and a fast snap of the head; rearing up and clawing (Chapter Three's gate); the head held level
+//    and turned to whatever it is looking at;
 //  * colliders are two circles along the body (the mesh itself is never used for collision);
 //  * like the boy, it catches a little more of its own colour when a beam is on it far off (catch).
 // It is loaded in the background when the game starts; `ready` resolves when it can be shown (`loaded`). Without it

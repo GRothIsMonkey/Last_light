@@ -463,6 +463,7 @@ export function createChapter4(o,k,ch2,ch3){
  const lampAt=(u,v)=>{let b=null,bd=1e9;for(const L of D.lamps){const d=Math.hypot(L.u-u,L.v-v);if(d<bd){bd=d;b=L;}}return b?LV.lamp+b.id:-1;};
  /* (any light, a shop's included: the one over the TV shop's door is the corner's) */
  const lightAt=(u,v)=>{let b=-1,bd=1.5;for(let i=0;i<600;i++){const q=lights.posOf(i);if(!q)continue;const d=Math.hypot(q.u-u,q.v-v);if(d<bd){bd=d;b=i;}}return b>=0?b:lampAt(u,v);};
+ /* (where the two of them really are, on foot or riding) */const boysAt=()=>[jamie,sam].filter(c=>c.active).map(c=>c.mode==='ride'?{x:c.bx,z:c.bz}:{x:c.px,z:c.pz});
  const lampPos=i=>{const q=lights.posOf(i);return q?at(q.u,q.v,q.y??TY+4.5):null;};
  function creatureDusk(){if(C.flags.crt)return;C.flags.crt=true;go('e4-creature');C.hMin=Math.max(C.hMin||0,HOUR.creature);mark('something at the end of Second Street');
   C.crt={stage:'watch',t:0,seenT:0,seenAt:null,u:90,v:-36,a:HN,y:null,vy:0,dive:0,stageAt:{watch:C.t},hideSeen:0,glance:0,gi:0,fs:0,k:{},
@@ -513,7 +514,7 @@ export function createChapter4(o,k,ch2,ch3){
     const wp=R2.v>-30?{u:92.4,v:-34}:{u:91,v:-62};face(wp.u,wp.v,10);to(wp.u,wp.v,sp);look=null;
     if(R2.v<-23)crKill('side',{dur:.35,flick:.85});if(R2.v<-43)crKill('far',{dur:.35,flick:.8});if(R2.v<-56.2){R2.dive=Math.min(2.4,R2.dive+dt*5.5);}
     if(R2.v<-58.6||R2.t>8){crStage('gone');creature.show(false);creature.ground=null;S.lookTarget=null;for(const c of [jamie,sam])if(c.lookAt===crHead)c.lookAt=null;sound('splash',at(90,-58.6,TY-2),{gain:.8});later(1.4,()=>cascadeStart());}}
-   if(R2.stage!=='gone'){/* (never through one of them: it goes round) */for(const c of [p,{x:jamie.px,z:jamie.pz},{x:sam.px,z:sam.pz}]){const w=at(R2.u,R2.v),dx=w.x-c.x,dz=w.z-c.z,l=Math.hypot(dx,dz);if(l<1.6&&l>1e-3){const q2=TL(w.x+dx/l*(1.6-l),w.z+dz/l*(1.6-l));R2.u=q2.u;R2.v=q2.v;}}
+   if(R2.stage!=='gone'){/* (never through one of them: it goes round) */for(const c of [p,...boysAt()]){const w=at(R2.u,R2.v),dx=w.x-c.x,dz=w.z-c.z,l=Math.hypot(dx,dz);if(l<1.6&&l>1e-3){const q2=TL(w.x+dx/l*(1.6-l),w.z+dz/l*(1.6-l));R2.u=q2.u;R2.v=q2.v;}}
     D2.speed=sp;D2.look=look;placeCrt(dt);creature.update(dt);}}
   else if(C.esc?.pass&&C.esc.pass.stage!=='gone')updatePass(dt);}
  // ---- the streetlights ----------------------------------------------------------------------------------------------------------
@@ -741,7 +742,7 @@ export function createChapter4(o,k,ch2,ch3){
   else if(R.stage==='afraid'){/* it shrinks from it and backs away the way it came; then its own end goes dark */look=R.t<.9?(R.behindLight?new THREE.Vector3(R.behindLight.x,TY+2.4,R.behindLight.z):darkPos()):at((K.far[0]||K.from).u,(K.far[0]||K.from).v,TY+2);
    D2.back=1;dmp('alert',0,3);dmp('cower',.75,5);sp=.8;to(R.u-K.axis*1.2,R.v,.8);face(R.u+K.axis*5,R.v,4);
    if(R.t>.8){killNear('far',K.far,{flick:.85,dur:.4});if(R.t<.8+dt*1.5){D2.snap=1;if(R.kind==='narrow')say([{who:'SAM',text:'“The other end—”',by:'sam',time:1.2}]);}}
-   if(R.t>1.7||dYou<5.5){R.lane=K.lane(pv);if(R.kind==='narrow'){const near=[p,{x:jamie.px,z:jamie.pz},{x:sam.px,z:sam.pz}].some(c=>{const q=TL(c.x,c.z);return Math.abs(q.v-R.lane)<1.25&&q.u>146&&q.u<176;});R.roof=near;}
+   if(R.t>1.7||dYou<5.5){R.lane=K.lane(pv);if(R.kind==='narrow'){const near=[p,...boysAt()].some(c=>{const q=TL(c.x,c.z);return Math.abs(q.v-R.lane)<1.25&&q.u>146&&q.u<176;});R.roof=near;}
     R.path=K.exit(R,pu);R.pi=0;passStage('bolt');}}
   else if(R.stage==='bolt'){/* past them, flat out, and away */dmp('cower',0,6);R.fs=Math.min(8.6,R.fs+16*dt);sp=R.fs;look=null;
    const w=R.path[R.pi];if(w){face(w[0],w[1],11);if(to(w[0],w[1],sp))R.pi++;}
@@ -749,7 +750,7 @@ export function createChapter4(o,k,ch2,ch3){
    if(K.dive&&R.v<-56.2)R.dive=Math.min(2.4,R.dive+dt*5.5);
    if(K.gone(R)||!w||R.t>7){passStage('gone');creature.show(false);creature.ground=null;for(const c of [jamie,sam])stand(c,null);follow(true);if(K.dive)sound('splash',at(R.u,-58.6,TY-2),{gain:.8});
     if(/^n4-(alley|laundry|depot)$/.test(S.phase))say([{wait:.6},{who:'JAMIE',text:'“It went right past us.”',by:'jamie'},{who:'SAM',text:'“It didn’t even look at us.”',by:'sam'},{who:'JAMIE',text:'“Keep going.”',by:'jamie',time:1.2}]);return;}}
-  if(R.stage!=='bolt'||!R.roof){for(const c of [p,{x:jamie.px,z:jamie.pz},{x:sam.px,z:sam.pz}]){const w=at(R.u,R.v),dx=w.x-c.x,dz=w.z-c.z,l=Math.hypot(dx,dz);if(l<1.6&&l>1e-3){const q2=TL(w.x+dx/l*(1.6-l),w.z+dz/l*(1.6-l));R.u=q2.u;R.v=q2.v;}}}
+  if(R.stage!=='bolt'||!R.roof){for(const c of [p,...boysAt()]){const w=at(R.u,R.v),dx=w.x-c.x,dz=w.z-c.z,l=Math.hypot(dx,dz);if(l<1.6&&l>1e-3){const q2=TL(w.x+dx/l*(1.6-l),w.z+dz/l*(1.6-l));R.u=q2.u;R.v=q2.v;}}}
   D2.speed=sp;D2.look=look;placePass(dt);creature.update(dt);creature.headPos?.(crHead);if(R.stage==='bolt'&&k.camLooksAt(crHead,.96))R.seenT+=dt;}
  function enterLaundry(){if(C.flags.laundry)return;C.flags.laundry=true;go('n4-laundry');objective('Out the side door.','Onto Depot Street.');C.lt={t:0};
   tvShow('laundry','live-behind');later(3.2,()=>tvShow('laundry',null));
