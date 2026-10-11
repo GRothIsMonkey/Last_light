@@ -88,7 +88,7 @@ export function createCreature({scene}){
  // the gaits: the phase each limb starts its stance at (0..1 of a stride)
  const WALK={LH:0,LF:.25,RH:.5,RF:.75},TROT={LH:.5,LF:0,RH:0,RF:.5},GALLOP={LH:0,RH:.09,LF:.53,RF:.62};
  const smooth=x=>{x=clamp(x,0,1);return x*x*(3-2*x);},wrap=x=>Math.atan2(Math.sin(x),Math.cos(x)),ease=x=>x<.5?2*x*x:1-2*(1-x)*(1-x);
- const LIMBS=[],last={x:0,y:0,z:0,a:0,ok:false},vel=new THREE.Vector3(),velS=new THREE.Vector3();let G=0,yawRate=0,accel=0,spPrev=0,stepping=null;
+ const LIMBS=[],last={x:0,y:0,z:0,a:0,ok:false},vel=new THREE.Vector3(),velS=new THREE.Vector3();let G=0,yawRate=0,accel=0,spPrev=0;
  const _w=new THREE.Vector3(),_land=new THREE.Vector3(),_rest=new THREE.Vector3(),_pole=new THREE.Vector3(),_tip=new THREE.Vector3(),_tipW=new THREE.Vector3(),_q1=new THREE.Quaternion(),_q2=new THREE.Quaternion(),_q3=new THREE.Quaternion();
  function initLimbs(){group.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(group.matrixWorld).invert(),loc=b=>b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv);
   const tipOf=b=>{let best=null,bd=-1;const o0=b.getWorldPosition(new THREE.Vector3());b.traverse(o=>{if(o.isBone&&o!==b){const d=o.getWorldPosition(new THREE.Vector3()).distanceTo(o0);if(d>bd){bd=d;best=o;}}});return best;};
@@ -103,7 +103,8 @@ export function createCreature({scene}){
   // (group-local +Z is forward (sin h, −cos h); local +X is (−cos h, −sin h))
   out.set(px+lz*s-lx*c,0,pz-lz*c-lx*s);out.y=groundAt(out.x,out.z,group.position.y)+L.y0;return out;}
  const groundAt=(x,z,y)=>{const g=api.ground?.(x,z);return Number.isFinite(g)?g:y;};
- function plantAll(){const p=group.position,h=api.heading||0;for(const L of LIMBS){restAt(L,p.x,p.z,h,L.plant);L.pos.copy(L.plant);L.lift.copy(L.plant);L.stance=true;L.u=0;}stepping=null;}
+ const nStepping=()=>{let n=0;for(const L of LIMBS)if(L.stepping)n++;return n;};
+ function plantAll(){const p=group.position,h=api.heading||0;for(const L of LIMBS){restAt(L,p.x,p.z,h,L.plant);L.pos.copy(L.plant);L.lift.copy(L.plant);L.stance=true;L.u=0;L.stepping=false;}}
  // Place it: ground point, heading (the game's convention: forward is (sin a, −cos a)).
  api.place=(x,y,z,heading)=>{group.position.set(x,y,z);group.rotation.set(0,Math.PI-heading,0);api.heading=heading;};
  api.show=v=>{const was=group.visible;group.visible=!!v&&api.loaded;if(group.visible&&!was)last.ok=false;};
@@ -145,7 +146,7 @@ export function createCreature({scene}){
   // the limbs: stance (planted) or swing (an arc to the next landing); standing still, a step now and then to settle
   const stanceT=duty/Math.max(f,.1),sh=api.heading||0;let slip=0;
   for(const L of LIMBS){const off=wW*WALK[L.k]+wT*TROT[L.k]+wG*GALLOP[L.k],ph=((G+off)%1+1)%1;
-   if(moving){const inSt=ph<duty;
+   if(moving){L.stepping=false;const inSt=ph<duty;
     if(inSt&&!L.stance){L.stance=true;L.plant.copy(L.pos);L.plant.y=groundAt(L.plant.x,L.plant.z,p.y)+L.y0;}
     else if(!inSt&&L.stance){L.stance=false;L.lift.copy(L.plant);restAt(L,p.x,p.z,sh,_rest);L.liftRel=(L.liftRel||new THREE.Vector3()).subVectors(L.plant,_rest);}
     if(L.stance){restAt(L,p.x,p.z,sh,_rest);const far=_rest.distanceTo(L.plant);if(far>L.reach){_w.subVectors(L.plant,_rest).multiplyScalar((far-L.reach)/far);L.plant.sub(_w);}L.pos.copy(L.plant);}
@@ -156,8 +157,11 @@ export function createCreature({scene}){
      /* (in the body's frame: from where it pushed off behind to where it will land ahead, so it never runs ahead of the shoulder) */
      if(L.liftRel){restAt(L,p.x,p.z,sh,_rest);_w.subVectors(_land,_rest);_w.y=0;L.pos.copy(_rest).addScaledVector(L.liftRel,1-e).addScaledVector(_w,e);L.pos.y=_rest.y*(1-e)+_land.y*e;}else L.pos.lerpVectors(L.lift,_land,e);L.pos.y+=hgt*Math.sin(Math.PI*u);if(!L.fore)L.pos.addScaledVector(fwd,-.06*Math.sin(Math.PI*Math.min(1,u*2))*wG);}}
    else{// standing: settle a limb that has been left too far from under the body, one at a time
-    restAt(L,p.x,p.z,sh,_rest);if(stepping===L){L.u=Math.min(1,L.u+dt/.32);L.pos.lerpVectors(L.lift,_rest,ease(L.u));L.pos.y+=.07*Math.sin(Math.PI*L.u);if(L.u>=1){L.plant.copy(_rest);L.pos.copy(_rest);L.stance=true;stepping=null;}}
-    else{if(!L.stance){L.stance=true;L.plant.copy(L.pos);L.plant.y=_rest.y;}if(!stepping&&L.plant.distanceTo(_rest)>.17){stepping=L;L.stance=false;L.u=0;L.lift.copy(L.plant);}L.pos.copy(L.plant);}}
+    /* (one at a time when it is only settling; two when it has turned or shifted further; and at once, whatever the
+       others are doing, for one it can no longer reach: a planted hand never stays where the arm cannot get to it) */
+    restAt(L,p.x,p.z,sh,_rest);if(L.stepping){L.u=Math.min(1,L.u+dt/.28);L.pos.lerpVectors(L.lift,_rest,ease(L.u));L.pos.y+=.07*Math.sin(Math.PI*L.u);if(L.u>=1){L.plant.copy(_rest);L.pos.copy(_rest);L.stance=true;L.stepping=false;}}
+    else{if(!L.stance){L.stance=true;L.plant.copy(L.pos);L.plant.y=_rest.y;}const far=L.plant.distanceTo(_rest),n=nStepping();
+     if((n<1&&far>.17)||(n<2&&far>.3)||far>.45||L.slip>.08){L.stepping=true;L.stance=false;L.u=0;L.lift.copy(L.plant);}L.pos.copy(L.plant);}}
    // the fore limbs let go when it rears (the claws are below); a shiver through them when it cowers
    const w=L.fore?1-smooth(D.rear*1.6):1;if(D.cower>0)L.pos.y+=Math.sin(clock0*29+(L.fore?0:1.7))*.006*D.cower;
    _pole.copy(L.pole).applyQuaternion(group.getWorldQuaternion(_q3));
@@ -167,7 +171,7 @@ export function createCreature({scene}){
    // the hand flat and the foot on its toes while planted; curled back in the swing
    if(L.tip){L.end.getWorldPosition(_a);L.tip.getWorldPosition(_tipW);_tip.copy(L.tipDir).applyQuaternion(group.getWorldQuaternion(_q3));if(!L.stance&&moving){_tip.addScaledVector(fwd,-.12*Math.sin(Math.PI*L.u));_tip.y+=.03*Math.sin(Math.PI*L.u);}
     rotFromTo(L.end,_v1.subVectors(_tipW,_a),_tip,L.stance?.85:.6);}
-   if(L.stance&&w>=1){L.end.getWorldPosition(_a);L.slip=_a.distanceTo(L.plant);slip=Math.max(slip,L.slip);}}
+   if(L.stance&&w>=1){L.end.getWorldPosition(_a);L.slip=_a.distanceTo(L.plant);if(L.slip>slip){slip=L.slip;api.slipInfo={k:L.k,moving,yawRate:+yawRate.toFixed(2),sp:+sp.toFixed(2),far:+L.plant.distanceTo(restAt(L,p.x,p.z,sh,_rest)).toFixed(2)};}}else L.slip=0;}
   api.slip=slip;
   // rearing and clawing (Chapter Three's gate): the arms come up and forward and strike, one after the other
   if(D.claw>0||D.rear>0){const t=clock0,sL=Math.max(0,Math.sin(t*9)),sR=Math.max(0,Math.sin(t*9+2.2));
@@ -186,6 +190,6 @@ export function createCreature({scene}){
   group.updateMatrixWorld(true);let low=0;for(const [k,y0] of contacts){bones[k].getWorldPosition(_hv);const y=_hv.y-groundAt(_hv.x,_hv.z,group.position.y);low=Math.min(low,y-y0*.6);}
   api.bob=bob;api.lift=-low;if(low<0){inner.position.y-=low;group.updateMatrixWorld(true);}};
  const performanceNow=()=>clock0;void performanceNow;
- api.reset=()=>{group.visible=false;if(clipAction)clipAction.time=0;/* (the clip's own clock, and the bones in their rest pose, too: a reset creature is the one the page made) */if(rest)for(const r of rest){r.b.quaternion.copy(r.q);r.b.position.copy(r.p);}if(api.loaded)inner.position.y=api.baseY;api.phase=0;api.headYaw=0;api.headPitch=0;catchU.value=0;clock0=0;G=0;last.ok=false;yawRate=0;accel=0;spPrev=0;api.sp=0;api.slip=0;stepping=null;
+ api.reset=()=>{group.visible=false;if(clipAction)clipAction.time=0;/* (the clip's own clock, and the bones in their rest pose, too: a reset creature is the one the page made) */if(rest)for(const r of rest){r.b.quaternion.copy(r.q);r.b.position.copy(r.p);}if(api.loaded)inner.position.y=api.baseY;api.phase=0;api.headYaw=0;api.headPitch=0;catchU.value=0;clock0=0;G=0;last.ok=false;yawRate=0;accel=0;spPrev=0;api.sp=0;api.slip=0;for(const L of LIMBS){L.stepping=false;L.slip=0;}
   Object.assign(api.drive,{speed:0,rear:0,claw:0,crouch:0,look:null,lift:0,cower:0,back:0,alert:0,snap:0});};
  return api;}
