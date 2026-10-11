@@ -80,13 +80,14 @@ procedural on the skeleton itself (`dist/creature.js`):
 - **States** (the `drive`): speed, crouch, cower (limbs drawn in, a fine shiver), back (backing away), alert (chest
   and head up), snap (a fast head turn), look; rear and claw for Chapter Three's gate.
 - `ground(x,z)` lets a chapter give it the surface under it (Chapter Four: street, garage roofs, the creek bank, falling
-  off it on a real arc). `reset()` now returns it exactly as the page made it (bones in rest pose, the clip's clock).
+  off it on a real arc). `reset()` now returns it exactly as the page made it (bones in rest pose, the clip's clock),
+  and the limbs are measured from the model's rest pose, so it moves the same whichever chapter showed it first.
 
 Its own movement language is a little wrong on purpose: it comes **low and quick, with a slight weave**, stops **dead
 mid-stride**, and turns its head **before** its body; frightened, it draws its limbs under itself and shivers.
 
 Evidence: `docs/qa/chapter4-horror-revision/creature-lab/` (profile, front, rear and three-quarter sheets of the run,
-trot, stalk, stop, turn, back, cower and turn-to-flee) — foot slip 0 in run, stalk, turn; ≤ 0.17 m only in the last
+trot, stalk, stop, turn, back, cower and turn-to-flee) — foot slip 0 in run, stalk, turn; ≤ 0.09 m only in the last
 frames of a hard stop. In the Chapter Four encounter: foot slip ≤ 0.21 m (was 2.2 m off the creek bank). Chapter
 Three's chase with the new gait: 156 checks pass; float 0, speed error median 0.004, heading error p95 0.003.
 
@@ -236,7 +237,7 @@ Software rendering (SwiftShader) only: the counts are real, the times are not a 
 
 ## 11. Known roughness
 
-- At a hard stop the last hand to land can slide up to 0.17 m for a few frames; a flinch backwards up to 0.3 m.
+- At a hard stop the last hand to land can slide up to 0.09 m for a few frames; turning in place toward something, about 0.2 m.
 - The creature does not path-find: its routes are hand-placed lines that avoid the town's solids; in the main-street
   variant it can brush street furniture on the north sidewalk.
 - In the narrow way at walking pace the creature passes at about 1.5 m (by design close, but tight at the shoulder).
