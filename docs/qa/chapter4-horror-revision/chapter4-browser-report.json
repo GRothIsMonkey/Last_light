@@ -1,0 +1,1062 @@
+{
+  "runtimeHashes": {
+    "dist/THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
+    "dist/adult-art.js": "07ab447ff682d430620a073814491b3a44e0f7c6603b685048e2b4c0ff1868a5",
+    "dist/alex-camera.js": "1ddd5182b375e1c3f71499f9d106b7395ad00e1fe813ea09a3c66ac44fdd0ba6",
+    "dist/alex-room.js": "f14a81330045bc8c1f4c91d25e8e949dad8d5f9b29c2178efd5c1fbfb94df686",
+    "dist/ambient.js": "5b2b3919a4a7fe3c5ec77ca38b265088cf7c219065d10c9257f65786c08deec3",
+    "dist/art-surfaces.js": "d34973c059b7af63b1f1c7b9668966751e0141e17aecb01e0d503ae4982de2c0",
+    "dist/audio.js": "f47e4a8bbf9aa92c9125119471f054b5a2f31d774af3650751e08cc85cc099e0",
+    "dist/background.js": "aee28cfb6656700c8a6baca429ddce80600a4c1b535d7ad8a48183342521be1e",
+    "dist/captions.js": "6e31b76593a62d1362cf00259ff5a75ac3bcfb33a1f70db0d22280e1e1643a99",
+    "dist/cast.js": "bfc977fc428a3860f648ad4f40a7eb6bd2e5424b3bdef2a1ebdbaf83e11c3ff9",
+    "dist/chapter1.js": "5aae6471ad0ad240f241c28a5ffb1c949af20a2d7e53ecd42a921ca6865e8f2e",
+    "dist/chapter2.js": "01b61485854de3cc30f9f5d56e649bd90ff6e9234300a77ef09435b0cdba137f",
+    "dist/chapter3-art.js": "7af9fb0ff6c1f7d2b26e443c811dbe1d35d2b6c82e69c84ddcec031799b75c95",
+    "dist/chapter3-props.js": "4ba5446b792d82adf49f7a0f055035e7310378f28c94f28d668bbdad55bb2b6f",
+    "dist/chapter3.js": "f1247c3f0b59b402122d6c8f9dea624b901c57b73f98592d450e751a6f5ee385",
+    "dist/chapter4.js": "d5f3ff4a1200081591bb37fe50a7711c3a985728060956cfaa3e8559f9afaa51",
+    "dist/companions.js": "d1ac29a271e1e5ccf5fc432817985dfaa3043d3a4222ef678dfe4056ff594e9b",
+    "dist/creature-asset.js": "cfd431397910ec8b899c38fff6d498299cc631c22e735aeb3ea8b811b8bf2be4",
+    "dist/creature.js": "450bd213c7afcd7146ca9861be12463d23970b7268345e35da03530e34b6034c",
+    "dist/creek.js": "f5cc5a7867f4c343e0ccf21818cd7bfff7a00ff2ea0c90bbed7b985df6889f0c",
+    "dist/dev-chapter-history.js": "a39e60097f53114045db0b1a1c82e250d2a6e1885bfdbea841ef83c49ecaf5b3",
+    "dist/dev-chapters.js": "a330b203482f26260c49ab06b66d4a2dd920cc369c819c4344f500d7c245bfa2",
+    "dist/drain.js": "b17b28ccb702c011cd1d46dcea7b92a5f0f39d5f1ca1f12004e861f72e6c8823",
+    "dist/easement.js": "f47b2b0759848d58b1d5d07c35b725524aabf45ee9171c777c81ac424f67451d",
+    "dist/ending.js": "9b8242d059f65b4826f5ed4ff2fc4b053aad37ac0ff2059b81eac0592397c14a",
+    "dist/footage.js": "5caa5cf3de34350c3912334e495396e26087cae46c6e9ae161a4b747c803686d",
+    "dist/friends.js": "89e91d18af47e918491de8188e23ccf0f4a297894e6200fda9ddcdb16dbdee2a",
+    "dist/furniture.js": "630b5dceb9da07cbe2af49c6826615e98caccfd404d0d22a1a46b4fea92fe0dc",
+    "dist/game.js": "db929615b5f13735e84bfcc7bd10332f008988fbcd8caea6c8b3119f11b0a9b5",
+    "dist/houses.js": "7dc3230d0f6924da908b0b38a3041bb174522b087a14dc0f92dcc94d6d1c7dfc",
+    "dist/index.html": "1954472034bf3d2031d610f3f5335c61743d421e70c3c9d1ca4bf15a2964c11d",
+    "dist/interactions.js": "d1f8b6e0859fb439d09cf3d634013a34c52242684a493be8892e9924bf65ccc1",
+    "dist/kit.js": "6ba15469732e2bd1f9ce798f97cd1650fec57973b63743eb5c8761fca26e14bd",
+    "dist/layout.js": "fc7e6ee21e8cf1b6ff9c8f9b888bcee57b7f2422ad3a2b27c13d57798414099c",
+    "dist/materials.js": "9d31af0e9c6df4304162b69d757d9e6eed8a0c8c4f802407a809791aefbc92dc",
+    "dist/memory.js": "76498323db63e152db35e36f11b44b01543da4d5cdf44bdd3a1300ea7c1be5ab",
+    "dist/nav.js": "c476563773f10d38a0c9ba470e9e4816980d1f3765d055c0db0d8226c9d724b8",
+    "dist/nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
+    "dist/old-bike.js": "df1f0e9344338cb74ac00bcae7904f1e312ee2d93f450cda21772811e81a7605",
+    "dist/on-foot.js": "d9a33013a86d72aefd77ec59465efb6ba2dfb5f23d4b12027b9de8f12faa3866",
+    "dist/palette.js": "52a0632bb1e9c5363b8ecfbc34983d037ab09bd9f1018f52d32d1b0ccada6a65",
+    "dist/patrol-art.js": "9e3e70672fd5f9e320daadc09e6c6effc796c1bac0bdd62134d0267183534d76",
+    "dist/people.js": "19e40d3045863ef4171f7c0de1ad3677565aa892efe2ed6239a6c2cf2de73f88",
+    "dist/police.js": "4c2acdbb1bdb3935ee576b562f9be0dd4342abfe294e6cd4eea7de1766d33091",
+    "dist/presence.js": "e6e4adb73e8b2339c17c202e95928929d3093d2fbe4956d9922cf4270f712842",
+    "dist/props.js": "ed8786554db22138ffd825e6920cf260fa9fff0a270e2849829e9867a8f8aebe",
+    "dist/ride-contact.js": "c6a3af3649f04468258914e03c96ee72828d730f0387fe4a3db10de87cc25f42",
+    "dist/rig.js": "0ea645750eae57f550b5e0609876de1791083af5df76e4a6e9d23e51aeb6886d",
+    "dist/route.js": "f17de16440dbcb6101a0ea0b483d22ef55663934398613ab932fcf030412b3f5",
+    "dist/story.js": "c1f2bfccdace50fdb27d65786a86028b83d4e7c84ea9c8254fdd24ef361958e0",
+    "dist/streets.js": "2b0e58223f14706a3fe4c53facb40610dc45aa3e7389098a7a4d393686b6a74d",
+    "dist/style.css": "0c1ecc8056b4836c34844424bb3dd02053b05a3583b8ca49ea91f0ac92fc78f5",
+    "dist/tension.js": "7b0de410dc3b848232dfb4c49dff6dcb85c1dc1c1057e1e4b998993bc3806e04",
+    "dist/terrain.js": "ecc674f1b9d847c7d6e992b65b287cd65a425b237ee40c540fa4e2ea364d6902",
+    "dist/three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
+    "dist/town-build.js": "40d79eee44ca854f5d9cb8972ac543fe75243193b370ea3ffb497192f9e5f9c2",
+    "dist/town-life.js": "0baba36529afde9d02aefc3027b269dfd1e8f3b544b9765da6f55b0478cdf58f",
+    "dist/town-plan.js": "e6681efee5c53a10275c52445316567a2ae932d6a681f0f2d651d62f7248e028",
+    "dist/ui.js": "342854a8172cbb454e063542af0c6484b4f5739def91e1f9f033a9237d9b2019",
+    "dist/vegetation.js": "7458d0e1523f0c6d3a65614f0082704dd2510cecfca6365014d9bd9ae29f08de",
+    "dist/woods.js": "e3ff8a8531f865f4448c27c4da87a6187150d02f6cb0b9e3819b071a4f5e9c4b",
+    "dist/world.js": "46c8a5cf3dd9a37fd8a6df6bbfbe54ec1cd476f9f75ee1b069e1ccd8c81e3b28"
+  },
+  "browser": "141.0.7390.37",
+  "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "passed": 13,
+  "checks": [
+    "Chapter Three ends on its card, with a \"Chapter Four\" button",
+    "a CHAPTER FOUR card over black, then Sam’s house the next afternoon",
+    "the old bike found in four of Alex’s pictures, the last at Mason’s downtown",
+    "the ride downtown is a real ride (Summerfield, Old Mill Road) and arrives on Main Street",
+    "the microfilm: five records read",
+    "Second Street: it comes for them, stops, looks at the empty corner as its lights die, backs off and hides",
+    "the TV shop’s window: the dark waits there; up close, the sets show the three of them live from above (\"That’s us.\")",
+    "the picture of the PINE RIDGE screen taken with Alex’s camera",
+    "the narrow way: it comes at them, stops, looks past them, and bolts past them without touching anyone",
+    "the walkthrough reaches Chapter Four’s end card, with sound off, by inputs alone",
+    "DEV: all 42 Chapter Four scenes start from the selector (real clicks) in a Chapter Four phase",
+    "no JavaScript errors",
+    "no WebGL/shader warnings"
+  ],
+  "frames": [
+    {
+      "name": "00-chapter-three-end-card",
+      "calls": 336,
+      "triangles": 739330,
+      "phase": "n3-end",
+      "clock": "1:52 PM",
+      "caption": "SAM“Then what did we follow?”"
+    },
+    {
+      "name": "01-sams-house-mom",
+      "calls": 253,
+      "triangles": 464547,
+      "phase": "d4-sam",
+      "clock": "1:53 PM",
+      "caption": "SAM“Okay.”"
+    },
+    {
+      "name": "02-backpack",
+      "calls": 176,
+      "triangles": 354835,
+      "phase": "d4-bag",
+      "clock": "1:53 PM",
+      "caption": "[The zipper on the front pocket.]"
+    },
+    {
+      "name": "03-camera-first-picture",
+      "calls": 230,
+      "triangles": 376248,
+      "phase": "d4-photos",
+      "clock": "1:54 PM",
+      "caption": "SAM“Delete that one.”"
+    },
+    {
+      "name": "04-picture-mason-old-bike-zoomed",
+      "calls": 230,
+      "triangles": 376248,
+      "phase": "d4-photos",
+      "clock": "1:55 PM",
+      "caption": "JAMIE“Mason’s. The old bike shop.”"
+    },
+    {
+      "name": "05-summerfield-road",
+      "calls": 272,
+      "triangles": 185105,
+      "phase": "d4-ride",
+      "clock": "2:02 PM",
+      "caption": "SAM“There’s the pizza place.”"
+    },
+    {
+      "name": "06-old-mill-road-crest",
+      "calls": 939,
+      "triangles": 211370,
+      "phase": "d4-ride",
+      "clock": "2:03 PM",
+      "caption": "SAM“You can see the water tower.”"
+    },
+    {
+      "name": "07-main-street-arrival",
+      "calls": 1047,
+      "triangles": 206050,
+      "phase": "d4-town",
+      "clock": "2:18 PM",
+      "caption": "SAM“You can see the water tower.”"
+    },
+    {
+      "name": "08-main-street-by-day",
+      "calls": 606,
+      "triangles": 188611,
+      "phase": "d4-town",
+      "clock": "2:19 PM",
+      "caption": "JAMIE“Mason’s is down past Second Street. Across from the square.”"
+    },
+    {
+      "name": "09-mason-window-poster",
+      "calls": 147,
+      "triangles": 123445,
+      "phase": "d4-town",
+      "clock": "2:21 PM",
+      "caption": "[Dust. Empty hooks on the wall. A counter. A poster, faded almost white.]"
+    },
+    {
+      "name": "10-florist",
+      "calls": 135,
+      "triangles": 104027,
+      "phase": "d4-town",
+      "clock": "2:22 PM",
+      "caption": "YOU“That’s the bike.”"
+    },
+    {
+      "name": "11-library-librarian",
+      "calls": 141,
+      "triangles": 110690,
+      "phase": "d4-library",
+      "clock": "2:27 PM",
+      "caption": "MRS. ALBRIGHT“I close at eight, boys.”"
+    },
+    {
+      "name": "12-microfilm-1988-mason",
+      "calls": 91,
+      "triangles": 60371,
+      "phase": "d4-archive",
+      "clock": "3:18 PM",
+      "caption": "OAK HOLLOW COURIER · JUNE 14, 1988“MASON CYCLE MARKS 30 YEARS ON MAIN”"
+    },
+    {
+      "name": "13-microfilm-1966",
+      "calls": 92,
+      "triangles": 60371,
+      "phase": "d4-archive",
+      "clock": "7:33 PM",
+      "caption": "OAK HOLLOW COURIER · AUGUST 30, 1966“GIRL, 11, STILL MISSING”"
+    },
+    {
+      "name": "14-library-closing",
+      "calls": 89,
+      "triangles": 60371,
+      "phase": "d4-closing",
+      "clock": "7:49 PM",
+      "caption": "SAM“Eight?”"
+    },
+    {
+      "name": "15-dusk-the-square",
+      "calls": 293,
+      "triangles": 191414,
+      "phase": "e4-dusk",
+      "clock": "7:56 PM",
+      "caption": "JAMIE“The bikes are on the rack out front.”"
+    },
+    {
+      "name": "16-alex-across-the-street",
+      "calls": 290,
+      "triangles": 301713,
+      "phase": "e4-alex",
+      "clock": "7:57 PM",
+      "caption": "SAM“Jamie. Don’t.”"
+    },
+    {
+      "name": "17-creature-threatening-approach",
+      "calls": 259,
+      "triangles": 296266,
+      "phase": "e4-creature",
+      "clock": "8:03 PM",
+      "caption": "SAM“Don’t run. Don’t run.”"
+    },
+    {
+      "name": "18-creature-looks-at-the-empty-corner",
+      "calls": 260,
+      "triangles": 298568,
+      "phase": "e4-creature",
+      "clock": "8:04 PM",
+      "caption": "JAMIE“What’s it looking at?”"
+    },
+    {
+      "name": "18b-creature-hiding",
+      "calls": 183,
+      "triangles": 316374,
+      "phase": "e4-creature",
+      "clock": "8:05 PM",
+      "caption": "SAM“It’s hiding.”"
+    },
+    {
+      "name": "18c-creature-flees-into-the-dark",
+      "calls": 183,
+      "triangles": 320361,
+      "phase": "e4-cascade",
+      "clock": "8:06 PM",
+      "caption": "SAM“It ran.”"
+    },
+    {
+      "name": "19-the-lights-going",
+      "calls": 473,
+      "triangles": 297355,
+      "phase": "e4-cascade",
+      "clock": "8:06 PM",
+      "caption": "SAM“It ran.”"
+    },
+    {
+      "name": "20-tv-window-live",
+      "calls": 154,
+      "triangles": 118801,
+      "phase": "e4-cascade",
+      "clock": "8:08 PM",
+      "caption": "SAM“That’s us. That’s us, right now.”"
+    },
+    {
+      "name": "21-store-tv-alex-from-above",
+      "calls": 294,
+      "triangles": 239780,
+      "phase": "n4-store",
+      "clock": "8:09 PM",
+      "caption": "[A sign on the counter: BACK IN 10 MIN — D.]"
+    },
+    {
+      "name": "22-store-pine-ridge-viewfinder",
+      "calls": 374,
+      "triangles": 246959,
+      "phase": "n4-store",
+      "clock": "8:09 PM",
+      "caption": "JAMIE“Take a picture. Take a picture of it!”"
+    },
+    {
+      "name": "23-store-tv-alex-room-ceiling",
+      "calls": 356,
+      "triangles": 241682,
+      "phase": "n4-store",
+      "clock": "8:10 PM",
+      "caption": "SAM“That’s his room.”"
+    },
+    {
+      "name": "24-store-phone-jamie",
+      "calls": 362,
+      "triangles": 191406,
+      "phase": "n4-store",
+      "clock": "8:10 PM",
+      "caption": "ON THE PHONE“…Jamie?”"
+    },
+    {
+      "name": "25-store-thats-us",
+      "calls": 473,
+      "triangles": 418812,
+      "phase": "n4-store",
+      "clock": "8:10 PM",
+      "caption": "SAM“That’s us.”"
+    },
+    {
+      "name": "26-store-lights-going",
+      "calls": 472,
+      "triangles": 416800,
+      "phase": "n4-store",
+      "clock": "8:11 PM",
+      "caption": "JAMIE“The back. There’s a back door.”"
+    },
+    {
+      "name": "27-out-the-back-alley",
+      "calls": 136,
+      "triangles": 269177,
+      "phase": "n4-alley",
+      "clock": "8:13 PM",
+      "caption": "JAMIE“The laundromat. It’s open till ten.”"
+    },
+    {
+      "name": "28-it-comes-at-them",
+      "calls": 191,
+      "triangles": 121492,
+      "phase": "n4-alley",
+      "clock": "8:14 PM",
+      "caption": "[Behind them, a light goes out.]"
+    },
+    {
+      "name": "28b-it-looks-past-them",
+      "calls": 191,
+      "triangles": 121492,
+      "phase": "n4-alley",
+      "clock": "8:14 PM",
+      "caption": "[Behind them, a light goes out.]"
+    },
+    {
+      "name": "28c-it-runs-past-them",
+      "calls": 189,
+      "triangles": 121096,
+      "phase": "n4-alley",
+      "clock": "8:14 PM",
+      "caption": "SAM“The other end—”"
+    },
+    {
+      "name": "29-laundromat",
+      "calls": 159,
+      "triangles": 107773,
+      "phase": "n4-laundry",
+      "clock": "8:14 PM",
+      "caption": "JAMIE“Side door. There.”"
+    },
+    {
+      "name": "30-theater-upper-windows",
+      "calls": 185,
+      "triangles": 89064,
+      "phase": "n4-depot",
+      "clock": "8:16 PM",
+      "caption": "SAM“Jamie. The windows.”"
+    },
+    {
+      "name": "31-alex-under-the-marquee",
+      "calls": 194,
+      "triangles": 96366,
+      "phase": "n4-marquee",
+      "clock": "8:19 PM",
+      "caption": "ALEX“Did you guys hear that?”"
+    },
+    {
+      "name": "31b-dont-run-dont-run",
+      "calls": 194,
+      "triangles": 96366,
+      "phase": "n4-marquee",
+      "clock": "8:20 PM",
+      "caption": "ALEX“Don’t run. Don’t run.”"
+    },
+    {
+      "name": "31c-see-you-tomorrow",
+      "calls": 194,
+      "triangles": 96366,
+      "phase": "n4-marquee",
+      "clock": "8:21 PM",
+      "caption": "ALEX“See you tomorrow.”"
+    },
+    {
+      "name": "32-marquee-blackout",
+      "calls": 174,
+      "triangles": 83358,
+      "phase": "n4-marquee",
+      "clock": "8:21 PM",
+      "caption": "ALEX“See you tomorrow.”"
+    },
+    {
+      "name": "33-power-returns-he-is-gone",
+      "calls": 184,
+      "triangles": 96606,
+      "phase": "n4-return",
+      "clock": "8:21 PM",
+      "caption": "JAMIE“He’s gone.”"
+    },
+    {
+      "name": "34-the-picture-pine-ridge",
+      "calls": 440,
+      "triangles": 422159,
+      "phase": "n4-clue",
+      "clock": "8:22 PM",
+      "caption": "SAM“Pine Ridge Recreation Area.”"
+    },
+    {
+      "name": "35-ride-home-old-mill-road",
+      "calls": 553,
+      "triangles": 1015705,
+      "phase": "n4-ride",
+      "clock": "8:27 PM",
+      "caption": "SAM“Don’t look back.”"
+    },
+    {
+      "name": "36-the-old-oak-it-was-scared",
+      "calls": 137,
+      "triangles": 104264,
+      "phase": "n4-oak",
+      "clock": "8:36 PM",
+      "caption": "SAM“It was scared.”"
+    },
+    {
+      "name": "37-chapter-four-end-card",
+      "calls": 140,
+      "triangles": 106657,
+      "phase": "n4-end",
+      "clock": "8:36 PM",
+      "caption": "YOU“Of what?”"
+    },
+    {
+      "name": "dev-chapter4",
+      "calls": 253,
+      "triangles": 464547,
+      "phase": "c4-black",
+      "clock": "1:52 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-sam-house",
+      "calls": 253,
+      "triangles": 464547,
+      "phase": "d4-sam",
+      "clock": "1:52 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-backpack",
+      "calls": 173,
+      "triangles": 350194,
+      "phase": "d4-bag",
+      "clock": "1:56 PM",
+      "caption": "[The zipper on the front pocket.]"
+    },
+    {
+      "name": "dev-c4-camera",
+      "calls": 250,
+      "triangles": 434273,
+      "phase": "d4-photos",
+      "clock": "1:58 PM",
+      "caption": "SAM“Delete that one.”"
+    },
+    {
+      "name": "dev-c4-photo-bike",
+      "calls": 250,
+      "triangles": 434273,
+      "phase": "d4-photos",
+      "clock": "1:58 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-photo-mason",
+      "calls": 250,
+      "triangles": 434273,
+      "phase": "d4-photos",
+      "clock": "1:58 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-ride",
+      "calls": 389,
+      "triangles": 812810,
+      "phase": "d4-ride",
+      "clock": "2:03 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-old-mill-road",
+      "calls": 952,
+      "triangles": 187125,
+      "phase": "d4-ride",
+      "clock": "2:10 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-downtown-arrival",
+      "calls": 1027,
+      "triangles": 193264,
+      "phase": "d4-town",
+      "clock": "2:18 PM",
+      "caption": "JAMIE“Mason’s is down past Second Street. Across from the square.”"
+    },
+    {
+      "name": "dev-c4-main-street",
+      "calls": 692,
+      "triangles": 250850,
+      "phase": "d4-town",
+      "clock": "2:21 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-mason",
+      "calls": 156,
+      "triangles": 125628,
+      "phase": "d4-town",
+      "clock": "2:27 PM",
+      "caption": "SAM“This is it. This is where he took it.”"
+    },
+    {
+      "name": "dev-c4-florist",
+      "calls": 156,
+      "triangles": 125628,
+      "phase": "d4-town",
+      "clock": "2:27 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-library",
+      "calls": 141,
+      "triangles": 110690,
+      "phase": "d4-library",
+      "clock": "2:54 PM",
+      "caption": "MRS. ALBRIGHT“Can I help you find something?”"
+    },
+    {
+      "name": "dev-c4-microfilm",
+      "calls": 98,
+      "triangles": 60616,
+      "phase": "d4-library",
+      "clock": "3:00 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-historical-clue",
+      "calls": 91,
+      "triangles": 60371,
+      "phase": "d4-archive",
+      "clock": "3:18 PM",
+      "caption": "OAK HOLLOW COURIER · JUNE 14, 1988“MASON CYCLE MARKS 30 YEARS ON MAIN”"
+    },
+    {
+      "name": "dev-c4-closing",
+      "calls": 93,
+      "triangles": 60371,
+      "phase": "d4-archive",
+      "clock": "7:49 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-dusk",
+      "calls": 233,
+      "triangles": 180498,
+      "phase": "e4-dusk",
+      "clock": "7:52 PM",
+      "caption": "JAMIE“The bikes are on the rack out front.”"
+    },
+    {
+      "name": "dev-c4-alex-across",
+      "calls": 193,
+      "triangles": 151559,
+      "phase": "e4-alex",
+      "clock": "7:54 PM",
+      "caption": "JAMIE“…Alex?”"
+    },
+    {
+      "name": "dev-c4-creature",
+      "calls": 501,
+      "triangles": 410011,
+      "phase": "e4-creature",
+      "clock": "8:03 PM",
+      "caption": "SAM“Stop. Stop.”"
+    },
+    {
+      "name": "dev-c4-creature-notices",
+      "calls": 503,
+      "triangles": 357404,
+      "phase": "e4-creature",
+      "clock": "8:03 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-creature-hiding",
+      "calls": 503,
+      "triangles": 357404,
+      "phase": "e4-creature",
+      "clock": "8:03 PM",
+      "caption": "SAM“It’s hiding.”"
+    },
+    {
+      "name": "dev-c4-presence",
+      "calls": 500,
+      "triangles": 334279,
+      "phase": "e4-cascade",
+      "clock": "8:06 PM",
+      "caption": "JAMIE“Why would it—”"
+    },
+    {
+      "name": "dev-c4-tv-window",
+      "calls": 500,
+      "triangles": 334279,
+      "phase": "e4-cascade",
+      "clock": "8:06 PM",
+      "caption": "JAMIE“Look. The TVs.”"
+    },
+    {
+      "name": "dev-c4-video-store",
+      "calls": 298,
+      "triangles": 242490,
+      "phase": "n4-store",
+      "clock": "8:08 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-store-footage",
+      "calls": 298,
+      "triangles": 242490,
+      "phase": "n4-store",
+      "clock": "8:08 PM",
+      "caption": "JAMIE“That’s Alex.”"
+    },
+    {
+      "name": "dev-c4-pine-ridge",
+      "calls": 298,
+      "triangles": 242490,
+      "phase": "n4-store",
+      "clock": "8:08 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-store-phone",
+      "calls": 298,
+      "triangles": 242490,
+      "phase": "n4-store",
+      "clock": "8:08 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-store-live",
+      "calls": 298,
+      "triangles": 242490,
+      "phase": "n4-store",
+      "clock": "8:08 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-back-door",
+      "calls": 120,
+      "triangles": 120086,
+      "phase": "n4-store",
+      "clock": "8:08 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-escape",
+      "calls": 245,
+      "triangles": 118965,
+      "phase": "n4-alley",
+      "clock": "8:13 PM",
+      "caption": "JAMIE“The laundromat. It’s open till ten.”"
+    },
+    {
+      "name": "dev-c4-route-a",
+      "calls": 205,
+      "triangles": 101447,
+      "phase": "n4-alley",
+      "clock": "8:13 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-route-b",
+      "calls": 239,
+      "triangles": 120193,
+      "phase": "n4-alley",
+      "clock": "8:13 PM",
+      "caption": "JAMIE“Up here. It comes out on Main.”"
+    },
+    {
+      "name": "dev-c4-alley-creature",
+      "calls": 196,
+      "triangles": 99259,
+      "phase": "n4-alley",
+      "clock": "8:13 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-laundromat",
+      "calls": 183,
+      "triangles": 116577,
+      "phase": "n4-laundry",
+      "clock": "8:13 PM",
+      "caption": "JAMIE“Depot Street. Up to Main.”"
+    },
+    {
+      "name": "dev-c4-depot-st",
+      "calls": 179,
+      "triangles": 90032,
+      "phase": "n4-depot",
+      "clock": "8:18 PM",
+      "caption": "SAM“Jamie. The windows.”"
+    },
+    {
+      "name": "dev-c4-theater",
+      "calls": 193,
+      "triangles": 100536,
+      "phase": "n4-depot",
+      "clock": "8:18 PM",
+      "caption": "SAM“Jamie. The windows.”"
+    },
+    {
+      "name": "dev-c4-marquee",
+      "calls": 206,
+      "triangles": 109741,
+      "phase": "n4-marquee",
+      "clock": "8:19 PM",
+      "caption": "[It goes quiet. No wind. Nothing.]"
+    },
+    {
+      "name": "dev-c4-power-returns",
+      "calls": 185,
+      "triangles": 95577,
+      "phase": "n4-marquee",
+      "clock": "8:19 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c4-final-clue",
+      "calls": 405,
+      "triangles": 252646,
+      "phase": "n4-clue",
+      "clock": "8:22 PM",
+      "caption": "JAMIE“The picture. Did it come out?”"
+    },
+    {
+      "name": "dev-c4-ride-home",
+      "calls": 392,
+      "triangles": 850283,
+      "phase": "n4-ride",
+      "clock": "8:27 PM",
+      "caption": "SAM“Don’t look back.”"
+    },
+    {
+      "name": "dev-c4-oak",
+      "calls": 151,
+      "triangles": 161508,
+      "phase": "n4-ride",
+      "clock": "8:33 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-chapter4-end",
+      "calls": 137,
+      "triangles": 113224,
+      "phase": "n4-oak",
+      "clock": "8:36 PM",
+      "caption": "There’s still a little light."
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "walkthrough": {
+    "found": [
+      "oak-sunset",
+      "briarwood",
+      "creek",
+      "mason"
+    ],
+    "read": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "pic": {
+      "lead": true,
+      "by": "you"
+    },
+    "sounds": {
+      "relay": 43,
+      "splash": 1,
+      "static": 1,
+      "door": 2,
+      "flash": 1,
+      "shutter": 1,
+      "phone": 1,
+      "click": 1,
+      "step": 1
+    }
+  },
+  "dev": [
+    {
+      "id": "chapter4",
+      "label": "Chapter Four Start",
+      "phase": "c4-black",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-sam-house",
+      "label": "Sam’s House (his mom)",
+      "phase": "d4-sam",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-backpack",
+      "label": "Alex’s Backpack",
+      "phase": "d4-bag",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-camera",
+      "label": "Alex’s Camera (the pictures)",
+      "phase": "d4-photos",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-photo-bike",
+      "label": "Old Bike in a Photo",
+      "phase": "d4-photos",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-photo-mason",
+      "label": "The Mason Cycle Photo",
+      "phase": "d4-photos",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-ride",
+      "label": "Ride Downtown",
+      "phase": "d4-ride",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-old-mill-road",
+      "label": "Old Mill Road",
+      "phase": "d4-ride",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-downtown-arrival",
+      "label": "Downtown Arrival",
+      "phase": "d4-town",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-main-street",
+      "label": "Main Street by Day",
+      "phase": "d4-town",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-mason",
+      "label": "Mason Cycle & Sport",
+      "phase": "d4-town",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-florist",
+      "label": "The Florist",
+      "phase": "d4-town",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-library",
+      "label": "The Library",
+      "phase": "d4-library",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-microfilm",
+      "label": "Microfilm Room",
+      "phase": "d4-library",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-historical-clue",
+      "label": "Microfilm: the Records",
+      "phase": "d4-archive",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-closing",
+      "label": "Library Closing",
+      "phase": "d4-archive",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-dusk",
+      "label": "Dusk (out of the library)",
+      "phase": "e4-dusk",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-alex-across",
+      "label": "Alex Across the Street",
+      "phase": "e4-alex",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-creature",
+      "label": "Creature First Appearance",
+      "phase": "e4-creature",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-creature-notices",
+      "label": "Creature Notices Presence",
+      "phase": "e4-creature",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-creature-hiding",
+      "label": "Creature Cowering / Fear",
+      "phase": "e4-creature",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-presence",
+      "label": "Streetlight Cascade",
+      "phase": "e4-cascade",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-tv-window",
+      "label": "TV Window (live)",
+      "phase": "e4-cascade",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-video-store",
+      "label": "Video Store",
+      "phase": "n4-store",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-store-footage",
+      "label": "Store TV: Alex Footage",
+      "phase": "n4-store",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-pine-ridge",
+      "label": "Store TV: Pine Ridge (the picture)",
+      "phase": "n4-store",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-store-phone",
+      "label": "The Phone (“Jamie?”)",
+      "phase": "n4-store",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-store-live",
+      "label": "Impossible Surveillance (“That’s us.”)",
+      "phase": "n4-store",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-back-door",
+      "label": "Video Store Escape (back door)",
+      "phase": "n4-store",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-escape",
+      "label": "Downtown Escape Start",
+      "phase": "n4-alley",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-route-a",
+      "label": "Alley Route A (the narrow way)",
+      "phase": "n4-alley",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-route-b",
+      "label": "Alley Route B (the passage to Main)",
+      "phase": "n4-alley",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-alley-creature",
+      "label": "Creature Flees Past Group",
+      "phase": "n4-alley",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-laundromat",
+      "label": "Laundromat",
+      "phase": "n4-laundry",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-depot-st",
+      "label": "Depot Street",
+      "phase": "n4-depot",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-theater",
+      "label": "Theater Approach (the windows)",
+      "phase": "n4-depot",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-marquee",
+      "label": "New Alex Message (under the marquee)",
+      "phase": "n4-marquee",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-power-returns",
+      "label": "Blackout / Power Returns",
+      "phase": "n4-marquee",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-final-clue",
+      "label": "Final Clue (the Pine Ridge picture)",
+      "phase": "n4-clue",
+      "state": "c1-walk"
+    },
+    {
+      "id": "c4-ride-home",
+      "label": "Ride Home",
+      "phase": "n4-ride",
+      "state": "c1-ride"
+    },
+    {
+      "id": "c4-oak",
+      "label": "Back on Oak Hollow",
+      "phase": "n4-ride",
+      "state": "c1-ride"
+    },
+    {
+      "id": "chapter4-end",
+      "label": "Chapter Four Ending (the old oak)",
+      "phase": "n4-oak",
+      "state": "c1-ride"
+    }
+  ],
+  "renderLimitation": "Software rendering (SwiftShader): render counts are real, frame times are not a real-GPU measurement.",
+  "audio": "Sound off; audio is deferred: placeholder hooks only."
+}
