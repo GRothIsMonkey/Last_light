@@ -49,7 +49,7 @@ import {createFootage,pineSignArt} from './footage.js';
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt)),lerp=(a,b,t)=>a+(b-a)*t;
 // QA jumps and DEV scenes, in story order.
 export const SECTIONS4=['chapter4-start','c4-sam-house','c4-backpack','c4-camera','c4-photo-bike','c4-photo-mason','c4-ride','c4-old-mill-road','c4-downtown-arrival','c4-main-street','c4-mason',
- 'c4-florist','c4-library','c4-microfilm','c4-historical-clue','c4-closing','c4-dusk','c4-alex-across','c4-creature','c4-presence','c4-tv-window','c4-video-store','c4-store-footage','c4-pine-ridge',
+ 'c4-florist','c4-library','c4-microfilm','c4-historical-clue','c4-closing','c4-dusk','c4-alex-across','c4-creature','c4-creature-notices','c4-creature-hiding','c4-presence','c4-tv-window','c4-video-store','c4-store-footage','c4-pine-ridge',
  'c4-store-phone','c4-store-live','c4-back-door','c4-escape','c4-alley-creature','c4-laundromat','c4-depot-st','c4-theater','c4-marquee','c4-power-returns','c4-final-clue','c4-ride-home','c4-oak','chapter4-end'];
 export const ALIAS4={'c4-start':'chapter4-start','c4-photos':'c4-camera','c4-downtown':'c4-downtown-arrival','c4-bike-shop':'c4-mason','c4-archive':'c4-microfilm','c4-streetlights':'c4-presence',
  'c4-cascade':'c4-presence','c4-store':'c4-video-store','c4-alley':'c4-escape','c4-lyric':'c4-theater','c4-alex-marquee':'c4-marquee','c4-lead':'c4-final-clue','c4-end':'chapter4-end'};
@@ -451,32 +451,79 @@ export function createChapter4(o,k,ch2,ch3){
   if(!C.flags.crt&&u>150&&!C.flags.westNudge&&!busy()){C.flags.westNudge=true;say([{who:'SAM',text:'“Home’s the other way.”',by:'sam'}]);}
   if(!C.flags.crt&&S.pt>100&&!C.flags.ride2Nudge&&!busy()){C.flags.ride2Nudge=true;say([{who:'JAMIE',text:'“Come on. That way. Up Main.”',by:'jamie'}]);}
   if(!C.flags.crt&&S.pt>170)carry('dusk',99,2.8,HE,{ride:me().riding});}
+ // ---- the creature at dusk: it comes for them, stops, looks at nothing, and is afraid -------------------------------------
+ // From the far end of Second Street it sees them and comes, low, up the middle of the street, closer than anyone wants.
+ // It stops dead and looks past them at the TV shop's corner, the way they were going, where nobody is standing. That
+ // corner's light dies, slowly. It backs away from it and makes itself small against the lit corner of the video store,
+ // nearer the boys than it has been, still turned to the corner, shaking. Then, far up Main, the streetlights begin to go
+ // out one after another, coming this way, and it bolts back down Second Street for the creek, the light over the street
+ // dying as it passes under it. The boys only ever see the lights. Each stage waits (within limits) for you to have seen
+ // it; nothing turns your head.
+ const CORNER={u:76,v:-7},HIDE={u:97.85,v:-13.7};
+ const lampAt=(u,v)=>{let b=null,bd=1e9;for(const L of D.lamps){const d=Math.hypot(L.u-u,L.v-v);if(d<bd){bd=d;b=L;}}return b?LV.lamp+b.id:-1;};
+ /* (any light, a shop's included: the one over the TV shop's door is the corner's) */
+ const lightAt=(u,v)=>{let b=-1,bd=1.5;for(let i=0;i<600;i++){const q=lights.posOf(i);if(!q)continue;const d=Math.hypot(q.u-u,q.v-v);if(d<bd){bd=d;b=i;}}return b>=0?b:lampAt(u,v);};
+ const lampPos=i=>{const q=lights.posOf(i);return q?at(q.u,q.v,q.y??TY+4.5):null;};
  function creatureDusk(){if(C.flags.crt)return;C.flags.crt=true;go('e4-creature');C.hMin=Math.max(C.hMin||0,HOUR.creature);mark('something at the end of Second Street');
-  C.crt={stage:'watch',t:0,seenT:0,seenAt:null,u:90.4,v:-50.8,a:HN,y:0,dive:0,stageAt:{watch:C.t}};creature.show(true);placeCrt();S.lookTarget=crHead;
-  for(const c of [jamie,sam])if(c.mode==='ride'&&!c.script)comp.run(c,[comp.steps.brake(c,.5)]);
+  C.crt={stage:'watch',t:0,seenT:0,seenAt:null,u:90,v:-36,a:HN,y:null,vy:0,dive:0,stageAt:{watch:C.t},hideSeen:0,glance:0,gi:0,fs:0,k:{},
+   lit:{corner:lightAt(72.8,-12),corner2:lampAt(66,-7.7),side:lampAt(94.2,-24),far:lampAt(94.2,-46)}};
+  creature.ground=(x,z)=>{const R=C.crt;if(R?.vy>0)return R.y;/* (in the air, its feet go with it) */const q=TL(x,z);return townY(q.u,q.v)-(R?.dive||0);};creature.show(true);placeCrt();S.lookTarget=crHead;
+  for(const c of [jamie,sam]){if(c.mode==='ride'&&!c.script)comp.run(c,[comp.steps.brake(c,.5)]);c.lookAt=crHead;}
   T?.set?.(.4,{rise:.08,why:'it, at the end of the street'});
   say([{who:'SAM',text:'“Stop. Stop.”',by:'sam',time:1.4},{who:'JAMIE',text:'“Is that—”',by:'jamie',time:1.4},{who:'SAM',text:'“Don’t move.”',by:'sam',time:1.4}]);}
- function placeCrt(){const R=C.crt;if(!R)return;const q=at(R.u,R.v);R.y=townY(R.u,R.v)-R.dive;creature.place(q.x,R.y,q.z,R.a);}
+ function placeCrt(dt=0){const R=C.crt;if(!R)return;const q=at(R.u,R.v),tgt=townY(R.u,R.v)-R.dive;
+  /* (off the creek bank it falls, it does not drop a storey in one frame) */if(dt>0&&R.y!=null&&tgt<R.y-.05){R.vy=(R.vy||0)+9.8*dt;R.y=Math.max(tgt,R.y-R.vy*dt);}else{R.vy=0;R.y=tgt;}creature.place(q.x,R.y,q.z,R.a);}
  function crStage(s){const R=C.crt;R.stage=s;R.t=0;R.stageAt[s]=C.t;mark('it: '+s);}
+ const crKill=(name,o)=>{const R=C.crt;if(R.k[name])return;R.k[name]=C.t;const i=R.lit[name];if(i>=0&&lights.hold[i]>0)lights.kill(i,lights.S.t,o);};
  function updateCrt(dt){const D2=creature.drive;
-  if(C.crt&&C.crt.stage!=='gone'&&S.phase.startsWith('e4-')){const R2=C.crt;R2.t+=dt;let sp=0,look=camera.position;
-   creature.headPos?.(crHead);if(!creature.loaded){const q=at(R2.u,R2.v);crHead.set(q.x,R2.y+.9,q.z);}
-   if(R2.stage==='watch'){D2.crouch=damp(D2.crouch,.7,3,dt);if(k.camLooksAt(crHead,.985)){R2.seenT+=dt;if(R2.seenAt===null&&R2.seenT>.4)R2.seenAt=C.t;}if(R2.seenT>1.2&&R2.t>2.2||R2.t>6.5)crStage('stalk');}
-   else if(R2.stage==='stalk'){sp=1.3;D2.crouch=damp(D2.crouch,.25,3,dt);R2.v+=sp*dt;if(R2.v>=-29||R2.t>16)crStage('freeze');}
-   else if(R2.stage==='freeze'){if(R2.t<dt*1.5)say([{who:'YOU',text:'“What’s it doing?”',time:1.6}]);sp=0;look=at(-30,1,TY+4);R2.a=damp(R2.a,HN+.32,3,dt);D2.crouch=damp(D2.crouch,.15,4,dt);if(R2.t>2.7)crStage('fear');}
-   else if(R2.stage==='fear'){if(R2.t<dt*1.5)say([{who:'JAMIE',text:'“It’s looking at something.”',by:'jamie',time:1.8}]);look=at(-30,1,TY+3);D2.cower=damp(D2.cower||0,1,5,dt);D2.back=1;sp=.85;R2.v-=sp*dt;if(R2.t>2.3){D2.back=0;crStage('turn');}}
-   else if(R2.stage==='turn'){R2.a=damp(R2.a,HS,9,dt);D2.cower=damp(D2.cower||0,.4,6,dt);sp=1.5;if(R2.t>.45)crStage('flee');}
-   else if(R2.stage==='flee'){if(R2.t<dt*1.5)say([{who:'SAM',text:'“It ran.”',by:'sam',time:1.4}]);R2.a=HS;D2.cower=damp(D2.cower||0,0,6,dt);sp=7.2;R2.v-=sp*dt;look=null;
-    if(R2.v<-56.2){R2.dive=Math.min(2.4,R2.dive+dt*5.5);}if(R2.v<-58.6||R2.t>3.2){crStage('gone');creature.show(false);S.lookTarget=null;sound('splash',at(90,-58.6,TY-2),{gain:.8});later(1.4,()=>cascadeStart());}}
-   if(R2.stage!=='gone'){D2.speed=sp;D2.look=look;placeCrt();creature.update(dt);}}
+  if(C.crt&&C.crt.stage!=='gone'&&S.phase.startsWith('e4-')){const R2=C.crt;R2.t+=dt;let sp=0,look=camera.position;D2.snap=0;
+   creature.headPos?.(crHead);if(!creature.loaded){const q=at(R2.u,R2.v);crHead.set(q.x,(R2.y??TY)+.9,q.z);}
+   const p=me(),cw=at(R2.u,R2.v),dYou=Math.hypot(p.x-cw.x,p.z-cw.z),seen=k.camLooksAt(crHead,.985);if(seen)R2.seenT+=dt;
+   const to=(u,v,s2)=>{const du=u-R2.u,dv=v-R2.v,l=Math.hypot(du,dv);if(l<.06)return true;const st=Math.min(l,s2*dt);R2.u+=du/l*st;R2.v+=dv/l*st;return l<.35;};
+   const face=(u,v,kk=4)=>{const w=at(u,v);R2.a+=wrap(headingTo(cw.x,cw.z,w.x,w.z)-R2.a)*(1-Math.exp(-kk*dt));};
+   const cornerW=at(CORNER.u,CORNER.v,TY+1.4),upMain=at(-20,1,TY+3),dmp=(k2,to2,r)=>{D2[k2]=damp(D2[k2]||0,to2,r,dt);};
+   /* (it looks from one thing to the next, fast, the way a frightened animal does) */
+   const glanceAt=list=>{R2.glance-=dt;if(R2.glance<=0){R2.gi=(R2.gi+1)%list.length;R2.glance=.7+((R2.gi*.37)%1)*.9;R2.snapT=.25;}if((R2.snapT-=dt)>0)D2.snap=1;return list[R2.gi]||cornerW;};
+   if(R2.stage==='watch'){dmp('crouch',.7,3);dmp('alert',0,3);if(R2.seenT>.4&&R2.seenAt===null)R2.seenAt=C.t;if((R2.seenT>1.2&&R2.t>2.2)||R2.t>6.5){crStage('stalk');say([{who:'JAMIE',text:'“It’s coming.”',by:'jamie',time:1.3},{who:'SAM',text:'“Don’t run. Don’t run.”',by:'sam',time:1.6}],{interrupt:true});}}
+   else if(R2.stage==='stalk'){/* low and deliberate, straight at them, a little quicker as it comes; once, under the light, it stops and holds still */
+    const hold=R2.v>-25.2&&R2.v<-24.2&&!R2.k.paused;if(hold){R2.pauseT=(R2.pauseT||0)+dt;if(R2.pauseT>1.3)R2.k.paused=C.t;dmp('crouch',.65,4);}
+    else{sp=1.7+.7*clamp((R2.v+36)/22,0,1);dmp('crouch',.42,3);R2.v+=sp*dt;R2.u=90+.45*Math.sin(R2.t*.8);face(R2.u+.6*Math.sin(R2.t*.8),R2.v+6,3);}
+    if(R2.v>=-14||dYou<12||R2.t>20)crStage('freeze');}
+   else if(R2.stage==='freeze'){/* mid-stride, dead still; the head snaps round, past them, to the corner */
+    if(R2.t<dt*1.5){say([{who:'YOU',text:'“Why’d it stop?”',time:1.6}],{interrupt:true});glance(sam,cornerW,3.2);}
+    D2.snap=R2.t<.3?1:0;look=cornerW;dmp('alert',1,5);dmp('crouch',.05,5);if(R2.t>2.2)crStage('look');if(dYou<6)crStage('flinch');}
+   else if(R2.stage==='look'){/* its whole body turns to it; the corner's light dies, slowly */
+    face(CORNER.u,CORNER.v,2.2);look=cornerW;dmp('alert',1,4);if(R2.t<dt*1.5)say([{who:'JAMIE',text:'“What’s it looking at?”',by:'jamie',time:1.6},{wait:.6},{who:'SAM',text:'“There’s nothing there.”',by:'sam',time:1.6}],{interrupt:true});
+    if(R2.t>1.1)crKill('corner',{dur:1.8,flick:.97});if(R2.t>2.3)crKill('corner2',{dur:.9,flick:.9});if(R2.t>3.2)crStage('back');if(dYou<6.5&&R2.t>.3)crStage('flinch');}
+   else if(R2.stage==='back'){/* it backs away from it, low, never taking its eyes off it */
+    D2.back=1;dmp('alert',0,3);dmp('cower',.55,4);sp=.9;to(HIDE.u,HIDE.v,.9);face(CORNER.u,CORNER.v,3);look=glanceAt([cornerW,upMain,cornerW]);
+    if(R2.t<dt*1.5)say([{who:'JAMIE',text:'“It’s backing up.”',by:'jamie',time:1.4}],{interrupt:true});if(R2.t>2.4)crStage(Math.hypot(p.x-at(HIDE.u,HIDE.v).x,p.z-at(HIDE.u,HIDE.v).z)<9?'flinch':'scurry');if(dYou<6.5)crStage('flinch');}
+   else if(R2.stage==='scurry'){/* then turns and scrambles for the lit corner of the store: toward them, away from it */
+    D2.back=0;dmp('cower',.35,6);sp=3.2;face(HIDE.u,HIDE.v,9);look=cornerW;if(to(HIDE.u,HIDE.v,3.2)||R2.t>4)crStage('hide');if(dYou<6)crStage('flinch');}
+   else if(R2.stage==='hide'){/* pressed into the corner of the store, in its light, made small, turned to the corner, looking and looking */
+    dmp('cower',1,3);dmp('crouch',.35,3);face(CORNER.u,CORNER.v-3,2.5);look=glanceAt([cornerW,upMain,cornerW,camera.position,cornerW]);if(seen)R2.hideSeen+=dt;
+    if(R2.t>.7&&!R2.k.hideLine){R2.k.hideLine=C.t;say([{who:'SAM',text:'“It’s hiding.”',by:'sam',time:1.5},{wait:.7},{who:'JAMIE',text:'“…From what?”',by:'jamie',time:1.6}],{interrupt:true});}
+    /* the answer: far up Main the lights begin to go out, one after another, coming this way */
+    if(!C.flags.cascade&&((R2.hideSeen>1.5&&R2.t>4.4)||R2.t>8))cascadeStart(0,{quiet:true});
+    const fr=C.cas?.front??-99;if((C.cas&&((fr>-64&&R2.hideSeen>2)||fr>-44))||(dYou<6.5&&R2.t>.4))crStage('flinch');}
+   else if(R2.stage==='flinch'){/* it recoils, all of it at once, then runs (the corner's light goes with it, if it had not) */
+    crKill('corner',{dur:.7,flick:.9});crKill('corner2',{dur:.5,flick:.9});D2.snap=1;D2.back=1;dmp('cower',.6,10);look=upMain;to(HIDE.u-.2,HIDE.v-.8,2.6);if(R2.t>.5){D2.back=0;crStage('flee');}}
+   else if(R2.stage==='flee'){/* back down Second Street for the creek; the light over the street dies as it passes under it */
+    if(R2.t<dt*1.5)say([{who:'SAM',text:'“It ran.”',by:'sam',time:1.4}],{interrupt:true});dmp('cower',0,6);R2.fs=Math.min(8.4,R2.fs+15*dt);sp=R2.fs;
+    const wp=R2.v>-30?{u:92.4,v:-34}:{u:91,v:-62};face(wp.u,wp.v,10);to(wp.u,wp.v,sp);look=null;
+    if(R2.v<-23)crKill('side',{dur:.35,flick:.85});if(R2.v<-43)crKill('far',{dur:.35,flick:.8});if(R2.v<-56.2){R2.dive=Math.min(2.4,R2.dive+dt*5.5);}
+    if(R2.v<-58.6||R2.t>8){crStage('gone');creature.show(false);creature.ground=null;S.lookTarget=null;for(const c of [jamie,sam])if(c.lookAt===crHead)c.lookAt=null;sound('splash',at(90,-58.6,TY-2),{gain:.8});later(1.4,()=>cascadeStart());}}
+   if(R2.stage!=='gone'){/* (never through one of them: it goes round) */for(const c of [p,{x:jamie.px,z:jamie.pz},{x:sam.px,z:sam.pz}]){const w=at(R2.u,R2.v),dx=w.x-c.x,dz=w.z-c.z,l=Math.hypot(dx,dz);if(l<1.6&&l>1e-3){const q2=TL(w.x+dx/l*(1.6-l),w.z+dz/l*(1.6-l));R2.u=q2.u;R2.v=q2.v;}}
+    D2.speed=sp;D2.look=look;placeCrt(dt);creature.update(dt);}}
   else if(C.esc?.pass&&C.esc.pass.stage!=='gone')updatePass(dt);}
  // ---- the streetlights ----------------------------------------------------------------------------------------------------------
- function cascadeStart(skip=0){if(C.flags.cascade)return;C.flags.cascade=true;go('e4-cascade');checkpoint('c4-presence');C.hMin=Math.max(C.hMin||0,HOUR.cascade);
+ function cascadeStart(skip=0,{quiet=false}={}){if(C.flags.cascade)return;C.flags.cascade=true;go('e4-cascade');checkpoint('c4-presence');C.hMin=Math.max(C.hMin||0,HOUR.cascade);
   /* (it goes as far as the TV shop and waits there while the sets in its window are on; the rest goes when it moves on) */
   C.cas={t:skip,start:lights.S.t+.8-skip,speed:6,tvAt:null,nearAt:null,darkT:0,pulled:false,watch:0,saidAt:null,resumeT:null,rest:EAST.filter(i=>posU(i)>=TV_HOLD+2)};cascade(EAST.filter(i=>!(posU(i)>=TV_HOLD+2)),{from:{u:-80,v:0},dir:{u:1,v:0},speed:6,skip});
   mark('the lights going out');T?.set?.(.55,{rise:.04,why:'the lights going out, coming closer'});C.amb.traffic=0;
   for(const c of [jamie,sam]){if(c.mode==='ride'&&!c.script)c.follow=null;c.lookAt=at(-10,2,TY+4);}
-  if(!skip)say([{who:'JAMIE',text:'“Why would it—”',by:'jamie',time:1.2},{wait:1.6},{who:'',text:'[Far up Main Street, a streetlight goes out. Then the next one.]',time:3.4}]);}
+  /* (from the hiding creature: no question first, the lights are the answer to the one just asked) */
+  if(!skip)say([...(quiet?[{wait:.4}]:[{who:'JAMIE',text:'“Why would it—”',by:'jamie',time:1.2},{wait:1.6}]),{who:'',text:'[Far up Main Street, a streetlight goes out. Then the next one.]',time:3.4}]);}
  function updateCascade(dt){const X=C.cas;if(!X)return;X.t+=dt;const p=me(),{u}=UV(p),front=X.resumeT===null?Math.min(TV_HOLD,-80+X.speed*Math.max(0,lights.S.t-X.start)):TV_HOLD+X.speed*Math.max(0,lights.S.t-X.resumeT);X.front=front;
   C.darkTo=.55*smooth((front-(u-34))/30);
   if(X.tvAt===null&&front>=TV_HOLD)tvWindow();
@@ -763,7 +810,7 @@ export function createChapter4(o,k,ch2,ch3){
   for(const T2 of Object.values(TVS)){T2.on=0;T2.shot=null;T2.t=0;T2.frames=0;T2.rt=0;T2.stat=1;for(const tv of [T2.tv,...T2.share])if(tv){tv.mat.uniforms.uOn.value=0;tv.mat.uniforms.uStatic.value=1;}}
   for(const key of Object.keys(DOORS)){DOORS[key].open=DOOR0[key];const d=D.doors?.[key];if(d){d.cur=DOOR0[key];d.posed=false;}}updateDoors(0);
   nav.setTown(false);samMom.show(false);samMom.lookAt=null;bag.visible=false;AX.person.group.visible=false;AX.state='off';for(const s of SIL){s.q.visible=false;s.state='off';}
-  if(C.crt||C.esc?.pass)creature.show(false);Object.assign(creature.drive,{cower:0,back:0});if(SG0!==undefined&&C.flags?.bagReady)SG?.set?.(SG0);ambient.blinkReset?.();
+  if(C.crt||C.esc?.pass)creature.show(false);creature.ground=null;Object.assign(creature.drive,{cower:0,back:0,alert:0,snap:0});if(SG0!==undefined&&C.flags?.bagReady)SG?.set?.(SG0);ambient.blinkReset?.();
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView)o.roam.walkLock=false;fresh();}
  // QA jumps, DEV scenes and Continue: the chapter at one of its moments, everything it needs set up.
  function jump(section){section=ALIAS4[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();
@@ -811,6 +858,11 @@ export function createChapter4(o,k,ch2,ch3){
   ff('outside');
   if(section==='c4-alex-across'){town(HOUR.alex);go('e4-dusk');youFoot(127.6,10.3,HS,RACK[0]);boyFoot(jamie,127.2,10.6,HS,{...RACK[1],a:HN});boyFoot(sam,130,10.9,HS,{...RACK[2],a:HN});bikesTo('rack');follow(true);alexAcross();return;}
   ff('alex','alexLines');
+  if(section==='c4-creature-notices'||section==='c4-creature-hiding'){town(20.05);go('e4-ride');objective('Go home.','East on Main Street, then up Old Mill Road.');youRide(tq(97.4,2.8),HE,0);boyRide(jamie,tq(99.6,1.4),HE,0);boyRide(sam,tq(100.8,3.9),HE,0);follow(true);
+   creatureDusk();S.queue.length=0;S.line=null;const R=C.crt;R.seenT=2;R.seenAt=C.t;R.stageAt.stalk=C.t;R.k.paused=C.t;
+   if(section==='c4-creature-notices'){R.stage='stalk';R.v=-17.6;}
+   else{for(const s2 of ['freeze','look','back','scurry'])R.stageAt[s2]=C.t;R.k.corner=R.k.corner2=C.t;outNow([R.lit.corner,R.lit.corner2].filter(i=>i>=0));R.stage='hide';R.u=HIDE.u;R.v=HIDE.v;R.a=hd(HIDE.u,HIDE.v,CORNER.u,CORNER.v-3);Object.assign(creature.drive,{cower:1,crouch:.35});}
+   R.t=0;placeCrt();return;}
   if(section==='c4-creature'){town(20.04);go('e4-ride');objective('Go home.','East on Main Street, then up Old Mill Road.');youRide(tq(97.4,2.8),HE,3.2);boyRide(jamie,tq(101.5,1.6),HE,3.2);boyRide(sam,tq(103.4,4.2),HE,3.2);follow(true);creatureDusk();return;}
   ff('crt');
   const atCorner=()=>{youRide(tq(93,2.9),HE,0);boyRide(jamie,tq(95.6,1.5),HE,0);boyRide(sam,tq(96.4,4.4),HE,0);for(const c of [jamie,sam])c.follow=null;follow(true);};

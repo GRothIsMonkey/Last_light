@@ -36,7 +36,7 @@ export function createTownLights({town,sfx=()=>{},scene,camera}){
   for(const f of T.D.fixtures){const i=f.lv;if(i>=LV.fix&&i<LV.neon)base[i]=S.fixOn?.[i]??1;}}
  // ---- the Presence's mask -----------------------------------------------------------------------------------------
  // kill: at time `at`, the light flickers (a few dips, ~.5 s) and goes out; it stays out until restore().
- function kill(i,at=S.t,{flick=.55,quiet=false}={}){S.events.push({i,at,kind:'kill',flick,quiet});}
+ function kill(i,at=S.t,{flick=.55,quiet=false,dur=.55}={}){S.events.push({i,at,kind:'kill',flick,quiet,dur});}
  function restore(i,at=S.t,{flick=.3}={}){S.events.push({i,at,kind:'restore',flick});}
  const posOf=i=>{if(i>=LV.lamp&&i<LV.shop){const Lm=T.D.lamps.find(q=>q.id===i-LV.lamp);return Lm?{u:Lm.u,v:Lm.v,y:Lm.y}:null;}
   if(i>=LV.shop&&i<LV.fix){const b=shopOf.get(i-LV.shop);return b?{u:(b.u0+b.u1)/2,v:b.side==='N'?(b.front??11)+1:(b.front??-11)-1,y:TY+2}:null;}
@@ -49,7 +49,7 @@ export function createTownLights({town,sfx=()=>{},scene,camera}){
  const flick=new Map();
  function update(dt,h){S.t+=dt;S.clock=h;schedule(h);
   for(let k=S.events.length-1;k>=0;k--){const e=S.events[k];if(S.t<e.at)continue;S.events.splice(k,1);
-   if(e.kind==='kill'){if(hold[e.i]>0){flick.set(e.i,{t:0,dur:.55,to:0,amp:e.flick});S.kills++;if(!e.quiet){const p=posOf(e.i);if(p&&base[e.i]>.05){const w=TW(p.u,p.v);sfx('relay',{x:w.x,y:p.y,z:w.z},{gain:.7});}}S.log.push({i:e.i,at:+S.t.toFixed(2),kind:'kill'});}hold[e.i]=0;}
+   if(e.kind==='kill'){if(hold[e.i]>0){flick.set(e.i,{t:0,dur:e.dur||.55,to:0,amp:e.flick});S.kills++;if(!e.quiet){const p=posOf(e.i);if(p&&base[e.i]>.05){const w=TW(p.u,p.v);sfx('relay',{x:w.x,y:p.y,z:w.z},{gain:.7});}}S.log.push({i:e.i,at:+S.t.toFixed(2),kind:'kill'});}hold[e.i]=0;}
    else{hold[e.i]=1;flick.set(e.i,{t:0,dur:.45,to:1,amp:e.flick});S.restores++;S.log.push({i:e.i,at:+S.t.toFixed(2),kind:'restore'});}}
   for(let i=0;i<n;i++){let m=hold[i];const f=flick.get(i);if(f){f.t+=dt;const u=f.t/f.dur;if(u>=1)flick.delete(i);else{const dip=(Math.sin(f.t*61+i)*Math.sin(f.t*23+i*1.7))>.1?1:.15;m=f.to===0?(u<.8?dip*(1-f.amp*u):0):(u>.35?dip*Math.min(1,u*1.4):0);}}mask[i]=m;L[i]=base[i]*mask[i];}
   T.timeU.value+=dt;}
