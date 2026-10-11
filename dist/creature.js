@@ -179,6 +179,6 @@ export function createCreature({scene}){
   group.updateMatrixWorld(true);let low=0;for(const [k,y0] of contacts){bones[k].getWorldPosition(_hv);const y=_hv.y-groundAt(_hv.x,_hv.z,group.position.y);low=Math.min(low,y-y0*.6);}
   api.bob=bob;api.lift=-low;if(low<0){inner.position.y-=low;group.updateMatrixWorld(true);}};
  const performanceNow=()=>clock0;void performanceNow;
- api.reset=()=>{group.visible=false;api.phase=0;api.headYaw=0;api.headPitch=0;catchU.value=0;clock0=0;G=0;last.ok=false;yawRate=0;accel=0;spPrev=0;api.sp=0;api.slip=0;stepping=null;
+ api.reset=()=>{group.visible=false;if(clipAction)clipAction.time=0;/* (the clip's own clock, and the bones in their rest pose, too: a reset creature is the one the page made) */if(rest)for(const r of rest){r.b.quaternion.copy(r.q);r.b.position.copy(r.p);}if(api.loaded)inner.position.y=api.baseY;api.phase=0;api.headYaw=0;api.headPitch=0;catchU.value=0;clock0=0;G=0;last.ok=false;yawRate=0;accel=0;spPrev=0;api.sp=0;api.slip=0;stepping=null;
   Object.assign(api.drive,{speed:0,rear:0,claw:0,crouch:0,look:null,lift:0,cower:0,back:0,alert:0,snap:0});};
  return api;}

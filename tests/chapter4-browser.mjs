@@ -39,7 +39,8 @@ const DRIVER=()=>{const L=lastLight,DT=1/30,A4=L.chapter4,at=A4.at,s4=()=>A4.sta
  const brake=()=>{L.release('KeyW');L.press('KeyS');until(()=>L.state.speed<.05,8);L.release('KeyS');};
  const off=()=>{if(L.state.state==='c1-ride'){brake();tap('KeyF');until(()=>L.state.state==='c1-walk',4);L.step(.3);}};
  const on=()=>{if(L.state.state==='c1-walk'){if(s4().view)tap('KeyV');L.step(.5);const r=L.roam;go({x:r.x,z:r.z},{r:1.2,max:40});face(r.x,r.z);L.step(.2);tap('KeyF');until(()=>L.state.state==='c1-ride',4);}};
- window.__d={L,A4,at,s4,pos,until,face,walk,go,goUV,faceUV,tap,quiet,ride,brake,off,on};};
+ /* (watching the creature as a player would: the head followed wherever it goes) */const watchIt=()=>{const cr=L.chapter3.creature;if(cr.group.visible){const c=cr.headPos(),q=L.camera.position;face(c.x,c.z,Math.atan2(c.y-q.y,Math.hypot(c.x-q.x,c.z-q.z))*.6);}};
+ window.__d={L,A4,at,s4,pos,until,face,walk,go,goUV,faceUV,tap,quiet,ride,brake,off,on,watchIt};};
 const stage=async(name,fn,arg)=>{const t=Date.now();const r=await page.evaluate(fn,arg);console.log('stage',name,(Date.now()-t)/1000+'s',String(JSON.stringify(r)).slice(0,300));return r;};
 let report={};
 try{
@@ -86,9 +87,14 @@ try{
  await stage('out',()=>{__d.goUV(143,50.5);__d.goUV(135,47);__d.goUV(135,42);__d.until(()=>__d.s4().phase==='e4-dusk',8);__d.until(()=>false,1);});await snap('15-dusk-the-square');
  await stage('alex',()=>{__d.goUV(128.4,13.4);__d.until(()=>__d.s4().phase==='e4-alex',10);const a=__d.A4.AX.person.group.position;__d.face(a.x,a.z);__d.until(()=>false,1.5);});await snap('16-alex-across-the-street');
  await stage('alex gone',()=>__d.until(()=>__d.s4().phase==='e4-ride',45));
- await stage('creature',()=>{__d.on();__d.ride([[124,4],[110,3.2],[96,3]].map(([u,v])=>{const q=__d.at(u,v);return [q.x,q.z];}),60,2,()=>__d.s4().phase==='e4-creature');__d.brake();const q=__d.at(90.4,-48);__d.face(q.x,q.z,-.02);__d.until(()=>['freeze','fear'].includes(__d.s4().creature.stage),20);});
- await snap('17-creature-end-of-second-street');
- await stage('fear',()=>__d.until(()=>__d.s4().creature.stage==='fear',8)&&__d.until(()=>false,1));await snap('18-creature-afraid');
+ await stage('creature',()=>{__d.on();__d.ride([[124,4],[110,3.2],[96,3]].map(([u,v])=>{const q=__d.at(u,v);return [q.x,q.z];}),60,2,()=>__d.s4().phase==='e4-creature');__d.brake();
+  const W=d=>d.watchIt();__d.until(()=>{W(__d);return __d.A4.C.crt?.stage==='stalk'&&__d.A4.C.crt.t>3;},20);});
+ await snap('17-creature-threatening-approach');
+ await stage('recognition',()=>{const W=d=>d.watchIt();__d.until(()=>{W(__d);return __d.A4.C.crt?.stage==='look'&&__d.A4.C.crt.t>1.6;},30);});await snap('18-creature-looks-at-the-empty-corner');
+ const hid=await stage('hiding',()=>{const W=d=>d.watchIt();__d.until(()=>{W(__d);return __d.A4.C.crt?.stage==='hide'&&__d.A4.C.crt.t>1.4;},20);return {stage:__d.A4.C.crt.stage,lights:__d.A4.C.crt.k};});
+ await snap('18b-creature-hiding');
+ check('Second Street: it comes for them, stops, looks at the empty corner as its lights die, backs off and hides',hid.stage==='hide'&&hid.lights.corner&&hid.lights.corner2,JSON.stringify(hid));
+ await stage('flees',()=>{const W=d=>d.watchIt();__d.until(()=>{W(__d);return __d.A4.C.crt?.stage==='flee'&&__d.A4.C.crt.t>.6;},20);});await snap('18c-creature-flees-into-the-dark');
  await stage('cascade',()=>{__d.until(()=>__d.s4().phase==='e4-cascade',30);const q=__d.at(-10,2);__d.face(q.x,q.z,.05);__d.until(()=>false,8);});await snap('19-the-lights-going');
  const tvw=await stage('tv window',()=>{__d.until(()=>__d.s4().cascade?.tvAt!=null,40);__d.ride([[82,-3.5],[76,-6.4],[73.4,-8.4]].map(([u,v])=>{const q=__d.at(u,v);return [q.x,q.z];}),30,1.4,()=>__d.A4.C.cas.saidAt!=null);__d.brake();const q=__d.at(72.8,-11.6,1.5);__d.face(q.x,q.z,-.04);__d.until(()=>__d.A4.C.cas.saidAt!=null,18);__d.L.step(.2);return {said:__d.A4.C.cas.saidAt!=null,watch:+__d.A4.C.cas.watch.toFixed(1),shot:__d.s4().tvs.acetv.shot};});await snap('20-tv-window-live');
  check('the TV shop’s window: the dark waits there; up close, the sets show the three of them live from above ("That’s us.")',tvw.said&&tvw.watch>1&&tvw.shot==='live-high',JSON.stringify(tvw));
@@ -106,16 +112,20 @@ try{
  await stage('back door',()=>{__d.goUV(111.2,-26,{r:.6});__d.goUV(111.2,-30,{r:.6});__d.goUV(104.2,-33.2,{r:.6});__d.faceUV(103.75,-35.6,1);__d.L.step(.3);__d.tap('KeyF');__d.until(()=>false,1);__d.goUV(103.75,-36.8,{r:.5});return __d.until(()=>__d.s4().phase==='n4-alley',5);});
  await snap('27-out-the-back-alley');
  // ---- out the back ---------------------------------------------------------------------------------------------------------------
- await stage('narrow',()=>{__d.goUV(118,-38.8);const {L,at}=__d,P=(a,b)=>{const p=L.nav.walkPath({x:a.x,z:a.z},{x:b.x,z:b.z});return p.length?p:[[b.x,b.z]];},a1=at(140,-39),a2=at(150,-38.2),q0=__d.pos(),pts=[...P(q0,a1),...P(a1,a2)];let i=0;
-  /* (walking the narrow way; the moment it comes, stop and turn to it, as anyone would) */const seen=__d.until(()=>{const R=__d.A4.C.esc.pass,q=__d.pos();if(R&&R.stage!=='coming'){L.release('KeyW');if(R.stage==='run'){const c=at(R.u,R.v,1.2+(R.y||0));__d.face(c.x,c.z,.05+(R.y||0)*.12);}const pu=at(0,0).x-q.x;return R.stage==='gone'||(R.stage==='run'&&R.u>pu-6);}
-   while(i<pts.length&&Math.hypot(pts[i][0]-q.x,pts[i][1]-q.z)<.6)i++;if(i<pts.length){__d.face(pts[i][0],pts[i][1]);L.press('KeyW');}else L.release('KeyW');return false;},45);L.release('KeyW');const R=__d.A4.C.esc.pass;return {seen,stage:R?.stage,roof:!!R?.roof,u:+(R?.u??0).toFixed(1)};});
- await snap('28-it-runs-past');
+ const narrow=await stage('narrow',()=>{for(const [u,v] of [[118,-40.2],[140,-40.2],[150.4,-38.6]])__d.goUV(u,v,{r:.6});const W=d=>d.watchIt();
+  __d.until(()=>{W(__d);return __d.A4.C.esc.pass?.stage==='stop'&&__d.A4.C.esc.pass.t>.5;},20);return __d.A4.C.esc.pass?.stage;});await snap('28-it-comes-at-them');
+ await stage('looks past',()=>{const W=d=>d.watchIt();__d.until(()=>{W(__d);return __d.A4.C.esc.pass?.stage==='look'&&__d.A4.C.esc.pass.t>1;},10);});await snap('28b-it-looks-past-them');
+ await stage('bolts',()=>{const W=d=>d.watchIt();__d.until(()=>{W(__d);return __d.A4.C.esc.pass?.stage==='bolt'&&__d.A4.C.esc.pass.t>.5;},10);});await snap('28c-it-runs-past-them');
+ const passed=await stage('passed',()=>{const W=d=>d.watchIt();__d.until(()=>{W(__d);return __d.A4.C.esc.pass?.stage==='gone';},12);const P=__d.s4().creature.pass;return {stage:P.stage,closest:P.closest,roof:P.roof,kind:P.kind};});
+ check('the narrow way: it comes at them, stops, looks past them, and bolts past them without touching anyone',passed.stage==='gone'&&passed.closest>1.3,JSON.stringify(passed));
  await stage('laundromat',()=>{__d.until(()=>__d.s4().creature.pass?.stage==='gone',20);__d.goUV(163.75,-38.2,{r:.6});__d.goUV(163.75,-35,{r:.6});__d.until(()=>__d.s4().phase==='n4-laundry',5);__d.goUV(165,-30,{r:.6});__d.until(()=>false,1);});await snap('29-laundromat');
  await stage('depot',()=>{__d.goUV(169,-27,{r:.6});__d.goUV(173,-26.75,{r:.6});__d.until(()=>__d.s4().phase==='n4-depot',5);const s=[...__d.A4.SIL].sort((a,b)=>a.t-b.t)[0];__d.face(s.pos.x,s.pos.z,.4);__d.until(()=>__d.A4.SIL.some(x=>x.state==='on'),6);});
  await snap('30-theater-upper-windows');
- await stage('corner',()=>{__d.until(()=>__d.A4.SIL.some(x=>x.state==='gone'),8);__d.goUV(179.4,-20);__d.goUV(179.4,-10.8);__d.until(()=>__d.s4().phase==='n4-marquee',6);const a=__d.A4.AX.person.group.position;__d.face(a.x,a.z);__d.until(()=>/I know where he is/.test(document.getElementById('subtitle').textContent),20);});
+ await stage('corner',()=>{__d.until(()=>__d.A4.SIL.some(x=>x.state==='gone'),8);__d.goUV(179.4,-20);__d.goUV(179.4,-10.8);__d.until(()=>__d.s4().phase==='n4-marquee',6);const a=__d.A4.AX.person.group.position;__d.face(a.x,a.z);__d.until(()=>/Did you guys hear that/.test(document.getElementById('subtitle').textContent),20);});
  await snap('31-alex-under-the-marquee');
- await stage('blackout',()=>{__d.until(()=>__d.s4().mq?.out!=null,25);__d.until(()=>false,1.6);});await snap('32-marquee-blackout');
+ await stage('his words',()=>{const a=__d.A4.AX.person.group.position;__d.until(()=>{__d.face(a.x,a.z);return /Don’t run/.test(document.getElementById('subtitle').textContent);},30);});await snap('31b-dont-run-dont-run');
+ await stage('goodbye',()=>{const a=__d.A4.AX.person.group.position;__d.until(()=>{__d.face(a.x,a.z);return /See you tomorrow/.test(document.getElementById('subtitle').textContent);},30);});await snap('31c-see-you-tomorrow');
+ await stage('blackout',()=>{__d.until(()=>__d.s4().mq?.out!=null,35);__d.until(()=>false,1.6);});await snap('32-marquee-blackout');
  await stage('power',()=>{__d.until(()=>__d.s4().phase==='n4-return',8);__d.until(()=>false,3);});await snap('33-power-returns-he-is-gone');
  await stage('bikes',()=>{__d.goUV(150,-9);__d.goUV(118,-8.6);const r=__d.L.roam;__d.go({x:r.x,z:r.z},{r:2});__d.until(()=>__d.s4().view==='camera',20);__d.until(()=>false,2);});await snap('34-the-picture-pine-ridge');
  await stage('home',()=>{__d.until(()=>__d.s4().phase==='n4-ride',45);__d.tap('KeyV');__d.until(()=>false,.6);__d.on();return import('./town-plan.js').then(m=>{const pts=[];for(let u=110;u>=-74;u-=10){const q=__d.at(u,3.2);pts.push([q.x,q.z]);}for(let s=166;s>=4;s-=10){const q=m.connAt(s,-1.4);pts.push([q.x,q.z]);}__d.ride(pts,200,3);return __d.s4().phase;});});

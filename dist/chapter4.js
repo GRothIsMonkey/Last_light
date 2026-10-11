@@ -467,7 +467,7 @@ export function createChapter4(o,k,ch2,ch3){
  function creatureDusk(){if(C.flags.crt)return;C.flags.crt=true;go('e4-creature');C.hMin=Math.max(C.hMin||0,HOUR.creature);mark('something at the end of Second Street');
   C.crt={stage:'watch',t:0,seenT:0,seenAt:null,u:90,v:-36,a:HN,y:null,vy:0,dive:0,stageAt:{watch:C.t},hideSeen:0,glance:0,gi:0,fs:0,k:{},
    lit:{corner:lightAt(72.8,-12),corner2:lampAt(66,-7.7),side:lampAt(94.2,-24),far:lampAt(94.2,-46)}};
-  creature.ground=(x,z)=>{const R=C.crt;if(R?.vy>0)return R.y;/* (in the air, its feet go with it) */const q=TL(x,z);return townY(q.u,q.v)-(R?.dive||0);};creature.show(true);placeCrt();S.lookTarget=crHead;
+  creature.reset();/* (the same creature every time it comes on) */creature.ground=(x,z)=>{const R=C.crt;if(R?.vy>0)return R.y;/* (in the air, its feet go with it) */const q=TL(x,z);return townY(q.u,q.v)-(R?.dive||0);};creature.show(true);placeCrt();S.lookTarget=crHead;
   for(const c of [jamie,sam]){if(c.mode==='ride'&&!c.script)comp.run(c,[comp.steps.brake(c,.5)]);c.lookAt=crHead;}
   T?.set?.(.4,{rise:.08,why:'it, at the end of the street'});
   say([{who:'SAM',text:'“Stop. Stop.”',by:'sam',time:1.4},{who:'JAMIE',text:'“Is that—”',by:'jamie',time:1.4},{who:'SAM',text:'“Don’t move.”',by:'sam',time:1.4}]);}
@@ -714,7 +714,7 @@ export function createChapter4(o,k,ch2,ch3){
    exit:(R,pu)=>[[pu-2.8,R.lane],[pu-7,7.5],[pu-9,15],[pu-10,27]],gone:q=>q.v>23}};
  function creaturePass(kind){const X=C.esc;if(X.pass)return;const K=PASS[kind],p=me(),{u:pu,v:pv}=UV(p);
   X.pass={kind,stage:'come',t:0,u:Math.max(K.from.u,pu+18),v:K.cv,a:HE,y:null,vy:0,dive:0,lane:null,roof:false,passedAt:null,seenT:0,fs:0,path:null,pi:0,k:{},stageAt:{come:C.t},minD:99};X.passAt=C.t;
-  const R=X.pass;creature.ground=(x,z)=>{if(R.vy>0)return R.y;const q=TL(x,z);return townY(q.u,q.v)+(R.roof?roofH(q.u,q.v):0)-R.dive;};creature.show(true);placePass(0);
+  const R=X.pass;creature.reset();creature.ground=(x,z)=>{if(R.vy>0)return R.y;const q=TL(x,z);return townY(q.u,q.v)+(R.roof?roofH(q.u,q.v):0)-R.dive;};creature.show(true);placePass(0);
   mark('something ahead of them: '+kind);T?.jolt?.(.9,{hold:8,why:'something ahead of them'});
   for(const c of [jamie,sam]){if(X.lead)X.lead=null;stand(c,()=>{const q=UV(me()),w=K.wall?K.wall(R.lane??K.lane(q.v)):q.v+(c===jamie?.9:-.9);return at(clamp(q.u+(c===jamie?-.9:-1.8),q.u-3,q.u),w);},{look:()=>crHead,max:3.4,gesture:K.wall?GEST.press(1):GEST.tense(1)});}
   say(kind==='narrow'?[{who:'SAM',text:'“Something’s— in front of us.”',by:'sam',time:1.4},{who:'JAMIE',text:'“The wall! Get against the wall!”',by:'jamie',time:1.6}]:[{who:'SAM',text:'“Stop.”',by:'sam',time:1},{who:'JAMIE',text:'“Don’t move. Don’t move.”',by:'jamie',time:1.6}],{interrupt:true});
@@ -929,7 +929,7 @@ export function createChapter4(o,k,ch2,ch3){
   for(const T2 of Object.values(TVS)){T2.on=0;T2.shot=null;T2.t=0;T2.frames=0;T2.rt=0;T2.stat=1;for(const tv of [T2.tv,...T2.share])if(tv){tv.mat.uniforms.uOn.value=0;tv.mat.uniforms.uStatic.value=1;}}
   for(const key of Object.keys(DOORS)){DOORS[key].open=DOOR0[key];const d=D.doors?.[key];if(d){d.cur=DOOR0[key];d.posed=false;}}updateDoors(0);
   nav.setTown(false);samMom.show(false);samMom.lookAt=null;bag.visible=false;AX.person.group.visible=false;AX.state='off';AX.still=false;AX.turn=0;AX.lk=undefined;for(const s of SIL){s.q.visible=false;s.state='off';}
-  if(C.crt||C.esc?.pass)creature.show(false);creature.ground=null;Object.assign(creature.drive,{cower:0,back:0,alert:0,snap:0});if(SG0!==undefined&&C.flags?.bagReady)SG?.set?.(SG0);ambient.blinkReset?.();
+  /* (the creature as the page made it: its gait, its feet, where its head was turned; not only hidden) */if(C.crt||C.esc?.pass)creature.reset();creature.ground=null;Object.assign(creature.drive,{cower:0,back:0,alert:0,snap:0});if(SG0!==undefined&&C.flags?.bagReady)SG?.set?.(SG0);ambient.blinkReset?.();
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView)o.roam.walkLock=false;fresh();}
  // QA jumps, DEV scenes and Continue: the chapter at one of its moments, everything it needs set up.
  function jump(section){section=ALIAS4[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();

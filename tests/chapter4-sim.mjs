@@ -31,7 +31,7 @@ export function chapterFourTools(T){
 
 // From Chapter Three's end card (or the chapter's own start) to Chapter Four's end card, with inputs only.
 const clamp1=(x,a,b)=>Math.max(a,Math.min(b,x));
-export function playChapterFour(T,label,{fromCard=true}={}){
+export function playChapterFour(T,label,{fromCard=true,dev=false}={}){
  const {h,press,release,tap,check,element,metrics}=T,X=chapterFourTools(T),{C1,C4,A4,at,uv,where,goUV,faceUV,routeDown,routeHome,offBike,onBike,companionsFinite,quiet,log,until,wait,me,faceTo,go}=X;
  const M2=/replay/.test(label)?{}:metrics,said=()=>log.said,saidIdx=l=>log.said.indexOf(l);
  const watch={streets:[],jumps:0,maxStep:0,lampsLit:[],dayDrop:0,lastDay:null,boysToGangway:99,crMin:99,passMin:99,cower:0,claw:0,carGap:99,people:0,cars:0,moving:0,bad:0,kills:[],lastP:null,sky:[]};
@@ -48,7 +48,8 @@ export function playChapterFour(T,label,{fromCard=true}={}){
  const t0=h.snapshot.clock;
  // ---- the hand-over -------------------------------------------------------------------------------------------------
  let cardSeen=false,overBlack=1;
- if(fromCard){check(`${label}: Chapter Three ends on its card, and the card leads on to Chapter Four`,()=>{assert.equal(h.snapshot.state,'ended');assert.equal(element('ending').querySelector?.('h2')?.innerHTML??'Chapter Three','Chapter Three');assert.equal(element('next-chapter').hidden,false);});
+ if(dev){/* (the DEV selector's Chapter Four Start: the real hand-over, as a tester gets it) */h.devStart(4);T.advance?.(1/30);}
+ else if(fromCard){check(`${label}: Chapter Three ends on its card, and the card leads on to Chapter Four`,()=>{assert.equal(h.snapshot.state,'ended');assert.equal(element('ending').querySelector?.('h2')?.innerHTML??'Chapter Three','Chapter Three');assert.equal(element('next-chapter').hidden,false);});
   element('next-chapter').onclick();}
  else h.jump('chapter4-start');
  U(()=>{if(element('chapter-card').classList.contains('on')){cardSeen=true;overBlack=Math.min(overBlack,+element('fade').style.opacity);}return C4().phase==='d4-sam';},20);

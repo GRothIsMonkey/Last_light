@@ -517,7 +517,9 @@ await runChapterThreeChecks(T2);
 for(const n of [2,3]){h.jump('chapter2-end');playChapterThree(T2,'Chapter Three replay '+n);}
 // Chapter Four on its own: every jump, alias and checkpoint, Continue, Start over from inside, switching away, seeded
 // randomized runs through its fallbacks, and the DEV selector's Chapter Four against arriving naturally.
-if(!process.env.NO_CHAPTER4){await runChapterFourChecks(T2,devCapture);h.jump('chapter4-start');playChapterFour(T2,'Chapter Four replay',{fromCard:false});}
+if(!process.env.NO_CHAPTER4){await runChapterFourChecks(T2,devCapture);h.jump('chapter4-start');playChapterFour(T2,'Chapter Four replay',{fromCard:false});
+ // and once more the whole way through from the DEV selector's Chapter Four Start
+ playChapterFour(T2,'Chapter Four DEV start replay',{fromCard:false,dev:true});}
 // TEMPORARY (private playtest build): the dev chapter selector equals natural arrival; switching leaks nothing.
 await runDevChapterChecks(T2,devCapture);
 
