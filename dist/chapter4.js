@@ -50,7 +50,7 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.
 // QA jumps and DEV scenes, in story order.
 export const SECTIONS4=['chapter4-start','c4-sam-house','c4-backpack','c4-camera','c4-photo-bike','c4-photo-mason','c4-ride','c4-old-mill-road','c4-downtown-arrival','c4-main-street','c4-mason',
  'c4-florist','c4-library','c4-microfilm','c4-historical-clue','c4-closing','c4-dusk','c4-alex-across','c4-creature','c4-creature-notices','c4-creature-hiding','c4-presence','c4-tv-window','c4-video-store','c4-store-footage','c4-pine-ridge',
- 'c4-store-phone','c4-store-live','c4-back-door','c4-escape','c4-alley-creature','c4-laundromat','c4-depot-st','c4-theater','c4-marquee','c4-power-returns','c4-final-clue','c4-ride-home','c4-oak','chapter4-end'];
+ 'c4-store-phone','c4-store-live','c4-back-door','c4-escape','c4-route-a','c4-route-b','c4-alley-creature','c4-laundromat','c4-depot-st','c4-theater','c4-marquee','c4-power-returns','c4-final-clue','c4-ride-home','c4-oak','chapter4-end'];
 export const ALIAS4={'c4-start':'chapter4-start','c4-photos':'c4-camera','c4-downtown':'c4-downtown-arrival','c4-bike-shop':'c4-mason','c4-archive':'c4-microfilm','c4-streetlights':'c4-presence',
  'c4-cascade':'c4-presence','c4-store':'c4-video-store','c4-alley':'c4-escape','c4-lyric':'c4-theater','c4-alex-marquee':'c4-marquee','c4-lead':'c4-final-clue','c4-end':'chapter4-end'};
 // Checkpoints (silent; Continue on the title returns to the last one).
@@ -443,7 +443,7 @@ export function createChapter4(o,k,ch2,ch3){
   if(AX.state==='walk'){AX.v=damp(AX.v,1.05,2.5,dt);AX.x+=Math.sin(AX.a)*AX.v*dt;AX.z-=Math.cos(AX.a)*AX.v*dt;AX.gait+=AX.v*dt/1.2;walkPose(P2,AX.gait,Math.max(AX.v,.8),{look:0});
    const {u,v}=TL(AX.x,AX.z);AX.person.group.position.set(AX.x,townY(u,v),AX.z);AX.person.group.rotation.set(0,-AX.a,0);
    if(AX.t>3.3||v<-17.5){AX.person.group.visible=false;AX.state='gone';if(C.ax)C.ax.goneAt=C.t;mark('he is gone');}}
-  else{const p=me(),la=clamp(-wrap(headingTo(AX.x,AX.z,p.x,p.z)-AX.a),-1.1,1.1);standPose(P2,AX.t*.6,{look:la*.8});}
+  else{const p=me(),la=clamp(-wrap(headingTo(AX.x,AX.z,p.x,p.z)-AX.a),-1.1,1.1);AX.lk=damp(AX.lk??la*.8,AX.turn?AX.turn:la*.8,AX.still?1.2:4,dt);standPose(P2,AX.still?0:AX.t*.6,{look:AX.lk});}/* (still: not breathing, not shifting; the head turns, slowly) */
   applyPose(AX.person,P2);AX.person.group.updateMatrixWorld(true);AX.person.group.getWorldPosition(axHead);axHead.y+=1.42;if(AX.talk>0)AX.talk-=dt;}
  // ---- the thing from the drain, at the end of Second Street --------------------------------------------------------------------
  function updateDuskRide(dt){const p=me(),{u,v}=UV(p);
@@ -731,12 +731,13 @@ export function createChapter4(o,k,ch2,ch3){
   if(R.stage==='come'){/* low, quick, straight at them up the middle */sp=2.7;dmp('crouch',.45,3);dmp('alert',0,3);to(R.u+K.axis*5,K.cv,sp);face(R.u+K.axis*5,K.cv,5);
    if(k.camLooksAt(crHead,.97))R.seenT+=dt;if(Math.abs(R.u-pu)<11.5||dYou<10||R.t>14)passStage('stop');}
   else if(R.stage==='stop'){/* it stops; behind them, a light goes out */dmp('crouch',.55,4);
-   if(R.t>.45&&!R.k.behind){R.k.behind=C.t;const P=X.P;let b=null,bd=1e9;for(const L of P.L){if(lights.hold[L.i]<=0)continue;const q=TL(L.x,L.z);const back=(q.u-pu)*K.axis;/* (+: behind them) */if(back<3)continue;const d=Math.hypot(L.x-p.x,L.z-p.z);if(d<4||d>34)continue;if(d<bd){bd=d;b=L;}}
-    if(b){lights.kill(b.i,lights.S.t,{flick:.9,dur:.6});R.behindLight=b;say([{who:'',text:'[Behind them, a light goes out.]',time:2.2}],{interrupt:true});}
-    /* (and the dark is right there, where it went) */const P2=X.P;if(P2.gap>8){const bp=b?{x:b.x,z:b.z}:null;if(bp){P2.x=bp.x;P2.z=bp.z;let bi=P2.i,bdd=1e9;for(let i=P2.i;i<P2.trail.length;i++){const d=Math.hypot(P2.trail[i].x-bp.x,P2.trail[i].z-bp.z);if(d<bdd){bdd=d;bi=i;}}P2.i=bi;}}}
+   if(R.t>.45&&!R.k.behind){R.k.behind=C.t;const P=X.P;let b=null,bd=1e9;/* (the nearest one behind them, not right over them; one this side of the dark first) */
+    for(const L of P.L){if(lights.hold[L.i]<=0)continue;const q=TL(L.x,L.z);const back=(q.u-pu)*K.axis;/* (+: behind them) */if(back<3)continue;const d=Math.hypot(L.x-p.x,L.z-p.z);if(d<4||d>34)continue;const sc=d+(d>P.gap+2?40:0);if(sc<bd){bd=sc;b=L;}}
+    if(b){lights.kill(b.i,lights.S.t,{flick:.9,dur:.6});R.behindLight=b;say([{who:'',text:'[Behind them, a light goes out.]',time:2.2}],{interrupt:true});
+     /* (and the dark is there now, where it went: only ever nearer) */const d=Math.hypot(b.x-p.x,b.z-p.z);if(d<P.gap){P.x=b.x;P.z=b.z;let bi=P.i,bdd=1e9;for(let i=P.i;i<P.trail.length;i++){const e=Math.hypot(P.trail[i].x-b.x,P.trail[i].z-b.z);if(e<bdd){bdd=e;bi=i;}}P.i=bi;}}}
    if(R.t>1.1)passStage('look');}
   else if(R.stage==='look'){/* past them: at the dark behind them */look=R.behindLight?new THREE.Vector3(R.behindLight.x,TY+2.4,R.behindLight.z):darkPos();D2.snap=R.t<.3?1:0;dmp('alert',1,5);dmp('crouch',.1,4);
-   if(R.t<dt*1.5){say([{who:'JAMIE',text:'“It’s not looking at us.”',by:'jamie',time:1.5}],{interrupt:true});glance(sam,look.clone(),2.2);}if(R.t>1.9)passStage('afraid');}
+   if(R.t<dt*1.5){say([{who:'JAMIE',text:'“It’s not looking at us.”',by:'jamie',time:1.5}]);glance(sam,look.clone(),2.2);}if(R.t>1.9)passStage('afraid');}
   else if(R.stage==='afraid'){/* it shrinks from it and backs away the way it came; then its own end goes dark */look=R.t<.9?(R.behindLight?new THREE.Vector3(R.behindLight.x,TY+2.4,R.behindLight.z):darkPos()):at((K.far[0]||K.from).u,(K.far[0]||K.from).v,TY+2);
    D2.back=1;dmp('alert',0,3);dmp('cower',.75,5);sp=.8;to(R.u-K.axis*1.2,R.v,.8);face(R.u+K.axis*5,R.v,4);
    if(R.t>.8){killNear('far',K.far,{flick:.85,dur:.4});if(R.t<.8+dt*1.5){D2.snap=1;if(R.kind==='narrow')say([{who:'SAM',text:'“The other end—”',by:'sam',time:1.2}]);}}
@@ -767,23 +768,36 @@ export function createChapter4(o,k,ch2,ch3){
   if(C.dp.t>45&&!C.flags.dp1&&!busy()){C.flags.dp1=true;say([{who:'SAM',text:'“Up to Main. Please.”',by:'sam'}]);}
   if(C.dp.t>110&&S.phase==='n4-depot'&&C.dp.way!=='main')carry('depot',178.6,-8.4,HWst,{jq:{u:179.8,v:-7},sq:{u:179.6,v:-10.2}});
   if(C.dp.t>110&&S.phase==='n4-depot'&&C.dp.way==='main'){const {u}=UV(me());carry('main',Math.max(u,172),-6.4,HWst,{jq:{u:Math.max(u,172)+1.2,v:-5.2},sq:{u:Math.max(u,172)+1,v:-7.8}});}}
- function updateSil(dt){if(!SIL.length)return;const ph=S.phase,live=ph==='n4-depot'||ph==='n4-marquee';
+ function updateSil(dt){if(!SIL.length)return;const ph=S.phase,live=ph==='n4-depot';
   for(const s of SIL){if(!live){if(s.q.visible)s.q.visible=false;continue;}s.t+=dt;
    if(s.state==='wait'&&s.t>0&&camera.position.distanceTo(s.pos)<34&&lights.level(LV.neon+NEON.lyricUpper)>.05){s.state='on';s.t=0;s.q.visible=true;mark('someone in an upper window');
     if(C.dp&&C.dp.first===null){C.dp.first=C.t;say([{who:'SAM',text:'“Jamie. The windows.”',by:'sam',time:1.6},{who:'JAMIE',text:'“Don’t look at them. Keep walking.”',by:'jamie'}]);}}
    else if(s.state==='on'){if(k.camLooksAt(s.pos,.993))s.seenT+=dt;if(s.seenT>.8||s.t>14){s.state='gone';s.q.visible=false;mark('the window is empty');}}}}
  // ---- the marquee ----------------------------------------------------------------------------------------------------------------------
+ // Under the marquee, in its light, the one who looks like Alex. When they reach the corner everything stops: no wind,
+ // no insects, nothing going out, nobody in the windows; he does not sway or breathe. He says what Alex said, word for
+ // word, the last evening on the hill, and Jamie answers the way he answered then before he can stop himself; then
+ // what Sam said tonight, on Second Street, where he was not. Then the goodbye at the corner of Briarwood, and the
+ // lights go. It is said as they come nearer (each line waits for a step closer, or a while): nothing holds them, nothing
+ // turns their head; come at him and he is gone before he finishes.
+ const MQ=[{d:99,t:1.2,lines:[{who:'JAMIE',text:'“…Alex?”',from:jamie,time:1.4,gap:.9},{who:'SAM',text:'“Jamie. Don’t.”',from:sam,time:1.4}],act:()=>{stand(jamie,{u:181.6,v:-7.6},{look:()=>axHead,max:1.4});stand(sam,{u:180.6,v:-9.2},{look:()=>axHead,max:1.6,gesture:GEST.grab(1)});}},
+  {d:19,t:5,lines:[{who:'ALEX',text:'“Did you guys hear that?”',from:AX,time:2,gap:1.6},{who:'JAMIE',text:'“…Hear what?”',from:jamie,time:1.4,gap:1.4},{who:'ALEX',text:'“Never mind.”',from:AX,time:1.6,gap:1.2}]},
+  {d:0,t:1.6,lines:[{who:'SAM',text:'“That’s what he said. On the hill. That’s exactly—”',from:sam,time:2.4}]},
+  {d:13,t:6,lines:[{who:'ALEX',text:'“Don’t run. Don’t run.”',from:AX,time:1.9,gap:1.8},{who:'SAM',text:'“…That’s what I said.”',from:sam,time:1.8}]},
+  {d:9.5,t:6,lines:[{who:'ALEX',text:'“Alright, I’m this way.”',from:AX,time:1.8,gap:1.2},{who:'ALEX',text:'“See you tomorrow.”',from:AX,time:1.8,gap:1.1}],act:()=>{AX.turn=-.9;},end:true}];
  function marquee(){if(C.flags.mq)return;C.flags.mq=true;go('n4-marquee');C.hMin=Math.max(C.hMin||0,HOUR.marquee);C.darkTo=.88;
-  outNow(D.lamps.map(L=>LV.lamp+L.id).filter(i=>!KEEP.has(i)));// (whatever was still on along Main)
-  C.mq={t:0,out:null,back:null,rush:false};placeAX(195.6,-9.6,HE);/* (under the near end of the marquee, in its light) */AX.state='stand';AX.t=0;S.lookTarget=axHead;
+  outNow(D.lamps.map(L=>LV.lamp+L.id).filter(i=>!KEEP.has(i)));/* (whatever was still on along Main) */for(const s2 of SIL){s2.q.visible=false;if(s2.state!=='gone')s2.state='off';}
+  C.mq={t:0,out:null,back:null,rush:false,still:true,step:0,stepAt:C.t,doneAt:null,lines:[]};placeAX(195.6,-9.6,HE);/* (under the near end of the marquee, in its light) */AX.state='stand';AX.t=0;AX.still=true;AX.turn=0;S.lookTarget=axHead;
+  for(const kk in C.amb)C.amb[kk]=0;/* (all at once: that is what is wrong with it) */
   for(const [c,q] of [[jamie,{u:179.8,v:-7.0}],[sam,{u:179.6,v:-10.2}]])stand(c,q,{look:()=>axHead,max:2.4});
-  talk([{wait:1.4},{who:'ALEX',text:'“Jamie.”',from:AX,time:1.6,gap:1.6},{who:'JAMIE',text:'“…Where is he?”',from:jamie,time:1.8,gap:1.2},{who:'ALEX',text:'“I know where he is.”',from:AX,time:2.2,gap:1},
-   {who:'SAM',text:'“Don’t listen to him.”',from:sam,time:1.8,gap:1.1},{who:'ALEX',text:'“Come find him.”',from:AX,time:2.2,gap:1.6}],{interrupt:true,then:blackout});mark('Alex under the marquee');}
- function updateMarquee(dt){const X=C.mq;if(!X)return;X.t+=dt;const p=me();
-  if(!X.rush&&X.out===null&&AX.person.group.visible&&Math.hypot(p.x-AX.x,p.z-AX.z)<8.5){X.rush=true;talk([{who:'ALEX',text:'“Come find him.”',from:AX,time:1.8}],{interrupt:true,then:blackout});}}
+  say([{who:'',text:'[It goes quiet. No wind. Nothing.]',time:2.4}],{interrupt:true});mark('Alex under the marquee');}
+ function updateMarquee(dt){const X=C.mq;if(!X)return;X.t+=dt;const p=me(),d=Math.hypot(p.x-AX.x,p.z-AX.z);if(X.out!==null)return;
+  if(X.step>=1&&!X.rush&&d<6.5&&AX.person.group.visible){X.rush=true;mark('too close');talk([{who:'ALEX',text:'“See you—”',from:AX,time:.7}],{interrupt:true,then:blackout});return;}
+  if(X.rush||busy())return;if(X.doneAt===null&&X.step>=MQ.length){X.doneAt=C.t;}if(X.doneAt!==null){if(C.t-X.doneAt>1.1)blackout();return;}
+  const st=MQ[X.step];if(d<st.d||C.t-X.stepAt>st.t){X.step++;X.stepAt=C.t;st.act?.();for(const l of st.lines)X.lines.push(l.who+': '+l.text);talk(st.lines,{then:()=>{C.mq.stepAt=C.t;}});mark('under the marquee: '+X.step);}}
  function blackout(){const X=C.mq;if(!X||X.out!==null)return;X.out=C.t;const t=lights.S.t;mark('the marquee goes out');
   lights.kill(LV.neon+NEON.bulbs,t+.05,{flick:.9});lights.kill(LV.neon+NEON.marquee,t+.55,{flick:.8});lights.kill(LV.neon+NEON.blade,t+.8);lights.kill(LV.neon+NEON.lyricUpper,t+.9,{quiet:true});if(shopIdx('lyric')>=0)lights.kill(shopIdx('lyric'),t+.9,{quiet:true});
-  later(1.05,()=>{AX.person.group.visible=false;AX.state='gone';C.darkTo=1;C.dark=Math.max(C.dark,.97);S.lookTarget=null;T?.jolt?.(1,{hold:6,why:'dark'});});later(3.7,powerBack);}
+  C.mq.still=false;later(1.05,()=>{AX.person.group.visible=false;AX.state='gone';AX.still=false;C.darkTo=1;C.dark=Math.max(C.dark,.97);S.lookTarget=null;T?.jolt?.(1,{hold:6,why:'dark'});});later(3.7,powerBack);}
  function powerBack(){if(C.mq.back!==null)return;C.mq.back=C.t;go('n4-return');C.darkTo=0;mark('the power comes back');
   const all=[];for(let i=0;i<lights.hold.length;i++)if(lights.hold[i]<.5)all.push(i);lights.wave(all,{from:{u:200,v:-9},speed:28});sound('relay',at(200,-9.4,TY+5),{gain:1});
   DOORS['video-front'].open=1;if(Math.hypot(...(()=>{const r=o.roam,q=at(STORE[0].u,STORE[0].v);return [r.x-q.x,r.z-q.z];})())>22)bikesTo('store');
@@ -813,7 +827,7 @@ export function createChapter4(o,k,ch2,ch3){
  function updateDoors(dt){for(const [key,d] of Object.entries(D.doors||{})){const want=DOORS[key]?.open??1;if(d.posed&&Math.abs(d.cur-want)<1e-3)continue;d.cur=damp(d.cur,want,6,dt);if(Math.abs(d.cur-want)<2e-3)d.cur=want;
   d.hinge.rotation.y=(SWING[key]??1)*d.cur*1.45;d.posed=true;}}
  function updateDark(dt){const to=C.darkTo||0;C.dark=damp(C.dark,to,to>C.dark?1.3:.7,dt);if(Math.abs(C.dark-to)<1e-3)C.dark=to;}
- function updateAmb(dt){const ph=S.phase,day=sky().day,town=where().street==='town';let want;
+ function updateAmb(dt){const ph=S.phase,day=sky().day,town=where().street==='town';let want;if(C.mq?.still&&ph==='n4-marquee'){for(const kk in C.amb)C.amb[kk]=0;return;}
   if(/^(e4-cascade|n4-(store|back|alley|laundry|depot|marquee))$/.test(ph))want={traffic:0,life:0,insects:.12,wind:.45,forest:0,tunnel:0,water:0};
   else want={traffic:town&&C.h<19.8?1:.15,life:day>.3?1:.35,insects:smooth((C.h-19.4)/.6),wind:.8,forest:0,tunnel:0,water:0};
   for(const kk in want)C.amb[kk]=damp(C.amb[kk]??0,want[kk],.6,dt);}
@@ -914,7 +928,7 @@ export function createChapter4(o,k,ch2,ch3){
  function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);life.clear();lights.reset();if(lights.S.attached)lights.attach(false);flashL.removeFromParent();flashL.intensity=0;flashT=0;photo.reset();footage.reset();
   for(const T2 of Object.values(TVS)){T2.on=0;T2.shot=null;T2.t=0;T2.frames=0;T2.rt=0;T2.stat=1;for(const tv of [T2.tv,...T2.share])if(tv){tv.mat.uniforms.uOn.value=0;tv.mat.uniforms.uStatic.value=1;}}
   for(const key of Object.keys(DOORS)){DOORS[key].open=DOOR0[key];const d=D.doors?.[key];if(d){d.cur=DOOR0[key];d.posed=false;}}updateDoors(0);
-  nav.setTown(false);samMom.show(false);samMom.lookAt=null;bag.visible=false;AX.person.group.visible=false;AX.state='off';for(const s of SIL){s.q.visible=false;s.state='off';}
+  nav.setTown(false);samMom.show(false);samMom.lookAt=null;bag.visible=false;AX.person.group.visible=false;AX.state='off';AX.still=false;AX.turn=0;AX.lk=undefined;for(const s of SIL){s.q.visible=false;s.state='off';}
   if(C.crt||C.esc?.pass)creature.show(false);creature.ground=null;Object.assign(creature.drive,{cower:0,back:0,alert:0,snap:0});if(SG0!==undefined&&C.flags?.bagReady)SG?.set?.(SG0);ambient.blinkReset?.();
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView)o.roam.walkLock=false;fresh();}
  // QA jumps, DEV scenes and Continue: the chapter at one of its moments, everything it needs set up.
@@ -989,10 +1003,12 @@ export function createChapter4(o,k,ch2,ch3){
   ff('store','out');ensureLead();
   // ---- out the back ----
   if(ix<=SECTIONS4.indexOf('c4-laundromat')){town(HOUR.back);DOORS['video-back'].open=1;outNow(VIDEO);bikesTo('store');
-   const skip=section==='c4-escape'?0:40;youFoot(103.75,-36.6,HWst,STORE[0]);bikesTo('store');boyFoot(jamie,102.4,-37.4,HWst,{...STORE[1],kick:0,fall:-1.3});boyFoot(sam,105.2,-37.8,HWst,{...STORE[2],kick:0,fall:-1.3});bikesTo('store');
+   youFoot(103.75,-36.6,HWst,STORE[0]);bikesTo('store');boyFoot(jamie,102.4,-37.4,HWst,{...STORE[1],kick:0,fall:-1.3});boyFoot(sam,105.2,-37.8,HWst,{...STORE[2],kick:0,fall:-1.3});bikesTo('store');
    C.flags.out=false;outBack();C.dark=C.darkTo;
    if(section==='c4-escape'){S.queue.length=0;S.line=null;say([{who:'JAMIE',text:'“The laundromat. It’s open till ten.”',by:'jamie'}]);return;}
    S.queue.length=0;S.line=null;
+   /* (where the ways part: on along the alley to the narrow way (A), or up the passage to Main (B); the dark ten metres back) */
+   if(section==='c4-route-a'||section==='c4-route-b'){const A2=section==='c4-route-a';youFoot(A2?136:136.4,A2?-40.2:-37.4,A2?HWst:hd(136.4,-37.4,143.2,-35.2),STORE[0]);bikesTo('store');boyFoot(jamie,A2?134.6:135,A2?-39.2:-36.6,HWst);boyFoot(sam,A2?133.8:134.6,A2?-40.6:-38.4,HWst);for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');darkBehind(126,10);C.esc.t=25;return;}
    if(section==='c4-alley-creature'){youFoot(146.6,-38.4,HWst,STORE[0]);bikesTo('store');boyFoot(jamie,145.4,-37.6,HWst);boyFoot(sam,144.2,-39.2,HWst);for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');darkBehind(137,10);C.esc.t=40;return;}
    C.esc.pass={kind:'narrow',stage:'gone'};youFoot(163.75,-35.4,HN,STORE[0]);bikesTo('store');boyFoot(jamie,162.6,-36.2,HN);boyFoot(sam,165,-36.3,HN);for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');darkBehind(158,8);C.esc.t=60;C.esc.routes=['alley','narrow'];C.esc.route='narrow';enterLaundry();S.queue.length=0;S.line=null;return;}
   ff('laundry');outNow([...VIDEO,...WEST]);

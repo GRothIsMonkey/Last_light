@@ -76,16 +76,18 @@ export const DEV_SCENES={
   {id:'c4-library',label:'The Library',jump:'c4-library'},{id:'c4-microfilm',label:'Microfilm Room',jump:'c4-microfilm',save:'c4-library'},
   {id:'c4-historical-clue',label:'Microfilm: the Records',jump:'c4-historical-clue'},{id:'c4-closing',label:'Library Closing',jump:'c4-closing'},
   {id:'c4-dusk',label:'Dusk (out of the library)',jump:'c4-dusk'},{id:'c4-alex-across',label:'Alex Across the Street',jump:'c4-alex-across',save:'c4-dusk'},
-  {id:'c4-creature',label:'Creature at Dusk (afraid)',jump:'c4-creature',save:'c4-dusk'},{id:'c4-presence',label:'Streetlight Cascade',jump:'c4-presence'},
+  {id:'c4-creature',label:'Creature First Appearance',jump:'c4-creature',save:'c4-dusk'},{id:'c4-creature-notices',label:'Creature Notices Presence',jump:'c4-creature-notices',save:'c4-dusk'},
+  {id:'c4-creature-hiding',label:'Creature Cowering / Fear',jump:'c4-creature-hiding',save:'c4-dusk'},{id:'c4-presence',label:'Streetlight Cascade',jump:'c4-presence'},
   {id:'c4-tv-window',label:'TV Window (live)',jump:'c4-tv-window'},{id:'c4-video-store',label:'Video Store',jump:'c4-video-store'},
   {id:'c4-store-footage',label:'Store TV: Alex Footage',jump:'c4-store-footage'},{id:'c4-pine-ridge',label:'Store TV: Pine Ridge (the picture)',jump:'c4-pine-ridge'},
-  {id:'c4-store-phone',label:'The Phone (“Jamie?”)',jump:'c4-store-phone'},{id:'c4-store-live',label:'“That’s us.”',jump:'c4-store-live'},
-  {id:'c4-back-door',label:'Back Door',jump:'c4-back-door'},{id:'c4-escape',label:'Alley Escape',jump:'c4-escape'},
-  {id:'c4-alley-creature',label:'Creature Passes (narrow alley)',jump:'c4-alley-creature'},{id:'c4-laundromat',label:'Laundromat',jump:'c4-laundromat'},
-  {id:'c4-depot-st',label:'Depot Street',jump:'c4-depot-st'},{id:'c4-theater',label:'Theater Windows (silhouettes)',jump:'c4-theater'},
-  {id:'c4-marquee',label:'Alex Under the Marquee',jump:'c4-marquee'},{id:'c4-power-returns',label:'Blackout / Power Returns',jump:'c4-power-returns'},
+  {id:'c4-store-phone',label:'The Phone (“Jamie?”)',jump:'c4-store-phone'},{id:'c4-store-live',label:'Impossible Surveillance (“That’s us.”)',jump:'c4-store-live'},
+  {id:'c4-back-door',label:'Video Store Escape (back door)',jump:'c4-back-door'},{id:'c4-escape',label:'Downtown Escape Start',jump:'c4-escape'},
+  {id:'c4-route-a',label:'Alley Route A (the narrow way)',jump:'c4-route-a',save:'c4-escape'},{id:'c4-route-b',label:'Alley Route B (the passage to Main)',jump:'c4-route-b',save:'c4-escape'},
+  {id:'c4-alley-creature',label:'Creature Flees Past Group',jump:'c4-alley-creature',save:'c4-escape'},{id:'c4-laundromat',label:'Laundromat',jump:'c4-laundromat'},
+  {id:'c4-depot-st',label:'Depot Street',jump:'c4-depot-st'},{id:'c4-theater',label:'Theater Approach (the windows)',jump:'c4-theater'},
+  {id:'c4-marquee',label:'New Alex Message (under the marquee)',jump:'c4-marquee',save:'c4-theater'},{id:'c4-power-returns',label:'Blackout / Power Returns',jump:'c4-power-returns'},
   {id:'c4-final-clue',label:'Final Clue (the Pine Ridge picture)',jump:'c4-final-clue'},{id:'c4-ride-home',label:'Ride Home',jump:'c4-ride-home',save:'c4-final-clue'},
-  {id:'c4-oak',label:'Back on Oak Hollow',jump:'c4-oak',save:'c4-final-clue'},{id:'chapter4-end',label:'Old Oak Ending',jump:'chapter4-end'}]};
+  {id:'c4-oak',label:'Back on Oak Hollow',jump:'c4-oak',save:'c4-final-clue'},{id:'chapter4-end',label:'Chapter Four Ending (the old oak)',jump:'chapter4-end'}]};
 
 export function createDevChapters(g){
  const {chapter,chapter2,chapter3,chapter4}=g,comp=chapter.companions,K=chapter.kit;
