@@ -4,27 +4,27 @@ Source: `claude/chapter4-main-street` at `8cc59e26111c4c2032a2893c69b67fafc54861
 
 | Gate | Result |
 |---|---|
-| Full simulation suite (`QUICK=1 node tests/verify.mjs`): the prologue and Chapters One–Three played naturally, then Chapter Four played on from Chapter Three's end card with no QA jump (the **natural muted walkthrough**), Chapter Four's focused checks, the Chapter Four replay, then **all of Chapter Four again from the DEV selector's Chapter Four Start**, then the DEV selector checks | ⟨FULL⟩ |
+| Full simulation suite (`QUICK=1 node tests/verify.mjs`): the prologue and Chapters One–Three played naturally, then Chapter Four played on from Chapter Three's end card with no QA jump (the **natural muted walkthrough**), Chapter Four's focused checks, the Chapter Four replay, then **all of Chapter Four again from the DEV selector's Chapter Four Start**, then the DEV selector checks | **622 passed**, 0 failed |
 | Chapter Four alone (`QUICK=1 ONLY=chapter4 node tests/verify.mjs`) | **35 passed**, 0 failed |
 | Chapter Three alone (`QUICK=1 ONLY=chapter3 node tests/verify.mjs`; the creature's code is shared) | **156 passed**, 0 failed |
-| Chapter Four in Chromium (`QA_OUTPUT=docs/qa/chapter4-horror-revision node tests/chapter4-browser.mjs`): the walkthrough from Chapter Three's end card by inputs alone, then all 42 DEV Chapter Four scenes by real clicks | ⟨BROWSER⟩ |
-| JavaScript / console / WebGL or shader warnings in the browser run | ⟨ERRORS⟩ |
+| Chapter Four in Chromium (`QA_OUTPUT=docs/qa/chapter4-horror-revision node tests/chapter4-browser.mjs`): the walkthrough from Chapter Three's end card by inputs alone, then all 42 DEV Chapter Four scenes by real clicks | **13 checks passed**, 86 captures (`docs/qa/chapter4-horror-revision/`, gallery `index.html`, report `chapter4-browser-report.json`; its runtime hashes are the committed `dist/`) |
+| JavaScript / console / WebGL or shader warnings in the browser run | **0 / 0** |
 
 ## What was checked, by problem
 
-**1. The creature's animation.** Lab renders of every motion from four sides (`docs/qa/chapter4-horror-revision/creature-lab/`): foot slip 0 in the gallop, stalk and turn, ≤ 0.08 m in the trot's blend, ≤ 0.09 m in the last frames of a hard stop. In the chapter: foot slip ⟨SLIP⟩ m at most through the whole Second Street encounter (was 2.2 m where it left the creek bank: it now falls on an arc and its feet go with it), 1.6 m from anyone at its closest in the narrow way, never rearing or clawing. Chapter Three's chase with the new gait: 156 checks; floating 0, speed error median 0.004, heading error p95 0.003.
+**1. The creature's animation.** Lab renders of every motion from four sides (`docs/qa/chapter4-horror-revision/creature-lab/`): foot slip 0 in the gallop, stalk and turn, ≤ 0.08 m in the trot's blend, ≤ 0.09 m in the last frames of a hard stop. In the chapter, in the full playthrough: foot slip 0.13 m at most through the whole Second Street encounter (was 2.2 m where it left the creek bank: it now falls on an arc and its feet go with it; and 0.8 m in an in-place turn until the limbs were measured from the rest pose and a hand it cannot reach is stepped at once), 1.6 m from anyone at its closest in the narrow way, never rearing or clawing. Chapter Three's chase with the new gait: 156 checks; floating 0, speed error median 0.004, heading error p95 0.003.
 
-**2. The greater evil.** The encounter's stages in order — watch, stalk, freeze, look, back, scurry, **hide**, flinch, flee, gone — with the corner's lights dying after it looks there and before it backs away, the cascade beginning far up Main while it hides and before it runs; at its closest ⟨CLOSEST⟩ m (readable; was 26–48 m); "It's hiding." and "There's nothing there." said; nothing spoken names or ranks it ("controls", "servant", "in charge", "created" never appear).
+**2. The greater evil.** The encounter's stages in order — watch, stalk, freeze, look, back, scurry, **hide**, flinch, flee, gone — with the corner's lights dying after it looks there and before it backs away, the cascade beginning far up Main while it hides and before it runs; at its closest 16.4 m (readable; was 26–48 m); "It's hiding." and "There's nothing there." said; nothing spoken names or ranks it ("controls", "servant", "in charge", "created" never appear).
 
 **3. The escape.** Every way out of the video store, walking and running, reaches the Lyric with no carry-on:
 
 | Way | Walking | Running | The creature | Closest it came | The dark: nearest / farthest | Boys, farthest |
 |---|---|---|---|---|---|---|
-| laundromat | 51 s | 30 s | narrow way | 1.5 m | 4.2 / 27 m | 8.0 / 13.5 m |
-| narrow way to Depot Street | 49 s | — | narrow way | 1.5 m | 4.2 / 30 m | 8.0 m |
-| passage to Main | 49 s | 33 s | Main | 3.1–3.5 m | 2.9 / 23 m | 12.8 / 14.0 m |
-| gangway to Main | 48 s | — | Main | 3.5 m | 2.9 / 32 m | 5.5 m |
-| along the creek | 57 s | — | the creek | 2.4 m | 3.8 / 21 m | 4.4 m |
+| laundromat | 51 s | 30 s | narrow way | 1.5 m (running 4.1 m) | 4.3 / 15.5 m (running 6.7 / 25.7 m) | 8.0 / 12.1 m |
+| narrow way to Depot Street | 49 s | — | narrow way | 1.5 m | 4.3 / 15.9 m | 8.0 m |
+| passage to Main | 48 s | 33 s | Main | 3.5 m (running 3.0 m) | 2.9 / 18.7 m (running 9.1 / 22.7 m) | 13.0 / 14.0 m |
+| gangway to Main | 48 s | — | Main | 3.5 m | 2.9 / 18.2 m | 5.8 m |
+| along the creek | 57 s | — | the creek | 2.4 m | 3.9 / 18.8 m | 4.4 m |
 
 The narrow-way pass in the natural walkthrough: come, stop, look (1.9 s), afraid, bolt, gone; "[Behind them, a light goes out.]" and the far end's light both went out; "It didn't even look at us." Seeded randomized runs (idle and walking out the back, idling on Depot Street, never going back for the bikes) all reach the next beat.
 
@@ -57,8 +57,8 @@ Before the fix: sprinting 14.4 / 18.1 m (Sam lost 12 s), the cascade 28.6 / 26.4
 | The creature | 1 skinned mesh, 23,820 triangles: one draw call per pass; its animation costs about **0.16 ms** of CPU per update (Node, galloping or cowering) |
 | Downtown (Chromium, 1440×900) | 136–1,047 draw calls, 83–417 k triangles across the walkthrough's frames (Main Street arriving by day is the most; the escape 136–191; the marquee 174–194) |
 | Chapter Three's tunnel, with the creature | 65–74 draw calls, 54–70 k triangles |
-| Renderer | ⟨GPU⟩ |
-| JavaScript / shader errors | ⟨ERRORS⟩ |
+| Renderer | ANGLE (Vulkan 1.3, SwiftShader), Chromium 141 |
+| JavaScript / shader errors | **0 / 0** |
 
 ---
 

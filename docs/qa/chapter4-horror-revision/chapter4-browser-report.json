@@ -18,7 +18,7 @@
     "dist/chapter4.js": "d5f3ff4a1200081591bb37fe50a7711c3a985728060956cfaa3e8559f9afaa51",
     "dist/companions.js": "d1ac29a271e1e5ccf5fc432817985dfaa3043d3a4222ef678dfe4056ff594e9b",
     "dist/creature-asset.js": "cfd431397910ec8b899c38fff6d498299cc631c22e735aeb3ea8b811b8bf2be4",
-    "dist/creature.js": "450bd213c7afcd7146ca9861be12463d23970b7268345e35da03530e34b6034c",
+    "dist/creature.js": "664bd15c7d80d36cf3c6c46767005137c0378489f3107b4cb8e2cc27a0321798",
     "dist/creek.js": "f5cc5a7867f4c343e0ccf21818cd7bfff7a00ff2ea0c90bbed7b985df6889f0c",
     "dist/dev-chapter-history.js": "a39e60097f53114045db0b1a1c82e250d2a6e1885bfdbea841ef83c49ecaf5b3",
     "dist/dev-chapters.js": "a330b203482f26260c49ab06b66d4a2dd920cc369c819c4344f500d7c245bfa2",
@@ -228,8 +228,8 @@
     },
     {
       "name": "18-creature-looks-at-the-empty-corner",
-      "calls": 260,
-      "triangles": 298568,
+      "calls": 257,
+      "triangles": 295846,
       "phase": "e4-creature",
       "clock": "8:04 PM",
       "caption": "JAMIE“What’s it looking at?”"
@@ -237,15 +237,15 @@
     {
       "name": "18b-creature-hiding",
       "calls": 183,
-      "triangles": 316374,
+      "triangles": 312723,
       "phase": "e4-creature",
       "clock": "8:05 PM",
       "caption": "SAM“It’s hiding.”"
     },
     {
       "name": "18c-creature-flees-into-the-dark",
-      "calls": 183,
-      "triangles": 320361,
+      "calls": 182,
+      "triangles": 308985,
       "phase": "e4-cascade",
       "clock": "8:06 PM",
       "caption": "SAM“It ran.”"
@@ -303,7 +303,7 @@
       "calls": 473,
       "triangles": 418812,
       "phase": "n4-store",
-      "clock": "8:10 PM",
+      "clock": "8:11 PM",
       "caption": "SAM“That’s us.”"
     },
     {
@@ -324,16 +324,16 @@
     },
     {
       "name": "28-it-comes-at-them",
-      "calls": 191,
-      "triangles": 121492,
+      "calls": 189,
+      "triangles": 121096,
       "phase": "n4-alley",
       "clock": "8:14 PM",
       "caption": "[Behind them, a light goes out.]"
     },
     {
       "name": "28b-it-looks-past-them",
-      "calls": 191,
-      "triangles": 121492,
+      "calls": 189,
+      "triangles": 121096,
       "phase": "n4-alley",
       "clock": "8:14 PM",
       "caption": "[Behind them, a light goes out.]"
@@ -341,7 +341,7 @@
     {
       "name": "28c-it-runs-past-them",
       "calls": 189,
-      "triangles": 121096,
+      "triangles": 122283,
       "phase": "n4-alley",
       "clock": "8:14 PM",
       "caption": "SAM“The other end—”"
@@ -364,40 +364,40 @@
     },
     {
       "name": "31-alex-under-the-marquee",
-      "calls": 194,
-      "triangles": 96366,
+      "calls": 198,
+      "triangles": 97592,
       "phase": "n4-marquee",
       "clock": "8:19 PM",
       "caption": "ALEX“Did you guys hear that?”"
     },
     {
       "name": "31b-dont-run-dont-run",
-      "calls": 194,
-      "triangles": 96366,
+      "calls": 198,
+      "triangles": 97592,
       "phase": "n4-marquee",
       "clock": "8:20 PM",
       "caption": "ALEX“Don’t run. Don’t run.”"
     },
     {
       "name": "31c-see-you-tomorrow",
-      "calls": 194,
-      "triangles": 96366,
+      "calls": 198,
+      "triangles": 97592,
       "phase": "n4-marquee",
       "clock": "8:21 PM",
       "caption": "ALEX“See you tomorrow.”"
     },
     {
       "name": "32-marquee-blackout",
-      "calls": 174,
-      "triangles": 83358,
+      "calls": 178,
+      "triangles": 84584,
       "phase": "n4-marquee",
       "clock": "8:21 PM",
       "caption": "ALEX“See you tomorrow.”"
     },
     {
       "name": "33-power-returns-he-is-gone",
-      "calls": 184,
-      "triangles": 96606,
+      "calls": 185,
+      "triangles": 97014,
       "phase": "n4-return",
       "clock": "8:21 PM",
       "caption": "JAMIE“He’s gone.”"

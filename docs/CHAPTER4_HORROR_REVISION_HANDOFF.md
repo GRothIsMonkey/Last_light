@@ -18,7 +18,9 @@ simulation and in Chromium (software rendering). Art direction and sound stay wi
 
 Commits, in order: `214c64b` companions · `4c508d5` creature animation · `4b1fd1e` Presence and the creature's fear ·
 `dc49d33` responsive escape and the video store · `281a25a` the Lyric and the DEV scenes · `eee6dd3` clean scene
-switching and the DEV-start playthrough · the docs/QA commit.
+switching and the DEV-start playthrough · `477ba22` docs, the lab, avoiding the boys where they really are ·
+`0f24a23` limbs measured from the rest pose · `3695f1e` lab sheets · `54c295f` the standing stance · `b3a84e7`
+and the final commit: QA captures and final numbers.
 
 ## 1. Findings from the playtest, and what was wrong
 
@@ -71,7 +73,8 @@ procedural on the skeleton itself (`dist/creature.js`):
 - **Gait by speed**: a walk (lateral sequence), a trot (diagonal pairs) and a **bounding gallop** (hind pair, then fore
   pair, with a flight phase), blended; cadence and duty factor follow speed.
 - **Planted contacts**: each hand and foot is planted where it lands and stays there while the body passes over it;
-  then it swings, in the body's own frame, to where it will land, predicted from speed and turn rate.
+  then it swings, in the body's own frame, to where it will land, predicted from speed and turn rate. Standing, the
+  limbs settle one at a time, two when it has turned further, and one it can no longer reach steps at once.
 - **Two-bone IK** on shoulder/elbow/hand and hip/knee/foot with the rest pose's own bend as the pole; hands flat and
   feet on their toes while planted, curled back in the swing.
 - **Weight**: the body bobs with the steps (rising through the gallop's flight), pitches against acceleration (nose
@@ -88,7 +91,8 @@ mid-stride**, and turns its head **before** its body; frightened, it draws its l
 
 Evidence: `docs/qa/chapter4-horror-revision/creature-lab/` (profile, front, rear and three-quarter sheets of the run,
 trot, stalk, stop, turn, back, cower and turn-to-flee) — foot slip 0 in run, stalk, turn; ≤ 0.09 m only in the last
-frames of a hard stop. In the Chapter Four encounter: foot slip ≤ 0.21 m (was 2.2 m off the creek bank). Chapter
+frames of a hard stop. In the Chapter Four encounter, in the full playthrough: foot slip ≤ 0.13 m (was 2.2 m off the creek
+bank, and 0.8 m in an in-place turn until standing hands it cannot reach were stepped at once). Chapter
 Three's chase with the new gait: 156 checks pass; float 0, speed error median 0.004, heading error p95 0.003.
 
 ## 4. The greater evil (the Presence)
