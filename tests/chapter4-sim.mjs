@@ -30,6 +30,7 @@ export function chapterFourTools(T){
 }
 
 // From Chapter Three's end card (or the chapter's own start) to Chapter Four's end card, with inputs only.
+const clamp1=(x,a,b)=>Math.max(a,Math.min(b,x));
 export function playChapterFour(T,label,{fromCard=true}={}){
  const {h,press,release,tap,check,element,metrics}=T,X=chapterFourTools(T),{C1,C4,A4,at,uv,where,goUV,faceUV,routeDown,routeHome,offBike,onBike,companionsFinite,quiet,log,until,wait,me,faceTo,go}=X;
  const M2=/replay/.test(label)?{}:metrics,said=()=>log.said,saidIdx=l=>log.said.indexOf(l);
@@ -122,9 +123,12 @@ export function playChapterFour(T,label,{fromCard=true}={}){
  check(`${label}: the phone: "…Jamie?"; the TV: the three of them, now ("That’s us."); the lights go from the front`,()=>{assert.equal(C4().store.answered,'you');assert.ok(said().includes('ON THE PHONE: “…Jamie?”'));assert.ok(said().includes('SAM: “That’s us.”'));assert.equal(C4().tvs.video.shot,'live-store');});
  U(()=>false,5);goUV(111.2,-26,{r:.6});goUV(111.2,-30,{r:.6});goUV(104.2,-33.2,{r:.6});faceUV(103.75,-35.6,1);U(()=>false,.3);tap('KeyF');U(()=>false,1);goUV(103.75,-36.8,{r:.5});U(()=>C4().phase==='n4-alley',5);
  // ---- out the back -----------------------------------------------------------------------------------------------------------------
- goUV(118,-38.8);goUV(140,-39);goUV(150,-38.2);U(()=>C4().creature.pass?.stage==='gone',20);U(()=>said().includes('SAM: “It didn’t even look at us.”'),8);
- check(`${label}: the narrow way: it comes from behind and runs past them, and does not look at them`,()=>{const ps=C4().creature.pass;assert.ok(ps.passedAt!==null,'passed');assert.ok(watch.passMin>.8,'closest '+watch.passMin);assert.equal(watch.claw,0);
-  assert.ok(said().includes('SAM: “It didn’t even look at us.”'));});
+ goUV(118,-40.2);goUV(140,-40.2);goUV(150,-38.6);/* (and stop there, the way anyone would) */U(()=>C4().creature.pass?.stage==='gone',30);U(()=>said().includes('SAM: “It didn’t even look at us.”'),8);
+ check(`${label}: the narrow way: it comes at them from the far end, stops, looks past them as a light goes out behind them, shrinks from it, and bolts past them, close`,()=>{const ps=C4().creature.pass,R=A4.C.esc.pass;assert.equal(ps.kind,'narrow');assert.ok(ps.passedAt!==null,'passed');
+  for(const k of ['come','stop','look','afraid','bolt','gone'])assert.ok(R.stageAt[k]!==undefined,k);assert.ok(R.stageAt.afraid-R.stageAt.look>1.5,'it looked a while');assert.ok(R.k.behind&&R.k.far,'both lights: '+JSON.stringify(R.k));
+  assert.ok(watch.passMin>1.3,'closest '+watch.passMin);assert.ok(ps.closest>1.3,'closest (its own count) '+ps.closest);assert.equal(watch.claw,0);
+  assert.ok(said().includes(': [Behind them, a light goes out.]')&&said().includes('SAM: “It didn’t even look at us.”'));});
+ metrics['chapter4 creature in the narrow way']={stages:Object.fromEntries(Object.entries(A4.C.esc.pass.stageAt).map(([k2,v2])=>[k2,+(v2-A4.C.esc.pass.stageAt.come).toFixed(1)])),closest:C4().creature.pass.closest,roof:C4().creature.pass.roof};
  goUV(163.75,-38.2,{r:.6});goUV(163.75,-35,{r:.6});U(()=>C4().phase==='n4-laundry',5);goUV(169,-27,{r:.6});goUV(173,-26.75,{r:.6});U(()=>C4().phase==='n4-depot',5);
  U(()=>A4.SIL.some(s=>s.state==='on'),8);/* look up at the one standing there (as a player would: straight at it) */U(()=>{const on=A4.SIL.find(s=>s.state==='on');if(on){const c=h.camera.position;faceTo(on.pos.x,on.pos.z,Math.atan2(on.pos.y-c.y,Math.hypot(on.pos.x-c.x,on.pos.z-c.z)));}return A4.SIL.some(s=>s.state==='gone');},8);
  check(`${label}: the theater’s upper windows: someone standing in one; looked at, the window is empty`,()=>{assert.ok(A4.SIL.some(s=>s.state==='gone'),JSON.stringify(C4().silhouettes));assert.ok(said().includes('SAM: “Jamie. The windows.”'));});
@@ -148,7 +152,7 @@ export function playChapterFour(T,label,{fromCard=true}={}){
 
 // Every jump, alias and checkpoint; Continue; Start over from inside; switching away leaves nothing behind; randomized runs.
 export async function runChapterFourChecks(T,cap){
- const {h,advance,press,release,tap,check,element,metrics}=T,X=chapterFourTools(T),{C1,C4,A4,at,uv,until,wait,me,faceTo,goUV,faceUV,companionsFinite,quiet,offBike,onBike}=X;
+ const {h,advance,press,release,tap,check,element,metrics}=T,X=chapterFourTools(T),{C1,C4,A4,at,uv,until,wait,me,faceTo,go,goUV,faceUV,companionsFinite,quiet,offBike,onBike}=X;
  // ---- jumps --------------------------------------------------------------------------------------------------------------------
  const jumps={};for(const sec of [...A4.SECTIONS,...Object.keys(A4.ALIAS)]){let err=null;try{h.jump(sec);advance(2.5);}catch(e){err=String(e.stack||e).slice(0,300);}jumps[sec]={err,phase:C4().phase,finite:companionsFinite()&&Number.isFinite(h.camera.position.y)};}
  check(`Chapter Four: all ${A4.SECTIONS.length} QA jumps and ${Object.keys(A4.ALIAS).length} aliases start without an error, in a Chapter Four phase, everyone where they can be`,()=>{for(const [k,v] of Object.entries(jumps)){assert.equal(v.err,null,k+': '+v.err);assert.ok(A4.owns(v.phase),k+' '+v.phase);assert.ok(v.finite,k);}});
@@ -176,12 +180,35 @@ export async function runChapterFourChecks(T,cap){
    if(ans){until(()=>C4().store?.ring,70);goUV(102.2,-19.3,{r:.6});faceUV(101,-19.4,1.1);advance(.3);tap('KeyF');}
    if(back){until(()=>C4().store?.dark!=null,90);goUV(111.2,-26,{r:.6});goUV(111.2,-30,{r:.6});goUV(104.2,-33.2,{r:.6});faceUV(103.75,-35.6,1);advance(.3);tap('KeyF');advance(1);goUV(103.75,-36.8,{r:.5});}},
   ()=>C4().phase==='n4-alley'&&C4().inv.lead,260);}
- for(const choice of ['walk','idle']){segment('out the back: '+choice,'c4-escape',()=>{if(choice==='walk'){goUV(118,-38.8);goUV(140,-39);goUV(150,-38.2);}},()=>C4().creature.pass?.stage==='gone',160);}
+ for(const choice of ['walk','idle']){segment('out the back: '+choice,'c4-escape',()=>{if(choice==='walk'){goUV(118,-40.2);goUV(140,-40.2);goUV(150,-38.6);}},()=>C4().creature.pass?.stage==='gone',160);}
  for(const choice of ['walk','idle']){segment('Depot Street: '+choice,'c4-depot-st',()=>{if(choice==='walk'){goUV(179.4,-20);goUV(179.4,-10.8);}},()=>C4().phase==='n4-return',190);}
  segment('the bikes, never gone back to','c4-power-returns',()=>{},()=>C4().phase==='n4-ride',240);
  check(`Chapter Four: ${runs.length} seeded randomized runs (idling, wandering, missing the picture, letting the phone ring) all reach the next beat, by the fallbacks where needed`,()=>{for(const r of runs){assert.equal(r.err,null,r.name);assert.ok(r.ok,JSON.stringify(r));}});
  check('Chapter Four: when the picture is missed, Jamie takes it; when the phone rings out, Sam answers; nobody waits forever',()=>{assert.ok(runs.some(r=>/picture missed/.test(r.name)&&r.ok));assert.ok(runs.some(r=>/left ringing/.test(r.name)&&r.ok));assert.ok(runs.some(r=>r.carried.length),'some run used a carry-on fallback');});
  metrics['chapter4 randomized runs']=runs.map(r=>({name:r.name,ok:r.ok,secs:r.secs,carried:r.carried}));
+ // ---- the store watches them: a shot nobody has looked at waits; the live picture is from the corner farthest from you --------
+ {const lens=A4.footage.SHOTS,said=()=>X.log.said;h.jump('c4-video-store');advance(.3);faceUV(114,-20,1.2);/* (turned away from the TV) */until(()=>C4().store?.shot==='alex-ride',20);const t0=C4().store.t;until(()=>C4().store.shot!=='alex-ride',40);const unseen=C4().store.t-t0;
+  const tv=at(99.15,-18,2.5);until(()=>{faceTo(tv.x,tv.z,.12);return C4().store.shot!=='alex-yard';},30);const t1=C4().store.t;until(()=>{faceTo(tv.x,tv.z,.12);return C4().store.shot!=='alex-yard'||C4().store.t-t1>30;},30);
+  h.jump('c4-video-store');advance(.3);until(()=>C4().store?.shot==='alex-ride',20);const t2=C4().store.t;until(()=>{faceTo(tv.x,tv.z,.12);return C4().store.shot!=='alex-ride';},40);const seen=C4().store.t-t2;
+  h.jump('c4-store-live');advance(1.5);const c0=A4.footage.storeCornerChanges,k0=A4.footage.storeCorner,cu=A4.footage.storeCornerUV;goUV(clamp1(cu[0],101,113.5),clamp1(cu[1],-26.5,-13.5),{r:.8,max:25});advance(2.5);
+  const moved=A4.footage.storeCornerChanges>c0&&A4.footage.storeCorner!==k0;until(()=>said().includes('SAM: “It moved. It’s— from over there now.”'),8);
+  check('Chapter Four, the video store: a shot on the TV nobody has looked at waits for you; the live picture is from the corner farthest from you, and when you go to that corner it is from another one',()=>{
+   assert.ok(unseen>lens['alex-ride'].len+6,'unwatched: '+unseen.toFixed(1));assert.ok(seen<lens['alex-ride'].len+1.2,'watched: '+seen.toFixed(1));assert.ok(moved,'the live picture moved: '+JSON.stringify({c0,k0,now:A4.footage.storeCorner}));
+   assert.ok(said().includes('SAM: “It moved. It’s— from over there now.”'));});
+  metrics['chapter4 store']={unwatchedShotSecs:+unseen.toFixed(1),watchedShotSecs:+seen.toFixed(1),shotLen:lens['alex-ride'].len,liveCornerMoved:moved};}
+ // ---- every way out of the video store comes out at the Lyric; the dark follows the way they went; the boys stay with them --------
+ {const comp=h.chapter.companions,J=comp.all.find(c=>c.key==='jamie'),Sm=comp.all.find(c=>c.key==='sam');
+  const WAYS={laundromat:[[118,-40.2],[140,-40.2],[150,-38.6],[163.75,-38.6],[163.75,-35],[165,-30],[169,-27],[173,-26.75],[179.4,-20],[179.4,-10.8]],
+   'narrow way to Depot':[[118,-40.2],[140,-40.2],[150,-38.6],[176,-38.8],[180,-20],[180,-10.8]],'passage to Main':[[118,-40.2],[135,-37.2],[143,-35.2],[143,-20],[143,-6],[172,-6]],
+   'gangway to Main':[[118,-40.2],[125,-36.4],[127,-34.4],[127,-20],[127,-6],[150,-6],[172,-6]],'along the creek':[[110,-44],[125,-51],[150,-51],[178,-50],[180,-30],[180,-10.8]]};
+  const ways={};for(const [name,pts] of Object.entries(WAYS))for(const sprint of [false,true]){if(sprint&&!/laundromat|passage/.test(name))continue;h.jump('c4-escape');advance(1);let worst=0,inv=0,t=0;
+   const smp=()=>{t+=1/30;const p=me();for(const c of [J,Sm]){worst=Math.max(worst,Math.hypot(c.px-p.x,c.pz-p.z));if(!c.person.group.visible)inv++;}return C4().phase==='n4-marquee';};
+   for(const [u,v] of pts){go(at(u,v),{max:60,sprint,stop:smp});if(C4().phase==='n4-marquee')break;}until(smp,30);release('ShiftLeft');release('KeyW');
+   const e=C4().escape,pa=C4().creature.pass;ways[name+(sprint?' (running)':'')]={reached:C4().phase==='n4-marquee',secs:+t.toFixed(1),route:e.route,pass:pa?.kind??null,passed:pa?.passedAt!=null,closest:pa?.closest??null,gapMin:e.gapMin,gapMax:e.gapMax,lightsOut:e.lightsOut,nudges:e.nudges,boysWorst:+worst.toFixed(1),hidden:inv};}
+  check(`Chapter Four: every way out of the video store (${Object.keys(WAYS).length} ways, walking and running) comes out at the Lyric; the dark follows, never closer than ${2.5} m; the creature passes, never through anyone; the boys stay close`,()=>{
+   for(const [k,w] of Object.entries(ways)){assert.ok(w.reached,k+' '+JSON.stringify(w));assert.ok(w.passed,k+' passed');assert.ok(w.closest>1.3,k+' closest '+w.closest);assert.ok(w.gapMin>2.5,k+' gap '+w.gapMin);assert.ok(w.gapMax<36,k+' gapMax '+w.gapMax);assert.equal(w.nudges,0,k);assert.ok(w.boysWorst<15,k+' boys '+w.boysWorst);assert.equal(w.hidden,0,k);}
+   assert.deepEqual([...new Set(Object.values(ways).map(w=>w.pass))].sort(),['creek','main','narrow']);assert.ok(new Set(Object.values(ways).map(w=>w.route)).size>=4,'the routes: '+JSON.stringify(Object.values(ways).map(w=>w.route)));});
+  metrics['chapter4 escape routes']=ways;}
  // ---- the DEV selector's Chapter Four ---------------------------------------------------------------------------------------------
  if(cap?.natural?.[4]){const {compare,far,strict}=await import('./dev-chapters-sim.mjs');const devAt=()=>{const ph=h.devStart(4);advance(1/30);/* (the natural arrival is captured on the first frame after Chapter Four begins: so is this) */return {ph,snap:h.dev.snapshot()};};
   const {ph,snap}=devAt(),d=compare(cap.natural[4],snap,4,.04/* (one frame: both are measured on the first frame after the hand-over, the history applied at it) */).filter(x=>!/^(chapter4\.C\.(t|pt|h|minute|lastEvent|renderT|renderQ)|chapter4\.state\.(t|h|clock|lastEvent)|game\.clock|chapter4\.state\.presence)/.test(x.path||x[0]||'')),f=far(cap.natural[4],snap);

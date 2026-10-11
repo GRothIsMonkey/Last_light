@@ -57,7 +57,16 @@ export function createFootage({scene,camera,world,nav,shoot,photo,town,renderer,
   // (the shot drifts in on the sign as he walks out of it, and holds there: the sign fills the screen)
   const c=cams.pine,k=smooth((t-1.5)/5.5);c.position.set(9.5-3.1*k,4.2-2.1*k,6.5-7.4*k);c.lookAt(3.4+1.2*k,1.2+.55*k,-6.5-.4*k);}
  // Where the live views look from (no camera anywhere near): the store's far corner, high over Main, right behind you.
- function liveCam(id,me){if(id==='live-store'){const p=TW(115.1,-26.8),t=TW(101,-16.4);cam.position.set(p.x,TY+.18+3.15,p.z);cam.lookAt(t.x,TY+1.1,t.z);cam.fov=62;}
+ // The store's is from whichever of its four upper corners is farthest from you, looking at the three of you; walk
+ // toward that corner and the picture is from another one (never a camera there, either).
+ const STORE_CORNERS=[[115,-27.5],[99.6,-27.5],[115,-12.1],[99.6,-12.1]],store={i:0,t:-9,changes:0,last:-1};
+ // (kept every frame while the shot is on, drawn or not)
+ function track(id,me,t=0){if(id!=='live-store')return;const q=TL(me.x,me.z),far=()=>{let b=0,bd=-1;STORE_CORNERS.forEach((c,i)=>{const d=Math.hypot(c[0]-q.u,c[1]-q.v);if(d>bd){bd=d;b=i;}});return b;};
+  if(t<store.last||store.t<-8){store.i=far();store.t=t;}/* (a new shot: from the far corner) */store.last=t;
+  const cur=STORE_CORNERS[store.i];if(Math.hypot(cur[0]-q.u,cur[1]-q.v)<7.5&&t-store.t>1.5){const b=far();if(b!==store.i){store.i=b;store.t=t;store.changes++;}}}
+ function liveCam(id,me,t=0){if(id==='live-store'){track(id,me,t);
+   const c=STORE_CORNERS[store.i],p=TW(c[0]+(c[0]>107?-.35:.35),c[1]+(c[1]>-20?-.35:.35)),pts=[me,...(me.with||[]).filter(w=>Math.hypot(w.x-me.x,w.z-me.z)<9)],cx=pts.reduce((a,w)=>a+w.x,0)/pts.length,cz=pts.reduce((a,w)=>a+w.z,0)/pts.length;
+   cam.position.set(p.x,TY+.18+3.15,p.z);cam.lookAt(cx,TY+.9,cz);cam.fov=62;}
   else if(id==='live-high'){const pts=[me,...(me.with||[]).filter(q=>Math.hypot(q.x-me.x,q.z-me.z)<14)],cx=pts.reduce((a,q)=>a+q.x,0)/pts.length,cz=pts.reduce((a,q)=>a+q.z,0)/pts.length,sp=Math.max(...pts.map(q=>Math.hypot(q.x-cx,q.z-cz)));
    /* (high over the middle of Main, as close as it can be with all three of them in it) */const q=TL(cx,cz),p=TW(q.u+3+sp*.8,q.v+Math.max(-3.2,Math.min(3.2,-q.v*.45)));cam.position.set(p.x,me.y+5.6+sp*.8,p.z);cam.lookAt(cx,me.y-.5,cz);cam.fov=30;}
   else{const a=me.a;cam.position.set(me.x-Math.sin(a)*3.4,me.y+1.9,me.z+Math.cos(a)*3.4);cam.lookAt(me.x+Math.sin(a)*3,me.y+1.1,me.z-Math.cos(a)*3);cam.fov=58;}cam.updateProjectionMatrix();}
@@ -68,11 +77,11 @@ export function createFootage({scene,camera,world,nav,shoot,photo,town,renderer,
   // (a screen is never drawn into its own picture: the live views can see it)
   const off=[tv.screen,...hide].filter(q=>q&&q.visible);for(const q of off)q.visible=false;try{
   if(id==='pine-ridge'){stagePine(t);shoot({cam:cams.pine,target,scene:pine});photo.studio.add(photo.who.alex.group);photo.who.alex.group.visible=false;return;}
-  if(SHOTS[id]?.live){liveCam(id,me);placeDouble();self.group.visible=false;try{shoot({cam,target,preset:null,quick:true});}finally{self.group.visible=true;dbl.group.visible=false;}return;}
+  if(SHOTS[id]?.live){liveCam(id,me,t);placeDouble();self.group.visible=false;try{shoot({cam,target,preset:null,quick:true});}finally{self.group.visible=true;dbl.group.visible=false;}return;}
   cam.fov=id==='alex-room'?70:50;cam.updateProjectionMatrix();const spec=stageAlex(id,t);if(!spec)return;try{shoot({cam,target,preset:spec.preset,sun:spec.sun,at:spec.at,room:spec.room,lamp:spec.lamp,quick:true});}finally{photo.studio.visible=false;for(const o of photo.studio.children)o.visible=false;}
   }finally{for(const q of off)q.visible=true;}}
  // For the photograph you take of the screen: what is on it right now, read back (null where it cannot be).
  function grab(tv,readPixels){const key=tv?.screen?.uuid,target=key&&rt[key];if(!target||!readPixels)return null;return {px:readPixels(target,target.width,target.height),w:target.width,h:target.height};}
- function reset(){dbl.group.visible=false;}
- return {render,grab,reset,pine,cams,dbl,SHOTS};
+ function reset(){dbl.group.visible=false;store.i=0;store.t=-9;store.changes=0;store.last=-1;}
+ return {render,track,grab,reset,pine,cams,dbl,SHOTS,get storeCorner(){return store.i;},get storeCornerUV(){return STORE_CORNERS[store.i];},get storeCornerChanges(){return store.changes;}};
 }

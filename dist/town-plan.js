@@ -181,6 +181,8 @@ lamp('wall',103.75,-35.12,{face:-1,on:'video'});lamp('wall',163.75,-37.12,{face:
 for(let k=0;k<4;k++){const s=26+k*40;LAMPS.push({id:LAMPS.length,kind:'cobra',conn:true,s,t:CONN_X.tree});}
 lamp('pole',130,-49.5);lamp('pole',30,-49);lamp('pole',45,52);lamp('pole',225,52);lamp('pole',176,-43.5);
 for(const [c,vs] of [[0,[-24,-46,24,48]],[90,[-24,-46,24,48]],[180,[-26,-40,24,48]]])for(const v of vs)lamp('cobra',c+(v<0?6.3:-6.3),v,{side:v<0?-1:1,cross:c,arm:v<0?-1:1});
+// two more security lights on back walls along the narrow way (Chapter Four's escape: at its mouth, and at the Depot Street end)
+lamp('wall',151.2,-37.12,{face:-1,on:'narrow'});lamp('wall',170.4,-37.12,{face:-1,on:'narrow'});
 // Street furniture. Trees in grates, benches, cans, hydrants, meters, news boxes, the payphone, a mailbox, planters, racks.
 const nearLamp=(u,v,d)=>LAMPS.some(L=>Math.hypot(L.u-u,L.v-v)<d);
 for(const u of [26,50,70,118,146,208,238])circ('tree-grate',u,8.3,.32);

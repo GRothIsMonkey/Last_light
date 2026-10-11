@@ -548,12 +548,13 @@ export function createChapter4(o,k,ch2,ch3){
  const TVS={video:{tv:D.tvs.video,share:[]},laundry:{tv:D.tvs.laundry,share:[]},acetv:{tv:D.tvs.acetv?.[0],share:D.tvs.acetv?.slice(1)||[]}};
  for(const T2 of Object.values(TVS))Object.assign(T2,{on:0,shot:null,t:0,stat:1,rt:0,frames:0});
  const tvPos=()=>{const q=SPOT.videoTV;return at(q.u,q.v,TY+.18+2.32);};
+ const storeCorner=()=>{const c=footage.storeCornerUV||[115,-27.5];return at(c[0],c[1],TY+.18+3.1);};
  function tvShow(key,shot){const T2=TVS[key];if(!T2?.tv)return;T2.on=1;T2.shot=shot;T2.t=0;T2.stat=shot?1:1;T2.rt=0;(C.shots||=[]).push({key,shot,at:+C.t.toFixed(2)});}
  function tvOff(key){const T2=TVS[key];if(T2){T2.on=0;T2.shot=null;}}
  const meNow=()=>{const p=me();return {x:p.x,z:p.z,a:p.a,y:nav.groundY(p.x,p.z)??TY,with:[jamie,sam].filter(c=>c.active).map(c=>c.mode==='ride'?{x:c.bx,z:c.bz}:{x:c.px,z:c.pz})};};
  const _tv=new THREE.Vector3();
  function shotT(T2){const S2=footage.SHOTS[T2.shot];if(!S2)return T2.t;if(S2.hold)return Math.min(T2.t,S2.len);return T2.t;}
- function updateTVs(dt){const tl=[];for(const T2 of Object.values(TVS)){if(!T2.tv)continue;T2.t+=dt;
+ function updateTVs(dt){const tl=[];for(const T2 of Object.values(TVS)){if(!T2.tv)continue;T2.t+=dt;if(T2.on&&footage.SHOTS[T2.shot]?.live)footage.track(T2.shot,meNow(),T2.t);
    T2.stat=T2.shot?Math.max(.0,T2.stat-dt*1.4):1;const sets=[T2.tv,...T2.share];T2.tv.screen.getWorldPosition(_tv);const near=_tv.distanceTo(camera.position)<45&&(T2.frames===0||k.camLooksAt(_tv,.15));/* (drawn only while it can be seen) */
    if(T2.on&&T2.shot&&near){T2.rt-=dt;if(T2.rt<=0){T2.rt=1/12;T2.frames++;footage.render(T2.tv,T2.shot,shotT(T2),meNow(),T2.share.map(q=>q.screen));const u0=T2.tv.mat.uniforms;for(const s of T2.share){s.mat.uniforms.uTex.value=u0.uTex.value;s.mat.uniforms.uHas.value=u0.uHas.value;}}}
    for(const tv of sets){const U=tv.mat.uniforms;U.uOn.value=damp(U.uOn.value,T2.on,12,dt);U.uStatic.value=T2.shot?T2.stat*.9+.06*Math.random()*T2.on:1;U.uRoll.value=T2.stat>.3?(U.uRoll.value+dt*.8)%1:damp(U.uRoll.value,0,6,dt);U.uBright.value=footage.SHOTS[T2.shot]?.live?2.2:1.3;}
@@ -585,8 +586,8 @@ export function createChapter4(o,k,ch2,ch3){
  const SEQ=['alex-ride','alex-yard','pine-ridge','alex-room'];
  const SHOT_LINES={'alex-ride':[{who:'JAMIE',text:'“That’s Alex.”',by:'jamie'},{who:'SAM',text:'“That’s Briarwood. That’s from— up in the air.”',by:'sam'}],'alex-yard':[{who:'SAM',text:'“Who’s filming this?”',by:'sam'}],
   'pine-ridge':[{who:'JAMIE',text:'“Where is that?”',by:'jamie'}],'alex-room':[{who:'SAM',text:'“That’s his room.”',by:'sam'},{wait:.8},{who:'SAM',text:'“That’s his room.”',by:'sam'}]};
- function storeShot(id){const X=C.store;X.shot=id;X.shotAt=C.t;tvShow('video',id);if(SHOT_LINES[id]&&!X.lines.has(id)){X.lines.add(id);say(SHOT_LINES[id],{interrupt:id==='alex-room'});}mark('the TV: '+id);}
- function updateStore(dt){const X=C.store;if(!X)return;X.t+=dt;const p=me(),inS=inside('video',p,-.2);
+ function storeShot(id){const X=C.store;X.shot=id;X.shotAt=C.t;X.shotSeen=0;tvShow('video',id);if(SHOT_LINES[id]&&!X.lines.has(id)){X.lines.add(id);say(SHOT_LINES[id],{interrupt:id==='alex-room'});}mark('the TV: '+id);}
+ function updateStore(dt){const X=C.store;if(!X)return;X.t+=dt;const p=me(),inS=inside('video',p,-.2);if(X.shot&&k.camLooksAt(tvPos(),.93))X.shotSeen=(X.shotSeen||0)+dt;
   // the front door, once all three are in
   if(X.doorShut===null&&inS&&UV(p).v<-12.9/* (past the doorway: it never shuts on you) */&&((inside('video',{x:jamie.px,z:jamie.pz})&&inside('video',{x:sam.px,z:sam.pz}))||X.t>7)){X.doorShut=C.t;DOORS['video-front'].open=0;sound('door',at(106.5,-11.4,TY+1),{gain:.7});
    for(const c of [jamie,sam])if(!inside('video',{x:c.px,z:c.pz})&&c.mode==='foot'){const q=at(c===jamie?103.6:102.6,c===jamie?-17.9:-13.5);comp.putFoot(c,q.x,q.z,HS,{bike:c.bike.group.visible?{x:c.bx,z:c.bz,a:c.ba,kick:0,fall:-1.3}:null});stand(c,{u:c===jamie?103.6:102.6,v:c===jamie?-17.9:-13.5},{look:()=>tvPos()});}}
@@ -598,14 +599,18 @@ export function createChapter4(o,k,ch2,ch3){
     if(C.inv.lead&&!X.gotIt){X.gotIt=C.t;objective('');if(C.leadBy==='you')say([{who:'YOU',text:'“Got it.”'}]);}
     if(!C.inv.lead&&X.leadAsk!==null&&C.t-X.leadAsk>15&&!C.view){X.gotIt=C.t;objective('');say([{who:'JAMIE',text:'“Give it—”',by:'jamie',time:1}],{then:()=>{takePicture('jamie');}});}
     if(C.inv.lead&&X.gotIt&&C.t-X.gotIt>2.6&&!busy())storeShot('alex-room');}
-   else if(e>S2.len){const i=SEQ.indexOf(X.shot);if(i<SEQ.length-1)storeShot(SEQ[i+1]);else{X.shot='static';X.shotAt=C.t;tvShow('video',null);}}}
+   /* (a shot nobody has looked at yet holds: it waits for you, a while) */else if(e>S2.len&&(X.shotSeen>=Math.min(2,S2.len*.4)||e>S2.len+9)){const i=SEQ.indexOf(X.shot);if(i<SEQ.length-1)storeShot(SEQ[i+1]);else{X.shot='static';X.shotAt=C.t;tvShow('video',null);}}}
   else if(X.shot==='static'&&X.ringAt===null&&C.t-X.shotAt>1.6&&!busy()){X.ringAt=C.t;X.ring=true;mark('the phone rings');}
   if(X.ring&&!X.answered){const q=at(SPOT.videoPhone.u,SPOT.videoPhone.v,TY+1.1);X.ringT=(X.ringT||0)-dt;if(X.ringT<=0){X.ringT=2.8;sound('phone',q,{gain:.9});}
    if(C.t-X.ringAt>14)answerPhone('sam');}
-  if(X.answered&&X.live===null&&X.callDone&&!busy()){X.live=C.t;tvShow('video','live-store');mark('the TV: live');say([{who:'SAM',text:'“That’s us.”',by:'sam',time:1.6},{wait:1.2},{who:'JAMIE',text:'“Where’s the camera? There’s no camera.”',by:'jamie'}]);}
+  if(X.answered&&X.live===null&&X.callDone&&!busy()){X.live=C.t;tvShow('video','live-store');mark('the TV: live');say([{who:'SAM',text:'“That’s us.”',by:'sam',time:1.6},{wait:1.2},{who:'JAMIE',text:'“Where’s the camera? There’s no camera.”',by:'jamie'}]);
+   /* (Sam looks up at where it would have to be; Jamie turns round, looking for it) */later(.4,()=>glance(sam,storeCorner(),3.4));later(2.2,()=>glance(jamie,storeCorner(),2.6));X.corner0=footage.storeCornerChanges;}
+  if(X.live!==null&&footage.storeCornerChanges>X.corner0&&!X.k?.moved){(X.k||={}).moved=C.t;glance(sam,storeCorner(),2.2);say([{who:'SAM',text:'“It moved. It’s— from over there now.”',by:'sam',time:2}]);}
+  if(X.dark!==null&&!X.k?.front&&Math.hypot(p.x-at(106.5,-12.6).x,p.z-at(106.5,-12.6).z)<2.4){(X.k||={}).front=C.t;glance(sam,at(106.5,-9,TY+1.4),2);say([{who:'SAM',text:'“Not out there.”',by:'sam',time:1.4},{who:'JAMIE',text:'“The back. Come on.”',by:'jamie',time:1.4}]);}
   if(X.live!==null&&X.dark===null&&C.t-X.live>6.5){X.dark=C.t;C.darkTo=.72;mark('the store lights going');const F=D.videoFix||{};
    lights.kill(shopIdx('video'),lights.S.t+.1);lights.kill(LV.neon+NEON.videoOpen,lights.S.t+.1);lights.kill(LV.neon+NEON.videoSign,lights.S.t+.2);
-   if(F.front!==undefined)lights.kill(F.front,lights.S.t+.4);if(F.middle!==undefined)lights.kill(F.middle,lights.S.t+2);if(F.rear!==undefined)lights.kill(F.rear,lights.S.t+3.6);
+   /* (the tubes go from the one over you outward; that one stutters a long time first) */const fx=['front','middle','rear'].map(n=>F[n]).filter(i=>i!==undefined).map(i=>{const q=lights.posOf(i),w=q?at(q.u,q.v):p;return {i,d:Math.hypot(w.x-p.x,w.z-p.z)};}).sort((a,b)=>a.d-b.d);
+   fx.forEach((f,n)=>lights.kill(f.i,lights.S.t+[.3,2.6,3.9][n],n===0?{flick:.98,dur:1.9}:{flick:.8,dur:.5}));X.firstTube=fx[0]?.i??null;
    later(4,()=>{objective('Get out the back.','Through the back room.');say([{who:'JAMIE',text:'“The back. There’s a back door.”',by:'jamie'}]);stand(jamie,{u:103.2,v:-33},{look:at(103.75,-35,TY+1.2),max:3.2});stand(sam,{u:105.6,v:-32.6},{look:()=>camera.position,max:3.2});});}
   if(X.dark!==null&&DOORS['video-back'].open<.5){const e=C.t-X.dark;if(e>26&&!C.flags.s1){C.flags.s1=true;say([{who:'JAMIE',text:'“Come ON.”',by:'jamie'}]);}
    if(e>44&&!C.flags.s2){C.flags.s2=true;openBack('jamie');}}
@@ -618,50 +623,150 @@ export function createChapter4(o,k,ch2,ch3){
   talk([{wait:.6},{who:'',text:by==='you'?'[Static. Something like wind.]':'[Sam picks it up. Static, something like wind.]',time:2.8,gap:.8},{who,text:'“…Jamie?”',time:2,gap:1.4},{who,text:'“Jamie?”',time:1.6,gap:.4},
    {act:()=>sound('click',q,{gain:.6}),wait:.3},{who:'',text:'[The line goes dead.]',time:2.2},{who:'JAMIE',text:'“Alex? ALEX!”',from:jamie,time:1.6}],{then:()=>{X.callDone=true;if(by==='you')unpose();else stand(sam,{u:102.6,v:-13.5},{look:()=>tvPos()});}});}
  function openBack(by){if(DOORS['video-back'].open>.5)return;DOORS['video-back'].open=1;sound('door',at(103.75,-35,TY+1),{gain:.9});mark('the back door, opened by '+by);}
- // ---- out the back: the alley, the lot, the narrow way, the laundromat -----------------------------------------------------------------
- function outBack(){if(C.flags.out)return;C.flags.out=true;if(C.view)closeView();go('n4-alley');checkpoint('c4-escape');C.hMin=Math.max(C.hMin||0,HOUR.back);C.darkTo=.8;
-  C.esc={t:0,pass:null,passAt:null};lights.kill(VIDEO_LAMP[0],lights.S.t+.5);// the light over the door, as you come out under it
-  cascade(WEST,{from:{u:100,v:-36},speed:2.7,delay:3.5});cascade(fixIdx(D.videoFix).filter(i=>lights.hold[i]>0),{from:{u:100,v:-36},speed:10,delay:.2,quiet:true});
-  objective('Get to the laundromat.','Down the alley. The light over its back door.');for(const c of [jamie,sam])stand(c,null);follow(true);C.flags.hurry=true;
+ // ---- out the back: the dark comes after them, whichever way they go ------------------------------------------------------------------
+ // Behind the shops there is more than one way to the Lyric: through the laundromat; on along the narrow way between the
+ // garages to Depot Street; up the passage (or the gangway) between the shops to Main; or along the creek behind the
+ // garages. Every way comes out at the corner of Main and Depot, under the theater. The dark comes after them along the way
+ // they actually went: a point that follows their trail, the lights near it dying as it reaches them. Stand still and it
+ // closes; keep moving and it falls back, but never more than a street behind; it never catches them, and nobody dies of
+ // it. Jamie runs ahead to each turning they are heading for and calls them on; Sam keeps looking back.
+ const JUNC=[{id:'narrow',u:150.6,v:-38.9,line:'“This way. Through here.”'},{id:'passage',u:143.2,v:-33.6,line:'“Up here. It comes out on Main.”'},
+  {id:'laundry',u:163.75,v:-36,line:'“The laundromat. In here!”'},{id:'depot',u:175.8,v:-38.9,line:'“Depot Street. Up to Main.”'},{id:'corner',u:178.6,v:-13.4,line:'“The Lyric. It’s still lit.”'}];
+ const ROOF={u0:148.3,u1:173.7,v0:-45.7,v1:-41.3,y:2.91};
+ const roofH=(u,v)=>{const e=Math.min(u-ROOF.u0,ROOF.u1-u,v-ROOF.v0,ROOF.v1-v);return e<=0?0:ROOF.y*smooth(e/.9);};
+ function escInit(){const p=me();C.esc={t:0,pass:null,passAt:null,route:null,routes:[],seen:{},lead:null,led:new Set(),vel:{x:0,z:0},last:{x:p.x,z:p.z},still:0,samT:3,said:{},nudges:0,
+   P:{x:p.x,z:p.z,i:0,trail:[{x:p.x,z:p.z}],gap:0,gapMin:99,gapMax:0,wait:3.2,min:2.6,r:9,out:0,closeT:0,closeAt:-99,
+    L:WEST.map(i=>{const q=lights.posOf(i);if(!q||!(q.u>98))return null;const w=at(q.u,q.v);return {i,x:w.x,z:w.z};}).filter(Boolean)}};}
+ function outBack(){if(C.flags.out)return;C.flags.out=true;if(C.view)closeView();go('n4-alley');checkpoint('c4-escape');C.hMin=Math.max(C.hMin||0,HOUR.back);C.darkTo=.7;escInit();
+  lights.kill(VIDEO_LAMP[0],lights.S.t+.5);/* (the light over the door, as you come out under it) */cascade(fixIdx(D.videoFix).filter(i=>lights.hold[i]>0),{from:{u:100,v:-36},speed:10,delay:.2,quiet:true});
+  objective('Get away from the dark.','The laundromat’s open till ten. Or out to Main, to the Lyric.');for(const c of [jamie,sam])stand(c,null);follow(true);C.flags.hurry=true;
   say([{who:'JAMIE',text:'“The laundromat. It’s open till ten.”',by:'jamie'},{who:'SAM',text:'“Go. Go.”',by:'sam',time:1.2}]);}
- function updateAlley(dt){const X=C.esc;if(!X)return;X.t+=dt;const p=me(),{u,v}=UV(p);
-  if(!X.pass&&((u>148.5&&v<-36.4&&v>-41.6)||(X.t>75&&u>128)))creaturePass();
-  if(!X.pass&&X.t>40&&!C.flags.a1&&!busy()){C.flags.a1=true;say([{who:'JAMIE',text:'“This way. Behind the shops.”',by:'jamie'}]);}
-  if(!X.pass&&X.t>100&&u<140)carry('alley',149.4,-38.1,HWst,{jq:{u:147.8,v:-37.7},sq:{u:146.6,v:-39.2}});
-  if(inside('laundry',p,-.2))enterLaundry();}
- // It comes from behind them, fast, along the narrow way, and goes past: on the garage side, or over the garage roofs if
- // there is no room. It does not look at them.
- function creaturePass(){const X=C.esc;if(X.pass)return;const p=me(),{v}=UV(p);const lane=v>-38.9?-40.3:-37.5,roof=Math.abs(v-lane)<1.05;
-  X.pass={stage:'coming',t:0,u:128,v:lane,lane,roof,y:0,a:HWst,passedAt:null,seenT:0};X.passAt=C.t;mark('something coming up the alley');T?.jolt?.(.9,{hold:8,why:'something behind them'});
-  for(const [c,s] of [[jamie,1],[sam,-1]]){const cu=clamp(UV({x:c.px,z:c.pz}).u,150,171);stand(c,{u:cu,v:roof||lane<-39?-37.35:-40.6},{look:()=>crHead,max:3.6,gesture:GEST.press(1)});void s;}
-  say([{who:'SAM',text:'“Something’s coming—”',by:'sam',time:1.2},{who:'JAMIE',text:'“The wall! Get against the wall!”',by:'jamie',time:1.6}],{interrupt:true});
-  sound('step',at(132,-39,TY+.3),{gain:.8});later(.5,()=>sound('step',at(138,-39,TY+.3),{gain:.9}));}
- function updatePass(dt){const R=C.esc.pass,D2=creature.drive;R.t+=dt;const p=me(),{u:pu}=UV(p);
-  if(R.stage==='coming'){if(R.t>1.1){R.stage='run';creature.show(true);}}
-  else if(R.stage==='run'){const sp=8.6;R.u+=sp*dt;D2.speed=sp;D2.look=null;D2.cower=0;D2.back=0;
-   let vv=R.lane,lift=0;if(R.roof){const k2=smooth((R.u-142)/4)*(1-smooth((R.u-170)/4));vv=lerp(R.lane,-43.6,k2);lift=2.95*k2;}
-   R.v=vv;R.y=lift;if(R.passedAt===null&&R.u>pu+1.5){R.passedAt=C.t;mark('it went past them');}
-   if(R.u>177){R.stage='turn';R.t=0;}}
-  else if(R.stage==='turn'){R.a=damp(R.a,HS,8,dt);R.u+=4*dt;R.v-=6*dt;if(R.t>1.6||R.v<-50){R.stage='gone';creature.show(false);for(const c of [jamie,sam])stand(c,null);follow(true);
-    say([{wait:.6},{who:'JAMIE',text:'“It went right past us.”',by:'jamie'},{who:'SAM',text:'“It didn’t even look at us.”',by:'sam'},{who:'JAMIE',text:'“Keep going.”',by:'jamie',time:1.2}]);return;}}
-  if(R.stage!=='coming'){const q=at(R.u,R.v);creature.place(q.x,townY(R.u,R.v)+R.y,q.z,R.a);creature.update(dt);creature.headPos?.(crHead);if(k.camLooksAt(crHead,.96))R.seenT+=dt;}
-  else{const q=at(R.u,R.v);creature.place(q.x,townY(R.u,R.v)-3,q.z,R.a);crHead.set(q.x,TY+.8,q.z);}}
- function enterLaundry(){if(C.flags.laundry)return;C.flags.laundry=true;go('n4-laundry');C.darkTo=.55;objective('Out the side door.','Onto Depot Street.');C.lt={t:0};
+ // (for the jumps: the dark already some way down the alley behind them, everything it passed already out)
+ function darkBehind(u0,gap=9){const X=C.esc,p=me(),P=X.P;outNow(P.L.filter(L=>{const q=TL(L.x,L.z);return q.v<-11.5&&q.u<u0;}).map(L=>L.i));
+  const {u,v}=UV(p),b=at(u-gap,v);P.x=b.x;P.z=b.z;P.trail=[{x:b.x,z:b.z},{x:p.x,z:p.z}];P.i=1;P.wait=0;X.seen.alley=true;}
+ // the dark: along their trail, at a walking pace that grows; held back while the creature is there; never closer than
+ // P.min, never farther than about a street (it hurries to close the distance)
+ function darkStep(dt){const X=C.esc,P=X.P,p=me();if(!X||C.fadeOut>=0)return;
+  const tl=P.trail[P.trail.length-1];if(Math.hypot(tl.x-p.x,tl.z-p.z)>.8){P.trail.push({x:p.x,z:p.z});if(P.trail.length>700){P.trail.shift();P.i=Math.max(0,P.i-1);}}
+  let gap=Math.hypot(P.x-p.x,P.z-p.z);const passOn=X.pass&&X.pass.stage!=='gone'&&X.pass.stage!=='bolt';
+  if(P.wait>0)P.wait-=dt;else{let v=(passOn?.4:1.9+.5*smooth(X.t/120))*(gap>22?2.6:gap>16?1.4:1);if(inside('laundry',p))v*=.85;let step=v*dt;
+   while(step>0&&P.i<P.trail.length){const t=P.trail[P.i];if(Math.hypot(t.x-p.x,t.z-p.z)<P.min)break;const dx=t.x-P.x,dz=t.z-P.z,l=Math.hypot(dx,dz);
+    if(l<=step){P.x=t.x;P.z=t.z;P.i++;step-=l;}else{P.x+=dx/l*step;P.z+=dz/l*step;step=0;}}}
+  gap=Math.hypot(P.x-p.x,P.z-p.z);P.gap=gap;if(X.t>4){P.gapMin=Math.min(P.gapMin,gap);P.gapMax=Math.max(P.gapMax,gap);}
+  for(const L of P.L){if(lights.hold[L.i]<=0)continue;if(Math.hypot(L.x-P.x,L.z-P.z)<P.r){lights.kill(L.i,lights.S.t,{flick:.7,dur:.45});P.out++;}}
+  // right behind them: the light over them goes, one at a time
+  if(gap<5&&P.wait<=0){P.closeT+=dt;if(P.closeT>1.2&&C.t-P.closeAt>5){let b=null,bd=9;for(const L of P.L){if(lights.hold[L.i]<=0)continue;const d=Math.hypot(L.x-p.x,L.z-p.z);if(d<bd){bd=d;b=L;}}
+    if(b){lights.kill(b.i,lights.S.t,{flick:.85,dur:.3});P.closeAt=C.t;}}}else P.closeT=0;
+  C.darkTo=.62+.22*smooth((16-gap)/12);}
+ const darkPos=()=>new THREE.Vector3(C.esc.P.x,TY+1.3,C.esc.P.z);
+ function updateEscape(dt){const X=C.esc;if(!X)return;X.t+=dt;const p=me(),{u,v}=UV(p),P=X.P;
+  const vx=(p.x-X.last.x)/Math.max(dt,1e-3),vz=(p.z-X.last.z)/Math.max(dt,1e-3);X.last={x:p.x,z:p.z};X.vel={x:damp(X.vel.x,vx,4,dt),z:damp(X.vel.z,vz,4,dt)};const spd=Math.hypot(X.vel.x,X.vel.z);
+  X.still=spd<.35?X.still+dt:0;darkStep(dt);
+  // which way they went (a log, for the tests and the report)
+  const reg=inside('laundry',p)?'laundromat':v>-11.5?'main':u>141.4&&u<145&&v>-34.6?'passage':u>126.2&&u<127.8&&v>-34.6?'gangway':v<-46?'creek':u>148&&v<-37.2&&v>-40.8&&u<173?'narrow':u>173?'depot':'alley';
+  if(X.routes[X.routes.length-1]!==reg){X.routes.push(reg);if(!X.route&&reg!=='alley')X.route=reg;X.seen[reg]=true;mark('the way: '+reg);}
+  // Jamie ahead, Sam looking back
+  leadOn();samBack(dt);pressureLines();
+  // the creature, if it comes, comes at them from ahead (once)
+  if(!X.pass){const ahead=TL(p.x+X.vel.x,p.z+X.vel.z).u-u;/* (+: on toward the Lyric) */
+   if(reg==='narrow'&&u>148.6&&u<154&&!X.seen.depot)creaturePass('narrow');
+   else if(reg==='creek'&&u>146&&u<162&&ahead>-.2)creaturePass('creek');
+   else if(reg==='main'&&u>146&&u<160&&v<6&&ahead>-.2)creaturePass('main');}
+  // onward, whichever way: the laundromat; Depot Street; Main, toward the Lyric
+  if(inside('laundry',p,-.2)&&!C.flags.laundry)enterLaundry();
+  if(!C.flags.depot&&((u>171.8&&v<-12&&!inside('laundry',p))||(v>-11.5&&u>150)))depot(v>-11.5?'main':'depot');
+  if(S.phase==='n4-depot'&&u<190&&u>168&&v>-12.6&&!(X.pass&&X.pass.stage!=='gone'))marquee();/* (at the corner, where the sidewalk under the marquee can be seen down; once it has gone) */
+  // nobody waits forever: standing still a long time with it right there, the boys pull you on
+  if(X.still>40&&P.gap<4.5&&!X.pass?.stage?.match?.(/come|stop|look|afraid|bolt/))nudge();}
+ function nudge(){const X=C.esc,p=me(),{u,v}=UV(p);X.nudges++;X.still=0;
+  if(v>-11.5)carry('main',clamp(u+12,150,176),-6.4,HWst);
+  else if(inside('laundry',p))carry('laundromat',173.2,-26.75,HWst,{jq:{u:173.4,v:-25.2},sq:{u:174.2,v:-28.2}});
+  else if(u>172.5)carry('depot',178.6,-8.4,HWst,{jq:{u:179.8,v:-7},sq:{u:179.6,v:-10.2}});
+  else if(v<-44)carry('creek',clamp(u+14,150,178),-50.5,HWst);
+  else if(u>146)carry('narrow',clamp(u+12,152,176),-38.9,HWst);
+  else carry('alley',149.4,-38.1,HWst,{jq:{u:147.8,v:-37.7},sq:{u:146.6,v:-39.2}});}
+ // Jamie: to the turning you are heading for, ahead of you, pointing the way; let go when you get there (or go elsewhere)
+ function leadOn(){const X=C.esc,p=me(),vel=X.vel,s=Math.hypot(vel.x,vel.z);if(jamie.mode!=='foot')return;
+  const passOn=X.pass&&X.pass.stage!=='gone';const cur=X.lead&&JUNC.find(j=>j.id===X.lead);
+  if(cur){const w=at(cur.u,cur.v),d=Math.hypot(w.x-p.x,w.z-p.z);if(d<3.4||d>15||passOn){X.lead=null;X.led.add(cur.id);if(!passOn)stand(jamie,null);}return;}
+  if(passOn||s<.8)return;
+  for(const j of JUNC){if(X.led.has(j.id))continue;const w=at(j.u,j.v),dx=w.x-p.x,dz=w.z-p.z,d=Math.hypot(dx,dz);if(d<5||d>13)continue;
+   if((dx*vel.x+dz*vel.z)/(d*s)<.78)continue;/* (only a turning you are already heading for) */
+   X.lead=j.id;stand(jamie,{u:j.u,v:j.v},{look:()=>camera.position,max:3.8,gesture:GEST.point(1)});if(!busy())say([{who:'JAMIE',text:j.line,by:'jamie',time:1.5}]);break;}}
+ // Sam: looks back at it, more often the closer it is
+ function samBack(dt){const X=C.esc;X.samT-=dt;if(X.samT>0||sam.mode!=='foot'||(X.pass&&X.pass.stage!=='gone'))return;glance(sam,darkPos(),1.1);X.samT=X.P.gap<7?1.8:3.6+((X.t*.37)%1)*2.4;}
+ function pressureLines(){const X=C.esc,P=X.P,once=(k,lines)=>{if(X.said[k]||busy())return;X.said[k]=C.t;say(lines);};if(X.pass&&X.pass.stage!=='gone'||P.wait>0)return;
+  if(P.gap<8&&X.t>6)once('behind',[{who:'SAM',text:'“It’s still behind us.”',by:'sam',time:1.5}]);
+  if(P.gap<4.6&&X.t>6)once('close',[{who:'JAMIE',text:'“Don’t stop. Don’t stop!”',by:'jamie',time:1.4}]);
+  if(P.closeT>3)once('run',[{who:'SAM',text:'“Run!”',by:'sam',time:1}]);
+  if(X.still>18)once('still1',[{who:'JAMIE',text:'“Come ON!”',by:'jamie',time:1.2}]);if(X.still>30)once('still2',[{who:'SAM',text:'“Please.”',by:'sam',time:1.2}]);
+  const p=me(),toDark=(P.x-p.x)*X.vel.x+(P.z-p.z)*X.vel.z;if(toDark>0&&P.gap<6&&Math.hypot(X.vel.x,X.vel.z)>.9)once('notThat',[{who:'SAM',text:'“Not that way!”',by:'sam',time:1.2}]);}
+ // The creature, ahead of them, coming: it stops. Behind them a light goes out. It looks past them at whatever is there
+ // and is afraid of it; the light at its own end goes too; and with nowhere else to go it bolts past them, close, and away
+ // through the nearest way out on their side. It never touches them; in the narrow way, if there is no room, it goes
+ // over the garage roofs. It never looks at them again.
+ const PASS={
+  narrow:{from:{u:176.6,v:-38.9},axis:-1,cv:-38.9,lane:p=>p>-38.9?-40.25:-37.6,wall:l=>l<-39?-37.55:-40.45,far:[{u:170.4,v:-37.12},{u:184.2,v:-40}],
+   exit:(R,pu)=>R.roof?[[Math.min(R.u,pu+5)-1.4,-42.4],[pu-1,-43.6],[149.4,-43.6],[146.4,-40],[143.2,-35.6],[143.2,-26],[143.2,-16]]:[[pu-3.4,R.lane],[146.8,R.lane>-39?-37.7:-39.7],[143.2,-35.4],[143.2,-26],[143.2,-16]],gone:q=>q.v>-22},
+  creek:{from:{u:184,v:-51.4},axis:-1,cv:-51.4,lane:p=>clamp(p>-51.4?p-4.2:p+4.2,-56.4,-46.8),wall:null,far:[{u:176,v:-43.5}],
+   exit:(R,pu)=>[[pu-2.6,R.lane],[pu-7.5,-55.6],[pu-9.4,-57.4],[pu-10,-61]],gone:q=>q.v<-58.6,dive:true},
+  main:{from:{u:183,v:-3.2},axis:-1,cv:-3.2,lane:p=>clamp(p>-3.2?p-4.4:p+4.4,-10.2,6.2),wall:null,far:[{u:168,v:7.7},{u:160,v:-7.7}],
+   exit:(R,pu)=>[[pu-2.8,R.lane],[pu-7,7.5],[pu-9,15],[pu-10,27]],gone:q=>q.v>23}};
+ function creaturePass(kind){const X=C.esc;if(X.pass)return;const K=PASS[kind],p=me(),{u:pu,v:pv}=UV(p);
+  X.pass={kind,stage:'come',t:0,u:Math.max(K.from.u,pu+18),v:K.cv,a:HE,y:null,vy:0,dive:0,lane:null,roof:false,passedAt:null,seenT:0,fs:0,path:null,pi:0,k:{},stageAt:{come:C.t},minD:99};X.passAt=C.t;
+  const R=X.pass;creature.ground=(x,z)=>{if(R.vy>0)return R.y;const q=TL(x,z);return townY(q.u,q.v)+(R.roof?roofH(q.u,q.v):0)-R.dive;};creature.show(true);placePass(0);
+  mark('something ahead of them: '+kind);T?.jolt?.(.9,{hold:8,why:'something ahead of them'});
+  for(const c of [jamie,sam]){if(X.lead)X.lead=null;stand(c,()=>{const q=UV(me()),w=K.wall?K.wall(R.lane??K.lane(q.v)):q.v+(c===jamie?.9:-.9);return at(clamp(q.u+(c===jamie?-.9:-1.8),q.u-3,q.u),w);},{look:()=>crHead,max:3.4,gesture:K.wall?GEST.press(1):GEST.tense(1)});}
+  say(kind==='narrow'?[{who:'SAM',text:'“Something’s— in front of us.”',by:'sam',time:1.4},{who:'JAMIE',text:'“The wall! Get against the wall!”',by:'jamie',time:1.6}]:[{who:'SAM',text:'“Stop.”',by:'sam',time:1},{who:'JAMIE',text:'“Don’t move. Don’t move.”',by:'jamie',time:1.6}],{interrupt:true});
+  sound('step',at(R.u,R.v,TY+.3),{gain:.7});}
+ function passStage(s){const R=C.esc.pass;R.stage=s;R.t=0;R.stageAt[s]=C.t;mark('it: '+s);}
+ function placePass(dt){const R=C.esc.pass,q=at(R.u,R.v),tgt=townY(R.u,R.v)+(R.roof?roofH(R.u,R.v):0)-R.dive;
+  if(R.y==null||dt<=0){R.y=tgt;R.vy=0;}else if(tgt<R.y-.05){R.vy+=9.8*dt;R.y=Math.max(tgt,R.y-R.vy*dt);}/* (it falls) */else{R.vy=0;R.y=tgt>R.y?Math.min(tgt,R.y+7*dt):tgt;}/* (it leaps up, it does not appear up there) */
+  creature.place(q.x,R.y,q.z,R.a);}
+ function updatePass(dt){const X=C.esc,R=X.pass,K=PASS[R.kind],D2=creature.drive;R.t+=dt;const p=me(),{u:pu,v:pv}=UV(p),cw=at(R.u,R.v),dYou=Math.hypot(p.x-cw.x,p.z-cw.z);R.minD=Math.min(R.minD,dYou);
+  let sp=0,look=camera.position;D2.snap=0;D2.back=0;
+  const to=(u,v,s2)=>{const du=u-R.u,dv=v-R.v,l=Math.hypot(du,dv);if(l<.06)return true;const st=Math.min(l,s2*dt);R.u+=du/l*st;R.v+=dv/l*st;return l<.5;};
+  const face=(u,v,kk=6)=>{const w=at(u,v);R.a+=wrap(headingTo(cw.x,cw.z,w.x,w.z)-R.a)*(1-Math.exp(-kk*dt));},dmp=(k2,t2,r)=>{D2[k2]=damp(D2[k2]||0,t2,r,dt);};
+  const killNear=(name,list,o)=>{if(R.k[name])return;R.k[name]=C.t;for(const f of list){let b=null,bd=3;for(const L of X.P.L){const q=TL(L.x,L.z),d=Math.hypot(q.u-f.u,q.v-f.v);if(d<bd){bd=d;b=L;}}if(b&&lights.hold[b.i]>0)lights.kill(b.i,lights.S.t+(o.delay||0),o);}};
+  if(R.stage==='come'){/* low, quick, straight at them up the middle */sp=2.7;dmp('crouch',.45,3);dmp('alert',0,3);to(R.u+K.axis*5,K.cv,sp);face(R.u+K.axis*5,K.cv,5);
+   if(k.camLooksAt(crHead,.97))R.seenT+=dt;if(Math.abs(R.u-pu)<11.5||dYou<10||R.t>14)passStage('stop');}
+  else if(R.stage==='stop'){/* it stops; behind them, a light goes out */dmp('crouch',.55,4);
+   if(R.t>.45&&!R.k.behind){R.k.behind=C.t;const P=X.P;let b=null,bd=1e9;for(const L of P.L){if(lights.hold[L.i]<=0)continue;const q=TL(L.x,L.z);const back=(q.u-pu)*K.axis;/* (+: behind them) */if(back<3)continue;const d=Math.hypot(L.x-p.x,L.z-p.z);if(d<4||d>34)continue;if(d<bd){bd=d;b=L;}}
+    if(b){lights.kill(b.i,lights.S.t,{flick:.9,dur:.6});R.behindLight=b;say([{who:'',text:'[Behind them, a light goes out.]',time:2.2}],{interrupt:true});}
+    /* (and the dark is right there, where it went) */const P2=X.P;if(P2.gap>8){const bp=b?{x:b.x,z:b.z}:null;if(bp){P2.x=bp.x;P2.z=bp.z;let bi=P2.i,bdd=1e9;for(let i=P2.i;i<P2.trail.length;i++){const d=Math.hypot(P2.trail[i].x-bp.x,P2.trail[i].z-bp.z);if(d<bdd){bdd=d;bi=i;}}P2.i=bi;}}}
+   if(R.t>1.1)passStage('look');}
+  else if(R.stage==='look'){/* past them: at the dark behind them */look=R.behindLight?new THREE.Vector3(R.behindLight.x,TY+2.4,R.behindLight.z):darkPos();D2.snap=R.t<.3?1:0;dmp('alert',1,5);dmp('crouch',.1,4);
+   if(R.t<dt*1.5){say([{who:'JAMIE',text:'“It’s not looking at us.”',by:'jamie',time:1.5}],{interrupt:true});glance(sam,look.clone(),2.2);}if(R.t>1.9)passStage('afraid');}
+  else if(R.stage==='afraid'){/* it shrinks from it and backs away the way it came; then its own end goes dark */look=R.t<.9?(R.behindLight?new THREE.Vector3(R.behindLight.x,TY+2.4,R.behindLight.z):darkPos()):at((K.far[0]||K.from).u,(K.far[0]||K.from).v,TY+2);
+   D2.back=1;dmp('alert',0,3);dmp('cower',.75,5);sp=.8;to(R.u-K.axis*1.2,R.v,.8);face(R.u+K.axis*5,R.v,4);
+   if(R.t>.8){killNear('far',K.far,{flick:.85,dur:.4});if(R.t<.8+dt*1.5){D2.snap=1;if(R.kind==='narrow')say([{who:'SAM',text:'“The other end—”',by:'sam',time:1.2}]);}}
+   if(R.t>1.7||dYou<5.5){R.lane=K.lane(pv);if(R.kind==='narrow'){const near=[p,{x:jamie.px,z:jamie.pz},{x:sam.px,z:sam.pz}].some(c=>{const q=TL(c.x,c.z);return Math.abs(q.v-R.lane)<1.25&&q.u>146&&q.u<176;});R.roof=near;}
+    R.path=K.exit(R,pu);R.pi=0;passStage('bolt');}}
+  else if(R.stage==='bolt'){/* past them, flat out, and away */dmp('cower',0,6);R.fs=Math.min(8.6,R.fs+16*dt);sp=R.fs;look=null;
+   const w=R.path[R.pi];if(w){face(w[0],w[1],11);if(to(w[0],w[1],sp))R.pi++;}
+   if(R.passedAt===null&&(R.u-pu)*K.axis>1.5){R.passedAt=C.t;mark('it went past them');}
+   if(K.dive&&R.v<-56.2)R.dive=Math.min(2.4,R.dive+dt*5.5);
+   if(K.gone(R)||!w||R.t>7){passStage('gone');creature.show(false);creature.ground=null;for(const c of [jamie,sam])stand(c,null);follow(true);if(K.dive)sound('splash',at(R.u,-58.6,TY-2),{gain:.8});
+    if(/^n4-(alley|laundry|depot)$/.test(S.phase))say([{wait:.6},{who:'JAMIE',text:'“It went right past us.”',by:'jamie'},{who:'SAM',text:'“It didn’t even look at us.”',by:'sam'},{who:'JAMIE',text:'“Keep going.”',by:'jamie',time:1.2}]);return;}}
+  if(R.stage!=='bolt'||!R.roof){for(const c of [p,{x:jamie.px,z:jamie.pz},{x:sam.px,z:sam.pz}]){const w=at(R.u,R.v),dx=w.x-c.x,dz=w.z-c.z,l=Math.hypot(dx,dz);if(l<1.6&&l>1e-3){const q2=TL(w.x+dx/l*(1.6-l),w.z+dz/l*(1.6-l));R.u=q2.u;R.v=q2.v;}}}
+  D2.speed=sp;D2.look=look;placePass(dt);creature.update(dt);creature.headPos?.(crHead);if(R.stage==='bolt'&&k.camLooksAt(crHead,.96))R.seenT+=dt;}
+ function enterLaundry(){if(C.flags.laundry)return;C.flags.laundry=true;go('n4-laundry');objective('Out the side door.','Onto Depot Street.');C.lt={t:0};
   tvShow('laundry','live-behind');later(3.2,()=>tvShow('laundry',null));
   const F=D.laundryFix||{};if(F.back!==undefined)lights.kill(F.back,lights.S.t+3);if(F.middle!==undefined)lights.kill(F.middle,lights.S.t+7);if(F.front!==undefined)lights.kill(F.front,lights.S.t+11.5);
   say([{who:'SAM',text:'“Hello?”',by:'sam',time:1.2},{wait:1},{who:'JAMIE',text:'“Side door. There.”',by:'jamie',time:1.6}]);}
- function updateLaundry(dt){const p=me(),{u}=UV(p);C.lt.t+=dt;if(!inside('laundry',p,.3)&&u>171.3)depot();
-  if(C.lt.t>30&&!C.flags.l1&&!busy()){C.flags.l1=true;say([{who:'JAMIE',text:'“The side door. Come on.”',by:'jamie'}]);}
-  if(C.lt.t>90)carry('laundromat',173.2,-26.75,HWst,{jq:{u:173.4,v:-25.2},sq:{u:174.2,v:-28.2}});}
- // ---- Depot Street: the theater's upper windows ---------------------------------------------------------------------------------------
- function depot(){if(C.flags.depot)return;C.flags.depot=true;go('n4-depot');checkpoint('c4-theater');C.hMin=Math.max(C.hMin||0,HOUR.theater);C.darkTo=.85;
-  outNow([...LAUNDRY_LAMP]);cascade(LAUNDRY,{from:{u:171,v:-27},speed:12,delay:.4,quiet:true});
+ function updateLaundry(dt){updateEscape(dt);C.lt.t+=dt;
+  if(C.lt.t>30&&!C.flags.l1&&!busy()){C.flags.l1=true;say([{who:'JAMIE',text:'“The side door. Come on.”',by:'jamie'}]);}}
+ // ---- Depot Street (or Main): the theater's upper windows ------------------------------------------------------------------------
+ function depot(way='depot'){if(C.flags.depot)return;C.flags.depot=true;go('n4-depot');checkpoint('c4-theater');C.hMin=Math.max(C.hMin||0,HOUR.theater);
+  if(C.flags.laundry){outNow([...LAUNDRY_LAMP]);cascade(LAUNDRY,{from:{u:171,v:-27},speed:12,delay:.4,quiet:true});}
   outNow(lampsWhere(L=>LAMPS[L.id]?.cross===180||(L.kind==='pole'&&Math.abs(L.u-176)<1)));
-  objective('Keep going.','Up Depot Street, to Main.');C.dp={t:0,first:null};{const door=at(171.4,-26.75,TY+1.5),dv=new THREE.Vector3(door.x,door.y,door.z),order=[...SIL].sort((a,b)=>a.pos.distanceToSquared(dv)-b.pos.distanceToSquared(dv));order.forEach((s,i)=>{s.state='wait';s.t=-(.9+i*2.4);s.seenT=0;});}for(const c of [jamie,sam])stand(c,null);follow(true);}
- function updateDepot(dt){const p=me(),{u,v}=UV(p);C.dp.t+=dt;
-  if(u<187&&u>168&&v>-12.2)marquee();/* (at the corner, where the sidewalk under the marquee can be seen down) */
+  objective('Keep going.',way==='main'?'Along Main, to the Lyric.':'Up Depot Street, to Main.');C.dp={t:0,first:null,way};
+  {const door=at(way==='main'?176:171.4,way==='main'?-8:-26.75,TY+1.5),dv=new THREE.Vector3(door.x,door.y,door.z),order=[...SIL].sort((a,b)=>a.pos.distanceToSquared(dv)-b.pos.distanceToSquared(dv));order.forEach((s,i)=>{s.state='wait';s.t=-(.9+i*2.4);s.seenT=0;});}
+  if(!C.esc?.pass||C.esc.pass.stage==='gone'){for(const c of [jamie,sam])stand(c,null);follow(true);}}
+ function updateDepot(dt){if(C.esc)updateEscape(dt);else{const p=me(),{u,v}=UV(p);if(u<190&&u>168&&v>-12.6)marquee();}C.dp.t+=dt;
   if(C.dp.t>45&&!C.flags.dp1&&!busy()){C.flags.dp1=true;say([{who:'SAM',text:'“Up to Main. Please.”',by:'sam'}]);}
-  if(C.dp.t>110)carry('depot',178.6,-8.4,HWst,{jq:{u:179.8,v:-7},sq:{u:179.6,v:-10.2}});}
+  if(C.dp.t>110&&S.phase==='n4-depot'&&C.dp.way!=='main')carry('depot',178.6,-8.4,HWst,{jq:{u:179.8,v:-7},sq:{u:179.6,v:-10.2}});
+  if(C.dp.t>110&&S.phase==='n4-depot'&&C.dp.way==='main'){const {u}=UV(me());carry('main',Math.max(u,172),-6.4,HWst,{jq:{u:Math.max(u,172)+1.2,v:-5.2},sq:{u:Math.max(u,172)+1,v:-7.8}});}}
  function updateSil(dt){if(!SIL.length)return;const ph=S.phase,live=ph==='n4-depot'||ph==='n4-marquee';
   for(const s of SIL){if(!live){if(s.q.visible)s.q.visible=false;continue;}s.t+=dt;
    if(s.state==='wait'&&s.t>0&&camera.position.distanceTo(s.pos)<34&&lights.level(LV.neon+NEON.lyricUpper)>.05){s.state='on';s.t=0;s.q.visible=true;mark('someone in an upper window');
@@ -796,7 +901,7 @@ export function createChapter4(o,k,ch2,ch3){
   else if(ph==='e4-ride')updateDuskRide(dt);
   else if(ph==='e4-cascade')updateCascade(dt);
   else if(ph==='n4-store')updateStore(dt);
-  else if(ph==='n4-alley')updateAlley(dt);
+  else if(ph==='n4-alley')updateEscape(dt);
   else if(ph==='n4-laundry')updateLaundry(dt);
   else if(ph==='n4-depot')updateDepot(dt);
   else if(ph==='n4-marquee')updateMarquee(dt);
@@ -885,17 +990,17 @@ export function createChapter4(o,k,ch2,ch3){
   // ---- out the back ----
   if(ix<=SECTIONS4.indexOf('c4-laundromat')){town(HOUR.back);DOORS['video-back'].open=1;outNow(VIDEO);bikesTo('store');
    const skip=section==='c4-escape'?0:40;youFoot(103.75,-36.6,HWst,STORE[0]);bikesTo('store');boyFoot(jamie,102.4,-37.4,HWst,{...STORE[1],kick:0,fall:-1.3});boyFoot(sam,105.2,-37.8,HWst,{...STORE[2],kick:0,fall:-1.3});bikesTo('store');
-   C.flags.out=false;outBack();if(skip){cascade(WEST,{from:{u:100,v:-36},speed:2.7,delay:0,skip,quiet:true});}C.dark=C.darkTo;
+   C.flags.out=false;outBack();C.dark=C.darkTo;
    if(section==='c4-escape'){S.queue.length=0;S.line=null;say([{who:'JAMIE',text:'“The laundromat. It’s open till ten.”',by:'jamie'}]);return;}
    S.queue.length=0;S.line=null;
-   if(section==='c4-alley-creature'){youFoot(147.4,-38.0,HWst,STORE[0]);bikesTo('store');boyFoot(jamie,145.8,-37.6,HWst);boyFoot(sam,144.6,-39.2,HWst);for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');return;}
-   C.esc.pass={stage:'gone'};youFoot(163.75,-35.4,HN,STORE[0]);bikesTo('store');boyFoot(jamie,162.6,-36.2,HN);boyFoot(sam,165,-36.3,HN);for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');enterLaundry();S.queue.length=0;S.line=null;return;}
+   if(section==='c4-alley-creature'){youFoot(146.6,-38.4,HWst,STORE[0]);bikesTo('store');boyFoot(jamie,145.4,-37.6,HWst);boyFoot(sam,144.2,-39.2,HWst);for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');darkBehind(137,10);C.esc.t=40;return;}
+   C.esc.pass={kind:'narrow',stage:'gone'};youFoot(163.75,-35.4,HN,STORE[0]);bikesTo('store');boyFoot(jamie,162.6,-36.2,HN);boyFoot(sam,165,-36.3,HN);for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');darkBehind(158,8);C.esc.t=60;C.esc.routes=['alley','narrow'];C.esc.route='narrow';enterLaundry();S.queue.length=0;S.line=null;return;}
   ff('laundry');outNow([...VIDEO,...WEST]);
   // ---- Depot Street, the Lyric ----
-  if(ix<=SECTIONS4.indexOf('c4-power-returns')){town(HOUR.theater);bikesTo('store');DOORS['video-back'].open=1;C.esc={t:0,pass:{stage:'gone'}};
+  if(ix<=SECTIONS4.indexOf('c4-power-returns')){town(HOUR.theater);bikesTo('store');DOORS['video-back'].open=1;escInit();C.esc.pass={kind:'narrow',stage:'gone'};C.flags.out=true;C.flags.hurry=true;
    const put=(u,v,a)=>{youFoot(u,v,a,STORE[0]);bikesTo('store');};
    if(section==='c4-depot-st'||section==='c4-theater'){put(...(section==='c4-depot-st'?[172.8,-26.75,HWst]:[176.2,-23.4,HWst+.35]));boyFoot(jamie,section==='c4-depot-st'?172.4:178.6,section==='c4-depot-st'?-25.4:-24.4,HN);boyFoot(sam,section==='c4-depot-st'?173.6:180.6,section==='c4-depot-st'?-28.2:-25.2,HN);
-    for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');depot();if(section==='c4-theater')SIL.forEach((s,i)=>{s.t=-(.3+i*1.6);});C.dark=C.darkTo;return;}
+    for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');C.flags.laundry=true;darkBehind(section==='c4-depot-st'?166:170,9);C.esc.t=80;C.esc.routes=['alley','narrow','laundromat'];C.esc.route='narrow';depot();if(section==='c4-theater')SIL.forEach((s,i)=>{s.t=-(.3+i*1.6);});C.darkTo=.7;C.dark=C.darkTo;return;}
    ff('depot');outNow([...LAUNDRY,...LAUNDRY_LAMP]);put(178.6,-8.4,HWst);boyFoot(jamie,179.8,-7.0,HWst);boyFoot(sam,179.6,-10.2,HWst);for(const c of [jamie,sam])c.bike.group.visible=true;bikesTo('store');
    C.flags.depot=true;go('n4-depot');checkpoint('c4-theater');C.dp={t:0,first:C.t};marquee();C.dark=C.darkTo;
    if(section==='c4-marquee')return;
@@ -921,7 +1026,8 @@ export function createChapter4(o,k,ch2,ch3){
   state:{get:()=>({phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,inv:{...C.inv},found:[...C.found],read:[...C.read].sort(),rec:C.rec,dark:+C.dark.toFixed(3),darkTo:C.darkTo||0,
    photos:{count:photo.photos.length,rendered:photo.rendered,index:photo.V.i,zoom:+photo.V.zoom.toFixed(2),open:photo.V.open,lead:leadIndex()},shots:[...(C.shots||[])],sounds:{...C.sounds},
    tvs:Object.fromEntries(Object.entries(TVS).map(([key,T2])=>[key,{on:T2.on,shot:T2.shot,frames:T2.frames}])),
-   creature:{visible:creature.group.visible,loaded:creature.loaded,stage:C.crt?.stage??null,seenAt:C.crt?.seenAt??null,pass:C.esc?.pass?{stage:C.esc.pass.stage,lane:C.esc.pass.lane,roof:!!C.esc.pass.roof,passedAt:C.esc.pass.passedAt??null,seenT:+(C.esc.pass.seenT||0).toFixed(2)}:null},
+   creature:{visible:creature.group.visible,loaded:creature.loaded,stage:C.crt?.stage??null,seenAt:C.crt?.seenAt??null,pass:C.esc?.pass?{kind:C.esc.pass.kind??null,stage:C.esc.pass.stage,lane:C.esc.pass.lane??null,roof:!!C.esc.pass.roof,passedAt:C.esc.pass.passedAt??null,seenT:+(C.esc.pass.seenT||0).toFixed(2),closest:C.esc.pass.minD!=null?+C.esc.pass.minD.toFixed(2):null}:null},
+   escape:C.esc?.P?{route:C.esc.route,routes:[...C.esc.routes],gap:+C.esc.P.gap.toFixed(2),gapMin:+Math.min(99,C.esc.P.gapMin).toFixed(2),gapMax:+C.esc.P.gapMax.toFixed(2),lightsOut:C.esc.P.out,nudges:C.esc.nudges}:null,
    alex:{state:AX.state,visible:AX.person.group.visible,seenAt:C.ax?.seenAt??null,walkAt:C.ax?.walkAt??null,goneAt:C.ax?.goneAt??null},
    silhouettes:SIL.map(s=>s.state),store:C.store?{t:+C.store.t.toFixed(2),shot:C.store.shot,ring:C.store.ring,answered:C.store.answered,live:C.store.live,dark:C.store.dark,doorShut:C.store.doorShut}:null,
    cascade:C.cas?{front:+(C.cas.front??-80).toFixed(1),tvAt:C.cas.tvAt,nearAt:C.cas.nearAt,darkT:+C.cas.darkT.toFixed(1),pulled:C.cas.pulled}:null,mq:C.mq?{out:C.mq.out,back:C.mq.back,rush:C.mq.rush}:null,
