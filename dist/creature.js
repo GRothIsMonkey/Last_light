@@ -115,8 +115,11 @@ export function createCreature({scene}){
  // Every frame while it is shown.
  api.update=(dt)=>{if(!api.loaded||!group.visible)return;const D=api.drive;clock0+=dt;dt=Math.max(1e-4,Math.min(dt,.1));
   for(const r of rest){r.b.quaternion.copy(r.q);r.b.position.copy(r.p);}
+  /* (the limbs are measured once, from the model's own rest pose: never from wherever the clip happened to be the
+     first time it was shown, which would make where its hands land depend on which chapter showed it first) */
+  inner.position.y=api.baseY;if(!LIMBS.length){group.updateMatrixWorld(true);initLimbs();}
   mixer.update(dt);if(clipAction)clipAction.timeScale=1+D.claw*1.5+Math.min(1,(api.sp||0)/4);
-  inner.position.y=api.baseY;group.updateMatrixWorld(true);if(!LIMBS.length)initLimbs();
+  group.updateMatrixWorld(true);
   const a=api.heading||0,p=group.position;fwd.set(Math.sin(a),0,-Math.cos(a));right.set(Math.cos(a),0,Math.sin(a));
   // where it really went since the last frame (a jump: plant everything where it now stands)
   let jumped=!last.ok;if(last.ok){const d=Math.hypot(p.x-last.x,p.z-last.z);if(d>2.5||Math.abs(p.y-last.y)>1.5)jumped=true;else vel.set((p.x-last.x)/dt,0,(p.z-last.z)/dt);}
