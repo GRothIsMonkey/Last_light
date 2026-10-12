@@ -8,7 +8,7 @@ import {CAST} from './cast.js';
 import {refineChapterThreeProps} from './chapter3-props.js';
 
 function contactMap(){const n=64,a=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.hypot((x+.5)/n*2-1,(y+.5)/n*2-1),i=(y*n+x)*4;a[i]=a[i+1]=a[i+2]=3;a[i+3]=Math.max(0,1-r)**2*240;}const t=new THREE.DataTexture(a,n,n);t.magFilter=THREE.LinearFilter;t.needsUpdate=true;return t;}
-function childHead(spec){
+export function childHead(spec){
  const K=createKit(),g=new THREE.Group(),F=spec.face,H=spec.hair,skin=F.skin,shade=new THREE.Color(skin).multiplyScalar(.82).getHex();
  const skull=new THREE.SphereGeometry(1,32,24),P=skull.attributes.position;
  for(let i=0;i<P.count;i++){let x=P.getX(i),y=P.getY(i),z=P.getZ(i);x*=.098*(1-.16*Math.max(0,-y));y*=.116;z*=.103;if(z<-.055)z=-.055+(z+.055)*.58;P.setXYZ(i,x,y,z);}skull.computeVertexNormals();g.add(new THREE.Mesh(skull,K.mat(skin)));
@@ -24,7 +24,7 @@ function childHead(spec){
  else{const rnd=seeded(H.style==='shaggy'?91:52);for(let k=0;k<20;k++){const a=k*2.399,r=.034+rnd()*.05;const m=K.ball(g,Math.sin(a)*r,.082+rnd()*.021,Math.cos(a)*r,.03,new THREE.Color(H.color).multiplyScalar(.83+rnd()*.29).getHex(),[.58,.46,1.5],true);m.rotation.set(.35,a,.22);}if(H.style==='shaggy'){for(const e of [-1,1])K.ball(g,e*.087,-.012,.042,.04,H.color,[.5,1.15,1],true);K.ball(g,0,-.024,.075,.05,H.color,[1.7,1,.6],true);}}
  g.updateMatrixWorld(true);const parts=[];g.traverse(o=>{if(o.isMesh)parts.push({geo:o.geometry,color:o.material.color,matrix:o.matrixWorld});});const geo=mergeParts(parts);geo.scale(spec.build.head||1,spec.build.head||1,spec.build.head||1);return geo;
 }
-function shirtGeometry(spec){
+export function shirtGeometry(spec){
  const K=createKit(),g=new THREE.Group(),c=spec.clothes,b=spec.build,pts=[],idx=[],levels=[[-.175,.115,.078],[-.145,.123,.082],[-.06,.116,.077],[.04,.125,.081],[.125,.142,.083],[.17,.137,.072],[.205,.062,.045],[.217,.052,.04]],N=40;
  for(let j=0;j<levels.length;j++){const [y,w,d]=levels[j];for(let i=0;i<N;i++){const a=i/N*Math.PI*2,fold=(j>0&&j<6?Math.sin(a*7+j*.7)*.002:0);pts.push(Math.sin(a)*(w+fold)*(b.shoulders||1),y,Math.cos(a)*(d+fold));}}
  for(let j=0;j<levels.length-1;j++)for(let i=0;i<N;i++){const a=j*N+i,b0=j*N+(i+1)%N;idx.push(a,b0,a+N,b0,b0+N,a+N);}

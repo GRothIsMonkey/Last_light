@@ -7,6 +7,7 @@
 import * as THREE from './three.module.js';
 import {createActor,worldPath,headingTo,wrap} from './people.js';
 import {makeCar} from './props.js';
+import {finishTownCar} from './town-props.js';
 import {createKit} from './kit.js';
 import {standPose,applyPose,P} from './rig.js';
 import {TW,TL,TY,townY,mainBase} from './town-plan.js';
@@ -33,7 +34,7 @@ export function createTownLife({scene,nav,sfx=()=>{}}){
  const box=new THREE.Mesh(new THREE.BoxGeometry(.5,.36,.4),K.mat(0xb89a6a,{roughness:1}));scene.add(box);box.visible=false;
  const buckets=new THREE.Group();for(let k=0;k<4;k++){const b=new THREE.Mesh(new THREE.CylinderGeometry(.16,.13,.36,10),K.mat(0x5a6a7a,{metalness:.4,roughness:.5}));b.position.set(k*.42,.18,0);buckets.add(b);const f=new THREE.Mesh(new THREE.IcosahedronGeometry(.2,0),K.mat([0xd84a5a,0xe8c040,0xf0ece0,0xa04a8a][k],{roughness:.9}));f.position.set(k*.42,.48,0);f.scale.y=.8;buckets.add(f);}scene.add(buckets);buckets.visible=false;
  // ---- cars ------------------------------------------------------------------------------------------------------------
- function car(kind,color,{name}={}){const g=new THREE.Group();g.name='town-car-'+(name||kind);scene.add(g);const inner=new THREE.Group();g.add(inner);const parts=makeCar(K,inner,kind,color,{lights:false});g.visible=false;
+ function car(kind,color,{name}={}){const g=new THREE.Group();g.name='town-car-'+(name||kind);scene.add(g);const inner=new THREE.Group();g.add(inner);const parts=makeCar(K,inner,kind,color,{lights:false});finishTownCar(K,inner,parts);g.visible=false;
   const C={g,kind,parts,L:parts.L,W:parts.W,x:0,z:0,a:0,v:0,path:null,s:0,mode:'off',name,wait:0,leaveAt:null,at:null};cars.push(C);return C;}
  const park=(C,u,v,a)=>{const w=W2(u,v);Object.assign(C,{x:w.x,z:w.z,a,v:0,mode:'parked',path:null});C.g.visible=true;place(C);};
  function place(C){const y=nav.groundY(C.x,C.z)??TY;C.g.position.set(C.x,y,C.z);C.g.rotation.set(0,-C.a+Math.PI,0);}
