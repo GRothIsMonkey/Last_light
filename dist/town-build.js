@@ -7,6 +7,7 @@
 import * as THREE from './three.module.js';
 import {createKit,seeded,hashSeed,smooth,clamp,lerp} from './kit.js';
 import {makeCar} from './props.js';
+import {polishTown} from './town-art.js';
 import {TY,T0,TW,TL,CONN,CONN_X,CONN_HOUSES,connAt,connBase,connY,connStrip,MAIN,mainHalf,mainWalk,mainBase,CROSS,CREEK,CORE,SURF,GRID,
  BUILDINGS,BLD,footprint,INTERIORS,STEPS,SOLIDS,LAMPS,DOORS,REGION,inRegion,landY,townY,SPOT,SUMMERFIELD,connProject} from './town-plan.js';
 
@@ -40,9 +41,16 @@ function crtMaterial(){return new THREE.ShaderMaterial({uniforms:{uTex:{value:nu
 // ---- canvases: signs, posters, covers, shop interiors ------------------------------------------------------------------
 function canvas(w,h){try{const c=document.createElement('canvas');const g=c.getContext?.('2d');if(!g)return null;c.width=w;c.height=h;return {c,g};}catch{return null;}}
 function texOf(cv,{repeat=false}={}){if(!cv)return null;const t=new THREE.CanvasTexture(cv.c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;if(repeat)t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;}
-// A shelf-packed atlas: add(w,h,draw) → texture coordinates of what was drawn.
-function atlas(W2,H2){const cv=canvas(W2,H2);let x=2,y=2,row=0;const A={cv,tex:null,full:false,
- add(w,h,draw){if(x+w>W2-2){x=2;y+=row+3;row=0;}const r={x,y,w,h};x+=w+3;row=Math.max(row,h);if(y+h>H2-2){A.full=true;return {u0:0,u1:.001,v0:0,v1:.001};}
+// Best-fit free rectangles accommodate tall theater lettering and short shop signs without oversized textures.
+function atlas(W2,H2){const cv=canvas(W2,H2);let free=[{x:2,y:2,w:W2-4,h:H2-4}],usedHeight=0;const A={cv,tex:null,full:false,entries:0,overflow:[],get usedHeight(){return usedHeight;},width:W2,height:H2,
+ add(w,h,draw){A.entries++;const pw=w+3,ph=h+3;let slot=null,score=Infinity;
+  for(const f of free)if(f.w>=pw&&f.h>=ph){const s=Math.min(f.w-pw,f.h-ph)*1e7+f.w*f.h;if(s<score){score=s;slot=f;}}
+  if(!slot){A.full=true;A.overflow.push({w,h});return {u0:0,u1:.001,v0:0,v1:.001};}
+  const r={x:slot.x,y:slot.y,w,h},right=r.x+pw,bottom=r.y+ph,next=[];usedHeight=Math.max(usedHeight,bottom+2);
+  for(const f of free){const fr=f.x+f.w,fb=f.y+f.h;if(r.x>=fr||right<=f.x||r.y>=fb||bottom<=f.y){next.push(f);continue;}
+   if(r.x>f.x)next.push({x:f.x,y:f.y,w:r.x-f.x,h:f.h});if(right<fr)next.push({x:right,y:f.y,w:fr-right,h:f.h});
+   if(r.y>f.y)next.push({x:f.x,y:f.y,w:f.w,h:r.y-f.y});if(bottom<fb)next.push({x:f.x,y:bottom,w:f.w,h:fb-bottom});}
+  free=next.filter((a,i)=>!next.some((b,j)=>j!==i&&b.x<=a.x&&b.y<=a.y&&b.x+b.w>=a.x+a.w&&b.y+b.h>=a.y+a.h&&(j<i||b.w*b.h>a.w*a.h)));
   if(cv){const g=cv.g;g.save();g.translate(r.x,r.y);g.beginPath();g.rect(0,0,w,h);g.clip();try{draw(g,w,h);}catch{}g.restore();}
   return {u0:(r.x+.5)/W2,u1:(r.x+w-.5)/W2,v0:1-(r.y+h-.5)/H2,v1:1-(r.y+.5)/H2};},
  finish(){A.tex=texOf(cv);return A.tex;}};return A;}
@@ -59,13 +67,33 @@ export function signArt(g,w,h,{text='',sub='',bg='#2a3a4a',fg='#f0e8d0',font='se
 export const FILMS=['THE LONG SUMMER','NIGHT SHIFT','HARBOR LIGHTS','GRIDIRON HEART','THE QUIET HOUSE','STARFALL','RIVER KINGS','DEAD AIR','SUMMER OF THE FOX','MIDNIGHT GARAGE','THE LAST DRIVE-IN','IRON CANYON',
  'COLD OPEN','BACKYARD LEGENDS','THE CELLAR','GALAXY PATROL','SECOND CHANCES','HIGHWAY 9','LOST SIGNAL','THE GOOD NEIGHBOR','FAST LANE 3','MOON DOGS','BLACKWATER','THE ORCHARD','SPEED TRAP','ICE CREAM WARS',
  'STORM CHASER','NO VACANCY','DEEP WOODS','BIG LEAGUE','TOWN SECRETS','FLASHPOINT','THE PIER','RENT DAY','ROBO KID 2','THE WISHING WELL','CAMP WILDCAT','SUBURBIA 2000','THE MUMMY’S CURSE','LASER TAG'];
-export function coverArt(g,w,h,i){const r=seeded(hashSeed(i,7)),hue=Math.floor(r()*360),dark=r()<.5;g.fillStyle=`hsl(${hue},${30+r()*40}%,${dark?12+r()*12:40+r()*26}%)`;g.fillRect(0,0,w,h);
- const k=i%6;g.fillStyle=`hsla(${(hue+150+r()*60)%360},${50+r()*30}%,${dark?55+r()*15:18+r()*10}%,.9)`;
- if(k===0){g.beginPath();g.arc(w*.5,h*.5,w*.3,0,7);g.fill();}else if(k===1)g.fillRect(0,h*.55,w,h*.2);else if(k===2){g.beginPath();g.moveTo(0,h);g.lineTo(w*.5,h*.32);g.lineTo(w,h);g.fill();}
- else if(k===3){for(let s=0;s<4;s++)g.fillRect(w*(.1+s*.21),h*(.32+r()*.25),w*.12,h*.5);}else if(k===4){g.beginPath();g.ellipse(w*.5,h*.62,w*.18,h*.26,0,0,7);g.fill();g.fillRect(w*.32,h*.2,w*.36,h*.16);}else{for(let s=0;s<9;s++){g.beginPath();g.arc(r()*w,h*.3+r()*h*.6,2+r()*w*.08,0,7);g.fill();}}
- g.fillStyle=dark?'#f4ecd8':'#141414';const t=FILMS[i%FILMS.length],words=t.split(' '),lines=[];let line='';for(const wd of words){if((line+' '+wd).trim().length>10&&line){lines.push(line.trim());line=wd;}else line+=' '+wd;}lines.push(line.trim());
- g.textAlign='center';g.textBaseline='top';const fs=Math.round(h*.085);g.font=`bold ${fs}px ${FAM.block}`;let y=h*.05;for(const L of lines){fit(g,L,fs,w*.9,'bold',FAM.block);g.fillText(L,w/2,y);y+=fs*1.05;}
- g.fillStyle=dark?'rgba(255,255,255,.45)':'rgba(0,0,0,.4)';g.fillRect(w*.1,h*.91,w*.8,h*.025);}
+export function coverArt(g,w,h,i){
+ const r=seeded(hashSeed(i,7)),k=i%6,pal=[['#233841','#b5a27b'],['#1b2434','#936453'],['#27494c','#c7ac78'],['#534636','#d5be86'],['#20272b','#90947a'],['#26384d','#a8a5bf']][k];
+ const sky=g.createLinearGradient(0,0,0,h);sky.addColorStop(0,pal[0]);sky.addColorStop(.68,pal[1]);sky.addColorStop(1,'#10151a');g.fillStyle=sky;g.fillRect(0,0,w,h);
+ // Faded painted/photographic-style fictional key art, not placeholder geometric symbols.
+ g.fillStyle='rgba(225,204,154,.45)';g.beginPath();g.arc(w*(.3+r()*.4),h*.35,w*.19,0,Math.PI*2);g.fill();
+ if(k===0||k===2||k===4){
+  for(let layer=0;layer<3;layer++){g.fillStyle=['#465751','#2a4140','#142b2d'][layer];g.beginPath();g.moveTo(0,h);for(let x=0;x<=w+4;x+=4)g.lineTo(x,h*(.49+layer*.105)-Math.sin(x/w*5+layer)*h*.07-r()*h*.025);g.lineTo(w,h);g.fill();}
+  for(let j=0;j<10;j++){const x=r()*w,y=h*(.53+r()*.21),hh=h*(.06+r()*.17);g.fillStyle='#18282b';g.fillRect(x,y-hh,w*.012,hh);g.beginPath();g.moveTo(x-w*.047,y-hh*.15);g.lineTo(x,y-hh);g.lineTo(x+w*.049,y-hh*.15);g.fill();}
+  if(k===4){g.fillStyle='#10191b';g.fillRect(w*.33,h*.55,w*.37,h*.24);g.beginPath();g.moveTo(w*.26,h*.57);g.lineTo(w*.51,h*.4);g.lineTo(w*.77,h*.57);g.fill();g.fillStyle='#c7a66c';g.fillRect(w*.4,h*.62,w*.07,h*.075);g.fillRect(w*.57,h*.62,w*.07,h*.075);}
+ }else if(k===1||k===5){
+  for(let j=0;j<12;j++){const x=j*w/11,hh=h*(.06+r()*.32);g.fillStyle=j%2?'#25343b':'#172932';g.fillRect(x,h*.72-hh,w*.11,hh);for(let z=0;z<4;z++)if(r()>.35){g.fillStyle='#af9972';g.fillRect(x+w*.025,h*.71-hh+z*h*.04,w*.023,h*.015);}}
+  if(k===5)for(let j=0;j<32;j++){g.fillStyle='rgba(221,222,208,.65)';g.fillRect(r()*w,r()*h*.55,Math.max(1,w*.006),Math.max(1,w*.006));}
+ }else{
+  g.fillStyle='#354243';g.fillRect(0,h*.57,w,h*.43);g.strokeStyle='#b4ae8e';g.lineWidth=w*.012;for(let j=0;j<3;j++){g.beginPath();g.moveTo(0,h*(.63+j*.06));g.lineTo(w,h*(.63+j*.06));g.stroke();}
+ }
+ // A road, figures and a foreground vignette give the covers depth at close range.
+ g.fillStyle='#283137';g.beginPath();g.moveTo(w*.46,h*.6);g.lineTo(w*.53,h*.6);g.lineTo(w*.91,h);g.lineTo(w*.08,h);g.fill();
+ const people=k===3?3:1;for(let j=0;j<people;j++){const x=w*(.5+(j-(people-1)/2)*.19),y=h*.77,hh=h*(.18+j*.018);g.fillStyle='#141c23';g.beginPath();g.ellipse(x,y-hh,w*.036,h*.029,0,0,7);g.fill();g.beginPath();g.moveTo(x-w*.054,y-hh*.83);g.lineTo(x+w*.054,y-hh*.83);g.lineTo(x+w*.071,y-hh*.2);g.lineTo(x-w*.061,y-hh*.2);g.fill();g.fillRect(x-w*.04,y-hh*.22,w*.028,hh*.35);g.fillRect(x+w*.011,y-hh*.22,w*.028,hh*.35);}
+ const vignette=g.createLinearGradient(0,h*.64,0,h);vignette.addColorStop(0,'rgba(9,13,19,0)');vignette.addColorStop(1,'rgba(9,13,19,.96)');g.fillStyle=vignette;g.fillRect(0,h*.64,w,h*.36);
+ // Muted print grain and a worn case edge. Seeded, never shimmers during play.
+ for(let j=0;j<170;j++){g.fillStyle=`rgba(231,222,194,${.03+r()*.07})`;g.fillRect(r()*w,r()*h,1,1);}
+ const title=FILMS[i%FILMS.length],words=title.split(' '),lines=[];let line='';for(const wd of words){if((line+' '+wd).trim().length>13&&line){lines.push(line);line=wd;}else line=(line+' '+wd).trim();}lines.push(line);
+ g.textAlign='center';g.textBaseline='top';g.fillStyle='#e5d8b8';let y=h*.07;for(const line of lines){fit(g,line,h*.073,w*.88,'bold',i%3?FAM.block:FAM.serif);g.fillText(line,w*.5,y);y+=h*.085;}
+ g.fillStyle='#bdbba8';fit(g,'A FILM TO REMEMBER',h*.024,w*.82,'',FAM.sans);g.fillText('A FILM TO REMEMBER',w*.5,h*.84);
+ for(let j=0;j<3;j++){g.fillStyle='rgba(218,211,188,.5)';g.fillRect(w*(.19+j*.05),h*(.89+j*.018),w*(.62-j*.1),Math.max(1,h*.004));}
+ g.strokeStyle='rgba(231,226,208,.3)';g.lineWidth=Math.max(1,w*.008);g.strokeRect(1,1,w-2,h-2);
+}
 // What is behind a shop window you cannot walk into (a shallow room: its back wall is painted).
 function roomArt(g,w,h,kind){const r=seeded(hashSeed(kind.length*13,w));
  const bg={hardware:'#c3ad86',drug:'#e2ddd0',variety:'#d8cbb0',acetv:'#8f8a80',barber:'#d6d0c2',florist:'#e2e8d6',tap:'#3e2a1e',bridal:'#ece2e0',office:'#cdc5b4',pizza:'#cfae84',gas:'#e6e6dc',hall:'#b5a68e',vacant:'#8e8676',carwash:'#2c3036',bank:'#d8d0bc',dentist:'#dcdcd4',shoe:'#7a6a5a',diner:'#e6dccb'}[kind]||'#c8c0b0';
@@ -90,8 +118,8 @@ export function flyerArt(g,w,h){g.fillStyle='#f4f1e8';g.fillRect(0,0,w,h);g.fill
 export function buildTown(W){
  const K=createKit(),veg=W.veg,R=seeded(4711);
  const surf=(c,kind,rough)=>{const m=K.mat(c,{roughness:rough,metalness:0});if(!m.userData.surface)W.surfaceMaterial(m,kind);return m;};
- const brick=c=>surf(c,'brick',.931),stone=c=>surf(c,'concrete',.952),concrete=c=>surf(c,'concrete',.971),asphalt=c=>surf(c,'asphalt',.991),earth=c=>surf(c,'earth',.981),roofM=c=>surf(c,'roof',.851),
-  plaster=c=>surf(c,'plaster',.941),carpet=c=>surf(c,'carpet',.989),timber=c=>surf(c,'timber',.861),siding=c=>surf(c,'siding',.912);
+ const brick=c=>surf(c,'c4-brick',.931),stone=c=>surf(c,'c4-stone',.952),concrete=c=>surf(c,'c4-walk',.971),asphalt=c=>surf(c,'c4-road',.991),earth=c=>surf(c,'earth',.981),roofM=c=>surf(c,'roof',.851),
+  plaster=c=>surf(c,'c4-plaster',.941),carpet=c=>surf(c,'c4-carpet',.989),timber=c=>surf(c,'timber',.861),siding=c=>surf(c,'siding',.912);
  const metal=c=>K.mat(c,{roughness:.42,metalness:.6}),paint=c=>K.mat(c,{roughness:.62}),dull=c=>K.mat(c,{roughness:.9});
  const grassM=K.mat(0x7a8552,{roughness:.996});W.grassMats.push(grassM);
  const glassClear=new THREE.MeshStandardMaterial({color:0x8fa4ac,roughness:.06,metalness:.3,transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide});glassClear.userData.keep=true;
@@ -105,21 +133,26 @@ export function buildTown(W){
  W.layers.push({mode:'rigid',group:out,zone:'town'},{mode:'rigid',group:inn,zone:'town-int'},{mode:'rigid',group:far,zone:'town',far:true},{mode:'rigid',group:world,zone:'town'});
  const at=(parent,u,y,v,rot=0)=>{const g=new THREE.Group();g.position.set(u,y,v);g.rotation.y=rot;parent.add(g);return g;};
  const B=(g,x,y,z,w,h,d,m)=>K.box(g,x,y,z,w,h,d,m);
- const signs=atlas(2048,2048),covers=atlas(1024,1024),rooms=atlas(2048,1024);
+ const signs=atlas(2048,2048),covers=atlas(2048,1024),rooms=atlas(2048,1024);
+ // Reuse film artwork; a shelf contains many copies, not thousands of unique texture allocations.
+ const coverCache=new Map();
+ const filmUV=(i,w=60,h=86)=>{const key=[i%120,w,h].join(':');if(!coverCache.has(key))coverCache.set(key,covers.add(w,h,(g,a,b)=>coverArt(g,a,b,i%120)));return coverCache.get(key);};
  const signMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.7}),coverMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.55}),roomMat=lvMat({color:0xffffff,roughness:.9,emissive:0xffffff,emissiveIntensity:.55});
  const litSignMat=lvMat({color:0xffffff,roughness:.5,emissive:0xffffff,emissiveIntensity:1.25},{flicker:.1});
  // Textured quads (atlas rectangles), in one mesh per material at the end.
- const quads={sign:[],cover:[],lit:[],room:[]};
+ const quads={sign:[],cover:[],lit:[],litCover:[],room:[]};
  function quadInto(list,parent,uv,w,h,{x=0,y=0,z=0,ry=0,rx=0,lvl=0,flip=false}={}){parent.updateMatrixWorld(true);const m=new THREE.Matrix4().makeTranslation(x,y,z).multiply(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(rx,ry,0,'YXZ')));
   list.push({parent,m,w,h,uv,lvl,flip});}
  const sign=(parent,spec,w,h,o={})=>{const px=Math.max(64,Math.min(1024,Math.round(w*120))),py=Math.max(24,Math.round(px*h/w));const uv=signs.add(px,py,(g,a,b)=>signArt(g,a,b,spec));quadInto(o.lit?quads.lit:quads.sign,parent,uv,w,h,o);return uv;};
  const D={lamps:[],pools:[],tvs:{},doors:{},fixtures:[],lights:[],silhouettes:[],posters:[],marquee:null,bladeUV:null,candidates:[]};
+ // Reserve the one tall image first; otherwise small signs fragment its space.
+ D.bladeUV=signs.add(160,1024,(gg,w,h)=>{gg.fillStyle='#8a2a1e';gg.fillRect(0,0,w,h);gg.fillStyle='#fff0c0';gg.textAlign='center';gg.textBaseline='middle';gg.shadowColor='#ffd070';gg.shadowBlur=18;gg.font=`bold ${w*.8}px ${FAM.serif}`;[...'LYRIC'].forEach((ch,i)=>gg.fillText(ch,w/2,h*(.12+i*.19)));});
  const nextFix=(()=>{let n=0;return ()=>{if(n>31)return 31;return n++;};})();
  // =========================================================== the ground (one surface grid) ===============================
  {const T=SURF,nu=GRID.nu,nv=GRID.nv,c=GRID.cell,done=new Uint8Array(nu*nv),id=(i,j)=>i*nv+j;
   const inside=(u,v,r)=>u>=r[0]&&u<r[1]&&v>=r[2]&&v<r[3];
   const room=(u,v)=>{for(const [k,I] of Object.entries(INTERIORS))if(inside(u,v,[I.floor[0]-.6,I.floor[1]+.6,I.floor[2]-.6,I.floor[3]+.6]))return k;return null;};
-  const matFor=(t,u,v)=>{const r=room(u,v);if(t===T.carpet)return r==='video'?carpet(0x2e3352):carpet(0x3c5552);if(t===T.lino)return concrete(0xd6d8d0);
+  const matFor=(t,u,v)=>{const r=room(u,v);if(t===T.carpet)return r==='video'?carpet(0x2e3352):carpet(0x3c5552);if(t===T.lino)return surf(0xd6d8d0,'c4-tile',.84);
    return {[T.road]:asphalt(0x5f6264),[T.walk]:concrete(0xbdb7a9),[T.lot]:asphalt(0x6b6b67),[T.grass]:grassM,[T.none]:grassM,[T.gravel]:earth(0x8b7f68),[T.paver]:concrete(0xb3a089),[T.tile]:concrete(0xd8d4c8),[T.wood]:timber(0x8a6844),[T.curb]:concrete(0xb3ae9f)}[t];};
   const draws=t=>t!==T.solid&&t!==T.creek&&t!==T.steps;
   const hOf=k=>{const t=GRID.t[k],f=GRID.floor[k];return Number.isNaN(f)?(t===T.road?0:t===T.grass||t===T.none?.12:t===T.lot?.02:t===T.gravel?.04:t===T.paver?.14:.15):f;};
@@ -135,7 +168,7 @@ export function buildTown(W){
    G.p.push(u0,yA,v0,u0,yA,v1,u1,yB,v1,u0,yA,v0,u1,yB,v1,u1,yB,v0);}
   // Curbs and lawn edges: wherever two drawn neighbours stand at different heights, a vertical face toward the lower one.
   const curb=concrete(0xb0aa9c),edges=[];
-  const face=(ua,va,ub,vb,yLo,yHi,nx,nz)=>{if(nx<0||nz<0)edges.push(ua,yLo,va,ub,yLo,vb,ub,yHi,vb,ua,yLo,va,ub,yHi,vb,ua,yHi,va);else edges.push(ua,yLo,va,ua,yHi,va,ub,yHi,vb,ua,yLo,va,ub,yHi,vb,ub,yLo,vb);};
+  const face=(ua,va,ub,vb,yLo,yHi,nx,nz)=>{if(nx<0||nz>0)edges.push(ua,yLo,va,ub,yLo,vb,ub,yHi,vb,ua,yLo,va,ub,yHi,vb,ua,yHi,va);else edges.push(ua,yLo,va,ua,yHi,va,ub,yHi,vb,ua,yLo,va,ub,yHi,vb,ub,yLo,vb);};
   for(let i=0;i<nu-1;i++)for(let j=0;j<nv-1;j++){const k=id(i,j),t=GRID.t[k];if(!draws(t))continue;const h=hOf(k),u=GRID.u0+i*c,v=GRID.v0+j*c;
    for(const [di,dj] of [[1,0],[0,1]]){const q=id(i+di,j+dj),t2=GRID.t[q];if(!draws(t2))continue;const h2=hOf(q);if(Math.abs(h-h2)<.035)continue;
     const lo=Math.min(h,h2),hi=Math.max(h,h2),y0=mainBase(u+c),hiFirst=h>h2;
@@ -191,7 +224,7 @@ export function buildTown(W){
     for(let i=0;i<r2.length;i+=9){const ax=r2[i+3]-r2[i],az=r2[i+5]-r2[i+2],bx=r2[i+6]-r2[i],bz=r2[i+8]-r2[i+2],ay=r2[i+4]-r2[i+1],by=r2[i+7]-r2[i+1];const ny=az*bx-ax*bz;if(ny<0)for(let j=0;j<3;j++)[r2[i+3+j],r2[i+6+j]]=[r2[i+6+j],r2[i+3+j]];void ay;void by;}
     K.tri(g,r2,rf);for(const s of [-1,1])K.tri(g,s<0?[-w/2,hh,d/2,-w/2,hh+rise*.98,0,-w/2,hh,-d/2]:[w/2,hh,-d/2,w/2,hh+rise*.98,0,w/2,hh,d/2],wall);
     if(H.kind==='cape')for(const x of [-w*.25,w*.25]){B(g,x,hh+1.1,d/2-.6,1.4,1.3,1.6,wall);B(g,x,hh+1.15,d/2+.21,.8,.9,.04,glassDark);}}
-   for(const fl of two?[1.1,3.9]:[1.1])for(const x of [-w*.32,0,w*.32]){if(fl===1.1&&x===0)continue;B(g,x,fl+.75,d/2+.02,1,1.45,.04,upper(Math.floor(R()*8)));B(g,x,fl+.75,d/2+.04,1.16,1.6,.02,trim);B(g,x-.72,fl+.75,d/2+.03,.3,1.5,.03,paint(0x3a4a3a));B(g,x+.72,fl+.75,d/2+.03,.3,1.5,.03,paint(0x3a4a3a));}
+   for(const fl of two?[1.1,3.9]:[1.1])for(const x of [-w*.32,0,w*.32]){if(fl===1.1&&x===0)continue;B(g,x,fl+.75,d/2+.02,1,1.45,.04,upper(Math.floor(R()*8)));for(const xx of [-.55,.55])B(g,x+xx,fl+.75,d/2+.06,.1,1.6,.1,trim);for(const yy of [-.76,.76])B(g,x,fl+.75+yy,d/2+.06,1.16,.08,.1,trim);B(g,x,fl+.75,d/2+.06,1,.04,.06,trim);B(g,x-.72,fl+.75,d/2+.03,.3,1.5,.03,paint(0x3a4a3a));B(g,x+.72,fl+.75,d/2+.03,.3,1.5,.03,paint(0x3a4a3a));}
    B(g,0,1.15,d/2+.03,1,2.1,.05,paint([0x7a2f2a,0x2f3d55,0x3d4d3a,0xe8e2d6][Math.floor(R()*4)]));
    if(H.porch){B(g,0,.25,d/2+1.3,w*.72,.4,2.6,timber(0x8a7a64));for(const x of [-w*.34,-w*.12,w*.12,w*.34])B(g,x,1.5,d/2+2.45,.18,2.5,.18,trim);B(g,0,2.8,d/2+1.4,w*.76,.16,2.9,trim);B(g,0,2.95,d/2+1.4,w*.78,.12,3,rf);
     for(const s of [-1,1])B(g,s*w*.23,.75,d/2+2.45,w*.2,.08,.06,trim);B(g,0,.08,d/2+2.9,1.4,.16,.5,stone(0xb0a898));}
@@ -244,7 +277,7 @@ export function buildTown(W){
    B(g,m,3.3,-recess+.02,ww,.56,.03,b.vacant?dull(0x5a5246):glassDark);if(box)shadowBox(g,a,c,.56,2.98,-recess-.06,2.6,shopKind(b),lit);}
   // door frame and (static) door
   B(g,doorX,2.6,-recess,doorW+.16,.12,.12,metal(0x5a5a54));for(const s of [-1,1])B(g,doorX+s*(doorW/2+.04),1.3,-recess,.08,2.6,.12,metal(0x5a5a54));B(g,doorX,3.3,-recess,doorW+.1,.56,.03,glassDark);
-  if(doorKind==='glass'){B(g,doorX,1.3,-recess-.03,doorW,2.46,.04,metal(0x4a4a46));B(g,doorX,1.42,-recess-.055,doorW-.2,1.9,.02,b.vacant?dull(0xb8a684):glassDark);}
+  if(doorKind==='glass'){B(g,doorX,1.3,-recess-.03,doorW,2.46,.04,metal(0x4a4a46));B(g,doorX,1.42,-recess+.002,doorW-.2,1.9,.02,b.vacant?dull(0xb8a684):glassDark);}
   B(g,0,.02,-recess/2,w-piers*2,.04,recess,stone(0x9a948a));// the threshold under the display, set back
   if(b.awning){const aw=w-piers*2,col=paint(b.awning),out2=1.5;const m=new THREE.Mesh(new THREE.PlaneGeometry(aw,out2*1.08),col);m.position.set(0,2.95,out2/2-.2);m.rotation.x=-Math.PI/2+.5;g.add(m);m.material.side=THREE.DoubleSide;
    B(g,0,2.68,out2-.15,aw,.3,.03,col);if(b.stripe)for(let x=-aw/2+.2;x<aw/2;x+=.5){const s2=new THREE.Mesh(new THREE.PlaneGeometry(.22,out2*1.08),paint(b.stripe));s2.position.set(x,2.951,out2/2-.19);s2.rotation.x=-Math.PI/2+.5;s2.material.side=THREE.DoubleSide;g.add(s2);}
@@ -285,7 +318,7 @@ export function buildTown(W){
   for(const s2 of [-1,1])B(g,s2*(w/2-.15),h+ph/2,-d/2,.3,ph,d,wall);B(g,0,h+ph/2,-d+.15,w,ph,.3,wall);
   if(b.plaque)sign(g,{text:b.plaque,bg:'#c8bca0',fg:'#4a3a2a',font:'serif',border:false},2.2,.5,{y:h+ph*.5,z:.02});
   // corner buildings: windows down the side street too
-  if(corner&&b.floors>1){const side=CROSS.some(c=>Math.abs(b.u0-(c.u+c.walk))<.6)?(F.s>0?1:-1):(F.s>0?-1:1),m=Math.floor((d-2)/3);for(let f=1;f<b.floors;f++)for(let k=0;k<m;k++){const z=-1.5-k*3,y=sf+.55+fh*(f-.5)+.1;const wg=at(g,side*(w/2),0,z,side*Math.PI/2);windowIn(wg,0,y,WIN.w,WIN.h,.02,{trim,glass:upper(k+f)});}}
+  if(corner&&b.floors>1){const side=CROSS.some(c=>Math.abs(b.u0-(c.u+c.walk))<.6)?(F.s>0?1:-1):(F.s>0?-1:1),m=Math.floor((d-2)/3);for(let f=1;f<b.floors;f++)for(let k=0;k<m;k++){const z=-1.5-k*3,y=sf+.55+fh*(f-.5)+.1;const wg=at(g,side*(w/2),0,z,side*Math.PI/2);windowIn(wg,0,y,WIN.w,WIN.h,.25,{trim,glass:upper(k+f),depth:.18});}}
   // rooftop units, a chimney, the back door, a fire escape on the tall ones
   for(let k=0;k<1+(w>14?1:0);k++)B(g,(R()-.5)*w*.5,h+.55,-d*(.4+R()*.3),1.6,.9,1.2,metal(0x9a9c98));if(R()<.5)B(g,w*.3,h+1.2,-d*.7,.6,2.2,.6,wall);
   if(!room&&!ext)B(g,(R()-.5)*w*.4,1.1,-d-.02,1,2.1,.06,metal(0x5a5a52));
@@ -317,7 +350,7 @@ export function buildTown(W){
   sign(g,{text:'OPEN',bg:'',fg:'#ff3a2a',font:'sans',neon:true,border:false},1,.4,{x:-w/2+2,y:2.2,z:-.3,lit:true,lvl:LV.neon+NEON.dinerOpen});}
  // ---- the video store: posters in its windows, the lantern sign, OPEN ----
  {const b=BLD.video,w=b.u1-b.u0,g=b.group;
-  for(let k=0;k<5;k++){const x=-w/2+1.5+k*(w-3)/4;if(Math.abs(x-(SPOT.videoDoor.u-(b.u0+b.u1)/2))<1.4)continue;const i=k*7+3,uv=covers.add(150,222,(gg,a,c)=>coverArt(gg,a,c,i));quadInto(quads.cover,g,uv,.92,1.36,{x,y:1.75,z:-.34,ry:0});quadInto(quads.cover,g,uv,.92,1.36,{x,y:1.75,z:-.36,ry:Math.PI});}
+  for(let k=0;k<5;k++){const x=-w/2+1.5+k*(w-3)/4;if(Math.abs(x-(SPOT.videoDoor.u-(b.u0+b.u1)/2))<1.4)continue;const i=k*7+3,uv=filmUV(i,150,222);quadInto(quads.cover,g,uv,.92,1.36,{x,y:1.75,z:-.34,ry:0});quadInto(quads.cover,g,uv,.92,1.36,{x,y:1.75,z:-.36,ry:Math.PI});}
   sign(g,{text:'THE LANTERN VIDEO',sub:'MOVIES · GAMES · NEW RELEASES TUESDAY',bg:'#1c2440',fg:'#f6d488',font:'serif',border:true},w-1.4,.86,{y:4.55,z:.08,lit:true,lvl:LV.neon+NEON.videoSign});
   B(g,0,4.55,.02,w-1.2,1,.12,metal(0x2a2a30));sign(g,{text:'OPEN',bg:'',fg:'#ff4a3a',font:'sans',neon:true,border:false},.9,.36,{x:w/2-2,y:2.4,z:-.29,lit:true,lvl:LV.neon+NEON.videoOpen});
   sign(g,{text:'RENT 2 GET 1 FREE · TUESDAYS',bg:'#f2e44a',fg:'#1a1a1a',font:'block',border:false},2.2,.42,{x:-w/2+2.4,y:.95,z:-.33});}
@@ -344,10 +377,10 @@ export function buildTown(W){
   sign(g,{text:'1927',bg:'#d8c8a4',fg:'#6a4a3a',font:'serif',border:false},2,.6,{y:h+1.9,z:.0});
   // under the marquee: piers, four glass doors, poster cases, the box office
   for(const x of [-w/2+.4,w/2-.4,-4.2,4.2])B(g,x,2.1,-.15,x>-5&&x<5?.6:.8,4.2,.3,wall);B(g,0,3.9,-.15,w,.6,.3,wall);
-  for(const x of [-2.7,-.9,.9,2.7]){B(g,x,1.2,-1.6,1.6,2.4,.06,metal(0x8a6a3a));B(g,x,1.3,-1.64,1.2,1.9,.02,glassDark);}B(g,0,2.65,-1.6,7.4,.5,.06,metal(0x8a6a3a));
+  for(const x of [-2.7,-.9,.9,2.7]){B(g,x,1.2,-1.6,1.6,2.4,.06,metal(0x8a6a3a));B(g,x,1.3,-1.559,1.2,1.9,.02,glassDark);}B(g,0,2.65,-1.6,7.4,.5,.06,metal(0x8a6a3a));
   B(g,0,2,-1.75,7.6,4,.1,wall);for(const s of [-1,1])B(g,s*3.8,2,-.9,.1,4,1.6,wall);B(g,0,.02,-.8,7.6,.04,1.6,stone(0xb8a890));
   {const bo=at(g,0,0,0,0);B(bo,0,1.2,.25,1.5,.14,1.3,metal(0x8a6a3a));B(bo,0,2.1,.25,1.4,1.6,1.2,glassDark);B(bo,0,3.05,.25,1.6,.25,1.4,metal(0x8a6a3a));B(bo,0,.55,.25,1.5,1.1,1.25,terra);}
-  for(const x of [-w/2+2.1,-w/2+3.6,w/2-3.6,w/2-2.1]){B(g,x,1.75,.02,1.2,1.9,.12,metal(0x8a6a3a));const i=Math.floor(R()*40),uv=covers.add(150,222,(gg,a,c)=>coverArt(gg,a,c,i+50));quadInto(quads.lit,g,uv,.98,1.48,{x,y:1.75,z:.09,lvl:LV.neon+NEON.marquee});D.posters.push(i);}
+  for(const x of [-w/2+2.1,-w/2+3.6,w/2-3.6,w/2-2.1]){B(g,x,1.75,.02,1.2,1.9,.12,metal(0x8a6a3a));const i=Math.floor(R()*40),uv=filmUV(i+50,150,222);quadInto(quads.litCover,g,uv,.98,1.48,{x,y:1.75,z:.09,lvl:LV.neon+NEON.marquee});D.posters.push(i);}
   // the auditorium behind, a little taller, flat roof; the side wall on Depot St with its fire escape, exit doors, four windows high up
   B(g,0,(h-1)/2,-d+.15,w,h-1,.3,wall);B(g,w/2-.15,(h-1)/2,-d/2-1,.3,h-1,d-2,wall);B(g,0,h-1.1,-d/2-1,w-.4,.2,d-2.2,dull(0x4a4844));
   const sx=-w/2+.15,sideOps=[-4,-8,-12,-16].map(z=>[z-.6,z+.6,6.9,8.7]);
@@ -413,7 +446,7 @@ export function buildTown(W){
  {const I=INTERIORS.library,y=roomShell('library',{ceil:4.6,wallC:0xe6dcc4,trim:0x5a3a24,ops:{v0:[-14,-10.5,-7,7,10.5,14].map(x=>[135-x-1,135-x+1,TY+.75+.9,TY+.75+4.9]),v1:[[145.1,146.9,TY+1.95,TY+5.15],[139.1,140.9,TY+1.95,TY+5.15],[129.1,130.9,TY+1.95,TY+5.15],[123.1,124.9,TY+1.95,TY+5.15]],u0:[[47,49,TY+1.65,TY+5.65],[52,54,TY+1.65,TY+5.65],[57,59,TY+1.65,TY+5.65]],u1:[[47,49,TY+1.65,TY+5.65],[52,54,TY+1.65,TY+5.65],[57,59,TY+1.65,TY+5.65]]}}),wood=timber(0x7a5a3c),books=[0x7a2a22,0x2a4a6a,0x3a5a3a,0x8a6a2a,0x5a3a5a,0x2a2a2a,0xa8402a,0x40607a,0xc8b48a];
   D.libraryFix={};troffers(119.5,151,45,61,y+4.6,3.4,3.2,(u,v)=>{const k=u>142.5&&v>54.5?'history':u<128?'east':u>141?'west':'center';return D.libraryFix[k]??=nextFix();});
   for(const s of SOLIDS.filter(s=>s.inside==='library')){const cu=(s.u0+s.u1)/2,cv=(s.v0+s.v1)/2,w=s.u1-s.u0,d=s.v1-s.v0;
-   if(s.kind==='stack'){const hgt=s.wall?2.4:2.1;B(inn,cu,y+hgt/2,cv,w,hgt,d,wood);for(let k=0;k<5;k++){const yy=y+.15+k*.42;for(const side of s.wall?[1]:[-1,1]){let u=s.u0+.05;const r2=seeded(hashSeed(k,cu,cv,side));while(u<s.u1-.1){const bw=.025+r2()*.04,bh=.24+r2()*.12,n=Math.max(1,Math.round(.3/bw));B(inn,u+bw*n/2,yy+bh/2,cv+side*(d/2+.005)-side*.12,bw*n,bh,.22,dull(books[Math.floor(r2()*books.length)]));u+=bw*n+.004;}}}}
+   if(s.kind==='stack'){const hgt=s.wall?2.4:2.1;B(inn,cu,y+hgt/2,cv,w,hgt,d,wood);for(let k=0;k<5;k++){const yy=y+.15+k*.42;for(const side of s.wall?[1]:[-1,1]){let u=s.u0+.05;const r2=seeded(hashSeed(k,cu,cv,side));while(u<s.u1-.1){const bw=.025+r2()*.04,bh=.24+r2()*.12,n=1;B(inn,u+bw*n/2,yy+bh/2,cv+side*(d/2+.025),bw*n,bh,.22,dull(books[Math.floor(r2()*books.length)]));u+=bw*n+.004;}}}}
    else if(s.kind==='desk-circ'){B(inn,cu,y+.5,cv,w,1,d,wood);B(inn,cu,y+1.02,cv,w+.06,.05,d+.06,paint(0xc8b490));}
    else if(s.kind==='table'){B(inn,cu,y+.74,cv,w,.06,d,wood);for(const [a,c] of [[s.u0+.1,s.v0+.1],[s.u1-.1,s.v0+.1],[s.u0+.1,s.v1-.1],[s.u1-.1,s.v1-.1]])B(inn,a,y+.37,c,.07,.74,.07,wood);for(let u=s.u0+.6;u<s.u1;u+=1.2)for(const e of [-1,1]){B(inn,u,y+.45,cv+e*(d/2+.35),.42,.05,.42,wood);B(inn,u,y+.85,cv+e*(d/2+.55),.42,.8,.05,wood);}}
    else if(s.kind==='computers'){B(inn,cu,y+.72,cv,w,.06,d,paint(0xd8d0c0));B(inn,cu,y+.36,cv,w,.7,d*.9,paint(0xb8b0a0));for(let u=s.u0+1.2;u<s.u1;u+=3.6){B(inn,u,y+1.03,cv+.05,.44,.38,.4,paint(0xd8d2c4));B(inn,u,y+1.03,cv-.16,.34,.27,.02,glassDark);B(inn,u,y+.77,cv-.18,.42,.03,.16,paint(0xd0c8b8));B(inn,u+.5,y+.95,cv,.18,.4,.4,paint(0xd8d2c4));}}
@@ -433,9 +466,9 @@ export function buildTown(W){
  {const I=INTERIORS.video,y=roomShell('video',{ceil:3.4,wallC:0x3a3e5a,ceilC:0xd8d6d0,trim:0x1a1a2a,skip:['v1']}),rackM=paint(0x2a2a30),shelfM=paint(0x8a8a90);
   // ceiling lights, in three sections from the front (the street) to the back, and the back room's
   D.videoFix={};troffers(99.5,115,-28,-11.5,y+3.4,3.2,3,(u,v)=>{const k=v>-16.5?'front':v>-22.5?'middle':'rear';return D.videoFix[k]??=nextFix();});troffers(100,115,-34.4,-28.6,y+3.4,4,3,()=>D.videoFix.back??=nextFix());
-  let ci=0;const cases=(s,side)=>{const n=Math.floor((s.v1-s.v0)/.17);const len=s.v1-s.v0;for(let r=0;r<5;r++){const yy=y+.35+r*.38;B(inn,(s.u0+s.u1)/2+side*.2,yy-.03,(s.v0+s.v1)/2,.5,.03,len,shelfM);for(let k=0;k<n;k++){const v=s.v0+.1+k*(len-.2)/n,uv=covers.add(60,86,(g,a,c)=>coverArt(g,a,c,(ci++)%120));quadInto(quads.cover,inn,uv,.135,.19,{x:(s.u0+s.u1)/2+side*(s.u1-s.u0)/2+side*.012,y:yy+.11,z:v,ry:side>0?Math.PI/2:-Math.PI/2});}}};
+  let ci=0;const cases=(s,side)=>{const n=Math.floor((s.v1-s.v0)/.17);const len=s.v1-s.v0;for(let r=0;r<5;r++){const yy=y+.35+r*.38;B(inn,(s.u0+s.u1)/2+side*.2,yy-.03,(s.v0+s.v1)/2,.5,.03,len,shelfM);for(let k=0;k<n;k++){const v=s.v0+.1+k*(len-.2)/n,uv=filmUV((ci++)%120);quadInto(quads.cover,inn,uv,.135,.19,{x:(s.u0+s.u1)/2+side*(s.u1-s.u0)/2+side*.012,y:yy+.11,z:v,ry:side>0?Math.PI/2:-Math.PI/2});}}};
   for(const s of SOLIDS.filter(s=>s.inside==='video')){const cu=(s.u0+s.u1)/2,cv=(s.v0+s.v1)/2,w=s.u1-s.u0,d=s.v1-s.v0;
-   if(s.kind==='rack'){B(inn,cu,y+1.05,cv,w,2.1,d,rackM);if(s.island){cases(s,1);cases(s,-1);}else if(s.wall==='w')cases(s,-1);else{const n=Math.floor(w/.17);for(let r=0;r<5;r++){const yy=y+.35+r*.38;for(let k=0;k<n;k++){const u=s.u0+.1+k*(w-.2)/n,uv=covers.add(60,86,(g,a,c)=>coverArt(g,a,c,(ci++)%120));quadInto(quads.cover,inn,uv,.135,.19,{x:u,y:yy+.11,z:s.v1+.012,ry:0});}}}}
+   if(s.kind==='rack'){B(inn,cu,y+1.05,cv,w,2.1,d,rackM);if(s.island){cases(s,1);cases(s,-1);}else if(s.wall==='w')cases(s,-1);else{const n=Math.floor(w/.17);for(let r=0;r<5;r++){const yy=y+.35+r*.38;for(let k=0;k<n;k++){const u=s.u0+.1+k*(w-.2)/n,uv=filmUV((ci++)%120);quadInto(quads.cover,inn,uv,.135,.19,{x:u,y:yy+.11,z:s.v1+.012,ry:0});}}}}
    else if(s.kind==='counter'){B(inn,cu,y+.52,cv,w,1.04,d,paint(0x6a4a7a));B(inn,cu,y+1.06,cv,w+.1,.05,d+.1,paint(0xd8d4c8));}
    else if(s.kind==='candy'){B(inn,cu,y+.6,cv,w,1.2,d,metal(0x8a8a8a));for(let k=0;k<4;k++)for(let j=0;j<6;j++)B(inn,s.u0+.1+j*.14,y+.3+k*.25,s.v1+.02,.12,.18,.04,dull([0xc83a2a,0xe8c040,0x3a6aaa,0x5aaa4a,0xe87a2a][Math.floor(R()*5)]));}
    else if(s.kind==='bins'){B(inn,cu,y+.4,cv,w,.8,d,paint(0x4a2a2a));for(let k=0;k<14;k++)B(inn,s.u0+.15+k*.18,y+.86,cv,.1,.19,.13,dull(0x1a1a1a));sign(inn,{text:'VHS $2.99 · 4 FOR $10',bg:'#e8d040',fg:'#1a1a1a',font:'block',border:false},1.4,.26,{x:cu,y:y+.55,z:s.v1+.01});}
@@ -450,7 +483,7 @@ export function buildTown(W){
   for(const [u,txt] of [[104.6,'NEW RELEASES'],[108.2,'ACTION · THRILLER'],[111.8,'COMEDY · FAMILY']]){B(inn,u,y+3.05,-19.9,.02,.5,.02,metal(0x8a8a8a));sign(inn,{text:txt,bg:'#c8302a',fg:'#ffffff',font:'block',border:false},1.6,.34,{x:u,y:y+2.75,z:-19.9,ry:Math.PI/2});}
   sign(inn,{text:'HORROR',bg:'#1a1a1a',fg:'#c8302a',font:'block',border:false},1.4,.34,{x:115.4,y:y+2.5,z:-24,ry:-Math.PI/2});sign(inn,{text:'DRAMA · CLASSICS',bg:'#2a3a6a',fg:'#ffffff',font:'block',border:false},1.8,.34,{x:115.4,y:y+2.5,z:-16,ry:-Math.PI/2});
   sign(inn,{text:'EMPLOYEES ONLY',bg:'#f2f2f2',fg:'#c8302a',font:'sans',border:false},.9,.24,{x:111.25,y:y+2.35,z:-28.03});
-  for(let k=0;k<4;k++){const uv=covers.add(150,222,(g,a,c)=>coverArt(g,a,c,k*11+5));quadInto(quads.cover,inn,uv,.8,1.18,{x:102.6+k*1.9,y:y+2.5,z:-27.4,ry:0});}
+  for(let k=0;k<4;k++){const uv=filmUV(k*11+5,150,222);quadInto(quads.cover,inn,uv,.8,1.18,{x:102.6+k*1.9,y:y+2.5,z:-27.4,ry:0});}
   {const mir=new THREE.Mesh(new THREE.SphereGeometry(.38,20,12,0,Math.PI*2,0,Math.PI/2),K.mat(0xd8dce0,{roughness:.05,metalness:1}));mir.rotation.x=-Math.PI/2;mir.position.set(115.3,y+3.0,-27.7);mir.rotation.set(-Math.PI/2,0,Math.PI*.75);inn.add(mir);}
   sign(inn,{text:'EXIT',bg:'#1a0a0a',fg:'#ff3a2a',font:'sans',neon:true,border:false},.42,.18,{x:SPOT.videoRear.u,y:y+2.5,z:-34.45,lit:true,lvl:LV.neon+NEON.exitSign});
   sign(inn,{text:'PLEASE BE KIND · REWIND',bg:'#2a6aaa',fg:'#ffffff',font:'block',border:false},1.4,.3,{x:99.03,y:y+2.0,z:-13.5,ry:Math.PI/2});}
@@ -531,6 +564,8 @@ export function buildTown(W){
   const dp=at(far,300,TY+.1,24,Math.PI/2);B(dp,0,2.2,0,18,4.4,8,siding(0x8a6a4a));K.tri(dp,[-9.5,4.4,4.5,9.5,4.4,4.5,0,6.8,0,9.5,4.4,-4.5,-9.5,4.4,-4.5,0,6.8,0],roofM(0x4a3a32));sign(dp,{text:'OAK HOLLOW',bg:'#e8e0c8',fg:'#3a2a1e',font:'serif',border:true},3.6,.6,{y:3.6,z:4.06});
   const wt=at(far,360,TY+5,-70,0);for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;K.rod(wt,[Math.cos(a)*4,0,Math.sin(a)*4],[Math.cos(a)*2.4,24,Math.sin(a)*2.4],.18,metal(0x9aa2a6));}
   const tank=new THREE.Mesh(new THREE.SphereGeometry(5.4,20,14),metal(0xb8c0c4));tank.scale.y=.8;tank.position.y=28;wt.add(tank);sign(wt,{text:'OAK HOLLOW',bg:'',fg:'#2a4a6a',font:'block',border:false},6,1.4,{y:28,z:5.42});}
+ // Chapter Four art is baked into the existing town cells; the navigation plan remains authoritative.
+ polishTown({W,K,out,inn,world,D,at,B,sign,filmUV,quadInto,quads,brick,stone,concrete,timber,metal,paint,dull,plaster,glassDark,LV,NEON});
  // =========================================================== the live parts ================================================
  // Lamp heads (one mesh), pools of light under them (one mesh), lit signs and posters, shop rooms, fixtures, the marquee.
  const live2={lvl:[],pos:[],nor:[]};
@@ -563,7 +598,7 @@ export function buildTown(W){
   const bulbs={pos:[],nor:[],lvl:[]},bg=new THREE.SphereGeometry(.045,6,4);g.updateMatrixWorld(true);const toLive=new THREE.Matrix4().copy(live.matrixWorld).invert().multiply(g.matrixWorld);let n=0;
   for(const y of [1.16,.06]){for(let x=-m.w/2+.15;x<=m.w/2-.15;x+=.3){for(const z of [m.d/2+.05,-m.d/2-.05]){M4.copy(toLive).multiply(new THREE.Matrix4().makeTranslation(x,y,z));addGeo(bulbs,bg,M4,LV.neon+NEON.bulbs+((n++%6)/6)*.999);}}}
   {const b=D.blade.group;b.updateMatrixWorld(true);const tb=new THREE.Matrix4().copy(live.matrixWorld).invert().multiply(b.matrixWorld);for(let y=6.3;y<=13;y+=.32)for(const z of [.08,1.72])for(const x of [-.27,.27]){M4.copy(tb).multiply(new THREE.Matrix4().makeTranslation(x,y,z-.0));if(Math.abs(z-.9)>.6)addGeo(bulbs,bg,M4,LV.neon+NEON.bulbs+((n++%6)/6)*.999);}
-   const uvB=signs.add(160,1024,(gg,w,h)=>{gg.fillStyle='#8a2a1e';gg.fillRect(0,0,w,h);gg.fillStyle='#fff0c0';gg.textAlign='center';gg.textBaseline='middle';gg.shadowColor='#ffd070';gg.shadowBlur=18;gg.font=`bold ${w*.8}px ${FAM.serif}`;[...'LYRIC'].forEach((ch,i)=>gg.fillText(ch,w/2,h*(.12+i*.19)));});
+   const uvB=D.bladeUV;
    for(const s of [-1,1])quadInto(quads.lit,b,uvB,1.3,6.6,{x:s*.26,y:9.6,z:.9,ry:s*Math.PI/2,lvl:LV.neon+NEON.blade});}
   D.bulbMesh=liveMesh(bulbs,lvMat({color:0xfff2d0,roughness:.3,emissive:0xffd890,emissiveIntensity:2.6},{chase:true}),'town-marquee-bulbs');}
  // the theater's upper windows (faint warm light inside, for the silhouettes to stand against: just over the dark glass)
@@ -582,6 +617,9 @@ export function buildTown(W){
   const C2=quadGeo(quads.cover.filter(filter),false,root);if(C2.pos.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(C2.pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(C2.nor,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(C2.uv,2));root.add(new THREE.Mesh(g,coverMat));}}
  function isInside(o){for(let p=o;p;p=p.parent)if(p===inn)return true;return false;}
  D.litMesh=liveMesh(quadGeo(quads.lit,true,live),litSignMat,'town-lit-signs');D.roomMesh=liveMesh(quadGeo(quads.room,true,live),roomMat,'town-shop-rooms');
+ // Poster coordinates belong to the film atlas, not the lettering atlas. Keep the same marquee blackout mask.
+ const litCoverMat=lvMat({color:0xffffff,roughness:.6,emissive:0xffffff,emissiveIntensity:.6});litCoverMat.map=litCoverMat.emissiveMap=covers.tex;
+ D.posterMesh=liveMesh(quadGeo(quads.litCover,true,live),litCoverMat,'lyric-lit-posters');
  // the doors that open and shut (their cells are solid while shut: town-plan DOORS)
  for(const [k,d] of Object.entries(DOORS)){const w=Math.max(d.u1-d.u0,d.v1-d.v0),alongU=(d.u1-d.u0)>=(d.v1-d.v0),cu=(d.u0+d.u1)/2,cv=(d.v0+d.v1)/2,y=townY(cu,cv);
   const hinge=new THREE.Group();hinge.position.set(alongU?d.u0+.04:cu,y,alongU?cv:d.v0+.04);live.add(hinge);const steel=k==='video-back'||k==='laundry-back'||k==='laundry-side';
@@ -592,7 +630,7 @@ export function buildTown(W){
  // the real lights: a few point lights, given each frame to the lit things nearest the camera (attached only in Chapter Four)
  for(let i=0;i<5;i++){const L=new THREE.PointLight(0xffd8a0,0,12,1.6);L.name='town-light-'+i;D.lights.push({L,src:null,w:0});}
  // ---- what the story moves: a few scene objects it needs ----
- W.town={...W.town,D,live,levels,LV,NEON,out,inn,far,timeU,signsAtlas:signs,coversAtlas:covers,FILMS,flyerArt,coverArt,signArt};
+ W.town={...W.town,D,live,levels,LV,NEON,out,inn,far,timeU,signsAtlas:signs,coversAtlas:covers,roomsAtlas:rooms,FILMS,flyerArt,coverArt,signArt};
  return W.town;
  // A television: cabinet and a curved screen with its own CRT material. ry turns it to face the room.
  function tvSet(parent,x,y,z,s,{ry=0,bracket=false}={}){const g=at(parent,x,y,z,ry),body=paint(0x2a2a2c);B(g,0,0,-s*.36,s*1.05,s*.8,s*.72,body);B(g,0,0,-s*.05,s*1.08,s*.84,s*.12,body);

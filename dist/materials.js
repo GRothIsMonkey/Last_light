@@ -1,11 +1,13 @@
 // Restrained, world-space surface detail: no asset downloads or texture seams.
 import * as THREE from './three.module.js';
 import {artSurface} from './art-surfaces.js';
+import {chapter4Surface} from './chapter4-surfaces.js';
 const noise=`
 float hsh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float softNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hsh(i),hsh(i+vec2(1,0)),f.x),mix(hsh(i+vec2(0,1)),hsh(i+1.),f.x),f.y);}
 `;
 export function surfaceMaterial(material,kind){
+ if(kind.startsWith('c4-'))return chapter4Surface(material,kind);
  if(['culvert','mineral','litter','roadwear','timber','bark3','textile','carpet','plaster','oxidized','drainwater'].includes(kind))return artSurface(material,kind);
  if(material.userData.surface)return material;material.userData.surface=kind;
  material.onBeforeCompile=sh=>{
