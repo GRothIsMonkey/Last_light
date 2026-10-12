@@ -1,4 +1,5 @@
 import {createChapterThreeArt} from './chapter3-art.js';
+import {createChapterFourArt} from './chapter4-art.js';
 import * as THREE from './three.module.js';
 import {LENGTH,chapters,memories,chapterAt,finale} from './story.js';
 import {LATERAL_LIMIT,roadFrame,groundPoint,roadGrade,heading} from './route.js';
@@ -344,6 +345,7 @@ const chapter3=createChapter3(chOpts,chapter.kit,chapter2);chapter2.next=chapter
 // Chapter Four is the next afternoon and evening, downtown (chapter4.js); Chapter Three's end card leads to it.
 const chapter4=createChapter4(chOpts,chapter.kit,chapter2,chapter3);chapter3.next=chapter4;
 const chapter3Art=createChapterThreeArt({scene,world,chapter,chapter3,camera,nav,foot});
+const chapter4Art=createChapterFourArt({scene,world,chapter,chapter3,chapter4,camera,nav});
 function playerState(){const walk=state==='c1-walk';
  return {state,x:walk?wx:roam.x,z:walk?wz:roam.z,a:walk?wa:roam.a,pitch:walk?walkPitch:headPitch,bike:roam,speed:state==='c1-ride'?speed:moveT,riding:state==='c1-ride',walking:walk,pushing:!roam.lock&&(keys.has('KeyW')||keys.has('ArrowUp')),
   eye:camera.position,clock,manualLook,lookInputAt,look,captionBusy:captionTimer>0};}
@@ -582,7 +584,12 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  if(n1){const pp=state==='c1-walk'?{x:wx,z:wz}:{x:roam.x,z:roam.z},Lz=nav.locate(pp.x,pp.z),cv=Lz?.street==='drain'?smooth((Lz.s+1.2)/13):0,sh=chapter.shade||0;if(cv>0||sh>0){hemi.intensity*=(1-.80*cv)*(1-.42*sh);hemi.groundColor.lerp(_c1.set(0x0b0c10),Math.max(cv,sh*.5));sunlight.intensity*=1-cv;
   scene.fog.color.lerp(_c1.set(0x040506),cv*.92).lerp(_c2.set(0x161a24),sh*.5*(1-cv));scene.fog.density=scene.fog.density*(1-cv)+.021*cv+.0045*sh*(1-cv);renderer.toneMappingExposure+=.24*cv;}}
  // (Chapter Four, inside a lit shop or the library: the room's own lights, as much as are still on)
- if(L4?.fill>0){const f=L4.fill;hemi.intensity+=(Math.max(hemi.intensity,1.55)-hemi.intensity)*f;hemi.color.lerp(_c1.set(0xf2f1ea),.6*f);hemi.groundColor.lerp(_c2.set(0x6e685c),.7*f);}
+ if(L4){
+  // A clear afternoon gives way to cool fill and warm practical pools. These values reset every frame above.
+  hemi.intensity*=.78+.1*day;hemi.groundColor.lerp(_c1.set(0x353c42),.24*(1-day));
+  sunlight.intensity*=1.05;scene.fog.density*=.88;renderer.toneMappingExposure+=.025;
+ }
+ if(L4?.fill>0){const f=L4.fill;hemi.intensity+=(Math.max(hemi.intensity,1.22)-hemi.intensity)*f;hemi.color.lerp(_c1.set(0xedece1),.52*f);hemi.groundColor.lerp(_c2.set(0x625b4e),.55*f);}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
  else if(state==='walking')updateWalk(dt);
@@ -596,6 +603,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  friends.update(dt,ctx);if(mem&&memCast)memCast.update(dt,ctx);ambient.update(dt,ctx);ending.update(dt,{callDone,fade,ended:state==='ended',camera,night:n1||mem});
  if(n1){chapter.update(dt);if(roam.fadeIn>0){roam.fadeIn=Math.max(0,roam.fadeIn-dt/3.2);fade=roam.fadeIn;$('fade').style.opacity=fade;}}
  chapter3Art.update(dt);
+ chapter4Art.update(dt);
  memory.update(dt);
  // Memory lines follow the evening (the first friend home, the ride home); prompts follow what you can do.
  if(!firstHome&&friends.list.some(f=>f.inside||f.homeward)){firstHome=true;nostalgia.mark('first-home',clock);}
@@ -615,21 +623,24 @@ const _c1=new THREE.Color(),_c2=new THREE.Color();
 // pixels for a photograph). The light can be set to a moment of a day for it; everything is put back afterwards, so the
 // frame being drawn is untouched. Far from where you are, the zones the culling has put away are drawn for it too.
 const _shot={fog:new THREE.Color(),hc:new THREE.Color(),hg:new THREE.Color(),sc:new THREE.Color(),sp:new THREE.Vector3(),st:new THREE.Vector3(),sky:new THREE.Vector3()};
+const _shotLamp=new THREE.PointLight(0xb4c4df,0,7,2);_shotLamp.name='chapter4-footage-room-bounce';
 function lightFor({day=0,dusk=0,night=0},at,sun){skyMat.uniforms.dusk.value=dusk;skyMat.uniforms.night.value=night;skyMat.uniforms.day.value=day;const p=dusk;
  scene.fog.color.set(0xe0b294).lerp(_c1.set(0x9991af),p*.88).lerp(_c2.set(0x53678c),night*.75).lerp(_c2.set(0xc4d2de),day);scene.fog.density=(.0058+p*.004+night*.001)*(1-day)+.0028*day;
  hemi.intensity=(2.05-p*.56-night*.40)-day*.15;hemi.color.set(0xe8e3d3).lerp(_c1.set(0x94afd6),p*.8+night*.2).lerp(_c2.set(0xe9efff),day*.6);hemi.groundColor.set(0x68675d).lerp(_c1.set(0x44465e),p);
  sunlight.color.set(0xffd09b).lerp(_c1.set(0xf9a17f),p).lerp(_c2.set(0xfff3e2),day);sunlight.intensity=Math.max(.04,2.7-p*2.25-night*.4)+day*.25;
  if(at){const s=sun||[-52,60,-60];sunlight.position.set(at.x+s[0],(at.y??0)+s[1],at.z+s[2]);sunlight.target.position.set(at.x,at.y??0,at.z);sunlight.target.updateMatrixWorld();}}
-function shoot({cam,target,scene:sc=null,preset=null,sun=null,at=null}={}){if(typeof renderer.setRenderTarget!=='function'||!target||!cam)return false;
+function shoot({cam,target,scene:sc=null,preset=null,sun=null,at=null,room=false,lamp=null}={}){if(typeof renderer.setRenderTarget!=='function'||!target||!cam)return false;
  if(sc){renderer.setRenderTarget(target);try{renderer.render(sc,cam);}finally{renderer.setRenderTarget(null);}return true;}
  const keep={d:skyMat.uniforms.dusk.value,n:skyMat.uniforms.night.value,y:skyMat.uniforms.day.value,fd:scene.fog.density,hi:hemi.intensity,si:sunlight.intensity,skyVis:sky.visible,skyS:sky.scale.x};
  _shot.fog.copy(scene.fog.color);_shot.hc.copy(hemi.color);_shot.hg.copy(hemi.groundColor);_shot.sc.copy(sunlight.color);_shot.sp.copy(sunlight.position);_shot.st.copy(sunlight.target.position);_shot.sky.copy(sky.position);
  const far=cam.position.distanceTo(camera.position)>60,masks=far?world.merged.map(m=>m.layers.mask):null;if(far)for(const m of world.merged)if(m.userData.mask0!==undefined)m.layers.mask=m.userData.mask0;
  if(preset)lightFor(preset,at,sun);sky.position.copy(cam.position);sky.visible=true;sky.scale.setScalar(Math.min(1,(cam.far||390)*.9/350));
+ if(room){hemi.intensity=.42;hemi.color.set(0x9dacc4);hemi.groundColor.set(0x41434a);sunlight.intensity=0;scene.fog.density=.006;sky.visible=false;}
+ if(lamp){_shotLamp.position.set(lamp.x,lamp.y,lamp.z);_shotLamp.color.set(lamp.color??0xb4c4df);_shotLamp.intensity=lamp.intensity??3.2;_shotLamp.distance=lamp.distance??7;scene.add(_shotLamp);}
  try{renderer.setRenderTarget(target);renderer.render(scene,cam);}finally{renderer.setRenderTarget(null);
   skyMat.uniforms.dusk.value=keep.d;skyMat.uniforms.night.value=keep.n;skyMat.uniforms.day.value=keep.y;scene.fog.density=keep.fd;scene.fog.color.copy(_shot.fog);hemi.intensity=keep.hi;hemi.color.copy(_shot.hc);hemi.groundColor.copy(_shot.hg);
   sunlight.intensity=keep.si;sunlight.color.copy(_shot.sc);sunlight.position.copy(_shot.sp);sunlight.target.position.copy(_shot.st);sunlight.target.updateMatrixWorld();sky.position.copy(_shot.sky);sky.visible=keep.skyVis;sky.scale.setScalar(keep.skyS);
-  if(masks)world.merged.forEach((m,i)=>{m.layers.mask=masks[i];});}
+  if(masks)world.merged.forEach((m,i)=>{m.layers.mask=masks[i];});_shotLamp.removeFromParent();_shotLamp.intensity=0;}
  return true;}
 function readPixels(target,w,h){if(typeof renderer.readRenderTargetPixels!=='function')return null;try{const px=new Uint8Array(w*h*4);renderer.readRenderTargetPixels(target,0,0,w,h,px);return px;}catch{return null;}}
 // Chapter Three's woods and storm drain are far from Oak Hollow and drawn only near them: the woods by

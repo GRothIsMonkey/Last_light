@@ -53,19 +53,24 @@ export function createTownLights({town,sfx=()=>{},scene,camera}){
    else{hold[e.i]=1;flick.set(e.i,{t:0,dur:.45,to:1,amp:e.flick});S.restores++;S.log.push({i:e.i,at:+S.t.toFixed(2),kind:'restore'});}}
   for(let i=0;i<n;i++){let m=hold[i];const f=flick.get(i);if(f){f.t+=dt;const u=f.t/f.dur;if(u>=1)flick.delete(i);else{const dip=(Math.sin(f.t*61+i)*Math.sin(f.t*23+i*1.7))>.1?1:.15;m=f.to===0?(u<.8?dip*(1-f.amp*u):0):(u>.35?dip*Math.min(1,u*1.4):0);}}mask[i]=m;L[i]=base[i]*mask[i];}
   T.timeU.value+=dt;}
- function reset(){S.events.length=0;flick.clear();hold.fill(1);mask.fill(1);L.fill(0);S.t=0;S.kills=0;S.restores=0;S.log.length=0;S.forced={};S.fixOn=null;S.dark=0;S.dim=0;}
+ function reset(){S.events.length=0;flick.clear();hold.fill(1);mask.fill(1);L.fill(0);S.t=0;S.kills=0;S.restores=0;S.log.length=0;S.forced={};S.fixOn=null;S.dark=0;S.dim=0;cand.length=0;assignT=0;}
  // ---- the real lights: the brightest lit things near the camera ----------------------------------------------------
  const cand=[],_v=new THREE.Vector3();let assignT=0;
  function lights(dt,eye,{indoors=false}={}){const D=T.D;assignT-=dt;
   if(assignT<=0){assignT=.2;cand.length=0;const me=TL(eye.x,eye.z);
-   for(const Lm of D.lamps){const lv=L[LV.lamp+Lm.id];if(lv<.05)continue;const d=Math.hypot(Lm.u-me.u,Lm.v-me.v);if(d>34)continue;cand.push({u:Lm.u,v:Lm.v,y:Lm.y-.4,lv,d,k:Lm.kind==='cobra'||Lm.kind==='pole'?16:Lm.kind==='wall'?7:10,r:Lm.kind==='cobra'||Lm.kind==='pole'?16:11,c:Lm.color});}
-   for(const f of D.fixtures){if(f.u===undefined)continue;const lv=L[f.lv];if(lv<.05)continue;const d=Math.hypot(f.u-me.u,f.v-me.v);if(d>16)continue;cand.push({u:f.u,v:f.v,y:f.y-.3,lv,d:d*(indoors?.7:1.4),k:3.2,r:7,c:WHITE});}
-   const mq=L[LV.neon+NEON.marquee];if(mq>.05){const d=Math.hypot(200-me.u,-8.5-me.v);if(d<40)cand.push({u:200,v:-8.6,y:TY+4,lv:mq,d:d*.8,k:14,r:18,c:MARQ});}
+   for(const Lm of D.lamps){const lv=L[LV.lamp+Lm.id];if(lv<.05)continue;const d=Math.hypot(Lm.u-me.u,Lm.v-me.v);if(d>34)continue;cand.push({u:Lm.u,v:Lm.v,y:Lm.y-.4,lv,idx:LV.lamp+Lm.id,d,k:Lm.kind==='cobra'||Lm.kind==='pole'?16:Lm.kind==='wall'?7:10,r:Lm.kind==='cobra'||Lm.kind==='pole'?16:11,c:Lm.color});}
+   for(const f of D.fixtures){if(f.u===undefined)continue;const lv=L[f.lv];if(lv<.05)continue;const d=Math.hypot(f.u-me.u,f.v-me.v);if(d>16)continue;cand.push({u:f.u,v:f.v,y:f.y-.3,lv,idx:f.lv,d:d*(indoors?.62:1.6),k:4.3,r:7,c:WHITE});}
+   const mq=L[LV.neon+NEON.marquee];if(mq>.05){const d=Math.hypot(200-me.u,-8.5-me.v);if(d<40)cand.push({u:200,v:-8.6,y:TY+4,lv:mq,idx:LV.neon+NEON.marquee,d:d*.8,k:17,r:18,c:MARQ});}
+   for(const p of D.candidates||[]){const lv=L[p.idx],d=Math.hypot(p.u-me.u,p.v-me.v);if(lv>.05&&d<p.r+4)cand.push({...p,lv,d:d*.86});}
    for(const tv of S.tvLights||[]){if(tv.lv<.05)continue;const d=Math.hypot(tv.u-me.u,tv.v-me.v);if(d<10)cand.push({...tv,d:d*.6});}
    cand.sort((a,b)=>b.lv*b.k/(1+b.d*b.d/80)-a.lv*a.k/(1+a.d*a.d/80));}
-  D.lights.forEach((slot,i)=>{const c=cand[i];const L2=slot.L;if(!c){L2.intensity=damp(L2.intensity,0,6,dt);return;}
-   const w=TW(c.u,c.v);if(slot.src!==c.u+':'+c.v){slot.src=c.u+':'+c.v;L2.intensity=0;L2.position.set(w.x,c.y,w.z);L2.color.copy(c.c);L2.distance=c.r;}
-   L2.intensity=damp(L2.intensity,c.k*c.lv,8,dt);});}
+  // Keep a physical fixture on its slot while it remains important; score reordering must not flash every light.
+  const chosen=cand.slice(0,D.lights.length),key=c=>c.u+':'+c.v+':'+c.y,used=new Set();
+  for(const slot of D.lights){const c=chosen.find(c=>key(c)===slot.src);slot.want=c||null;if(c)used.add(c);}
+  for(const slot of D.lights)if(!slot.want){const c=chosen.find(c=>!used.has(c));if(c){slot.want=c;used.add(c);}}
+  D.lights.forEach(slot=>{const c=slot.want,L2=slot.L;if(!c){L2.intensity=damp(L2.intensity,0,6,dt);return;}
+   const w=TW(c.u,c.v);if(slot.src!==key(c)){slot.src=key(c);L2.intensity=0;L2.position.set(w.x,c.y,w.z);L2.color.copy(c.c);L2.distance=c.r;}
+   const lv=c.idx===undefined?c.lv:L[c.idx];L2.intensity=lv<.001?0:damp(L2.intensity,c.k*lv,8,dt);});}
  function attach(on){if(S.attached===on)return;S.attached=on;for(const s of T.D.lights){if(on)scene.add(s.L);else{s.L.removeFromParent();s.L.intensity=0;s.src=null;}}}
  const WHITE=new THREE.Color(.92,.96,1),MARQ=new THREE.Color(1,.8,.55);
  return {S,base,mask,schedule,update,kill,restore,cascade,wave,reset,lights,attach,posOf,hold,
