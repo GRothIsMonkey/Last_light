@@ -16,6 +16,7 @@ const server=http.createServer((req,res)=>{const u=req.url.split('?')[0];if(u===
  try{res.setHeader('Content-Type',types[file.split('.').pop()]||'application/octet-stream');res.end(fs.readFileSync(file));}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const args=['--no-sandbox','--disable-dev-shm-usage'];if(!process.env.BROWSER_GPU)args.push('--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist');
+if(process.env.BROWSER_SERVERLESS)args.push('--single-process','--no-zygote','--in-process-gpu');
 const browser=await pw.chromium.launch({executablePath:exe,headless:true,args});
 const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[],warnings=[],checks=[],frames=[];
 page.on('pageerror',e=>{errors.push(String(e));console.error('PAGE',String(e));});
