@@ -1,0 +1,346 @@
+{
+  "failure": "page.evaluate: Target page, context or browser has been closed\nBrowser logs:\n\n<launching> /workspace/scratch/1967877aeff6/browser-153-fresh/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist --single-process --no-zygote --in-process-gpu --js-flags=--max-old-space-size=768 --expose-gc --user-data-dir=/tmp/playwright_chromiumdev_profile-VyuEjp --remote-debugging-pipe --no-startup-window\n<launched> pid=17\n[pid=17][err] [1013/084315.485814:ERROR:../net/base/address_tracker_linux.cc:224] Could not create NETLINK socket: Operation not permitted (1)\n[pid=17][err] [1013/084349.762128:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=10\n[pid=17][err] [1013/084349.867398:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=20\n[pid=17][err] [1013/084350.129053:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=30\n[pid=17][err] [1013/084352.265658:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=40\n[pid=17][err] [1013/084408.255160:ERROR:../gpu/command_buffer/service/gl_utils.cc:427] [.WebGL-0x2b2c02100a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\n[pid=17][err] [1013/084411.224910:ERROR:../gpu/command_buffer/service/gl_utils.cc:427] [.WebGL-0x2b2c02100a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)\n[pid=17][err] [1013/084443.620743:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=50\n[pid=17][err] [1013/084445.083009:INFO:CONSOLE:0] \"[.WebGL-0x2b2c02100a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\", source: http://127.0.0.1:42123/index.html?qa (0)\n[pid=17][err] [1013/084445.086978:INFO:CONSOLE:0] \"[.WebGL-0x2b2c02100a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)\", source: http://127.0.0.1:42123/index.html?qa (0)\n[pid=17][err] [1013/084450.084705:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=60\n[pid=17][err] [1013/084451.351756:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084453.710256:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=70\n[pid=17][err] [1013/084517.075399:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=80\n[pid=17][err] [1013/084519.032053:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084521.779744:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=90\n[pid=17][err] [1013/084522.419887:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084528.659054:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084533.204692:WARNING:../services/audio/sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=100\n[pid=17][err] [1013/084533.211389:WARNING:../services/audio/sync_reader.cc:178] (log cap reached, suppressing further logs)\n[pid=17][err] [1013/084559.933732:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084628.717325:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084634.737434:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084642.373619:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084649.953657:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084656.705583:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084706.624839:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084709.965636:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084718.308499:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084724.525929:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084741.295913:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084745.561735:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084755.610981:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084802.032147:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084804.921109:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084815.944865:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084826.666432:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084835.700144:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084915.605826:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/084937.800797:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085113.293091:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085149.903881:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085240.978724:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085323.405984:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085414.860894:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085431.220505:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085433.951705:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085436.899749:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085442.541678:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085455.452577:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085458.374259:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085501.236604:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085503.813647:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085506.517949:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085508.214045:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n[pid=17][err] [1013/085519.278096:INFO:CONSOLE:33] \"performance warning: READ-usage buffer was written, then fenced, but written again before being read back. This discarded the shadow copy that was created to accelerate readback.\", source: http://127.0.0.1:42123/captions.js (33)\n    at stage (/workspace/scratch/1967877aeff6/Last-Light-Chapter4/tests/chapter4-browser.mjs:47:72)\n    at /workspace/scratch/1967877aeff6/Last-Light-Chapter4/tests/chapter4-browser.mjs:134:8",
+  "checks": [
+    "Chapter Three ends on its card, with a \"Chapter Four\" button",
+    "a CHAPTER FOUR card over black, then Sam’s house the next afternoon",
+    "the old bike found in four of Alex’s pictures, the last at Mason’s downtown",
+    "the ride downtown is a real ride (Summerfield, Old Mill Road) and arrives on Main Street",
+    "the microfilm: five records read",
+    "Second Street: it comes for them, stops, looks at the empty corner as its lights die, backs off and hides",
+    "the TV shop’s window: the dark waits there; up close, the sets show the three of them live from above (\"That’s us.\")",
+    "the picture of the PINE RIDGE screen taken with Alex’s camera",
+    "the narrow way: it comes at them, stops, looks past them, and bolts past them without touching anyone"
+  ],
+  "frames": [
+    {
+      "name": "00-chapter-three-end-card",
+      "calls": 337,
+      "triangles": 739498,
+      "phase": "n3-end",
+      "clock": "1:52 PM",
+      "caption": "SAM“Then what did we follow?”"
+    },
+    {
+      "name": "01-sams-house-mom",
+      "calls": 258,
+      "triangles": 469442,
+      "phase": "d4-sam",
+      "clock": "1:53 PM",
+      "caption": "SAM“Okay.”"
+    },
+    {
+      "name": "02-backpack",
+      "calls": 180,
+      "triangles": 356179,
+      "phase": "d4-bag",
+      "clock": "1:53 PM",
+      "caption": "[The zipper on the front pocket.]"
+    },
+    {
+      "name": "03-camera-first-picture",
+      "calls": 235,
+      "triangles": 381189,
+      "phase": "d4-photos",
+      "clock": "1:54 PM",
+      "caption": "SAM“Delete that one.”"
+    },
+    {
+      "name": "04-picture-mason-old-bike-zoomed",
+      "calls": 235,
+      "triangles": 381189,
+      "phase": "d4-photos",
+      "clock": "1:55 PM",
+      "caption": "JAMIE“Mason’s. The old bike shop.”"
+    },
+    {
+      "name": "05-summerfield-road",
+      "calls": 276,
+      "triangles": 211813,
+      "phase": "d4-ride",
+      "clock": "2:02 PM",
+      "caption": "SAM“There’s the pizza place.”"
+    },
+    {
+      "name": "06-old-mill-road-crest",
+      "calls": 409,
+      "triangles": 256368,
+      "phase": "d4-ride",
+      "clock": "2:03 PM",
+      "caption": "SAM“You can see the water tower.”"
+    },
+    {
+      "name": "07-main-street-arrival",
+      "calls": 412,
+      "triangles": 248647,
+      "phase": "d4-town",
+      "clock": "2:18 PM",
+      "caption": "SAM“You can see the water tower.”"
+    },
+    {
+      "name": "08-main-street-by-day",
+      "calls": 324,
+      "triangles": 242941,
+      "phase": "d4-town",
+      "clock": "2:19 PM",
+      "caption": "JAMIE“Mason’s is down past Second Street. Across from the square.”"
+    },
+    {
+      "name": "09-mason-window-poster",
+      "calls": 151,
+      "triangles": 158999,
+      "phase": "d4-town",
+      "clock": "2:21 PM",
+      "caption": "[Dust. Empty hooks on the wall. A counter. A poster, faded almost white.]"
+    },
+    {
+      "name": "10-florist",
+      "calls": 139,
+      "triangles": 127677,
+      "phase": "d4-town",
+      "clock": "2:22 PM",
+      "caption": "YOU“That’s the bike.”"
+    },
+    {
+      "name": "11-library-librarian",
+      "calls": 147,
+      "triangles": 198390,
+      "phase": "d4-library",
+      "clock": "2:27 PM",
+      "caption": "MRS. ALBRIGHT“I close at eight, boys.”"
+    },
+    {
+      "name": "12-microfilm-1988-mason",
+      "calls": 98,
+      "triangles": 69500,
+      "phase": "d4-archive",
+      "clock": "3:18 PM",
+      "caption": "OAK HOLLOW COURIER · JUNE 14, 1988“MASON CYCLE MARKS 30 YEARS ON MAIN”"
+    },
+    {
+      "name": "13-microfilm-1966",
+      "calls": 99,
+      "triangles": 69500,
+      "phase": "d4-archive",
+      "clock": "7:33 PM",
+      "caption": "OAK HOLLOW COURIER · AUGUST 30, 1966“GIRL, 11, STILL MISSING”"
+    },
+    {
+      "name": "14-library-closing",
+      "calls": 96,
+      "triangles": 69500,
+      "phase": "d4-closing",
+      "clock": "7:49 PM",
+      "caption": "SAM“Eight?”"
+    },
+    {
+      "name": "15-dusk-the-square",
+      "calls": 256,
+      "triangles": 253163,
+      "phase": "e4-dusk",
+      "clock": "7:56 PM",
+      "caption": "JAMIE“The bikes are on the rack out front.”"
+    },
+    {
+      "name": "16-alex-across-the-street",
+      "calls": 296,
+      "triangles": 352203,
+      "phase": "e4-alex",
+      "clock": "7:57 PM",
+      "caption": "SAM“Jamie. Don’t.”"
+    },
+    {
+      "name": "17-creature-threatening-approach",
+      "calls": 209,
+      "triangles": 334001,
+      "phase": "e4-creature",
+      "clock": "8:03 PM",
+      "caption": "SAM“Don’t run. Don’t run.”"
+    },
+    {
+      "name": "18-creature-looks-at-the-empty-corner",
+      "calls": 210,
+      "triangles": 336375,
+      "phase": "e4-creature",
+      "clock": "8:04 PM",
+      "caption": "JAMIE“What’s it looking at?”"
+    },
+    {
+      "name": "18b-creature-hiding",
+      "calls": 185,
+      "triangles": 352524,
+      "phase": "e4-creature",
+      "clock": "8:05 PM",
+      "caption": "SAM“It’s hiding.”"
+    },
+    {
+      "name": "18c-creature-flees-into-the-dark",
+      "calls": 185,
+      "triangles": 356511,
+      "phase": "e4-cascade",
+      "clock": "8:06 PM",
+      "caption": "SAM“It ran.”"
+    },
+    {
+      "name": "19-the-lights-going",
+      "calls": 317,
+      "triangles": 325191,
+      "phase": "e4-cascade",
+      "clock": "8:06 PM",
+      "caption": "SAM“It ran.”"
+    },
+    {
+      "name": "20-tv-window-live",
+      "calls": 157,
+      "triangles": 161619,
+      "phase": "e4-cascade",
+      "clock": "8:08 PM",
+      "caption": "SAM“That’s us. That’s us, right now.”"
+    },
+    {
+      "name": "21-store-tv-alex-from-above",
+      "calls": 245,
+      "triangles": 279410,
+      "phase": "n4-store",
+      "clock": "8:09 PM",
+      "caption": "[A sign on the counter: BACK IN 10 MIN — D.]"
+    },
+    {
+      "name": "22-store-pine-ridge-viewfinder",
+      "calls": 271,
+      "triangles": 286875,
+      "phase": "n4-store",
+      "clock": "8:09 PM",
+      "caption": "JAMIE“Take a picture. Take a picture of it!”"
+    },
+    {
+      "name": "23-store-tv-alex-room-ceiling",
+      "calls": 254,
+      "triangles": 281708,
+      "phase": "n4-store",
+      "clock": "8:10 PM",
+      "caption": "SAM“That’s his room.”"
+    },
+    {
+      "name": "24-store-phone-jamie",
+      "calls": 259,
+      "triangles": 232124,
+      "phase": "n4-store",
+      "clock": "8:10 PM",
+      "caption": "ON THE PHONE“…Jamie?”"
+    },
+    {
+      "name": "25-store-thats-us",
+      "calls": 317,
+      "triangles": 459694,
+      "phase": "n4-store",
+      "clock": "8:10 PM",
+      "caption": "SAM“That’s us.”"
+    },
+    {
+      "name": "26-store-lights-going",
+      "calls": 316,
+      "triangles": 457682,
+      "phase": "n4-store",
+      "clock": "8:11 PM",
+      "caption": "JAMIE“The back. There’s a back door.”"
+    },
+    {
+      "name": "27-out-the-back-alley",
+      "calls": 137,
+      "triangles": 281133,
+      "phase": "n4-alley",
+      "clock": "8:13 PM",
+      "caption": "JAMIE“The laundromat. It’s open till ten.”"
+    },
+    {
+      "name": "28-it-comes-at-them",
+      "calls": 141,
+      "triangles": 144186,
+      "phase": "n4-alley",
+      "clock": "8:14 PM",
+      "caption": "[Behind them, a light goes out.]"
+    },
+    {
+      "name": "28b-it-looks-past-them",
+      "calls": 141,
+      "triangles": 144186,
+      "phase": "n4-alley",
+      "clock": "8:14 PM",
+      "caption": "[Behind them, a light goes out.]"
+    },
+    {
+      "name": "28c-it-runs-past-them",
+      "calls": 139,
+      "triangles": 143790,
+      "phase": "n4-alley",
+      "clock": "8:14 PM",
+      "caption": "SAM“The other end—”"
+    },
+    {
+      "name": "29-laundromat",
+      "calls": 161,
+      "triangles": 131241,
+      "phase": "n4-laundry",
+      "clock": "8:14 PM",
+      "caption": "JAMIE“Side door. There.”"
+    },
+    {
+      "name": "30-theater-upper-windows",
+      "calls": 135,
+      "triangles": 109402,
+      "phase": "n4-depot",
+      "clock": "8:16 PM",
+      "caption": "SAM“Jamie. The windows.”"
+    },
+    {
+      "name": "31-alex-under-the-marquee",
+      "calls": 144,
+      "triangles": 122822,
+      "phase": "n4-marquee",
+      "clock": "8:19 PM",
+      "caption": "ALEX“Did you guys hear that?”"
+    },
+    {
+      "name": "31b-dont-run-dont-run",
+      "calls": 144,
+      "triangles": 122822,
+      "phase": "n4-marquee",
+      "clock": "8:20 PM",
+      "caption": "ALEX“Don’t run. Don’t run.”"
+    },
+    {
+      "name": "31c-see-you-tomorrow",
+      "calls": 144,
+      "triangles": 122822,
+      "phase": "n4-marquee",
+      "clock": "8:21 PM",
+      "caption": "ALEX“See you tomorrow.”"
+    },
+    {
+      "name": "32-marquee-blackout",
+      "calls": 123,
+      "triangles": 103632,
+      "phase": "n4-marquee",
+      "clock": "8:21 PM",
+      "caption": "ALEX“See you tomorrow.”"
+    },
+    {
+      "name": "33-power-returns-he-is-gone",
+      "calls": 134,
+      "triangles": 116940,
+      "phase": "n4-return",
+      "clock": "8:21 PM",
+      "caption": "JAMIE“He’s gone.”"
+    },
+    {
+      "name": "34-the-picture-pine-ridge",
+      "calls": 338,
+      "triangles": 467013,
+      "phase": "n4-clue",
+      "clock": "8:22 PM",
+      "caption": "SAM“Pine Ridge Recreation Area.”"
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

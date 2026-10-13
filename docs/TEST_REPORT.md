@@ -1,3 +1,56 @@
+# Last Light — Chapter Four Astra final art polish: verification
+
+Accepted source: `claude/chapter4-horror-revision` at `f0120badfcbd60d3f1dcf7e837650a5c61088f90`. Astra branch: `codex/astra-chapter4-final-polish`. Runtime identity: `39b6ce7a9d8f7f617de9403d4f206aa22af38ed1`; final delivery commit contains QA/documentation only.
+
+## Final validation
+
+Validated across October 12–13, 2026 (UTC). Runtime files are unchanged from `39b6ce7a9d8f7f617de9403d4f206aa22af38ed1`; the final capture/documentation commit does not alter the game. Each completed JSON report records hashes of all 66 top-level runtime files, compared again before packaging. Creature asset files are unchanged from the accepted source.
+
+| Gate | Result |
+|---|---|
+| Existing full progression/regression suite, `QUICK=1 node tests/verify.mjs` | **622/622**; QUICK omits slow world-geometry sweeps, as in the accepted source's 622-check gate. Includes natural play, replays, five escape routes, companion stress, Chapter Three creature regression, checkpoints and DEV switching. |
+| Continuous muted Chromium attempt | **Incomplete, not a full pass**: 9 checks and 41 captures through the Pine Ridge clue/theater return. The 8 GiB worker killed Chromium during the ride home. |
+| Fresh ending/DEV browser run, `QA_PART=ending-dev` | **4/4**: from the `c4-ride-home` checkpoint, gameplay inputs reach the end card; then all **42** Chapter Four DEV scenes launch with selector clicks. This is a separate run, not a continuous full-chapter browser pass. |
+| Focused art/restoration run, `tests/chapter4-art-review.mjs` | **10/10**; all three atlases fit, footage light is removed, physical lights respect blackout masks, and Chapters 0–2 restore materials/character geometry and hide Chapter Four details. |
+| Completed browser runs | **0 JavaScript/console errors; 0 shader/WebGL warnings** |
+| Final captures | **106**: 41 frames from the interrupted continuous attempt + 45 fresh ending/DEV frames + 20 art/restoration views. An additional eight before/after comparison sheets reuse those frames. |
+
+The combined rendered coverage includes Sam's opening, camera photographs, the real ride into town, Mason's/library/microfilm, dusk, creature fear and flight, TV surveillance, the video store and Alex-room footage, the narrow-way escape, the Lyric encounter/blackout, Pine Ridge, ride home, and ending. Simulation covers all five escape routes; rendered scene starts show the alternate routes. Jamie and Sam remain active in the accepted horror staging. Chapter Three's simulation and mixed-chapter DEV switching remain green; shared creature code/assets did not change.
+
+**Outstanding validation limitation:** a continuous end-to-end browser playthrough did not finish within this worker's memory budget. The full simulation gate completed the natural Chapter Four playthrough and replays, and the fresh browser verified the ending separately. A continuous human playtest on a real GPU remains outstanding. This delivery does not turn the interrupted run into a pass.
+
+Browser: Chromium 153.0.8010.0, ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver). Captures are 1440×900. This is **software rendering**, not a real-GPU FPS result. Audio output is muted; hooks are exercised, not perceptually reviewed.
+
+Earlier interrupted/parallel browser attempts were not counted as passes. Final runs were sequential. The ending/DEV run uses `BROWSER_MEMORY_MB=768` (bounded V8 heap plus garbage collection after screenshots), `MALLOC_ARENA_MAX=2` and `MALLOC_TRIM_THRESHOLD_=131072` to constrain the software-rendering worker. These settings affect the test browser only. Missing text in an intermediate capture batch was traced to expired temporary browser font paths; final runs use available local fonts. No runtime change was needed for that environment issue.
+
+### Representative render counts
+
+| Matched view | Draw calls, before → after | Triangles, before → after |
+|---|---:|---:|
+| Old Mill Road | 952 → 373 | 187,125 → 220,565 |
+| Downtown arrival | 1,027 → 392 | 193,264 → 235,861 |
+| Main Street | 692 → 375 | 250,850 → 301,698 |
+| Library | 141 → 147 | 110,690 → 198,390 |
+| Video shelves | 175 → 177 | 261,707 → 298,092 |
+| Marquee | 206 → 157 | 109,741 → 136,293 |
+| Ride home | 392 → 394 | 850,283 → 855,935 |
+
+The arrival and daytime-street savings come primarily from merging vehicle parts. Interior book/retail detail adds triangles. These are structural counts from matched saved art views, not proof of increased hardware frame rate; street-life timing can also change visible traffic.
+
+### Evidence and reproduction
+
+- `docs/qa/chapter4-astra-final/simulation-report.json`: all 622 checks, route/companion metrics and runtime hashes.
+- `docs/qa/chapter4-astra-final/chapter4-browser-report.json` and `index.html`: interrupted continuous attempt, 9 checks and 41 frames. Its failure is retained.
+- `docs/qa/chapter4-astra-ending/chapter4-browser-report.json` and `index.html`: fresh ending check and 42 DEV scene starts, 45 frames and runtime hashes.
+- `docs/qa/chapter4-astra-review/report.json`: 10 focused checks, 20 art views and runtime hashes.
+- `docs/qa/chapter4-astra-comparison/index.html`: eight saved before/after comparisons and render counts.
+- Browser driver environment: `BROWSER_PATH` points to Chromium; `BROWSER_SERVERLESS=1` is used for the serverless build, with `LD_LIBRARY_PATH` for its bundled libraries and `FONTCONFIG_PATH` for available fonts. `CODEX_PRIMARY_RUNTIME_NODE_MODULES` supplies Playwright here. No browser binaries or machine-specific tool dependencies are needed to run the shipped game.
+
+
+Complete changes and known limitations: [ASTRA_CHAPTER4_FINAL_POLISH.md](ASTRA_CHAPTER4_FINAL_POLISH.md).
+
+---
+
 # Last Light — Chapter Four: horror revision: verification
 
 Source: `claude/chapter4-main-street` at `8cc59e26111c4c2032a2893c69b67fafc548612a` (unchanged). Branch: `claude/chapter4-horror-revision`. Renders are software (SwiftShader); no real-GPU frame rate is claimed. Sound off throughout: audio is placeholder hooks only.

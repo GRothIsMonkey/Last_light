@@ -1,3 +1,20 @@
+# Last Light — Chapter Four Astra final art polish
+
+From the accepted `claude/chapter4-horror-revision` release `f0120badfcbd60d3f1dcf7e837650a5c61088f90`, on `codex/astra-chapter4-final-polish`. Story, routes, companion/creature behavior, creature asset identity, adaptive captions and the ending are preserved.
+
+- Main Street gains layered facades, clearer windows, coherent brick/masonry/pavement materials and 14 more physical shop displays. Curb winding and sign-atlas overflow are corrected.
+- The library gains visible books, shelf labels, counters, records and research detail. Lantern Video gains complete movie stock, original fictional cover/poster art, checkout detail and a more coherent interior. Lyric poster texture sampling is fixed.
+- TV-shop, theater, service-alley and Old Mill details strengthen the setting; Sam's garage gets household storage, the photo bike inherits worn fittings, and Alex-room ceiling footage uses room-specific lighting.
+- Warm practicals and cooler dusk fill retain the existing blackout choreography. Light slots stay stable while turning; killed fixtures lose illumination immediately. Jamie/Sam gain restrained clothing detail and stopped breathing; apparent Alex stays still.
+- Batched traffic lowers the matched arrival view from 1,027 to 392 draws. Library triangles rise from 110,690 to 198,390. Three atlases fit within 32 MiB uncompressed before mipmaps, with no overflow.
+- Final validation: **622 simulation checks**, **4 completed ending/DEV browser checks**, **42 DEV starts**, **10 focused art/restoration checks**, **106 final captures**, and **zero completed-browser JavaScript errors/shader warnings**. Software Chromium/SwiftShader; no hardware FPS claim.
+- The continuous browser attempt was killed by the worker's 8 GiB memory limit on the ride home (9 earlier checks/41 captures). It is not counted as a completed full-browser pass; the ending was checked separately. A continuous real-GPU human playtest remains outstanding.
+- Known limits: stylized procedural characters/vehicles, placeholder audio, and the accepted approximately 0.13 m turn/foot-slide remain. No Chapter Five implementation, merge to main or changes to earlier release branches.
+
+See [the complete report](ASTRA_CHAPTER4_FINAL_POLISH.md) and [verification](TEST_REPORT.md). Authenticated GitHub push was unavailable; the delivery preserves the exact local history in a portable standalone Git repository.
+
+---
+
 # Last Light — Chapter Four: horror revision
 
 From `claude/chapter4-main-street` at `8cc59e26111c4c2032a2893c69b67fafc548612a` (unchanged), on `claude/chapter4-horror-revision`. A structural correction after human playtesting: same chapter, same town, same 22 beats and story; five things fixed.

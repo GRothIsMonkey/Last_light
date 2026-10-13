@@ -1,0 +1,426 @@
+[
+  {
+    "view": "02-c4-old-mill-road",
+    "before": {
+      "name": "02-c4-old-mill-road",
+      "calls": 952,
+      "triangles": 187125,
+      "phase": "d4-ride",
+      "atlases": {
+        "signs": true,
+        "covers": true
+      },
+      "art": null
+    },
+    "after": {
+      "name": "02-c4-old-mill-road",
+      "calls": 373,
+      "triangles": 220565,
+      "phase": "d4-ride",
+      "atlases": {
+        "signs": {
+          "full": false,
+          "entries": 136,
+          "width": 2048,
+          "height": 2048,
+          "usedHeight": 1662
+        },
+        "covers": {
+          "full": false,
+          "entries": 135,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 993
+        },
+        "rooms": {
+          "full": false,
+          "entries": 14,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 896
+        }
+      },
+      "art": {
+        "facades": 27,
+        "shopDisplays": 14,
+        "libraryDetails": 25,
+        "videoDetails": 24,
+        "serviceDetails": 125,
+        "procedural": true,
+        "extraPointLights": 0
+      },
+      "footageLightLeaked": false
+    }
+  },
+  {
+    "view": "03-c4-downtown-arrival",
+    "before": {
+      "name": "03-c4-downtown-arrival",
+      "calls": 1027,
+      "triangles": 193264,
+      "phase": "d4-town",
+      "atlases": {
+        "signs": true,
+        "covers": true
+      },
+      "art": null
+    },
+    "after": {
+      "name": "03-c4-downtown-arrival",
+      "calls": 392,
+      "triangles": 235861,
+      "phase": "d4-town",
+      "atlases": {
+        "signs": {
+          "full": false,
+          "entries": 136,
+          "width": 2048,
+          "height": 2048,
+          "usedHeight": 1662
+        },
+        "covers": {
+          "full": false,
+          "entries": 135,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 993
+        },
+        "rooms": {
+          "full": false,
+          "entries": 14,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 896
+        }
+      },
+      "art": {
+        "facades": 27,
+        "shopDisplays": 14,
+        "libraryDetails": 25,
+        "videoDetails": 24,
+        "serviceDetails": 125,
+        "procedural": true,
+        "extraPointLights": 0
+      },
+      "footageLightLeaked": false
+    }
+  },
+  {
+    "view": "04-c4-main-street",
+    "before": {
+      "name": "04-c4-main-street",
+      "calls": 692,
+      "triangles": 250850,
+      "phase": "d4-town",
+      "atlases": {
+        "signs": true,
+        "covers": true
+      },
+      "art": null
+    },
+    "after": {
+      "name": "04-c4-main-street",
+      "calls": 375,
+      "triangles": 301698,
+      "phase": "d4-town",
+      "atlases": {
+        "signs": {
+          "full": false,
+          "entries": 136,
+          "width": 2048,
+          "height": 2048,
+          "usedHeight": 1662
+        },
+        "covers": {
+          "full": false,
+          "entries": 135,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 993
+        },
+        "rooms": {
+          "full": false,
+          "entries": 14,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 896
+        }
+      },
+      "art": {
+        "facades": 27,
+        "shopDisplays": 14,
+        "libraryDetails": 25,
+        "videoDetails": 24,
+        "serviceDetails": 125,
+        "procedural": true,
+        "extraPointLights": 0
+      },
+      "footageLightLeaked": false
+    }
+  },
+  {
+    "view": "05-c4-mason",
+    "before": {
+      "name": "05-c4-mason",
+      "calls": 156,
+      "triangles": 125628,
+      "phase": "d4-town",
+      "atlases": {
+        "signs": true,
+        "covers": true
+      },
+      "art": null
+    },
+    "after": {
+      "name": "05-c4-mason",
+      "calls": 159,
+      "triangles": 161178,
+      "phase": "d4-town",
+      "atlases": {
+        "signs": {
+          "full": false,
+          "entries": 136,
+          "width": 2048,
+          "height": 2048,
+          "usedHeight": 1662
+        },
+        "covers": {
+          "full": false,
+          "entries": 135,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 993
+        },
+        "rooms": {
+          "full": false,
+          "entries": 14,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 896
+        }
+      },
+      "art": {
+        "facades": 27,
+        "shopDisplays": 14,
+        "libraryDetails": 25,
+        "videoDetails": 24,
+        "serviceDetails": 125,
+        "procedural": true,
+        "extraPointLights": 0
+      },
+      "footageLightLeaked": false
+    }
+  },
+  {
+    "view": "06-c4-library",
+    "before": {
+      "name": "06-c4-library",
+      "calls": 141,
+      "triangles": 110690,
+      "phase": "d4-library",
+      "atlases": {
+        "signs": true,
+        "covers": true
+      },
+      "art": null
+    },
+    "after": {
+      "name": "06-c4-library",
+      "calls": 147,
+      "triangles": 198390,
+      "phase": "d4-library",
+      "atlases": {
+        "signs": {
+          "full": false,
+          "entries": 136,
+          "width": 2048,
+          "height": 2048,
+          "usedHeight": 1662
+        },
+        "covers": {
+          "full": false,
+          "entries": 135,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 993
+        },
+        "rooms": {
+          "full": false,
+          "entries": 14,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 896
+        }
+      },
+      "art": {
+        "facades": 27,
+        "shopDisplays": 14,
+        "libraryDetails": 25,
+        "videoDetails": 24,
+        "serviceDetails": 125,
+        "procedural": true,
+        "extraPointLights": 0
+      },
+      "footageLightLeaked": false
+    }
+  },
+  {
+    "view": "07-c4-microfilm",
+    "before": {
+      "name": "07-c4-microfilm",
+      "calls": 98,
+      "triangles": 60616,
+      "phase": "d4-library",
+      "atlases": {
+        "signs": true,
+        "covers": true
+      },
+      "art": null
+    },
+    "after": {
+      "name": "07-c4-microfilm",
+      "calls": 104,
+      "triangles": 69685,
+      "phase": "d4-library",
+      "atlases": {
+        "signs": {
+          "full": false,
+          "entries": 136,
+          "width": 2048,
+          "height": 2048,
+          "usedHeight": 1662
+        },
+        "covers": {
+          "full": false,
+          "entries": 135,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 993
+        },
+        "rooms": {
+          "full": false,
+          "entries": 14,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 896
+        }
+      },
+      "art": {
+        "facades": 27,
+        "shopDisplays": 14,
+        "libraryDetails": 25,
+        "videoDetails": 24,
+        "serviceDetails": 125,
+        "procedural": true,
+        "extraPointLights": 0
+      },
+      "footageLightLeaked": false
+    }
+  },
+  {
+    "view": "12-c4-video-store",
+    "before": {
+      "name": "12-c4-video-store",
+      "calls": 175,
+      "triangles": 261707,
+      "phase": "n4-store",
+      "atlases": {
+        "signs": true,
+        "covers": true
+      },
+      "art": null
+    },
+    "after": {
+      "name": "12-c4-video-store",
+      "calls": 177,
+      "triangles": 298092,
+      "phase": "n4-store",
+      "atlases": {
+        "signs": {
+          "full": false,
+          "entries": 136,
+          "width": 2048,
+          "height": 2048,
+          "usedHeight": 1662
+        },
+        "covers": {
+          "full": false,
+          "entries": 135,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 993
+        },
+        "rooms": {
+          "full": false,
+          "entries": 14,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 896
+        }
+      },
+      "art": {
+        "facades": 27,
+        "shopDisplays": 14,
+        "libraryDetails": 25,
+        "videoDetails": 24,
+        "serviceDetails": 125,
+        "procedural": true,
+        "extraPointLights": 0
+      },
+      "footageLightLeaked": false
+    }
+  },
+  {
+    "view": "17-c4-marquee",
+    "before": {
+      "name": "17-c4-marquee",
+      "calls": 206,
+      "triangles": 109741,
+      "phase": "n4-marquee",
+      "atlases": {
+        "signs": true,
+        "covers": true
+      },
+      "art": null
+    },
+    "after": {
+      "name": "17-c4-marquee",
+      "calls": 157,
+      "triangles": 136293,
+      "phase": "n4-marquee",
+      "atlases": {
+        "signs": {
+          "full": false,
+          "entries": 136,
+          "width": 2048,
+          "height": 2048,
+          "usedHeight": 1662
+        },
+        "covers": {
+          "full": false,
+          "entries": 135,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 993
+        },
+        "rooms": {
+          "full": false,
+          "entries": 14,
+          "width": 2048,
+          "height": 1024,
+          "usedHeight": 896
+        }
+      },
+      "art": {
+        "facades": 27,
+        "shopDisplays": 14,
+        "libraryDetails": 25,
+        "videoDetails": 24,
+        "serviceDetails": 125,
+        "procedural": true,
+        "extraPointLights": 0
+      },
+      "footageLightLeaked": false
+    }
+  }
+]

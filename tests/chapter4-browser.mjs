@@ -17,6 +17,8 @@ const server=http.createServer((req,res)=>{const u=req.url.split('?')[0];if(u===
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const args=['--no-sandbox','--disable-dev-shm-usage'];if(!process.env.BROWSER_GPU)args.push('--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist');
 if(process.env.BROWSER_SERVERLESS)args.push('--single-process','--no-zygote','--in-process-gpu');
+// Bound test-browser heap growth in memory-limited software-rendering workers; the shipped runtime is unchanged.
+const memoryMB=Number(process.env.BROWSER_MEMORY_MB||0);if(memoryMB>0)args.push(`--js-flags=--max-old-space-size=${memoryMB} --expose-gc`);
 const browser=await pw.chromium.launch({executablePath:exe,headless:true,args});
 const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[],warnings=[],checks=[],frames=[];
 page.on('pageerror',e=>{errors.push(String(e));console.error('PAGE',String(e));});
@@ -25,7 +27,7 @@ const check=(name,value,info='')=>{assert.ok(value,name+(info?' '+info:''));chec
 const ev=(fn,arg)=>page.evaluate(fn,arg);
 const snap=async(name)=>{await ev(()=>{for(const id of ['objective','objective-note','prompt','subtitle','fade','chapter-card','ending'])for(const a of document.getElementById(id)?.getAnimations()||[])try{a.finish();}catch{}});
  const info=await ev(()=>{const L=lastLight,r={...L.render()},s=L.state.chapter4;return {calls:r.calls,triangles:r.triangles,phase:s.phase,clock:s.clock,caption:document.getElementById('subtitle').textContent.slice(0,90)};});
- await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:86,timeout:300000});frames.push({name,...info});console.log('Captured',name,info.phase,info.calls,info.triangles);};
+ await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:86,timeout:300000});frames.push({name,...info});console.log('Captured',name,info.phase,info.calls,info.triangles);if(memoryMB>0)await ev(()=>globalThis.gc?.());};
 // The in-page player: walking (turn toward the next point, hold W), riding (the game's own QA drive), F, V, looking.
 const DRIVER=()=>{const L=lastLight,DT=1/30,A4=L.chapter4,at=A4.at,s4=()=>A4.state;
  const pos=()=>{const st=L.state.state;return st==='c1-walk'?{x:L.camera.position.x,z:L.camera.position.z}:{x:L.roam.x,z:L.roam.z};};
@@ -47,6 +49,7 @@ let report={};
 try{
  await page.goto(`http://127.0.0.1:${server.address().port}/index.html?qa`,{timeout:180000});await page.waitForFunction(()=>window.lastLight,null,{timeout:180000});
  await page.click('#start');await ev(()=>lastLight.step(.4));await ev(DRIVER);
+ if(process.env.QA_PART!=='ending-dev'){
  // ---- the hand-over: Chapter Three's ending, its card, the button ---------------------------------------------------------
  await stage('chapter three ending',()=>{lastLight.jump('chapter3-end');return __d.until(()=>lastLight.state.state==='ended',120);});
  check('Chapter Three ends on its card, with a "Chapter Four" button',await ev(()=>!document.getElementById('ending').hidden&&document.querySelector('#ending h2').textContent==='Chapter Three'&&!document.getElementById('next-chapter').hidden));
@@ -130,13 +133,18 @@ try{
  await stage('power',()=>{__d.until(()=>__d.s4().phase==='n4-return',8);__d.until(()=>false,3);});await snap('33-power-returns-he-is-gone');
  await stage('bikes',()=>{__d.goUV(150,-9);__d.goUV(118,-8.6);const r=__d.L.roam;__d.go({x:r.x,z:r.z},{r:2});__d.until(()=>__d.s4().view==='camera',20);__d.until(()=>false,2);});await snap('34-the-picture-pine-ridge');
  await stage('home',()=>{__d.until(()=>__d.s4().phase==='n4-ride',45);__d.tap('KeyV');__d.until(()=>false,.6);__d.on();return import('./town-plan.js').then(m=>{const pts=[];for(let u=110;u>=-74;u-=10){const q=__d.at(u,3.2);pts.push([q.x,q.z]);}for(let s=166;s>=4;s-=10){const q=m.connAt(s,-1.4);pts.push([q.x,q.z]);}__d.ride(pts,200,3);return __d.s4().phase;});});
+ report.walkthrough={found,read,pic,scope:'continuous walkthrough'};
+ }else{
+  await stage('fresh return checkpoint',()=>{lastLight.jump('c4-ride-home');return import('./town-plan.js').then(m=>{const pts=[];for(let s=128;s>=4;s-=10){const q=m.connAt(s,-1.4);pts.push([q.x,q.z]);}__d.ride(pts,160,3);return __d.s4().phase;});});
+  report.walkthrough={scope:'ending segment from c4-ride-home checkpoint; not a continuous full-chapter browser pass'};
+ }
  await snap('35-ride-home-old-mill-road');
  await stage('oak',()=>{const L=__d.L,B2=L.world.sideFrames[1],pts=[];for(let u=244;u>=8;u-=12){const p=B2.point(u,1.6);pts.push([p.x,p.z]);}for(let d=880;d<=1132;d+=12){const p=L.nav.main(d,1.8);pts.push([p.x,p.z]);}__d.ride(pts,220,3,()=>__d.s4().phase==='n4-oak');__d.brake();__d.until(()=>/It was scared/.test(document.getElementById('subtitle').textContent),30);});
  await snap('36-the-old-oak-it-was-scared');
  const end=await stage('end',()=>{__d.until(()=>lastLight.state.state==='ended',40);return {state:lastLight.state.state,h2:document.querySelector('#ending h2').textContent,next:document.getElementById('next-chapter').hidden};});
  await snap('37-chapter-four-end-card');
- check('the walkthrough reaches Chapter Four’s end card, with sound off, by inputs alone',end.state==='ended'&&end.h2==='Chapter Four'&&end.next===true,JSON.stringify(end));
- const said=await ev(()=>lastLight.state.chapter4.sounds);report.walkthrough={found,read,pic,sounds:said};
+ check(process.env.QA_PART==='ending-dev'?'the fresh return checkpoint reaches Chapter Four’s end card by gameplay inputs':'the walkthrough reaches Chapter Four’s end card, with sound off, by inputs alone',end.state==='ended'&&end.h2==='Chapter Four'&&end.next===true,JSON.stringify(end));
+ const said=await ev(()=>lastLight.state.chapter4.sounds);report.walkthrough.sounds=said;
  // ---- the DEV selector: Chapter Four, every scene, with real clicks ------------------------------------------------------------------
  const scenes=await ev(()=>lastLight.DEV_SCENES[4].map(s=>({id:s.id,label:s.label})));const dev=[];
  await ev(()=>lastLight.toTitle());
@@ -149,12 +157,12 @@ try{
  check('no JavaScript errors',errors.length===0,JSON.stringify(errors.slice(0,4)));check('no WebGL/shader warnings',warnings.length===0,JSON.stringify(warnings.slice(0,3)));
  report={runtimeHashes,browser:browser.version(),gpu,passed:checks.length,checks,frames,errors,warnings,...report,renderLimitation:/SwiftShader/i.test(gpu)?'Software rendering (SwiftShader): render counts are real, frame times are not a real-GPU measurement.':'GPU: '+gpu,audio:'Sound off; audio is deferred: placeholder hooks only.'};
 }catch(e){report.failure=String(e.stack||e);console.error('FAILED',e);process.exitCode=1;}
-finally{fs.writeFileSync(path.join(out,'chapter4-browser-report.json'),JSON.stringify({...report,checks,frames,errors,warnings},null,2));
+finally{report.scope=process.env.QA_PART||'full';fs.writeFileSync(path.join(out,'chapter4-browser-report.json'),JSON.stringify({...report,runtimeHashes,checks,frames,errors,warnings},null,2));
  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  fs.writeFileSync(path.join(out,'index.html'),`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chapter Four QA</title><style>
 :root{--bg:#f4f2ee;--fg:#1d1c1a;--mute:#5d5a55;--card:#fff}@media (prefers-color-scheme:dark){:root{--bg:#141414;--fg:#e9e6e0;--mute:#a19d96;--card:#1e1e1e}}
 body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,sans-serif}main{max-width:1400px;margin:auto}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
 figure{margin:0;background:var(--card);border-radius:6px;overflow:hidden}img{width:100%;display:block}figcaption{padding:6px 8px;color:var(--mute);font-size:12px}figcaption b{color:var(--fg)}</style></head><body><main>
-<h1>Last Light — Chapter Four QA</h1><p>${esc(report.renderLimitation||'')} ${checks.length} checks passed; ${errors.length} JavaScript errors; ${warnings.length} WebGL warnings. Captures 00–37: the input-driven walkthrough from Chapter Three’s end card; <i>dev-*</i>: each DEV scene started from the selector.</p>
+<h1>Last Light — Chapter Four QA</h1><p>${esc(report.renderLimitation||'')} ${checks.length} checks passed; ${errors.length} JavaScript errors; ${warnings.length} WebGL warnings. Scope: ${esc(report.scope)}. ${report.failure?'Run incomplete: '+esc(report.failure.split('\n')[0]):esc(report.walkthrough?.scope||'')} <i>dev-*</i>: each DEV scene started from the selector.</p>
 <div class="grid">${frames.map(f=>`<figure><a href="${esc(f.name)}.jpg"><img loading="lazy" src="${esc(f.name)}.jpg" alt="${esc(f.name)}"></a><figcaption><b>${esc(f.name)}</b><br>${esc(f.phase)} · ${esc(f.clock)} · ${f.triangles.toLocaleString('en-US')} tris · ${f.calls} draws<br>${esc(f.caption)}</figcaption></figure>`).join('')}</div></main></body></html>`);
  await browser.close();server.close();console.log(JSON.stringify({passed:checks.length,errors:errors.length,warnings:warnings.length,frames:frames.length,failure:report.failure||null}));}
