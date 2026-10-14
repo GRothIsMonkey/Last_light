@@ -826,7 +826,7 @@ export function createChapter4(o,k,ch2,ch3){
  // ---- doors, the dark, the night's sounds ----------------------------------------------------------------------------------------
  const SWING={'video-front':1,'library-front':-1,'video-back':1,'video-office':1,'laundry-back':1,'laundry-side':1};// (shop doors swing in, the back doors out)
  function updateDoors(dt){for(const [key,d] of Object.entries(D.doors||{})){const want=DOORS[key]?.open??1;if(d.posed&&Math.abs(d.cur-want)<1e-3)continue;d.cur=damp(d.cur,want,6,dt);if(Math.abs(d.cur-want)<2e-3)d.cur=want;
-  d.hinge.rotation.y=(SWING[key]??1)*d.cur*1.45;d.posed=true;}}
+  if(d.leaves)for(const leaf of d.leaves)leaf.hinge.rotation.y=leaf.sign*d.cur*1.45;else d.hinge.rotation.y=(SWING[key]??1)*d.cur*1.45;d.posed=true;}}
  function updateDark(dt){const to=C.darkTo||0;C.dark=damp(C.dark,to,to>C.dark?1.3:.7,dt);if(Math.abs(C.dark-to)<1e-3)C.dark=to;}
  function updateAmb(dt){const ph=S.phase,day=sky().day,town=where().street==='town';let want;if(C.mq?.still&&ph==='n4-marquee'){for(const kk in C.amb)C.amb[kk]=0;return;}
   if(/^(e4-cascade|n4-(store|back|alley|laundry|depot|marquee))$/.test(ph))want={traffic:0,life:0,insects:.12,wind:.45,forest:0,tunnel:0,water:0};

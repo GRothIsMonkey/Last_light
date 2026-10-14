@@ -7,7 +7,7 @@
 import * as THREE from './three.module.js';
 import {createKit,seeded,hashSeed,smooth,clamp,lerp} from './kit.js';
 import {makeCar} from './props.js';
-import {outsideMasks} from './town-ground.js';
+import {parkLawnMaterial,libraryEntry,libraryDoors,parkDetails,serviceBuildings,backdropHouse} from './town-repair2.js';
 import {buildApproachHouses} from './town-houses.js';
 import {polishTown} from './town-art.js';
 import {TY,T0,TW,TL,CONN,CONN_X,CONN_HOUSES,connAt,connBase,connY,connStrip,MAIN,mainHalf,mainWalk,mainBase,CROSS,CREEK,CORE,SURF,GRID,
@@ -123,7 +123,7 @@ export function buildTown(W){
  const brick=c=>surf(c,'c4-brick',.931),stone=c=>surf(c,'c4-stone',.952),concrete=c=>surf(c,'c4-walk',.971),asphalt=c=>surf(c,'c4-road',.991),earth=c=>surf(c,'earth',.981),roofM=c=>surf(c,'roof',.851),
   plaster=c=>surf(c,'c4-plaster',.941),carpet=c=>surf(c,'c4-carpet',.989),timber=c=>surf(c,'timber',.861),siding=c=>surf(c,'siding',.912);
  const metal=c=>K.mat(c,{roughness:.42,metalness:.6}),paint=c=>K.mat(c,{roughness:.62}),dull=c=>K.mat(c,{roughness:.9});
- const grassM=K.mat(0x7a8552,{roughness:.996});W.grassMats.push(grassM);
+ const grassM=W.grassMat,parkM=parkLawnMaterial(W);
  const glassClear=new THREE.MeshStandardMaterial({color:0x8fa4ac,roughness:.06,metalness:.3,transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide});glassClear.userData.keep=true;
  const glassDark=new THREE.MeshStandardMaterial({color:0x252c30,roughness:.14,metalness:.5});
  const upper=i=>W.windowMats[i%W.windowMats.length];// apartments and offices over the shops: lit in the evening with the rest of the township's windows
@@ -155,7 +155,7 @@ export function buildTown(W){
   const inside=(u,v,r)=>u>=r[0]&&u<r[1]&&v>=r[2]&&v<r[3];
   const room=(u,v)=>{for(const [k,I] of Object.entries(INTERIORS))if(inside(u,v,[I.floor[0]-.6,I.floor[1]+.6,I.floor[2]-.6,I.floor[3]+.6]))return k;return null;};
   const matFor=(t,u,v)=>{const r=room(u,v);if(t===T.carpet)return r==='video'?carpet(0x2e3352):carpet(0x3c5552);if(t===T.lino)return surf(0xd6d8d0,'c4-tile',.84);
-   return {[T.road]:asphalt(0x5f6264),[T.walk]:concrete(0xbdb7a9),[T.lot]:asphalt(0x6b6b67),[T.grass]:grassM,[T.none]:grassM,[T.gravel]:earth(0x8b7f68),[T.paver]:concrete(0xb3a089),[T.tile]:concrete(0xd8d4c8),[T.wood]:timber(0x8a6844),[T.curb]:concrete(0xb3ae9f)}[t];};
+   return {[T.road]:asphalt(0x5f6264),[T.walk]:concrete(0xbdb7a9),[T.lot]:asphalt(0x6b6b67),[T.grass]:(u>98.5&&u<171.5&&v>11&&v<40.5?parkM:grassM),[T.none]:grassM,[T.gravel]:earth(0x8b7f68),[T.paver]:concrete(0xb3a089),[T.tile]:concrete(0xd8d4c8),[T.wood]:timber(0x8a6844),[T.curb]:concrete(0xb3ae9f)}[t];};
   const draws=t=>t!==T.solid&&t!==T.creek&&t!==T.steps;
   const hOf=k=>{const t=GRID.t[k],f=GRID.floor[k];return Number.isNaN(f)?(t===T.road?0:t===T.grass||t===T.none?.12:t===T.lot?.02:t===T.gravel?.04:t===T.paver?.14:.15):f;};
   const geo=new Map(),put=(m,arr)=>{if(!geo.has(m))geo.set(m,{p:[],inn:false});return geo.get(m);};
@@ -164,29 +164,31 @@ export function buildTown(W){
    const h=hOf(k),u=GRID.u0+i*c,v=GRID.v0+j*c,m=matFor(t,u+c/2,v+c/2),indoor=!!room(u+c/2,v+c/2)&&!Number.isNaN(GRID.floor[k]);
    const same=(a,b)=>{const q=id(a,b);return !done[q]&&GRID.t[q]===t&&hOf(q)===h&&matFor(t,GRID.u0+a*c+c/2,GRID.v0+b*c+c/2)===m;};
    let j2=j;while(j2+1<nv&&same(i,j2+1))j2++;
-   const maxI=u<-10?4:400;let i2=i;outer:while(i2+1<nu&&i2+1-i<maxI){for(let b=j;b<=j2;b++)if(!same(i2+1,b))break outer;i2++;}
+   const maxI=u<-10?1:400;let i2=i;outer:while(i2+1<nu&&i2+1-i<maxI){for(let b=j;b<=j2;b++)if(!same(i2+1,b))break outer;i2++;}
    for(let a=i;a<=i2;a++)for(let b=j;b<=j2;b++)done[id(a,b)]=1;
    const u0=u,u1=GRID.u0+(i2+1)*c,v0=v,v1=GRID.v0+(j2+1)*c,G=put(m);G.inn=G.inn||indoor;const yA=yAt(u0,h),yB=yAt(u1,h);
    if(u0<-12){
     // The approach has smooth widening edges, not half-metre stair steps.
     // Clip surrounding lots/lawns to the very same edge used by the new strip.
-    for(const side of [-1,1]){const a0=side<0?v0:Math.max(v0,mainWalk(u0)),a1=side<0?Math.min(v1,-mainWalk(u0)):v1;
-     const b0=side<0?v0:Math.max(v0,mainWalk(u1)),b1=side<0?Math.min(v1,-mainWalk(u1)):v1;
-     if(a1>a0&&b1>b0)G.p.push(u0,yA,a0,u0,yA,a1,u1,yB,b1,u0,yA,a0,u1,yB,b1,u1,yB,b0);}
+    for(const side of [-1,1]){const poly=[[u0,v0],[u1,v0],[u1,v1],[u0,v1]],clipped=[],d=p=>side*p[1]-lerp(mainWalk(u0),mainWalk(u1),(p[0]-u0)/(u1-u0));
+     for(let n=0;n<4;n++){const a=poly[n],b=poly[(n+1)%4],da=d(a),db=d(b),ia=da>=0,ib=db>=0;if(ia)clipped.push(a);if(ia!==ib){const f=da/(da-db);clipped.push([lerp(a[0],b[0],f),lerp(a[1],b[1],f)]);}}
+     const p=clipped.map(([u,v])=>[u,yAt(u,h),v]);for(let n=1;n<p.length-1;n++)G.p.push(...p[0],...p[n+1],...p[n]);}
    }else G.p.push(u0,yA,v0,u0,yA,v1,u1,yB,v1,u0,yA,v0,u1,yB,v1,u1,yB,v0);}
   // Curbs and lawn edges: wherever two drawn neighbours stand at different heights, a vertical face toward the lower one.
   const curb=concrete(0xb0aa9c),edges=[];
-  const face=(ua,va,ub,vb,yLo,yHi,nx,nz)=>{if(nx<0||nz>0)edges.push(ua,yLo,va,ub,yLo,vb,ub,yHi,vb,ua,yLo,va,ub,yHi,vb,ua,yHi,va);else edges.push(ua,yLo,va,ua,yHi,va,ub,yHi,vb,ua,yLo,va,ub,yHi,vb,ub,yLo,vb);};
+  const face=(ua,va,ub,vb,lo,hi,nx,nz)=>{const a=mainBase(ua),b=mainBase(ub);if(nx<0||nz>0)edges.push(ua,a+lo,va,ub,b+lo,vb,ub,b+hi,vb,ua,a+lo,va,ub,b+hi,vb,ua,a+hi,va);else edges.push(ua,a+lo,va,ua,a+hi,va,ub,b+hi,vb,ua,a+lo,va,ub,b+hi,vb,ub,b+lo,vb);};
   for(let i=0;i<nu-1;i++)for(let j=0;j<nv-1;j++){const k=id(i,j),t=GRID.t[k];if(!draws(t))continue;const h=hOf(k),u=GRID.u0+i*c,v=GRID.v0+j*c;
-   for(const [di,dj] of [[1,0],[0,1]]){const q=id(i+di,j+dj),t2=GRID.t[q];if(!draws(t2))continue;const h2=hOf(q);if(u<-12||Math.abs(h-h2)<.035)continue;
+   for(const [di,dj] of [[1,0],[0,1]]){const q=id(i+di,j+dj),t2=GRID.t[q];if(!draws(t2))continue;const h2=hOf(q);if(Math.abs(h-h2)<.035||u<-12&&[t,t2].some(t=>t===T.road||t===T.walk))continue;
     const lo=Math.min(h,h2),hi=Math.max(h,h2),y0=mainBase(u+c),hiFirst=h>h2;
-    if(di)face(u+c,v,u+c,v+c,y0+lo,y0+hi,hiFirst?1:-1,0);else face(u,v+c,u+c,v+c,y0+lo,y0+hi,0,hiFirst?1:-1);}}
+    if(di)face(u+c,v,u+c,v+c,lo,hi,hiFirst?1:-1,0);else face(u,v+c,u+c,v+c,lo,hi,0,hiFirst?1:-1);}}
   const mk=(arr,m,parent,name)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));g.computeVertexNormals();const me=new THREE.Mesh(g,m);me.name=name;parent.add(me);return me;};
   // Sample the authored grade at half-metre intervals, shared by all bands.
   const roadP=[],walkP=[],curbP=[];
   for(let u=-80;u<-12;u+=.5){const v=u+.5,ya=mainBase(u),yb=mainBase(v),ha=mainHalf(u),hb=mainHalf(v),wa=mainWalk(u),wb=mainWalk(v);
    const strip=(dst,a,b,c,d,lift)=>dst.push(u,ya+lift,a,u,ya+lift,b,v,yb+lift,d,u,ya+lift,a,v,yb+lift,d,v,yb+lift,c);
    strip(roadP,-ha,ha,-hb,hb,0);strip(walkP,-wa,-ha,-wb,-hb,.15);strip(walkP,ha,wa,hb,wb,.15);
+   // Close the outer walk edge against the lower grass/forecourt, including the widening slivers.
+   for(const side of [-1,1]){const a=[u,ya+.01,side*wa],b=[v,yb+.01,side*wb],c=[v,yb+.15,side*wb],d=[u,ya+.15,side*wa];curbP.push(...(side<0?[...a,...b,...c,...a,...c,...d]:[...a,...c,...b,...a,...d,...c]));}
    for(const side of [-1,1]){const a=[u,ya,side*ha],b=[v,yb,side*hb],c=[v,yb+.15,side*hb],d=[u,ya+.15,side*ha];curbP.push(...(side<0?[...a,...b,...c,...a,...c,...d]:[...a,...c,...b,...a,...d,...c]));}
   }
   mk(roadP,asphalt(0x5f6264),out,'main-street-graded-road');mk(walkP,concrete(0xbdb7a9),out,'main-street-graded-walk');mk(curbP,curb,out,'main-street-smooth-curbs');
@@ -215,9 +217,11 @@ export function buildTown(W){
  // =========================================================== Old Mill Road ================================================
  {const st=2,N=Math.ceil(CONN.len/st),road=asphalt(0x5e6164),curbM=concrete(0xb3ad9f),walkM=concrete(0xbcb6a8),under=grassM;
   const P=(s,t,y)=>{const q=connAt(s,t);return [q.x,y,q.z];};
-  const band=(m,ts,yf,s0=0,s1=CONN.len,name='old-mill-road')=>{const pos=[];for(let i=Math.floor(s0/st);i<Math.ceil(s1/st);i++){const sa=Math.max(s0,i*st),sb=Math.min(s1,(i+1)*st);
-    for(let k=0;k<ts.length-1;k++){const ta=ts[k],tb=ts[k+1],a=P(sa,ta,yf(sa,ta)),b=P(sa,tb,yf(sa,tb)),c2=P(sb,tb,yf(sb,tb)),d=P(sb,ta,yf(sb,ta));pos.push(...a,...b,...c2,...a,...c2,...d);}}
-   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();const me=new THREE.Mesh(g,m);me.name=name;world.add(me);return me;};
+  const band=(m,ts,yf,s0=0,s1=CONN.len,name='old-mill-road')=>{const pos=[],normals=[];
+   const normal=(s,t)=>{const e=.1,sa=Math.max(s0,s-e),sb=Math.min(s1,s+e),ta=Math.max(ts[0],t-e),tb=Math.min(ts.at(-1),t+e),a=P(sa,t,yf(sa,t)),b=P(sb,t,yf(sb,t)),c=P(s,ta,yf(s,ta)),d=P(s,tb,yf(s,tb)),ds=new THREE.Vector3(...b).sub(new THREE.Vector3(...a)),dt=new THREE.Vector3(...d).sub(new THREE.Vector3(...c));return dt.cross(ds).normalize().toArray();};
+   for(let i=Math.floor(s0/st);i<Math.ceil(s1/st);i++){const sa=Math.max(s0,i*st),sb=Math.min(s1,(i+1)*st);
+    for(let k=0;k<ts.length-1;k++){const ta=ts[k],tb=ts[k+1],a=P(sa,ta,yf(sa,ta)),b=P(sa,tb,yf(sa,tb)),c2=P(sb,tb,yf(sb,tb)),d=P(sb,ta,yf(sb,ta));pos.push(...a,...b,...c2,...a,...c2,...d);if(m===under){const an=normal(sa,ta),bn=normal(sa,tb),cn=normal(sb,tb),dn=normal(sb,ta);normals.push(...an,...bn,...cn,...an,...cn,...dn);}}}
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));if(normals.length)g.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));else g.computeVertexNormals();const me=new THREE.Mesh(g,m);me.name=name;world.add(me);return me;};
   const h=CONN.half,cx=[-h,-h*.6,-h*.25,0,h*.25,h*.6,h];band(road,cx,(s,t)=>connY(s,t));
   for(const e of [-1,1]){band(curbM,e<0?[-CONN_X.curb,-h]:[h,CONN_X.curb],(s,t)=>connY(s,t));// (top; the face below)
    {const pos=[];for(let i=0;i<N;i++){const sa=i*st,sb=Math.min(CONN.len,(i+1)*st),a=P(sa,e*h,connBase(sa)),b=P(sb,e*h,connBase(sb)),c2=P(sb,e*h,connBase(sb)+.15),d=P(sa,e*h,connBase(sa)+.15);if(e<0)pos.push(...a,...b,...c2,...a,...c2,...d);else pos.push(...a,...c2,...b,...a,...d,...c2);}
@@ -225,7 +229,7 @@ export function buildTown(W){
    const sa=e<0?[-CONN_X.strip,-CONN_X.curb]:[CONN_X.curb,CONN_X.strip];band(grassM,sa,(s,t)=>connY(s,t),0,CONN.len-22);band(walkM,sa,(s,t)=>connY(s,t),CONN.len-22,CONN.len);
    band(walkM,e<0?[-CONN_X.walk,-CONN_X.strip]:[CONN_X.strip,CONN_X.walk],(s,t)=>connY(s,t));
    // The lawns share an exact boundary with the clipped surrounding land.
-   const lt=e<0?[-44,-38,-30,-24,-19,-14,-10,-CONN_X.walk]:[CONN_X.walk,10,14,19,24,30,38,44];band(under,lt,(s,t)=>Math.abs(t)<=24?connY(s,t):landY(...[connAt(s,t)].map(q=>[q.x,q.z])[0]),CONN.straight,CONN.len,'old-mill-lawn');}
+   const right=[CONN_X.walk,...Array.from({length:19},(_,i)=>8+i*2)],lt=e<0?right.map(t=>-t).reverse():right;band(under,lt,(s,t)=>Math.abs(t)<=24?connY(s,t):landY(...[connAt(s,t)].map(q=>[q.x,q.z])[0]),CONN.straight,CONN.len,'old-mill-lawn');}
   // center line and edge lines
   {const y=K.mat(0xd2ae3c,{roughness:.8,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),wl=K.mat(0xe2ded2,{roughness:.8,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
    for(const off of [-.12,.12])band(y,[off-.05,off+.05],(s,t)=>connY(s,t)+.006,4,CONN.len-2,'center-line');for(const e of [-1,1])band(wl,[e*(h-.45),e*(h-.33)],(s,t)=>connY(s,t)+.006,4,CONN.len-2,'edge-line');}
@@ -240,11 +244,7 @@ export function buildTown(W){
   for(let i=0;i<polesAt.length-1;i++){const a=polesAt[i],b=polesAt[i+1],pts=[];for(let k=0;k<=12;k++){const t=k/12;pts.push(new THREE.Vector3(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t-2.6*t*(1-t),a.z+(b.z-a.z)*t));}world.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0x3d3632})));}
   D.connPoles=polesAt;}
  // =========================================================== the land around it all ======================================
- {const step=5,pts=REGION.map(([x,z])=>TL(x,z)),u0=Math.floor(Math.min(...pts.map(p=>p.u))/step)*step,u1=Math.ceil(Math.max(...pts.map(p=>p.u))/step)*step,v0=Math.floor(Math.min(...pts.map(p=>p.v))/step)*step,v1=Math.ceil(Math.max(...pts.map(p=>p.v))/step)*step,pos=[];
-  const vertex=([u,v])=>{const q=TW(u,v);return [u,landY(q.x,q.z),v];};
-  for(let u=u0;u<u1;u+=step)for(let v=v0;v<v1;v+=step){const q=TW(u+step/2,v+step/2);if(!inRegion(q.x,q.z,4))continue;
-   for(const p of outsideMasks([[u,v],[u+step,v],[u+step,v+step],[u,v+step]]))for(let i=1;i<p.length-1;i++)pos.push(...vertex(p[0]),...vertex(p[i+1]),...vertex(p[i]));}
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();const land=new THREE.Mesh(g,grassM);land.name='town-land';far.add(land);D.landTris=pos.length/9;}
+ // The shared background heightfield now meets these exact authored boundaries.
  // =========================================================== buildings ======================================================
  const WIN={w:1.05,h:1.75};
  // A wall with rectangular openings (x across, y up), as boxes around them. ops: [x0,x1,y0,y1].
@@ -404,7 +404,7 @@ export function buildTown(W){
   B(g,0,4.7,1.1,6.6,.6,2.6,tr);K.tri(g,[-3.4,5,2.42,0,6.6,2.42,3.4,5,2.42],tr);B(g,0,5,-.1,6.8,.05,2.6,tr);
   B(g,0,h-.3,.05,w+.3,.6,.4,tr);sign(g,{text:'OAK HOLLOW PUBLIC LIBRARY',bg:'#d8cfba',fg:'#4a3e30',font:'serif',border:false},11,.55,{y:h-.32,z:.27});
   B(g,0,h-.1,-d/2,w-.4,.2,d-.4,dull(0x4a4844));{const pts=[[-w/2-.3,h,.3],[w/2+.3,h,.3],[w/2+.3,h,-d-.3],[-w/2-.3,h,-d-.3]],ap=[[-w/2+6,h+2.6,-d/2],[w/2-6,h+2.6,-d/2]];K.tri(g,[...pts[0],...ap[0],...pts[1],...pts[1],...ap[0],...ap[1],...pts[1],...ap[1],...pts[2],...pts[2],...ap[1],...ap[0],...pts[2],...ap[0],...pts[3],...pts[3],...ap[0],...pts[0]],roofM(0x4a4e52));}
-  B(g,0,1.4,-.28,3.6,2.8,.06,timber(0x5a3a24));sign(g,{text:'HOURS  MON–SAT 9–8',sub:'SUMMER READING · AUG 1–27',bg:'#f2eee4',fg:'#2a2a2a',font:'sans',border:true},.8,.55,{x:2.4,y:1.4,z:-.25});}
+  libraryEntry({g,B,K,stone,metal,glassClear,sign});sign(g,{text:'HOURS  MON–SAT 9–8',sub:'SUMMER READING · AUG 1–27',bg:'#f2eee4',fg:'#2a2a2a',font:'sans',border:true},.8,.55,{x:2.4,y:1.4,z:-.25});}
  // ---- the church: stone, a gable roof, the steeple at the front corner, its sign board on the lawn ----
  {const b=BLD.church,F=footprint(b),w=b.u1-b.u0,uc=(b.u0+b.u1)/2,y0=TY+.15,g=at(out,uc,y0,F.front,Math.PI),d=b.d,h=b.h,st=stone(b.c),tr=stone(0xc8c0b0);b.group=g;
   B(g,0,h/2,-d/2,w,h,d,st);const ridge=h+6.5,v=[];for(const s of [-1,1])v.push(-w/2-.4*s*0-.4,h,.4*0,0,ridge,0,0,ridge,-d,-w/2-.4,h,0,0,ridge,-d,-w/2-.4,h,-d);
@@ -417,15 +417,7 @@ export function buildTown(W){
   const bd=at(out,uc+6,TY+.12,13.6,Math.PI);B(bd,0,.5,0,.12,1,.12,timber(0x4a3a2a));B(bd,2.6,.5,0,.12,1,.12,timber(0x4a3a2a));B(bd,1.3,1.3,0,2.9,1.3,.18,timber(0x4a3a2a));
   sign(bd,{text:'GRACE UNITED METHODIST',sub:'SUNDAY WORSHIP 9:30 AM',sub2:'ALL ARE WELCOME · VBS AUG 8–12',bg:'#f2eee6',fg:'#2a2a3a',font:'serif',border:true},2.6,1.1,{x:1.3,y:1.3,z:.1});}
  // ---- Main Street East: the gas station, the car wash, the VFW ----
- {const b=BLD.gas,F=footprint(b),uc=(b.u0+b.u1)/2,y0=mainBase(uc)+.02,g=at(out,uc,y0,F.front,Math.PI),w=b.u1-b.u0;b.group=g;
-  B(g,0,b.h/2,-b.d/2,w,b.h,b.d,plaster(0xe8e4da));B(g,0,b.h+.2,-.1,w+.2,.5,.3,paint(0xb83a2a));wallWith(g,-w/2,w/2,.6,2.6,.02,.04,[],glassDark);B(g,0,1.6,.04,w-2,2,.04,glassClear);
-  sign(g,{text:'HOLLOW FUEL & FOOD',sub:'COLD DRINKS · ICE · LOTTO',bg:'#b83a2a',fg:'#fff4e8',font:'block',border:false},w-1,.6,{y:b.h+.2,z:.07});
-  const cg=at(out,(-58.5-45.5)/2,y0,18,0);B(cg,0,4.8,0,15,.6,9.4,paint(0xe8e4dc));B(cg,0,5.1,0,15.2,.4,9.6,paint(0xb83a2a));for(const [x,z] of [[-6.5,-3.8],[6.5,-3.8],[-6.5,3.8],[6.5,3.8]])B(cg,x,2.3,z,.4,4.6,.4,paint(0xd8d4cc));
-  for(const x of [-3,3]){const pg=at(cg,x,0,0,0);B(pg,0,.8,0,.8,1.6,.5,paint(0xe8e2d8));B(pg,0,1.4,.26,.6,.4,.02,glassDark);B(pg,0,.1,0,1.1,.2,1.3,concrete(0xb0aa9c));}
-  const ps=at(out,-34,y0,12.4,0);B(ps,0,2.5,0,.25,5,.25,metal(0x6a6a6a));B(ps,0,5.4,0,1.8,1.6,.3,paint(0xb83a2a));sign(ps,{text:'REGULAR  3.59⁹',sub:'PLUS 3.71⁹ · DIESEL 3.89⁹',bg:'#141414',fg:'#ffd040',font:'mono',border:false},1.7,.9,{y:5.2,z:.17,lit:true,lvl:LV.neon+NEON.gasPrice});}
- {const b=BLD.carwash,F=footprint(b),uc=(b.u0+b.u1)/2,y0=mainBase(uc)+.02,g=at(out,uc,y0,F.front,0),w=b.u1-b.u0;b.group=g;
-  B(g,0,b.h/2,-b.d/2,w,b.h,b.d,plaster(0xd8dce0));for(const x of [-3.6,3.6])B(g,x,1.9,.01,3.6,3.8,.04,dull(0x16181c));B(g,0,b.h+.3,0,w,.6,.2,paint(0x2a6aaa));
-  sign(g,{text:'MILL ROAD CAR WASH',sub:'SELF SERVE · VACUUM · OPEN 24 HRS',bg:'#2a6aaa',fg:'#ffffff',font:'block',border:false},w-1,.55,{y:b.h+.3,z:.11});}
+ serviceBuildings({out,at,B,K,sign,brick,stone,concrete,plaster,metal,paint,dull,glassDark,glassClear,D,LV,NEON,quadInto,quads});
  {const b=BLD.vfw,g=b.group;sign(g,{text:'V.F.W. POST 4417',sub:'BINGO THURSDAYS 7 PM',bg:'#1a2a4a',fg:'#ffffff',font:'serif',border:false},4,.62,{y:4.0,z:.06});K.cyl(g,(b.u1-b.u0)/2+1.4,4,.8,.06,8,metal(0xc8c8c8),8);}
  // =========================================================== the rooms you can walk into ===================================
  // A thin wall inside a room (plaster over the brick), with openings: along u at v (alongU) or along v at u.
@@ -548,11 +540,11 @@ export function buildTown(W){
  // =========================================================== beyond the edges ==============================================
  // The town goes on past what you can reach: houses on the residential streets north and south, the rail line west,
  // trees, the water tower. All rough and far.
- {const rnd=seeded(77),house=(u,v,rot,c)=>{const g=at(far,u,mainBase(u)+.1,v,rot),w=8+rnd()*3,d=8+rnd()*2,two=rnd()<.5,h=two?5.8:3.2,wall=siding(c),rf=roofM([0x4d4a48,0x5b534d,0x46505a,0x635a52][Math.floor(rnd()*4)]);
-   B(g,0,h/2,0,w,h,d,wall);K.tri(g,[-w/2-.3,h,d/2+.3,w/2+.3,h,d/2+.3,0,h+2.2,0, w/2+.3,h,-d/2-.3,-w/2-.3,h,-d/2-.3,0,h+2.2,0, -w/2-.3,h,-d/2-.3,-w/2-.3,h,d/2+.3,0,h+2.2,0, w/2+.3,h,d/2+.3,w/2+.3,h,-d/2-.3,0,h+2.2,0],rf);
-   for(const x of [-w*.3,w*.3])B(g,x,1.5,d/2+.02,1.1,1.3,.04,upper(Math.floor(rnd()*8)));if(two)for(const x of [-w*.3,0,w*.3])B(g,x,4.3,d/2+.02,1,1.2,.04,upper(Math.floor(rnd()*8)));};
+ {const rnd=seeded(77),house=(u,v,rot,c)=>{const w=8+rnd()*3,d=8+rnd()*2,two=rnd()<.5,roof=[0x4d4a48,0x5b534d,0x46505a,0x635a52][Math.floor(rnd()*4)];
+   // Preserve the accepted lot/tree random stream while improving only each house.
+   for(let i=0;i<(two?5:2);i++)rnd();backdropHouse(W,far,{u,v,rot,w,d,two,c,roof});};
   for(let u=-60;u<300;u+=16+rnd()*6){for(const [v0,rot] of [[94,Math.PI],[118,0],[-80,0],[-104,Math.PI]]){if(rnd()<.18)continue;house(u,v0+(rnd()-.5)*4,rot+(rnd()-.5)*.1,HOUSE_WALLS[Math.floor(rnd()*HOUSE_WALLS.length)]);}}
-  for(let k=0;k<160;k++){const u=-120+rnd()*520,v=(rnd()<.5?1:-1)*(76+rnd()*120);if(Math.abs(v)<80&&u>-80&&u<290)continue;const tg=at(far,u,mainBase(clamp(u,-80,290))+.1,v,rnd()*6);veg.build(tg,rnd,{size:1+rnd()*.8,kind:rnd()<.3?'pine':'maple',lod:'far'});}
+  for(let k=0;k<160;k++){const u=-120+rnd()*520,v=(rnd()<.5?1:-1)*(76+rnd()*120);if(Math.abs(v)<80&&u>-80&&u<290)continue;const q=TW(u,v),tg=at(far,u,landY(q.x,q.z),v,rnd()*6);veg.build(tg,rnd,{size:1+rnd()*.8,kind:rnd()<.3?'pine':'maple',lod:'far'});}
   // the rail line past Main's west end, its old depot, and the water tower on the hill beyond
   const rl=at(far,288,TY,0,0);for(const x of [-.75,.75])B(rl,x,.12,0,.08,.12,300,metal(0x6a5a4a));for(let z=-150;z<150;z+=.65)B(rl,0,.04,z,2.4,.08,.22,timber(0x5a4a3a));
   for(const s of [-1,1]){const xb=at(far,284,TY,s*9,0);K.cyl(xb,0,2,0,.06,4,metal(0xe8e8e8),6);const cb=new THREE.Group();cb.position.y=3.6;xb.add(cb);for(const a of [.7,-.7]){const bar=B(cb,0,0,0,1.3,.2,.03,paint(0xf2f2f2));bar.rotation.z=a;}}
@@ -561,6 +553,7 @@ export function buildTown(W){
   const tank=new THREE.Mesh(new THREE.SphereGeometry(5.4,20,14),metal(0xb8c0c4));tank.scale.y=.8;tank.position.y=28;wt.add(tank);sign(wt,{text:'OAK HOLLOW',bg:'',fg:'#2a4a6a',font:'block',border:false},6,1.4,{y:28,z:5.42});}
  // Chapter Four art is baked into the existing town cells; the navigation plan remains authoritative.
  polishTown({W,K,out,inn,world,D,at,B,sign,filmUV,quadInto,quads,brick,stone,concrete,timber,metal,paint,dull,plaster,glassDark,LV,NEON});
+ parkDetails({out,K,B,stone,earth,dull});
  // =========================================================== the live parts ================================================
  // Lamp heads (one mesh), pools of light under them (one mesh), lit signs and posters, shop rooms, fixtures, the marquee.
  const live2={lvl:[],pos:[],nor:[]};
@@ -616,12 +609,13 @@ export function buildTown(W){
  const litCoverMat=lvMat({color:0xffffff,roughness:.6,emissive:0xffffff,emissiveIntensity:.6});litCoverMat.map=litCoverMat.emissiveMap=covers.tex;
  D.posterMesh=liveMesh(quadGeo(quads.litCover,true,live),litCoverMat,'lyric-lit-posters');
  // the doors that open and shut (their cells are solid while shut: town-plan DOORS)
- for(const [k,d] of Object.entries(DOORS)){const w=Math.max(d.u1-d.u0,d.v1-d.v0),alongU=(d.u1-d.u0)>=(d.v1-d.v0),cu=(d.u0+d.u1)/2,cv=(d.v0+d.v1)/2,y=townY(cu,cv);
+ for(const [k,d] of Object.entries(DOORS)){if(k==='library-front')continue;const w=Math.max(d.u1-d.u0,d.v1-d.v0),alongU=(d.u1-d.u0)>=(d.v1-d.v0),cu=(d.u0+d.u1)/2,cv=(d.v0+d.v1)/2,y=townY(cu,cv);
   const hinge=new THREE.Group();hinge.position.set(alongU?d.u0+.04:cu,y,alongU?cv:d.v0+.04);live.add(hinge);const steel=k==='video-back'||k==='laundry-back'||k==='laundry-side';
   const leaf=new THREE.Mesh(new THREE.BoxGeometry(alongU?w-.08:.05,2.2,alongU?.05:w-.08),K.mat(steel?0x5a5e5c:0x3a3a36,{roughness:.5,metalness:.4}));leaf.position.set(alongU?(w-.08)/2:0,1.1,alongU?0:(w-.08)/2);hinge.add(leaf);
   if(!steel){const gl=new THREE.Mesh(new THREE.BoxGeometry(alongU?w-.3:.02,1.7,alongU?.02:w-.3),glassDark);gl.position.copy(leaf.position).add(new THREE.Vector3(alongU?0:.02,.1,alongU?.02:0));hinge.add(gl);}
   else{const bar=new THREE.Mesh(new THREE.BoxGeometry(alongU?w-.3:.06,.06,alongU?.06:w-.3),K.mat(0xb8b8b0,{metalness:.6,roughness:.4}));bar.position.copy(leaf.position).add(new THREE.Vector3(0,-.1,0));bar.position[alongU?'z':'x']+=.06;hinge.add(bar);}
   D.doors[k]={hinge,alongU,open:d.open,cur:d.open,sign:k==='video-front'||k==='library-front'?1:-1};}
+ libraryDoors({live,D,at,B,metal,timber,glassClear});
  // the real lights: a few point lights, given each frame to the lit things nearest the camera (attached only in Chapter Four)
  for(let i=0;i<5;i++){const L=new THREE.PointLight(0xffd8a0,0,12,1.6);L.name='town-light-'+i;D.lights.push({L,src:null,w:0});}
  // ---- what the story moves: a few scene objects it needs ----

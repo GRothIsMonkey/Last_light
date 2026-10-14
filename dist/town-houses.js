@@ -25,7 +25,7 @@ export function buildApproachHouses(W,world){
   const bottom=low-base-.18;K.box(P.g,0,(bottom-.05)/2,0,H.w+.14,-.05-bottom,H.d+.14,0x9b958a);
   // Paths are tessellated and graded to the sidewalk, not floating flat boxes.
   function pathStrip(x,width,z0,z1,atHouse){const pos=[],N=Math.ceil((z1-z0)/.7),M=Math.ceil(width/.8);
-   const v=(x,z)=>{const q=P.toWorld(x,z),f=clamp((z-z0)/(z1-z0),0,1),ground=connY(q.d,q.lat);return [q.x,atHouse===null?ground+.014:lerp(base+.014,ground+.014,f),q.z];};
+   const v=(x,z)=>{const q=P.toWorld(x,z),f=clamp((z-z0)/(z1-z0),0,1),ground=connY(q.d,q.lat);return [q.x,Math.max(ground+.04,atHouse===null?ground+.04:lerp(base+.04,ground+.04,f)),q.z];};
    for(let i=0;i<N;i++)for(let j=0;j<M;j++){const za=lerp(z0,z1,i/N),zb=lerp(z0,z1,(i+1)/N),xa=x-width/2+width*j/M,xb=x-width/2+width*(j+1)/M,a=v(xa,za),b=v(xb,za),c=v(xb,zb),d=v(xa,zb);pos.push(...a,...c,...b,...a,...d,...c);}
    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
    const m=new THREE.Mesh(g,W.surfaceMaterial(K.mat(0xb7b0a0,{roughness:.972}),'c4-walk'));m.name='old-mill-graded-path';world.add(m);

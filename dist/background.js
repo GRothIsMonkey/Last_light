@@ -8,14 +8,18 @@ import {groundPoint,heading,roadFrame} from './route.js';
 import {MAIN,LAWN,terrainY,streetCoords,nearY} from './terrain.js';
 import {JUNCTIONS,ROAD_START,SECTION} from './layout.js';
 import {HOUSE,FOLIAGE,STREET} from './palette.js';
-import {seeded,hashSeed,pickFrom,smooth} from './kit.js';
+import {seeded,hashSeed,pickFrom,smooth,lerp} from './kit.js';
+import {TW,TL,REGION,inRegion,edgeDist,landY as townLandY} from './town-plan.js';
+import {outsideMasks} from './town-ground.js';
 import {planHouse,buildHouse,hipRoof,gableRoof,outward} from './houses.js';
 
 export function buildBackground(W){
  const {K}=W,veg=W.veg,REAR=SECTION.rearFence;
  const T=(x,z)=>terrainY(x,z)+LAWN-.08;// the far ground's lawn level
  // Where the far ground slides under authored lawns, keep it just below them.
- const landY=(x,z)=>{const {d,lat}=streetCoords(x,z),a=Math.abs(lat);const t=T(x,z);return a<86&&d>ROAD_START-6?Math.min(t,nearY(d,lat)+LAWN-.08):t;};
+ const baseLandY=(x,z)=>{const {d,lat}=streetCoords(x,z),a=Math.abs(lat);const t=T(x,z);return a<86&&d>ROAD_START-6?Math.min(t,nearY(d,lat)+LAWN-.08):t;};
+ // One ground surface and one grass material across the old/new region boundary.
+ const landY=(x,z)=>{const base=baseLandY(x,z);return inRegion(x,z,36)?lerp(base,townLandY(x,z),inRegion(x,z)?1:1-smooth(edgeDist(x,z)/36)):base;};
  const inSide=(x,z,margin=0)=>W.sideFrames.find(f=>{const q=f.project(x,z);return q.u>-2&&q.u<f.length+14+margin&&Math.abs(q.v)<40+margin;});
 
  // Second row: the next street's houses, backs toward us, with their own back yards ------------
@@ -81,24 +85,26 @@ export function buildBackground(W){
   const tx=x+(rand()-.5)*10,tz=z+(rand()-.5)*10;if(W.woods?.inside(tx,tz,3)||W.town?.inside(tx,tz,3))continue;if(veg.treeWorld(tx,tz,T(tx,tz),{size:1.3+rand()*.9,kind:rand()<.35?'pine':'maple',clearance:3.5}))trees++;}
 
  // The far ground itself, meeting the street's lawns under the rear fences --------------------
- const step=8,nx=Math.ceil((maxX-minX+40)/step)+1,nz=Math.ceil((maxZ-minZ+40)/step)+1,x0=minX-20,z0=minZ-20;
- const H=new Float32Array(nx*nz),keep=new Uint8Array(nx*nz);
+ const step=4,rx=REGION.map(p=>p[0]),rz=REGION.map(p=>p[1]);
+ const x0=Math.floor(Math.min(minX-20,Math.min(...rx)-40)/step)*step,z0=Math.floor(Math.min(minZ-20,Math.min(...rz)-40)/step)*step;
+ const nx=Math.ceil((Math.max(maxX+20,Math.max(...rx)+40)-x0)/step)+1,nz=Math.ceil((Math.max(maxZ+20,Math.max(...rz)+40)-z0)/step)+1;
+ const keep=new Uint8Array(nx*nz);
  for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const x=x0+i*step,z=z0+j*step,{d,lat}=streetCoords(x,z),a=Math.abs(lat);
-  H[i*nz+j]=landY(x,z);
-  // Cells the authored street ground already covers: the lot corridor, the side streets, the lookout field.
   const covered=(a<30&&d>ROAD_START+4&&d<1150)||(d>1149&&d<1645&&a<76)||!!inSide(x,z,-6);
-  keep[i*nz+j]=a>R+40||covered?0:1;}
- const pos=[],idx=[];const vid=new Int32Array(nx*nz).fill(-1);
- const v=(i,j)=>{const k=i*nz+j;if(vid[k]<0){vid[k]=pos.length/3;pos.push(x0+i*step,H[k],z0+j*step);}return vid[k];};
- // The drainage easement has its own ground; leave out far cells that would roof over its trench.
- const ez=W.easement,overTrench=(i,j)=>{if(!ez)return false;for(let a=0;a<=4;a++)for(let b=0;b<=4;b++){const x=x0+(i+a/4)*step,z=z0+(j+b/4)*step;if(ez.trench(x,z,1.5))return true;}return false;};
- // ...and of cells wholly inside Chapter Three's woods (they have their own ground).
- const wz=W.woods,underBasin=(i,j)=>{if(!wz)return false;for(const [a,b] of [[0,0],[1,0],[0,1],[1,1]])if(!wz.inside(x0+(i+a)*step,z0+(j+b)*step,-1))return false;return true;};
- // ...and of cells wholly inside Chapter Four's region (Old Mill Road and the town lay their own land).
- const tw=W.town,underTown=(i,j)=>{if(!tw)return false;for(const [a,b] of [[0,0],[1,0],[0,1],[1,1]])if(!tw.inside(x0+(i+a)*step,z0+(j+b)*step,-1))return false;return true;};
- for(let i=0;i<nx-1;i++)for(let j=0;j<nz-1;j++){if(!(keep[i*nz+j]||keep[(i+1)*nz+j]||keep[i*nz+j+1]||keep[(i+1)*nz+j+1]))continue;if(overTrench(i,j)||underBasin(i,j)||underTown(i,j))continue;
-  const a=v(i,j),b=v(i+1,j),c=v(i,j+1),e=v(i+1,j+1);idx.push(a,c,b,b,c,e);}
+  keep[i*nz+j]=inRegion(x,z,36)?1:a>R+40||covered?0:1;}
+ const ez=W.easement,overTrench=(x,z)=>{if(!ez)return false;for(let a=0;a<=2;a++)for(let b=0;b<=2;b++)if(ez.trench(x+a*step/2,z+b*step/2,1.5))return true;return false;};
+ const wz=W.woods,underBasin=(x,z)=>wz&&[[0,0],[1,0],[0,1],[1,1]].every(([a,b])=>wz.inside(x+a*step,z+b*step,-1));
+ const pos=[],idx=[],vertices=new Map();let townTris=0;
+ const vertex=(x,z)=>{const key=x.toFixed(5)+':'+z.toFixed(5);if(vertices.has(key))return vertices.get(key);const n=pos.length/3;pos.push(x,landY(x,z),z);vertices.set(key,n);return n;};
+ for(let i=0;i<nx-1;i++)for(let j=0;j<nz-1;j++){
+  if(!(keep[i*nz+j]||keep[(i+1)*nz+j]||keep[i*nz+j+1]||keep[(i+1)*nz+j+1]))continue;
+  const x=x0+i*step,z=z0+j*step;if(overTrench(x,z)||underBasin(x,z))continue;
+  if(inRegion(x+step/2,z+step/2,44)){
+   const poly=[[x,z],[x+step,z],[x+step,z+step],[x,z+step]].map(([x,z])=>{const q=TL(x,z);return [q.u,q.v];});
+   for(const p of outsideMasks(poly)){const ids=p.map(([u,v])=>{const q=TW(u,v);return vertex(q.x,q.z);});for(let k=1;k<ids.length-1;k++){idx.push(ids[0],ids[k+1],ids[k]);townTris++;}}
+  }else{const a=vertex(x,z),b=vertex(x+step,z),c=vertex(x,z+step),d=vertex(x+step,z+step);idx.push(a,c,b,b,c,d);}
+ }
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
  const land=new THREE.Mesh(geo,W.grassMat);land.name='far-land';land.userData.far=true;W.baked.push(land);
- W.background={row2:row2.length,farHouses:houses,trees,landTris:idx.length/3};
+ W.town.D.landTris=townTris;W.background={row2:row2.length,farHouses:houses,trees,landTris:idx.length/3};
 }

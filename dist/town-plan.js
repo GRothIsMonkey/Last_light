@@ -248,7 +248,7 @@ export const REGION=(()=>{const P=(u,v)=>{const p=S2.point(u,v);return [p.x,p.z]
  return [P(CONN.u0+8,-46),P(CONN.u0+70,-60),W2(-90,-130),W2(150,-300),W2(520,-250),W2(560,200),W2(250,340),W2(-90,300),P(CONN.u0+70,62),P(CONN.u0+8,46)];})();
 const RB=(()=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const [x,z] of REGION){x0=Math.min(x0,x);x1=Math.max(x1,x);z0=Math.min(z0,z);z1=Math.max(z1,z);}return {x0,x1,z0,z1};})();
 const inPolyR=(x,z)=>{let c=false;for(let i=0,j=REGION.length-1;i<REGION.length;j=i++){const [xi,zi]=REGION[i],[xj,zj]=REGION[j];if((zi>z)!==(zj>z)&&x<(xj-xi)*(z-zi)/(zj-zi)+xi)c=!c;}return c;};
-const edgeDist=(x,z)=>{let best=1e18;for(let i=0,j=REGION.length-1;i<REGION.length;j=i++){const [ax,az]=REGION[j],[bx,bz]=REGION[i],dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz||1,f=clamp(((x-ax)*dx+(z-az)*dz)/l,0,1);best=Math.min(best,Math.hypot(x-ax-dx*f,z-az-dz*f));}return best;};
+export const edgeDist=(x,z)=>{let best=1e18;for(let i=0,j=REGION.length-1;i<REGION.length;j=i++){const [ax,az]=REGION[j],[bx,bz]=REGION[i],dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz||1,f=clamp(((x-ax)*dx+(z-az)*dz)/l,0,1);best=Math.min(best,Math.hypot(x-ax-dx*f,z-az-dz*f));}return best;};
 export function inRegion(x,z,m=0){if(x<RB.x0-m||x>RB.x1+m||z<RB.z0-m||z>RB.z1+m)return false;const i=inPolyR(x,z);if(m===0)return i;return i?(m>0||edgeDist(x,z)>-m):(m>0&&edgeDist(x,z)<m);}
 // The core rect downtown's own ground covers (the land leaves it out).
 export const inCore=(u,v,m=0)=>u>CORE.u0-m&&u<CORE.u1+m&&v>CORE.v0-m&&v<CORE.v1+m;

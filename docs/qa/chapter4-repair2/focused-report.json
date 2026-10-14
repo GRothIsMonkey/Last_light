@@ -1,0 +1,234 @@
+{
+  "checks": [
+    {
+      "name": "title screen and controls present",
+      "passed": true
+    },
+    {
+      "name": "DEV Chapter Four start preserves opening scene",
+      "passed": true
+    },
+    {
+      "name": "creature GLB decoded with no error",
+      "passed": true
+    },
+    {
+      "name": "sign atlases fit",
+      "passed": true
+    },
+    {
+      "name": "library accessible in both directions",
+      "passed": true,
+      "detail": {
+        "inside": {
+          "u": 135,
+          "v": 48.188938691003045
+        },
+        "outside": {
+          "u": 135,
+          "v": 37.938938690995315
+        },
+        "phase": "d4-library"
+      }
+    },
+    {
+      "name": "library scene progression preserved",
+      "passed": true
+    },
+    {
+      "name": "park crosspath walkable for over ten metres",
+      "passed": true,
+      "detail": {
+        "u": 140.127272024334,
+        "v": 27
+      }
+    },
+    {
+      "name": "corridor and widening sidewalk edges have no missing ground",
+      "passed": true,
+      "detail": {
+        "n": 754,
+        "missing": 0,
+        "worst": 0.01557953787274391,
+        "bad": [],
+        "landTriangles": 281675
+      }
+    },
+    {
+      "name": "short actual ride reaches downtown",
+      "passed": true,
+      "detail": {
+        "end": {
+          "u": -44.34912078143333,
+          "v": -1.378556489508128
+        },
+        "distance": 228.06635651469298,
+        "phase": "d4-town",
+        "objective": "Ride downtown.",
+        "companions": [
+          {
+            "key": "jamie",
+            "active": true,
+            "follow": "ride"
+          },
+          {
+            "key": "sam",
+            "active": true,
+            "follow": "ride"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Jamie and Sam retain ride following",
+      "passed": true
+    },
+    {
+      "name": "no runtime or asset errors",
+      "passed": true,
+      "detail": {
+        "errors": [],
+        "requests": []
+      }
+    }
+  ],
+  "errors": [],
+  "requests": [],
+  "frames": [
+    {
+      "name": "01-gas",
+      "calls": 127,
+      "triangles": 137401,
+      "phase": "d4-town"
+    },
+    {
+      "name": "02-carwash",
+      "calls": 238,
+      "triangles": 508289,
+      "phase": "d4-town"
+    },
+    {
+      "name": "03-park",
+      "calls": 265,
+      "triangles": 269069,
+      "phase": "d4-town"
+    },
+    {
+      "name": "04-library",
+      "calls": 206,
+      "triangles": 280216,
+      "phase": "d4-town"
+    },
+    {
+      "name": "05-houses-south",
+      "calls": 107,
+      "triangles": 170567,
+      "phase": "d4-town"
+    },
+    {
+      "name": "06-houses-north",
+      "calls": 76,
+      "triangles": 114101,
+      "phase": "d4-town"
+    },
+    {
+      "name": "07-ride-1",
+      "calls": 429,
+      "triangles": 346221,
+      "phase": "d4-ride"
+    },
+    {
+      "name": "08-ride-side-1",
+      "calls": 174,
+      "triangles": 294891,
+      "phase": "d4-ride"
+    },
+    {
+      "name": "07-ride-3",
+      "calls": 482,
+      "triangles": 381807,
+      "phase": "d4-ride"
+    },
+    {
+      "name": "08-ride-side-3",
+      "calls": 179,
+      "triangles": 363271,
+      "phase": "d4-ride"
+    },
+    {
+      "name": "07-ride-5",
+      "calls": 431,
+      "triangles": 329167,
+      "phase": "d4-town"
+    }
+  ],
+  "runtimeHashes": {
+    "adult-art.js": "07ab447ff682d430620a073814491b3a44e0f7c6603b685048e2b4c0ff1868a5",
+    "alex-camera.js": "1ddd5182b375e1c3f71499f9d106b7395ad00e1fe813ea09a3c66ac44fdd0ba6",
+    "alex-room.js": "f14a81330045bc8c1f4c91d25e8e949dad8d5f9b29c2178efd5c1fbfb94df686",
+    "ambient.js": "5b2b3919a4a7fe3c5ec77ca38b265088cf7c219065d10c9257f65786c08deec3",
+    "art-surfaces.js": "d34973c059b7af63b1f1c7b9668966751e0141e17aecb01e0d503ae4982de2c0",
+    "audio.js": "f47e4a8bbf9aa92c9125119471f054b5a2f31d774af3650751e08cc85cc099e0",
+    "background.js": "8120d4bb914e3f5137e249c3aa99b888b9c6ab0c756ebc0222bfa6faab0c4dde",
+    "captions.js": "6e31b76593a62d1362cf00259ff5a75ac3bcfb33a1f70db0d22280e1e1643a99",
+    "cast.js": "bfc977fc428a3860f648ad4f40a7eb6bd2e5424b3bdef2a1ebdbaf83e11c3ff9",
+    "chapter1.js": "5aae6471ad0ad240f241c28a5ffb1c949af20a2d7e53ecd42a921ca6865e8f2e",
+    "chapter2.js": "01b61485854de3cc30f9f5d56e649bd90ff6e9234300a77ef09435b0cdba137f",
+    "chapter3-art.js": "f990c6985b2932b25152a9722e3c449729de57e3b84c79495ad769bf43c4ba91",
+    "chapter3-props.js": "4ba5446b792d82adf49f7a0f055035e7310378f28c94f28d668bbdad55bb2b6f",
+    "chapter3.js": "f1247c3f0b59b402122d6c8f9dea624b901c57b73f98592d450e751a6f5ee385",
+    "chapter4-art.js": "575a8cbd41a2cd3080816c09780eb3a3d6202db0d93f415e1e4464595db6ada1",
+    "chapter4-surfaces.js": "77dd32b2f8f678097cc1bab69ca41e5772e972ed0cc2d3e3590d4f81b12ead63",
+    "chapter4-textures.js": "bc4c492d15332fb2f4a7524822b448c300311473a5f77c7c8716f338aa4723d0",
+    "chapter4.js": "5ed39173debef8a05f46fd13fef822912ed70cb183dcd54a9fc20e289df25758",
+    "companions.js": "d1ac29a271e1e5ccf5fc432817985dfaa3043d3a4222ef678dfe4056ff594e9b",
+    "creature-asset.js": "cfd431397910ec8b899c38fff6d498299cc631c22e735aeb3ea8b811b8bf2be4",
+    "creature.js": "664bd15c7d80d36cf3c6c46767005137c0378489f3107b4cb8e2cc27a0321798",
+    "creek.js": "f5cc5a7867f4c343e0ccf21818cd7bfff7a00ff2ea0c90bbed7b985df6889f0c",
+    "dev-chapter-history.js": "a39e60097f53114045db0b1a1c82e250d2a6e1885bfdbea841ef83c49ecaf5b3",
+    "dev-chapters.js": "a330b203482f26260c49ab06b66d4a2dd920cc369c819c4344f500d7c245bfa2",
+    "drain.js": "b17b28ccb702c011cd1d46dcea7b92a5f0f39d5f1ca1f12004e861f72e6c8823",
+    "easement.js": "f47b2b0759848d58b1d5d07c35b725524aabf45ee9171c777c81ac424f67451d",
+    "ending.js": "9b8242d059f65b4826f5ed4ff2fc4b053aad37ac0ff2059b81eac0592397c14a",
+    "footage.js": "5caa5cf3de34350c3912334e495396e26087cae46c6e9ae161a4b747c803686d",
+    "friends.js": "89e91d18af47e918491de8188e23ccf0f4a297894e6200fda9ddcdb16dbdee2a",
+    "furniture.js": "630b5dceb9da07cbe2af49c6826615e98caccfd404d0d22a1a46b4fea92fe0dc",
+    "game.js": "c74d660c3b8b15fe8821148502d40161b3624d10f094ac43794ed9aa44aa3463",
+    "houses.js": "7dc3230d0f6924da908b0b38a3041bb174522b087a14dc0f92dcc94d6d1c7dfc",
+    "interactions.js": "d1f8b6e0859fb439d09cf3d634013a34c52242684a493be8892e9924bf65ccc1",
+    "kit.js": "6ba15469732e2bd1f9ce798f97cd1650fec57973b63743eb5c8761fca26e14bd",
+    "layout.js": "fc7e6ee21e8cf1b6ff9c8f9b888bcee57b7f2422ad3a2b27c13d57798414099c",
+    "materials.js": "3c48c0da355812a59fa972fa0ae06a7f375a6ab20e833f4cb11286ee8837f220",
+    "memory.js": "76498323db63e152db35e36f11b44b01543da4d5cdf44bdd3a1300ea7c1be5ab",
+    "nav.js": "c476563773f10d38a0c9ba470e9e4816980d1f3765d055c0db0d8226c9d724b8",
+    "nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
+    "old-bike.js": "df1f0e9344338cb74ac00bcae7904f1e312ee2d93f450cda21772811e81a7605",
+    "on-foot.js": "d9a33013a86d72aefd77ec59465efb6ba2dfb5f23d4b12027b9de8f12faa3866",
+    "palette.js": "52a0632bb1e9c5363b8ecfbc34983d037ab09bd9f1018f52d32d1b0ccada6a65",
+    "patrol-art.js": "9e3e70672fd5f9e320daadc09e6c6effc796c1bac0bdd62134d0267183534d76",
+    "people.js": "19e40d3045863ef4171f7c0de1ad3677565aa892efe2ed6239a6c2cf2de73f88",
+    "police.js": "4c2acdbb1bdb3935ee576b562f9be0dd4342abfe294e6cd4eea7de1766d33091",
+    "presence.js": "377f49d357583665ee266a1cfad2187ed349890e0e8df51cb3280dc4991b5980",
+    "props.js": "ed8786554db22138ffd825e6920cf260fa9fff0a270e2849829e9867a8f8aebe",
+    "ride-contact.js": "c6a3af3649f04468258914e03c96ee72828d730f0387fe4a3db10de87cc25f42",
+    "rig.js": "0ea645750eae57f550b5e0609876de1791083af5df76e4a6e9d23e51aeb6886d",
+    "route.js": "f17de16440dbcb6101a0ea0b483d22ef55663934398613ab932fcf030412b3f5",
+    "story.js": "c1f2bfccdace50fdb27d65786a86028b83d4e7c84ea9c8254fdd24ef361958e0",
+    "streets.js": "2b0e58223f14706a3fe4c53facb40610dc45aa3e7389098a7a4d393686b6a74d",
+    "tension.js": "7b0de410dc3b848232dfb4c49dff6dcb85c1dc1c1057e1e4b998993bc3806e04",
+    "terrain.js": "ecc674f1b9d847c7d6e992b65b287cd65a425b237ee40c540fa4e2ea364d6902",
+    "three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
+    "town-art.js": "eac14655bed1fd41ab477249295a99e45f001e51e36b19ffad5e69d60e4586e5",
+    "town-build.js": "724529f7ec18bdeea9fba5317181913f43a1013a029647fafcb2300b92e06ec2",
+    "town-ground.js": "d1fb84bfb9d026ad65f3baeb53a3658e94642ec5163dea85167963ff81eee1d9",
+    "town-houses.js": "f007e67fecc1c57647352e37e616047a7c8dbdfeda865bdfa3f4d1241a43810a",
+    "town-life.js": "eceb2453af4f94731796ebe488c0df435e659add87b8a3935737b9a9ff944fa5",
+    "town-plan.js": "4180af8cfd0f06ca33b86023fcb66b06b026de2c34236d2b4d32f4c0dc9d8666",
+    "town-props.js": "8b1abf9f3a89a7e1bcec3b5764a6d76a90d468bc00c64dd96686450bae5d5c56",
+    "town-repair2.js": "1394bdb24c3c8e9ce1dc062814470f3c62192afb10c072a01d69b3a4c769b8c9",
+    "ui.js": "342854a8172cbb454e063542af0c6484b4f5739def91e1f9f033a9237d9b2019",
+    "vegetation.js": "7458d0e1523f0c6d3a65614f0082704dd2510cecfca6365014d9bd9ae29f08de",
+    "woods.js": "e3ff8a8531f865f4448c27c4da87a6187150d02f6cb0b9e3819b071a4f5e9c4b",
+    "world.js": "46c8a5cf3dd9a37fd8a6df6bbfbe54ec1cd476f9f75ee1b069e1ccd8c81e3b28"
+  }
+}
