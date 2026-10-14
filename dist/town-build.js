@@ -7,6 +7,8 @@
 import * as THREE from './three.module.js';
 import {createKit,seeded,hashSeed,smooth,clamp,lerp} from './kit.js';
 import {makeCar} from './props.js';
+import {outsideMasks} from './town-ground.js';
+import {buildApproachHouses} from './town-houses.js';
 import {polishTown} from './town-art.js';
 import {TY,T0,TW,TL,CONN,CONN_X,CONN_HOUSES,connAt,connBase,connY,connStrip,MAIN,mainHalf,mainWalk,mainBase,CROSS,CREEK,CORE,SURF,GRID,
  BUILDINGS,BLD,footprint,INTERIORS,STEPS,SOLIDS,LAMPS,DOORS,REGION,inRegion,landY,townY,SPOT,SUMMERFIELD,connProject} from './town-plan.js';
@@ -165,15 +167,29 @@ export function buildTown(W){
    const maxI=u<-10?4:400;let i2=i;outer:while(i2+1<nu&&i2+1-i<maxI){for(let b=j;b<=j2;b++)if(!same(i2+1,b))break outer;i2++;}
    for(let a=i;a<=i2;a++)for(let b=j;b<=j2;b++)done[id(a,b)]=1;
    const u0=u,u1=GRID.u0+(i2+1)*c,v0=v,v1=GRID.v0+(j2+1)*c,G=put(m);G.inn=G.inn||indoor;const yA=yAt(u0,h),yB=yAt(u1,h);
-   G.p.push(u0,yA,v0,u0,yA,v1,u1,yB,v1,u0,yA,v0,u1,yB,v1,u1,yB,v0);}
+   if(u0<-12){
+    // The approach has smooth widening edges, not half-metre stair steps.
+    // Clip surrounding lots/lawns to the very same edge used by the new strip.
+    for(const side of [-1,1]){const a0=side<0?v0:Math.max(v0,mainWalk(u0)),a1=side<0?Math.min(v1,-mainWalk(u0)):v1;
+     const b0=side<0?v0:Math.max(v0,mainWalk(u1)),b1=side<0?Math.min(v1,-mainWalk(u1)):v1;
+     if(a1>a0&&b1>b0)G.p.push(u0,yA,a0,u0,yA,a1,u1,yB,b1,u0,yA,a0,u1,yB,b1,u1,yB,b0);}
+   }else G.p.push(u0,yA,v0,u0,yA,v1,u1,yB,v1,u0,yA,v0,u1,yB,v1,u1,yB,v0);}
   // Curbs and lawn edges: wherever two drawn neighbours stand at different heights, a vertical face toward the lower one.
   const curb=concrete(0xb0aa9c),edges=[];
   const face=(ua,va,ub,vb,yLo,yHi,nx,nz)=>{if(nx<0||nz>0)edges.push(ua,yLo,va,ub,yLo,vb,ub,yHi,vb,ua,yLo,va,ub,yHi,vb,ua,yHi,va);else edges.push(ua,yLo,va,ua,yHi,va,ub,yHi,vb,ua,yLo,va,ub,yHi,vb,ub,yLo,vb);};
   for(let i=0;i<nu-1;i++)for(let j=0;j<nv-1;j++){const k=id(i,j),t=GRID.t[k];if(!draws(t))continue;const h=hOf(k),u=GRID.u0+i*c,v=GRID.v0+j*c;
-   for(const [di,dj] of [[1,0],[0,1]]){const q=id(i+di,j+dj),t2=GRID.t[q];if(!draws(t2))continue;const h2=hOf(q);if(Math.abs(h-h2)<.035)continue;
+   for(const [di,dj] of [[1,0],[0,1]]){const q=id(i+di,j+dj),t2=GRID.t[q];if(!draws(t2))continue;const h2=hOf(q);if(u<-12||Math.abs(h-h2)<.035)continue;
     const lo=Math.min(h,h2),hi=Math.max(h,h2),y0=mainBase(u+c),hiFirst=h>h2;
     if(di)face(u+c,v,u+c,v+c,y0+lo,y0+hi,hiFirst?1:-1,0);else face(u,v+c,u+c,v+c,y0+lo,y0+hi,0,hiFirst?1:-1);}}
   const mk=(arr,m,parent,name)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));g.computeVertexNormals();const me=new THREE.Mesh(g,m);me.name=name;parent.add(me);return me;};
+  // Sample the authored grade at half-metre intervals, shared by all bands.
+  const roadP=[],walkP=[],curbP=[];
+  for(let u=-80;u<-12;u+=.5){const v=u+.5,ya=mainBase(u),yb=mainBase(v),ha=mainHalf(u),hb=mainHalf(v),wa=mainWalk(u),wb=mainWalk(v);
+   const strip=(dst,a,b,c,d,lift)=>dst.push(u,ya+lift,a,u,ya+lift,b,v,yb+lift,d,u,ya+lift,a,v,yb+lift,d,v,yb+lift,c);
+   strip(roadP,-ha,ha,-hb,hb,0);strip(walkP,-wa,-ha,-wb,-hb,.15);strip(walkP,ha,wa,hb,wb,.15);
+   for(const side of [-1,1]){const a=[u,ya,side*ha],b=[v,yb,side*hb],c=[v,yb+.15,side*hb],d=[u,ya+.15,side*ha];curbP.push(...(side<0?[...a,...b,...c,...a,...c,...d]:[...a,...c,...b,...a,...d,...c]));}
+  }
+  mk(roadP,asphalt(0x5f6264),out,'main-street-graded-road');mk(walkP,concrete(0xbdb7a9),out,'main-street-graded-walk');mk(curbP,curb,out,'main-street-smooth-curbs');
   for(const [m,G] of geo)mk(G.p,m,G.inn?inn:out,'town-ground');if(edges.length)mk(edges,curb,out,'town-curbs');}
  // =========================================================== Mill Creek ====================================================
  {const g=out,u0=CORE.u0,u1=CORE.u1,top=TY+.12,bed=CREEK.bed,wall=concrete(0x9c978a),bedM=concrete(0x7d786c),Lc=u1-u0;
@@ -197,59 +213,38 @@ export function buildTown(W){
     const v0=s*(MAIN.walk+.6),v1=s*(MAIN.walk+3.4);for(let u=c.u-4.4;u<=c.u+4.4;u+=1.1)strip(u-.25,u+.25,Math.min(v0,v1),Math.max(v0,v1),white);strip(c.u-c.half+.3,c.u-.2,s*(MAIN.walk+3.8),s*(MAIN.walk+4.2),white);}}
   for(const [u0,u1,v0,v1] of [[10,80,-56,-41],[113,147,-56,-41],[10,80,41,64],[190,260,42,64]])for(let u=u0;u<u1;u+=2.8){strip(u,u+.1,v0,v0+5,white);strip(u,u+.1,v1-5,v1,white);}}
  // =========================================================== Old Mill Road ================================================
- {const st=2,N=Math.ceil(CONN.len/st),road=asphalt(0x5e6164),curbM=concrete(0xb3ad9f),walkM=concrete(0xbcb6a8),under=K.mat(0x7a8552,{roughness:.997,polygonOffset:true,polygonOffsetFactor:3,polygonOffsetUnits:3});
+ {const st=2,N=Math.ceil(CONN.len/st),road=asphalt(0x5e6164),curbM=concrete(0xb3ad9f),walkM=concrete(0xbcb6a8),under=grassM;
   const P=(s,t,y)=>{const q=connAt(s,t);return [q.x,y,q.z];};
   const band=(m,ts,yf,s0=0,s1=CONN.len,name='old-mill-road')=>{const pos=[];for(let i=Math.floor(s0/st);i<Math.ceil(s1/st);i++){const sa=Math.max(s0,i*st),sb=Math.min(s1,(i+1)*st);
     for(let k=0;k<ts.length-1;k++){const ta=ts[k],tb=ts[k+1],a=P(sa,ta,yf(sa,ta)),b=P(sa,tb,yf(sa,tb)),c2=P(sb,tb,yf(sb,tb)),d=P(sb,ta,yf(sb,ta));pos.push(...a,...b,...c2,...a,...c2,...d);}}
    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();const me=new THREE.Mesh(g,m);me.name=name;world.add(me);return me;};
   const h=CONN.half,cx=[-h,-h*.6,-h*.25,0,h*.25,h*.6,h];band(road,cx,(s,t)=>connY(s,t));
-  for(const e of [-1,1]){band(curbM,e<0?[-CONN_X.curb,-h]:[h,CONN_X.curb],(s,t)=>connBase(s)+.15);// (top; the face below)
+  for(const e of [-1,1]){band(curbM,e<0?[-CONN_X.curb,-h]:[h,CONN_X.curb],(s,t)=>connY(s,t));// (top; the face below)
    {const pos=[];for(let i=0;i<N;i++){const sa=i*st,sb=Math.min(CONN.len,(i+1)*st),a=P(sa,e*h,connBase(sa)),b=P(sb,e*h,connBase(sb)),c2=P(sb,e*h,connBase(sb)+.15),d=P(sa,e*h,connBase(sa)+.15);if(e<0)pos.push(...a,...b,...c2,...a,...c2,...d);else pos.push(...a,...c2,...b,...a,...d,...c2);}
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();world.add(new THREE.Mesh(g,curbM));}
-   const sa=e<0?[-CONN_X.strip,-CONN_X.curb]:[CONN_X.curb,CONN_X.strip];band(grassM,sa,(s,t)=>connY(s,t),0,CONN.len-30);band(walkM,sa,(s,t)=>connBase(s)+.15,CONN.len-30,CONN.len);
-   band(walkM,e<0?[-CONN_X.walk,-CONN_X.strip]:[CONN_X.strip,CONN_X.walk],(s,t)=>connBase(s)+.15);
-   // the lawns, out to where the land takes over (laid just under it, so the two can overlap)
-   const lt=e<0?[-46,-38,-30,-24,-19,-14,-10,-CONN_X.walk]:[CONN_X.walk,10,14,19,24,30,38,46];band(under,lt,(s,t)=>Math.abs(t)<=24?connY(s,t)-.015:landY(...[connAt(s,t)].map(q=>[q.x,q.z])[0])-.03,CONN.straight,CONN.len,'old-mill-lawn');}
+   const sa=e<0?[-CONN_X.strip,-CONN_X.curb]:[CONN_X.curb,CONN_X.strip];band(grassM,sa,(s,t)=>connY(s,t),0,CONN.len-22);band(walkM,sa,(s,t)=>connY(s,t),CONN.len-22,CONN.len);
+   band(walkM,e<0?[-CONN_X.walk,-CONN_X.strip]:[CONN_X.strip,CONN_X.walk],(s,t)=>connY(s,t));
+   // The lawns share an exact boundary with the clipped surrounding land.
+   const lt=e<0?[-44,-38,-30,-24,-19,-14,-10,-CONN_X.walk]:[CONN_X.walk,10,14,19,24,30,38,44];band(under,lt,(s,t)=>Math.abs(t)<=24?connY(s,t):landY(...[connAt(s,t)].map(q=>[q.x,q.z])[0]),CONN.straight,CONN.len,'old-mill-lawn');}
   // center line and edge lines
   {const y=K.mat(0xd2ae3c,{roughness:.8,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),wl=K.mat(0xe2ded2,{roughness:.8,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
    for(const off of [-.12,.12])band(y,[off-.05,off+.05],(s,t)=>connY(s,t)+.006,4,CONN.len-2,'center-line');for(const e of [-1,1])band(wl,[e*(h-.45),e*(h-.33)],(s,t)=>connY(s,t)+.006,4,CONN.len-2,'edge-line');}
   // the older houses (1920s–50s), their walks and drives, picket fences, mailboxes; street trees and the pole line
-  const houseAt=(H)=>{const q=connAt(H.s,H.side*(H.set+H.d/2)),y=connY(H.s,H.side*H.set)+.1,g=new THREE.Group();g.position.set(q.x,y,q.z);g.rotation.y=-q.a+(H.side>0?Math.PI:0);world.add(g);return {g,y};};
-  for(const H of CONN_HOUSES){const {g}=houseAt(H),wall=H.kind==='foursquare'?siding(H.c):H.kind==='cape'?siding(H.c):siding(H.c),trim=paint(0xece6d8),rf=roofM(H.roof),w=H.w,d=H.d,two=H.kind==='foursquare',hh=two?5.8:H.kind==='cape'?3:3.1;
-   // (local: x across the house, z toward the street = +z, depth -z)
-   B(g,0,-.25,0,w+.2,.6,d+.2,stone(0x9a948a));B(g,0,hh/2+.05,0,w,hh,d,wall);
-   if(two){const pts=[[-w/2-.4,hh,d/2+.4],[w/2+.4,hh,d/2+.4],[w/2+.4,hh,-d/2-.4],[-w/2-.4,hh,-d/2-.4]],apex=[0,hh+2.4,0];const v=[];for(let k=0;k<4;k++){const a=pts[k],b=pts[(k+1)%4];v.push(...a,...apex,...b);}K.tri(g,upTris(v),rf);}
-   else{const rise=H.kind==='cape'?3.4:2.2,ov=.5,v=[];for(const s of [-1,1]){v.push(-w/2-ov,hh,s*(d/2+ov),0,hh+rise,s*(d/2+ov)*0,w/2+ov,hh,s*(d/2+ov));}
-    const r2=[];for(const s of [-1,1])r2.push(-w/2-ov,hh,s*(d/2+ov),-w/2-ov,hh+rise,0,w/2+ov,hh+rise,0,-w/2-ov,hh,s*(d/2+ov),w/2+ov,hh+rise,0,w/2+ov,hh,s*(d/2+ov));
-    for(let i=0;i<r2.length;i+=9){const ax=r2[i+3]-r2[i],az=r2[i+5]-r2[i+2],bx=r2[i+6]-r2[i],bz=r2[i+8]-r2[i+2],ay=r2[i+4]-r2[i+1],by=r2[i+7]-r2[i+1];const ny=az*bx-ax*bz;if(ny<0)for(let j=0;j<3;j++)[r2[i+3+j],r2[i+6+j]]=[r2[i+6+j],r2[i+3+j]];void ay;void by;}
-    K.tri(g,r2,rf);for(const s of [-1,1])K.tri(g,s<0?[-w/2,hh,d/2,-w/2,hh+rise*.98,0,-w/2,hh,-d/2]:[w/2,hh,-d/2,w/2,hh+rise*.98,0,w/2,hh,d/2],wall);
-    if(H.kind==='cape')for(const x of [-w*.25,w*.25]){B(g,x,hh+1.1,d/2-.6,1.4,1.3,1.6,wall);B(g,x,hh+1.15,d/2+.21,.8,.9,.04,glassDark);}}
-   for(const fl of two?[1.1,3.9]:[1.1])for(const x of [-w*.32,0,w*.32]){if(fl===1.1&&x===0)continue;B(g,x,fl+.75,d/2+.02,1,1.45,.04,upper(Math.floor(R()*8)));for(const xx of [-.55,.55])B(g,x+xx,fl+.75,d/2+.06,.1,1.6,.1,trim);for(const yy of [-.76,.76])B(g,x,fl+.75+yy,d/2+.06,1.16,.08,.1,trim);B(g,x,fl+.75,d/2+.06,1,.04,.06,trim);B(g,x-.72,fl+.75,d/2+.03,.3,1.5,.03,paint(0x3a4a3a));B(g,x+.72,fl+.75,d/2+.03,.3,1.5,.03,paint(0x3a4a3a));}
-   B(g,0,1.15,d/2+.03,1,2.1,.05,paint([0x7a2f2a,0x2f3d55,0x3d4d3a,0xe8e2d6][Math.floor(R()*4)]));
-   if(H.porch){B(g,0,.25,d/2+1.3,w*.72,.4,2.6,timber(0x8a7a64));for(const x of [-w*.34,-w*.12,w*.12,w*.34])B(g,x,1.5,d/2+2.45,.18,2.5,.18,trim);B(g,0,2.8,d/2+1.4,w*.76,.16,2.9,trim);B(g,0,2.95,d/2+1.4,w*.78,.12,3,rf);
-    for(const s of [-1,1])B(g,s*w*.23,.75,d/2+2.45,w*.2,.08,.06,trim);B(g,0,.08,d/2+2.9,1.4,.16,.5,stone(0xb0a898));}
-   B(g,w*.3,hh+2.1,-d*.15,.6,1.6,.6,brick(0x8a5a48));
-   // front walk to the sidewalk, a mailbox, a picket fence on some, a driveway beside
-   const yard=new THREE.Group();g.add(yard);const walkLen=H.set-CONN_X.walk-.4;B(g,0,.02,d/2+(H.porch?2.6:0)+walkLen/2,1.1,.06,walkLen,concrete(0xb8b2a4));
-   if(R()<.55){for(let x=-w/2-2;x<=w/2+2;x+=.12)if(Math.abs(x)>.7)B(g,x,.45,d/2+walkLen+(H.porch?2.4:0)-.4,.06,.9,.03,paint(0xeee8dc));}
-   B(g,w/2+2.6,.03,d/2+walkLen/2+1,2.8,.05,walkLen+6,concrete(0xaaa496));void yard;}
+  D.approachHouses=buildApproachHouses(W,world);
+  // Keep the accepted seeded choices for every downtown building and prop.
+  // The former house loop used 7 random draws for a foursquare, 4 for the others.
+  for(const H of CONN_HOUSES)for(let i=0;i<(H.kind==='foursquare'?7:4);i++)R();
   for(let k=0;;k++){const s=18+k*16;if(s>CONN.len-28)break;for(const e of [-1,1]){const q=connAt(s,e*CONN_X.tree),g=new THREE.Group();g.position.set(q.x,connY(s,e*CONN_X.tree),q.z);world.add(g);veg.build(g,seeded(hashSeed(9,s,e)),{size:1.05+.25*seeded(hashSeed(8,s,e))(),kind:'maple',lod:'full'});}}
   const polesAt=[];for(let k=0;k<4;k++){const s=26+k*40;if(s>CONN.len-10)break;const q=connAt(s,CONN_X.tree),y=connY(s,CONN_X.tree),g=new THREE.Group();g.position.set(q.x,y,q.z);g.rotation.y=-q.a;world.add(g);
    K.cyl(g,0,4.5,0,.14,9.2,dull(0x786551),7);B(g,0,8.6,0,1.9,.12,.12,dull(0x6a5a48));K.rod(g,[0,7.5,0],[-2.1,7.9,0],.05,metal(0x8a8e8c));polesAt.push(new THREE.Vector3(q.x,y+8.7,q.z));}
   for(let i=0;i<polesAt.length-1;i++){const a=polesAt[i],b=polesAt[i+1],pts=[];for(let k=0;k<=12;k++){const t=k/12;pts.push(new THREE.Vector3(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t-2.6*t*(1-t),a.z+(b.z-a.z)*t));}world.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0x3d3632})));}
   D.connPoles=polesAt;}
  // =========================================================== the land around it all ======================================
- {const step=5,pts=REGION.map(([x,z])=>TL(x,z)),u0=Math.floor(Math.min(...pts.map(p=>p.u))/step)*step,u1=Math.ceil(Math.max(...pts.map(p=>p.u))/step)*step,v0=Math.floor(Math.min(...pts.map(p=>p.v))/step)*step,v1=Math.ceil(Math.max(...pts.map(p=>p.v))/step)*step;
-  const nu=(u1-u0)/step+1,nv=(v1-v0)/step+1,H=new Float32Array(nu*nv),pos=[],idx=[],vid=new Int32Array(nu*nv).fill(-1);
-  for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){const p=TW(u0+i*step,v0+j*step);H[i*nv+j]=landY(p.x,p.z);}
-  const vtx=(i,j)=>{const k=i*nv+j;if(vid[k]<0){vid[k]=pos.length/3;pos.push(u0+i*step,H[k],v0+j*step);}return vid[k];};
-  const nearRoad=(u,v)=>{const p=TW(u,v),q=connProject(p.x,p.z);return !!q&&q.s>-2&&q.s<CONN.len+2&&Math.abs(q.t)<CONN_X.walk+.6;};
-  const summer=(u,v)=>{const p=TW(u,v),q=SUMMERFIELD.project(p.x,p.z,CONN.u0);return q.u<CONN.u0+24.5&&q.u>CONN.u0-60&&Math.abs(q.v)<44.5||q.u<CONN.u0+8;};
-  for(let i=0;i<nu-1;i++)for(let j=0;j<nv-1;j++){const ua=u0+i*step,va=v0+j*step,cu=ua+step/2,cv=va+step/2,c=TW(cu,cv);if(!inRegion(c.x,c.z,4))continue;
-   if(ua>=CORE.u0-.01&&ua+step<=CORE.u1+.01&&va>=CORE.v0-.01&&va+step<=CORE.v1+.01)continue;
-   const corners=[[ua,va],[ua+step,va],[ua,va+step],[ua+step,va+step]];if(corners.some(([a,b])=>nearRoad(a,b)||summer(a,b)))continue;
-   const a=vtx(i,j),b=vtx(i+1,j),c2=vtx(i,j+1),d=vtx(i+1,j+1);idx.push(a,b,d,a,d,c2);}
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const land=new THREE.Mesh(g,grassM);land.name='town-land';far.add(land);D.landTris=idx.length/3;}
+ {const step=5,pts=REGION.map(([x,z])=>TL(x,z)),u0=Math.floor(Math.min(...pts.map(p=>p.u))/step)*step,u1=Math.ceil(Math.max(...pts.map(p=>p.u))/step)*step,v0=Math.floor(Math.min(...pts.map(p=>p.v))/step)*step,v1=Math.ceil(Math.max(...pts.map(p=>p.v))/step)*step,pos=[];
+  const vertex=([u,v])=>{const q=TW(u,v);return [u,landY(q.x,q.z),v];};
+  for(let u=u0;u<u1;u+=step)for(let v=v0;v<v1;v+=step){const q=TW(u+step/2,v+step/2);if(!inRegion(q.x,q.z,4))continue;
+   for(const p of outsideMasks([[u,v],[u+step,v],[u+step,v+step],[u,v+step]]))for(let i=1;i<p.length-1;i++)pos.push(...vertex(p[0]),...vertex(p[i+1]),...vertex(p[i]));}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();const land=new THREE.Mesh(g,grassM);land.name='town-land';far.add(land);D.landTris=pos.length/9;}
  // =========================================================== buildings ======================================================
  const WIN={w:1.05,h:1.75};
  // A wall with rectangular openings (x across, y up), as boxes around them. ops: [x0,x1,y0,y1].
@@ -296,7 +291,7 @@ export function buildTown(W){
  // An ordinary commercial building: storefront below, windows above, cornice and parapet, back wall with a door.
  function commercial(b){const F=footprint(b),w=b.u1-b.u0,uc=(b.u0+b.u1)/2,y0=mainBase(uc)+.15,g=at(out,uc,y0,F.front,F.s>0?Math.PI:0),d=b.d,h=b.h,trim=paint(b.trim);
   const wall=b.brick?brick(b.c):b.stone?stone(b.c):plaster(b.c),corner=CROSS.some(c=>Math.abs(b.u0-(c.u+c.walk))<.6||Math.abs(b.u1-(c.u-c.walk))<.6),room=!!INTERIORS[b.id];
-  B(g,0,-.3,-d/2,w,.6,d,stone(0x8a847a));// foundation (the ground falls away in places)
+  B(g,0,-.33,-d/2,w,.54,d,stone(0x8a847a));// subfloor top is 6 cm below the finish floor, never coplanar
   const sf=b.floors>1?4.3:Math.min(4.2,h-.6),sfOpts={sf,wall,trim,lit:b.lit,doorX:b.id==='video'?(SPOT.videoDoor.u-uc)*(F.s>0?-1:1):b.id==='laundry'?(162.8-uc):(R()-.5)*w*.3,doorKind:room&&b.id==='video'?'none':'glass',box:!room&&b.id!=='diner',papered:b.vacant&&b.id!=='mason'};
   const front=b.kind!=='bank';if(front)storefront(g,b,w,sfOpts);
   // upper floors: openings in the front wall
@@ -370,7 +365,7 @@ export function buildTown(W){
  {const g=BLD.laundry.group,w=BLD.laundry.u1-BLD.laundry.u0;sign(g,{text:'FRONT DOOR LOCKED AFTER 8 PM',sub:'PLEASE USE SIDE ENTRANCE ON DEPOT ST',bg:'#f4f0e4',fg:'#1a1a1a',font:'sans',border:true},.82,.5,{x:(BLD.laundry.u0+BLD.laundry.u1)/2-163.4,y:1.5,z:-.34});void w;}
  // ---- the Lyric ----
  {const b=BLD.lyric,F=footprint(b),w=b.u1-b.u0,uc=(b.u0+b.u1)/2,y0=TY+.15,g=at(out,uc,y0,F.front,0),d=b.d,h=b.h,wall=brick(b.c),tc=paint(0xe6d8b8),terra=stone(0xd8c8a4);b.group=g;
-  B(g,0,-.3,-d/2,w,.6,d,stone(0x8a847a));
+  B(g,0,-.33,-d/2,w,.54,d,stone(0x8a847a));
   // facade: three tall arched windows above the marquee, terracotta bands and a parapet with a name panel
   const ops=[[-7,-4.4,6.6,10.4],[-1.3,1.3,6.6,10.4],[4.4,7,6.6,10.4]];wallWith(g,-w/2,w/2,4.2,h,-.15,.3,ops,wall);for(const [a,c] of ops)windowIn(g,(a+c)/2,8.5,c-a,3.8,-.02,{trim:terra,glass:glassDark,arch:true,bars:false});
   for(const y of [5.9,11.2])B(g,0,y,.03,w,.22,.12,terra);B(g,0,h+.7,-.15,w,1.4,.3,wall);B(g,0,h+1.45,-.05,w+.2,.2,.5,terra);B(g,0,h+1.9,-.15,7,1.1,.28,terra);
@@ -401,7 +396,7 @@ export function buildTown(W){
   D.blade={group:bl};}
  // ---- the library: brick and stone, a portico, tall arched windows, PUBLIC LIBRARY in the frieze ----
  {const b=BLD.library,F=footprint(b),w=b.u1-b.u0,uc=(b.u0+b.u1)/2,y0=TY+.75,g=at(out,uc,y0,F.front,Math.PI),d=b.d,h=b.h,wall=brick(b.c),tr=stone(0xddd4c0);b.group=g;
-  B(g,0,-.45,-d/2,w+.4,.9,d+.4,stone(0xa8a090));
+  B(g,0,-.48,-d/2,w+.4,.84,d+.4,stone(0xa8a090));
   const winX=[-14,-10.5,-7,7,10.5,14],ops=[...winX.map(x=>[x-1,x+1,.9,4.9]),[-2,2,0,3.1]];wallWith(g,-w/2,w/2,0,h,-.15,.3,ops,wall);winX.forEach((x,i)=>windowIn(g,x,2.9,2,4,-.02,{trim:tr,glass:glassClear,arch:true}));
   for(const s of [-1,1]){const sg=at(g,s*(w/2-.15),0,-d/2,s*Math.PI/2);const sops=[-5,0,5].map(z=>[z-1,z+1,.9,4.9]);wallWith(sg,-d/2+.15,d/2-.15,0,h,0,.3,sops,wall);for(const [a] of sops)windowIn(sg,a+1,2.9,2,4,.14,{trim:tr,glass:glassClear,arch:true});}
   {const bops=[-11,-5,5,11].map(x=>[x-.9,x+.9,1.2,4.4]);const bg=at(g,0,0,-d+.15,Math.PI);wallWith(bg,-w/2,w/2,0,h,0,.3,bops,wall);for(const [a] of bops)windowIn(bg,a+.9,2.8,1.8,3.2,.14,{trim:tr,glass:glassClear,arch:false});}

@@ -47,11 +47,12 @@ export function connBase(s){if(s<=CONN.straight)return S2.point(CONN.u0+Math.max
 export const CONN_X={curb:4.5,strip:5.85,walk:7.35,lawn:24,tree:5.15};// (Summerfield's own cross-section, carried on)
 export function connStrip(s){return 1-smooth((s-(CONN.len-34))/24);}// 1: the grass strip is there; 0: sidewalk to the curb
 export function connY(s,t){const b=connBase(s),a=Math.abs(t),h=CONN.half;
- if(a<=h)return b+.028*Math.max(0,1-(t/h)**2);// the crown (Summerfield's own)
- if(a<=CONN_X.curb)return b+.15;
- if(a<=CONN_X.strip)return b+(connStrip(s)>.5?.13:.15);
- if(a<=CONN_X.walk)return b+.15;
- return b+.13+Math.min(a-CONN_X.walk,17)*.035*(1-smooth((s-(CONN.len-44))/36));}// front lawns rise gently to the houses (level again where Main Street starts)
+ if(a<=h)return b+.028*Math.max(0,1-(t/h)**2)*(1-smooth((s-(CONN.len-12))/12));
+ let y=a<=CONN_X.curb?b+.15:a<=CONN_X.strip?b+.15-.02*connStrip(s):a<=CONN_X.walk?b+.15:
+  b+.13+Math.min(a-CONN_X.walk,17)*.035*(1-smooth((s-(CONN.len-44))/36));
+ // Match the existing cross-section at Summerfield, not just the centerline.
+ const old=S2.point(CONN.u0+s,t).y+(a<=CONN_X.curb?.15:a<=CONN_X.strip?.12:a<=CONN_X.walk?.16:.12);
+ return lerp(old,y,smooth((s-(a>CONN_X.walk?24:0))/(a>CONN_X.walk?30:24)));}
 export function connSurface(s,t){const a=Math.abs(t);if(a<=CONN.half)return 'asphalt';if(a<=CONN_X.curb)return 'asphalt';if(a<=CONN_X.strip)return connStrip(s)>.5?'grass':'asphalt';if(a<=CONN_X.walk)return 'asphalt';return 'grass';}
 // The older houses along it (s, side, kind); their footprints are solids. Lots run deep behind them.
 export const CONN_HOUSES=[
@@ -157,9 +158,9 @@ function paint(u0,u1,v0,v1,type,floorH=null){const i0=Math.max(0,Math.round((Mat
  paint(CORE.u0,CORE.u1,CREEK.v0,CREEK.v1,T.creek);paint(-5,5,CREEK.v0,CREEK.v1,T.road);
 }
 export function cellAt(u,v){const i=Math.floor((u-CORE.u0)/CORE.cell),j=Math.floor((v-CORE.v0)/CORE.cell);if(i<0||j<0||i>=NU||j>=NV)return -1;return gi(i,j);}
-export function typeAt(u,v){const k=cellAt(u,v);return k<0?SURF.none:GRID.t[k];}
+export function typeAt(u,v){if(u>=MAIN.u0&&u<-12&&Math.abs(v)<=mainWalk(u))return Math.abs(v)<=mainHalf(u)?SURF.road:SURF.walk;const k=cellAt(u,v);return k<0?SURF.none:GRID.t[k];}
 // Height of the walking surface over (u,v): street level by surface, interiors and steps by their own floors.
-export function townY(u,v){const k=cellAt(u,v);const base=mainBase(u);if(k<0)return base+.12;const t=GRID.t[k];
+export function townY(u,v){const k=cellAt(u,v);const base=mainBase(u);if(k<0)return base+.12;const t=typeAt(u,v);
  if(t===SURF.steps){const s=STEPS.find(q=>u>=q.u0&&u<q.u1&&v>=q.v0&&v<q.v1);if(s){const f=clamp((v-s.v0)/(s.v1-s.v0),0,1),n=s.n,step=Math.min(n,Math.floor(f*(n+1)));return base+s.y0+(s.y1-s.y0)*step/n;}}
  const fl=GRID.floor[k];if(!Number.isNaN(fl))return base+fl;const h=SURF_INFO[t].h;
  return base+(h??.12);}
@@ -261,7 +262,11 @@ export function landY(x,z){const nat=T0land(x,z),{u,v}=TL(x,z);
  const q=connProject(x,z);if(q){const a=Math.abs(q.t),road=connY(q.s,Math.min(a,CONN_X.walk+17)*Math.sign(q.t||1)),w=1-smooth((a-26)/34);y=lerp(y,road+(a>CONN_X.walk+17?(a-CONN_X.walk-17)*.03:0),w*(1-smooth((q.s-(CONN.len+20))/30)));}
  // ...and Summerfield's own ground where it ends (the seam with its lawns)
  const p=S2.project(x,z,CONN.u0+20);if(p.u>CONN.u0-4&&p.u<CONN.u0+60&&Math.abs(p.v)<70){const w=(1-smooth((p.u-(CONN.u0+24))/30))*(1-smooth((Math.abs(p.v)-44)/22));if(w>0)y=lerp(y,S2.point(p.u,p.v).y+LAWN,w);}
- return lerp(nat,y,smooth(edgeDist(x,z)/45));}
+ // Region-edge blending must not lift the land away from the authored road.
+ let result=lerp(nat,y,smooth(edgeDist(x,z)/45));
+ if(q&&q.s<=CONN.len){const a=Math.abs(q.t),w=1-smooth((a-24)/20);result=lerp(result,connY(q.s,q.t),w);}
+ if(p.u>CONN.u0-4&&p.u<CONN.u0+60&&Math.abs(p.v)<70){const w=(1-smooth((p.u-(CONN.u0+24))/30))*(1-smooth((Math.abs(p.v)-44)/22));result=lerp(result,S2.point(p.u,p.v).y+LAWN,w);}
+ return result;}
 // ---- walking and riding --------------------------------------------------------------------------------------------------
 // Answers for world points inside the region. Returns null outside (the rest of the world answers there).
 export function townNav(){
