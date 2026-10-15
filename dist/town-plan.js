@@ -146,6 +146,8 @@ function paint(u0,u1,v0,v1,type,floorH=null){const i0=Math.max(0,Math.round((Mat
  paint(-60,-26,11,42,T.lot);paint(-74,-54,-36,-11,T.lot);paint(-50,-16,-34,-11,T.lot);
  // streets (lowest)
  for(let u=MAIN.u0;u<MAIN.u1;u+=CORE.cell){const h=mainHalf(u+.25),w=mainWalk(u+.25);paint(u,u+CORE.cell,-h,h,T.road);paint(u,u+CORE.cell,h,w,T.walk);paint(u,u+CORE.cell,-w,-h,T.walk);}
+ // Mill Street goes on north past its sawhorse, as the Old Reservoir Road (pine-plan.js), with grass verges either side
+ paint(-14,14,66,CORE.v1,T.grass);paint(-5,5,66,CORE.v1,T.road);
  for(const c of CROSS){paint(c.u-c.half,c.u+c.half,c.v0,c.v1,T.road);for(const s of [-1,1]){paint(c.u+s*c.half,c.u+s*c.walk,c.v0,-MAIN.walk,T.walk);paint(c.u+s*c.half,c.u+s*c.walk,MAIN.walk,c.v1,T.walk);}}
  // the square: lawn, a paved edge along Main, paths (paver), the library forecourt
  paint(98.5,171.5,11,13,T.paver);paint(133,137,13,40.5,T.paver);paint(98.5,171.5,26,28,T.paver);paint(120,150,38,40.5,T.paver);

@@ -12,6 +12,7 @@ import {easementNav} from './easement.js';
 import {woodsNav} from './woods.js';
 import {drainNav} from './drain.js';
 import {townNav} from './town-plan.js';
+import {pineNav} from './pine-plan.js';
 
 const CF=SECTION.curbFace,CUL=1100;
 // Things a rider or walker cannot pass through (driveways and walks are registered too, but open).
@@ -53,11 +54,15 @@ export function createNav(world){
  const B2=world.sideFrames[1],J2=B2?.junction,TN=world.town?.inside?townNav():null;
  const side2Houses=B2?world.sidePlansAll.filter(p=>p.frameId===B2.id):[],side2Drives=B2?world.sideDrives.filter(d=>d.frameId===B2.id):[];
  const BF2=TN&&B2?(()=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(let u=20;u<=B2.length+12;u+=4)for(const v of [-46,46]){const p=B2.point(u,v);x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);z0=Math.min(z0,p.z);z1=Math.max(z1,p.z);}return {x0,x1,z0,z1};})():null;
+ // Chapter Five: past downtown's north edge, Mill Street goes on as the Old Reservoir Road to Pine Ridge (pine-plan.js),
+ // which answers for itself wherever the town is open.
+ const PN=world.pine?.box?pineNav():null;
  let lastU2=40,townOpen=false;// (only Chapter Four opens the road out of the neighborhood: earlier chapters' world ends where it did)
  let lastU=40,lastD=1136;
  function locate(x,z){if(room&&room.inside(x,z))return {street:'room',d:0,lat:0};
   if(DZ&&x>DB.x0&&x<DB.x1&&z>DB.z0&&z<DB.z1){const q=DZ.project(x,z);if(q&&q.s>=0&&q.s<=DZ.len+.5&&Math.abs(q.t)<DZ.sizeAt(Math.max(0,q.s)).w/2+.02)return {street:'drain',s:q.s,t:q.t,q,d:0,lat:0};}
   if(WZ&&x>WZ.box.x0&&WZ.inside(x,z)){const w=WN.where(x,z);return {street:'woods',s:w.q?.s,t:w.q?.t,w,d:0,lat:0};}
+  if(townOpen&&PN&&x>PN.box.x0&&x<PN.box.x1&&z>PN.box.z0&&z<PN.box.z1){const w=PN.where(x,z);if(w)return {street:'pine',w,d:0,lat:0};}
   if(townOpen&&TN&&x<TN.box.x1+1&&z<TN.box.z1+1&&x>TN.box.x0-1&&z>TN.box.z0-1){const w=TN.where(x,z);if(w)return {street:'town',w,d:0,lat:0};}
   if(townOpen&&BF2&&x>BF2.x0&&x<BF2.x1&&z>BF2.z0&&z<BF2.z1){let q=B2.project(x,z,Math.max(5,Math.min(B2.length,lastU2)));const [cx,cz,a]=B2.center(q.u);if(Math.hypot(cx+q.v*Math.cos(a)-x,cz+q.v*Math.sin(a)-z)>.25)q=B2.project(x,z,null);
    // (from just past Oak Hollow's own edge on the road and its sidewalks; farther out, lawns, from where Oak Hollow's yards end)
@@ -75,16 +80,17 @@ export function createNav(world){
  // Ground height (the surface you stand on) and the bare ground under curbs and steps.
  function side2Authored(u,v){let best=null;for(const h of side2Houses){if(Math.abs(h.u-u)>16||Math.sign(v)!==h.side)continue;const q=h.localOf(u,v);for(const p of h.localPads)if(q.x>=p.x0&&q.x<=p.x1&&q.z>=p.z0&&q.z<=p.z1){const y=typeof p.y==='function'?p.y(q.x,q.z):p.y;if(best===null||y>best)best=y;}}
   if(best!==null)return best;for(const dr of side2Drives)if(dr.contains(u,v))return dr.y(u,v);return world.sideSurface(J2,Math.min(u,B2.length-.01),v);}
- function groundY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='town')return TN.groundY(x,z,L.w);if(L.street==='side2')return B2.point(L.u,L.v).y+side2Authored(L.u,L.v);if(L.street==='drain')return DN.groundY(x,z,L.q);if(L.street==='woods')return WN.groundY(x,z,L.w);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y+sideAuthored(L.u,L.v):world.groundY(L.d,L.lat);}
- function baseY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='town')return TN.baseY(x,z,L.w);if(L.street==='side2')return B2.point(L.u,L.v).y;if(L.street==='drain')return DN.groundY(x,z,L.q);if(L.street==='woods')return WN.baseY(x,z,L.w);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y:groundPoint(L.d,L.lat).y;}
+ function groundY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='pine')return PN.groundY(x,z,L.w);if(L.street==='town')return TN.groundY(x,z,L.w);if(L.street==='side2')return B2.point(L.u,L.v).y+side2Authored(L.u,L.v);if(L.street==='drain')return DN.groundY(x,z,L.q);if(L.street==='woods')return WN.groundY(x,z,L.w);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y+sideAuthored(L.u,L.v):world.groundY(L.d,L.lat);}
+ function baseY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='pine')return PN.baseY(x,z,L.w);if(L.street==='town')return TN.baseY(x,z,L.w);if(L.street==='side2')return B2.point(L.u,L.v).y;if(L.street==='drain')return DN.groundY(x,z,L.q);if(L.street==='woods')return WN.baseY(x,z,L.w);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y:groundPoint(L.d,L.lat).y;}
  // The street's direction here (for the bike's gentle settling along it), either way along.
- function streetHeading(x,z,L=locate(x,z)){if(L.street==='room')return room.heading||0;if(L.street==='town')return TN.heading(x,z,L.w);if(L.street==='side2')return B2.heading(L.u);if(L.street==='drain')return DN.heading(x,z,L.q);if(L.street==='woods')return WN.heading(x,z,L.w);if(L.street==='easement')return EZ.heading;return L.street==='side'?B.heading(L.u):heading(Math.min(L.d,CUL));}
+ function streetHeading(x,z,L=locate(x,z)){if(L.street==='room')return room.heading||0;if(L.street==='pine')return PN.heading(x,z,L.w);if(L.street==='town')return TN.heading(x,z,L.w);if(L.street==='side2')return B2.heading(L.u);if(L.street==='drain')return DN.heading(x,z,L.q);if(L.street==='woods')return WN.heading(x,z,L.w);if(L.street==='easement')return EZ.heading;return L.street==='side'?B.heading(L.u):heading(Math.min(L.d,CUL));}
  const solid=(x,z,r)=>!!world.space.blocked(x,z,r,SOLID)||!!walls.blocked(x,z,r,WALL);
  const inCreek=(u,v)=>Math.abs(u-C.u)<C.half+.5&&Math.abs(v)>H+XS.walk+.15;
  // Bikes: streets, sidewalks and curbs as before, plus whole driveways and front lawns now.
  function rideable(x,z,{lawn=true,r=.3}={}){const L=locate(x,z);if(L.street==='easement'||L.street==='room'||L.street==='drain')return false;// bikes stay on the street side of the fence, and outside the drain
   if(L.street==='woods')return WN.rideable(x,z,L.w)&&!solid(x,z,r*.6);// the old road, and the pad at its end
   if(L.street==='town')return TN.rideable(x,z,{lawn,r},L.w);
+  if(L.street==='pine')return PN.rideable(x,z,{lawn,r},L.w);
   if(L.street==='side2'){const a=Math.abs(L.v),H2=J2.half;if(L.u<6)return false;if(a<=H2+XS.walk-.025)return !solid(x,z,r*.6);if(L.u>B2.length)return false;
    if(side2Drives.some(dr=>dr.contains(L.u,L.v)))return !solid(x,z,r);return lawn&&a<16&&!solid(x,z,r);}
   if(L.street==='side'){const a=Math.abs(L.v);if(L.u<6||L.u>sideEnd)return false;
@@ -102,6 +108,7 @@ export function createNav(world){
  function walkable(x,z,{r=.28}={}){const L=locate(x,z);if(L.street==='room')return room.walkable(x,z,r);if(nearFence(x,z,r))return false;
   if(L.street==='drain')return DN.walkable(x,z,r,L.q);// (underground: the trees and posts on the hill above are not in here)
   if(L.street==='town')return TN.walkable(x,z,{r},L.w);
+  if(L.street==='pine')return PN.walkable(x,z,{r},L.w);
   if(L.street==='side2'){if(L.u<6||Math.abs(L.v)>31.3)return false;if(L.u>B2.length&&Math.abs(L.v)>J2.half+XS.walk)return false;return !solid(x,z,r);}
   if(L.street==='woods')return WN.walkable(x,z,L.w)&&!solid(x,z,r*.8);
   if(L.street==='easement')return EN.walkable(L.s,L.t)&&!solid(x,z,r*.8);
@@ -113,7 +120,7 @@ export function createNav(world){
   if(world.obstacles.some(o=>!o.house&&!o.soft&&d>o.d0-r&&d<o.d1+r&&lat>o.l0-r&&lat<o.l1+r))return false;
   return !solid(x,z,r*.8);}
  // Surface under a walker's feet, for footsteps.
- function surface(x,z,L=locate(x,z)){if(L.street==='room')return 'floor';if(L.street==='town')return TN.surface(x,z,L.w);if(L.street==='side2'){const a=Math.abs(L.v),H2=J2.half;return a<=H2||(a>=H2+XS.strip&&a<=H2+XS.walk)?'asphalt':'grass';}if(L.street==='drain')return DN.surface(x,z,L.q);if(L.street==='woods')return WN.surface(x,z,L.w);if(L.street==='easement')return EN.surface(L.s,L.t);if(L.street==='side'){const a=Math.abs(L.v);return a<=H?'asphalt':a>=H+XS.strip&&a<=H+XS.walk?'asphalt':inCreek(L.u,L.v)?'grass':'grass';}
+ function surface(x,z,L=locate(x,z)){if(L.street==='room')return 'floor';if(L.street==='pine')return PN.surface(x,z,L.w);if(L.street==='town')return TN.surface(x,z,L.w);if(L.street==='side2'){const a=Math.abs(L.v),H2=J2.half;return a<=H2||(a>=H2+XS.strip&&a<=H2+XS.walk)?'asphalt':'grass';}if(L.street==='drain')return DN.surface(x,z,L.q);if(L.street==='woods')return WN.surface(x,z,L.w);if(L.street==='easement')return EN.surface(L.s,L.t);if(L.street==='side'){const a=Math.abs(L.v);return a<=H?'asphalt':a>=H+XS.strip&&a<=H+XS.walk?'asphalt':inCreek(L.u,L.v)?'grass':'grass';}
   const a=Math.abs(L.lat);return a<=CF||(a>=CF+XS.strip&&a<=CF+XS.walk)||L.d>=CUL&&Math.hypot(L.lat,L.d-1142)<11?'asphalt':'grass';}
  // Is there a house (or the far neighborhood) right here? For sound: walls between you and a siren.
  const FAR=new Set(['far-house']),wallAt=(x,z)=>!!walls.blocked(x,z,0,WALL)||!!world.space.blocked(x,z,0,FAR);
@@ -134,6 +141,6 @@ export function createNav(world){
  // A room you are inside for a while (Chapter Three: Alex's): {inside(x,z), walkable(x,z,r), floorY}; null to leave.
  function setRoom(r){room=r||null;}
  function setTown(on){townOpen=!!on;}
- return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,walkPath,setRoom,setTown,get townOpen(){return townOpen;},get room(){return room;},frame:B,junction:J,creek:C,easement:EZ,woods:WZ,woodsNav:WN,drain:DZ,drainNav:DN,
+ return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,walkPath,setRoom,setTown,get townOpen(){return townOpen;},get room(){return room;},frame:B,junction:J,creek:C,easement:EZ,woods:WZ,woodsNav:WN,drain:DZ,drainNav:DN,pine:PN,
   side:(u,v)=>B.point(u,v),main:(d,lat)=>groundPoint(d,lat),town:TN,side2:B2};
 }

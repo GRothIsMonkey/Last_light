@@ -177,8 +177,8 @@ export function buildTown(W){
   // Curbs and lawn edges: wherever two drawn neighbours stand at different heights, a vertical face toward the lower one.
   const curb=concrete(0xb0aa9c),edges=[];
   const face=(ua,va,ub,vb,lo,hi,nx,nz)=>{const a=mainBase(ua),b=mainBase(ub);if(nx<0||nz>0)edges.push(ua,a+lo,va,ub,b+lo,vb,ub,b+hi,vb,ua,a+lo,va,ub,b+hi,vb,ua,a+hi,va);else edges.push(ua,a+lo,va,ua,a+hi,va,ub,b+hi,vb,ua,a+lo,va,ub,b+hi,vb,ub,b+lo,vb);};
-  for(let i=0;i<nu-1;i++)for(let j=0;j<nv-1;j++){const k=id(i,j),t=GRID.t[k];if(!draws(t))continue;const h=hOf(k),u=GRID.u0+i*c,v=GRID.v0+j*c;
-   for(const [di,dj] of [[1,0],[0,1]]){const q=id(i+di,j+dj),t2=GRID.t[q];if(!draws(t2))continue;const h2=hOf(q);if(Math.abs(h-h2)<.035||u<-12&&[t,t2].some(t=>t===T.road||t===T.walk))continue;
+  for(let i=0;i<nu-1;i++)for(let j=0;j<nv;j++){const k=id(i,j),t=GRID.t[k];if(!draws(t))continue;const h=hOf(k),u=GRID.u0+i*c,v=GRID.v0+j*c;
+   for(const [di,dj] of [[1,0],[0,1]]){if(j+dj>=nv)continue;const q=id(i+di,j+dj),t2=GRID.t[q];if(!draws(t2))continue;const h2=hOf(q);if(Math.abs(h-h2)<.035||u<-12&&[t,t2].some(t=>t===T.road||t===T.walk))continue;
     const lo=Math.min(h,h2),hi=Math.max(h,h2),y0=mainBase(u+c),hiFirst=h>h2;
     if(di)face(u+c,v,u+c,v+c,lo,hi,hiFirst?1:-1,0);else face(u,v+c,u+c,v+c,lo,hi,0,hiFirst?1:-1);}}
   const mk=(arr,m,parent,name)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));g.computeVertexNormals();const me=new THREE.Mesh(g,m);me.name=name;parent.add(me);return me;};
@@ -542,9 +542,9 @@ export function buildTown(W){
  // trees, the water tower. All rough and far.
  {const rnd=seeded(77),house=(u,v,rot,c)=>{const w=8+rnd()*3,d=8+rnd()*2,two=rnd()<.5,roof=[0x4d4a48,0x5b534d,0x46505a,0x635a52][Math.floor(rnd()*4)];
    // Preserve the accepted lot/tree random stream while improving only each house.
-   for(let i=0;i<(two?5:2);i++)rnd();backdropHouse(W,far,{u,v,rot,w,d,two,c,roof});};
+   for(let i=0;i<(two?5:2);i++)rnd();{const q=TW(u,v);if(W.pine?.inside(q.x,q.z,9)||Math.abs(u)<15)return;}backdropHouse(W,far,{u,v,rot,w,d,two,c,roof});};// (Chapter Five: Mill Street goes on north between them)
   for(let u=-60;u<300;u+=16+rnd()*6){for(const [v0,rot] of [[94,Math.PI],[118,0],[-80,0],[-104,Math.PI]]){if(rnd()<.18)continue;house(u,v0+(rnd()-.5)*4,rot+(rnd()-.5)*.1,HOUSE_WALLS[Math.floor(rnd()*HOUSE_WALLS.length)]);}}
-  for(let k=0;k<160;k++){const u=-120+rnd()*520,v=(rnd()<.5?1:-1)*(76+rnd()*120);if(Math.abs(v)<80&&u>-80&&u<290)continue;const q=TW(u,v),tg=at(far,u,landY(q.x,q.z),v,rnd()*6);veg.build(tg,rnd,{size:1+rnd()*.8,kind:rnd()<.3?'pine':'maple',lod:'far'});}
+  for(let k=0;k<160;k++){const u=-120+rnd()*520,v=(rnd()<.5?1:-1)*(76+rnd()*120);if(Math.abs(v)<80&&u>-80&&u<290)continue;const q=TW(u,v),tg=at(far,u,landY(q.x,q.z),v,rnd()*6);veg.build(tg,rnd,{size:1+rnd()*.8,kind:rnd()<.3?'pine':'maple',lod:'far'});if(W.pine?.inside(q.x,q.z,3))tg.removeFromParent();}// (Pine Ridge plants its own: the stream of the others is kept)
   // the rail line past Main's west end, its old depot, and the water tower on the hill beyond
   const rl=at(far,288,TY,0,0);for(const x of [-.75,.75])B(rl,x,.12,0,.08,.12,300,metal(0x6a5a4a));for(let z=-150;z<150;z+=.65)B(rl,0,.04,z,2.4,.08,.22,timber(0x5a4a3a));
   for(const s of [-1,1]){const xb=at(far,284,TY,s*9,0);K.cyl(xb,0,2,0,.06,4,metal(0xe8e8e8),6);const cb=new THREE.Group();cb.position.y=3.6;xb.add(cb);for(const a of [.7,-.7]){const bar=B(cb,0,0,0,1.3,.2,.03,paint(0xf2f2f2));bar.rotation.z=a;}}

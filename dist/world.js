@@ -23,6 +23,8 @@ import {woodsFrame,buildWoods} from './woods.js';
 import {drainFrame,buildDrain} from './drain.js';
 import {buildTown} from './town-build.js';
 import {inRegion,CONN_X} from './town-plan.js';
+import {pineFrame} from './pine-plan.js';
+import {buildPine} from './pine-build.js';
 
 export {JUNCTIONS,BULB,ROAD_END,LOOKOUT} from './layout.js';
 export {LAWN,SIDEWALK,CURB_TOP,knoll,roadCrown} from './terrain.js';
@@ -61,6 +63,7 @@ export function buildWorld(scene){
  W.woods=woodsFrame(W);// Chapter Three: the old access road past Briarwood's end, the woods, the outfall (same idea)
  W.drain=drainFrame(W);// ...and the storm sewer trunk behind the outfall
  W.town={inside:(x,z,m=0)=>inRegion(x,z,m),walk:CONN_X.walk};// Chapter Four: Old Mill Road and downtown (older far ground and houses leave it out)
+ W.pine=pineFrame(W);// Chapter Five: the old Reservoir Road, the park and the camp at Pine Ridge (older ground and scatter leave it out)
  W.plans=planLots(W);// every first-row lot decided up front: streets need the driveway cuts
  buildStreets(W);// surfaces, curbs, sidewalks, junctions, cul-de-sac, lookout ground
  buildHouses(W);// first-row houses, friend homes and their interiors, driveways, walks
@@ -69,6 +72,7 @@ export function buildWorld(scene){
  buildWoods(W);// past Briarwood's end: the access road, the woods, the creek valley and the outfall
  buildDrain(W);// the box culvert behind the outfall
  buildTown(W);// Chapter Four: Old Mill Road, Main Street, the side streets and alleys, the rooms you can walk into (town-build.js)
+ W.pine={...W.pine,...buildPine(W)};// Chapter Five: Pine Ridge (pine-build.js, pine-camp.js)
  buildBackground(W);// back yards, second row, side-street houses, far neighborhood and land
 
  const {merged,originals,shadowProxies}=bakeAndMerge(W,scene);
@@ -94,7 +98,7 @@ export function buildWorld(scene){
 
  return {scene,road:W.named.road,originals,merged,windowMats:W.windowMats,porchMats:W.porchMats,streetLamps:W.streetLamps,foliage:W.foliage,grassMat:W.grassMat,grassMats:W.grassMats,
   groundY,authoredY,rideable:W.rideable,obstacles:W.obstacles,homes:W.homes,doors,garages,windows,sideDoors,anchor,houseAnchor,alexWindow:W.alexWindow,car:W.car,drivewayOpenings:W.drives,sideDrives:W.sideDrives||[],houses:W.houses,sidePlansAll:W.sidePlans,surfaceY:W.surfaceY,sideSurface:W.sideSurface,junctions:W.junctions,creek:W.creekInfo||null,interiorMats:W.interiorMats,
-  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,lights:W.lights,hooks:W.hooks||{},hoops:W.hoops||[],easement:W.easement,woods:W.woods,drain:W.drain,town:W.town,vegBuild:(g,r,o)=>W.veg.build(g,r,o),terrainY,signs:W.signs||[],
+  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,lights:W.lights,hooks:W.hooks||{},hoops:W.hoops||[],easement:W.easement,woods:W.woods,drain:W.drain,town:W.town,pine:W.pine,vegBuild:(g,r,o)=>W.veg.build(g,r,o),terrainY,signs:W.signs||[],
   poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space,fenceSegs:W.fenceSegs||[]};
 }
 
@@ -166,7 +170,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
   for(const o of objs){const {pos,nor}=transform(o,layer,height);
    if(o.name&&o.isMesh){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));if(o.geometry.index)g.setIndex(o.geometry.index.clone());g.computeBoundingSphere();const m=new THREE.Mesh(g,o.material);m.name=o.name;m.userData={...o.userData};originals.push(m);if(o.userData.ref)W.named[o.userData.ref]=m;}
    if(o.isLine){const key=o.material.color.getHex();if(!lineBatches.has(key))lineBatches.set(key,new Buf());const arr=lineBatches.get(key),segs=o.isLineSegments;for(let i=0;i<pos.length/3-1;i+=segs?2:1)arr.push(pos[i*3],pos[i*3+1],pos[i*3+2]),arr.push(pos[i*3+3],pos[i*3+4],pos[i*3+5]);continue;}
-   const material=batchMaterial(o.material),idx=o.geometry.index,uv=o.geometry.attributes.uv,far=!!layer.far||!!o.userData.far,zone=layer.zone||o.userData.zone||null,cellSize=zone==='woods'?(far?120:70):zone==='tunnel'?50:zone==='town'?(far?160:90):zone==='town-int'?30:far?220:110;
+   const material=batchMaterial(o.material),idx=o.geometry.index,uv=o.geometry.attributes.uv,far=!!layer.far||!!o.userData.far,zone=layer.zone||o.userData.zone||null,cellSize=zone==='woods'?(far?120:70):zone==='tunnel'?50:zone==='town'?(far?160:90):zone==='town-int'?30:zone==='pine'?(far?150:80):zone==='pine-int'?24:far?220:110;
    const wi=W.windowMats.indexOf(o.material),pi=W.porchMats.indexOf(o.material);
    const col=o.material===W.darkGlass?{r:9,g:0,b:0}:wi>=0?{r:W.windowOn[wi],g:0,b:0}:pi>=0?{r:W.porchOn[pi],g:0,b:0}:o.material===W.farWindow?{r:.5+hashF(t0++)*.3,g:0,b:0}:o.material.userData.lamp!==undefined?{r:1,g:o.material.userData.lamp/255,b:0}:o.material.color;
    const tris=idx?idx.count/3:pos.length/9,local=new Map(),caster=castsShadow(material,far),leaf=caster&&!!material.map&&material.alphaTest>0,slocal=new Map();

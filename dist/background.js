@@ -11,15 +11,16 @@ import {HOUSE,FOLIAGE,STREET} from './palette.js';
 import {seeded,hashSeed,pickFrom,smooth,lerp} from './kit.js';
 import {TW,TL,REGION,inRegion,edgeDist,landY as townLandY} from './town-plan.js';
 import {outsideMasks} from './town-ground.js';
+import {farT,baseLandY as farBaseLandY,farLandY} from './far-land.js';
 import {planHouse,buildHouse,hipRoof,gableRoof,outward} from './houses.js';
 
 export function buildBackground(W){
  const {K}=W,veg=W.veg,REAR=SECTION.rearFence;
- const T=(x,z)=>terrainY(x,z)+LAWN-.08;// the far ground's lawn level
+ const T=farT;// the far ground's lawn level (far-land.js)
  // Where the far ground slides under authored lawns, keep it just below them.
- const baseLandY=(x,z)=>{const {d,lat}=streetCoords(x,z),a=Math.abs(lat);const t=T(x,z);return a<86&&d>ROAD_START-6?Math.min(t,nearY(d,lat)+LAWN-.08):t;};
+ const baseLandY=farBaseLandY;
  // One ground surface and one grass material across the old/new region boundary.
- const landY=(x,z)=>{const base=baseLandY(x,z);return inRegion(x,z,36)?lerp(base,townLandY(x,z),inRegion(x,z)?1:1-smooth(edgeDist(x,z)/36)):base;};
+ const landY=farLandY;
  const inSide=(x,z,margin=0)=>W.sideFrames.find(f=>{const q=f.project(x,z);return q.u>-2&&q.u<f.length+14+margin&&Math.abs(q.v)<40+margin;});
 
  // Second row: the next street's houses, backs toward us, with their own back yards ------------
@@ -28,7 +29,7 @@ export function buildBackground(W){
   if(JUNCTIONS.some(j=>j.side===side&&Math.abs(u-j.d)<56))continue;
   const P=planHouse(rand,{frame:MAIN,frameId:'main',u,side,setback:47+rand()*3,facing:-1,lod:'mid',far:true,garage:rand()<.7,porch:'stoop'});
   P.groundFn=(uu,vv,x,z)=>T(x,z)-LAWN+.08;
-  const c=P.toWorld(0,0);if(!W.space.free(c.x,c.z,6))continue;if(W.town?.inside(c.x,c.z,14))continue;// (Chapter Four: Old Mill Road and the town have their own)
+  const c=P.toWorld(0,0);if(!W.space.free(c.x,c.z,6))continue;if(W.town?.inside(c.x,c.z,14)||W.pine?.inside(c.x,c.z,14))continue;// (Chapter Four: Old Mill Road and the town have their own)
   buildHouse(W,P);row2.push(P);
   // A back yard between the shared rear fence and the house: a tree, sometimes a swing set or a shed.
   const by=side*(REAR+2.5+rand()*3),bd=u+(rand()-.5)*10,p=groundPoint(bd,by);
@@ -76,13 +77,14 @@ export function buildBackground(W){
   if(inSide(px,pz,8))continue;
   if(W.woods?.inside(px,pz,14))continue;// Chapter Three's woods
   if(W.town?.inside(px,pz,14))continue;// Chapter Four's road into town
+  if(W.pine?.inside(px,pz,14))continue;// Chapter Five's Pine Ridge
   const rot=-heading(d)+(lat>0?-Math.PI/2:Math.PI/2)+(rand()<.5?Math.PI:0)+(rand()-.5)*.25;
   if(rand()<.62&&W.space.free(px,pz,9)){farHouse(px,pz,rot,rand);houses++;}
-  const nt=rand()<.7?1+Math.floor(rand()*2):0;for(let k=0;k<nt;k++){const tx=px+(rand()-.5)*26,tz=pz+(rand()-.5)*26;if(W.easement?.inside(tx,tz,3)||W.woods?.inside(tx,tz,3)||W.town?.inside(tx,tz,3))continue;if(veg.treeWorld(tx,tz,T(tx,tz),{size:.9+rand()*.8,kind:rand()<.3?'pine':'maple',clearance:3}))trees++;}
+  const nt=rand()<.7?1+Math.floor(rand()*2):0;for(let k=0;k<nt;k++){const tx=px+(rand()-.5)*26,tz=pz+(rand()-.5)*26;if(W.easement?.inside(tx,tz,3)||W.woods?.inside(tx,tz,3)||W.town?.inside(tx,tz,3)||W.pine?.inside(tx,tz,3))continue;if(veg.treeWorld(tx,tz,T(tx,tz),{size:.9+rand()*.8,kind:rand()<.3?'pine':'maple',clearance:3}))trees++;}
  }
  // Tree lines on the far rise, so the horizon is trees in haze rather than a bare edge.
  for(let x=minX;x<maxX;x+=14)for(let z=minZ;z<maxZ;z+=14){const {d,lat}=streetCoords(x,z),a=Math.abs(lat);if(a<R-60||a>R+10||d<ROAD_START-360||d>1700)continue;const rand=seeded(hashSeed(13,x,z));if(rand()<.62)continue;
-  const tx=x+(rand()-.5)*10,tz=z+(rand()-.5)*10;if(W.woods?.inside(tx,tz,3)||W.town?.inside(tx,tz,3))continue;if(veg.treeWorld(tx,tz,T(tx,tz),{size:1.3+rand()*.9,kind:rand()<.35?'pine':'maple',clearance:3.5}))trees++;}
+  const tx=x+(rand()-.5)*10,tz=z+(rand()-.5)*10;if(W.woods?.inside(tx,tz,3)||W.town?.inside(tx,tz,3)||W.pine?.inside(tx,tz,3))continue;if(veg.treeWorld(tx,tz,T(tx,tz),{size:1.3+rand()*.9,kind:rand()<.35?'pine':'maple',clearance:3.5}))trees++;}
 
  // The far ground itself, meeting the street's lawns under the rear fences --------------------
  const step=4,rx=REGION.map(p=>p[0]),rz=REGION.map(p=>p[1]);
@@ -99,6 +101,7 @@ export function buildBackground(W){
  for(let i=0;i<nx-1;i++)for(let j=0;j<nz-1;j++){
   if(!(keep[i*nz+j]||keep[(i+1)*nz+j]||keep[i*nz+j+1]||keep[(i+1)*nz+j+1]))continue;
   const x=x0+i*step,z=z0+j*step;if(overTrench(x,z)||underBasin(x,z))continue;
+  if(W.pine?.ownsCell&&W.pine.ownsCell(Math.round(x/step),Math.round(z/step)))continue;// (Pine Ridge's own ground is there)
   if(inRegion(x+step/2,z+step/2,44)){
    const poly=[[x,z],[x+step,z],[x+step,z+step],[x,z+step]].map(([x,z])=>{const q=TL(x,z);return [q.u,q.v];});
    for(const p of outsideMasks(poly)){const ids=p.map(([u,v])=>{const q=TW(u,v);return vertex(q.x,q.z);});for(let k=1;k<ids.length-1;k++){idx.push(ids[0],ids[k+1],ids[k]);townTris++;}}
