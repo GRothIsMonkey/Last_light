@@ -163,8 +163,10 @@ export function createChapter4(o,k,ch2,ch3){
  const checkpoint=id=>{k.checkpointTo(id,LABEL4[id]);saveInv();};// (silent: Continue on the title comes back here)
  const later=(sec,fn)=>C.timers.push({at:C.t+sec,fn});
  const mark=why=>{C.lastEvent=C.t;if(why)T?.note?.(why);};
- const owns=ph=>typeof ph==='string'&&/^(c4|d4|e4|n4)-/.test(ph);
- const handles=sec=>SECTIONS4.includes(sec)||!!ALIAS4[sec];
+ // (Chapter Five picks up the next afternoon: chapter5.js has its phases, sections and everything in them)
+ const mine=ph=>typeof ph==='string'&&/^(c4|d4|e4|n4)-/.test(ph);
+ const owns=ph=>mine(ph)||!!A4.next?.owns(ph),nextOwns=()=>!!A4.next?.owns(S.phase);
+ const handles=sec=>SECTIONS4.includes(sec)||!!ALIAS4[sec]||!!A4.next?.handles?.(sec);
  function card(on,title='Chapter Four',eyebrow=''){const el=$('chapter-card');if(!el)return;if(on){const e=el.querySelector?.('.eyebrow'),h=el.querySelector?.('h2');if(e)e.textContent=eyebrow;if(h)h.textContent=title;el.classList.add('on');}else el.classList.remove('on');C.cardOn=on;}
  function saveInv(){try{localStorage.setItem(SAVE4,JSON.stringify({camera:!!C.inv.camera,lead:!!C.inv.lead,found:[...C.found]}));}catch{}}
  // ---- poses: a closer look (the backpack, the shop window, the reader, the phone) ---------------------------------------
@@ -822,7 +824,8 @@ export function createChapter4(o,k,ch2,ch3){
   if(!X.started&&((p.speed||0)<.6||X.t>7)){X.started=true;const oak=main(LOOKOUT.oak.d,LOOKOUT.oak.lat);S.lookTarget={x:oak.x,y:oak.y+3,z:oak.z};
    talk([{wait:2.2},{who:'JAMIE',text:'“That thing in the tunnel…”',from:jamie,time:2.4,gap:1.8},{who:'SAM',text:'“It was scared.”',from:sam,time:1.8,gap:2},{who:'YOU',text:'“Of what?”',time:1.6,gap:.4},
     {wait:3.2},{act:()=>{C.blink=ambient.blink?.(me(),{back:46,dur:1.9});mark('a streetlight, down the street');},wait:3.6},{act:()=>{C.endT=0;S.lookTarget=null;},wait:.1}]);}}
- function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Four';if(pp)pp.textContent='August 23, 2011.';}const nb=$('next-chapter');if(nb)nb.hidden=true;o.finish();}
+ function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Four';if(pp)pp.textContent='August 23, 2011.';}
+  const nb=$('next-chapter');if(nb){nb.hidden=!A4.next;if(A4.next)nb.innerHTML='Chapter Five <span>→</span>';}A4.finished=true;o.finish();}
  // ---- doors, the dark, the night's sounds ----------------------------------------------------------------------------------------
  const SWING={'video-front':1,'library-front':-1,'video-back':1,'video-office':1,'laundry-back':1,'laundry-side':1};// (shop doors swing in, the back doors out)
  function updateDoors(dt){for(const [key,d] of Object.entries(D.doors||{})){const want=DOORS[key]?.open??1;if(d.posed&&Math.abs(d.cur-want)<1e-3)continue;d.cur=damp(d.cur,want,6,dt);if(Math.abs(d.cur-want)<2e-3)d.cur=want;
@@ -846,7 +849,7 @@ export function createChapter4(o,k,ch2,ch3){
    for(const [c,q] of [[jamie,J],[sam,Sq]]){if(ride){boyRide(c,at(q.u,q.v),a,0);c.follow=null;}else{const bk=c.bike.group.visible?{x:c.bx,z:c.bz,a:c.ba,kick:c.kick,fall:c.fall}:null,w=at(q.u,q.v);comp.putFoot(c,w.x,w.z,a,{bike:bk});c.follow=null;}}
    follow(true);C.fadeIn=0;};}
  // ---- the spots F works on, and the camera's keys -------------------------------------------------------------------------------
- function spots(){const out=[],ph=S.phase;if(C.view||C.fadeOut>=0||posed())return out;
+ function spots(){if(nextOwns())return A4.next.spots();const out=[],ph=S.phase;if(C.view||C.fadeOut>=0||posed())return out;
   if(ph==='d4-sam'&&C.flags.bagReady&&!C.flags.bag)out.push({id:'c4-bag',label:'Look in Alex’s backpack',at:bag.position,face:bag.position,r:2.6,wide:true});
   if(ph==='d4-town'){const v=P4('vic');if(v?.visible&&!v.walking&&!C.talked.has('vic'))out.push({id:'c4-vic',label:'Talk to Vic',at:v.pos,face:v.pos,r:3.2,wide:true,ride:true});
    if(C.flags.mason&&!C.flags.window){const w=at(SPOT.masonWindow.u,SPOT.masonWindow.v);out.push({id:'c4-window',label:'Look in the window',at:w,face:at(SPOT.masonWindow.look.u,SPOT.masonWindow.look.v),r:2.4,wide:true});}
@@ -856,11 +859,11 @@ export function createChapter4(o,k,ch2,ch3){
   if(ph==='n4-store'&&C.store?.ring&&!C.store.answered){const q=at(SPOT.videoPhone.u,SPOT.videoPhone.v,TY+1.1);out.push({id:'c4-phone',label:'Answer the phone',at:q,face:q,r:2.4,wide:true});}
   if(ph==='n4-store'&&C.store?.dark!==null&&C.store?.dark!==undefined&&DOORS['video-back'].open<.5){const q=at(103.75,-33.9);out.push({id:'c4-backdoor',label:'Push the door open',at:q,face:at(103.75,-35.6),r:1.9,wide:true});}
   return out;}
- function act(id){if(id==='c4-bag')openBag();else if(id==='c4-vic')talkVic();else if(id==='c4-window')lookWindow();else if(id==='c4-florist')florist();else if(id==='c4-librarian')talkLibrarian();
+ function act(id){if(nextOwns()){A4.next.act(id);return;}if(id==='c4-bag')openBag();else if(id==='c4-vic')talkVic();else if(id==='c4-window')lookWindow();else if(id==='c4-florist')florist();else if(id==='c4-librarian')talkLibrarian();
   else if(id==='c4-reader')startArchive();else if(id==='c4-phone')answerPhone('you');else if(id==='c4-backdoor'){openBack('you');}}
  const canCamera=()=>C.inv.camera&&me().walking&&!posed()&&!C.view&&C.fadeOut<0&&!['c4-black','d4-bag','d4-archive'].includes(S.phase);
  const shootWanted=()=>S.phase==='n4-store'&&C.store?.shot==='pine-ridge'&&!C.inv.lead;
- function key(code,repeat){if(!owns(S.phase))return false;
+ function key(code,repeat){if(nextOwns())return A4.next.key(code,repeat);if(!mine(S.phase))return false;
   if(code==='KeyV'){if(C.view==='camera'||C.view==='shoot'){if(!repeat)closeView();return true;}if(C.view==='reader'){if(!repeat&&!C.flags.closing)leaveArchive();return true;}
    if(canCamera()){if(!repeat){if(shootWanted())openShoot();else openCamera(S.phase==='n4-clue'||C.inv.lead&&/^n4-/.test(S.phase)?Math.max(0,leadIndex()):photo.V.i);}return true;}return false;}
   if(C.view==='camera'){if(code==='KeyA'||code==='ArrowLeft'){photo.browse(-1);return true;}if(code==='KeyD'||code==='ArrowRight'){photo.browse(1);return true;}
@@ -871,9 +874,9 @@ export function createChapter4(o,k,ch2,ch3){
   if(C.view==='reader'){if(code==='KeyA'||code==='ArrowLeft'){showRecord(C.rec-1);return true;}if(code==='KeyD'||code==='ArrowRight'||code==='KeyF'){if(!repeat)showRecord(C.rec+1);return true;}
    if(code==='KeyS'||code==='ArrowDown'){if(!repeat&&!C.flags.closing)leaveArchive();return true;}return ['KeyW','Space','KeyQ','KeyE','KeyC','KeyT'].includes(code);}
   return false;}
- function pan(dx,dy){if(!owns(S.phase))return false;if(C.view==='camera'){photo.pan(dx,dy);return true;}if(C.view==='reader')return true;return false;}
- function wheel(dy){if(!owns(S.phase)||C.view!=='camera')return false;photo.zoomBy(dy<0?1:-1);return true;}
- function hint(){const ph=S.phase;
+ function pan(dx,dy){if(nextOwns())return A4.next.pan(dx,dy);if(!mine(S.phase))return false;if(C.view==='camera'){photo.pan(dx,dy);return true;}if(C.view==='reader')return true;return false;}
+ function wheel(dy){if(nextOwns())return A4.next.wheel(dy);if(!mine(S.phase)||C.view!=='camera')return false;photo.zoomBy(dy<0?1:-1);return true;}
+ function hint(){if(nextOwns())return A4.next.hint?.()??null;const ph=S.phase;
   if(C.view==='camera')return [['A / D','Previous / next'],['W / S','Zoom'],...(photo.V.zoom>1.05?[['Mouse','Move around']]:[]),['V','Lower the camera']];
   if(C.view==='shoot')return C.aim&&!C.inv.lead?[['F','Take a picture'],['V','Lower the camera']]:[['V','Lower the camera']];
   if(C.view==='reader')return [['A / D','Previous / next'],...(C.flags.closing?[]:[['S','Get up']])];
@@ -889,11 +892,11 @@ export function createChapter4(o,k,ch2,ch3){
   else if(C.view==='shoot'){C.viewT+=dt;C.aim=inside('video')&&TVS.video.shot==='pine-ridge'&&k.camLooksAt(tvPos(),.955);photo.V.dirty=false;drawViewfinder(dt);const G=photo.model.group;G.position.y-=.085*smooth(photo.V.raise);G.position.x+=.035*smooth(photo.V.raise);}
   else if(C.view==='reader')updateArchive(dt);}
  // ---- sounds in the world (placeholders), what is in the way ----------------------------------------------------------------------
- function sources(out){const f=fixIdx(D.laundryFix)[0];if(f!==undefined&&lights.level(f)>.3&&C.lightsOn){const q=at(157.2,-24,TY+1);if(camera.position.distanceTo(new THREE.Vector3(q.x,q.y,q.z))<30)out.push({id:'dryers4',kind:'fan',pos:new THREE.Vector3(q.x,q.y,q.z),level:.6});}}
- function blockers(){const out=[...life.blockers];if(samMom.visible)out.push({x:samMom.x,z:samMom.z,r:.34,speed:0});if(AX.person.group.visible)out.push({x:AX.x,z:AX.z,r:.3,speed:0});out.push(...creature.colliders());return out;}
+ function sources(out){if(nextOwns()){A4.next.sources(out);return;}const f=fixIdx(D.laundryFix)[0];if(f!==undefined&&lights.level(f)>.3&&C.lightsOn){const q=at(157.2,-24,TY+1);if(camera.position.distanceTo(new THREE.Vector3(q.x,q.y,q.z))<30)out.push({id:'dryers4',kind:'fan',pos:new THREE.Vector3(q.x,q.y,q.z),level:.6});}}
+ function blockers(){if(nextOwns())return A4.next.blockers();const out=[...life.blockers];if(samMom.visible)out.push({x:samMom.x,z:samMom.z,r:.34,speed:0});if(AX.person.group.visible)out.push({x:AX.x,z:AX.z,r:.3,speed:0});out.push(...creature.colliders());return out;}
  // ---- every frame -------------------------------------------------------------------------------------------------------------------
  const others=()=>{const p=me();return [{x:p.x,z:p.z},...[jamie,sam].filter(c=>c.active).map(c=>c.mode==='foot'?{x:c.px,z:c.pz}:{x:c.bx,z:c.bz})];};
- function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase,p=me();
+ function update(dt){if(nextOwns()){A4.next.update(dt);return;}C.t+=dt;C.pt+=dt;const ph=S.phase,p=me();
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
   clock(dt);
   if(C.lightsOn){lights.S.fixOn={...Object.fromEntries(fixIdx(D.libraryFix).map(i=>[i,C.h<20.02?1:0]))};lights.update(dt,C.h);lights.lights(dt,camera.position,{indoors:inside('library')||inside('video')||inside('laundry')});}
@@ -926,14 +929,14 @@ export function createChapter4(o,k,ch2,ch3){
   const L4=sky();A.day=L4.day;A.night=L4.night;ch2.day=A.day;A.shade=0;A.barLight=false;}
  // ---- lifecycle -----------------------------------------------------------------------------------------------------------------------
  const SG0=SG?.open;
- function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);life.clear();lights.reset();if(lights.S.attached)lights.attach(false);flashL.removeFromParent();flashL.intensity=0;flashT=0;photo.reset();footage.reset();
+ function reset(){A4.next?.reset();A4.finished=false;{const nb=$('next-chapter');if(nb)nb.innerHTML='Chapter Four <span>→</span>';}const hadPose=C.pose,hadView=!!C.view;card(false);life.clear();lights.reset();if(lights.S.attached)lights.attach(false);flashL.removeFromParent();flashL.intensity=0;flashT=0;photo.reset();footage.reset();
   for(const T2 of Object.values(TVS)){T2.on=0;T2.shot=null;T2.t=0;T2.frames=0;T2.rt=0;T2.stat=1;for(const tv of [T2.tv,...T2.share])if(tv){tv.mat.uniforms.uOn.value=0;tv.mat.uniforms.uStatic.value=1;}}
   for(const key of Object.keys(DOORS)){DOORS[key].open=DOOR0[key];const d=D.doors?.[key];if(d){d.cur=DOOR0[key];d.posed=false;}}updateDoors(0);
   nav.setTown(false);samMom.show(false);samMom.lookAt=null;bag.visible=false;AX.person.group.visible=false;AX.state='off';AX.still=false;AX.turn=0;AX.lk=undefined;for(const s of SIL){s.q.visible=false;s.state='off';}
   /* (the creature as the page made it: its gait, its feet, where its head was turned; not only hidden) */if(C.crt||C.esc?.pass)creature.reset();creature.ground=null;Object.assign(creature.drive,{cower:0,back:0,alert:0,snap:0});if(SG0!==undefined&&C.flags?.bagReady)SG?.set?.(SG0);ambient.blinkReset?.();
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView)o.roam.walkLock=false;fresh();}
  // QA jumps, DEV scenes and Continue: the chapter at one of its moments, everything it needs set up.
- function jump(section){section=ALIAS4[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();
+ function jump(section){if(A4.next?.handles?.(section)&&!SECTIONS4.includes(section)&&!ALIAS4[section]){reset();A4.next.jump(section);return;}section=ALIAS4[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();
   if(section==='chapter4-start'){begin();return;}
   common();dayWorld();objective('');C.renderQ=photo.photos.map((p,i)=>i);C.inv.camera=true;
   const ix=SECTIONS4.indexOf(section),past=s=>ix>SECTIONS4.indexOf(s),ff=(...ks)=>{for(const kk of ks)C.flags[kk]=true;};
@@ -1035,11 +1038,11 @@ export function createChapter4(o,k,ch2,ch3){
   C.h=HOUR.oak;date(C.h);go('n4-ride');youRide(main(1130,-1.1),heading(1130),.4);boyRide(jamie,main(1127.6,.8),heading(1127.6),.3);boyRide(sam,main(1126.4,-2.8),heading(1126.4),.3);follow(true);atOak();}
  // ---- the api ---------------------------------------------------------------------------------------------------------------------------
  Object.assign(A4,{SECTIONS:SECTIONS4,ALIAS:ALIAS4,LABEL:LABEL4,ARCHIVE,owns,handles,begin,update,spots,act,sources,blockers,reset,jump,hint,key,pan,wheel,
-  light:()=>owns(S.phase)?sky():null,jamieSweep:()=>null,longThrow:()=>null,officerAim:()=>null,
-  canDismount:()=>!posed()&&!C.view&&S.phase!=='c4-black',
-  canRemount:()=>!C.view&&!posed()&&!/^(d4-(sam|bag|library|archive)|n4-(store|laundry))$/.test(S.phase)&&!(S.phase==='d4-photos'&&!C.flags.lead1),
+  light:()=>nextOwns()?A4.next.light():mine(S.phase)?sky():null,jamieSweep:t=>nextOwns()?A4.next.jamieSweep?.(t)??null:null,longThrow:(h,a)=>nextOwns()?A4.next.longThrow?.(h,a)??null:null,officerAim:()=>nextOwns()?A4.next.officerAim?.()??null:null,
+  canDismount:()=>nextOwns()?A4.next.canDismount():!posed()&&!C.view&&S.phase!=='c4-black',
+  canRemount:()=>nextOwns()?A4.next.canRemount():!C.view&&!posed()&&!/^(d4-(sam|bag|library|archive)|n4-(store|laundry))$/.test(S.phase)&&!(S.phase==='d4-photos'&&!C.flags.lead1),
   C,lights,life,photo,footage,TVS,AX,SIL,bag,samMom,EAST,WEST,KEEP,LYRIC,VIDEO,LAUNDRY,sky,drawRecord,takePicture,ensureLead,leadIndex,inside,at});
- Object.defineProperties(A4,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
+ Object.defineProperties(A4,{amb:{get:()=>nextOwns()?A4.next.amb:C.amb},viewing:{get:()=>nextOwns()?A4.next.viewing:C.view},
   state:{get:()=>({phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,inv:{...C.inv},found:[...C.found],read:[...C.read].sort(),rec:C.rec,dark:+C.dark.toFixed(3),darkTo:C.darkTo||0,
    photos:{count:photo.photos.length,rendered:photo.rendered,index:photo.V.i,zoom:+photo.V.zoom.toFixed(2),open:photo.V.open,lead:leadIndex()},shots:[...(C.shots||[])],sounds:{...C.sounds},
    tvs:Object.fromEntries(Object.entries(TVS).map(([key,T2])=>[key,{on:T2.on,shot:T2.shot,frames:T2.frames}])),

@@ -17,6 +17,8 @@
 //     behind black, until Chapter Two's own end() calls chapter3.begin().
 //   * Chapter Four: Chapter Three's last scene (the chapter3-end checkpoint), the game runs, muted, until Chapter
 //     Three's own ending card, then the card's own "Chapter Four" button (nextChapter → chapter4.begin()).
+//   * Chapter Five: the same from Chapter Four's last scene (chapter4-end): its ending card, then its own "Chapter Five"
+//     button (nextChapter → chapter5.begin()).
 // The checkpoint scenes cannot know what earlier beats left behind (which windows were tapped, the
 // flashlight Jamie gave you, the siren, Chapter Two's evidence and police flags…). That history comes from
 // HISTORY (dev-chapter-history.js), which is GENERATED from a natural playthrough
@@ -40,7 +42,7 @@
 //     moment, through the departures in between, as a player would;
 //   * approach: the last stretch of the street to the lookout (the game rides the rest when you do).
 import {HISTORY,TIMESTAMPS,SCENE_HISTORY} from './dev-chapter-history.js';
-export const DEV_CHAPTERS=[{n:0,label:'Prologue',phase:null},{n:1,label:'Chapter One',phase:'leave'},{n:2,label:'Chapter Two',phase:'c2-black'},{n:3,label:'Chapter Three',phase:'c3-black'},{n:4,label:'Chapter Four',phase:'c4-black'}];
+export const DEV_CHAPTERS=[{n:0,label:'Prologue',phase:null},{n:1,label:'Chapter One',phase:'leave'},{n:2,label:'Chapter Two',phase:'c2-black'},{n:3,label:'Chapter Three',phase:'c3-black'},{n:4,label:'Chapter Four',phase:'c4-black'},{n:5,label:'Chapter Five',phase:'c5-black'}];
 // The scenes of each chapter, in story order. The first of each list is the chapter's own start.
 export const DEV_SCENES={
  0:[{id:'start',label:'Start (new game)',chapter:0},{id:'group-ride',label:'Group Ride',warp:150},{id:'alex-hears',label:'Alex Before Briarwood (“Did you guys hear that?”)',warp:355},
@@ -87,10 +89,29 @@ export const DEV_SCENES={
   {id:'c4-depot-st',label:'Depot Street',jump:'c4-depot-st'},{id:'c4-theater',label:'Theater Approach (the windows)',jump:'c4-theater'},
   {id:'c4-marquee',label:'New Alex Message (under the marquee)',jump:'c4-marquee',save:'c4-theater'},{id:'c4-power-returns',label:'Blackout / Power Returns',jump:'c4-power-returns'},
   {id:'c4-final-clue',label:'Final Clue (the Pine Ridge picture)',jump:'c4-final-clue'},{id:'c4-ride-home',label:'Ride Home',jump:'c4-ride-home',save:'c4-final-clue'},
-  {id:'c4-oak',label:'Back on Oak Hollow',jump:'c4-oak',save:'c4-final-clue'},{id:'chapter4-end',label:'Chapter Four Ending (the old oak)',jump:'chapter4-end'}]};
+  {id:'c4-oak',label:'Back on Oak Hollow',jump:'c4-oak',save:'c4-final-clue'},{id:'chapter4-end',label:'Chapter Four Ending (the old oak)',jump:'chapter4-end'}],
+ 5:[{id:'chapter5',label:'Chapter Five Start',chapter:5},{id:'c5-garage',label:'Sam’s Garage (packing)',jump:'c5-garage',save:'chapter5-start'},
+  {id:'c5-departure',label:'Departure (Jamie’s sock)',jump:'c5-departure',save:'chapter5-start'},{id:'c5-ride',label:'The Old Reservoir Road',jump:'c5-ride'},
+  {id:'c5-race',label:'The Race (Jamie)',jump:'c5-race',save:'c5-ride'},{id:'c5-crest',label:'Top of the Ridge (first view)',jump:'c5-crest',save:'c5-ride'},
+  {id:'c5-arrival',label:'Pine Ridge Arrival (the new sign)',jump:'c5-arrival'},{id:'c5-park',label:'The Park (the bike rack)',jump:'c5-park',save:'c5-arrival'},
+  {id:'c5-stones',label:'Skipping Stones',jump:'c5-stones',save:'c5-arrival'},{id:'c5-dock-memory',label:'The Dock (Alex and the shoe)',jump:'c5-dock-memory',save:'c5-arrival'},
+  {id:'c5-sign-search',label:'Find the Place in the Picture',jump:'c5-sign-search'},{id:'c5-photo-match',label:'Photo Match (the old sign)',jump:'c5-photo-match',save:'c5-sign-search'},
+  {id:'c5-trail-map',label:'The Trail Map',jump:'c5-trail-map',save:'c5-sign-search'},{id:'c5-gate-decision',label:'The Yellow Gate (the decision)',jump:'c5-gate-decision'},
+  {id:'c5-gravel-road',label:'The Road to the Camp',jump:'c5-gravel-road',save:'c5-gate-decision'},{id:'c5-camp-gate',label:'Camp Whippoorwill (the arch)',jump:'c5-camp-gate',save:'c5-gate-decision'},
+  {id:'c5-camp',label:'Camp Exploration',jump:'c5-camp'},{id:'c5-office',label:'The Office',jump:'c5-office',save:'c5-camp-gate'},
+  {id:'c5-register',label:'The 1991 Register (the Whitcomb search)',jump:'c5-register',save:'c5-camp-gate'},{id:'c5-lodge',label:'The Lodge',jump:'c5-lodge',save:'c5-camp-gate'},
+  {id:'c5-pantry',label:'The Pantry (someone has been here)',jump:'c5-pantry',save:'c5-camp-gate'},{id:'c5-cabins',label:'The Cabins (Sam’s batteries)',jump:'c5-cabins',save:'c5-camp-gate'},
+  {id:'c5-campfire',label:'The Campfire (the quiet scene)',jump:'c5-campfire',save:'c5-camp-gate'},{id:'c5-golden-hour',label:'Golden Hour (Wren’s window)',jump:'c5-golden-hour'},
+  {id:'c5-owl',label:'Owl (Alex’s shirt)',jump:'c5-owl',save:'c5-campfire'},{id:'c5-calling',label:'Calling for Alex (a light in the trees)',jump:'c5-calling'},
+  {id:'c5-three-lights',label:'Three Lights / the Creature',jump:'c5-three-lights',save:'c5-owl'},{id:'c5-split',label:'The Camp That Wants Them Apart',jump:'c5-split'},
+  {id:'c5-compromise',label:'Disagreement and Compromise',jump:'c5-compromise',save:'c5-split'},{id:'c5-window',label:'Owl From the Porch (the double)',jump:'c5-window',save:'c5-split'},
+  {id:'c5-run',label:'Run (escape start)',jump:'c5-run'},{id:'c5-route-a',label:'Escape Route A (the road)',jump:'c5-route-a',save:'c5-run'},
+  {id:'c5-route-c',label:'Escape Route C (the dam)',jump:'c5-route-c',save:'c5-run'},{id:'c5-boundary',label:'Camp Boundary (the gate)',jump:'c5-boundary',save:'c5-run'},
+  {id:'c5-aftermath',label:'Aftermath (the lamp in the lot)',jump:'c5-aftermath',save:'c5-run'},{id:'c5-second-discovery',label:'The Last Picture',jump:'c5-second-discovery'},
+  {id:'chapter5-end',label:'Chapter Five Ending (one light)',jump:'chapter5-end'}]};
 
 export function createDevChapters(g){
- const {chapter,chapter2,chapter3,chapter4}=g,comp=chapter.companions,K=chapter.kit;
+ const {chapter,chapter2,chapter3,chapter4,chapter5}=g,comp=chapter.companions,K=chapter.kit;
  // Every per-run state object emptied completely before the chapters' own reset()/fresh() refill them
  // (their fresh() functions refill a fixed list of keys; anything else would otherwise survive).
  function clearObject(o,keep=[]){if(!o)return;for(const k of Object.keys(o))if(!keep.includes(k))delete o[k];}
@@ -109,7 +130,7 @@ export function createDevChapters(g){
  // over's resetState() + start() as its first step): one start(), so the pointer lock is requested once per click.
  function clear({restart=true}={}){
   g.audio()?.stopRecording?.();
-  if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
+  if(chapter5)clearObject(chapter5.C);if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
   // Chapter One's shared state: the dialogue queue array is kept as the same array (other code holds it).
   const q=K.S.queue;clearObject(K.S);K.S.queue=q;q.length=0;
   rebirth();
@@ -139,6 +160,7 @@ export function createDevChapters(g){
   else if(n===2){g.jumpTo('clue');chapter.act('reflector');runUntil(()=>phase()==='c2-black');}
   else if(n===3){g.jumpTo('chapter2-end');runUntil(()=>phase()==='c3-black');}
   else if(n===4){g.jumpTo('chapter3-end');runUntil(()=>G().state==='ended');g.nextChapter();}
+  else if(n===5){g.jumpTo('chapter4-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n!==0)throw new Error('dev start: no chapter '+n);
   if(history)applyHistory(n);
   return phase();}
@@ -181,6 +203,7 @@ export function createDevChapters(g){
     extra:chapter2.extra.map(person),beams:chapter2.beams.map(b=>({on:!!b.on,visible:!!b.beam?.visible}))},
    chapter3:{C:plain(chapter3.C),state:plain(chapter3.state),old:chapter3.old.group.visible,evidence:chapter3.evidence.visible,phone:chapter3.phone.visible,figure:chapter3.figure.group.visible,amb:plain(chapter3.amb)},
    chapter4:chapter4?{C:plain(chapter4.C),state:(st=>{if(st?.photos)delete st.photos.rendered;return st;})(plain(chapter4.state))}:null,// (which of Alex's pictures are already rendered is a cache, not state)
+   chapter5:chapter5?{C:plain(chapter5.C),state:plain(chapter5.state)}:null,
    companions:comp.all.map(c=>({key:c.key,active:c.active,mode:c.mode,follow:c.follow||null,script:!!c.script,visible:!!c.person?.group?.visible,bikeVisible:!!c.bike?.group?.visible,
     p:pos({x:c.px,z:c.pz}),b:pos({x:c.bx,z:c.bz}),pa:r(c.pa),ba:r(c.ba),speed:r(c.speed),flash:!!c.flash,lookAt:!!c.lookAt,lookPlayer:!!c.lookPlayer,hidden:!!c.hidden,poi:!!c.poi})),
    people:{officer:person(chapter.officer),officer2:person(chapter.officer2),dad:person(chapter.dad),mom:person(chapter.mom),neighbor:person(chapter.neighbor),adults:(chapter.adults||[]).map(person),
