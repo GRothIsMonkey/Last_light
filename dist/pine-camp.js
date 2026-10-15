@@ -189,7 +189,7 @@ export function buildCamp(W,out){
    // cans in rows, dusty; a gap on the middle shelf (chapter5.js marks the clean rings where some were taken)
    const canM=[K.mat(0x9a3a2a,{roughness:.6,metalness:.3}),K.mat(0x3a6a3a,{roughness:.6,metalness:.3}),K.mat(0xd8c060,{roughness:.6,metalness:.3}),K.mat(0x8a8a8a,{roughness:.5,metalness:.5})];
    for(const y of [.5,1.0,1.5])for(let k=0;k<12;k++){if(y===1.0&&k>=4&&k<8)continue;K.cyl(I,t.x-.1+(k%2)*.16,f+y+.09,t.z-t.d/2+.25+Math.floor(k/2)*.6,.055,.16,canM[(k+Math.round(y*3))%4],8);}
-   out.anchors.pantryGap={b:b.id,x:t.x-.02,y:f+1.0,z:t.z-t.d/2+2.65};}
+   out.anchors.pantryGap={b:b.id,x:t.x-.02,y:f+1.0,z:t.z-t.d/2+1.75};}// (the middle of the four missing cans)
   // on the walls: the group photographs, the plaque, a fire extinguisher, the light fixtures
   const years=[1964,1971,1977,1983,1987,1990];years.forEach((y,i)=>{const x=-3+i*1.85;face(I,paint(300,240,groupPhotoArt(y,y)),.86,.68,{x,y:f+2.15,z:hd2-th-.02});});
   face(I,paint(300,400,plaqueArt),.66,.88,{x:2.4,y:f+1.8,z:-hd2+th+.02,ry:Math.PI});

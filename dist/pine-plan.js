@@ -334,7 +334,7 @@ export const TREES=[];
  solidC('flagpole',CL[0],CL[1],.18);solidC('bellpost',-196,566,.22);solidC('tether',-222,541,.12);solidR('mapboard',[-190,541],hd(1,-.2),1.8,.3);solidC('signpost',-193,546,.14);
  for(const [e,n,a] of [[-201,539,.3],[-217,556,-.6],[-214,537,2.2],[-199,555,-2.6]])solidR('bench',[e,n],a,1.8,.5);
  solidR('buddyboard',[-229,511],hd(0,-1),2.4,.25);solidR('canoerack',[-256,513],hd(1,-.1),5.2,1.5);
- for(let k=0;k<6;k++){const a=k/6*Math.PI*2+.3;solidR('log',[-212+Math.sin(a)*4.3,516+Math.cos(a)*4.3],a+Math.PI/2,2.1,.42,{low:true});}
+ for(let k=0;k<6;k++){const a=k/6*Math.PI*2+.3;solidR('log',[-212+Math.sin(a)*4.3,516+Math.cos(a)*4.3],a,2.1,.42,{low:true});}// (benches round the ring: each along the circle)
  solidC('firering',-212,516,1.05,{low:true});
  // the park
  for(const [e,n,a] of [[-142,326,.1],[-153,326,-.1],[-141,336,.05],[-154,337,-.2],[-131,346,.4],[-163,321,.6],[-121,323,-.3],[-104,345,.2],[-170,330,1.2]])solidR('table',[e,n],a,1.9,1.6);

@@ -31,6 +31,12 @@ export function createCampPresence({scene,world,camera,sfx=()=>{}}){
   const cord=new THREE.Mesh(new THREE.CylinderGeometry(.006,.006,.18,5),new THREE.MeshStandardMaterial({color:0x1e1c1a}));cord.position.set(pos.x,pos.y+.12,pos.z);root.add(cord);
   LAMPS['office-porch']={id:'office-porch',pos,bulb,level:0,want:0,rate:2,flick:0,seed:3.1,color:0xffd08a,porch:true};}
  const POOL=[0,1,2].map(i=>{const L=new THREE.PointLight(0xffbe6a,0,11,2);L.name='camp-lamp-'+i;root.add(L);return L;});
+ // A lit window seen from far off (across the lake, from the dam, from the lot): a small glow the night's haze does not swallow.
+ // (and the porch bulb's own halo, near)
+ const glowTex=(()=>{try{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext?.('2d');if(!g)return null;const r=g.createRadialGradient?.(32,32,0,32,32,32);if(!r)return null;
+  r.addColorStop(0,'rgba(255,236,190,1)');r.addColorStop(.16,'rgba(255,220,160,.95)');r.addColorStop(.38,'rgba(255,190,110,.4)');r.addColorStop(1,'rgba(255,170,80,0)');g.fillStyle=r;g.fillRect(0,0,64,64);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}catch{return null;}})();
+ // (far off, a lit window shows through the trees between, the way a light does at night)
+ for(const L of Object.values(LAMPS)){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xffc890,transparent:true,opacity:0,depthWrite:false,depthTest:!!L.porch,blending:THREE.AdditiveBlending,fog:false}));sp.renderOrder=L.porch?0:5;sp.position.copy(L.pos);if(!L.porch)sp.position.y-=.45;sp.visible=false;sp.name='lamp-glow-'+L.id;root.add(sp);L.sprite=sp;}
  let t=0;
  function set(id,want,{rate=1.5,flick=0}={}){const L=LAMPS[id];if(!L)return;L.want=want;L.rate=rate;L.flick=flick;}
  const level=id=>LAMPS[id]?.level||0;
@@ -72,6 +78,7 @@ export function createCampPresence({scene,world,camera,sfx=()=>{}}){
   // the three nearest lit lamps get the real lights
   const cam=camera.position,best=Object.values(LAMPS).filter(L=>L.level>.03).sort((a,b)=>a.pos.distanceToSquared(cam)/(a.level+.2)-b.pos.distanceToSquared(cam)/(b.level+.2)).slice(0,POOL.length);
   POOL.forEach((P,i)=>{const L=best[i];if(L){P.position.copy(L.pos);P.intensity=L.level*(L.porch?5:7);P.color.setHex(L.color);P.distance=L.porch?9:11;}else P.intensity=0;});
+  for(const L of Object.values(LAMPS)){const sp=L.sprite;if(!sp)continue;const d=sp.position.distanceTo(cam),far=L.porch?1:smooth((d-35)/40),o=Math.min(1,L.level)*far;sp.visible=o>.02;if(sp.visible){sp.material.opacity=o*(L.porch?.8:1);const k=L.porch?.55:Math.max(1.2,d*.032);sp.scale.set(k,k,1);}}
   updateCarry(dt,groundY);updateDouble(dt);}
  function attach(on){if(on){if(!root.parent)scene.add(root);const lot=PN?.lights?.lot?.pool;if(lot&&!lot.parent)live?.add(lot);}else{root.removeFromParent();const lot=PN?.lights?.lot?.pool;lot?.removeFromParent();}}
  function reset(){allOff();for(const c of CARRY){c.g.visible=false;c.on=c.want=0;c.path=null;c.L.intensity=0;}D.person.group.visible=false;for(const P of POOL)P.intensity=0;t=0;}
