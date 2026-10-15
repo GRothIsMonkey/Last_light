@@ -296,7 +296,7 @@ export const TREES=[];
  // the clearing, worn dirt; the campfire terrace
  paintCircle(CL,15.5,T.dirt);paintCircle([-212,516],5.6,T.dirt);
  // the docks: decks over the water at their own height
- for(const D of DOCKS){const F=frameOf(D.root,D.a);paintFn(D.root[0]-D.len-3,D.root[0]+D.len+3,D.root[1]-D.len-3,D.root[1]+D.len+3,(e,n)=>{const [lx,lz]=F.of(e,n);return Math.abs(lx)<=D.w/2&&lz>=-1.2&&lz<=D.len?{t:T.wood,f:D.y}:null;});}
+ for(const D of DOCKS){const F=frameOf(D.root,D.a);paintFn(D.root[0]-D.len-3,D.root[0]+D.len+3,D.root[1]-D.len-3,D.root[1]+D.len+3,(e,n)=>{const [lx,lz]=F.of(e,n);return Math.abs(lx)<=D.w/2&&lz>=-1.2&&lz<=D.len?{t:lz<.2?T.step:T.wood,f:D.y}:null;});}// (its landward end a step: on and off it from the bank, wherever the bank is)
  // the dam: the crest is concrete at its own height; its faces and the water past it are not walkable
  {const a=DAM.a,b=DAM.b,L=Math.hypot(b[0]-a[0],b[1]-a[1]),dir=[(b[0]-a[0])/L,(b[1]-a[1])/L];paintFn(-376,-340,360,456,(e,n)=>{const de=e-a[0],dn=n-a[1],s=de*dir[0]+dn*dir[1],t=de*dir[1]-dn*dir[0];if(s<-3||s>L+3)return null;
   if(Math.abs(t)<=DAM.width/2-.25)return {t:T.concrete,f:DAM.crest};if(Math.abs(t)<=DAM.width/2+.4&&s>-.5&&s<L+.5)return T.solid;return null;});}
@@ -315,13 +315,20 @@ export const TREES=[];
 }
 // Furniture and fixtures that stand in the way (interiors in their building's frame; outside in e, n).
 {const add=(b,lx,lz,w,d,kind,o={})=>{const B=BLD[b];solidR(kind,B.F.to(lx,lz),B.a,w,d,{inside:b,...o});};
+ // the walls of the rooms you can walk into (thinner than the half-metre grid, so they are solids, not painted cells),
+ // open where their doors are (a shut door is a wall of its own: shutAt)
+ for(const B of BUILDINGS.filter(b=>b.enter)){const hw=B.w/2,hd2=B.d/2,t=.26,wall=(lx0,lx1,lz)=>{if(lx1-lx0>.05)add(B.id,(lx0+lx1)/2,lz,lx1-lx0,t,'wall');};
+  // (the openings a little wider than the doors themselves: a doorway you can walk through without threading it)
+  const gaps=(lz,dr)=>{if(!dr){wall(-hw,hw,lz);return;}wall(-hw,dr[0]-dr[1]/2-.12,lz);wall(dr[0]+dr[1]/2+.12,hw,lz);};
+  gaps(hd2-.06,B.door);gaps(-hd2+.06,B.back||null);for(const s of [-1,1])add(B.id,s*(hw-.06),0,t,B.d,'wall');}
  // cabins: four bunks (two each side), a shelf at the back
  for(const id of ['bluejay','cardinal','owl']){const B=BLD[id],I=interiorOf(B);for(const s of [-1,1])for(const lz of [-1.9,1.05]){add(id,s*(B.w/2-.62),lz,1.0,2.05,'bunk',{side:s});}add(id,0,I.z0+.24,2.4,.4,'shelf');}
  // the office: a counter inside the door, a desk, a filing cabinet, a bench
  add('office',-.3,.6,2.2,.55,'counter');add('office',1.6,-1.4,1.4,.75,'desk');add('office',-2.55,-1.75,.5,.6,'cabinet');add('office',2.65,1.2,.45,1.4,'bench');
  // the lodge: four long tables with their benches, the stage, the kitchen wall and its counter, the hearth
  // (looking out of the front door, south: the stage at the west end on your right, the kitchen at the east end by the lane)
- for(const lx of [-2.6,1.4,5.4])for(const lz of [-1.6,1.9]){add('lodge',lx,lz,3.6,.85,'table');for(const s of [-1,1])add('lodge',lx,lz+s*.72,3.4,.3,'bench');}
+ // (two columns of tables with a wide aisle down the middle from the doors, room round their ends and between the rows)
+ for(const lx of [-1.8,4.6])for(const lz of [-1.4,2.2]){add('lodge',lx,lz,3.0,.85,'table');for(const s of [-1,1])add('lodge',lx,lz+s*.72,2.8,.3,'bench');}
  add('lodge',8.6,0,1.6,9.8,'stage');add('lodge',-4.6,-.5,.2,9.6,'kwall',{gap:[-1.2,.2]});add('lodge',-7.6,-3.6,4.2,.7,'kcounter');add('lodge',-8.9,1.2,.6,4,'pantry');add('lodge',3,-5.05,2.2,.7,'hearth');
  // outside: the flagpole, the bell, the tetherball, benches, the map board, the signpost; the picnic tables, grills, barrels
  solidC('flagpole',CL[0],CL[1],.18);solidC('bellpost',-196,566,.22);solidC('tether',-222,541,.12);solidR('mapboard',[-190,541],hd(1,-.2),1.8,.3);solidC('signpost',-193,546,.14);

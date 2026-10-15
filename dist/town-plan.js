@@ -287,7 +287,8 @@ export function townNav(){
   if(W.zone==='conn'&&Math.abs(W.t)<=CONN_X.walk)return connBase(W.s);return groundY(x,z,W);}
  // r: the walker's or rider's radius (a few samples round the point, so you stop at a wall, not in it)
  function coreOK(u,v,r,ride,lawn){const t=typeAt(u,v),I=SURF_INFO[t];if(!(ride?I.ride:I.walk))return false;if(ride&&I.lawn&&!lawn)return false;
-  if(r>0)for(const [du,dv] of [[r,0],[-r,0],[0,r],[0,-r]]){const t2=typeAt(u+du,v+dv),I2=SURF_INFO[t2];if(!(ride?I2.ride:I2.walk))return false;}
+  // (past the grid's north edge on Mill Street, Pine Ridge's ground goes on: pine-plan.js answers there, not this grid's edge)
+  if(r>0)for(const [du,dv] of [[r,0],[-r,0],[0,r],[0,-r]]){if(v+dv>=CORE.v1-.01&&Math.abs(u+du)<16)continue;const t2=typeAt(u+du,v+dv),I2=SURF_INFO[t2];if(!(ride?I2.ride:I2.walk))return false;}
   if(solidAt(u,v,r))return false;if(shut(u,v,r))return false;return true;}
  function walkable(x,z,{r=.28}={},W=where(x,z)){if(!W)return null;if(W.zone==='core')return coreOK(W.u,W.v,r*.9,false,true);
   if(W.zone==='conn'){const a=Math.abs(W.t);if(a>REACH_T-r)return false;return !connSolid(W.s,W.t,r);}return false;}

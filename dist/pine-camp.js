@@ -176,8 +176,8 @@ export function buildCamp(W,out){
   // the ceiling boards (under the roof), so the hall has a top
   {const grp=new THREE.Group();grp.rotation.y=Math.PI/2;I.add(grp);K.quad(grp,[-hd2+.15,f+h+.02,-hw+.2],[0,f+h+2.55,-hw+.2],[0,f+h+2.55,hw-.2],[-hd2+.15,f+h+.02,hw-.2],M2.floor);K.quad(grp,[0,f+h+2.55,-hw+.2],[hd2-.15,f+h+.02,-hw+.2],[hd2-.15,f+h+.02,hw-.2],[0,f+h+2.55,hw-.2],M2.floor);}
   const loc=(kind)=>SOLIDS.filter(q=>q.inside===b.id&&q.kind===kind).map(s=>{const [lx,lz]=b.F.of(s.c[0],s.c[1]);return {x:lx,z:-lz,w:s.w,d:s.d};});
-  for(const t of loc('table')){B(I,t.x,f+.74,t.z,t.w,.06,t.d,M2.floor);for(const x of [-1.5,1.5])B(I,t.x+x,f+.37,t.z,.08,.72,t.d-.1,M2.frame);}
-  for(const t of loc('bench')){B(I,t.x,f+.43,t.z,t.w,.05,t.d,M2.floor);for(const x of [-1.4,1.4])B(I,t.x+x,f+.21,t.z,.06,.42,t.d-.04,M2.frame);}
+  for(const t of loc('table')){B(I,t.x,f+.74,t.z,t.w,.06,t.d,M2.floor);for(const x of [-(t.w/2-.18),t.w/2-.18])B(I,t.x+x,f+.37,t.z,.08,.72,t.d-.1,M2.frame);}
+  for(const t of loc('bench')){B(I,t.x,f+.43,t.z,t.w,.05,t.d,M2.floor);for(const x of [-(t.w/2-.14),t.w/2-.14])B(I,t.x+x,f+.21,t.z,.06,.42,t.d-.04,M2.frame);}
   for(const t of loc('stage')){B(I,t.x,f+.22,t.z,t.w,.44,t.d,M2.floorDark);B(I,t.x+t.w/2+.15,f+.1,t.z,.3,.2,2.2,M2.floor);
    face(I,paint(1200,140,bannerArt),5.6,.66,{x:hw-th-.03,y:f+2.7,z:t.z,ry:Math.PI/2});
    // an old upright piano at the side of the stage

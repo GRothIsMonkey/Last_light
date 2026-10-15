@@ -258,7 +258,8 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
   // ---- the lot's lamp: a tall pole, a cobra head (its level is the story's)
   {const s=SOLIDS.find(q=>q.kind==='lamp'),g=at(root,s.e,s.n,null,0);K.cyl(g,0,4.5,0,.1,9,M.steel,8);K.rod(g,[0,8.7,0],[0,9.1,1.4],.05,M.steel);const head=new THREE.Mesh(new THREE.BoxGeometry(.32,.14,.62),new THREE.MeshStandardMaterial({color:0xd8d0c0,emissive:0xffb060,emissiveIntensity:0}));
    const hp=PW(s.e,s.n-1.5);head.position.set(hp.x,gY(s.e,s.n)+9.05,hp.z);head.name='lot-lamp-head';live.add(head);
-   const pool=new THREE.PointLight(0xffb870,0,26,1.6);pool.position.set(hp.x,gY(s.e,s.n)+8.6,hp.z);live.add(pool);out.lights.lot={head,pool,level:0};}
+   // (its light joins the scene only while Chapter Five is playing: every light in the scene costs every lit material)
+   const pool=new THREE.PointLight(0xffb870,0,26,1.6);pool.position.set(hp.x,gY(s.e,s.n)+8.6,hp.z);pool.name='lot-lamp-light';out.lights.lot={head,pool,level:0};}
   // ---- the kiosk: two posts, a little roof, the map behind plexiglass
   {const s=SOLIDS.find(q=>q.kind==='kiosk'),g=at(root,s.c[0],s.c[1],null,Math.PI);for(const x of [-.95,.95])K.cyl(g,x,1.3,0,.07,2.6,M.brown,6);B(g,0,2.68,0,2.4,.08,.9,M.shingle);B(g,0,1.45,.02,2.02,1.42,.06,M.brown);
    const uv=paint(1024,720,kioskMapArt);face(g,uv,1.86,1.3,{y:1.45,z:-.03});out.anchors.kiosk=g;}
