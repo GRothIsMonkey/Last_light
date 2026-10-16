@@ -76,6 +76,9 @@ export function buildWorld(scene){
  buildBackground(W);// back yards, second row, side-street houses, far neighborhood and land
 
  const {merged,originals,shadowProxies}=bakeAndMerge(W,scene);
+ // A layer that asks for it lets go of its objects once they are baked (Pine Ridge's thousands of trees and planks): only the
+ // merged meshes draw, and anything still in use is held by whoever uses it; its root is untransformed, so they keep their places.
+ for(const l of W.layers)if(l.release)l.group.clear();
 
  // Surface height queries for riders and walkers ------------------------------------------
  // Only Oak Hollow's houses matter to riders and walkers (side-street houses live in their own frames).

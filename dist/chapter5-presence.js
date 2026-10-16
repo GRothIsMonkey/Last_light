@@ -46,19 +46,21 @@ export function createCampPresence({scene,world,camera,sfx=()=>{}}){
  // ---- the carried lights ------------------------------------------------------------------------------------------------------
  const CARRY=[0,1,2].map(i=>{const g=new THREE.Group();g.name='carried-light-'+i;const head=new THREE.Mesh(new THREE.SphereGeometry(.045,8,6),new THREE.MeshBasicMaterial({color:0xfff2d0}));g.add(head);
   const halo=new THREE.Mesh(new THREE.SphereGeometry(.22,10,8),new THREE.MeshBasicMaterial({color:0xffe0a0,transparent:true,opacity:.18,depthWrite:false}));g.add(halo);
-  const L=new THREE.PointLight(0xffe6b0,0,7,2);g.add(L);g.visible=false;root.add(g);return {g,head,halo,L,on:0,want:0,path:null,u:0,v:1.25,off:[0,-1.1,1.1][i],lag:[0,1.3,2.4][i],phase:i*2.1,stop:0,done:false};});
+  // (its light is not inside the group that is shown and hidden: it stays in the scene at 0 when unlit, so the number of lights
+  // never changes during the chapter and nothing has to recompile its shaders in the middle of a scene)
+  const L=new THREE.PointLight(0xffe6b0,0,7,2);L.name='carried-light-lamp-'+i;root.add(L);g.visible=false;root.add(g);return {g,head,halo,L,on:0,want:0,path:null,u:0,v:1.25,off:[0,-1.1,1.1][i],lag:[0,1.3,2.4][i],phase:i*2.1,stop:0,done:false};});
  // A path for them all (world points); speed; when it ends, they stop and hold (or go out: out=true).
  function carry(n,pts,{speed=1.25,out=false,from=0}={}){const segs=[];let L=0;for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b.x-a.x,b.z-a.z);segs.push({a,b,l,s:L,wait:b.wait||0});L+=l;}
   for(let i=0;i<3;i++){const c=CARRY[i];c.path=i<n?{segs,L}:null;c.u=from;c.v=speed;c.want=i<n?1:0;c.out=out;c.done=false;c.stop=0;c.wait=0;if(i<n){c.g.visible=true;}}}
  function carriedOut(dur=.4){for(const c of CARRY){c.want=0;c.fade=dur;}}
  const at=(c,u)=>{const P=c.path;if(!P||!P.segs.length)return null;u=clamp(u,0,P.L);let s=P.segs[P.segs.length-1];for(const q of P.segs)if(u<=q.s+q.l){s=q;break;}const f=s.l>0?(u-s.s)/s.l:1;
   return {x:s.a.x+(s.b.x-s.a.x)*f,z:s.a.z+(s.b.z-s.a.z)*f,y:(s.a.y??0)+((s.b.y??0)-(s.a.y??0))*f,dx:(s.b.x-s.a.x)/(s.l||1),dz:(s.b.z-s.a.z)/(s.l||1),seg:s,f};};
- function updateCarry(dt,groundY){for(const [i,c] of CARRY.entries()){if(!c.g.visible)continue;c.on=damp(c.on,c.want,c.want>c.on?3:(c.fade?1/Math.max(.05,c.fade)*2:2),dt);
+ function updateCarry(dt,groundY){for(const [i,c] of CARRY.entries()){if(!c.g.visible){c.L.intensity=0;continue;}c.on=damp(c.on,c.want,c.want>c.on?3:(c.fade?1/Math.max(.05,c.fade)*2:2),dt);
    if(c.path&&!c.done){if(c.wait>0)c.wait-=dt;else{const before=c.u;c.u+=c.v*dt;// (they stop where you stopped, as long as you did)
      for(const q of c.path.segs)if(q.wait&&before<q.s+q.l-c.lag&&c.u>=q.s+q.l-c.lag){c.wait=q.wait;c.u=q.s+q.l-c.lag;break;}}
     if(c.u-c.lag>=c.path.L){c.done=true;if(c.out)c.want=0;}}
    const q=at(c,Math.max(0,c.u-c.lag));if(q){const nx=-q.dz,nz=q.dx,bob=Math.sin(t*5.2+c.phase)*.05,sway=Math.sin(t*1.7+c.phase)*.18;const x=q.x+nx*(c.off+sway*.3),z=q.z+nz*(c.off+sway*.3);
-    c.g.position.set(x,(groundY?.(x,z)??q.y)+1.05+bob,z);}
+    c.g.position.set(x,(groundY?.(x,z)??q.y)+1.05+bob,z);c.L.position.copy(c.g.position);}
    const k=c.on;c.head.material.color.setScalar(.25+.75*k);c.halo.material.opacity=.2*k;c.L.intensity=1.6*k;if(k<.01&&c.want===0){c.g.visible=false;c.path=null;}}}
  const carrying=()=>CARRY.filter(c=>c.g.visible).length;
  const carriedAt=i=>CARRY[i]?.g.visible?CARRY[i].g.position:null;

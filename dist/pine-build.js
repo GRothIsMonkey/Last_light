@@ -33,7 +33,7 @@ export function atlas(W2,H2){const cv=canvas(W2,H2);let free=[{x:2,y:2,w:W2-4,h:
 export function buildPine(W){
  const K=createKit(),veg=W.veg,frame=W.pine;
  const zone='pine',root=new THREE.Group(),far=new THREE.Group(),inn=new THREE.Group();
- W.layers.push({mode:'rigid',group:root,zone},{mode:'rigid',group:far,far:true,zone},{mode:'rigid',group:inn,zone:'pine-int'});
+ W.layers.push({mode:'rigid',group:root,zone,release:true},{mode:'rigid',group:far,far:true,zone,release:true},{mode:'rigid',group:inn,zone:'pine-int',release:true});
  const live=new THREE.Group();live.name='pine-live';W.scene.add(live);
  const mat=(c,o={},kind=null)=>{const m=K.mat(c,o);return kind?W.surfaceMaterial(m.clone(),kind):m;};// (a surface kind on its own copy: cached colours are shared)
  // places (e, n) in the world, standing on the ground (or a height)
