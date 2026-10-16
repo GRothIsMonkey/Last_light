@@ -901,7 +901,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(section==='c5-camp'){campAt(SPOT.campGate[0]-3,SPOT.campGate[1]+5,ha(-169,517,-181,531));campGo();return;}
   if(section==='c5-office'||section==='c5-register'){const b=BLD.office,[e,n]=b.F.to(b.door[0],b.d/2+b.porch+2.2);campAt(e,n,ha(e,n,...b.c),{h:HOUR.camp+.06});campGo();
    if(section==='c5-register'){DOORS.office.open=1;const [e2,n2]=b.F.to(PN.anchors.register.x+.4,-PN.anchors.register.z+.75);youFoot(e2,n2,ha(e2,n2,...b.c),null,{...W5(RACK[1].e,RACK[1].n),a:RACK[1].a});C.trail=defaultTrail(3);}return;}
-  ff('searchmap');C.clues.add('register');C.clues.add('searchmap');C.read.add(0);C.read.add(1);C.read.add(2);C.read.add(3);C.photos.push('register3');DOORS.office.open=1;
+  ff('searchmap');C.clues.add('register');C.clues.add('searchmap');C.read.add(0);C.read.add(1);C.read.add(2);C.read.add(3);DOORS.office.open=1;
   if(section==='c5-lodge'||section==='c5-pantry'){const b=BLD.lodge,[e,n]=b.F.to(0,b.d/2+b.porch+3);campAt(e,n,ha(e,n,...b.c),{h:HOUR.camp+.18});campGo();C.trail=defaultTrail(5);
    if(section==='c5-pantry'){DOORS.lodge.open=1;const t=pantryPos(),[e2,n2]=b.F.to(PN.anchors.pantryGap.x+1.7,-PN.anchors.pantryGap.z+.4);youFoot(e2,n2,ha(e2,n2,...Object.values(PL(t.x,t.z))),null,{...W5(RACK[1].e,RACK[1].n),a:RACK[1].a});}return;}
   ff('pantry');C.clues.add('pantry');DOORS.lodge.open=1;
@@ -913,7 +913,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(section==='c5-golden-hour'){const L=SEATS[0];campAt(L.seat[0]-Math.sin(L.face)*1.2,L.seat[1]-Math.cos(L.face)*1.2,ha(L.seat[0],L.seat[1],-228,591),{h:HOUR.golden+.02});C.hMin=HOUR.golden;fireShot({render:false});go('e5-dusk');checkpoint('c5-campfire');objective('Check the last cabin.','Owl, past Bluejay and Heron, at the west end.');return;}
   fireShotQuiet();ff('wren');
   if(section==='c5-owl'){campAt(OWL_FRONT[0]+1,OWL_FRONT[1]+3,ha(OWL_FRONT[0]+1,OWL_FRONT[1]+3,...OWLB.c),{h:HOUR.owl-.03});C.hMin=HOUR.owl-.03;go('e5-dusk');objective('Check the last cabin.','Owl, past Bluejay and Heron, at the west end.');return;}
-  ff('owl','shirtSeen','shirtDone','carvingSeen','carvingDone','owlDone','owlLine');C.inv.shirt=true;DOORS.owl.open=1;placeEvidence();carving.visible=true;C.photos.push('shirt','carving');
+  ff('owl','shirtSeen','shirtDone','carvingSeen','carvingDone','owlDone','owlLine');C.inv.shirt=true;DOORS.owl.open=1;placeEvidence();carving.visible=true;
   // ---- night ----
   if(section==='c5-calling'){campAt(OWL_PORCH[0],OWL_PORCH[1]-.2,ha(OWL_PORCH[0],OWL_PORCH[1],-293,525),{h:HOUR.call-.02});C.owl={t:0};go('e5-owl');checkpoint('c5-owl');quiet();callAlex();return;}
   ff('call');lightsOut(true);C.h=HOUR.lights;

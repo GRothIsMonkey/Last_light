@@ -24,7 +24,8 @@ section below, and **Continue** on the title returns to the last checkpoint.
 The scripted, direct simulation playthrough takes **26.6 minutes** of game time from Chapter Four's end card to
 Chapter Five's end card (27.4 by the other route). It goes straight to each objective. A player who looks around the
 park, the camp and the buildings will take about **35–45 minutes**. Nothing is timed against the player. Every beat
-has a time fallback, so a player who stands still is carried on.
+has a time fallback (leaving Sam's garage after 150 s, the ride after eight minutes, the bike rack after 200 s on foot,
+and the rest as listed in the sim's idle check), so a player who stands still is carried on.
 
 ## 1. The story as implemented
 
@@ -61,14 +62,16 @@ arguing." "And we're back at the bikes before dark."). Both lead on.
 **Camp Whippoorwill.** A gate under a log arch reads STAY WITH YOUR BUDDY. Sam hands out a flashlight each. The camp
 has an office, a clearing with a flagpole and a dinner bell, a lodge, six cabins named for birds (Robin, Bluejay,
 Cardinal, Wren, Heron, Owl), a washhouse, a maintenance shed, a pump house, a campfire circle and a camp dock.
-Bluejay, Cardinal, Owl, the office and the lodge can be entered. Free exploration:
-- **The office.** The camp map on the wall. The **1991 office register** can be paged through with F (A/D), and each
+Bluejay, Cardinal, the office and the lodge can be entered during the afternoon; Owl's door is swollen shut until dusk.
+Free exploration:
+- **The clearing.** The camp map on its board, the flagpole, the dinner bell on its post (F rings it).
+- **The office.** The **1991 office register** can be paged through with F (A/D), and each
   page is read aloud. Its entries for August 22–25, 1991, record a missing boy from Mill Street (Jamie: "Danny
   Whitcomb. From the library.", the boy from Chapter Four's microfilm), the search based at the lodge, and on
   **8/24**, Grid 7 (pump house / service road): *"two bike tracks at the service gate, fresh. Searchers say both lead
   in. None out."* Pinned up is the **search grid map** with the pump house circled. While the
   player reads the register or looks closer at the map or the carving, **V** photographs it with Alex's camera.
-- **The lodge.** Long tables, camp photographs, a dinner bell and a pantry. On the pantry's middle shelf, cans are
+- **The lodge.** Long tables, camp photographs and a pantry. On the pantry's middle shelf, cans are
   gone from the dust, leaving clean rings. *Recently.*
 - **The cabins.** The first time the player switches the flashlight on in the camp (Bluejay, in the test runs), it
   dies: "My light's dead." Sam: "Here." "You brought batteries?" "I brought batteries for the batteries." Nobody
@@ -103,8 +106,10 @@ my hat." "That's me." The light goes out, and then every light in the camp comes
 - **Route C, the dam.** Through the service yard, behind the pump house, onto the service road. The dinner bell rings
   by itself across the water.
 
-Every light in the camp goes out at once. Lamps wake behind the boys as they pass, never on top of them. A player
-who stops is told to keep going, and after 24 s of stopping (or 200 s in all) the friends carry the escape on.
+Every light in the camp came on at once at the double; along the way out, each lamp the boys pass flickers and its
+door slams. At the boundary every light in the camp goes out at once. The way out is read from where the player goes
+(either can be chosen late). A player who stops, or is pinned against something, is told to keep going, and after 24 s
+without moving (or 200 s in all) the friends carry the escape on.
 
 **Aftermath.** The lamp in the lot. Shaky laughter. The shirt is in Sam's bag. "It didn't start till we found it."
 "It knew we'd come."
@@ -116,7 +121,8 @@ campfire, from the trees, stamped **6:53**.
 water, **one light** is on in Owl. End card: **LAST LIGHT / Chapter Five / August 24, 2011.** There is no Chapter Six
 button.
 
-The chapter never explains the Presence, has no fight, and never forces the player's view. Jamie and Sam stay with
+The chapter never explains the Presence and has no fight. It never turns the player's view during play; only three
+time fallbacks do (after 170 s and 200 s in Owl, the shirt and the carving; after 520 s in the camp, the seat at the fire). Jamie and Sam stay with
 the player the whole way and both survive.
 
 ## 2. World layout (Pine Ridge)
@@ -135,8 +141,8 @@ One frame: `e` east, `n` north, meters from Mill Street's centerline at the town
   escape route C, and it is walkable.
 - **Ground.** One designed height function, triangulated on the far ground's lattice, used both for drawing and for
   walking. Where Pine Ridge meets the older far ground it takes the far ground's heights, so there is one surface,
-  not two. Walls, tables, benches, logs and other furniture are solid (353 nav solids). Doors (Bluejay, Cardinal, Owl,
-  office, lodge, lodge back) open and close.
+  not two. Walls, tables, benches, logs and other furniture are solid (353 nav solids). The doors of Bluejay, Cardinal,
+  Owl, the office and the lodge open with F (and at the wake); the lodge's kitchen door stays shut.
 
 Modules: `dist/pine-plan.js` (plan, heights, nav, solids, doors, spots), `dist/pine-build.js` (terrain, roads, park,
 water, trees, lights, animation), `dist/pine-camp.js` (camp buildings and interiors), `dist/pine-art.js` (canvas art:
@@ -195,7 +201,7 @@ stops and calls). The camp pulls at whichever friend is farther from the player.
 with him (within 3.6 m), not by standing beside him staring at a light. Voices make surges: "…Jamie?" from Owl at
 9 s, Sam's "mom" by the office at 19 s, and the bell at 29 s (both). When the three stay together for 2.6 s after
 25 s, or at 66 s at the latest, it resolves into Sam's compromise. This does not repeat Chapter Four's
-streetlight cascade: the camp's lamps wake behind the boys, never in a line toward them.
+streetlight cascade: the camp's lamps come on all at once, not in a line toward them.
 
 ## 6. Alex clue details
 
@@ -210,8 +216,9 @@ streetlight cascade: the camp's lamps wake behind the boys, never in a line towa
 ## 7. Ending state
 
 Phase `n5-end`, game state `ended`, card LAST LIGHT / Chapter Five / August 24, 2011, and `#next-chapter` hidden.
-`chapter4.finished` is set and the checkpoint `chapter5-end` is saved. **Start over** and **Back to the title** work as
-before.
+The checkpoint `chapter5-end` ("One light") is saved when the last image begins, so Continue returns there. The lamp
+in the lot is saved as `c5-second-discovery` (at the rack, after the relief scene). **Start over** and **Back to the
+title** work as before.
 
 ## 8. Companion logic
 
@@ -230,8 +237,10 @@ The stress test (sprinting round the camp) keeps both within 10.2 m. Neither fri
   picture · The yellow gate · Camp Whippoorwill · The campfire · Owl · The camp at night · Run · The lamp in the lot ·
   One light.
 - **37 QA sections** (`SECTIONS5`), each a canonical initializer (`jump`). Each one sets every flag of the chapter's
-  earlier beats, the clock and sky, the positions, the bikes, the lamps and the Continue save, and starts shortly
-  **before** its event. There are also 27 aliases (`ALIAS5`).
+  earlier beats, the clock and sky, the positions, the bikes and the lamps, and starts shortly **before** its event.
+  The Continue save a player would hold at that moment comes from the jump's own checkpoint or, in the DEV selector,
+  from the scene's `save`. Evidence photographs are not pre-taken: after a jump the player can still take them. There
+  are also 27 aliases (`ALIAS5`).
 - **DEV selector: Chapter Five, 37 scenes.** **Chapter Five Start** is the real hand-over: Chapter Four's end
   checkpoint played to its end card, then its button. The other 36 scenes use the matching jumps. See
   [DEV_CHAPTER_SELECTOR.md](DEV_CHAPTER_SELECTOR.md).
