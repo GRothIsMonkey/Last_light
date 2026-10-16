@@ -198,8 +198,8 @@ export async function runChapterFiveChecks(T,cap){
  h.jump('c5-split');advance(.2);until(()=>C5().split.resolved,80);check('Chapter Five set piece: in time the two of them come back together on their own (Sam’s compromise)',()=>assert.ok(C5().split.resolved));
  // ---- fallbacks: a player who idles everywhere is carried on, never stuck ------------------------------------------------------
  const idle={};for(const sec of ['c5-park','c5-stones','c5-dock-memory','c5-sign-search','c5-trail-map','c5-gate-decision','c5-gravel-road','c5-camp','c5-golden-hour','c5-owl','c5-three-lights','c5-split','c5-window','c5-run','c5-aftermath','c5-second-discovery','chapter5-end']){
-  h.jump(sec);advance(.3);const ph=S().phase;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended',sec==='c5-park'?60:sec==='c5-camp'?600:420);idle[sec]={from:ph,to:S().phase,moved,ended:h.snapshot.state==='ended'};}
- check('Chapter Five fallbacks: standing still, every scene moves on in time (the boys pull you along)',()=>{const stuck=Object.entries(idle).filter(([k,v])=>!v.moved&&k!=='c5-park');assert.deepEqual(stuck,[]);});
+  h.jump(sec);advance(.3);const ph=S().phase;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended',sec==='c5-park'?260:sec==='c5-camp'?600:420);idle[sec]={from:ph,to:S().phase,moved,ended:h.snapshot.state==='ended'};}
+ check('Chapter Five fallbacks: standing still, every scene moves on in time (the boys pull you along)',()=>{const stuck=Object.entries(idle).filter(([k,v])=>!v.moved);assert.deepEqual(stuck,[]);});
  metrics['chapter5 idle fallbacks']=Object.fromEntries(Object.entries(idle).map(([k,v])=>[k,v.from+'→'+(v.ended?'end':v.to)]));
  // ---- Start over from inside Chapter Five: the prologue, clean ----------------------------------------------------------------
  h.jump('c5-split');advance(2);element('restart').onclick?.();advance(.5);check('Start over from inside Chapter Five begins the prologue normally (nothing of the camp left)',()=>{assert.equal(h.snapshot.state,'riding');assert.equal(h.chapter.state.phase,'off');assert.equal(A5.camp.carrying(),0);assert.equal(A5.props.parent,null);});
