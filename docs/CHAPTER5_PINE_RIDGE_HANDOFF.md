@@ -251,6 +251,18 @@ See [TEST_REPORT.md](TEST_REPORT.md) for the numbers. In summary:
 
 - **No real-GPU frame rate measured.** Rendering was checked in SwiftShader only. Draw counts and triangle counts are
   real, frame times are not. The heaviest reviewed views (the ridge crest, the old lot) are just under 1M triangles.
+- **Memory.** Pine Ridge is built at load with the rest of the world. Measured against the starting commit:
+  - Vertex data grows by 151 MB (518 → 670 MB across all merged meshes and shadow proxies), measured in the
+    simulation harness.
+  - The JS heap at the title grows by 340 MB (0.93 → 1.27 GB), and the steady renderer RSS by about 0.45 GB, measured
+    in Chromium with SwiftShader.
+  - Under software GL, the first render of a new chapter's scene spikes memory for a moment: the renderer peaked at
+    6.7 GB entering Chapter Four, against 5.3 GB at the starting commit. In SwiftShader all GPU buffers live in
+    system RAM, so this says little about a real GPU, but test runs need the browser alone on a machine with 14 GB
+    or more.
+  - The main savings available are instancing the 6,235 Pine Ridge trees, and releasing the pre-bake object groups
+    (`W.layers` in `world.js` still references them after `bakeAndMerge`, for every chapter's world, not only Pine
+    Ridge). Neither was attempted in this pass.
 - **No human playtest yet.** The walkthroughs are scripted inputs.
 - **Audio is first-draft synthesis plus hooks.** The bell, door slams, clicks, splashes and voices are placeholder
   sounds, and the voices are captions with synthesized cues. No new audio assets were added.
