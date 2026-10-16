@@ -194,7 +194,22 @@ export function createChapter5(o,k,ch2,ch3,ch4){
    g.t+=dt;if(g.t>=2.5){const mv=Math.hypot(q.x-g.x,q.z-g.z);g.x=q.x;g.z=q.z;g.t=0;g.stuck=d>6&&mv<.4&&c.mode==='foot'&&!sp?g.stuck+2.5:0;if(g.stuck===2.5){c.route=null;C.guardLog.unstuck++;}}
    if(g.stuck>=7.5&&d>9&&c.mode==='foot'&&!c.script&&p.walking&&!C.view&&!seenAt(q)){
     for(let i=TRAIL.length-1;i>=0;i--){const t=TRAIL[i],b=Math.hypot(t.x-p.x,t.z-p.z);if(b<5)continue;if(b>12)break;
-     if(nav.walkable(t.x,t.z,{r:.3})&&!seenAt(t)){comp.putFoot(c,t.x,t.z,headingTo(t.x,t.z,p.x,p.z),{bike:c.bike.group.visible?{x:c.bx,z:c.bz,a:c.ba,kick:c.kick,fall:c.fall}:null});if(C.match)c.follow='walk';g.stuck=0;C.guardLog.recovered++;mark('caught up: '+c.key);break;}}}}}
+     if(nav.walkable(t.x,t.z,{r:.3})&&!seenAt(t)){comp.putFoot(c,t.x,t.z,headingTo(t.x,t.z,p.x,p.z),{bike:c.bike.group.visible?{x:c.bx,z:c.bz,a:c.ba,kick:c.kick,fall:c.fall}:null});if(C.match)c.follow='walk';g.stuck=0;C.guardLog.recovered++;mark('caught up: '+c.key);break;}}}}
+  makeWay(dt,p);}
+ // Make way: you are walking (W held) and getting nowhere, with one of them right in front of you in a narrow place (the
+ // corner of a porch, a cabin door): he steps aside, the way a friend would, and then goes back to following (or to where the
+ // scene had him). (Neither of you walks into the other, so otherwise you could both stand there.)
+ function makeWay(dt,p){const M=C.makeWay||(C.makeWay={x:p.x,z:p.z,t:0,cool:0});M.cool-=dt;const mv=Math.hypot(p.x-M.x,p.z-M.z);M.x=p.x;M.z=p.z;
+  M.t=p.walking&&p.pushing&&mv<Math.max(dt,1e-3)*.3&&!C.view&&!posed()?M.t+dt:0;if(M.t<.6||M.cool>0)return;
+  const fx=Math.sin(p.a),fz=-Math.cos(p.a),rx=Math.cos(p.a),rz=Math.sin(p.a);let best=null;
+  for(const c of [jamie,sam]){if(!c.active||c.mode!=='foot'||(C.seated||{})[c.key]||c.script?.makeWay)continue;const dx=c.px-p.x,dz=c.pz-p.z,d=Math.hypot(dx,dz);
+   if(d>1.6||dx*fx+dz*fz<-.2*d)continue;if(!best||d<best.d)best={c,d,side:Math.sign(dx*rx+dz*rz)||1};}
+  if(!best)return;const c=best.c,s0=best.side;
+  // to his side of the way you are going (or the other side, or back), on ground he can stand on, clear of your next steps
+  const q=[[s0,0],[s0,-.7],[-s0,0],[-s0,-.7],[0,-1.4]].map(([sd,bk])=>({x:c.px+rx*sd*1.5+fx*bk*1.5,z:c.pz+rz*sd*1.5+fz*bk*1.5}))
+   .find(q=>nav.walkable(q.x,q.z,{r:.3})&&Math.abs((q.x-p.x)*rx+(q.z-p.z)*rz)>.9);if(!q)return;
+  M.cool=2.5;M.t=0;C.guardLog.madeWay=(C.guardLog.madeWay||0)+1;mark('made way: '+c.key);
+  comp.run(c,[comp.steps.walkTo(c,[[q.x,q.z]],{speed:1.7})],{then:()=>{const sp=C.spot[c.key];if(sp){c.script=null;stand(c,sp.q,sp);}else if(C.match&&c.mode==='foot')c.follow='walk';}});c.script.makeWay=true;}
  // ---- the clock, and the light it makes ---------------------------------------------------------------------------------------
  // The afternoon runs at four times real time, the evening at six, the night at three. When something has to happen at a
  // set time the clock catches up to it (a minute a second) rather than the story waiting. At the campfire the afternoon
@@ -646,17 +661,19 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   objective('Run.','The camp gate and the road — or the dam.');const p=me();C.esc={t:0,route:null,still:0,trail:[{x:p.x,z:p.z}],front:0,woke:new Set(),said:{},boundary:false};}
  // the lights wake behind you as you go, never quite on top of you
  const ROUTE_A=['heron','bluejay','robin','cardinal','wren','lodge','office','office-porch'],ROUTE_C=['heron','wash','mshed','pump'];
- function updateRun(dt){const X=C.esc;if(!X||X.boundary)return;X.t+=dt;const p=me(),{e,n}=EN(p),v=p.speed||0;
+ function updateRun(dt){const X=C.esc;if(!X||X.boundary)return;X.t+=dt;const p=me(),{e,n}=EN(p),v=X.lp?Math.hypot(p.x-X.lp.x,p.z-X.lp.z)/Math.max(dt,1e-3):0;X.lp={x:p.x,z:p.z};// (stopped is not moving: held against a wall counts too)
   const L=X.trail[X.trail.length-1];if(Math.hypot(L.x-p.x,L.z-p.z)>1)X.trail.push({x:p.x,z:p.z});
-  if(!X.route){if(e>-246||(e>-262&&n<548))X.route='A';else if(e<-304||n<530&&e<-286)X.route='C';if(X.route){C.route=X.route;mark('route '+X.route);
-    say(X.route==='A'?[{who:'JAMIE',text:'“The road! The gate!”',by:'jamie',time:1.4}]:[{who:'SAM',text:'“The dam! It’s open, it’s open, go!”',by:'sam',time:1.6}]);}}
+  // which way out: wherever you are now (the two ways' ground does not overlap, so it never flickers); you can change your mind
+  const want=e>-246||(e>-262&&n<548)?'A':e<-304||n<530&&e<-286?'C':null;
+  if(want&&want!==X.route){X.route=C.route=want;mark('route '+want);if(!X.said['r'+want]){X.said['r'+want]=C.t;
+    say(want==='A'?[{who:'JAMIE',text:'“The road! The gate!”',by:'jamie',time:1.4}]:[{who:'SAM',text:'“The dam! It’s open, it’s open, go!”',by:'sam',time:1.6}]);}}
   // waking: a lamp comes on when you have passed it by a little
   for(const id of X.route==='C'?ROUTE_C:ROUTE_A){if(X.woke.has(id))continue;const q=camp.LAMPS[id]?.pos;if(!q)continue;const d=Math.hypot(p.x-q.x,p.z-q.z);if(d<16&&d>5){X.woke.add(id);camp.set(id,1,{rate:6,flick:.08});sound('doorSlam',q,{gain:.35});}}
   X.still=v<.6?X.still+dt:0;
   if(X.still>3.5&&!X.said.s1&&!busy()){X.said.s1=C.t;say([{who:'SAM',text:'“Don’t stop. Don’t STOP.”',by:'sam'}]);}
   if(X.still>9&&!X.said.s2&&!busy()){X.said.s2=C.t;say([{who:'JAMIE',text:'“Come ON!”',by:'jamie'}]);}
-  if(X.route==='A'&&passedGate())gateScare();
-  if(X.route==='C'&&near(SPOT.damN,9))damScare();
+  if(passedGate()){X.route=C.route='A';gateScare();}
+  if(near(SPOT.damN,9)){X.route=C.route='C';damScare();}
   if(X.still>24||X.t>200){X.boundary=true;if(!X.route){X.route=C.route='A';mark('route A (carried)');}if(X.route==='C')carry('dam',[SPOT.damN[0]+1,SPOT.damN[1]-6],ha(SPOT.damN[0],SPOT.damN[1],SPOT.damS[0],SPOT.damS[1]),{after:damScare});else carry('gate',[SPOT.campGate[0]+3,SPOT.campGate[1]-6],ha(-166,512,-157,493),{after:gateScare});}}
  const passedGate=()=>{const p=me(),{e,n}=EN(p);return Math.hypot(e-SPOT.campGate[0],n-SPOT.campGate[1])<9&&(n<SPOT.campGate[1]-2.5);};
  // The camp gate: Sam swings it shut behind you. Every light in the camp goes out at once. And it swings open again.
