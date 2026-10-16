@@ -20,7 +20,7 @@ export function installNaturalCapture(h,element){
   return render(...a);};
  // The prologue: the first frame after the title's start button on a fresh page (a new game).
  const st=element('start'),go=st.onclick;st.onclick=function(...a){const r=go.apply(this,a);if(!cap.off&&!(0 in cap.natural)){cap.armed=0;cap.how[0]='start';}return r;};
- for(const [n,api] of [[1,h.chapter],[2,h.chapter2],[3,h.chapter3],...(h.chapter4?[[4,h.chapter4]]:[])]){const b=api.begin;api.begin=function(...a){const r=b.apply(this,a);if(!cap.off&&!(n in cap.natural)){cap.armed=n;cap.how[n]=a[0]??null;}return r;};}
+ for(const [n,api] of [[1,h.chapter],[2,h.chapter2],[3,h.chapter3],...(h.chapter4?[[4,h.chapter4]]:[]),...(h.chapter5?[[5,h.chapter5]]:[])]){const b=api.begin;api.begin=function(...a){const r=b.apply(this,a);if(!cap.off&&!(n in cap.natural)){cap.armed=n;cap.how[n]=a[0]??null;}return r;};}
  return cap;
 }
 
@@ -235,7 +235,7 @@ const CLOCK_STAMPS={chapter1:['sirenOff','bellAt','dadCall','samWait'],chapter2:
 const NOT_CARRIED=['t','pt','queue','line','pose','api','state','lookTarget','jamieAim','samAim','poiFor','timers'];
 export function recordHistory(h,cap,fs,file,advance){
  const out={},same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),scenes={};
- for(const n of [2,3,4]){if(!cap.natural[n])continue;h.dev.start(n,{history:false});const dev=h.dev.snapshot(),nat=cap.natural[n],H={};
+ for(const n of [2,3,4,5]){if(!cap.natural[n])continue;h.dev.start(n,{history:false});const dev=h.dev.snapshot(),nat=cap.natural[n],H={};
   for(const [part,natObj,devObj] of [['chapter1',nat.chapter1,dev.chapter1],['chapter2',nat.chapter2.C,dev.chapter2.C],['chapter3',nat.chapter3?.C,dev.chapter3?.C]]){
    if((part==='chapter2'&&n<3)||(part==='chapter3'&&n<4)||!natObj||!devObj)continue;const vals={},stamps={};
    for(const k of new Set([...Object.keys(natObj),...Object.keys(devObj)])){if(NOT_CARRIED.includes(k))continue;const v=natObj[k];
