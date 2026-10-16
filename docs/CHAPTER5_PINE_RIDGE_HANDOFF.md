@@ -225,6 +225,9 @@ title** work as before.
 Jamie and Sam use the existing companion system (`putFoot`, `run`, `rideTo`, follow modes). Chapter Five adds:
 - A guard, as in Chapter Four. It releases a friend held at a scene spot when the player walks away, and clears a
   stuck friend's route after 2.5 s without progress. Each case is counted in `C.guardLog`.
+- Make way: when the player holds W and gets nowhere with Jamie or Sam right in front (a porch corner, a cabin
+  door), that friend steps 1.5 m aside onto walkable ground, then follows on or returns to his spot
+  (`C.guardLog.madeWay`).
 - Seats taken from the campfire logs' own solids. Standing up steps back off the log.
 - Scripted stand-and-look spots for each beat.
 - Bikes locked at the rack: everyone is on foot from the park to the end.
@@ -260,18 +263,23 @@ See [TEST_REPORT.md](TEST_REPORT.md) for the numbers. In summary:
 
 - **No real-GPU frame rate measured.** Rendering was checked in SwiftShader only. Draw counts and triangle counts are
   real, frame times are not. The heaviest reviewed views (the ridge crest, the old lot) are just under 1M triangles.
-- **Memory.** Pine Ridge is built at load with the rest of the world. Measured against the starting commit:
-  - Vertex data grows by 151 MB (518 → 670 MB across all merged meshes and shadow proxies), measured in the
-    simulation harness.
-  - The JS heap at the title grows by 340 MB (0.93 → 1.27 GB), and the steady renderer RSS by about 0.45 GB, measured
-    in Chromium with SwiftShader.
-  - Under software GL, the first render of a new chapter's scene spikes memory for a moment: the renderer peaked at
-    6.7 GB entering Chapter Four, against 5.3 GB at the starting commit. In SwiftShader all GPU buffers live in
-    system RAM, so this says little about a real GPU, but test runs need the browser alone on a machine with 14 GB
-    or more.
-  - The main savings available are instancing the 6,235 Pine Ridge trees, and releasing the pre-bake object groups
-    (`W.layers` in `world.js` still references them after `bakeAndMerge`, for every chapter's world, not only Pine
-    Ridge). Neither was attempted in this pass.
+- **Memory** (Chromium with SwiftShader, measured with nothing else running; details in the test report). Pine Ridge
+  is built at load with the rest of the world.
+  - Vertex data: +151 MB over the starting commit (518 → 670 MB of merged meshes and shadow proxies, simulation
+    harness), mostly the 6,235 trees.
+  - JS heap at the title: 927 MB at the starting commit, 1,267 MB before this pass's fixes, **1,139 MB** now. Pine
+    Ridge's bake layers now let go of their pre-bake objects once merged (`release:true` in `pine-build.js`, honoured by
+    `world.js`); other chapters' layers are unchanged.
+  - No leaks found: revisiting the camp, the three lights and the split three times leaves shader programs (187),
+    geometries (1,989), textures (49) and the heap flat.
+  - Lights: Chapter Five keeps a constant 9 point lights (the carried lights stay in the scene at intensity 0 when
+    unlit), so no material recompiles mid-scene. Entering Chapter Five recompiles once, behind its black card.
+  - Steady state in Chapter Five: renderer about 1.6–2.0 GB, GPU process about 1.0 GB. Jumps and chapter changes
+    (DEV starts, Continue) spike the renderer for a moment to 2–5.8 GB under software GL; the starting commit spiked
+    to 5.3 GB entering Chapter Four. In SwiftShader all GPU buffers live in system RAM, so these numbers say little
+    about a real GPU.
+  - Still available: instancing the trees, and releasing the other chapters' pre-bake groups (not done: those reach
+    into accepted Chapters 0–4, and two of their modules read parent chains of baked objects).
 - **No human playtest yet.** The walkthroughs are scripted inputs.
 - **Audio is first-draft synthesis plus hooks.** The bell, door slams, clicks, splashes and voices are placeholder
   sounds, and the voices are captions with synthesized cues. No new audio assets were added.
