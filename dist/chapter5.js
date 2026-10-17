@@ -40,6 +40,8 @@ import {P as PI} from './rig.js';
 import {PW,PL,hd,SPOT,BLD,DOORS,ROADS,DOCKS,SOLIDS,heightAt,WATER,shoreSD} from './pine-plan.js';
 import {registerPageArt,REGISTER,searchMapArt,freshCarvingArt,kioskMapArt,oldSignArt} from './pine-art.js';
 import {createCampPresence,roomPoint} from './chapter5-presence.js';
+import {createCompanionBrain} from './companion-brain.js';
+import {createPlaces} from './chapter5-places.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt)),lerp=(a,b,t)=>a+(b-a)*t;
 // QA jumps and DEV scenes, in story order.
@@ -82,6 +84,9 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  const inAny=(p=me())=>['office','lodge','bluejay','cardinal','owl'].find(id=>inside(id,p));
  const near=(q,r,p=me())=>{const w=at(q);return Math.hypot(p.x-w.x,p.z-w.z)<r;};
  const date=h=>o.setDate(`AUGUST 24, 2011 <i></i> ${fmt(h)}`);
+ // Jamie and Sam with minds of their own (companion-brain.js): what each place offers them to look at, and the mood
+ const brain=createCompanionBrain({nav,comp}),PLACES=createPlaces((e,n)=>{const p=PW(e,n);return {x:p.x,z:p.z,y:heightAt(p.x,p.z)};});
+ function minds(){brain.reset();for(const c of [jamie,sam])brain.enable(c,true);C.mindKey=null;}
  const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
  const roomV=(id,lx,lz,y)=>roomPoint(id,lx,lz,y);
  // a building's frame point on the ground (or its floor): plan-frame lx, lz (lz out of the front)
@@ -259,7 +264,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   const q=drive(.5,2.6),bk=drive(1.3,5.4);o.placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,sq.x,sq.z),mode:'walk',bike:{x:bk.x,z:bk.z,a:driveA(1.3,5.4)}});}
  // ---- the beginning ---------------------------------------------------------------------------------------------------------------
  function inventory(){C.inv.camera=true;ch4.ensureLead();C.inv.lead=ch4.leadIndex()>=0;}
- function begin(){fresh();go('c5-black');C.cardT=0;o.fade(1);common();dayWorld();comp.reset();garageScene();objective('');T?.reset?.();C.h=HOUR.start;inventory();C.inv.camera=false;
+ function begin(){fresh();go('c5-black');C.cardT=0;o.fade(1);common();dayWorld();comp.reset();minds();garageScene();objective('');T?.reset?.();C.h=HOUR.start;inventory();C.inv.camera=false;
   for(const c of [jamie,sam]){c.lookAt=null;c.lookPlayer=false;}}
  function opening(){go('d5-garage');date(C.h);C.fadeIn=0;C.g={t:0};
   say([{wait:1.2},{who:'SAM',text:'“Mom’s at work till six. She thinks we’re at Jamie’s.”',by:'sam',time:3},{who:'SAM',text:'“Come help me. I’ve got a list.”',by:'sam',time:2.2}],
@@ -846,7 +851,21 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function jamieSweep(t){const X=C.split,ph=S.phase;if(ph==='n5-window'){const D=DOUBLE();return {x:D.x,y:D.y+1.2,z:D.z};}if(X&&!X.resolved&&owlLamp())return {x:owlLamp().x,y:owlLamp().y-1,z:owlLamp().z};
   const c=jamie,x=c.mode==='foot'?c.px:c.bx,z=c.mode==='foot'?c.pz:c.bz,a=(c.mode==='foot'?c.pa:c.ba)+Math.sin(t*.6)*.45;return {x:x+Math.sin(a)*6,y:gy(x+Math.sin(a)*6,z-Math.cos(a)*6),z:z-Math.cos(a)*6};}
  // ---- every frame ---------------------------------------------------------------------------------------------------------------------------
- function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase;
+ // the mood and what is worth a look, by where the chapter is (set when it changes)
+ function mind(){const ph=S.phase,key=ph+(C.flags.hurry?'!':'');if(C.mindKey===key)return;C.mindKey=key;let mood='relaxed',pois=[],goal=null;
+  if(/^d5-(park|dock)$/.test(ph))pois=PLACES.PARK;
+  else if(/^d5-(sign|map)$/.test(ph)){mood='explore';pois=[...PLACES.PARK,...PLACES.OLDLOT];}
+  else if(ph==='d5-gate')pois=PLACES.OLDLOT;
+  else if(ph==='d5-road'){mood='explore';pois=PLACES.ROAD;goal=W5(...SPOT.campGate);}
+  else if(ph==='d5-camp'||ph==='d5-fire'){mood='explore';pois=PLACES.CAMP;}
+  else if(ph==='e5-dusk'){mood='explore';pois=PLACES.CAMP;goal=W5(...OWL_FRONT);}
+  else if(/^e5-(owl|call)$/.test(ph))mood='tense';
+  else if(ph==='e5-lights'){mood='tense';goal=W5(...SPOT.campGate);}
+  else if(/^n5-(split|window)$/.test(ph))mood='danger';
+  else if(ph==='n5-run'){mood='escape';goal=W5(...SPOT.campGate);}
+  else if(ph==='n5-out'){mood='tense';goal=rackSpot();}
+  brain.setScene({mood,pois,goal});}
+ function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase;mind();
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
   clock(dt);
   updatePose(dt);match(dt);rackBikes();seatSnap();guard(dt);standAll();photo.update(dt);updateView(dt);updateStone(dt);updateRings(dt);updateCrt(dt);camp.update(dt,{groundY:gy});updateAmb(dt);
@@ -886,7 +905,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView)o.roam.walkLock=false;fresh();}
  // QA jumps, DEV scenes and Continue: the chapter at one of its moments, everything it needs set up (the flags of every beat
  // before it set the way playing it sets them).
- function jump(section){section=ALIAS5[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();
+ function jump(section){section=ALIAS5[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();minds();
   if(section==='chapter5-start'){begin();return;}
   common();dayWorld();objective('');inventory();
   const ix=SECTIONS5.indexOf(section),ff=(...ks)=>{for(const kk of ks)C.flags[kk]=true;},hh=h=>{C.h=h;C.minute=-1;date(h);};
@@ -982,7 +1001,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   light:()=>owns(S.phase)?sky():null,longThrow:()=>null,officerAim:()=>null,
   canDismount:()=>!posed()&&!C.view&&S.phase!=='c5-black'&&!C.lapse,
   canRemount:()=>!C.view&&!posed()&&!C.flags.locked&&!(S.phase==='d5-garage'&&!C.flags.leave),
-  C,camp,shirt,carving,props,sky,inside,W5,RACK,photograph,DOUBLE,trailPath});
+  C,camp,shirt,carving,props,sky,inside,W5,RACK,photograph,DOUBLE,trailPath,brain,PLACES});
  Object.defineProperties(A5,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,inv:{...C.inv},clues:[...C.clues].sort(),read:[...C.read].sort(),photos:[...C.photos],
    choice:C.choice,route:C.route,dark:+C.dark.toFixed(3),where:(()=>{const q=EN(p);return {e:+q.e.toFixed(1),n:+q.n.toFixed(1),street:where(p).street};})(),

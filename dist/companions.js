@@ -30,7 +30,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  const KEYS=new Map();const keysFor=c=>{if(!KEYS.has(c.key))KEYS.set(c.key,dismountKeys(c.geom));return KEYS.get(c.key);};
  const vTmp=new THREE.Vector3();
  const pebble=new THREE.Mesh(new THREE.IcosahedronGeometry(.016,0),new THREE.MeshStandardMaterial({color:0x969187,roughness:1}));scene.add(pebble);pebble.visible=false;
- function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{active:false,boost:1,footBoost:1,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
+ function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{brain:null,B:null,active:false,boost:1,footBoost:1,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
   bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side,stall:0,unstick:0,wayT:0,waySide:1,poi:null,gaze:null,route:null,routeT:0,turnHold:0,turnDir:0,tight:0});trail.reset();}
  // Take a friend over from friends.js (they were inside, or their bike lying where they left it).
  function take(c){if(!c.active){// start from wherever friends.js left the bike
@@ -69,13 +69,15 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   const found=T.nearest(c.bx,c.bz,c.sOn-6,c.sOn+10);if(found&&found.dist<6)c.sOn=found.s;else{const any=T.nearest(c.bx,c.bz,T.start(),T.end);if(any)c.sOn=any.s;}
   // If your path folded back past us (you turned round), take the short way to it.
   const cut=T.nearest(c.bx,c.bz,c.sOn+5,T.end-c.lag*.5);if(cut&&cut.dist<2.8)c.sOn=cut.s;
-  const pv=pl.riding?pl.speed:0;
+  // (with a mind of his own, companion-brain.js: he answers what you did a moment ago, not this instant, at his own pace)
+  const St=c.brain?c.brain.rideStyle(c):null,pv=c.brain?c.brain.seenSpeed(c,pl,dt,ctx.clock):pl.riding?pl.speed:0;if(c.brain)c.brain.rideTick(c,dt);
   if(pv>.8&&ctx.clock>c.slotAt){c.slot=(c.slot+1)%4;c.slotAt=ctx.clock+9+(c.key==='sam'?3:0);}
   const slots=c.key==='jamie'?[[.2,1.5],[-1.1,1.6],[2.6,-1.35],[.5,-1.55]]:[[2.8,-1.5],[.6,-1.65],[-.9,1.7],[2.4,1.5]];
   // Changing sides, a friend drops back and crosses behind you, never across your front wheel.
   // (Tight: the woods at night in Chapter Three; they ride closer in, nearer behind you.)
   const tight=c.tight||0,raw=slots[c.slot],selected=tight?[raw[0]*(1-.35*tight)+.4*tight,raw[1]*(1-.38*tight)]:raw,crossing=Math.sign(c.formationSide)!==Math.sign(selected[1])&&Math.abs(c.formationSide)>.25;
-  c.formationLag=damp(c.formationLag,pv>.6?(crossing?Math.max(selected[0],2.8):selected[0]):2.8,1.2,dt);c.formationSide=damp(c.formationSide,crossing&&c.formationLag<2.3?c.formationSide:selected[1],.55,dt);
+  const lagSel=St?Math.max(St.lag+(selected[0]-1)*.35,.6):selected[0];
+  c.formationLag=damp(c.formationLag,pv>.6?(crossing?Math.max(lagSel,2.8):lagSel):St?St.lag:2.8,St?.5:1.2,dt);c.formationSide=damp(c.formationSide,crossing&&c.formationLag<2.3?c.formationSide:selected[1],.55,dt);
   const gap=T.end-c.sOn-c.formationLag;let vT=clamp(pv+gap*.5,0,6.6*(c.boost||1));if(gap<.4&&pv<.4)vT=Math.min(vT,Math.max(0,gap*.8));
   const want=vT,fx=Math.sin(c.ba),fz=-Math.cos(c.ba);
   // Ease off behind whatever is in the way. Two friends stopped close together and both turning
@@ -109,7 +111,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
    if(c.turnHold>.7&&!c.turnDir)c.turnDir=Math.sign(wrap(headingTo(c.bx,c.bz,pl.bx,pl.bz)-c.ba))||1;if(c.turnHold<=.7)c.turnDir=0;
    c.omega=want>.3&&Math.abs(err)>.06?Math.sign(err)*Math.min(1.5,Math.abs(err)*2.4):c.turnHold>.7?c.turnDir*1.2:0;}
   else{c.turnHold=0;c.turnDir=0;}
-  c.ba+=c.omega*dt;c.effort=damp(c.effort,clamp((vT-c.speed)/1.2,0,1),2.5,dt);c.speed+=clamp(vT-c.speed,-3.2*dt,1.5*dt*(c.boost||1));c.speed=Math.max(0,c.speed);
+  c.ba+=c.omega*dt;c.effort=damp(c.effort,clamp((vT-c.speed)/1.2,0,1),2.5,dt);c.speed+=clamp(vT-c.speed,-(St?St.brake:3.2)*dt,(St?St.acc:1.5)*dt*(c.boost||1));c.speed=Math.max(0,c.speed);
   // You are pushing your bike at me and I am standing in its way: feet down, I shuffle my bike
   // sideways out of your line (instead of each of us waiting for the other).
   {const pfx=Math.sin(pl.a),pfz=-Math.cos(pl.a),ox=c.bx-pl.bx,oz=c.bz-pl.bz,pa=ox*pfx+oz*pfz,ps=ox*Math.cos(pl.a)+oz*Math.sin(pl.a);// ahead of you, and to your right
@@ -281,10 +283,12 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  function run(c,steps,{then=null}={}){c.script=steps;c.step=0;c.then=then;c.follow=null;}
  // ---- every frame ----------------------------------------------------------------------------
  function update(dt,ctx){const pl=ctx.player;if(pl.riding)trail.push(pl.bx,pl.bz);
+  {const br=all.find(c=>c.active&&c.brain)?.brain;if(br)br.track(dt,pl.riding?{x:pl.bx,z:pl.bz,a:pl.a}:pl);}
   for(const c of all){if(!c.active)continue;c.posed=false;
    if(c.script){if(c.step<c.script.length){if(c.script[c.step](dt,ctx))c.step++;}if(c.step>=c.script.length){c.script=null;const f=c.then;c.then=null;f?.(c);}}
    else if(c.mode==='ride'&&c.follow==='ride')followRide(c,dt,ctx);
    else if(c.mode==='ride'){c.speed=Math.max(0,c.speed-3*dt);c.omega=0;cycle(c,dt,true);}
+   else if(c.mode==='foot'&&c.follow==='walk'&&c.brain)c.brain.walk(c,dt,ctx);
    else if(c.mode==='foot'&&c.follow==='walk')followWalk(c,dt,ctx);
    else if(c.mode==='foot'&&c.follow==='search')followSearch(c,dt,ctx);
    else if(c.mode==='foot'&&!c.posed)standStill(c,dt,ctx);
@@ -299,5 +303,6 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  // Where each one's head is (for the player's eyes to turn toward whoever is talking).
  function headOf(c){if(c.person.joints.head){c.person.group.updateMatrixWorld(true);return c.person.group.localToWorld(vTmp.copy(c.person.joints.head));}return c.person.group.getWorldPosition(vTmp);}
  reset();
- return {list,all,trail,steps:S,run,update,reset,take,release,putRiding,putFoot,blockers,headOf,placeBike,placePerson,feet};
+ const motion={routeTo,lineClear,feet,headOf,stepToward,standStill,footLook};
+ return {list,all,trail,steps:S,run,update,reset,take,release,putRiding,putFoot,blockers,headOf,placeBike,placePerson,feet,motion};
 }
