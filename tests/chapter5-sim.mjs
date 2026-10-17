@@ -161,8 +161,8 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  U(()=>S().phase==='n5-out',40);check(`${label}: the escape by route ${route}, and the boundary: ${route==='A'?'the gate swings open again':'the bell, by itself'}; every light out at once`,()=>{assert.equal(C5().route,route);assert.ok(C5().flags.boundary);assert.ok(Object.values(C5().lamps).every(v=>v<.2),JSON.stringify(C5().lamps));});
  M2['chapter5 escape seconds']=+(h.snapshot.clock-tRun).toFixed(1);
  // ---- back to the bikes ----
- if(route==='A')walkTo([...gravel(4,186).reverse(),P5(-118,352),P5(-122,338),P5(-130,322)],{r:2,max:260,sprint:false});
- else walkTo([P5(-358,410),P5(-362,380),P5(-346,347),P5(-320,334),P5(-292,324),P5(-262,317),P5(-228,316),P5(-198,319),P5(-170,322),P5(-145,320),P5(-132,318)],{r:2,max:320});
+ if(route==='A')walkTo([...gravel(4,186).reverse(),P5(-118,352),P5(-122,338),P5(-130,322)],{r:2,max:260,sprint:false,stop:()=>A5.C.flags.after});
+ else walkTo([P5(-358,410),P5(-362,380),P5(-346,347),P5(-320,334),P5(-292,324),P5(-262,317),P5(-228,316),P5(-198,319),P5(-170,322),P5(-145,320),P5(-132,318)],{r:2,max:320,stop:()=>A5.C.flags.after});
  U(()=>S().phase==='n5-final',40);U(()=>A5.C.flags.review,90);
  check(`${label}: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”`,()=>{assert.ok(log.said.some(l=>/like a duck/.test(l)));assert.ok(log.said.some(l=>/knew we’d come/.test(l)));});
  // ---- the last picture ----

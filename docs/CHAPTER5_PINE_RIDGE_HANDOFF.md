@@ -121,7 +121,8 @@ door slams. At the boundary every light in the camp goes out at once. The way ou
 (either can be chosen late). A player who stops to look back may: Sam and Jamie call at 3.5, 9 and 20 s, and only after
 40 s without moving (or 200 s in all) do the friends carry the escape on.
 
-**Aftermath.** The lamp in the lot. Shaky laughter. The shirt is in Sam's bag. "It didn't start till we found it."
+**Aftermath.** The walk back to the bikes is the player's own (about 300 m along the shore from the dam); a player who
+is still getting nearer is never cut short, and one who stops for 90 s (or after 8 minutes) is faded to the rack. The lamp in the lot. Shaky laughter. The shirt is in Sam's bag. "It didn't start till we found it."
 "It knew we'd come."
 
 **The second discovery.** The last picture on Alex's camera is one none of them took: the three of them at the

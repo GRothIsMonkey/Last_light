@@ -135,7 +135,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  const C={};
  function fresh(){for(const key of Object.keys(C))delete C[key];Object.assign(C,{t:0,pt:0,h:HOUR.start,flags:{},timers:[],cardT:-1,fadeIn:-1,fadeOut:-1,endT:-1,after:null,pose:null,match:false,want:null,wantT:0,
   spot:{jamie:null,sam:null},sitW:{jamie:0,sam:0},view:null,page:0,read:new Set(),clues:new Set(),seen:new Set(),talked:new Set(),photos:[],dark:0,lastEvent:0,sounds:{},amb:{traffic:0,insects:.4,wind:.8,life:1,forest:.4,tunnel:0,water:.5},
-  inv:{camera:false,lead:false,shirt:false,flashlight:false,batteries:false},minute:-1,race:null,st:null,sign:null,trail:[],crt:null,split:null,esc:null,choice:null,route:null,lapse:null,beat:null,lit:false});}
+  inv:{camera:false,lead:false,shirt:false,flashlight:false,batteries:false},minute:-1,race:null,st:null,sign:null,trail:[],crt:null,split:null,esc:null,out:null,choice:null,route:null,lapse:null,beat:null,lit:false});}
  fresh();
  const checkpoint=id=>{k.checkpointTo(id,LABEL5[id]);};// (silent: Continue on the title comes back here)
  const later=(sec,fn)=>C.timers.push({at:C.t+sec,fn});
@@ -711,7 +711,10 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   objective('Back to the bikes.','The rack, under the lamp in the lot.');}
  function updateOut(dt){const p=me();if(near(SPOT.rack.c,6))aftermath();
   if(!C.flags.o1&&S.pt>14&&!busy()){C.flags.o1=true;say([{who:'JAMIE',text:'“Is it following us?”',by:'jamie',time:1.4},{who:'SAM',text:'“Don’t look.”',by:'sam',time:1}]);}
-  if(S.pt>260)carry('rack',[SPOT.rack.c[0]+2.6,SPOT.rack.c[1]-1.6],ha(-130,316,-133,317.5),{after:aftermath});void p,dt;}
+  // (a player still walking back is never cut short: only one who has stopped getting nearer for 90 s, or after 480 s; the
+  // dam's way back along the shore is about 300 m)
+  const r=W5(...SPOT.rack.c),d=Math.hypot(p.x-r.x,p.z-r.z),O=C.out||(C.out={best:d,idle:0});if(d<O.best-1){O.best=d;O.idle=0;}else O.idle+=dt;
+  if(O.idle>90||S.pt>480)carry('rack',[SPOT.rack.c[0]+2.6,SPOT.rack.c[1]-1.6],ha(-130,316,-133,317.5),{after:aftermath});}
  function aftermath(){if(C.flags.after)return;C.flags.after=true;go('n5-final');C.hMin=Math.max(C.hMin||0,HOUR.final);checkpoint('c5-second-discovery');mark('the lamp in the lot');C.darkTo=.3;T?.set?.(.18,{rise:-.1,why:'the lamp'});objective('');
   const r=SPOT.rack.c;stand(jamie,[r[0]+1.6,r[1]+1.4],{look:()=>camera.position,keep:true});stand(sam,[r[0]+.4,r[1]-1.8],{look:()=>camera.position,keep:true});
   if(C.fireShot&&!C.flags.fireOnCamera){C.flags.fireOnCamera=true;const s=C.fireShot;C.fireIdx=photo.capture({id:'c5-campfire',date:'08/24/2011',time:s.time,label:'',source:(g,w,h)=>{if(s.canvas)g.drawImage(s.canvas.c,0,0,w,h);else drawFireSketch(g,w,h);}});photo.V.shutter=0;}
