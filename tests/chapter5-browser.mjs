@@ -66,7 +66,7 @@ try{
    txt(date.toUpperCase(),48,70,15);if(obj)txt(obj,48,98,18);if(cap)txt(cap.slice(0,110),720,820,24,'center','italic');
    caps.push({name,data:c.toDataURL('image/jpeg',.84),phase:L.chapter5.state?.phase,time:date,caption:cap.slice(0,90),calls:r.calls,triangles:r.triangles});};
   const check=(name,fn)=>{try{fn();passed.push(name);}catch(e){fails.push(name+': '+String(e.message).slice(0,400));}try{capture(String(caps.length+2).padStart(2,'0')+'-'+name.replace(/^Chromium: /,''));}catch(e){fails.push('capture '+name+': '+e);}};
-  const T={h,advance,press,release,tap,check,element,metrics,groundPoint,W:null};
+  const T={h,advance,press,release,tap,check,element,metrics,groundPoint,W:null,snap:n=>capture(String(caps.length+2).padStart(2,'0')+'-'+n)};
   // one segment of the chapter per call (the simulation's own segments), so the page gets its event loop back between them
   window.__walk={T,playChapterFive,passed,fails,metrics,get clock(){return clock;}};return true;});
  const SEGS=['start','stones','sign','road','camp','dusk','lights','split','run'],mem=[];

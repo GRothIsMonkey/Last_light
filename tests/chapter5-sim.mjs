@@ -61,7 +61,7 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  const sq=A5.W5?null:null;void sq;const g=h.world.homes.sam;void g;
  {const s=boys().find(c=>c.key==='sam');go({x:s.px,z:s.pz},{r:2.2,max:20});faceTo(s.px,s.pz);act('c5-pack',6);}
  // Jamie's bag, dropped open on the driveway: you look in it (one sock)
- U(()=>C5().flags.bagOpen,60);{const b=A5.props.getObjectByName('jamie-backpack').position;go({x:b.x,z:b.z},{r:1.3,max:12});faceTo(b.x,b.z,-.6);act('c5-bag',6);}
+ U(()=>C5().flags.bagOpen,60);{const b=A5.props.getObjectByName('jamie-backpack').position;go({x:b.x,z:b.z},{r:1.3,max:12});faceTo(b.x,b.z,-.6);act('c5-bag',6);U(()=>(A5.C.pose?.w||0)>.9,3);T.snap?.('jamie-bag-one-sock');}// (Chromium keeps a frame)
  U(()=>C5().flags.leave,90);check(`${label}: packing, Jamie's bag (one sock), what happened downtown, and the ride`,()=>{assert.ok(C5().flags.packed&&C5().flags.departure&&C5().flags.leave);assert.ok(C5().inv.camera,'the camera is yours to hold');assert.ok(C5().flags.bagSeen,'you looked in Jamie’s bag');
   assert.ok(log.said.some(l=>/one sock/.test(l)));assert.ok(log.said.some(l=>/copying us/.test(l))&&log.said.some(l=>/wants us out there/.test(l)),'Sam’s worry about downtown');});
  onBike();const d0=h.world.homes.sam.drivD;rideTo([M(d0-14,-2.2),M(d0-30,-2.2),M(d0-50,-2.2)],40,3,()=>S().phase==='d5-ride');U(()=>S().phase==='d5-ride'&&A5.C.fadeIn<0,10);

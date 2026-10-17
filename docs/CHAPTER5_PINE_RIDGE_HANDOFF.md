@@ -33,8 +33,12 @@ Chapter Four's end card (LAST LIGHT / Chapter Four / August 23, 2011) has a **Ch
 black and the chapter card: THE PLACE IN THE PICTURE over **Chapter Five**.
 
 **Sam's garage, 1:52 PM.** Sam's mother is at work until six and thinks they are at Jamie's. **F** helps Sam pack:
-three flashlights, batteries, water, and Alex's camera ("You hold it."). Jamie arrives late. His backpack holds one
-sock. Sam hands him two granola bars without a word.
+three flashlights, batteries, water, and Alex's camera ("You hold it."). Jamie arrives late and drops his backpack
+open on the driveway. **F** looks in it: one sock ("…I packed one sock."; if the player doesn't look, the line comes
+after 8 s). Sam hands him two granola bars without a word. Then, before they ride, what happened downtown: Jamie: "He
+said 'see you tomorrow.' It's tomorrow." Sam: "That wasn't him last night. It said what WE said. Like it was copying
+us." "What if the picture's the same thing? Something that wants us out there." Jamie: "Then he's out there too. I'm
+going." Sam: "…I know. I packed, didn't I?"
 
 **The ride.** Through town and north on Mill Street, past its LOCAL TRAFFIC ONLY sawhorse, onto the **Old Reservoir
 Road**: fields, a farmhouse and barn, a narrow two-lane road climbing the wooded ridge. Jamie races you to the top.
@@ -81,9 +85,13 @@ Free exploration:
 nice. That's messed up, right?" Jamie's mom keeps saying "when he comes home", not "if", and he doesn't think she
 believes it. "What if we find him and he's not— what if it's—" "Never mind." Time passes in a short lapse. "It's six
 fifty-three." "We've been sitting here three hours?" "It felt like ten minutes." Jamie talks Sam into one last cabin.
-"…Five minutes."
+"…Five minutes." Sitting is the player's to undo: **S** stands up while they talk (the talk and the lapse go on), and
+**F** at the log sits back down. A player who never sits is brought to the log by a fade 520 s after reaching the camp;
+the bike stays in the rack.
 
-**Dusk.** Wren's window lights for a moment. "Did you see that? Wren. In the window." "It's the sun. On the glass." In **Owl**, at the west end:
+**Dusk.** Wren's window lights for a moment. "Did you see that? Wren. In the window." "It's the sun. On the glass." (A
+player who doesn't go to Owl is led: after 120 s Jamie says "Owl's the last one. Down here." and the two of them walk to
+its front; after 240 s a fade brings the player to the porch.) In **Owl**, at the west end:
 **Alex's gold shirt** hangs on a nail, still wet, and **JSA** is cut fresh into the back wall, with an arrow and four
 marks. Sam takes the shirt and puts it in his bag. They call Alex's name. A light in the trees moves away toward the
 pump house, stops, and goes out.
@@ -95,7 +103,9 @@ watching the lights. It runs from them. The lights stop, turn, and go out.
 **Night: the camp that wants them apart (the set piece).** Owl's window is lit behind them and the office's porch
 light is ahead, toward the way out. A voice from Owl says "Jamie?" A voice by the office sounds like Sam's mother. The
 camp pulls at whichever friend the player is **not** with, and staring at Owl pulls at Sam. Sam's compromise:
-together, look from the porch, then go.
+together, look from the porch, then go. A player who doesn't go to the porch is led there: after 100 s Jamie
+("Owl. Come on. Together.") and Sam walk to the front of Owl, and after 170 s a fade brings the three of them to the
+porch. The double is never skipped on a timer.
 
 **Owl from the porch.** Standing where the shirt hung is Jamie: his cap, his shirt. Jamie, beside the player: "…That's
 my hat." "That's me." The light goes out, and then every light in the camp comes on at once. **RUN.**
@@ -108,8 +118,8 @@ my hat." "That's me." The light goes out, and then every light in the camp comes
 
 Every light in the camp came on at once at the double; along the way out, each lamp the boys pass flickers and its
 door slams. At the boundary every light in the camp goes out at once. The way out is read from where the player goes
-(either can be chosen late). A player who stops, or is pinned against something, is told to keep going, and after 24 s
-without moving (or 200 s in all) the friends carry the escape on.
+(either can be chosen late). A player who stops to look back may: Sam and Jamie call at 3.5, 9 and 20 s, and only after
+40 s without moving (or 200 s in all) do the friends carry the escape on.
 
 **Aftermath.** The lamp in the lot. Shaky laughter. The shirt is in Sam's bag. "It didn't start till we found it."
 "It knew we'd come."
@@ -167,12 +177,13 @@ branch, and `dist/world.js` builds Pine Ridge with the town.
 
 ## 4. Friendship moments (all playable)
 
-1. **The departure.** Packing in the garage, Jamie's one sock, Sam's granola bars.
+1. **The departure.** Packing in the garage; Jamie's bag, open on the driveway, which the player looks in (one sock);
+   Sam's granola bars; then the three of them on what happened downtown, and Sam's worry that the picture is a trap.
 2. **Ordinary competition.** Jamie's race to the ridge, and skipping stones (three throws each; Sam's plunk, then six).
 3. **A shared memory.** The end of the dock: Alex and Gary the shoe. The scene ends on its own; no scare interrupts it.
 4. **Help without asking.** Sam's batteries in Bluejay.
-5. **A quiet three-person scene.** The campfire. The player and the boys sit on the logs. Jamie's confidence slips
-   and he can't finish his sentence.
+5. **A quiet three-person scene.** The campfire. The player and the boys sit on the logs (the player can stand up
+   and sit back down while they talk). Jamie's confidence slips and he can't finish his sentence.
 6. **Genuine disagreement.** The yellow gate. Jamie under it, Sam refusing, the player's call. At night the
    disagreement returns as the split, until Sam's compromise.
 7. **Shared relief.** The lamp in the lot: shaky laughter, the shirt in the bag.
@@ -225,9 +236,10 @@ title** work as before.
 Jamie and Sam use the existing companion system (`putFoot`, `run`, `rideTo`, follow modes). Chapter Five adds:
 - A guard, as in Chapter Four. It releases a friend held at a scene spot when the player walks away, and clears a
   stuck friend's route after 2.5 s without progress. Each case is counted in `C.guardLog`.
-- Make way: when the player holds W and gets nowhere with Jamie or Sam right in front (a porch corner, a cabin
-  door), that friend steps 1.5 m aside onto walkable ground, then follows on or returns to his spot
-  (`C.guardLog.madeWay`).
+- Make way: when the player holds W and gets nowhere with Jamie or Sam right in front, in the player's path (within
+  0.75 m of the line ahead: a porch corner, a cabin door), that friend steps 1.5 m aside, then follows on or returns to
+  his spot (`C.guardLog.madeWay`). Every quarter metre of the step aside must be walkable, so he never walks through a
+  cabin wall or off the edge of a porch. A friend beside the player (not in the way) is left alone.
 - Seats taken from the campfire logs' own solids. Standing up steps back off the log.
 - Scripted stand-and-look spots for each beat.
 - Bikes locked at the rack: everyone is on foot from the park to the end.
