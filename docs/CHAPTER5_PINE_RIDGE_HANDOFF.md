@@ -24,7 +24,7 @@ section below, and **Continue** on the title returns to the last checkpoint.
 The scripted, direct simulation playthrough takes **26.6 minutes** of game time from Chapter Four's end card to
 Chapter Five's end card (27.4 by the other route). It goes straight to each objective. A player who looks around the
 park, the camp and the buildings will take about **35–45 minutes**. Nothing is timed against the player. Every beat
-has a time fallback (leaving Sam's garage after 150 s, the ride after eight minutes, the bike rack after 200 s on foot,
+has a time fallback (leaving Sam's garage a minute after "Ride to Pine Ridge.", the ride after eight minutes, the bike rack after 200 s on foot,
 and the rest as listed in the sim's idle check), so a player who stands still is carried on.
 
 ## 1. The story as implemented
@@ -86,8 +86,9 @@ nice. That's messed up, right?" Jamie's mom keeps saying "when he comes home", n
 believes it. "What if we find him and he's not— what if it's—" "Never mind." Time passes in a short lapse. "It's six
 fifty-three." "We've been sitting here three hours?" "It felt like ten minutes." Jamie talks Sam into one last cabin.
 "…Five minutes." Sitting is the player's to undo: **S** stands up while they talk (the talk and the lapse go on), and
-**F** at the log sits back down. A player who never sits is brought to the log by a fade 520 s after reaching the camp;
-the bike stays in the rack.
+**F** at the log sits back down. A player still standing when the talk ends is put back on the log (with a fade if
+they walked off) before the three hours pass, so the picture taken from the trees has all three of them in it. A
+player who never sits is brought to the log by a fade 520 s after reaching the camp; the bike stays in the rack.
 
 **Dusk.** Wren's window lights for a moment. "Did you see that? Wren. In the window." "It's the sun. On the glass." (A
 player who doesn't go to Owl is led: after 120 s Jamie says "Owl's the last one. Down here." and the two of them walk to
@@ -119,7 +120,8 @@ my hat." "That's me." The light goes out, and then every light in the camp comes
 Every light in the camp came on at once at the double; along the way out, each lamp the boys pass flickers and its
 door slams. At the boundary every light in the camp goes out at once. The way out is read from where the player goes
 (either can be chosen late). A player who stops to look back may: Sam and Jamie call at 3.5, 9 and 20 s, and only after
-40 s without moving (or 200 s in all) do the friends carry the escape on.
+40 s without moving (or 200 s in all) do the friends carry the escape on (to the gate, or onto the dam's walkway).
+Every fade that carries the three of them lands each one on the nearest ground they can walk.
 
 **Aftermath.** The walk back to the bikes is the player's own (about 300 m along the shore from the dam); a player who
 is still getting nearer is never cut short, and one who stops for 90 s (or after 8 minutes) is faded to the rack. The lamp in the lot. Shaky laughter. The shirt is in Sam's bag. "It didn't start till we found it."
