@@ -168,7 +168,11 @@ function relief(e,n){const rn=ridgeN(e),rw=n<rn?46:42,r=Math.exp(-(((n-rn)/rw)**
  const dam=(()=>{const t=clamp((n-DAM.b[1])/(DAM.a[1]-DAM.b[1]),0,1),de=e-lerp(DAM.b[0],DAM.a[0],t);if(de>0)return 0;const along=1-smooth((Math.abs(n-408)-22)/40);return -6.2*smooth(-de/18)*along-2*smooth(-de/40)*(1-along);})();
  return 2.35+r+north+west+east+roll+dam;}
 // The basin: a bank up from the waterline, then the land as it lies; under water the bed shelves away.
-function basin(e,n,y,sd){if(sd<0){const b=WATER+.12-.55*smooth(-sd/2.5)-.13*(-sd);return Math.max(WATER-4.6,b);}
+// Where a kid can wade (the pebble beach by the public dock, the edge of the park's lawn): the bed shelves gently, a hand's
+// depth for the first metre and a half, under a foot at the edge of what can be walked (WADE), then away as elsewhere.
+export const WADE={beach:{c:[-179,337.5],r:9.5,depth:2.8},lawn:{e0:-178,e1:-140,n0:330,n1:392,depth:.95}};
+export function wadeZone(e,n){const B=WADE.beach,d=Math.hypot(e-B.c[0],n-B.c[1]),zb=1-smooth((d-B.r+3)/3);const L=WADE.lawn,zl=(e>L.e0-4&&e<L.e1+4&&n>L.n0-4&&n<L.n1+4)?1:0;return {beach:clamp(zb,0,1),lawn:zl};}
+function basin(e,n,y,sd){if(sd<0){let b=WATER+.12-.55*smooth(-sd/2.5)-.13*(-sd);const z=wadeZone(e,n).beach;if(z>0){const g=WATER+.1-.11*(-sd)-.1*smooth((-sd-2.6)/2.4);b=lerp(b,Math.min(g,WATER+.06),z);}return Math.max(WATER-4.6,b);}
  if(sd>70)return y;const bank=WATER+.12+1.2*smooth(sd/7)+.05*Math.max(0,sd-4);return lerp(bank,y,smooth((sd-11)/58));}
 // A pad: signed distance (negative inside) in its own frame.
 function padDist(p,e,n){if(p.r)return Math.hypot(e-p.c[0],n-p.c[1])-p.r;const F=p.F||(p.F=frameOf(p.c,p.a)),[lx,lz]=F.of(e,n),dx=Math.abs(lx)-p.w/2,dz=Math.abs(lz)-p.d/2;return dx>0||dz>0?Math.hypot(Math.max(dx,0),Math.max(dz,0)):Math.max(dx,dz);}
@@ -236,12 +240,13 @@ export function heightAt(x,z){const F=FINE;if(x<F.x0||x>F.x1||z<F.z0||z>F.z1)ret
  const a=H[i*F.nz+j],b=H[(i+1)*F.nz+j],c=H[i*F.nz+j+1],d=H[(i+1)*F.nz+j+1];return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v);}
 
 // ---- what is where for walking: a half-meter surface grid ----------------------------------------------------------------
-export const PS={none:0,woods:1,grass:2,lawn:3,dirt:4,gravel:5,asphalt:6,lot:7,shore:8,water:9,wood:10,floor:11,solid:12,concrete:13,step:14,field:15,track:16};
+export const PS={none:0,woods:1,grass:2,lawn:3,dirt:4,gravel:5,asphalt:6,lot:7,shore:8,water:9,wood:10,floor:11,solid:12,concrete:13,step:14,field:15,track:16,shallow:17};
 export const PS_INFO=[
  {k:'none',walk:false,ride:false},{k:'woods',walk:true,ride:false,snd:'grass'},{k:'grass',walk:true,ride:true,snd:'grass',lawn:true},{k:'lawn',walk:true,ride:true,snd:'grass',lawn:true},
  {k:'dirt',walk:true,ride:true,snd:'grass',off:.02},{k:'gravel',walk:true,ride:true,snd:'asphalt',off:.035},{k:'asphalt',walk:true,ride:true,snd:'asphalt',off:.035},{k:'lot',walk:true,ride:true,snd:'asphalt',off:.035},
  {k:'shore',walk:true,ride:false,snd:'grass'},{k:'water',walk:false,ride:false},{k:'wood',walk:true,ride:false,snd:'floor'},{k:'floor',walk:true,ride:false,snd:'floor'},{k:'solid',walk:false,ride:false},
- {k:'concrete',walk:true,ride:true,snd:'asphalt'},{k:'step',walk:true,ride:false,snd:'floor'},{k:'field',walk:true,ride:false,snd:'grass'},{k:'track',walk:true,ride:true,snd:'asphalt',off:.03}];
+ {k:'concrete',walk:true,ride:true,snd:'asphalt'},{k:'step',walk:true,ride:false,snd:'floor'},{k:'field',walk:true,ride:false,snd:'grass'},{k:'track',walk:true,ride:true,snd:'asphalt',off:.03},
+ {k:'shallow',walk:true,ride:false,snd:'water',wade:true}];
 export const GRID=(()=>{const e0=-388,e1=44,n0=-4,n1=656,c=.5,ne=Math.round((e1-e0)/c),nn=Math.round((n1-n0)/c);return {e0,e1,n0,n1,c,ne,nn,t:new Uint8Array(ne*nn),floor:new Float32Array(ne*nn).fill(NaN)};})();
 const G=GRID,gi=(i,j)=>i*G.nn+j;
 export function cellOf(e,n){const i=Math.floor((e-G.e0)/G.c),j=Math.floor((n-G.n0)/G.c);if(i<0||j<0||i>=G.ne||j>=G.nn)return -1;return gi(i,j);}
@@ -279,7 +284,9 @@ export const TREES=[];
  paintPoly([[-160,500],[-174,486],[-200,494],[-246,503],[-276,502],[-300,494],[-320,482],[-336,486],[-336,530],[-328,580],[-312,622],[-268,624],[-226,622],[-190,612],[-170,592],[-162,560],[-156,526]],T.woods);
  // the dam's crest and its approach
  // the shore and the water: anything under the waterline is water; a thin band of shore you can stand on
- paintFn(-388,44,-4,656,(e,n)=>{const k=cellOf(e,n);if(G.t[k]===T.none&&!(e<-140&&e>-370&&n>320&&n<512))return null;const sd=shoreSD(e,n);if(sd<-.35)return T.water;if(sd<1.3&&G.t[k]!==T.none)return T.shore;return null;});
+ paintFn(-388,44,-4,656,(e,n)=>{const k=cellOf(e,n);if(G.t[k]===T.none&&!(e<-140&&e>-370&&n>320&&n<512))return null;const sd=shoreSD(e,n);
+  // (where you can wade: in, as far as the water is shallow; elsewhere the waterline is the edge)
+  if(sd<-.35){const z=wadeZone(e,n);if(z.beach>.6&&sd>-WADE.beach.depth)return T.shallow;if(z.lawn&&sd>-WADE.lawn.depth)return T.shallow;return T.water;}if(sd<1.3&&G.t[k]!==T.none)return T.shore;return null;});
  // the fields by the road, fenced: you can stand at their edge, not wander across them
  paintFn(-30,40,30,160,(e,n)=>{const k=cellOf(e,n);if(G.t[k]!==T.woods)return null;const w=PW(e,n),q=ROADS.orr.project(w.x,w.z,2);if(q&&Math.abs(q.t)>8.6)return T.none;return null;});
  // grass verges along the road

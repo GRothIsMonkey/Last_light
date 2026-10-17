@@ -304,7 +304,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
    c.person.face?.update(dt,{clock:ctx.clock,talk:c.talk,speech:c.speech,visible:c.person.group.visible});}
   for(const f of afters)f(dt,ctx);
  }
- function placePersonIfFree(c,dt){if(c.script&&c.script[c.step]?.climbing)return;placePerson(c,dt);}
+ function placePersonIfFree(c,dt){if(c.script&&c.script[c.step]?.climbing)return;if(c.holdPlace){c.holdPlace=false;return;}placePerson(c,dt);}
  // Bodies and bikes, for the player not to ride or walk through.
  function blockers(){const out=[];for(const c of all){if(!c.active)continue;if(c.bike.group.visible)out.push({x:c.bx,z:c.bz,r:c.mode==='ride'?.55:.5,speed:c.mode==='ride'?c.speed:0});if(c.mode==='foot'&&c.person.group.visible)out.push({x:c.px,z:c.pz,r:.3,speed:0});}return out;}
  // Where each one's head is (for the player's eyes to turn toward whoever is talking).

@@ -100,11 +100,11 @@ function showCaption(who,text,time=7.5){$('subtitle').replaceChildren();if(who){
 // Spoken dialogue captions are optional; memory and navigation thoughts remain separate.
 function say(who,text,time){if(who&&!ui.settings.captions){$('subtitle').style.opacity=0;ctx.speaker=who;captionTimer=time??7.5;return;}showCaption(who,text,time);}
 function start(){if(state!=='intro')return;ui.closePanels();state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;cockpit.visible=true;self.group.visible=true;if(!audio)setSound(true);else if(!muted)setSound(true);showCaption('','There’s still a little light.',5.5);}
-function pause(){if(!active())return;resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();ui.prompt(null);$('pause').hidden=false;audio?.setEnabled(false);}
+function pause(){if(!active())return;resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();down?.clear();ui.prompt(null);$('pause').hidden=false;audio?.setEnabled(false);}
 function resume(){if(state!=='paused')return;ui.closePanels();state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
-function finish(kind){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();ui.clear();setAct('');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;$('objective')?.classList.remove('on');audio?.ending(kind);}
+function finish(kind){state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();down?.clear();ui.clear();setAct('');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;$('objective')?.classList.remove('on');audio?.ending(kind);}
 // Everything a replay needs to start clean: the ride, the finale, the interface and the world's small stories.
-function resetState(){foot.reset();contact.reset();escFov=0;escWant=0;escDir=null;if(camera.fov!==64){camera.fov=64;camera.updateProjectionMatrix();}bellTime=-1;bellStruck=false;playerBike.bell.lever.rotation.x=0;glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
+function resetState(){foot.reset();contact.reset();escFov=0;escWant=0;escDir=null;if(camera.fov!==64){camera.fov=64;camera.updateProjectionMatrix();}bellTime=-1;bellStruck=false;playerBike.bell.lever.rotation.x=0;glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();down?.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
  finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
  memory.reset();tension.reset();captionTone.reset();$('fade').classList.remove('warm');friends.reset();ambient.reset();ending.reset();interact.reset();nostalgia.reset();chapter.reset();auto=null;wx=wz=wa=0;walkPitch=0;ui.clear();setAct('');audio?.reset();$('ending').hidden=true;$('pause').hidden=true;$('subtitle').style.opacity=0;$('date').innerHTML='AUGUST 21, 2011 <i></i> 7:42 PM';}
 function reset(){resetState();state='intro';start();}
@@ -150,12 +150,14 @@ function action(){
 }
 // Going home no longer ends the memory: you get on and ride back out of the cul-de-sac.
 function leave(){if(state!=='stopped'&&state!=='remounting')return;startNight('ride');}
-addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ControlLeft','ControlRight'].includes(e.code))e.preventDefault();
+// (every key held down right now, whoever handled it: a chapter that waits for a key to be let go reads this)
+const down=new Set();
+addEventListener('keydown',e=>{down.add(e.code);if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ControlLeft','ControlRight'].includes(e.code))e.preventDefault();
  if(e.code==='KeyM'&&!e.repeat){setSound(muted);return;}
  if(e.code==='Escape'){if(e.repeat)return;if(ui.closePanels())return;if(active())pause();else if(state==='paused'&&performance.now()-lastPauseAt>180)resume();return;}
  if(active()){if(night1()&&chapter4.key(e.code,e.repeat))return;keys.add(e.code);if(e.code==='KeyR'){mouseYaw=0;mousePitch=0;lookInputAt=clock;glance=0;manualLook=false;}if(e.code==='Space'&&!e.repeat){if(state==='walking'||state==='c1-walk')foot.jump(!interact.pose&&!chapter.pose&&!roam.walkLock);else{tut.bell=true;bell();}}if(e.code==='KeyT'&&!e.repeat&&state==='c1-walk'){foot.toggle();tut.flash=true;}if(e.code==='KeyF'&&!e.repeat)action();if(e.code.startsWith('Shift'))tut.shift=true;if(['KeyA','KeyD','ArrowLeft','ArrowRight'].includes(e.code))tut.steered=true;
   if((e.code==='KeyW'||e.code==='ArrowUp')&&!e.repeat&&state==='stopped'){if(callDone)leave();else if(!endHint&&captionTimer<1){endHint=true;showCaption('','The street ends here.',4);}}}});
-addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+addEventListener('keyup',e=>{keys.delete(e.code);down.delete(e.code);});addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 // Pointer lock is optional. Mouse-drag works if the browser declines it.
 function requestLook(){if(touch)return;lastMouse=null;lockAt=clock;try{const result=canvas.requestPointerLock?.();result?.catch?.(()=>{});}catch{}}
 let dragging=false,lockAt=-1;
@@ -336,7 +338,7 @@ const tension=createTension();
 const chOpts={scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,$,renderer,tension,
  say:(who,text,time)=>say(who,text,time),player:()=>playerState(),roam,setDate:html=>{$('date').innerHTML=html;},finish:()=>finish('chapter'),fade:v=>{fade=v;$('fade').style.opacity=v;},
  placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),attachFlashlight:on=>{if(on&&foot.light.parent)return;foot.attach(on);},// (just the flashlight's lights: Chapter Five's camp is lit by day rendering's sun)
- setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},setSpill:k=>{foot.spillLevel=k;},playerLight:foot.light,memory:null,
+ setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},held:c=>down.has(c)||keys.has(c),setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},setSpill:k=>{foot.spillLevel=k;},playerLight:foot.light,memory:null,
  foot,self,shoot:(o2)=>shoot(o2),readPixels:(t,w,h)=>readPixels(t,w,h)};
 const chapter=createChapter1(chOpts);
 // Chapter Two picks up seconds after the first one stops, with the same people, systems and night,

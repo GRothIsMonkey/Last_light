@@ -8,7 +8,7 @@
 // amount the scene animates. Replace the meshes, keep the names, grips and openings, and every scene still works.
 // World space; a person is a rig.js person (parts, joints, group).
 import * as THREE from './three.module.js';
-import {standPose,copyPose,applyPose,P,smooth} from './rig.js';
+import {standPose,sitPose,blendPose,copyPose,applyPose,newPose,P,smooth} from './rig.js';
 import {headingTo,wrap} from './people.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -79,6 +79,23 @@ export function createPhysical({scene,comp=null}){
  function offer(c,{to,side='r',dur=1.2}={}){let e=0;const o=side==='r'?P.rh:P.lh;return (dt,ctx)=>{e+=dt;const t=to();c.pa+=clamp(wrap(headingTo(c.px,c.pz,t.x,t.z)-c.pa),-3*dt,3*dt);standPose(c.tmp,ctx.clock+c.R.phase,{look:clamp(-wrap(headingTo(c.px,c.pz,t.x,t.z)-c.pa),-1,1)});copyPose(c.pose,c.tmp);
    const u=smooth(e/.5);c.pose[o]+=((side==='r'?.12:-.12)-c.pose[o])*u;c.pose[o+1]+=(1.02-c.pose[o+1])*u;c.pose[o+2]+=(-.42-c.pose[o+2])*u;comp?.feet(c,c.pose);c.posed=true;applyPose(c.person,c.pose);return e>=dur;};}
  function handOff(prop2,to,side='r',grip=null){LOG.handoffs++;LOG.log.push(['handoff',prop2.name]);prop2.holdBy(to,side,grip);}
+ // ---- sitting down and getting up (a dock's edge, a log) ----------------------------------------------------------------------
+ // seat: {x, z, y (the surface sat on), a (the way the seat faces)}; legs 'hang' (over an edge) or 'bent' (on a log, h its
+ // height over the ground at the feet). He turns his back to the seat, lowers onto it, and stays until until() says.
+ function sit(c,{seat,legs='bent',h=.43,hands='knees',until=()=>false,look=null}){let e=0,mode='down';const base=newPose(),seatP=newPose();
+  return (dt,ctx)=>{const S2=seat();if(!S2)return true;e+=dt;
+   if(e<=dt){copyPose(base,c.pose);c.seatAt={...S2};}
+   // (he ends up on the seat: from where he stands, a short step back onto it while he lowers)
+   const u=smooth(e/.9);c.px+=(S2.x-c.px)*Math.min(1,dt*6);c.pz+=(S2.z-c.pz)*Math.min(1,dt*6);c.pa+=clamp(wrap(S2.a-c.pa),-3*dt,3*dt);
+   const lk=look?clamp(-wrap(headingTo(c.px,c.pz,look().x,look().z)-c.pa),-1.1,1.1):0;
+   sitPose(seatP,{seat:h,legs,t:ctx.clock+c.R.phase,hands,look:lk});blendPose(c.pose,base,seatP,u);c.sitW=u;c.seated=u>.98;
+   c.py=S2.y;c.person.group.position.set(c.px,S2.y,c.pz);c.person.group.rotation.set(0,-c.pa,0);applyPose(c.person,c.pose);c.posed=true;c.holdPlace=true;
+   if(e>1&&until()){c.seated=false;return true;}return false;};}
+ function rise(c,{back=.45,legs='bent',h=.43}={}){let e=0;const seatP=newPose(),st=newPose();let from=null;return (dt,ctx)=>{e+=dt;if(!from){from={x:c.px,z:c.pz,y:c.py};}
+  const u=smooth(e/.8);sitPose(seatP,{seat:h,legs,t:ctx.clock});standPose(st,ctx.clock+c.R.phase);blendPose(c.pose,seatP,st,u);
+  // (up and a step forward off it)
+  const fx=Math.sin(c.pa),fz=-Math.cos(c.pa);c.px=from.x+fx*back*u;c.pz=from.z+fz*back*u;c.py=null;c.sitW=1-u;c.seated=false;
+  c.person.group.position.set(c.px,from.y,c.pz);applyPose(c.person,c.pose);c.posed=true;c.holdPlace=e<.8;return e>=.8;};}
  // ---- the player's hands (first person) -------------------------------------------------------------------------------------
  // One action at a time: reach a point (pick up / put in / touch / take), with the eye's crouch for something low; the
  // arm comes into view, the hand gets there, contact, back. arms(pose, toLocal) is what on-foot.js draws over the body.
@@ -90,11 +107,11 @@ export function createPhysical({scene,comp=null}){
  const PCARRY={r:[.19,1.0,-.38],l:[-.19,1.0,-.38]};
  // How far you lean (and dip) to get a hand to something a little out of reach: the body and the eye go toward it.
  function lean(foot,dt,want,dip){if(!foot)return;const E=foot.extraEye,k=1-Math.exp(-7*dt);E.f+=(want-E.f)*k;E.y+=(dip-E.y)*k;}
- function arms(p,{toLocal:tl,dt,foot=null}){const A=ME.act;if(!A)lean(foot,dt,0,0);
+ function arms(p,{toLocal:tl,dt,foot=null}){const A=ME.act;if(!A||A.kind!=='reach')lean(foot,dt,0,A?.dip??0);
   // held things in a hand when nothing else is going on: forward, low in view
   for(const side of ['r','l']){const H=ME.hold[side];if(!H||A?.side===side&&A.kind==='reach')continue;const o=side==='r'?P.rh:P.lh,e2=side==='r'?P.re:P.le,q=H.at||PCARRY[side];for(let i=0;i<3;i++)p[o+i]+=(q[i]-p[o+i])*(H.w??1);p[e2]=side==='r'?.8:-.8;p[e2+1]=-.4;p[e2+2]=.4;}
-  for(const f of ME.extra)f(p,{toLocal:tl,dt});
-  if(!A)return;A.e+=dt;const w=A.at();if(!w){ME.act=null;return;}A.lastW=w;const L=tl(_v.copy(w));A.lastY=L.y;
+  for(const f of ME.extra)f(p,{toLocal:tl,dt,foot});
+  if(!A||A.kind!=='reach')return;A.e+=dt;const w=A.at();if(!w){ME.act=null;return;}A.lastW=w;const L=tl(_v.copy(w));A.lastY=L.y;
   const o=A.side==='r'?P.rh:P.lh,e2=A.side==='r'?P.re:P.le;if(!A.start)A.start=[p[o],p[o+1],p[o+2]];
   const u=smooth(A.e/A.dur[0]),back=smooth((A.e-A.dur[0]-A.dur[1])/A.dur[2]),end=A.carry&&ME.hold[A.side]?PCARRY[A.side]:A.start;
   // (out of reach: lean toward it, and down for something low, as much as it takes, up to a step's worth)
@@ -105,8 +122,8 @@ export function createPhysical({scene,comp=null}){
   if(!A.touched&&A.e>=A.dur[0]){A.touched=true;A.onContact?.();}
   if(A.e>=A.dur[0]+A.dur[1]+A.dur[2]){const t=A.then;ME.act=null;t?.();}}
  function playerHold(side,prop2,{at=null}={}){ME.hold[side]=prop2?{prop:prop2,at,w:1}:null;}
- function reset(){for(const P2 of PROPS.values()){P2.holder=null;HELD.delete(P2);}HELD.clear();ME.act=null;ME.hold.r=ME.hold.l=null;ME.extra.length=0;LOG.contacts=LOG.releases=LOG.handoffs=0;LOG.log.length=0;}
- const api={root,PROPS,LOG,ME,prop,container,sync,torsoFrame,reach,offer,handOff,carryOverlay,playerReach,playerBusy,playerCrouch,playerHold,arms,reset,handFrame,
+ function reset(){for(const P2 of PROPS.values()){P2.holder=null;HELD.delete(P2);}HELD.clear();ME.act=null;ME.hold.r=ME.hold.l=null;LOG.contacts=LOG.releases=LOG.handoffs=0;LOG.log.length=0;}
+ const api={root,PROPS,LOG,ME,prop,container,sync,torsoFrame,sit,rise,reach,offer,handOff,carryOverlay,playerReach,playerBusy,playerCrouch,playerHold,arms,reset,handFrame,
   };
  return api;
 }

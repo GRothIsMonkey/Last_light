@@ -138,8 +138,10 @@ export function createNav(world){
  // Is there a house (or the far neighborhood) right here? For sound: walls between you and a siren.
  const FAR=new Set(['far-house']),wallAt=(x,z)=>!!walls.blocked(x,z,0,WALL)||!!world.space.blocked(x,z,0,FAR);
  // Small local A* for a grown-up crossing a driveway. No destination knowledge for companions.
- function walkPath(start,end,obstacles=[]){
-  const step=.65,pad=5,minX=Math.min(start.x,end.x)-pad,minZ=Math.min(start.z,end.z)-pad,maxX=Math.max(start.x,end.x)+pad,maxZ=Math.max(start.z,end.z)+pad;
+ function walkPath(start,end,obstacles=[],pad=null){
+  // (at Pine Ridge the way round can be wide, a shore or a fence line: no way within the first box, a wider one)
+  if(pad==null){if(!pineOpen)pad=5;else{const p=walkPath(start,end,obstacles,5);return p.length?p:walkPath(start,end,obstacles,14);}}
+  const step=.65,minX=Math.min(start.x,end.x)-pad,minZ=Math.min(start.z,end.z)-pad,maxX=Math.max(start.x,end.x)+pad,maxZ=Math.max(start.z,end.z)+pad;
   const point=(i,j)=>({x:minX+i*step,z:minZ+j*step}),ix=p=>Math.round((p.x-minX)/step),iz=p=>Math.round((p.z-minZ)/step),key=(i,j)=>i+','+j;
   const valid=p=>walkable(p.x,p.z,{r:.3})&&!obstacles.some(o=>Math.hypot(o.x-p.x,o.z-p.z)<o.r+.38);
   const clear=(a,b)=>{const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.2);for(let i=1;i<=n;i++)if(!valid({x:a.x+(b.x-a.x)*i/n,z:a.z+(b.z-a.z)*i/n}))return false;return true;};

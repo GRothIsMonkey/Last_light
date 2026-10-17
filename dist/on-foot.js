@@ -1,9 +1,9 @@
 // Shared on-foot movement and embodiment. Jump never changes horizontal collision rules.
 import * as THREE from './three.module.js';
-import {standPose,walkPose,sitPose,newPose,applyPose,headPos,P,stride,smooth} from './rig.js';
+import {standPose,walkPose,sitPose,newPose,blendPose,applyPose,headPos,P,stride,smooth} from './rig.js';
 const clamp=THREE.MathUtils.clamp,damp=THREE.MathUtils.damp;
 export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
- const pose=newPose(),direction=new THREE.Vector3(),hand=new THREE.Vector3();
+ const pose=newPose(),standP=newPose(),direction=new THREE.Vector3(),hand=new THREE.Vector3();
  const light=new THREE.SpotLight(0xffefcf,0,17,.31,.8,2),torch=new THREE.Group();torch.name='player-flashlight';
  // A real flashlight has a hotspot and a dim, wide spill round it. The spill is used where the dark is total (the storm
  // drain): it shows the walls and floor near you while the hotspot stays only as strong as whoever stands in it can take.
@@ -44,7 +44,9 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    // Sitting (a chapter's seat: the dock's edge, a log): the body on the seat, facing the way the seat faces, legs as
    // they would be; the head turns, not the body.
    const seat=scripted&&CP?.seat?CP.seat:null;
-   if(seat){F.sitT=(F.sitT||0)+dt;sitPose(pose,{seat:seat.h??.43,legs:seat.legs||'bent',t:F.sitT,hands:seat.hands||'knees'});x=seat.x;z=seat.z;y=seat.y;a=seat.a;
+   if(seat){F.sitT=(F.sitT||0)+dt;const w=smooth(CP.w??1);copyStand(standP,pose);sitPose(pose,{seat:seat.h??.43,legs:seat.legs||'bent',t:F.sitT,hands:seat.hands||'knees'});blendPose(pose,standP,pose,w);
+    // (down onto it from where you stood, turning to face the way it faces)
+    const fx=CP.fx??seat.x,fz=CP.fz??seat.z,fa=CP.from??seat.a,da=Math.atan2(Math.sin(seat.a+Math.PI-(-fa)),Math.cos(seat.a+Math.PI-(-fa)));x=fx+(seat.x-fx)*w;z=fz+(seat.z-fz)*w;y=seat.y;a=seat.a+(1-w)*Math.atan2(Math.sin(fa-seat.a),Math.cos(fa-seat.a));void da;
     // (the view turned well round: the shoulders follow a little)
     const tw=clamp(Math.atan2(Math.sin(F.viewYaw-a),Math.cos(F.viewYaw-a)),-.9,.9);pose[P.twist]=-tw*.35;}
    else if(scripted&&!CP?.stand){pose[P.root+1]=.30;pose[P.lean]=1.04;pose[P.root+2]=0;pose[P.lf]=-.17;pose[P.rf]=.17;pose[P.lf+2]=-.10;pose[P.rf+2]=.06;pose[P.lh+1]=.25;pose[P.lh+2]=-.07;pose[P.rh+1]=.42;pose[P.rh+2]=-.45;const hp=headPos(pose,new THREE.Vector3());x=camera.position.x-hp.x*Math.cos(a)+hp.z*Math.sin(a);z=camera.position.z-hp.x*Math.sin(a)-hp.z*Math.cos(a);y=camera.position.y-hp.y-.015;}
@@ -81,5 +83,6 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
   // (and a reach for something leans you toward it and down: extraEye, set by the hands, physical.js)
   lookDip(pitch){const th=Math.max(0,-pitch),U=F.fp.eyeU,Fw=F.fp.eyeF;return {y:U*Math.cos(th)-Fw*Math.sin(th)-U+F.extraEye.y,f:U*Math.sin(th)+Fw*Math.cos(th)-Fw+F.extraEye.f};},
  };
+ function copyStand(out,src){out.set(src);return out;}
  return F;
 }

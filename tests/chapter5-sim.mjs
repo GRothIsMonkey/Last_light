@@ -26,14 +26,14 @@ export function chapterFiveTools(T){
  const spot=()=>h.chapter.spot?.();
  // F on what the prompt offers, if it is that one
  const act=(id,max=8)=>{let ok=false;until(()=>{const s=spot();if(s?.id===id){tap('KeyF');ok=true;return true;}return false;},max);return ok;};
- const boys=()=>h.chapter.companions.all.filter(c=>c.active);
+ const boys=()=>h.chapter.companions.all.filter(c=>c.active),jamieSam=boys;
  const gap=()=>{const p=me();return Math.max(...boys().map(c=>Math.hypot((c.mode==='ride'?c.bx:c.px)-p.x,(c.mode==='ride'?c.bz:c.pz)-p.z)));};
- return {...X,C5,A5,S,P5,Q5,en,goEN,faceEN,faceV,M,orr,gravel,offBike,onBike,rideTo,quiet,spot,act,boys,gap};
+ return {...X,C5,A5,S,P5,Q5,en,goEN,faceEN,faceV,M,orr,gravel,offBike,onBike,rideTo,quiet,spot,act,boys,jamieSam,gap};
 }
 
 // From Chapter Four's end card (or the chapter's own start, or the DEV selector's) to Chapter Five's end card, inputs only.
 export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choice='sam',seedLook=true,from=null,entered=false,to=null,cont=false}={}){
- const {h,press,release,tap,check,element,metrics}=T,X=chapterFiveTools(T),{C5,A5,S,P5,Q5,en,goEN,faceEN,faceV,M,orr,gravel,offBike,onBike,rideTo,quiet,act,boys,gap,log,until,wait,me,faceTo,walkTo,go}=X;
+ const {h,press,release,tap,check,element,metrics}=T,X=chapterFiveTools(T),{C5,A5,S,P5,Q5,en,goEN,faceEN,faceV,M,orr,gravel,offBike,onBike,rideTo,quiet,act,boys,jamieSam,gap,log,until,wait,me,faceTo,walkTo,go}=X;
  const M2=/replay|DEV/.test(label)?{}:metrics;const watch={streets:[],gapMax:0,gapAt:null,bad:0,jumps:0,lastP:null,sky:[],darkMax:0,lit:0,carried:0,creature:0,double:0};
  const sample=()=>{const s=C5(),p=me(),w=s.where?.street;if(watch.streets[watch.streets.length-1]!==w)watch.streets.push(w);
   if(!/^(c5-black|d5-garage|d5-ride)$/.test(s.phase)&&A5.C.fadeOut<0&&!A5.C.lapse){const g=gap();if(g>watch.gapMax){watch.gapMax=g;watch.gapAt={phase:s.phase,where:s.where};}}
@@ -85,13 +85,18 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  }
  // ---- skipping stones ----
  if(seg('stones')){
- const STN=SPOT.shoreStones,AIM=[STN[0]-14,STN[1]+6];goEN(STN[0]+.4,STN[1]+.4,{r:.8});U(()=>C5().stones,10);
- let throws=0;U(()=>{const s=C5().stones;if(!s||s.done)return true;if(A5.C.st.turn==='you'&&!A5.C.st.busy&&!A5.C.stoneRun){faceEN(AIM[0],AIM[1],null,-.12);press('KeyC');W(.6);if(X.spot()?.id==='c5-throw'){tap('KeyF');throws++;}release('KeyC');W(1);}return false;},140);
- check(`${label}: skipping stones: three throws each, Sam's six`,()=>{assert.ok(C5().stones.done);assert.equal(throws,3,'your throws '+throws);assert.equal(C5().stones.best.sam,6);assert.ok(C5().stones.you.every(n=>n>=2),'low, flat, across the water: '+C5().stones.you);});
- M2['chapter5 stones']={you:C5().stones.you,best:C5().stones.best};
+ // the beach: pick a stone up off the ground (F on it), hold F to wind up, crouch, aim low across the water, let go
+ const STN=SPOT.shoreStones,AIM=[STN[0]-14,STN[1]+6],PKS=A5.PK.S;goEN(STN[0]+.4,STN[1]+.4,{r:.8});U(()=>C5().stones,20);
+ let throws=0;U(()=>{const s=C5().stones;if(!s||s.done)return true;if(A5.C.st.turn==='you'&&!A5.C.st.busy&&!PKS.flying.length&&!A5.PK.holding&&!A5.phys.playerBusy()){
+   const P=A5.PK.nearestStone(me().x,me().z);if(P){go({x:P.obj.position.x,z:P.obj.position.z},{r:.7,max:12});faceV(P.obj.position);W(.05);if(X.spot()?.id==='p5-stone:'+P.name){tap('KeyF');U(()=>A5.PK.holding,3);W(.5);}}}
+  if(A5.C.st.turn==='you'&&A5.PK.holding&&!A5.PK.winding){faceEN(AIM[0],AIM[1],null,-.1);press('KeyC');W(.5);press('KeyF');W(.85);release('KeyF');W(.3);release('KeyC');throws++;U(()=>!PKS.flying.length,8);W(.5);}return false;},220);
+ check(`${label}: skipping stones: a stone picked up off the shore, wound up and let go, each time; Jamie's and Sam's their own; Sam's six`,()=>{assert.ok(C5().stones.done);assert.equal(throws,3,'your throws '+throws);assert.equal(PKS.best.sam,6,JSON.stringify(PKS.log));assert.ok(PKS.you.every(n=>n>=2),'low, flat, across the water: '+PKS.you);
+  assert.ok(PKS.jamie.length===3&&PKS.sam.length===3,'they threw their own');assert.ok(A5.phys.LOG.log.filter(l=>l[0]==='hold'&&/beach-stone/.test(l[1])).length>=9,'every stone picked up by a hand');});
+ M2['chapter5 stones']={you:PKS.you,jamie:PKS.jamie,sam:PKS.sam};
  // ---- the dock ----
  U(()=>S().phase==='d5-dock',30);const DE=SPOT.dockEnd,DK=DOCKS[0];goEN(DE[0]+Math.sin(DK.a+Math.PI)*.8,DE[1]+Math.cos(DK.a+Math.PI)*.8,{r:.5});faceEN(DE[0]+Math.sin(DK.a)*3,DE[1]+Math.cos(DK.a)*3);act('c5-sit',6);
- U(()=>S().phase==='d5-sign',120);check(`${label}: the dock: Alex, and the shoe he named Gary`,()=>{assert.ok(C5().flags.dock);assert.ok(log.said.some(l=>/Gary/.test(l)));});
+ let seatedAll=false;U(()=>{if(jamieSam().every(c=>c.seated)&&(A5.C.pose?.w||0)>.95)seatedAll=true;return S().phase==='d5-sign';},150);
+ check(`${label}: the dock: the three of you sat on its edge, legs over the water; Alex, and the shoe he named Gary`,()=>{assert.ok(C5().flags.dock);assert.ok(seatedAll,'all three seated');assert.ok(log.said.some(l=>/Gary/.test(l)));});
  }
  // ---- the place in the picture: Alex's camera, compared ----
  if(seg('sign')){
