@@ -68,7 +68,7 @@ try{
   const check=(name,fn)=>{try{fn();passed.push(name);}catch(e){fails.push(name+': '+String(e.message).slice(0,400));}try{capture(String(caps.length+2).padStart(2,'0')+'-'+name.replace(/^Chromium: /,''));}catch(e){fails.push('capture '+name+': '+e);}};
   const T={h,advance,press,release,tap,check,element,metrics,groundPoint,W:null,snap:n=>capture(String(caps.length+2).padStart(2,'0')+'-'+n)};
   // one segment of the chapter per call (the simulation's own segments), so the page gets its event loop back between them
-  window.__walk={T,playChapterFive,passed,fails,metrics,get clock(){return clock;}};return true;});
+  window.__walk={T,playChapterFive,passed,fails,metrics,get clock(){return clock;}};return true;},{route,choice});
  const SEGS=['start','stones','sign','road','camp','dusk','lights','split','run'],mem=[];
  for(const k of SEGS){const t1=Date.now();const r=await ev(({k,route,choice})=>{const W=window.__walk,L=lastLight;
    try{W.playChapterFive(W.T,'Chromium',k==='start'?{fromCard:false,entered:true,route,choice,to:'start'}:{from:k,to:k,cont:true,route,choice});}catch(e){W.fails.push(k+': playthrough threw: '+String(e.stack||e).slice(0,800));}
