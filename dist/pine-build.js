@@ -120,7 +120,7 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
    else quad(x,z,LAT,coarseY);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
   const m=new THREE.Mesh(g,tm);m.name='pine-ground';m.userData.zone=zone;W.baked.push(m);
-  out.cells=cells;out.groundTris=P.length/9;}
+  out.cells=cells;out.groundTris=P.length/9;P.length=0;N.length=0;}// (the build arrays are copied into the geometry: let them go)
 
  // ============================================== the reservoir ====================================================================
  {const e0=-372,e1=-136,n0=318,n1=516,s=3,ne=Math.ceil((e1-e0)/s)+1,nn=Math.ceil((n1-n0)/s)+1,pos=[],sh=[],idx=[],ids=new Int32Array(ne*nn).fill(-1);

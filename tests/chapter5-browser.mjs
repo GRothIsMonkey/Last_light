@@ -74,6 +74,9 @@ try{
    try{W.playChapterFive(W.T,'Chromium',k==='start'?{fromCard:false,entered:true,route,choice,to:'start'}:{from:k,to:k,cont:true,route,choice});}catch(e){W.fails.push(k+': playthrough threw: '+String(e.stack||e).slice(0,800));}
    globalThis.gc?.();return {phase:L.chapter5.state.phase,clock:+(W.clock/60).toFixed(2),heapMB:Math.round((performance.memory?.usedJSHeapSize||0)/1048576)};},{k,route,choice});
   mem.push({segment:k,...r,wallSeconds:Math.round((Date.now()-t1)/1000)});console.log('segment',k,JSON.stringify(mem[mem.length-1]));}
+ // the flashlight's two lights are in the scene for the whole chapter (T only changes how bright), so the beam lights the camp
+ const flash=await ev(()=>{const L=lastLight,f=L.foot;return {light:!!f?.light?.parent,spill:!!f?.spill?.parent,owned:!!f?.owned};});
+ check('Chapter Five: the flashlight’s lights are in the scene (the beam lights what it points at)',flash.light&&flash.spill,JSON.stringify(flash));
  const walk=await ev(()=>{const W=window.__walk;return {passed:W.passed,fails:W.fails,metrics:W.metrics,clock:W.clock,state:lastLight.state.state};});
  console.log('walkthrough',((Date.now()-t0)/1000).toFixed(0)+'s',JSON.stringify({passed:walk.passed.length,fails:walk.fails}));
  for(const n of walk.passed)check(n,true);for(const f of walk.fails)check(f,false);

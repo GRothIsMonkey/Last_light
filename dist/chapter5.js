@@ -227,7 +227,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   const d=C.dark;night=lerp(night,.95,d);deep=lerp(deep,.6,d);
   const id=inAny(),fill=id?camp.level(id):0;return {day,p,night,deep,fill};}
  // ---- the world as Chapter Five finds it ------------------------------------------------------------------------------------
- function common(){document.body?.classList?.add('night1');nav.setTown(true);camp.attach(true);if(!props.parent)scene.add(props);}
+ function common(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);camp.attach(true);o.attachFlashlight?.(true);if(!props.parent)scene.add(props);}// (the flashlight's lights stay in the scene the whole chapter: T only changes how bright)
  function dayWorld(){A.day=1;A.night=0;ch2.day=1;S.deep=A.deep=0;o.flashShadow?.(false);o.nightRendering?.(false);ambient.night?.(false);ambient.morning?.(true);
   for(const a of [...k.adults,...ch2.extra,...Object.values(ch3.people||{})]){a.show(false);a.lookAt=null;a.gest(null);a.path=null;a.mode='stand';}
   police.reset?.();k.carA.show(false);k.carB.show(false);ch2.flyers.visible=true;ch2.found.group.visible=false;ch2.tape.visible=false;for(const b of ch2.beams)b.on=false;ch2.samBeam&&(ch2.samBeam.on=false);
@@ -846,7 +846,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function readMapFallback(){if(C.flags.mapNudge)return;C.flags.mapNudge=true;say([{who:'SAM',text:'“The map’s by the bathrooms. Or we just follow the road.”',by:'sam'}]);}
  // ---- lifecycle --------------------------------------------------------------------------------------------------------------------------------
  const DOOR0=Object.fromEntries(Object.entries(DOORS).map(([key,d])=>[key,d.open]));
- function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='camera')photo.close();camp.reset();camp.attach(false);props.removeFromParent();shirt.visible=false;carving.visible=false;pageG.visible=false;stone.visible=false;
+ function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='camera')photo.close();camp.reset();camp.attach(false);nav.setPine?.(false);props.removeFromParent();shirt.visible=false;carving.visible=false;pageG.visible=false;stone.visible=false;
   for(const r of RINGS){r.m.visible=false;r.t=9;}for(const key of Object.keys(DOORS))DOORS[key].open=DOOR0[key]??0;const gt=PN?.dyn?.campGate;if(gt){gt.want=-1.25;gt.k=1.4;}
   const bell=PN?.dyn?.bell;if(bell){bell.v=0;bell.swing=0;bell.yoke.rotation.z=0;}if(PN?.lights?.lot)PN.lights.lot.level=0;
   if(C.crt){creature.reset();creature.show(false);}creature.ground=null;

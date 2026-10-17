@@ -78,7 +78,7 @@ export function buildWorld(scene){
  const {merged,originals,shadowProxies}=bakeAndMerge(W,scene);
  // A layer that asks for it lets go of its objects once they are baked (Pine Ridge's thousands of trees and planks): only the
  // merged meshes draw, and anything still in use is held by whoever uses it; its root is untransformed, so they keep their places.
- for(const l of W.layers)if(l.release)l.group.clear();
+ for(const l of W.layers)if(l.release)l.group.clear();W.baked=W.baked.filter(m=>!/^pine/.test(m.userData.zone||''));// (and Pine Ridge's baked ground and paths, likewise)
 
  // Surface height queries for riders and walkers ------------------------------------------
  // Only Oak Hollow's houses matter to riders and walkers (side-street houses live in their own frames).
@@ -171,7 +171,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
   if(layer.mode==='drape'){const p=layer.frame.point(layer.u0,0),a=layer.frame.heading(layer.u0);layer.lin={cx:p.x,cz:p.z,fx:Math.sin(a),fz:-Math.cos(a),rx:Math.cos(a),rz:Math.sin(a)};}
   const height=layer.mode==='drape'?heightGrid(layer):null;const objs=[];layer.group.traverse(o=>{if(o.isMesh||o.isLine)objs.push(o);});
   for(const o of objs){const {pos,nor}=transform(o,layer,height);
-   if(o.name&&o.isMesh){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));if(o.geometry.index)g.setIndex(o.geometry.index.clone());g.computeBoundingSphere();const m=new THREE.Mesh(g,o.material);m.name=o.name;m.userData={...o.userData};originals.push(m);if(o.userData.ref)W.named[o.userData.ref]=m;}
+   if(o.name&&o.isMesh&&!/^pine/.test(layer.zone||o.userData.zone||'')){/* (Pine Ridge keeps no reference copies: nothing reads them) */const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));if(o.geometry.index)g.setIndex(o.geometry.index.clone());g.computeBoundingSphere();const m=new THREE.Mesh(g,o.material);m.name=o.name;m.userData={...o.userData};originals.push(m);if(o.userData.ref)W.named[o.userData.ref]=m;}
    if(o.isLine){const key=o.material.color.getHex();if(!lineBatches.has(key))lineBatches.set(key,new Buf());const arr=lineBatches.get(key),segs=o.isLineSegments;for(let i=0;i<pos.length/3-1;i+=segs?2:1)arr.push(pos[i*3],pos[i*3+1],pos[i*3+2]),arr.push(pos[i*3+3],pos[i*3+4],pos[i*3+5]);continue;}
    const material=batchMaterial(o.material),idx=o.geometry.index,uv=o.geometry.attributes.uv,far=!!layer.far||!!o.userData.far,zone=layer.zone||o.userData.zone||null,cellSize=zone==='woods'?(far?120:70):zone==='tunnel'?50:zone==='town'?(far?160:90):zone==='town-int'?30:zone==='pine'?(far?150:80):zone==='pine-int'?24:far?220:110;
    const wi=W.windowMats.indexOf(o.material),pi=W.porchMats.indexOf(o.material);

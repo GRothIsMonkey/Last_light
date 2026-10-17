@@ -201,11 +201,15 @@ export async function runChapterFiveChecks(T,cap){
   h.jump(sec);advance(.3);const ph=S().phase;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended',sec==='c5-park'?260:sec==='c5-camp'?600:420);idle[sec]={from:ph,to:S().phase,moved,ended:h.snapshot.state==='ended'};}
  check('Chapter Five fallbacks: standing still, every scene moves on in time (the boys pull you along)',()=>{const stuck=Object.entries(idle).filter(([k,v])=>!v.moved);assert.deepEqual(stuck,[]);});
  metrics['chapter5 idle fallbacks']=Object.fromEntries(Object.entries(idle).map(([k,v])=>[k,v.from+'→'+(v.ended?'end':v.to)]));
+ // ---- Chapter Four keeps its north edge: Mill Street past the sawhorse opens only in Chapter Five ------------------------------
+ {const {TW}=await import('../dist/town-plan.js'),probe=()=>[70,78,84].map(v=>{const q=TW(0,v);return {v,walk:!!h.nav.walkable(q.x,q.z),ride:!!h.nav.rideable(q.x,q.z)};});
+  h.jump('c4-main-street');advance(.5);const ch4=probe();h.jump('c5-ride');advance(.5);const ch5=probe();
+  check('Chapter Four keeps its north edge (Mill Street past the sawhorse is closed); Chapter Five opens the road to Pine Ridge',()=>{assert.ok(ch4.every(r=>!r.walk&&!r.ride),JSON.stringify(ch4));assert.ok(ch5.every(r=>r.ride),JSON.stringify(ch5));});}
  // ---- Start over from inside Chapter Five: the prologue, clean ----------------------------------------------------------------
  h.jump('c5-split');advance(2);element('restart').onclick?.();advance(.5);check('Start over from inside Chapter Five begins the prologue normally (nothing of the camp left)',()=>{assert.equal(h.snapshot.state,'riding');assert.equal(h.chapter.state.phase,'off');assert.equal(A5.camp.carrying(),0);assert.equal(A5.props.parent,null);});
  // ---- the DEV selector: Chapter Five Start equals arriving naturally; scenes start; switching leaks nothing --------------------
  if(cap?.natural?.[5]){const {compare,far,strict}=await import('./dev-chapters-sim.mjs');const devAt=()=>{const ph=h.devStart(5);advance(1/30);return {ph,snap:h.dev.snapshot()};};
-  const {ph,snap}=devAt(),d=compare(cap.natural[5],snap,5,.04).filter(x=>!/^(chapter5\.C\.(t|pt|h|minute|lastEvent)|chapter5\.state\.(t|h|clock|where\.(e|n))|game\.clock)/.test(x[0]))// (where.e/n mirror the player's position, which far() checks like every inherited position),f=far(cap.natural[5],snap);
+  const {ph,snap}=devAt(),d=compare(cap.natural[5],snap,5,.04).filter(x=>!/^(chapter5\.C\.(t|pt|h|minute|lastEvent)|chapter5\.state\.(t|h|clock|where\.(e|n))|game\.clock)/.test(x[0])),f=far(cap.natural[5],snap);// (where.e/n mirror the player's position, which far() checks like every inherited position)
   check(`DEV start at Chapter Five (phase ${ph}): the same state as arriving from Chapter Four's end card (${d.length} differences)`,()=>{assert.deepEqual(d,[],JSON.stringify(d.slice(0,12)));assert.deepEqual(f,[]);});
   const clean5=devAt().snap,sw=[];for(const n of [5,1,5,4,5,0,3,5]){const s=(n===5?devAt().snap:(h.devStart(n),h.dev.snapshot()));if(n===5){const dd=strict(clean5,s,5);if(dd.length)sw.push({n,d:dd.slice(0,6)});}}
   check('DEV switching 5→1→5→4→5→0→3→5 in one session: every Chapter Five start identical to a clean one',()=>assert.deepEqual(sw,[],JSON.stringify(sw)));metrics['chapter5 dev']={differences:d.length,switchingLeaks:sw.length};}

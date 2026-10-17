@@ -542,7 +542,7 @@ export function buildTown(W){
  // trees, the water tower. All rough and far.
  {const rnd=seeded(77),house=(u,v,rot,c)=>{const w=8+rnd()*3,d=8+rnd()*2,two=rnd()<.5,roof=[0x4d4a48,0x5b534d,0x46505a,0x635a52][Math.floor(rnd()*4)];
    // Preserve the accepted lot/tree random stream while improving only each house.
-   for(let i=0;i<(two?5:2);i++)rnd();{const q=TW(u,v);if(W.pine?.inside(q.x,q.z,9)||Math.abs(u)<15)return;}backdropHouse(W,far,{u,v,rot,w,d,two,c,roof});};// (Chapter Five: Mill Street goes on north between them)
+   for(let i=0;i<(two?5:2);i++)rnd();{const q=TW(u,v);if(W.pine?.inside(q.x,q.z,9)||(v>0&&Math.abs(u)<15))return;}backdropHouse(W,far,{u,v,rot,w,d,two,c,roof});};// (Chapter Five: Mill Street goes on north between them)
   for(let u=-60;u<300;u+=16+rnd()*6){for(const [v0,rot] of [[94,Math.PI],[118,0],[-80,0],[-104,Math.PI]]){if(rnd()<.18)continue;house(u,v0+(rnd()-.5)*4,rot+(rnd()-.5)*.1,HOUSE_WALLS[Math.floor(rnd()*HOUSE_WALLS.length)]);}}
   for(let k=0;k<160;k++){const u=-120+rnd()*520,v=(rnd()<.5?1:-1)*(76+rnd()*120);if(Math.abs(v)<80&&u>-80&&u<290)continue;const q=TW(u,v),tg=at(far,u,landY(q.x,q.z),v,rnd()*6);veg.build(tg,rnd,{size:1+rnd()*.8,kind:rnd()<.3?'pine':'maple',lod:'far'});if(W.pine?.inside(q.x,q.z,3))tg.removeFromParent();}// (Pine Ridge plants its own: the stream of the others is kept)
   // the rail line past Main's west end, its old depot, and the water tower on the hill beyond

@@ -335,7 +335,8 @@ const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 const tension=createTension();
 const chOpts={scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>audio,$,renderer,tension,
  say:(who,text,time)=>say(who,text,time),player:()=>playerState(),roam,setDate:html=>{$('date').innerHTML=html;},finish:()=>finish('chapter'),fade:v=>{fade=v;$('fade').style.opacity=v;},
- placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},setSpill:k=>{foot.spillLevel=k;},playerLight:foot.light,memory:null,
+ placePlayer,nightRendering,flashShadow,giveFlashlight:()=>foot.give(),attachFlashlight:on=>{if(on&&foot.light.parent)return;foot.attach(on);},// (just the flashlight's lights: Chapter Five's camp is lit by day rendering's sun)
+ setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},setSpill:k=>{foot.spillLevel=k;},playerLight:foot.light,memory:null,
  foot,self,shoot:(o2)=>shoot(o2),readPixels:(t,w,h)=>readPixels(t,w,h)};
 const chapter=createChapter1(chOpts);
 // Chapter Two picks up seconds after the first one stops, with the same people, systems and night,

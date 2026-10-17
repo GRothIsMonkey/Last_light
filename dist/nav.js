@@ -57,12 +57,12 @@ export function createNav(world){
  // Chapter Five: past downtown's north edge, Mill Street goes on as the Old Reservoir Road to Pine Ridge (pine-plan.js),
  // which answers for itself wherever the town is open.
  const PN=world.pine?.box?pineNav():null;
- let lastU2=40,townOpen=false;// (only Chapter Four opens the road out of the neighborhood: earlier chapters' world ends where it did)
+ let lastU2=40,townOpen=false,pineOpen=false;// (only Chapter Four opens the road out of the neighborhood: earlier chapters' world ends where it did)
  let lastU=40,lastD=1136;
  function locate(x,z){if(room&&room.inside(x,z))return {street:'room',d:0,lat:0};
   if(DZ&&x>DB.x0&&x<DB.x1&&z>DB.z0&&z<DB.z1){const q=DZ.project(x,z);if(q&&q.s>=0&&q.s<=DZ.len+.5&&Math.abs(q.t)<DZ.sizeAt(Math.max(0,q.s)).w/2+.02)return {street:'drain',s:q.s,t:q.t,q,d:0,lat:0};}
   if(WZ&&x>WZ.box.x0&&WZ.inside(x,z)){const w=WN.where(x,z);return {street:'woods',s:w.q?.s,t:w.q?.t,w,d:0,lat:0};}
-  if(townOpen&&PN&&x>PN.box.x0&&x<PN.box.x1&&z>PN.box.z0&&z<PN.box.z1){const w=PN.where(x,z);if(w)return {street:'pine',w,d:0,lat:0};}
+  if(townOpen&&pineOpen&&PN&&x>PN.box.x0&&x<PN.box.x1&&z>PN.box.z0&&z<PN.box.z1){const w=PN.where(x,z);if(w)return {street:'pine',w,d:0,lat:0};}
   if(townOpen&&TN&&x<TN.box.x1+1&&z<TN.box.z1+1&&x>TN.box.x0-1&&z>TN.box.z0-1){const w=TN.where(x,z);if(w)return {street:'town',w,d:0,lat:0};}
   if(townOpen&&BF2&&x>BF2.x0&&x<BF2.x1&&z>BF2.z0&&z<BF2.z1){let q=B2.project(x,z,Math.max(5,Math.min(B2.length,lastU2)));const [cx,cz,a]=B2.center(q.u);if(Math.hypot(cx+q.v*Math.cos(a)-x,cz+q.v*Math.sin(a)-z)>.25)q=B2.project(x,z,null);
    // (from just past Oak Hollow's own edge on the road and its sidewalks; farther out, lawns, from where Oak Hollow's yards end)
@@ -89,7 +89,7 @@ export function createNav(world){
  // Bikes: streets, sidewalks and curbs as before, plus whole driveways and front lawns now.
  function rideable(x,z,{lawn=true,r=.3}={}){const L=locate(x,z);if(L.street==='easement'||L.street==='room'||L.street==='drain')return false;// bikes stay on the street side of the fence, and outside the drain
   if(L.street==='woods')return WN.rideable(x,z,L.w)&&!solid(x,z,r*.6);// the old road, and the pad at its end
-  if(L.street==='town')return TN.rideable(x,z,{lawn,r},L.w);
+  if(L.street==='town'){if(townEdge(L.w))return false;return TN.rideable(x,z,{lawn,r},L.w);}
   if(L.street==='pine')return PN.rideable(x,z,{lawn,r},L.w);
   if(L.street==='side2'){const a=Math.abs(L.v),H2=J2.half;if(L.u<6)return false;if(a<=H2+XS.walk-.025)return !solid(x,z,r*.6);if(L.u>B2.length)return false;
    if(side2Drives.some(dr=>dr.contains(L.u,L.v)))return !solid(x,z,r);return lawn&&a<16&&!solid(x,z,r);}
@@ -107,7 +107,7 @@ export function createNav(world){
  // Walkers: anywhere a kid could go without climbing a fence or walking into a house.
  function walkable(x,z,{r=.28}={}){const L=locate(x,z);if(L.street==='room')return room.walkable(x,z,r);if(nearFence(x,z,r))return false;
   if(L.street==='drain')return DN.walkable(x,z,r,L.q);// (underground: the trees and posts on the hill above are not in here)
-  if(L.street==='town')return TN.walkable(x,z,{r},L.w);
+  if(L.street==='town'){if(townEdge(L.w))return false;return TN.walkable(x,z,{r},L.w);}
   if(L.street==='pine')return PN.walkable(x,z,{r},L.w);
   if(L.street==='side2'){if(L.u<6||Math.abs(L.v)>31.3)return false;if(L.u>B2.length&&Math.abs(L.v)>J2.half+XS.walk)return false;return !solid(x,z,r);}
   if(L.street==='woods')return WN.walkable(x,z,L.w)&&!solid(x,z,r*.8);
@@ -141,6 +141,10 @@ export function createNav(world){
  // A room you are inside for a while (Chapter Three: Alex's): {inside(x,z), walkable(x,z,r), floorY}; null to leave.
  function setRoom(r){room=r||null;}
  function setTown(on){townOpen=!!on;}
- return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,walkPath,setRoom,setTown,get townOpen(){return townOpen;},get room(){return room;},frame:B,junction:J,creek:C,easement:EZ,woods:WZ,woodsNav:WN,drain:DZ,drainNav:DN,pine:PN,
+ // Mill Street's road north out of town (to Pine Ridge) is open only in Chapter Five: before that the town ends past its
+ // LOCAL TRAFFIC ONLY sawhorse, where it always did.
+ function setPine(on){pineOpen=!!on;}
+ const townEdge=w=>!pineOpen&&w?.zone==='core'&&w.v>65.7&&Math.abs(w.u)<15;
+ return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,walkPath,setRoom,setTown,setPine,get townOpen(){return townOpen;},get pineOpen(){return pineOpen;},get room(){return room;},frame:B,junction:J,creek:C,easement:EZ,woods:WZ,woodsNav:WN,drain:DZ,drainNav:DN,pine:PN,
   side:(u,v)=>B.point(u,v),main:(d,lat)=>groundPoint(d,lat),town:TN,side2:B2};
 }
