@@ -6,7 +6,7 @@
 // Called from verify.mjs with the running harness; real dist/ modules.
 import assert from 'node:assert/strict';
 import {chapterThreeTools} from './chapter3-sim.mjs';
-import {PW,PL,SPOT,BLD,ROADS,DOCKS} from '../dist/pine-plan.js';
+import {PW,PL,SPOT,BLD,ROADS,DOCKS,SOLIDS} from '../dist/pine-plan.js';
 
 export function chapterFiveTools(T){
  const X=chapterThreeTools(T),{h,press,release,tap}=T,{until,wait,me,faceTo,walkTo,go}=X;
@@ -185,7 +185,7 @@ export async function runChapterFiveChecks(T,cap){
  for(const sec of A5.SECTIONS){let r;try{h.jump(sec);advance(.2);const ph0=S().phase;until(()=>false,2.5);r={ok:true,phase:ph0,phase2:S().phase,gap:+gap().toFixed(1),finite:X.companionsFinite(),boys:boys().length};}catch(e){r={ok:false,err:String(e).slice(0,300)};}jumps[sec]=r;}
  check(`Chapter Five: every one of its ${A5.SECTIONS.length} jumps starts without an error, Jamie and Sam with you`,()=>{const bad=Object.entries(jumps).filter(([k,r])=>!r.ok||!r.finite||r.boys!==2||(r.gap>14&&!/^(chapter5-start|c5-garage|c5-departure)$/.test(k)));assert.deepEqual(bad,[]);});
  // a jump (Continue, DEV) into the ride, the park or the set piece: the beat's own lines and objective; the flashlight's lights in the scene
- const obj={};for(const sec of ['c5-ride','c5-race','c5-crest','c5-arrival','c5-split','c5-compromise','c5-camp']){h.jump(sec);advance(.2);until(()=>!!S().objective,20);obj[sec]={objective:S().objective||'',flash:!!h.foot.light.parent&&!!h.foot.spill.parent};}
+ const obj={};for(const sec of ['c5-ride','c5-race','c5-crest','c5-arrival','c5-camp-gate','c5-split','c5-compromise','c5-camp']){h.jump(sec);advance(.2);until(()=>!!S().objective,20);obj[sec]={objective:S().objective||'',flash:!!h.foot.light.parent&&!!h.foot.spill.parent};}
  check('Chapter Five: a jump into the ride, the park or the set piece shows its objective; the flashlight’s two lights are in the scene',()=>{const bad=Object.entries(obj).filter(([k,v])=>!v.objective||!v.flash);assert.deepEqual(bad,[],JSON.stringify(obj));});
  for(const [k,a] of Object.entries(A5.ALIAS)){h.jump(k);advance(.1);check(`Chapter Five alias ${k} → ${a}`,()=>assert.ok(S().phase&&A5.owns(S().phase)));}
  // Continue: every checkpoint label exists and returns there
@@ -203,14 +203,23 @@ export async function runChapterFiveChecks(T,cap){
  // and in time, whatever you do, they come back together (nobody is lost)
  h.jump('c5-split');advance(.2);until(()=>C5().split.resolved,80);check('Chapter Five set piece: in time the two of them come back together on their own (Sam’s compromise)',()=>assert.ok(C5().split.resolved));
  // ---- fallbacks: a player who idles everywhere is carried on, never stuck ------------------------------------------------------
- const idle={};for(const sec of ['c5-park','c5-stones','c5-dock-memory','c5-sign-search','c5-trail-map','c5-gate-decision','c5-gravel-road','c5-camp','c5-golden-hour','c5-owl','c5-three-lights','c5-split','c5-window','c5-run','c5-aftermath','c5-second-discovery','chapter5-end']){
-  h.jump(sec);advance(.3);const ph=S().phase;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended',sec==='c5-park'?260:sec==='c5-camp'?600:420);idle[sec]={from:ph,to:S().phase,moved,ended:h.snapshot.state==='ended'};}
- check('Chapter Five fallbacks: standing still, every scene moves on in time (the boys pull you along)',()=>{const stuck=Object.entries(idle).filter(([k,v])=>!v.moved);assert.deepEqual(stuck,[]);});
+ const idle={};for(const sec of ['c5-park','c5-stones','c5-dock-memory','c5-sign-search','c5-trail-map','c5-gate-decision','c5-gravel-road','c5-camp','c5-golden-hour','c5-owl','c5-three-lights','c5-split','c5-window','c5-run','c5-route-c','c5-aftermath','c5-second-discovery','chapter5-end']){
+  h.jump(sec);advance(.3);const ph=S().phase;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended',sec==='c5-park'?260:sec==='c5-camp'?600:420);
+  // (and wherever a fallback's fade put the three of you, it is ground you can walk on)
+  wait(1.5);const p=me(),stand=[p,...boys().map(c=>({x:c.px,z:c.pz}))].map(q=>!!h.nav.walkable(q.x,q.z,{r:.25}));
+  idle[sec]={from:ph,to:S().phase,moved,ended:h.snapshot.state==='ended',stand:A5.C.pose||h.snapshot.state==='ended'||stand.every(Boolean)};}
+ check('Chapter Five fallbacks: standing still, every scene moves on in time (the boys pull you along), and nobody is left where they cannot walk',()=>{const stuck=Object.entries(idle).filter(([k,v])=>!v.moved||!v.stand);assert.deepEqual(stuck,[]);});
  metrics['chapter5 idle fallbacks']=Object.fromEntries(Object.entries(idle).map(([k,v])=>[k,v.from+'→'+(v.ended?'end':v.to)]));
+ // ---- the garage: after "Ride to Pine Ridge." you have a minute to ride out before the fade carries you ----
+ {h.jump('c5-departure');advance(.3);until(()=>A5.C.flags.leave,120);const t0=h.snapshot.clock;until(()=>A5.C.flags.toRoad,120);const gap=h.snapshot.clock-t0;
+  check(`Chapter Five garage: standing still after “Ride to Pine Ridge.”, the ride out comes ${gap.toFixed(0)} s later (time to ride out first)`,()=>assert.ok(gap>55&&gap<70,gap));}
  // ---- the campfire: S stands you up while they talk, F sits you back down ----
  {const {tap}=T;h.jump('c5-campfire');advance(.3);X.act('c5-fire',6);until(()=>A5.C.pose?.w>.95,5);const sat=!!A5.C.pose;tap('KeyS');until(()=>!A5.C.pose,4);const stood=!A5.C.pose&&!h.night.roam.walkLock;
   wait(1);const talking=S().phase==='d5-fire'&&(!!S().line||S().queue.length>0);X.act('c5-resit',6);until(()=>A5.C.pose?.w>.95,5);const again=!!A5.C.pose;
-  check('Chapter Five campfire: sitting is yours to undo (S stands you up, the talk goes on, F sits you back down)',()=>{assert.ok(sat&&stood&&talking&&again,JSON.stringify({sat,stood,talking,again}));});}
+  // stand up again and walk off: the three hours still go by with you on the log (and in the picture from the trees)
+  tap('KeyS');until(()=>!A5.C.pose,4);X.goEN(SPOT.campfire[0]+12,SPOT.campfire[1]-8,{r:1,max:20});until(()=>!!A5.C.lapse,120);wait(1.5);const seat=X.Q5(...SOLIDS.find(q=>q.kind==='log').c),pp=me();
+  const lapseSeated=!!A5.C.lapse&&!!A5.C.pose&&Math.hypot(pp.x-seat.x,pp.z-seat.z)<1.5;
+  check('Chapter Five campfire: sitting is yours to undo (S stands you up, the talk goes on, F sits you back down; the three hours pass with you on the log)',()=>{assert.ok(sat&&stood&&talking&&again&&lapseSeated,JSON.stringify({sat,stood,talking,again,lapseSeated}));});}
  // ---- Chapter Four keeps its north edge: Mill Street past the sawhorse opens only in Chapter Five ------------------------------
  {const {TW}=await import('../dist/town-plan.js'),probe=()=>[70,78,84].map(v=>{const q=TW(0,v);return {v,walk:!!h.nav.walkable(q.x,q.z),ride:!!h.nav.rideable(q.x,q.z)};});
   h.jump('c4-main-street');advance(.5);const ch4=probe();h.jump('c5-ride');advance(.5);const ch5=probe();
