@@ -4,7 +4,8 @@ Chromium (SwiftShader), nothing else running, 1280×720.
 
 - `probe-starting-commit.log`: the starting commit `c9647772`.
 - `probe-before-fixes.log`: this branch before the memory fixes.
-- `probe-after-fixes.log`: this branch after them.
+- `probe-after-fixes.log`: this branch after the first of them.
+- `probe-final.log`: the final runtime (`71f5539`), after all of them.
 
 For each step the probe records the following:
 - the JS heap after a forced GC;

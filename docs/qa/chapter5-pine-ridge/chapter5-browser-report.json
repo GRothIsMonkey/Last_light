@@ -1,0 +1,1080 @@
+{
+  "walkthrough": {
+    "scope": "continuous: Chapter Four end card → real click → Chapter Five played with inputs to its end card (one page call per segment, no jump between them)",
+    "route": "A",
+    "choice": "sam",
+    "gameMinutes": 24.43,
+    "wallSeconds": 330,
+    "segments": [
+      {
+        "segment": "start",
+        "phase": "d5-stones",
+        "clock": 3.25,
+        "heapMB": 1095,
+        "wallSeconds": 36
+      },
+      {
+        "segment": "stones",
+        "phase": "d5-sign",
+        "clock": 7.04,
+        "heapMB": 1095,
+        "wallSeconds": 54
+      },
+      {
+        "segment": "sign",
+        "phase": "d5-road",
+        "clock": 9.36,
+        "heapMB": 1096,
+        "wallSeconds": 28
+      },
+      {
+        "segment": "road",
+        "phase": "d5-camp",
+        "clock": 10.26,
+        "heapMB": 1096,
+        "wallSeconds": 24
+      },
+      {
+        "segment": "camp",
+        "phase": "e5-dusk",
+        "clock": 14.57,
+        "heapMB": 1098,
+        "wallSeconds": 46
+      },
+      {
+        "segment": "dusk",
+        "phase": "e5-lights",
+        "clock": 16.53,
+        "heapMB": 1098,
+        "wallSeconds": 45
+      },
+      {
+        "segment": "lights",
+        "phase": "n5-split",
+        "clock": 17.19,
+        "heapMB": 1098,
+        "wallSeconds": 22
+      },
+      {
+        "segment": "split",
+        "phase": "n5-run",
+        "clock": 18.18,
+        "heapMB": 1098,
+        "wallSeconds": 24
+      },
+      {
+        "segment": "run",
+        "phase": "n5-end",
+        "clock": 24.43,
+        "heapMB": 1099,
+        "wallSeconds": 37
+      }
+    ],
+    "metrics": {
+      "chapter5 race": {
+        "winner": "jamie",
+        "seconds": 48.5
+      },
+      "chapter5 stones": {
+        "you": [
+          7,
+          7,
+          7
+        ],
+        "best": {
+          "you": 7,
+          "jamie": 4,
+          "sam": 6
+        }
+      },
+      "chapter5 three lights seconds": 26.7,
+      "chapter5 split": {
+        "resolvedAt": 25,
+        "how": "together",
+        "maxSpread": 12.6,
+        "pullAfterLookingAtOwl": {
+          "t": 6.8,
+          "drift": {
+            "jamie": 0,
+            "sam": 1.52
+          }
+        }
+      },
+      "chapter5 escape seconds": 89.1,
+      "chapter5 natural minutes": 6.25,
+      "chapter5 lines spoken": 42,
+      "chapter5 photos on the camera": 16,
+      "chapter5 guard": {
+        "released": 0,
+        "unstuck": 0,
+        "recovered": 0,
+        "madeWay": 4
+      },
+      "chapter5 sounds": {
+        "click": 15,
+        "curb": 1,
+        "chain": 1,
+        "pebble": 41,
+        "splash": 9,
+        "creak": 6,
+        "thud": 1,
+        "oldBell": 1,
+        "doorSlam": 7,
+        "fence": 1
+      }
+    },
+    "fails": []
+  },
+  "dev": [
+    {
+      "id": "chapter5",
+      "label": "Chapter Five Start",
+      "phase": "c5-black",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-garage",
+      "label": "Sam’s Garage (packing)",
+      "phase": "d5-garage",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-departure",
+      "label": "Departure (Jamie’s sock)",
+      "phase": "d5-garage",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-ride",
+      "label": "The Old Reservoir Road",
+      "phase": "d5-ride",
+      "state": "c1-ride",
+      "boys": 2
+    },
+    {
+      "id": "c5-race",
+      "label": "The Race (Jamie)",
+      "phase": "d5-ride",
+      "state": "c1-ride",
+      "boys": 2
+    },
+    {
+      "id": "c5-crest",
+      "label": "Top of the Ridge (first view)",
+      "phase": "d5-ride",
+      "state": "c1-ride",
+      "boys": 2
+    },
+    {
+      "id": "c5-arrival",
+      "label": "Pine Ridge Arrival (the new sign)",
+      "phase": "d5-park",
+      "state": "c1-ride",
+      "boys": 2
+    },
+    {
+      "id": "c5-park",
+      "label": "The Park (the bike rack)",
+      "phase": "d5-park",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-stones",
+      "label": "Skipping Stones",
+      "phase": "d5-stones",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-dock-memory",
+      "label": "The Dock (Alex and the shoe)",
+      "phase": "d5-dock",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-sign-search",
+      "label": "Find the Place in the Picture",
+      "phase": "d5-sign",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-photo-match",
+      "label": "Photo Match (the old sign)",
+      "phase": "d5-sign",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-trail-map",
+      "label": "The Trail Map",
+      "phase": "d5-map",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-gate-decision",
+      "label": "The Yellow Gate (the decision)",
+      "phase": "d5-gate",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-gravel-road",
+      "label": "The Road to the Camp",
+      "phase": "d5-road",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-camp-gate",
+      "label": "Camp Whippoorwill (the arch)",
+      "phase": "d5-road",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-camp",
+      "label": "Camp Exploration",
+      "phase": "d5-camp",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-office",
+      "label": "The Office",
+      "phase": "d5-camp",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-register",
+      "label": "The 1991 Register (the Whitcomb search)",
+      "phase": "d5-camp",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-lodge",
+      "label": "The Lodge",
+      "phase": "d5-camp",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-pantry",
+      "label": "The Pantry (someone has been here)",
+      "phase": "d5-camp",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-cabins",
+      "label": "The Cabins (Sam’s batteries)",
+      "phase": "d5-camp",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-campfire",
+      "label": "The Campfire (the quiet scene)",
+      "phase": "d5-camp",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-golden-hour",
+      "label": "Golden Hour (Wren’s window)",
+      "phase": "e5-dusk",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-owl",
+      "label": "Owl (Alex’s shirt)",
+      "phase": "e5-dusk",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-calling",
+      "label": "Calling for Alex (a light in the trees)",
+      "phase": "e5-call",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-three-lights",
+      "label": "Three Lights / the Creature",
+      "phase": "e5-lights",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-split",
+      "label": "The Camp That Wants Them Apart",
+      "phase": "n5-split",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-compromise",
+      "label": "Disagreement and Compromise",
+      "phase": "n5-split",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-window",
+      "label": "Owl From the Porch (the double)",
+      "phase": "n5-split",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-run",
+      "label": "Run (escape start)",
+      "phase": "n5-run",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-route-a",
+      "label": "Escape Route A (the road)",
+      "phase": "n5-run",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-route-c",
+      "label": "Escape Route C (the dam)",
+      "phase": "n5-run",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-boundary",
+      "label": "Camp Boundary (the gate)",
+      "phase": "n5-run",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-aftermath",
+      "label": "Aftermath (the lamp in the lot)",
+      "phase": "n5-out",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "c5-second-discovery",
+      "label": "The Last Picture",
+      "phase": "n5-final",
+      "state": "c1-walk",
+      "boys": 2
+    },
+    {
+      "id": "chapter5-end",
+      "label": "Chapter Five Ending (one light)",
+      "phase": "n5-final",
+      "state": "c1-walk",
+      "boys": 2
+    }
+  ],
+  "browser": "141.0.7390.37",
+  "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "triangles": {
+    "min": 147049,
+    "max": 690757
+  },
+  "renderLimitation": "Software rendering (SwiftShader): render counts are real, frame times are not a real-GPU measurement.",
+  "audio": "Sound off; audio events are exercised, not listened to.",
+  "runtimeHashes": {
+    "dist/THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
+    "dist/adult-art.js": "07ab447ff682d430620a073814491b3a44e0f7c6603b685048e2b4c0ff1868a5",
+    "dist/alex-camera.js": "1ddd5182b375e1c3f71499f9d106b7395ad00e1fe813ea09a3c66ac44fdd0ba6",
+    "dist/alex-room.js": "f14a81330045bc8c1f4c91d25e8e949dad8d5f9b29c2178efd5c1fbfb94df686",
+    "dist/ambient.js": "5b2b3919a4a7fe3c5ec77ca38b265088cf7c219065d10c9257f65786c08deec3",
+    "dist/art-surfaces.js": "d34973c059b7af63b1f1c7b9668966751e0141e17aecb01e0d503ae4982de2c0",
+    "dist/audio.js": "f47e4a8bbf9aa92c9125119471f054b5a2f31d774af3650751e08cc85cc099e0",
+    "dist/background.js": "b25f27519d20f5ff66816169fe795deed74acdb625e4c52437995c850afb0a5a",
+    "dist/captions.js": "6e31b76593a62d1362cf00259ff5a75ac3bcfb33a1f70db0d22280e1e1643a99",
+    "dist/cast.js": "bfc977fc428a3860f648ad4f40a7eb6bd2e5424b3bdef2a1ebdbaf83e11c3ff9",
+    "dist/chapter1.js": "5aae6471ad0ad240f241c28a5ffb1c949af20a2d7e53ecd42a921ca6865e8f2e",
+    "dist/chapter2.js": "01b61485854de3cc30f9f5d56e649bd90ff6e9234300a77ef09435b0cdba137f",
+    "dist/chapter3-art.js": "f990c6985b2932b25152a9722e3c449729de57e3b84c79495ad769bf43c4ba91",
+    "dist/chapter3-props.js": "4ba5446b792d82adf49f7a0f055035e7310378f28c94f28d668bbdad55bb2b6f",
+    "dist/chapter3.js": "f1247c3f0b59b402122d6c8f9dea624b901c57b73f98592d450e751a6f5ee385",
+    "dist/chapter4-art.js": "575a8cbd41a2cd3080816c09780eb3a3d6202db0d93f415e1e4464595db6ada1",
+    "dist/chapter4-surfaces.js": "77dd32b2f8f678097cc1bab69ca41e5772e972ed0cc2d3e3590d4f81b12ead63",
+    "dist/chapter4-textures.js": "bc4c492d15332fb2f4a7524822b448c300311473a5f77c7c8716f338aa4723d0",
+    "dist/chapter4.js": "117ac75708c7716e6702b87d2477d7bb211f72aec803af6faae60a2631e44661",
+    "dist/chapter5-presence.js": "92844236641d2366889d40ea7a8465de307dca7870d8d0be3e910c7c90ad4678",
+    "dist/chapter5.js": "1a66f2d3b5024934f57331e98d66c7499ffcef271b295af6ad9e39ae5904184f",
+    "dist/companions.js": "d1ac29a271e1e5ccf5fc432817985dfaa3043d3a4222ef678dfe4056ff594e9b",
+    "dist/creature-asset.js": "cfd431397910ec8b899c38fff6d498299cc631c22e735aeb3ea8b811b8bf2be4",
+    "dist/creature.js": "664bd15c7d80d36cf3c6c46767005137c0378489f3107b4cb8e2cc27a0321798",
+    "dist/creek.js": "f5cc5a7867f4c343e0ccf21818cd7bfff7a00ff2ea0c90bbed7b985df6889f0c",
+    "dist/dev-chapter-history.js": "5e1e19c8d38f40160bbd0b05ebb649e147ce69b92fae7124aeeeabc9a0ce74a9",
+    "dist/dev-chapters.js": "c1fbde3a3b7f2d8c5aa14642d1dea1d511609e1b93bcf05864925315afa5416b",
+    "dist/drain.js": "b17b28ccb702c011cd1d46dcea7b92a5f0f39d5f1ca1f12004e861f72e6c8823",
+    "dist/easement.js": "f47b2b0759848d58b1d5d07c35b725524aabf45ee9171c777c81ac424f67451d",
+    "dist/ending.js": "9b8242d059f65b4826f5ed4ff2fc4b053aad37ac0ff2059b81eac0592397c14a",
+    "dist/far-land.js": "ac3cf062a9fd984d95808e8ea636b3ecc59c263ce57b11f6d2ea867d1fb9e4cc",
+    "dist/footage.js": "5caa5cf3de34350c3912334e495396e26087cae46c6e9ae161a4b747c803686d",
+    "dist/friends.js": "89e91d18af47e918491de8188e23ccf0f4a297894e6200fda9ddcdb16dbdee2a",
+    "dist/furniture.js": "630b5dceb9da07cbe2af49c6826615e98caccfd404d0d22a1a46b4fea92fe0dc",
+    "dist/game.js": "384ef76f426b7d8f7fef886ef8c44de6281e532169eff7bcee779f6e106bb30b",
+    "dist/houses.js": "7dc3230d0f6924da908b0b38a3041bb174522b087a14dc0f92dcc94d6d1c7dfc",
+    "dist/index.html": "e015ea4fa1515c7d91949549934b6af640da0561913ec69da2ffe7f9ec5f8753",
+    "dist/interactions.js": "d1f8b6e0859fb439d09cf3d634013a34c52242684a493be8892e9924bf65ccc1",
+    "dist/kit.js": "6ba15469732e2bd1f9ce798f97cd1650fec57973b63743eb5c8761fca26e14bd",
+    "dist/layout.js": "fc7e6ee21e8cf1b6ff9c8f9b888bcee57b7f2422ad3a2b27c13d57798414099c",
+    "dist/materials.js": "3c48c0da355812a59fa972fa0ae06a7f375a6ab20e833f4cb11286ee8837f220",
+    "dist/memory.js": "76498323db63e152db35e36f11b44b01543da4d5cdf44bdd3a1300ea7c1be5ab",
+    "dist/nav.js": "fe3d26efb649897158480ac1e675aae6aab058c083226d46769e0b9aabc0e0d0",
+    "dist/nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
+    "dist/old-bike.js": "df1f0e9344338cb74ac00bcae7904f1e312ee2d93f450cda21772811e81a7605",
+    "dist/on-foot.js": "d9a33013a86d72aefd77ec59465efb6ba2dfb5f23d4b12027b9de8f12faa3866",
+    "dist/palette.js": "52a0632bb1e9c5363b8ecfbc34983d037ab09bd9f1018f52d32d1b0ccada6a65",
+    "dist/patrol-art.js": "9e3e70672fd5f9e320daadc09e6c6effc796c1bac0bdd62134d0267183534d76",
+    "dist/people.js": "19e40d3045863ef4171f7c0de1ad3677565aa892efe2ed6239a6c2cf2de73f88",
+    "dist/pine-art.js": "f329d00edabc6dd3f7a3d7dd7a89df6fdb0c9c5e9dc98f2c7ad88ea16c90ecbc",
+    "dist/pine-build.js": "1ce84d71d146a617413526c8d3827796e6c19ca6b612ce2c088518652e5b0e22",
+    "dist/pine-camp.js": "198292e71678a0a501df850ae09a83f6c7b5a19083189d2cd20abd85b29c3d72",
+    "dist/pine-plan.js": "76e292b596d990f08be45b0b5e0956c81b0a872891883880322d94c5c38130f5",
+    "dist/police.js": "4c2acdbb1bdb3935ee576b562f9be0dd4342abfe294e6cd4eea7de1766d33091",
+    "dist/presence.js": "377f49d357583665ee266a1cfad2187ed349890e0e8df51cb3280dc4991b5980",
+    "dist/props.js": "ed8786554db22138ffd825e6920cf260fa9fff0a270e2849829e9867a8f8aebe",
+    "dist/ride-contact.js": "c6a3af3649f04468258914e03c96ee72828d730f0387fe4a3db10de87cc25f42",
+    "dist/rig.js": "0ea645750eae57f550b5e0609876de1791083af5df76e4a6e9d23e51aeb6886d",
+    "dist/route.js": "f17de16440dbcb6101a0ea0b483d22ef55663934398613ab932fcf030412b3f5",
+    "dist/story.js": "c1f2bfccdace50fdb27d65786a86028b83d4e7c84ea9c8254fdd24ef361958e0",
+    "dist/streets.js": "2b0e58223f14706a3fe4c53facb40610dc45aa3e7389098a7a4d393686b6a74d",
+    "dist/style.css": "0c1ecc8056b4836c34844424bb3dd02053b05a3583b8ca49ea91f0ac92fc78f5",
+    "dist/tension.js": "7b0de410dc3b848232dfb4c49dff6dcb85c1dc1c1057e1e4b998993bc3806e04",
+    "dist/terrain.js": "ecc674f1b9d847c7d6e992b65b287cd65a425b237ee40c540fa4e2ea364d6902",
+    "dist/three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
+    "dist/town-art.js": "eac14655bed1fd41ab477249295a99e45f001e51e36b19ffad5e69d60e4586e5",
+    "dist/town-build.js": "75cc169635edc0c076433b36d0b694364a3e7c61837d0176d21a76010ea2530e",
+    "dist/town-ground.js": "d1fb84bfb9d026ad65f3baeb53a3658e94642ec5163dea85167963ff81eee1d9",
+    "dist/town-houses.js": "f007e67fecc1c57647352e37e616047a7c8dbdfeda865bdfa3f4d1241a43810a",
+    "dist/town-life.js": "eceb2453af4f94731796ebe488c0df435e659add87b8a3935737b9a9ff944fa5",
+    "dist/town-plan.js": "a222b48d6d8d6d1d4b4885891b715970aaff4f235056ba44302f0127465adcd5",
+    "dist/town-props.js": "8b1abf9f3a89a7e1bcec3b5764a6d76a90d468bc00c64dd96686450bae5d5c56",
+    "dist/town-repair2.js": "1394bdb24c3c8e9ce1dc062814470f3c62192afb10c072a01d69b3a4c769b8c9",
+    "dist/ui.js": "342854a8172cbb454e063542af0c6484b4f5739def91e1f9f033a9237d9b2019",
+    "dist/vegetation.js": "7458d0e1523f0c6d3a65614f0082704dd2510cecfca6365014d9bd9ae29f08de",
+    "dist/woods.js": "e3ff8a8531f865f4448c27c4da87a6187150d02f6cb0b9e3819b071a4f5e9c4b",
+    "dist/world.js": "faacd14d312b3c18c5ee0034d2a330047eedd9fe321a15a8030aa0af96009a15"
+  },
+  "passed": 33,
+  "checks": [
+    "Chapter Four ends on its card, with a \"Chapter Five\" button",
+    "the button opens Chapter Five on its card over black",
+    "Chapter Five: the flashlight’s lights are in the scene (the beam lights what it points at)",
+    "Chromium: the chapter opens on its card (Chapter Five, The Place in the Picture)",
+    "Chromium: Sam's garage, the next afternoon (Wednesday, August 24)",
+    "Chromium: packing, Jamie's bag (one sock), what happened downtown, and the ride",
+    "Chromium: out of town, on Mill Street past the sawhorse (the Old Reservoir Road)",
+    "Chromium: the race to the top of the ridge has a winner",
+    "Chromium: Pine Ridge Park (the new sign is not the one in the picture)",
+    "Chromium: the bikes locked to the rack (no riding off from here on)",
+    "Chromium: skipping stones: three throws each, Sam's six",
+    "Chromium: the dock: Alex, and the shoe he named Gary",
+    "Chromium: the picture matched, by looking, at the old lot (camera up on the lead, at the vantage)",
+    "Chromium: the yellow gate: a disagreement, and your call (sam)",
+    "Chromium: Camp Whippoorwill: the arch, a flashlight each",
+    "Chromium: the office: the 1991 register (August 24, twenty years ago) and the search map, photographed",
+    "Chromium: the lodge: cans gone from the dust, recently",
+    "Chromium: Bluejay, a dead flashlight, and Sam's batteries without being asked",
+    "Chromium: the campfire: the quiet scene, and three hours gone in ten minutes",
+    "Chromium: Owl: Alex's gold shirt, wet, and JSA cut fresh into the wall",
+    "Chromium: they call his name; a light in the trees goes away and out; the shirt in Sam's bag",
+    "Chromium: three lights come in at the gate, walk where you walked, stop, turn, go out; the creature runs from them",
+    "Chromium: at night the camp pulls at whichever friend you leave; together, Sam's compromise",
+    "Chromium: Owl from the porch: a second Jamie, while Jamie is next to you; then every light at once, RUN",
+    "Chromium: the escape by route A, and the boundary: the gate swings open again; every light out at once",
+    "Chromium: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”",
+    "Chromium: on Alex's camera, a picture none of them took (the three of them at the fire, 6:53)",
+    "Chromium: the last image (one light across the water), then the end card: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six",
+    "Chromium: Jamie and Sam never left: farthest 14.0 m ({\"phase\":\"n5-final\",\"where\":{\"e\":-130.4,\"n\":315.9,\"street\":\"pine\"}}); nothing non-finite",
+    "the walkthrough reaches Chapter Five’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six",
+    "DEV: all 37 Chapter Five scenes start from the selector (real clicks) in a Chapter Five phase, Jamie and Sam there",
+    "no JavaScript errors",
+    "no WebGL/shader warnings"
+  ],
+  "failed": [],
+  "frames": [
+    {
+      "name": "00-chapter-four-end-card",
+      "calls": 143,
+      "triangles": 147049,
+      "phase": "n4-end",
+      "time": "AUGUST 23, 2011  8:36 PM",
+      "caption": "YOU“Of what?”"
+    },
+    {
+      "name": "01-chapter-five-card",
+      "calls": 235,
+      "triangles": 445329,
+      "phase": "c5-black",
+      "time": "AUGUST 21, 2011  7:42 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "02-the-chapter-opens-on-its-card-chapter-five-the-place-in-the-picture",
+      "phase": "c5-black",
+      "time": "AUGUST 21, 2011  7:42 PM",
+      "caption": "There’s still a little light.",
+      "calls": 235,
+      "triangles": 445329,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-sam-s-garage-the-next-afternoon-wednesday-august-24",
+      "phase": "d5-garage",
+      "time": "AUGUST 24, 2011  1:53 PM",
+      "caption": "SAM“Come help me. I’ve got a list.”",
+      "calls": 235,
+      "triangles": 445329,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-jamie-bag-one-sock",
+      "phase": "d5-garage",
+      "time": "AUGUST 24, 2011  1:55 PM",
+      "caption": "JAMIE“Yeah, I packed—”",
+      "calls": 157,
+      "triangles": 325471,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-packing-jamie-s-bag-one-sock-what-happened-downtown-and-the-ride",
+      "phase": "d5-garage",
+      "time": "AUGUST 24, 2011  1:57 PM",
+      "caption": "SAM“…I know. I packed, didn’t I?”",
+      "calls": 250,
+      "triangles": 588348,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "06-out-of-town-on-mill-street-past-the-sawhorse-the-old-reservoir-road",
+      "phase": "d5-ride",
+      "time": "AUGUST 24, 2011  2:25 PM",
+      "caption": "JAMIE“Race you to the top. Loser buys slushies.”",
+      "calls": 287,
+      "triangles": 321554,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "07-the-race-to-the-top-of-the-ridge-has-a-winner",
+      "phase": "d5-ride",
+      "time": "AUGUST 24, 2011  2:28 PM",
+      "caption": "JAMIE“It’s bigger than I remember.”",
+      "calls": 400,
+      "triangles": 654137,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "08-pine-ridge-park-the-new-sign-is-not-the-one-in-the-picture",
+      "phase": "d5-park",
+      "time": "AUGUST 24, 2011  2:32 PM",
+      "caption": "SAM“Then it’s an old picture. Or an old sign.”",
+      "calls": 257,
+      "triangles": 610318,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "09-the-bikes-locked-to-the-rack-no-riding-off-from-here-on",
+      "phase": "d5-stones",
+      "time": "AUGUST 24, 2011  2:34 PM",
+      "caption": "JAMIE“Bet I can skip a rock farther than both of you.”",
+      "calls": 342,
+      "triangles": 663387,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "10-skipping-stones-three-throws-each-sam-s-six",
+      "phase": "d5-stones",
+      "time": "AUGUST 24, 2011  2:38 PM",
+      "caption": "SAM“…Physics.”",
+      "calls": 187,
+      "triangles": 478578,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "11-the-dock-alex-and-the-shoe-he-named-gary",
+      "phase": "d5-sign",
+      "time": "AUGUST 24, 2011  2:49 PM",
+      "caption": "SAM“Then let’s find where.”",
+      "calls": 234,
+      "triangles": 512491,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "12-the-picture-matched-by-looking-at-the-old-lot-camera-up-on-the-lead",
+      "phase": "d5-map",
+      "time": "AUGUST 24, 2011  2:52 PM",
+      "caption": "SAM“Where does that road go?”",
+      "calls": 333,
+      "triangles": 665603,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "13-the-yellow-gate-a-disagreement-and-your-call-sam",
+      "phase": "d5-road",
+      "time": "AUGUST 24, 2011  2:58 PM",
+      "caption": "JAMIE“Deal. Can we GO now?”",
+      "calls": 343,
+      "triangles": 653778,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "14-camp-whippoorwill-the-arch-a-flashlight-each",
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:18 PM",
+      "caption": "SAM“Here. For inside.”",
+      "calls": 253,
+      "triangles": 541793,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "15-the-office-the-1991-register-august-24-twenty-years-ago-and-the-sea",
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:21 PM",
+      "caption": "SAM“Nobody followed it up.”",
+      "calls": 241,
+      "triangles": 538756,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "16-the-lodge-cans-gone-from-the-dust-recently",
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:25 PM",
+      "caption": "YOU“Somebody’s been eating here.”",
+      "calls": 156,
+      "triangles": 426667,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "17-bluejay-a-dead-flashlight-and-sam-s-batteries-without-being-asked",
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:28 PM",
+      "caption": "SAM“…I did, actually.”",
+      "calls": 176,
+      "triangles": 512889,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "18-the-campfire-the-quiet-scene-and-three-hours-gone-in-ten-minutes",
+      "phase": "e5-dusk",
+      "time": "AUGUST 24, 2011  6:52 PM",
+      "caption": "SAM“…Five minutes.”",
+      "calls": 284,
+      "triangles": 513857,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "19-owl-alex-s-gold-shirt-wet-and-jsa-cut-fresh-into-the-wall",
+      "phase": "e5-owl",
+      "time": "AUGUST 24, 2011  7:30 PM",
+      "caption": "JAMIE“And an arrow. Pointing… that way.”",
+      "calls": 110,
+      "triangles": 374906,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "20-they-call-his-name-a-light-in-the-trees-goes-away-and-out-the-shirt",
+      "phase": "e5-lights",
+      "time": "AUGUST 24, 2011  7:45 PM",
+      "caption": "SAM“That’s why we’re leaving.”",
+      "calls": 350,
+      "triangles": 663459,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "21-three-lights-come-in-at-the-gate-walk-where-you-walked-stop-turn-go",
+      "phase": "n5-split",
+      "time": "AUGUST 24, 2011  7:55 PM",
+      "caption": "SAM“They’re looking at us.”",
+      "calls": 241,
+      "triangles": 481519,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "22-at-night-the-camp-pulls-at-whichever-friend-you-leave-together-sam-",
+      "phase": "n5-split",
+      "time": "AUGUST 24, 2011  8:03 PM",
+      "caption": "SAM“That’s my mom. That’s— she’s at work. She’s at WORK.”",
+      "calls": 270,
+      "triangles": 530618,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "23-owl-from-the-porch-a-second-jamie-while-jamie-is-next-to-you-then-e",
+      "phase": "n5-run",
+      "time": "AUGUST 24, 2011  8:08 PM",
+      "caption": "SAM“RUN.”",
+      "calls": 100,
+      "triangles": 308353,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "24-the-escape-by-route-a-and-the-boundary-the-gate-swings-open-again-e",
+      "phase": "n5-out",
+      "time": "AUGUST 24, 2011  8:15 PM",
+      "caption": "SAM“Don’t look at it. Walk.”",
+      "calls": 200,
+      "triangles": 376693,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "25-the-lamp-in-the-lot-a-shaky-laugh-the-shirt-in-sam-s-bag-it-knew-we",
+      "phase": "n5-final",
+      "time": "AUGUST 24, 2011  8:28 PM",
+      "caption": "SAM“Let me see the camera. The register. I want to read it again.”",
+      "calls": 236,
+      "triangles": 383456,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "26-on-alex-s-camera-a-picture-none-of-them-took-the-three-of-them-at-t",
+      "phase": "n5-final",
+      "time": "AUGUST 24, 2011  8:28 PM",
+      "caption": "SAM“Let me see the camera. The register. I want to read it again.”",
+      "calls": 255,
+      "triangles": 384282,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "27-the-last-image-one-light-across-the-water-then-the-end-card-last-li",
+      "phase": "n5-end",
+      "time": "AUGUST 24, 2011  8:31 PM",
+      "caption": "JAMIE“Guys.”",
+      "calls": 316,
+      "triangles": 405322,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "28-jamie-and-sam-never-left-farthest-14-0-m-phase-n5-final-where-e-130",
+      "phase": "n5-end",
+      "time": "AUGUST 24, 2011  8:31 PM",
+      "caption": "JAMIE“Guys.”",
+      "calls": 316,
+      "triangles": 405322,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "99-chapter-five-end-card",
+      "calls": 316,
+      "triangles": 405322,
+      "phase": "n5-end",
+      "time": "AUGUST 24, 2011  8:31 PM",
+      "caption": "JAMIE“Guys.”"
+    },
+    {
+      "name": "dev-chapter5",
+      "calls": 235,
+      "triangles": 445329,
+      "phase": "c5-black",
+      "time": "AUGUST 21, 2011  7:42 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-garage",
+      "calls": 235,
+      "triangles": 445329,
+      "phase": "d5-garage",
+      "time": "AUGUST 24, 2011  1:54 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-departure",
+      "calls": 235,
+      "triangles": 445329,
+      "phase": "d5-garage",
+      "time": "AUGUST 24, 2011  1:54 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-ride",
+      "calls": 291,
+      "triangles": 356898,
+      "phase": "d5-ride",
+      "time": "AUGUST 24, 2011  2:25 PM",
+      "caption": "JAMIE“Race you to the top. Loser buys slushies.”"
+    },
+    {
+      "name": "dev-c5-race",
+      "calls": 287,
+      "triangles": 428544,
+      "phase": "d5-ride",
+      "time": "AUGUST 24, 2011  2:28 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-crest",
+      "calls": 324,
+      "triangles": 591546,
+      "phase": "d5-ride",
+      "time": "AUGUST 24, 2011  2:28 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-arrival",
+      "calls": 341,
+      "triangles": 690757,
+      "phase": "d5-park",
+      "time": "AUGUST 24, 2011  2:31 PM",
+      "caption": "SAM“Pine Ridge Park.”"
+    },
+    {
+      "name": "dev-c5-park",
+      "calls": 260,
+      "triangles": 606039,
+      "phase": "d5-park",
+      "time": "AUGUST 24, 2011  2:31 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-stones",
+      "calls": 260,
+      "triangles": 579312,
+      "phase": "d5-stones",
+      "time": "AUGUST 24, 2011  2:36 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-dock-memory",
+      "calls": 239,
+      "triangles": 497525,
+      "phase": "d5-dock",
+      "time": "AUGUST 24, 2011  2:41 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-sign-search",
+      "calls": 359,
+      "triangles": 385216,
+      "phase": "d5-sign",
+      "time": "AUGUST 24, 2011  2:46 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-photo-match",
+      "calls": 315,
+      "triangles": 652034,
+      "phase": "d5-sign",
+      "time": "AUGUST 24, 2011  2:46 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-trail-map",
+      "calls": 365,
+      "triangles": 365537,
+      "phase": "d5-map",
+      "time": "AUGUST 24, 2011  2:51 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-gate-decision",
+      "calls": 310,
+      "triangles": 631130,
+      "phase": "d5-gate",
+      "time": "AUGUST 24, 2011  2:54 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-gravel-road",
+      "calls": 302,
+      "triangles": 636804,
+      "phase": "d5-road",
+      "time": "AUGUST 24, 2011  2:54 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-camp-gate",
+      "calls": 264,
+      "triangles": 529432,
+      "phase": "d5-road",
+      "time": "AUGUST 24, 2011  3:16 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-camp",
+      "calls": 257,
+      "triangles": 546933,
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:18 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-office",
+      "calls": 259,
+      "triangles": 528812,
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:21 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-register",
+      "calls": 251,
+      "triangles": 521574,
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:21 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-lodge",
+      "calls": 142,
+      "triangles": 357920,
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:28 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-pantry",
+      "calls": 145,
+      "triangles": 390322,
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:28 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-cabins",
+      "calls": 195,
+      "triangles": 527655,
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  3:36 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-campfire",
+      "calls": 308,
+      "triangles": 498224,
+      "phase": "d5-camp",
+      "time": "AUGUST 24, 2011  4:03 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-golden-hour",
+      "calls": 219,
+      "triangles": 479491,
+      "phase": "e5-dusk",
+      "time": "AUGUST 24, 2011  6:54 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-owl",
+      "calls": 129,
+      "triangles": 375935,
+      "phase": "e5-dusk",
+      "time": "AUGUST 24, 2011  7:28 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-calling",
+      "calls": 189,
+      "triangles": 518510,
+      "phase": "e5-call",
+      "time": "AUGUST 24, 2011  7:43 PM",
+      "caption": "JAMIE“ALEX!”"
+    },
+    {
+      "name": "dev-c5-three-lights",
+      "calls": 315,
+      "triangles": 655602,
+      "phase": "e5-lights",
+      "time": "AUGUST 24, 2011  7:51 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-split",
+      "calls": 203,
+      "triangles": 437850,
+      "phase": "n5-split",
+      "time": "AUGUST 24, 2011  8:02 PM",
+      "caption": "JAMIE“That’s Owl. That’s Owl’s window.”"
+    },
+    {
+      "name": "dev-c5-compromise",
+      "calls": 203,
+      "triangles": 437850,
+      "phase": "n5-split",
+      "time": "AUGUST 24, 2011  8:03 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-window",
+      "calls": 135,
+      "triangles": 344878,
+      "phase": "n5-split",
+      "time": "AUGUST 24, 2011  8:07 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-run",
+      "calls": 296,
+      "triangles": 490960,
+      "phase": "n5-run",
+      "time": "AUGUST 24, 2011  8:10 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-route-a",
+      "calls": 214,
+      "triangles": 434890,
+      "phase": "n5-run",
+      "time": "AUGUST 24, 2011  8:10 PM",
+      "caption": "JAMIE“The road! The gate!”"
+    },
+    {
+      "name": "dev-c5-route-c",
+      "calls": 75,
+      "triangles": 284128,
+      "phase": "n5-run",
+      "time": "AUGUST 24, 2011  8:10 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-boundary",
+      "calls": 214,
+      "triangles": 387717,
+      "phase": "n5-run",
+      "time": "AUGUST 24, 2011  8:13 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-aftermath",
+      "calls": 223,
+      "triangles": 305406,
+      "phase": "n5-out",
+      "time": "AUGUST 24, 2011  8:19 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-c5-second-discovery",
+      "calls": 224,
+      "triangles": 377488,
+      "phase": "n5-final",
+      "time": "AUGUST 24, 2011  8:25 PM",
+      "caption": "There’s still a little light."
+    },
+    {
+      "name": "dev-chapter5-end",
+      "calls": 225,
+      "triangles": 377490,
+      "phase": "n5-final",
+      "time": "AUGUST 24, 2011  8:25 PM",
+      "caption": "There’s still a little light."
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}

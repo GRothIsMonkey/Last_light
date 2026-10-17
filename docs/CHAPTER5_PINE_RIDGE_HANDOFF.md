@@ -21,9 +21,9 @@ section below, and **Continue** on the title returns to the last checkpoint.
 
 ## Length
 
-The scripted, direct simulation playthrough takes **26.6 minutes** of game time from Chapter Four's end card to
-Chapter Five's end card (27.4 by the other route). It goes straight to each objective. A player who looks around the
-park, the camp and the buildings will take about **35–45 minutes**. Nothing is timed against the player. Every beat
+The scripted, direct simulation playthrough takes **24.6 minutes** of game time from Chapter Four's end card to
+Chapter Five's end card (the Chromium walkthrough, the same player in the page: 24.4). It goes straight to each
+objective. A player who looks around the park, the camp and the buildings will take about **35–45 minutes**. Nothing is timed against the player. Every beat
 has a time fallback (leaving Sam's garage a minute after "Ride to Pine Ridge.", the ride after eight minutes, the bike rack after 200 s on foot,
 and the rest as listed in the sim's idle check), so a player who stands still is carried on.
 
@@ -282,15 +282,15 @@ See [TEST_REPORT.md](TEST_REPORT.md) for the numbers. In summary:
   is built at load with the rest of the world.
   - Vertex data: +151 MB over the starting commit (518 → 670 MB of merged meshes and shadow proxies, simulation
     harness), mostly the 6,235 trees.
-  - JS heap at the title: 927 MB at the starting commit, 1,267 MB before this pass's fixes, **1,139 MB** now. Pine
+  - JS heap at the title: 927 MB at the starting commit, 1,267 MB before this pass's fixes, **1,084 MB** now. Pine
     Ridge's bake layers now let go of their pre-bake objects once merged (`release:true` in `pine-build.js`, honoured by
     `world.js`); other chapters' layers are unchanged.
   - No leaks found: revisiting the camp, the three lights and the split three times leaves shader programs (187),
-    geometries (1,989), textures (49) and the heap flat.
+    geometries (1,957), textures (49) and the heap (about 1,093 MB) flat.
   - Lights: Chapter Five keeps a constant 9 point lights (the carried lights stay in the scene at intensity 0 when
-    unlit), so no material recompiles mid-scene. Entering Chapter Five recompiles once, behind its black card.
-  - Steady state in Chapter Five: renderer about 1.6–2.0 GB, GPU process about 1.0 GB. Jumps and chapter changes
-    (DEV starts, Continue) spike the renderer for a moment to 2–5.8 GB under software GL; the starting commit spiked
+    unlit) and the flashlight's 2 spots, so no material recompiles mid-scene. Entering Chapter Five recompiles once, behind its black card.
+  - Steady state in Chapter Five: renderer about 1.5–1.8 GB, GPU process about 1.0 GB. Jumps and chapter changes
+    (DEV starts, Continue) spike the renderer for a moment to 2–5.9 GB under software GL; the starting commit spiked
     to 5.3 GB entering Chapter Four. In SwiftShader all GPU buffers live in system RAM, so these numbers say little
     about a real GPU.
   - Still available: instancing the trees, and releasing the other chapters' pre-bake groups (not done: those reach

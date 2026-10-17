@@ -1,3 +1,175 @@
+# Last Light — Chapter Five: The Place in the Picture: verification
+
+Branch `claude/chapter5-pine-ridge`, created from `codex/astra-chapter4-repair-pass2` at
+`c9647772642c0bbb5478bdb04bf36592fcc74919` (not modified). Linear history, no rebase, squash, merge or force-push.
+Runtime last changed in `71f5539`; the commits after it are tests, QA evidence and documentation only.
+Rendering is software (Chromium with SwiftShader): draw and triangle counts are real, frame times are not, and no
+real-GPU frame rate is claimed. Sound was off for every run; audio is placeholder synthesis and hooks.
+
+## Gates
+
+Every run below was made on its own, with nothing else running, after the last runtime change.
+
+| Gate | Result |
+|---|---|
+| Full simulation suite, `QUICK=1 node tests/verify.mjs` (the prologue through Chapter Five played naturally, every chapter's checks and replays, the DEV checks) | **718/718** at `71f5539` (the accepted Chapter Four baseline was 622). 94 of them are Chapter Five's: the natural playthrough from Chapter Four's end card (26), the chapter's own checks (42) and a second playthrough by Route C and Jamie's way at the gate (26). Report: `docs/qa/chapter5-pine-ridge/simulation-report.json`. |
+| Chapter Five alone, `ONLY=chapter5 node tests/verify.mjs` | **68/68** |
+| Chromium, `node tests/chapter5-browser.mjs` (SwiftShader, sound off) | **33/33**, **0 JavaScript errors**, **0 WebGL/shader warnings**, 67 frames. Chapter Four's end card, the **Chapter Five** button by a real click, then the whole chapter played by inputs in one page (Route A, Sam's way) to the end card: 26/26 beats in 24.4 game minutes (330 s). The flashlight's lights are in the scene. All **37 DEV scenes** start from the selector by real clicks, each in a Chapter Five phase with Jamie and Sam there. Report and gallery: `docs/qa/chapter5-pine-ridge/chapter5-browser-report.json`, `index.html`. |
+| Memory, Chromium, measured alone | JS heap at the title **1,084 MB** (Chapter Four baseline at the starting commit: 927 MB; this branch before its memory fixes: 1,267 MB). Flat through the chapter and through repeated revisits (no leaks). Details below. |
+| Private playtest build | The hosting copy, served the way the host serves it, loads with no errors: the title, **Start**, the DEV selector's Chapter Five, the creature credit, and the creature model. |
+
+Earlier Chromium attempts are not counted as passes. Three were killed when the renderer ran out of memory while node suites ran at the same time (the container's memory limit is 13.7 GB). One stopped at the start of the walkthrough because of a bug in the test itself: its in-page setup was not given the route and gate choice. Fixed in `2b13913`. The counted run was made alone, on the runtime of `71f5539` (unchanged since; the report records every runtime file's hash).
+
+## The natural playthrough (simulation, inputs only)
+
+From Chapter Four's end card, by the keys and the mouse (walking, riding, looking, F where the prompt says, V for
+Alex's camera, T for the flashlight, C to crouch), Route A and Sam's way at the gate:
+
+| Measure | Result |
+|---|---|
+| Game time, Chapter Four's end card to Chapter Five's | **24.6 minutes** (scripted and direct: a player who explores will take longer) |
+| Lines spoken | 233 |
+| Pictures on Alex's camera at the end | 16 (the evidence photographed, plus the one none of them took) |
+| The race | Jamie wins in 48.3 s (the race adapts; either winner is fine) |
+| Skipping stones | 7, 7, 7 for the player; Jamie's best 4, Sam's 6 |
+| The three lights | 26.7 s from the gate until they go out |
+| The split | resolved together at 25 s; the farthest the three got apart, 12.7 m |
+| The escape | 89.5 s to the boundary |
+| Jamie and Sam | the guard never had to release, unstick or recover either of them; make way fired 4 times |
+
+The full suite also plays Chapter Five a second time from its own start, by Route C (the dam) and Jamie's way at the
+gate, and starts it once from the DEV selector.
+
+## What else is checked (Chapter Five)
+
+- Every one of the 37 QA jumps starts without an error, with Jamie and Sam present, near and finite; every alias
+  resolves; all 12 Continue checkpoints are jumps.
+- A jump (Continue, DEV) into the ride, the arrival, the split and the compromise plays the beat's own lines and shows
+  its objective, and the flashlight's two lights are in the scene for the whole chapter.
+- Companion stress: sprinting round the camp, doubling back and standing in a cabin, the farthest either friend gets
+  is 10.2 m, with no guard releases.
+- The set piece answers the player: staying with Jamie pulls Sam (and the reverse), and staring at Owl pulls Sam; in
+  time the two come back together on their own.
+- Idle fallbacks: standing still in each of 17 scenes, every one moves on (park, stones, dock, sign, map, gate, road,
+  camp, dusk, Owl, three lights, split, window, run, aftermath, second discovery, end). None skips its payoff.
+- The campfire: S stands the player up while the talk goes on, F sits back down.
+- Chapter Four keeps its north edge (Mill Street past the sawhorse is closed in Chapter Four, open in Chapter Five).
+- Start over from inside Chapter Five begins the prologue cleanly.
+- DEV: Chapter Five Start equals arriving from Chapter Four's end card (0 differences once clocks and positions are
+  set aside, and positions within 15 m); switching 5→1→5→4→5→0→3→5 in one session leaves every Chapter Five start
+  identical to a clean one; all 37 scenes start, 18/18 start before their event, and none leaks into the next.
+
+## Review findings fixed in this pass
+
+Four rounds of adversarial review were run against the branch (spec coverage; the code; the fixes themselves, twice;
+and the publication), and each finding was checked against the code before it was fixed. The last round reviewed only
+the previous round's fixes, and found five more problems in them, all fixed below.
+- **Lost lines.** Two of Jamie's lines ("He was standing right here.", "Come on.") were swallowed: the talk engine
+  treats any line with `until` as a silent wait. Each is now a wait followed by the line.
+- **The camp.** The campfire's time fallback no longer fires while the register is open; closing the register frees
+  walking and leaves Jamie and Sam on their logs; the batteries' last line no longer stands Sam up.
+- **Continue and DEV.** The lamp in the lot resumes at the rack, not the run; the last image saves `chapter5-end`.
+  Jumps past the campfire hide the parked sedan. Two DEV scenes start with the Continue save a player holds there.
+  Jumps no longer mark evidence as already photographed. A jump into the ride, the arrival, the split or the
+  compromise now plays the beat's lines and shows its objective (they were cleared after the beat started).
+- **Fallbacks.** Sam locks the bikes himself after 200 s on foot at the park; the ride carries on after eight
+  minutes. The window's 130 s timer started the chase without the double: now Jamie and Sam lead the player to Owl,
+  then a fade brings the three of them to the porch, and the double always plays. Dusk leads the player to Owl
+  before its fade. The campfire fallback cut to the fire with no fade and moved the player's bike out of the rack: it
+  fades and leaves the bike. Stopping during the escape is allowed for 40 s (three calls) instead of 24 s.
+- **The flashlight never lit anything.** Day rendering took its two SpotLights out of the scene. The first fix put
+  them back before day rendering ran, so it was undone a frame later; they are now attached after it, for the whole
+  chapter (T only changes the brightness). Checked in the simulation and in Chromium.
+- **Chapter Four's north edge was open.** The road toward Pine Ridge was walkable and rideable during Chapter Four;
+  it now opens only in Chapter Five. The backdrop filter for that road also removed houses south of the closed bridge
+  in Chapter Four; it now applies to the north rows only.
+- **Jamie and Sam.** The route out is read from where the player goes (a player heading for the dam was carried back
+  to the gate). At Owl's porch the player and a friend could block each other: the friend in the player's path now
+  steps aside. A later review found the step could pass through a cabin wall or off a porch, and that it fired for a
+  friend beside the player: the step is now checked every quarter metre, and only a friend in the path moves (in the
+  natural run it fires 6 times, down from 15).
+- **The creature's flight** ran through the washhouse; it now goes round it and the trees.
+- **Spec gaps closed.** Jamie's bag, open on the driveway, is something to look in (one sock), and the opening has a
+  short exchange about what happened downtown, with Sam's worry that the picture is a trap. At the campfire the
+  player can stand up and sit back down while the boys talk.
+- **Found in the fixes themselves.** The longer departure left a player who let Sam pack about 2 s to ride out
+  before the garage's fallback faded them (it is now a minute from "Ride to Pine Ridge."). A player who stood up at the
+  campfire could miss the three hours on the log, and the picture from the trees was taken without them (they are now
+  put back on the log first). The run's dam fallback put the player and Sam inside the dam's parapet, where nobody
+  could move (it now lands on the walkway, and every carry lands each of the three on walkable ground). Continue at
+  "Camp Whippoorwill" had no objective. One make-way candidate could never be chosen.
+- **Found by the Route C replay.** The fallback after the escape (260 s) could fade a player still walking the
+  300 m back from the dam; it now waits until they stop getting nearer for 90 s (or 480 s in all). And the run's
+  fallback, if a fade was already running, would have left the run with no end; it now waits for the fade.
+- **Memory.** See below.
+
+## Memory (Chromium, SwiftShader, 1280×720, measured alone)
+
+Measured with `docs/qa/chapter5-pine-ridge/memory/memprobe.mjs`, nothing else running. Each step jumps to a section,
+renders for 3 s and forces a garbage collection. Logs: `memory/probe-starting-commit.log` (Chapter Four as accepted),
+`probe-before-fixes.log`, `probe-after-fixes.log` and `probe-final.log` (this runtime).
+
+| | Starting commit (Chapter Four) | Before the fixes | Final |
+|---|---:|---:|---:|
+| JS heap at the title | 927 MB | 1,267 MB | **1,084 MB** |
+| JS heap at Chapter Four's end | 923 MB | — | 1,089 MB |
+| JS heap through Chapter Five (and three revisits of the camp, the three lights and the split) | — | — | 1,091–1,094 MB |
+| Renderer, steady (Chapter Four's end / in Chapter Five) | 1,388 MB / — | 1.6–2.0 GB | 1,784 MB / 1.46–1.76 GB |
+| Renderer, brief peak on a jump | 5,338 MB (entering Chapter Four) | 5.8 GB | 5,876 MB |
+| GPU process | — | about 1.0 GB | 0.83–1.03 GB |
+| Programs / geometries / textures after the revisits | — | — | 187 / 1,957 / 49, unchanged by revisits |
+| Lights in Chapter Five | — | — | 9 point lights and the flashlight's 2 spots, constant |
+
+- **What Chapter Five costs.** About 157 MB of JS heap, all of it Pine Ridge's world, built at load with the rest of
+  the world. Merged vertex data grows by 151 MB (518 → 670 MB), mostly the 6,235 trees.
+- **What was fixed.** Pine Ridge kept its pre-bake objects after merging them, reference copies of its named meshes,
+  its baked pre-merge ground and paths, and the ground's build arrays. It now lets go of all of them (1,267 → 1,084 MB).
+  Its lamps keep a constant number of lights, so no material recompiles mid-scene; entering the chapter compiles once,
+  behind its black card.
+- **No leaks.** Revisiting the camp, the three lights and the split three times leaves the heap, programs, geometries
+  and textures unchanged.
+- **In the Chromium walkthrough** the JS heap stayed between 1,095 and 1,099 MB across all nine segments of the
+  chapter. Over the whole run (walkthrough and 37 DEV scene starts) the renderer peaked at 5.66 GB, the GPU process
+  at 1.14 GB, and the container's memory at 9.1 GB, including the test's own node process.
+- **The peaks are SwiftShader's.** Software GL keeps every GPU buffer in system RAM, so the renderer's brief jump
+  peaks are of the same kind as the starting commit's when entering Chapter Four, and say little about a real GPU.
+
+## Publication
+
+- The private playtest build is a copy of `dist/` with two hosting-only changes, made in the copy and not in the
+  repository: the page's document wrapper is supplied by the host, and the creature's model (`creature.glb`, which the
+  host does not serve) rides in a script module as base64. The bytes decode to the same SHA-256
+  (`e86b69df95ce1a96519f0eb720f3dc58cb15d07f3848e35c5f8891047add51b3`). The creature's credit (Bento, CC BY 4.0) is
+  on the title's Credits page.
+- Before publishing, every file in the copy was read in full: no secrets, tokens, personal data, tracking or network
+  calls beyond the page's own files. `three.module.js` is byte-identical to the official three.js r160 build.
+- A smoke test of the hosting copy, served the way the host serves it: no errors; the title, Start, the DEV
+  selector's Chapter Five, the creature credit, and the creature model loaded from the embedded bytes.
+
+## Not done / limits
+
+- **No human playtest of this build.** Every walkthrough is scripted inputs. Major gameplay issues already found by
+  the human player (companion behaviour, story, physical interaction) belong to the separate redesign and are not
+  addressed here.
+- **No real-GPU frame rate.** Chromium ran with SwiftShader (software). Draw and triangle counts are real; frame times
+  and the renderer's memory say little about a real GPU. The heaviest walkthrough frame drew 690,757 triangles.
+- **The browser walkthrough covers one way through:** Route A, the road, and Sam's way at the gate. Route C (the
+  dam) and Jamie's way are covered by the simulation's second playthrough only.
+- **Time fallbacks still move the player by a fade** in some beats: dusk (240 s), the window (170 s), the campfire
+  (520 s), the run (40 s stopped or 200 s in all), and the walk back (90 s without getting nearer). Each now waits for
+  the player first and lands everyone on walkable ground, but a player may still read it as a teleport.
+- The campfire talk begins only when the player sits (or by its fallback); the player can stand up during it.
+- Make way: a friend blocking a spot where neither side step is walkable stays put until the guard or the scene moves
+  him.
+- First-draft art: Jamie's bag is a few boxes; the granola bars are a caption; the park is empty on a Wednesday; fog
+  makes the distant tree impostors read pale at dusk; the double can be hidden by Owl's door frame from far to one
+  side.
+- Audio is first-draft synthesis plus hooks; every run was muted.
+- Memory still available: instancing the 6,235 trees, releasing the other chapters' pre-bake groups (not done: those
+  reach into accepted Chapters 0–4), and a 4.56 MB navigation grid kept for Pine Ridge's floors.
+
+---
+
 # Last Light — Chapter Four Astra final art polish: verification
 
 Accepted source: `claude/chapter4-horror-revision` at `f0120badfcbd60d3f1dcf7e837650a5c61088f90`. Astra branch: `codex/astra-chapter4-final-polish`. Runtime identity: `39b6ce7a9d8f7f617de9403d4f206aa22af38ed1`; final delivery commit contains QA/documentation only.
