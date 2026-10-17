@@ -693,7 +693,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(passedGate()){X.route=C.route='A';gateScare();}
   if(near(SPOT.damN,9)){X.route=C.route='C';damScare();}
   if(X.still>20&&!X.said.s3&&!busy()){X.said.s3=C.t;say([{who:'SAM',text:'“Please. We have to GO.”',by:'sam'}]);}
-  if(X.still>40||X.t>200){X.boundary=true;if(!X.route){X.route=C.route='A';mark('route A (carried)');}if(X.route==='C')carry('dam',[SPOT.damN[0]+1,SPOT.damN[1]-6],ha(SPOT.damN[0],SPOT.damN[1],SPOT.damS[0],SPOT.damS[1]),{after:damScare});else carry('gate',[SPOT.campGate[0]+3,SPOT.campGate[1]-6],ha(-166,512,-157,493),{after:gateScare});}}
+  if((X.still>40||X.t>200)&&C.fadeOut<0){X.boundary=true;/* (only once the carry can start: a carry refused mid-fade would leave the run with no end) */if(!X.route){X.route=C.route='A';mark('route A (carried)');}if(X.route==='C')carry('dam',[SPOT.damN[0]+1,SPOT.damN[1]-6],ha(SPOT.damN[0],SPOT.damN[1],SPOT.damS[0],SPOT.damS[1]),{after:damScare});else carry('gate',[SPOT.campGate[0]+3,SPOT.campGate[1]-6],ha(-166,512,-157,493),{after:gateScare});}}
  const passedGate=()=>{const p=me(),{e,n}=EN(p);return Math.hypot(e-SPOT.campGate[0],n-SPOT.campGate[1])<9&&(n<SPOT.campGate[1]-2.5);};
  // The camp gate: Sam swings it shut behind you. Every light in the camp goes out at once. And it swings open again.
  function gateScare(){if(C.flags.boundary)return;C.flags.boundary=true;C.esc&&(C.esc.boundary=true);mark('the gate');go('n5-run');const gt=PN?.dyn?.campGate;

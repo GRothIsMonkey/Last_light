@@ -157,7 +157,7 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  const tRun=h.snapshot.clock;
  if(route==='A'){walkTo([P5(-262,556),P5(-236,552),P5(-212,546),P5(-192,538),P5(-180,528),P5(-170,518),P5(-163,506),P5(-158,496)],{r:1.6,max:120,sprint:true,stop:()=>C5().flags.boundary});}
  else{go(Q5(-312,562),{r:.6,max:60,sprint:true,stop:()=>C5().flags.boundary});// (off Owl's porch round its corner: follow the path closely)
- walkTo([P5(-320,540),P5(-326,516),P5(-337,492),P5(-347,466),P5(-352,450)],{r:1.6,max:150,sprint:true,stop:()=>C5().flags.boundary});}
+ walkTo([P5(-320,540),P5(-326,516),P5(-337,492),P5(-347,466),P5(-352,450),P5(-352,444)],{r:1.6,max:150,sprint:true,stop:()=>C5().flags.boundary});}// (onto the dam itself)
  U(()=>S().phase==='n5-out',40);check(`${label}: the escape by route ${route}, and the boundary: ${route==='A'?'the gate swings open again':'the bell, by itself'}; every light out at once`,()=>{assert.equal(C5().route,route);assert.ok(C5().flags.boundary);assert.ok(Object.values(C5().lamps).every(v=>v<.2),JSON.stringify(C5().lamps));});
  M2['chapter5 escape seconds']=+(h.snapshot.clock-tRun).toFixed(1);
  // ---- back to the bikes ----
