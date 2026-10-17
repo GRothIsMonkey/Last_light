@@ -1,0 +1,1 @@
+export default async function(L,{step}){L.jump('c5-garage');step(4);const s=L.state;return {state:s.state,walk:s.walk,roam:s.roam,prompt:s.prompt,pose:L.chapter.pose,self:L.self.group.position,cam:L.camera.position};}

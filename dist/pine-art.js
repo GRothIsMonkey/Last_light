@@ -52,6 +52,37 @@ export function kioskMapArt(g,w,h){g.fillStyle='#e8e0c8';g.fillRect(0,0,w,h);g.f
  g.restore();g.fillStyle='#3e5a3a';g.fillRect(0,h*.95,w,h*.05);text(g,'NO SWIMMING  ·  PARK CLOSES AT DUSK  ·  OAK HOLLOW TWP. PARKS DEPT.',w/2,h*.975,h*.026,{w:w*.94});
  weather(g,w,h,{fade:.22,stain:.3,seed:31});}
 // The camp's own map board: painted on plywood a long time ago, re-painted once, peeling.
+// Sam's county road map (a gas-station map, folded too many times): town at the bottom, Mill Street running north out of
+// it as the Old Reservoir Road, over the ridge, down to Pine Ridge Recreation Area on the reservoir. Sam has gone over the
+// way in pencil and circled the park. The old camp is not on it (the park's own trail map shows it).
+export function countyMapArt(g,w,h){g.fillStyle='#ece4cc';g.fillRect(0,0,w,h);
+ const box={e0:-420,e1:120,n0:-150,n1:600},sx=w/(box.e1-box.e0),sy=h/(box.n1-box.n0),k=Math.min(sx,sy),ox=(w-(box.e1-box.e0)*k)/2,oy=(h-(box.n1-box.n0)*k)/2;
+ const P=(e,n)=>[ox+(e-box.e0)*k,h-oy-(n-box.n0)*k];
+ // fields and woods: a pale green wash north of town, darker on the ridge
+ g.fillStyle='rgba(150,180,120,.35)';g.fillRect(0,0,w,P(0,40)[1]);
+ g.save();g.globalAlpha=.25;g.fillStyle='#5a7a4a';g.beginPath();const ridge=[[-420,150],[60,160],[110,240],[-60,250],[-420,250]];ridge.forEach(([e,n],i)=>{const [x,y]=P(e,n);if(i)g.lineTo(x,y);else g.moveTo(x,y);});g.closePath();g.fill();g.restore();
+ // contour lines on the ridge
+ g.strokeStyle='rgba(120,90,50,.45)';g.lineWidth=1;for(let i=0;i<4;i++){g.beginPath();for(let e=-420;e<=110;e+=10){const n=185+i*12+Math.sin(e*.03+i)*8,[x,y]=P(e,n);if(e>-420)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
+ // the town: a grid of streets south of Mill Street's end
+ g.fillStyle='rgba(200,170,150,.55)';{const [x0,y0]=P(-150,0),[x1,y1]=P(110,-150);g.fillRect(x0,y0,x1-x0,y1-y0);}
+ g.strokeStyle='#b0a090';g.lineWidth=1.5;for(let e=-140;e<=100;e+=24){g.beginPath();g.moveTo(...P(e,-150));g.lineTo(...P(e,0));g.stroke();}for(let n=-140;n<=0;n+=22){g.beginPath();g.moveTo(...P(-150,n));g.lineTo(...P(110,n));g.stroke();}
+ // the reservoir and its roads
+ drawShore(g,P);drawRoad(g,P,ROADS.orr,{color:'#c8302a',width:Math.max(3,w*.006)});drawRoad(g,P,ROADS.gravel,{color:'#8a7a60',width:1.5,dash:[4,4]});drawRoad(g,P,ROADS.service,{color:'#8a7a60',width:1.5,dash:[4,4]});
+ g.strokeStyle='#c8302a';g.lineWidth=Math.max(3,w*.006);g.beginPath();g.moveTo(...P(0,0));g.lineTo(...P(0,-150));g.stroke();
+ const lab=(t,e,n,size,{color='#2a2a2a',rot=0,weight='bold',align='left'}={})=>{const [x,y]=P(e,n);g.save();g.translate(x,y);g.rotate(rot);g.font=`${weight} ${h*size}px ${FAM.sans}`;g.fillStyle=color;g.textAlign=align;g.textBaseline='middle';g.fillText(t,0,0);g.restore();};
+ lab('OAK HOLLOW',-130,-130,.034,{color:'#5a4a3a'});lab('DOWNTOWN',30,-75,.03,{color:'#5a4a3a'});lab('MILL ST',8,-40,.026,{color:'#8a2a1a',rot:-Math.PI/2,align:'center'});
+ lab('OLD RESERVOIR RD',12,80,.026,{color:'#8a2a1a',rot:-1.35});lab('PINE RIDGE',-30,215,.034,{color:'#3a4a2a',weight:'bold'});lab('PINE RIDGE',-300,430,.03,{color:'#1e3a4a'});lab('RESERVOIR',-300,405,.03,{color:'#1e3a4a'});
+ lab('DAM',-395,410,.024,{color:'#1e3a4a',align:'center'});
+ // the park: a square and its name, as the map prints it
+ {const [x,y]=P(-112,318);g.fillStyle='#3e6a3a';g.fillRect(x-w*.012,y-w*.012,w*.024,w*.024);}lab('PINE RIDGE',-100,345,.026,{color:'#1e3a1e'});lab('RECREATION AREA',-100,327,.026,{color:'#1e3a1e'});
+ // Sam's pencil: the way traced, the park circled, "4 mi?"
+ g.strokeStyle='rgba(50,50,60,.75)';g.lineWidth=Math.max(2,w*.004);g.setLineDash([]);g.beginPath();const tr=[[6,-120],[6,0],[7,60],[2,110],[-10,150],[-40,205],[-60,262],[-80,296],[-110,312]];tr.forEach(([e,n],i)=>{const [x,y]=P(e+4,n);if(i)g.lineTo(x,y);else g.moveTo(x,y);});g.stroke();
+ {const [x,y]=P(-112,320);g.beginPath();g.ellipse(x,y,w*.07,h*.045,-.2,0,Math.PI*2);g.stroke();}
+ g.font=`${h*.032}px ${FAM.hand}`;g.fillStyle='rgba(50,50,60,.85)';g.textAlign='left';{const [x,y]=P(30,150);g.fillText('4 mi?',x,y);}
+ // folds, a coffee ring, the legend strip
+ g.strokeStyle='rgba(120,100,70,.35)';g.lineWidth=2;for(const f of [1/3,2/3]){g.beginPath();g.moveTo(w*f,0);g.lineTo(w*f,h);g.stroke();}g.beginPath();g.moveTo(0,h/2);g.lineTo(w,h/2);g.stroke();
+ g.fillStyle='rgba(240,232,210,.92)';g.fillRect(w*.02,h*.02,w*.4,h*.075);g.font=`bold ${h*.03}px ${FAM.serif}`;g.fillStyle='#2a2a2a';g.textAlign='left';g.textBaseline='middle';g.fillText('COUNTY ROAD MAP',w*.035,h*.045);g.font=`${h*.02}px ${FAM.sans}`;g.fillText('Sunoco · 2004 edition',w*.035,h*.075);
+ weather(g,w,h,{fade:.08,stain:.22,seed:91});}
 export function campMapArt(g,w,h){wood(g,w,h,'#9a7a52',{seed:41});g.fillStyle='rgba(232,222,190,.9)';g.fillRect(w*.04,h*.04,w*.92,h*.92);
  text(g,'CAMP WHIPPOORWILL',w/2,h*.1,h*.075,{w:w*.8,fam:FAM.serif,color:'#2e4a2a'});
  const box={e0:-338,e1:-148,n0:478,n1:628},P0=project(w*.86,h*.7,box),P=(e,n)=>{const [x,y]=P0(e,n);return [x+w*.07,y+h*.16];};

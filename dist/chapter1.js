@@ -114,7 +114,7 @@ export function createChapter1(o){
   if(S.gap>0){S.gap-=dt;return;}
   const l=S.queue.shift();if(!l)return;
   if(l.then){l.then();return;}if(l.act)l.act();if(l.wait||l.until){S.line={...l,dur:l.wait||.01,text:''};S.lineT=0;return;}
-  l.dur=lineTime(l);S.line=l;S.lineT=0;S.talking=l.from||null;if(l.from)l.from.talk=l.dur;say(l.who,l.text,l.dur+.6);}
+  l.dur=lineTime(l);S.line=l;S.lineT=0;S.talking=l.from||null;if(l.from){l.from.talk=l.dur;l.from.speech={text:l.text,dur:l.dur};}say(l.who,l.text,l.dur+.6);}
  const speaking=()=>S.line&&S.line.text?S.line.who:null;
  // ---- helpers for places ---------------------------------------------------------------------------
  const me=()=>{const p=player();return p;};
@@ -275,7 +275,12 @@ export function createChapter1(o){
   if((ph==='friends')&&!S.flags.samSignal&&S.samTap<3)out.push({id:'tap-sam',label:'Tap on the window',at:SWin.stand,face:SWin.glass,r:2.5});
   if(ph==='creek'){const c=clue.position;out.push({id:'reflector',label:'Look closer',at:c,face:c,r:1.9});}
   return out;}
- function spot(){if(busy()&&S.phase==='friends'&&(S.flags.jamieTapped||S.flags.samSignal))return null;const p=me();if(!p.walking&&!(p.riding&&p.speed<.3))return null;let best=null,bd=1e9;for(const s of spots()){if(!p.walking&&!s.ride)continue;const d=dist(p,s.at);if(d>s.r||d>bd)continue;const a=wrap(headingTo(p.x,p.z,s.face.x,s.face.z)-p.a);if(!s.wide&&Math.abs(a)>1.25&&d>.8)continue;best=s;bd=d;}return best;}
+ // (a spot marked look: what you are actually looking at, among small things close together, wins over the nearest)
+ const _lf=new THREE.Vector3(),_ld=new THREE.Vector3();
+ function spot(){if(busy()&&S.phase==='friends'&&(S.flags.jamieTapped||S.flags.samSignal))return null;const p=me();if(!p.walking&&!(p.riding&&p.speed<.3))return null;let best=null,bd=1e9,bl=null,bc=-2;camera.getWorldDirection(_lf);
+  for(const s of spots()){if(!p.walking&&!s.ride)continue;const d=dist(p,s.at);if(d>s.r)continue;
+   if(s.look){_ld.set(s.at.x-camera.position.x,(s.at.y??camera.position.y)-camera.position.y,s.at.z-camera.position.z);const l=_ld.length()||1,c=_ld.dot(_lf)/l,need=Math.cos(Math.atan((s.size||.12)/l)+(s.cone??.1));if(c>=need&&c>bc){bc=c;bl=s;}continue;}
+   if(d>bd)continue;const a=wrap(headingTo(p.x,p.z,s.face.x,s.face.z)-p.a);if(!s.wide&&Math.abs(a)>1.25&&d>.8)continue;best=s;bd=d;}return bl||best;}
  function act(id){if(api.next?.owns(S.phase)){api.next.act(id);return;}if(id==='tap-jamie')tapJamie();else if(id==='tap-sam')tapSam();else if(id==='reflector'&&S.phase==='creek')findClue();}
  // ---- every frame -----------------------------------------------------------------------------------------
  const eye=new THREE.Vector3();

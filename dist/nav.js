@@ -30,9 +30,20 @@ export function createNav(world){
  for(const s of world.fenceSegs){const [ax,az,bx,bz]=s;for(let i=Math.floor(Math.min(ax,bx)/FC)-1;i<=Math.floor(Math.max(ax,bx)/FC)+1;i++)for(let j=Math.floor(Math.min(az,bz)/FC)-1;j<=Math.floor(Math.max(az,bz)/FC)+1;j++){const k=fk(i,j);if(!fences.has(k))fences.set(k,[]);fences.get(k).push(s);}}
  // Every house's own walls and garage, and the air conditioner beside it, as exact rectangles:
  // close enough to stand at a side window or a garage's side door.
- const walls=createSpace(20);
+ const walls=createSpace(20),doorways=[];
  for(const P of new Set([...world.houses,...world.sidePlansAll])){if(!P.toWorld||P.far)continue;const box=(x0,x1,z0,z1)=>{const c=P.toWorld((x0+x1)/2,(z0+z1)/2);walls.rect(c.x,c.z,(x1-x0)/2,(z1-z0)/2,P.worldRot,'wall');};
-  box(-P.w/2,P.w/2,-P.depth/2,P.depth/2);if(P.hasGarage)box(P.gx-P.gw/2,P.gx+P.gw/2,P.gfront-P.gd,P.gfront);
+  box(-P.w/2,P.w/2,-P.depth/2,P.depth/2);
+  // (a friend's garage with a real opening is a room you can walk into: its three walls, the jambs either side of the
+  // door, what stands inside it; the doorway itself is shut while the garage door is down: doorways below)
+  if(P.hasGarage&&P.dynamicGarage&&P.garageInfo&&P.key&&world.garages?.[P.key]){const {gx,gw,gd,gfront}=P,dw=P.garageInfo.doorW,t=.2,s=P.gs,gz=gfront-gd/2,x0=gx-gw/2,x1=gx+gw/2,z0=gfront-gd;
+   box(x0,x0+t,z0,gfront);box(x1-t,x1,z0,gfront);box(x0,x1,z0,z0+t);box(x0,gx-dw/2,gfront-t,gfront);box(gx+dw/2,x1,gfront-t,gfront);
+   const wx=gx+s*(gw/2-.55);box(wx-.32,wx+.32,z0+.1,z0+2.9);// shelving
+   box(gx-s*.4-.95,gx-s*.4+.95,z0,z0+.8);// workbench
+   {const hx=gx-s*(gw/2-.45);box(hx-.32,hx+.32,z0+.1,z0+.8);}// water heater
+   if(P.interior!=='garage-car'){const mx=gx-s*(gw/2-.8),mz=gz+.2;box(mx-.35,mx+.35,mz-.45,mz+.75);}// mower
+   if(P.interior==='garage-car')box(gx-1.1,gx+1.1,z0+.6,gfront-.6);// the car
+   const c=P.toWorld(gx,gfront-t/2);doorways.push({key:P.key,x:c.x,z:c.z,hw:dw/2,hd:t/2+.05,rot:P.worldRot});}
+  else if(P.hasGarage)box(P.gx-P.gw/2,P.gx+P.gw/2,P.gfront-P.gd,P.gfront);
   if(P.chimney==='exterior'){const s=P.hasGarage?-P.gs:1,x=s*(P.w/2+.42),z=P.sneak?0:-P.depth*.12;box(x-.4,x+.4,z-.54,z+.54);}
   if(P.ac&&P.lod==='full'){const s=P.hasGarage?-P.gs:1,x=s*(P.w/2+.55),z=P.sneak?P.depth*.15:-P.depth*.225;box(x-.42,x+.42,z-.42,z+.42);}}
  function nearFence(x,z,r){for(const s of fences.get(fk(Math.floor(x/FC),Math.floor(z/FC)))||[]){const [ax,az,bx,bz]=s,dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/l));if(Math.hypot(x-ax-dx*t,z-az-dz*t)<r)return true;}return false;}
@@ -84,7 +95,9 @@ export function createNav(world){
  function baseY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='pine')return PN.baseY(x,z,L.w);if(L.street==='town')return TN.baseY(x,z,L.w);if(L.street==='side2')return B2.point(L.u,L.v).y;if(L.street==='drain')return DN.groundY(x,z,L.q);if(L.street==='woods')return WN.baseY(x,z,L.w);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y:groundPoint(L.d,L.lat).y;}
  // The street's direction here (for the bike's gentle settling along it), either way along.
  function streetHeading(x,z,L=locate(x,z)){if(L.street==='room')return room.heading||0;if(L.street==='pine')return PN.heading(x,z,L.w);if(L.street==='town')return TN.heading(x,z,L.w);if(L.street==='side2')return B2.heading(L.u);if(L.street==='drain')return DN.heading(x,z,L.q);if(L.street==='woods')return WN.heading(x,z,L.w);if(L.street==='easement')return EZ.heading;return L.street==='side'?B.heading(L.u):heading(Math.min(L.d,CUL));}
- const solid=(x,z,r)=>!!world.space.blocked(x,z,r,SOLID)||!!walls.blocked(x,z,r,WALL);
+ // (a friend's garage door, down: its doorway is a wall)
+ const doorShut=(x,z,r)=>doorways.some(D=>{const g=world.garages[D.key];if(!g||g.open>.85)return false;const c=Math.cos(D.rot),sn=Math.sin(D.rot),dx=x-D.x,dz=z-D.z,lx=dx*c-dz*sn,lz=dx*sn+dz*c;return Math.abs(lx)<D.hw+r&&Math.abs(lz)<D.hd+r;});
+ const solid=(x,z,r)=>!!world.space.blocked(x,z,r,SOLID)||!!walls.blocked(x,z,r,WALL)||(doorways.length>0&&doorShut(x,z,r));
  const inCreek=(u,v)=>Math.abs(u-C.u)<C.half+.5&&Math.abs(v)>H+XS.walk+.15;
  // Bikes: streets, sidewalks and curbs as before, plus whole driveways and front lawns now.
  function rideable(x,z,{lawn=true,r=.3}={}){const L=locate(x,z);if(L.street==='easement'||L.street==='room'||L.street==='drain')return false;// bikes stay on the street side of the fence, and outside the drain

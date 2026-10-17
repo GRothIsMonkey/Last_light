@@ -168,7 +168,7 @@ canvas.addEventListener('pointerup',()=>{dragging=false;lastMouse=null;});canvas
 // Head-look limits on the bike: a good look over each shoulder, never all the way round.
 const LOOK={yaw:1.85,down:1.2,up:.6};let sens=.0022;
 function turnView(dx,dy){if(!dx&&!dy)return;if(night1()&&chapter4.pan(dx,dy))return;// (a magnified picture on Alex's camera moves under the mouse instead)
- manualLook=true;lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else if(state==='c1-walk'){wa+=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else{const L=state==='memory'?MEMLOOK:LOOK;mouseYaw=clamp(mouseYaw-dx*sens,-L.yaw,L.yaw);mousePitch=clamp(mousePitch-dy*sens,-L.down,L.up);}}
+ manualLook=true;lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else if(state==='c1-walk'){wa+=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.32,.9);}else{const L=state==='memory'?MEMLOOK:LOOK;mouseYaw=clamp(mouseYaw-dx*sens,-L.yaw,L.yaw);mousePitch=clamp(mousePitch-dy*sens,-L.down,L.up);}}
 addEventListener('mousemove',e=>{if(!active()||touch)return;let dx=0,dy=0;
  if(document.pointerLockElement===canvas){dx=e.movementX||0;dy=e.movementY||0;
   // Chromium can report one huge jump right after the lock engages; ignore it.
@@ -509,7 +509,7 @@ function updateNightWalk(dt){
  // and, near panic, a faint unsteadiness. Nothing when calm.
  const H=tension.value>.3||tension.exertion>.05?tension.heart:null;if(H){bodyBreath+=dt*Math.PI*2*H.breathRate/60;}else bodyBreath=0;
  const heave=H?Math.sin(bodyBreath)*.006*H.breath:0,sway=H?Math.sin(bodyBreath*.37+1.3)*.0025*smooth((tension.value-.7)/.3):0;
- camera.position.set(wx,y+1.42+bob-.014+foot.eyeOffset+heave,wz);camera.rotation.set(walkPitch+heave*.35,-wa,(E?Math.sin(gait*Math.PI)*.009*smooth(moveT/2):Math.sin(gait*Math.PI)*.004*moveT)+sway,'YXZ');
+ const dip=foot.lookDip(walkPitch);camera.position.set(wx+Math.sin(wa)*dip.f,y+1.42+bob-.014+foot.eyeOffset+heave+dip.y,wz-Math.cos(wa)*dip.f);camera.rotation.set(walkPitch+heave*.35,-wa,(E?Math.sin(gait*Math.PI)*.009*smooth(moveT/2):Math.sin(gait*Math.PI)*.004*moveT)+sway,'YXZ');
  // A crouch or a look the chapter asks for: the eye eases into it and back; the mouse still looks around.
  const P=chapter.pose;if(P&&P.w>0){_e.set(clamp(P.pitch+walkPitch-(P.fromPitch||0),-1.3,.9),-(P.yaw+wa-P.from),0,'YXZ');_q.setFromEuler(_e);camera.position.lerp(_v.set(P.x,P.y,P.z),P.w);camera.quaternion.slerp(_q,P.w);}}
 // Getting off and back on at night.
@@ -600,7 +600,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  else if(state==='c1-dismount')updateNightTransition(dt,true);else if(state==='c1-remount')updateNightTransition(dt,false);else if(state==='c1-walk')updateNightWalk(dt);
  else{eyeRig.updateMatrixWorld(true);eyeRig.getWorldPosition(camera.position);eyeRig.getWorldQuaternion(camera.quaternion);}
  if(state==='walking'){const p=groundPoint(walkD,walkLat);foot.body(dt,{x:p.x,z:p.z,a:heading(walkD)-walkYaw,y:groundY(walkD,walkLat),speed:foot.speed||0,scripted:!!interact.pose});}
- if(state==='c1-walk')foot.body(dt,{x:chapter.pose?camera.position.x:wx,z:chapter.pose?camera.position.z:wz,a:chapter.pose?chapter.pose.yaw+wa-chapter.pose.from:escDir??wa,y:nav.groundY(wx,wz),speed:foot.speed||0,scripted:!!chapter.pose});
+ if(state==='c1-walk')foot.body(dt,{x:chapter.pose?camera.position.x:wx,z:chapter.pose?camera.position.z:wz,a:chapter.pose?chapter.pose.yaw+wa-chapter.pose.from:escDir??wa,y:nav.groundY(wx,wz),speed:foot.speed||0,scripted:!!chapter.pose,pose:chapter.pose});
  if(state!=='c1-walk'&&state!=='c1-ride')escWant=0;if(state!=='c1-walk')escDir=null;
  if(state!=='memory'){escFov=damp(escFov,escWant,escWant>escFov?1.6:1,dt);if(escFov<.01&&!escWant)escFov=0;if(Math.abs(camera.fov-(64+escFov))>.02){camera.fov=64+escFov;camera.updateProjectionMatrix();}}
  foot.lamp(dt,state==='c1-walk');barLamp();camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=n1?clamp(nav.locate(camera.position.x,camera.position.z).d,-300,1140):distance;ctx.speed=n1?0:speed;ctx.lateral=lateral;ctx.state=mem?'riding':state;

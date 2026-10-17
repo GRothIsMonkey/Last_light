@@ -59,11 +59,18 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  check(`${label}: Sam's garage, the next afternoon (Wednesday, August 24)`,()=>{assert.equal(S().phase,'d5-garage');assert.match(element('date').innerHTML,/AUGUST 24, 2011/);});
  // ---- pack, Jamie's sock, out ----
  const sq=A5.W5?null:null;void sq;const g=h.world.homes.sam;void g;
- {const s=boys().find(c=>c.key==='sam');go({x:s.px,z:s.pz},{r:2.2,max:20});faceTo(s.px,s.pz);act('c5-pack',6);}
- // Jamie's bag, dropped open on the driveway: you look in it (one sock)
- U(()=>C5().flags.bagOpen,60);{const b=A5.props.getObjectByName('jamie-backpack').position;go({x:b.x,z:b.z},{r:1.3,max:12});faceTo(b.x,b.z,-.6);act('c5-bag',6);U(()=>(A5.C.pose?.w||0)>.9,3);T.snap?.('jamie-bag-one-sock');}// (Chromium keeps a frame)
- U(()=>C5().flags.leave,90);check(`${label}: packing, Jamie's bag (one sock), what happened downtown, and the ride`,()=>{assert.ok(C5().flags.packed&&C5().flags.departure&&C5().flags.leave);assert.ok(C5().inv.camera,'the camera is yours to hold');assert.ok(C5().flags.bagSeen,'you looked in Jamie’s bag');
-  assert.ok(log.said.some(l=>/one sock/.test(l)));assert.ok(log.said.some(l=>/copying us/.test(l))&&log.said.some(l=>/wants us out there/.test(l)),'Sam’s worry about downtown');});
+ // up to the table; pack two things with your own hands (F on one, F on the bag); take Alex's camera from Sam's hand
+ const GS=A5.G5.S,lookV=v=>faceV(v);{const t=A5.G5.TL(0,-.78,0);go({x:t.x,z:t.z},{r:.3,max:20});}U(()=>GS.flags.packing,20);
+ let mine=0;for(let k=0;k<2;k++){const P=GS.items.find(q=>q.state==='placed'&&!q.claimed);if(!P)break;lookV(P.obj.position);W(.05);if(X.spot()?.id==='g5-take:'+P.name){tap('KeyF');U(()=>GS.holding===P,3);W(.6);lookV(GS.bag.mouth());W(.05);if(X.spot()?.id==='g5-put'){tap('KeyF');U(()=>P.state==='stored',3);mine++;}}W(.6);}
+ U(()=>GS.flags.cameraAsked,90);lookV(GS.cam.obj.position);W(.05);if(X.spot()?.id==='g5-camera')tap('KeyF');U(()=>C5().inv.camera,20);T.snap?.('garage-camera-taken');
+ check(`${label}: the garage: the supplies packed by hand (you ${mine}, Sam the rest), Alex's camera from Sam's hand`,()=>{assert.equal(GS.items.filter(P=>P.state==='stored').length,GS.items.length,'everything in the bag');assert.ok(GS.packedBy.you>=2&&GS.packedBy.sam>=1,JSON.stringify(GS.packedBy));assert.ok(C5().inv.camera);assert.equal(GS.cam.state,'hidden','in your pocket, not on the table');});
+ // Jamie: his backpack off his back, the sock out of it, the granola bars from Sam's hand; the map, the way, the rules
+ U(()=>GS.sockShownAt!=null,90);T.snap?.('jamie-one-sock');U(()=>C5().flags.leave,150);
+ check(`${label}: Jamie's backpack and one sock, Sam's granola bars, the map and the plan`,()=>{assert.ok(C5().flags.departure&&C5().flags.plan&&C5().flags.leave);assert.ok(GS.flags.barsTaken&&GS.sock.state==='stored'&&GS.bars.every(b=>b.state==='stored'),'sock and bars in Jamie’s bag');
+  assert.ok(GS.flags.mapOpen);assert.ok(log.said.some(l=>/one sock/.test(l)));assert.ok(log.said.some(l=>/come find him/.test(l))&&log.said.some(l=>/Danny Whitcomb/.test(l))&&log.said.some(l=>/before dark/i.test(l)),'why Pine Ridge, and the rules');});
+ // they go to their bikes and get on them themselves, before you do
+ U(()=>C5().flags['ready-jamie']&&C5().flags['ready-sam'],60);
+ check(`${label}: Jamie and Sam get on their own bikes before you do, and wait`,()=>{assert.ok(boys().every(c=>c.mode==='ride'),boys().map(c=>c.mode).join());assert.equal(h.night.state,'c1-walk','you are still on foot');assert.equal(GS.bagP.state,'worn');assert.equal(GS.jbagP.state,'worn');});
  onBike();const d0=h.world.homes.sam.drivD;rideTo([M(d0-14,-2.2),M(d0-30,-2.2),M(d0-50,-2.2)],40,3,()=>S().phase==='d5-ride');U(()=>S().phase==='d5-ride'&&A5.C.fadeIn<0,10);
  check(`${label}: out of town, on Mill Street past the sawhorse (the Old Reservoir Road)`,()=>{assert.equal(S().phase,'d5-ride');assert.ok(Math.abs(C5().where.e)<12&&C5().where.n<10,JSON.stringify(C5().where));});
  // ---- the race: Jamie goes; you go too ----

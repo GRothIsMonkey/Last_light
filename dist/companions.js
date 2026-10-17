@@ -218,6 +218,11 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   drop(c){let e=0,played=false;return dt=>{e+=dt;c.holding=false;const t=clamp(e/.62,0,1);c.fall=-1.36*t*t+(e>.62?.05*Math.sin((e-.62)*18)*Math.exp(-(e-.62)*7):0);c.steer=damp(c.steer,.55,4,dt);
    if(t>=1&&!played){played=true;sfx('bikeDrop',c.bike.group.position,{gain:.7});}return e>=.9;};},
   kickstand(c){let e=0;return dt=>{e+=dt;c.kick=smooth(e/.7);c.lean=.13*smooth((e-.35)/.45);const tap=Math.sin(Math.PI*clamp(e/.7,0,1));c.pose[P.rf]+=(.3-c.pose[P.rf])*tap*.5;c.pose[P.rf+1]=.065+.07*tap;applyPose(c.person,c.pose);c.posed=true;if(e>=.9){c.holding=false;return true;}};},
+  // Kickstand up before getting on: beside the bike, a hand on the grip, the right foot flicks it up and the bike comes
+  // upright against the hand.
+  kickUp(c,t=.7){let e=0;const keys=keysFor(c);return (dt,ctx)=>{if(e===0){c.lean0=c.lean;}e+=dt;const u=smooth(e/t);c.kick=1-smooth((e-.15)/.35);c.lean=c.lean0*(1-u);
+   samplePose(c.pose,keys,keys[keys.length-1][0]);const tap=Math.sin(Math.PI*clamp((e-.05)/.45,0,1));c.pose[P.rf+2]+=.12*tap;c.pose[P.rf+1]+=.06*tap;
+   placePerson(c,dt);applyPose(c.person,c.pose);c.posed=true;return e>=t;};},
   // Up off the lawn: crouch, lift it by the bars, stand it up beside you.
   lift(c){let e=0;const target=new THREE.Vector3();return dt=>{e+=dt;const lift=smooth((e-.52)/1.05),down=smooth(e/.5)*(1-smooth((e-1.15)/.65));c.fall=-1.36*(1-lift);c.steer=.35*(1-lift);placeBike(c,0);standPose(c.pose,e);
    c.pose[P.root+1]-=.29*down;c.pose[P.lean]+=.86*down;c.pose[P.hy]=-.25*down;placePerson(c,0);c.person.group.updateMatrixWorld(true);c.bike.group.updateMatrixWorld(true);
@@ -295,7 +300,9 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
    if(c.mode==='ride'&&!c.posed)poseRider(c,dt,ctx);
    if(c.spinV>0){c.spin+=c.spinV*dt;c.spinV=Math.max(0,c.spinV-dt*1.6);}
    if(c.bike.group.visible)placeBike(c,dt);if(c.mode==='foot')placePersonIfFree(c,dt);
-   if(c.talk>0){c.talk-=dt;}}
+   if(c.talk>0){c.talk-=dt;}
+   c.person.face?.update(dt,{clock:ctx.clock,talk:c.talk,speech:c.speech,visible:c.person.group.visible});}
+  for(const f of afters)f(dt,ctx);
  }
  function placePersonIfFree(c,dt){if(c.script&&c.script[c.step]?.climbing)return;placePerson(c,dt);}
  // Bodies and bikes, for the player not to ride or walk through.
@@ -304,5 +311,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  function headOf(c){if(c.person.joints.head){c.person.group.updateMatrixWorld(true);return c.person.group.localToWorld(vTmp.copy(c.person.joints.head));}return c.person.group.getWorldPosition(vTmp);}
  reset();
  const motion={routeTo,lineClear,feet,headOf,stepToward,standStill,footLook};
- return {list,all,trail,steps:S,run,update,reset,take,release,putRiding,putFoot,blockers,headOf,placeBike,placePerson,feet,motion};
+ // (after every pose of the frame: what follows a hand, physical.js)
+ const afters=[];const after=fn=>{if(!afters.includes(fn))afters.push(fn);};
+ return {list,all,trail,steps:S,run,update,reset,take,release,putRiding,putFoot,blockers,headOf,placeBike,placePerson,feet,motion,after};
 }

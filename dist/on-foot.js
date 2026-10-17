@@ -1,6 +1,6 @@
 // Shared on-foot movement and embodiment. Jump never changes horizontal collision rules.
 import * as THREE from './three.module.js';
-import {standPose,walkPose,newPose,applyPose,headPos,P,stride} from './rig.js';
+import {standPose,walkPose,sitPose,newPose,applyPose,headPos,P,stride,smooth} from './rig.js';
 const clamp=THREE.MathUtils.clamp,damp=THREE.MathUtils.damp;
 export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
  const pose=newPose(),direction=new THREE.Vector3(),hand=new THREE.Vector3();
@@ -10,9 +10,9 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
  const spill=new THREE.SpotLight(0xffefcf,0,12,1.05,1,2);spill.name='player-flashlight-spill';
  const shell=new THREE.Mesh(new THREE.CylinderGeometry(.026,.021,.17,12),new THREE.MeshStandardMaterial({color:0x33424a,roughness:.55,metalness:.35}));shell.rotation.x=Math.PI/2;torch.add(shell);
  const lens=new THREE.Mesh(new THREE.CylinderGeometry(.024,.024,.018,12),new THREE.MeshStandardMaterial({color:0xe9dfb9,roughness:.25}));lens.rotation.x=Math.PI/2;lens.position.z=-.091;torch.add(lens);scene.add(torch);torch.visible=false;
- const F={exposure:null,runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,spillLevel:6,light,spill,torch,pose,
+ const F={fp:{back0:.09,back1:0,eyeU:.11,eyeF:.1},extraEye:{f:0,y:0},arms:null,viewPitch:0,viewYaw:0,exposure:null,runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,spillLevel:6,light,spill,torch,pose,
   attach(on){if(on){scene.add(light,light.target,spill,spill.target);}else{for(const o of [light,light.target,spill,spill.target])o.removeFromParent();}},
-  reset(){Object.assign(F,{runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;spill.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
+  reset(){F.extraEye.f=F.extraEye.y=0;Object.assign(F,{runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;spill.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
   ride(){if(self.group.parent!==bike.group)bike.group.add(self.group);self.group.position.set(0,0,0);self.group.rotation.set(0,0,0);torch.visible=false;},
   give(){F.owned=true;F.on=true;sfx('click',null,{gain:.45});},
   toggle(){if(F.owned){F.on=!F.on;sfx('click',null,{gain:.5});}},
@@ -27,10 +27,13 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    const el=$('stamina');if(el){el.style.opacity=F.sprint||F.stamina<.98?'.65':'0';$('stamina-fill').style.width=(F.stamina*100)+'%';}
    return moving?(duck?.95:F.sprint?3.65:2.05*F.pace):0;
   },
-  body(dt,{x,z,a,y,speed=0,scripted=false}){
+  body(dt,{x,z,a,y,speed=0,scripted=false,pose:CP=null}){
    if(self.group.parent!==scene)scene.add(self.group);self.group.visible=true;
+   {camera.getWorldDirection(direction);F.viewPitch=Math.asin(clamp(direction.y,-1,1));F.viewYaw=Math.atan2(direction.x,-direction.z);}
    F.phase+=speed*dt/stride(Math.max(speed,.8));
-   if(speed>.08&&F.height===0)walkPose(pose,F.phase,speed);else standPose(pose,0,{shift:0});
+   if(speed>.08&&F.height===0)walkPose(pose,F.phase,speed);else{standPose(pose,0,{shift:0});
+    // (your own stance, seen from above: feet a little apart, one a little forward, so the shoes show past the knees)
+    pose[P.lf]=-.14;pose[P.lf+2]=-.15;pose[P.rf]=.15;pose[P.rf+2]=-.2;pose[P.lk]=-.3;pose[P.rk]=.3;pose[P.lfp]=.08;pose[P.rfp]=.08;}
    const crouch=scripted?clamp((y+1.406-camera.position.y)/.54,0,1):F.crouch;
    pose[P.root+1]-=.31*crouch;pose[P.lean]+=.52*crouch;pose[P.root+2]+=.09*crouch;
    for(const p of [P.lh,P.rh]){pose[p+1]-=.22*crouch;pose[p+2]-=.16*crouch;}
@@ -38,8 +41,19 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    if(F.owned){pose[P.rh]=.2;pose[P.rh+1]=.98-.25*crouch;pose[P.rh+2]=-.34;pose[P.re]=1;pose[P.re+1]=-.5;pose[P.re+2]=.2;}
    // Running hard the light goes with the arm: the beam swings and jolts with every stride.
    F.runK=scripted?0:clamp((speed-3)/2,0,1);if(F.owned&&F.runK>0){const ph=F.phase*Math.PI*2;pose[P.rh+1]+=.04*F.runK*Math.sin(ph*2);pose[P.rh+2]+=.06*F.runK*Math.sin(ph);}
-   if(scripted){pose[P.root+1]=.30;pose[P.lean]=1.04;pose[P.root+2]=0;pose[P.lf]=-.17;pose[P.rf]=.17;pose[P.lf+2]=-.10;pose[P.rf+2]=.06;pose[P.lh+1]=.25;pose[P.lh+2]=-.07;pose[P.rh+1]=.42;pose[P.rh+2]=-.45;const hp=headPos(pose,new THREE.Vector3());x=camera.position.x-hp.x*Math.cos(a)+hp.z*Math.sin(a);z=camera.position.z-hp.x*Math.sin(a)-hp.z*Math.cos(a);y=camera.position.y-hp.y-.015;}
-   self.group.position.set(x,y+F.height-F.land,z);self.group.rotation.set(0,-a,0);applyPose(self,pose);
+   // Sitting (a chapter's seat: the dock's edge, a log): the body on the seat, facing the way the seat faces, legs as
+   // they would be; the head turns, not the body.
+   const seat=scripted&&CP?.seat?CP.seat:null;
+   if(seat){F.sitT=(F.sitT||0)+dt;sitPose(pose,{seat:seat.h??.43,legs:seat.legs||'bent',t:F.sitT,hands:seat.hands||'knees'});x=seat.x;z=seat.z;y=seat.y;a=seat.a;
+    // (the view turned well round: the shoulders follow a little)
+    const tw=clamp(Math.atan2(Math.sin(F.viewYaw-a),Math.cos(F.viewYaw-a)),-.9,.9);pose[P.twist]=-tw*.35;}
+   else if(scripted&&!CP?.stand){pose[P.root+1]=.30;pose[P.lean]=1.04;pose[P.root+2]=0;pose[P.lf]=-.17;pose[P.rf]=.17;pose[P.lf+2]=-.10;pose[P.rf+2]=.06;pose[P.lh+1]=.25;pose[P.lh+2]=-.07;pose[P.rh+1]=.42;pose[P.rh+2]=-.45;const hp=headPos(pose,new THREE.Vector3());x=camera.position.x-hp.x*Math.cos(a)+hp.z*Math.sin(a);z=camera.position.z-hp.x*Math.sin(a)-hp.z*Math.cos(a);y=camera.position.y-hp.y-.015;}
+   // Looking down at yourself: the body sits a little back under the eye (as a neck bends the eyes forward over the
+   // chest), so you see your chest, arms, legs and shoes, never the inside of your own shoulders.
+   if(!seat){const T=F.fp,back=T.back0+T.back1*smooth((-F.viewPitch-.25)/.75)-F.extraEye.f;x-=Math.sin(a)*back;z+=Math.cos(a)*back;}
+   self.group.position.set(x,y+F.height-F.land,z);self.group.rotation.set(0,-a,0);
+   if(F.arms){self.group.updateMatrixWorld(true);F.arms(pose,{toLocal:v=>self.group.worldToLocal(v),dt,foot:F});}else{F.extraEye.f*=.85;F.extraEye.y*=.85;}
+   applyPose(self,pose);
   },
   lamp(dt,walking){
    torch.visible=walking&&F.owned;light.intensity=walking&&F.on?24:0;spill.intensity=0;
@@ -61,6 +75,11 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    if(F.on&&ex?.reach){spill.intensity=ex.wide!==undefined?Math.min(F.spillLevel,Math.max(.15,ex.wide*ex.wide*1.2)):F.spillLevel;spill.position.copy(light.position);spill.target.position.copy(light.target.position);}
   },
   get eyeOffset(){return F.height-.54*F.crouch-F.land;},
+  // looking down, the eyes go down and forward with the bending neck (game.js adds this to the walking eye)
+  // (the eye is fp.eyeF ahead of and fp.eyeU above the neck's pivot: bending the neck by the pitch moves it round that
+  // pivot; zero when looking level, so the walking eye is unchanged then)
+  // (and a reach for something leans you toward it and down: extraEye, set by the hands, physical.js)
+  lookDip(pitch){const th=Math.max(0,-pitch),U=F.fp.eyeU,Fw=F.fp.eyeF;return {y:U*Math.cos(th)-Fw*Math.sin(th)-U+F.extraEye.y,f:U*Math.sin(th)+Fw*Math.cos(th)-Fw+F.extraEye.f};},
  };
  return F;
 }

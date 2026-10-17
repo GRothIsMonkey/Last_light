@@ -60,7 +60,7 @@ const M4=(x=0,y=0,z=0,sx=1,sy=1,sz=1,rx=0,ry=0,rz=0)=>new THREE.Matrix4().compos
 // People ---------------------------------------------------------------------------
 // Normalize either a cast entry or the old flat options into one description.
 function describe(s={}){
- if(s.face||s.clothes)return {scale:s.scale??1,firstPerson:!!s.firstPerson,face:s.face||{},hair:s.hair||{style:'cropped',color:0x4a3528},build:s.build||{},clothes:s.clothes||{}};
+ if(s.face||s.clothes)return {scale:s.scale??1,firstPerson:!!s.firstPerson,face:s.expressive?{...(s.face||{}),rig:true}:s.face||{},hair:s.hair||{style:'cropped',color:0x4a3528},build:s.build||{},clothes:s.clothes||{}};
  const hair=s.cap!=null?{style:'cap',color:s.hair??0x4a3528,cap:s.cap}:{style:s.longHair?(s.scale>1.05?'ponytail':'shaggy'):'cropped',color:s.hair??0x4a3528};
  return {scale:s.scale??1,firstPerson:!!s.firstPerson,face:{skin:s.skin??0xd6a57f},hair,build:{},clothes:{shirt:s.shirt??0x7a8fa6,trim:s.stripe??null,shorts:s.shorts??0x4e5566,pants:s.pants||null,shoes:s.shoes??0xe6e0d0,socks:s.pants||0xf0ece2,sleeves:s.sleeves?'long':'short'}};
 }
@@ -77,9 +77,9 @@ export function headGeometry(face={},hair={},size=1){
  const parts=[{geo:skull,color:F.skin}],sph=sphereGeo(1),box=new THREE.BoxGeometry(1,1,1),S=(x,y,z,sx,sy,sz,c,rx=0,ry=0,rz=0,g=sph)=>parts.push({geo:g,color:c,matrix:M4(x,y,z,sx,sy,sz,rx,ry,rz)});
  for(const s of [-1,1]){S(s*.096,-.006,.006,.009*F.ears,.026*F.ears,.018*F.ears,F.skin,0,s*.2,0);// ears
   S(s*F.eyeGap,F.eyeY,-.088,.017,.012,.009,0xf1ede4);S(s*F.eyeGap,F.eyeY-.001,-.095,.0085,.0095,.005,F.iris);S(s*F.eyeGap+.002,F.eyeY+.003,-.0985,.0022,.0022,.002,0xffffff);// eyes
-  S(s*(F.eyeGap+.002),F.eyeY+.026,-.093,.032,.007,.009,H.color,0,s*-.12,s*-F.browTilt,box);}// brows
+  if(!F.rig)S(s*(F.eyeGap+.002),F.eyeY+.026,-.093,.032,.007,.009,H.color,0,s*-.12,s*-F.browTilt,box);}// brows (a face with its own moving brows and mouth, faces.js, leaves them out)
  if(F.nose==='straight')S(0,-.016,-.1,.011,.02,.014,F.skin,-.25);else if(F.nose==='broad')S(0,-.02,-.101,.018,.017,.016,F.skin);else S(0,-.017,-.102,.013,.016,.015,F.skin);
- if(F.mouth==='flat')S(0,-.05,-.092,.024,.0055,.008,F.lips,0,0,0,box);
+ if(F.rig){}else if(F.mouth==='flat')S(0,-.05,-.092,.024,.0055,.008,F.lips,0,0,0,box);
  else{const w=F.mouth==='grin'?.03:.024;S(0,-.051,-.091,w,.006,.008,F.lips,0,0,0,box);for(const s of [-1,1])S(s*w*.55,-.047,-.09,.012,.005,.007,F.lips,0,0,s*.45,box);if(F.mouth==='grin')S(0,-.0485,-.092,w*.8,.004,.006,0xf4f0e6,0,0,0,box);}
  // Hair: a cap shell plus a style-specific shape.
  const c=H.color;
@@ -207,6 +207,15 @@ export function walkPose(p,phase,speed,{look=0,lookPitch=0}={}){
  set3(p,P.lh,-.19+.03*run,y-.07+.2*run+.08*run*Math.max(0,swing),-(.15+.1*run)*swing-.02);set3(p,P.rh,.19-.03*run,y-.07+.2*run+.08*run*Math.max(0,-swing),(.15+.1*run)*swing-.02);
  set3(p,P.lk,0,0,-1);set3(p,P.rk,0,0,-1);set3(p,P.le,-.2,-.2*run,1);set3(p,P.re,.2,-.2*run,1);return p;
 }
+// Sitting. legs 'bent': on a seat of height seat (a log, a bench), feet on the ground; 'hang': on an edge (a dock), the
+// legs over it, the feet hanging below (the person's ground, y 0, is the seat's surface). Hands on the knees or on the
+// boards beside you.
+export function sitPose(p,{seat=.43,legs='bent',t=0,look=0,lookPitch=0,hands='knees'}={}){standPose(p,t,{look,lookPitch,shift:0});const breath=Math.sin(t*1.9)*.003;
+ if(legs==='hang'){set3(p,P.root,0,.075+breath,.07);p[P.lean]=.13;set3(p,P.lf,-.11,-.29,-.47);set3(p,P.rf,.12,-.31,-.45);p[P.lfp]=.35;p[P.rfp]=.3;set3(p,P.lk,-.05,1,-.3);set3(p,P.rk,.05,1,-.3);
+  if(hands==='deck'){set3(p,P.lh,-.25,.04,.03);set3(p,P.rh,.25,.04,.05);set3(p,P.le,-1,0,.3);set3(p,P.re,1,0,.3);}else{set3(p,P.lh,-.13,.17,-.32);set3(p,P.rh,.13,.17,-.3);set3(p,P.le,-1,-.2,.2);set3(p,P.re,1,-.2,.2);}}
+ else{set3(p,P.root,0,seat+.07+breath,.06);p[P.lean]=.14;set3(p,P.lf,-.12,BODY.ankle,-.44);set3(p,P.rf,.13,BODY.ankle,-.41);p[P.lfp]=0;p[P.rfp]=0;set3(p,P.lk,-.1,1,-.3);set3(p,P.rk,.1,1,-.3);
+  set3(p,P.lh,-.14,seat+.12,-.3);set3(p,P.rh,.14,seat+.12,-.28);set3(p,P.le,-1,-.2,.2);set3(p,P.re,1,-.2,.2);}
+ p[P.yaw]=0;p[P.roll]=0;p[P.twist]=0;return p;}
 // Right-hand wave layered over any pose.
 export function addWave(p,t,w){if(w<=0)return p;const sh=shoulderPos(p,1,_v[3]);
  const x=sh.x+.12+Math.sin(t*9)*.07,y=sh.y+.36+Math.cos(t*9)*.015,z=sh.z-.05;

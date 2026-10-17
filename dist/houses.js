@@ -344,7 +344,9 @@ function chair(K,g,x,y,z,c){const cg=K.group(g,x,z,Math.PI,y);K.box(cg,0,.38,0,.
 
 // Attached garage: walls, roof, door (or a real opening with an interior shell for friends).
 function buildGarage(W,P,g,rand,mid,siding,roofMat,gable){const {K}=W,{gx,gw,gd,gh,gfront}=P,gz=gfront-gd/2,doorW=gw>5?5.1:2.75,dh=2.15,T=HOUSE.trim;P.garageInfo={x:gx,front:gfront,doorW,doorH:dh,depth:gd,y:.2};
- K.rbox(g,gx,-.05,gz,gw+.1,.86,gd+.1,.03,HOUSE.foundation);
+ // (a friend's open garage: the foundation stops at the slab people stand on, +0.2 m, so its concrete floor is the floor
+ // you see and stand on; a shut garage keeps its taller footing, hidden behind its door)
+ K.rbox(g,gx,P.dynamicGarage?-.23:-.05,gz,gw+.1,.86,gd+.1,.03,HOUSE.foundation);
  if(P.dynamicGarage){const t=.16,ox=gx+P.gs*(gw/2-t/2);K.box(g,gx-P.gs*(gw/2-t/2),gh/2+.1,gz,t,gh-.2,gd,siding);K.box(g,gx,gh/2+.1,gz-gd/2+t/2,gw,gh-.2,t,siding);
   // A friend's garage can have a real side door (Sam slips out through it later that night).
   if(P.sideDoor){const zd=gz+gd*.18,dw=.96,dh2=2.1,z0=zd-dw/2,z1=zd+dw/2,a=gz-gd/2,b=gz+gd/2;P.sideDoorAt={x:gx+P.gs*gw/2,z:zd,w:dw,h:dh2};

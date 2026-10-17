@@ -42,6 +42,8 @@ import {registerPageArt,REGISTER,searchMapArt,freshCarvingArt,kioskMapArt,oldSig
 import {createCampPresence,roomPoint} from './chapter5-presence.js';
 import {createCompanionBrain} from './companion-brain.js';
 import {createPlaces} from './chapter5-places.js';
+import {createPhysical} from './physical.js';
+import {createGarage} from './chapter5-garage.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt)),lerp=(a,b,t)=>a+(b-a)*t;
 // QA jumps and DEV scenes, in story order.
@@ -128,12 +130,6 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  // Stones, and the rings they leave on the water.
  const stone=new THREE.Mesh(new THREE.SphereGeometry(.035,8,5),K.mat(0x8a8478));stone.scale.y=.45;stone.visible=false;props.add(stone);
  const RINGS=[...Array(10)].map(()=>{const m=new THREE.Mesh(new THREE.RingGeometry(.12,.17,20),new THREE.MeshBasicMaterial({color:0xe8eef0,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));m.rotation.x=-Math.PI/2;m.visible=false;props.add(m);return {m,t:9};});
- // Jamie's backpack, dropped open on the driveway: what he packed (one sock).
- const jbag=new THREE.Group();jbag.name='jamie-backpack';jbag.visible=false;props.add(jbag);
- {const red=K.mat(0x8e3b2f,{roughness:.85}),dark=K.mat(0x2a1c1a,{roughness:1}),white=K.mat(0xf0ece2,{roughness:1}),bx=(w,h,d,m,x,y,z,rx=0,ry=0)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);q.position.set(x,y,z);q.rotation.set(rx,ry,0);q.castShadow=true;jbag.add(q);return q;};
-  bx(.34,.38,.2,red,0,.19,0);bx(.28,.15,.05,red,0,.12,.12);bx(.3,.006,.16,dark,0,.383,0);/* the flap, thrown back */bx(.32,.02,.16,red,0,.37,-.17,-.6);
-  /* one sock, on top */bx(.065,.035,.17,white,.03,.4,.01,0,.4);bx(.065,.035,.08,white,-.01,.4,.1,0,1.4);}
- const bagTop=()=>({x:jbag.position.x,y:jbag.position.y+.4,z:jbag.position.z});
  function ring(x,z,big=1){const r=RINGS.reduce((a,b)=>b.t>a.t?b:a);r.t=0;r.big=big;r.m.position.set(x,WATER+.025,z);r.m.visible=true;}
  function updateRings(dt){for(const r of RINGS){if(!r.m.visible)continue;r.t+=dt;const s=1+r.t*3.2*r.big;r.m.scale.set(s,s,s);r.m.material.opacity=.5*Math.max(0,1-r.t/1.6);if(r.t>1.6)r.m.visible=false;}}
  // ---- state --------------------------------------------------------------------------------------------------------------
@@ -148,7 +144,10 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  const owns=ph=>typeof ph==='string'&&/^(c5|d5|e5|n5)-/.test(ph);
  const handles=sec=>SECTIONS5.includes(sec)||!!ALIAS5[sec];
  function card(on,title='Chapter Five',eyebrow=''){const el=$('chapter-card');if(!el)return;if(on){const e=el.querySelector?.('.eyebrow'),h=el.querySelector?.('h2');if(e)e.textContent=eyebrow;if(h)h.textContent=title;el.classList.add('on');}else el.classList.remove('on');C.cardOn=on;}
- const by=l=>l.text===undefined?l:({...l,from:l.by==='jamie'?jamie:l.by==='sam'?sam:l.from,time:l.time??Math.max(1.4,l.text.replace(/[“”]/g,'').length*.056)});
+ // (a line can set the speaker's face, face:'amused', and the listeners', faces:{sam:'unimpressed'}: faces.js)
+ const by=l=>{if(l.text===undefined&&!l.face&&!l.faces)return l;const from=l.by==='jamie'?jamie:l.by==='sam'?sam:l.from,act0=l.act;
+  const act=(l.face||l.faces)?()=>{if(l.face&&from?.person?.face)from.person.face.set(l.face,{hold:Math.max(3,(l.time||2)+1.5)});if(l.faces)for(const [k,f] of Object.entries(l.faces)){const c=k==='jamie'?jamie:sam;c.person.face?.set(f,{hold:4});}act0?.();}:act0;
+  if(l.text===undefined)return {...l,act};return {...l,from,act,time:l.time??Math.max(1.4,l.text.replace(/[“”]/g,'').length*.056)};};
  function say(lines,opts){talk(lines.map(by),opts);}
  // ---- poses: a closer look, sitting down ---------------------------------------------------------------------------------
  function pose(q,{y,pitch=0,yaw=null,look=null}){const p=me(),a=yaw??headingTo(q.x,q.z,look.x,look.z);C.pose={w:0,x:q.x,y,z:q.z,yaw:a,pitch,from:p.a,fromPitch:p.pitch||0,baseYaw:a,baseY:y,release:false};k.setPose(C.pose);o.roam.walkLock=true;}
@@ -256,44 +255,70 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  const drive=(x,z)=>SHW(gxS+x,gzS+z);
  const driveA=(x,z)=>{const a=drive(x,z),b=drive(x,z+5);return headingTo(a.x,a.z,b.x,b.z);};
  const d0=SH.drivD;
- function garageScene(){SG?.set?.(1);const sq=drive(-.4,-1.6),jb=drive(-.9,5.6),sb=drive(-2.1,6.4);
-  comp.putFoot(sam,sq.x,sq.z,driveA(0,0)+Math.PI,{bike:{x:sb.x,z:sb.z,a:driveA(-2.1,6.4),kick:1}});
-  // (Jamie is not here yet: he rides up the street a minute in; his bike and he wait out of sight round the bend)
-  const jq=main(d0+46,-2.2);comp.putRiding(jamie,jq.x,jq.z,headingTo(jq.x,jq.z,main(d0,-2).x,main(d0,-2).z),0);jamie.follow=null;jamie.hidden=false;void jb;
+ // The garage scene itself (the table, the supplies, the bags, the sock, the map): chapter5-garage.js. Here: who is
+ // where, what is said, and the way out to the bikes.
+ const phys=createPhysical({scene,comp});comp.after(()=>phys.sync());
+ const G5=createGarage({scene,phys,comp,jamie,sam,drive,driveA,gy,camera,me,self:o.self,busy,later:(t,f)=>later(t,f),t:()=>C.t,
+  say:(l,op)=>say(l,op),sound:(n,p,op)=>sound(n,p,op),stand:(c,q,op)=>stand(c,q,op),eyePos:()=>camera.position.clone().add(new THREE.Vector3(0,-.25,0)),
+  lockWalk:on=>{o.roam.walkLock=on||!!C.pose||!!C.view;},gotCamera:()=>{C.inv.camera=true;mark('Alex’s camera, in your hand');},jamieArrives:()=>jamieArrives(),
+  lookMap:at=>{closeLook({x:at.x,y:at.y,z:at.z},{back:.62,eye:1.42});C.view='look';C.lookAt=at;C.lookKind='map';later(9,()=>{if(C.view==='look'&&C.lookKind==='map')endLook();});}});
+ const BIKE={jamie:()=>drive(-.9,5.6),sam:()=>drive(-2.1,6.4),you:()=>drive(1.3,5.4)};
+ const WAITAT={jamie:[-1.15,11.2],sam:[-2.55,9.6]};
+ function garageScene(){SG?.set?.(1);G5.build();G5.layTable();const sq=G5.samStand(0),sb=BIKE.sam();
+  comp.putFoot(sam,sq.x,sq.z,driveA(0,0),{bike:{x:sb.x,z:sb.z,a:driveA(-2.1,6.4),kick:1}});
+  // (Jamie is not here yet: he rides up the street a minute in, his backpack on; he and his bike wait out of sight round the bend)
+  const jq=main(d0+46,-2.2);comp.putRiding(jamie,jq.x,jq.z,headingTo(jq.x,jq.z,main(d0,-2).x,main(d0,-2).z),0);jamie.follow=null;jamie.hidden=false;G5.wearBags({samBag:false});
   for(const c of [jamie,sam]){c.lookAt=null;c.lookPlayer=false;}
-  const q=drive(.5,2.6),bk=drive(1.3,5.4);o.placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,sq.x,sq.z),mode:'walk',bike:{x:bk.x,z:bk.z,a:driveA(1.3,5.4)}});}
+  const q=drive(-.2,.95),bk=BIKE.you();o.placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,sq.x,sq.z),mode:'walk',bike:{x:bk.x,z:bk.z,a:driveA(1.3,5.4)}});o.foot.arms=phys.arms;}
  // ---- the beginning ---------------------------------------------------------------------------------------------------------------
  function inventory(){C.inv.camera=true;ch4.ensureLead();C.inv.lead=ch4.leadIndex()>=0;}
- function begin(){fresh();go('c5-black');C.cardT=0;o.fade(1);common();dayWorld();comp.reset();minds();garageScene();objective('');T?.reset?.();C.h=HOUR.start;inventory();C.inv.camera=false;
+ function begin(){fresh();go('c5-black');C.cardT=0;o.fade(1);common();dayWorld();comp.reset();minds();phys.reset();garageScene();objective('');T?.reset?.();C.h=HOUR.start;inventory();C.inv.camera=false;
   for(const c of [jamie,sam]){c.lookAt=null;c.lookPlayer=false;}}
  function opening(){go('d5-garage');date(C.h);C.fadeIn=0;C.g={t:0};
-  say([{wait:1.2},{who:'SAM',text:'“Mom’s at work till six. She thinks we’re at Jamie’s.”',by:'sam',time:3},{who:'SAM',text:'“Come help me. I’ve got a list.”',by:'sam',time:2.2}],
-   {then:()=>{checkpoint('chapter5-start');C.flags.packReady=true;objective('Help Sam pack.','Inside his garage.');}});}
- function pack(){if(C.flags.packed)return;C.flags.packed=true;objective('');mark('packing');sound('click',drive(-.4,-2),{gain:.4});
-  say([{who:'SAM',text:'“Flashlights. Three.”',by:'sam'},{who:'SAM',text:'“Batteries.”',by:'sam',time:1.2},{who:'SAM',text:'“Water.”',by:'sam',time:1},
-   {who:'SAM',text:'“And this.”',by:'sam',time:1.2,act:()=>{C.inv.camera=true;sound('click',camera.position,{gain:.5});}},
-   {who:'SAM',text:'“Alex’s camera. You hold it. You’re better with it.”',by:'sam',time:2.8},{who:'YOU',text:'“Where’s Jamie?”',time:1.4},{who:'SAM',text:'“Late. He’s always late.”',by:'sam',time:1.8,act:()=>jamieArrives()}]);}
- function openBag(){const q=drive(-.65,2.75),y=drive(-.4,-1.6);jbag.position.set(q.x,q.y,q.z);jbag.rotation.set(0,Math.atan2(y.x-q.x,y.z-q.z),0);jbag.visible=true;C.flags.bagOpen=true;if(C.g)C.g.bagAt=C.t;}
- function lookBag(){if(C.flags.bagSeen)return;C.flags.bagSeen=true;mark('one sock');const t=bagTop();closeLook(t,{back:.75,eye:1.1});C.view='look';C.lookAt=t;C.lookKind=null;
-  later(3.4,()=>{if(C.view==='look'&&!C.lookKind){C.view=null;unpose();}});}
- function jamieArrives(){if(C.flags.jamieComing)return;C.flags.jamieComing=true;const stop=drive(-.9,5.6),mid=main(d0+8,-1.6);
+  say([{wait:1.2},{who:'SAM',text:'“Mom’s at work till six. She thinks we’re at Jamie’s.”',by:'sam',time:3},{who:'SAM',text:'“Come help me. I’ve got a list.”',by:'sam',time:2.2,face:'determined'}],
+   {then:()=>{checkpoint('chapter5-start');C.flags.packReady=true;G5.startPacking();objective('Help Sam pack.','The supplies on the table. F picks one up; F on the bag puts it in.');}});}
+ function jamieArrives(){if(C.flags.jamieComing)return;C.flags.jamieComing=true;C.flags.packed=true;objective('');const stop=BIKE.jamie(),mid=main(d0+8,-1.6);
   comp.run(jamie,[comp.steps.rideTo(jamie,[[mid.x,mid.z],[stop.x,stop.z]],{vmax:5.2,vend:0}),comp.steps.brake(jamie,.3),comp.steps.dismount(jamie),comp.steps.kickstand(jamie)],
-   {then:()=>{const w=drive(-1.3,2.2);comp.run(jamie,[comp.steps.walkTo(jamie,[[w.x,w.z]],{speed:1.4}),comp.steps.turnTo(jamie,()=>headingTo(jamie.px,jamie.pz,me().x,me().z),.5)],{then:()=>departure()});}});
-  later(3.2,()=>sound('curb',drive(-.9,5.6),{gain:.6}));}
- function departure(){if(C.flags.departure)return;C.flags.departure=true;mark('Jamie’s backpack');
-  stand(jamie,drive(-1.3,2.2),{look:()=>camera.position});stand(sam,drive(-.2,.4),{look:()=>({x:jamie.px,z:jamie.pz,y:gy(jamie.px,jamie.pz)+1.3})});
-  say([{who:'JAMIE',text:'“Sorry. Sorry, sorry. My mom.”',by:'jamie'},{who:'SAM',text:'“Did you bring food?”',by:'sam'},{who:'JAMIE',text:'“Yeah, I packed—”',by:'jamie',time:1.5,act:()=>{sound('click',{x:jamie.px,y:1,z:jamie.pz},{gain:.3});openBag();}},
-   {until:()=>C.flags.bagSeen||C.t-(C.g?.bagAt??C.t)>8},{wait:.8},{who:'JAMIE',text:'“…I packed one sock.”',by:'jamie',time:2},{wait:1.6,act:()=>glance(sam,{x:jamie.px,z:jamie.pz,y:gy(jamie.px,jamie.pz)+1.1},2.2)},
-   {who:'',text:'(Sam hands him two granola bars.)',time:2.2},{who:'JAMIE',text:'“…Thanks.”',by:'jamie',time:1.3},{who:'SAM',text:'“You brought a sock.”',by:'sam',time:1.6},{who:'JAMIE',text:'“It’s a good sock.”',by:'jamie',time:1.6,act:()=>{jbag.visible=false;}},
-   {wait:1},{who:'JAMIE',text:'“He said ‘see you tomorrow.’ It’s tomorrow.”',by:'jamie',time:2.2},{who:'SAM',text:'“That wasn’t him last night. It said what WE said. Like it was copying us.”',by:'sam',time:3.2},
-   {who:'SAM',text:'“What if the picture’s the same thing? Something that wants us out there.”',by:'sam',time:3},{who:'JAMIE',text:'“Then he’s out there too. I’m going.”',by:'jamie',time:2},{who:'SAM',text:'“…I know. I packed, didn’t I?”',by:'sam',time:2}],
-   {then:()=>{C.flags.leave=true;if(C.g)C.g.leaveAt=C.t;jbag.visible=false;objective('Ride to Pine Ridge.','Through town, then north on Mill Street, past the sawhorse.');for(const c of [jamie,sam])stand(c,null);follow(true);}});}
- function updateGarage(dt){const X=C.g;X.t+=dt;const p=me();
-  if(C.flags.packReady&&!C.flags.packed&&S.pt>40&&!C.flags.packNudge&&!busy()){C.flags.packNudge=true;say([{who:'SAM',text:'“The bench. Back here.”',by:'sam'}]);}
-  if(C.flags.packReady&&!C.flags.packed&&S.pt>75)pack();// (Sam packs it himself, talking you through it)
-  if(C.flags.leave){if(p.riding){C.rideT=(C.rideT||0)+dt;const L=where(p),away=L.street==='main'?Math.abs(L.d-d0)>24:true;if(away||C.rideT>26)toReservoirRoad();}
-   else if(C.t-(X.leaveAt??C.t)>20&&!C.flags.goNudge&&!busy()){C.flags.goNudge=true;say([{who:'JAMIE',text:'“Come on. It’s a long ride.”',by:'jamie'}]);}
-   if(C.t-(X.leaveAt??C.t)>60&&!p.riding)toReservoirRoad();}}// (counted from "Ride to Pine Ridge.", not from the garage's start)
+   {then:()=>{const w=G5.TL(.86,.22,0);comp.run(jamie,[comp.steps.walkTo(jamie,[[w.x,w.z]],{speed:1.4}),comp.steps.turnTo(jamie,()=>headingTo(jamie.px,jamie.pz,me().x,me().z),.5)],{then:()=>departure()});}});
+  later(3.2,()=>sound('curb',BIKE.jamie(),{gain:.6}));}
+ const face=(c,f,hold=4)=>c.person.face?.set(f,{hold});
+ function departure(){if(C.flags.departure)return;C.flags.departure=true;mark('Jamie’s backpack');const tg=C.t,GS=G5.S;
+  stand(sam,G5.samStand(0),{look:()=>({x:jamie.px,z:jamie.pz,y:gy(jamie.px,jamie.pz)+1.3})});
+  say([{who:'JAMIE',text:'“Sorry. Sorry, sorry. My mom.”',by:'jamie',face:'embarrassed'},{who:'SAM',text:'“Did you bring food?”',by:'sam',face:'unimpressed'},
+   {who:'JAMIE',text:'“Yeah, I packed—”',by:'jamie',time:1.4,act:()=>{C.flags.bagOpen=true;G5.sockScene();}},
+   {until:()=>(GS.sockShownAt!=null&&C.t-GS.sockShownAt>.9)||C.t-tg>12},{wait:.5},
+   {who:'JAMIE',text:'“…I packed one sock.”',by:'jamie',time:2,face:'embarrassed',faces:{sam:'unimpressed'}},{wait:1.6,act:()=>{C.flags.bagSeen=true;face(sam,'unimpressed',5);mark('one sock');}},
+   {wait:.2,act:()=>G5.barsScene()},{until:()=>GS.flags.barsTaken||C.t-tg>24},
+   {who:'JAMIE',text:'“…Thanks.”',by:'jamie',time:1.3,face:'embarrassed'},{who:'SAM',text:'“You brought a sock.”',by:'sam',time:1.6,face:'unimpressed'},{who:'JAMIE',text:'“It’s a good sock.”',by:'jamie',time:1.6,face:'grin'},
+   {until:()=>GS.flags.jamieReady||C.t-tg>34}],{then:()=>plan()});}
+ // Sam opens the map on the table; the three of them work out the way, and why, and the rules
+ function plan(){if(C.flags.plan)return;C.flags.plan=true;const tp=C.t;G5.openMap();const pt=(c,w,t)=>()=>comp.run(c,G5.pointAt(c,w,t),{then:()=>stand(c,c===sam?G5.samStand(0):G5.TL(.86,.22,0),{look:()=>G5.TL(0,0)})});
+  say([{until:()=>G5.S.flags.mapOpen&&!sam.script||C.t-tp>6},{who:'SAM',text:'“Okay. This is us.”',by:'sam',time:1.4,act:pt(sam,'town',1.2)},
+   {who:'SAM',text:'“Mill Street goes out past the sawhorse. Then it’s the Old Reservoir Road. Up over the ridge.”',by:'sam',time:3.6,act:pt(sam,'road',2.6)},
+   {who:'JAMIE',text:'“And down to Pine Ridge. Where the TV said.”',by:'jamie',time:2.2,act:pt(jamie,'park',1.6)},{who:'YOU',text:'“Pine Ridge Recreation Area. It was on the sign. In his picture.”',time:2.6},
+   {who:'SAM',text:'“Where they looked for Danny Whitcomb. In ninety-one. It was in the paper.”',by:'sam',time:3.2,face:'concerned'},
+   {who:'SAM',text:'“My dad took us fishing out there once. It’s like four miles. Big hill.”',by:'sam',time:3},
+   {who:'JAMIE',text:'“Alex rode out there. I know he did.”',by:'jamie',time:2.2,face:'determined'},{wait:.6},
+   {who:'SAM',text:'“Last night. Under the theater. It said ‘come find him.’”',by:'sam',time:2.8,face:'worried'},{who:'SAM',text:'“What if that’s what it wants? Us. Out there.”',by:'sam',time:2.6,face:'worried'},
+   {who:'JAMIE',text:'“Then Alex is out there too.”',by:'jamie',time:2,face:'determined'},{who:'JAMIE',text:'“I’m going.”',by:'jamie',time:1.2,face:'determined'},{wait:.8},
+   {who:'SAM',text:'“…I know. I packed, didn’t I?”',by:'sam',time:2,face:'unimpressed'},{who:'SAM',text:'“We stay together. We look. We’re back before dark.”',by:'sam',time:2.8,face:'determined'},
+   {who:'JAMIE',text:'“Before dark. Deal.”',by:'jamie',time:1.4,face:'happy'}],
+   {then:()=>{C.flags.leave=true;C.g.leaveAt=C.t;objective('Ride to Pine Ridge.','Mill Street north, past the sawhorse. Then the Old Reservoir Road.');toBikes();}});}
+ // Out to the bikes, each on his own: Sam folds the map into his bag and shoulders it; Jamie goes first; each walks to
+ // his bike, kicks the stand up, gets on, and rolls down to the end of the driveway to wait for you.
+ function toBike(c,delay){later(delay,()=>{const b=BIKE[c.key](),a=c.ba,side={x:c.bx-Math.cos(a)*.43,z:c.bz-Math.sin(a)*.43},path=nav.walkPath({x:c.px,z:c.pz},side),w=drive(...WAITAT[c.key]);void b;
+  stand(c,null);comp.run(c,[comp.steps.walkTo(c,path.length?path:[[side.x,side.z]],{speed:1.35}),comp.steps.turnTo(c,()=>c.ba,.5),comp.steps.kickUp(c),comp.steps.mount(c,.85),comp.steps.wait(.4),
+   comp.steps.rideTo(c,[[w.x,w.z]],{vmax:1.8,vend:0}),comp.steps.brake(c,.3)],{then:()=>{c.follow=null;C.flags['ready-'+c.key]=C.t;mark(c.key+' waiting on his bike');}});});}
+ function toBikes(){G5.foldMap();toBike(jamie,1.2);later(.2,()=>{const go2=()=>{if(G5.S.flags.mapAway||C.t-C.g.leaveAt>9)toBike(sam,.4);else later(.25,go2);};go2();});}
+ function updateGarage(dt){const X=C.g;X.t+=dt;const p=me();G5.update(dt);
+  if(C.flags.leave){const ready=C.flags['ready-jamie']&&C.flags['ready-sam'];
+   // you get going: they come with you (each answering when he sees you go)
+   if(p.riding&&ready&&!C.flags.rolling&&p.speed>.6){C.flags.rolling=true;follow(true);for(const c of [jamie,sam])c.follow='ride';}
+   if(p.riding){C.rideT=(C.rideT||0)+dt;const L=where(p),away=L.street==='main'?Math.abs(L.d-d0)>24:true;if(away||C.rideT>40)toReservoirRoad();}
+   const since=C.t-Math.max(C.flags['ready-jamie']||1e9,C.flags['ready-sam']||1e9);
+   if(ready&&!p.riding&&since>18&&!C.flags.goNudge&&!busy()){C.flags.goNudge=true;say([{who:'JAMIE',text:'“Come ON. It’s a long ride.”',by:'jamie'}]);}
+   if(ready&&!p.riding&&since>55&&!C.flags.goNudge2&&!busy()){C.flags.goNudge2=true;say([{who:'SAM',text:'“You coming? Your bike’s right there.”',by:'sam'}]);}
+   if(C.t-(X.leaveAt??C.t)>160&&!p.riding)toReservoirRoad();}}// (counted from "Ride to Pine Ridge.": a bounded recovery, never sooner)
  // Out of Oak Hollow, through town: the next you see of it is Mill Street's end, the sawhorse behind you.
  function toReservoirRoad(){if(C.flags.toRoad||C.fadeOut>=0)return;C.flags.toRoad=true;mark('the ride out');C.fadeOut=0;
   C.after=()=>{go('d5-ride');C.h=Math.max(C.h,HOUR.ride);C.minute=-1;date(C.h);ridePlace(-6.5,3.2);checkpoint('c5-ride');C.fadeIn=0;later(1.2,raceOffer);};}
@@ -775,8 +800,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  // ---- the spots F works on --------------------------------------------------------------------------------------------------------------
  function spots(){const out=[],ph=S.phase,p=me();if(C.view||C.fadeOut>=0||posed()||C.lapse)return out;
   const add=(id,label,q,face,r=2.4,o2={})=>out.push({id,label,at:q,face:face||q,r,wide:true,...o2});
-  if(ph==='d5-garage'&&C.flags.packReady&&!C.flags.packed){const q=drive(-.4,-1.6);add('c5-pack','Help Sam pack',q,q,3.2);}
-  if(ph==='d5-garage'&&C.flags.bagOpen&&!C.flags.bagSeen&&!C.flags.leave&&jbag.visible)add('c5-bag','Look in Jamie’s bag',bagTop(),bagTop(),3.2);
+  if(ph==='d5-garage')G5.spots(add);
   if(ph==='d5-fire'&&C.flags.fireStood&&!C.pose){const q=W5(...SEATS[0].seat);add('c5-resit','Sit back down',q,W5(...FIRE),3.2);}
   if((ph==='d5-park'||ph==='d5-stones'||ph==='d5-dock'||ph==='d5-sign')&&!C.flags.locked&&p.walking)add('c5-lock','Lock the bikes',rackSpot(),rackSpot(),3.4);
   if(ph==='d5-stones'&&C.st&&C.st.turn==='you'&&!C.st.busy&&!C.stoneRun&&near(STONES,6))add('c5-throw','Skip a stone',W5(...STONES),W5(...STONE_AIM),6.5);
@@ -793,7 +817,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
    if(ph==='e5-owl'&&inside('owl')){if(!C.flags.shirtSeen)add('c5-shirt','Look at the shirt',shirtPos(),null,2.6);if(C.flags.shirtDone&&!C.flags.carvingSeen)add('c5-carving','Look at the carving',carving.position,null,2.2);}}
   if(ph==='n5-window'&&C.win?.stage==='wait'&&near(OWL_PORCH,4.2)){const D=DOUBLE();add('c5-window','Look inside',{x:D.x,y:D.y+1.4,z:D.z},null,4.2);}
   return out;}
- function act(id){if(id==='c5-pack')pack();else if(id==='c5-bag')lookBag();else if(id==='c5-resit')sitFire();else if(id==='c5-lock')lockBikes();else if(id==='c5-throw')throwYours();else if(id==='c5-sit')sitDock();else if(id==='c5-map')readMap();
+ function act(id){if(id.startsWith('g5-')&&G5.act(id))return;if(id==='c5-resit')sitFire();else if(id==='c5-lock')lockBikes();else if(id==='c5-throw')throwYours();else if(id==='c5-sit')sitDock();else if(id==='c5-map')readMap();
   else if(id==='c5-go')choose('jamie');else if(id==='c5-hear')choose('sam');else if(id==='c5-owl-stuck'){C.flags.owlStuck=true;sound('thud',roomV('owl',0,BLD.owl.d/2,1),{gain:.5});say([{who:'SAM',text:'“It’s stuck. Swollen shut. Leave it.”',by:'sam'}]);}else if(id.startsWith('c5-door-'))openDoor(id.slice(8));else if(id==='c5-register')openRegister();else if(id==='c5-searchmap')lookSearchMap();
   else if(id==='c5-pantry')lookPantry();else if(id==='c5-photos')lookPhotos();else if(id==='c5-campmap')lookCampMap();else if(id==='c5-bell')ringBell();else if(id==='c5-fire')toFire();
   else if(id==='c5-shirt')lookShirt();else if(id==='c5-carving')lookCarving();else if(id==='c5-window'){if(C.win)C.win.lookT=1;}}
@@ -841,7 +865,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function updateView(dt){if(C.view==='camera'){C.viewT+=dt;if(photo.current&&!photo.current.canvas&&!photo.current.lead)photo.take(photo.V.i);}}
  // ---- sounds in the world, what is in the way --------------------------------------------------------------------------------------------
  function sources(out){void out;}
- function blockers(){const out=[];out.push(...creature.colliders());if(camp.D.person.group.visible)out.push({x:camp.D.x,z:camp.D.z,r:.3,speed:0});return out;}
+ function blockers(){const out=[];out.push(...creature.colliders());if(S.phase==='d5-garage')G5.blockers(out);if(camp.D.person.group.visible)out.push({x:camp.D.x,z:camp.D.z,r:.3,speed:0});return out;}
  function updateAmb(dt){const ph=S.phase,L=sky(),p=me(),pine=where(p).street==='pine',campArea=pine&&EN(p).n>480;let want;
   if(/^n5-(split|window)$/.test(ph))want={traffic:0,life:0,insects:.35,wind:.5,forest:.5,tunnel:0,water:.25};
   else if(ph==='n5-run')want={traffic:0,life:0,insects:.15,wind:.7,forest:.4,tunnel:0,water:.2};
@@ -898,7 +922,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function readMapFallback(){if(C.flags.mapNudge)return;C.flags.mapNudge=true;say([{who:'SAM',text:'“The map’s by the bathrooms. Or we just follow the road.”',by:'sam'}]);}
  // ---- lifecycle --------------------------------------------------------------------------------------------------------------------------------
  const DOOR0=Object.fromEntries(Object.entries(DOORS).map(([key,d])=>[key,d.open]));
- function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='camera')photo.close();camp.reset();camp.attach(false);nav.setPine?.(false);props.removeFromParent();shirt.visible=false;carving.visible=false;pageG.visible=false;stone.visible=false;jbag.visible=false;
+ function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='camera')photo.close();camp.reset();camp.attach(false);nav.setPine?.(false);props.removeFromParent();shirt.visible=false;carving.visible=false;pageG.visible=false;stone.visible=false;G5.reset();phys.reset();if(o.foot.arms===phys.arms)o.foot.arms=null;
   for(const r of RINGS){r.m.visible=false;r.t=9;}for(const key of Object.keys(DOORS))DOORS[key].open=DOOR0[key]??0;const gt=PN?.dyn?.campGate;if(gt){gt.want=-1.25;gt.k=1.4;}
   const bell=PN?.dyn?.bell;if(bell){bell.v=0;bell.swing=0;bell.yoke.rotation.z=0;}if(PN?.lights?.lot)PN.lights.lot.level=0;
   if(C.crt){creature.reset();creature.show(false);}creature.ground=null;
@@ -911,9 +935,12 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   const ix=SECTIONS5.indexOf(section),ff=(...ks)=>{for(const kk of ks)C.flags[kk]=true;},hh=h=>{C.h=h;C.minute=-1;date(h);};
   const quiet=()=>{S.queue.length=0;S.line=null;};
   // ---- Sam's garage ----
+  phys.reset();o.foot.arms=phys.arms;
   if(ix<=SECTIONS5.indexOf('c5-departure')){garageScene();hh(HOUR.start+.03);C.inv.camera=false;
-   if(section==='c5-garage'){go('d5-garage');C.g={t:0};ff('packReady');objective('Help Sam pack.','Inside his garage.');return;}
-   go('d5-garage');C.g={t:0};ff('packReady','packed');C.inv.camera=true;quiet();jamieArrives();return;}
+   if(section==='c5-garage'){go('d5-garage');C.g={t:0};ff('packReady');G5.startPacking();objective('Help Sam pack.','The supplies on the table. F picks one up; F on the bag puts it in.');return;}
+   // (everything packed, the camera in your pocket: Jamie on his way)
+   go('d5-garage');C.g={t:0};ff('packReady','packed');for(const P of G5.S.items)P.storeIn(G5.S.bag);G5.S.flags.packing=G5.S.flags.allPacked=G5.S.flags.offer=G5.S.flags.cameraAsked=G5.S.flags.cameraTaken=true;G5.S.cam.hide();G5.wearBags();G5.S.flags.shouldered=true;C.inv.camera=true;quiet();jamieArrives();return;}
+  G5.wearBags();
   ff('packReady','packed','jamieComing','departure','leave','toRoad');C.inv.camera=true;
   // ---- the Old Reservoir Road ----
   if(ix<=SECTIONS5.indexOf('c5-crest')){go('d5-ride');hh(HOUR.ride+(section==='c5-ride'?0:.05));objective('Ride to Pine Ridge.','Through town, then north on Mill Street, past the sawhorse.');
@@ -1001,7 +1028,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   light:()=>owns(S.phase)?sky():null,longThrow:()=>null,officerAim:()=>null,
   canDismount:()=>!posed()&&!C.view&&S.phase!=='c5-black'&&!C.lapse,
   canRemount:()=>!C.view&&!posed()&&!C.flags.locked&&!(S.phase==='d5-garage'&&!C.flags.leave),
-  C,camp,shirt,carving,props,sky,inside,W5,RACK,photograph,DOUBLE,trailPath,brain,PLACES});
+  C,camp,shirt,carving,props,sky,inside,W5,RACK,photograph,DOUBLE,trailPath,brain,PLACES,G5,phys});
  Object.defineProperties(A5,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,inv:{...C.inv},clues:[...C.clues].sort(),read:[...C.read].sort(),photos:[...C.photos],
    choice:C.choice,route:C.route,dark:+C.dark.toFixed(3),where:(()=>{const q=EN(p);return {e:+q.e.toFixed(1),n:+q.n.toFixed(1),street:where(p).street};})(),

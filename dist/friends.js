@@ -5,6 +5,7 @@ import {createPerson,blinkPerson,createBike,newPose,ridePose,walkPose,standPose,
 import {groundPoint,heading,roadFrame} from './route.js';
 import {CAST,FORMATION} from './cast.js';
 import {seeded,hashSeed} from './kit.js';
+import {createFace} from './faces.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
 const RAD_PER_M=1.25,SPRINT=6.3;
@@ -31,7 +32,8 @@ export function createFriends(scene,world,hooks={}){
  const sfx=hooks.sfx||(()=>{}),bell=hooks.bell||(()=>{});
  // Jamie's mother comes out a little before he says goodbye.
  const MOM_AT=FORMATION.jamie.leaveAt-15;
- const list=ORDER.map((key,slot)=>{const c=CAST[key],bike=createBike(c.bike),person=createPerson(c);scene.add(bike.group);bike.group.add(person.group);
+ // (each with a face that shows what he feels and moves when he talks: faces.js)
+ const list=ORDER.map((key,slot)=>{const c=CAST[key],bike=createBike(c.bike),person=createPerson({...c,expressive:true});person.face=createFace(person,c);scene.add(bike.group);bike.group.add(person.group);
   return {...FORMATION[key],key,name:c.name,cast:c,R:c.ride,slot,bike,person,pose:newPose(),tmp:newPose(),from:newPose(),rest:newPose(),home:world.homes[key]};});
  // Jamie's mother comes to the door; she is a small part of the scene, not a character.
  const mom={person:createPerson(CAST.mom),pose:newPose()};scene.add(mom.person.group);
@@ -207,7 +209,7 @@ export function createFriends(scene,world,hooks={}){
 
  function update(dt,ctx){
   for(const f of list){
-   blinkPerson(f.person,ctx.clock,f.slot+1);if(f.external)continue;
+   if(f.external)continue;f.person.face.update(dt,{clock:ctx.clock+f.slot*1.37,visible:f.person.group.visible});
    if(f.mode==='ride'&&ctx.distance>=f.leaveAt&&ctx.state!=='intro'){f.mode='leave';f.script=plan(f,ctx);f.step=0;}
    if(f.mode==='ride')ride(f,dt,ctx);
    f.posed=false;if(f.script&&f.step<f.script.length){if(f.script[f.step](dt,ctx))f.step++;}
