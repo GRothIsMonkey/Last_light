@@ -112,6 +112,7 @@ export const IGNORE=[
  // separately to be in the same place (within NEAR metres); headings are not compared. Derived from them:
  // Chapter One's distance-along-the-road tracker (lastDp, dpRate) and the siren's distance (siren.lastDist).
  /^player\.roam\.(x|z|a)$/, /^player\.walk\./, /^companions\.\d+\.(p|b)\.(x|z)$/, /^companions\.\d+\.(pa|ba|speed)$/,
+ /^chapter5\.state\.where\.(e|n)$/, // Chapter Five's mirror of the player's position (same check as above)
  /^people\..*\.(x|z)$/, /^police\.car[AB]\.(x|z)$/, /^chapter1\.(lastDp|dpRate)$/, /^chapter1\.siren\.lastDist$/, /^game\.(lateral|speed)$/,
  // The Chapter Two searchers still walking their routes in the morning: how far along depends on how long
  // Chapter Two's dawn ran (they are hidden for the night in Chapter Three; never part of the story state).

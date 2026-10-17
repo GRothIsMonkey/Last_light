@@ -60,7 +60,10 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  // ---- pack, Jamie's sock, out ----
  const sq=A5.W5?null:null;void sq;const g=h.world.homes.sam;void g;
  {const s=boys().find(c=>c.key==='sam');go({x:s.px,z:s.pz},{r:2.2,max:20});faceTo(s.px,s.pz);act('c5-pack',6);}
- U(()=>C5().flags.leave,90);check(`${label}: packing, then Jamie with one sock, and the ride`,()=>{assert.ok(C5().flags.packed&&C5().flags.departure&&C5().flags.leave);assert.ok(C5().inv.camera,'the camera is yours to hold');assert.ok(log.said.some(l=>/one sock/.test(l)));});
+ // Jamie's bag, dropped open on the driveway: you look in it (one sock)
+ U(()=>C5().flags.bagOpen,60);{const b=A5.props.getObjectByName('jamie-backpack').position;go({x:b.x,z:b.z},{r:1.3,max:12});faceTo(b.x,b.z,-.6);act('c5-bag',6);}
+ U(()=>C5().flags.leave,90);check(`${label}: packing, Jamie's bag (one sock), what happened downtown, and the ride`,()=>{assert.ok(C5().flags.packed&&C5().flags.departure&&C5().flags.leave);assert.ok(C5().inv.camera,'the camera is yours to hold');assert.ok(C5().flags.bagSeen,'you looked in Jamie’s bag');
+  assert.ok(log.said.some(l=>/one sock/.test(l)));assert.ok(log.said.some(l=>/copying us/.test(l))&&log.said.some(l=>/wants us out there/.test(l)),'Sam’s worry about downtown');});
  onBike();const d0=h.world.homes.sam.drivD;rideTo([M(d0-14,-2.2),M(d0-30,-2.2),M(d0-50,-2.2)],40,3,()=>S().phase==='d5-ride');U(()=>S().phase==='d5-ride'&&A5.C.fadeIn<0,10);
  check(`${label}: out of town, on Mill Street past the sawhorse (the Old Reservoir Road)`,()=>{assert.equal(S().phase,'d5-ride');assert.ok(Math.abs(C5().where.e)<12&&C5().where.n<10,JSON.stringify(C5().where));});
  // ---- the race: Jamie goes; you go too ----
@@ -181,6 +184,9 @@ export async function runChapterFiveChecks(T,cap){
  const jumps={};
  for(const sec of A5.SECTIONS){let r;try{h.jump(sec);advance(.2);const ph0=S().phase;until(()=>false,2.5);r={ok:true,phase:ph0,phase2:S().phase,gap:+gap().toFixed(1),finite:X.companionsFinite(),boys:boys().length};}catch(e){r={ok:false,err:String(e).slice(0,300)};}jumps[sec]=r;}
  check(`Chapter Five: every one of its ${A5.SECTIONS.length} jumps starts without an error, Jamie and Sam with you`,()=>{const bad=Object.entries(jumps).filter(([k,r])=>!r.ok||!r.finite||r.boys!==2||(r.gap>14&&!/^(chapter5-start|c5-garage|c5-departure)$/.test(k)));assert.deepEqual(bad,[]);});
+ // a jump (Continue, DEV) into the ride, the park or the set piece: the beat's own lines and objective; the flashlight's lights in the scene
+ const obj={};for(const sec of ['c5-ride','c5-race','c5-crest','c5-arrival','c5-split','c5-compromise','c5-camp']){h.jump(sec);advance(.2);until(()=>!!S().objective,20);obj[sec]={objective:S().objective||'',flash:!!h.foot.light.parent&&!!h.foot.spill.parent};}
+ check('Chapter Five: a jump into the ride, the park or the set piece shows its objective; the flashlight’s two lights are in the scene',()=>{const bad=Object.entries(obj).filter(([k,v])=>!v.objective||!v.flash);assert.deepEqual(bad,[],JSON.stringify(obj));});
  for(const [k,a] of Object.entries(A5.ALIAS)){h.jump(k);advance(.1);check(`Chapter Five alias ${k} → ${a}`,()=>assert.ok(S().phase&&A5.owns(S().phase)));}
  // Continue: every checkpoint label exists and returns there
  const labels=Object.keys(A5.LABEL);check(`Chapter Five: ${labels.length} checkpoints, each a jump`,()=>{for(const id of labels)assert.ok(A5.SECTIONS.includes(id),id);});
@@ -201,6 +207,10 @@ export async function runChapterFiveChecks(T,cap){
   h.jump(sec);advance(.3);const ph=S().phase;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended',sec==='c5-park'?260:sec==='c5-camp'?600:420);idle[sec]={from:ph,to:S().phase,moved,ended:h.snapshot.state==='ended'};}
  check('Chapter Five fallbacks: standing still, every scene moves on in time (the boys pull you along)',()=>{const stuck=Object.entries(idle).filter(([k,v])=>!v.moved);assert.deepEqual(stuck,[]);});
  metrics['chapter5 idle fallbacks']=Object.fromEntries(Object.entries(idle).map(([k,v])=>[k,v.from+'→'+(v.ended?'end':v.to)]));
+ // ---- the campfire: S stands you up while they talk, F sits you back down ----
+ {const {tap}=T;h.jump('c5-campfire');advance(.3);X.act('c5-fire',6);until(()=>A5.C.pose?.w>.95,5);const sat=!!A5.C.pose;tap('KeyS');until(()=>!A5.C.pose,4);const stood=!A5.C.pose&&!h.night.roam.walkLock;
+  wait(1);const talking=S().phase==='d5-fire'&&(!!S().line||S().queue.length>0);X.act('c5-resit',6);until(()=>A5.C.pose?.w>.95,5);const again=!!A5.C.pose;
+  check('Chapter Five campfire: sitting is yours to undo (S stands you up, the talk goes on, F sits you back down)',()=>{assert.ok(sat&&stood&&talking&&again,JSON.stringify({sat,stood,talking,again}));});}
  // ---- Chapter Four keeps its north edge: Mill Street past the sawhorse opens only in Chapter Five ------------------------------
  {const {TW}=await import('../dist/town-plan.js'),probe=()=>[70,78,84].map(v=>{const q=TW(0,v);return {v,walk:!!h.nav.walkable(q.x,q.z),ride:!!h.nav.rideable(q.x,q.z)};});
   h.jump('c4-main-street');advance(.5);const ch4=probe();h.jump('c5-ride');advance(.5);const ch5=probe();
