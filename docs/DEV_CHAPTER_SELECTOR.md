@@ -9,6 +9,28 @@ rebuild can be playtested from any chapter. Everything below applies there uncha
 rebuild's evidence is in `docs/qa/dev-chapters-rebuild/` (the files in `docs/qa/dev-chapters/` are the
 playtest build's, kept as they were).
 
+## On `claude/chapter5-gameplay-story-repair`: Chapter Five's scenes start with the repair's state
+
+Same picker, same 37 Chapter Five scenes, same names and order (137 in all); Chapters 0–4 unchanged. Each scene's
+initializer (`chapter5.jump(section)`) now also sets what the repair added, as a player arriving there would have it:
+
+- **Props and bags**: everything packed in the garage is in Sam's bag (G5 `wearBags`), minus what has been handed out by
+  then (two flashlights at the camp gate, a battery pack in Bluejay, a water bottle at the fire); Jamie's sock and the
+  granola bars in Jamie's bag; the map in Sam's pocket. Nothing duplicates on a second DEV start (G5 `reset` clears
+  `given`).
+- **The yellow gate**: shut before *The Yellow Gate*, open (walked round by Jamie) from the gravel road on
+  (`GT.setOpen/setShut`, snapped, no swing). The camp gate's leaves as the story has them.
+- **The flashlight**: from the camp on, in your hand and off; from the cabins on, the batteries changed and the light
+  on. The inventory (I) is derived from this state.
+- **The shirt**: from Owl on, in Sam's bag (`GR.shirtInBag`), never back on its nail.
+- **The clock**: the new afternoon (out of the garage at 3:37 PM; the fire about 6:45 PM); the picture none of them took
+  is stamped with the rest's time when a scene after the fire is started.
+- **The night**: the three lights' route (office → map board → fire), the double's walk and the gate's slam are fresh in
+  each scene that starts before them.
+
+Verification: the same DEV checks as below (all scenes start; natural vs DEV start; 18 scenes start before their event;
+switching leaks nothing), plus the repair's own checks in `tests/chapter5-sim.mjs` and `tests/chapter5-companions.mjs`.
+
 ## On `claude/chapter5-pine-ridge`: Chapter Five added
 
 The picker is the same two-step picker, still TEMPORARY and still only on the title, with a sixth chapter button,

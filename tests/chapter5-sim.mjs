@@ -188,7 +188,7 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  // ---- run ----
  if(!seg('run'))return;
  const tRun=h.snapshot.clock;
- if(route==='A'){trek([P5(-262,556),P5(-236,552),P5(-212,546),P5(-192,538),P5(-180,528),P5(-170,518),P5(-163,506),P5(-158,496)],{r:1.6,max:120,sprint:true,stop:()=>C5().flags.boundary});}
+ if(route==='A'){trek([P5(-262,556),P5(-236,552),P5(-212,546),P5(-192,538),P5(-178,524),P5(-170,518),P5(-163,506),P5(-158,496)],{r:1.6,max:120,sprint:true,stop:()=>C5().flags.boundary});}
  else{go(Q5(-312,562),{r:.6,max:60,sprint:true,stop:()=>C5().flags.boundary});// (off Owl's porch round its corner: follow the path closely)
  walkTo([P5(-320,540),P5(-326,516),P5(-337,492),P5(-347,466),P5(-352,450),P5(-352,444)],{r:1.6,max:150,sprint:true,stop:()=>C5().flags.boundary});}// (onto the dam itself)
  U(()=>S().phase==='n5-out',40);check(`${label}: the escape by route ${route}, and the boundary: ${route==='A'?'the camp gate slams shut in front of you; Sam shoves it open':'the bell, by itself'}; every light out at once`,()=>{assert.equal(C5().route,route);assert.ok(C5().flags.boundary);if(route==='A')assert.equal(A5.C.flags.gateOpened,'sam');assert.ok(Object.values(C5().lamps).every(v=>v<.2),JSON.stringify(C5().lamps));});
@@ -236,16 +236,23 @@ export async function runChapterFiveChecks(T,cap){
  // and in time, whatever you do, they come back together (nobody is lost)
  h.jump('c5-split');advance(.2);until(()=>C5().split.resolved,80);check('Chapter Five set piece: in time the two of them come back together on their own (Sam’s compromise)',()=>assert.ok(C5().split.resolved));
  // ---- fallbacks: a player who idles everywhere is carried on, never stuck ------------------------------------------------------
+ // Standing still in each scene. Evidence is yours to find (the picture's match, the camp's records and pantry and cabins,
+ // the shirt, the last picture): those scenes never move on without you, they say more and more plainly where to look.
+ // Getting somewhere (the map, the gate, the road, Owl, the porch, the walk back) is pulled along by the boys, and only
+ // after a long while (a lost walk) does a fade bring you on. The optional and the eventful move on in time.
+ const EVIDENCE=new Set(['c5-sign-search','c5-camp','c5-owl','c5-second-discovery']),TRAVEL=new Set(['c5-trail-map','c5-gate-decision','c5-gravel-road','c5-golden-hour','c5-window','c5-aftermath']);
  const idle={};for(const sec of ['c5-park','c5-stones','c5-dock-memory','c5-sign-search','c5-trail-map','c5-gate-decision','c5-gravel-road','c5-camp','c5-golden-hour','c5-owl','c5-three-lights','c5-split','c5-window','c5-run','c5-route-c','c5-aftermath','c5-second-discovery','chapter5-end']){
-  h.jump(sec);advance(.3);const ph=S().phase;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended',sec==='c5-park'?260:sec==='c5-camp'?600:420);
+  h.jump(sec);advance(.3);const ev0=JSON.stringify({m:!!C5().flags.match,c:C5().clues.length,s:!!C5().flags.shirtSeen,f:!!C5().flags.found}),ph=S().phase,n0=log.said.length,lim=EVIDENCE.has(sec)?(sec==='c5-camp'?420:300):sec==='c5-park'?260:TRAVEL.has(sec)?320:420;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended',lim);
   // (and wherever a fallback's fade put the three of you, it is ground you can walk on)
   wait(1.5);const p=me(),stand=[p,...boys().map(c=>({x:c.px,z:c.pz}))].map(q=>!!h.nav.walkable(q.x,q.z,{r:.25}));
-  idle[sec]={from:ph,to:S().phase,moved,ended:h.snapshot.state==='ended',stand:A5.C.pose||h.snapshot.state==='ended'||stand.every(Boolean)};}
- check('Chapter Five fallbacks: standing still, every scene moves on in time (the boys pull you along), and nobody is left where they cannot walk',()=>{const stuck=Object.entries(idle).filter(([k,v])=>!v.moved||!v.stand);assert.deepEqual(stuck,[]);});
- metrics['chapter5 idle fallbacks']=Object.fromEntries(Object.entries(idle).map(([k,v])=>[k,v.from+'→'+(v.ended?'end':v.to)]));
+  const found=JSON.stringify({m:!!C5().flags.match,c:C5().clues.length,s:!!C5().flags.shirtSeen,f:!!C5().flags.found})!==ev0;
+  idle[sec]={from:ph,to:S().phase,moved,found,said:log.said.length-n0,kind:EVIDENCE.has(sec)?'evidence':TRAVEL.has(sec)?'travel':'event',ended:h.snapshot.state==='ended',stand:A5.C.pose||h.snapshot.state==='ended'||stand.every(Boolean)};}
+ check('Chapter Five fallbacks: standing still, evidence is never found for you (only hints, plainer each time); getting somewhere, the boys pull you along; the optional and the eventful move on; nobody left where they cannot walk',()=>{
+  const bad=Object.entries(idle).filter(([k,v])=>!v.stand||(v.kind==='evidence'&&(v.found||v.said<2))||(v.kind==='travel'&&!v.moved&&v.said<2)||(v.kind==='event'&&!v.moved));assert.deepEqual(bad,[]);});
+ metrics['chapter5 idle fallbacks']=Object.fromEntries(Object.entries(idle).map(([k,v])=>[k,v.kind+': '+v.from+'→'+(v.ended?'end':v.to)+' ('+v.said+' lines)']));
  // ---- the garage: after "Ride to Pine Ridge." you have a minute to ride out before the fade carries you ----
- {h.jump('c5-departure');advance(.3);until(()=>A5.C.flags.leave,120);const t0=h.snapshot.clock;until(()=>A5.C.flags.toRoad,120);const gap=h.snapshot.clock-t0;
-  check(`Chapter Five garage: standing still after “Ride to Pine Ridge.”, the ride out comes ${gap.toFixed(0)} s later (time to ride out first)`,()=>assert.ok(gap>55&&gap<70,gap));}
+ {h.jump('c5-departure');advance(.3);until(()=>A5.C.flags.leave,120);const t0=h.snapshot.clock,n0=log.said.length;until(()=>A5.C.flags.toRoad,220);const gap=h.snapshot.clock-t0,calls=log.said.length-n0;
+  check(`Chapter Five garage: standing still after “Ride to Pine Ridge.”, they wait at the end of the driveway and call you (${calls} lines); only after ${gap.toFixed(0)} s does the ride out come on its own`,()=>{assert.ok(gap>150&&gap<175,gap);assert.ok(calls>=2,'calls '+calls);});}
  // ---- the campfire: S stands you up while they talk, F sits you back down ----
  {const {tap}=T;h.jump('c5-campfire');advance(.3);X.act('c5-fire',6);until(()=>A5.C.pose?.w>.95,5);const sat=!!A5.C.pose;tap('KeyS');until(()=>!A5.C.pose,4);const stood=!A5.C.pose&&!h.night.roam.walkLock;
   wait(1);const talking=S().phase==='d5-fire'&&(!!S().line||S().queue.length>0);X.act('c5-resit',6);until(()=>A5.C.pose?.w>.95,5);const again=!!A5.C.pose;

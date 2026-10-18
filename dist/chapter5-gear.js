@@ -83,9 +83,9 @@ export function createGear(X){
   // (the index finger that presses the shutter: a fingertip over the button)
   finger=new THREE.Mesh(new THREE.CapsuleGeometry(.0072,.026,4,8),new THREE.MeshStandardMaterial({color:X.skin?.()??0xc8946e,roughness:.7}));finger.rotation.z=Math.PI/2.3;g.add(finger);}
  // in view: at arm's length, a little below the eye, its back (the screen) to you
- const HOLD=new THREE.Vector3(.0,-.085,-.33);
+ const HOLD=new THREE.Vector3(.0,-.055,-.36);
  function shoot(fn){if(S.shot||busy())return false;buildModel();const g=model.group;g.visible=true;g.position.set(.03,-.32,-.3);g.rotation.set(-.5,Math.PI,0);
-  S.shot={e:0,fn,fired:false};phys.ME.act={kind:'gear',what:'shoot',e:0};preview();S.log.push('shoot');return true;}
+  S.shot={e:0,fn,fired:false};foot.hideTorch=true;phys.ME.act={kind:'gear',what:'shoot',e:0};preview();S.log.push('shoot');return true;}
  function shootArms(p,A,toLocal){const Sh=S.shot;if(!Sh){end(A);return;}const e=A.e,g=model.group,up=smooth(e/.38)*(1-smooth((e-1.05)/.35));
   g.position.set(HOLD.x+.03*(1-up),HOLD.y-.24*(1-up),HOLD.z+.04*(1-up));g.rotation.set(-.5*(1-up)+.02,Math.PI,.05*(1-up));
   // the finger: above the shutter, down on it at .42-.5, up
@@ -94,7 +94,7 @@ export function createGear(X){
   g.updateMatrixWorld(true);const R=toLocal(g.localToWorld(tmpV.set(-.06,-.006,.01)).clone()),L=toLocal(g.localToWorld(tmpV.set(.06,-.006,.01)).clone());
   lerp3(p,PI.rh,[R.x,R.y,R.z],up);lerp3(p,PI.lh,[L.x,L.y,L.z],up);p[PI.re]=.7;p[PI.re+1]=-.5;p[PI.re+2]=.3;p[PI.le]=-.7;p[PI.le+1]=-.5;p[PI.le+2]=.3;
   if(!Sh.fired&&e>=.46){Sh.fired=true;const r=Sh.fn?.();flash();if(r&&r.px)toLCD(r);}
-  if(e>=1.4){g.visible=false;S.shot=null;end(A);}}
+  if(e>=1.4){g.visible=false;S.shot=null;foot.hideTorch=false;end(A);}}
  // the flash: the spill light, wide, from the camera, for a moment; strong as the dark is deep
  function flash(){const dark=clamp(X.darkness(),0,1);foot.flash=.6+9*dark*dark;S.flashAt=X.t();S.log.push('flash:'+foot.flash.toFixed(1));}
  function preview(){const r=X.render?.(160,120);if(r)toLCD(r);}
@@ -125,6 +125,6 @@ export function createGear(X){
  // ---- the inventory ----------------------------------------------------------------------------------------------------------------
  const inv=createInventory({items:()=>X.items({flashlight:{have:has(),hand:inHand(),on:!!foot.on,dead:!!(X.flags().dead&&!X.flags().batteries)}}),
   use:id=>{if(id==='flashlight'){if(inHand())putAway();else takeOut(false);}else X.use?.(id,inv);},onOpen:()=>X.held(true),onClose:()=>X.held(false)});
- function reset(){S.torchOut=S.offerTorch=S.torchTaken=S.jtorchTaken=false;S.torch=S.jtorch=null;S.act=null;S.onIn=0;S.dieT=0;S.batt=null;S.offerBatt=false;S.battTaken=false;S.shot=null;S.log.length=0;foot.flash=0;if(model)model.group.visible=false;if(shirtP){X.shirt.scale.set(1,1,1);}inv.reset();}
+ function reset(){S.torchOut=S.offerTorch=S.torchTaken=S.jtorchTaken=false;S.torch=S.jtorch=null;S.act=null;S.onIn=0;S.dieT=0;S.batt=null;S.offerBatt=false;S.battTaken=false;S.shot=null;S.log.length=0;foot.flash=0;foot.hideTorch=false;if(model)model.group.visible=false;if(shirtP){X.shirt.scale.set(1,1,1);}inv.reset();}
  return {S,inv,handOut,takeOut,putAway,toggle,set,shoot,hidden,hangShirt,shirtInBag,samTakesShirt,update,spots,act,reset,get inHand(){return inHand();},get model(){return model;}};
 }

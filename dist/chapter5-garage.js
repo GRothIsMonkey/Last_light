@@ -183,7 +183,7 @@ export function createGarage(X){
  function given(kind,n=1){for(let i=0;i<n;i++){const P=packedOf(kind);if(P){P.given=true;P.hide();}}}
  const packedOf=kind=>S.items.find(q=>q.kind===kind&&q.state==='stored'&&!q.given)||null;
  // ---- the bags on their backs from here on ------------------------------------------------------------------------------------
- function wearBags({jamieBag=true,samBag=true}={}){build();if(samBag){openFlap(S.bagParts,0);S.bagP.wearOn(sam.person);for(const P of S.items)if(!P.given&&P.state!=='stored')P.storeIn(S.bag);}if(jamieBag){openFlap(S.jbagParts,0);S.jbagP.wearOn(jamie.person);}}
+ function wearBags({jamieBag=true,samBag=true,after=false}={}){build();if(after&&jamieBag){for(const P of [...S.bars,S.sock])if(P&&!P.given&&P.state!=='stored')P.storeIn(S.jbag);}if(samBag){openFlap(S.bagParts,0);S.bagP.wearOn(sam.person);for(const P of S.items)if(!P.given&&P.state!=='stored')P.storeIn(S.bag);}if(jamieBag){openFlap(S.jbagParts,0);S.jbagP.wearOn(jamie.person);}}
  // the flap pulled shut, then both hands on it and it goes up onto his back
  function closeAndShoulder(then=null){comp.run(sam,[phys.reach(sam,{at:()=>mouth(),dur:[.4,.2,.2],carry:false,onContact:()=>{openFlap(S.bagParts,0);X.sound('cloth',mouth(),{gain:.2});}}),phys.reach(sam,{at:()=>S.bagP.obj.position.clone().add(new THREE.Vector3(0,.2,0)),both:true,dur:[.45,.1,.35],carry:false,onContact:()=>{S.bagP.wearOn(sam.person);X.sound('cloth',S.bagP.obj.position,{gain:.3});}})],{then:()=>{S.flags.shouldered=true;then?.();}});}
  // folded up again and into his back pocket ("I'll bring the map")

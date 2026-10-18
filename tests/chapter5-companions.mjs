@@ -33,7 +33,7 @@ export function runCompanionTests(T,X){
  // ---- A: a minute standing still in the open ----
  {open();const R=sampler();run(R,60,{settle:8});
   M.A={path:{jamie:+R.path.jamie.toFixed(1),sam:+R.path.sam.toFixed(1)},moves:R.moves,sprints:R.sprints,minGap:+R.minGap.toFixed(2),minYou:+R.minYou.toFixed(2),goals:{jamie:R.goals.jamie.length,sam:R.goals.sam.length},flips:{jamie:R.flips('jamie'),sam:R.flips('sam')}};
-  check(`Companions A: a minute standing still in the park: they settle (walked ${M.A.path.jamie} m and ${M.A.path.sam} m after settling, on purpose), no pacing, no sprints, nobody bumps`,()=>{
+  check(`Companions A: a minute standing still in the open, inside the camp gate: they settle (walked ${M.A.path.jamie} m and ${M.A.path.sam} m after settling, on purpose), no pacing, no sprints, nobody bumps`,()=>{
    for(const k of ['jamie','sam']){assert.ok(R.path[k]<30,k+' walked '+R.path[k]);assert.ok(R.moves[k]<=6,k+' moves '+R.moves[k]);assert.equal(R.sprints[k],0,k+' sprints');assert.ok(R.flips(k)<=1,k+' flip-flops '+R.flips(k));}assert.ok(R.minGap>.55,'gap '+R.minGap);assert.ok(R.minYou>.6,'to you '+R.minYou);});}
  // ---- B: a sudden sprint from rest ----
  {open();run(sampler(),6);const R=sampler(),q=(()=>{const w=W5(-206,545);return [w.x,w.z];})();
@@ -54,7 +54,7 @@ export function runCompanionTests(T,X){
   walkPath(R,away,{max:14});walkPath(R,{x:p0.x,z:p0.z},{max:14});run(R,6);M.D={flips:{jamie:R.flips('jamie'),sam:R.flips('sam')},goals:{jamie:R.goals.jamie.map(g=>g.g).join(' '),sam:R.goals.sam.map(g=>g.g).join(' ')}};
   check('Companions D: walking away and coming back: no flip-flopping between goals',()=>{for(const k of ['jamie','sam'])assert.ok(R.flips(k)<=2,k+': '+M.D.goals[k]);assert.ok(R.minYou>.55,'to you '+R.minYou);});}
  // ---- E: the garage departure, you standing still ----
- {h.jump('c5-departure');adv(.5);const R=sampler();let jr=null,sr=null,jm=null,sm=null;const[J0,S0]=boys();for(let t=0;t<150&&!(jr&&sr);t+=1/30){adv(1/30);R.tick(1/30);const F=A5.C.flags;if(!jr&&F['ready-jamie'])jr=+t.toFixed(1);if(!sr&&F['ready-sam'])sr=+t.toFixed(1);if(jm==null&&J0.mode==='ride')jm=+t.toFixed(1);if(sm==null&&S0.mode==='ride')sm=+t.toFixed(1);}
+ {h.jump('c5-departure');adv(.5);const R=sampler();let jr=null,sr=null,jm=null,sm=null,jf=false,sf=false;const[J0,S0]=boys();for(let t=0;t<150&&!(jr&&sr);t+=1/30){adv(1/30);R.tick(1/30);const F=A5.C.flags;if(!jr&&F['ready-jamie'])jr=+t.toFixed(1);if(!sr&&F['ready-sam'])sr=+t.toFixed(1);if(J0.mode==='foot')jf=true;if(S0.mode==='foot')sf=true;if(jm==null&&jf&&J0.mode==='ride')jm=+t.toFixed(1);if(sm==null&&sf&&S0.mode==='ride')sm=+t.toFixed(1);}
   M.E={jamieReady:jr,samReady:sr,jamieMounted:jm,samMounted:sm,modes:boys().map(c=>c.mode)};
   check(`Companions E: you stand still after packing; Jamie and Sam go to their own bikes and get on by themselves (Jamie on at ${jm} s, Sam at ${sm} s; waiting at ${jr} s and ${sr} s)`,()=>{assert.ok(jr!=null&&sr!=null&&jm!=null&&sm!=null,JSON.stringify(M.E));assert.ok(Math.abs(jm-sm)>.8,'not in step');assert.ok(boys().every(c=>c.mode==='ride'),'on their bikes');});}
  // ---- F: minutes in the camp, from building to building ----
@@ -72,7 +72,7 @@ export function runCompanionTests(T,X){
   M.G={minGap:+R.minGap.toFixed(2),minYou:+R.minYou.toFixed(2),seconds:+R.t.toFixed(0)};void DO;
   check(`Companions G: inside the office, round the counter and back: nobody walks through anybody (closest ${M.G.minYou} m to you, ${M.G.minGap} m to each other)`,()=>{assert.ok(R.minYou>.45,'to you '+R.minYou);assert.ok(R.minGap>.45,'gap '+R.minGap);});}
  // ---- H: the run ----
- {h.jump('c5-run');adv(.3);const R=sampler(),pts=[[-262,556],[-236,552],[-212,546],[-192,538],[-180,528]].map(([e,n])=>W5(e,n));for(const q of pts)walkPath(R,q,{max:20,sprint:true});
+ {h.jump('c5-run');adv(.3);const R=sampler(),pts=[[-262,556],[-236,552],[-212,546],[-192,538],[-178,524]].map(([e,n])=>W5(e,n));for(const q of pts)walkPath(R,q,{max:20,sprint:true});
   const far={jamie:Math.max(...R.dist.jamie),sam:Math.max(...R.dist.sam)},runFrac=k=>R.speeds[k].filter(v=>v>2.4).length/Math.max(1,R.speeds[k].length);
   M.H={far:{jamie:+far.jamie.toFixed(1),sam:+far.sam.toFixed(1)},running:{jamie:+runFrac('jamie').toFixed(2),sam:+runFrac('sam').toFixed(2)},minYou:+R.minYou.toFixed(2)};
   check(`Companions H: the run: they run (${Math.round(runFrac('jamie')*100)}% and ${Math.round(runFrac('sam')*100)}% of it), keep with you (farthest ${M.H.far.jamie} m, ${M.H.far.sam} m), and don't run into you`,()=>{for(const k of ['jamie','sam']){assert.ok(far[k]<18,k+' far '+far[k]);assert.ok(runFrac(k)>.25,k+' running '+runFrac(k));}assert.ok(R.minYou>.5,'to you '+R.minYou);});}

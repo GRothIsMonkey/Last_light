@@ -58,7 +58,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    applyPose(self,pose);
   },
   lamp(dt,walking){
-   torch.visible=walking&&F.owned;light.intensity=walking&&F.on?24:0;spill.intensity=0;
+   torch.visible=walking&&F.owned&&!F.hideTorch;// (hidden while both hands hold Alex's camera)light.intensity=walking&&F.on?24:0;spill.intensity=0;
    if(!torch.visible)return;self.group.updateMatrixWorld(true);self.parts.rhand.getWorldPosition(hand);
    // The beam is only as strong as what it lands on can take: a level of light on whatever is nearest
    // in it (the ground looked down at, a wall in the storm drain, a friend standing in it), so nothing

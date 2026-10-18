@@ -30,6 +30,11 @@ try{
   const cap=async(name,{text=true}={})=>{L.render();const src=L.renderer.domElement,c=document.createElement('canvas');c.width=src.width;c.height=src.height;const g=c.getContext('2d');g.drawImage(src,0,0);
    if(text){const k=c.width/1280,line=(s,x,y,sz,al='left')=>{g.font=`${Math.round(sz*k)}px Georgia, serif`;g.textAlign=al;g.fillStyle='rgba(0,0,0,.6)';g.fillText(s,x*k+1,y*k+1);g.fillStyle='rgba(255,248,236,.95)';g.fillText(s,x*k,y*k);};
     const date=document.getElementById('date')?.textContent||'',obj=document.getElementById('objective')?.textContent||'',cap=document.getElementById('subtitle')?.style.opacity==='0'?'':document.getElementById('subtitle')?.textContent||'',pr=L.state.prompt||'';
+    // (the inventory panel, when open: drawn from its text, the way it sits at the right of the view)
+    const inv=document.getElementById('inventory');if(inv&&!inv.hidden){const rows=[...inv.querySelectorAll('.inv-head,.inv-row')];let y=150;g.fillStyle='rgba(17,20,25,.86)';g.fillRect(c.width-380*k,130*k,340*k,(30+rows.length*38)*k);
+     for(const r of rows){const head=r.classList.contains('inv-head'),sel=r.classList.contains('sel');if(sel){g.fillStyle='rgba(255,241,216,.14)';g.fillRect(c.width-372*k,(y-16)*k,324*k,34*k);}
+      const nm=head?r.textContent.toUpperCase():(r.querySelector('.inv-name')?.textContent||'')+(r.querySelector('.inv-state')?'  ·  '+r.querySelector('.inv-state').textContent:'');line(nm,(1280-364),y,head?11:15);
+      if(!head&&r.querySelector('.inv-note'))line(r.querySelector('.inv-note').textContent.slice(0,52),(1280-364),y+15,11);y+=38;}}
     line(date.toUpperCase(),40,56,14);if(obj)line(obj,40,80,16);if(cap)line(cap.slice(0,120),640,730,21,'center');if(pr)line(pr,640,770,16,'center');line(name,1240,790,12,'right');}
    await window.__save(name,c.toDataURL('image/jpeg',.86));};
   const face=(a,p=0)=>L.face(a,p);

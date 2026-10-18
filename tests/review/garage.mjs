@@ -3,7 +3,7 @@ export default async function(L,{cap,step,press,release,tap,face}){globalThis.__
  const C5=L.chapter5,G=C5.G5,GS=G.S,cam=L.camera;
  const lookAt=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));};
  const walkTo=(q,max=6)=>{for(let t=0;t<max;t+=1/30){const w=L.state.walk,dx=q.x-w.x,dz=q.z-w.z;if(Math.hypot(dx,dz)<.25)break;face(Math.atan2(dx,-dz),0);press('KeyW');step(1/30);}release('KeyW');};
- const J=L.chapter.companions.list.jamie,S=L.chapter.companions.list.sam,head=c=>({x:c.px,y:c.person.group.position.y+1.3,z:c.pz});
+ const J=L.chapter.companions.list.jamie,S=L.chapter.companions.list.sam,head=c=>{const g=c.person.group.position;return {x:g.x,y:g.y+1.3,z:g.z};};
  L.jump('chapter5-start');step(7.5);lookAt(G.TL(0,.2));await cap('g01-garage-sam-at-the-table');
  walkTo(G.TL(0,-.78,0));for(let i=0;i<60&&!GS.flags.packing;i++)step(.25);step(.3);
  const P=GS.items.find(q=>q.state==='placed'&&!q.claimed&&q.kind==='flashlight');lookAt(P.obj.position);step(.1);await cap('g02-look-at-a-flashlight');
@@ -19,7 +19,7 @@ export default async function(L,{cap,step,press,release,tap,face}){globalThis.__
  for(let i=0;i<120&&!GS.flags.mapOpen;i++)step(.25);step(1.5);lookAt(G.TL(0,0,.73));step(.1);await cap('g17-the-map-on-the-table');
  step(2.5);await cap('g18-sam-points');
  const mp=GS.map.obj.position;tap('KeyF');step(1.5);await cap('g19-looking-at-the-map');step(9);
- for(let i=0;i<200&&!C5.C.flags.leave;i++)step(.25);for(let i=0;i<40&&J.script?.[J.step]&&J.mode==='foot';i++){step(.2);lookAt(head(J));}
+ for(let i=0;i<200&&!C5.C.flags.leave;i++)step(.25);walkTo(G.TL(0,-5.2,0),6);for(let i=0;i<10&&J.script?.[J.step]&&J.mode==='foot';i++){step(.2);lookAt(head(J));}
  lookAt(head(J));await cap('g20-jamie-to-his-bike');for(let i=0;i<40&&J.mode==='foot';i++){step(.1);lookAt(head(J));}await cap('g21-jamie-kickstand-and-mount');step(.6);await cap('g22-jamie-mounting');step(.8);await cap('g23-jamie-on-his-bike');
  for(let i=0;i<80&&!(C5.C.flags['ready-sam']);i++)step(.25);lookAt({x:(J.bx+S.bx)/2,y:cam.position.y-.3,z:(J.bz+S.bz)/2});await cap('g24-both-waiting-at-the-end-of-the-driveway');
  return {packedBy:GS.packedBy,flags:Object.keys(GS.flags)};

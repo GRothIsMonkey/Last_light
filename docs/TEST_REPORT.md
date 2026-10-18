@@ -1,3 +1,41 @@
+# Last Light — Chapter Five gameplay and story repair: verification
+
+Branch `claude/chapter5-gameplay-story-repair` from `claude/chapter5-pine-ridge` at
+`cafc27f7f6ffd9ce8229b3a1cb7075680c332be8` (which descends from the accepted Chapter Four commit
+`c9647772642c0bbb5478bdb04bf36592fcc74919`). Linear history; no rebase, squash, merge or force-push. Rendering is
+software (Chromium with SwiftShader); frame times are not real-GPU numbers. Sound off; audio is placeholder.
+What changed and why: `docs/CHAPTER5_GAMEPLAY_STORY_REPAIR.md`. This build waits on human review; it is not approved.
+
+## Gates
+
+| Gate | Result |
+|---|---|
+{{GATES}}
+
+## The repair's own checks (simulation, `tests/chapter5-sim.mjs`, `tests/chapter5-companions.mjs`)
+
+{{CHECKS}}
+
+## Human-viewable review frames (Chromium, `tests/review-capture.mjs`)
+
+Frames from the real renderer at player height, before, during and after each action, in `docs/qa/chapter5-repair/`
+(one folder per script, contact sheets alongside). They are for a person to judge, not pass/fail; what was found in
+them and fixed is listed under *Found in the frames*.
+
+{{FRAMES}}
+
+## Found in the frames, and fixed
+
+{{FOUND}}
+
+## Memory and lights
+
+{{MEMORY}}
+
+## Not done / limits
+
+{{LIMITS}}
+
 # Last Light — Chapter Five: The Place in the Picture: verification
 
 Branch `claude/chapter5-pine-ridge`, created from `codex/astra-chapter4-repair-pass2` at

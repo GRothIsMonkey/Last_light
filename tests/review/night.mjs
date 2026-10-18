@@ -26,7 +26,7 @@ export default async function(L,{cap,step,press,release,tap,face}){
  until(()=>C5.C.win?.stage==='come',20);for(let i=0;i<4;i++){step(1);lookAt({x:camp.D.x,y:camp.D.y+1.3,z:camp.D.z});await cap('n14-it-comes-out-'+i);if(C5.C.win.stage==='run')break;}
  until(()=>C5.C.flags.wake,10);step(.6);await cap('n15-every-light-RUN');
  // ---- the gate ----
- L.jump('c5-run');step(.4);for(const [e,n] of [[-262,556],[-236,552],[-212,546],[-192,538],[-180,528],[-172,520]]){walkTo(W(e,n),16,true);if(C5.C.flags.gateShut)break;}
+ L.jump('c5-run');step(.4);for(const [e,n] of [[-262,556],[-236,552],[-212,546],[-192,538],[-186.6,532.6],[-185.3,530],[-178.8,524.2],[-172,520]]){walkTo(W(e,n),16,true);if(C5.C.flags.gateShut)break;}
  until(()=>C5.C.flags.gateShut,10);step(.4);lookAt(W(-166,512,1));await cap('n16-the-gate-slams-shut');
  for(let i=0;i<80&&!C5.C.flags.gateOpened;i++){step(.1);if(i%5===0)lookAt({x:Sm.px,y:Sm.person.group.position.y+1.1,z:Sm.pz});}step(.4);await cap('n17-sam-shoves-it-open');
  walkTo(W(-163,505),10,true);walkTo(W(-160,500),6,true);until(()=>C5.C.flags.boundary,8);step(2);face(Math.atan2(W(-190,545).x-L.state.walk.x,-(W(-190,545).z-L.state.walk.z)),0);await cap('n18-every-light-out-behind');

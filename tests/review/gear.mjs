@@ -15,7 +15,8 @@ export default async function(L,{cap,step,press,release,tap,face}){
  L.jump('c5-camp-gate');step(.6);const CG=C5.W5(-166,512);walkTo({x:CG.x+1.5,z:CG.z+4.5},14);until(()=>Sm.script||GR.S.torchOut,12);
  for(let i=0;i<90&&!GR.S.offerTorch;i++){step(.1);lookAt(head(Sm));if(!out.bag&&C5.G5.S.bagP.holder===Sm.person&&C5.G5.S.bagP.side!=='back'){out.bag=1;step(.4);lookAt(head(Sm));await cap('e05-sam-swings-his-bag-round');}}
  step(.4);if(GR.S.torch){lookAt(GR.S.torch.obj.position);await cap('e06-a-flashlight-held-out');act('c5-torch');step(.35);await cap('e07-you-take-it');step(.8);}lookAt({x:CG.x,y:cam.position.y-.2,z:CG.z+6});await cap('e08-in-your-hand');
- tap('KeyT');step(.3);await cap('e09-on-by-day');tap('KeyT');step(.2);
+ // (by day, at a shadowed post close up: off, then on)
+ {const post=C5.W5(-163.3,513.4);walkTo({x:post.x+1.4,z:post.z+1.9},6);lookAt({x:post.x,y:cam.position.y-.5,z:post.z});if(L.foot?.on)tap('KeyT');step(.3);await cap('e09-by-day-off');tap('KeyT');step(.3);await cap('e09-by-day-on');tap('KeyT');step(.2);}
  // ---- Bluejay: it dies; Sam's batteries ----
  const pp=await import('/dist/pine-plan.js'),bjB=pp.BLD.bluejay;L.jump('c5-cabins');step(.6);act('c5-door-bluejay');step(.8);
  walkTo(C5.W5(...bjB.F.to(bjB.door[0],bjB.d/2-.9)),8);walkTo(C5.W5(...bjB.c),8);lookAt({x:C5.W5(...bjB.c).x,y:cam.position.y-.3,z:C5.W5(...bjB.c).z+1});
@@ -28,7 +29,7 @@ export default async function(L,{cap,step,press,release,tap,face}){
  // ---- the inventory ----
  tap('KeyI');step(.2);await cap('e16-the-inventory');tap('KeyI');step(.2);
  // ---- Owl: the shirt ----
- L.jump('c5-owl');step(.5);act('c5-door-owl');step(.5);act('c5-shirt');until(()=>C5.C.flags.shirtDone,40);act('c5-carving');until(()=>C5.C.flags.owlDone,40);
+ L.jump('c5-owl');step(.5);act('c5-door-owl');step(.8);{const ob=pp.BLD.owl;walkTo(C5.W5(...ob.F.to(ob.door[0],ob.d/2-.9)),8);walkTo(C5.W5(...ob.F.to(ob.w/2-1.25,-(ob.d/2-.75))),8);}act('c5-shirt');until(()=>C5.C.flags.shirtDone,40);act('c5-carving');until(()=>C5.C.flags.owlDone,40);
  for(let i=0;i<200&&!C5.C.inv.shirt;i++){step(.1);lookAt(head(Sm));const P=C5.phys.PROPS.get('alex-shirt');if(P?.holder===Sm.person&&!out.held){out.held=1;step(.2);await cap('e17-sam-has-the-shirt');step(.7);await cap('e18-gathered-up');}if(C5.G5.S.bagP.side!=='back'&&out.held&&!out.bag2){out.bag2=1;step(.6);await cap('e19-into-his-bag');}}
  step(1.2);lookAt(head(Sm));await cap('e20-bag-back-on');out.shirt=C5.C.inv.shirt;
  return out;

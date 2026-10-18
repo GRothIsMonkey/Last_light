@@ -136,7 +136,9 @@ function applySetting(k,v){
  else if(k==='memories'&&!v)ui.clear();}
 document.addEventListener('fullscreenchange',()=>{ui.settings.fullscreen=!!document.fullscreenElement;ui.fill();});
 // The touch action button carries whatever F would do right now.
-let actLabel='';function setAct(label){if(label===actLabel)return;actLabel=label;const act=$('act');if(act){act.hidden=!touch||!label;act.textContent=label.toUpperCase();}}
+// (and the bag button opens what you carry, the way I does: Chapter Five on)
+{const b=$('bag');if(b){b.addEventListener('click',()=>{dispatchEvent(Object.assign(new Event('keydown'),{code:'KeyI'}));});}}
+let actLabel='';function setAct(label){const bag=$('bag');if(bag){let off=true;try{off=!touch||!chapter5?.inventoryReady?.();}catch{}if(bag.hidden!==off)bag.hidden=off;}if(label===actLabel)return;actLabel=label;const act=$('act');if(act){act.hidden=!touch||!label;act.textContent=label.toUpperCase();}}
 
 // F: get off at the end of the street, or get back on and ride home.
 function action(){
