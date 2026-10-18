@@ -349,6 +349,8 @@ export const TREES=[];
  for(const [e,n] of [[-133,318],[-160,342],[-110,313],[-92,312],[-119,352]])solidC('barrel',e,n,.34);
  solidR('kiosk',[-108,318],0,2,.6);solidR('oldsign',[-113.4,368.9],hd(-.343,-.94),3.4,.3);
  for(const s of [-1,1])solidC('gatepost',-118+s*2.8,371,.12);
+ // (boulders either side of the posts, the way they keep trucks from driving round a gate: the road through is the gate)
+ for(const s of [-1,1])for(const [d,r,dn] of [[3.45,.42,.1],[4.35,.5,-.08],[5.35,.55,.12],[6.4,.5,-.05]])solidC('gaterock',-118+s*d,371+dn,r);
  // the playground: swing set, slide, merry-go-round
  solidR('swings',[-118,340],.2,4.6,.4);solidR('slide',[-127,336],.2,.8,3.6);solidC('merry',-121,333.2,1.3);
  solidC('lamp',-112,315.3,.2);for(let k=0;k<6;k++)solidC('bollard',-146+k*2.2,314.6,.12);
@@ -395,7 +397,8 @@ for(const s of SOLIDS){const r=s.r??Math.hypot(s.w,s.d)/2,ce=s.e??s.c[0],cn=s.n?
 export function solidAt(e,n,r=0,{low=false}={}){for(let i=Math.floor((e-r)/SC);i<=Math.floor((e+r)/SC);i++)for(let j=Math.floor((n-r)/SC);j<=Math.floor((n+r)/SC);j++)for(const s of SH.get(sk(i,j))||[]){
  if(low&&s.low)continue;if(s.r!==undefined){if(Math.hypot(e-s.e,n-s.n)<s.r+r)return s;continue;}const [lx,lz]=s.F.of(e,n);if(Math.abs(lx)<s.w/2+r&&Math.abs(lz)<s.d/2+r){if(s.gap&&lz>s.gap[0]-r*0&&lz<s.gap[1])continue;return s;}}return null;}
 // A shut door is a wall across its opening.
-export function shutAt(e,n,r=0){for(const D of Object.values(DOORS)){if(D.open>.55)continue;const B=BLD[D.b],[lx,lz]=B.F.of(e,n);if(Math.abs(lx-D.lx)<D.w/2+r&&Math.abs(lz-D.lz)<.28+r)return D;}return null;}
+export function shutAt(e,n,r=0){for(const D of Object.values(DOORS)){if((D.cur??D.open)>.55)continue;// (the door as drawn now: shut until it has swung open, again as soon as it swings to)
+ const B=BLD[D.b],[lx,lz]=B.F.of(e,n);if(Math.abs(lx-D.lx)<D.w/2+r&&Math.abs(lz-D.lz)<.28+r)return D;}return null;}
 
 // ---- named places (the story uses these) -------------------------------------------------------------------------------------------
 export const SPOT={
@@ -410,6 +413,22 @@ export const SPOT={
  campGate:[-166,512],office:BLD.office.c,clearing:CL,lodge:BLD.lodge.c,campfire:[-212,516],campDock:DOCKS[1].root,buddy:[-229,511],mapBoard:[-190,541],bell:[-196,566],
  pump:BLD.pump.c,yard:[-284,604],damN:DAM.a,damS:DAM.b,
 };
+
+// ---- gates that swing --------------------------------------------------------------------------------------------------------------------
+// The yellow arm across the gravel road and the camp gate's two leaves. Each is a bar from its hinge (in the frame c,a: hx
+// along the frame's x, at its middle) that turns about the post; ux is which way the bar runs from the hinge when shut.
+// What blocks is the bar where it is drawn now (pine-build.js turns it toward want and writes ang back each frame), so
+// a gate shuts in your way as it swings to and lets you by only once it has swung clear: never an invisible gate, never
+// one you can walk through. want: where it is going (the story sets it); ang: where it is.
+export const GATES={};
+{const g=(id,c,a,hx,ux,len,ang,o={})=>{GATES[id]={id,c,a,hx,ux,len,ang,want:ang,shut:ang,...o};};
+ g('swing',SPOT.gate,0,-2.8,1,5.6,0,{open:1.62,label:'the yellow gate'});
+ const ca=hd(.43,-.9);g('campL',SPOT.campGate,ca,-2.75,1,2.7,-1.25,{label:'the camp gate'});g('campR',SPOT.campGate,ca,2.75,-1,2.7,.05,{label:'the camp gate'});}
+// the bar's ends in the plan, as it stands now
+export function gateBar(G,ang=G.ang){const ca=Math.cos(G.a),sa=Math.sin(G.a),he=G.c[0]+G.hx*ca,hn=G.c[1]-G.hx*sa,dx=G.ux*Math.cos(ang),dz=-G.ux*Math.sin(ang);
+ return [he,hn,he+G.len*(dx*ca-dz*sa),hn+G.len*(-dx*sa-dz*ca)];}
+export function gateAt(e,n,r=0){for(const G of Object.values(GATES)){const [a0,b0,a1,b1]=gateBar(G),de=a1-a0,dn=b1-b0,l2=de*de+dn*dn,t=Math.max(0,Math.min(1,((e-a0)*de+(n-b0)*dn)/l2));
+  if(Math.hypot(e-a0-de*t,n-b0-dn*t)<r+.08)return G;}return null;}
 
 // ---- the frame for the builders (reserve the land; older ground and scatter keep out) -------------------------------------------------
 export function pineFrame(W){
@@ -432,8 +451,8 @@ export function pineNav(){
   for(const [de,dn] of [[r,0],[-r,0],[0,r],[0,-r]])if(!okAt(e+de,n+dn,false,true))return false;
   // (no stepping straight off a deck or a porch onto the ground below)
   const f0=G.floor[W.k];for(const [de,dn] of [[r,0],[-r,0],[0,r],[0,-r]]){const k=cellOf(e+de,n+dn),f=k>=0?G.floor[k]:NaN;if(Number.isNaN(f)!==Number.isNaN(f0)&&G.t[k]!==PS.step&&W.t!==PS.step){const a=Number.isNaN(f0)?heightAt(x,z):f0,b=Number.isNaN(f)?heightAt(...Object.values(PW(e+de,n+dn))):f;if(Math.abs(a-b)>.42)return false;}}
-  if(solidAt(e,n,r*.9))return false;if(shutAt(e,n,r*.6))return false;return true;}
- function rideable(x,z,{lawn=true,r=.3}={},W=where(x,z)){if(!W)return null;const {e,n}=W;if(!okAt(e,n,true,lawn))return false;for(const [de,dn] of [[r*.6,0],[-r*.6,0],[0,r*.6],[0,-r*.6]])if(!okAt(e+de,n+dn,true,lawn))return false;if(solidAt(e,n,r*.6,{low:false}))return false;return true;}
+  if(solidAt(e,n,r*.9))return false;if(shutAt(e,n,r*.6))return false;if(gateAt(e,n,r*.9))return false;return true;}
+ function rideable(x,z,{lawn=true,r=.3}={},W=where(x,z)){if(!W)return null;const {e,n}=W;if(!okAt(e,n,true,lawn))return false;for(const [de,dn] of [[r*.6,0],[-r*.6,0],[0,r*.6],[0,-r*.6]])if(!okAt(e+de,n+dn,true,lawn))return false;if(solidAt(e,n,r*.6,{low:false}))return false;if(gateAt(e,n,r*.6))return false;return true;}
  function surface(x,z,W=where(x,z)){if(!W)return null;return info(W.t).snd||'grass';}
  function heading(x,z,W=where(x,z)){if(!W)return null;let best=null,bd=1e9;for(const R of ROADLIST){const q=R.project(x,z,2);if(q&&Math.abs(q.t)<bd&&q.s>-1&&q.s<R.L+1){bd=Math.abs(q.t);best=q.a;}}return best??0;}
  return {where,groundY,baseY,walkable,rideable,surface,heading,box:NB};

@@ -166,8 +166,24 @@ export function createGarage(X){
  const MAPPT={town:[-.1,.17],mill:[.0,.08],road:[.04,-.04],ridge:[.0,-.08],park:[.07,-.12],lake:[.14,-.17]};
  // (a finger on the map: Sam or Jamie reaching to a place on it)
  function pointAt(c,where,t=1.6){const q=MAPPT[where]||[0,0];const at=()=>TL(-q[0],q[1],TABLE_H+.02);return [phys.reach(c,{at,dur:[.45,t,.4],carry:false})];}
+ // ---- a bag on someone's back, used later (Sam's flashlights and batteries, Alex's shirt) ---------------------------------------
+ // Off the back into the left hand, out in front; the flap up; a hand in for something (take), or something put in (put);
+ // the flap down; back on. Steps for comp.run; what was taken stays in the right hand after (carried).
+ const BAGS={sam:()=>({P:S.bagP,box:S.bag,parts:S.bagParts}),jamie:()=>({P:S.jbagP,box:S.jbag,parts:S.jbagParts})};
+ function holdOpen(c,B,{t=.6,open=0,close=0}={}){let e=0;return (dt,ctx)=>{e+=dt;standPose(c.tmp,ctx.clock+c.R.phase,{look:0,shift:0});copyPose(c.pose,c.tmp);c.pose[PI.lh]=-.05;c.pose[PI.lh+1]=.86;c.pose[PI.lh+2]=-.3;c.pose[PI.le]=-.8;c.pose[PI.le+2]=.3;c.pose[PI.hp]=-.35;
+  if(open)openFlap(B.parts,smooth(e/t));if(close)openFlap(B.parts,1-smooth(e/t));if(B.carry)phys.carryOverlay('r')(c.pose,1);comp.feet(c,c.pose);applyPose(c.person,c.pose);c.posed=true;return e>=t;};}
+ function bagSteps(c,{take=null,put=null,onTake=null,onPut=null}={}){build();const B={...BAGS[c.key](),carry:false},mouth=()=>B.box.mouth(new THREE.Vector3());
+  const torso=()=>{const q=new THREE.Vector3();phys.torsoFrame(c.person,q,new THREE.Quaternion());return q.add(new THREE.Vector3(0,.14,0));};
+  const steps=[phys.reach(c,{side:'l',at:torso,dur:[.4,.1,.01],carry:false,onContact:()=>{B.P.holdBy(c.person,'l',{p:[.06,-.42,-.06],r:[0,Math.PI,0],hang:true});X.sound('cloth',c.person.group.position,{gain:.3});}}),holdOpen(c,B,{t:.7,open:1})];
+  if(put)steps.push(phys.reach(c,{at:mouth,dur:[.45,.25,.3],carry:false,onContact:()=>{const it=typeof put==='function'?put():put;it?.storeIn(B.box);onPut?.(it);X.sound('cloth',mouth(),{gain:.25});}}));
+  if(take)steps.push(phys.reach(c,{at:mouth,dur:[.45,.3,.3],carry:true,onContact:()=>{const it=typeof take==='function'?take():take;if(it){it.holdBy(c.person,'r');B.carry=true;}onTake?.(it);}}));
+  steps.push(holdOpen(c,B,{t:.45,close:1}),phys.reach(c,{side:'l',at:torso,dur:[.4,.05,.3],carry:false,onContact:()=>{openFlap(B.parts,0);B.P.wearOn(c.person);X.sound('cloth',c.person.group.position,{gain:.3});}}));
+  return steps;}
+ // (one of the things packed this morning, still in the bag: by kind)
+ function given(kind,n=1){for(let i=0;i<n;i++){const P=packedOf(kind);if(P){P.given=true;P.hide();}}}
+ const packedOf=kind=>S.items.find(q=>q.kind===kind&&q.state==='stored'&&!q.given)||null;
  // ---- the bags on their backs from here on ------------------------------------------------------------------------------------
- function wearBags({jamieBag=true,samBag=true}={}){build();if(samBag){openFlap(S.bagParts,0);S.bagP.wearOn(sam.person);}if(jamieBag){openFlap(S.jbagParts,0);S.jbagP.wearOn(jamie.person);}}
+ function wearBags({jamieBag=true,samBag=true}={}){build();if(samBag){openFlap(S.bagParts,0);S.bagP.wearOn(sam.person);for(const P of S.items)if(!P.given&&P.state!=='stored')P.storeIn(S.bag);}if(jamieBag){openFlap(S.jbagParts,0);S.jbagP.wearOn(jamie.person);}}
  // the flap pulled shut, then both hands on it and it goes up onto his back
  function closeAndShoulder(then=null){comp.run(sam,[phys.reach(sam,{at:()=>mouth(),dur:[.4,.2,.2],carry:false,onContact:()=>{openFlap(S.bagParts,0);X.sound('cloth',mouth(),{gain:.2});}}),phys.reach(sam,{at:()=>S.bagP.obj.position.clone().add(new THREE.Vector3(0,.2,0)),both:true,dur:[.45,.1,.35],carry:false,onContact:()=>{S.bagP.wearOn(sam.person);X.sound('cloth',S.bagP.obj.position,{gain:.3});}})],{then:()=>{S.flags.shouldered=true;then?.();}});}
  // folded up again and into his back pocket ("I'll bring the map")
@@ -189,6 +205,6 @@ export function createGarage(X){
    const p=me();comp.run(sam,[comp.steps.walkTo(sam,[[p.x+Math.sin(p.a)*.8,p.z-Math.cos(p.a)*.8]],{speed:1.1}),holdOut(sam,()=>X.eyePos(),{until:()=>S.flags.cameraTaken})]);}
  }
  function startPacking(){S.flags.packing=true;S.samX=0;}
- function reset(){if(!S.built)return;S.sockShownAt=null;for(const k of Object.keys(S.flags))delete S.flags[k];S.samBusy=false;S.samStop=false;S.holding=null;S.said.clear();S.packedBy={you:0,sam:0};for(const P of S.items)P.claimed=null;hideAll();root.removeFromParent();S.built&&scene.add(root);}
- return {S,build,layTable,startPacking,spots,act,update,blockers,wearBags,sockScene,barsScene,openMap,foldMap,closeAndShoulder,pointAt,reset,hideAll,TL,samStand,packed,get holding(){return S.holding;}};
+ function reset(){if(!S.built)return;S.sockShownAt=null;for(const k of Object.keys(S.flags))delete S.flags[k];S.samBusy=false;S.samStop=false;S.holding=null;S.said.clear();S.packedBy={you:0,sam:0};for(const P of S.items){P.claimed=null;P.given=false;}hideAll();root.removeFromParent();S.built&&scene.add(root);}
+ return {S,build,layTable,startPacking,spots,act,update,blockers,wearBags,bagSteps,packedOf,given,holdOut,sockScene,barsScene,openMap,foldMap,closeAndShoulder,pointAt,reset,hideAll,TL,samStand,packed,get holding(){return S.holding;}};
 }

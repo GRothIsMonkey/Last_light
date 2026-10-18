@@ -6,6 +6,7 @@
 // Called from verify.mjs with the running harness; real dist/ modules.
 import assert from 'node:assert/strict';
 import {chapterThreeTools} from './chapter3-sim.mjs';
+import {runCompanionTests} from './chapter5-companions.mjs';
 import {PW,PL,SPOT,BLD,ROADS,DOCKS,SOLIDS} from '../dist/pine-plan.js';
 
 export function chapterFiveTools(T){
@@ -18,6 +19,8 @@ export function chapterFiveTools(T){
  const faceV=(v,{pitch=null}={})=>{const c=h.camera.position;faceTo(v.x,v.z,pitch??Math.atan2((v.y??c.y)-c.y,Math.hypot(v.x-c.x,v.z-c.z)));};
  const M=(d,l)=>{const p=T.groundPoint(d,l);return [p.x,p.z];};
  const orr=(s0,s1,t=.9,st=10)=>{const o=[];for(let s=s0;s<=s1;s+=st){const q=ROADS.orr.at(s,t);o.push([q.x,q.z]);}return o;};
+ // (a route walked leg by leg along the nav's paths: round a shut gate leaf, not into it)
+ const trek=(pts,o={})=>{for(const q of pts){if(o.stop?.())return;go({x:q[0],z:q[1]},{...o,max:Math.min(o.max||60,60)});}};
  const gravel=(s0,s1,st=8)=>{const o=[];for(let s=s0;s<=s1;s+=st){const q=ROADS.gravel.at(s,0);o.push([q.x,q.z]);}return o;};
  const offBike=()=>{if(h.night.state==='c1-ride'){release('KeyW');press('KeyS');until(()=>h.night.speed<.05,8);release('KeyS');tap('KeyF');until(()=>h.night.state==='c1-walk',4);wait(.3);}};
  const onBike=()=>{if(h.night.state==='c1-walk'){const r=h.night.roam;go({x:r.x,z:r.z},{r:1.2,max:40});faceTo(r.x,r.z);wait(.2);tap('KeyF');until(()=>h.night.state==='c1-ride',4);}};
@@ -28,12 +31,12 @@ export function chapterFiveTools(T){
  const act=(id,max=8)=>{let ok=false;until(()=>{const s=spot();if(s?.id===id){tap('KeyF');ok=true;return true;}return false;},max);return ok;};
  const boys=()=>h.chapter.companions.all.filter(c=>c.active),jamieSam=boys;
  const gap=()=>{const p=me();return Math.max(...boys().map(c=>Math.hypot((c.mode==='ride'?c.bx:c.px)-p.x,(c.mode==='ride'?c.bz:c.pz)-p.z)));};
- return {...X,C5,A5,S,P5,Q5,en,goEN,faceEN,faceV,M,orr,gravel,offBike,onBike,rideTo,quiet,spot,act,boys,jamieSam,gap};
+ return {...X,C5,A5,S,P5,Q5,en,goEN,faceEN,faceV,M,orr,gravel,trek,offBike,onBike,rideTo,quiet,spot,act,boys,jamieSam,gap};
 }
 
 // From Chapter Four's end card (or the chapter's own start, or the DEV selector's) to Chapter Five's end card, inputs only.
 export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choice='sam',seedLook=true,from=null,entered=false,to=null,cont=false}={}){
- const {h,press,release,tap,check,element,metrics}=T,X=chapterFiveTools(T),{C5,A5,S,P5,Q5,en,goEN,faceEN,faceV,M,orr,gravel,offBike,onBike,rideTo,quiet,act,boys,jamieSam,gap,log,until,wait,me,faceTo,walkTo,go}=X;
+ const {h,press,release,tap,check,element,metrics}=T,X=chapterFiveTools(T),{C5,A5,S,P5,Q5,en,goEN,faceEN,faceV,M,orr,gravel,trek,offBike,onBike,rideTo,quiet,act,boys,jamieSam,gap,log,until,wait,me,faceTo,walkTo,go}=X;
  const M2=/replay|DEV/.test(label)?{}:metrics;const watch={streets:[],gapMax:0,gapAt:null,bad:0,jumps:0,lastP:null,sky:[],darkMax:0,lit:0,carried:0,creature:0,double:0};
  const sample=()=>{const s=C5(),p=me(),w=s.where?.street;if(watch.streets[watch.streets.length-1]!==w)watch.streets.push(w);
   if(!/^(c5-black|d5-garage|d5-ride)$/.test(s.phase)&&A5.C.fadeOut<0&&!A5.C.lapse){const g=gap();if(g>watch.gapMax){watch.gapMax=g;watch.gapAt={phase:s.phase,where:s.where};}}
@@ -106,14 +109,18 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  U(()=>S().phase==='d5-map',40);
  // ---- the trail map; the gate ----
  goEN(-108,320.4,{r:.7});faceEN(-108,318.4,1.45);act('c5-map',6);U(()=>S().phase==='d5-gate',40);
- goEN(SPOT.gate[0]+.6,SPOT.gate[1]-3.6,{r:.8});U(()=>C5().flags.choose,40);
+ const GQ=Q5(...SPOT.gate),gateShut=h.nav.walkable(GQ.x,GQ.z)===false;goEN(SPOT.gate[0]+.6,SPOT.gate[1]-3.6,{r:.8});U(()=>C5().flags.choose,40);
+ const gateBy=A5.GT.S.by.swing,gateOpen=A5.GT.isOpen('swing'),gateWalk=h.nav.walkable(GQ.x,GQ.z)===true;
+ check(`${label}: the yellow gate is shut and in the way until a hand opens it: Jamie lifts the latch and walks it round, and then it lets you by`,()=>{assert.ok(gateShut,'shut: the road through it blocked');assert.equal(gateBy,'jamie');assert.ok(gateOpen,'swung open');assert.ok(gateWalk,'open: the way through');});
  if(choice==='sam'){const s=boys().find(c=>c.key==='sam');go({x:s.px,z:s.pz},{r:2,max:15});faceTo(s.px,s.pz);act('c5-hear',6);}else{goEN(SPOT.gate[0]-.2,SPOT.gate[1]+2.6,{r:.8});}
  U(()=>S().phase==='d5-road',40);check(`${label}: the yellow gate: a disagreement, and your call (${choice})`,()=>{assert.equal(C5().choice,choice==='sam'?'sam':'jamie');});
  }
  // ---- the road to the camp ----
  if(seg('road')){
- walkTo(gravel(14,186),{r:2,max:220,sprint:true});U(()=>S().phase==='d5-camp',20);
- U(()=>C5().inv.flashlight,12);check(`${label}: Camp Whippoorwill: the arch, a flashlight each`,()=>{assert.equal(S().phase,'d5-camp');assert.ok(C5().inv.flashlight);});
+ trek(gravel(14,186),{r:2,max:220,sprint:true});U(()=>S().phase==='d5-camp',20);
+ // (Sam gets the flashlights out of his bag and holds yours out: F takes it, into your hand; Jamie takes his from Sam's)
+ U(()=>A5.GR.S.offerTorch,30);{const P=A5.GR.S.torch;if(P){go({x:P.obj.position.x,z:P.obj.position.z},{r:1.2,max:10});faceV(P.obj.position);W(.1);act('c5-torch',6);}}U(()=>C5().inv.flashlight,12);U(()=>A5.GR.S.jtorchTaken,30);
+ check(`${label}: Camp Whippoorwill: the arch, a flashlight each, out of Sam's bag and handed over`,()=>{assert.equal(S().phase,'d5-camp');assert.ok(C5().inv.flashlight);assert.ok(h.foot.owned,'in your hand');assert.ok(A5.GR.S.jtorchTaken,'Jamie took his from Sam');assert.ok(A5.phys.LOG.log.some(l=>l[0]==='handoff'&&/flashlight/.test(l[1])),'handed');});
  }
  // ---- the office: the door, the register, the search map ----
  if(seg('camp')){
@@ -129,10 +136,15 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  check(`${label}: the lodge: cans gone from the dust, recently`,()=>{assert.ok(C5().clues.includes('pantry'),JSON.stringify({where:C5().where,view:C5().view,phase:S().phase,flags:C5().flags.pantry,lodge:BLD.lodge.F.of(C5().where.e,C5().where.n),doors:h.chapter5.C.flags}));assert.ok(log.said.some(l=>/soup/.test(l)));});
  // ---- a cabin: Bluejay; the flashlight; Sam's batteries ----
  goEN(...door('lodge',3),{r:.3});goEN(...door('bluejay',1.1),{r:.5});faceEN(...B('bluejay').c);act('c5-door-bluejay',5);W(.8);goEN(...door('bluejay',-.9),{r:.25});goEN(...B('bluejay').c,{r:.5});tap('KeyT');
- U(()=>C5().flags.batteries&&quiet(),40);check(`${label}: Bluejay, a dead flashlight, and Sam's batteries without being asked`,()=>{assert.ok(C5().clues.includes('cabin'));assert.ok(C5().flags.batteries);assert.ok(log.said.some(l=>/batteries for the batteries/.test(l)));});
+ // (in the dark of the cabin it flickers and dies; Sam gets the spare batteries out of his bag and holds them out; F takes them, your hands change them)
+ U(()=>C5().flags.dead,12);const deadAt=A5.C.t;U(()=>A5.GR.S.offerBatt,40);const offerAfter=A5.C.t-deadAt;{const P=A5.GR.S.batt;if(P){faceV(P.obj.position);W(.1);act('c5-batt',6);}}
+ U(()=>C5().flags.batteries&&quiet(),40);check(`${label}: Bluejay, a dead flashlight, and Sam's batteries out of his bag, without being asked`,()=>{assert.ok(C5().clues.includes('cabin'));assert.ok(C5().flags.batteries);assert.ok(h.foot.on,'back on');assert.ok(offerAfter>2,'Sam took '+offerAfter.toFixed(1)+' s to get them out');assert.ok(log.said.some(l=>/batteries for the batteries/.test(l)));});
  // ---- the campfire ----
  U(()=>C5().flags.fireOffer,30);const L0=(()=>{const F=SPOT.campfire,a=.5;return [F[0]+Math.sin(a)*2.05,F[1]+Math.cos(a)*2.05];})();goEN(...door('bluejay',2.6),{r:.3});goEN(L0[0]+Math.sin(.5)*.9,L0[1]+Math.cos(.5)*.9,{r:.6,max:90});faceEN(...SPOT.campfire);act('c5-fire',6);
- const hf=C5().h;U(()=>S().phase==='e5-dusk',150);check(`${label}: the campfire: the quiet scene, and three hours gone in ten minutes`,()=>{assert.equal(S().phase,'e5-dusk');assert.ok(C5().h>18.8&&hf<16.5,`${hf} → ${C5().h}`);assert.ok(log.said.some(l=>/Never mind/.test(l)));assert.ok(log.said.some(l=>/almost seven/.test(l)));});
+ const hf=C5().h,tf=A5.C.t;let lapsed=false;U(()=>{if(A5.C.lapse)lapsed=true;return S().phase==='e5-dusk';},240);const restS=A5.C.t-tf,restH=C5().h-hf;
+ M2['chapter5 campfire rest']={seconds:+restS.toFixed(1),clockMinutes:+(restH*60).toFixed(1),from:hf,picture:A5.C.fireShot?.time};
+ check(`${label}: the campfire: a short rest (${restS.toFixed(0)} s, the clock ${(restH*60).toFixed(0)} minutes on), water passed round, no hours lost`,()=>{assert.equal(S().phase,'e5-dusk');assert.ok(!lapsed,'no lapse');assert.ok(restS>45&&restS<240,'seconds '+restS);assert.ok(restH>0&&restH<.5,'clock '+restH);
+  assert.ok(hf>18.2&&hf<19.1,'about a quarter to seven: '+hf);assert.ok(A5.C.flags.fireWater,'the water');assert.ok(log.said.some(l=>/Never mind/.test(l)));assert.ok(log.said.some(l=>/keep going/.test(l)));assert.ok(A5.C.fireShot&&/PM$/.test(A5.C.fireShot.time),'the picture from the trees, stamped '+A5.C.fireShot?.time);});
  }
  // ---- dusk: Wren; Owl ----
  if(seg('dusk')){
@@ -143,12 +155,19 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  check(`${label}: Owl: Alex's gold shirt, wet, and JSA cut fresh into the wall`,()=>{assert.ok(C5().flags.shirtSeen&&C5().flags.carvingSeen);assert.ok(log.said.some(l=>/still wet/.test(l)));assert.ok(log.said.some(l=>/J\. S\. A\./.test(l)));});
  // ---- they call; a light in the trees ----
  goEN(...door('owl',3.2),{r:.3});U(()=>S().phase==='e5-lights',60);
- check(`${label}: they call his name; a light in the trees goes away and out; the shirt in Sam's bag`,()=>{assert.ok(C5().inv.shirt);assert.ok(log.said.some(l=>/A flashlight/.test(l)));});
+ check(`${label}: they call his name; a light in the trees (a ranger? somebody fishing?) turns its beam on them and goes out; the shirt off its nail by Sam's hand, into his bag`,()=>{assert.ok(C5().inv.shirt);assert.equal(A5.phys.PROPS.get('alex-shirt')?.state,'stored');assert.ok(A5.phys.LOG.log.some(l=>l[0]==='hold'&&l[1]==='alex-shirt'),'held');assert.ok(log.said.some(l=>/A light\. In the trees/.test(l)));assert.ok(log.said.some(l=>/Or a ranger/.test(l)));assert.ok(log.said.some(l=>/would have said something/.test(l)));});
  }
  // ---- going back: three lights, where you walked; the creature, afraid of them ----
  if(seg('lights')){
- goEN(-252,551,{r:1.5});U(()=>A5.C.lt?.started,30);const tl=h.snapshot.clock;faceEN(-190,541,4);U(()=>S().phase==='n5-split',60);
- check(`${label}: three lights come in at the gate, walk where you walked, stop, turn, go out; the creature runs from them`,()=>{assert.ok(watch.carried>=3,'carried '+watch.carried);assert.ok(watch.creature>10,'creature frames '+watch.creature);assert.equal(C5().creature.stage,'gone');assert.ok(log.said.some(l=>/That’s us/.test(l)));});
+ goEN(-252,551,{r:1.5});U(()=>A5.C.lt?.started,30);const tl=h.snapshot.clock;faceEN(-190,541,4);let nearest=1e9;const lightGap=()=>{const p=me();for(let i=0;i<3;i++){const q=A5.camp.carriedAt(i);if(q)nearest=Math.min(nearest,Math.hypot(q.x-p.x,q.z-p.z));}};
+ // (they stop at the map board: Jamie says flash them; you do, twice: off, on, off, on)
+ U(()=>{lightGap();return A5.C.lt.board;},60);W(4);for(let i=0;i<4;i++){tap('KeyT');U(()=>{lightGap();return false;},1.3);}
+ U(()=>{lightGap();return S().phase==='n5-split';},120);const LT=A5.C.lt;
+ check(`${label}: three lights at the gate (lights, not people, the length of the camp away) walk where you walked: the office, the map board (they stop where you stood), one copies your flashlight, then they sit where you sat at the fire; the creature runs from them; they turn on you and go out`,()=>{
+  assert.ok(watch.carried>=3,'carried '+watch.carried);assert.ok(LT.office&&LT.board&&LT.sat&&LT.turned&&LT.out,JSON.stringify({o:LT.office,b:LT.board,s:LT.sat,t:LT.turned,x:LT.out}));assert.ok(LT.copies>=2,'copied '+LT.copies);assert.ok(!LT.close,'never close');assert.ok(nearest>12,'nearest light '+nearest.toFixed(1)+' m');
+  assert.ok(watch.creature>10,'creature frames '+watch.creature);assert.equal(C5().creature.stage,'gone');assert.ok(log.said.some(l=>/There’s a light\. At the gate/.test(l)));assert.ok(!log.said.some(l=>/Three of them|people/i.test(l)&&/gate/.test(l)),'no people seen at a hundred metres');
+  assert.ok(log.said.some(l=>/doing what you do/.test(l)));assert.ok(log.said.some(l=>/where we sat/.test(l)));});
+ M2['chapter5 three lights']={seconds:+(h.snapshot.clock-tl).toFixed(1),copies:LT.copies,nearest:+nearest.toFixed(1)};
  M2['chapter5 three lights seconds']=+(h.snapshot.clock-tl).toFixed(1);
  }
  // ---- the camp that wants them apart: look at Owl (it pulls Sam), then keep both close ----
@@ -161,25 +180,27 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  M2['chapter5 split']={resolvedAt:C5().split.t,how:C5().split.how,maxSpread:C5().split.maxSpread,pullAfterLookingAtOwl:pulled};void sp0;
  // ---- Owl, from the porch: Jamie ----
  U(()=>A5.C.flags.toWindow,20);const OP=(()=>{const b=B('owl');return b.F.to(0,b.d/2+b.porch-.4);})();goEN(OP[0],OP[1],{r:.6,max:120});
- U(()=>S().phase==='n5-window',10);{const D=A5.DOUBLE();faceV({x:D.x,y:D.y+1.45,z:D.z});}U(()=>S().phase==='n5-run',40);
- check(`${label}: Owl from the porch: a second Jamie, while Jamie is next to you; then every light at once, RUN`,()=>{assert.ok(watch.double>20,'double frames '+watch.double);assert.ok(log.said.some(l=>/That’s me/.test(l)));assert.ok(watch.lit>=6,'lamps lit '+watch.lit);});
+ U(()=>S().phase==='n5-window',10);const D0=A5.DOUBLE();faceV({x:D0.x,y:D0.y+1.45,z:D0.z});let dMin=1e9;U(()=>{const d=A5.camp.D,p=me();if(d.person.group.visible)dMin=Math.min(dMin,Math.hypot(d.x-p.x,d.z-p.z));return S().phase==='n5-run';},40);
+ const moved=Math.hypot(A5.camp.D.x-D0.x,A5.camp.D.z-D0.z),iBack=log.said.findIndex(l=>/Back up/.test(l)),iRun=log.said.findIndex(l=>/RUN/.test(l));
+ check(`${label}: Owl from the porch: a second Jamie, while Jamie is next to you; it turns to look at him, then comes out toward you (${moved.toFixed(1)} m, to ${dMin.toFixed(1)} m); only then every light at once, RUN`,()=>{assert.ok(watch.double>20,'double frames '+watch.double);assert.ok(log.said.some(l=>/That’s me/.test(l)));
+  assert.ok(A5.C.win.comeAt!=null,'it came out');assert.ok(moved>2,'walked '+moved);assert.ok(iBack>=0&&iRun>iBack,'RUN after it came: '+iBack+' '+iRun);assert.ok(watch.lit>=6,'lamps lit '+watch.lit);});
  }
  // ---- run ----
  if(!seg('run'))return;
  const tRun=h.snapshot.clock;
- if(route==='A'){walkTo([P5(-262,556),P5(-236,552),P5(-212,546),P5(-192,538),P5(-180,528),P5(-170,518),P5(-163,506),P5(-158,496)],{r:1.6,max:120,sprint:true,stop:()=>C5().flags.boundary});}
+ if(route==='A'){trek([P5(-262,556),P5(-236,552),P5(-212,546),P5(-192,538),P5(-180,528),P5(-170,518),P5(-163,506),P5(-158,496)],{r:1.6,max:120,sprint:true,stop:()=>C5().flags.boundary});}
  else{go(Q5(-312,562),{r:.6,max:60,sprint:true,stop:()=>C5().flags.boundary});// (off Owl's porch round its corner: follow the path closely)
  walkTo([P5(-320,540),P5(-326,516),P5(-337,492),P5(-347,466),P5(-352,450),P5(-352,444)],{r:1.6,max:150,sprint:true,stop:()=>C5().flags.boundary});}// (onto the dam itself)
- U(()=>S().phase==='n5-out',40);check(`${label}: the escape by route ${route}, and the boundary: ${route==='A'?'the gate swings open again':'the bell, by itself'}; every light out at once`,()=>{assert.equal(C5().route,route);assert.ok(C5().flags.boundary);assert.ok(Object.values(C5().lamps).every(v=>v<.2),JSON.stringify(C5().lamps));});
+ U(()=>S().phase==='n5-out',40);check(`${label}: the escape by route ${route}, and the boundary: ${route==='A'?'the camp gate slams shut in front of you; Sam shoves it open':'the bell, by itself'}; every light out at once`,()=>{assert.equal(C5().route,route);assert.ok(C5().flags.boundary);if(route==='A')assert.equal(A5.C.flags.gateOpened,'sam');assert.ok(Object.values(C5().lamps).every(v=>v<.2),JSON.stringify(C5().lamps));});
  M2['chapter5 escape seconds']=+(h.snapshot.clock-tRun).toFixed(1);
  // ---- back to the bikes ----
- if(route==='A')walkTo([...gravel(4,186).reverse(),P5(-118,352),P5(-122,338),P5(-130,322)],{r:2,max:260,sprint:false,stop:()=>A5.C.flags.after});
+ if(route==='A')trek([...gravel(4,186).reverse(),P5(-118,352),P5(-122,338),P5(-130,322)],{r:2,max:260,sprint:false,stop:()=>A5.C.flags.after});
  else walkTo([P5(-358,410),P5(-362,380),P5(-346,347),P5(-320,334),P5(-292,324),P5(-262,317),P5(-228,316),P5(-198,319),P5(-170,322),P5(-145,320),P5(-132,318)],{r:2,max:320,stop:()=>A5.C.flags.after});
  U(()=>S().phase==='n5-final',40);U(()=>A5.C.flags.review,90);
  check(`${label}: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”`,()=>{assert.ok(log.said.some(l=>/like a duck/.test(l)));assert.ok(log.said.some(l=>/knew we’d come/.test(l)));});
  // ---- the last picture ----
  tap('KeyV');W(.5);for(let i=0;i<40&&A5.C.view==='camera'&&h.chapter4.photo.V.i<C5().fireIdx;i++){tap('KeyD');W(.15);}U(()=>C5().flags.found,20);
- check(`${label}: on Alex's camera, a picture none of them took (the three of them at the fire, 6:53)`,()=>{assert.ok(C5().flags.found);assert.ok(C5().fireIdx>0);assert.ok(log.said.some(l=>/in my bag/.test(l)));});
+ check(`${label}: on Alex's camera, a picture none of them took (the three of them at the fire, ${A5.C.fireShot?.time})`,()=>{assert.ok(C5().flags.found);assert.ok(C5().fireIdx>0);assert.ok(log.said.some(l=>/in my bag/.test(l)));});
  U(()=>A5.C.flags.finalImage,90);faceV(A5.camp.LAMPS.owl.pos);U(()=>h.snapshot.state==='ended',30);
  check(`${label}: the last image (one light across the water), then the end card: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six`,()=>{assert.equal(h.snapshot.state,'ended');const el=element('ending');assert.match(el.querySelector?.('h2')?.innerHTML||'Chapter Five',/Chapter Five/);assert.equal(element('next-chapter').hidden,true);
   assert.ok(log.said.some(l=>/good sock/.test(l)));});
@@ -228,10 +249,9 @@ export async function runChapterFiveChecks(T,cap){
  // ---- the campfire: S stands you up while they talk, F sits you back down ----
  {const {tap}=T;h.jump('c5-campfire');advance(.3);X.act('c5-fire',6);until(()=>A5.C.pose?.w>.95,5);const sat=!!A5.C.pose;tap('KeyS');until(()=>!A5.C.pose,4);const stood=!A5.C.pose&&!h.night.roam.walkLock;
   wait(1);const talking=S().phase==='d5-fire'&&(!!S().line||S().queue.length>0);X.act('c5-resit',6);until(()=>A5.C.pose?.w>.95,5);const again=!!A5.C.pose;
-  // stand up again and walk off: the three hours still go by with you on the log (and in the picture from the trees)
-  tap('KeyS');until(()=>!A5.C.pose,4);X.goEN(SPOT.campfire[0]+12,SPOT.campfire[1]-8,{r:1,max:20});until(()=>!!A5.C.lapse,120);wait(1.5);const seat=X.Q5(...SOLIDS.find(q=>q.kind==='log').c),pp=me();
-  const lapseSeated=!!A5.C.lapse&&!!A5.C.pose&&Math.hypot(pp.x-seat.x,pp.z-seat.z)<1.5;
-  check('Chapter Five campfire: sitting is yours to undo (S stands you up, the talk goes on, F sits you back down; the three hours pass with you on the log)',()=>{assert.ok(sat&&stood&&talking&&again&&lapseSeated,JSON.stringify({sat,stood,talking,again,lapseSeated}));});}
+  // stand up again and walk off: the talk goes on and ends, and they get up to go on (no carrying you back, no lapse)
+  tap('KeyS');until(()=>!A5.C.pose,4);X.goEN(SPOT.campfire[0]+12,SPOT.campfire[1]-8,{r:1,max:20});let lapsed=false;until(()=>{if(A5.C.lapse)lapsed=true;return S().phase==='e5-dusk';},200);const went=S().phase==='e5-dusk'&&!lapsed&&!A5.C.pose;
+  check('Chapter Five campfire: sitting is yours to undo (S stands you up, the talk goes on, F sits you back down; walk off and it still ends, nobody carries you back)',()=>{assert.ok(sat&&stood&&talking&&again&&went,JSON.stringify({sat,stood,talking,again,went,lapsed}));});}
  // ---- Chapter Four keeps its north edge: Mill Street past the sawhorse opens only in Chapter Five ------------------------------
  {const {TW}=await import('../dist/town-plan.js'),probe=()=>[70,78,84].map(v=>{const q=TW(0,v);return {v,walk:!!h.nav.walkable(q.x,q.z),ride:!!h.nav.rideable(q.x,q.z)};});
   h.jump('c4-main-street');advance(.5);const ch4=probe();h.jump('c5-ride');advance(.5);const ch5=probe();
@@ -258,6 +278,8 @@ export async function runChapterFiveChecks(T,cap){
  for(const [n,id] of ORDER){const snap=scene(n,id);if(n===5){/* (Chapter Four's own dormant streetlight clock, as chapter4-sim.mjs leaves it out too) */const d=strict(clean[id],snap,5).filter(x=>!/^(game\.clock|chapter5\.(C|state)\.(t|lastEvent)|chapter4\.state\.(photos|presence))/.test(x[0]));if(d.length)leaks.push({id,d:d.slice(0,6)});}advance(4);}
  check(`DEV scene switching through Chapter Five and back (${ORDER.map(o=>o.join('/')).join(' → ')}): no leaks`,()=>assert.deepEqual(leaks,[],JSON.stringify(leaks)));
  metrics['chapter5 dev scenes']={scenes:SC.length,started:Object.values(st).filter(r=>r.ok).length,before:Object.keys(BEFORE).length-notBefore.length+'/'+Object.keys(BEFORE).length,leaks:leaks.length};
+ // ---- Jamie and Sam, measured: the companion acceptance tests ----
+ runCompanionTests(T,X);
  element('restart').onclick?.();advance(.5);
  void wait;void me;void faceTo;void Q5;void log;
 }

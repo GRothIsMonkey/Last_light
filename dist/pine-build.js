@@ -4,7 +4,7 @@
 // story moves (doors, the bell, the gate, lit windows, the lot's lamp, the water) stays live in W.pine.live.
 import * as THREE from './three.module.js';
 import {createKit,seeded,hashSeed,smooth,clamp,lerp} from './kit.js';
-import {P0,PW,PL,hd,WATER,frameOf,SHORE_LINE,shoreSD,DAM,ROADS,PADS,BUILDINGS,BLD,PATHS,DOCKS,GRID,PS,cellOf,typeAt,TREES,SOLIDS,SPOT,
+import {GATES,P0,PW,PL,hd,WATER,frameOf,SHORE_LINE,shoreSD,DAM,ROADS,PADS,BUILDINGS,BLD,PATHS,DOCKS,GRID,PS,cellOf,typeAt,TREES,SOLIDS,SPOT,
  FINE,fineHeights,heightAt,coarseY,ownsCell,LAT,REGION_BOX,regionDist,insideRegion,interiorOf,DOORS} from './pine-plan.js';
 import {TL,TW,inRegion as inTown} from './town-plan.js';
 import {outsideMasks} from './town-ground.js';
@@ -296,7 +296,10 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
    const uv=paint(640,400,oldSignArt);B(g,0,1.75,.06,3.3,2.1,.08,K.mat(0x3a2818,{roughness:1}));face(g,uv,3.2,2,{y:1.75,z:-.01});out.anchors.oldSign=g;}
   {const g=at(root,SPOT.gate[0],SPOT.gate[1],null,0);for(const x of [-2.8,2.8])K.cyl(g,x,.6,0,.09,1.2,K.mat(0x8a8a6a,{roughness:.5,metalness:.4}),8);
    const arm=new THREE.Group();arm.position.set(-2.8,1.05,0);g.add(arm);K.cyl(arm,2.8,0,0,.05,5.6,M.yellowSteel,8,[0,0,Math.PI/2]);B(arm,2.8,-.16,.05,.6,.26,.03,K.mat(0xd83a2a,{roughness:.7}));
-   K.rod(g,[2.8,1.05,0],[2.86,.7,0],.008,M.steel);out.anchors.swingGate=arm;
+   K.rod(g,[2.8,1.05,0],[2.86,.7,0],.008,M.steel);out.anchors.swingGate=arm;out.dyn.swing={arm,G:GATES.swing};
+   // the latch at the free end (where a hand opens it): a hasp on the arm over a catch post
+   B(arm,5.55,0,.06,.1,.12,.03,M.steel);
+   {const rg=new THREE.DodecahedronGeometry(1,0),rm=K.mat(0x7c786c,{roughness:.95});for(const q of SOLIDS.filter(q=>q.kind==='gaterock')){const p=PW(q.e,q.n),m=new THREE.Mesh(rg,rm);m.scale.set(q.r*1.05,q.r*.72,q.r*.95);m.rotation.y=q.e*1.7;m.position.set(p.x,heightAt(p.x,p.z)+q.r*.35,p.z);m.castShadow=true;m.receiveShadow=true;root.add(m);}}
    for(let k=0;k<6;k++){const pg=at(root,-120+k*.9,370.6);B(pg,0,.02,0,.6,.06,.6,M.stone);}}
   {const b=BLD.arshed,g=at(root,b.c[0],b.c[1],b.y,b.a);B(g,0,b.floor/2,0,b.w+.2,b.floor,b.d+.2,M.concrete);B(g,0,b.floor+b.h/2,0,b.w,b.h,b.d,K.mat(0x8a8a7a,{roughness:.9}));B(g,0,b.floor+b.h+.15,0,b.w+.5,.3,b.d+.5,K.mat(0x4a3a32,{roughness:.9}));
    B(g,-.9,b.floor+1.05,-b.d/2-.03,1,2.1,.05,K.mat(0x5a6a62,{roughness:.6,metalness:.4}));B(g,1.2,b.floor+1.7,-b.d/2-.02,.8,.5,.04,K.mat(0x30383a,{roughness:.3}));
@@ -383,10 +386,13 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
  const dmp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
  out.update=(dt,{fog,dusk=0,night=0,time}={})=>{const U=out.waterU;U.uTime.value=(time??(U.uTime.value+dt));out.groundU.uTime.value=U.uTime.value;if(fog){_c.copy(fog);U.uSky.value.lerp(_c,1-Math.exp(-3*dt));}
   const L=out.lights.lot;if(L){L.head.material.emissiveIntensity=L.level*2.2;L.pool.intensity=L.level*14;}
-  for(const [key,d] of Object.entries(out.doors)){const want=DOORS[key]?.open??0;if(d.posed&&Math.abs(d.cur-want)<1e-4)continue;d.cur=dt>0?dmp(d.cur,want,d.fast||5,dt):want;if(Math.abs(d.cur-want)<1e-3)d.cur=want;
+  for(const [key,d] of Object.entries(out.doors)){const want=DOORS[key]?.open??0;if(d.posed&&Math.abs(d.cur-want)<1e-4){if(DOORS[key])DOORS[key].cur=d.cur;continue;}d.cur=dt>0?dmp(d.cur,want,d.fast||5,dt):want;if(Math.abs(d.cur-want)<1e-3)d.cur=want;if(DOORS[key])DOORS[key].cur=d.cur;
    d.hinge.rotation.y=-d.inward*d.cur*1.45;if(d.pair)d.pair.hinge.rotation.y=d.inward*d.cur*1.45;d.posed=true;}
   for(const g of Object.values(out.glows)){const lv=clamp(g.level,0,1.5);if(g.shown===lv)continue;g.shown=lv;g.mat.emissiveIntensity=lv*2.6;if(g.see){g.mat.opacity=g.base+Math.min(1,lv)*.55;}}
   const bell=out.dyn.bell;if(bell&&(Math.abs(bell.v)>1e-4||Math.abs(bell.swing)>1e-4)){bell.v+=(-9.8/.45*Math.sin(bell.swing)-bell.v*.9)*dt;bell.swing+=bell.v*dt;bell.yoke.rotation.z=bell.swing;}
-  const gate=out.dyn.campGate;if(gate){const want=gate.want??-1.25;gate.left.hinge.rotation.y=dt>0?dmp(gate.left.hinge.rotation.y,want,gate.k||1.4,dt):want;}};
+  const gate=out.dyn.campGate;if(gate){const want=gate.want??-1.25;gate.left.hinge.rotation.y=dt>0?dmp(gate.left.hinge.rotation.y,want,gate.k||1.4,dt):want;
+   GATES.campL.ang=gate.left.hinge.rotation.y;GATES.campL.want=want;GATES.campR.ang=gate.right.hinge.rotation.y;}
+  // the yellow arm: turned toward where the story (or a hand) sends it, at a hand's pace; what blocks follows it
+  const sw=out.dyn.swing;if(sw){const G=sw.G,a=sw.arm.rotation.y,to=G.want;let v=a;if(G.snap){G.snap=false;v=to;}else if(dt>0){const k=G.k||2.4;v=Math.abs(to-a)<1e-3?to:a+Math.sign(to-a)*Math.min(Math.abs(to-a),dt*k*Math.max(.18,Math.min(1,Math.abs(to-a)*1.6)));}else v=to;sw.arm.rotation.y=v;G.ang=v;}};
  return out;
 }

@@ -12,7 +12,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
  const lens=new THREE.Mesh(new THREE.CylinderGeometry(.024,.024,.018,12),new THREE.MeshStandardMaterial({color:0xe9dfb9,roughness:.25}));lens.rotation.x=Math.PI/2;lens.position.z=-.091;torch.add(lens);scene.add(torch);torch.visible=false;
  const F={fp:{back0:.09,back1:0,eyeU:.11,eyeF:.1},extraEye:{f:0,y:0},arms:null,viewPitch:0,viewYaw:0,exposure:null,runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,spillLevel:6,light,spill,torch,pose,
   attach(on){if(on){scene.add(light,light.target,spill,spill.target);}else{for(const o of [light,light.target,spill,spill.target])o.removeFromParent();}},
-  reset(){F.extraEye.f=F.extraEye.y=0;Object.assign(F,{runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;spill.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
+  reset(){F.extraEye.f=F.extraEye.y=0;Object.assign(F,{flash:0,runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;spill.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
   ride(){if(self.group.parent!==bike.group)bike.group.add(self.group);self.group.position.set(0,0,0);self.group.rotation.set(0,0,0);torch.visible=false;},
   give(){F.owned=true;F.on=true;sfx('click',null,{gain:.45});},
   toggle(){if(F.owned){F.on=!F.on;sfx('click',null,{gain:.5});}},
@@ -75,6 +75,8 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    torch.position.copy(hand);torch.lookAt(hand.clone().sub(direction));
    light.position.copy(hand).addScaledVector(direction,.1);const aim=hand.clone().addScaledVector(direction,12);if(dt===0)light.target.position.copy(aim);else light.target.position.lerp(aim,1-Math.exp(-16*dt));
    if(F.on&&ex?.reach){spill.intensity=ex.wide!==undefined?Math.min(F.spillLevel,Math.max(.15,ex.wide*ex.wide*1.2)):F.spillLevel;spill.position.copy(light.position);spill.target.position.copy(light.target.position);}
+   // a camera's flash (chapter5-gear.js): the wide spill, from the eye, for the moment it lasts (one light, no new ones)
+   if(F.flash>0){spill.intensity=Math.max(spill.intensity,F.flash);spill.position.copy(camera.position);spill.target.position.copy(camera.position).addScaledVector(direction,6);}
   },
   get eyeOffset(){return F.height-.54*F.crouch-F.land;},
   // looking down, the eyes go down and forward with the bending neck (game.js adds this to the walking eye)

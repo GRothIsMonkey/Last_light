@@ -66,11 +66,16 @@ export function createPark(X){
   const L=launch(handPos,a,el,power,spin);P.used=true;P.claimed=null;X.sound('pebble',handPos,{gain:.15});
   const isTurn=S.turn==='you';fly(P,L,'you',run=>{const n=run.landed?-1:run.skips;S.you.push(n);S.best.you=Math.max(S.best.you,n);S.log.push(['you',n]);X.thrown('you',n,isTurn);});}
  // the first-person arm for a throw (drawn over the body by physical.js's arms)
- phys.ME.extra.push((p,{toLocal,dt})=>{const A=phys.ME.act;if(!A||A.kind!=='throw')return;A.e+=dt;const o=PI.rh,e2=PI.re;
-  if(A.phase==='wind'){const w=smooth(A.e/.35)*(.55+.45*A.power);p[o]+=(.42-p[o])*w;p[o+1]+=(.86-p[o+1])*w;p[o+2]+=(.12-p[o+2])*w;p[e2]=1;p[e2+1]=-.2;p[e2+2]=.2;p[PI.twist]+=.35*w;p[PI.lean]+=.12*w;A.dip=-.12*w;}
-  else{const t=A.e,f=t<.12?smooth(t/.12):1,ft=smooth((t-.12)/.35),back=smooth((t-.55)/.35);
-   const hx=.42+(.04-.42)*f+(-.26-.04)*ft,hy=.86+(.92-.86)*f+(1.0-.92)*ft,hz=.12+(-.58-.12)*f+(-.32+.58)*ft;
-   p[o]=hx*(1-back)+p[o]*back;p[o+1]=hy*(1-back)+p[o+1]*back;p[o+2]=hz*(1-back)+p[o+2]*back;p[e2]=.9;p[e2+1]=-.3;p[e2+2]=.3;p[PI.twist]+=(.35-.7*f+.35*back);A.dip=-.12*(1-back);
+ // the first-person arm for a throw (drawn over the body by physical.js's arms): a sidearm, kept low. Wound up, the hand
+ // goes back and down past the right hip (out of the bottom-right of the view, the stone with it); let go, it comes round
+ // at waist height across the front, the stone leaving it there, and follows through to the left; the body barely turns
+ // (a turn of the shoulders under a first-person eye sweeps the sleeve through the view)
+ const WIND=[.42,.78,.3],REL=[.12,.86,-.5],FOL=[-.28,.92,-.34];
+ phys.ME.extra.push((p,{toLocal,dt})=>{const A=phys.ME.act;if(!A||A.kind!=='throw')return;A.e+=dt;const o=PI.rh,e2=PI.re,set=(q,w)=>{for(let i=0;i<3;i++)p[o+i]+=(q[i]-p[o+i])*w;};
+  if(A.phase==='wind'){const w=smooth(A.e/.35),k=.55+.45*A.power;set([WIND[0],WIND[1]-.06*k,WIND[2]*k+.05],w);p[e2]=1;p[e2+1]=-.35;p[e2+2]=.1;p[PI.twist]+=.12*w;p[PI.lean]+=.06*w;A.dip=-.08*w;}
+  else{const t=A.e,f=smooth(t/.12),ft=smooth((t-.12)/.3),back=smooth((t-.5)/.4),h=[0,0,0];
+   for(let i=0;i<3;i++)h[i]=WIND[i]+(REL[i]-WIND[i])*f+(FOL[i]-REL[i])*ft;
+   for(let i=0;i<3;i++)p[o+i]=h[i]*(1-back)+p[o+i]*back;p[e2]=.9;p[e2+1]=-.3;p[e2+2]=.2;p[PI.twist]+=.12-.24*f*(1-back);A.dip=-.08*(1-back);
    if(!A.released&&t>=.1){A.released=true;X.self.group.updateMatrixWorld(true);const hp=new THREE.Vector3();X.self.parts.rhand.getWorldPosition(hp);letGo(hp);}
    if(t>1){phys.ME.act=null;}}});
  // ---- Jamie's and Sam's stones -------------------------------------------------------------------------------------------------------

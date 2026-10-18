@@ -114,6 +114,7 @@ export function createChapter1(o){
   if(S.gap>0){S.gap-=dt;return;}
   const l=S.queue.shift();if(!l)return;
   if(l.then){l.then();return;}if(l.act)l.act();if(l.wait||l.until){S.line={...l,dur:l.wait||.01,text:''};S.lineT=0;return;}
+  if(typeof l.text==='function')l.text=l.text();// (a line that says what is true when it is said: the time)
   l.dur=lineTime(l);S.line=l;S.lineT=0;S.talking=l.from||null;if(l.from){l.from.talk=l.dur;l.from.speech={text:l.text,dur:l.dur};}say(l.who,l.text,l.dur+.6);}
  const speaking=()=>S.line&&S.line.text?S.line.who:null;
  // ---- helpers for places ---------------------------------------------------------------------------

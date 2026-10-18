@@ -126,3 +126,13 @@ body.remembering .vignette{box-shadow:inset 0 0 180px #30291c35}
 #dev-chapters .dev-go{flex-basis:100%;padding:9px;background:#8a5a12;border-color:#ffb347;color:#fff;font-weight:bold;letter-spacing:.8px}
 #dev-chapters .dev-go:hover,#dev-chapters .dev-go:focus-visible{background:#a86e18}
 body.dev-starting #dev-chapters button{opacity:.5;pointer-events:none}
+/* What you carry (I): a small panel at the right of the view, over the game, the walk held while it is open */
+#inventory{position:absolute;top:131px;right:45px;width:min(330px,80vw);max-height:62vh;overflow:auto;padding:12px 14px 10px;border-radius:3px;background:rgba(17,20,25,.86);box-shadow:0 3px 15px #0004;font-size:14px;color:#fff1d8;z-index:3}
+#inventory ul{list-style:none;margin:0 0 8px;padding:0}#inventory .inv-head{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;opacity:.62;margin:2px 0 5px}
+#inventory .inv-row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;padding:6px 8px;border-radius:2px;cursor:pointer}
+#inventory .inv-row.sel{background:rgba(255,241,216,.12);outline:1px solid rgba(255,241,216,.25)}#inventory .inv-row.found .inv-name{opacity:.92}
+#inventory .inv-state{font-size:11px;letter-spacing:1px;opacity:.7;text-transform:uppercase}#inventory .inv-note{grid-column:1/-1;font-size:12px;opacity:.72;line-height:1.35}
+#inventory .inv-act{grid-column:1/-1;justify-self:start;margin-top:3px;padding:3px 9px;font-size:12px;border:1px solid rgba(255,241,216,.4);border-radius:2px;background:transparent}
+#inventory .inv-none{opacity:.6;padding:6px 8px}#inventory .inv-keys{font-size:11px;opacity:.6;margin-top:2px}#inventory kbd{padding:0 4px;border:1px solid rgba(255,241,216,.35);border-radius:2px;margin-right:2px}
+#bag{min-width:64px}
+@media(max-width:700px){#inventory{top:96px;right:16px;left:16px;width:auto;font-size:13px}}

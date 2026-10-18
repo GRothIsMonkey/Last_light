@@ -64,6 +64,11 @@ if(process.env.ONLY==='chapter5'){const {playChapterFive,runChapterFiveChecks}=a
  try{playChapterFive(T5,'Chapter Five',{fromCard:process.env.FROMCARD!=='0',route:process.env.ROUTE||'A',choice:process.env.CHOICE||'sam',from:process.env.FROM||null});}catch(e){fails.push('playthrough threw: '+String(e.stack||e).slice(0,800));}
  if(!process.env.PLAY_ONLY)try{await runChapterFiveChecks(T5,null);}catch(e){fails.push('checks threw: '+String(e.stack||e).slice(0,800));}
  console.log(JSON.stringify({passed:checks.length,failed:fails,metrics},null,1));process.exit(fails.length?1:0);}
+// ONLY=companions: Chapter Five's companion acceptance tests (A–H) alone, for development.
+if(process.env.ONLY==='companions'){const {chapterFiveTools}=await import('./chapter5-sim.mjs');const {runCompanionTests}=await import('./chapter5-companions.mjs');const fails=[];
+ const soft=(name,fn)=>{try{fn();checks.push(name);console.log('ok  ',name);}catch(e){fails.push(name+': '+String(e.message).slice(0,500));console.log('FAIL',name,String(e.message).slice(0,500));}};
+ const T5={h,advance,press,release,tap,check:soft,element,metrics,groundPoint,W};try{runCompanionTests(T5,chapterFiveTools(T5));}catch(e){fails.push('companions threw: '+String(e.stack||e).slice(0,800));}
+ console.log(JSON.stringify({passed:checks.length,failed:fails,metrics},null,1));process.exit(fails.length?1:0);}
 // ONLY=chapter3: a quick loop for Chapter Three alone (from the end of Chapter Two), for development.
 if(process.env.ONLY==='chapter3'){const {playChapterThree,runChapterThreeChecks}=await import('./chapter3-sim.mjs');const T3={h,advance,press,release,tap,check,element,metrics,groundPoint,W};
  if(!process.env.SKIPPLAY){h.jump('chapter2-end');playChapterThree(T3,'chapter three alone');for(let n=2;n<=+(process.env.REPLAYS||1);n++){h.jump('chapter2-end');playChapterThree(T3,'replay '+n);}}if(!process.env.SKIPCHECKS)await runChapterThreeChecks(T3);console.log(JSON.stringify({passed:checks.length,checks,metrics},null,1));process.exit(0);}
