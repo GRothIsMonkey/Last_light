@@ -26,7 +26,30 @@ them and fixed is listed under *Found in the frames*.
 
 ## Found in the frames, and fixed
 
-{{FOUND}}
+Earlier rounds (before the inspection): the player's own stone throw never fired (the arms reset cleared it); the torch was
+drawn through Alex's camera during a picture; the inventory panel was missing from captured frames; the carried beams
+pointed backwards; the first light was invisible at a distance; the night script toggled the light twice.
+
+From the frame-by-frame inspection of the 22 scenes, fixed in code:
+
+- Backpacks were worn at head height (both kids read as box-heads from behind): now belt to shoulder blades.
+- The camera, flashlight and battery hand-offs were staged metres apart: Sam comes to an arm's length (round the table
+  for the camera) and holds the thing out; small things are taken within an arm's length, so the hand meets the object.
+- The camera shot's finger was at the wrong end of the camera, and the screen looked the same before and after the
+  picture: the finger is over the shutter; focus brackets while aiming, the taken picture white-edged with a count.
+- Crouched to throw, the eye went inside the collar: Chapter Five's body sits further back and leans less.
+- The double never came out of Owl before every light came on: it comes out of the door toward you first.
+- The yellow gate never visibly opened (its arm was baked into the static world): built live, it turns on screen.
+- Wall battens ran across cabin, office and lodge doorways and windows like bars: they stop at the openings.
+- The carried beam read as a hard disc pointed at you: the cone fades along its length and when facing you; a glint
+  takes over.
+- Capture faults (not game faults): each frame showed the view from the step before (the view turns on the next step);
+  the seated dock frames double-counted the seat's heading; the three-lights frames faced cabin walls. The scripts aim a
+  step ahead now, aim relative to the seat, and watch the lights from a clear vantage.
+
+What the inspection listed as art (rig, clothing, hands, faces, eyes, hair, props, water, ground, buildings, lighting) is
+in `docs/CHAPTER5_ASTRA_PREP_HANDOFF.md` under *Visual deficiencies found in the review captures*; none of it is claimed
+fixed here.
 
 ## Memory and lights
 

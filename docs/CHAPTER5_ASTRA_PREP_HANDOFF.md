@@ -147,7 +147,8 @@ attachment, timing) that this repair fixed in code after the inspection; the res
   they stop at the openings, `pine-camp.js`)**.
 - **Camp gate:** untextured posts and a blank sign, thin flat rails, no hinge or latch hardware, and no fence line: a
   slammed gate that could be walked round. A fence into the woods would make the slam a threat.
-- **Yellow gate:** no hinge collar, counterweight or latch mechanism; the latch is a dark square on the post.
+- **Yellow gate:** no hinge collar, counterweight or latch mechanism; the latch is a dark square on the post. (The arm
+  was baked and never seen to turn; **repaired**: it is built live and turns on screen.)
 - **Porch light:** a bare white egg on an invisible cord.
 - **The lot:** no lamp post or fixture is visible at the aftermath, only a pool on the grass; bike spokes glow white.
 

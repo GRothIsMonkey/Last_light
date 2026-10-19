@@ -174,6 +174,15 @@ inspection of the 22 review scenes. What they found and what was done:
   dropped after a scripted scene; pace changes once wanted; a step off the bike is not a heading; a look-at spot is clear of
   the other friend; make-way never steps a friend onto the other.
 - **Scene jumps** start with doors and gates where the scene wants them instead of swinging there.
+- **The yellow gate never visibly opened**: its arm was built under the root that bakes into the merged static world, so
+  the group that turned held nothing that was drawn (play and collision opened; the picture stayed shut). The arm is
+  built live, like the doors (`pine-build.js`).
+- **Tight spots:** at Pine Ridge a path that starts pressed against something (a gate leaf's end, a post) starts from
+  the nearest clear spot (`nav.js`); in Chapter Five a step out of something you are standing in is always allowed,
+  never a step further in (`game.js`). The camp gate's half-shut leaf could otherwise hold you after Sam's hand-out.
+- **Dark enough:** calling Alex's name deepens the dusk (the first light shows); RUN no longer lightens the sky (it went
+  from 0.5 to 0.35 of the scripted dark).
+- **Wading** is slowed only where the bed is under the water (the first half metre of "shallow" was dry pebbles).
 - **Tests:** companion test G now opens the office door and checks you were inside.
 
 ## Repair report: each playtest complaint
@@ -199,12 +208,12 @@ inspection of the 22 review scenes. What they found and what was done:
 | 14 | Must reach down for a stone | — | Reach with crouch, within an arm's length | frames s07 | Yes | Hand pose |
 | 15 | Throwing animations unconvincing | No arm | First-person wind-up and release; friends crouch and throw | frames s09–s14 | Partly | Animation |
 | 16 | Impacts need interaction | — | Rings and splashes at each touch | frames s12–s13 | Yes | Water effects |
-| 17 | Hard shoreline | Water cells unwalkable | Wade zones at the beach and lawn (`WADE`, `PS.shallow`), slower in the water | sim wade check; frame s15 | Yes | See-through shallows |
+| 17 | Hard shoreline | Water cells unwalkable | Wade zones at the beach and lawn (`WADE`, `PS.shallow`), slower where the bed is under water | sim "the shallows" check; frame s15 | Yes | See-through shallows |
 | 18 | Enter shallow water | — | As 17; only where the bed is under water | as 17 | Yes | — |
 | 19 | Dock sitting is wrong | Only the camera moved | All three sit on the edge, legs over the water (`physical.js` `sit`, `sitPose` hang); seats side by side | sim dock check; dock frames | Yes | Seated first-person body |
 | 20 | Looking down at yourself is bad | Camera inside the neck | Chapter Five's body back under the eye, an eye that dips, a stance (`on-foot.js` `fpBody`) | lookdown frames | Partly | Leg and shoe meshes |
-| 21 | Walk through a gate | Gates drawn, not solid | Collision follows the drawn arm (`gateAt`); F lifts the latch or Jamie does (`chapter5-gates.js`) | sim gate checks | Yes | Hinge/latch hardware |
-| 22 | No inventory | — | I/Tab or the BAG button (`inventory.js`) | sim inventory checks; frame e16 | Yes | Panel styling |
+| 21 | Walk through a gate | Gates drawn, not solid | Collision follows the arm (`gateAt`); F lifts the latch or Jamie does (`chapter5-gates.js`); the arm is drawn live so it is seen to turn; it stops against a player in its way | sim gate checks; frames e01–e04 | Yes | Hinge/latch hardware |
+| 22 | No inventory | — | I/Tab or the BAG button (`inventory.js`); Escape, the pause and the end close it | sim "what you carry" check; frame e16 | Yes | Panel styling |
 | 23 | Flashlight by day | It died on first use | Sam hands it out at the camp gate; works by day; dies only in Bluejay, then Sam's batteries | sim flashlight/batteries checks | Yes | Torch model, hotspot |
 | 24 | Camera needs hands and shutter | Model hung on the view | Both hands raise it, a finger presses the shutter (`chapter5-gear.js` shot) | frames e10–e15 | Yes | Finger rig; camera model is Ch.4's |
 | 25 | Shutter/flash response | A click | Flash light, the picture on the screen, white-edged | frames e13–e14 | Yes | Flash burst effect |
