@@ -242,7 +242,7 @@ export async function runChapterFiveChecks(T,cap){
  // after a long while (a lost walk) does a fade bring you on. The optional and the eventful move on in time.
  const EVIDENCE=new Set(['c5-sign-search','c5-camp','c5-owl','c5-second-discovery']),TRAVEL=new Set(['c5-trail-map','c5-gate-decision','c5-gravel-road','c5-golden-hour','c5-window','c5-aftermath']);
  const idle={};for(const sec of ['c5-park','c5-stones','c5-dock-memory','c5-sign-search','c5-trail-map','c5-gate-decision','c5-gravel-road','c5-camp','c5-golden-hour','c5-owl','c5-three-lights','c5-split','c5-window','c5-run','c5-route-c','c5-aftermath','c5-second-discovery','chapter5-end']){
-  h.jump(sec);advance(.3);const ev0=JSON.stringify({m:!!C5().flags.match,c:C5().clues.length,s:!!C5().flags.shirtSeen,f:!!C5().flags.found}),ph=S().phase,n0=log.said.length,lim=EVIDENCE.has(sec)?(sec==='c5-camp'?420:300):sec==='c5-park'?260:TRAVEL.has(sec)?320:420;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended',lim);
+  h.jump(sec);advance(.3);const ev0=JSON.stringify({m:!!C5().flags.match,c:C5().clues.length,s:!!C5().flags.shirtSeen,f:!!C5().flags.found}),ph=S().phase,n0=log.said.length,lim=EVIDENCE.has(sec)?(sec==='c5-camp'?420:300):sec==='c5-park'?260:TRAVEL.has(sec)?320:420;const moved=until(()=>S().phase!==ph||h.snapshot.state==='ended'||(sec==='c5-split'&&C5().split?.resolved),lim);
   // (and wherever a fallback's fade put the three of you, it is ground you can walk on)
   wait(1.5);const p=me(),stand=[p,...boys().map(c=>({x:c.px,z:c.pz}))].map(q=>!!h.nav.walkable(q.x,q.z,{r:.25}));
   const found=JSON.stringify({m:!!C5().flags.match,c:C5().clues.length,s:!!C5().flags.shirtSeen,f:!!C5().flags.found})!==ev0;

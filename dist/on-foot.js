@@ -58,7 +58,10 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    applyPose(self,pose);
   },
   lamp(dt,walking){
-   torch.visible=walking&&F.owned&&!F.hideTorch;// (hidden while both hands hold Alex's camera)light.intensity=walking&&F.on?24:0;spill.intensity=0;
+   torch.visible=walking&&F.owned&&!F.hideTorch;light.intensity=walking&&F.on?24:0;spill.intensity=0;// (the torch hidden while both hands hold Alex's camera)
+   // a camera's flash (chapter5-gear.js): the wide spill, from the eye, for the moment it lasts (one light, no new ones);
+   // whether or not the flashlight is in your hand (during a picture it is not drawn)
+   if(F.flash>0){camera.getWorldDirection(direction);spill.intensity=F.flash;spill.position.copy(camera.position);spill.target.position.copy(camera.position).addScaledVector(direction,6);}
    if(!torch.visible)return;self.group.updateMatrixWorld(true);self.parts.rhand.getWorldPosition(hand);
    // The beam is only as strong as what it lands on can take: a level of light on whatever is nearest
    // in it (the ground looked down at, a wall in the storm drain, a friend standing in it), so nothing
@@ -75,8 +78,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    torch.position.copy(hand);torch.lookAt(hand.clone().sub(direction));
    light.position.copy(hand).addScaledVector(direction,.1);const aim=hand.clone().addScaledVector(direction,12);if(dt===0)light.target.position.copy(aim);else light.target.position.lerp(aim,1-Math.exp(-16*dt));
    if(F.on&&ex?.reach){spill.intensity=ex.wide!==undefined?Math.min(F.spillLevel,Math.max(.15,ex.wide*ex.wide*1.2)):F.spillLevel;spill.position.copy(light.position);spill.target.position.copy(light.target.position);}
-   // a camera's flash (chapter5-gear.js): the wide spill, from the eye, for the moment it lasts (one light, no new ones)
-   if(F.flash>0){spill.intensity=Math.max(spill.intensity,F.flash);spill.position.copy(camera.position);spill.target.position.copy(camera.position).addScaledVector(direction,6);}
+   if(F.flash>0){spill.intensity=Math.max(spill.intensity,F.flash);spill.position.copy(camera.position);spill.target.position.copy(camera.position).addScaledVector(direction,6);}// (the flash over the beam's own spill)
   },
   get eyeOffset(){return F.height-.54*F.crouch-F.land;},
   // looking down, the eyes go down and forward with the bending neck (game.js adds this to the walking eye)

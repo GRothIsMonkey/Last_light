@@ -20,10 +20,10 @@ export default async function(L,{cap,step,press,release,tap,face}){
  until(()=>C5.C.lt.sat,80);step(1.5);lookAt(W(-212,516,.7));await cap('n09-sitting-where-you-sat');
  until(()=>C5.C.lt.turned,30);step(1.4);lookAt(W(-212,516,1.1));await cap('n10-turned-on-you');out.copies=C5.C.lt.copies;
  // ---- the double ----
- L.jump('c5-window');step(.6);const D=C5.DOUBLE();until(()=>C5.C.win,10);lookAt({x:D.x,y:D.y+1.4,z:D.z});step(1);await cap('n11-owl-from-the-porch');
+ L.jump('c5-window');step(.6);const D=C5.DOUBLE();{const pr=await import('/dist/pine-plan.js'),ob=pr.BLD.owl,porch=W(...ob.F.to(0,ob.d/2+ob.porch+1.0));walkTo(porch,10);}until(()=>C5.C.win,10);lookAt({x:D.x,y:D.y+1.4,z:D.z});step(1);await cap('n11-owl-from-the-porch');
  until(()=>C5.C.win?.stage==='turn',45);step(1.5);lookAt({x:camp.D.x,y:camp.D.y+1.4,z:camp.D.z});await cap('n12-it-looks-at-jamie');
  const jh={x:J.px,y:J.person.group.position.y+1.3,z:J.pz};lookAt(jh);await cap('n13-jamie-beside-you');
- until(()=>C5.C.win?.stage==='come',20);for(let i=0;i<4;i++){step(1);lookAt({x:camp.D.x,y:camp.D.y+1.3,z:camp.D.z});await cap('n14-it-comes-out-'+i);if(C5.C.win.stage==='run')break;}
+ until(()=>C5.C.win?.stage==='come',20);for(let i=0;i<4;i++){step(1);lookAt({x:camp.D.x,y:camp.D.y+1.3,z:camp.D.z});await cap('n14-it-comes-out-'+i);if(C5.C.win?.stage==='run')break;}
  until(()=>C5.C.flags.wake,10);step(.6);await cap('n15-every-light-RUN');
  // ---- the gate ----
  L.jump('c5-run');step(.4);for(const [e,n] of [[-262,556],[-236,552],[-212,546],[-192,538],[-186.6,532.6],[-185.3,530],[-178.8,524.2],[-172,520]]){walkTo(W(e,n),16,true);if(C5.C.flags.gateShut)break;}

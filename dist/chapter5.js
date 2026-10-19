@@ -435,7 +435,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   for(const c of [jamie,sam]){const q=DOCK_SEAT(SEAT_X[c.key]),front={x:q.x-fx*.55,z:q.z-fz*.55},already=c.seated;stand(c,null);const pth=nav.walkPath({x:c.px,z:c.pz},front);
    comp.run(c,[...(already?[]:[comp.steps.walkTo(c,pth.length?pth:[[front.x,front.z]],{speed:1.1}),comp.steps.turnTo(c,yaw,.5)]),
     phys.sit(c,{seat:()=>({...DOCK_SEAT(SEAT_X[c.key]),a:yaw}),legs:'hang',hands:'deck',until:()=>C.flags.dockUp,look:()=>c===jamie?(sam.talk>0?{x:sam.px,z:sam.pz}:camera.position):(jamie.talk>0?{x:jamie.px,z:jamie.pz}:camera.position)}),
-    phys.rise(c,{legs:'hang',h:0,back:-.5})],{then:()=>{stand(c,null);follow(true);}});}
+    phys.rise(c,{legs:'hang',h:0,back:-.5}),comp.steps.walkTo(c,[[W5(...DOCK_F.to(0,DOCK.len-2.4)).x,W5(...DOCK_F.to(0,DOCK.len-2.4)).z]],{speed:1})],{then:()=>{stand(c,null);follow(true);}});}
   say([{until:()=>jamie.seated&&sam.seated||C.t-C.dockAt>9},{wait:2.4},{who:'JAMIE',text:'“He fished off this dock for three hours.”',by:'jamie',face:'amused'},{who:'JAMIE',text:'“Three hours. And he caught one shoe.”',by:'jamie',face:'grin'},
    {who:'SAM',text:'“Gary.”',by:'sam',time:1.2,face:'amused'},{who:'YOU',text:'“He named it Gary.”',time:1.6},
    {who:'JAMIE',text:'“‘Guys. Guys. I caught Gary.’ Like it was a fish.”',by:'jamie',time:3,face:'happy'},{who:'SAM',text:'“He kept it. It’s on the shelf in his garage. With the trophies.”',by:'sam',time:3,face:'happy'},
@@ -986,7 +986,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(t>95&&!C.flags.dockAhead){C.flags.dockAhead=true;const yaw=DOCK.a,fx=Math.sin(yaw),fz=-Math.cos(yaw);for(const c of [jamie,sam]){const q=DOCK_SEAT(SEAT_X[c.key]),front={x:q.x-fx*.55,z:q.z-fz*.55};const pth=nav.walkPath({x:c.px,z:c.pz},front);stand(c,null);
     comp.run(c,[comp.steps.walkTo(c,pth.length?pth:[[front.x,front.z]],{speed:1.1}),comp.steps.turnTo(c,yaw,.5),phys.sit(c,{seat:()=>({...DOCK_SEAT(SEAT_X[c.key]),a:yaw}),legs:'hang',hands:'deck',until:()=>C.flags.dock,look:()=>camera.position})]);}}
   if(C.flags.dockAhead&&jamie.seated&&near(DOCK_END,5)&&me().walking&&!C.flags.dock&&!busy()&&t>100){/* (close enough: you sit down with them) */}
-  if(t>260&&!C.flags.dockSkip&&!busy()){C.flags.dockSkip=true;C.flags.dock=true;C.flags.dockUp=true;say([{who:'SAM',text:'“Okay. Let’s go find where his picture was.”',by:'sam'}],{then:()=>{for(const c of [jamie,sam]){comp.run(c,[phys.rise(c,{legs:'hang',h:0,back:-.5})],{then:()=>{stand(c,null);follow(true);}});}signStart();}});}}
+  if(t>260&&!C.flags.dockSkip&&!busy()){C.flags.dockSkip=true;C.flags.dock=true;C.flags.dockUp=true;say([{who:'SAM',text:'“Okay. Let’s go find where his picture was.”',by:'sam'}],{then:()=>{for(const c of [jamie,sam]){comp.run(c,[phys.rise(c,{legs:'hang',h:0,back:-.5}),comp.steps.walkTo(c,[[W5(...DOCK_F.to(0,DOCK.len-2.4)).x,W5(...DOCK_F.to(0,DOCK.len-2.4)).z]],{speed:1})],{then:()=>{stand(c,null);follow(true);}});}signStart();}});}}
  // the mood and what is worth a look, by where the chapter is (set when it changes)
  function mind(){const ph=S.phase,key=ph+(C.flags.hurry?'!':'');if(C.mindKey===key)return;C.mindKey=key;let mood='relaxed',pois=[],goal=null;
   if(/^d5-(park|dock)$/.test(ph))pois=PLACES.PARK;
