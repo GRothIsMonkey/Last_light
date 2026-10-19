@@ -54,7 +54,8 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    else if(scripted&&!CP?.stand){pose[P.root+1]=.30;pose[P.lean]=1.04;pose[P.root+2]=0;pose[P.lf]=-.17;pose[P.rf]=.17;pose[P.lf+2]=-.10;pose[P.rf+2]=.06;pose[P.lh+1]=.25;pose[P.lh+2]=-.07;pose[P.rh+1]=.42;pose[P.rh+2]=-.45;const hp=headPos(pose,new THREE.Vector3());x=camera.position.x-hp.x*Math.cos(a)+hp.z*Math.sin(a);z=camera.position.z-hp.x*Math.sin(a)-hp.z*Math.cos(a);y=camera.position.y-hp.y-.015;}
    // Looking down at yourself: the body sits a little back under the eye (as a neck bends the eyes forward over the
    // chest), so you see your chest, arms, legs and shoes, never the inside of your own shoulders.
-   if(!seat&&F.fpBody){const T=F.fp,back=T.back0+T.back1*smooth((-F.viewPitch-.25)/.75)-F.extraEye.f;x-=Math.sin(a)*back;z+=Math.cos(a)*back;}
+   // (crouched, or the eye dipping into a throw: the body further back and leaning less, so the eye stays ahead of the collar)
+   if(!seat&&F.fpBody){const T=F.fp,cr=scripted?0:F.crouch;pose[P.lean]-=.24*cr;const back=T.back0+T.back1*smooth((-F.viewPitch-.25)/.75)-F.extraEye.f+.16*cr+Math.max(0,-F.extraEye.y)*1.3;x-=Math.sin(a)*back;z+=Math.cos(a)*back;}
    self.group.position.set(x,y+F.height-F.land,z);self.group.rotation.set(0,-a,0);
    if(F.arms){self.group.updateMatrixWorld(true);F.arms(pose,{toLocal:v=>self.group.worldToLocal(v),dt,foot:F});}else{F.extraEye.f*=.85;F.extraEye.y*=.85;}
    applyPose(self,pose);

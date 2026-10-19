@@ -7,7 +7,7 @@
 import assert from 'node:assert/strict';
 import {chapterThreeTools} from './chapter3-sim.mjs';
 import {runCompanionTests} from './chapter5-companions.mjs';
-import {PW,PL,SPOT,BLD,ROADS,DOCKS,SOLIDS} from '../dist/pine-plan.js';
+import {PW,PL,SPOT,BLD,ROADS,DOCKS,SOLIDS,WADE,WATER,shoreSD,wadeZone,heightAt} from '../dist/pine-plan.js';
 
 export function chapterFiveTools(T){
  const X=chapterThreeTools(T),{h,press,release,tap}=T,{until,wait,me,faceTo,walkTo,go}=X;
@@ -64,7 +64,7 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  const sq=A5.W5?null:null;void sq;const g=h.world.homes.sam;void g;
  // up to the table; pack two things with your own hands (F on one, F on the bag); take Alex's camera from Sam's hand
  const GS=A5.G5.S,lookV=v=>faceV(v);{const t=A5.G5.TL(0,-.78,0);go({x:t.x,z:t.z},{r:.3,max:20});}U(()=>GS.flags.packing,20);
- let mine=0;for(let k=0;k<2;k++){const P=GS.items.find(q=>q.state==='placed'&&!q.claimed);if(!P)break;lookV(P.obj.position);W(.05);if(X.spot()?.id==='g5-take:'+P.name){tap('KeyF');U(()=>GS.holding===P,3);W(.6);lookV(GS.bag.mouth());W(.05);if(X.spot()?.id==='g5-put'){tap('KeyF');U(()=>P.state==='stored',3);mine++;}}W(.6);}
+ let mine=0;for(let k=0;k<2;k++){const P=GS.items.find(q=>q.state==='placed'&&!q.claimed);if(!P)break;{const t=A5.G5.TL(P.lx??0,-.62,0);go({x:t.x,z:t.z},{r:.2,max:8});}/* (in front of it, within an arm's length) */lookV(P.obj.position);W(.05);if(X.spot()?.id==='g5-take:'+P.name){tap('KeyF');U(()=>GS.holding===P,3);W(.6);lookV(GS.bag.mouth());W(.05);if(X.spot()?.id==='g5-put'){tap('KeyF');U(()=>P.state==='stored',3);mine++;}}W(.6);}
  U(()=>GS.flags.cameraAsked,90);lookV(GS.cam.obj.position);W(.05);if(X.spot()?.id==='g5-camera')tap('KeyF');U(()=>C5().inv.camera,20);T.snap?.('garage-camera-taken');
  check(`${label}: the garage: the supplies packed by hand (you ${mine}, Sam the rest), Alex's camera from Sam's hand`,()=>{assert.equal(GS.items.filter(P=>P.state==='stored').length,GS.items.length,'everything in the bag');assert.ok(GS.packedBy.you>=2&&GS.packedBy.sam>=1,JSON.stringify(GS.packedBy));assert.ok(C5().inv.camera);assert.equal(GS.cam.state,'hidden','in your pocket, not on the table');});
  // Jamie: his backpack off his back, the sock out of it, the granola bars from Sam's hand; the map, the way, the rules
@@ -96,6 +96,12 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  check(`${label}: skipping stones: a stone picked up off the shore, wound up and let go, each time; Jamie's and Sam's their own; Sam's six`,()=>{assert.ok(C5().stones.done);assert.equal(throws,3,'your throws '+throws);assert.equal(PKS.best.sam,6,JSON.stringify(PKS.log));assert.ok(PKS.you.every(n=>n>=2),'low, flat, across the water: '+PKS.you);
   assert.ok(PKS.jamie.length===3&&PKS.sam.length===3,'they threw their own');assert.ok(A5.phys.LOG.log.filter(l=>l[0]==='hold'&&/beach-stone/.test(l[1])).length>=9,'every stone picked up by a hand');});
  M2['chapter5 stones']={you:PKS.you,jamie:PKS.jamie,sam:PKS.sam};
+ // ---- the shallows: off the beach into the water, at a wading pace while the bed is under it, and back out ----
+ {let tgt=null;for(let r=2;r<9&&!tgt;r+=.5)for(let k=0;k<24&&!tgt;k++){const e=STN[0]+Math.sin(k/24*Math.PI*2)*r,n=STN[1]+Math.cos(k/24*Math.PI*2)*r,sd=shoreSD(e,n);if(sd<-1.4&&sd>-2.4&&wadeZone(e,n).beach>.8){const w=PW(e,n);if(heightAt(w.x,w.z)<WATER-.08)tgt=[e,n];}}
+  const back=[STN[0]+.4,STN[1]+.4];let wet=0,slow=0,dry=0;const watch=()=>{const p=me(),wsurf=h.nav.surface(p.x,p.z);if(wsurf==='water')wet++;if(Math.abs((h.foot.pace??1)-.58)<.01)slow++;};
+  if(tgt){goEN(tgt[0],tgt[1],{r:.6,max:20,stop:()=>{watch();return false;}});for(let i=0;i<30;i++){W(1/30);watch();}goEN(back[0],back[1],{r:.8,max:20});W(.4);dry=Math.abs((h.foot.pace??1)-1)<.01?1:0;}
+  M2['chapter5 wading']={target:tgt&&tgt.map(v=>+v.toFixed(1)),wetFrames:wet,slowFrames:slow,paceBack:h.foot.pace};
+  check(`${label}: the shallows: off the beach into the water (wading pace while the bed is under water), and back out`,()=>{assert.ok(tgt,'a wading point');assert.ok(wet>10,'in the water '+wet);assert.ok(slow>10,'wading pace '+slow);assert.ok(dry,'back to walking pace on the beach '+h.foot.pace);});}
  // ---- the dock ----
  U(()=>S().phase==='d5-dock',30);const DE=SPOT.dockEnd,DK=DOCKS[0];goEN(DE[0]+Math.sin(DK.a+Math.PI)*.8,DE[1]+Math.cos(DK.a+Math.PI)*.8,{r:.5});faceEN(DE[0]+Math.sin(DK.a)*3,DE[1]+Math.cos(DK.a)*3);act('c5-sit',6);
  let seatedAll=false;U(()=>{if(jamieSam().every(c=>c.seated)&&(A5.C.pose?.w||0)>.95)seatedAll=true;return S().phase==='d5-sign';},150);
@@ -119,8 +125,14 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  if(seg('road')){
  trek(gravel(14,186),{r:2,max:220,sprint:true});U(()=>S().phase==='d5-camp',20);
  // (Sam gets the flashlights out of his bag and holds yours out: F takes it, into your hand; Jamie takes his from Sam's)
- U(()=>A5.GR.S.offerTorch,30);{const P=A5.GR.S.torch;if(P){go({x:P.obj.position.x,z:P.obj.position.z},{r:1.2,max:10});faceV(P.obj.position);W(.1);act('c5-torch',6);}}U(()=>C5().inv.flashlight,12);U(()=>A5.GR.S.jtorchTaken,30);
+ U(()=>A5.GR.S.offerTorch,30);{const P=A5.GR.S.torch;if(P){go({x:P.obj.position.x,z:P.obj.position.z},{r:.8,max:10});faceV(P.obj.position);W(.1);act('c5-torch',6);}}U(()=>C5().inv.flashlight,12);U(()=>A5.GR.S.jtorchTaken,30);
  check(`${label}: Camp Whippoorwill: the arch, a flashlight each, out of Sam's bag and handed over`,()=>{assert.equal(S().phase,'d5-camp');assert.ok(C5().inv.flashlight);assert.ok(h.foot.owned,'in your hand');assert.ok(A5.GR.S.jtorchTaken,'Jamie took his from Sam');assert.ok(A5.phys.LOG.log.some(l=>l[0]==='handoff'&&/flashlight/.test(l[1])),'handed');});
+ // ---- what you carry (I): the camera and the flashlight listed; the flashlight put away and taken out from it; Escape closes it ----
+ {const inv=A5.GR.inv;W(1.5);tap('KeyI');W(.2);const open1=inv.isOpen,rows=inv.rows(),names=rows.map(r=>r.id);const fi=rows.findIndex(r=>r.id==='flashlight');let away=null,outAgain=null;
+  if(fi>=0){inv.S.sel=fi;tap('KeyF');W(.9);away=!A5.GR.inHand;inv.S.sel=inv.rows().findIndex(r=>r.id==='flashlight');tap('KeyF');W(.9);outAgain=A5.GR.inHand;}
+  tap('Escape');W(.1);const closed=!inv.isOpen;
+  M2['chapter5 inventory']={open:open1,rows:names,putAway:away,takenOut:outAgain,escapeCloses:closed};
+  check(`${label}: what you carry (I): the camera and the flashlight; put away and taken out from the bag; Escape closes it (not the pause)`,()=>{assert.ok(open1,'opens');assert.ok(names.includes('camera')&&names.includes('flashlight'),JSON.stringify(names));assert.ok(away,'put away');assert.ok(outAgain,'taken out');assert.ok(closed,'Escape closes it');assert.notEqual(h.snapshot.state,'paused','not paused');});}
  }
  // ---- the office: the door, the register, the search map ----
  if(seg('camp')){
@@ -197,7 +209,7 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  if(route==='A')trek([...gravel(4,186).reverse(),P5(-118,352),P5(-122,338),P5(-130,322)],{r:2,max:260,sprint:false,stop:()=>A5.C.flags.after});
  else walkTo([P5(-358,410),P5(-362,380),P5(-346,347),P5(-320,334),P5(-292,324),P5(-262,317),P5(-228,316),P5(-198,319),P5(-170,322),P5(-145,320),P5(-132,318)],{r:2,max:320,stop:()=>A5.C.flags.after});
  U(()=>S().phase==='n5-final',40);U(()=>A5.C.flags.review,90);
- check(`${label}: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”`,()=>{assert.ok(log.said.some(l=>/like a duck/.test(l)));assert.ok(log.said.some(l=>/knew we’d come/.test(l)));});
+ check(`${label}: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”`,()=>{assert.ok(log.said.some(l=>/like a duck/.test(l)),JSON.stringify({phase:S().phase,after:!!A5.C.flags.after,review:!!A5.C.flags.review,last:log.said.slice(-10)}));assert.ok(log.said.some(l=>/knew we’d come/.test(l)));});
  // ---- the last picture ----
  tap('KeyV');W(.5);for(let i=0;i<40&&A5.C.view==='camera'&&h.chapter4.photo.V.i<C5().fireIdx;i++){tap('KeyD');W(.15);}U(()=>C5().flags.found,20);
  check(`${label}: on Alex's camera, a picture none of them took (the three of them at the fire, ${A5.C.fireShot?.time})`,()=>{assert.ok(C5().flags.found);assert.ok(C5().fireIdx>0);assert.ok(log.said.some(l=>/in my bag/.test(l)));});

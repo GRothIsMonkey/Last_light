@@ -55,7 +55,7 @@ export function createGear(X){
   const near=X.beside(-1,.1,.8);X.stand(sam,null);
   comp.run(sam,[comp.steps.walkTo(sam,X.walkPath(sam,near),{speed:1.25}),comp.steps.turnTo(sam,()=>X.headingToEye(sam),.35),
    ...G5.bagSteps(sam,{take:()=>G5.packedOf('batteries'),onTake:it=>{S.batt=it;if(it)it.given=true;}}),
-   (dt)=>{S.offerBatt=true;return true;},G5.holdOut(sam,()=>X.eye(),{until:()=>S.battTaken})],{then:()=>{X.stand(sam,null);}});
+   approach(sam),(dt)=>{S.offerBatt=true;return true;},G5.holdOut(sam,()=>X.eye(),{until:()=>S.battTaken})],{then:()=>{X.stand(sam,null);}});
   X.later(14,()=>{if(!S.battTaken&&S.offerBatt&&!X.busy())X.say([{who:'SAM',text:'“Here. Batteries.”',by:'sam',time:1.4}]);});}
  function takeBatteries(){const P=S.batt;if(!P||S.battTaken||busy())return;X.lockWalk(true);
   phys.playerReach({side:'l',at:()=>P.obj.position.clone(),dur:[.45,.15,.35],carry:false,onContact:()=>{phys.handOff(P,X.self,'l');phys.playerHold('l',P,{at:[-.16,.98,-.36]});S.battTaken=true;X.sound('cloth',P.obj.position,{gain:.2});},
@@ -64,8 +64,11 @@ export function createGear(X){
     if(!inHand()){takeOutThen(go);}else go();}});}
  function takeOutThen(f){phys.ME.act={kind:'gear',what:'out',e:0,on:false,then:f};}
  // ---- the flashlights, out of Sam's bag at the camp gate: one held out to you (F takes it, into your hand, off), one to Jamie
+ // (a thing handed over: he comes to you first, to an arm's length, on his side of you, unless he is that close already)
+ function approach(c){let way=null;return (dt,ctx)=>{const p=camera.position,dx=c.px-p.x,dz=c.pz-p.z,d=Math.hypot(dx,dz);if(!way&&d<1.2)return true;
+  if(!way){const q={x:p.x+dx/d*.85,z:p.z+dz/d*.85};way=comp.steps.walkTo(c,X.walkPath(c,q),{speed:1.25});}return way(dt,ctx);};}
  function handOut(){if(S.torchOut)return;S.torchOut=true;X.stand(sam,null);
-  comp.run(sam,[comp.steps.turnTo(sam,()=>X.headingToEye(sam),.35),...G5.bagSteps(sam,{take:()=>G5.packedOf('flashlight'),onTake:it=>{S.torch=it;if(it)it.given=true;}}),
+  comp.run(sam,[approach(sam),comp.steps.turnTo(sam,()=>X.headingToEye(sam),.35),...G5.bagSteps(sam,{take:()=>G5.packedOf('flashlight'),onTake:it=>{S.torch=it;if(it)it.given=true;}}),
    (dt)=>{S.offerTorch=true;return true;},G5.holdOut(sam,()=>X.eye(),{until:()=>S.torchTaken||!S.torch}),
    // (and Jamie's: Sam gets the next one out, Jamie takes it from his hand and pockets it)
    ...G5.bagSteps(sam,{take:()=>G5.packedOf('flashlight'),onTake:it=>{S.jtorch=it;if(it)it.given=true;}}),G5.holdOut(sam,()=>jamie.person.group.position.clone().add(new THREE.Vector3(0,1.1,0)),{until:()=>S.jtorchTaken||!S.jtorch})],{then:()=>X.stand(sam,null)});
@@ -81,7 +84,9 @@ export function createGear(X){
  let model=null,finger=null;const tmpV=new THREE.Vector3(),tmpQ=new THREE.Quaternion();
  function buildModel(){if(model)return;model=makeCameraModel();const g=model.group;g.visible=false;camera.add(g);
   // (the index finger that presses the shutter: a fingertip over the button)
-  finger=new THREE.Mesh(new THREE.CapsuleGeometry(.0072,.026,4,8),new THREE.MeshStandardMaterial({color:X.skin?.()??0xc8946e,roughness:.7}));finger.rotation.z=Math.PI/2.3;g.add(finger);}
+  // (the shutter is at the camera's +x end, which is the left as you look at its screen: that hand's index finger, from
+  // where the hand holds the end, over the top to the button)
+  finger=new THREE.Mesh(new THREE.CapsuleGeometry(.0068,.024,4,8),new THREE.MeshStandardMaterial({color:X.skin?.()??0xc8946e,roughness:.7}));finger.rotation.z=1.19;g.add(finger);}
  // in view: at arm's length, a little below the eye, its back (the screen) to you
  const HOLD=new THREE.Vector3(.0,-.055,-.36);
  function shoot(fn){if(S.shot||busy())return false;buildModel();const g=model.group;g.visible=true;g.position.set(.03,-.32,-.3);g.rotation.set(-.5,Math.PI,0);
@@ -89,18 +94,24 @@ export function createGear(X){
  function shootArms(p,A,toLocal){const Sh=S.shot;if(!Sh){end(A);return;}const e=A.e,g=model.group,up=smooth(e/.38)*(1-smooth((e-1.05)/.35));
   g.position.set(HOLD.x+.03*(1-up),HOLD.y-.24*(1-up),HOLD.z+.04*(1-up));g.rotation.set(-.5*(1-up)+.02,Math.PI,.05*(1-up));
   // the finger: above the shutter, down on it at .42-.5, up
-  const press=smooth((e-.4)/.06)*(1-smooth((e-.56)/.08));finger.position.set(-.03,.058/2+.012-.006*press,-.004);
+  const press=smooth((e-.4)/.06)*(1-smooth((e-.56)/.08));finger.position.set(.043,.058/2+.0095-.0045*press,-.002);
   // the hands at its two ends (the arms reach for where it is)
   g.updateMatrixWorld(true);const R=toLocal(g.localToWorld(tmpV.set(-.06,-.006,.01)).clone()),L=toLocal(g.localToWorld(tmpV.set(.06,-.006,.01)).clone());
   lerp3(p,PI.rh,[R.x,R.y,R.z],up);lerp3(p,PI.lh,[L.x,L.y,L.z],up);p[PI.re]=.7;p[PI.re+1]=-.5;p[PI.re+2]=.3;p[PI.le]=-.7;p[PI.le+1]=-.5;p[PI.le+2]=.3;
-  if(!Sh.fired&&e>=.46){Sh.fired=true;const r=Sh.fn?.();flash();if(r&&r.px)toLCD(r);}
+  if(!Sh.fired&&e>=.46){Sh.fired=true;const r=Sh.fn?.();flash();if(r&&r.px)toLCD(r,{taken:true});}
   if(e>=1.4){g.visible=false;S.shot=null;foot.hideTorch=false;end(A);}}
  // the flash: the spill light, wide, from the camera, for a moment; strong as the dark is deep
  function flash(){const dark=clamp(X.darkness(),0,1);foot.flash=.6+9*dark*dark;S.flashAt=X.t();S.log.push('flash:'+foot.flash.toFixed(1));}
- function preview(){const r=X.render?.(160,120);if(r)toLCD(r);}
+ function preview(){const r=X.render?.(160,120);if(r)toLCD(r,{live:true});}
  // (pixels read back from a render, bottom row first, onto the camera's screen)
- function toLCD(r){if(!r||!r.px||!model?.lcdCanvas)return;try{const L=model.lcdCanvas,cv=L.c,g=L.g;if(!g?.createImageData)return;const {px,w,h}=r,off=globalThis.document.createElement('canvas');off.width=w;off.height=h;const og=off.getContext('2d'),im=og.createImageData(w,h);
-  for(let y=0;y<h;y++)im.data.set(px.subarray((h-1-y)*w*4,(h-y)*w*4),y*w*4);og.putImageData(im,0,0);g.drawImage(off,0,0,cv.width,cv.height);model.tex.needsUpdate=true;S.lcd=(S.lcd||0)+1;}catch{}}
+ // (live: what it sees, with the focus brackets; taken: the picture held on the screen, white edged, the way a camera
+ // shows what it just took)
+ function toLCD(r,{live=false,taken=false}={}){if(!r||!r.px||!model?.lcdCanvas)return;try{const L=model.lcdCanvas,cv=L.c,g=L.g;if(!g?.createImageData)return;const {px,w,h}=r,off=globalThis.document.createElement('canvas');off.width=w;off.height=h;const og=off.getContext('2d'),im=og.createImageData(w,h);
+  for(let y=0;y<h;y++)im.data.set(px.subarray((h-1-y)*w*4,(h-y)*w*4),y*w*4);og.putImageData(im,0,0);g.drawImage(off,0,0,cv.width,cv.height);
+  const W2=cv.width,H2=cv.height,u=W2/160;if(live){g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=2*u;const bx=W2*.38,by=H2*.36,bw=W2*.24,bh=H2*.28,k=10*u;
+   for(const [x,y,sx,sy] of [[bx,by,1,1],[bx+bw,by,-1,1],[bx,by+bh,1,-1],[bx+bw,by+bh,-1,-1]]){g.beginPath();g.moveTo(x,y+sy*k);g.lineTo(x,y);g.lineTo(x+sx*k,y);g.stroke();}}
+  if(taken){g.strokeStyle='rgba(255,255,255,.95)';g.lineWidth=5*u;g.strokeRect(2.5*u,2.5*u,W2-5*u,H2-5*u);g.fillStyle='rgba(0,0,0,.55)';g.fillRect(W2-46*u,H2-17*u,42*u,13*u);g.fillStyle='#fff';g.font=`${Math.round(10*u)}px sans-serif`;g.fillText('▶ '+(S.taken=(S.taken||0)+1),W2-42*u,H2-7*u);}
+  model.tex.needsUpdate=true;S.lcd=(S.lcd||0)+1;}catch{}}
  // (the picture itself is rendered without your hands or the camera in it)
  function hidden(fn){const a=X.self.group.visible,b=model?.group.visible;X.self.group.visible=false;if(model)model.group.visible=false;try{return fn();}finally{X.self.group.visible=a;if(model)model.group.visible=b;}}
  // ---- Alex's shirt: off the nail, gathered up, into Sam's bag ---------------------------------------------------------------------
@@ -119,8 +130,8 @@ export function createGear(X){
   c.pose[PI.re]=.6;c.pose[PI.re+1]=-.4;c.pose[PI.le]=-.6;c.pose[PI.le+1]=-.4;c.pose[PI.hp]-=.3*k;comp.feet(c,c.pose);applyPose(c.person,c.pose);c.posed=true;}
  // ---- every frame, and the prompts ------------------------------------------------------------------------------------------------
  function update(dt){updateBatteries(dt);if(foot.flash>0){foot.flash*=Math.exp(-dt/.035);if(foot.flash<.02)foot.flash=0;}inv.update();}
- function spots(add){if(S.offerTorch&&!S.torchTaken&&S.torch&&S.torch.holder===sam.person&&!busy())add('c5-torch','Take the flashlight',S.torch.obj.position,S.torch.obj.position,2.4,{look:true,size:.12});
-  if(S.offerBatt&&!S.battTaken&&S.batt&&S.batt.holder===sam.person&&!busy())add('c5-batt','Take the batteries',S.batt.obj.position,S.batt.obj.position,2.4,{look:true,size:.12});}
+ function spots(add){if(S.offerTorch&&!S.torchTaken&&S.torch&&S.torch.holder===sam.person&&!busy())add('c5-torch','Take the flashlight',S.torch.obj.position,S.torch.obj.position,1.25,{look:true,size:.12});
+  if(S.offerBatt&&!S.battTaken&&S.batt&&S.batt.holder===sam.person&&!busy())add('c5-batt','Take the batteries',S.batt.obj.position,S.batt.obj.position,1.25,{look:true,size:.12});}
  function act(id){if(id==='c5-batt'){takeBatteries();return true;}if(id==='c5-torch'){takeTorch();return true;}return false;}
  // ---- the inventory ----------------------------------------------------------------------------------------------------------------
  const inv=createInventory({items:()=>X.items({flashlight:{have:has(),hand:inHand(),on:!!foot.on,dead:!!(X.flags().dead&&!X.flags().batteries)}}),

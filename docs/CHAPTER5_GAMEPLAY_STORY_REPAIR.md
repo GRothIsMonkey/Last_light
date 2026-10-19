@@ -145,6 +145,81 @@ what a friend is doing while he is free to choose):
   shut in front of you; Sam gets there and shoves the leaf open (or you do, F), holds it, and the three of you go through;
   behind you every light in the camp goes out at once. The dam route keeps the bell.
 
+## Review round: code review, visual inspection, and Chapters Zero to Four
+
+After stages A–G, two independent reviews were run over the repair: a code review of the diff by area (companions, hands
+and props, gates and gear, the night and the story, scene jumps, regressions in Chapters 0–4), and a frame-by-frame
+inspection of the 22 review scenes. What they found and what was done:
+
+- **Chapters 0–4 had changed** through shared code (garages walkable in every chapter, the garage footing lowered, the
+  first-person stance and look-down eye, the deeper look-down limit, the new faces with moving mouths). All of it is now
+  switched on by Chapter Five only (`foot.fpBody`, `face.enable`, `nav` garage rooms tied to `setPine`, `slabs()`), so the
+  earlier chapters look and play as accepted; the full regression covers them.
+- **Hands and props:** make-way no longer cancels a friend's scripted action (the stones game could stall, a bag stay in a
+  hand); one counted throw per turn and nothing after the game ends; a single press throws (the touch button);
+  the garage reset frees the granola bars and the sock; Sam comes to an arm's length before handing over the camera,
+  the flashlight or the batteries, and the take ranges are an arm's length; backpacks are worn at the back, not the head.
+- **Gates and gear:** Tab no longer moves browser focus (Enter could reload the page); Escape, the pause and the end close
+  the bag; the yellow arm stops against a player standing in its way instead of trapping them, and Jamie walks it at a
+  pace he can keep; the flashlight comes out on after the new batteries; the beam is off during a picture; wading only
+  where the bed is under water; the shutter finger is on the shutter and the screen shows the picture taken.
+- **The night:** the carried beam cone faced backwards (fixed earlier), now fades along its length and when pointed at
+  you; the three lights walk round the office, not through it, and each reaches its own log; "they sit where we sat"
+  needs them there; Jamie's demonstration is one blink and he repeats it only if nobody does; the double comes out of the
+  door toward you before every light comes on; the camp-gate clock catches up instead of jumping 40 minutes.
+- **The campfire:** the water bottle crossed seven metres of fire in one frame; Sam now walks it round inside the logs to
+  Jamie, who sets it down by his log after a drink. The campfire checkpoint starts the call to the fire.
+- **Companions:** kick-up no longer jumps the body 0.43 m twice; the rise starts from the sit; the dock fallback rises at
+  once from the seat; reset clears the seated state; lead lasts 6–12 s; looks last their time and stay near you; intent is
+  dropped after a scripted scene; pace changes once wanted; a step off the bike is not a heading; a look-at spot is clear of
+  the other friend; make-way never steps a friend onto the other.
+- **Scene jumps** start with doors and gates where the scene wants them instead of swinging there.
+- **Tests:** companion test G now opens the office door and checks you were inside.
+
+## Repair report: each playtest complaint
+
+"Fixed" means fixed in the simulation and the review frames, pending the human playtest. Tests named here are in
+`tests/chapter5-sim.mjs` (the full play), `tests/chapter5-companions.mjs` (A–H) and the review scripts in `tests/review/`.
+
+| # | Complaint | Cause | What changed, and where | How tested | Fixed? | For Astra / human review |
+|---|---|---|---|---|---|---|
+| 1 | Sam's packing doesn't match what he says | `pack()` was one F press and captions | Sam packs each supply by hand: reach, grip, lift, into the open bag (`chapter5-garage.js`, `physical.js` `reach`/`prop`/`container`); lines follow what is in his hand | sim garage checks (each item stored, by whom); review `garage` frames | Yes | Finger grips, a soft bag model |
+| 2 | The player can't help pack | No interaction | F picks a supply up and F on the bag puts it in; Sam packs the rest | sim "you pack" check; frames g03–g06 | Yes | First-person hand model |
+| 3 | Sam's feet sink into the floor | Garage footing top at +0.38 m | Footing lowered to the slab (Chapter Five only, `slabs()`); feet grounded by `comp.feet` | frames smoke-01/02, g01 | Yes | Contact shadows |
+| 4 | Jamie's sock and backpack aren't real | Bag appeared on the driveway; sock was two boxes | Jamie arrives wearing his bag, swings it off, opens it, pulls the sock out; the bag goes back on (`sockScene`) | sim sock check; garage frames g12–g16 | Yes | Cloth sock, bag straps |
+| 5 | Friends are followers | Slot following on the view heading | Goal-based minds (`companion-brain.js`): idle, look, aside, follow, lead, wait; each with his own spot | companions A, D, F | Yes | Idle variety, acting |
+| 6 | They wait for you to do trivial things | Mounting only when you rode | They go to their own bikes and get on by themselves | companions E | Yes | Mount animation |
+| 7 | Acceleration and stopping copy yours | `vT = pv + gap*.5` | Seen-speed with reaction delays, own acceleration (`seenSpeed`, `PERSON`) | companions B, C | Yes | — |
+| 8 | Pacing, collisions, crowding | Spot re-chosen every frame; no personal space | Personal space, settle rule, make-way, look-at spots clear of others | companions A, F, G, H | Yes | — |
+| 9 | Why Pine Ridge isn't clear | Told in captions | Sam's county map in the garage; Alex's picture matched at the sign; the register | sim map/sign checks | Yes (story) | Human review of pacing |
+| 10 | Too scripted | Triggers drove everything | Hints before recovery; the player does the actions; carries only after long idle | idle test (evidence never found for you) | Yes | — |
+| 11 | Geography and lore | — | Map in the garage, road signs, the kiosk map, the register's 1991 entry | sim; review frames | Partly | Signage art, a clearer map |
+| 12 | Stones aren't a minigame | `throwYours()` was a random number | Pick a stone up, hold F to wind, let go; physics skips by speed and angle (`chapter5-park.js` `bounce`) | sim stones checks (counts vary with the throw); frames | Yes | Throw animation (low sidearm) |
+| 13 | Stones appear without pickup | Mesh at the hand | Stones lie on the beach; F reaches down and takes one | frames s06–s08 | Yes | One stone asset |
+| 14 | Must reach down for a stone | — | Reach with crouch, within an arm's length | frames s07 | Yes | Hand pose |
+| 15 | Throwing animations unconvincing | No arm | First-person wind-up and release; friends crouch and throw | frames s09–s14 | Partly | Animation |
+| 16 | Impacts need interaction | — | Rings and splashes at each touch | frames s12–s13 | Yes | Water effects |
+| 17 | Hard shoreline | Water cells unwalkable | Wade zones at the beach and lawn (`WADE`, `PS.shallow`), slower in the water | sim wade check; frame s15 | Yes | See-through shallows |
+| 18 | Enter shallow water | — | As 17; only where the bed is under water | as 17 | Yes | — |
+| 19 | Dock sitting is wrong | Only the camera moved | All three sit on the edge, legs over the water (`physical.js` `sit`, `sitPose` hang); seats side by side | sim dock check; dock frames | Yes | Seated first-person body |
+| 20 | Looking down at yourself is bad | Camera inside the neck | Chapter Five's body back under the eye, an eye that dips, a stance (`on-foot.js` `fpBody`) | lookdown frames | Partly | Leg and shoe meshes |
+| 21 | Walk through a gate | Gates drawn, not solid | Collision follows the drawn arm (`gateAt`); F lifts the latch or Jamie does (`chapter5-gates.js`) | sim gate checks | Yes | Hinge/latch hardware |
+| 22 | No inventory | — | I/Tab or the BAG button (`inventory.js`) | sim inventory checks; frame e16 | Yes | Panel styling |
+| 23 | Flashlight by day | It died on first use | Sam hands it out at the camp gate; works by day; dies only in Bluejay, then Sam's batteries | sim flashlight/batteries checks | Yes | Torch model, hotspot |
+| 24 | Camera needs hands and shutter | Model hung on the view | Both hands raise it, a finger presses the shutter (`chapter5-gear.js` shot) | frames e10–e15 | Yes | Finger rig; camera model is Ch.4's |
+| 25 | Shutter/flash response | A click | Flash light, the picture on the screen, white-edged | frames e13–e14 | Yes | Flash burst effect |
+| 26 | Little facial expression | Brows and mouth merged in the head | Dynamic brows and mouth with expressions per line (`faces.js`) | faces frames | Partly | Lids, eyes, range |
+| 27 | Mouths don't move | — | Text-timed mouth movement on every line | faces frames | Partly (provisional) | Audio lip sync |
+| 28 | Campfire takes 3.5 hours | `C.lapse` jumped the clock | A short rest at the real clock rate; the evening runs at six times | sim campfire check (clock) | Yes | — |
+| 29 | Shirt taken without a pickup | `shirt.visible=false` | Sam takes it off the nail, gathers it, puts it in his bag | sim shirt check; frames e17–e20 | Yes | Cloth states |
+| 30 | Floating yellow orb | Sphere and halo | Carried flashlights with beams, a glint, a pool (`chapter5-presence.js`) | night frames | Partly | Volumetric beam, darkness |
+| 31 | People too far for the dialogue | Named people at 90 m | They talk about lights ("There's a light. At the gate."); the lights come close but go out at 12 m | sim three-lights checks | Yes | — |
+| 32 | Horror lacks causes | Triggers | Lights copy you, sit where you sat, turn on you; the double comes out toward you | sim night checks; night frames | Yes (needs human review) | Darkness grade |
+| 33 | RUN without danger | RUN on seeing the double | RUN only when it comes out at you; the gate slams; Sam shoves it | sim escape checks | Yes | — |
+| 34 | The escape isn't frightening | — | The camp gate slams shut in front of you; every light out behind | sim; frames n16–n18 | Needs human review | Darkness, audio |
+| 35 | Disconnected triggers | — | One afternoon to night, clock-driven, each beat caused by the last | sim full play | Needs human review | — |
+| 36 | Visuals below quality | Placeholder art | Not addressed (the Astra pass); deficiencies listed in the Astra handoff | review frames | No (by design) | Everything in the handoff |
+
 ## Fallbacks: hints before recovery
 
 Evidence is never found for you: the photo match, the camp's records/pantry/cabins, the shirt and carving, and the last

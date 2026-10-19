@@ -272,7 +272,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  // where, what is said, and the way out to the bikes.
  const phys=createPhysical({scene,comp});comp.after(()=>phys.sync());
  const G5=createGarage({scene,phys,comp,jamie,sam,drive,driveA,gy,camera,me,self:o.self,busy,later:(t,f)=>later(t,f),t:()=>C.t,
-  say:(l,op)=>say(l,op),sound:(n,p,op)=>sound(n,p,op),stand:(c,q,op)=>stand(c,q,op),eyePos:()=>camera.position.clone().add(new THREE.Vector3(0,-.25,0)),
+  say:(l,op)=>say(l,op),sound:(n,p,op)=>sound(n,p,op),stand:(c,q,op)=>stand(c,q,op),walkPath:(c,q,obs=[])=>nav.walkPath({x:c.px,z:c.pz},q,obs),eyePos:()=>camera.position.clone().add(new THREE.Vector3(0,-.25,0)),
   lockWalk:on=>{o.roam.walkLock=on||!!C.pose||!!C.view;},gotCamera:()=>{C.inv.camera=true;mark('Alex’s camera, in your hand');},jamieArrives:()=>jamieArrives(),
   lookMap:at=>{closeLook({x:at.x,y:at.y,z:at.z},{back:.62,eye:1.42});C.view='look';C.lookAt=at;C.lookKind='map';later(9,()=>{if(C.view==='look'&&C.lookKind==='map')endLook();});}});
  const BIKE={jamie:()=>drive(-.9,5.6),sam:()=>drive(-2.1,6.4),you:()=>drive(1.3,5.4)};
@@ -794,13 +794,14 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function updateWindow(dt){const X=C.win;X.t+=dt;const D=DOUBLE(),dd=camp.D,head={x:dd.x,y:dd.y+1.45,z:dd.z},p=me(),close=near(OWL_PORCH,4.2);
   if(X.stage==='wait'){if(close&&k.camLooksAt(head,.95))X.lookT+=dt;if(X.lookT>.8||X.t>40){X.stage='turn';X.seen=C.t;mark('the double');T?.set?.(.8,{rise:.18,why:'the double'});camp.D.turnTo=1.25;
     say([{wait:2.2},{who:'JAMIE',text:'“…That’s my hat.”',by:'jamie',time:1.6,face:'shocked'},{wait:1},{who:'JAMIE',text:'“That’s me.”',by:'jamie',time:1.4,face:'terrified'},{who:'SAM',text:'“Jamie. Look at me. Don’t look at it.”',by:'sam',time:2,face:'afraid'},
-     {wait:1.4,act:()=>{X.stage='come';X.comeAt=C.t;camp.doubleWalk(doublePath(),{speed:.8});mark('it comes out');T?.set?.(.95,{rise:.25,why:'it comes out'});}},{wait:1.6},
+     {wait:1.4,act:()=>{X.stage='come';X.comeAt=C.t;camp.doubleWalk(doublePath(),{speed:1});mark('it comes out');T?.set?.(.95,{rise:.25,why:'it comes out'});}},{wait:1.6},
      {who:'SAM',text:'“Back up. Back UP.”',by:'sam',time:1.4,face:'terrified'}],{interrupt:true});
     stand(sam,camBeside(-1,-.9,.9),{look:()=>head,keep:true,max:3});}}
   else if(X.stage==='come'){const d=Math.hypot(dd.x-p.x,dd.z-p.z),dj=Math.hypot(dd.x-jamie.px,dd.z-jamie.pz);
    // (Jamie can't move; Sam pulls him back by the arm)
    if(!X.pull&&C.t-X.comeAt>2.2){X.pull=true;stand(jamie,camBeside(1,-.8,.8),{look:()=>head,keep:true,max:3});}
-   if(d<4.6||dj<3.8||C.t-X.comeAt>9||(!dd.path&&C.t-X.comeAt>4)){X.stage='run';X.hideAt=C.t;wake('it came out');}}
+   // (out of the door and across the porch toward you first; then, close, every light)
+   const out=(dd.pi||0)>=2||!dd.path;if((out&&(d<3.4||dj<3))||C.t-X.comeAt>8.5||(!dd.path&&C.t-X.comeAt>4)){X.stage='run';X.hideAt=C.t;wake('it came out');}}
   else if(X.stage==='run'){// gone, when nobody is looking at where it was
    if(camp.D.person.group.visible&&(!k.camLooksAt(head,.8)||C.t-X.hideAt>6)&&C.t-X.hideAt>1.2){camp.double(false);mark('it is gone');}}
   void p;void D;}

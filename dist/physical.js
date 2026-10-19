@@ -41,7 +41,8 @@ export function createPhysical({scene,comp=null}){
    storeIn(box,{visible=false,local=null}={}){HELD.delete(P2);P2.holder=null;P2.state='stored';P2.where='stored';P2.container=box;box.contents?.add?.(name);
     if(visible&&local){box.obj.attach(obj);obj.position.copy(local);obj.visible=true;}else obj.visible=false;LOG.releases++;LOG.log.push(['store',name,box.name]);return P2;},
    // worn (a backpack): it goes where the wearer's back goes
-   wearOn(person,at=[0,.02,.15],rot=[0,0,0]){P2.grip={p:new THREE.Vector3(...at),q:new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot))};P2.holder=person;P2.side='back';P2.state='worn';P2.where='worn';P2.container=null;if(obj.parent!==root)root.attach(obj);obj.visible=true;HELD.add(P2);sync1(P2);LOG.log.push(['wear',name]);return P2;},
+   // (at: from the middle of the torso to the bag's bottom: down at the belt, its top at the shoulder blades, below the head)
+   wearOn(person,at=[0,-.21,.14],rot=[0,0,0]){P2.grip={p:new THREE.Vector3(...at),q:new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot))};P2.holder=person;P2.side='back';P2.state='worn';P2.where='worn';P2.container=null;if(obj.parent!==root)root.attach(obj);obj.visible=true;HELD.add(P2);sync1(P2);LOG.log.push(['wear',name]);return P2;},
    hide(){HELD.delete(P2);P2.holder=null;obj.visible=false;P2.state='hidden';P2.where='hidden';return P2;},
    get held(){return P2.state==='held';}};
   PROPS.set(name,P2);return P2;}

@@ -31,7 +31,10 @@ export function buildCamp(W,out){
  // the same along z (a side wall at x)
  function wallZ(g,z0,z1,y0,y1,x,th,ops,m){const s=new THREE.Group();s.position.x=x;s.rotation.y=Math.PI/2;g.add(s);wallX(s,-z1,-z0,y0,y1,0,th,ops.map(o=>[-o[1],-o[0],o[2],o[3]]),m);}
  // board-and-batten: thin battens over a wall's outside face
- function battens(g,x0,x1,y0,y1,z,out2,m,step=.42){for(let x=x0+step/2;x<x1;x+=step)B(g,x,(y0+y1)/2,z+out2*.03,.05,y1-y0,.04,m);}
+ // (holes: the wall's openings, [x0,x1,y0,y1]; a batten stops at an opening's edges instead of running across it)
+ function battens(g,x0,x1,y0,y1,z,out2,m,step=.42,holes=[]){for(let x=x0+step/2;x<x1;x+=step){let segs=[[y0,y1]];
+  for(const [a,b2,c,d] of holes){if(x<a-.03||x>b2+.03)continue;segs=segs.flatMap(([s0,s1])=>[[s0,Math.min(s1,c)],[Math.max(s0,d),s1]]).filter(([s0,s1])=>s1-s0>.04);}
+  for(const [s0,s1] of segs)B(g,x,(s0+s1)/2,z+out2*.03,.05,s1-s0,.04,m);}}
  // a window: trim round the opening, a sill, a pane (live: its glow is the story's), sash bars
  const panes={};
  function windowAt(g,b,x,y,w,h,z,out2,{shutter=null,live2=true}={}){B(g,x,y-h/2-.05,z+out2*.06,w+.24,.07,.16,M2.trim);B(g,x,y+h/2+.05,z+out2*.04,w+.24,.09,.08,M2.trim);for(const s of [-1,1])B(g,x+s*(w/2+.05),y,z+out2*.04,.09,h+.1,.08,M2.trim);
@@ -65,11 +68,13 @@ export function buildCamp(W,out){
   B(g,0,f-.08,0,b.w+.06,.16,b.d+.06,M2.floorDark);
   // walls with their openings: the door (front), two windows each side, one at the back
   const wy0=f,wy1=f+h,winY=f+1.45,ww=.92,wh=.86,door=b.door,shut=!b.enter&&r()<.5;
-  wallX(g,-hw,hw,wy0,wy1,-hd2+th/2,th,[[door[0]-door[1]/2,door[0]+door[1]/2,f,f+2.05]],M2.wall);
-  wallX(g,-hw,hw,wy0,wy1,hd2-th/2,th,[[-ww/2,ww/2,winY-wh/2,winY+wh/2]],M2.wall);
-  for(const s of [-1,1])wallZ(g,-hd2,hd2,wy0,wy1,s*(hw-th/2),th,[[-2.3-ww/2,-2.3+ww/2,winY-wh/2,winY+wh/2],[1.6-ww/2,1.6+ww/2,winY-wh/2,winY+wh/2]],M2.wall);
-  battens(g,-hw,hw,wy0,wy1,-hd2,-1,M2.wallL);battens(g,-hw,hw,wy0,wy1,hd2,1,M2.wallL);
-  for(const s of [-1,1]){const sg=new THREE.Group();sg.position.x=s*hw;sg.rotation.y=s*Math.PI/2;g.add(sg);battens(sg,-hd2,hd2,wy0,wy1,0,1,M2.wallL);}
+  const HF=[[door[0]-door[1]/2,door[0]+door[1]/2,f,f+2.05]],HB=[[-ww/2,ww/2,winY-wh/2,winY+wh/2]],HS=[[-2.3-ww/2,-2.3+ww/2,winY-wh/2,winY+wh/2],[1.6-ww/2,1.6+ww/2,winY-wh/2,winY+wh/2]];
+  wallX(g,-hw,hw,wy0,wy1,-hd2+th/2,th,HF,M2.wall);
+  wallX(g,-hw,hw,wy0,wy1,hd2-th/2,th,HB,M2.wall);
+  for(const s of [-1,1])wallZ(g,-hd2,hd2,wy0,wy1,s*(hw-th/2),th,HS,M2.wall);
+  battens(g,-hw,hw,wy0,wy1,-hd2,-1,M2.wallL,.42,HF);battens(g,-hw,hw,wy0,wy1,hd2,1,M2.wallL,.42,HB);
+  // (the side walls' battens are drawn turned a quarter round: x along them is -z on the right side, +z on the left)
+  for(const s of [-1,1]){const sg=new THREE.Group();sg.position.x=s*hw;sg.rotation.y=s*Math.PI/2;g.add(sg);battens(sg,-hd2,hd2,wy0,wy1,0,1,M2.wallL,.42,s>0?HS.map(([a,b2,c,d])=>[-b2,-a,c,d]):HS);}
   // corner boards, the sill plate
   for(const x of [-hw,hw])for(const z of [-hd2,hd2])B(g,x,f+h/2,z,.16,h,.16,M2.trim);
   windowAt(g,b,0,winY,ww,wh,hd2,1,{shutter:shut?'closed':null});for(const s of [-1,1])for(const z of [-2.3,1.6]){const sg=new THREE.Group();sg.position.set(s*hw,0,z);sg.rotation.y=s*Math.PI/2;g.add(sg);windowAt(sg,b,0,winY,ww,wh,0,1,{shutter:shut?'closed':r()<.3?'open':null});}
@@ -111,7 +116,7 @@ export function buildCamp(W,out){
   B(g,0,f/2-.05,0,b.w+.1,f+.1,b.d+.1,M2.stone);B(g,0,f-.06,0,b.w,.12,b.d,M2.floorDark);
   wallX(g,-hw,hw,f,f+h,-hd2+th/2,th,[[door[0]-door[1]/2,door[0]+door[1]/2,f,f+2.05],[.9,2.2,f+.95,f+1.85]],M2.wall);wallX(g,-hw,hw,f,f+h,hd2-th/2,th,[[-.6,.6,f+1,f+1.8]],M2.wall);
   for(const s of [-1,1])wallZ(g,-hd2,hd2,f,f+h,s*(hw-th/2),th,[[-.5,.5,f+1,f+1.8]],M2.wall);
-  battens(g,-hw,hw,f,f+h,-hd2,-1,M2.wallL);battens(g,-hw,hw,f,f+h,hd2,1,M2.wallL);for(const x of [-hw,hw])for(const z of [-hd2,hd2])B(g,x,f+h/2,z,.16,h,.16,M2.trim);
+  battens(g,-hw,hw,f,f+h,-hd2,-1,M2.wallL,.42,[[door[0]-door[1]/2,door[0]+door[1]/2,f,f+2.05],[.9,2.2,f+.95,f+1.85]]);battens(g,-hw,hw,f,f+h,hd2,1,M2.wallL,.42,[[-.6,.6,f+1,f+1.8]]);for(const x of [-hw,hw])for(const z of [-hd2,hd2])B(g,x,f+h/2,z,.16,h,.16,M2.trim);
   windowAt(g,b,1.55,f+1.4,1.3,.9,-hd2,-1);windowAt(g,b,0,f+1.4,1.2,.8,hd2,1);for(const s of [-1,1]){const sg=new THREE.Group();sg.position.set(s*hw,0,0);sg.rotation.y=s*Math.PI/2;g.add(sg);windowAt(sg,b,0,f+1.4,1,.8,0,1);}
   gableZ(g,b.w,b.d,f+h,1.3,.4,M2.roof,{fwd:b.porch});gableEnds(g,b.w,f+h,1.3,[-hd2,hd2],M2.wall);
   B(g,0,f-.06,-hd2-b.porch/2,b.w,.12,b.porch,M2.floor);for(const x of [-hw+.12,hw-.12])B(g,x,f+h/2,-hd2-b.porch+.12,.14,h,.14,M2.frame);
@@ -147,10 +152,12 @@ export function buildCamp(W,out){
   B(g,0,f/2-.05,0,b.w+.12,f+.1,b.d+.12,M2.stone);B(g,0,f-.06,0,b.w,.12,b.d,M2.floorDark);
   // walls: the double doors in the middle of the front, three big windows each side of them; side windows; the back with the kitchen door
   const winF=[-7.8,-5.4,-3,3,5.4,7.8].map(x=>[x-.6,x+.6,f+1,f+2.2]);
-  wallX(g,-hw,hw,f,f+h,-hd2+th/2,th,[[-door[1]/2,door[1]/2,f,f+2.35],...winF],M2.wall);
-  wallX(g,-hw,hw,f,f+h,hd2-th/2,th,[[b.back[0]-b.back[1]/2,b.back[0]+b.back[1]/2,f,f+2.05],[-6-.6,-6+.6,f+1.1,f+2.1],[-2-.6,-2+.6,f+1.1,f+2.1],[2.6-.5,2.6+.5,f+1.3,f+2.1]],M2.wall);
-  wallZ(g,-hd2,hd2,f,f+h,-(hw-th/2),th,[[-3-.6,-3+.6,f+1,f+2.1],[3-.6,3+.6,f+1,f+2.1]],M2.wall);wallZ(g,-hd2,hd2,f,f+h,hw-th/2,th,[[-2-.55,-2+.55,f+1.2,f+2.1],[2.2-.55,2.2+.55,f+1.2,f+2.1]],M2.wall);
-  battens(g,-hw,hw,f,f+h,-hd2,-1,M2.wallL,.5);battens(g,-hw,hw,f,f+h,hd2,1,M2.wallL,.5);for(const s of [-1,1]){const sg=new THREE.Group();sg.position.x=s*hw;sg.rotation.y=s*Math.PI/2;g.add(sg);battens(sg,-hd2,hd2,f,f+h,0,1,M2.wallL,.5);}
+  const LF=[[-door[1]/2,door[1]/2,f,f+2.35],...winF],LB=[[b.back[0]-b.back[1]/2,b.back[0]+b.back[1]/2,f,f+2.05],[-6-.6,-6+.6,f+1.1,f+2.1],[-2-.6,-2+.6,f+1.1,f+2.1],[2.6-.5,2.6+.5,f+1.3,f+2.1]],
+   LL=[[-3-.6,-3+.6,f+1,f+2.1],[3-.6,3+.6,f+1,f+2.1]],LR=[[-2-.55,-2+.55,f+1.2,f+2.1],[2.2-.55,2.2+.55,f+1.2,f+2.1]];
+  wallX(g,-hw,hw,f,f+h,-hd2+th/2,th,LF,M2.wall);
+  wallX(g,-hw,hw,f,f+h,hd2-th/2,th,LB,M2.wall);
+  wallZ(g,-hd2,hd2,f,f+h,-(hw-th/2),th,LL,M2.wall);wallZ(g,-hd2,hd2,f,f+h,hw-th/2,th,LR,M2.wall);
+  battens(g,-hw,hw,f,f+h,-hd2,-1,M2.wallL,.5,LF);battens(g,-hw,hw,f,f+h,hd2,1,M2.wallL,.5,LB);for(const s of [-1,1]){const sg=new THREE.Group();sg.position.x=s*hw;sg.rotation.y=s*Math.PI/2;g.add(sg);battens(sg,-hd2,hd2,f,f+h,0,1,M2.wallL,.5,s>0?LR.map(([a,b2,c,d])=>[-b2,-a,c,d]):LL);}
   for(const x of [-hw,hw])for(const z of [-hd2,hd2])B(g,x,f+h/2,z,.2,h,.2,M2.trim);
   for(const o of winF)windowAt(g,b,(o[0]+o[1])/2,(o[2]+o[3])/2,1.2,1.2,-hd2,-1);
   for(const [x,y,w2] of [[-6,f+1.6,1.2],[-2,f+1.6,1.2],[2.6,f+1.7,1]])windowAt(g,b,x,y,w2,.95,hd2,1);

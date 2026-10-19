@@ -119,8 +119,11 @@ export function createGarage(X){
    if(S.packedBy.you===1&&!X.busy())X.say([{who:'SAM',text:S.packedBy.sam?'“Good.”':'“Good. Keep going.”',by:'sam',time:1}]);},then:()=>X.lockWalk(false)});}
  // ---- the camera: Sam holds it out, you take it --------------------------------------------------------------------------
  function offerCamera(){if(S.flags.offer)return;S.flags.offer=true;S.offerAt=X.t();const P=S.cam;
+  // (picked up off the table, then round it to you: he stands in front of you, an arm's length off, and holds it out)
+  const toYou=()=>{const p=me(),q={x:p.x+Math.sin(p.a)*.85,z:p.z-Math.cos(p.a)*.85},obs=[];blockers(obs);const pth=X.walkPath?X.walkPath(sam,q,obs):[[q.x,q.z]];return pth.length?pth:[[q.x,q.z]];};
+  let way=null;const goRound=(dt,ctx)=>{const p=me();if(Math.hypot(sam.px-p.x,sam.pz-p.z)<1.25)return true;if(!way)way=comp.steps.walkTo(sam,toYou(),{speed:1.15});return way(dt,ctx);};
   comp.run(sam,[comp.steps.turnTo(sam,()=>TA(),.3),phys.reach(sam,{at:()=>P.obj.position.clone(),dur:[.5,.15,.35],onContact:()=>P.holdBy(sam.person,'r'),carry:true}),
-   holdOut(sam,()=>X.eyePos(),{until:()=>S.flags.cameraTaken})],{then:()=>{X.stand(sam,samStand(0),{look:()=>camera.position});}});
+   goRound,holdOut(sam,()=>X.eyePos(),{until:()=>S.flags.cameraTaken})],{then:()=>{X.stand(sam,samStand(0),{look:()=>camera.position});}});
   X.say([{wait:.6},{who:'SAM',text:'“And this.”',by:'sam',time:1.1,face:'neutral'},{who:'SAM',text:'“Alex’s camera. You hold it. You’re better with it.”',by:'sam',time:2.8,face:'concerned'}],{then:()=>{S.flags.cameraAsked=true;}});}
  // a hand held out toward someone (holding something), until told
  function holdOut(c,to,{until}){let e=0;return (dt,ctx)=>{e+=dt;const t=to();c.pa+=clamp(wrap(headingTo(c.px,c.pz,t.x,t.z)-c.pa),-2.5*dt,2.5*dt);standPose(c.tmp,ctx.clock+c.R.phase,{look:clamp(-wrap(headingTo(c.px,c.pz,t.x,t.z)-c.pa),-1,1),shift:.3});copyPose(c.pose,c.tmp);
@@ -192,8 +195,8 @@ export function createGarage(X){
  // ---- F: what you can do here ----------------------------------------------------------------------------------------------------
  function spots(add){if(!S.table?.visible)return;const p=me();
   if(S.flags.packing&&!S.flags.allPacked){if(S.holding){add('g5-put','Put the '+NAMES[S.holding.kind]+' in the bag',mouth(),null,1.3,{look:true,size:.2});}
-   else for(const P of S.items)if(free(P))add('g5-take:'+P.name,'Pick up the '+NAMES[P.kind],P.obj.position,null,1.2,{look:true,size:P.kind==='water'?.09:.07});}
-  if(S.flags.cameraAsked&&!S.flags.cameraTaken&&S.cam.holder===sam.person)add('g5-camera','Take Alex’s camera',S.cam.obj.position,null,1.5,{look:true,size:.14});
+   else for(const P of S.items)if(free(P))add('g5-take:'+P.name,'Pick up the '+NAMES[P.kind],P.obj.position,null,1.0,{look:true,size:P.kind==='water'?.09:.07});}
+  if(S.flags.cameraAsked&&!S.flags.cameraTaken&&S.cam.holder===sam.person)add('g5-camera','Take Alex’s camera',S.cam.obj.position,null,1.15,{look:true,size:.14});
   if(S.flags.mapOpen&&!S.flags.mapSeen&&S.mapParts.open.visible)add('g5-map','Look at the map',S.map.obj.position,null,2.4,{look:true,size:.32});}
  function act(id){if(id.startsWith('g5-take:')){const P=S.items.find(q=>q.name===id.slice(8));if(P)youTake(P);return true;}
   if(id==='g5-put'){youPut();return true;}if(id==='g5-camera'){youTakeCamera();return true;}if(id==='g5-map'){S.flags.mapSeen=true;X.lookMap(S.map.obj.position);return true;}return false;}
