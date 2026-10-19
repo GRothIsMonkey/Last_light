@@ -92,7 +92,8 @@ them and fixed is listed under *Found in the frames*.
 | `night/` | `tests/review/night.mjs` | The first light in the trees, its beam on you, gone; three lights at the gate, at the office, stopped at the board, copying your flashlight, sat at the fire, turned on you; the double in Owl, looking at Jamie, Jamie beside you, coming out, every light, RUN; the gate slammed, Sam shoving it open, every light out behind |
 | `aftermath/` | `tests/review/aftermath.mjs` | The lamp in the lot; the shaky laugh; the shirt in Sam's bag; the granola bar out of Jamie's bag; the last picture |
 
-{{FRAMECOUNT}}
+156 frames in ten folders (1280×800 JPEG), each folder with a labelled `contact-sheet.jpg` of all its frames, about
+16 MB in all. Every frame was re-captured on this branch's final runtime.
 
 ## Found in the frames, and fixed
 
