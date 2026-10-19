@@ -294,8 +294,8 @@ export const HISTORY={
     "walking": true,
     "pushing": false,
     "eye": {
-     "x": 214.237,
-     "z": -906.8
+     "x": 212.453,
+     "z": -906.966
     },
     "clock": 1700.3,
     "manualLook": false,
