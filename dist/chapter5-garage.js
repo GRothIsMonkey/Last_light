@@ -127,7 +127,7 @@ export function createGarage(X){
   X.say([{wait:.6},{who:'SAM',text:'“And this.”',by:'sam',time:1.1,face:'neutral'},{who:'SAM',text:'“Alex’s camera. You hold it. You’re better with it.”',by:'sam',time:2.8,face:'concerned'}],{then:()=>{S.flags.cameraAsked=true;}});}
  // a hand held out toward someone (holding something), until told
  function holdOut(c,to,{until}){let e=0;return (dt,ctx)=>{e+=dt;const t=to();c.pa+=clamp(wrap(headingTo(c.px,c.pz,t.x,t.z)-c.pa),-2.5*dt,2.5*dt);standPose(c.tmp,ctx.clock+c.R.phase,{look:clamp(-wrap(headingTo(c.px,c.pz,t.x,t.z)-c.pa),-1,1),shift:.3});copyPose(c.pose,c.tmp);
-   const u=smooth(e/.5);c.pose[PI.rh]+=(.08-c.pose[PI.rh])*u;c.pose[PI.rh+1]+=(1.06-c.pose[PI.rh+1])*u;c.pose[PI.rh+2]+=(-.42-c.pose[PI.rh+2])*u;c.pose[PI.re]=.6;c.pose[PI.re+1]=-.4;
+   const u=smooth(e/.5);c.pose[PI.rh]+=(.08-c.pose[PI.rh])*u;c.pose[PI.rh+1]+=(1.14-c.pose[PI.rh+1])*u;c.pose[PI.rh+2]+=(-.43-c.pose[PI.rh+2])*u;c.pose[PI.re]=.6;c.pose[PI.re+1]=-.4;
    comp.feet(c,c.pose);applyPose(c.person,c.pose);c.posed=true;return until();};}
  function youTakeCamera(){if(phys.playerBusy()||S.flags.cameraTaken)return;const P=S.cam;X.lockWalk(true);
   phys.playerReach({at:()=>P.obj.position.clone(),dur:[.45,.2,.5],onContact:()=>{phys.handOff(P,self,'r',{p:[0,.04,.03],r:[-1.3,0,0]});S.flags.cameraTaken=true;phys.playerHold('r',P);X.sound('click',P.obj.position,{gain:.2});
