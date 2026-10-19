@@ -497,7 +497,11 @@ function updateNightWalk(dt){
  // (something low lying in the way, a bike on its side, can be jumped: in the air it is not in the way)
  const oldX=wx,oldZ=wz,near=(ox,oz,r,x,z)=>{const d=Math.hypot(ox-x,oz-z);return d<r&&d<Math.hypot(ox-wx,oz-wz)-1e-6;},over=foot.height>.18;
  const free=(x,z)=>nav.walkable(x,z)&&!chapter.blockers(true).some(o=>!(o.low&&over)&&near(o.x,o.z,o.r+.3,x,z))&&!near(roam.x,roam.z,.5,x,z);
- if(free(wx+dx,wz+dz)){wx+=dx;wz+=dz;}
+ // (Chapter Five: standing where something now stands, a gate leaf swung onto you, any step that does not go further into
+ // it is allowed, so you can always walk out)
+ const outOf=()=>{if(!nav.pineOpen||free(wx,wz))return false;const nx=wx+dx,nz=wz+dz,l=Math.hypot(dx,dz)||1;if(!nav.walkable(nx,nz)&&(nav.walkable(wx,wz)||!nav.walkable(wx+dx/l*.5,wz+dz/l*.5)))return false;/* (out of it, not further in) */
+  const gap=(x,z)=>Math.min(9,...chapter.blockers(true).filter(o=>!(o.low&&over)).map(o=>Math.hypot(o.x-x,o.z-z)-o.r),Math.hypot(roam.x-x,roam.z-z));return gap(nx,nz)>=gap(wx,wz)-1e-4;};
+ if(free(wx+dx,wz+dz)||outOf()){wx+=dx;wz+=dz;}
  else if(E&&[.3,-.3,.6,-.6,.9,-.9].some(k=>{const c=Math.cos(k),sn=Math.sin(k),ex=dx*c-dz*sn,ez=dx*sn+dz*c;if(free(wx+ex,wz+ez)){wx+=ex;wz+=ez;return true;}return false;})){}// (running: veer round it, the way anyone would)
  else if(E&&!over&&nav.walkable(wx+dx,wz+dz)&&!chapter.blockers(true).some(o=>!o.low&&near(o.x,o.z,o.r+.3,wx+dx,wz+dz))&&!near(roam.x,roam.z,.5,wx+dx,wz+dz))foot.jump(true);// (running and only something low in the way: you vault it)
  else if(free(wx+dx,wz)){wx+=dx;}else if(free(wx,wz+dz)){wz+=dz;}

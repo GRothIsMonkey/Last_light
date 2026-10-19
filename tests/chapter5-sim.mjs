@@ -97,11 +97,11 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
   assert.ok(PKS.jamie.length===3&&PKS.sam.length===3,'they threw their own');assert.ok(A5.phys.LOG.log.filter(l=>l[0]==='hold'&&/beach-stone/.test(l[1])).length>=9,'every stone picked up by a hand');});
  M2['chapter5 stones']={you:PKS.you,jamie:PKS.jamie,sam:PKS.sam};
  // ---- the shallows: off the beach into the water, at a wading pace while the bed is under it, and back out ----
- {let tgt=null;for(let r=2;r<9&&!tgt;r+=.5)for(let k=0;k<24&&!tgt;k++){const e=STN[0]+Math.sin(k/24*Math.PI*2)*r,n=STN[1]+Math.cos(k/24*Math.PI*2)*r,sd=shoreSD(e,n);if(sd<-1.4&&sd>-2.4&&wadeZone(e,n).beach>.8){const w=PW(e,n);if(heightAt(w.x,w.z)<WATER-.08)tgt=[e,n];}}
-  const back=[STN[0]+.4,STN[1]+.4];let wet=0,slow=0,dry=0;const watch=()=>{const p=me(),wsurf=h.nav.surface(p.x,p.z);if(wsurf==='water')wet++;if(Math.abs((h.foot.pace??1)-.58)<.01)slow++;};
-  if(tgt){goEN(tgt[0],tgt[1],{r:.6,max:20,stop:()=>{watch();return false;}});for(let i=0;i<30;i++){W(1/30);watch();}goEN(back[0],back[1],{r:.8,max:20});W(.4);dry=Math.abs((h.foot.pace??1)-1)<.01?1:0;}
-  M2['chapter5 wading']={target:tgt&&tgt.map(v=>+v.toFixed(1)),wetFrames:wet,slowFrames:slow,paceBack:h.foot.pace};
-  check(`${label}: the shallows: off the beach into the water (wading pace while the bed is under water), and back out`,()=>{assert.ok(tgt,'a wading point');assert.ok(wet>10,'in the water '+wet);assert.ok(slow>10,'wading pace '+slow);assert.ok(dry,'back to walking pace on the beach '+h.foot.pace);});}
+ {let tgt=null;for(let r=2;r<9&&!tgt;r+=.5)for(let k=0;k<24&&!tgt;k++){const e=STN[0]+Math.sin(k/24*Math.PI*2)*r,n=STN[1]+Math.cos(k/24*Math.PI*2)*r,sd=shoreSD(e,n);if(sd<-1.9&&sd>-2.6&&wadeZone(e,n).beach>.8){const w=PW(e,n);if(heightAt(w.x,w.z)<WATER-.14)tgt=[e,n];}}
+  const back=[STN[0]+.4,STN[1]+.4];let wet=0,slow=0,dry=0,deep=9,diag=null;const watch=()=>{const p=me(),wsurf=h.nav.surface(p.x,p.z),d=heightAt(p.x,p.z)-WATER;if(wsurf==='water')wet++;if(Math.abs((h.foot.pace??1)-.58)<.01)slow++;if(d<deep){deep=d;diag={phase:S().phase,state:h.snapshot.state,walking:me().walking,pace:h.foot.pace,surf:wsurf};}};
+  if(tgt){goEN(tgt[0],tgt[1],{r:.3,max:25,stop:()=>{watch();return false;}});for(let i=0;i<30;i++){W(1/30);watch();}goEN(back[0],back[1],{r:.8,max:20});W(.4);dry=Math.abs((h.foot.pace??1)-1)<.01?1:0;}
+  M2['chapter5 wading']={target:tgt&&tgt.map(v=>+v.toFixed(1)),wetFrames:wet,slowFrames:slow,deepest:+deep.toFixed(2),atDeepest:diag,paceBack:h.foot.pace};
+  check(`${label}: the shallows: off the beach into the water (wading pace while the bed is under water), and back out`,()=>{assert.ok(tgt,'a wading point');assert.ok(wet>10,'in the water '+wet);assert.ok(slow>10,'wading pace '+slow+' '+JSON.stringify(M2['chapter5 wading']));assert.ok(dry,'back to walking pace on the beach '+h.foot.pace);});}
  // ---- the dock ----
  U(()=>S().phase==='d5-dock',30);const DE=SPOT.dockEnd,DK=DOCKS[0];goEN(DE[0]+Math.sin(DK.a+Math.PI)*.8,DE[1]+Math.cos(DK.a+Math.PI)*.8,{r:.5});faceEN(DE[0]+Math.sin(DK.a)*3,DE[1]+Math.cos(DK.a)*3);act('c5-sit',6);
  let seatedAll=false;U(()=>{if(jamieSam().every(c=>c.seated)&&(A5.C.pose?.w||0)>.95)seatedAll=true;return S().phase==='d5-sign';},150);
@@ -129,8 +129,8 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  check(`${label}: Camp Whippoorwill: the arch, a flashlight each, out of Sam's bag and handed over`,()=>{assert.equal(S().phase,'d5-camp');assert.ok(C5().inv.flashlight);assert.ok(h.foot.owned,'in your hand');assert.ok(A5.GR.S.jtorchTaken,'Jamie took his from Sam');assert.ok(A5.phys.LOG.log.some(l=>l[0]==='handoff'&&/flashlight/.test(l[1])),'handed');});
  // ---- what you carry (I): the camera and the flashlight listed; the flashlight put away and taken out from it; Escape closes it ----
  {const inv=A5.GR.inv;W(1.5);tap('KeyI');W(.2);const open1=inv.isOpen,rows=inv.rows(),names=rows.map(r=>r.id);const fi=rows.findIndex(r=>r.id==='flashlight');let away=null,outAgain=null;
-  if(fi>=0){inv.S.sel=fi;tap('KeyF');W(.9);away=!A5.GR.inHand;inv.S.sel=inv.rows().findIndex(r=>r.id==='flashlight');tap('KeyF');W(.9);outAgain=A5.GR.inHand;}
-  tap('Escape');W(.1);const closed=!inv.isOpen;
+  const wasOn=A5.GR.on;if(fi>=0){inv.S.sel=fi;tap('KeyF');W(.9);away=!A5.GR.inHand;inv.S.sel=inv.rows().findIndex(r=>r.id==='flashlight');tap('KeyF');W(.9);outAgain=A5.GR.inHand;}
+  tap('Escape');W(.1);const closed=!inv.isOpen;if(A5.GR.on!==wasOn){tap('KeyT');W(.3);}/* (as it was: off, so it dies where the story has it, in Bluejay) */
   M2['chapter5 inventory']={open:open1,rows:names,putAway:away,takenOut:outAgain,escapeCloses:closed};
   check(`${label}: what you carry (I): the camera and the flashlight; put away and taken out from the bag; Escape closes it (not the pause)`,()=>{assert.ok(open1,'opens');assert.ok(names.includes('camera')&&names.includes('flashlight'),JSON.stringify(names));assert.ok(away,'put away');assert.ok(outAgain,'taken out');assert.ok(closed,'Escape closes it');assert.notEqual(h.snapshot.state,'paused','not paused');});}
  }

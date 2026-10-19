@@ -653,7 +653,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(X.t>170&&!C.flags.owlPoint&&!busy()){C.flags.owlPoint=true;const b=OWLB,[e,n]=b.F.to(SHIRT_AT[0]-.6,SHIRT_AT[1]+.4);stand(jamie,[e,n],{look:()=>shirtPos(),keep:true,gesture:'point'});say([{who:'JAMIE',text:C.flags.shirtSeen?'“Here. On the wall, there’s something cut in it.”':'“Here. On the wall. Look.”',by:'jamie'}]);}
   if(X.t>(X.again||260)&&!C.flags.owlDone&&!busy()){X.again=X.t+100;say([{who:'SAM',text:C.flags.shirtSeen?'“The wall. Next to where it was hanging.”':'“The back corner. By the hook.”',by:'sam'}]);}}
  // ---- they call his name -------------------------------------------------------------------------------------------------------------------
- function callAlex(){if(C.flags.call)return;C.flags.call=true;go('e5-call');C.hMin=Math.max(C.hMin||0,HOUR.call);mark('they call his name');lightsOut(true);objective('');
+ function callAlex(){if(C.flags.call)return;C.flags.call=true;go('e5-call');C.hMin=Math.max(C.hMin||0,HOUR.call);C.darkTo=Math.max(C.darkTo||0,.3);/* (the dusk deepens as they call: a light in the trees shows) */mark('they call his name');lightsOut(true);objective('');
   stand(jamie,[OWL_FRONT[0]+.6,OWL_FRONT[1]-.6],{look:()=>W5(-280,540,2),keep:true});stand(sam,[OWL_FRONT[0]-.8,OWL_FRONT[1]+.8],{look:()=>W5(-280,540,2),keep:true});
   // a light in the trees, twenty-odd metres off, going away toward the pump house: somebody with a flashlight, they think
   say([{who:'JAMIE',text:'“ALEX!”',by:'jamie',time:1.4,face:'worried'},{wait:1.6},{who:'JAMIE',text:'“ALEX!”',by:'jamie',time:1.4},{who:'SAM',text:'“ALEX!”',by:'sam',time:1.4},{who:'YOU',text:'“ALEX!”',time:1.4},
@@ -809,7 +809,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function wake(why){if(C.flags.wake)return;C.flags.wake=true;mark('the camp wakes ('+why+')');if(why!=='it came out')camp.double(false);
   for(const id of Object.keys(camp.LAMPS))if(id!=='owl')camp.set(id,1,{rate:9,flick:.05});camp.set('owl',0);const b=PN?.dyn?.bell;if(b)b.v+=3;sound('oldBell',bellPos(),{gain:1});
   for(const [i,key] of ['bluejay','cardinal','office','lodge'].entries())later(.2+i*.17,()=>{DOORS[key].open=1;sound('doorSlam',roomV(key,0,BLD[key].d/2,1),{gain:.7});});
-  C.darkTo=.35;T?.set?.(1,{rise:.3,why:'run'});say([{who:'SAM',text:'“RUN.”',by:'sam',time:1}],{interrupt:true});later(.4,runStart);}
+  C.darkTo=Math.max(C.darkTo||0,.6);/* (every lamp on, under a sky that does not lighten) */T?.set?.(1,{rise:.3,why:'run'});say([{who:'SAM',text:'“RUN.”',by:'sam',time:1}],{interrupt:true});later(.4,runStart);}
  // ---- run: the road (the camp gate) or the dam (the bell) --------------------------------------------------------------------------------------
  function runStart(){if(C.esc)return;go('n5-run');C.hMin=Math.max(C.hMin||0,HOUR.run);checkpoint('c5-run');C.flags.hurry=true;for(const c of [jamie,sam])stand(c,null);follow(true);
   objective('Run.','The camp gate and the road — or the dam.');const p=me();C.esc={t:0,route:null,still:0,trail:[{x:p.x,z:p.z}],front:0,woke:new Set(),said:{},boundary:false};}

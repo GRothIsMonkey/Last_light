@@ -295,7 +295,8 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
   {const s=SOLIDS.find(q=>q.kind==='oldsign'),g=at(root,s.c[0],s.c[1],null,s.a);for(const x of [-1.5,1.5])B(g,x,1,0,.14,2,.14,K.mat(0x4a3420,{roughness:1}));
    const uv=paint(640,400,oldSignArt);B(g,0,1.75,.06,3.3,2.1,.08,K.mat(0x3a2818,{roughness:1}));face(g,uv,3.2,2,{y:1.75,z:-.01});out.anchors.oldSign=g;}
   {const g=at(root,SPOT.gate[0],SPOT.gate[1],null,0);for(const x of [-2.8,2.8])K.cyl(g,x,.6,0,.09,1.2,K.mat(0x8a8a6a,{roughness:.5,metalness:.4}),8);
-   const arm=new THREE.Group();arm.position.set(-2.8,1.05,0);g.add(arm);K.cyl(arm,2.8,0,0,.05,5.6,M.yellowSteel,8,[0,0,Math.PI/2]);B(arm,2.8,-.16,.05,.6,.26,.03,K.mat(0xd83a2a,{roughness:.7}));
+   // (the arm turns, so it stays live: built under the root it would be baked into the merged world where it was drawn)
+   const gLive=at(live,SPOT.gate[0],SPOT.gate[1],null,0),arm=new THREE.Group();arm.position.set(-2.8,1.05,0);gLive.add(arm);K.cyl(arm,2.8,0,0,.05,5.6,M.yellowSteel,8,[0,0,Math.PI/2]);B(arm,2.8,-.16,.05,.6,.26,.03,K.mat(0xd83a2a,{roughness:.7}));
    K.rod(g,[2.8,1.05,0],[2.86,.7,0],.008,M.steel);out.anchors.swingGate=arm;out.dyn.swing={arm,G:GATES.swing};
    // the latch at the free end (where a hand opens it): a hasp on the arm over a catch post
    B(arm,5.55,0,.06,.1,.12,.03,M.steel);

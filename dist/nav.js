@@ -147,6 +147,9 @@ export function createNav(world){
   const point=(i,j)=>({x:minX+i*step,z:minZ+j*step}),ix=p=>Math.round((p.x-minX)/step),iz=p=>Math.round((p.z-minZ)/step),key=(i,j)=>i+','+j;
   const valid=p=>walkable(p.x,p.z,{r:.3})&&!obstacles.some(o=>Math.hypot(o.x-p.x,o.z-p.z)<o.r+.38);
   const clear=(a,b)=>{const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.2);for(let i=1;i<=n;i++)if(!valid({x:a.x+(b.x-a.x)*i/n,z:a.z+(b.z-a.z)*i/n}))return false;return true;};
+  // (Pine Ridge: starting pressed against something, a gate leaf's end, a post: first the nearest clear spot, then the way)
+  if(pineOpen&&!valid(start)){let best=null;for(let r=.25;r<=1.25&&!best;r+=.25)for(let k=0;k<12;k++){const a=k/12*Math.PI*2,q={x:start.x+Math.sin(a)*r,z:start.z+Math.cos(a)*r};if(valid(q)&&(!best||Math.hypot(q.x-end.x,q.z-end.z)<Math.hypot(best.x-end.x,best.z-end.z)))best=q;}
+   if(best){const rest=walkPath(best,end,obstacles,pad);return rest.length?[[best.x,best.z],...rest]:[];}}
   if(clear(start,end))return [[end.x,end.z]];
   const root={i:ix(start),j:iz(start),g:0,p:start},open=[root],seen=new Map([[key(root.i,root.j),root]]);let done=null;
   for(let n=0;n<5000&&open.length;n++){open.sort((a,b)=>(a.g+Math.hypot(a.p.x-end.x,a.p.z-end.z))-(b.g+Math.hypot(b.p.x-end.x,b.p.z-end.z)));const q=open.shift();if(q.closed)continue;q.closed=true;
