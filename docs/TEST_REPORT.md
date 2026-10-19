@@ -14,7 +14,64 @@ What changed and why: `docs/CHAPTER5_GAMEPLAY_STORY_REPAIR.md`. This build waits
 
 ## The repair's own checks (simulation, `tests/chapter5-sim.mjs`, `tests/chapter5-companions.mjs`)
 
-{{CHECKS}}
+`ONLY=chapter5 node tests/verify.mjs` (the whole chapter played with the keys from Chapter Four's end card, then the
+DEV scenes, the fallbacks and the companion tests): **81 checks passed, 0 failed** (54 below, plus 27 scene-alias checks).
+The play took 30.5 minutes of game time; the escape 146 s; 261 lines spoken.
+
+- Chapter Five: Chapter Four's end card offers Chapter Five
+- Chapter Five: the chapter opens on its card (Chapter Five, The Place in the Picture)
+- Chapter Five: Sam's garage, the next afternoon (Wednesday, August 24)
+- Chapter Five: the garage: the supplies packed by hand (you 2, Sam the rest), Alex's camera from Sam's hand
+- Chapter Five: Jamie's backpack and one sock, Sam's granola bars, the map and the plan
+- Chapter Five: Jamie and Sam get on their own bikes before you do, and wait
+- Chapter Five: out of town, on Mill Street past the sawhorse (the Old Reservoir Road)
+- Chapter Five: the race to the top of the ridge has a winner
+- Chapter Five: Pine Ridge Park (the new sign is not the one in the picture)
+- Chapter Five: the bikes locked to the rack (no riding off from here on)
+- Chapter Five: skipping stones: a stone picked up off the shore, wound up and let go, each time; Jamie's and Sam's their own; Sam's six
+- Chapter Five: the dock: the three of you sat on its edge, legs over the water; Alex, and the shoe he named Gary
+- Chapter Five: the shallows: off the beach into the water (wading pace while the bed is under water), and back out
+- Chapter Five: the picture matched, by looking, at the old lot (camera up on the lead, at the vantage)
+- Chapter Five: the yellow gate is shut and in the way until a hand opens it: Jamie lifts the latch and walks it round, and then it lets you by
+- Chapter Five: the yellow gate: a disagreement, and your call (sam)
+- Chapter Five: Camp Whippoorwill: the arch, a flashlight each, out of Sam's bag and handed over
+- Chapter Five: what you carry (I): the camera and the flashlight; put away and taken out from the bag; Escape closes it (not the pause)
+- Chapter Five: the office: the 1991 register (August 24, twenty years ago) and the search map, photographed
+- Chapter Five: the lodge: cans gone from the dust, recently
+- Chapter Five: Bluejay, a dead flashlight, and Sam's batteries out of his bag, without being asked
+- Chapter Five: the campfire: a short rest (55 s, the clock 4 minutes on), water passed round, no hours lost
+- Chapter Five: Owl: Alex's gold shirt, wet, and JSA cut fresh into the wall
+- Chapter Five: they call his name; a light in the trees (a ranger? somebody fishing?) turns its beam on them and goes out; the shirt off its nail by Sam's hand, into his bag
+- Chapter Five: three lights at the gate (lights, not people, the length of the camp away) walk where you walked: the office, the map board (they stop where you stood), one copies your flashlight, then they sit where you sat at the fire; the creature runs from them; they turn on you and go out
+- Chapter Five: at night the camp pulls at whichever friend you leave; together, Sam's compromise
+- Chapter Five: Owl from the porch: a second Jamie, while Jamie is next to you; it turns to look at him, then comes out toward you (8.1 m, to 1.4 m); only then every light at once, RUN
+- Chapter Five: the escape by route A, and the boundary: the camp gate slams shut in front of you; Sam shoves it open; every light out at once
+- Chapter Five: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”
+- Chapter Five: on Alex's camera, a picture none of them took (the three of them at the fire, 6:34PM)
+- Chapter Five: the last image (one light across the water), then the end card: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six
+- Chapter Five: Jamie and Sam never left: farthest 13.8 m ({"phase":"n5-split","where":{"e":-252.9,"n":550.4,"street":"pine"}}); nothing non-finite
+- Chapter Five: every one of its 37 jumps starts without an error, Jamie and Sam with you
+- Chapter Five: a jump into the ride, the park or the set piece shows its objective; the flashlight’s two lights are in the scene
+- Chapter Five: 12 checkpoints, each a jump
+- Chapter Five stress: sprinting round the camp, Jamie and Sam stay with you (farthest 10.3 m, {"released":0,"unstuck":0,"recovered":0})
+- Chapter Five set piece: the camp pulls at the friend you are not with (and at Sam when you watch Owl)
+- Chapter Five set piece: in time the two of them come back together on their own (Sam’s compromise)
+- Chapter Five fallbacks: standing still, evidence is never found for you (only hints, plainer each time); getting somewhere, the boys pull you along; the optional and the eventful move on; nobody left where they cannot walk
+- Chapter Five garage: standing still after “Ride to Pine Ridge.”, they wait at the end of the driveway and call you (2 lines); only after 160 s does the ride out come on its own
+- Chapter Five campfire: sitting is yours to undo (S stands you up, the talk goes on, F sits you back down; walk off and it still ends, nobody carries you back)
+- Chapter Four keeps its north edge (Mill Street past the sawhorse is closed); Chapter Five opens the road to Pine Ridge
+- Start over from inside Chapter Five begins the prologue normally (nothing of the camp left)
+- DEV scenes: all 37 Chapter Five scenes start without an error
+- DEV scenes: each of 18 key Chapter Five scenes starts shortly BEFORE its event
+- DEV scene switching through Chapter Five and back (5/c5-split → 3/c3-creature-chase-start → 5/c5-owl → 4/c4-escape → 5/c5-run → 1/oak → 5/c5-split → 5/chapter5-end → 5/c5-owl): no leaks
+- Companions A: a minute standing still in the open, inside the camp gate: they settle (walked 0 m and 0 m after settling, on purpose), no pacing, no sprints, nobody bumps
+- Companions B: a sudden sprint: they go after a moment (Jamie 1.57 s, Sam 2.17 s), not with you, not together, and catch up
+- Companions C: a sudden stop: they walk on a step or two and stop (Jamie after 2 s, Sam 2.5 s), not frozen on the spot
+- Companions D: walking away and coming back: no flip-flopping between goals
+- Companions E: you stand still after packing; Jamie and Sam go to their own bikes and get on by themselves (Jamie on at 102.6 s, Sam at 104.3 s; waiting at 107.9 s and 108.3 s)
+- Companions F: 216 s round the camp: they keep near (median 3 m and 3.2 m), look at things on their own, wait, never crowd you
+- Companions G: inside the office (2.44 m in), round the counter and back: nobody walks through anybody (closest 1.36 m to you, 0.63 m to each other)
+- Companions H: the run: they run (79% and 92% of it), keep with you (farthest 7.2 m, 9.4 m), and don't run into you
 
 ## Human-viewable review frames (Chromium, `tests/review-capture.mjs`)
 
