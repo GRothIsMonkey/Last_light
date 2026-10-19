@@ -103,9 +103,9 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
   M2['chapter5 wading']={target:tgt&&tgt.map(v=>+v.toFixed(1)),wetFrames:wet,slowFrames:slow,deepest:+deep.toFixed(2),atDeepest:diag,paceBack:h.foot.pace};
   check(`${label}: the shallows: off the beach into the water (wading pace while the bed is under water), and back out`,()=>{assert.ok(tgt,'a wading point');assert.ok(wet>10,'in the water '+wet);assert.ok(slow>10,'wading pace '+slow+' '+JSON.stringify(M2['chapter5 wading']));assert.ok(dry,'back to walking pace on the beach '+h.foot.pace);});}
  // ---- the dock ----
- U(()=>S().phase==='d5-dock',30);const DE=SPOT.dockEnd,DK=DOCKS[0];goEN(DE[0]+Math.sin(DK.a+Math.PI)*.8,DE[1]+Math.cos(DK.a+Math.PI)*.8,{r:.5});faceEN(DE[0]+Math.sin(DK.a)*3,DE[1]+Math.cos(DK.a)*3);act('c5-sit',6);
+ U(()=>S().phase==='d5-dock',30);const DE=SPOT.dockEnd,DK=DOCKS[0];goEN(DE[0]+Math.sin(DK.a+Math.PI)*.8,DE[1]+Math.cos(DK.a+Math.PI)*.8,{r:.5});faceEN(DE[0]+Math.sin(DK.a)*3,DE[1]+Math.cos(DK.a)*3);const dockAt={where:C5().where,spot:X.spot()?.id,pt:+h.snapshot.clock?.toFixed?.(1),flags:Object.keys(A5.C.flags).filter(k=>/dock/.test(k)),holding:!!A5.PK.holding,view:A5.C.view,pose:!!A5.C.pose};act('c5-sit',6);
  let seatedAll=false;U(()=>{if(jamieSam().every(c=>c.seated)&&(A5.C.pose?.w||0)>.95)seatedAll=true;return S().phase==='d5-sign';},150);
- check(`${label}: the dock: the three of you sat on its edge, legs over the water; Alex, and the shoe he named Gary`,()=>{assert.ok(C5().flags.dock);assert.ok(seatedAll,'all three seated');assert.ok(log.said.some(l=>/Gary/.test(l)));});
+ check(`${label}: the dock: the three of you sat on its edge, legs over the water; Alex, and the shoe he named Gary`,()=>{assert.ok(C5().flags.dock);assert.ok(seatedAll,'all three seated '+JSON.stringify(dockAt));assert.ok(log.said.some(l=>/Gary/.test(l)));});
  }
  // ---- the place in the picture: Alex's camera, compared ----
  if(seg('sign')){
@@ -136,11 +136,12 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  }
  // ---- the office: the door, the register, the search map ----
  if(seg('camp')){
- goEN(...door('office',1.1),{r:.5});faceEN(...B('office').c);act('c5-door-office',5);W(1);
+ const campAt={where:C5().where,lock:h.roam.walkLock,view:A5.C.view,pose:!!A5.C.pose,inv:A5.GR.inv.isOpen,state:h.snapshot.state,act:A5.phys.ME.act?.what||A5.phys.ME.act?.kind||null};
+ goEN(...door('office',1.1),{r:.5});campAt.after=C5().where;faceEN(...B('office').c);act('c5-door-office',5);W(1);
  {const b=B('office'),R=h.world.pine.anchors.register,[e,n]=b.F.to(R.x+.4,-R.z+.8);goEN(...b.F.to(b.door[0],b.d/2-.9),{r:.25});goEN(e,n,{r:.25});faceEN(...b.F.to(R.x+.4,-R.z));act('c5-register',6);
   for(let i=0;i<3;i++){W(1.2);tap('KeyD');}U(()=>quiet(),40);tap('KeyV');W(.6);tap('KeyS');W(1.5);
   const M3=h.world.pine.anchors.searchMap,[e2,n2]=b.F.to(M3.x,-M3.z+1.2);goEN(e2,n2,{r:.25});faceEN(...b.F.to(M3.x,-M3.z));act('c5-searchmap',6);U(()=>C5().clues.includes('searchmap'),40);}
- check(`${label}: the office: the 1991 register (August 24, twenty years ago) and the search map, photographed`,()=>{assert.ok(C5().clues.includes('register')&&C5().clues.includes('searchmap'));assert.ok(C5().photos.includes('register3'),JSON.stringify(C5().photos));assert.ok(log.said.some(l=>/None out/.test(l)));});
+ check(`${label}: the office: the 1991 register (August 24, twenty years ago) and the search map, photographed`,()=>{assert.ok(C5().clues.includes('register')&&C5().clues.includes('searchmap'),JSON.stringify(campAt));assert.ok(C5().photos.includes('register3'),JSON.stringify(C5().photos));assert.ok(log.said.some(l=>/None out/.test(l)));});
  // ---- the lodge: the pantry ----
  {const b=B('office');for(const [lx,lz] of [[-2.2,-.3],[-2.2,1.3],[-1.2,1.9],[-1.2,3.2],[-1.2,4.5]])goEN(...b.F.to(lx,lz),{r:.25,max:20});}// (round the counter, out the door)
  goEN(...door('office',2.6),{r:.3});goEN(...door('lodge',1.2),{r:.5});faceEN(...B('lodge').c);act('c5-door-lodge',5);W(1);
