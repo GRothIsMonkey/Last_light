@@ -27,6 +27,11 @@ initializer (`chapter5.jump(section)`) now also sets what the repair added, as a
   is stamped with the rest's time when a scene after the fire is started.
 - **The night**: the three lights' route (office → map board → fire), the double's walk and the gate's slam are fresh in
   each scene that starts before them.
+- **Doors and gates are where the scene wants them when it starts** (snapped: they do not swing there on their own).
+- **Chapter Five only**: starting any Chapter Five scene switches on what the repair added to shared code (the walk-in
+  garages, the first-person body, the expressive faces); starting a scene of Chapters 0–4 switches it off, so those
+  chapters look and play as accepted.
+- **The campfire scene** starts the boys' call to the fire as in play.
 
 Verification: the same DEV checks as below (all scenes start; natural vs DEV start; 18 scenes start before their event;
 switching leaks nothing), plus the repair's own checks in `tests/chapter5-sim.mjs` and `tests/chapter5-companions.mjs`.

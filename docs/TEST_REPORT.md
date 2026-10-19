@@ -22,7 +22,20 @@ Frames from the real renderer at player height, before, during and after each ac
 (one folder per script, contact sheets alongside). They are for a person to judge, not pass/fail; what was found in
 them and fixed is listed under *Found in the frames*.
 
-{{FRAMES}}
+| Folder | Script | What it shows |
+|---|---|---|
+| `garage/` | `tests/review/garage.mjs` | Sam packing by hand; your reach, the flashlight into the bag; Sam handing you Alex's camera across the table; Jamie's backpack and the one sock; the map; each boy to his own bike, kickstand, on, waiting at the end of the driveway |
+| `smoke/` | `tests/review/smoke.mjs` | Sam's feet on the garage floor; your own feet; faces at talking distance |
+| `lookdown/` | `tests/review/lookdown.mjs` | Your body looking down: empty-handed, with the flashlight, walking |
+| `stones/` | `tests/review/stones.mjs` | Jamie's throw and skips; a stone at your feet, the reach, in hand, wound up crouched, let go, flying, skipping; Sam getting down low; wading the shallows |
+| `dock/` | `tests/review/dock.mjs` | Jamie and Sam walking out; the three of you sat on the edge, looking out, at each other, legs over the water; Gary |
+| `gear/` | `tests/review/gear.mjs` | The yellow gate: shut, the latch lifted by Jamie, walked round, open; the flashlight from Sam's bag, held out, taken; off and on by day; Bluejay: on, flickering, dead, Sam's batteries held out, taken, changed, back on; the register and a picture taken with your hands (up, finger on the shutter, flash, the picture on the screen, down); the inventory; Alex's shirt off its nail, gathered, into Sam's bag |
+| `companions/` | `tests/review/companions.mjs` | A minute standing still (they settle, look round), a sudden sprint, a sudden stop |
+| `faces/` | `tests/review/faces.mjs` | Expressions and talking mouths through the afternoon and the night |
+| `night/` | `tests/review/night.mjs` | The first light in the trees, its beam on you, gone; three lights at the gate, at the office, stopped at the board, copying your flashlight, sat at the fire, turned on you; the double in Owl, looking at Jamie, Jamie beside you, coming out, every light, RUN; the gate slammed, Sam shoving it open, every light out behind |
+| `aftermath/` | `tests/review/aftermath.mjs` | The lamp in the lot; the shaky laugh; the shirt in Sam's bag; the granola bar out of Jamie's bag; the last picture |
+
+{{FRAMECOUNT}}
 
 ## Found in the frames, and fixed
 
