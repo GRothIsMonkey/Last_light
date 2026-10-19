@@ -126,5 +126,5 @@ export function createGear(X){
  const inv=createInventory({items:()=>X.items({flashlight:{have:has(),hand:inHand(),on:!!foot.on,dead:!!(X.flags().dead&&!X.flags().batteries)}}),
   use:id=>{if(id==='flashlight'){if(inHand())putAway();else takeOut(false);}else X.use?.(id,inv);},onOpen:()=>X.held(true),onClose:()=>X.held(false)});
  function reset(){S.torchOut=S.offerTorch=S.torchTaken=S.jtorchTaken=false;S.torch=S.jtorch=null;S.act=null;S.onIn=0;S.dieT=0;S.batt=null;S.offerBatt=false;S.battTaken=false;S.shot=null;S.log.length=0;foot.flash=0;foot.hideTorch=false;if(model)model.group.visible=false;if(shirtP){X.shirt.scale.set(1,1,1);}inv.reset();}
- return {S,inv,handOut,takeOut,putAway,toggle,set,shoot,hidden,hangShirt,shirtInBag,samTakesShirt,update,spots,act,reset,get inHand(){return inHand();},get model(){return model;}};
+ return {S,inv,handOut,takeOut,putAway,toggle,set,shoot,hidden,hangShirt,shirtInBag,samTakesShirt,update,spots,act,reset,get inHand(){return inHand();},get on(){return !!foot.on;},get model(){return model;}};
 }

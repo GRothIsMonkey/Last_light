@@ -52,15 +52,17 @@ export function createCampPresence({scene,world,camera,sfx=()=>{}}){
  // balls. Each has a switch (lit) apart from fading in and out, and a carried height (sitting: lower).
  const beamTex=(()=>{try{const c=document.createElement('canvas');c.width=4;c.height=64;const g=c.getContext?.('2d');if(!g?.createLinearGradient)return null;const r=g.createLinearGradient(0,0,0,64);
   r.addColorStop(0,'rgba(255,240,205,0)');r.addColorStop(.55,'rgba(255,238,200,.35)');r.addColorStop(.9,'rgba(255,236,196,.85)');r.addColorStop(1,'rgba(255,236,196,1)');g.fillStyle=r;g.fillRect(0,0,4,64);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}catch{return null;}})();
- const BEAM_L=7,beamGeo=new THREE.ConeGeometry(.95,BEAM_L,14,1,true);beamGeo.translate(0,-BEAM_L/2,0);beamGeo.rotateX(Math.PI/2);// (apex at the lens, opening along +z)
+ const BEAM_L=9,beamGeo=new THREE.ConeGeometry(1.15,BEAM_L,14,1,true);beamGeo.translate(0,-BEAM_L/2,0);beamGeo.rotateX(-Math.PI/2);// (apex at the lens, opening along +z, the way it points)
  const bodyGeo=new THREE.CylinderGeometry(.018,.022,.17,8);bodyGeo.rotateX(Math.PI/2);const lensGeo=new THREE.CircleGeometry(.024,12);
  const CARRY=[0,1,2].map(i=>{const g=new THREE.Group();g.name='carried-light-'+i;const aimG=new THREE.Group();g.add(aimG);
   const body=new THREE.Mesh(bodyGeo,new THREE.MeshStandardMaterial({color:0x1c1c1e,roughness:.5,metalness:.4}));body.position.z=-.085;aimG.add(body);
   const head=new THREE.Mesh(lensGeo,new THREE.MeshBasicMaterial({color:0xfff2d0}));head.position.z=.002;aimG.add(head);
   const beam=new THREE.Mesh(beamGeo,new THREE.MeshBasicMaterial({color:0xffe8c0,map:beamTex,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending}));beam.renderOrder=4;aimG.add(beam);
+  // (the lens's glare, seen only from in front of it: a flashlight pointed at you is a point of light; pointed away, a beam)
+  const glint=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xfff0d0,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,fog:false}));glint.position.z=.02;glint.renderOrder=6;aimG.add(glint);
   // (its light stays in the scene at 0 when unlit, so the number of lights never changes during the chapter)
   const L=new THREE.SpotLight(0xffe6b0,0,16,.36,.55,1.6);L.name='carried-light-lamp-'+i;root.add(L,L.target);g.visible=false;root.add(g);
-  return {g,aimG,head,beam,halo:beam,L,on:0,want:0,lit:1,litWant:1,path:null,u:0,v:1.25,off:[0,-1.1,1.1][i],lag:[0,1.3,2.4][i],phase:i*2.1,stop:0,done:false,h:1.05,hWant:1.05,aim:null,dir:new THREE.Vector3(0,0,1)};});
+  return {g,aimG,head,beam,glint,halo:beam,L,on:0,want:0,lit:1,litWant:1,path:null,u:0,v:1.25,off:[0,-1.1,1.1][i],lag:[0,1.3,2.4][i],phase:i*2.1,stop:0,done:false,h:1.05,hWant:1.05,aim:null,dir:new THREE.Vector3(0,0,1)};});
  // A path for them all (world points); speed; when it ends, they stop and hold (or go out: out=true).
  function carry(n,pts,{speed=1.25,out=false,from=0}={}){const each=Array.isArray(pts[0]),mk=list=>{const segs=[];let L=0;for(let i=1;i<list.length;i++){const a=list[i-1],b=list[i],l=Math.hypot(b.x-a.x,b.z-a.z);segs.push({a,b,l,s:L,wait:b.wait||0,sit:!!b.sit});L+=l;}return {segs,L};};
   const one=each?null:mk(pts);
@@ -85,7 +87,8 @@ export function createCampPresence({scene,world,camera,sfx=()=>{}}){
     if(c.aim){_t.set(c.aim.x-x,(c.aim.y??c.g.position.y)-c.g.position.y,c.aim.z-z).normalize();}else{const sw=walking?Math.sin(t*2.6+c.phase)*.16:Math.sin(t*.7+c.phase)*.05;_t.set(q.dx+nx*sw,-.34,q.dz+nz*sw).normalize();}
     c.dir.lerp(_t,1-Math.exp(-(c.aim?6:3.5)*dt)).normalize();c.aimG.quaternion.setFromRotationMatrix(_m.lookAt(new THREE.Vector3(),c.dir.clone().negate(),_up));
     c.L.position.copy(c.g.position);c.L.target.position.copy(c.g.position).addScaledVector(c.dir,8);}
-   const k=c.on*c.lit;c.head.material.color.setScalar(.12+.88*k);c.beam.material.opacity=.32*k;c.L.intensity=9*k;if(c.on<.01&&c.want===0){c.g.visible=false;c.path=null;c.L.intensity=0;}}}
+   const k=c.on*c.lit;c.head.material.color.setScalar(.12+.88*k);c.beam.material.opacity=.42*k;c.L.intensity=9*k;
+   {const p=c.g.position,cp=camera.position,dx=cp.x-p.x,dy=cp.y-p.y,dz=cp.z-p.z,d=Math.hypot(dx,dy,dz)||1,f=(c.dir.x*dx+c.dir.y*dy+c.dir.z*dz)/d,o=Math.pow(clamp((f-.5)/.5,0,1),2)*k,sz=Math.max(.08,.014*d);c.glint.material.opacity=o;c.glint.scale.set(sz,sz,1);c.glint.visible=o>.01;}if(c.on<.01&&c.want===0){c.g.visible=false;c.path=null;c.L.intensity=0;}}}
  const carrying=()=>CARRY.filter(c=>c.g.visible).length;
  const carriedAt=i=>CARRY[i]?.g.visible?CARRY[i].g.position:null;
  // ---- the double: Jamie, in a room ----------------------------------------------------------------------------------------------
