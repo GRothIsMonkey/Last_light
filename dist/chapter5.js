@@ -42,7 +42,7 @@ import {registerPageArt,REGISTER,searchMapArt,freshCarvingArt,kioskMapArt,oldSig
 import {createCampPresence,roomPoint} from './chapter5-presence.js';
 import {createCompanionBrain} from './companion-brain.js';
 import {createPlaces} from './chapter5-places.js';
-import {createPhysical} from './physical.js';
+import {createPhysical,handFrame} from './physical.js';
 import {createGarage} from './chapter5-garage.js';
 import {createPark} from './chapter5-park.js';
 import {createGates} from './chapter5-gates.js';
@@ -223,7 +223,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function makeWay(dt,p){const M=C.makeWay||(C.makeWay={x:p.x,z:p.z,t:0,cool:0});M.cool-=dt;const mv=Math.hypot(p.x-M.x,p.z-M.z);M.x=p.x;M.z=p.z;
   M.t=p.walking&&p.pushing&&mv<Math.max(dt,1e-3)*.3&&!C.view&&!posed()?M.t+dt:0;if(M.t<.6||M.cool>0)return;
   const fx=Math.sin(p.a),fz=-Math.cos(p.a),rx=Math.cos(p.a),rz=Math.sin(p.a);let best=null;
-  for(const c of [jamie,sam]){if(!c.active||c.mode!=='foot'||(C.seated||{})[c.key]||c.script?.makeWay)continue;const dx=c.px-p.x,dz=c.pz-p.z,d=Math.hypot(dx,dz);
+  for(const c of [jamie,sam]){if(!c.active||c.mode!=='foot'||(C.seated||{})[c.key]||(c.script&&!c.script.spot5))continue;/* (not in the middle of something: a throw, a hand-off, his bag) */const dx=c.px-p.x,dz=c.pz-p.z,d=Math.hypot(dx,dz);
    if(d>1.6||dx*fx+dz*fz<.15||Math.abs(dx*rx+dz*rz)>.75)continue;if(!best||d<best.d)best={c,d,side:Math.sign(dx*rx+dz*rz)||1};}
   if(!best)return;const c=best.c,s0=best.side;
   // to his side of the way you are going (or the other side), on ground he can stand on, clear of your next steps
@@ -370,7 +370,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  // ---- skipping stones (chapter5-park.js): three rounds, Jamie, you, Sam; each picks up his own stone and throws it ----------
  const STONES=SPOT.shoreStones,STONE_J=[STONES[0]-2.2,STONES[1]-2.4],STONE_S=[STONES[0]+1.5,STONES[1]],STONE_AIM=[STONES[0]-7.2,STONES[1]+14.2];
  const JAMIE_SKIPS=[3,4,2],SAM_SKIPS=[0,2,6];
- const GT=createGates({phys,comp,sound:(n,p,op)=>sound(n,p,op),lockWalk:on=>{o.roam.walkLock=on||!!C.pose||!!C.view;},walkPath:(c,q)=>{const pth=nav.walkPath({x:c.px,z:c.pz},q);return pth.length?pth:[[q.x,q.z]];},opened:by=>mark('the yellow gate opened: '+by)});
+ const GT=createGates({phys,comp,sound:(n,p,op)=>sound(n,p,op),lockWalk:on=>{o.roam.walkLock=on||!!C.pose||!!C.view;},walkPath:(c,q)=>{const pth=nav.walkPath({x:c.px,z:c.pz},q);return pth.length?pth:[[q.x,q.z]];},opened:by=>mark('the yellow gate opened: '+by),me:()=>me()});
  const PK=createPark({scene,phys,comp,jamie,sam,camera,W5,BEACH:STONES,self:o.self,ring:(x,z,b)=>ring(x,z,b),sound:(n,p,op)=>sound(n,p,op),held:c=>!!o.held?.(c),
   lockWalk:on=>{o.roam.walkLock=on||!!C.pose||!!C.view;},surface:(x,z)=>nav.surface(x,z),pace:k=>o.setPace?.(k),aimPoint:()=>W5(...STONE_AIM),spotId:()=>A.spot?.()?.id,
   walkPath:(c,q)=>{const pth=nav.walkPath({x:c.px,z:c.pz},q);return pth.length?pth:[[q.x,q.z]];},thrown:(who,n,turn)=>afterThrow(who,n,turn)});
@@ -400,10 +400,12 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function throwBy(c){const X2=C.st;if(!X2||X2.busy||X2.done)return;X2.busy=true;PK.S.turn=c.key;const want=(c===jamie?JAMIE_SKIPS:SAM_SKIPS)[X2.round];
   stand(c,null);PK.friendThrow(c,{want,hard:c===jamie?.97:.62+X2.round*.19,low:c===sam&&X2.round>=2?.3:0,at:()=>W5(...(c===jamie?STONE_J:STONE_S)),then:n=>afterThrow(c.key,n,true)});}
  // what they say is what the stone did
- function afterThrow(who,n,turn){const X2=C.st;if(!X2)return;if(who==='you'&&!turn){if(!C.flags.extraThrow&&!busy()){C.flags.extraThrow=true;say([{who:'JAMIE',text:n>3?'“Hey! That one doesn’t count.”':'“Wait your turn!”',by:'jamie',face:'amused'}]);}return;}
+ function afterThrow(who,n,turn){const X2=C.st;if(!X2||X2.done)return;// (the game over, a stone still in the air says nothing)
+  if(who==='you'&&turn&&(X2.turn!=='you'||X2.youThrew))turn=false;if(who==='you'&&turn)X2.youThrew=true;// (one counts on your turn: the first to come down)
+  if(who==='you'&&!turn){if(!C.flags.extraThrow&&!busy()){C.flags.extraThrow=true;say([{who:'JAMIE',text:n>3?'“Hey! That one doesn’t count.”':'“Wait your turn!”',by:'jamie',face:'amused'}]);}return;}
   X2.busy=false;const r=X2.round,num=n<=0?null:NUM[Math.min(n,12)];
   if(who==='jamie'){const L=[[{who:'JAMIE',text:`“${num||'Okay that one'}${num?'. Beat that.':' was a warm-up.'}”`,by:'jamie',face:'grin'}],[{who:'JAMIE',text:n>=4?`“${num.toUpperCase()}. ${num}! Did you see that?”`:`“${num||'Ugh'}. The wind.”`,by:'jamie',face:n>=4?'happy':'frustrated'}],n<=2?[{who:'JAMIE',text:'“That didn’t count. My foot slipped.”',by:'jamie',face:'embarrassed'}]:[{who:'JAMIE',text:`“${num}. Still the master.”`,by:'jamie',face:'grin'}]][r];
-   say(L,{then:()=>{X2.turn='you';PK.S.turn='you';X2.wait=0;stand(jamie,STONE_J,{look:()=>camera.position,leash:40});if(r===0&&!C.flags.throwTip){C.flags.throwTip=true;say([{who:'SAM',text:'“Pick a flat one. Throw it low, sideways. Get down low.”',by:'sam',time:2.8}]);}}});}
+   say(L,{then:()=>{X2.turn='you';PK.S.turn='you';X2.wait=0;X2.youThrew=false;stand(jamie,STONE_J,{look:()=>camera.position,leash:40});if(r===0&&!C.flags.throwTip){C.flags.throwTip=true;say([{who:'SAM',text:'“Pick a flat one. Throw it low, sideways. Get down low.”',by:'sam',time:2.8}]);}}});}
   else if(who==='you'){const line=n<0?[{who:'JAMIE',text:'“That was the beach. You threw it at the beach.”',by:'jamie',face:'amused'}]:n===0?[{who:'JAMIE',text:'“That was a rock. That was just a rock.”',by:'jamie',face:'amused'}]:n<=2?[{who:'JAMIE',text:`“${num}. Ehh.”`,by:'jamie',time:1.2}]:n<=4?[{who:'JAMIE',text:`“${num}. Okay. Not bad.”`,by:'jamie',face:'surprised'}]:[{who:'JAMIE',text:`“${num}?! WHOA. Okay. OKAY.”`,by:'jamie',face:'shocked'}];
    say(line,{then:()=>{X2.turn='sam';PK.S.turn='sam';later(.6,()=>throwBy(sam));}});}
   else{const L=[[{who:'SAM',text:'“I don’t really do this.”',by:'sam',face:'embarrassed'},{who:'JAMIE',text:'“That was a rock, Sam. You threw a rock.”',by:'jamie',face:'amused'}],[{who:'SAM',text:`“…${num||'Zero'}.”`,by:'sam'}],
@@ -504,7 +506,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(S.pt>150&&!C.flags.roadNudge&&!busy()){C.flags.roadNudge=true;say([{who:'SAM',text:'“The camp’s at the end of the road. Along the shore.”',by:'sam'}]);}
   if(S.pt>270&&!C.flags.roadNudge2&&!busy()){C.flags.roadNudge2=true;say([{who:'JAMIE',text:'“Keep going. It can’t be much farther.”',by:'jamie'}]);}
   if(S.pt>480&&!C.flags.campIn)carry('road',[SPOT.campGate[0]+2.4,SPOT.campGate[1]-4],ha(-163.6,508,-170,520));void dt;}
- function campGate(){if(C.flags.campIn)return;C.flags.campIn=true;go('d5-camp');C.h=Math.max(C.h,HOUR.camp);date(C.h);checkpoint('c5-camp-gate');mark('the camp gate');C.trail=[];C.campAt=C.t;
+ function campGate(){if(C.flags.campIn)return;C.flags.campIn=true;go('d5-camp');C.hMin=Math.max(C.hMin||0,HOUR.camp);/* (behind, the clock catches up a minute a second: it never skips) */checkpoint('c5-camp-gate');mark('the camp gate');C.trail=[];C.campAt=C.t;
   say([{who:'JAMIE',text:'“Camp Whippoorwill. Established 1961.”',by:'jamie',time:2.2},{who:'SAM',text:'“‘Stay with your buddy.’”',by:'sam',time:1.6},{wait:.8},
    {who:'SAM',text:'“Flashlights. For inside.”',by:'sam',time:1.6,act:()=>GR.handOut()},{who:'JAMIE',text:'“Office first.”',by:'jamie',time:1.2}],
    {then:()=>{objective('Look around the camp.','The office. The lodge. The cabins.');}});}
@@ -586,10 +588,18 @@ export function createChapter5(o,k,ch2,ch3,ch4){
    {then:fireEnd});}
  function sitFire(){const S0=SEATS[0],q=W5(...S0.seat);C.flags.fireStood=false;pose({x:q.x,z:q.z},{y:q.y+1.1,yaw:S0.face,pitch:-.16});}
  // (the water bottles packed this morning: Sam's out of his bag, a drink, passed across to Jamie)
+ // (Sam gets up, takes a bottle out of his bag, walks round inside the logs, past the empty one, and puts it in Jamie's
+ // hand where he sits; then back to his log. Jamie sets it down beside him after a drink. Nothing crosses the fire.)
  function fireWater(){if(C.flags.fireWater||!G5.packedOf('water'))return;C.flags.fireWater=true;let B=null;
+  const J=SEATS[2],Sk=SEATS[4],deg=q=>Math.atan2(q.seat[0]-FIRE[0],q.seat[1]-FIRE[1])*180/Math.PI,ring=(a,r)=>{const t=a*Math.PI/180,q=W5(FIRE[0]+Math.sin(t)*r,FIRE[1]+Math.cos(t)*r);return [q.x,q.z];};
+  const a0=deg(Sk),d=((deg(J)-a0+540)%360)-180,there=[[1/3,3.25],[2/3,3.25],[.94,3.4]].map(([f,r])=>ring(a0+d*f,r)),back=[...there.slice(0,2).reverse(),(()=>{const q=W5(...Sk.front);return [q.x,q.z];})()];
+  const jHand=()=>{const v=new THREE.Vector3(),q=new THREE.Quaternion();handFrame(jamie.person,'r',v,q);return v;};
+  stand(sam,null);
   comp.run(sam,[...G5.bagSteps(sam,{take:()=>G5.packedOf('water'),onTake:it=>{B=it;if(it)it.given=true;}}),phys.reach(sam,{at:()=>{const q=sam.person.group.position.clone();return q.add(new THREE.Vector3(Math.sin(sam.pa)*.08,1.48,-Math.cos(sam.pa)*.08));},dur:[.5,1.1,.5],carry:true}),
-   G5.holdOut(sam,()=>jamie.person.group.position.clone().add(new THREE.Vector3(0,.9,0)),{until:()=>!B||B.holder===jamie.person})],{then:()=>{const Sk=SEATS[4];stand(sam,Sk.front,{face:Sk.face,sit:Sk.seat,keep:true,look:()=>W5(...FIRE)});}});
-  later(5.5,()=>{if(!B)return;comp.run(jamie,[phys.reach(jamie,{at:()=>B.obj.position.clone(),dur:[.6,.15,.4],carry:true,onContact:()=>phys.handOff(B,jamie.person,'r')})],{then:()=>{const Sk=SEATS[2];stand(jamie,Sk.front,{face:Sk.face,sit:Sk.seat,keep:true,look:()=>W5(...FIRE)});}});});}
+   comp.steps.walkTo(sam,there,{speed:1.05}),phys.reach(sam,{at:jHand,dur:[.7,.35,.5],carry:false,lean:.12,onContact:()=>{if(B){phys.handOff(B,jamie.person,'r');mark('Sam gives Jamie the water');}}}),
+   comp.steps.walkTo(sam,back,{speed:1.05})],{then:()=>stand(sam,Sk.front,{face:Sk.face,sit:Sk.seat,keep:true,look:()=>W5(...FIRE)})});
+  // (a drink, and the bottle down on the ground by his log)
+  later(30,()=>{if(B?.holder===jamie.person){const q=W5(...J.seat),f=W5(...J.front),side=new THREE.Vector3(f.z-q.z,0,-(f.x-q.x)).normalize().multiplyScalar(.75);const at=new THREE.Vector3(q.x,0,q.z).add(side).addScaledVector(new THREE.Vector3(f.x-q.x,0,f.z-q.z),.35);at.y=gy(at.x,at.z)+.003;B.place(at,new THREE.Euler(0,1.1,0));}});}
  function fireEnd(){if(C.flags.fireDone)return;C.flags.fireDone=true;C.hMin=Math.max(C.hMin||0,HOUR.golden);if(PN?.dyn?.fishCar)PN.dyn.fishCar.g.visible=false;if(posed())unpose();
   for(const c of [jamie,sam])stand(c,null);follow(true);go('e5-dusk');objective('Check the last cabin.','Owl, past Bluejay and Heron, at the west end.');T?.set?.(.1,{rise:.02,why:'the time'});mark('up from the fire');}
  // The picture none of them took: the three of you at the fire, from the trees behind, at 6:53 (rendered now, while it is
@@ -661,7 +671,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  // went (the office first, then the map board: they stop where you stood), and one of them does what your flashlight
  // does. Then they go on to the fire and sit where you sat. Nothing a search party would do.
  const MAPFRONT=[SPOT.mapBoard[0]-.8,SPOT.mapBoard[1]-2.2];
- function lightsPath(){const w=(e,n,o={})=>{const q=W5(e,n);return {x:q.x,y:q.y,z:q.z,...o};},common=[w(...SPOT.campGate),w(-171,519),w(...OFFICE_FRONT,{wait:3}),w(-186,536),w(...MAPFRONT,{wait:1e4})];
+ function lightsPath(){const w=(e,n,o={})=>{const q=W5(e,n);return {x:q.x,y:q.y,z:q.z,...o};},common=[w(...SPOT.campGate),w(-171,519),w(...OFFICE_FRONT,{wait:3}),w(-183,525),w(-188.5,530.5),w(...MAPFRONT,{wait:1e4})];// (round the office's west corner, not through it)
   return [0,2,4].map(k=>{const S0=SEATS[k];return [...common,w(-201,529),w(...S0.front),w(...S0.seat,{wait:1e4,sit:true})];});}
  function threeLights(){if(C.lt.started)return;const X=C.lt;X.started=true;X.at=C.t;X.copies=0;X.flips=[];X.lastOn=!!o.foot.on;X.jLast=!!S.flashOn;mark('three lights at the gate');camp.carry(3,lightsPath(),{speed:1.25});T?.set?.(.45,{rise:.05,why:'three lights'});
   for(const c of [jamie,sam])stand(c,null);follow(true);objective('');
@@ -682,12 +692,15 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   const on=!!o.foot.on;if(on!==X.lastOn){X.lastOn=on;if(X.board&&!X.went)X.flips.push({t:C.t+.7,on});}
   const jon=!!S.flashOn;if(jon!==X.jLast){X.jLast=jon;if(X.board&&!X.went)X.flips.push({t:C.t+.7,on:jon,j:true});}
   while(X.flips.length&&X.flips[0].t<=C.t){const f=X.flips.shift();camp.switchLight(0,f.on);sound('click',pos(0)||camera.position,{gain:.08});if(!f.on)X.copies++;mark('the light copies: '+(f.on?'on':'off'));}
-  if(X.ask&&!X.jamieFlash&&C.t-X.ask>12&&X.copies===0){X.jamieFlash=true;say([{who:'JAMIE',text:'“Like this.”',by:'jamie',time:1}]);for(const [d,v] of [[.6,false],[1.1,true],[1.6,false],[2.1,true]])later(d,()=>{S.flashOn=v;});}
-  if(X.copies>=1&&!X.react1){X.react1=true;later(1,()=>say([{who:'JAMIE',text:'“…They flashed back.”',by:'jamie',time:1.6,face:'hopeful'},{who:'SAM',text:'“No. Do it again.”',by:'sam',time:1.4,face:'afraid'}]));}
+  const blink=()=>{for(const [d,v] of [[.6,false],[1.1,true]])later(d,()=>{S.flashOn=v;});};// (Jamie's light: one off and on)
+  if(X.ask&&!X.jamieFlash&&C.t-X.ask>12&&X.copies===0){X.jamieFlash=true;say([{who:'JAMIE',text:'“Like this.”',by:'jamie',time:1}]);blink();}
+  if(X.copies>=1&&!X.react1){X.react1=true;X.react1At=C.t;later(1,()=>say([{who:'JAMIE',text:'“…They flashed back.”',by:'jamie',time:1.6,face:'hopeful'},{who:'SAM',text:'“No. Do it again.”',by:'sam',time:1.4,face:'afraid'}]));}
+  // (asked to do it again, nobody does: Jamie does, once)
+  if(X.react1&&!X.react2&&!X.jamieAgain&&C.t-X.react1At>13){X.jamieAgain=true;say([{who:'JAMIE',text:'“Okay. Again.”',by:'jamie',time:1.1,face:'worried'}]);blink();}
   if(X.copies>=2&&!X.react2){X.react2=true;X.went=C.t;later(1.4,()=>say([{who:'SAM',text:'“It’s doing what you do. Exactly what you do.”',by:'sam',time:2.4,face:'terrified'},{who:'JAMIE',text:'“That’s not a search party.”',by:'jamie',time:1.6,face:'afraid'}],{then:()=>{camp.switchLight(0,true);camp.hold(false);}}));}
   if(X.board&&!X.went&&C.t-X.boardAt>45){X.went=C.t;camp.switchLight(0,true);camp.hold(false);}
   // at the fire they sit, where you sat
-  if(X.went&&!X.sat&&camp.CARRY.every(c=>!c.g.visible||c.sitting)){X.sat=true;X.satAt=C.t;mark('the lights sit at the fire');
+  if(X.went&&!X.sat&&!X.out&&camp.CARRY.some(c=>c.g.visible)&&camp.CARRY.every(c=>!c.g.visible||c.sitting)){X.sat=true;X.satAt=C.t;mark('the lights sit at the fire');
    say([{wait:1},{who:'SAM',text:'“…That’s where we sat.”',by:'sam',time:1.8,face:'terrified'},{who:'YOU',text:'“That’s us. They’re doing what we did.”',time:2.2}]);later(4,crtStart);}
   // they get up, turn their lights on you, and go out, all three at once
   if(X.sat&&!X.turned&&(C.crt?.stage==='gone'||C.t-X.satAt>16)){X.turned=true;X.turnAt=C.t;for(let i=0;i<3;i++){camp.sitDown(i,false);camp.aim(i,camera.position);}mark('the lights turn on you');
@@ -938,7 +951,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   g.restore();const v=g.createRadialGradient(w/2,h/2,h*.2,w/2,h/2,h*.75);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.45)');g.fillStyle=v;g.fillRect(0,0,w,h);}
  function key(code,repeat){if(!owns(S.phase))return false;
   // the inventory (I): not over a view, a fade or the black; while it is open, every key is its
-  if((code==='KeyI'||code==='Tab')&&!GR.inv.isOpen&&(C.view||C.fadeOut>=0||S.phase==='c5-black'||C.lapse))return true;if(GR.inv.key(code,repeat))return true;
+  if((code==='KeyI'||code==='Tab')&&!GR.inv.isOpen&&(C.view||C.fadeOut>=0||C.endT>=0||S.phase==='c5-black'||C.lapse))return true;if(GR.inv.key(code,repeat))return true;
   // T: the flashlight (out of your pocket and on; on and off in your hand), whenever you have it, day or night
   if(code==='KeyT'&&!C.view){if(!repeat&&C.inv.flashlight)GR.toggle();return !!C.inv.flashlight;}
   if(PK.key(code,repeat))return true;
@@ -986,7 +999,10 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(t>95&&!C.flags.dockAhead){C.flags.dockAhead=true;const yaw=DOCK.a,fx=Math.sin(yaw),fz=-Math.cos(yaw);for(const c of [jamie,sam]){const q=DOCK_SEAT(SEAT_X[c.key]),front={x:q.x-fx*.55,z:q.z-fz*.55};const pth=nav.walkPath({x:c.px,z:c.pz},front);stand(c,null);
     comp.run(c,[comp.steps.walkTo(c,pth.length?pth:[[front.x,front.z]],{speed:1.1}),comp.steps.turnTo(c,yaw,.5),phys.sit(c,{seat:()=>({...DOCK_SEAT(SEAT_X[c.key]),a:yaw}),legs:'hang',hands:'deck',until:()=>C.flags.dock,look:()=>camera.position})]);}}
   if(C.flags.dockAhead&&jamie.seated&&near(DOCK_END,5)&&me().walking&&!C.flags.dock&&!busy()&&t>100){/* (close enough: you sit down with them) */}
-  if(t>260&&!C.flags.dockSkip&&!busy()){C.flags.dockSkip=true;C.flags.dock=true;C.flags.dockUp=true;say([{who:'SAM',text:'“Okay. Let’s go find where his picture was.”',by:'sam'}],{then:()=>{for(const c of [jamie,sam]){comp.run(c,[phys.rise(c,{legs:'hang',h:0,back:-.5}),comp.steps.walkTo(c,[[W5(...DOCK_F.to(0,DOCK.len-2.4)).x,W5(...DOCK_F.to(0,DOCK.len-2.4)).z]],{speed:1})],{then:()=>{stand(c,null);follow(true);}});}signStart();}});}}
+  // (you never came: they get up off the end as Sam says it, from the sit they are in, a step back onto the boards, and walk in)
+  if(t>260&&!C.flags.dockSkip&&!busy()){C.flags.dockSkip=true;C.flags.dock=true;C.flags.dockUp=true;
+   for(const c of [jamie,sam]){const sitting=c.seated||(c.sitW||0)>.4,back=W5(...DOCK_F.to(SEAT_X[c.key]*.7,DOCK.len-2.4-(c===sam?.6:0)));comp.run(c,[...(sitting?[phys.rise(c,{back:-.5})]:[]),comp.steps.walkTo(c,[[back.x,back.z]],{speed:1})],{then:()=>{stand(c,null);follow(true);}});}
+   say([{who:'SAM',text:'“Okay. Let’s go find where his picture was.”',by:'sam'}],{then:()=>signStart()});}}
  // the mood and what is worth a look, by where the chapter is (set when it changes)
  function mind(){const ph=S.phase,key=ph+(C.flags.hurry?'!':'');if(C.mindKey===key)return;C.mindKey=key;let mood='relaxed',pois=[],goal=null;
   if(/^d5-(park|dock)$/.test(ph))pois=PLACES.PARK;
@@ -1004,7 +1020,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase;mind();
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
   clock(dt);
-  updatePose(dt);match(dt);rackBikes();seatSnap();guard(dt);standAll();photo.update(dt);updateView(dt);PK.update(dt);GT.update(dt);GR.update(dt);if(GR.inv.isOpen&&(C.view||posed()||C.fadeOut>=0))GR.inv.close();wade(dt);updateRings(dt);updateCrt(dt);camp.update(dt,{groundY:gy});updateAmb(dt);
+  updatePose(dt);match(dt);rackBikes();seatSnap();guard(dt);standAll();photo.update(dt);updateView(dt);PK.update(dt);GT.update(dt);GR.update(dt);if(GR.inv.isOpen&&(C.view||posed()||C.fadeOut>=0||C.endT>=0))GR.inv.close();wade(dt);updateRings(dt);updateCrt(dt);camp.update(dt,{groundY:gy});updateAmb(dt);
   C.dark=damp(C.dark,C.darkTo||0,(C.darkTo||0)>C.dark?1.3:.7,dt);
   if(C.fadeIn>=0){C.fadeIn+=dt;o.fade(1-smooth(C.fadeIn/1.6));if(C.fadeIn>=1.6){o.fade(0);C.fadeIn=-1;}}
   if(C.fadeOut>=0){C.fadeOut+=dt;o.fade(smooth(C.fadeOut/.8));if(C.fadeOut>=1){C.fadeOut=-1;const f=C.after;C.after=null;f?.();}}
@@ -1102,7 +1118,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   ff('pantry');C.clues.add('pantry');DOORS.lodge.open=1;
   if(section==='c5-cabins'){const b=BLD.bluejay,[e,n]=b.F.to(0,b.d/2+b.porch+2.4);campAt(e,n,ha(e,n,...b.c),{h:HOUR.camp+.3});campGo();C.trail=defaultTrail(7);return;}
   ff('dying','dead','batteries');C.inv.batteries=true;G5.given('batteries');GR.set({have:true,hand:true,on:true});C.clues.add('cabin');DOORS.bluejay.open=1;C.seen.add('bluejay');C.trail=defaultTrail(9);
-  if(section==='c5-campfire'){const L=SEATS[0];campAt(L.seat[0]-Math.sin(L.face)*1.8,L.seat[1]-Math.cos(L.face)*1.8,L.face,{h:HOUR.fire-.02});go('d5-camp');ff('fireOffer');objective('Sit down by the campfire.','The circle of logs, down by the water.');return;}
+  if(section==='c5-campfire'){const L=SEATS[0];campAt(L.seat[0]-Math.sin(L.face)*1.8,L.seat[1]-Math.cos(L.face)*1.8,L.face,{h:HOUR.fire-.02});go('d5-camp');ff('fireOffer');C.fireOfferAt=C.t;objective('Sit down by the campfire.','The circle of logs, down by the water.');return;}
   ff('fireOffer','fire','fireWater','fireDone');G5.given('water');C.fireShot=null;if(PN?.dyn?.fishCar)PN.dyn.fishCar.g.visible=false;
   // ---- dusk ----
   if(section==='c5-golden-hour'){const L=SEATS[0];campAt(L.seat[0]-Math.sin(L.face)*1.2,L.seat[1]-Math.cos(L.face)*1.2,ha(L.seat[0],L.seat[1],-228,591),{h:HOUR.golden+.02});C.hMin=HOUR.golden;fireShot({render:false,h:HOUR.fire+.14});go('e5-dusk');checkpoint('c5-campfire');objective('Check the last cabin.','Owl, past Bluejay and Heron, at the west end.');return;}

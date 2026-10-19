@@ -49,6 +49,7 @@ export function createCompanionBrain({nav,comp}){
  const mood=()=>MOOD[scene.mood]||MOOD.relaxed;
  // ---- the player, tracked ------------------------------------------------------------------------------------------------
  function track(dt,pl){if(!PL.init||hyp(pl.x-PL.x,pl.z-PL.z)>6){Object.assign(PL,{x:pl.x,z:pl.z,vx:0,vz:0,v:0,dir:pl.a,still:0,init:true});PL.trail.length=0;}
+  if(hyp(pl.x-PL.x,pl.z-PL.z)/Math.max(dt,1e-3)>12){PL.x=pl.x;PL.z=pl.z;return;}// (a step off the bike in one frame is not a heading)
   const vx=(pl.x-PL.x)/Math.max(dt,1e-3),vz=(pl.z-PL.z)/Math.max(dt,1e-3);PL.vx=damp(PL.vx,vx,4,dt);PL.vz=damp(PL.vz,vz,4,dt);PL.x=pl.x;PL.z=pl.z;PL.v=hyp(PL.vx,PL.vz);
   if(PL.v>.45)PL.dir=Math.atan2(PL.vx,-PL.vz);PL.still=PL.v<.3?PL.still+dt:0;PL.t+=dt;
   const L=PL.trail[PL.trail.length-1];if(!L||hyp(L.x-pl.x,L.z-pl.z)>.5){PL.trail.push({x:pl.x,z:pl.z});if(PL.trail.length>120)PL.trail.shift();}}
@@ -79,10 +80,13 @@ export function createCompanionBrain({nav,comp}){
  function think(c,pl){const B=state(c),m=mood(),d=hyp(PL.x-c.px,PL.z-c.pz),o=other(c),dO=o&&o.mode==='foot'?hyp(o.px-c.px,o.pz-c.pz):9;
   const closing=((PL.x-c.px)*-PL.vx+(PL.z-c.pz)*-PL.vz)/(d||1);// (how fast you are coming toward him)
   const wantFollow=d>m.far||(d>m.near+.8&&PL.v>.5&&closing<.2&&PL.still<.1);
+  if(B.goal==='inspect'&&!m.poi){B.poi=null;setGoal(c,'idle');}
   if(B.goal==='idle'&&!B.spot)B.spot={x:c.px,z:c.pz,px:PL.x,pz:PL.z};
   if(B.goal==='idle'||B.goal==='inspect'||B.goal==='aside'){
    // you are going: he notices after his own moment (and finishes a look first, a little)
-   if(wantFollow&&!(B.goal==='inspect'&&B.poi&&B.poi.t>0&&B.poi.t<Math.min(1.2,B.poi.time)&&d<m.far+3)){if(B.react<0)B.react=range(B.K.react)*m.react*(B.goal==='inspect'?1.4:1);}
+   // (looking at something near you while you stand there is not being left behind; and a look is finished, a little)
+   const looking=B.goal==='inspect'&&B.poi&&PL.still>.8&&hyp(B.poi.x-PL.x,B.poi.z-PL.z)<m.far+2.5,finishing=B.goal==='inspect'&&B.poi&&B.poi.t>0&&B.poi.t<Math.min(1.2,B.poi.time)&&d<m.far+3;
+   if(wantFollow&&!(looking||finishing)){if(B.react<0)B.react=range(B.K.react)*m.react*(B.goal==='inspect'?1.4:1);}
    else if(!wantFollow)B.react=-1;
    if(B.react===0){B.react=-1;B.poi=null;setGoal(c,'follow');return;}
    if(B.goal==='idle'){
@@ -91,7 +95,7 @@ export function createCompanionBrain({nav,comp}){
     // the two of them on top of each other: the one who got there second moves
     if(o&&o.mode==='foot'&&dO<.85&&o.B?.goal==='idle'&&B.gt<o.B.gt){B.spot=chooseSpot(c);setGoal(c,'aside',{aside:{x:B.spot.x,z:B.spot.z}});return;}
     // something nearby to look at
-    if(m.poi&&B.gt>B.dwell&&PL.still>1.5&&!scene.seat){const q=pickPoi(c);if(q){setGoal(c,'inspect',{poi:{...q,t:0,at:null}});LOG.inspects++;return;}B.dwell=B.gt+range(B.K.curious);}
+    if(m.poi&&B.gt>B.dwell&&PL.still>1.5&&!scene.seat){const q=pickPoi(c);if(q){setGoal(c,'inspect',{poi:{...q,t:0,at:null,time:Array.isArray(q.time)?range(q.time):(q.time||range([4,7]))}});LOG.inspects++;return;}B.dwell=B.gt+range(B.K.curious);}
     // where he stands has stopped being a good place (you moved off a little, without going)
     if(B.spot&&(hyp(B.spot.px-PL.x,B.spot.pz-PL.z)>2.2||d>m.near+.9)&&PL.still>.7){const s=chooseSpot(c);if(hyp(s.x-c.px,s.z-c.pz)>.6){B.spot=s;setGoal(c,'aside',{aside:{x:s.x,z:s.z}});}else B.spot=s;}}
    return;}
@@ -102,13 +106,13 @@ export function createCompanionBrain({nav,comp}){
    if(closing>.5&&d<m.far+2){setGoal(c,'wait');return;}
    // Jamie goes on ahead now and then when it is clear where you are all going
    if(B.goal==='follow'&&scene.lead&&scene.goal&&B.K.lead>0&&PL.v>.9&&B.gt>2.5&&rnd()<B.K.lead*.05){const g=scene.goal,gd=hyp(g.x-PL.x,g.z-PL.z),ga=headingTo(PL.x,PL.z,g.x,g.z);
-    if(gd>12&&Math.abs(wrap(ga-PL.dir))<.6){setGoal(c,'lead',{lead:{until:B.gt+range([6,12])}});LOG.leads++;return;}}
+    if(gd>12&&Math.abs(wrap(ga-PL.dir))<.6){setGoal(c,'lead',{lead:{until:range([6,12])}});LOG.leads++;return;}}
    if(B.goal==='lead'&&(B.gt>(B.lead?.until||8)||!scene.goal||PL.still>.4))setGoal(c,'follow');
    return;}
   if(B.goal==='wait'){if(d<m.near&&PL.still>.4){B.spot=chooseSpot(c);setGoal(c,hyp(B.spot.x-c.px,B.spot.z-c.pz)>.5?'aside':'idle',{aside:{x:B.spot.x,z:B.spot.z}});return;}
    if(closing<.1&&d>m.near+.5||d>m.far+1.5){if(B.gt>.4)setGoal(c,'follow');}return;}}
  // something near you both, of a kind he likes, not looked at lately
- function pickPoi(c){const B=state(c);let best=null,bs=0;for(const q of scene.pois){if(q.who&&q.who!==c.key)continue;if((B.cool[q.id]||-99)>PL.t-45)continue;if(hyp(q.x-PL.x,q.z-PL.z)>(q.reach||10))continue;const dC=hyp(q.x-c.px,q.z-c.pz);if(dC>13)continue;
+ function pickPoi(c){const B=state(c);let best=null,bs=0;for(const q of scene.pois){if(q.who&&q.who!==c.key)continue;if((B.cool[q.id]||-99)>PL.t-45)continue;if(hyp(q.x-PL.x,q.z-PL.z)>Math.min(q.reach||10,mood().far+2))continue;/* (near enough to you that looking at it is still being with you) */const dC=hyp(q.x-c.px,q.z-c.pz);if(dC>13)continue;
    const o=other(c);if(o?.B?.poi?.id===q.id)continue;const s=(B.K.likes[q.kind]||.5)*(1.2-dC/16)*(.6+rnd()*.8);if(s>bs){bs=s;best=q;}}
   if(best)B.cool[best.id]=PL.t;return best;}
  // ---- moving -------------------------------------------------------------------------------------------------------------
@@ -181,7 +185,10 @@ export function createCompanionBrain({nav,comp}){
   B.gW=Math.min(1,B.gW+dt/.55);B.gPrevW=Math.max(0,(B.gPrevW||0)-dt/.45);
   const t=ctx.clock+c.R.phase;if(B.gPrev&&B.gPrevW>0&&G[B.gPrev])G[B.gPrev](c.pose,smooth(B.gPrevW)*standing,t);if(B.gName&&G[B.gName])G[B.gName](c.pose,smooth(B.gW)*(B.force?1:standing),t);}
  // ---- every frame, on foot ------------------------------------------------------------------------------------------------
- function walk(c,dt,ctx){const B=state(c),m=mood(),pl=ctx.player;if(!pl.walking&&!pl.riding){idle(c,dt,ctx);return;}
+ function walk(c,dt,ctx){const B=state(c),m=mood(),pl=ctx.player;
+  // (back from a scene the chapter ran, or a while away: what he was about to do before it is forgotten, not resumed)
+  if(B.lastWalk!=null&&ctx.clock-B.lastWalk>.5){B.poi=null;B.react=-1;B.spot=null;B.aside=null;setGoal(c,hyp(PL.x-c.px,PL.z-c.pz)>m.far?'follow':'idle',{dwell:range(B.K.curious)});}B.lastWalk=ctx.clock;
+  if(!pl.walking&&!pl.riding){idle(c,dt,ctx);return;}
   B.think-=dt;if(B.think<=0){B.think=.25;think(c,pl);}
   if(B.react>0)B.react=Math.max(0,B.react-dt);
   B.gt+=dt;
@@ -191,15 +198,17 @@ export function createCompanionBrain({nav,comp}){
   const g=B.goal;
   if(g==='follow'||g==='lead'){const tgt=followTarget(c,g),d=hyp(tgt.x-c.px,tgt.z-c.pz),dP=hyp(PL.x-c.px,PL.z-c.pz);
    // pace by how far behind he is (with a little memory, so it does not flicker between walking and running)
-   const K=B.K,want=dP>12||d>9?K.run:dP>7.5||d>5.5?K.jog:d>2.4||PL.v>1.6?K.brisk:K.walk;B.pace=B.pace&&Math.abs(B.pace-want)<.7?B.pace:want;
+   const K=B.K,want=dP>12||d>9?K.run:dP>7.5||d>5.5?K.jog:d>2.4||PL.v>1.6?K.brisk:K.walk;if(!B.pace||want>B.pace+.9)B.pace=want;else if(want!==B.pace){B.paceT=(B.paceT||0)+dt;if(B.paceT>.7){B.pace=want;B.paceT=0;}}else B.paceT=0;// (a new pace once it has been wanted a moment: no flicker, but no sticking either)
    const fast=scene.mood==='escape'||scene.mood==='danger'?1.08:1;move(c,dt,ctx,tgt.x,tgt.z,B.pace*fast,{arrive:.4});return;}
   if(g==='aside'){const a=B.aside;if(!a){setGoal(c,'idle');idle(c,dt,ctx);return;}const d=move(c,dt,ctx,a.x,a.z,B.K.walk,{arrive:.22});if(d<.25&&B.v<.08){B.spot={x:c.px,z:c.pz,px:PL.x,pz:PL.z};setGoal(c,'idle',{dwell:range(B.K.curious)});}
    else if(B.gt>6){B.spot={x:c.px,z:c.pz,px:PL.x,pz:PL.z};setGoal(c,'idle');}return;}
   if(g==='inspect'){const q=B.poi;if(!q){setGoal(c,'idle');idle(c,dt,ctx);return;}
-   if(!q.at){const a0=headingTo(PL.x,PL.z,q.x,q.z),st=q.stand??.8;for(const k of [0,.7,-.7,1.4,-1.4,Math.PI]){const a=a0+k,x=q.x-Math.sin(a)*st,z=q.z+Math.cos(a)*st;if(ok(x,z,.3)){q.at={x,z};break;}}if(!q.at){setGoal(c,'idle');return;}}
+   // (where to stand to look: clear of the other one and of you; if he is standing there by the time I get there, elsewhere)
+   const o=other(c),free=(x,z)=>!(o&&o.mode==='foot'&&hyp(o.px-x,o.pz-z)<1)&&hyp(PL.x-x,PL.z-z)>1;if(q.at&&q.t===0&&!free(q.at.x,q.at.z))q.at=null;
+   if(!q.at){const a0=headingTo(PL.x,PL.z,q.x,q.z),st=q.stand??.8;for(const k of [0,.7,-.7,1.4,-1.4,Math.PI]){const a=a0+k,x=q.x-Math.sin(a)*st,z=q.z+Math.cos(a)*st;if(ok(x,z,.3)&&free(x,z)){q.at={x,z};break;}}if(!q.at){B.poi=null;setGoal(c,'idle');return;}}
    if(q.t===0){const d=move(c,dt,ctx,q.at.x,q.at.z,B.K.walk*.92,{arrive:.25,look:{x:q.x,y:q.y,z:q.z}});if(d<.3&&B.v<.1)q.t=1e-3;if(B.gt>14)setGoal(c,'idle');return;}
    q.t+=dt;B.v=damp(B.v,0,8,dt);c.pa+=clamp(wrap(headingTo(c.px,c.pz,q.x,q.z)-c.pa),-2.5*dt,2.5*dt);pose(c,dt,ctx,{x:q.x,y:q.y??0,z:q.z});
-   if(q.t>(q.time||range([4,7]))){q.time=q.time||1;B.poi=null;B.spot=null;setGoal(c,'idle',{dwell:range(B.K.curious)*1.3});
+   if(q.t>q.time){B.poi=null;B.spot=null;setGoal(c,'idle',{dwell:range(B.K.curious)*1.3});
     // back near you, if he wandered off a way to look
     if(hyp(PL.x-c.px,PL.z-c.pz)>m.near+.6){B.spot=chooseSpot(c);setGoal(c,'aside',{aside:{x:B.spot.x,z:B.spot.z}});}}return;}
   if(g==='wait'){B.v=damp(B.v,0,6,dt);faceToward(c,dt,PL.x,PL.z,.4);pose(c,dt,ctx,null);return;}

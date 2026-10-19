@@ -3,7 +3,8 @@
 // Alex's shirt off its nail into Sam's bag; the inventory (I).
 export default async function(L,{cap,step,press,release,tap,face}){
  const C5=L.chapter5,cam=L.camera,J=L.chapter.companions.list.jamie,Sm=L.chapter.companions.list.sam,GR=C5.GR,GT=C5.GT,act=id=>(L.chapter.act?L.chapter.act(id):C5.act(id));
- const lookAt=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));};
+ // (the view turns on the next step: one step taken, then aimed again, so the frame shows where it was aimed)
+ const aim=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));},lookAt=v=>{aim(v);step(1/30);aim(v);step(1/30);};
  const walkTo=(q,max=12)=>{for(let t=0;t<max;t+=1/30){const w=L.state.walk,dx=q.x-w.x,dz=q.z-w.z;if(Math.hypot(dx,dz)<.35)break;face(Math.atan2(dx,-dz),0);press('KeyW');step(1/30);}release('KeyW');};
  const head=c=>({x:c.px,y:c.person.group.position.y+1.15,z:c.pz}),until=(f,max=20,dt=.1)=>{for(let t=0;t<max&&!f();t+=dt)step(dt);};
  const out={};

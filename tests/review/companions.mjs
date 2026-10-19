@@ -2,7 +2,8 @@
 // looking at them), then a sudden sprint (looking back over your shoulder at them as they react), and a sudden stop.
 export default async function(L,{cap,step,press,release,tap,face}){
  const C5=L.chapter5,cam=L.camera,J=L.chapter.companions.list.jamie,S=L.chapter.companions.list.sam,W=(e,n)=>C5.W5(e,n);
- const lookAt=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));};
+ // (the view turns on the next step: one step taken, then aimed again, so the frame shows where it was aimed)
+ const aim=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));},lookAt=v=>{aim(v);step(1/30);aim(v);step(1/30);};
  const walkTo=(q,max=12,run=false)=>{for(let t=0;t<max;t+=1/30){const w=L.state.walk,dx=q.x-w.x,dz=q.z-w.z;if(Math.hypot(dx,dz)<.5)break;face(Math.atan2(dx,-dz),0);press('KeyW');if(run)press('ShiftLeft');step(1/30);}release('KeyW');release('ShiftLeft');};
  const mid=()=>({x:(J.px+S.px)/2,y:J.person.group.position.y+1.1,z:(J.pz+S.pz)/2});
  L.jump('c5-camp');step(.5);walkTo(W(-182,523),12);step(4);

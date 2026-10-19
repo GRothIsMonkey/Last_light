@@ -91,8 +91,8 @@ export function createPhysical({scene,comp=null}){
    sitPose(seatP,{seat:h,legs,t:ctx.clock+c.R.phase,hands,look:lk});blendPose(c.pose,base,seatP,u);c.sitW=u;c.seated=u>.98;
    c.py=S2.y;c.person.group.position.set(c.px,S2.y,c.pz);c.person.group.rotation.set(0,-c.pa,0);applyPose(c.person,c.pose);c.posed=true;c.holdPlace=true;
    if(e>1&&until()){c.seated=false;return true;}return false;};}
- function rise(c,{back=.45,legs='bent',h=.43}={}){let e=0;const seatP=newPose(),st=newPose();let from=null;return (dt,ctx)=>{e+=dt;if(!from){from={x:c.px,z:c.pz,y:c.py};}
-  const u=smooth(e/.8);sitPose(seatP,{seat:h,legs,t:ctx.clock});standPose(st,ctx.clock+c.R.phase);blendPose(c.pose,seatP,st,u);
+ function rise(c,{back=.45,legs='bent',h=.43}={}){let e=0;const seatP=newPose(),st=newPose();let from=null;return (dt,ctx)=>{e+=dt;if(!from){from={x:c.px,z:c.pz,y:c.py};copyPose(seatP,c.pose);}// (from the sit he is in, hands and head as they are)
+  const u=smooth(e/.8);standPose(st,ctx.clock+c.R.phase);blendPose(c.pose,seatP,st,u);void legs;void h;
   // (up and a step forward off it)
   const fx=Math.sin(c.pa),fz=-Math.cos(c.pa);c.px=from.x+fx*back*u;c.pz=from.z+fz*back*u;c.py=null;c.sitW=1-u;c.seated=false;
   c.person.group.position.set(c.px,from.y,c.pz);applyPose(c.person,c.pose);c.posed=true;c.holdPlace=e<.8;return e>=.8;};}

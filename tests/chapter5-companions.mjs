@@ -18,7 +18,7 @@ export function runCompanionTests(T,X){
     if(R.t>settle){if(v>2.3){R.fast[k]+=dt;}else{if(R.fast[k]>.25&&R.fast[k]<1.5)R.sprints[k]++;R.fast[k]=0;}
      if(v>.35){R.mv[k]+=dt;}else{if(R.mv[k]>.5)R.moves[k]++;R.mv[k]=0;}}
     const dy=Math.hypot(x-p.x,z-p.z);R.dist[k].push(dy);if(c.mode==='foot'&&R.t>settle)R.minYou=Math.min(R.minYou,dy);}
-   if(J.mode==='foot'&&S.mode==='foot'&&R.t>settle)R.minGap=Math.min(R.minGap,Math.hypot(J.px-S.px,J.pz-S.pz));};
+   if(J.mode==='foot'&&S.mode==='foot'&&R.t>settle){const g=Math.hypot(J.px-S.px,J.pz-S.pz);if(g<R.minGap){R.minGap=g;R.minGapAt={t:+R.t.toFixed(1),jamie:brain.state(J).goal,sam:brain.state(S).goal,scripts:[!!J.script,!!S.script],J:[+J.px.toFixed(2),+J.pz.toFixed(2)],S:[+S.px.toFixed(2),+S.pz.toFixed(2)],poi:[brain.state(J).poi?.id,brain.state(S).poi?.id,brain.state(S).poi?.at,brain.state(S).poi?.t]};}}};
   R.flips=k=>{const G=R.goals[k];let n=0;for(let i=2;i<G.length;i++)if(G[i].g===G[i-2].g&&G[i].t-G[i-2].t<3)n++;return n;};
   R.median=k=>{const a=[...R.dist[k]].sort((x,y)=>x-y);return a[Math.floor(a.length/2)]||0;};
   return R;}
@@ -60,7 +60,7 @@ export function runCompanionTests(T,X){
  // ---- F: minutes in the camp, from building to building ----
  {h.jump('c5-camp');adv(.5);const R=sampler(),stops=[[-181,527],[-190,539],[-205,571],[-240,553],[-226,586],[-200,556]];
   for(const [e,n] of stops){walkPath(R,W5(e,n),{max:40,o:{settle:3}});run(R,9,{settle:3});}
-  const ins=brain.LOG.inspects;M.F={seconds:+R.t.toFixed(0),median:{jamie:+R.median('jamie').toFixed(1),sam:+R.median('sam').toFixed(1)},max:{jamie:+Math.max(...R.dist.jamie).toFixed(1),sam:+Math.max(...R.dist.sam).toFixed(1)},minGap:+R.minGap.toFixed(2),minYou:+R.minYou.toFixed(2),inspects:ins,goals:{jamie:new Set(R.goals.jamie.map(g=>g.g)).size,sam:new Set(R.goals.sam.map(g=>g.g)).size}};
+  const ins=brain.LOG.inspects;M.F={seconds:+R.t.toFixed(0),median:{jamie:+R.median('jamie').toFixed(1),sam:+R.median('sam').toFixed(1)},max:{jamie:+Math.max(...R.dist.jamie).toFixed(1),sam:+Math.max(...R.dist.sam).toFixed(1)},minGap:+R.minGap.toFixed(2),minGapAt:R.minGapAt,minYou:+R.minYou.toFixed(2),inspects:ins,goals:{jamie:new Set(R.goals.jamie.map(g=>g.g)).size,sam:new Set(R.goals.sam.map(g=>g.g)).size}};
   check(`Companions F: ${M.F.seconds} s round the camp: they keep near (median ${M.F.median.jamie} m and ${M.F.median.sam} m), look at things on their own, wait, never crowd you`,()=>{
    for(const k of ['jamie','sam']){assert.ok(R.median(k)>1.4&&R.median(k)<10,k+' median '+R.median(k));assert.ok(Math.max(...R.dist[k])<30,k+' max');}assert.ok(R.minYou>.55,'to you '+R.minYou);assert.ok(R.minGap>.5,'gap '+R.minGap);
    assert.ok(M.F.goals.jamie>=3||M.F.goals.sam>=3,'more than following: '+JSON.stringify(M.F.goals));});}

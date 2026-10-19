@@ -3,7 +3,8 @@
 export default async function(L,{cap,step,press,release,tap,face}){
  const C5=L.chapter5,cam=L.camera,J=L.chapter.companions.list.jamie,S=L.chapter.companions.list.sam;
  const sub=()=>document.getElementById('subtitle')?.textContent||'',until=(f,max=30,dt=.1)=>{for(let t=0;t<max&&!f();t+=dt)step(dt);};
- const lookAt=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));};
+ // (the view turns on the next step: one step taken, then aimed again, so the frame shows where it was aimed)
+ const aim=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));},lookAt=v=>{aim(v);step(1/30);aim(v);step(1/30);};
  const mid=()=>({x:(J.px+S.px)/2,y:J.person.group.position.y+1.1,z:(J.pz+S.pz)/2});
  L.jump('c5-aftermath');step(.6);for(let i=0;i<400&&!C5.C.flags.after;i++){const w=L.state.walk,r=C5.W5(-131,317);face(Math.atan2(r.x-w.x,-(r.z-w.z)),0);press('KeyW');step(1/30);}release('KeyW');
  step(1.5);lookAt(mid());await cap('a01-under-the-lamp');for(let i=0;i<6;i++){step(3);lookAt(mid());await cap('a0'+(i+2)+'-'+(sub().replace(/[^A-Za-z ]/g,'').trim().split(' ').slice(0,4).join('-').toLowerCase()||'quiet'));}

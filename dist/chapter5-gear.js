@@ -24,7 +24,7 @@ export function createGear(X){
  // ---- the first-person hands for these (drawn over the body by physical.js's arms) ----------------------------------------
  phys.ME.extra.push((p,{toLocal,dt})=>{const A=phys.ME.act;if(!A||A.kind!=='gear')return;A.e+=dt;const o=PI.rh;
   if(A.what==='out'){// down to the pocket, the light in the hand at .28, up to where it is held
-   if(A.e<.28)lerp3(p,o,POCKET,smooth(A.e/.28));else{if(!A.flip){A.flip=true;foot.owned=true;foot.on=A.on&&!X.flags().dead;if(foot.on)X.sound('click',camera.position,{gain:.45});}const u=smooth((A.e-.28)/.32),hold=[p[o],p[o+1],p[o+2]];for(let i=0;i<3;i++)p[o+i]=POCKET[i]+(hold[i]-POCKET[i])*u;}
+   if(A.e<.28)lerp3(p,o,POCKET,smooth(A.e/.28));else{if(!A.flip){A.flip=true;foot.owned=true;foot.on=A.on&&!(X.flags().dead&&!X.flags().batteries);if(foot.on)X.sound('click',camera.position,{gain:.45});}const u=smooth((A.e-.28)/.32),hold=[p[o],p[o+1],p[o+2]];for(let i=0;i<3;i++)p[o+i]=POCKET[i]+(hold[i]-POCKET[i])*u;}
    if(A.e>=.6)end(A);}
   else if(A.what==='in'){// down to the pocket with it, off and in at .3, the hand back
    if(A.e<.3)lerp3(p,o,POCKET,smooth(A.e/.3));else{if(!A.flip){A.flip=true;if(foot.on)X.sound('click',camera.position,{gain:.4});foot.on=false;foot.owned=false;}const u=smooth((A.e-.3)/.25),rest=[p[o],p[o+1],p[o+2]];for(let i=0;i<3;i++)p[o+i]=POCKET[i]+(rest[i]-POCKET[i])*u;}

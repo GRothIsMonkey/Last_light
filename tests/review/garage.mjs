@@ -1,7 +1,8 @@
 // Review frames: Sam's garage played through (packing, the camera, Jamie's sock, the map, the bikes).
 export default async function(L,{cap,step,press,release,tap,face}){globalThis.__onlySock=!!(window.__ONLY_SOCK);
  const C5=L.chapter5,G=C5.G5,GS=G.S,cam=L.camera;
- const lookAt=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));};
+ // (the view turns on the next step: one step taken, then aimed again, so the frame shows where it was aimed)
+ const aim=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));},lookAt=v=>{aim(v);step(1/30);aim(v);step(1/30);};
  const walkTo=(q,max=6)=>{for(let t=0;t<max;t+=1/30){const w=L.state.walk,dx=q.x-w.x,dz=q.z-w.z;if(Math.hypot(dx,dz)<.25)break;face(Math.atan2(dx,-dz),0);press('KeyW');step(1/30);}release('KeyW');};
  const J=L.chapter.companions.list.jamie,S=L.chapter.companions.list.sam,head=c=>{const g=c.person.group.position;return {x:g.x,y:g.y+1.3,z:g.z};};
  L.jump('chapter5-start');step(7.5);lookAt(G.TL(0,.2));await cap('g01-garage-sam-at-the-table');

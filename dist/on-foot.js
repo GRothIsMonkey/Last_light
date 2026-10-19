@@ -58,7 +58,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    applyPose(self,pose);
   },
   lamp(dt,walking){
-   torch.visible=walking&&F.owned&&!F.hideTorch;light.intensity=walking&&F.on?24:0;spill.intensity=0;// (the torch hidden while both hands hold Alex's camera)
+   torch.visible=walking&&F.owned&&!F.hideTorch;light.intensity=walking&&F.on&&!F.hideTorch?24:0;spill.intensity=0;// (the torch hidden, and its beam off, while both hands hold Alex's camera)
    // a camera's flash (chapter5-gear.js): the wide spill, from the eye, for the moment it lasts (one light, no new ones);
    // whether or not the flashlight is in your hand (during a picture it is not drawn)
    if(F.flash>0){camera.getWorldDirection(direction);spill.intensity=F.flash;spill.position.copy(camera.position);spill.target.position.copy(camera.position).addScaledVector(direction,6);}

@@ -1,7 +1,8 @@
 // Review frames: the dock, all three sat on its edge, legs over the water (and looking down at your own).
 export default async function(L,{cap,step,press,release,tap,face}){
  const C5=L.chapter5,cam=L.camera,J=L.chapter.companions.list.jamie,Sm=L.chapter.companions.list.sam;
- const lookAt=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));};
+ // (the view turns on the next step: one step taken, then aimed again, so the frame shows where it was aimed)
+ const aim=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));},lookAt=v=>{aim(v);step(1/30);aim(v);step(1/30);};
  const head=c=>({x:c.px,y:c.person.group.position.y+1.0,z:c.pz});
  L.jump('c5-dock-memory');step(1);lookAt(head(J));await cap('k01-jamie-and-sam-walk-out');
  L.chapter.act?.('c5-sit')??C5.act('c5-sit');for(let i=0;i<60&&!(J.seated&&Sm.seated);i++)step(.25);step(1.2);

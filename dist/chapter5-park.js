@@ -58,7 +58,7 @@ export function createPark(X){
   phys.playerReach({at:()=>P.obj.position.clone(),dur:[.55,.15,.45],onContact:()=>{if(P.state==='placed'){P.holdBy(X.self,'r');S.holding=P;phys.playerHold('r',P);X.sound('tap',P.obj.position,{gain:.2});}else P.claimed=null;},then:()=>X.lockWalk(false)});}
  // F held: the arm draws back (further and lower the longer), the body turns and dips; let go: it comes through low and fast
  function windStart(){if(!S.holding||S.wind||phys.playerBusy())return false;S.wind={t:0};phys.ME.act={kind:'throw',e:0,power:0,phase:'wind'};return true;}
- function windUpdate(dt){const A=phys.ME.act;if(!S.wind||!A||A.kind!=='throw')return;if(A.phase==='wind'){S.wind.t+=dt;A.power=clamp(S.wind.t/1.1,0,1);if(!X.held('KeyF'))release();}}
+ function windUpdate(dt){const A=phys.ME.act;if(!S.wind||!A||A.kind!=='throw')return;if(A.phase==='wind'){S.wind.t+=dt;A.power=clamp(S.wind.t/1.1,0,1);if(S.wind.auto?S.wind.t>=S.wind.auto:!X.held('KeyF'))release();}}
  function release(){const A=phys.ME.act;if(!A||A.phase!=='wind')return;A.phase='release';A.e=0;A.released=false;}
  // (called by the arm, at the moment the hand passes the front)
  function letGo(handPos){const P=S.holding;if(!P)return;S.holding=null;phys.playerHold('r',null);S.wind=null;const A=phys.ME.act,power=A?.power??.6;
@@ -104,15 +104,17 @@ export function createPark(X){
    return e>=1.35;};}
  // ---- wading ----------------------------------------------------------------------------------------------------------------------
  let wadeStep=0;
- function wading(dt,p,gait){const s=X.surface(p.x,p.z);const wet=s==='water';X.pace(wet?.58:1);if(!wet){wadeStep=Math.floor(gait*2);return false;}
+ function wading(dt,p,gait){const s=X.surface(p.x,p.z);const wet=s==='water'&&heightAt(p.x,p.z)<WATER-.03;/* (in the water, not on the wet pebbles above it) */X.pace(wet?.58:1);if(!wet){wadeStep=Math.floor(gait*2);return false;}
   const st=Math.floor(gait*2);if(st!==wadeStep){wadeStep=st;X.ring(p.x+(Math.random()-.5)*.2,p.z+(Math.random()-.5)*.2,.5);}return true;}
  // a stone still in your hand when you do something else, or walk away up the beach, is let fall at your feet
  function drop(){const P=S.holding;if(!P||S.wind)return;S.holding=null;phys.playerHold('r',null);const p=camera.position,d=new THREE.Vector3();camera.getWorldDirection(d);const l=Math.hypot(d.x,d.z)||1,x=p.x+d.x/l*.35,z=p.z+d.z/l*.35;
   P.place(new THREE.Vector3(x,heightAt(x,z)+.012,z),new THREE.Euler(0,Math.atan2(d.x,-d.z),0));P.used=true;P.claimed=null;X.sound('tap',P.obj.position,{gain:.2});}
  // ---- every frame -------------------------------------------------------------------------------------------------------------------
  function update(dt){if(!S.built)return;windUpdate(dt);if(S.holding&&!S.wind){const p=camera.position,b=W5(...X.BEACH);if(Math.hypot(p.x-b.x,p.z-b.z)>11)drop();}for(let i=S.flying.length-1;i>=0;i--){const r=S.flying[i];if(r.alive)step(r,dt);else{r.sinkT=(r.sinkT??0)+dt;if(!r.landed){r.m.position.y-=dt*.4;if(r.sinkT>.5){r.m.visible=false;S.flying.splice(i,1);r.onDone?.(r);}}else{S.flying.splice(i,1);r.onDone?.(r);}}}}
- function spots(add){if(!S.built||S.done&&!S.free)return;if(S.holding||phys.playerBusy())return;for(const P of S.stones)if(onBeach(P))add('p5-stone:'+P.name,'Pick up a flat stone',P.obj.position,null,1.5,{look:true,size:.07});}
- function act(id){if(id.startsWith('p5-stone:')){const P=S.stones.find(q=>q.name===id.slice(9));if(P)youPick(P);return true;}return false;}
+ function spots(add){if(!S.built||S.done&&!S.free)return;
+  // (a stone in your hand: a throw is one press away too, for a touch screen's button; F held winds it up further)
+  if(S.holding&&!S.wind&&!phys.playerBusy()){add('p5-throw','Throw it',camera.position,null,3,{});return;}if(S.holding||phys.playerBusy())return;for(const P of S.stones)if(onBeach(P))add('p5-stone:'+P.name,'Pick up a flat stone',P.obj.position,null,1.5,{look:true,size:.07});}
+ function act(id){if(id==='p5-throw'){if(windStart())S.wind.auto=.8;return true;}if(id.startsWith('p5-stone:')){const P=S.stones.find(q=>q.name===id.slice(9));if(P)youPick(P);return true;}return false;}
  function key(code,repeat){if(code==='KeyF'&&S.holding&&!repeat){const sp=X.spotId?.();if(sp&&!sp.startsWith('p5-'))return false;return windStart();}if(code==='KeyF'&&S.wind)return true;return false;}
  function reset(){if(!S.built)return;for(const r of S.flying)r.m.visible=false;S.flying.length=0;S.holding=null;S.wind=null;S.turn=null;S.round=0;S.done=false;S.free=false;S.best={you:0,jamie:0,sam:0};S.you=[];S.jamie=[];S.sam=[];S.log=[];hide();root.removeFromParent();scene.add(root);}
  return {S,build,lay,hide,update,spots,act,key,reset,drop,friendThrow,nearestStone,wading,simulateSkip,planThrow,get holding(){return S.holding;},get winding(){return !!S.wind;}};

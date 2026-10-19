@@ -205,6 +205,6 @@ export function createGarage(X){
    const p=me();comp.run(sam,[comp.steps.walkTo(sam,[[p.x+Math.sin(p.a)*.8,p.z-Math.cos(p.a)*.8]],{speed:1.1}),holdOut(sam,()=>X.eyePos(),{until:()=>S.flags.cameraTaken})]);}
  }
  function startPacking(){S.flags.packing=true;S.samX=0;}
- function reset(){if(!S.built)return;S.sockShownAt=null;for(const k of Object.keys(S.flags))delete S.flags[k];S.samBusy=false;S.samStop=false;S.holding=null;S.said.clear();S.packedBy={you:0,sam:0};for(const P of S.items){P.claimed=null;P.given=false;}hideAll();root.removeFromParent();S.built&&scene.add(root);}
+ function reset(){if(!S.built)return;S.sockShownAt=null;for(const k of Object.keys(S.flags))delete S.flags[k];S.samBusy=false;S.samStop=false;S.holding=null;S.said.clear();S.packedBy={you:0,sam:0};for(const P of [...S.items,...S.bars,S.sock])if(P){P.claimed=null;P.given=false;}hideAll();root.removeFromParent();S.built&&scene.add(root);}
  return {S,build,layTable,startPacking,spots,act,update,blockers,wearBags,bagSteps,packedOf,given,holdOut,sockScene,barsScene,openMap,foldMap,closeAndShoulder,pointAt,reset,hideAll,TL,samStand,packed,get holding(){return S.holding;}};
 }

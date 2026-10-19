@@ -31,7 +31,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  const vTmp=new THREE.Vector3();
  const pebble=new THREE.Mesh(new THREE.IcosahedronGeometry(.016,0),new THREE.MeshStandardMaterial({color:0x969187,roughness:1}));scene.add(pebble);pebble.visible=false;
  function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{brain:null,B:null,active:false,boost:1,footBoost:1,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
-  bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side,stall:0,unstick:0,wayT:0,waySide:1,poi:null,gaze:null,route:null,routeT:0,turnHold:0,turnDir:0,tight:0});trail.reset();}
+  bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side,stall:0,unstick:0,wayT:0,waySide:1,poi:null,gaze:null,route:null,routeT:0,turnHold:0,turnDir:0,tight:0,seated:false,holdPlace:false,sitW:0,then:null});trail.reset();}
  // Take a friend over from friends.js (they were inside, or their bike lying where they left it).
  function take(c){if(!c.active){// start from wherever friends.js left the bike
   const g=c.bike.group,f=c.f;c.bx=g.position.x;c.bz=g.position.z;c.ba=-g.rotation.y;c.fall=f.fall||0;c.lean=f.lean||0;c.kick=f.kick||0;c.wheel=f.wheel||0;c.crank=f.crank||0;c.steer=f.steer||0;c.speed=0;c.bikeY=null;}
@@ -221,7 +221,9 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
   // Kickstand up before getting on: beside the bike, a hand on the grip, the right foot flicks it up and the bike comes
   // upright against the hand.
   kickUp(c,t=.7){let e=0;const keys=keysFor(c);return (dt,ctx)=>{if(e===0){c.lean0=c.lean;}e+=dt;const u=smooth(e/t);c.kick=1-smooth((e-.15)/.35);c.lean=c.lean0*(1-u);
-   samplePose(c.pose,keys,keys[keys.length-1][0]);const tap=Math.sin(Math.PI*clamp((e-.05)/.45,0,1));c.pose[P.rf+2]+=.12*tap;c.pose[P.rf+1]+=.06*tap;
+   samplePose(c.pose,keys,keys[keys.length-1][0]);{// (that pose is drawn from the bike; he is already standing at its side, so it is drawn from him)
+    const dx=c.pose[P.root];for(const b of [P.root,P.lh,P.rh,P.lf,P.rf])c.pose[b]-=dx;}// (positions only: the knee and elbow entries are directions)
+   const tap=Math.sin(Math.PI*clamp((e-.05)/.45,0,1));c.pose[P.rf+2]+=.12*tap;c.pose[P.rf+1]+=.06*tap;
    placePerson(c,dt);applyPose(c.person,c.pose);c.posed=true;return e>=t;};},
   // Up off the lawn: crouch, lift it by the bars, stand it up beside you.
   lift(c){let e=0;const target=new THREE.Vector3();return dt=>{e+=dt;const lift=smooth((e-.52)/1.05),down=smooth(e/.5)*(1-smooth((e-1.15)/.65));c.fall=-1.36*(1-lift);c.steer=.35*(1-lift);placeBike(c,0);standPose(c.pose,e);

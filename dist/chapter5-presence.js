@@ -51,7 +51,7 @@ export function createCampPresence({scene,world,camera,sfx=()=>{}}){
  // at the path a few metres ahead, swinging a little with each step; aim() turns it on something (on you). No glowing
  // balls. Each has a switch (lit) apart from fading in and out, and a carried height (sitting: lower).
  const beamTex=(()=>{try{const c=document.createElement('canvas');c.width=4;c.height=64;const g=c.getContext?.('2d');if(!g?.createLinearGradient)return null;const r=g.createLinearGradient(0,0,0,64);
-  r.addColorStop(0,'rgba(255,240,205,0)');r.addColorStop(.55,'rgba(255,238,200,.35)');r.addColorStop(.9,'rgba(255,236,196,.85)');r.addColorStop(1,'rgba(255,236,196,1)');g.fillStyle=r;g.fillRect(0,0,4,64);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}catch{return null;}})();
+  r.addColorStop(0,'rgba(255,240,205,.8)');r.addColorStop(.3,'rgba(255,238,200,.55)');r.addColorStop(.72,'rgba(255,236,196,.16)');r.addColorStop(1,'rgba(255,236,196,0)');g.fillStyle=r;g.fillRect(0,0,4,64);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}catch{return null;}})();
  const BEAM_L=9,beamGeo=new THREE.ConeGeometry(1.15,BEAM_L,14,1,true);beamGeo.translate(0,-BEAM_L/2,0);beamGeo.rotateX(-Math.PI/2);// (apex at the lens, opening along +z, the way it points)
  const bodyGeo=new THREE.CylinderGeometry(.018,.022,.17,8);bodyGeo.rotateX(Math.PI/2);const lensGeo=new THREE.CircleGeometry(.024,12);
  const CARRY=[0,1,2].map(i=>{const g=new THREE.Group();g.name='carried-light-'+i;const aimG=new THREE.Group();g.add(aimG);
@@ -66,7 +66,7 @@ export function createCampPresence({scene,world,camera,sfx=()=>{}}){
  // A path for them all (world points); speed; when it ends, they stop and hold (or go out: out=true).
  function carry(n,pts,{speed=1.25,out=false,from=0}={}){const each=Array.isArray(pts[0]),mk=list=>{const segs=[];let L=0;for(let i=1;i<list.length;i++){const a=list[i-1],b=list[i],l=Math.hypot(b.x-a.x,b.z-a.z);segs.push({a,b,l,s:L,wait:b.wait||0,sit:!!b.sit});L+=l;}return {segs,L};};
   const one=each?null:mk(pts);
-  for(let i=0;i<3;i++){const c=CARRY[i];c.path=i<n?(each?mk(pts[i]||pts[0]):one):null;c.off=each?0:[0,-1.1,1.1][i];c.u=from;c.v=speed;c.want=i<n?1:0;c.out=out;c.done=false;c.stop=0;c.wait=0;c.aim=null;c.lit=c.litWant=1;c.hWant=1.05;if(i<n){c.g.visible=true;}}}
+  for(let i=0;i<3;i++){const c=CARRY[i];c.path=i<n?(each?mk(pts[i]||pts[0]):one):null;c.off=each?0:[0,-1.1,1.1][i];c.each=each;c.u=from-(each?c.lag:0);c.v=speed;c.want=i<n?1:0;c.out=out;c.done=false;c.stop=0;c.wait=0;c.aim=null;c.lit=c.litWant=1;c.hWant=1.05;if(i<n){c.g.visible=true;}}}
  function hold(on){for(const c of CARRY){if(!c.g.visible)continue;if(on){if(c.wait<60)c.wait=1e4;}else if(c.wait>60)c.wait=0;}}
  function carriedOut(dur=.4){for(const c of CARRY){c.want=0;c.fade=dur;}}
  // the switch (a click: no fade), the aim (a point to shine at, or null), the carried height
@@ -79,16 +79,19 @@ export function createCampPresence({scene,world,camera,sfx=()=>{}}){
  function updateCarry(dt,groundY){for(const [i,c] of CARRY.entries()){if(!c.g.visible){c.L.intensity=0;continue;}c.on=damp(c.on,c.want,c.want>c.on?3:(c.fade?1/Math.max(.05,c.fade)*2:2),dt);
    c.lit=c.litWant;c.h=damp(c.h,c.hWant,2.2,dt);
    if(c.path&&!c.done){if(c.wait>0){c.wait-=dt;if(c.wait<=0&&c.sitting){c.sitting=false;c.hWant=1.05;}}else{const before=c.u;c.u+=c.v*dt;// (they stop where you stopped, as long as you did; where you sat, they sit)
-     for(const q of c.path.segs)if(q.wait&&before<q.s+q.l-c.lag&&c.u>=q.s+q.l-c.lag){c.wait=q.wait;c.u=q.s+q.l-c.lag;if(q.sit){c.sitting=true;c.hWant=.62;}break;}}
-    if(c.u-c.lag>=c.path.L){c.done=true;if(c.out)c.want=0;}}
-   const q=at(c,Math.max(0,c.u-c.lag));if(q){const nx=-q.dz,nz=q.dx,walking=c.wait<=0&&!c.done,bob=walking?Math.sin(t*5.2+c.phase)*.04:Math.sin(t*1.1+c.phase)*.008,sway=Math.sin(t*1.7+c.phase)*.18;const x=q.x+nx*(c.off+sway*.3),z=q.z+nz*(c.off+sway*.3);
+     // (one path for all: the others keep their distance behind the first; a path each: they set off one after another,
+     // stop a step apart where they stop, and each gets all the way to its own seat)
+     for(const q of c.path.segs){const end=q.s+q.l-(c.each&&q.sit?0:c.lag);if(q.wait&&before<end&&c.u>=end){c.wait=q.wait;c.u=end;if(q.sit){c.sitting=true;c.hWant=.62;}break;}}}
+    if(c.u-(c.each?0:c.lag)>=c.path.L){c.done=true;if(c.out)c.want=0;}}
+   const q=at(c,Math.max(0,c.u-(c.each?0:c.lag)));if(q){const nx=-q.dz,nz=q.dx,walking=c.wait<=0&&!c.done,bob=walking?Math.sin(t*5.2+c.phase)*.04:Math.sin(t*1.1+c.phase)*.008,sway=Math.sin(t*1.7+c.phase)*.18;const x=q.x+nx*(c.off+sway*.3),z=q.z+nz*(c.off+sway*.3);
     c.g.position.set(x,(groundY?.(x,z)??q.y)+c.h+bob,z);
     // where it points: down the path ahead (with the step's swing), or at what it is aimed at
     if(c.aim){_t.set(c.aim.x-x,(c.aim.y??c.g.position.y)-c.g.position.y,c.aim.z-z).normalize();}else{const sw=walking?Math.sin(t*2.6+c.phase)*.16:Math.sin(t*.7+c.phase)*.05;_t.set(q.dx+nx*sw,-.34,q.dz+nz*sw).normalize();}
     c.dir.lerp(_t,1-Math.exp(-(c.aim?6:3.5)*dt)).normalize();c.aimG.quaternion.setFromRotationMatrix(_m.lookAt(new THREE.Vector3(),c.dir.clone().negate(),_up));
     c.L.position.copy(c.g.position);c.L.target.position.copy(c.g.position).addScaledVector(c.dir,8);}
-   const k=c.on*c.lit;c.head.material.color.setScalar(.12+.88*k);c.beam.material.opacity=.42*k;c.L.intensity=9*k;
-   {const p=c.g.position,cp=camera.position,dx=cp.x-p.x,dy=cp.y-p.y,dz=cp.z-p.z,d=Math.hypot(dx,dy,dz)||1,f=(c.dir.x*dx+c.dir.y*dy+c.dir.z*dz)/d,o=Math.pow(clamp((f-.5)/.5,0,1),2)*k,sz=Math.max(.08,.014*d);c.glint.material.opacity=o;c.glint.scale.set(sz,sz,1);c.glint.visible=o>.01;}if(c.on<.01&&c.want===0){c.g.visible=false;c.path=null;c.L.intensity=0;}}}
+   const k=c.on*c.lit;c.head.material.color.setScalar(.12+.88*k);c.L.intensity=14*k;
+   // (pointed at you, the cone's sides would stack into a disc: it fades and the lens glint takes over)
+   {const p=c.g.position,cp=camera.position,dx=cp.x-p.x,dy=cp.y-p.y,dz=cp.z-p.z,d=Math.hypot(dx,dy,dz)||1,f=(c.dir.x*dx+c.dir.y*dy+c.dir.z*dz)/d,o=(.3+.7*Math.pow(clamp((f-.5)/.5,0,1),2))*k,sz=Math.max(.12,.026*d)*(.6+.4*clamp((f-.3)/.7,0,1));c.beam.material.opacity=.42*k*(1-smooth((f-.55)/.37));c.glint.material.opacity=o;c.glint.scale.set(sz,sz,1);c.glint.visible=o>.01;}if(c.on<.01&&c.want===0){c.g.visible=false;c.path=null;c.L.intensity=0;}}}
  const carrying=()=>CARRY.filter(c=>c.g.visible).length;
  const carriedAt=i=>CARRY[i]?.g.visible?CARRY[i].g.position:null;
  // ---- the double: Jamie, in a room ----------------------------------------------------------------------------------------------

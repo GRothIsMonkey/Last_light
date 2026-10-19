@@ -2,7 +2,8 @@
 // the shallows waded, and the three of you sat on the dock.
 export default async function(L,{cap,step,press,release,tap,face}){
  const C5=L.chapter5,PK=C5.PK,S=PK.S,cam=L.camera,J=L.chapter.companions.list.jamie,Sm=L.chapter.companions.list.sam;
- const lookAt=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));};
+ // (the view turns on the next step: one step taken, then aimed again, so the frame shows where it was aimed)
+ const aim=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));},lookAt=v=>{aim(v);step(1/30);aim(v);step(1/30);};
  const walkTo=(q,max=12)=>{for(let t=0;t<max;t+=1/30){const w=L.state.walk,dx=q.x-w.x,dz=q.z-w.z;if(Math.hypot(dx,dz)<.35)break;face(Math.atan2(dx,-dz),0);press('KeyW');step(1/30);}release('KeyW');};
  const head=c=>({x:c.px,y:c.person.group.position.y+1.2,z:c.pz}),hand=c=>{const v=c.person.parts.rhand.getWorldPosition(new (cam.position.constructor)());return v;};
  const B=C5.W5(-178,338),AIM=C5.W5(-178-7.2,338+14.2);
