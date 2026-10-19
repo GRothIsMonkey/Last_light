@@ -10,7 +10,9 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
  const spill=new THREE.SpotLight(0xffefcf,0,12,1.05,1,2);spill.name='player-flashlight-spill';
  const shell=new THREE.Mesh(new THREE.CylinderGeometry(.026,.021,.17,12),new THREE.MeshStandardMaterial({color:0x33424a,roughness:.55,metalness:.35}));shell.rotation.x=Math.PI/2;torch.add(shell);
  const lens=new THREE.Mesh(new THREE.CylinderGeometry(.024,.024,.018,12),new THREE.MeshStandardMaterial({color:0xe9dfb9,roughness:.25}));lens.rotation.x=Math.PI/2;lens.position.z=-.091;torch.add(lens);scene.add(torch);torch.visible=false;
- const F={fp:{back0:.09,back1:0,eyeU:.11,eyeF:.1},extraEye:{f:0,y:0},arms:null,viewPitch:0,viewYaw:0,exposure:null,runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,spillLevel:6,light,spill,torch,pose,
+ // (fpBody: Chapter Five's first-person body, its stance, the body back under the eye and the eye that dips looking down;
+ // off, the body and the eye are as Chapters Zero to Four had them)
+ const F={fpBody:false,fp:{back0:.09,back1:0,eyeU:.11,eyeF:.1},extraEye:{f:0,y:0},arms:null,viewPitch:0,viewYaw:0,exposure:null,runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1,spillLevel:6,light,spill,torch,pose,
   attach(on){if(on){scene.add(light,light.target,spill,spill.target);}else{for(const o of [light,light.target,spill,spill.target])o.removeFromParent();}},
   reset(){F.extraEye.f=F.extraEye.y=0;Object.assign(F,{flash:0,runK:0,stamina:1,crouch:0,height:0,vy:0,cooldown:0,sprint:false,exhausted:false,owned:false,on:false,phase:0,land:0,drain:1,pace:1});F.ride();light.intensity=0;spill.intensity=0;torch.visible=false;const bar=$('stamina');if(bar)bar.style.opacity=0;},
   ride(){if(self.group.parent!==bike.group)bike.group.add(self.group);self.group.position.set(0,0,0);self.group.rotation.set(0,0,0);torch.visible=false;},
@@ -33,7 +35,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    F.phase+=speed*dt/stride(Math.max(speed,.8));
    if(speed>.08&&F.height===0)walkPose(pose,F.phase,speed);else{standPose(pose,0,{shift:0});
     // (your own stance, seen from above: feet a little apart, one a little forward, so the shoes show past the knees)
-    pose[P.lf]=-.14;pose[P.lf+2]=-.15;pose[P.rf]=.15;pose[P.rf+2]=-.2;pose[P.lk]=-.3;pose[P.rk]=.3;pose[P.lfp]=.08;pose[P.rfp]=.08;}
+    if(F.fpBody)pose[P.lf]=-.14,pose[P.lf+2]=-.15,pose[P.rf]=.15,pose[P.rf+2]=-.2,pose[P.lk]=-.3,pose[P.rk]=.3,pose[P.lfp]=.08,pose[P.rfp]=.08;}
    const crouch=scripted?clamp((y+1.406-camera.position.y)/.54,0,1):F.crouch;
    pose[P.root+1]-=.31*crouch;pose[P.lean]+=.52*crouch;pose[P.root+2]+=.09*crouch;
    for(const p of [P.lh,P.rh]){pose[p+1]-=.22*crouch;pose[p+2]-=.16*crouch;}
@@ -52,7 +54,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    else if(scripted&&!CP?.stand){pose[P.root+1]=.30;pose[P.lean]=1.04;pose[P.root+2]=0;pose[P.lf]=-.17;pose[P.rf]=.17;pose[P.lf+2]=-.10;pose[P.rf+2]=.06;pose[P.lh+1]=.25;pose[P.lh+2]=-.07;pose[P.rh+1]=.42;pose[P.rh+2]=-.45;const hp=headPos(pose,new THREE.Vector3());x=camera.position.x-hp.x*Math.cos(a)+hp.z*Math.sin(a);z=camera.position.z-hp.x*Math.sin(a)-hp.z*Math.cos(a);y=camera.position.y-hp.y-.015;}
    // Looking down at yourself: the body sits a little back under the eye (as a neck bends the eyes forward over the
    // chest), so you see your chest, arms, legs and shoes, never the inside of your own shoulders.
-   if(!seat){const T=F.fp,back=T.back0+T.back1*smooth((-F.viewPitch-.25)/.75)-F.extraEye.f;x-=Math.sin(a)*back;z+=Math.cos(a)*back;}
+   if(!seat&&F.fpBody){const T=F.fp,back=T.back0+T.back1*smooth((-F.viewPitch-.25)/.75)-F.extraEye.f;x-=Math.sin(a)*back;z+=Math.cos(a)*back;}
    self.group.position.set(x,y+F.height-F.land,z);self.group.rotation.set(0,-a,0);
    if(F.arms){self.group.updateMatrixWorld(true);F.arms(pose,{toLocal:v=>self.group.worldToLocal(v),dt,foot:F});}else{F.extraEye.f*=.85;F.extraEye.y*=.85;}
    applyPose(self,pose);
@@ -85,7 +87,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
   // (the eye is fp.eyeF ahead of and fp.eyeU above the neck's pivot: bending the neck by the pitch moves it round that
   // pivot; zero when looking level, so the walking eye is unchanged then)
   // (and a reach for something leans you toward it and down: extraEye, set by the hands, physical.js)
-  lookDip(pitch){const th=Math.max(0,-pitch),U=F.fp.eyeU,Fw=F.fp.eyeF;return {y:U*Math.cos(th)-Fw*Math.sin(th)-U+F.extraEye.y,f:U*Math.sin(th)+Fw*Math.cos(th)-Fw+F.extraEye.f};},
+  lookDip(pitch){if(!F.fpBody)return {y:0,f:0};const th=Math.max(0,-pitch),U=F.fp.eyeU,Fw=F.fp.eyeF;return {y:U*Math.cos(th)-Fw*Math.sin(th)-U+F.extraEye.y,f:U*Math.sin(th)+Fw*Math.cos(th)-Fw+F.extraEye.f};},
  };
  function copyStand(out,src){out.set(src);return out;}
  return F;

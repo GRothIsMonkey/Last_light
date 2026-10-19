@@ -4,7 +4,7 @@
 // would see: no pacing, no copying, no crowding, no flip-flopping between goals, nobody stuck. (Distances are not the
 // whole story: tests/review/companions.mjs films the same situations for a person to look at.)
 import assert from 'node:assert/strict';
-import {PW,BLD,SPOT} from '../dist/pine-plan.js';
+import {PW,PL,BLD,SPOT,DOORS} from '../dist/pine-plan.js';
 
 export function runCompanionTests(T,X){
  const {h,press,release,tap,check,metrics}=T,{until,wait,me,faceTo,go}=X,A5=h.chapter5,C5=()=>A5.state.get();
@@ -18,7 +18,7 @@ export function runCompanionTests(T,X){
     if(R.t>settle){if(v>2.3){R.fast[k]+=dt;}else{if(R.fast[k]>.25&&R.fast[k]<1.5)R.sprints[k]++;R.fast[k]=0;}
      if(v>.35){R.mv[k]+=dt;}else{if(R.mv[k]>.5)R.moves[k]++;R.mv[k]=0;}}
     const dy=Math.hypot(x-p.x,z-p.z);R.dist[k].push(dy);if(c.mode==='foot'&&R.t>settle)R.minYou=Math.min(R.minYou,dy);}
-   if(J.mode==='foot'&&S.mode==='foot'&&R.t>settle){const g=Math.hypot(J.px-S.px,J.pz-S.pz);if(g<R.minGap){R.minGap=g;R.minGapAt={t:+R.t.toFixed(1),jamie:brain.state(J).goal,sam:brain.state(S).goal,scripts:[!!J.script,!!S.script],J:[+J.px.toFixed(2),+J.pz.toFixed(2)],S:[+S.px.toFixed(2),+S.pz.toFixed(2)],poi:[brain.state(J).poi?.id,brain.state(S).poi?.id,brain.state(S).poi?.at,brain.state(S).poi?.t]};}}};
+   if(J.mode==='foot'&&S.mode==='foot'&&R.t>settle){const g=Math.hypot(J.px-S.px,J.pz-S.pz);if(g<R.minGap){R.minGap=g;R.minGapAt={t:+R.t.toFixed(1),jamie:brain.state(J).goal,sam:brain.state(S).goal,scripts:[!!J.script,!!S.script]};}}};
   R.flips=k=>{const G=R.goals[k];let n=0;for(let i=2;i<G.length;i++)if(G[i].g===G[i-2].g&&G[i].t-G[i-2].t<3)n++;return n;};
   R.median=k=>{const a=[...R.dist[k]].sort((x,y)=>x-y);return a[Math.floor(a.length/2)]||0;};
   return R;}
@@ -65,12 +65,14 @@ export function runCompanionTests(T,X){
    for(const k of ['jamie','sam']){assert.ok(R.median(k)>1.4&&R.median(k)<10,k+' median '+R.median(k));assert.ok(Math.max(...R.dist[k])<30,k+' max');}assert.ok(R.minYou>.55,'to you '+R.minYou);assert.ok(R.minGap>.5,'gap '+R.minGap);
    assert.ok(M.F.goals.jamie>=3||M.F.goals.sam>=3,'more than following: '+JSON.stringify(M.F.goals));});}
  // ---- G: a narrow room (the office: the counter, the desk, the cabinets) ----
- {h.jump('c5-office');adv(.5);const b=BLD.office,R=sampler(),pt=(lx,lz)=>{const [e,n]=b.F.to(lx,lz);return W5(e,n);};const DO=A5.DOORS?.office;
-  T.tap?.('KeyF');X.act?.('c5-door-office',3);run(R,1);
-  for(const [lx,lz] of [[b.door[0],b.d/2-.8],[-1.2,1.9],[-2.2,1.3],[-2.2,-.3],[-1.2,1.9],[b.door[0],b.d/2-.8]]){walkPath(R,pt(lx,lz),{max:12});run(R,3);}
+ {h.jump('c5-office');adv(.5);const b=BLD.office,R=sampler(),pt=(lx,lz)=>{const [e,n]=b.F.to(lx,lz);return W5(e,n);};const DO=DOORS.office;
+  // (the door opened first, as a player would, then in, round the counter and back out: and the test knows you were in)
+  if(!(DO?.open>.5))A5.act?.('c5-door-office');run(R,1.5);let deepest=-9;const depth=()=>{const p=me(),q=PL(p.x,p.z),[lx,lz]=b.F.of(q.e,q.n);return Math.abs(lx)<b.w/2-.2?b.d/2-lz:-9;};
+  for(const [lx,lz] of [[b.door[0],b.d/2-.8],[-1.2,1.9],[-2.2,1.3],[-2.2,-.3],[-1.2,1.9],[b.door[0],b.d/2-.8]]){walkPath(R,pt(lx,lz),{max:12});run(R,3);deepest=Math.max(deepest,depth());}
   const stuck={};for(const k of ['jamie','sam']){let s=0,run2=0;const sp=R.speeds[k];for(const v of sp){run2=v<.05?run2+1:0;if(run2===90)s++;}stuck[k]=s;}
   M.G={minGap:+R.minGap.toFixed(2),minYou:+R.minYou.toFixed(2),seconds:+R.t.toFixed(0)};void DO;
-  check(`Companions G: inside the office, round the counter and back: nobody walks through anybody (closest ${M.G.minYou} m to you, ${M.G.minGap} m to each other)`,()=>{assert.ok(R.minYou>.45,'to you '+R.minYou);assert.ok(R.minGap>.45,'gap '+R.minGap);});}
+  M.G.door=+(DO?.open??-1).toFixed(2);M.G.inside=+deepest.toFixed(2);
+  check(`Companions G: inside the office (${M.G.inside} m in), round the counter and back: nobody walks through anybody (closest ${M.G.minYou} m to you, ${M.G.minGap} m to each other)`,()=>{assert.ok(M.G.door>.5,'the door opened '+M.G.door);assert.ok(M.G.inside>2,'you were inside: '+M.G.inside);assert.ok(R.minYou>.45,'to you '+R.minYou);assert.ok(R.minGap>.45,'gap '+R.minGap);});}
  // ---- H: the run ----
  {h.jump('c5-run');adv(.3);const R=sampler(),pts=[[-262,556],[-236,552],[-212,546],[-192,538],[-178,524]].map(([e,n])=>W5(e,n));for(const q of pts)walkPath(R,q,{max:20,sprint:true});
   const far={jamie:Math.max(...R.dist.jamie),sam:Math.max(...R.dist.sam)},runFrac=k=>R.speeds[k].filter(v=>v>2.4).length/Math.max(1,R.speeds[k].length);

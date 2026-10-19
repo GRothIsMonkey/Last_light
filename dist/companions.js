@@ -303,7 +303,7 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
    if(c.spinV>0){c.spin+=c.spinV*dt;c.spinV=Math.max(0,c.spinV-dt*1.6);}
    if(c.bike.group.visible)placeBike(c,dt);if(c.mode==='foot')placePersonIfFree(c,dt);
    if(c.talk>0){c.talk-=dt;}
-   c.person.face?.update(dt,{clock:ctx.clock,talk:c.talk,speech:c.speech,visible:c.person.group.visible});}
+   if(c.person.face?.enabled)c.person.face.update(dt,{clock:ctx.clock,talk:c.talk,speech:c.speech,visible:c.person.group.visible});}
   for(const f of afters)f(dt,ctx);
  }
  function placePersonIfFree(c,dt){if(c.script&&c.script[c.step]?.climbing)return;if(c.holdPlace){c.holdPlace=false;return;}placePerson(c,dt);}

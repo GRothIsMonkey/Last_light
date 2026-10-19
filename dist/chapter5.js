@@ -227,8 +227,8 @@ export function createChapter5(o,k,ch2,ch3,ch4){
    if(d>1.6||dx*fx+dz*fz<.15||Math.abs(dx*rx+dz*rz)>.75)continue;if(!best||d<best.d)best={c,d,side:Math.sign(dx*rx+dz*rz)||1};}
   if(!best)return;const c=best.c,s0=best.side;
   // to his side of the way you are going (or the other side), on ground he can stand on, clear of your next steps
-  const q=[[s0,0],[s0,-.7],[-s0,0],[-s0,-.7]].map(([sd,bk])=>({x:c.px+rx*sd*1.5+fx*bk*1.5,z:c.pz+rz*sd*1.5+fz*bk*1.5}))
-   .find(q=>nav.walkable(q.x,q.z,{r:.3})&&Math.abs((q.x-p.x)*rx+(q.z-p.z)*rz)>.9&&clearWay(c.px,c.pz,q.x,q.z));if(!q)return;
+  const q=[1.5,2.2].flatMap(k=>[[s0,0],[s0,-.7],[-s0,0],[-s0,-.7],[s0,.6],[-s0,.6]].map(([sd,bk])=>({x:c.px+rx*sd*k+fx*bk*k,z:c.pz+rz*sd*k+fz*bk*k})))
+   .find(q=>nav.walkable(q.x,q.z,{r:.3})&&Math.abs((q.x-p.x)*rx+(q.z-p.z)*rz)>.9&&clearWay(c.px,c.pz,q.x,q.z)&&[jamie,sam].every(o=>o===c||o.mode!=='foot'||Math.hypot(o.px-q.x,o.pz-q.z)>1.1));if(!q)return;// (not onto the other one)
   M.cool=2.5;M.t=0;C.guardLog.madeWay=(C.guardLog.madeWay||0)+1;mark('made way: '+c.key);
   comp.run(c,[comp.steps.walkTo(c,[[q.x,q.z]],{speed:1.7})],{then:()=>{const sp=C.spot[c.key];if(sp){c.script=null;stand(c,sp.q,sp);}else if(C.match&&c.mode==='foot')c.follow='walk';}});c.script.makeWay=true;}
  // ---- the clock, and the light it makes ---------------------------------------------------------------------------------------
@@ -248,7 +248,11 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   const d=C.dark;night=lerp(night,.95,d);deep=lerp(deep,.6,d);
   const id=inAny(),fill=id?camp.level(id):0;return {day,p,night,deep,fill};}
  // ---- the world as Chapter Five finds it ------------------------------------------------------------------------------------
- function common(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);camp.attach(true);if(!props.parent)scene.add(props);}
+ // (friends' garage floors: down to the slab while this chapter walks you into Sam's; as they were for the other chapters)
+ // (the faces that show what they feel and move when they talk: this chapter's; the others keep the faces they had)
+ function faces(on){for(const f of o.friends?.list||[])f.person?.face?.enable?.(on);for(const c of [jamie,sam])c.person?.face?.enable?.(on);}
+ function slabs(on){for(const P of Object.values(world.homes||{})){const f=P?.garageFoundation;if(f)f.position.y=on?-.23:-.05;}}
+ function common(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);slabs(true);faces(true);o.foot.fpBody=true;camp.attach(true);if(!props.parent)scene.add(props);}
  function dayWorld(){A.day=1;A.night=0;ch2.day=1;S.deep=A.deep=0;o.flashShadow?.(false);o.nightRendering?.(false);o.attachFlashlight?.(true);/* (day rendering takes the flashlight's lights out; they go back in and stay the whole chapter: T only changes how bright) */ambient.night?.(false);ambient.morning?.(true);
   for(const a of [...k.adults,...ch2.extra,...Object.values(ch3.people||{})]){a.show(false);a.lookAt=null;a.gest(null);a.path=null;a.mode='stand';}
   police.reset?.();k.carA.show(false);k.carB.show(false);ch2.flyers.visible=true;ch2.found.group.visible=false;ch2.tape.visible=false;for(const b of ch2.beams)b.on=false;ch2.samBeam&&(ch2.samBeam.on=false);
@@ -1050,14 +1054,16 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function readMapFallback(){if(C.flags.mapNudge)return;C.flags.mapNudge=true;say([{who:'SAM',text:'“The map’s by the bathrooms. Or we just follow the road.”',by:'sam'}]);}
  // ---- lifecycle --------------------------------------------------------------------------------------------------------------------------------
  const DOOR0=Object.fromEntries(Object.entries(DOORS).map(([key,d])=>[key,d.open]));
- function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='camera')photo.close();camp.reset();camp.attach(false);nav.setPine?.(false);props.removeFromParent();shirt.visible=false;carving.visible=false;pageG.visible=false;stone.visible=false;G5.reset();PK.reset();GT.reset();GR.reset();o.setPace?.(1);phys.reset();if(o.foot.arms===phys.arms)o.foot.arms=null;
+ function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='camera')photo.close();camp.reset();camp.attach(false);nav.setPine?.(false);slabs(false);faces(false);o.foot.fpBody=false;props.removeFromParent();shirt.visible=false;carving.visible=false;pageG.visible=false;stone.visible=false;G5.reset();PK.reset();GT.reset();GR.reset();o.setPace?.(1);phys.reset();if(o.foot.arms===phys.arms)o.foot.arms=null;
   for(const r of RINGS){r.m.visible=false;r.t=9;}for(const key of Object.keys(DOORS))DOORS[key].open=DOOR0[key]??0;const gt=PN?.dyn?.campGate;if(gt){gt.want=-1.25;gt.k=1.4;}
   const bell=PN?.dyn?.bell;if(bell){bell.v=0;bell.swing=0;bell.yoke.rotation.z=0;}if(PN?.lights?.lot)PN.lights.lot.level=0;
   if(C.crt){creature.reset();creature.show(false);}creature.ground=null;
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView)o.roam.walkLock=false;fresh();}
  // QA jumps, DEV scenes and Continue: the chapter at one of its moments, everything it needs set up (the flags of every beat
  // before it set the way playing it sets them).
- function jump(section){section=ALIAS5[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();minds();
+ // (a scene started from the menu or a checkpoint starts with its doors and gates where it wants them, not swinging there)
+ function jump(section){jumpTo(section);try{PN?.update?.(0,{});}catch{}}
+ function jumpTo(section){section=ALIAS5[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();minds();
   if(section==='chapter5-start'){begin();return;}
   common();dayWorld();objective('');inventory();
   const ix=SECTIONS5.indexOf(section),ff=(...ks)=>{for(const kk of ks)C.flags[kk]=true;},hh=h=>{C.h=h;C.minute=-1;date(h);};

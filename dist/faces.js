@@ -8,6 +8,7 @@
 // The mouth and the brows are each one small mesh whose vertices are rewritten when the face changes (two draw calls a
 // face); the head mesh is built without its own mouth and brows (rig.js headGeometry, face.rig).
 import * as THREE from './three.module.js';
+import {headGeometry,blinkPerson} from './rig.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
 // browY (m up), tilt (inner ends up, +), knit (pulled together and down), smile (corners, -1..1), open (0..1), wide
@@ -32,7 +33,10 @@ function speechKeys(text,dur){const t=String(text||'').replace(/[“”"‘’'(
   time+=step;i++;}
  const k=dur/Math.max(time,.1);for(const q of out)q[0]*=Math.min(1,k);out.push([dur,0,0]);return out;}
 
-export function createFace(person,cast={}){const head=person.parts.head,F=cast.face||{},H=cast.hair||{},size=person.build?.head??1;
+// (switched off, enabled false, the head is the one Chapters Zero to Four drew: its own brows and mouth, the old blink.
+// Chapter Five switches the faces on; a head built expressive starts on.)
+export function createFace(person,cast={},{enabled=true}={}){const head=person.parts.head,F=cast.face||{},H=cast.hair||{},size=person.build?.head??1;
+ const built=head.geometry,other=headGeometry(enabled?F:{...F,rig:true},cast.hair||{style:'cropped',color:0x4a3528},size),geo={on:enabled?built:other,off:enabled?other:built},lidY=person.lids.map(L=>L.position.y);
  const lips=new THREE.Color(F.lips??0xb87a62),dark=new THREE.Color(0x3a1f1a),teethC=new THREE.Color(0xf0ece2),hairC=new THREE.Color(H.color??0x4a3528);
  const base={...{neutral:{},grin:EXPRESSIONS.grin}[F.mouth==='grin'?'grin':'neutral']};// (Jamie's resting face has his grin in it, a little)
  const rest=F.mouth==='grin'?{smile:.35,teeth:.25}:F.mouth==='smile'?{smile:.3}:{};void base;
@@ -44,7 +48,7 @@ export function createFace(person,cast={}){const head=person.parts.head,F=cast.f
  const bQ=2*3,bPos=new Float32Array(bQ*6*3),bGeo=new THREE.BufferGeometry();bGeo.setAttribute('position',new THREE.BufferAttribute(bPos,3));bGeo.setAttribute('normal',new THREE.BufferAttribute(new Float32Array(bQ*6*3).map((_,i)=>i%3===2?-1:0),3));
  const brows=new THREE.Mesh(bGeo,new THREE.MeshStandardMaterial({color:hairC,roughness:.9,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));brows.name='face-brows';brows.frustumCulled=false;brows.castShadow=false;head.add(brows);
  const ex=Object.fromEntries(KEYS.map(k=>[k,0])),want=Object.fromEntries(KEYS.map(k=>[k,0]));
- const S={name:'neutral',hold:0,mood:'neutral',open:0,round:0,keys:null,speakT:0,speakDur:0,blinkT:0,dirty:true,last:'',talking:false};
+ const S={name:'neutral',hold:0,mood:'neutral',open:0,round:0,keys:null,speakT:0,speakDur:0,blinkT:0,dirty:true,last:'',talking:false,enabled:true};
  let qi=0;
  const quad=(pos,col,i,ax,ay,bx,by,cx,cy,dx,dy,z,c)=>{const v=[[ax,ay],[bx,by],[cx,cy],[ax,ay],[cx,cy],[dx,dy]];for(let k=0;k<6;k++){const o=(i*6+k)*3;pos[o]=v[k][0]*size;pos[o+1]=v[k][1]*size;pos[o+2]=z*size;if(col){col[o]=c.r;col[o+1]=c.g;col[o+2]=c.b;}}};
  // the face's surface bulges forward in the middle: a mouth corner sits a little further back than its centre
@@ -77,7 +81,8 @@ export function createFace(person,cast={}){const head=person.parts.head,F=cast.f
  // (a recorded line: an amplitude envelope 0..1 sampled at rate Hz drives the opening instead)
  function speakAudio(env,rate=60){S.env={env,rate,t:0};S.talking=true;}
  function silence(){S.keys=null;S.talking=false;S.env=null;}
- function update(dt,{clock=0,talk=0,speech=null,visible=true}={}){
+ function enable(on){on=!!on;S.enabled=on;head.geometry=on?geo.on:geo.off;mouth.visible=brows.visible=on;if(!on){person.lids.forEach((L,i)=>{L.position.y=lidY[i];});silence();}S.last='';}
+ function update(dt,{clock=0,talk=0,speech=null,visible=true,seed=0}={}){if(!S.enabled){blinkPerson(person,clock,seed);return;}
   if(speech&&speech!==S.lastSpeech){S.lastSpeech=speech;speak(speech.text,speech.dur);}
   if(talk<=0&&!S.env)S.talking=false;
   // the expression: what it was set to, for as long, then back to his own mood
@@ -94,5 +99,6 @@ export function createFace(person,cast={}){const head=person.parts.head,F=cast.f
   if(!visible)return;
   const key=KEYS.map(k=>ex[k].toFixed(3)).join(',')+S.open.toFixed(3)+S.round.toFixed(2);if(key!==S.last){S.last=key;build();}}
  build();
- return {set,mood,speak,speakAudio,silence,update,mouth,brows,S,get expression(){return S.hold>0?S.name:S.mood;},get speaking(){return S.talking;},get openness(){return clamp(ex.open+S.open,0,1);}};
+ if(!enabled)enable(false);
+ return {set,mood,speak,speakAudio,silence,update,enable,get enabled(){return S.enabled;},mouth,brows,S,get expression(){return S.hold>0?S.name:S.mood;},get speaking(){return S.talking;},get openness(){return clamp(ex.open+S.open,0,1);}};
 }

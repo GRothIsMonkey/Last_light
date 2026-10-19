@@ -174,7 +174,7 @@ canvas.addEventListener('pointerup',()=>{dragging=false;lastMouse=null;});canvas
 // Head-look limits on the bike: a good look over each shoulder, never all the way round.
 const LOOK={yaw:1.85,down:1.2,up:.6};let sens=.0022;
 function turnView(dx,dy){if(!dx&&!dy)return;if(night1()&&chapter4.pan(dx,dy))return;// (a magnified picture on Alex's camera moves under the mouse instead)
- manualLook=true;lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else if(state==='c1-walk'){wa+=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.32,.9);}else{const L=state==='memory'?MEMLOOK:LOOK;mouseYaw=clamp(mouseYaw-dx*sens,-L.yaw,L.yaw);mousePitch=clamp(mousePitch-dy*sens,-L.down,L.up);}}
+ manualLook=true;lookInputAt=clock;glance=0;if(state==='walking'){walkYaw-=dx*sens;walkPitch=clamp(walkPitch-dy*sens,-1.1,.9);}else if(state==='c1-walk'){wa+=dx*sens;walkPitch=clamp(walkPitch-dy*sens,foot.fpBody?-1.32:-1.1,.9);}else{const L=state==='memory'?MEMLOOK:LOOK;mouseYaw=clamp(mouseYaw-dx*sens,-L.yaw,L.yaw);mousePitch=clamp(mousePitch-dy*sens,-L.down,L.up);}}
 addEventListener('mousemove',e=>{if(!active()||touch)return;let dx=0,dy=0;
  if(document.pointerLockElement===canvas){dx=e.movementX||0;dy=e.movementY||0;
   // Chromium can report one huge jump right after the lock engages; ignore it.
