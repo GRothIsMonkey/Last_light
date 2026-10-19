@@ -55,7 +55,7 @@ export function createOnFoot({scene,self,bike,camera,keys,sfx,landing,$}){
    // Looking down at yourself: the body sits a little back under the eye (as a neck bends the eyes forward over the
    // chest), so you see your chest, arms, legs and shoes, never the inside of your own shoulders.
    // (crouched, or the eye dipping into a throw: the body further back and leaning less, so the eye stays ahead of the collar)
-   if(!seat&&F.fpBody){const T=F.fp,cr=scripted?0:F.crouch;pose[P.lean]-=.24*cr;const back=T.back0+T.back1*smooth((-F.viewPitch-.25)/.75)-F.extraEye.f+.16*cr+Math.max(0,-F.extraEye.y)*1.3;x-=Math.sin(a)*back;z+=Math.cos(a)*back;}
+   if(!seat&&F.fpBody){const T=F.fp,cr=scripted?0:F.crouch;pose[P.lean]-=.24*cr;const back=T.back0+T.back1*smooth((-F.viewPitch-.25)/.75)-F.extraEye.f+.16*cr+Math.min(.09,Math.max(0,-F.extraEye.y))*1.3;/* (a throw's small dip, not a reach to the ground: that bends you toward it) */x-=Math.sin(a)*back;z+=Math.cos(a)*back;}
    self.group.position.set(x,y+F.height-F.land,z);self.group.rotation.set(0,-a,0);
    if(F.arms){self.group.updateMatrixWorld(true);F.arms(pose,{toLocal:v=>self.group.worldToLocal(v),dt,foot:F});}else{F.extraEye.f*=.85;F.extraEye.y*=.85;}
    applyPose(self,pose);

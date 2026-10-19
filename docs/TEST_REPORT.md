@@ -57,7 +57,16 @@ fixed here.
 
 ## Not done / limits
 
-{{LIMITS}}
+- **Not approved.** Everything here is simulation and software-rendered frames; the chapter waits on the human playtest.
+- **Art is placeholder** (the Astra pass): rig, clothing, hands, faces, props, water, buildings, lighting. The list of
+  what the frames show is in the Astra handoff. Mouth movement is text-timed; there is no voice.
+- **Real-GPU frame rate is unmeasured** (the container has no GPU); memory is measured in Chromium with SwiftShader.
+- **Audio** is placeholder synthesis.
+- **Touch:** the act button picks up and throws a stone (one press, a set wind-up); sprint, crouch and the flashlight
+  are still keyboard-only on touch screens, as in earlier chapters.
+- **The frames are samples.** Some moments fall between captured frames (a grasp, a bag going on); the review scripts
+  can be given more frames where a moment needs looking at.
+- **No hosted build.** See the final report for why and how to run it locally.
 
 # Last Light — Chapter Five: The Place in the Picture: verification
 
