@@ -61,7 +61,7 @@ if(process.env.ONLY==='chapter5'){const {playChapterFive,runChapterFiveChecks}=a
  // (for development the checks here report and go on, so one run shows every failure)
  const soft=(name,fn)=>{try{fn();checks.push(name);console.log('ok  ',name);}catch(e){fails.push(name+': '+String(e.message).slice(0,500));console.log('FAIL',name,String(e.message).slice(0,500));}};
  const T5={h,advance,press,release,tap,check:soft,element,metrics,groundPoint,W};
- try{playChapterFive(T5,'Chapter Five',{fromCard:process.env.FROMCARD!=='0',route:process.env.ROUTE||'A',choice:process.env.CHOICE||'sam',from:process.env.FROM||null});}catch(e){fails.push('playthrough threw: '+String(e.stack||e).slice(0,800));}
+ try{playChapterFive(T5,'Chapter Five',{fromCard:process.env.FROMCARD!=='0',route:process.env.ROUTE||'A',choice:process.env.CHOICE||'sam',from:process.env.FROM||null,to:process.env.TO||null});}catch(e){fails.push('playthrough threw: '+String(e.stack||e).slice(0,800));}
  if(!process.env.PLAY_ONLY)try{await runChapterFiveChecks(T5,null);}catch(e){fails.push('checks threw: '+String(e.stack||e).slice(0,800));}
  console.log(JSON.stringify({passed:checks.length,failed:fails,metrics},null,1));process.exit(fails.length?1:0);}
 // ONLY=companions: Chapter Five's companion acceptance tests (A–H) alone, for development.

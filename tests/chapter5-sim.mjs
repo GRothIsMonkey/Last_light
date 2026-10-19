@@ -96,16 +96,16 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  check(`${label}: skipping stones: a stone picked up off the shore, wound up and let go, each time; Jamie's and Sam's their own; Sam's six`,()=>{assert.ok(C5().stones.done);assert.equal(throws,3,'your throws '+throws);assert.equal(PKS.best.sam,6,JSON.stringify(PKS.log));assert.ok(PKS.you.every(n=>n>=2),'low, flat, across the water: '+PKS.you);
   assert.ok(PKS.jamie.length===3&&PKS.sam.length===3,'they threw their own');assert.ok(A5.phys.LOG.log.filter(l=>l[0]==='hold'&&/beach-stone/.test(l[1])).length>=9,'every stone picked up by a hand');});
  M2['chapter5 stones']={you:PKS.you,jamie:PKS.jamie,sam:PKS.sam};
+ // ---- the dock ----
+ U(()=>S().phase==='d5-dock',30);const DE=SPOT.dockEnd,DK=DOCKS[0];goEN(DE[0]+Math.sin(DK.a+Math.PI)*.8,DE[1]+Math.cos(DK.a+Math.PI)*.8,{r:.5});faceEN(DE[0]+Math.sin(DK.a)*3,DE[1]+Math.cos(DK.a)*3);const dockAt={where:C5().where,spot:X.spot()?.id,pt:+h.snapshot.clock?.toFixed?.(1),flags:Object.keys(A5.C.flags).filter(k=>/dock/.test(k)),holding:!!A5.PK.holding,view:A5.C.view,pose:!!A5.C.pose};act('c5-sit',6);
+ let seatedAll=false;U(()=>{if(jamieSam().every(c=>c.seated)&&(A5.C.pose?.w||0)>.95)seatedAll=true;return S().phase==='d5-sign';},150);
+ check(`${label}: the dock: the three of you sat on its edge, legs over the water; Alex, and the shoe he named Gary`,()=>{assert.ok(C5().flags.dock);assert.ok(seatedAll,'all three seated '+JSON.stringify(dockAt));assert.ok(log.said.some(l=>/Gary/.test(l)));});
  // ---- the shallows: off the beach into the water, at a wading pace while the bed is under it, and back out ----
  {let tgt=null;for(let r=2;r<9&&!tgt;r+=.5)for(let k=0;k<24&&!tgt;k++){const e=STN[0]+Math.sin(k/24*Math.PI*2)*r,n=STN[1]+Math.cos(k/24*Math.PI*2)*r,sd=shoreSD(e,n);if(sd<-1.9&&sd>-2.6&&wadeZone(e,n).beach>.8){const w=PW(e,n);if(heightAt(w.x,w.z)<WATER-.14)tgt=[e,n];}}
   const back=[STN[0]+.4,STN[1]+.4];let wet=0,slow=0,dry=0,deep=9,diag=null;const watch=()=>{const p=me(),wsurf=h.nav.surface(p.x,p.z),d=heightAt(p.x,p.z)-WATER;if(wsurf==='water')wet++;if(Math.abs((h.foot.pace??1)-.58)<.01)slow++;if(d<deep){deep=d;diag={phase:S().phase,state:h.snapshot.state,walking:me().walking,pace:h.foot.pace,surf:wsurf};}};
   if(tgt){goEN(tgt[0],tgt[1],{r:.3,max:25,stop:()=>{watch();return false;}});for(let i=0;i<30;i++){W(1/30);watch();}goEN(back[0],back[1],{r:.8,max:20});W(.4);dry=Math.abs((h.foot.pace??1)-1)<.01?1:0;}
   M2['chapter5 wading']={target:tgt&&tgt.map(v=>+v.toFixed(1)),wetFrames:wet,slowFrames:slow,deepest:+deep.toFixed(2),atDeepest:diag,paceBack:h.foot.pace};
   check(`${label}: the shallows: off the beach into the water (wading pace while the bed is under water), and back out`,()=>{assert.ok(tgt,'a wading point');assert.ok(wet>10,'in the water '+wet);assert.ok(slow>10,'wading pace '+slow+' '+JSON.stringify(M2['chapter5 wading']));assert.ok(dry,'back to walking pace on the beach '+h.foot.pace);});}
- // ---- the dock ----
- U(()=>S().phase==='d5-dock',30);const DE=SPOT.dockEnd,DK=DOCKS[0];goEN(DE[0]+Math.sin(DK.a+Math.PI)*.8,DE[1]+Math.cos(DK.a+Math.PI)*.8,{r:.5});faceEN(DE[0]+Math.sin(DK.a)*3,DE[1]+Math.cos(DK.a)*3);const dockAt={where:C5().where,spot:X.spot()?.id,pt:+h.snapshot.clock?.toFixed?.(1),flags:Object.keys(A5.C.flags).filter(k=>/dock/.test(k)),holding:!!A5.PK.holding,view:A5.C.view,pose:!!A5.C.pose};act('c5-sit',6);
- let seatedAll=false;U(()=>{if(jamieSam().every(c=>c.seated)&&(A5.C.pose?.w||0)>.95)seatedAll=true;return S().phase==='d5-sign';},150);
- check(`${label}: the dock: the three of you sat on its edge, legs over the water; Alex, and the shoe he named Gary`,()=>{assert.ok(C5().flags.dock);assert.ok(seatedAll,'all three seated '+JSON.stringify(dockAt));assert.ok(log.said.some(l=>/Gary/.test(l)));});
  }
  // ---- the place in the picture: Alex's camera, compared ----
  if(seg('sign')){
@@ -136,7 +136,9 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  }
  // ---- the office: the door, the register, the search map ----
  if(seg('camp')){
- const campAt={where:C5().where,lock:h.roam.walkLock,view:A5.C.view,pose:!!A5.C.pose,inv:A5.GR.inv.isOpen,state:h.snapshot.state,act:A5.phys.ME.act?.what||A5.phys.ME.act?.kind||null};
+ const campAt={where:C5().where,lock:h.roam.walkLock,view:A5.C.view,pose:!!A5.C.pose,inv:A5.GR.inv.isOpen,state:h.snapshot.state,act:A5.phys.ME.act?.what||A5.phys.ME.act?.kind||null,
+  boys:jamieSam().map(c=>{const q=PL(c.px,c.pz);return [+q.e.toFixed(2),+q.n.toFixed(2),c.script?'script':'',h.chapter5.brain.state(c).goal];}),path:(()=>{const p=me(),d=Q5(...door('office',1.1));return h.nav.walkPath({x:p.x,z:p.z},d).map(q=>{const r=PL(q[0],q[1]);return [+r.e.toFixed(1),+r.n.toFixed(1)];});})(),walk0:h.nav.walkable(me().x,me().z),blk:h.chapter.blockers(true).map(o=>{const q=PL(o.x,o.z);return [o.r,+q.e.toFixed(1),+q.n.toFixed(1)];})};
+ goEN(-165.6,513.4,{r:.3,max:6});/* (through the open half of the arch first, between the leaves, as you would: the right leaf stands half shut) */
  goEN(...door('office',1.1),{r:.5});campAt.after=C5().where;faceEN(...B('office').c);act('c5-door-office',5);W(1);
  {const b=B('office'),R=h.world.pine.anchors.register,[e,n]=b.F.to(R.x+.4,-R.z+.8);goEN(...b.F.to(b.door[0],b.d/2-.9),{r:.25});goEN(e,n,{r:.25});faceEN(...b.F.to(R.x+.4,-R.z));act('c5-register',6);
   for(let i=0;i<3;i++){W(1.2);tap('KeyD');}U(()=>quiet(),40);tap('KeyV');W(.6);tap('KeyS');W(1.5);

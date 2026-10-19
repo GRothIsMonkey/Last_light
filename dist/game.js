@@ -499,7 +499,7 @@ function updateNightWalk(dt){
  const free=(x,z)=>nav.walkable(x,z)&&!chapter.blockers(true).some(o=>!(o.low&&over)&&near(o.x,o.z,o.r+.3,x,z))&&!near(roam.x,roam.z,.5,x,z);
  // (Chapter Five: standing where something now stands, a gate leaf swung onto you, any step that does not go further into
  // it is allowed, so you can always walk out)
- const outOf=()=>{if(!nav.pineOpen||free(wx,wz))return false;const nx=wx+dx,nz=wz+dz,l=Math.hypot(dx,dz)||1;if(!nav.walkable(nx,nz)&&(nav.walkable(wx,wz)||!nav.walkable(wx+dx/l*.5,wz+dz/l*.5)))return false;/* (out of it, not further in) */
+ const outOf=()=>{if(!nav.pineOpen||free(wx,wz))return false;const nx=wx+dx,nz=wz+dz;if(!nav.walkable(nx,nz)&&(nav.walkable(wx,wz)||!nav.walkable(nx,nz,{r:.1})))return false;/* (inside something's clearance: along or out of it, never into the thing itself) */
   const gap=(x,z)=>Math.min(9,...chapter.blockers(true).filter(o=>!(o.low&&over)).map(o=>Math.hypot(o.x-x,o.z-z)-o.r),Math.hypot(roam.x-x,roam.z-z));return gap(nx,nz)>=gap(wx,wz)-1e-4;};
  if(free(wx+dx,wz+dz)||outOf()){wx+=dx;wz+=dz;}
  else if(E&&[.3,-.3,.6,-.6,.9,-.9].some(k=>{const c=Math.cos(k),sn=Math.sin(k),ex=dx*c-dz*sn,ez=dx*sn+dz*c;if(free(wx+ex,wz+ez)){wx+=ex;wz+=ez;return true;}return false;})){}// (running: veer round it, the way anyone would)

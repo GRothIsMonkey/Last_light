@@ -3,7 +3,7 @@ export default async function(L,{cap,step,press,release,tap,face}){
  const C5=L.chapter5,cam=L.camera,J=L.chapter.companions.list.jamie,Sm=L.chapter.companions.list.sam;
  // (the view turns on the next step: one step taken, then aimed again, so the frame shows where it was aimed)
  const aim=v=>{const w=L.state.walk,c=cam.position;face(Math.atan2(v.x-w.x,-(v.z-w.z)),Math.atan2(v.y-c.y,Math.hypot(v.x-c.x,v.z-c.z)));},lookAt=v=>{aim(v);step(1/30);aim(v);step(1/30);};
- const head=c=>({x:c.px,y:c.person.group.position.y+1.0,z:c.pz});
+ const head=c=>({x:c.px,y:c.person.group.position.y+(c.seated?.62:1.0),z:c.pz});// (sat on the edge, the head is lower)
  L.jump('c5-dock-memory');step(1);lookAt(head(J));await cap('k01-jamie-and-sam-walk-out');
  L.chapter.act?.('c5-sit')??C5.act('c5-sit');for(let i=0;i<60&&!(J.seated&&Sm.seated);i++)step(.25);step(1.2);
  // (seated, the view is the seat's heading plus how far you have turned from where you sat down: aim relative to it)
