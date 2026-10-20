@@ -212,7 +212,7 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  // (from the first point of the road ahead: the escape can end past the camp gate, and a point behind it would take the
  // walk back in and across the fence line)
  if(route==='A'){const back=gravel(4,186).reverse(),d=q=>Math.hypot(q[0]-me().x,q[1]-me().z);let i=0;while(i<back.length-1&&d(back[i+1])<d(back[i]))i++;
-  trek([...back.slice(i),P5(-118,352),P5(-122,338),P5(-130,322)],{r:2,max:260,sprint:false,stop:()=>A5.C.flags.after});}
+  trek([...back.slice(i),P5(-118,352),P5(-122,338),P5(-130,322),P5(-132.5,318.5)],{r:2,max:260,sprint:false,stop:()=>A5.C.flags.after});}/* (on to the rack itself: the lamp scene starts within 6 m of it) */
  else walkTo([P5(-358,410),P5(-362,380),P5(-346,347),P5(-320,334),P5(-292,324),P5(-262,317),P5(-228,316),P5(-198,319),P5(-170,322),P5(-145,320),P5(-132,318)],{r:2,max:320,stop:()=>A5.C.flags.after});
  U(()=>S().phase==='n5-final',40);U(()=>A5.C.flags.review,90);
  check(`${label}: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”`,()=>{assert.ok(log.said.some(l=>/like a duck/.test(l)),JSON.stringify({phase:S().phase,after:!!A5.C.flags.after,review:!!A5.C.flags.review,last:log.said.slice(-10)}));assert.ok(log.said.some(l=>/knew we’d come/.test(l)));});
