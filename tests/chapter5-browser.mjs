@@ -81,7 +81,7 @@ const installWalk=()=>ev(async({route,choice})=>{const L=lastLight,{playChapterF
   got.passed.push(...w.passed);got.fails.push(...w.fails);Object.assign(got.metrics,w.metrics);got.clock+=w.clock;
   for(let i=0;i<w.n;i++)got.caps.push(await ev(i=>{const c=window.__caps[i];window.__caps[i]=null;return c;},i));
   await ev(()=>{const W=window.__walk;W.passed.length=0;W.fails.length=0;window.__caps.length=0;});};
- const SEGS=(process.env.SEGS?process.env.SEGS.split(','):['start','stones','sign','road','camp','dusk','lights','split','run']),mem=[];
+ const SEGS=(process.env.SEGS==='none'?[]:process.env.SEGS?process.env.SEGS.split(','):['start','stones','sign','road','camp','dusk','lights','split','run']),mem=[];
  for(const k of SEGS){const t1=Date.now();if(SEG&&k!=='start'){await harvest();await openBrowser();await installWalk();}const r=await ev(({k,route,choice,SEG})=>{const W=window.__walk,L=lastLight;
    try{W.playChapterFive(W.T,'Chromium',k==='start'?{fromCard:false,entered:true,route,choice,to:'start'}:{from:k,to:k,cont:!SEG,route,choice});}catch(e){W.fails.push(k+': playthrough threw: '+String(e.stack||e).slice(0,800));}
    globalThis.gc?.();return {phase:L.chapter5.state.phase,clock:+(W.clock/60).toFixed(2),heapMB:Math.round((performance.memory?.usedJSHeapSize||0)/1048576)};},{k,route,choice,SEG});
