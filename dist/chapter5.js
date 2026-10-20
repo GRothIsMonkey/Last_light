@@ -644,7 +644,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   say([{who:'SAM',text:'“J. S. A.”',by:'sam',time:1.4},{who:'YOU',text:'“Like at the lookout. Like he wrote in chalk.”',time:2.4},{who:'JAMIE',text:'“It’s new. The wood’s still white.”',by:'jamie'},
    {who:'SAM',text:'“Four marks.”',by:'sam',time:1.2},{who:'SAM',text:'“Sunday. Monday. Tuesday. Today.”',by:'sam',time:2.6},{who:'JAMIE',text:'“And an arrow. Pointing… that way.”',by:'jamie'}],{then:()=>{endLook();C.flags.carvingDone=true;owlNext();}});}
  function owlNext(){if(!(C.flags.shirtDone&&C.flags.carvingDone)||C.flags.owlDone)return;C.flags.owlDone=true;
-  const b=OWLB,beside=()=>{const [e,n]=b.F.to(SHIRT_AT[0]-.5,SHIRT_AT[1]+.5);return W5(e,n);};const t0=C.t;
+  const b=OWLB,beside=()=>{const [e,n]=b.F.to(SHIRT_AT[0]-.5,SHIRT_AT[1]+.5);/* (the nearest clear standing room by the nail: from the old spot, too tight, he could not step away after) */for(let r=0;r<=.6;r+=.05)for(let k=0;k<(r?16:1);k++){const a=k/16*Math.PI*2,q=W5(e+Math.sin(a)*r,n+Math.cos(a)*r);if(nav.walkable(q.x,q.z,{r:.32}))return q;}return W5(e,n);};const t0=C.t;
   say([{wait:1},{who:'SAM',text:'“I’m taking it.”',by:'sam',time:1.4,face:'determined',act:()=>GR.samTakesShirt({stand:beside})},{until:()=>C.inv.shirt||C.t-t0>16},
    {who:'JAMIE',text:'“He’s HERE. He’s somewhere here.”',by:'jamie',face:'hopeful'}],{then:callAlex});}
  function updateOwl(dt){const X=C.owl;X.t+=dt;
