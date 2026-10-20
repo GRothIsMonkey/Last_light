@@ -50,7 +50,7 @@
   "dist/layout.js": "fc7e6ee21e8cf1b6ff9c8f9b888bcee57b7f2422ad3a2b27c13d57798414099c",
   "dist/materials.js": "3c48c0da355812a59fa972fa0ae06a7f375a6ab20e833f4cb11286ee8837f220",
   "dist/memory.js": "76498323db63e152db35e36f11b44b01543da4d5cdf44bdd3a1300ea7c1be5ab",
-  "dist/nav.js": "c6efa2e8d530408b7f79fcf7b3fd988e2aa4047d50e95140260bf4e1f99bcdc7",
+  "dist/nav.js": "786768e7d92248b9e9170f1c4f69e2c92fa5d90fec190adff5cf4e9d484eb6b0",
   "dist/nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
   "dist/old-bike.js": "df1f0e9344338cb74ac00bcae7904f1e312ee2d93f450cda21772811e81a7605",
   "dist/on-foot.js": "e31bb980fd342bcee1da67edd75f4ed90cc6c0c09e2990a639b7529a32f9ffcf",
@@ -283,7 +283,7 @@
   "first ride: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, \u201cit knew we\u2019d come\u201d",
   "first ride: on Alex's camera, a picture none of them took (the three of them at the fire, 6:34PM)",
   "first ride: the last image (one light across the water), then the end card: LAST LIGHT \u00b7 Chapter Five \u00b7 August 24, 2011, and no Chapter Six",
-  "first ride: Jamie and Sam never left: farthest 13.6 m ({\"phase\":\"n5-split\",\"where\":{\"e\":-250.6,\"n\":549,\"street\":\"pine\"}}); nothing non-finite",
+  "first ride: Jamie and Sam never left: farthest 13.6 m ({\"phase\":\"n5-split\",\"where\":{\"e\":-250.6,\"n\":549.2,\"street\":\"pine\"}}); nothing non-finite",
   "first ride: the head turns toward friends heading home when you are not looking around yourself",
   "first ride: memory lines appear once each, never over a friend's line",
   "no friend was hidden before going inside (Alex only once he is out of sight down Briarwood)",
@@ -761,7 +761,7 @@
   "Chapter Five replay: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, \u201cit knew we\u2019d come\u201d",
   "Chapter Five replay: on Alex's camera, a picture none of them took (the three of them at the fire, 6:34PM)",
   "Chapter Five replay: the last image (one light across the water), then the end card: LAST LIGHT \u00b7 Chapter Five \u00b7 August 24, 2011, and no Chapter Six",
-  "Chapter Five replay: Jamie and Sam never left: farthest 13.6 m ({\"phase\":\"n5-split\",\"where\":{\"e\":-250.6,\"n\":549.3,\"street\":\"pine\"}}); nothing non-finite",
+  "Chapter Five replay: Jamie and Sam never left: farthest 13.5 m ({\"phase\":\"n5-final\",\"where\":{\"e\":-130.4,\"n\":315.9,\"street\":\"pine\"}}); nothing non-finite",
   "DEV start at chapter 1 (phase leave): the same state as arriving naturally (0 differences outside the documented list)",
   "DEV start at chapter 1: player, companions and the people present are where a natural arrival leaves them (within 15 m)",
   "DEV start at chapter 2 (phase c2-black): the same state as arriving naturally (0 differences outside the documented list)",
@@ -1084,7 +1084,7 @@
   "chapter5 split": {
    "resolvedAt": 25,
    "how": "together",
-   "maxSpread": 25.2,
+   "maxSpread": 25.1,
    "pullAfterLookingAtOwl": {
     "t": 6.8,
     "drift": {
@@ -1093,9 +1093,9 @@
     }
    }
   },
-  "chapter5 escape seconds": 145.8,
+  "chapter5 escape seconds": 199,
   "chapter5 catch-ups": [],
-  "chapter5 natural minutes": 28.28,
+  "chapter5 natural minutes": 29.16,
   "chapter5 lines spoken": 258,
   "chapter5 photos on the camera": 16,
   "chapter5 guard": {
@@ -1119,7 +1119,7 @@
    "oldBell": 1,
    "doorSlam": 7
   },
-  "first playthrough minutes": 101.6,
+  "first playthrough minutes": 102.49,
   "reflectionsShown": 3,
   "alexGoneView": {
    "who": "ALEX",
