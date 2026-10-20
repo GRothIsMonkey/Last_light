@@ -14,7 +14,7 @@ What changed and why: `docs/CHAPTER5_GAMEPLAY_STORY_REPAIR.md`. This build waits
 | Chapter Five alone with the companion tests, `ONLY=chapter5 node tests/verify.mjs` | **81/81** (the play, the DEV scenes, the fallbacks, companion tests A–H) |
 | Chromium walkthrough, `tests/chapter5-browser.mjs` (SwiftShader, sound off, the game's Low setting, `SEGMENTED=1`) | Run 1, Chapter Four's end card → the real **Chapter Five** click → the garage to the campfire: **24 passed, 0 failed**. Run 2, dusk to Chapter Five's end card: **16 passed, 0 failed, 0 JavaScript errors, 0 WebGL/shader warnings**. Each segment after the first in a fresh browser from its own checkpoint (see *Chromium and this container's memory*). Frames, reports, console: `docs/qa/chapter5-repair/browser/`. |
 | Chromium, DEV selector | **All 37 Chapter Five scenes** start from the selector with real clicks, each in a Chapter Five phase with Jamie and Sam there; 0 JavaScript errors, 0 WebGL warnings (four scenes per browser). The same run's "end card" check fails by construction: it skipped the walkthrough. |
-| Memory | JS heap 1,085 MB at the title, 1,089–1,099 MB through every Chapter Five segment, the same as the first draft (1,084 / 1,091–1,094). Renderer steady 1.7–2.3 GB. Details below. |
+| Memory | JS heap 1,085 MB at the title, 1,089–1,099 MB through every Chapter Five segment, the same as the first draft (1,084 / 1,091–1,094). Renderer steady 1.67–1.82 GB in every section. Details below. |
 | Final audit and its verification | Five confirmed defects fixed and each fix independently re-verified (one of them a Chapters 0–4 regression: Chapter Four's heads); follow-ups from the verification fixed (see the repair report, *The final audit*). |
 | Private playtest build | Updated in place (the same private link): the repository's runtime plus the two hosting-only files of the previous playtest build, unchanged (see *Publication*). |
 
@@ -140,11 +140,31 @@ the Chromium walkthrough (the JS heap after a forced GC at each segment's end):
 | JS heap at the title | 1,084 MB | 1,085 MB |
 | JS heap at Chapter Four's end | 1,089 MB | 1,093 MB |
 | JS heap through Chapter Five | 1,091–1,094 MB | 1,089–1,099 MB (every segment) |
-| Renderer, steady (Chapter Four's end / in Chapter Five) | 1,784 MB / 1.46–1.76 GB | 1,726 MB / 1.7–2.3 GB |
+| Renderer, steady (Chapter Four's end / in Chapter Five) | 1,784 MB / 1.46–1.76 GB | 1,726 MB / 1.67–1.82 GB (2.3 GB in Jamie's sock scene) |
 | Renderer, brief peak on a jump | 5,876 MB | 5,901 MB (Chapter Four's end), 4,051 MB (Jamie's sock scene) |
-| Lights in Chapter Five | 9 point lights and the flashlight's 2 spots | 6 point lights and 5 spots in the garage (the flashlight's 2 among them) |
+| Lights in Chapter Five | 9 point lights and the flashlight's 2 spots | 6 point lights and 5 spots in every section (the flashlight's 2 among them) |
 
-{{MEMSECTIONS}}
+Every Chapter Five section, final runtime, three sessions of the probe (a fresh browser each; one session through all
+of them is more than this container allows, see below). Log: `docs/qa/chapter5-repair/memory/probe-final.txt`.
+
+| Section | JS heap | Programs | Geometries | Renderer steady (peak on the jump) | GPU process |
+|---|---:|---:|---:|---:|---:|
+| The ride | 1,087 MB | 65 | 786 | 1,667 MB (2,973) | 603 MB |
+| The park | 1,088 MB | 68 | 976 | 1,824 MB (2,771) | 672 MB |
+| The stones | 1,089 MB | 68 | 986 | 1,736 MB (3,296) | 674 MB |
+| The dock | 1,089 MB | 70 | 994 | 1,707 MB (3,016) | 674 MB |
+| The yellow gate | 1,087 MB | 62 | 756 | 1,676 MB (3,488) | 634 MB |
+| The camp | 1,088 MB | 62 | 792 | 1,779 MB (4,076) | 646 MB |
+| The office | 1,088 MB | 62 | 815 | 1,723 MB (5,054) | 650 MB |
+| The campfire | 1,088 MB | 66 | 998 | 1,776 MB (4,425) | 691 MB |
+| Owl | 1,090 MB | 60 | 617 | 1,697 MB (2,950) | 602 MB |
+| The three lights | 1,088 MB | 69 | 849 | 1,778 MB (5,005) | 673 MB |
+| The split | 1,088 MB | 70 | 881 | 1,798 MB (3,448) | 674 MB |
+| The run | 1,088 MB | 70 | 901 | 1,698 MB (3,804) | 677 MB |
+| The aftermath | 1,089 MB | 72 | 1,007 | 1,767 MB (3,823) | 704 MB |
+
+The lights are the same in every section (a hemisphere, the sun, 6 point lights and 5 spots, the flashlight's among
+them), so no material recompiles mid-scene.
 
 **Chromium and this container's memory.** This session's container kills the browser's renderer when the container's
 memory runs out: the kernel log shows it killed at 4.5–9.1 GB resident, where the first draft's container allowed

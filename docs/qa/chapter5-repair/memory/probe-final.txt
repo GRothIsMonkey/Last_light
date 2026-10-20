@@ -1,0 +1,26 @@
+# memprobe.mjs, final runtime (66c6ca5 dist), Chromium SwiftShader 1280x720, nothing else running; three sessions (fresh browser each)
+== session c5-ride,c5-park,c5-stones,c5-dock-memory
+title+start                heap  1085 MB  programs   33  geometries   338  textures   10   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":2}   renderer 2060 (peak 2600)  gpu 447 (peak 572)
+c5-ride                    heap  1087 MB  programs   65  geometries   786  textures   14   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1667 (peak 2973)  gpu 603 (peak 606)
+c5-park                    heap  1088 MB  programs   68  geometries   976  textures   14   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1824 (peak 2771)  gpu 672 (peak 674)
+c5-stones                  heap  1089 MB  programs   68  geometries   986  textures   14   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1736 (peak 3296)  gpu 674 (peak 683)
+c5-dock-memory             heap  1089 MB  programs   70  geometries   994  textures   15   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1707 (peak 3016)  gpu 674 (peak 684)
+== session c5-gate-decision,c5-camp,c5-office,c5-campfire
+title+start                heap  1085 MB  programs   33  geometries   338  textures   10   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":2}   renderer 1788 (peak 2050)  gpu 531 (peak 531)
+c5-gate-decision           heap  1087 MB  programs   62  geometries   756  textures   15   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1676 (peak 3488)  gpu 634 (peak 708)
+c5-camp                    heap  1088 MB  programs   62  geometries   792  textures   15   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1779 (peak 4076)  gpu 646 (peak 668)
+c5-office                  heap  1088 MB  programs   62  geometries   815  textures   15   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1723 (peak 5054)  gpu 650 (peak 656)
+c5-campfire                heap  1088 MB  programs   66  geometries   998  textures   15   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1776 (peak 4425)  gpu 691 (peak 717)
+== session c5-owl,c5-three-lights,c5-split,c5-run,c5-aftermath
+title+start                heap  1085 MB  programs   33  geometries   338  textures   10   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":2}   renderer 1973 (peak 2336)  gpu 561 (peak 572)
+c5-owl                     heap  1090 MB  programs   60  geometries   617  textures   14   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1697 (peak 2950)  gpu 602 (peak 706)
+c5-three-lights            heap  1088 MB  programs   69  geometries   849  textures   15   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1778 (peak 5005)  gpu 673 (peak 695)
+c5-split                   heap  1088 MB  programs   70  geometries   881  textures   16   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1798 (peak 3448)  gpu 674 (peak 683)
+c5-run                     heap  1088 MB  programs   70  geometries   901  textures   16   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1698 (peak 3804)  gpu 677 (peak 684)
+c5-aftermath               heap  1089 MB  programs   72  geometries  1007  textures   21   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1767 (peak 3823)  gpu 704 (peak 708)
+
+# earlier single session (killed by the container after c5-departure):
+title+start                heap  1085 MB  programs   33  geometries   338  textures   10   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":2}   renderer 1938 (peak 2413)  gpu 436 (peak 572)
+chapter4-end               heap  1093 MB  programs  143  geometries  1517  textures   45   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":8}   renderer 1726 (peak 5901)  gpu 800 (peak 802)
+c5-garage                  heap  1093 MB  programs  171  geometries  1608  textures   46   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 1711 (peak 1977)  gpu 837 (peak 854)
+c5-departure               heap  1094 MB  programs  171  geometries  1608  textures   46   lights {"HemisphereLight":1,"DirectionalLight*":1,"PointLight":6,"SpotLight":5}   renderer 2313 (peak 4051)  gpu 849 (peak 878)
