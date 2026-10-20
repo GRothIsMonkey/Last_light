@@ -224,6 +224,8 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
   assert.ok(log.said.some(l=>/good sock/.test(l)));});
  check(`${label}: Jamie and Sam never left: farthest ${watch.gapMax.toFixed(1)} m (${JSON.stringify(watch.gapAt)}); nothing non-finite`,()=>{assert.ok(watch.gapMax<30,JSON.stringify(watch.gapAt));assert.deepEqual(log.bad,[]);});
  const minutes=(h.snapshot.clock-t0)/60;
+ // (each time the guard put a friend back near you out of sight, and the two events before it: where it happened)
+ {const L=h.tension?.log||[];M2['chapter5 catch-ups']=L.map((e,i)=>/^caught up/.test(e.why||'')?{who:e.why.slice(11),after:L.slice(Math.max(0,i-2),i).map(x=>x.why)}:null).filter(Boolean);}
  M2['chapter5 natural minutes']=+minutes.toFixed(2);M2['chapter5 lines spoken']=log.said.length;M2['chapter5 photos on the camera']=C5().photosOnCamera;M2['chapter5 guard']=C5().guard;M2['chapter5 sounds']=C5().sounds;
  return {minutes,watch};
 }

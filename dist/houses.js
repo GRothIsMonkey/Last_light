@@ -529,16 +529,21 @@ function makeDynamic(W){const {K}=W,doors={},garages={};
   const open=h.S(D.x,D.front+.9),inside=h.S(D.x+D.hinge*.15,D.front-2.3),stepOut=h.S(D.x,h.stepFront+.5),porch=h.S(D.x,D.front+.45),latch=h.S(D.x+D.dirX*.42,D.front+Math.min(1.2,h.pdep-.2)),entry=h.S(D.x,D.front-.7);
   // Doors swing inward, about 85 degrees.
   return {pivot,d,lat,open:0,set(t){this.open=t;pivot.rotation.y=D.dirX*t*1.48;},threshold:h.S(D.x,D.front),outside:open,inside,entry,steps:stepOut,porch,latch,floor:D.y,house:h};}
+ let footShadow=null;
  // A friend's garage footing, drawn live instead of baked: the same rounded box, draped on the ground vertex by vertex the
  // way the bake drapes it, so Chapters Zero to Four see it where it always was. Chapter Five, where you walk in, lowers it
- // 0.18 m to the slab people stand on (+0.2 m), so its concrete floor is the floor you see: chapter5.js slabs().
+ // 0.18 m to the floor people stand on (+0.2 m), under the garage's concrete slab (+0.22 m): chapter5.js slabs().
  function liveFooting(h){const {gx,gw,gd,gfront}=h,gz=gfront-gd/2,src=K.rbox(new THREE.Group(),0,0,0,gw+.1,.86,gd+.1,.03,HOUSE.foundation),sg=src.geometry;
   const P=sg.attributes.position,N=sg.attributes.normal,n=P.count,pos=new Float32Array(n*3),nor=new Float32Array(n*3),c=Math.cos(h.worldRot),s=Math.sin(h.worldRot);
   for(let i=0;i<n;i++){const w=h.toWorld(gx+P.getX(i),gz+P.getZ(i));pos[i*3]=w.x;pos[i*3+1]=w.ground-.05+P.getY(i);pos[i*3+2]=w.z;
    if(N){const nx=N.getX(i),nz=N.getZ(i);nor[i*3]=nx*c+nz*s;nor[i*3+1]=N.getY(i);nor[i*3+2]=-nx*s+nz*c;}}
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));if(N)geo.setAttribute('normal',new THREE.BufferAttribute(nor,3));else geo.computeVertexNormals();
   if(sg.index)geo.setIndex(sg.index.clone());if(sg.attributes.uv)geo.setAttribute('uv',sg.attributes.uv.clone());geo.computeBoundingSphere();
-  const m=new THREE.Mesh(geo,src.material);m.name=h.key+'-garage-footing';m.castShadow=m.receiveShadow=true;W.scene.add(m);return m;}
+  // (shadows as the bake gives them: the drawn mesh receives, a shadow-only copy on layer 1 casts, so the sun sees it and
+  // a flashlight's layer-0 shadow camera does not)
+  const m=new THREE.Mesh(geo,src.material);m.name=h.key+'-garage-footing';m.castShadow=false;m.receiveShadow=true;
+  const sh=new THREE.Mesh(geo,footShadow||(footShadow=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false,side:THREE.DoubleSide})));sh.castShadow=true;sh.receiveShadow=false;sh.layers.set(1);sh.name=m.name+'-shadow';m.add(sh);
+  W.scene.add(m);return m;}
  function makeGarage(h){h.garageFoundation=liveFooting(h);const G=h.garageInfo,I=W.interiors[h.key+'-garage']||W.interiors[h.key],{g,d,lat}=W.houseAnchor(h,G.x,G.front-.1,G.y);const panel=new THREE.Group();g.add(panel);
   const slab=new THREE.Mesh(K.boxGeo,K.mat(0xeeeae0));slab.scale.set(G.doorW-.04,G.doorH,.06);slab.castShadow=true;panel.add(slab);
   for(let k=1;k<4;k++){const gr=new THREE.Mesh(K.boxGeo,K.mat(0xb3ad9f));gr.scale.set(G.doorW-.04,.03,.02);gr.position.set(0,-G.doorH/2+k*G.doorH/4,.035);panel.add(gr);}

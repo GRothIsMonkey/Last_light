@@ -272,7 +272,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  // where, what is said, and the way out to the bikes.
  const phys=createPhysical({scene,comp});comp.after(()=>phys.sync());
  const G5=createGarage({scene,phys,comp,jamie,sam,drive,driveA,gy,camera,me,self:o.self,busy,later:(t,f)=>later(t,f),t:()=>C.t,
-  say:(l,op)=>say(l,op),sound:(n,p,op)=>sound(n,p,op),stand:(c,q,op)=>stand(c,q,op),walkPath:(c,q,obs=[])=>nav.walkPath({x:c.px,z:c.pz},q,obs),eyePos:()=>camera.position.clone().add(new THREE.Vector3(0,-.25,0)),
+  say:(l,op)=>say(l,op),sound:(n,p,op)=>sound(n,p,op),stand:(c,q,op)=>stand(c,q,op),walkPath:(c,q,obs=[],pad=null)=>nav.walkPath({x:c.px,z:c.pz},q,obs,pad),walkable:(x,z,r=.3)=>nav.walkable(x,z,{r}),eyePos:()=>camera.position.clone().add(new THREE.Vector3(0,-.25,0)),
   lockWalk:on=>{o.roam.walkLock=on||!!C.pose||!!C.view;},gotCamera:()=>{C.inv.camera=true;mark('Alex’s camera, in your hand');},jamieArrives:()=>jamieArrives(),
   lookMap:at=>{closeLook({x:at.x,y:at.y,z:at.z},{back:.62,eye:1.42});C.view='look';C.lookAt=at;C.lookKind='map';later(9,()=>{if(C.view==='look'&&C.lookKind==='map')endLook();});}});
  const BIKE={jamie:()=>drive(-.9,5.6),sam:()=>drive(-2.1,6.4),you:()=>drive(1.3,5.4)};
