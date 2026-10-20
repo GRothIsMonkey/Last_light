@@ -27,10 +27,15 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const args=['--no-sandbox','--disable-dev-shm-usage'];if(!process.env.BROWSER_GPU)args.push('--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist');
 // (gc() between segments and precise heap numbers for the report; BROWSER_MEMORY_MB bounds the test browser's heap)
 const memoryMB=Number(process.env.BROWSER_MEMORY_MB||0);args.push('--enable-precise-memory-info',`--js-flags=--expose-gc${memoryMB>0?' --max-old-space-size='+memoryMB:''}`);
-const browser=await pw.chromium.launch({executablePath:exe,headless:true,args});
-const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[],warnings=[],checks=[],failed=[],frames=[];
-page.on('pageerror',e=>{errors.push(String(e));console.error('PAGE',String(e));});
-page.on('console',m=>{const t=m.text();if(m.type()==='error'){errors.push(t);console.error('CONSOLE',t);}else if(m.type()==='warning'&&/GL_INVALID|Feedback loop|shader/i.test(t))warnings.push(t);});
+// SEGMENTED=1: each walkthrough segment after the first, and each batch of DEV scenes, in a fresh browser (software GL's
+// memory peaks on a jump add up in one page; a container with less memory than the renderer's peaks kills the page)
+const SEG=!!process.env.SEGMENTED,errors=[],warnings=[],checks=[],failed=[],frames=[];let browser,page;
+async function openBrowser(){if(browser)await browser.close().catch(()=>{});browser=await pw.chromium.launch({executablePath:exe,headless:true,args});page=await browser.newPage({viewport:{width:1440,height:900}});
+ page.on('pageerror',e=>{errors.push(String(e));console.error('PAGE',String(e));});page.on('crash',()=>{errors.push('page crashed');console.error('PAGE CRASHED');});
+ page.on('console',m=>{const t=m.text();if(m.type()==='error'){errors.push(t);console.error('CONSOLE',t);}else if(m.type()==='warning'&&/GL_INVALID|Feedback loop|shader/i.test(t))warnings.push(t);});
+ await page.goto(`http://127.0.0.1:${server.address().port}/dist/index.html?qa`,{timeout:180000});await page.waitForFunction(()=>window.lastLight,null,{timeout:180000});
+ await page.click('#start');await page.evaluate(()=>lastLight.step(.4));}
+await openBrowser();
 const check=(name,value,info='')=>{if(value){checks.push(name);console.log('PASS',name);}else{failed.push(name+(info?' '+info:''));console.log('FAIL',name,info);}};
 const ev=(fn,arg)=>page.evaluate(fn,arg);
 const snap=async(name)=>{await ev(()=>{for(const id of ['objective','objective-note','prompt','subtitle','fade','chapter-card','ending'])for(const a of document.getElementById(id)?.getAnimations()||[])try{a.finish();}catch{}});
@@ -38,8 +43,6 @@ const snap=async(name)=>{await ev(()=>{for(const id of ['objective','objective-n
  await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:86,timeout:300000});frames.push({name,...info});console.log('Captured',name,info.phase,info.calls,info.triangles);if(memoryMB>0)await ev(()=>globalThis.gc?.());};
 const route=process.env.ROUTE||'A',choice=process.env.CHOICE||'sam';let report={};
 try{
- await page.goto(`http://127.0.0.1:${server.address().port}/dist/index.html?qa`,{timeout:180000});await page.waitForFunction(()=>window.lastLight,null,{timeout:180000});
- await page.click('#start');await ev(()=>lastLight.step(.4));
  // ---- the hand-over: Chapter Four's ending, its card, the button ---------------------------------------------------------------
  const card4=await ev(()=>{const L=lastLight;L.jump('chapter4-end');for(let i=0;i<120*30&&L.state.state!=='ended';i++)L.step(1/30);
   return {state:L.state.state,h2:document.querySelector('#ending h2').textContent,next:!document.getElementById('next-chapter').hidden,label:document.getElementById('next-chapter').textContent};});
@@ -51,7 +54,7 @@ try{
  await snap('01-chapter-five-card');
  // ---- the walkthrough: the simulation's player, in the page ---------------------------------------------------------------------
  const t0=Date.now();
- await ev(async({route,choice})=>{const L=lastLight,{playChapterFive}=await import('/tests/chapter5-sim.mjs'),{groundPoint}=await import('/dist/route.js');
+const installWalk=()=>ev(async({route,choice})=>{const L=lastLight,{playChapterFive}=await import('/tests/chapter5-sim.mjs'),{groundPoint}=await import('/dist/route.js');
   let clock=0;const caps=window.__caps=[],fails=[],passed=[],metrics={};
   const h=new Proxy(L,{get(t,k){if(k==='snapshot'){const s=L.state;return {state:s.state,clock,speed:s.speed};}
    if(k==='night'){const s=L.state;return {state:s.state,wx:s.walk.x,wz:s.walk.z,wa:s.walk.a,speed:s.speed,fade:s.fade,roam:L.roam};}return Reflect.get(t,k);}});
@@ -69,31 +72,37 @@ try{
   const T={h,advance,press,release,tap,check,element,metrics,groundPoint,W:null,snap:n=>capture(String(caps.length+2).padStart(2,'0')+'-'+n)};
   // one segment of the chapter per call (the simulation's own segments), so the page gets its event loop back between them
   window.__walk={T,playChapterFive,passed,fails,metrics,get clock(){return clock;}};return true;},{route,choice});
+ await installWalk();
+ // (what the page has gathered, kept here before a fresh browser replaces it)
+ const got={passed:[],fails:[],metrics:{},clock:0,caps:[]};
+ const harvest=async()=>{const w=await ev(()=>{const W=window.__walk;return {passed:W.passed,fails:W.fails,metrics:W.metrics,clock:W.clock,n:window.__caps.length};});
+  got.passed.push(...w.passed);got.fails.push(...w.fails);Object.assign(got.metrics,w.metrics);got.clock+=w.clock;
+  for(let i=0;i<w.n;i++)got.caps.push(await ev(i=>{const c=window.__caps[i];window.__caps[i]=null;return c;},i));
+  await ev(()=>{const W=window.__walk;W.passed.length=0;W.fails.length=0;window.__caps.length=0;});};
  const SEGS=['start','stones','sign','road','camp','dusk','lights','split','run'],mem=[];
- for(const k of SEGS){const t1=Date.now();const r=await ev(({k,route,choice})=>{const W=window.__walk,L=lastLight;
-   try{W.playChapterFive(W.T,'Chromium',k==='start'?{fromCard:false,entered:true,route,choice,to:'start'}:{from:k,to:k,cont:true,route,choice});}catch(e){W.fails.push(k+': playthrough threw: '+String(e.stack||e).slice(0,800));}
-   globalThis.gc?.();return {phase:L.chapter5.state.phase,clock:+(W.clock/60).toFixed(2),heapMB:Math.round((performance.memory?.usedJSHeapSize||0)/1048576)};},{k,route,choice});
+ for(const k of SEGS){const t1=Date.now();if(SEG&&k!=='start'){await harvest();await openBrowser();await installWalk();}const r=await ev(({k,route,choice,SEG})=>{const W=window.__walk,L=lastLight;
+   try{W.playChapterFive(W.T,'Chromium',k==='start'?{fromCard:false,entered:true,route,choice,to:'start'}:{from:k,to:k,cont:!SEG,route,choice});}catch(e){W.fails.push(k+': playthrough threw: '+String(e.stack||e).slice(0,800));}
+   globalThis.gc?.();return {phase:L.chapter5.state.phase,clock:+(W.clock/60).toFixed(2),heapMB:Math.round((performance.memory?.usedJSHeapSize||0)/1048576)};},{k,route,choice,SEG});
   mem.push({segment:k,...r,wallSeconds:Math.round((Date.now()-t1)/1000)});console.log('segment',k,JSON.stringify(mem[mem.length-1]));}
  // the flashlight's two lights are in the scene for the whole chapter (T only changes how bright), so the beam lights the camp
  const flash=await ev(()=>{const L=lastLight,f=L.foot;return {light:!!f?.light?.parent,spill:!!f?.spill?.parent,owned:!!f?.owned};});
  check('Chapter Five: the flashlight’s lights are in the scene (the beam lights what it points at)',flash.light&&flash.spill,JSON.stringify(flash));
- const walk=await ev(()=>{const W=window.__walk;return {passed:W.passed,fails:W.fails,metrics:W.metrics,clock:W.clock,state:lastLight.state.state};});
+ await harvest();const walk={...got,state:await ev(()=>lastLight.state.state)};
  console.log('walkthrough',((Date.now()-t0)/1000).toFixed(0)+'s',JSON.stringify({passed:walk.passed.length,fails:walk.fails}));
  for(const n of walk.passed)check(n,true);for(const f of walk.fails)check(f,false);
  // the frames the player captured, one at a time
- const nCaps=await ev(()=>window.__caps.length);
- for(let i=0;i<nCaps;i++){const c=await ev(i=>{const c=window.__caps[i];window.__caps[i]=null;return c;},i);const name=c.name.replace(/[^a-z0-9]+/gi,'-').replace(/-+$/,'').slice(0,70).toLowerCase();
+ for(const c of walk.caps){if(!c)continue;const name=c.name.replace(/[^a-z0-9]+/gi,'-').replace(/-+$/,'').slice(0,70).toLowerCase();
   fs.writeFileSync(path.join(out,name+'.jpg'),Buffer.from(c.data.split(',')[1],'base64'));frames.push({name,phase:c.phase,time:c.time,caption:c.caption,calls:c.calls,triangles:c.triangles,overlay:'test-drawn text'});}
  const end=await ev(()=>({state:lastLight.state.state,eyebrow:document.querySelector('#ending .eyebrow, #ending p')?.textContent||'',h2:document.querySelector('#ending h2').textContent,
   text:document.getElementById('ending').textContent.replace(/\s+/g,' ').trim(),next:document.getElementById('next-chapter').hidden}));
  await snap('99-chapter-five-end-card');
  check('the walkthrough reaches Chapter Five’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six',
   end.state==='ended'&&end.h2==='Chapter Five'&&/LAST LIGHT/i.test(end.text)&&/August 24, 2011/.test(end.text)&&end.next===true,JSON.stringify(end));
- report.walkthrough={scope:'continuous: Chapter Four end card → real click → Chapter Five played with inputs to its end card (one page call per segment, no jump between them)',route,choice,gameMinutes:+(walk.clock/60).toFixed(2),wallSeconds:Math.round((Date.now()-t0)/1000),segments:mem,metrics:walk.metrics,fails:walk.fails};
+ report.walkthrough={scope:SEG?'segmented: Chapter Four end card → real click → the first segment; each later segment in a fresh browser from its own checkpoint, played with inputs (the end card reached by the last)':'continuous: Chapter Four end card → real click → Chapter Five played with inputs to its end card (one page call per segment, no jump between them)',route,choice,gameMinutes:+(walk.clock/60).toFixed(2),wallSeconds:Math.round((Date.now()-t0)/1000),segments:mem,metrics:walk.metrics,fails:walk.fails};
  // ---- the DEV selector: Chapter Five, every scene, with real clicks ---------------------------------------------------------------
  const scenes=await ev(()=>lastLight.DEV_SCENES[5].map(s=>({id:s.id,label:s.label})));const dev=[];
  await ev(()=>lastLight.toTitle());
- for(const sc of scenes){await page.click('[data-dev-chapter="5"]',{timeout:300000});await page.selectOption('#dev-scene',sc.id);await page.click('#dev-start',{timeout:300000});
+ for(const [i,sc] of scenes.entries()){if(SEG&&i%6===0){await openBrowser();await ev(()=>lastLight.toTitle());}await page.click('[data-dev-chapter="5"]',{timeout:300000});await page.selectOption('#dev-scene',sc.id);await page.click('#dev-start',{timeout:300000});
   await page.waitForFunction(()=>!document.body.classList.contains('dev-starting'),null,{timeout:300000});await ev(()=>lastLight.step(1.5));
   const s=await ev(()=>{const c=lastLight.chapter.companions.all.filter(c=>c.active);return {phase:lastLight.chapter5.state.phase,state:lastLight.state.state,boys:c.length};});
   dev.push({...sc,...s});await snap('dev-'+sc.id);await ev(()=>lastLight.toTitle());}
