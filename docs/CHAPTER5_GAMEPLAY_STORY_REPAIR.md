@@ -157,7 +157,7 @@ inspection of the 22 review scenes. What they found and what was done:
   earlier chapters look and play as accepted; the full regression covers them.
 - **Hands and props:** make-way no longer cancels a friend's scripted action (the stones game could stall, a bag stay in a
   hand); one counted throw per turn and nothing after the game ends; a single press throws (the touch button);
-  the garage reset frees the granola bars and the sock; Sam comes to an arm's length before handing over the camera,
+  the garage reset frees the granola bars and the sock; Sam comes to an arm's length (round the table, see *The final audit*) before handing over the camera,
   the flashlight or the batteries, and the take ranges are an arm's length; backpacks are worn at the back, not the head.
 - **Gates and gear:** Tab no longer moves browser focus (Enter could reload the page); Escape, the pause and the end close
   the bag; the yellow arm stops against a player standing in its way instead of trapping them, and Jamie walks it at a
@@ -185,6 +185,30 @@ inspection of the 22 review scenes. What they found and what was done:
 - **Wading** is slowed only where the bed is under the water (the first half metre of "shallow" was dry pebbles).
 - **Tests:** companion test G now opens the office door and checks you were inside.
 
+### The final audit
+
+A last pair of auditors (one over every change to code Chapters 0–4 share, one over the latest fixes), each finding
+checked by an independent verifier against the running code, confirmed five defects; all five are fixed in `c08d35e`:
+
+- **Chapter Four's heads (a Chapters 0–4 regression).** Every reset switched off Jamie's and Sam's faces even when they
+  were already off, which put their simple heads back over Chapter Three's detailed ones; going on from Chapter Three's
+  end card (or a DEV jump inside Chapters 3–4) left the simple heads for all of Chapter Four. `faces.js` `enable()` now
+  does nothing when unchanged, and `chapter3-art.js`, switching off, restores only what it still owns, so Chapter Five
+  keeps its faces' heads too (before, the old head with its built-in brows and mouth came back under the moving ones).
+- **The yellow gate.** A player standing in the arm's swing held it up past the scene; when it finished, Jamie's late
+  "through" pinned him at the gate for the whole gravel road. It now only applies during the scene.
+- **The camera hand-over.** When the point in front of you was on the card table, Sam walked straight through the
+  table to it. He now goes round the table to the nearest point at arm's length he can reach, or holds the camera out
+  across the table if none (the 14 s fallback too).
+- **The garage footing.** Chapter Five's lowering of the footing never showed: the footing was baked into the merged
+  world, so moving the original did nothing, and feet still sank 0.18 m into the visible concrete. A friend's garage
+  footing is now drawn live, draped on the ground vertex by vertex the way the bake drapes it (Chapters 0–4 see it where
+  it was), and culled with the suburb; Chapter Five lowers it 0.18 m to the floor people stand on.
+- **The camera's screen counter** carried over a Start over or a jump ("▶ 4" on the first picture); it is reset.
+
+Two further claims were rejected by the verifiers: Tab blocked in every chapter (intended: it moved focus to the header
+link, where Enter reloaded the page), and a pace-hysteresis timer (it cannot occur as described).
+
 ## Repair report: each playtest complaint
 
 "Fixed" means fixed in the simulation and the review frames, pending the human playtest. Tests named here are in
@@ -194,7 +218,7 @@ inspection of the 22 review scenes. What they found and what was done:
 |---|---|---|---|---|---|---|
 | 1 | Sam's packing doesn't match what he says | `pack()` was one F press and captions | Sam packs each supply by hand: reach, grip, lift, into the open bag (`chapter5-garage.js`, `physical.js` `reach`/`prop`/`container`); lines follow what is in his hand | sim garage checks (each item stored, by whom); review `garage` frames | Yes | Finger grips, a soft bag model |
 | 2 | The player can't help pack | No interaction | F picks a supply up and F on the bag puts it in; Sam packs the rest | sim "you pack" check; frames g03–g06 | Yes | First-person hand model |
-| 3 | Sam's feet sink into the floor | Garage footing top at +0.38 m | Footing lowered to the slab (Chapter Five only, `slabs()`); feet grounded by `comp.feet` | frames smoke-01/02, g01 | Yes | Contact shadows |
+| 3 | Sam's feet sink into the floor | Garage footing top 0.18 m above the floor people stand on | The friends' garage footings are drawn live (`houses.js` `liveFooting`), so Chapter Five can lower them to the floor (`slabs()`); feet grounded by `comp.feet`. (Until the final audit the lowering never showed: the footing was baked.) | footing top equals the walk floor (measured); frames smoke-01/02, g01 | Yes | Contact shadows |
 | 4 | Jamie's sock and backpack aren't real | Bag appeared on the driveway; sock was two boxes | Jamie arrives wearing his bag, swings it off, opens it, pulls the sock out; the bag goes back on (`sockScene`) | sim sock check; garage frames g12–g16 | Yes | Cloth sock, bag straps |
 | 5 | Friends are followers | Slot following on the view heading | Goal-based minds (`companion-brain.js`): idle, look, aside, follow, lead, wait; each with his own spot | companions A, D, F | Yes | Idle variety, acting |
 | 6 | They wait for you to do trivial things | Mounting only when you rode | They go to their own bikes and get on by themselves | companions E | Yes | Mount animation |

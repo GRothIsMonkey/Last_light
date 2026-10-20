@@ -28,10 +28,14 @@ The repair's shared-code changes are switched on by Chapter Five and off by its 
 - `foot.fpBody` (`on-foot.js`): the first-person stance, the body set back under the eye, the eye that dips looking down,
   the deeper look-down limit (`game.js`).
 - `face.enable(on)` (`faces.js`): the expressive faces swap the head geometry (brows and mouth out of the head mesh) and
-  show the dynamic mouth and brows; off, the static head and the old blink are back.
+  show the dynamic mouth and brows; off, the static head and the old blink are back. `enable()` does nothing when the
+  face is already in that state (a reset must not put a head back over Chapter Three's detailed heads), and
+  `chapter3-art.js`, switching off, restores only a value it still owns.
 - `nav.setPine(on)` also selects the friends' garages as walk-in rooms (`nav.js` `gRoom`) instead of solid boxes (`gBox`),
   for collision and for the siren's walls.
-- `P.garageFoundation` (`houses.js`): lowered to the slab by `slabs(true)`.
+- `P.garageFoundation` (`houses.js` `liveFooting`): the friends' garage footings are live meshes, not baked, draped on the
+  ground vertex by vertex the way the bake drapes; `slabs(true)` lowers them 0.18 m to the floor people stand on. A re-modelled
+  garage keeps its footing out of the bake (or the lowering will not show).
 
 ### Interaction contracts
 
