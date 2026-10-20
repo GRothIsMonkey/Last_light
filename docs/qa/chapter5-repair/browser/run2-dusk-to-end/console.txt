@@ -1,0 +1,25 @@
+PASS Chapter Four ends on its card, with a "Chapter Five" button
+Captured 00-chapter-four-end-card n4-end 143 147049
+PASS the button opens Chapter Five on its card over black
+Captured 01-chapter-five-card c5-black 306 455762
+segment dusk {"segment":"dusk","phase":"e5-lights","clock":2.13,"heapMB":1089,"wallSeconds":61}
+segment lights {"segment":"lights","phase":"n5-split","clock":1.82,"heapMB":1092,"wallSeconds":85}
+segment split {"segment":"split","phase":"n5-run","clock":1.48,"heapMB":1089,"wallSeconds":86}
+segment run {"segment":"run","phase":"n5-end","clock":5.82,"heapMB":1090,"wallSeconds":96}
+PASS Chapter Five: the flashlight’s lights are in the scene (the beam lights what it points at)
+walkthrough 353s {"passed":10,"fails":[]}
+PASS Chromium: Owl: Alex's gold shirt, wet, and JSA cut fresh into the wall
+PASS Chromium: they call his name; a light in the trees (a ranger? somebody fishing?) turns its beam on them and goes out; the shirt off its nail by Sam's hand, into his bag
+PASS Chromium: three lights at the gate (lights, not people, the length of the camp away) walk where you walked: the office, the map board (they stop where you stood), one copies your flashlight, then they sit where you sat at the fire; the creature runs from them; they turn on you and go out
+PASS Chromium: at night the camp pulls at whichever friend you leave; together, Sam's compromise
+PASS Chromium: Owl from the porch: a second Jamie, while Jamie is next to you; it turns to look at him, then comes out toward you (8.1 m, to 1.4 m); only then every light at once, RUN
+PASS Chromium: the escape by route A, and the boundary: the camp gate slams shut in front of you; Sam shoves it open; every light out at once
+PASS Chromium: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”
+PASS Chromium: on Alex's camera, a picture none of them took (the three of them at the fire, 6:45PM)
+PASS Chromium: the last image (one light across the water), then the end card: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six
+PASS Chromium: Jamie and Sam never left: farthest 11.4 m ({"phase":"n5-end","where":{"e":-133.6,"n":317.8,"street":"pine"}}); nothing non-finite
+Captured 99-chapter-five-end-card n5-end 328 418302
+PASS the walkthrough reaches Chapter Five’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six
+PASS no JavaScript errors
+PASS no WebGL/shader warnings
+{"passed":16,"failed":[],"errors":0,"warnings":0,"frames":13,"failure":null}

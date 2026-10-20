@@ -1,0 +1,64 @@
+PASS Chapter Four ends on its card, with a "Chapter Five" button
+Captured 00-chapter-four-end-card n4-end 143 147049
+PASS the button opens Chapter Five on its card over black
+Captured 01-chapter-five-card c5-black 306 455762
+segment start {"segment":"start","phase":"d5-stones","clock":4.16,"heapMB":1099,"wallSeconds":42}
+segment stones {"segment":"stones","phase":"d5-sign","clock":2.86,"heapMB":1090,"wallSeconds":126}
+segment sign {"segment":"sign","phase":"d5-road","clock":2.5,"heapMB":1090,"wallSeconds":86}
+segment road {"segment":"road","phase":"d5-camp","clock":3.13,"heapMB":1089,"wallSeconds":83}
+segment camp {"segment":"camp","phase":"e5-dusk","clock":4.12,"heapMB":1094,"wallSeconds":95}
+PASS Chapter Five: the flashlight’s lights are in the scene (the beam lights what it points at)
+walkthrough 521s {"passed":21,"fails":[]}
+PASS Chromium: the chapter opens on its card (Chapter Five, The Place in the Picture)
+PASS Chromium: Sam's garage, the next afternoon (Wednesday, August 24)
+PASS Chromium: the garage: the supplies packed by hand (you 2, Sam the rest), Alex's camera from Sam's hand
+PASS Chromium: Jamie's backpack and one sock, Sam's granola bars, the map and the plan
+PASS Chromium: Jamie and Sam get on their own bikes before you do, and wait
+PASS Chromium: out of town, on Mill Street past the sawhorse (the Old Reservoir Road)
+PASS Chromium: the race to the top of the ridge has a winner
+PASS Chromium: Pine Ridge Park (the new sign is not the one in the picture)
+PASS Chromium: the bikes locked to the rack (no riding off from here on)
+PASS Chromium: skipping stones: a stone picked up off the shore, wound up and let go, each time; Jamie's and Sam's their own; Sam's six
+PASS Chromium: the dock: the three of you sat on its edge, legs over the water; Alex, and the shoe he named Gary
+PASS Chromium: the shallows: off the beach into the water (wading pace while the bed is under water), and back out
+PASS Chromium: the picture matched, by looking, at the old lot (camera up on the lead, at the vantage)
+PASS Chromium: the yellow gate is shut and in the way until a hand opens it: Jamie lifts the latch and walks it round, and then it lets you by
+PASS Chromium: the yellow gate: a disagreement, and your call (sam)
+PASS Chromium: Camp Whippoorwill: the arch, a flashlight each, out of Sam's bag and handed over
+PASS Chromium: what you carry (I): the camera and the flashlight; put away and taken out from the bag; Escape closes it (not the pause)
+PASS Chromium: the office: the 1991 register (August 24, twenty years ago) and the search map, photographed
+PASS Chromium: the lodge: cans gone from the dust, recently
+PASS Chromium: Bluejay, a dead flashlight, and Sam's batteries out of his bag, without being asked
+PASS Chromium: the campfire: a short rest (55 s, the clock 4 minutes on), water passed round, no hours lost
+PAGE CRASHED
+FAILED page.screenshot: Target crashed 
+Browser logs:
+
+<launching> /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist --enable-precise-memory-info --js-flags=--expose-gc --user-data-dir=/tmp/playwright_chromiumdev_profile-fKDyRK --remote-debugging-pipe --no-startup-window
+<launched> pid=18426
+[pid=18426][err] [1020/220258.033390:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[pid=18426][err] [1020/220258.034577:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[pid=18426][err] [1020/220258.034982:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+[pid=18426][err] [1020/220258.043632:WARNING:device/bluetooth/dbus/bluez_dbus_manager.cc:209] Floss manager service not available, cannot set Floss enable/disable.
+[pid=18426][err] [1020/220258.053885:WARNING:sandbox/policy/linux/sandbox_linux.cc:414] InitializeSandbox() called with multiple threads in process gpu-process.
+[pid=18426][err] [1020/220329.959999:WARNING:media/audio/linux/audio_manager_linux.cc:54] Falling back to ALSA for audio output. PulseAudio is not available or could not be initialized.
+[pid=18426][err] [1020/220333.847007:ERROR:gpu/command_buffer/service/gl_utils.cc:391] [.WebGL-0x20c40012fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[pid=18426][err] [1020/220339.899332:ERROR:gpu/command_buffer/service/gl_utils.cc:391] [.WebGL-0x20c40012fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+[pid=18426][err] [1020/220418.510874:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=10
+[pid=18426][err] [1020/220459.227846:INFO:CONSOLE:0] "[.WebGL-0x20c40012fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:41023/dist/index.html?qa (0)
+[pid=18426][err] [1020/220459.234684:INFO:CONSOLE:0] "[.WebGL-0x20c40012fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)", source: http://127.0.0.1:41023/dist/index.html?qa (0)
+[pid=18426][err] [1020/220556.968368:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=20
+[pid=18426][err] [1020/220557.070740:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=30
+[pid=18426][err] [1020/220557.172418:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=40
+[pid=18426][err] [1020/220557.287756:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=50
+[pid=18426][err] [1020/220557.293437:WARNING:services/audio/sync_reader.cc:148] ASR: No room in socket buffer.: Broken pipe (32)
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+[2m  - fonts loaded[22m
+
+    at snap (/home/user/Last_light/tests/chapter5-browser.mjs:45:13)
+    at async file:///home/user/Last_light/tests/chapter5-browser.mjs:100:2 {
+  name: 'Error'
+}
+{"passed":24,"failed":[],"errors":1,"warnings":0,"frames":25,"failure":"page.screenshot: Target crashed \nBrowser logs:\n\n<launching> /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist --enable-precise-memory-info --js-flags=--expose-gc --user-data-dir=/tmp/playwright_chromiumdev_profile-fKDyRK --remote-debugging-pipe --no-startup-window\n<launched> pid=18426\n[pid=18426][err] [1020/220258.033390:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory\n[pid=18426][err] [1020/220258.034577:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory\n[pid=18426][err] [1020/220258.034982:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory\n[pid=18426][err] [1020/220258.043632:WARNING:device/bluetooth/dbus/bluez_dbus_manager.cc:209] Floss manager service not available, cannot set Floss enable/disable.\n[pid=18426][err] [1020/220258.053885:WARNING:sandbox/policy/linux/sandbox_linux.cc:414] InitializeSandbox() called with multiple threads in process gpu-process.\n[pid=18426][err] [1020/220329.959999:WARNING:media/audio/linux/audio_manager_linux.cc:54] Falling back to ALSA for audio output. PulseAudio is not available or could not be initialized.\n[pid=18426][err] [1020/220333.847007:ERROR:gpu/command_buffer/service/gl_utils.cc:391] [.WebGL-0x20c40012fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\n[pid=18426][err] [1020/220339.899332:ERROR:gpu/command_buffer/service/gl_utils.cc:391] [.WebGL-0x20c40012fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)\n[pid=18426][err] [1020/220418.510874:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=10\n[pid=18426][err] [1020/220459.227846:INFO:CONSOLE:0] \"[.WebGL-0x20c40012fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\", source: http://127.0.0.1:41023/dist/index.html?qa (0)\n[pid=18426][err] [1020/220459.234684:INFO:CONSOLE:0] \"[.WebGL-0x20c40012fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)\", source: http://127.0.0.1:41023/dist/index.html?qa (0)\n[pid=18426][err] [1020/220556.968368:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=20\n[pid=18426][err] [1020/220557.070740:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=30\n[pid=18426][err] [1020/220557.172418:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=40\n[pid=18426][err] [1020/220557.287756:WARNING:services/audio/sync_reader.cc:171] SyncReader::Read timed out, audio glitch count=50\n[pid=18426][err] [1020/220557.293437:WARNING:services/audio/sync_reader.cc:148] ASR: No room in socket buffer.: Broken pipe (32)\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\n    at snap (/home/user/Last_light/tests/chapter5-browser.mjs:45:13)\n    at async file:///home/user/Last_light/tests/chapter5-browser.mjs:100:2"}
