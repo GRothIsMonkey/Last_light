@@ -27,13 +27,15 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const args=['--no-sandbox','--disable-dev-shm-usage'];if(!process.env.BROWSER_GPU)args.push('--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist');
 // (gc() between segments and precise heap numbers for the report; BROWSER_MEMORY_MB bounds the test browser's heap)
 const memoryMB=Number(process.env.BROWSER_MEMORY_MB||0);args.push('--enable-precise-memory-info',`--js-flags=--expose-gc${memoryMB>0?' --max-old-space-size='+memoryMB:''}`);
-// SEGMENTED=1: each walkthrough segment after the first, and each batch of DEV scenes, in a fresh browser (software GL's
+// SEGMENTED=1: each walkthrough segment after the first, and each batch of DEV scenes (DEV_BATCH, default 6), in a fresh
+// browser; SEGS=dusk,lights,... plays only those segments (each from its checkpoint) (software GL's
 // memory peaks on a jump add up in one page; a container with less memory than the renderer's peaks kills the page)
 const SEG=!!process.env.SEGMENTED,errors=[],warnings=[],checks=[],failed=[],frames=[];let browser,page;
 async function openBrowser(){if(browser)await browser.close().catch(()=>{});browser=await pw.chromium.launch({executablePath:exe,headless:true,args});page=await browser.newPage({viewport:{width:1440,height:900}});
  page.on('pageerror',e=>{errors.push(String(e));console.error('PAGE',String(e));});page.on('crash',()=>{errors.push('page crashed');console.error('PAGE CRASHED');});
  page.on('console',m=>{const t=m.text();if(m.type()==='error'){errors.push(t);console.error('CONSOLE',t);}else if(m.type()==='warning'&&/GL_INVALID|Feedback loop|shader/i.test(t))warnings.push(t);});
  await page.goto(`http://127.0.0.1:${server.address().port}/dist/index.html?qa`,{timeout:180000});await page.waitForFunction(()=>window.lastLight,null,{timeout:180000});
+ if(process.env.QUALITY)await page.evaluate(q=>{const el=document.getElementById('set-quality');el.value=q;el.dispatchEvent(new Event('change'));},process.env.QUALITY);/* (QUALITY=low: the game's Low setting, less memory) */
  await page.click('#start');await page.evaluate(()=>lastLight.step(.4));}
 await openBrowser();
 const check=(name,value,info='')=>{if(value){checks.push(name);console.log('PASS',name);}else{failed.push(name+(info?' '+info:''));console.log('FAIL',name,info);}};
@@ -79,7 +81,7 @@ const installWalk=()=>ev(async({route,choice})=>{const L=lastLight,{playChapterF
   got.passed.push(...w.passed);got.fails.push(...w.fails);Object.assign(got.metrics,w.metrics);got.clock+=w.clock;
   for(let i=0;i<w.n;i++)got.caps.push(await ev(i=>{const c=window.__caps[i];window.__caps[i]=null;return c;},i));
   await ev(()=>{const W=window.__walk;W.passed.length=0;W.fails.length=0;window.__caps.length=0;});};
- const SEGS=['start','stones','sign','road','camp','dusk','lights','split','run'],mem=[];
+ const SEGS=(process.env.SEGS?process.env.SEGS.split(','):['start','stones','sign','road','camp','dusk','lights','split','run']),mem=[];
  for(const k of SEGS){const t1=Date.now();if(SEG&&k!=='start'){await harvest();await openBrowser();await installWalk();}const r=await ev(({k,route,choice,SEG})=>{const W=window.__walk,L=lastLight;
    try{W.playChapterFive(W.T,'Chromium',k==='start'?{fromCard:false,entered:true,route,choice,to:'start'}:{from:k,to:k,cont:!SEG,route,choice});}catch(e){W.fails.push(k+': playthrough threw: '+String(e.stack||e).slice(0,800));}
    globalThis.gc?.();return {phase:L.chapter5.state.phase,clock:+(W.clock/60).toFixed(2),heapMB:Math.round((performance.memory?.usedJSHeapSize||0)/1048576)};},{k,route,choice,SEG});
@@ -100,13 +102,13 @@ const installWalk=()=>ev(async({route,choice})=>{const L=lastLight,{playChapterF
   end.state==='ended'&&end.h2==='Chapter Five'&&/LAST LIGHT/i.test(end.text)&&/August 24, 2011/.test(end.text)&&end.next===true,JSON.stringify(end));
  report.walkthrough={scope:SEG?'segmented: Chapter Four end card → real click → the first segment; each later segment in a fresh browser from its own checkpoint, played with inputs (the end card reached by the last)':'continuous: Chapter Four end card → real click → Chapter Five played with inputs to its end card (one page call per segment, no jump between them)',route,choice,gameMinutes:+(walk.clock/60).toFixed(2),wallSeconds:Math.round((Date.now()-t0)/1000),segments:mem,metrics:walk.metrics,fails:walk.fails};
  // ---- the DEV selector: Chapter Five, every scene, with real clicks ---------------------------------------------------------------
- const scenes=await ev(()=>lastLight.DEV_SCENES[5].map(s=>({id:s.id,label:s.label})));const dev=[];
+ const scenes=process.env.NO_DEV?[]:await ev(()=>lastLight.DEV_SCENES[5].map(s=>({id:s.id,label:s.label})));const dev=[];/* (NO_DEV=1: the walkthrough only) */
  await ev(()=>lastLight.toTitle());
- for(const [i,sc] of scenes.entries()){if(SEG&&i%6===0){await openBrowser();await ev(()=>lastLight.toTitle());}await page.click('[data-dev-chapter="5"]',{timeout:300000});await page.selectOption('#dev-scene',sc.id);await page.click('#dev-start',{timeout:300000});
+ for(const [i,sc] of scenes.entries()){if(SEG&&i%(+process.env.DEV_BATCH||6)===0){await openBrowser();await ev(()=>lastLight.toTitle());}await page.click('[data-dev-chapter="5"]',{timeout:300000});await page.selectOption('#dev-scene',sc.id);await page.click('#dev-start',{timeout:300000});
   await page.waitForFunction(()=>!document.body.classList.contains('dev-starting'),null,{timeout:300000});await ev(()=>lastLight.step(1.5));
   const s=await ev(()=>{const c=lastLight.chapter.companions.all.filter(c=>c.active);return {phase:lastLight.chapter5.state.phase,state:lastLight.state.state,boys:c.length};});
   dev.push({...sc,...s});await snap('dev-'+sc.id);await ev(()=>lastLight.toTitle());}
- check(`DEV: all ${scenes.length} Chapter Five scenes start from the selector (real clicks) in a Chapter Five phase, Jamie and Sam there`,dev.every(d=>/^(c5|d5|e5|n5)-/.test(d.phase)&&d.boys===2),JSON.stringify(dev.filter(d=>!/^(c5|d5|e5|n5)-/.test(d.phase)||d.boys!==2)));
+ if(scenes.length)check(`DEV: all ${scenes.length} Chapter Five scenes start from the selector (real clicks) in a Chapter Five phase, Jamie and Sam there`,dev.every(d=>/^(c5|d5|e5|n5)-/.test(d.phase)&&d.boys===2),JSON.stringify(dev.filter(d=>!/^(c5|d5|e5|n5)-/.test(d.phase)||d.boys!==2)));
  report.dev=dev;
  const gpu=await ev(()=>{const gl=lastLight.renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'unavailable';});
  check('no JavaScript errors',errors.length===0,JSON.stringify(errors.slice(0,4)));check('no WebGL/shader warnings',warnings.length===0,JSON.stringify(warnings.slice(0,3)));
