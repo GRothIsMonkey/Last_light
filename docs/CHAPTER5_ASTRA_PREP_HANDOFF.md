@@ -177,6 +177,16 @@ attachment, timing) that this repair fixed in code after the inspection; the res
 Some moments fall between frames (the grasp at the table, the bag going on, the kickstand); the frames are a sample of
 each action, not every moment of it. `tests/review/*.mjs` can be given more `cap()` calls where a moment needs it.
 
+### Small issues left as they are (cosmetic or rare; for the playtest to judge)
+
+- The garage's baked concrete slab is 1–2 cm above the floor people stand on, so feet sit 1–2 cm into it (the footing
+  under it now matches the floor). A re-modelled garage floor should sit at the walk height (+0.2 m).
+- Sam can linger in Owl after taking the shirt in some runs, until the companion guard brings him back out of sight.
+- From inside Alex's room the car garage's live footing is culled where its baked predecessor was drawn (not visible
+  from there).
+- The world's mesh count (2,259) is over the 2,000 ceiling of the world-geometry check, as on the first draft.
+- Under software GL the renderer peaks at 4–6 GB on a jump; the human playtest should watch memory over a long session.
+
 ## Review frames
 
 `docs/qa/chapter5-repair/` holds frames captured from the real renderer (Chromium, SwiftShader) by

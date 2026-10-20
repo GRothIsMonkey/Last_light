@@ -1,0 +1,49 @@
+PASS Chapter Four ends on its card, with a "Chapter Five" button
+Captured 00-chapter-four-end-card n4-end 143 147049
+PASS the button opens Chapter Five on its card over black
+Captured 01-chapter-five-card c5-black 306 455762
+PASS Chapter Five: the flashlight’s lights are in the scene (the beam lights what it points at)
+walkthrough 0s {"passed":0,"fails":[]}
+Captured 99-chapter-five-end-card c5-black 306 455762
+FAIL the walkthrough reaches Chapter Five’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six {"state":"c1-walk","eyebrow":"LAST LIGHT","h2":"Chapter Two","text":"LAST LIGHT Chapter Two August 22, 2011. Chapter Four → Start over ↻ Back to the title","next":false}
+Captured dev-chapter5 c5-black 306 455762
+Captured dev-c5-garage d5-garage 299 455598
+Captured dev-c5-departure d5-garage 245 453240
+Captured dev-c5-ride d5-ride 298 357074
+Captured dev-c5-race d5-ride 294 428964
+Captured dev-c5-crest d5-ride 331 592266
+Captured dev-c5-arrival d5-park 348 692533
+Captured dev-c5-park d5-park 264 607515
+Captured dev-c5-stones d5-stones 300 583048
+Captured dev-c5-dock-memory d5-dock 265 510153
+Captured dev-c5-sign-search d5-sign 390 395080
+Captured dev-c5-photo-match d5-sign 321 653786
+Captured dev-c5-trail-map d5-map 369 365657
+Captured dev-c5-gate-decision d5-gate 319 634106
+Captured dev-c5-gravel-road d5-road 312 641120
+Captured dev-c5-camp-gate d5-road 268 530908
+Captured dev-c5-camp d5-camp 261 548409
+Captured dev-c5-office d5-camp 263 530288
+Captured dev-c5-register d5-camp 255 523050
+Captured dev-c5-lodge d5-camp 146 359084
+Captured dev-c5-pantry d5-camp 149 391186
+Captured dev-c5-cabins d5-camp 199 529131
+Captured dev-c5-campfire d5-camp 334 500832
+Captured dev-c5-golden-hour e5-dusk 223 480811
+Captured dev-c5-owl e5-dusk 133 376211
+Captured dev-c5-calling e5-call 205 520042
+Captured dev-c5-three-lights e5-lights 319 657018
+Captured dev-c5-split n5-split 209 439290
+Captured dev-c5-compromise n5-split 209 439290
+Captured dev-c5-window n5-split 139 345310
+Captured dev-c5-run n5-run 325 494380
+Captured dev-c5-route-a n5-run 218 436054
+Captured dev-c5-route-c n5-run 79 284248
+Captured dev-c5-boundary n5-run 243 390337
+Captured dev-c5-aftermath n5-out 227 305514
+Captured dev-c5-second-discovery n5-final 250 380108
+Captured dev-chapter5-end n5-final 251 380110
+PASS DEV: all 37 Chapter Five scenes start from the selector (real clicks) in a Chapter Five phase, Jamie and Sam there
+PASS no JavaScript errors
+PASS no WebGL/shader warnings
+{"passed":6,"failed":["the walkthrough reaches Chapter Five’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six {\"state\":\"c1-walk\",\"eyebrow\":\"LAST LIGHT\",\"h2\":\"Chapter Two\",\"text\":\"LAST LIGHT Chapter Two August 22, 2011. Chapter Four → Start over ↻ Back to the title\",\"next\":false}"],"errors":0,"warnings":0,"frames":40,"failure":null}

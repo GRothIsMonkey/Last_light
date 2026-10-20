@@ -10,7 +10,13 @@ What changed and why: `docs/CHAPTER5_GAMEPLAY_STORY_REPAIR.md`. This build waits
 
 | Gate | Result |
 |---|---|
-{{GATES}}
+| Full simulation suite, `QUICK=1 node tests/verify.mjs` (the prologue through Chapter Five played naturally, every chapter's checks and replays, the DEV checks) | **736/736** at `626a718` (the first draft had 718; the accepted Chapter Four 622). Chapters 0–4's checks all pass. Report: `docs/qa/chapter5-repair/simulation-report.json`. Re-run on the final runtime: {{FINALQUICK}} |
+| Chapter Five alone with the companion tests, `ONLY=chapter5 node tests/verify.mjs` | **81/81** (the play, the DEV scenes, the fallbacks, companion tests A–H) |
+| Chromium walkthrough, `tests/chapter5-browser.mjs` (SwiftShader, sound off, the game's Low setting, `SEGMENTED=1`) | Run 1, Chapter Four's end card → the real **Chapter Five** click → the garage to the campfire: **24 passed, 0 failed**. Run 2, dusk to Chapter Five's end card: **16 passed, 0 failed, 0 JavaScript errors, 0 WebGL/shader warnings**. Each segment after the first in a fresh browser from its own checkpoint (see *Chromium and this container's memory*). Frames, reports, console: `docs/qa/chapter5-repair/browser/`. |
+| Chromium, DEV selector | **All 37 Chapter Five scenes** start from the selector with real clicks, each in a Chapter Five phase with Jamie and Sam there; 0 JavaScript errors, 0 WebGL warnings (four scenes per browser). The same run's "end card" check fails by construction: it skipped the walkthrough. |
+| Memory | JS heap 1,085 MB at the title, 1,089–1,099 MB through every Chapter Five segment, the same as the first draft (1,084 / 1,091–1,094). Renderer steady 1.7–2.3 GB. Details below. |
+| Final audit and its verification | Five confirmed defects fixed and each fix independently re-verified (one of them a Chapters 0–4 regression: Chapter Four's heads); follow-ups from the verification fixed (see the repair report, *The final audit*). |
+| Private playtest build | Updated in place (the same private link): the repository's runtime plus the two hosting-only files of the previous playtest build, unchanged (see *Publication*). |
 
 ## The repair's own checks (simulation, `tests/chapter5-sim.mjs`, `tests/chapter5-companions.mjs`)
 
@@ -93,7 +99,9 @@ them and fixed is listed under *Found in the frames*.
 | `aftermath/` | `tests/review/aftermath.mjs` | The lamp in the lot; the shaky laugh; the shirt in Sam's bag; the granola bar out of Jamie's bag; the last picture |
 
 156 frames in ten folders (1280×800 JPEG), each folder with a labelled `contact-sheet.jpg` of all its frames, about
-16 MB in all. Every frame was re-captured on this branch's final runtime.
+16 MB in all. They were captured before the final audit's fixes: the garage frames still show the old footing (feet
+sunk into the concrete) and Sam's old straight hand-over walk, and the faces frames predate the heads fix. The Chromium
+walkthrough frames in `browser/` are from the final runtime.
 
 ## Found in the frames, and fixed
 
@@ -124,7 +132,47 @@ fixed here.
 
 ## Memory and lights
 
-{{MEMORY}}
+Measured with `docs/qa/chapter5-pine-ridge/memory/memprobe.mjs` (each step jumps to a section and renders 3 s) and in
+the Chromium walkthrough (the JS heap after a forced GC at each segment's end):
+
+| | First draft | This build |
+|---|---:|---:|
+| JS heap at the title | 1,084 MB | 1,085 MB |
+| JS heap at Chapter Four's end | 1,089 MB | 1,093 MB |
+| JS heap through Chapter Five | 1,091–1,094 MB | 1,089–1,099 MB (every segment) |
+| Renderer, steady (Chapter Four's end / in Chapter Five) | 1,784 MB / 1.46–1.76 GB | 1,726 MB / 1.7–2.3 GB |
+| Renderer, brief peak on a jump | 5,876 MB | 5,901 MB (Chapter Four's end), 4,051 MB (Jamie's sock scene) |
+| Lights in Chapter Five | 9 point lights and the flashlight's 2 spots | 6 point lights and 5 spots in the garage (the flashlight's 2 among them) |
+
+{{MEMSECTIONS}}
+
+**Chromium and this container's memory.** This session's container kills the browser's renderer when the container's
+memory runs out: the kernel log shows it killed at 4.5–9.1 GB resident, where the first draft's container allowed
+13.7 GB. Software GL (SwiftShader) keeps its GPU buffers in system memory and peaks at 4–6 GB on a jump, so the
+one-page walkthrough, which jumps and renders throughout, was killed part way (twice in the road segment, once in the
+stones), and so was the memory probe after its fifth jump. Instrumenting the page found no large typed-array or canvas
+allocation by the game during play, and the JS heap stayed flat; the first draft's build, run the same way, swings
+between 2 and 6 GB in this container. The walkthrough was therefore run segmented (each segment after the first in a
+fresh browser from its own checkpoint, `SEGMENTED=1 SEGS=... QUALITY=low`), and the DEV scenes four per browser.
+Whether memory grows over a long session on a real GPU is for the human playtest to watch (Chrome's task manager).
+
+**A stall found by the Chromium run, fixed.** At Pine Ridge a friend whose path target could not be reached asked for a
+path every frame, and each failed search (with the 14 m retry) took from 0.1 s to tens of seconds: the in-page
+walkthrough froze. A failed Pine Ridge search is now remembered for the next 45 identical asks and the wide retry is
+bounded (`nav.js`, Chapter Five only: Chapters 0–4 never take that branch).
+
+## Publication (private playtest build)
+
+The existing private playtest artifact was updated in place (version 2; the link is in the final report, not in the
+repository). It is the repository's `dist/` at this branch's final runtime with the same two hosting-only differences
+as the first draft's build: the host supplies the page's document wrapper (the page is `dist/index.html`'s body, titled
+*Last Light Playtest*, with the creature's CC BY credit on the Credits page), and the creature model rides in a script
+module as base64 because the host does not serve `.glb`; `creature.js` loads it from there. Those two files were not
+changed by this repair and were kept as published; the embedded bytes decode to the runtime model's SHA-256
+(`e86b69df…51b3`). The 26 runtime files this repair changed or added, and the page, were published; the published
+sizes match the repository byte for byte, and the published file set equals `dist/` (86 files, plus the embedded
+model). The published copy was not loaded through the host from this container; the same runtime, served locally, is
+what the Chromium runs above played.
 
 ## Not done / limits
 
@@ -137,7 +185,14 @@ fixed here.
   are still keyboard-only on touch screens, as in earlier chapters.
 - **The frames are samples.** Some moments fall between captured frames (a grasp, a bag going on); the review scripts
   can be given more frames where a moment needs looking at.
-- **No hosted build.** See the final report for why and how to run it locally.
+- **Chromium coverage is segmented** (see *Memory and lights*): no single page played the whole chapter in this container.
+- **Known, not fixed (for the playtest and Astra):** Sam can linger in Owl after taking the shirt in some runs, until
+  the guard brings him back out of sight (a catch-up in two of the last three full natural plays; where it was
+  recorded, right after the shirt); the garage's concrete slab is 1–2 cm above
+  the floor people stand on (feet 1–2 cm into it); from Alex's room the car garage's footing is culled where the baked
+  one was drawn (not visible from there); the world's mesh count is over the 2,000 ceiling of the world-geometry check
+  (2,259, the same on the first draft; the QUICK suite skips that check).
+- **Private playtest build:** published; see *Publication*.
 
 # Last Light — Chapter Five: The Place in the Picture: verification
 

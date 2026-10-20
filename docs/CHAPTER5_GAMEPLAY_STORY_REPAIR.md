@@ -206,6 +206,20 @@ checked by an independent verifier against the running code, confirmed five defe
   it was), and culled with the suburb; Chapter Five lowers it 0.18 m to the floor people stand on.
 - **The camera's screen counter** carried over a Start over or a jump ("▶ 4" on the first picture); it is reset.
 
+Verifying the five fixes (each re-run against the fixed tree, before and after) confirmed them all and turned up
+follow-ups, also fixed: the hand-over's search for a way round the table tried points inside walls (each a full failed
+search; up to 22 s in one frame when you stood facing a wall), and after a hand-over in front of the table Sam's
+straight walk back wedged him in its edge (then opening the map walked him through it): only points he could stand on
+are searched now, in a small box, and every walk back behind the table goes round it (13 positions and fallbacks:
+never inside the table, the longest frame 15 ms). The live footings take shadows as the bake did (a shadow-only copy
+on layer 1, so a flashlight's shadow camera ignores them, as before). Two more found by tracing the natural play:
+Sam's stand point by the shirt's nail had room only for a 0.1 m body, so afterwards he could not step away (he stayed
+in Owl through the calling scene); and in the Chromium run, a friend whose path target could not be reached at Pine
+Ridge asked for a path every frame, each failed search costing up to tens of seconds (the page froze): a failed
+search is now remembered for the next 45 asks and the wide retry is bounded (Chapter Five only). The simulation's
+walk back after the escape started from a road point behind the camp gate and ended outside the lamp's 6 m (test
+driver only; fixed).
+
 Two further claims were rejected by the verifiers: Tab blocked in every chapter (intended: it moved focus to the header
 link, where Enter reloaded the page), and a pace-hysteresis timer (it cannot occur as described).
 
