@@ -662,7 +662,7 @@ function readPixels(target,w,h){if(typeof renderer.readRenderTargetPixels!=='fun
 // distance, the drain only from its mouth or inside it. Deep in the drain (past its first bend, where
 // the way out cannot be seen) nothing outside it is drawn at all.
 const zoneState={cave:0,inDrain:false,s:-1,hidPlain:false};
-const zoned=world.merged.filter(m=>m.userData.zone),plainMerged=world.merged.filter(m=>!m.userData.zone),PORTAL=world.drain?.P;
+const zoned=world.merged.filter(m=>m.userData.zone),plainMerged=world.merged.filter(m=>!m.userData.zone).concat(Object.values(world.homes||{}).map(h=>h?.garageFoundation).filter(Boolean)),PORTAL=world.drain?.P;/* (the friends' garage footings are drawn live now: culled with the suburb they were baked into) */
 // Culling by where you are uses render layers (mask 0: not drawn, nor into shadows), never .visible, which stays what
 // the world contains (a culled batch is still there; the story's own hiding is untouched).
 function drawn(m,on){const u=m.userData;if(u.mask0===undefined)u.mask0=m.layers.mask;m.layers.mask=on?u.mask0:0;}

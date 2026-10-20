@@ -251,7 +251,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  // (friends' garage floors: down to the slab while this chapter walks you into Sam's; as they were for the other chapters)
  // (the faces that show what they feel and move when they talk: this chapter's; the others keep the faces they had)
  function faces(on){for(const f of o.friends?.list||[])f.person?.face?.enable?.(on);for(const c of [jamie,sam])c.person?.face?.enable?.(on);}
- function slabs(on){for(const P of Object.values(world.homes||{})){const f=P?.garageFoundation;if(f)f.position.y=on?-.23:-.05;}}
+ function slabs(on){for(const P of Object.values(world.homes||{})){const f=P?.garageFoundation;if(f)f.position.y=on?-.18:0;}}
  function common(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);slabs(true);faces(true);o.foot.fpBody=true;camp.attach(true);if(!props.parent)scene.add(props);}
  function dayWorld(){A.day=1;A.night=0;ch2.day=1;S.deep=A.deep=0;o.flashShadow?.(false);o.nightRendering?.(false);o.attachFlashlight?.(true);/* (day rendering takes the flashlight's lights out; they go back in and stay the whole chapter: T only changes how bright) */ambient.night?.(false);ambient.morning?.(true);
   for(const a of [...k.adults,...ch2.extra,...Object.values(ch3.people||{})]){a.show(false);a.lookAt=null;a.gest(null);a.path=null;a.mode='stand';}
@@ -486,7 +486,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  function atGate(){if(C.flags.gate)return;C.flags.gate=true;go('d5-gate');checkpoint('c5-gate-decision');objective('');mark('the yellow gate');C.gt={t:0};
   stand(sam,GATE_OUT,{look:()=>({x:jamie.px,z:jamie.pz,y:gy(jamie.px,jamie.pz)+1.3}),keep:true,leash:40});
   // Jamie doesn't wait to be asked: he goes for the latch and walks the arm round (unless you've opened it), and through
-  const through=()=>stand(jamie,GATE_IN,{look:()=>camera.position,keep:true,leash:40});
+  const through=()=>{if(!C.flags.road)stand(jamie,GATE_IN,{look:()=>camera.position,keep:true,leash:40});};/* (an arm held up past the scene finishes late: then he just follows) */
   if(GT.opening('swing'))through();else{stand(jamie,null);if(!busy())say([{who:'JAMIE',text:'“It’s not even locked.”',by:'jamie',time:1.4,face:'grin'}]);GT.friendOpen(jamie,'swing',{then:through});}
   const tg=C.t;say([{until:()=>GT.isOpen('swing')&&Math.hypot(jamie.px-W5(...GATE_IN).x,jamie.pz-W5(...GATE_IN).z)<1.6||C.t-tg>16},{who:'JAMIE',text:'“Come on.”',by:'jamie',time:1.2},
    {who:'SAM',text:C.flags.map?'“It says closed. It says no access.”':'“It says authorized vehicles only.”',by:'sam'},{who:'JAMIE',text:'“We’re not vehicles.”',by:'jamie',time:1.4},

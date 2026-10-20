@@ -94,6 +94,10 @@ export function createGarage(X){
  function openFlap(B,v){B.hinge.rotation.x=-2.3*v;B.open=v;}
  // ---- the table is in the way ---------------------------------------------------------------------------------------------
  function blockers(out){if(!S.table?.visible)return;for(const x of [-.42,0,.42]){const p=TL(x,0,0);out.push({x:p.x,z:p.z,r:.36,speed:0});}}
+ // Sam's way to an arm's length from you, round the table: the point in front of you first, then further round to either
+ // side; none he can reach (you are boxed in) and he stays where he is and holds it out across the table.
+ function toYou(r){const p=me(),obs=[];blockers(obs);for(const k of [0,1,-1,2,-2,3,-3,4,-4]){const a=p.a+k*Math.PI/8,q={x:p.x+Math.sin(a)*r,z:p.z-Math.cos(a)*r};
+   if(!X.walkPath)return [[q.x,q.z]];if(obs.some(o=>Math.hypot(o.x-q.x,o.z-q.z)<o.r+.38))continue;const pth=X.walkPath(sam,q,obs);if(pth.length)return pth;}return null;}
  // ---- Sam packs ------------------------------------------------------------------------------------------------------------------
  const packed=()=>S.items.filter(P=>P.state==='stored').length;
  const free=P=>P.state==='placed'&&!P.claimed;
@@ -120,8 +124,7 @@ export function createGarage(X){
  // ---- the camera: Sam holds it out, you take it --------------------------------------------------------------------------
  function offerCamera(){if(S.flags.offer)return;S.flags.offer=true;S.offerAt=X.t();const P=S.cam;
   // (picked up off the table, then round it to you: he stands in front of you, an arm's length off, and holds it out)
-  const toYou=()=>{const p=me(),q={x:p.x+Math.sin(p.a)*.85,z:p.z-Math.cos(p.a)*.85},obs=[];blockers(obs);const pth=X.walkPath?X.walkPath(sam,q,obs):[[q.x,q.z]];return pth.length?pth:[[q.x,q.z]];};
-  let way=null;const goRound=(dt,ctx)=>{const p=me();if(Math.hypot(sam.px-p.x,sam.pz-p.z)<1.25)return true;if(!way)way=comp.steps.walkTo(sam,toYou(),{speed:1.15});return way(dt,ctx);};
+  let way=null;const goRound=(dt,ctx)=>{const p=me();if(Math.hypot(sam.px-p.x,sam.pz-p.z)<1.25)return true;if(!way){const pth=toYou(.85);if(!pth)return true;way=comp.steps.walkTo(sam,pth,{speed:1.15});}return way(dt,ctx);};
   comp.run(sam,[comp.steps.turnTo(sam,()=>TA(),.3),phys.reach(sam,{at:()=>P.obj.position.clone(),dur:[.5,.15,.35],onContact:()=>P.holdBy(sam.person,'r'),carry:true}),
    goRound,holdOut(sam,()=>X.eyePos(),{until:()=>S.flags.cameraTaken})],{then:()=>{X.stand(sam,samStand(0),{look:()=>camera.position});}});
   X.say([{wait:.6},{who:'SAM',text:'“And this.”',by:'sam',time:1.1,face:'neutral'},{who:'SAM',text:'“Alex’s camera. You hold it. You’re better with it.”',by:'sam',time:2.8,face:'concerned'}],{then:()=>{S.flags.cameraAsked=true;}});}
@@ -205,7 +208,7 @@ export function createGarage(X){
   if(S.flags.packing&&!S.flags.allPacked){if(!S.samBusy&&!sam.script)samNext();if(packed()===S.items.length&&!S.holding&&!sam.script){S.flags.allPacked=true;S.samStop=true;closeAndShoulder(()=>X.later(.3,offerCamera));}}
   // (taking too long to take the camera: he brings it to you and puts it in your hand)
   if(S.flags.cameraAsked&&!S.flags.cameraTaken&&X.t()-S.offerAt>14&&!S.flags.cameraBrought){S.flags.cameraBrought=true;X.say([{who:'SAM',text:'“Here.”',by:'sam',time:.9}]);
-   const p=me();comp.run(sam,[comp.steps.walkTo(sam,[[p.x+Math.sin(p.a)*.8,p.z-Math.cos(p.a)*.8]],{speed:1.1}),holdOut(sam,()=>X.eyePos(),{until:()=>S.flags.cameraTaken})]);}
+   const pth=toYou(.8);comp.run(sam,[...(pth?[comp.steps.walkTo(sam,pth,{speed:1.1})]:[]),holdOut(sam,()=>X.eyePos(),{until:()=>S.flags.cameraTaken})]);}
  }
  function startPacking(){S.flags.packing=true;S.samX=0;}
  function reset(){if(!S.built)return;S.sockShownAt=null;for(const k of Object.keys(S.flags))delete S.flags[k];S.samBusy=false;S.samStop=false;S.holding=null;S.said.clear();S.packedBy={you:0,sam:0};for(const P of [...S.items,...S.bars,S.sock])if(P){P.claimed=null;P.given=false;}hideAll();root.removeFromParent();S.built&&scene.add(root);}

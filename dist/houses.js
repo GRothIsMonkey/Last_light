@@ -344,9 +344,8 @@ function chair(K,g,x,y,z,c){const cg=K.group(g,x,z,Math.PI,y);K.box(cg,0,.38,0,.
 
 // Attached garage: walls, roof, door (or a real opening with an interior shell for friends).
 function buildGarage(W,P,g,rand,mid,siding,roofMat,gable){const {K}=W,{gx,gw,gd,gh,gfront}=P,gz=gfront-gd/2,doorW=gw>5?5.1:2.75,dh=2.15,T=HOUSE.trim;P.garageInfo={x:gx,front:gfront,doorW,doorH:dh,depth:gd,y:.2};
- // (a friend's garage keeps its footing as Chapters Zero to Four had it; Chapter Five, where you walk in, lowers it to the
- // slab people stand on, +0.2 m, so its concrete floor is the floor you see: P.garageFoundation, set by chapter5.js)
- {const f=K.rbox(g,gx,-.05,gz,gw+.1,.86,gd+.1,.03,HOUSE.foundation);if(P.dynamicGarage)P.garageFoundation=f;}
+ // (a friend's garage footing is not baked: makeDynamic draws it live, in the same place, so Chapter Five can lower it)
+ if(!P.dynamicGarage)K.rbox(g,gx,-.05,gz,gw+.1,.86,gd+.1,.03,HOUSE.foundation);
  if(P.dynamicGarage){const t=.16,ox=gx+P.gs*(gw/2-t/2);K.box(g,gx-P.gs*(gw/2-t/2),gh/2+.1,gz,t,gh-.2,gd,siding);K.box(g,gx,gh/2+.1,gz-gd/2+t/2,gw,gh-.2,t,siding);
   // A friend's garage can have a real side door (Sam slips out through it later that night).
   if(P.sideDoor){const zd=gz+gd*.18,dw=.96,dh2=2.1,z0=zd-dw/2,z1=zd+dw/2,a=gz-gd/2,b=gz+gd/2;P.sideDoorAt={x:gx+P.gs*gw/2,z:zd,w:dw,h:dh2};
@@ -530,7 +529,17 @@ function makeDynamic(W){const {K}=W,doors={},garages={};
   const open=h.S(D.x,D.front+.9),inside=h.S(D.x+D.hinge*.15,D.front-2.3),stepOut=h.S(D.x,h.stepFront+.5),porch=h.S(D.x,D.front+.45),latch=h.S(D.x+D.dirX*.42,D.front+Math.min(1.2,h.pdep-.2)),entry=h.S(D.x,D.front-.7);
   // Doors swing inward, about 85 degrees.
   return {pivot,d,lat,open:0,set(t){this.open=t;pivot.rotation.y=D.dirX*t*1.48;},threshold:h.S(D.x,D.front),outside:open,inside,entry,steps:stepOut,porch,latch,floor:D.y,house:h};}
- function makeGarage(h){const G=h.garageInfo,I=W.interiors[h.key+'-garage']||W.interiors[h.key],{g,d,lat}=W.houseAnchor(h,G.x,G.front-.1,G.y);const panel=new THREE.Group();g.add(panel);
+ // A friend's garage footing, drawn live instead of baked: the same rounded box, draped on the ground vertex by vertex the
+ // way the bake drapes it, so Chapters Zero to Four see it where it always was. Chapter Five, where you walk in, lowers it
+ // 0.18 m to the slab people stand on (+0.2 m), so its concrete floor is the floor you see: chapter5.js slabs().
+ function liveFooting(h){const {gx,gw,gd,gfront}=h,gz=gfront-gd/2,src=K.rbox(new THREE.Group(),0,0,0,gw+.1,.86,gd+.1,.03,HOUSE.foundation),sg=src.geometry;
+  const P=sg.attributes.position,N=sg.attributes.normal,n=P.count,pos=new Float32Array(n*3),nor=new Float32Array(n*3),c=Math.cos(h.worldRot),s=Math.sin(h.worldRot);
+  for(let i=0;i<n;i++){const w=h.toWorld(gx+P.getX(i),gz+P.getZ(i));pos[i*3]=w.x;pos[i*3+1]=w.ground-.05+P.getY(i);pos[i*3+2]=w.z;
+   if(N){const nx=N.getX(i),nz=N.getZ(i);nor[i*3]=nx*c+nz*s;nor[i*3+1]=N.getY(i);nor[i*3+2]=-nx*s+nz*c;}}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));if(N)geo.setAttribute('normal',new THREE.BufferAttribute(nor,3));else geo.computeVertexNormals();
+  if(sg.index)geo.setIndex(sg.index.clone());if(sg.attributes.uv)geo.setAttribute('uv',sg.attributes.uv.clone());geo.computeBoundingSphere();
+  const m=new THREE.Mesh(geo,src.material);m.name=h.key+'-garage-footing';m.castShadow=m.receiveShadow=true;W.scene.add(m);return m;}
+ function makeGarage(h){h.garageFoundation=liveFooting(h);const G=h.garageInfo,I=W.interiors[h.key+'-garage']||W.interiors[h.key],{g,d,lat}=W.houseAnchor(h,G.x,G.front-.1,G.y);const panel=new THREE.Group();g.add(panel);
   const slab=new THREE.Mesh(K.boxGeo,K.mat(0xeeeae0));slab.scale.set(G.doorW-.04,G.doorH,.06);slab.castShadow=true;panel.add(slab);
   for(let k=1;k<4;k++){const gr=new THREE.Mesh(K.boxGeo,K.mat(0xb3ad9f));gr.scale.set(G.doorW-.04,.03,.02);gr.position.set(0,-G.doorH/2+k*G.doorH/4,.035);panel.add(gr);}
   const cols=G.doorW>3?8:4;for(let k=1;k<cols;k++){const gr=new THREE.Mesh(K.boxGeo,K.mat(0xc4beb0));gr.scale.set(.03,G.doorH,.02);gr.position.set(-G.doorW/2+G.doorW*k/cols,0,.035);panel.add(gr);}
