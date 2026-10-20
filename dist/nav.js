@@ -140,9 +140,15 @@ export function createNav(world){
  // Is there a house (or the far neighborhood) right here? For sound: walls between you and a siren.
  const FAR=new Set(['far-house']),wallAt=(x,z)=>!!walls.blocked(x,z,0,WALL)||garageAt(x,z,0)||!!world.space.blocked(x,z,0,FAR);
  // Small local A* for a grown-up crossing a driveway. No destination knowledge for companions.
+ const failed=new Map();
  function walkPath(start,end,obstacles=[],pad=null){
   // (at Pine Ridge the way round can be wide, a shore or a fence line: no way within the first box, a wider one)
-  if(pad==null){if(!pineOpen)pad=5;else{const p=walkPath(start,end,obstacles,5);return p.length?p:walkPath(start,end,obstacles,14);}}
+  if(pad==null){if(!pineOpen)pad=5;else{
+   // (Pine Ridge: a friend whose target cannot be reached asks again every frame, and a failed wide search is costly: a
+   // failure is remembered for the next 45 identical asks, about a second and a half)
+   const key=Math.round(start.x)+','+Math.round(start.z)+'>'+Math.round(end.x)+','+Math.round(end.z)+'#'+obstacles.length,f=failed.get(key);if(f&&f.n>0){f.n--;return [];}
+   const p=walkPath(start,end,obstacles,5);if(p.length)return p;const p2=walkPath(start,end,obstacles,14);
+   if(p2.length)failed.delete(key);else{if(failed.size>256)failed.clear();failed.set(key,{n:45});}return p2;}}
   const step=.65,minX=Math.min(start.x,end.x)-pad,minZ=Math.min(start.z,end.z)-pad,maxX=Math.max(start.x,end.x)+pad,maxZ=Math.max(start.z,end.z)+pad;
   const point=(i,j)=>({x:minX+i*step,z:minZ+j*step}),ix=p=>Math.round((p.x-minX)/step),iz=p=>Math.round((p.z-minZ)/step),key=(i,j)=>i+','+j;
   const valid=p=>walkable(p.x,p.z,{r:.3})&&!obstacles.some(o=>Math.hypot(o.x-p.x,o.z-p.z)<o.r+.38);
@@ -152,7 +158,7 @@ export function createNav(world){
    if(best){const rest=walkPath(best,end,obstacles,pad);return rest.length?[[best.x,best.z],...rest]:[];}}
   if(clear(start,end))return [[end.x,end.z]];
   const root={i:ix(start),j:iz(start),g:0,p:start},open=[root],seen=new Map([[key(root.i,root.j),root]]);let done=null;
-  for(let n=0;n<5000&&open.length;n++){open.sort((a,b)=>(a.g+Math.hypot(a.p.x-end.x,a.p.z-end.z))-(b.g+Math.hypot(b.p.x-end.x,b.p.z-end.z)));const q=open.shift();if(q.closed)continue;q.closed=true;
+  for(let n=0,cap=pad>5?2000:5000;n<cap&&open.length;n++)/* (the wide Pine Ridge retry is bounded) */{open.sort((a,b)=>(a.g+Math.hypot(a.p.x-end.x,a.p.z-end.z))-(b.g+Math.hypot(b.p.x-end.x,b.p.z-end.z)));const q=open.shift();if(q.closed)continue;q.closed=true;
    if(Math.hypot(q.p.x-end.x,q.p.z-end.z)<step*1.5&&clear(q.p,end)){done=q;break;}
    for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const i=q.i+di,j=q.j+dj,p=point(i,j);if(p.x<minX||p.x>maxX||p.z<minZ||p.z>maxZ||!clear(q.p,p))continue;const k=key(i,j),g=q.g+Math.hypot(di,dj)*step,old=seen.get(k);if(old&&old.g<=g)continue;const v={i,j,p,g,parent:q};seen.set(k,v);open.push(v);}}
   if(!done)return [];const pts=[end];for(let q=done;q?.parent;q=q.parent)pts.unshift(q.p);pts.unshift(start);
@@ -163,7 +169,7 @@ export function createNav(world){
  function setTown(on){townOpen=!!on;}
  // Mill Street's road north out of town (to Pine Ridge) is open only in Chapter Five: before that the town ends past its
  // LOCAL TRAFFIC ONLY sawhorse, where it always did.
- function setPine(on){pineOpen=!!on;}
+ function setPine(on){pineOpen=!!on;failed.clear();}
  const townEdge=w=>!pineOpen&&w?.zone==='core'&&w.v>65.7&&Math.abs(w.u)<15;
  return {locate,groundY,baseY,streetHeading,rideable,walkable,surface,nearFence,wallAt,walkPath,setRoom,setTown,setPine,get townOpen(){return townOpen;},get pineOpen(){return pineOpen;},get room(){return room;},frame:B,junction:J,creek:C,easement:EZ,woods:WZ,woodsNav:WN,drain:DZ,drainNav:DN,pine:PN,
   side:(u,v)=>B.point(u,v),main:(d,lat)=>groundPoint(d,lat),town:TN,side2:B2};
