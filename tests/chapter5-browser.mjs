@@ -25,6 +25,7 @@ const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.sp
   res.setHeader('Content-Type',types[file.split('.').pop()]||'application/octet-stream');res.end(body);}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const args=['--no-sandbox','--disable-dev-shm-usage'];if(!process.env.BROWSER_GPU)args.push('--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist');
+if(process.env.BROWSER_SERVERLESS)args.push('--no-zygote','--single-process');
 // (gc() between segments and precise heap numbers for the report; BROWSER_MEMORY_MB bounds the test browser's heap)
 const memoryMB=Number(process.env.BROWSER_MEMORY_MB||0);args.push('--enable-precise-memory-info',`--js-flags=--expose-gc${memoryMB>0?' --max-old-space-size='+memoryMB:''}`);
 // SEGMENTED=1: each walkthrough segment after the first, and each batch of DEV scenes (DEV_BATCH, default 6), in a fresh

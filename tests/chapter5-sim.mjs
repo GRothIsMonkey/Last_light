@@ -203,10 +203,13 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  // ---- run ----
  if(!seg('run'))return;
  const tRun=h.snapshot.clock;
- if(route==='A'){trek([P5(-262,556),P5(-236,552),P5(-212,546),P5(-192,538),P5(-178,524),P5(-170,518),P5(-163,506),P5(-158,496)],{r:1.6,max:120,sprint:true,stop:()=>C5().flags.boundary});}
+ if(route==='A'){trek([P5(-262,556),P5(-236,552),P5(-212,546),P5(-192,538),P5(-178,524),P5(-170,518)],{r:1.6,max:120,sprint:true,stop:()=>C5().flags.gateShut});
+  const latch=A5.GT.barPoint('campL',.75),mp=me(),ld=Math.hypot(mp.x-latch.x,mp.z-latch.z);go({x:latch.x+(mp.x-latch.x)/ld*1.15,z:latch.z+(mp.z-latch.z)/ld*1.15},{r:.4,max:25});faceV(latch);W(.25);assert.ok(act('c5-shove',5),'gate offers the player a pull');W(1.6);
+  trek([P5(-163,506),P5(-158,496)],{r:1.6,max:30,sprint:true,stop:()=>C5().flags.boundary});}
+
  else{go(Q5(-312,562),{r:.6,max:60,sprint:true,stop:()=>C5().flags.boundary});// (off Owl's porch round its corner: follow the path closely)
  walkTo([P5(-320,540),P5(-326,516),P5(-337,492),P5(-347,466),P5(-352,450),P5(-352,444)],{r:1.6,max:150,sprint:true,stop:()=>C5().flags.boundary});}// (onto the dam itself)
- U(()=>S().phase==='n5-out',40);check(`${label}: the escape by route ${route}, and the boundary: ${route==='A'?'the camp gate slams shut in front of you; Sam shoves it open':'the bell, by itself'}; every light out at once`,()=>{assert.equal(C5().route,route);assert.ok(C5().flags.boundary);if(route==='A')assert.equal(A5.C.flags.gateOpened,'sam');assert.ok(Object.values(C5().lamps).every(v=>v<.2),JSON.stringify(C5().lamps));});
+ U(()=>S().phase==='n5-out',40);check(`${label}: the escape by route ${route}, and the boundary: ${route==='A'?'the camp gate slams shut in front of you; you pull while Sam holds the latch':'the bell, by itself'}; every light out at once`,()=>{assert.equal(C5().route,route);assert.ok(C5().flags.boundary);if(route==='A')assert.equal(A5.C.flags.gateOpened,'you');assert.ok(Object.values(C5().lamps).every(v=>v<.2),JSON.stringify(C5().lamps));});
  M2['chapter5 escape seconds']=+(h.snapshot.clock-tRun).toFixed(1);
  // ---- back to the bikes ----
  // (from the first point of the road ahead: the escape can end past the camp gate, and a point behind it would take the

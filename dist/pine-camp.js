@@ -7,6 +7,7 @@
 // Each building is built in its own frame (x to the right looking out of the front door, -z out of the front, y up
 // from its pad); its static parts bake under 'pine' (rooms under 'pine-int'); its doors and window panes are live.
 import * as THREE from './three.module.js';
+import {pineMaterial} from './pine-materials.js';
 import {seeded,hashSeed,clamp,lerp} from './kit.js';
 import {PW,PL,hd,frameOf,BUILDINGS,BLD,SOLIDS,DOORS,SPOT,DOCKS,heightAt,interiorOf} from './pine-plan.js';
 import {campMapArt,archArt,cabinBoardArt,CAMP_SIGNS,searchMapArt,groupPhotoArt,plaqueArt,bannerArt,scheduleArt,carvingArt} from './pine-art.js';
@@ -23,6 +24,8 @@ export function buildCamp(W,out){
   frame:K.mat(0x5a4a38,{roughness:.8}),mattress:K.mat(0x8a8a9a,{roughness:1}),stripe:K.mat(0x5a6a8a,{roughness:1}),metal:K.mat(0x6e7270,{roughness:.5,metalness:.55}),
   corr:K.mat(0x8e928c,{roughness:.55,metalness:.6}),dark:K.mat(0x1e1c1a,{roughness:.9}),door:K.mat(0x5a4632,{roughness:.85}),screen:K.mat(0x3a3e3a,{roughness:.9}),
  };
+ const surfaces={wall:'wood',wallL:'wood',trim:'paint',greenTrim:'paint',floor:'wood',floorDark:'wood',roof:'roof',roofRed:'roof',fascia:'wood',pier:'concrete',stone:'stone',block:'stone',frame:'wood',mattress:'fabric',stripe:'fabric',metal:'metal',corr:'metal',door:'paint'};
+ for(const [name,kind] of Object.entries(surfaces)){const old=M2[name];M2[name]=pineMaterial(old.color,kind,{roughness:old.roughness,metalness:old.metalness});}
  // ---- shared pieces -------------------------------------------------------------------------------------------------------
  // A wall with rectangular openings: boxes around them. Runs along x at depth z (thickness th), from y0 to y1. ops [x0,x1,y0,y1].
  function wallX(g,x0,x1,y0,y1,z,th,ops,m){const xs=[...new Set([x0,x1,...ops.flatMap(o=>[o[0],o[1]])])].filter(x=>x>=x0&&x<=x1).sort((a,b)=>a-b),ys=[...new Set([y0,y1,...ops.flatMap(o=>[o[2],o[3]])])].filter(y=>y>=y0&&y<=y1).sort((a,b)=>a-b);
@@ -47,7 +50,12 @@ export function buildCamp(W,out){
   K.quad(g,[-xh,yy,z1],[0,y+r,z1],[0,y+r,z0],[-xh,yy,z0],m);K.quad(g,[0,y+r,z1],[xh,yy,z1],[xh,yy,z0],[0,y+r,z0],m);
   // undersides and fascia
   K.quad(g,[-xh,yy-.02,z0],[0,y+r-.02,z0],[0,y+r-.02,z1],[-xh,yy-.02,z1],M2.fascia);K.quad(g,[0,y+r-.02,z0],[xh,yy-.02,z0],[xh,yy-.02,z1],[0,y+r-.02,z1],M2.fascia);
-  for(const s of [-1,1])B(g,s*xh,yy-.06,(z0+z1)/2,.05,.14,z1-z0,M2.fascia);B(g,0,y+r+.04,(z0+z1)/2,.18,.08,z1-z0,M2.fascia);}
+  for(const s of [-1,1])B(g,s*xh,yy-.06,(z0+z1)/2,.09,.19,z1-z0,M2.fascia);B(g,0,y+r+.04,(z0+z1)/2,.22,.1,z1-z0,M2.fascia);
+  // Rake boards, exposed rafter tails and a ridge cap give the roof real thickness at eye height.
+  for(const z of [z0,z1])for(const side of [-1,1])K.rod(g,[side*xh,yy-.06,z],[0,y+r-.06,z],.065,M2.trim,.065,4);
+  for(let z=z0+.22;z<z1;z+=.68)for(const side of [-1,1])K.rod(g,[side*(xh-.36),yy+.06,z],[side*xh,yy-.06,z],.045,M2.frame,.045,4);
+ }
+
  // (both faces: the outside, and an inside one a wall's thickness in, so a room is closed under its rafters)
  function gableEnds(g,w,y,r,zs,m){for(const z of zs){const i=z<0?.1:-.1;K.tri(g,z<0?[w/2,y,z,-w/2,y,z,0,y+r,z]:[-w/2,y,z,w/2,y,z,0,y+r,z],m);K.tri(g,z<0?[-w/2,y,z+i,w/2,y,z+i,0,y+r,z+i]:[w/2,y,z+i,-w/2,y,z+i,0,y+r,z+i],m);}}
  // a door: live hinge at its left edge (seen from outside), the leaf swinging inward; F opens it (chapter5.js)
@@ -63,27 +71,32 @@ export function buildCamp(W,out){
 
  // ---- a cabin ---------------------------------------------------------------------------------------------------------------
  function cabin(b){const g=place(b,root),L=liveAt(b),I=b.enter?place(b,inn):null,hw=b.w/2,hd2=b.d/2,f=b.floor,h=b.h,th=.12,r=seeded(hashSeed(17,b.c[0],b.c[1]));
+  const walls=pineMaterial(({bluejay:0x72817e,cardinal:0x896e5b,owl:0x766d59,robin:0x8c7961,heron:0x798173,wren:0x95876e})[b.id]||0x84735b,'paint');
   // piers and the floor platform; skirt boards between the piers
   for(const x of [-hw+.2,0,hw-.2])for(const z of [-hd2+.2,0,hd2-.2])B(g,x,f/2-.1,z,.36,f+.2,.36,M2.pier);
   B(g,0,f-.08,0,b.w+.06,.16,b.d+.06,M2.floorDark);
   // walls with their openings: the door (front), two windows each side, one at the back
   const wy0=f,wy1=f+h,winY=f+1.45,ww=.92,wh=.86,door=b.door,shut=!b.enter&&r()<.5;
   const HF=[[door[0]-door[1]/2,door[0]+door[1]/2,f,f+2.05]],HB=[[-ww/2,ww/2,winY-wh/2,winY+wh/2]],HS=[[-2.3-ww/2,-2.3+ww/2,winY-wh/2,winY+wh/2],[1.6-ww/2,1.6+ww/2,winY-wh/2,winY+wh/2]];
-  wallX(g,-hw,hw,wy0,wy1,-hd2+th/2,th,HF,M2.wall);
-  wallX(g,-hw,hw,wy0,wy1,hd2-th/2,th,HB,M2.wall);
-  for(const s of [-1,1])wallZ(g,-hd2,hd2,wy0,wy1,s*(hw-th/2),th,HS,M2.wall);
-  battens(g,-hw,hw,wy0,wy1,-hd2,-1,M2.wallL,.42,HF);battens(g,-hw,hw,wy0,wy1,hd2,1,M2.wallL,.42,HB);
+  wallX(g,-hw,hw,wy0,wy1,-hd2+th/2,th,HF,walls);
+  wallX(g,-hw,hw,wy0,wy1,hd2-th/2,th,HB,walls);
+  for(const s of [-1,1])wallZ(g,-hd2,hd2,wy0,wy1,s*(hw-th/2),th,HS,walls);
+  battens(g,-hw,hw,wy0,wy1,-hd2,-1,walls,.42,HF);battens(g,-hw,hw,wy0,wy1,hd2,1,walls,.42,HB);
   // (the side walls' battens are drawn turned a quarter round: x along them is -z on the right side, +z on the left)
-  for(const s of [-1,1]){const sg=new THREE.Group();sg.position.x=s*hw;sg.rotation.y=s*Math.PI/2;g.add(sg);battens(sg,-hd2,hd2,wy0,wy1,0,1,M2.wallL,.42,s>0?HS.map(([a,b2,c,d])=>[-b2,-a,c,d]):HS);}
+  for(const s of [-1,1]){const sg=new THREE.Group();sg.position.x=s*hw;sg.rotation.y=s*Math.PI/2;g.add(sg);battens(sg,-hd2,hd2,wy0,wy1,0,1,walls,.42,s>0?HS.map(([a,b2,c,d])=>[-b2,-a,c,d]):HS);}
   // corner boards, the sill plate
   for(const x of [-hw,hw])for(const z of [-hd2,hd2])B(g,x,f+h/2,z,.16,h,.16,M2.trim);
   windowAt(g,b,0,winY,ww,wh,hd2,1,{shutter:shut?'closed':null});for(const s of [-1,1])for(const z of [-2.3,1.6]){const sg=new THREE.Group();sg.position.set(s*hw,0,z);sg.rotation.y=s*Math.PI/2;g.add(sg);windowAt(sg,b,0,winY,ww,wh,0,1,{shutter:shut?'closed':r()<.3?'open':null});}
   // the roof (over the porch too), its gable ends
-  gableZ(g,b.w,b.d,f+h,1.55,.42,M2.roof,{fwd:b.porch});gableEnds(g,b.w,f+h,1.55,[-hd2,hd2],M2.wall);
+  gableZ(g,b.w,b.d,f+h,1.55,.42,M2.roof,{fwd:b.porch});gableEnds(g,b.w,f+h,1.55,[-hd2,hd2],walls);
   // the porch: a deck at the floor, two posts, side rails, steps down; the name board over the door
   const pz=-hd2-b.porch/2;B(g,0,f-.06,pz,b.w,.12,b.porch,M2.floor);for(const x of [-hw+.12,hw-.12]){B(g,x,f/2,-hd2-b.porch+.12,.14,f,.14,M2.pier);B(g,x,f+h/2+.05,-hd2-b.porch+.12,.14,h+.1,.14,M2.frame);}
   for(const s of [-1,1]){B(g,s*(hw-.12),f+.9,pz,.06,.06,b.porch,M2.frame);B(g,s*(hw-.12),f+.45,pz,.04,.9,.04,M2.frame);}
   const steps=Math.max(1,Math.round(f/.19));for(let k=0;k<steps;k++){const y=f-(k+1)*f/steps;B(g,door[0],y+f/steps/2-.02,-hd2-b.porch-.14-k*.28,1.4,f/steps,.28,M2.floor);}
+  // Diagonal porch braces, floor edging and feet remain out of the doorway.
+  for(const side of [-1,1]){K.rod(g,[side*(hw-.12),f+h-.7,-hd2-b.porch+.12],[side*(hw-.72),f+h-.05,-hd2-b.porch+.12],.052,M2.frame,.052,4);B(g,side*(hw-.11),f-.16,pz,.12,.22,b.porch,M2.frame);}
+  // A louvred attic vent and its frame, rather than an empty triangular facade.
+  B(g,0,f+h+.48,-hd2-.017,.46,.52,.05,M2.dark);for(let k=0;k<6;k++){const v=B(g,0,f+h+.25+k*.085,-hd2-.06,.48,.035,.08,M2.trim);v.rotation.x=-.22;}
   const nb=sign({w:1.4,h:.36,draw:cabinBoardArt(b.name)});face(g,nb,1.4,.36,{y:f+h-.32,z:-hd2-.04});
   // the door: live in the cabins you can go into, shut and painted in the others
   if(b.enter)doorAt(b,L,door[0],-hd2+th/2,door[1]-.04,2.0,f);
@@ -99,7 +112,8 @@ export function buildCamp(W,out){
    // the bunks (where the plan put them): posts, two frames, two mattresses each; a carved end board
    for(const s of SOLIDS.filter(q=>q.inside===b.id&&q.kind==='bunk')){const [lx,lz]=b.F.of(s.c[0],s.c[1]),bk=new THREE.Group();bk.position.set(lx,f,-lz);I.add(bk);
     for(const x of [-.45,.45])for(const z of [-.98,.98])B(bk,x,.85,z,.07,1.7,.07,M2.frame);
-    for(const y of [.32,1.32]){B(bk,0,y,0,.96,.06,2.02,M2.frame);B(bk,0,y+.09,0,.86,.12,1.9,M2.mattress);for(let k=0;k<5;k++)B(bk,0,y+.152,-.8+k*.4,.86,.004,.04,M2.stripe);}
+    for(const y of [.32,1.32]){B(bk,0,y,0,.96,.06,2.02,M2.frame);K.rbox(bk,0,y+.09,0,.86,.12,1.9,.045,M2.mattress);K.rbox(bk,0,y+.19,.68,.52,.12,.36,.05,M2.trim);B(bk,0,y+.165,-.28,.87,.025,.82,M2.stripe);for(let k=0;k<5;k++)B(bk,0,y+.152,-.8+k*.4,.86,.004,.04,M2.stripe);}
+    for(const x of [-.3,.3])B(bk,x,.79,-1.06,.035,1.38,.04,M2.frame);for(let k=0;k<4;k++)B(bk,0,.25+k*.3,-1.07,.62,.035,.05,M2.frame);
     const cv=sign({w:.9,h:.5,draw:carvingArt([['TODD 84','JEFF + MIKE','BLUEJAY RULES','R.K.'],['DAVE','SUMMER 79','CARDINAL #1','KJ + LM'],['PETE','OWL 88','BEN W.','LIGHTS OUT = LAME']][['bluejay','cardinal','owl'].indexOf(b.id)%3]||['CAMP'],hashSeed(b.c[0],lz))});
     B(bk,0,.62,-1.02,.96,.56,.04,M2.frame);face(bk,cv,.9,.5,{y:.62,z:-1.045});out.anchors['bunk-'+b.id+'-'+(lz>0?'f':'b')+(s.side>0?'r':'l')]={b:b.id,lx,lz,side:s.side};}
    // the shelf at the back, hooks, the schedule on the wall by the door

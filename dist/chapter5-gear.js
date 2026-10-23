@@ -12,6 +12,7 @@
 // The inventory (I) lists it all (inventory.js).
 import * as THREE from './three.module.js';
 import {P as PI,smooth,standPose,copyPose,applyPose} from './rig.js';
+import {dressCamera} from './chapter5-props.js';
 import {makeCameraModel} from './alex-camera.js';
 import {createInventory} from './inventory.js';
 
@@ -82,7 +83,7 @@ export function createGear(X){
   phys.playerReach({at:()=>P.obj.position.clone(),dur:[.45,.15,.4],onContact:()=>{P.hide();S.torchTaken=true;X.inv().flashlight=true;foot.owned=true;foot.on=false;X.sound('click',camera.position,{gain:.25});X.mark('a flashlight, from Sam');},then:()=>X.lockWalk(false)});}
  // ---- the camera: a picture taken with your hands --------------------------------------------------------------------------------
  let model=null,finger=null;const tmpV=new THREE.Vector3(),tmpQ=new THREE.Quaternion();
- function buildModel(){if(model)return;model=makeCameraModel();const g=model.group;g.visible=false;camera.add(g);
+ function buildModel(){if(model)return;model=dressCamera(makeCameraModel());const g=model.group;g.visible=false;camera.add(g);
   // (the index finger that presses the shutter: a fingertip over the button)
   // (the shutter is at the camera's +x end, which is the left as you look at its screen: that hand's index finger, from
   // where the hand holds the end, over the top to the button)
@@ -117,13 +118,13 @@ export function createGear(X){
  // ---- Alex's shirt: off the nail, gathered up, into Sam's bag ---------------------------------------------------------------------
  let shirtP=null;
  function shirtProp(){if(!shirtP){shirtP=phys.prop('alex-shirt',X.shirt,{grip:{p:[0,-.2,.02],r:[0,0,0]}});}return shirtP;}
- function hangShirt(pos,rot){const P=shirtProp();X.shirt.scale.set(1,1,1);P.place(pos,rot);X.shirt.visible=true;}
- function shirtInBag(){const P=shirtProp();X.shirt.scale.set(.5,.4,1.2);P.storeIn(G5.S.bag);X.inv().shirt=true;}
+ function hangShirt(pos,rot){const P=shirtProp();X.shirt.scale.set(1,1,1);X.shirt.userData.setFold?.(0);P.place(pos,rot);X.shirt.visible=true;}
+ function shirtInBag(){const P=shirtProp();X.shirt.userData.setFold?.(1);P.storeIn(G5.S.bag);X.inv().shirt=true;}
  function samTakesShirt({stand,then}){const P=shirtProp();X.stand(sam,null);let e=0;
   comp.run(sam,[comp.steps.walkTo(sam,X.walkPath(sam,stand()),{speed:1}),comp.steps.turnTo(sam,()=>X.headingTo(sam,P.obj.position),.4),
    phys.reach(sam,{at:()=>P.obj.position.clone().add(new THREE.Vector3(0,.12,0)),dur:[.6,.3,.4],carry:true,onContact:()=>{P.holdBy(sam.person,'r');X.sound('cloth',P.obj.position,{gain:.35});X.mark('Sam takes the shirt off the nail');}}),
    // gathered up in both hands, folded over on itself
-   (dt,ctx)=>{e+=dt;const u=smooth(e/.9);X.shirt.scale.set(1-.5*u,1-.6*u,1+.2*u);gather(sam,ctx,u);return e>=1.1;},
+   (dt,ctx)=>{e+=dt;const u=smooth(e/.9);X.shirt.userData.setFold?.(u);gather(sam,ctx,u);return e>=1.1;},
    ...G5.bagSteps(sam,{put:P,onPut:()=>{X.inv().shirt=true;X.mark('the shirt in Sam’s bag');}})],{then:()=>then?.()});}
  // (both hands together in front, turning it over on itself)
  function gather(c,ctx,u){standPose(c.tmp,ctx.clock+c.R.phase,{look:0,shift:0});copyPose(c.pose,c.tmp);const k=smooth(Math.min(1,u*2.2));lerp3(c.pose,PI.rh,[.07,1.02,-.3],k);lerp3(c.pose,PI.lh,[-.07,1.0,-.3+.04*Math.sin(u*6)],k);

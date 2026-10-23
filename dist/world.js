@@ -134,6 +134,9 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
  const castsShadow=(m,far)=>!far&&!W.grassMats.includes(m)&&m!==W.asphalt&&!m.userData.noShadow&&m!==W.glassLit&&m!==W.porchLit&&m.side!==THREE.BackSide&&!m.transparent;
  const plain=m=>m===W.glassLit||m===W.porchLit||m===W.lampLit||W.grassMats.includes(m)||m===W.asphalt||m.emissive?.getHex()!==0||m.transparent||!m.isMeshStandardMaterial||m.userData.keep;
  function batchMaterial(m){
+  if(m.userData.c5Surface){const key='c5:'+m.customProgramCacheKey()+':'+[m.roughness,m.metalness,m.polygonOffsetFactor,m.polygonOffsetUnits].join(':');
+   if(!colorMaterials.has(key)){const b=m.clone();b.color.setHex(0xffffff);b.vertexColors=true;b.onBeforeCompile=m.onBeforeCompile;b.customProgramCacheKey=m.customProgramCacheKey;colorMaterials.set(key,b);}return colorMaterials.get(key);}
+
   if(W.windowMats.includes(m)||m===W.darkGlass||m===W.farWindow)return W.glassLit;if(W.porchMats.includes(m))return W.porchLit;if(m.userData.lamp!==undefined)return W.lampLit;
   if(plain(m))return m;
   const isLeaf=W.foliage.includes(m),kind=m.userData.surface||'',key=[m.roughness,m.metalness,m.side,isLeaf?'leaf':kind,m.alphaTest,m.polygonOffset,m.polygonOffsetFactor,m.polygonOffsetUnits,m.map?.uuid||'none'].join(':');

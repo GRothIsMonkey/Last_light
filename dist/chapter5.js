@@ -47,6 +47,9 @@ import {createGarage} from './chapter5-garage.js';
 import {createPark} from './chapter5-park.js';
 import {createGates} from './chapter5-gates.js';
 import {createGear} from './chapter5-gear.js';
+import {chapter5Appearance} from './chapter5-models.js';
+import {CAST} from './cast.js';
+import {clothShirt,flashlightMesh} from './chapter5-props.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt)),lerp=(a,b,t)=>a+(b-a)*t;
 // QA jumps and DEV scenes, in story order.
@@ -115,12 +118,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  const texOf=cv=>{if(!cv)return null;const t=new THREE.CanvasTexture(cv.c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;};
  // Alex's shirt: the gold one with the collar (the one on the flyers), on the nail where Owl's campers hung their towels.
  const shirt=new THREE.Group();shirt.name='alex-shirt';props.add(shirt);
- {const gold=K.mat(0xd4b25a,{roughness:.95}),wet=K.mat(0x9a8040,{roughness:.7}),trim=K.mat(0xf0e6c8,{roughness:.9}),bx=(w,h,d,m,x,y,z,rz=0)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);q.position.set(x,y,z);q.rotation.z=rz;q.castShadow=true;shirt.add(q);return q;};
-  bx(.44,.52,.035,gold,0,-.3,0);bx(.18,.15,.03,gold,-.27,-.12,0,.75);bx(.18,.15,.03,gold,.27,-.12,0,-.75);
-  bx(.11,.05,.02,trim,-.06,-.035,-.02,-.35);bx(.11,.05,.02,trim,.06,-.035,-.02,.35);bx(.02,.36,.01,trim,0,-.25,-.022);
-  // wet through in patches: darker, and it hangs heavier at the hem
-  bx(.2,.16,.006,wet,-.08,-.42,-.021);bx(.14,.2,.006,wet,.12,-.27,-.021);bx(.44,.05,.006,wet,0,-.545,-.021);
-  for(const y of [-.15,-.27,-.39]){const b2=new THREE.Mesh(new THREE.SphereGeometry(.01,6,4),trim);b2.position.set(.02,y,-.024);shirt.add(b2);}}
+ clothShirt(shirt);
  shirt.visible=false;
  // JSA, cut fresh into the wall boards: pale wood under the gray, an arrow, four marks.
  const carving=new THREE.Group();carving.name='owl-carving';props.add(carving);
@@ -250,7 +248,10 @@ export function createChapter5(o,k,ch2,ch3,ch4){
  // ---- the world as Chapter Five finds it ------------------------------------------------------------------------------------
  // (friends' garage floors: down to the slab while this chapter walks you into Sam's; as they were for the other chapters)
  // (the faces that show what they feel and move when they talk: this chapter's; the others keep the faces they had)
- function faces(on){for(const f of o.friends?.list||[])f.person?.face?.enable?.(on);for(const c of [jamie,sam])c.person?.face?.enable?.(on);}
+ const appearances=new Map();let oldTorch=null,newTorch=null;
+ function faces(on){const people=new Map();for(const f of o.friends?.list||[])if(f.person)people.set(f.person,CAST[f.key]||CAST[f.name?.toLowerCase()]||CAST.jamie);for(const c of [jamie,sam])people.set(c.person,CAST[c.key]);people.set(o.self,CAST.player);
+  for(const [p,cast] of people){if(!p||!cast)continue;if(on){p.face?.enable?.(true);if(!appearances.has(p))appearances.set(p,chapter5Appearance(p,cast));appearances.get(p).enable(true);}else{appearances.get(p)?.enable(false);p.face?.enable?.(false);}}
+  const torch=o.foot?.torch;if(torch){if(on&&!oldTorch){oldTorch=[...torch.children];torch.clear();newTorch||=flashlightMesh();newTorch.rotation.y=Math.PI/2;torch.add(newTorch);}else if(!on&&oldTorch){torch.clear();torch.add(...oldTorch);oldTorch=null;}}}
  function slabs(on){for(const P of Object.values(world.homes||{})){const f=P?.garageFoundation;if(f)f.position.y=on?-.18:0;}}
  function common(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);slabs(true);faces(true);o.foot.fpBody=true;camp.attach(true);if(!props.parent)scene.add(props);}
  function dayWorld(){A.day=1;A.night=0;ch2.day=1;S.deep=A.deep=0;o.flashShadow?.(false);o.nightRendering?.(false);o.attachFlashlight?.(true);/* (day rendering takes the flashlight's lights out; they go back in and stay the whole chapter: T only changes how bright) */ambient.night?.(false);ambient.morning?.(true);
@@ -801,21 +802,31 @@ export function createChapter5(o,k,ch2,ch3,ch4){
    // (Jamie can't move; Sam pulls him back by the arm)
    if(!X.pull&&C.t-X.comeAt>2.2){X.pull=true;stand(jamie,camBeside(1,-.8,.8),{look:()=>head,keep:true,max:3});}
    // (out of the door and across the porch toward you first; then, close, every light)
-   const out=(dd.pi||0)>=2||!dd.path;if((out&&(d<3.4||dj<3))||C.t-X.comeAt>8.5||(!dd.path&&C.t-X.comeAt>4)){X.stage='run';X.hideAt=C.t;wake('it came out');}}
-  else if(X.stage==='run'){// gone, when nobody is looking at where it was
-   if(camp.D.person.group.visible&&(!k.camLooksAt(head,.8)||C.t-X.hideAt>6)&&C.t-X.hideAt>1.2){camp.double(false);mark('it is gone');}}
+   const out=(dd.pi||0)>=2||!dd.path;if((out&&(d<3.4||dj<3))||C.t-X.comeAt>8.5||(!dd.path&&C.t-X.comeAt>4)){X.stage='run';X.hideAt=C.t;camp.D.v=5.8;camp.D.burst=.65;sound('c5Rush',head,{gain:.65});mark('the porch lunge');wake('it came out');}}
+  else if(X.stage==='run'){/* The same physical double follows the player's trail until the boundary. */}
   void p;void D;}
  // Every light in the camp comes on at once. RUN.
- function wake(why){if(C.flags.wake)return;C.flags.wake=true;mark('the camp wakes ('+why+')');if(why!=='it came out')camp.double(false);
+ function wake(why){if(C.flags.wake)return;C.flags.wake=true;mark('the camp wakes ('+why+')');
   for(const id of Object.keys(camp.LAMPS))if(id!=='owl')camp.set(id,1,{rate:9,flick:.05});camp.set('owl',0);const b=PN?.dyn?.bell;if(b)b.v+=3;sound('oldBell',bellPos(),{gain:1});
   for(const [i,key] of ['bluejay','cardinal','office','lodge'].entries())later(.2+i*.17,()=>{DOORS[key].open=1;sound('doorSlam',roomV(key,0,BLD[key].d/2,1),{gain:.7});});
   C.darkTo=Math.max(C.darkTo||0,.6);/* (every lamp on, under a sky that does not lighten) */T?.set?.(1,{rise:.3,why:'run'});say([{who:'SAM',text:'“RUN.”',by:'sam',time:1}],{interrupt:true});later(.4,runStart);}
  // ---- run: the road (the camp gate) or the dam (the bell) --------------------------------------------------------------------------------------
  function runStart(){if(C.esc)return;go('n5-run');C.hMin=Math.max(C.hMin||0,HOUR.run);checkpoint('c5-run');C.flags.hurry=true;for(const c of [jamie,sam])stand(c,null);follow(true);
-  objective('Run.','The camp gate and the road — or the dam.');const p=me();C.esc={t:0,route:null,still:0,trail:[{x:p.x,z:p.z}],front:0,woke:new Set(),said:{},boundary:false};}
+  objective('Get to the gate. Stay together.','The camp road — or the service road to the dam.');const p=me();C.esc={t:0,route:null,still:0,trail:[{x:p.x,z:p.z}],front:0,woke:new Set(),said:{},boundary:false,huntIndex:0,huntReady:false};
+  if(!camp.D.person.group.visible){const q=DOUBLE();camp.double(true,q);camp.doubleWalk(doublePath(),{speed:2.4});}camp.D.hunting=true;camp.D.ground=gy;}
  // the lights wake behind you as you go, never quite on top of you
  const ROUTE_A=['heron','bluejay','robin','cardinal','wren','lodge','office','office-porch'],ROUTE_C=['heron','wash','mshed','pump'];
- function updateRun(dt){const X=C.esc;if(!X||X.boundary)return;X.t+=dt;const p=me(),{e,n}=EN(p),v=X.lp?Math.hypot(p.x-X.lp.x,p.z-X.lp.z)/Math.max(dt,1e-3):0;X.lp={x:p.x,z:p.z};// (stopped is not moving: held against a wall counts too)
+ // The pursuer takes the path the player actually walked. No repositioning on camera turns, no teleporting through buildings.
+ function pursue(dt){const X=C.esc,D=camp.D;if(!X||!D.person.group.visible)return;const p=me(),gap=Math.hypot(D.x-p.x,D.z-p.z);X.closest=Math.min(X.closest??999,gap);X.visibleSeconds=(X.visibleSeconds||0)+dt;
+  if(!X.huntReady){if(D.path)return;X.huntReady=true;const q=X.trail[0],path=nav.walkPath({x:D.x,z:D.z},q,[],7);if(path.length){camp.doubleWalk(path.map(([x,z])=>({x,z,y:gy(x,z)})),{speed:3.4});return;}}
+  if(gap<2.25){D.path=null;D.walkV=0;D.a=headingTo(D.x,D.z,p.x,p.z);if(!X.said.close||C.t-X.said.close>8){X.said.close=C.t;sound('c5Near',new THREE.Vector3(D.x,D.y+1,D.z),{gain:.45});o.foot.stamina=Math.max(.2,o.foot.stamina-.08);}return;}
+  if(!D.path){while(X.huntIndex<X.trail.length-1&&Math.hypot(D.x-X.trail[X.huntIndex].x,D.z-X.trail[X.huntIndex].z)<1.3)X.huntIndex++;
+   const q=X.trail[X.huntIndex];if(q&&Math.hypot(D.x-q.x,D.z-q.z)>.2)camp.doubleWalk([{x:q.x,z:q.z,y:gy(q.x,q.z)}],{speed:gap>18?4.8:gap>8?3.5:2.7});}
+  D.v=gap>18?4.8:gap>8?3.5:2.7;
+  if(!X.doorBeat&&X.route==='A'&&near(BLD.lodge.c,25)){X.doorBeat=true;mark('the lodge door strikes');DOORS.lodge.open=0;sound('c5WoodStrike',roomV('lodge',0,BLD.lodge.d/2,1),{gain:.65});camp.set('lodge',1.4,{rate:12,flick:.4});later(.85,()=>DOORS.lodge.open=1);say([{who:'JAMIE',text:'“That was right next to us.”',by:'jamie',time:1.6,face:'terrified'}]);}
+  if(!X.serviceBeat&&X.route==='C'&&near(BLD.pump.c,22)){X.serviceBeat=true;mark('the intake answers');sound('c5WoodStrike',roomV('pump',0,0,.5),{gain:.55});camp.set('pump',1.2,{rate:15,flick:.6});say([{who:'SAM',text:'“On the walkway. Don’t go inside.”',by:'sam',time:1.9,face:'afraid'}]);}
+ }
+ function updateRun(dt){const X=C.esc;if(!X||X.boundary)return;pursue(dt);X.t+=dt;const p=me(),{e,n}=EN(p),v=X.lp?Math.hypot(p.x-X.lp.x,p.z-X.lp.z)/Math.max(dt,1e-3):0;X.lp={x:p.x,z:p.z};// (stopped is not moving: held against a wall counts too)
   const L=X.trail[X.trail.length-1];if(Math.hypot(L.x-p.x,L.z-p.z)>1)X.trail.push({x:p.x,z:p.z});
   // which way out: wherever you are now (the two ways' ground does not overlap, so it never flickers); you can change your mind
   const want=e>-246||(e>-262&&n<548)?'A':e<-304||n<530&&e<-286?'C':null;
@@ -827,41 +838,47 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(X.still>3.5&&!X.said.s1&&!busy()){X.said.s1=C.t;say([{who:'SAM',text:'“Don’t stop. Don’t STOP.”',by:'sam'}]);}
   if(X.still>9&&!X.said.s2&&!busy()){X.said.s2=C.t;say([{who:'JAMIE',text:'“Come ON!”',by:'jamie'}]);}
   if(X.route==='A'&&!C.flags.gateShut&&nearGateIn())gateShut();
-  if(C.flags.gateShut&&!C.flags.gateOpened&&C.t-C.gateShutAt>12)shoveGate('late');// (Sam held up somewhere: it does not keep you in)
+  if(C.flags.gateShut&&!C.flags.gateOpened&&C.t-C.gateShutAt>18&&!X.said.help){X.said.help=true;say([{who:'SAM',text:'“Grab this side. I’m holding the latch.”',by:'sam',time:2}]);}
+  if(C.flags.gateShut&&!C.flags.gateOpened&&C.t-C.gateShutAt>55)shoveGate('recovery');// forgiving recovery after repeated prompts
   if(passedGate()){X.route=C.route='A';gateScare();}
   if(near(SPOT.damN,9)){X.route=C.route='C';damScare();}
   if(X.still>20&&!X.said.s3&&!busy()){X.said.s3=C.t;say([{who:'SAM',text:'“Please. We have to GO.”',by:'sam'}]);}
-  if((X.still>90||X.t>300)&&C.fadeOut<0){X.boundary=true;/* (only once the carry can start: a carry refused mid-fade would leave the run with no end) */if(!X.route){X.route=C.route='A';mark('route A (carried)');}if(X.route==='C')carry('dam',DAM_IN,ha(...DAM_IN,...SPOT.damS),{after:damScare});else carry('gate',[SPOT.campGate[0]+3,SPOT.campGate[1]-6],ha(-166,512,-157,493),{after:gateScare});}}
+  if((X.still>75||X.t>210)&&C.fadeOut<0){X.boundary=true;/* (only once the carry can start: a carry refused mid-fade would leave the run with no end) */if(!X.route){X.route=C.route='A';mark('route A (carried)');}if(X.route==='C')carry('dam',DAM_IN,ha(...DAM_IN,...SPOT.damS),{after:damScare});else carry('gate',[SPOT.campGate[0]+3,SPOT.campGate[1]-6],ha(-166,512,-157,493),{after:gateScare});}}
  // (six metres onto the dam, on its centre line: the walkway, inside the parapet)
  const DAM_IN=(()=>{const [a,b]=[SPOT.damN,SPOT.damS],L=Math.hypot(b[0]-a[0],b[1]-a[1]);return [a[0]+(b[0]-a[0])*6/L,a[1]+(b[1]-a[1])*6/L];})();
  const passedGate=()=>{const p=me(),{e,n}=EN(p);return Math.hypot(e-SPOT.campGate[0],n-SPOT.campGate[1])<9&&(n<SPOT.campGate[1]-2.5);};
- // The camp gate, in front of you: it slams shut (both leaves: the way out closed). Sam gets to it first and shoves the
- // leaf open, out toward the road, and holds it; you go through, Jamie, Sam last. Behind you every light in the camp
+ // The camp gate slams shut. Sam holds the latch; the player pulls the leaf open, out toward the road.
+ // Jamie watches the double; you go through, Jamie, Sam last. Behind you every light in the camp
  // goes out at once.
  const nearGateIn=()=>{const p=me(),{e,n}=EN(p);return Math.hypot(e-SPOT.campGate[0],n-SPOT.campGate[1])<14&&n>SPOT.campGate[1]+1;};
- function shoveGate(by){const gt=PN?.dyn?.campGate;if(C.flags.gateOpened)return;C.flags.gateOpened=by;if(gt){gt.k=1.6;gt.want=1.15;}sound('fence',W5(...SPOT.campGate),{gain:.7});mark('the gate shoved open: '+by);}
+ function shoveGate(by){const gt=PN?.dyn?.campGate;if(C.flags.gateOpened)return;C.flags.gateOpened=by;C.flags.gateHelp=by==='you';if(gt){gt.k=1.6;gt.want=1.15;}sound('c5Gate',W5(...SPOT.campGate),{gain:.7});mark('the gate shoved open: '+by);objective('Through the gate.','Jamie first. Sam is holding it.');
+  stand(sam,null);GT.friendPush(sam,'campL',{to:1.15,set:()=>{},then:()=>stand(sam,[SPOT.campGate[0]-.6,SPOT.campGate[1]-1.2],{look:()=>camera.position,keep:true,max:5})});}
+
  function gateShut(){if(C.flags.gateShut)return;C.flags.gateShut=true;C.gateShutAt=C.t;const gt=PN?.dyn?.campGate;if(gt){gt.k=5;gt.want=.04;}sound('fence',W5(...SPOT.campGate),{gain:1});mark('the gate slams shut');T?.set?.(1,{rise:.15,why:'the gate'});
-  say([{who:'JAMIE',text:'“The gate—!”',by:'jamie',time:1,face:'terrified'},{who:'SAM',text:'“I got it. I GOT it!”',by:'sam',time:1.3,face:'determined'}],{interrupt:true});
-  stand(sam,null);later(.6,()=>GT.friendPush(sam,'campL',{to:1.15,set:()=>shoveGate('sam'),then:()=>{stand(sam,[SPOT.campGate[0]-.6,SPOT.campGate[1]-1.2],{look:()=>camera.position,keep:true,max:5});}}));}
+  objective('Help Sam open the gate.','F at the wooden gate. He holds the latch; you pull.');
+  say([{who:'JAMIE',text:'“The gate—!”',by:'jamie',time:1,face:'terrified'},{who:'SAM',text:'“I have the latch. PULL!”',by:'sam',time:1.5,face:'determined'},{who:'JAMIE',text:'“It’s still coming. It’s still ME.”',by:'jamie',time:1.7,face:'terrified'}],{interrupt:true});
+  const q=GT.barPoint('campL',.84);stand(sam,()=>({x:q.x+.5,z:q.z-.65}),{look:()=>q,keep:true,max:4,gesture:p=>{sam.person.group.updateMatrixWorld(true);const hand=sam.person.group.worldToLocal(q.clone());p[PI.rh]=hand.x;p[PI.rh+1]=hand.y;p[PI.rh+2]=hand.z;p[PI.re]=.6;}});
+  stand(jamie,[SPOT.campGate[0]-2,SPOT.campGate[1]+3],{look:()=>({x:camp.D.x,y:camp.D.y+1.35,z:camp.D.z}),keep:true,max:4});}
+
  function gateScare(){if(C.flags.boundary)return;C.flags.boundary=true;C.esc&&(C.esc.boundary=true);mark('the gate');go('n5-run');
   stand(jamie,[SPOT.campGate[0]+2.2,SPOT.campGate[1]-5],{look:()=>W5(-190,545,4),keep:true,max:4});
   later(1.2,()=>{stand(sam,[SPOT.campGate[0]+1,SPOT.campGate[1]-4],{look:()=>W5(-190,545,4),keep:true,max:4});});
-  say([{who:'SAM',text:'“Go. Go, go.”',by:'sam',time:1.2,face:'terrified'},{wait:1.6,act:()=>{camp.allOff();C.darkTo=.85;sound('click',W5(-200,550,4),{gain:.2});mark('every light at once');}},{wait:2},
+  say([{who:'SAM',text:'“Go. Go, go.”',by:'sam',time:1.2,face:'terrified'},{wait:1.6,act:()=>{camp.allOff();C.darkTo=.85;const gt=PN?.dyn?.campGate;if(gt){gt.want=.04;gt.k=7;}sound('c5Gate',W5(...SPOT.campGate),{gain:.7});camp.D.burst=.5;later(.3,()=>camp.double(false));mark('every light at once');}},{wait:2},
    {who:'JAMIE',text:'“They all went out.”',by:'jamie',time:1.4,face:'afraid'},{who:'SAM',text:'“Don’t look back. Walk.”',by:'sam',time:1.6,face:'afraid'}],
    {interrupt:true,then:outStart});}
  // The dam: the bell rings once, by itself, across the water. Every light goes out.
  function damScare(){if(C.flags.boundary)return;C.flags.boundary=true;C.esc&&(C.esc.boundary=true);mark('the dam');
   say([{wait:1.2,act:()=>{const b=PN?.dyn?.bell;if(b)b.v+=2.2;sound('oldBell',bellPos(),{gain:.7});}},{who:'JAMIE',text:'“The bell.”',by:'jamie',time:1.2},{who:'JAMIE',text:'“Nobody’s there. Nobody’s at the bell.”',by:'jamie',time:2},
-   {wait:1.4,act:()=>{camp.allOff();C.darkTo=.85;mark('every light at once');}},{wait:2},{who:'SAM',text:'“Keep walking. Don’t look back. Keep walking.”',by:'sam',time:2.2}],{interrupt:true,then:outStart});}
+   {wait:1.4,act:()=>{camp.allOff();C.darkTo=.85;camp.double(false);mark('every light at once');}},{wait:2},{who:'SAM',text:'“Keep walking. Don’t look back. Keep walking.”',by:'sam',time:2.2}],{interrupt:true,then:outStart});}
  // ---- after: the lamp in the lot -----------------------------------------------------------------------------------------------------------
  function outStart(){if(C.flags.out)return;C.flags.out=true;go('n5-out');C.hMin=Math.max(C.hMin||0,HOUR.out);C.flags.hurry=false;for(const c of [jamie,sam])stand(c,null);follow(true);T?.set?.(.35,{rise:-.05,why:'away from the camp'});
-  objective('Back to the bikes.','The rack, under the lamp in the lot.');}
- function updateOut(dt){const p=me();if(near(SPOT.rack.c,6))aftermath();
-  if(!C.flags.o1&&S.pt>14&&!busy()){C.flags.o1=true;say([{who:'JAMIE',text:'“Is it following us?”',by:'jamie',time:1.4},{who:'SAM',text:'“Don’t look.”',by:'sam',time:1}]);}
-  // (a player still walking back is never cut short: only one who has stopped getting nearer for 90 s, or after 480 s; the
-  // dam's way back along the shore is about 300 m)
-  const r=W5(...SPOT.rack.c),d=Math.hypot(p.x-r.x,p.z-r.z),O=C.out||(C.out={best:d,idle:0});if(d<O.best-1){O.best=d;O.idle=0;}else O.idle+=dt;
-  if(O.idle>240||S.pt>720)carry('rack',[SPOT.rack.c[0]+2.6,SPOT.rack.c[1]-1.6],ha(-130,316,-133,317.5),{after:aftermath});}
+  objective('Stay with them. Follow the shore.','The danger has passed. The lot is farther along this road.');C.out={t:0,start:{x:me().x,z:me().z},travel:0,lp:{x:me().x,z:me().z},transition:false};}
+ function updateOut(dt){const p=me();if(near(SPOT.rack.c,6)){aftermath();return;}const O=C.out||(C.out={t:0,start:{x:p.x,z:p.z},travel:0,lp:{x:p.x,z:p.z},transition:false});O.t+=dt;O.travel+=Math.hypot(p.x-O.lp.x,p.z-O.lp.z);O.lp={x:p.x,z:p.z};
+  if(!C.flags.o1&&O.t>2&&!busy()){C.flags.o1=true;say([{who:'JAMIE',text:'“Is it following us?”',by:'jamie',time:1.4,face:'afraid'},{who:'SAM',text:C.route==='C'?'“Across the dam. Follow the shore to the lamp.”':'“Follow the shore. The lamp is just past the yellow gate.”',by:'sam',time:2.8,face:'tired'}]);}
+  // The emergency has ended. An announced passage of time replaces 190–300 metres of empty recovery walking.
+  if(!O.transition&&((O.t>8&&O.travel>9)||O.t>24)&&!busy()&&C.fadeOut<0){O.transition=true;objective('A few minutes later · Pine Ridge parking lot','Together, along the shore.');mark('shore walk time transition');
+   carry('rack',[SPOT.rack.c[0]+2.6,SPOT.rack.c[1]-1.6],ha(-130,316,-133,317.5),{after:()=>{C.h+=3/60;camp.double(false);aftermath();}});}}
+
  function aftermath(){if(C.flags.after)return;C.flags.after=true;go('n5-final');C.hMin=Math.max(C.hMin||0,HOUR.final);checkpoint('c5-second-discovery');mark('the lamp in the lot');C.darkTo=.3;T?.set?.(.18,{rise:-.1,why:'the lamp'});objective('');
   const r=SPOT.rack.c;stand(jamie,[r[0]+1.6,r[1]+1.4],{look:()=>camera.position,keep:true});stand(sam,[r[0]+.4,r[1]-1.8],{look:()=>camera.position,keep:true});
   if(C.fireShot&&!C.flags.fireOnCamera){C.flags.fireOnCamera=true;const s=C.fireShot;C.fireIdx=photo.capture({id:'c5-campfire',date:'08/24/2011',time:s.time,label:'',source:(g,w,h)=>{if(s.canvas)g.drawImage(s.canvas.c,0,0,w,h);else drawFireSketch(g,w,h);}});photo.V.shutter=0;}
@@ -918,7 +935,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(/^d5-(stones|dock|park)$/.test(ph)&&near(STONES,10))PK.spots(add);
   if(S.phase.startsWith('d5')&&near(GATE,6))GT.spots(add);
   GR.spots(add);
-  if(C.flags.gateShut&&!C.flags.gateOpened&&near(SPOT.campGate,4)){const q=GT.barPoint('campL',.75);add('c5-shove','Shove the gate open',q,q,2.6);}
+  if(C.flags.gateShut&&!C.flags.gateOpened&&near(SPOT.campGate,5)){const q=GT.barPoint('campL',.75);add('c5-shove','Help Sam — pull the gate',q,q,2.6);}
   if(ph==='d5-dock'&&!C.flags.dock)add('c5-sit','Sit down',W5(...DOCK_END,dockY()),W5(...DOCK_END,dockY()),2.6);
   if(ph==='d5-map'&&!C.flags.map){const q=W5(...KIOSK);add('c5-map','Read the trail map',q,q,2.8);}
   if(ph==='d5-gate'&&C.flags.choose&&!C.choice){add('c5-go','Go with Jamie',W5(...GATE),W5(...GATE_IN),3.6);add('c5-hear','Hear Sam out',{x:sam.px,z:sam.pz,y:gy(sam.px,sam.pz)},{x:sam.px,z:sam.pz},3.2);}
@@ -932,7 +949,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
    if(ph==='e5-owl'&&inside('owl')){if(!C.flags.shirtSeen)add('c5-shirt','Look at the shirt',shirtPos(),null,2.6);if(C.flags.shirtDone&&!C.flags.carvingSeen)add('c5-carving','Look at the carving',carving.position,null,2.2);}}
   if(ph==='n5-window'&&C.win?.stage==='wait'&&near(OWL_PORCH,4.2)){const D=DOUBLE();add('c5-window','Look inside',{x:D.x,y:D.y+1.4,z:D.z},null,4.2);}
   return out;}
- function act(id){if(id.startsWith('g5-')&&G5.act(id))return;if(id.startsWith('p5-')&&PK.act(id))return;if(PK.holding)PK.drop();if(id.startsWith('c5-gate:')&&GT.act(id))return;if(GR.act(id))return;if(id==='c5-shove'){phys.playerReach({at:()=>GT.barPoint('campL',.75),dur:[.25,.1,.3],carry:false,onContact:()=>shoveGate('you')});return;}if(id==='c5-resit')sitFire();else if(id==='c5-lock')lockBikes();else if(id==='c5-sit')sitDock();else if(id==='c5-map')readMap();
+ function act(id){if(id.startsWith('g5-')&&G5.act(id))return;if(id.startsWith('p5-')&&PK.act(id))return;if(PK.holding)PK.drop();if(id.startsWith('c5-gate:')&&GT.act(id))return;if(GR.act(id))return;if(id==='c5-shove'){phys.playerReach({at:()=>GT.barPoint('campL',.75),dur:[.38,.65,.4],carry:false,onContact:()=>shoveGate('you')});return;}if(id==='c5-resit')sitFire();else if(id==='c5-lock')lockBikes();else if(id==='c5-sit')sitDock();else if(id==='c5-map')readMap();
   else if(id==='c5-go')choose('jamie');else if(id==='c5-hear')choose('sam');else if(id==='c5-owl-stuck'){C.flags.owlStuck=true;sound('thud',roomV('owl',0,BLD.owl.d/2,1),{gain:.5});say([{who:'SAM',text:'“It’s stuck. Swollen shut. Leave it.”',by:'sam'}]);}else if(id.startsWith('c5-door-'))openDoor(id.slice(8));else if(id==='c5-register')openRegister();else if(id==='c5-searchmap')lookSearchMap();
   else if(id==='c5-pantry')lookPantry();else if(id==='c5-photos')lookPhotos();else if(id==='c5-campmap')lookCampMap();else if(id==='c5-bell')ringBell();else if(id==='c5-fire')toFire();
   else if(id==='c5-shirt')lookShirt();else if(id==='c5-carving')lookCarving();else if(id==='c5-window'){if(C.win)C.win.lookT=1;}}
@@ -1145,8 +1162,8 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   ff('window','wake');C.split={t:63,resolved:true,how:'together',drift:{jamie:0,sam:0},said:{},events:[],center:[-214,551],look:{owl:0,office:0},maxSpread:0};
   const woke=()=>{for(const id of Object.keys(camp.LAMPS))if(id!=='owl')camp.snap(id,1);};
   if(section==='c5-run'||section==='c5-route-a'||section==='c5-route-c'){const at2=section==='c5-route-a'?[-232,546,ha(-232,546,-208,548)]:section==='c5-route-c'?[-300,553,ha(-300,553,-313,563)]:[OWL_FRONT[0]+.5,OWL_FRONT[1]+1.5,ha(OWL_FRONT[0],OWL_FRONT[1],-246,550)];
-   campAt(at2[0],at2[1],at2[2],{h:HOUR.run});lightsOut(true);woke();C.darkTo=C.dark=.35;C.flags.hurry=true;go('n5-run');checkpoint('c5-run');runStart();quiet();return;}
-  if(section==='c5-boundary'){campAt(SPOT.campGate[0]-4,SPOT.campGate[1]+7,ha(-170,519,-166,512),{h:HOUR.run+.04});lightsOut(true);woke();C.darkTo=C.dark=.35;C.flags.hurry=true;go('n5-run');checkpoint('c5-run');runStart();C.esc.route='A';C.route='A';quiet();return;}
+   campAt(at2[0],at2[1],at2[2],{h:HOUR.run});lightsOut(true);woke();C.darkTo=C.dark=.6;C.flags.hurry=true;go('n5-run');checkpoint('c5-run');runStart();quiet();return;}
+  if(section==='c5-boundary'){campAt(SPOT.campGate[0]-4,SPOT.campGate[1]+7,ha(-170,519,-166,512),{h:HOUR.run+.04});lightsOut(true);woke();C.darkTo=C.dark=.6;C.flags.hurry=true;go('n5-run');checkpoint('c5-run');runStart();C.esc.route='A';C.route='A';const q=W5(-180,534);camp.double(true,{x:q.x,y:gy(q.x,q.z),z:q.z,a:ha(-180,534,-170,519)});camp.D.hunting=true;camp.D.ground=gy;quiet();return;}
   ff('boundary','out');C.route='A';C.esc={t:0,route:'A',boundary:true,trail:[],woke:new Set(),said:{},still:0};
   if(section==='c5-aftermath'){campAt(-120,345,ha(-120,345,-133,317.5),{h:HOUR.out+.05});lightsOut(true);C.darkTo=C.dark=.4;go('n5-out');objective('Back to the bikes.','The rack, under the lamp in the lot.');checkpoint('c5-run');return;}
   ff('after');

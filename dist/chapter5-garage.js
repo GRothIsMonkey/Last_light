@@ -12,6 +12,7 @@
 // name without touching the scene: garage-table, supply-flashlight-1..3, supply-batteries-1..2, supply-water-1..3,
 // supply-camera, county-map, granola-bar-1..2, sam-backpack, jamie-backpack, jamie-sock.
 import * as THREE from './three.module.js';
+import {flashlightMesh,bottle,backpack,sockMesh,dressCamera,garageDress} from './chapter5-props.js';
 import {makeCameraModel} from './alex-camera.js';
 import {countyMapArt} from './pine-art.js';
 import {headingTo,wrap} from './people.js';
@@ -21,30 +22,12 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const mat=(c,o={})=>new THREE.MeshStandardMaterial({color:c,roughness:.75,...o});
 
 // ---- the props ----------------------------------------------------------------------------------------------------------------
-function flashlightMesh(color){const g=new THREE.Group();const body=new THREE.Mesh(new THREE.CylinderGeometry(.019,.017,.15,10),mat(color,{roughness:.45,metalness:.3}));body.rotation.z=Math.PI/2;g.add(body);
- const head=new THREE.Mesh(new THREE.CylinderGeometry(.026,.02,.04,12),mat(color,{roughness:.4,metalness:.35}));head.rotation.z=Math.PI/2;head.position.x=.09;g.add(head);
- const lens=new THREE.Mesh(new THREE.CircleGeometry(.022,12),mat(0xeee6c8,{roughness:.2}));lens.rotation.y=Math.PI/2;lens.position.x=.111;g.add(lens);
- const sw=new THREE.Mesh(new THREE.BoxGeometry(.016,.008,.012),mat(0x202020));sw.position.set(.02,.019,0);g.add(sw);for(const m of g.children)m.castShadow=true;return g;}
 function batteryPack(){const g=new THREE.Group();const card=new THREE.Mesh(new THREE.BoxGeometry(.085,.004,.12),mat(0xd8a020,{roughness:.6}));g.add(card);
  const blister=new THREE.Mesh(new THREE.BoxGeometry(.066,.016,.06),mat(0xdfe8ee,{roughness:.15,transparent:true,opacity:.6}));blister.position.set(0,.01,.015);g.add(blister);
  for(let i=0;i<4;i++){const b=new THREE.Mesh(new THREE.CylinderGeometry(.0072,.0072,.05,8),mat(i%2?0xb87830:0x2a2a2a,{metalness:.3}));b.rotation.x=Math.PI/2;b.position.set(-.024+i*.016,.01,.015);g.add(b);}
  const label=new THREE.Mesh(new THREE.BoxGeometry(.07,.0045,.03),mat(0x1a1a1a));label.position.set(0,.001,-.035);g.add(label);for(const m of g.children)m.castShadow=true;return g;}
-function bottle(){const g=new THREE.Group();const b=new THREE.Mesh(new THREE.CylinderGeometry(.033,.033,.17,12),mat(0x9cc4dc,{roughness:.12,transparent:true,opacity:.7}));b.position.y=.085;g.add(b);
- const water=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.14,12),mat(0x6fa0c0,{roughness:.1,transparent:true,opacity:.45}));water.position.y=.075;g.add(water);
- const lab=new THREE.Mesh(new THREE.CylinderGeometry(.0335,.0335,.05,12,1,true),mat(0x2a5aa0));lab.position.y=.09;g.add(lab);const cap=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,.02,10),mat(0x2a6ad8));cap.position.y=.205;g.add(cap);
- const neck=new THREE.Mesh(new THREE.CylinderGeometry(.015,.033,.025,12),b.material);neck.position.y=.183;g.add(neck);for(const m of g.children)m.castShadow=true;return g;}
 function granola(){const g=new THREE.Group();const m=new THREE.Mesh(new THREE.BoxGeometry(.11,.018,.035),mat(0x3a8a3a,{roughness:.5}));g.add(m);const s=new THREE.Mesh(new THREE.BoxGeometry(.04,.019,.036),mat(0xe8d040,{roughness:.5}));s.position.x=.02;g.add(s);m.castShadow=true;return g;}
 // a backpack: body, front pocket, straps, and a top flap on a hinge (open: thrown back) — its opening is above the body
-function backpack(color,{zip=0x222222}={}){const g=new THREE.Group(),c=mat(color,{roughness:.85}),d=mat(new THREE.Color(color).multiplyScalar(.7).getHex(),{roughness:.9});
- const body=new THREE.Mesh(new THREE.BoxGeometry(.3,.36,.17),c);body.position.y=.18;g.add(body);const pocket=new THREE.Mesh(new THREE.BoxGeometry(.24,.16,.05),d);pocket.position.set(0,.11,-.105);g.add(pocket);
- const inner=new THREE.Mesh(new THREE.BoxGeometry(.27,.006,.14),mat(0x141210,{roughness:1}));inner.position.y=.357;g.add(inner);
- for(const s of [-1,1]){const st=new THREE.Mesh(new THREE.BoxGeometry(.04,.32,.015),d);st.position.set(s*.09,.2,.095);g.add(st);}
- const hinge=new THREE.Group();hinge.position.set(0,.36,.085);g.add(hinge);const flap=new THREE.Mesh(new THREE.BoxGeometry(.31,.02,.19),d);flap.position.set(0,.01,-.095);hinge.add(flap);
- const z=new THREE.Mesh(new THREE.BoxGeometry(.3,.006,.01),mat(zip,{metalness:.4}));z.position.set(0,.356,-.085);g.add(z);for(const m of g.children)m.castShadow=true;flap.castShadow=true;
- return {g,hinge,flap};}
-function sockMesh(){const g=new THREE.Group(),w=mat(0xf2efe6,{roughness:1}),r=mat(0xc0302a,{roughness:1});
- const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.026,.16,3,8),w);leg.position.y=-.09;g.add(leg);const foot=new THREE.Mesh(new THREE.CapsuleGeometry(.024,.08,3,8),w);foot.rotation.x=Math.PI/2;foot.position.set(0,-.19,-.045);g.add(foot);
- for(const y of [-.025,-.04]){const s=new THREE.Mesh(new THREE.TorusGeometry(.026,.004,4,12),r);s.rotation.x=Math.PI/2;s.position.y=y;g.add(s);}for(const m of g.children)m.castShadow=true;return g;}
 function mapMesh(){const cv=(()=>{try{const c=document.createElement('canvas');const g=c.getContext?.('2d');if(!g)return null;c.width=1024;c.height=1024;countyMapArt(g,1024,1024);return c;}catch{return null;}})();
  const tex=cv?new THREE.CanvasTexture(cv):null;if(tex){tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=8;}
  const g=new THREE.Group();const open=new THREE.Mesh(new THREE.PlaneGeometry(.56,.56),new THREE.MeshStandardMaterial({map:tex,color:tex?0xffffff:0xe8e0c8,roughness:.95,side:THREE.DoubleSide}));open.rotation.x=-Math.PI/2;open.position.y=.002;g.add(open);
@@ -72,7 +55,7 @@ export function createGarage(X){
  // (local x: right of facing out, (cos a, sin a); local +z: into the garage, (-sin a, cos a))
  const TL=(x,z,y=TABLE_H)=>{const c=T0(),a=TA(),cs=Math.cos(a),sn=Math.sin(a);return new THREE.Vector3(c.x+x*cs-z*sn,c.y+y,c.z+x*sn+z*cs);};
  function build(){if(S.built)return;S.built=true;scene.add(root);
-  S.table=tableMesh();root.add(S.table);
+  S.table=tableMesh();root.add(S.table);S.dressing=garageDress();root.add(S.dressing);
   for(const [name,kind,x,z,r,color] of LAYOUT){const m=kind==='flashlight'?flashlightMesh(color):kind==='batteries'?batteryPack():bottle();
    const grip=kind==='flashlight'?{p:[0,.04,.025],r:[0,0,Math.PI/2]}:kind==='batteries'?{p:[0,.05,.03],r:[1.2,0,0]}:{p:[0,.0,.035],r:[Math.PI/2,0,0]};
    const P=phys.prop(name,m,{grip});P.kind=kind;P.lx=x;P.lz=z;P.lr=r;S.items.push(P);}
@@ -81,12 +64,12 @@ export function createGarage(X){
   S.sock=phys.prop('jamie-sock',sockMesh(),{grip:{p:[0,.04,.02],r:[0,0,0]}});
   for(let i=0;i<2;i++){const P=phys.prop('granola-bar-'+(i+1),granola(),{grip:{p:[0,.04,.02],r:[0,0,Math.PI/2]}});S.bars.push(P);}
   {const M=mapMesh();M.g.name='county-map';S.map=phys.prop('county-map',M.g,{grip:{p:[0,.03,.03],r:[0,0,0]}});S.mapParts=M;}
-  {const M=makeCameraModel();M.group.name='supply-camera';M.group.scale.setScalar(1);S.cam=phys.prop('supply-camera',M.group,{grip:{p:[0,.04,.03],r:[-1.2,0,0]}});}
+  {const M=dressCamera(makeCameraModel());M.group.name='supply-camera';M.group.scale.setScalar(1);S.cam=phys.prop('supply-camera',M.group,{grip:{p:[0,.04,.03],r:[-1.2,0,0]}});}
   hideAll();}
- function hideAll(){for(const P of [...S.items,...S.bars,S.sock,S.map,S.cam,S.bagP,S.jbagP])P?.hide();if(S.table)S.table.visible=false;}
+ function hideAll(){if(S.dressing)S.dressing.visible=false;for(const P of [...S.items,...S.bars,S.sock,S.map,S.cam,S.bagP,S.jbagP])P?.hide();if(S.table)S.table.visible=false;}
  // ---- where things are --------------------------------------------------------------------------------------------------------
  function place(P,x,z,{y=TABLE_H+.002,turn=0,lie=false}={}){const p=TL(x,z,y),q=new THREE.Quaternion().setFromEuler(new THREE.Euler(lie?-Math.PI/2:0,-(TA()+turn),0,'YXZ'));P.place(p,q);P.setHome(p,q);P.container=null;}
- function layTable(){S.table.visible=true;const c=T0();S.table.position.set(c.x,c.y,c.z);S.table.rotation.set(0,-TA(),0);
+ function layTable(){S.table.visible=true;const c=T0();S.dressing.visible=true;S.dressing.position.set(c.x,c.y,c.z);S.dressing.rotation.y=-TA();S.table.position.set(c.x,c.y,c.z);S.table.rotation.set(0,-TA(),0);
   for(const P of S.items){const flat=P.kind!=='water';place(P,P.lx,P.lz,{turn:P.lr,y:TABLE_H+(P.kind==='flashlight'?.02:P.kind==='batteries'?.003:.002)});void flat;}
   place(S.bagP,0,.13,{y:TABLE_H+.001,turn:Math.PI});S.bag.contents.clear();openFlap(S.bagParts,1);
   place(S.cam,-.12,-.19,{y:TABLE_H+.03,turn:Math.PI});place(S.map,.05,-.2,{y:TABLE_H});S.mapParts.open.visible=false;S.mapParts.folded.visible=true;S.mapParts.g.scale.setScalar(1);

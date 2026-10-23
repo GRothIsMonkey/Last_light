@@ -618,7 +618,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  if(n1){chapter.update(dt);if(roam.fadeIn>0){roam.fadeIn=Math.max(0,roam.fadeIn-dt/3.2);fade=roam.fadeIn;$('fade').style.opacity=fade;}}
  chapter3Art.update(dt);
  chapter4Art.update(dt);
- world.pine?.update?.(dt,{fog:scene.fog?.color});// (Pine Ridge's water, the camp's doors, windows and bell)
+ world.pine?.update?.(dt,{fog:scene.fog?.color,camera});// (Pine Ridge's water, the camp's doors, windows and bell)
  memory.update(dt);
  // Memory lines follow the evening (the first friend home, the ride home); prompts follow what you can do.
  if(!firstHome&&friends.list.some(f=>f.inside||f.homeward)){firstHome=true;nostalgia.mark('first-home',clock);}

@@ -14,6 +14,9 @@ import {planHouse,buildHouse} from './houses.js';
 import {leafGeometrySmall,leafTexture} from './materials.js';
 import {oldSignArt,newSignArt,kioskMapArt,simpleSign,PARK_SIGNS} from './pine-art.js';
 import {buildCamp} from './pine-camp.js';
+import {pineMaterial} from './pine-materials.js';
+import {buildPineDetail} from './pine-detail.js';
+import {createPineForest} from './pine-forest.js';
 
 // ---- canvases and the sign atlas ----------------------------------------------------------------------------------------------
 export function canvas(w,h){try{const c=document.createElement('canvas');const g=c.getContext?.('2d');if(!g)return null;c.width=w;c.height=h;return {c,g};}catch{return null;}}
@@ -53,6 +56,8 @@ export function buildPine(W){
   timber:mat(0x7a5a3a,{},'timber'),grey:mat(0x8a8478,{},'timber'),bark:mat(0x4a3a2a,{},'bark3'),steel:K.mat(0x6e7270,{roughness:.55,metalness:.55}),rust:K.mat(0x7a4a2e,{roughness:.9,metalness:.25}),
   yellowSteel:K.mat(0xd6b438,{roughness:.6,metalness:.2}),green:K.mat(0x3e5a3e,{roughness:.8}),brown:mat(0x4a3322,{},'timber'),shingle:mat(0x4a4e44,{},'roof'),red:mat(0x8a3226,{},'timber'),
  };
+ const surf={asphalt:'asphalt',lotA:'asphalt',patch:'asphalt',gravel:'gravel',rut:'gravel',concrete:'concrete',oldConcrete:'concrete',stone:'stone',block:'stone',timber:'wood',grey:'wood',bark:'wood',brown:'wood',shingle:'roof',red:'paint',steel:'metal',rust:'metal',yellowSteel:'metal',green:'paint'};
+ for(const [name,kind] of Object.entries(surf)){const old=M[name];M[name]=pineMaterial(old.color,kind,{roughness:old.roughness,metalness:old.metalness,polygonOffset:old.polygonOffset,polygonOffsetFactor:old.polygonOffsetFactor,polygonOffsetUnits:old.polygonOffsetUnits});}
  const signs=atlas(4096,2048),signMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.75});
  // A painted face: a quad mapped to an atlas rectangle, placed in a group's frame (it faces the group's -z, the front).
  const faces=[];
@@ -102,6 +107,14 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
  vec3 needles=uNeedles*(.72+.4*broad+(grain-.5)*.26*aa);needles=mix(needles,needles*vec3(1.3,1.05,.72),smoothstep(.68,.88,fleck)*.55*aa);
  float dry=smoothstep(uWater+.05,uWater+.6,vPW.y);vec3 shore=mix(uMud,uSand,dry*(.6+.4*pch))*(.85+.25*grain*aa);
  vec3 c=grass*m.r+litter*m.g+shore*m.b+needles*m.a;
+ // Scattered individual leaves and needles, metre-scaled and filtered at distance.
+ vec2 lc=floor(q*3.1),lp=fract(q*3.1)-.5;float la=th(lc+3.7)*6.283;
+ lp=mat2(cos(la),-sin(la),sin(la),cos(la))*lp;
+ float ld=length(lp/vec2(.23,.072)),lw=max(.05,fwidth(ld));float leaf=(1.-smoothstep(1.-lw,1.+lw,ld))*step(.42,th(lc+8.));
+ float vein=(1.-smoothstep(.002,.012+fwidth(lp.y),abs(lp.y)))*leaf;
+ vec3 leafCol=mix(vec3(.17,.12,.065),vec3(.38,.26,.13),th(lc+17.));
+ c=mix(c,leafCol,leaf*(m.g*.68+m.a*.42)*aa);c*=1.-vein*.13*(m.g+m.a)*aa;
+ float patch=tn(q*.8)*tn(q*.18+9.);c*=.87+.23*patch+.12*tn(q*2.7);
  c=mix(c,uBed,smoothstep(uWater-.2,uWater-1.2,vPW.y));
  diffuseColor.rgb=c;`);};
   tm.customProgramCacheKey=()=>'pine-ground';out.groundMat=tm;out.groundU=U;
@@ -132,7 +145,7 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
   g.computeBoundingSphere();
   // The water: dark and clear near the bank, the sky in it farther out, small wind ripples, a sheen where the sun is.
   const U={uTime:{value:0},uSky:{value:new THREE.Color(0x9ab0c8)},uDeep:{value:new THREE.Color(0x1d2c30)},uBank:{value:new THREE.Color(0x2a3424)},uWind:{value:1}};
-  const wm=new THREE.MeshStandardMaterial({color:0x2a3c40,roughness:.12,metalness:.05});wm.userData.keep=true;
+  const wm=new THREE.MeshStandardMaterial({color:0x2a3c40,roughness:.18,metalness:.04,transparent:true,opacity:1,depthWrite:false});wm.userData.keep=true;
   wm.onBeforeCompile=sh2=>{Object.assign(sh2.uniforms,U);
    sh2.vertexShader='attribute float aShore;\nvarying float vShore;\nvarying vec3 vWPos;\n'+sh2.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvShore=aShore;\nvWPos=(modelMatrix*vec4(position,1.)).xyz;');
    sh2.fragmentShader='uniform float uTime,uWind;uniform vec3 uSky,uDeep,uBank;varying float vShore;varying vec3 vWPos;\nfloat wh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\nfloat wn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(wh(i),wh(i+vec2(1,0)),f.x),mix(wh(i+vec2(0,1)),wh(i+1.),f.x),f.y);}\n'
@@ -143,7 +156,12 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
     .replace('#include <color_fragment>',`#include <color_fragment>
      vec3 V=normalize(cameraPosition-vWPos);float fres=pow(1.-max(V.y,0.),3.2);float near=smoothstep(-7.,0.,vShore);
      vec3 body=mix(uDeep,uBank,near*.8);diffuseColor.rgb=mix(body,uSky*.92,clamp(fres*.85+.08,0.,.86)*(1.-near*.55));
-     diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.42,.4,.32),smoothstep(-.6,0.,vShore)*.45);`);};
+     float ripple=wn(vWPos.xz*.43+vec2(uTime*.06,-uTime*.035));
+     float cloud=wn(vec2(V.x/max(.12,V.y),V.z/max(.12,V.y))*2.4+ripple*.15);
+     vec3 reflected=uSky*(.62+.46*cloud);diffuseColor.rgb=mix(body,reflected,clamp(fres*.88+.08,0.,.9));
+     // The bed really shows through the shallows. Distant water retains sky colour and a moving specular surface.
+     diffuseColor.a=mix(.93,.32,smoothstep(-3.8,.15,vShore))*(1.-smoothstep(.2,1.6,vShore));
+     diffuseColor.rgb=mix(diffuseColor.rgb,uBank,smoothstep(-1.3,.2,vShore)*.3);`);};
   wm.customProgramCacheKey=()=>'pine-water';
   const water=new THREE.Mesh(g,wm);water.name='pine-reservoir';water.receiveShadow=true;live.add(water);out.water=water;out.waterU=U;}
 
@@ -340,21 +358,10 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
 
  // ============================================== the woods ===============================================================================
  {const leafM=c=>W.foliageMat(c,true,leafTexture);
-  // Tall camp pines: bare trunks to well over your head, whorls of branches and needle clusters above.
-  function campPine(g,rand,size){const H=(13+rand()*4)*size,bark=M.bark;K.lathe(g,[[.001,-.3],[.34*size,-.3],[.28*size,.2],[.22*size,1],[.07*size,H]],0,0,0,bark,8);
-   const c=[0x2e4a2e,0x34502f,0x2a4430][Math.floor(rand()*3)];const tiers=7;
-   for(let k=0;k<tiers;k++){const y=H*(.42+k*.08),r=(2.5-k*.27)*size;for(let j=0;j<5;j++){const a=j*1.2566+k*.9+rand()*.5,end=[Math.cos(a)*r,y-.25,Math.sin(a)*r];if(j<3)K.rod(g,[0,y,0],end,.05*size,bark,.015,4);
-     const cr=new THREE.Mesh(leafGeometrySmall,leafM(c));cr.position.set(end[0]*.66,y+.1,end[2]*.66);cr.scale.set(r*.9,.78*size,r*.9);cr.rotation.set(.15,a,.1);g.add(cr);}
-    // and the dense middle of the tier, so from across the lake a crown reads as a crown
-    const mid=new THREE.Mesh(leafGeometrySmall,leafM(c));mid.position.y=y+.2;mid.scale.set(r*.75,.9*size,r*.75);mid.rotation.y=k;g.add(mid);}
-   const top=new THREE.Mesh(leafGeometrySmall,leafM(c));top.position.y=H+.2;top.scale.set(1.1*size,1.6*size,1.1*size);g.add(top);
-   // a few dead stubs low on the trunk
-   for(let k=0;k<3;k++){const a=rand()*6.3,y=(2.5+rand()*3.5)*size;K.rod(g,[0,y,0],[Math.cos(a)*.6,y-.2,Math.sin(a)*.6],.025,bark,.008,3);}}
-  let n={near:0,mid:0,far:0};
-  for(const t of TREES){const p=PW(t.e,t.n),y=heightAt(p.x,p.z)-.06,parent=t.lod==='far'?far:root,g=new THREE.Group();g.position.set(p.x,y,p.z);g.rotation.y=(t.seed%628)/100;parent.add(g);const rand=seeded(t.seed);
-   if(t.camp&&t.kind==='pine')campPine(g,rand,t.size);
-   else veg.build(g,rand,{size:t.size,kind:t.kind,lod:t.lod==='near'?(t.kind==='pine'?'mid':'full'):t.lod==='mid'?'mid':'far'});n[t.lod]++;}
-  out.trees=n;
+  const n={near:0,mid:0,far:0};for(const t of TREES)n[t.lod]++;
+  // Keep the town-facing fringe as authored in Chapters Zero–Four. Beyond it all trees share four prototypes.
+  const modern=[];for(const t of TREES){if(t.n>=170){modern.push(t);continue;}const p=PW(t.e,t.n),g=at(t.lod==='far'?far:root,t.e,t.n,heightAt(p.x,p.z)-.06,t.seed*.01);veg.build(g,seeded(t.seed),{size:t.size,kind:t.kind,lod:t.lod==='near'?'full':t.lod});}
+  out.forest=createPineForest(modern,live);out.trees=n;
   // Undergrowth: shrubs and ferns along the edges of where you can walk, fallen logs, stumps, rocks.
   const r=seeded(6061),edge=[];for(let i=0;i<GRID.ne;i+=5)for(let j=0;j<GRID.nn;j+=5){const k=i*GRID.nn+j,t=GRID.t[k];if(t!==PS.woods)continue;const e=GRID.e0+(i+.5)*GRID.c,n2=GRID.n0+(j+.5)*GRID.c;
    // a woods cell next to the edge of what is reachable
@@ -374,7 +381,7 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
   const padM=K.mat(0x3e5a2e,{roughness:.6,side:THREE.DoubleSide});for(let k=0;k<70;k++){const e=-330+r()*170,n2=330+r()*170;const sd=shoreSD(e,n2);if(sd>-2||sd<-14)continue;const p=PW(e,n2);const m=new THREE.Mesh(new THREE.CircleGeometry(.22+r()*.18,8,.3,5.6),padM);m.rotation.set(-Math.PI/2,0,r()*6);m.position.set(p.x,WATER+.012,p.z);root.add(m);}}
 
  // ============================================== the camp ==================================================================================
- buildCamp(W,out);
+ buildCamp(W,out);buildPineDetail(W,out);
  // ============================================== finish ======================================================================================
  const tex=signs.finish();if(tex){signMat.map=tex;signMat.needsUpdate=true;}
  // (painted faces bake with the rest: one material, the atlas)
@@ -385,7 +392,7 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
  // The camp's moving parts follow what the story sets (chapter5.js): each door's DOORS[key].open (what nav.js also
  // reads), each building's window glow level, the bell's swing, the gate's left leaf.
  const dmp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt));
- out.update=(dt,{fog,dusk=0,night=0,time}={})=>{const U=out.waterU;U.uTime.value=(time??(U.uTime.value+dt));out.groundU.uTime.value=U.uTime.value;if(fog){_c.copy(fog);U.uSky.value.lerp(_c,1-Math.exp(-3*dt));}
+ out.update=(dt,{fog,dusk=0,night=0,time,camera}={})=>{out.forest?.update(dt,camera);const U=out.waterU;U.uTime.value=(time??(U.uTime.value+dt));out.groundU.uTime.value=U.uTime.value;if(fog){_c.copy(fog);U.uSky.value.lerp(_c,1-Math.exp(-3*dt));}
   const L=out.lights.lot;if(L){L.head.material.emissiveIntensity=L.level*2.2;L.pool.intensity=L.level*14;}
   for(const [key,d] of Object.entries(out.doors)){const want=DOORS[key]?.open??0;if(d.posed&&Math.abs(d.cur-want)<1e-4){if(DOORS[key])DOORS[key].cur=d.cur;continue;}d.cur=dt>0?dmp(d.cur,want,d.fast||5,dt):want;if(Math.abs(d.cur-want)<1e-3)d.cur=want;if(DOORS[key])DOORS[key].cur=d.cur;
    d.hinge.rotation.y=-d.inward*d.cur*1.45;if(d.pair)d.pair.hinge.rotation.y=d.inward*d.cur*1.45;d.posed=true;}

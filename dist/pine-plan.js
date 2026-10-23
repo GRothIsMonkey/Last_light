@@ -266,6 +266,8 @@ function paintCircle(c,r,t){paintFn(c[0]-r,c[0]+r,c[1]-r,c[1]+r,(e,n)=>Math.hypo
 export const SOLIDS=[];
 const solidC=(kind,e,n,r,o={})=>{const s={kind,e,n,r,...o};SOLIDS.push(s);return s;};
 const solidR=(kind,c,a,w,d,o={})=>{const s={kind,c,a,w,d,F:frameOf(c,a),...o};SOLIDS.push(s);return s;};
+// The camp gate is connected to real fences; these exact solids are also used by the renderer.
+{const a=hd(.43,-.9),F=frameOf([-166,512],a);for(const side of [-1,1])solidR('camp-fence',F.to(side*9.5,0),a,13,.16);}
 // Doors: {building, lx, width, open (0..1), swing}. Shut doors are walls.
 export const DOORS={};
 // ---- trees (planted here, so walking knows the trunks) -------------------------------------------------------------------

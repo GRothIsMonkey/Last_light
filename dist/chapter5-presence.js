@@ -13,6 +13,7 @@ import * as THREE from './three.module.js';
 import {createPerson,newPose,standPose,walkPose,applyPose,P as PI} from './rig.js';
 import {createFace} from './faces.js';
 import {CAST} from './cast.js';
+import {chapter5Appearance} from './chapter5-models.js';
 import {PW,BLD,frameOf} from './pine-plan.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt)),smooth=x=>{x=clamp(x,0,1);return x*x*(3-2*x);};
@@ -96,17 +97,17 @@ export function createCampPresence({scene,world,camera,sfx=()=>{}}){
  const carriedAt=i=>CARRY[i]?.g.visible?CARRY[i].g.position:null;
  // ---- the double: Jamie, in a room ----------------------------------------------------------------------------------------------
  const D={person:createPerson({...CAST.jamie,expressive:true}),pose:newPose(),t:0,turn:0,turnTo:0,x:0,z:0,y:0,a:0,path:null,pi:0,v:.85,gait:0,walkV:0};D.person.group.visible=false;D.person.group.name='owl-double';root.add(D.person.group);
- D.face=createFace(D.person,CAST.jamie);
+ D.face=createFace(D.person,CAST.jamie);D.person.face=D.face;D.art=chapter5Appearance(D.person,CAST.jamie);D.art.enable(true);
  D.person.group.traverse(q=>{if(q.isMesh)q.castShadow=true;});
- function double(on,{x,y,z,a}={}){D.person.group.visible=!!on;D.path=null;D.walkV=0;if(on){D.x=x;D.y=y;D.z=z;D.a=a;D.turn=0;D.turnTo=0;D.t=0;D.person.group.position.set(x,y,z);D.person.group.rotation.set(0,-a,0);D.face?.set('neutral',{hold:99});}}
+ function double(on,{x,y,z,a}={}){D.person.group.visible=!!on;D.path=null;D.walkV=0;if(on){D.x=x;D.y=y;D.z=z;D.a=a;D.turn=0;D.turnTo=0;D.t=0;D.hunting=false;D.burst=0;D.ground=null;D.person.group.position.set(x,y,z);D.person.group.rotation.set(0,-a,0);D.face?.set('neutral',{hold:99});}}
  // it walks (world points with y): out of the room, through the door, toward you; its face your friend's, smiling
  function doubleWalk(pts,{speed=.85,smile=true}={}){D.path=pts;D.pi=0;D.v=speed;if(smile)D.face?.set('grin',{hold:99});}
  function updateDouble(dt){if(!D.person.group.visible)return;D.t+=dt;D.turn=damp(D.turn,D.turnTo,1.1,dt);
-  const q=D.path?.[D.pi];if(q){const dx=q.x-D.x,dz=q.z-D.z,l=Math.hypot(dx,dz);if(l<.15){D.pi++;if(D.pi>=D.path.length)D.path=null;}else{const want=Math.atan2(dx,-dz);let da=want-D.a;da=Math.atan2(Math.sin(da),Math.cos(da));D.a+=da*(1-Math.exp(-6*dt));D.walkV=damp(D.walkV,D.v,3,dt);const st=Math.min(l,D.walkV*dt);D.x+=dx/l*st;D.z+=dz/l*st;D.y+=((q.y??D.y)-D.y)*Math.min(1,st/Math.max(l,.01));D.gait+=st/1.25;}}
+  const q=D.path?.[D.pi];if(q){const dx=q.x-D.x,dz=q.z-D.z,l=Math.hypot(dx,dz);if(l<.15){D.pi++;if(D.pi>=D.path.length)D.path=null;}else{const want=Math.atan2(dx,-dz);let da=want-D.a;da=Math.atan2(Math.sin(da),Math.cos(da));D.a+=da*(1-Math.exp(-6*dt));D.walkV=damp(D.walkV,D.v,3,dt);const st=Math.min(l,(D.burst>0?5.8:D.walkV)*dt);D.x+=dx/l*st;D.z+=dz/l*st;D.y+=((q.y??D.y)-D.y)*Math.min(1,st/Math.max(l,.01));D.gait+=st/1.25;}}
   else D.walkV=damp(D.walkV,0,5,dt);
-  D.person.group.position.set(D.x,D.y,D.z);D.person.group.rotation.set(0,-D.a,0);
+  if(D.ground)D.y=D.ground(D.x,D.z);D.burst=Math.max(0,(D.burst||0)-dt);D.person.group.position.set(D.x,D.y,D.z);D.person.group.rotation.set(0,-D.a,0);
   // stands the way he stands; breathes; does not shift his weight (that is the only thing wrong with it); walking, it never looks away from you
-  if(D.walkV>.08){walkPose(D.pose,D.gait,Math.max(.8,D.walkV),{look:D.turn*.5});D.pose[PI.hy]=D.turn*.6;}else{standPose(D.pose,0,{look:D.turn,shift:0});D.pose[PI.hy]=D.turn;}applyPose(D.person,D.pose);
+  if(D.walkV>.08){walkPose(D.pose,D.gait,Math.max(.8,D.walkV),{look:D.turn*.5});D.pose[PI.hy]=D.turn*.6;}else{standPose(D.pose,0,{look:D.turn,shift:0});D.pose[PI.hy]=D.turn;}D.pose[PI.hp]=-.075+Math.sin(D.t*.45)*.025;D.pose[PI.lean]+=.07;D.pose[PI.twist]=Math.sin(D.t*.32)*.035;if(D.hunting){const aim=Math.atan2(camera.position.x-D.x,-(camera.position.z-D.z));D.pose[PI.hy]=-clamp(Math.atan2(Math.sin(aim-D.a),Math.cos(aim-D.a)),-.85,.85);D.pose[PI.lh+1]-=.04;D.pose[PI.rh+1]+=.025;}applyPose(D.person,D.pose);
   D.face?.update(dt,{clock:t,talk:0,visible:true});}
  // ---- every frame ------------------------------------------------------------------------------------------------------------------
  function apply(){for(const L of Object.values(LAMPS)){const v=L.level;if(L.glow)L.glow.level=v;if(L.bulb)L.bulb.material.emissiveIntensity=v*3.2;}}

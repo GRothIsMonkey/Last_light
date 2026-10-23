@@ -235,6 +235,10 @@ export function createAudio({context=null,random=Math.random}={}){
  function stopRecording(){if(phone?.spk&&ctx){const g=phone.spk.gain,t=now();g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(0,t+.04);}phone=null;}
  // Short sounds Chapter Three adds: chain-link shaken, a chain against a pipe gate, a rusted bell lever.
  Object.assign(SFX,{
+  c5Rush(t,o){burst(t,.24,.12,'highpass',650,.7,o);for(let i=0;i<3;i++){tone(105-i*9,t+i*.085,.11,.09,'sine',o,54);burst(t+i*.085,.075,.12,'bandpass',950+i*240,.7,o);}},
+  c5Near(t,o){burst(t,.55,.05,'bandpass',570,.8,o);tone(67,t,.36,.035,'sine',o,48);},
+  c5WoodStrike(t,o){tone(93,t,.32,.13,'triangle',o,61);burst(t,.16,.19,'lowpass',1500,.7,o);for(let i=0;i<5;i++)burst(t+.04+i*.043,.034,.07/(i+1),'bandpass',1400+i*230,1.8,o);},
+  c5Gate(t,o){tone(118,t,.28,.08,'triangle',o,57);burst(t,.21,.17,'lowpass',1050,.7,o);for(let i=0;i<8;i++)burst(t+.02+i*.027,.023,.06/(1+i*.3),'bandpass',1900+i*170,2,o);},
   fence(t,o){for(let k=0;k<14;k++)burst(t+k*.018+random()*.01,.025,.05/(1+k*.15),'bandpass',2600+random()*2600,3,o);burst(t,.12,.05,'lowpass',500,.8,o);},
   chain(t,o){for(let k=0;k<6;k++){burst(t+k*.07+random()*.03,.02,.06,'bandpass',3200+random()*1200,5,o);tone(2100+random()*900,t+k*.07,.12,.012,'sine',o);}},
   oldBell(t,o){burst(t,.012,.12,'bandpass',2300,2.5,o);tone(690,t+.004,.05,.05,'triangle',o,520);burst(t+.09,.01,.04,'bandpass',1600,3,o);},
