@@ -54,7 +54,11 @@ export function clothShirt(g){g.clear();const gold=pineMaterial(0xc4a052,'fabric
  const body=mesh(g,loft([[-.56,.18,.015],[-.51,.202,.02],[-.34,.19,.026],[-.13,.207,.027],[-.07,.16,.026],[-.026,.052,.016]],24,3),gold);parts.push(body);
  for(const s of [-1,1]){const q=mesh(g,loft([[-.18,.069,.024],[-.06,.078,.03],[.012,.071,.024]],16,2.8),gold,[s*.235,-.065,0]);q.rotation.z=s*.85;parts.push(q);K.rbox(g,s*.047,-.045,-.025,.08,.036,.009,.008,trim).rotation.z=s*-.4;}
  K.rbox(g,0,-.155,-.028,.019,.21,.004,.003,trim);for(const y of [-.09,-.15,-.21])K.ball(g,0,y,-.031,.004,trim,[1,1,.4]);
- for(const q of parts){const a=q.geometry.attributes.position;for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i);a.setZ(i,a.getZ(i)+Math.sin(x*51+y*3)*.009*(.4+Math.abs(y)));}q.geometry.computeVertexNormals();q.userData.hanging=Float32Array.from(a.array);}
+ for(const q of parts){const a=q.geometry.attributes.position;for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i);a.setZ(i,a.getZ(i)+Math.sin(x*51+y*3)*.009*(.4+Math.abs(y)));}
+  // Fold every panel in the shirt's coordinates, including each sleeve's offset and rotation.
+  // Shrinking only a sleeve's local vertices leaves its shoulder behind as the body gathers.
+  q.updateMatrix();q.geometry.applyMatrix4(q.matrix);q.position.set(0,0,0);q.rotation.set(0,0,0);q.scale.set(1,1,1);
+  q.geometry.computeVertexNormals();q.userData.hanging=Float32Array.from(a.array);}
  g.userData.fold=0;g.userData.setFold=u=>{g.userData.fold=u;for(const q of parts){const a=q.geometry.attributes.position,base=q.userData.hanging;for(let i=0;i<a.count;i++){const x=base[i*3],y=base[i*3+1],z=base[i*3+2];a.setXYZ(i,x*(1-.42*u),y*(1-.64*u),z+u*Math.sin((y+.56)*15)*.048);}a.needsUpdate=true;q.geometry.computeVertexNormals();}for(const q of g.children)if(!parts.includes(q))q.visible=u<.4;};return g;
 }
 // Wall-mounted and shallow additions keep the existing walk floor and table/door collision footprints.
