@@ -114,7 +114,7 @@ float tn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(th(i)
  float vein=(1.-smoothstep(.002,.012+fwidth(lp.y),abs(lp.y)))*leaf;
  vec3 leafCol=mix(vec3(.17,.12,.065),vec3(.38,.26,.13),th(lc+17.));
  c=mix(c,leafCol,leaf*(m.g*.68+m.a*.42)*aa);c*=1.-vein*.13*(m.g+m.a)*aa;
- float patch=tn(q*.8)*tn(q*.18+9.);c*=.87+.23*patch+.12*tn(q*2.7);
+ float groundPatch=tn(q*.8)*tn(q*.18+9.);c*=.87+.23*groundPatch+.12*tn(q*2.7);
  c=mix(c,uBed,smoothstep(uWater-.2,uWater-1.2,vPW.y));
  diffuseColor.rgb=c;`);};
   tm.customProgramCacheKey=()=>'pine-ground';out.groundMat=tm;out.groundU=U;
