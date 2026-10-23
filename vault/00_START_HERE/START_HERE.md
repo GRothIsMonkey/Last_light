@@ -49,7 +49,7 @@ Full detail: [Current project status](CURRENT_PROJECT_STATUS.md) · [Project das
 ## 🛠️ Active tasks
 
 - [ ] **Astra:** Chapter Five visual reconstruction and the redesigned escape from Owl (in progress on
-      `codex/astra-chapter5-ultra-visual-reconstruction`, last seen at `4bf3902`). See
+      `codex/astra-chapter5-ultra-visual-reconstruction`, last seen at `95a7e43`). See
       [Chapter Five Astra objectives](../08_PLAYTESTING_AND_ISSUES/CHAPTER5_ASTRA_OBJECTIVES.md).
 - [ ] **Human developer:** playtest Chapter Five after Astra's pass; approve or reject it.
 - [ ] **Decide:** the continuity error in Chapter Five's garage ("It said 'come find him'"); see

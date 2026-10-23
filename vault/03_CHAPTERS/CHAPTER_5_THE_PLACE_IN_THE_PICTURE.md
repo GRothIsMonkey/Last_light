@@ -221,4 +221,4 @@ Full lists: [Chapter Five initial feedback](../08_PLAYTESTING_AND_ISSUES/CHAPTER
 
 🟡 Not approved. Repair verification: 736/736 simulation (Chapter Five alone 81/81); Chromium walkthrough in two
 segments (24 + 16 checks, 0 errors); all 37 DEV scenes start. A private playtest build was updated in place (link not in
-the repository). Astra's reconstruction (`4bf3902`, 2026-10-23) is in progress and unapproved.
+the repository). Astra's reconstruction (last seen at `95a7e43`, 2026-10-23) is in progress and unapproved.

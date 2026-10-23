@@ -32,7 +32,7 @@ decides what is accepted.
 | `codex/astra-chapter4-repair-pass2` | `c9647772642c0bbb5478bdb04bf36592fcc74919` | 2026-10-14 | **Chapter Four repair pass 2** — base of Chapter Five | Frozen | ✔ |
 | `claude/chapter5-pine-ridge` | `cafc27f7f6ffd9ce8229b3a1cb7075680c332be8` | 2026-10-17 | Chapter Five first draft | Historical (superseded) | ✔ |
 | `claude/chapter5-gameplay-story-repair` | `d4de9abd16fa184f1861335a6e4d8100ce31f1e2` | 2026-10-20 | **Chapter Five gameplay/story repair — current baseline** | Finished; awaiting human review | ✔ (it is the reference) |
-| `codex/astra-chapter5-ultra-visual-reconstruction` | `4bf39029b29fc01b91584217f6d2d99dbfe81cf7` | 2026-10-23 | **Astra's active Chapter Five visual pass** | **ACTIVE — do not touch** | Descends from `d4de9ab` (+2 commits) |
+| `codex/astra-chapter5-ultra-visual-reconstruction` | `95a7e432d01c42c03c5079e585bce6a2a4cc7635` (was `4bf39029b29fc01b91584217f6d2d99dbfe81cf7` earlier the same day) | 2026-10-23 | **Astra's active Chapter Five visual pass** | **ACTIVE — do not touch** | Descends from `d4de9ab` (+3 commits) |
 | `docs/last-light-vault` | (this vault) | 2026-10-23 | This knowledge vault, from `d4de9ab` | Documentation only | Descends from `d4de9ab` |
 
 ## Release commits that are not branch heads

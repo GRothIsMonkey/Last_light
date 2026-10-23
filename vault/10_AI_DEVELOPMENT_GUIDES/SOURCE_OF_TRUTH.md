@@ -26,7 +26,7 @@ When sources disagree, use this order.
 | Purpose | Branch @ commit |
 |---|---|
 | Gameplay and story for the whole game (Ch0–5) | `claude/chapter5-gameplay-story-repair` @ `d4de9abd16fa184f1861335a6e4d8100ce31f1e2` |
-| Chapter Five visuals in progress | `codex/astra-chapter5-ultra-visual-reconstruction` @ `4bf39029…` (Astra's; read-only for everyone else) |
+| Chapter Five visuals in progress | `codex/astra-chapter5-ultra-visual-reconstruction` @ `95a7e432…` as of 2026-10-23 (Astra's; read-only for everyone else; it moves often) |
 | A frozen chapter as accepted | Its release branch ([Git branches](../09_DEVELOPMENT_HISTORY/GIT_BRANCHES.md)) |
 | Documentation | `docs/last-light-vault` (this vault) and `docs/` on the code branches |
 | Public release | `main` (v0.1 only; out of date) |

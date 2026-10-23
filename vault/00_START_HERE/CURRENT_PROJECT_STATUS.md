@@ -31,7 +31,7 @@ has been started, and `main` still holds only the v0.1 prologue.
 - **Gameplay and story truth for Chapters 0–5:** `claude/chapter5-gameplay-story-repair` @ `d4de9ab`. It contains every
   accepted chapter unchanged (the repair's shared-code changes are switched on only inside Chapter Five) plus the
   repaired Chapter Five.
-- **Visual work in progress:** `codex/astra-chapter5-ultra-visual-reconstruction` @ `4bf3902` (two commits on top of
+- **Visual work in progress:** `codex/astra-chapter5-ultra-visual-reconstruction` @ `95a7e43` (three commits on top of
   `d4de9ab`, 2026-10-23). Astra's, not to be modified by anyone else.
 - **Frozen releases** of each earlier chapter: see [Git branches](../09_DEVELOPMENT_HISTORY/GIT_BRANCHES.md).
 

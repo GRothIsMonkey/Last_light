@@ -1,7 +1,7 @@
 # Project dashboard
 
 The numbers in one place. For the narrative version see [Current project status](CURRENT_PROJECT_STATUS.md).
-Last updated 2026-10-23 from the repository at `d4de9ab` (and a read-only look at Astra's branch head `4bf3902`).
+Last updated 2026-10-23 from the repository at `d4de9ab` (and a read-only look at Astra's branch head `95a7e43`).
 
 ## The game at a glance
 
@@ -61,7 +61,7 @@ Counts from [Open issues](../08_PLAYTESTING_AND_ISSUES/OPEN_ISSUES.md) and
 
 | Who | What | Where | State |
 |---|---|---|---|
-| Astra (Codex) | Chapter Five visual reconstruction + interactive Owl escape | `codex/astra-chapter5-ultra-visual-reconstruction` @ `4bf3902` | In progress, started 2026-10-23 |
+| Astra (Codex) | Chapter Five visual reconstruction + interactive Owl escape | `codex/astra-chapter5-ultra-visual-reconstruction` @ `95a7e43` | In progress, started 2026-10-23 |
 | Human developer | Playtest and approve Chapter Five | — | Waiting on Astra's build |
 | Claude | This vault | `docs/last-light-vault` | Documentation only |
 

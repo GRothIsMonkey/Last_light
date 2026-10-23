@@ -6,7 +6,7 @@ Full SHAs: [Git branches](GIT_BRANCHES.md).
 
 | # | Release | Branch @ commit | Date | State | Verification (automated) |
 |---|---|---|---|---|---|
-| 13 | Chapter Five visual reconstruction (Astra) | `codex/astra-chapter5-ultra-visual-reconstruction` @ `4bf3902` | 2026-10-23 | **Active**, unapproved | No report yet |
+| 13 | Chapter Five visual reconstruction (Astra) | `codex/astra-chapter5-ultra-visual-reconstruction` @ `95a7e43` | 2026-10-23 | **Active**, unapproved | No report yet |
 | 12 | **Chapter Five gameplay and story repair** | `claude/chapter5-gameplay-story-repair` @ `d4de9ab` | 2026-10-20 | Finished; **awaiting human review**; baseline | 736/736 sim; Ch5 81/81; Chromium 24+16 segmented; 37 DEV scenes |
 | 11 | Chapter Five first draft | `claude/chapter5-pine-ridge` @ `cafc27f` | 2026-10-17 | Superseded by the repair | 718/718 sim; Chromium 33/33 |
 | 10 | Chapter Four repair pass 2 (Astra) | `codex/astra-chapter4-repair-pass2` @ `c964777` | 2026-10-14 | Frozen; base of Chapter Five | 11 focused browser checks |

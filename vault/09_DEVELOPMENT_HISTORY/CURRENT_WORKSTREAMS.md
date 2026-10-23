@@ -2,7 +2,7 @@
 
 | Workstream | Owner | Branch | Base | State | Next step |
 |---|---|---|---|---|---|
-| **Chapter Five visual reconstruction + interactive Owl escape** | Astra (Codex) | `codex/astra-chapter5-ultra-visual-reconstruction` | `d4de9ab` | **Active** (2 commits, 2026-10-23: `4f96fdf`, `4bf3902`) | Finish; write a handoff; hand to the human |
+| **Chapter Five visual reconstruction + interactive Owl escape** | Astra (Codex) | `codex/astra-chapter5-ultra-visual-reconstruction` | `d4de9ab` | **Active** (3 commits, 2026-10-23: `4f96fdf`, `4bf3902`, `95a7e43`) | Finish; write a handoff; hand to the human |
 | Chapter Five approval | Human developer | — | Astra's build | Waiting | Playtest; approve or list problems |
 | Development knowledge vault | Claude | `docs/last-light-vault` | `d4de9ab` | Created 2026-10-23 | Human decides when to integrate |
 | Chapter Six | — | — | — | **Not started** (do not start before Chapter Five is approved) | Human decides direction |
@@ -17,6 +17,8 @@ Commits on top of `d4de9ab`:
   `chapter5-garage.js`, `chapter5-gear.js`, `chapter5-presence.js`, `chapter5.js`, `game.js`, `pine-build.js`,
   `pine-camp.js`, `pine-plan.js`, `world.js`, `tests/chapter5-browser.mjs`, `tests/chapter5-sim.mjs`.
 - `4bf3902` — "Avoid reserved GLSL identifier in forest-floor material".
+- `95a7e43` — "Keep shirt sleeves attached while gathering the fabric" (`dist/chapter5-props.js`). Pushed while this vault was
+  being written; the branch is moving, so re-check its head before relying on these notes.
 
 The escape changes visible in the diff are summarized in
 [Chapter Five Astra objectives](../08_PLAYTESTING_AND_ISSUES/CHAPTER5_ASTRA_OBJECTIVES.md). No documentation for the pass
