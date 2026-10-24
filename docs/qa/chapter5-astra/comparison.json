@@ -1,0 +1,145 @@
+{
+  "captureRuntime": "4bf39029b29fc01b91584217f6d2d99dbfe81cf7",
+  "finalRuntime": "95a7e432d01c42c03c5079e585bce6a2a4cc7635",
+  "matchedViews": 17,
+  "captureHashesMatchCommit": true,
+  "laterChange": "Shirt-fold geometry only; see final gear review.",
+  "rows": [
+    {
+      "scene": "c5-garage",
+      "beforeDraws": 299,
+      "afterDraws": 378,
+      "beforeTriangles": 455598,
+      "afterTriangles": 483094,
+      "heapBytes": 1089920754
+    },
+    {
+      "scene": "c5-ride",
+      "beforeDraws": 297,
+      "afterDraws": 385,
+      "beforeTriangles": 356978,
+      "afterTriangles": 277316,
+      "heapBytes": 1035621832
+    },
+    {
+      "scene": "c5-crest",
+      "beforeDraws": 331,
+      "afterDraws": 450,
+      "beforeTriangles": 596412,
+      "afterTriangles": 532828,
+      "heapBytes": 1065330551
+    },
+    {
+      "scene": "c5-park",
+      "beforeDraws": 264,
+      "afterDraws": 383,
+      "beforeTriangles": 607515,
+      "afterTriangles": 388876,
+      "heapBytes": 1036138259
+    },
+    {
+      "scene": "c5-dock-memory",
+      "beforeDraws": 260,
+      "afterDraws": 410,
+      "beforeTriangles": 506161,
+      "afterTriangles": 430201,
+      "heapBytes": 1036612642
+    },
+    {
+      "scene": "c5-camp-gate",
+      "beforeDraws": 268,
+      "afterDraws": 428,
+      "beforeTriangles": 530908,
+      "afterTriangles": 457724,
+      "heapBytes": 1036388738
+    },
+    {
+      "scene": "c5-camp",
+      "beforeDraws": 261,
+      "afterDraws": 390,
+      "beforeTriangles": 548409,
+      "afterTriangles": 449216,
+      "heapBytes": 1036377887
+    },
+    {
+      "scene": "c5-office",
+      "beforeDraws": 263,
+      "afterDraws": 427,
+      "beforeTriangles": 530288,
+      "afterTriangles": 521045,
+      "heapBytes": 1668318943
+    },
+    {
+      "scene": "c5-lodge",
+      "beforeDraws": 146,
+      "afterDraws": 285,
+      "beforeTriangles": 359084,
+      "afterTriangles": 502651,
+      "heapBytes": 1032959161
+    },
+    {
+      "scene": "c5-cabins",
+      "beforeDraws": 199,
+      "afterDraws": 339,
+      "beforeTriangles": 529131,
+      "afterTriangles": 455776,
+      "heapBytes": 1032502955
+    },
+    {
+      "scene": "c5-campfire",
+      "beforeDraws": 334,
+      "afterDraws": 483,
+      "beforeTriangles": 500832,
+      "afterTriangles": 469486,
+      "heapBytes": 1036267462
+    },
+    {
+      "scene": "c5-owl",
+      "beforeDraws": 133,
+      "afterDraws": 286,
+      "beforeTriangles": 376211,
+      "afterTriangles": 535144,
+      "heapBytes": 1033064318
+    },
+    {
+      "scene": "c5-calling",
+      "beforeDraws": 205,
+      "afterDraws": 325,
+      "beforeTriangles": 520042,
+      "afterTriangles": 488414,
+      "heapBytes": 1034440142
+    },
+    {
+      "scene": "c5-three-lights",
+      "beforeDraws": 319,
+      "afterDraws": 464,
+      "beforeTriangles": 657018,
+      "afterTriangles": 494355,
+      "heapBytes": 1085167652
+    },
+    {
+      "scene": "c5-window",
+      "beforeDraws": 139,
+      "afterDraws": 290,
+      "beforeTriangles": 345310,
+      "afterTriangles": 537880,
+      "heapBytes": 1032868774
+    },
+    {
+      "scene": "c5-boundary",
+      "beforeDraws": 243,
+      "afterDraws": 418,
+      "beforeTriangles": 390337,
+      "afterTriangles": 461845,
+      "heapBytes": 1035344197
+    },
+    {
+      "scene": "c5-aftermath",
+      "beforeDraws": 227,
+      "afterDraws": 319,
+      "beforeTriangles": 305514,
+      "afterTriangles": 328146,
+      "heapBytes": 1037298420
+    }
+  ]
+}

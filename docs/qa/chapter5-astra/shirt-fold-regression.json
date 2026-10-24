@@ -1,0 +1,41 @@
+{
+  "passed": 6,
+  "frames": [
+    {
+      "fold": 0,
+      "sleeveSeamMetres": [
+        0.02343,
+        0.02388
+      ]
+    },
+    {
+      "fold": 0.25,
+      "sleeveSeamMetres": [
+        0.02032,
+        0.01979
+      ]
+    },
+    {
+      "fold": 0.5,
+      "sleeveSeamMetres": [
+        0.01614,
+        0.01631
+      ]
+    },
+    {
+      "fold": 0.75,
+      "sleeveSeamMetres": [
+        0.01281,
+        0.01352
+      ]
+    },
+    {
+      "fold": 1,
+      "sleeveSeamMetres": [
+        0.0111,
+        0.00929
+      ]
+    }
+  ],
+  "unfoldRestores": true
+}

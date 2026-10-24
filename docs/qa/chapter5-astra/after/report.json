@@ -1,0 +1,491 @@
+{
+  "renderer": "Chromium / ANGLE SwiftShader (software)",
+  "quality": "low",
+  "frames": [
+    {
+      "section": "c5-garage",
+      "phase": "d5-garage",
+      "camera": {
+        "position": [
+          212.44514892997893,
+          3.483392808398503,
+          -906.9703778674711
+        ],
+        "rotation": [
+          -0.08,
+          1.092183039149886,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 378,
+      "triangles": 483094,
+      "points": 649,
+      "lines": 3859,
+      "heap": 1089920754
+    },
+    {
+      "section": "c5-ride",
+      "phase": "d5-ride",
+      "camera": {
+        "position": [
+          -306.81598892268653,
+          2.4962631092021397,
+          -1047.615912929892
+        ],
+        "rotation": [
+          -0.16000000000000003,
+          0,
+          0,
+          "XYZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 385,
+      "triangles": 277316,
+      "points": 649,
+      "lines": 270,
+      "heap": 1035621832
+    },
+    {
+      "section": "c5-crest",
+      "phase": "d5-ride",
+      "camera": {
+        "position": [
+          -344.4910383147161,
+          8.506688079068542,
+          -1246.5673569783673
+        ],
+        "rotation": [
+          -0.16864469284352496,
+          0.4310833599891363,
+          0.07018523777956595,
+          "XYZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 450,
+      "triangles": 532828,
+      "points": 649,
+      "lines": 270,
+      "heap": 1065330551
+    },
+    {
+      "section": "c5-park",
+      "phase": "d5-park",
+      "camera": {
+        "position": [
+          -438.31598892268653,
+          4.599188356188841,
+          -1367.241242419647
+        ],
+        "rotation": [
+          0,
+          1.1071487177940953,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 383,
+      "triangles": 388876,
+      "points": 649,
+      "lines": 0,
+      "heap": 1036138259
+    },
+    {
+      "section": "c5-dock-memory",
+      "phase": "d5-dock",
+      "camera": {
+        "position": [
+          -483.9533033288086,
+          2.856000047683716,
+          -1405.2837231014364
+        ],
+        "rotation": [
+          0,
+          0.8991901705411564,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 410,
+      "triangles": 430201,
+      "points": 649,
+      "lines": 0,
+      "heap": 1036612642
+    },
+    {
+      "section": "c5-camp-gate",
+      "phase": "d5-road",
+      "camera": {
+        "position": [
+          -468.31598892268653,
+          4.672502770197895,
+          -1551.941242419647
+        ],
+        "rotation": [
+          0,
+          0.4563484685571093,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 428,
+      "triangles": 457724,
+      "points": 649,
+      "lines": 0,
+      "heap": 1036388738
+    },
+    {
+      "section": "c5-camp",
+      "phase": "d5-camp",
+      "camera": {
+        "position": [
+          -476.7159889226865,
+          4.803997692484967,
+          -1567.941242419647
+        ],
+        "rotation": [
+          0,
+          0.7086262721276703,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 390,
+      "triangles": 449216,
+      "points": 649,
+      "lines": 0,
+      "heap": 1036377887
+    },
+    {
+      "section": "c5-office",
+      "phase": "d5-camp",
+      "camera": {
+        "position": [
+          -483.3219931367441,
+          4.868199958904981,
+          -1578.4721201298978
+        ],
+        "rotation": [
+          0,
+          0.9992550772238921,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 427,
+      "triangles": 521045,
+      "points": 649,
+      "lines": 0,
+      "heap": 1668318943
+    },
+    {
+      "section": "c5-lodge",
+      "phase": "d5-camp",
+      "camera": {
+        "position": [
+          -515.7159889226865,
+          5.276887703581591,
+          -1619.041242419647
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 5,
+      "calls": 285,
+      "triangles": 502651,
+      "points": 649,
+      "lines": 0,
+      "heap": 1032959161
+    },
+    {
+      "section": "c5-cabins",
+      "phase": "d5-camp",
+      "camera": {
+        "position": [
+          -545.4274609392266,
+          4.9794379897878365,
+          -1600.5050041047282
+        ],
+        "rotation": [
+          0,
+          1.5182132651839584,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 8,
+      "calls": 339,
+      "triangles": 455776,
+      "points": 649,
+      "lines": 0,
+      "heap": 1032502955
+    },
+    {
+      "section": "c5-campfire",
+      "phase": "d5-camp",
+      "camera": {
+        "position": [
+          -517.9133156620524,
+          3.84032401369306,
+          -1572.7687950033132
+        ],
+        "rotation": [
+          0,
+          2.8415926535897897,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 483,
+      "triangles": 469486,
+      "points": 649,
+      "lines": 4237,
+      "heap": 1036267462
+    },
+    {
+      "section": "c5-owl",
+      "phase": "e5-dusk",
+      "camera": {
+        "position": [
+          -581.811185879307,
+          4.882349136341111,
+          -1616.0665470420936
+        ],
+        "rotation": [
+          0,
+          1.6839232691484178,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 5,
+      "calls": 286,
+      "triangles": 535144,
+      "points": 829,
+      "lines": 0,
+      "heap": 1033064318
+    },
+    {
+      "section": "c5-calling",
+      "phase": "e5-call",
+      "camera": {
+        "position": [
+          -586.2850376160101,
+          6.485999923706054,
+          -1613.5978842498205
+        ],
+        "rotation": [
+          0,
+          2.777397490163545,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 8,
+      "calls": 325,
+      "triangles": 488414,
+      "points": 875,
+      "lines": 4129,
+      "heap": 1034440142
+    },
+    {
+      "section": "c5-three-lights",
+      "phase": "e5-lights",
+      "camera": {
+        "position": [
+          -577.7159889226865,
+          4.656562326071886,
+          -1603.941242419647
+        ],
+        "rotation": [
+          0,
+          -1.6512673380603575,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 464,
+      "triangles": 494355,
+      "points": 875,
+      "lines": 4129,
+      "heap": 1085167652
+    },
+    {
+      "section": "c5-window",
+      "phase": "n5-split",
+      "camera": {
+        "position": [
+          -580.811185879307,
+          4.678624274087996,
+          -1618.0665470420936
+        ],
+        "rotation": [
+          0,
+          2.233115666335431,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 5,
+      "calls": 290,
+      "triangles": 537880,
+      "points": 875,
+      "lines": 0,
+      "heap": 1032868774
+    },
+    {
+      "section": "c5-boundary",
+      "phase": "n5-run",
+      "camera": {
+        "position": [
+          -477.7159889226865,
+          4.792473956574908,
+          -1569.941242419647
+        ],
+        "rotation": [
+          0,
+          -2.62244653934327,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 8,
+      "calls": 418,
+      "triangles": 461845,
+      "points": 875,
+      "lines": 378,
+      "heap": 1035344197
+    },
+    {
+      "section": "c5-aftermath",
+      "phase": "n5-out",
+      "camera": {
+        "position": [
+          -427.7159889226865,
+          4.488698402023038,
+          -1395.941242419647
+        ],
+        "rotation": [
+          0,
+          2.700000291282502,
+          0,
+          "YXZ"
+        ]
+      },
+      "frame": 2,
+      "calls": 319,
+      "triangles": 328146,
+      "points": 875,
+      "lines": 4357,
+      "heap": 1037298420
+    }
+  ],
+  "errors": [],
+  "runtimeHashes": {
+    "THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
+    "adult-art.js": "07ab447ff682d430620a073814491b3a44e0f7c6603b685048e2b4c0ff1868a5",
+    "alex-camera.js": "1ddd5182b375e1c3f71499f9d106b7395ad00e1fe813ea09a3c66ac44fdd0ba6",
+    "alex-room.js": "f14a81330045bc8c1f4c91d25e8e949dad8d5f9b29c2178efd5c1fbfb94df686",
+    "ambient.js": "5b2b3919a4a7fe3c5ec77ca38b265088cf7c219065d10c9257f65786c08deec3",
+    "art-surfaces.js": "d34973c059b7af63b1f1c7b9668966751e0141e17aecb01e0d503ae4982de2c0",
+    "audio.js": "4158405e4eef51486378f0d0a77d5d84b7e20250e8c9b747f062337bed7ae022",
+    "background.js": "b25f27519d20f5ff66816169fe795deed74acdb625e4c52437995c850afb0a5a",
+    "captions.js": "6e31b76593a62d1362cf00259ff5a75ac3bcfb33a1f70db0d22280e1e1643a99",
+    "cast.js": "bfc977fc428a3860f648ad4f40a7eb6bd2e5424b3bdef2a1ebdbaf83e11c3ff9",
+    "chapter1.js": "c646b5894b4f704279843cfc42a972502e01a9afded0ca95f5dc42310660a76c",
+    "chapter2.js": "01b61485854de3cc30f9f5d56e649bd90ff6e9234300a77ef09435b0cdba137f",
+    "chapter3-art.js": "111e03eebd8bb66b442b8d5e98368ac37efb58213f7eb1a1835af201c0c73a8f",
+    "chapter3-props.js": "4ba5446b792d82adf49f7a0f055035e7310378f28c94f28d668bbdad55bb2b6f",
+    "chapter3.js": "f1247c3f0b59b402122d6c8f9dea624b901c57b73f98592d450e751a6f5ee385",
+    "chapter4-art.js": "575a8cbd41a2cd3080816c09780eb3a3d6202db0d93f415e1e4464595db6ada1",
+    "chapter4-surfaces.js": "77dd32b2f8f678097cc1bab69ca41e5772e972ed0cc2d3e3590d4f81b12ead63",
+    "chapter4-textures.js": "bc4c492d15332fb2f4a7524822b448c300311473a5f77c7c8716f338aa4723d0",
+    "chapter4.js": "117ac75708c7716e6702b87d2477d7bb211f72aec803af6faae60a2631e44661",
+    "chapter5-garage.js": "68291376b5454674ffef20cf070dd54dbcbfb63f0a4649d1c73e511c4c252447",
+    "chapter5-gates.js": "77770eb579adba1a1b1a8888ef7455e6f6d3387d870b1b597f1622bf18255017",
+    "chapter5-gear.js": "d54e2f1bf8989e2520dd0caed6be70a8de19ee045719aa6cd98d3e2e0faeba4a",
+    "chapter5-models.js": "bd3ad20826e26cd21a1447eada849b842f7a232ec6c283a924985828cf224717",
+    "chapter5-park.js": "5b0013f48e4796c5943aee701b2f9110ef3e035aa887152bfceea5ee88048a4d",
+    "chapter5-places.js": "e711a22b01f0eaf4641028f9ce6c773ce5ebff2bfa09846d228d6746472ac709",
+    "chapter5-presence.js": "afeb2e9a053565a357ccbba492d2026edf10de1af5216ac6ae4661a42515796a",
+    "chapter5-props.js": "303aecdf7c3212a89210867d54ab6ccb265494f44c03da3a6ffabfd69141dd27",
+    "chapter5.js": "3c95d33464d570a79bc48c63401481e5cc88e1ea6b82171374d2084200ac7b29",
+    "companion-brain.js": "8807d63f35534552f331e25ccde619ac947c1ce25dc5ca3e53bc7eeabca90e64",
+    "companions.js": "bc19dfd6d1f4f510a21616f575dd9cf4fe68d53369f38d572ab92ad18c63b80c",
+    "creature-asset.js": "cfd431397910ec8b899c38fff6d498299cc631c22e735aeb3ea8b811b8bf2be4",
+    "creature.js": "664bd15c7d80d36cf3c6c46767005137c0378489f3107b4cb8e2cc27a0321798",
+    "creek.js": "f5cc5a7867f4c343e0ccf21818cd7bfff7a00ff2ea0c90bbed7b985df6889f0c",
+    "dev-chapter-history.js": "c791acc1fe1e6c636d2889ebaf3f0e94ca2f9902efbfff2b62b08e6e25dc877e",
+    "dev-chapters.js": "c1fbde3a3b7f2d8c5aa14642d1dea1d511609e1b93bcf05864925315afa5416b",
+    "drain.js": "b17b28ccb702c011cd1d46dcea7b92a5f0f39d5f1ca1f12004e861f72e6c8823",
+    "easement.js": "f47b2b0759848d58b1d5d07c35b725524aabf45ee9171c777c81ac424f67451d",
+    "ending.js": "9b8242d059f65b4826f5ed4ff2fc4b053aad37ac0ff2059b81eac0592397c14a",
+    "faces.js": "ca49833caf5dc964622d274ff960e34aa238dfd44cd05aa7a1d6e52e02a3849d",
+    "far-land.js": "ac3cf062a9fd984d95808e8ea636b3ecc59c263ce57b11f6d2ea867d1fb9e4cc",
+    "footage.js": "5caa5cf3de34350c3912334e495396e26087cae46c6e9ae161a4b747c803686d",
+    "friends.js": "79e849fa4f0ca4a2fff9631332600cf8b5fd47a8422563633d498da394c31eeb",
+    "furniture.js": "630b5dceb9da07cbe2af49c6826615e98caccfd404d0d22a1a46b4fea92fe0dc",
+    "game.js": "69622a1466fdfcf8dd2ede2acaf02ce9cf3f2421cf8daa0e0b81cf340370cfc3",
+    "houses.js": "908d2b3d13ca9726f638b9abf073e98658a2aa9a5bb1fdf85a601f231437b637",
+    "index.html": "52420500b4e524c8a02e5247ad0ed10f3b7f3ae1d6a5f5c109d00e1007c188d1",
+    "interactions.js": "d1f8b6e0859fb439d09cf3d634013a34c52242684a493be8892e9924bf65ccc1",
+    "inventory.js": "61b23139144e1ed72964b13cc2d113c051a6e4dccdb791217b4de7e9a6723e99",
+    "kit.js": "6ba15469732e2bd1f9ce798f97cd1650fec57973b63743eb5c8761fca26e14bd",
+    "layout.js": "fc7e6ee21e8cf1b6ff9c8f9b888bcee57b7f2422ad3a2b27c13d57798414099c",
+    "materials.js": "3c48c0da355812a59fa972fa0ae06a7f375a6ab20e833f4cb11286ee8837f220",
+    "memory.js": "76498323db63e152db35e36f11b44b01543da4d5cdf44bdd3a1300ea7c1be5ab",
+    "nav.js": "786768e7d92248b9e9170f1c4f69e2c92fa5d90fec190adff5cf4e9d484eb6b0",
+    "nostalgia.js": "b91127c6bf5c6e50a08a748476c31991b4cc5cdcb1d891202bbfea0f5c63866b",
+    "old-bike.js": "df1f0e9344338cb74ac00bcae7904f1e312ee2d93f450cda21772811e81a7605",
+    "on-foot.js": "e31bb980fd342bcee1da67edd75f4ed90cc6c0c09e2990a639b7529a32f9ffcf",
+    "palette.js": "52a0632bb1e9c5363b8ecfbc34983d037ab09bd9f1018f52d32d1b0ccada6a65",
+    "patrol-art.js": "9e3e70672fd5f9e320daadc09e6c6effc796c1bac0bdd62134d0267183534d76",
+    "people.js": "19e40d3045863ef4171f7c0de1ad3677565aa892efe2ed6239a6c2cf2de73f88",
+    "physical.js": "d4479a41764b78d9588c3dee6a554c7e6982924d3357af9a6a0e81f37016579c",
+    "pine-art.js": "63f4053c21f59aa1f601ae08c6fd39d34e51f62e20b0c47e6cd624db2e2949ed",
+    "pine-build.js": "236e9ce2f877efb8a41a51985fb88762b4ed62068ac5813381fd4606243423e0",
+    "pine-camp.js": "20dc451f461d29092476d47f3fdd8725d25dd4407e268353bd2d47b4a6b100ad",
+    "pine-detail.js": "2fcf2c6ff7a127a5626d864ee2ff528d0afdcd3aa58478ae6643a3bac687a450",
+    "pine-forest.js": "a20927ae28ee0a2456591dbbb3268cdb2679108cd6a94439ec26f5680ab25663",
+    "pine-materials.js": "967b4908819ee558929354da251490baf0a4f522e538d35be5024c08dcf37339",
+    "pine-plan.js": "04bfaf0ec965266f63a0c30b5cab458b7fca9da735fe4856c017e87191b54b65",
+    "police.js": "4c2acdbb1bdb3935ee576b562f9be0dd4342abfe294e6cd4eea7de1766d33091",
+    "presence.js": "377f49d357583665ee266a1cfad2187ed349890e0e8df51cb3280dc4991b5980",
+    "props.js": "ed8786554db22138ffd825e6920cf260fa9fff0a270e2849829e9867a8f8aebe",
+    "ride-contact.js": "c6a3af3649f04468258914e03c96ee72828d730f0387fe4a3db10de87cc25f42",
+    "rig.js": "42d749ed8a4d9d8db949cd6bfa7399de2564ee6ffca84f8c6922ad10a7d9970e",
+    "route.js": "f17de16440dbcb6101a0ea0b483d22ef55663934398613ab932fcf030412b3f5",
+    "story.js": "c1f2bfccdace50fdb27d65786a86028b83d4e7c84ea9c8254fdd24ef361958e0",
+    "streets.js": "2b0e58223f14706a3fe4c53facb40610dc45aa3e7389098a7a4d393686b6a74d",
+    "style.css": "bf509c9959f9acd3248fb85866403fbbae8e7ebaa3b5a2d70299a91e02c94878",
+    "tension.js": "7b0de410dc3b848232dfb4c49dff6dcb85c1dc1c1057e1e4b998993bc3806e04",
+    "terrain.js": "ecc674f1b9d847c7d6e992b65b287cd65a425b237ee40c540fa4e2ea364d6902",
+    "three.module.js": "76dea8151bc9352aef3528b4262e249b2604f62543828328db978d060d61a495",
+    "town-art.js": "eac14655bed1fd41ab477249295a99e45f001e51e36b19ffad5e69d60e4586e5",
+    "town-build.js": "75cc169635edc0c076433b36d0b694364a3e7c61837d0176d21a76010ea2530e",
+    "town-ground.js": "d1fb84bfb9d026ad65f3baeb53a3658e94642ec5163dea85167963ff81eee1d9",
+    "town-houses.js": "f007e67fecc1c57647352e37e616047a7c8dbdfeda865bdfa3f4d1241a43810a",
+    "town-life.js": "eceb2453af4f94731796ebe488c0df435e659add87b8a3935737b9a9ff944fa5",
+    "town-plan.js": "a222b48d6d8d6d1d4b4885891b715970aaff4f235056ba44302f0127465adcd5",
+    "town-props.js": "8b1abf9f3a89a7e1bcec3b5764a6d76a90d468bc00c64dd96686450bae5d5c56",
+    "town-repair2.js": "1394bdb24c3c8e9ce1dc062814470f3c62192afb10c072a01d69b3a4c769b8c9",
+    "ui.js": "342854a8172cbb454e063542af0c6484b4f5739def91e1f9f033a9237d9b2019",
+    "vegetation.js": "7458d0e1523f0c6d3a65614f0082704dd2510cecfca6365014d9bd9ae29f08de",
+    "woods.js": "e3ff8a8531f865f4448c27c4da87a6187150d02f6cb0b9e3819b071a4f5e9c4b",
+    "world.js": "7ae1df7dc5df8cb493ef26514691450250a6ae43435d508e4cf96388c4de5ffc"
+  }
+}

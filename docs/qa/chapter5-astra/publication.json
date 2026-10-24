@@ -1,0 +1,10 @@
+{
+  "project_id": "appgprj_6adb7905b2e08191bed61fa38665b6c9",
+  "deployment_id": "appgdep_6adc2c6950b48191af4de584decc7d74",
+  "version_id": "appgprj_6adb7905b2e08191bed61fa38665b6c9~appgver_a85b10f8fa1081919f344415ff52a22f",
+  "status": "succeeded",
+  "url": "https://last-light-chapter5-astra.graysonroth30.chatgpt.site",
+  "visibility": "owner-private",
+  "sites_source_commit": "296989659ee8a288dd2fb5bd9362154a18b14dd3",
+  "github_runtime_commit": "95a7e432d01c42c03c5079e585bce6a2a4cc7635"
+}

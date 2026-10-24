@@ -1,3 +1,41 @@
+# Last Light — Chapter Five Astra verification
+
+Final runtime: `95a7e432d01c42c03c5079e585bce6a2a4cc7635`. Branch: `codex/astra-chapter5-ultra-visual-reconstruction`. Accepted source: `d4de9abd16fa184f1861335a6e4d8100ce31f1e2`. Human playtest candidate, not approved.
+
+| Check | Completed result and scope |
+| --- | --- |
+| Full simulation, no QUICK flag | **758 passed**, exit 0 on `4bf3902`. Real geometry, mocked renderer/DOM; Chapters 0–5, replays, geometry, saves, companion and DEV checks. Natural Route C replay passed. |
+| Route A Chromium | **13 passed, 0 failed**, no JS errors or shader warnings. Segmented split/Owl and run/ending; real Chapter Four end-card click. |
+| Route C Chromium | **11 passed, 0 failed**, no JS errors or shader warnings. Corrected checkpoint driver around Owl, service road, dam bell, recovery and ending. |
+| Last shirt-only correction | **6 geometry checks passed** on final runtime: sleeve seams remain connected through five fold states and unfolding restores the hanging geometry. Fresh gear review: **29 frames, no errors**, runtime hashes match the final source, shirt stored successfully. See `docs/qa/chapter5-astra/gear/`. |
+| Earlier development checks | 81 Chapter Five checks and 12 focused Astra checks completed before the final GLSL identifier correction. |
+| Visual comparisons | 17 before + 17 after views, matching camera transforms, capture hashes verified against `4bf3902`, zero reported errors. Final change only affects the shirt fold. |
+| Quality smoke | Medium and High camp captures completed without errors: 390 calls / 449,216 triangles. |
+
+**Evidence retention:** an environment reset lost the uncommitted raw full-suite and successful walkthrough reports. `docs/qa/chapter5-astra/validation-summary.json` is an explicitly reconstructed summary of completed tool results observed in this conversation, not a replacement raw log. The 34 comparison images survived. Final shirt/gear captures and their runtime hashes were regenerated. Historical repair results below remain separate.
+
+## Measured escape and performance
+
+| Run (RUN → recovery phase) | Escape | Recovery → lot | Double visible | Closest |
+| --- | ---: | ---: | ---: | ---: |
+| Natural Route A, simulation | 58.8 s | 9.4 s | 48.9 s | 0.70 m |
+| Route A, Chromium | 57.7 s | 9.4 s | 48.4 s | 2.21 m |
+| Route C, Chromium | 68.3 s | 9.4 s | 56.4 s | 7.06 m |
+
+The accepted repair's natural Route A escape measured 146 s. The new complete natural Chapter Five simulation measured 25.22 game minutes. These are automated timings, excluding the earlier recognition scene, not human pacing claims. Route A opens the gate through the player's F action; Route C rings the dam bell. Both retain the evidence, explicit time transition and Chapter Five ending. The optional lodge-door and intake scares were not triggered by those automated route lines.
+
+All browser tests use Chromium / ANGLE SwiftShader. Across the 17 Low-quality views: **285–483 draws / 277,316–537,880 triangles**. Camp clearing changed from 261 draws / 548,409 triangles to 390 / 449,216; the park from 264 / 607,515 to 383 / 388,876; garage from 299 / 455,598 to 378 / 483,094. Added detail increases draw calls. Static world allocation: **2,190 batches / 3,671,371 triangles**. Forest: 6,060 trees using 3,153,504 bytes of shared geometry and instance buffers.
+
+Most snapshot heaps were 1.03–1.09 GB, one was 1.67 GB. Browser segment heap samples: 1,698 MiB after split/Owl, 987 MiB after Route A, 990 MiB after Route C. These are not retained or maximum process-memory bounds. No real-GPU FPS or continuous full-chapter browser claim is made. Sound was muted; audio events were exercised, not listened to.
+
+## Corrections and limits
+
+The reserved GLSL identifier was fixed before successful compiled captures. The inherited 2,000-batch ceiling was corrected to the accepted repair's documented 2,259; the new runtime uses fewer batches. An OOM-killed partial browser attempt is retained under `attempt-browser-oom/` and not counted. The Route C checkpoint driver needed closer waypoints around Owl; game collision was unchanged. The final garment review found and fixed sleeve detachment without altering story or interaction state.
+
+The full suite covers all 37 Chapter Five DEV scenes in simulation; this final pass did not repeat every selector click in Chromium. Cloud preview WebGL is disabled. The private deployment succeeded; seven hosted resources (HTML, game modules, stylesheet and creature GLB) returned HTTP 200 and matched final local bytes. See `publication.json` and `hosted-verification.json`; this is not a hosted GPU playthrough. Human review remains necessary for scare effectiveness, visual cohesion, animation quality, sound and actual-device performance.
+
+---
+
 # Last Light — Chapter Five gameplay and story repair: verification
 
 Branch `claude/chapter5-gameplay-story-repair` from `claude/chapter5-pine-ridge` at

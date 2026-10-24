@@ -207,17 +207,20 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
   const latch=A5.GT.barPoint('campL',.75),mp=me(),ld=Math.hypot(mp.x-latch.x,mp.z-latch.z);go({x:latch.x+(mp.x-latch.x)/ld*1.15,z:latch.z+(mp.z-latch.z)/ld*1.15},{r:.4,max:25});faceV(latch);W(.25);assert.ok(act('c5-shove',5),'gate offers the player a pull');W(1.6);
   trek([P5(-163,506),P5(-158,496)],{r:1.6,max:30,sprint:true,stop:()=>C5().flags.boundary});}
 
- else{go(Q5(-312,562),{r:.6,max:60,sprint:true,stop:()=>C5().flags.boundary});// (off Owl's porch round its corner: follow the path closely)
+ else{// Leave Owl's east-facing porch around its south wall; a distant waypoint cuts the cabin corner.
+ trek([P5(-274,551),P5(-300,551),P5(-312,562)],{r:.25,max:60,sprint:true,stop:()=>C5().flags.boundary});
  walkTo([P5(-320,540),P5(-326,516),P5(-337,492),P5(-347,466),P5(-352,450),P5(-352,444)],{r:1.6,max:150,sprint:true,stop:()=>C5().flags.boundary});}// (onto the dam itself)
  U(()=>S().phase==='n5-out',40);check(`${label}: the escape by route ${route}, and the boundary: ${route==='A'?'the camp gate slams shut in front of you; you pull while Sam holds the latch':'the bell, by itself'}; every light out at once`,()=>{assert.equal(C5().route,route);assert.ok(C5().flags.boundary);if(route==='A')assert.equal(A5.C.flags.gateOpened,'you');assert.ok(Object.values(C5().lamps).every(v=>v<.2),JSON.stringify(C5().lamps));});
  M2['chapter5 escape seconds']=+(h.snapshot.clock-tRun).toFixed(1);
+ M2['chapter5 pursuit']={secondsPresent:+(A5.C.esc?.visibleSeconds||0).toFixed(1),closestMetres:+(A5.C.esc?.closest||0).toFixed(2),gateHelp:!!A5.C.flags.gateHelp,doorBeat:!!A5.C.esc?.doorBeat,serviceBeat:!!A5.C.esc?.serviceBeat};
+ const tRecovery=h.snapshot.clock;
  // ---- back to the bikes ----
  // (from the first point of the road ahead: the escape can end past the camp gate, and a point behind it would take the
  // walk back in and across the fence line)
  if(route==='A'){const back=gravel(4,186).reverse(),d=q=>Math.hypot(q[0]-me().x,q[1]-me().z);let i=0;while(i<back.length-1&&d(back[i+1])<d(back[i]))i++;
   trek([...back.slice(i),P5(-118,352),P5(-122,338),P5(-130,322),P5(-132.5,318.5)],{r:2,max:260,sprint:false,stop:()=>A5.C.flags.after});}/* (on to the rack itself: the lamp scene starts within 6 m of it) */
  else walkTo([P5(-358,410),P5(-362,380),P5(-346,347),P5(-320,334),P5(-292,324),P5(-262,317),P5(-228,316),P5(-198,319),P5(-170,322),P5(-145,320),P5(-132,318)],{r:2,max:320,stop:()=>A5.C.flags.after});
- U(()=>S().phase==='n5-final',40);U(()=>A5.C.flags.review,90);
+ U(()=>S().phase==='n5-final',40);M2['chapter5 recovery seconds']=+(h.snapshot.clock-tRecovery).toFixed(1);M2['chapter5 announced transition']=!!A5.C.out?.transition;U(()=>A5.C.flags.review,90);
  check(`${label}: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”`,()=>{assert.ok(log.said.some(l=>/like a duck/.test(l)),JSON.stringify({phase:S().phase,after:!!A5.C.flags.after,review:!!A5.C.flags.review,last:log.said.slice(-10)}));assert.ok(log.said.some(l=>/knew we’d come/.test(l)));});
  // ---- the last picture ----
  tap('KeyV');W(.5);for(let i=0;i<40&&A5.C.view==='camera'&&h.chapter4.photo.V.i<C5().fireIdx;i++){tap('KeyD');W(.15);}U(()=>C5().flags.found,20);

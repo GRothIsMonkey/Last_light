@@ -1,0 +1,84 @@
+{
+  "evidenceSource": "Completed tool results observed in this conversation on 2026-10-23. An environment reset later lost the uncommitted raw full-suite and successful walkthrough reports; these are explicitly reconstructed summaries, not recreated raw logs.",
+  "testedGameplayRuntime": "4bf39029b29fc01b91584217f6d2d99dbfe81cf7",
+  "finalRuntime": "95a7e432d01c42c03c5079e585bce6a2a4cc7635",
+  "onlySubsequentGameChange": "chapter5-props.js: bake sleeve offsets and rotations into the shirt geometry before folding; no gameplay/state change.",
+  "fullSimulation": {
+    "command": "TRACE=1 node tests/verify.mjs",
+    "passed": 758,
+    "exitCode": 0,
+    "renderer": "mocked WebGL renderer/DOM; real Three.js geometry",
+    "coverage": "Chapters 0\u20135, replays, geometry, saves, fallbacks, companion tests, DEV scenes and restoration; natural Route C replay passed.",
+    "worldMeshes": 2190,
+    "worldTriangles": 3671371,
+    "worldBuildMs": 23121,
+    "chapter5Minutes": 25.22
+  },
+  "browserA": {
+    "scope": "SEGMENTED=1 QUALITY=low NO_DEV=1 SEGS=split,run",
+    "passed": 13,
+    "failed": 0,
+    "javascriptErrors": 0,
+    "shaderWarnings": 0,
+    "escapeSeconds": 57.7,
+    "recoverySeconds": 9.4,
+    "pursuerVisibleSeconds": 48.4,
+    "closestMetres": 2.21,
+    "gateOpenedBy": "you"
+  },
+  "browserC": {
+    "scope": "SEGMENTED=1 QUALITY=low NO_DEV=1 SEGS=run ROUTE=C CHOICE=jamie; corrected driver around Owl corner",
+    "passed": 11,
+    "failed": 0,
+    "javascriptErrors": 0,
+    "shaderWarnings": 0,
+    "escapeSeconds": 68.3,
+    "recoverySeconds": 9.4,
+    "pursuerVisibleSeconds": 56.4,
+    "closestMetres": 7.06,
+    "bellEvents": 1
+  },
+  "naturalRouteA": {
+    "escapeSeconds": 58.8,
+    "recoverySeconds": 9.4,
+    "pursuerVisibleSeconds": 48.9,
+    "closestMetres": 0.7
+  },
+  "conditionalScaresObserved": {
+    "lodgeDoor": false,
+    "intake": false
+  },
+  "earlierCompletedReviews": {
+    "garageFrames": 26,
+    "gearFrames": 29,
+    "nightFrames": 23,
+    "lookdownFrames": 8,
+    "errors": 0,
+    "filesRetained": false,
+    "note": "The gear sequence is rerendered on the final shirt fix; its new report and frames accompany this summary."
+  },
+  "mediumHighSmoke": {
+    "scene": "c5-camp",
+    "qualitySettings": [
+      "medium",
+      "high"
+    ],
+    "drawCalls": 390,
+    "triangles": 449216,
+    "errors": 0,
+    "filesRetained": false
+  },
+  "limitations": [
+    "SwiftShader software rendering: no real-GPU FPS claim.",
+    "Sound muted: events exercised, no listening mix review.",
+    "No continuous whole-chapter final browser walkthrough.",
+    "All 37 Chapter Five DEV scenes tested in simulation; final Chromium pass did not repeat all selector clicks."
+  ],
+  "finalGearReview": {
+    "saved": 29,
+    "errors": 0,
+    "ok": true,
+    "allRuntimeHashesMatchFinal": true,
+    "shirtStored": true
+  }
+}

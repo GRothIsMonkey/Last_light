@@ -1,0 +1,50 @@
+{
+  "url": "https://last-light-chapter5-astra.graysonroth30.chatgpt.site",
+  "runtimeCommit": "95a7e432d01c42c03c5079e585bce6a2a4cc7635",
+  "method": "Authenticated HTTP fetch with official Sites-provided read credential; exact byte comparisons. No hosted GPU playthrough.",
+  "results": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 6852,
+      "matchesLocalRuntime": true
+    },
+    {
+      "path": "game.js",
+      "status": 200,
+      "bytes": 86699,
+      "matchesLocalRuntime": true
+    },
+    {
+      "path": "chapter5.js",
+      "status": 200,
+      "bytes": 166852,
+      "matchesLocalRuntime": true
+    },
+    {
+      "path": "chapter5-props.js",
+      "status": 200,
+      "bytes": 8653,
+      "matchesLocalRuntime": true
+    },
+    {
+      "path": "three.module.js",
+      "status": 200,
+      "bytes": 1272972,
+      "matchesLocalRuntime": true
+    },
+    {
+      "path": "style.css",
+      "status": 200,
+      "bytes": 20912,
+      "matchesLocalRuntime": true
+    },
+    {
+      "path": "assets/creature/creature.glb",
+      "status": 200,
+      "bytes": 2583500,
+      "matchesLocalRuntime": true
+    }
+  ],
+  "allMatched": true
+}

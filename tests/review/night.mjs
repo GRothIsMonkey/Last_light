@@ -35,7 +35,8 @@ export default async function(L,{cap,step,press,release,tap,face}){
  // ---- the gate ----
  L.jump('c5-run');step(.4);for(const [e,n] of [[-262,556],[-236,552],[-212,546],[-192,538],[-186.6,532.6],[-185.3,530],[-178.8,524.2],[-172,520]]){walkTo(W(e,n),16,true);if(C5.C.flags.gateShut)break;}
  until(()=>C5.C.flags.gateShut,10);walkTo(W(-169,516),4,true);step(.3);{const g=W(-166,512);lookAt({x:g.x,y:cam.position.y-.25,z:g.z});}await cap('n16-the-gate-slams-shut');
- for(let i=0;i<80&&!C5.C.flags.gateOpened;i++){step(.1);if(i%5===0)lookAt({x:Sm.px,y:Sm.person.group.position.y+1.1,z:Sm.pz});}step(.4);await cap('n17-sam-shoves-it-open');
+ step(2);lookAt({x:camp.D.x,y:camp.D.y+1.3,z:camp.D.z});await cap('n17a-double-still-approaching');
+ const latch=C5.GT.barPoint('campL',.75),p=L.state.walk,d=Math.hypot(p.x-latch.x,p.z-latch.z);walkTo({x:latch.x+(p.x-latch.x)/d*1.15,z:latch.z+(p.z-latch.z)/d*1.15},8);lookAt(latch);tap('KeyF');step(.45);await cap('n17b-player-pulls-with-sam');step(1.2);await cap('n17c-the-gate-opens');
  walkTo(W(-163,505),10,true);walkTo(W(-160,500),6,true);until(()=>C5.C.flags.boundary,8);step(2);face(Math.atan2(W(-190,545).x-L.state.walk.x,-(W(-190,545).z-L.state.walk.z)),0);await cap('n18-every-light-out-behind');
  out.gate=C5.C.flags.gateOpened;return out;
 }

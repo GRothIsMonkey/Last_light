@@ -3,9 +3,10 @@
 // it names, so an animation can be looked at before, during and after it. Not a pass/fail test: it writes frames.
 //   REVIEW=tests/review/garage.mjs OUT=docs/qa/chapter5-repair/garage node tests/review-capture.mjs
 // The review module: export default async function(L,{cap,step,press,release,tap,face,wait}) { ... }
-import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url);let pw;for(const p of [null,'/opt/node-tools/node_modules','/opt/node22/lib/node_modules'])try{pw=p?require(p+'/playwright'):require('playwright');break;}catch{}
+import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import {createRequire} from 'node:module';import {createHash} from 'node:crypto';
+const require=createRequire(import.meta.url);let pw;for(const p of [null,process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'/opt/node-tools/node_modules','/opt/node22/lib/node_modules'])try{pw=p?require(p+'/playwright'):require('playwright');break;}catch{}
 const repo=path.resolve('.'),root=path.join(repo,'dist'),out=path.resolve(process.env.OUT||'docs/qa/chapter5-repair/review');fs.mkdirSync(out,{recursive:true});
+const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(path.join(root,n)).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(path.join(root,n))).digest('hex')]));
 const review=process.env.REVIEW;if(!review){console.error('REVIEW=<module> required');process.exit(2);}
 const types={js:'application/javascript',mjs:'application/javascript',css:'text/css',html:'text/html',glb:'model/gltf-binary',json:'application/json',png:'image/png',jpg:'image/jpeg'};
 const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.split('?')[0]);if(u==='/favicon.ico'){res.writeHead(204);return res.end();}
@@ -13,13 +14,16 @@ const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.sp
  try{const body=fs.readFileSync(file);res.setHeader('Content-Type',types[file.split('.').pop()]||'application/octet-stream');res.end(body);}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const args=['--no-sandbox','--disable-dev-shm-usage'];if(!process.env.BROWSER_GPU)args.push('--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist');
-const browser=await pw.chromium.launch({headless:true,args});
+if(process.env.BROWSER_SERVERLESS)args.push('--no-zygote','--single-process');
+args.push('--js-flags=--expose-gc --max-old-space-size=2048');
+const browser=await pw.chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH,args});
 const W=+(process.env.W||1280),H=+(process.env.H||800);
 const page=await browser.newPage({viewport:{width:W,height:H}});const errors=[];
 page.on('pageerror',e=>{errors.push(String(e));console.error('PAGE',String(e));});page.on('console',m=>{if(m.type()==='error'){errors.push(m.text());console.error('CONSOLE',m.text());}else if(process.env.VERBOSE)console.log('page:',m.text());});
 let saved=0;
 try{
  await page.goto(`http://127.0.0.1:${server.address().port}/dist/index.html?qa`,{timeout:180000});await page.waitForFunction(()=>window.lastLight,null,{timeout:180000});
+ if(process.env.QUALITY)await page.evaluate(q=>{const el=document.getElementById('set-quality');el.value=q;el.dispatchEvent(new Event('change'));},process.env.QUALITY);
  await page.click('#start');await page.evaluate(()=>lastLight.step(.3));
  await page.exposeFunction('__save',(name,data)=>{fs.writeFileSync(path.join(out,name+'.jpg'),Buffer.from(data.split(',')[1],'base64'));saved++;console.log('frame',name);});
  const rel='/'+path.relative(repo,path.resolve(review)).split(path.sep).join('/');
@@ -36,9 +40,10 @@ try{
       const nm=head?r.textContent.toUpperCase():(r.querySelector('.inv-name')?.textContent||'')+(r.querySelector('.inv-state')?'  ·  '+r.querySelector('.inv-state').textContent:'');line(nm,(1280-364),y,head?11:15);
       if(!head&&r.querySelector('.inv-note'))line(r.querySelector('.inv-note').textContent.slice(0,52),(1280-364),y+15,11);y+=38;}}
     line(date.toUpperCase(),40,56,14);if(obj)line(obj,40,80,16);if(cap)line(cap.slice(0,120),640,730,21,'center');if(pr)line(pr,640,770,16,'center');line(name,1240,790,12,'right');}
-   await window.__save(name,c.toDataURL('image/jpeg',.86));};
+   await window.__save(name,c.toDataURL('image/jpeg',.86));globalThis.gc?.();};
   const face=(a,p=0)=>L.face(a,p);
   try{return {ok:true,info:await m.default(L,{cap,step,press,release,tap,face,wait:step})};}catch(e){return {ok:false,err:String(e.stack||e).slice(0,1500)};}},rel);
  console.log(JSON.stringify(res,null,1));
+ fs.writeFileSync(path.join(out,'review-report.json'),JSON.stringify({review,result:res,saved,errors,runtimeHashes},null,2));if(!res.ok||errors.length)process.exitCode=1;
 }catch(e){console.error(e);errors.push(String(e));}
-finally{await browser.close();server.close();console.log(JSON.stringify({saved,errors:errors.slice(0,10)}));}
+finally{await browser.close();server.close();console.log(JSON.stringify({saved,errors:errors.slice(0,10)}));if(errors.length)process.exitCode=1;}

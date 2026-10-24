@@ -9,6 +9,12 @@ rebuild can be playtested from any chapter. Everything below applies there uncha
 rebuild's evidence is in `docs/qa/dev-chapters-rebuild/` (the files in `docs/qa/dev-chapters/` are the
 playtest build's, kept as they were).
 
+## On `codex/astra-chapter5-ultra-visual-reconstruction`
+
+The same 37 Chapter Five scenes and names remain. Chapter Five applies the new body meshes and detailed flashlight; leaving restores the accepted earlier-chapter presentation. Run and both escape-route scenes retain the physical double. Camp Boundary places it on the approach behind the player. At the gate, approach the bar and press **F** to pull while Sam holds the latch; recovery opens it after 55 seconds if necessary. Crossing closes the gate and blacks out the camp. The shore recovery explicitly transitions to the lot after a little walking, or 24 seconds stationary. Evidence, save identifiers, the last photograph and the ending are retained.
+
+See the Astra release report and the new section of `TEST_REPORT.md` for verification and limitations.
+
 ## On `claude/chapter5-gameplay-story-repair`: Chapter Five's scenes start with the repair's state
 
 Same picker, same 37 Chapter Five scenes, same names and order (137 in all); Chapters 0–4 unchanged. Each scene's
