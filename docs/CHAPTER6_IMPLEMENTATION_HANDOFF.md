@@ -251,18 +251,56 @@ no room and no storm sky. Chapter Five's end-card check now expects its Chapter 
 - Three hidden background people in the shared scene (pre-existing, not Chapter Six's) have unbuilt face geometry until
   first shown; Chromium logs one bounding-sphere warning for it. Chapter Six's own faces are built at creation.
 
-## 6. For the vault (once accepted — not done here)
+## 6. Private playtest
 
-When a person has played and accepted the chapter, the vault (`docs/last-light-vault`) should record:
+A private build of this branch's runtime (`b6feb6b`) is hosted at **https://claude.ai/artifact/THG93DdUVKkPxGTTjZLCFR**
+(private to its owner until shared from the page's Share menu). Start a new game, or use the title's **DEV** panel:
+**Chapter Six** → a scene → START SCENE. One packaging difference from `dist/`: the host does not serve `.glb` files, so
+the hosted copy carries the creature model's identical bytes as base64 text (`assets/creature/creature.glb.txt`) and its
+copy of `creature.js` decodes them; the repository is unchanged. Sound starts from the title's button, as before.
 
-- the files above and this handoff and its test report (`docs/CHAPTER6_TEST_REPORT.md`, `docs/qa/chapter6-someone-was-here/`);
-- canon introduced by Chapter Six: Officer **Reyes** (badge 212) is Sunday night's second officer; **Ray Brandt**,
-  Oak Hollow Township Public Works, thirty-one years; the **Mill Creek Isolation Works, Gate Structure No. 2** (1958),
-  where **Line Four** (Briarwood, via the creek) and **Line Two** (Mill Street, brick, 1908) meet; gate **2B**'s
-  fail-safe brake and its broken return spring; 1991: 2B found open on August 27, padlock missing, K-9 would not enter
-  Line Two; 1966: Ruth Ann Carver, the Lyric, the bell at the Mill Street culvert (W. Keller); Alex's helmet (red, 17)
-  recovered from the bar screen on August 24; the shirt in evidence (case 11-0821, item 3);
-- events: Sam's 2 a.m. call from "Jamie"; the shape up the bank in the campfire picture; the other Jamie on his stairs;
-  the voice twice from the cut intercom; Alex's prints on the landing; the Alex figure at the grille; **Sam missing
-  since about 4:20 PM, August 25, 2011, in the junction chamber; not found; not confirmed dead**; Reyes saw both Sams
-  at once and said so; the grille found open afterward; Reyes's radio: "…I've got it."
+## 7. For the vault (once accepted — not done here)
+
+The vault was read and not changed. After a person has played and accepted the chapter, these are the updates it needs.
+
+**Chapter index.** Chapter Six — *Someone Was Here* — Thursday, August 25, 2011, ~8:40 AM to ~7:55 PM. Files and docs:
+the table in section 2, this handoff, `docs/CHAPTER6_TEST_REPORT.md`, `docs/qa/chapter6-someone-was-here/`. Entered
+from Chapter Five's end card; ends on its own card with no next chapter.
+
+**Story timeline (Aug 25, 2011).** ~2:00 AM Sam's call from "Jamie" in his back yard · 8:41 wake · ~8:50 Sam's call ·
+9:13 Sam's garage: the shirt bagged (case 11-0821, item 3), the camera handed to Reyes, the shape up the bank in the
+fire picture · county deputies and Alex's dad to Camp Whippoorwill · ~10:05 the oak · ~10:25 the other Jamie on his
+stairs · ~10:45 Reyes at the Briarwood creek · 2:09 PM the plan and the files at Sam's; the helmet pulled from the bar
+screen the morning before (Aug 24) · 3:31 the Mill Creek works; the helmet identified and bagged · the voice twice from
+the cut intercom · the prints on the landing · ~3:55 the Alex figure at the Line Two grille · ~4:19 the power fails,
+2B drops, Sam holds it · ~4:20 two Sams, the gate slams, **Sam missing** · the manhole · ~7:54 the yard: the grille
+found open, nothing up the pipe; Reyes: "I saw them both. At the same time."; "…I've got it." on his radio.
+
+**Mystery tracker (new or advanced; nothing explained).** The Line Two / Line Four junction at the Mill Creek works as
+the common point of 1966 (Carver), 1991 (Whitcomb) and 2011 (Alex, Sam). 2B found open in 1991 with its padlock gone,
+"like somebody had the key". Line Two's grille, locked in March, found open after Sam. The voice that repeats (Reyes's
+words from a cut intercom; "Sam, come to the window" in Jamie's voice; "…I've got it." in Sam's on Reyes's radio).
+Doubles that copy a beat late and smile (Jamie on the stairs, Sam under the lamp). Alex's wet prints standing at the
+foot of the stairs, pointing up at the gallery. The shape up the bank in a picture nobody took. Dogs that sit down at
+the water. The light far back in the flooded chamber, seen through the port. Sam's fate: open.
+
+**Character relationships.** Reyes moves from "Okay." to believing them, then to being a witness the other officer
+won't write down. Alex's dad: the shirt; goes with the deputies; never speaks to the boys about the picture. Sam's dad:
+"Stay with him." and, at the end, across the yard with Reyes. Jamie: blames himself ("He held it for me."); the gum.
+Sam: the planner who reads the plan, takes the radio "because you'll answer it", holds the brake. Brandt: thirty-one
+years, his own 1991 log entry, locked the grille himself.
+
+**New horror mechanics.** A double visible only while you look through a doorway beside the real friend, gone the first
+unwatched moment (with a companion-sighting fallback); a voice repeated from a dead speaker behind you; a figure that
+charges a grille between you; a double standing at once with the real friend, copying his pose a beat late, seen
+through a gap you and an adult witness look through together; a fail-safe gate held open by a child's hands on a
+release lever, a pin that won't line up, a crank connected to nothing; rising water that slows you.
+
+**Playtest issues to watch** (from section 5 and the test report): Acts III and IV run short in direct play; audio is
+untested by ear; the works and the room are first-draft art; the other Sam's moment can be partly blocked by Reyes's
+body if you stand right behind him; three pre-existing hidden faces log one warning when first drawn.
+
+**Release history.** `claude/chapter6-someone-was-here` from `7db770d` (Chapter Five Astra release): Chapter Six
+implemented, verified by simulation (818 checks, prologue to Chapter Six) and Chromium (52 checks, 91 frames, 25 DEV
+scenes); private playtest published; **awaiting human playtest approval**. Nothing merged to `main`; earlier branches
+unchanged.

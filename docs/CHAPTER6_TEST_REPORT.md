@@ -103,6 +103,13 @@ full-page screenshots, and one frame per DEV scene. Found in the review and fixe
 - **Faces.** A face's mouth geometry is built on its first update; Chapter Six's figures are now updated once when they
   are made. Three hidden background people in the shared scene (pre-existing) still have unbuilt faces until shown.
 
+## Private playtest
+
+Published as a private artifact: **https://claude.ai/artifact/THG93DdUVKkPxGTTjZLCFR** (runtime `b6feb6b`; see the
+handoff for the one packaging difference: the creature model's bytes as base64 text, because the host serves no
+`.glb`). Before publishing, the packaged copy was opened in Chromium: the title, the DEV Chapter Six button and the
+creature asset loaded with no errors.
+
 ## How to run
 
 ```
