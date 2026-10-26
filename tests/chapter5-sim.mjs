@@ -226,7 +226,7 @@ export function playChapterFive(T,label,{fromCard=true,dev=false,route='A',choic
  tap('KeyV');W(.5);for(let i=0;i<40&&A5.C.view==='camera'&&h.chapter4.photo.V.i<C5().fireIdx;i++){tap('KeyD');W(.15);}U(()=>C5().flags.found,20);
  check(`${label}: on Alex's camera, a picture none of them took (the three of them at the fire, ${A5.C.fireShot?.time})`,()=>{assert.ok(C5().flags.found);assert.ok(C5().fireIdx>0);assert.ok(log.said.some(l=>/in my bag/.test(l)));});
  U(()=>A5.C.flags.finalImage,90);faceV(A5.camp.LAMPS.owl.pos);U(()=>h.snapshot.state==='ended',30);
- check(`${label}: the last image (one light across the water), then the end card: LAST LIGHT · Chapter Five · August 24, 2011, and no Chapter Six`,()=>{assert.equal(h.snapshot.state,'ended');const el=element('ending');assert.match(el.querySelector?.('h2')?.innerHTML||'Chapter Five',/Chapter Five/);assert.equal(element('next-chapter').hidden,true);
+ check(`${label}: the last image (one light across the water), then the end card: LAST LIGHT · Chapter Five · August 24, 2011, and its Chapter Six button`,()=>{assert.equal(h.snapshot.state,'ended');const el=element('ending');assert.match(el.querySelector?.('h2')?.innerHTML||'Chapter Five',/Chapter Five/);assert.equal(element('next-chapter').hidden,false);assert.match(element('next-chapter').innerHTML,/Chapter Six/);
   assert.ok(log.said.some(l=>/good sock/.test(l)));});
  check(`${label}: Jamie and Sam never left: farthest ${watch.gapMax.toFixed(1)} m (${JSON.stringify(watch.gapAt)}); nothing non-finite`,()=>{assert.ok(watch.gapMax<30,JSON.stringify(watch.gapAt));assert.deepEqual(log.bad,[]);});
  const minutes=(h.snapshot.clock-t0)/60;

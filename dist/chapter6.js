@@ -284,7 +284,12 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.view==='camera'&&photo.current?.id==='c5-campfire'){X.fireT=(X.fireT||0)+dt;if(X.fireT>1.4&&!C.flags.reviewed)reviewed();}
   if(C.flags.up&&!C.inv.camera&&X.t-X.upAt>45&&!C.flags.camHint&&!busy()){C.flags.camHint=true;say([{who:'',text:'Alex’s camera. On your desk, where you put it last night.',time:3.4}]);objective('Take Alex’s camera.','On the desk, under the window.');}
   if(!C.flags.ring&&((C.flags.reviewed&&C.t-C.reviewAt>5&&!busy())||X.t>140))ringPhone();
-  if(C.flags.ring&&!C.flags.answered){X.ringT=(X.ringT||0)+dt;if(X.ringT>2.9){X.ringT=0;sound('phoneRing',HS.phone,{gain:.8});}if(C.t-C.ringAt>24&&!C.flags.momAgain&&!busy()){C.flags.momAgain=true;say([{who:'MOM (KITCHEN)',text:'“Honey? The phone!”',time:1.8}]);}}}
+  if(C.flags.ring&&!C.flags.answered){X.ringT=(X.ringT||0)+dt;if(X.ringT>2.9){X.ringT=0;sound('phoneRing',HS.phone,{gain:.8});}if(C.t-C.ringAt>24&&!C.flags.momAgain&&!busy()){C.flags.momAgain=true;say([{who:'MOM (KITCHEN)',text:'“Honey? The phone!”',time:1.8}]);}
+   // (never answered: she gets it in the kitchen, and calls you to it)
+   if(C.t-C.ringAt>55&&!C.flags.momGot&&!busy()&&!phys.playerBusy()){C.flags.momGot=true;home.ring(false);say([{who:'MOM (KITCHEN)',text:'“Hello? …Hi, Sam. Hang on.”',time:2},{who:'MOM (KITCHEN)',text:'“Hon! It’s Sam! Pick up in the hall!”',time:2.2}],
+    {then:()=>{if(C.flags.answered)return;carry('phone',HS.phoneStand,headingTo(HS.phoneStand.x,HS.phoneStand.z,HS.phone.x,HS.phone.z),{after:()=>{C.flags.answered=true;home.holdPhone(true);o.roam.walkLock=true;objective('');call();}});}});}}
+  if(C.flags.called&&!C.flags.outT)C.flags.outT=C.t;
+  if(C.flags.called&&C.t-C.flags.outT>75&&C.fadeOut<0&&!busy()&&!C.flags.outAuto&&!phys.playerBusy()){C.flags.outAuto=true;if(!C.inv.camera){C.inv.camera='have';home.cameraOnDesk(false);}goOutside();}}
  function reviewed(){if(C.flags.reviewed)return;C.flags.reviewed=true;C.reviewAt=C.t;mark('the picture from the trees');T?.set?.(.18,{rise:.03,why:'the picture'});
   say([{wait:.6},{who:'',text:'The three of you at the fire. From the trees.',time:3},{who:'',text:`${FIRE_TIME.replace('PM',' PM')}. Sam read it out loud last night, like that would make it make sense.`,time:4.4},{who:'',text:'The camera never left your pocket.',time:3}]);}
  function ringPhone(){if(C.flags.ring)return;C.flags.ring=true;C.ringAt=C.t;home.ring(true);sound('phoneRing',HS.phone,{gain:.8});if(C.view==='camera')closeView();if(C.view==='look')endLook();if(!C.flags.up)getUp();
@@ -307,8 +312,8 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
     say([{who:'MOM (KITCHEN)',text:'“Who was that, hon?”',time:1.6},{who:'YOU',text:'“Sam. I’m going over to Sam’s.”',time:1.8},{who:'MOM (KITCHEN)',text:'“Okay. Back for lunch.”',time:1.6},{wait:.8},
      {who:'MOM (KITCHEN)',text:'“And hey— stay together, okay? All of you.”',time:2.4},{who:'YOU',text:'“We will.”',time:1.2}],{then:()=>{C.flags.called=true;objective('Go to Sam’s.',C.inv.camera?'Out the front door. Oak Hollow, toward the oak.':'Bring Alex’s camera. Then out the front door.');}});}});}});}
  function goOutside(){if(C.fadeOut>=0)return;if(!C.inv.camera){say([{who:'',text:'Alex’s camera. It’s still on your desk.',time:2.6}]);objective('Take Alex’s camera.','On the desk, under the window.');return;}
-  C.fadeOut=0;sound('doorOpen',HS.front,{gain:.5});C.after=()=>{nav.setRoom(null);home.show(false);const st=HS.stoop,bk=main(home.P.drivD+1,home.P.side*9.4),road=main(home.P.drivD+1,0);
-   o.placePlayer({x:st.x,z:st.z,a:headingTo(st.x,st.z,road.x,road.z),mode:'walk',bike:{x:bk.x,z:bk.z,a:headingTo(bk.x,bk.z,road.x,road.z)}});sound('doorSlam',HS.front,{gain:.25});
+  C.fadeOut=0;sound('doorOpen',HS.front,{gain:.5});C.after=()=>{nav.setRoom(null);home.show(false);const [sx,sz]=landing(HS.stoop.x,HS.stoop.z),bk=main(home.P.drivD+1,home.P.side*9.4),road=main(home.P.drivD+1,0);
+   o.placePlayer({x:sx,z:sz,a:headingTo(sx,sz,road.x,road.z),mode:'walk',bike:{x:bk.x,z:bk.z,a:headingTo(bk.x,bk.z,road.x,road.z)}});sound('doorSlam',HS.front,{gain:.25});
    go('d6-ride');checkpoint('c6-ride');C.fadeIn=0;C.hMin=HOUR.ride;objective('Ride to Sam’s.','Oak Hollow, toward the oak. The ranch with the blue garage trim.');meetingStage(true);};}
  // ---- Sam's garage ----------------------------------------------------------------------------------------------------------------
  // (who stands where: TL is Chapter Five's table frame: x across, +z into the garage)
@@ -330,7 +335,8 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(d<9&&p.walking){meetStart();return;}
   if(d<16&&p.riding){C.rideNear=(C.rideNear||0)+dt;if(C.rideNear>8&&!C.flags.leaveBike&&!busy()){C.flags.leaveBike=true;say([{who:'JAMIE',text:'“Leave your bike. They’re in the garage.”',by:'jamie'}]);}
    if(C.rideNear>70)carry('meeting',drive(.2,2.4),driveA(0,0)+Math.PI,{after:meetStart});}
-  if(S.pt>200&&!C.flags.rideHint&&!busy()){C.flags.rideHint=true;objective('Ride to Sam’s.','Up Oak Hollow, toward the oak. Reyes’s car is out front.');}}
+  if(S.pt>200&&!C.flags.rideHint&&!busy()){C.flags.rideHint=true;objective('Ride to Sam’s.','Up Oak Hollow, toward the oak. Reyes’s car is out front.');}
+  if(S.pt>330)carry('meeting',drive(.2,2.4),driveA(0,0)+Math.PI,{after:meetStart});}
  // The meeting. Everything is said at the table; everything handed is handed.
  function meetStart(){if(C.meet)return;go('d6-meet');checkpoint('c6-meeting');C.hMin=HOUR.meet;objective('');mark('Sam’s garage');C.meet={t:0,stage:'hello',pics:new Set(),silT:0};
   follow(false);for(const c of [jamie,sam])c.lookPlayer=false;
@@ -378,7 +384,9 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   // (never showing them: Reyes asks for it, and you hand it over; the station looks at them)
   if(M.stage==='pictures'&&!C.flags.showing&&M.t>170&&!C.flags.copy&&!busy()){C.flags.silDone=true;copyRequest();}
   if(M.stage==='pictures'&&C.flags.showing&&M.t>260&&!C.flags.copy&&!busy()){C.flags.silDone=true;copyRequest();}
-  if(M.stage==='give'&&!C.flags.given&&M.t-M.giveAt>40&&!C.flags.giveNudge&&!busy()){C.flags.giveNudge=true;say([{who:'OFFICER REYES',text:'“I’ll be careful with it.”',from:reyes,time:1.6}]);}}
+  if(M.stage==='give'&&!C.flags.given&&M.t-M.giveAt>40&&!C.flags.giveNudge&&!busy()){C.flags.giveNudge=true;say([{who:'OFFICER REYES',text:'“I’ll be careful with it.”',from:reyes,time:1.6}]);}
+  if(M.stage==='give'&&!C.flags.given&&M.t-M.giveAt>80&&!busy()&&!phys.playerBusy()){C.flags.given=true;C.inv.camera='reyes';camHand.visible=true;reyes.gest(null);sound('click',reyes.pos,{gain:.2});mark('the camera, to Reyes (he asked twice)');
+   say([{who:'',text:'You give it to him.',time:1.6}]);objective('');later(1.2,()=>{camHand.visible=false;});later(1.8,jamieTells);}}
  function pictureTalk(id){const M=C.meet;M.pics.add(id);
   if(id==='c5-register3')say([{who:'SAM',text:'“That’s the camp’s register. From ninety-one. The search.”',by:'sam',time:2.6},{who:'SAM',text:'“August twenty-fourth. ‘Two bike tracks at the service gate. Both lead in. None out.’”',by:'sam',time:3.8},
    {who:'OFFICER REYES',text:'“Danny Whitcomb.”',from:reyes,time:1.4},{who:'SAM’S DAD',text:'“The Whitcomb boy. God.”',from:samDad,time:1.6},{who:'OFFICER REYES',text:'“‘Told Sergeant Pruitt. He says kids, cutting through.’”',from:reyes,time:3}]);
@@ -461,14 +469,15 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // Jamie's house on the way: he goes to tell his mom; she isn't home; the door is left open; the stairs inside.
  function updateStreet(dt){const X=C.st;X.t+=dt;const p=me(),L=nav.locate(p.x,p.z),d=L.street==='main'?L.d:null;
   if(!X.stop&&d!==null&&d<815&&d>700){X.stop=true;jamieHome();}
-  if(!X.stop&&X.t>260&&!busy()&&!X.nudge){X.nudge=true;say([{who:'SAM',text:'“Briarwood. It’s back that way.”',by:'sam'}]);}}
+  if(!X.stop&&X.t>260&&!busy()&&!X.nudge){X.nudge=true;say([{who:'SAM',text:'“Briarwood. It’s back that way.”',by:'sam'}]);}
+  if(!X.stop&&X.t>380){X.stop=true;carry('street',[JDRIVE.x+2.2,JDRIVE.z+3.2],headingTo(JDRIVE.x,JDRIVE.z,JDOOR.x,JDOOR.z),{after:jamieHome});}}
  function jamieHome(){go('d6-jamie');const A2=C.anom={t:0,stage:'ride',seen:0,seenTotal:0,shown:false,gone:false,cue:false};mark('Jamie’s house');
   say([{who:'JAMIE',text:'“Hang on. I gotta tell my mom where I am. She’ll freak.”',by:'jamie',time:2.4}]);
   const stop=JBIKE;comp.run(jamie,[...(jamie.mode==='ride'?[comp.steps.rideTo(jamie,[[JDRIVE.x,JDRIVE.z],[stop.x,stop.z]],{vmax:3,vend:0}),comp.steps.brake(jamie,.3),comp.steps.dismount(jamie),comp.steps.kickstand(jamie)]:[]),
    comp.steps.walkTo(jamie,[[JSTEP.x,JSTEP.z],[JDOOR.x+(JSTEP.x-JDOOR.x)*.25,JDOOR.z+(JSTEP.z-JDOOR.z)*.25]],{speed:1.4}),comp.steps.turnTo(jamie,()=>headingTo(JSTEP.x,JSTEP.z,JDOOR.x,JDOOR.z),.4)],{then:()=>{A2.stage='door';A2.doorAt=C.t;}});
   stand(sam,[JDRIVE.x+.8,JDRIVE.z+1.6],{look:()=>JDOOR,keep:true,max:1.8});objective('Wait for Jamie.');}
  function updateJamie(dt){const X=C.anom;X.t+=dt;const p=me(),dp=dist2(p,JDOOR);const doorV=world.doors.jamie;
-  if(X.stage==='door'){if(dp>34){if(!X.callBack&&!busy()){X.callBack=true;say([{who:'SAM',text:'“Hey! He’s just at his house!”',by:'sam'}]);}return;}
+  if(X.stage==='door'){if(dp>34&&C.t-X.doorAt<50){if(!X.callBack&&!busy()){X.callBack=true;say([{who:'SAM',text:'“Hey! He’s just at his house!”',by:'sam'}]);}return;}
    X.stage='calling';doorV?.set(0);let open=0;const opening=()=>{open=Math.min(.9,open+.05);doorV?.set(open);if(open<.9)later(.03,opening);};opening();sound('doorOpen',JDOOR,{gain:.5});
    say([{wait:.6},{who:'JAMIE',text:'“Mom?”',by:'jamie',time:1},{wait:1.2},{who:'JAMIE',text:'“MOM?”',by:'jamie',time:1.1},{wait:1.6},
     {who:'JAMIE',text:'“…Her car’s gone. She works Thursdays. I forgot.”',by:'jamie',time:2.6,act:()=>{X.stage='back';X.backAt=C.t;
@@ -507,7 +516,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   reyes.show(true);reyes.place(BW.reyes.x,BW.reyes.z,headingTo(BW.reyes.x,BW.reyes.z,BW.gap.x,BW.gap.z));reyes.gest('fold');reyes.lookAt=null;
   objective('Meet Officer Reyes at Briarwood.','By the creek, where Alex turned. His car’s there.');C.cr={t:0};}
  function updateCreek(dt){const X=C.cr;if(!X)return;X.t+=dt;const p=me();
-  if(!X.talk){if(dist2(p,BW.reyes)<14){creekTalk();}return;}}
+  if(!X.talk){if(dist2(p,BW.reyes)<14){creekTalk();}else if(X.t>240)carry('creek',[BW.creek.x-1.6,BW.creek.z-2.4],headingTo(BW.creek.x,BW.creek.z,BW.reyes.x,BW.reyes.z),{after:creekTalk});return;}}
  function creekTalk(){const X=C.cr;if(X.talk)return;X.talk=true;go('d6-creek');checkpoint('c6-creek');C.hMin=HOUR.creek;mark('Reyes at the creek');reyes.gest(null);reyes.lookAt=camera.position;
   stand(jamie,[BW.creek.x+1.6,BW.creek.z+.6],{look:()=>BW.gap,max:2,keep:true,leash:40});stand(sam,[BW.creek.x-1.2,BW.creek.z-.8],{look:()=>reyes.pos,max:2,keep:true,leash:40});
   say([{wait:.6},{who:'OFFICER REYES',text:'“You started at the oak.”',from:reyes,time:1.6},{who:'JAMIE',text:'“Yeah.”',by:'jamie',time:.8},
@@ -572,7 +581,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    {who:'SAM',text:'“And this comes in the other side. Line Two. Mill Street. ‘Brick, nineteen-oh-eight.’”',by:'sam',time:3.4,act:()=>pt(sam,[-.24,.05])()},
    {who:'SAM',text:'“Ninety-one. The pale thing in the culvert, under the Mill Street bridge. That’s Line Two.”',by:'sam',time:3.6,act:mk('dw')},
    {who:'OFFICER REYES',text:'“Sixty-six.”',from:reyes,time:1,act:()=>{folderP.holdBy(reyes.person,'r');}},
-   {who:'OFFICER REYES',text:'“Ruth Ann Carver. Rode downtown to the Lyric. Searchers heard a bike bell at the Mill Street culvert that night.”',from:reyes,time:4.6},
+   {who:'OFFICER REYES',text:'“Ruth Ann Carver. Rode downtown to the Lyric. Searchers heard a bike bell at the Mill Street culvert that night.”',from:reyes,time:4.6,act:()=>later(4.8,()=>{folderP.place(TL(-.55,.1,.73),new THREE.Euler(0,-driveA(0,0)+.2,0));})},
    {who:'SAM',text:'“Mill Street again.”',by:'sam',time:1.2,act:mk('rac')},{who:'SAM',text:'“And Alex. Briarwood. Line Four.”',by:'sam',time:1.8},{wait:1},
    {who:'SAM',text:'“Line Four goes out to the creek. The creek comes here. Line Two comes in here.”',by:'sam',time:3.2,act:mk('meet')},{wait:1.2},
    {who:'SAM',text:'“…They meet. Right here.”',by:'sam',time:1.6,face:'afraid',act:mk('works')},
@@ -599,15 +608,16 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    {who:'SAM’S DAD',text:'“Sam.”',from:samDad,time:.8,act:()=>{samDad.lookAt=sam.person.group.position.clone().setY(1.3);}},{who:'SAM',text:'“Yeah?”',by:'sam',time:.8},{wait:1},
    {who:'SAM’S DAD',text:'“…Stay with him.”',from:samDad,time:1.4},{who:'SAM',text:'“I will.”',by:'sam',time:1}],
    {then:()=>{X.stage='go';objective('Go with Officer Reyes.','His car, at the curb.');const car=k.carA,door={x:car.x+Math.cos(car.a)*1.4,z:car.z+Math.sin(car.a)*1.4};
-    reyes.walk([[drive(1,8).x,drive(1,8).z],[door.x,door.z]],{speed:1.1,then:a=>{a.faceTo(camera.position.x,camera.position.z);}});planP.hide();folderP.hide();
+    reyes.walk([[drive(1,8).x,drive(1,8).z],[door.x,door.z]],{speed:1.1,then:a=>{a.faceTo(camera.position.x,camera.position.z);}});planP.hide();// (the file stays on the table: copies)
     for(const c of [jamie,sam])stand(c,()=>{const cc=k.carA;return {x:cc.x-Math.cos(cc.a)*(c===jamie?1.5:1.7)-Math.sin(cc.a)*(c===jamie?.6:-1.2),z:cc.z-Math.sin(cc.a)*(c===jamie?1.5:1.7)+Math.cos(cc.a)*(c===jamie?.6:-1.2)};},{look:()=>camera.position,max:2.4,leash:60});}});}
  function updateRecords(dt){const X=C.rec;if(!X)return;X.t+=dt;
-  if(X.stage==='camera'&&C.flags.camBack&&!C.inv.camera!=='have'&&X.t>0&&C.inv.camera!=='have'){X.camT=(X.camT||0)+dt;if(X.camT>30&&!X.camNudge&&!busy()){X.camNudge=true;say([{who:'OFFICER REYES',text:'“Here. Take it.”',from:reyes,time:1.2}]);}}
+  if(X.stage==='camera'&&C.flags.camBack&&C.inv.camera!=='have'){X.camT=(X.camT||0)+dt;if(X.camT>30&&!X.camNudge&&!busy()){X.camNudge=true;say([{who:'OFFICER REYES',text:'“Here. Take it.”',from:reyes,time:1.2}]);}
+   if(X.camT>70&&!busy()&&!phys.playerBusy()){camHand.visible=false;C.inv.camera='have';reyes.gest(null);sound('click',reyes.pos,{gain:.2});objective('');say([{who:'',text:'He puts it in your hands.',time:1.6}]);X.stage='plan0';later(1.8,planTalk);}}
   if(X.stage==='plan'&&X.planAt&&!C.flags.planLook&&C.t-X.planAt>26&&!busy()){if(!X.nudge){X.nudge=true;say([{who:'SAM',text:'“Come look at this.”',by:'sam',time:1.4}]);}else if(C.t-X.planAt>45){C.flags.planLook=true;planWords();}}
   if(X.stage==='go'){const car=k.carA;X.goT=(X.goT||0)+dt;if(X.goT>55&&!X.goNudge&&!busy()){X.goNudge=true;say([{who:'OFFICER REYES',text:'“Come on. Before it opens up.”',from:reyes,time:1.8}]);}if(X.goT>110)toWorks();void car;}}
  // into the car, and Old Mill Road, and the gravel track down to the creek
  function toWorks(){if(C.flags.toWorks||C.fadeOut>=0)return;C.flags.toWorks=true;objective('Old Mill Road · the Mill Creek works','Half past three.');C.fadeOut=0;sound('carDoor',k.carA.pos,{gain:.6});
-  C.after=()=>{meetingStage(false);wxRadio.visible=false;samDad.show(false);G5.reset?.();worksStart();};}
+  C.after=()=>{meetingStage(false);wxRadio.visible=false;samDad.show(false);folderP.hide();G5.reset?.();worksStart();};}
  // ---- Act IV: the works ---------------------------------------------------------------------------------------------------------------
  function worksPeople(){const pa=WPa(WS.arrive),c=WPa(WS.cruiser);
   o.placePlayer({x:pa.x,z:pa.z,a:headingTo(pa.x,pa.z,WPa(WS.houseDoor).x,WPa(WS.houseDoor).z),mode:'walk',bike:{x:WP(40,8).x,z:WP(40,8).z,a:0}});
@@ -659,10 +669,15 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   later(1.2,()=>reyes.walk([[r1.x,r1.z],[g1.x,g1.z],[g2.x,g2.z+.8]],{speed:1,then:a=>{a.faceTo(camera.position.x,camera.position.z);a.lookAt=camera.position;C.wk.reyesWait=true;}}));}
  function updateWorks(dt){const W=C.wk;if(!W)return;W.t+=dt;const p=me(),z=zone();
   if(W.stage==='lights'&&W.t>40&&!W.lightNudge&&!busy()){W.lightNudge=true;say([{who:'MR. BRANDT',text:'“Go on, take one.”',from:brandt,time:1.2}]);}
+  if(W.stage==='lights'&&W.t>85&&!busy()&&!phys.playerBusy()){C.inv.flashlight=true;o.setFlashlight?.(true,false);brandt.gest(null);sound('click',brandt.pos,{gain:.2});say([{who:'',text:'He puts one in your hand anyway.',time:1.8}]);
+   W.stage='go';W.goAt=W.t;objective('Go into the gatehouse.','The door on its east side.');jamie.lookAt=null;const d=WPa(WS.houseIn);brandt.walk([[WPa(WS.houseDoor).x,WPa(WS.houseDoor).z],[d.x-1,d.z+1.6]],{speed:1.1});
+   const r=WP(19.5,-5.6);reyes.walk([[WPa(WS.houseDoor).x,WPa(WS.houseDoor).z],[r.x,r.z]],{speed:1.05,then:a=>{a.faceTo(WPa(WS.helmet).x,WPa(WS.helmet).z);}});}
+  if(W.stage==='go'&&W.t-(W.goAt??=W.t)>100)carry('house',WP(19.6,-3.9),-Math.PI/2,{after:houseIn});
   if((W.stage==='go'||W.stage==='lights')&&(z==='house'||z==='door')){if(W.stage==='lights'){C.inv.flashlight=true;o.setFlashlight?.(true,false);}houseIn();}
   if(W.stage==='house'&&!C.flags.helmetSeen&&C.t>(W.houseAt??=C.t)+28&&!busy()){if(!W.hNudge){W.hNudge=true;say([{who:'OFFICER REYES',text:'“The bin. On the desk.”',from:reyes,time:1.4}]);}else if(C.t>W.houseAt+50){lookHelmet();}}
   if(W.stage==='down'&&(z==='gallery'||z==='bridge')){galleryStart();}
-  if(W.stage==='down'&&W.t>(W.downAt??=W.t)+90&&!W.downNudge&&!busy()){W.downNudge=true;say([{who:'SAM',text:'“The stairs are through there. In the wall.”',by:'sam'}]);}}
+  if(W.stage==='down'&&W.t>(W.downAt??=W.t)+90&&!W.downNudge&&!busy()){W.downNudge=true;say([{who:'SAM',text:'“The stairs are through there. In the wall.”',by:'sam'}]);}
+  if(W.stage==='down'&&W.t>W.downAt+150)carry('gallery',WP(8,-2),Math.PI,{after:galleryStart});}
  // ---- the gallery: the gates below, the gauge, a lamp at the dead end, and the radio --------------------------------------------------
  function galleryStart(){if(C.gal)return;go('e6-gallery');checkpoint('c6-gallery');C.gal={t:0};mark('the gallery');C.stormTo=.72;C.rainTo=.45;works.WATER.chan.want=-4.2;works.ST.wheelSpin=0;
   later(2,()=>{const L=WPa(WS.L);reyes.lookAt=null;reyes.walk([[WP(8,14).x,WP(8,14).z],[L.x-.8,L.z]],{speed:1,then:a=>{a.faceTo(WPa(WS.Lgate).x,WPa(WS.Lgate).z);}});});
@@ -673,7 +688,8 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    later(1.8,()=>say([{who:'JAMIE',text:'“Did that light just—”',by:'jamie',time:1.4,act:()=>{jamie.lookAt=WPa(WS.galleryNorth);}},{who:'SAM',text:'“Old wiring.”',by:'sam',time:1}]));}
   if(X.t>34&&!X.radio&&!busy()){X.radio=true;radioTwice();}
   if(X.down&&(z==='stair2'||z==='L'))lowerStart();
-  if(X.down&&C.t-X.downAt>70&&!X.nudge&&!busy()){X.nudge=true;say([{who:'OFFICER REYES (RADIO)',text:'“Boys. Down here. Now.”',time:1.6,act:()=>sound('c6Static',{x:sam.px,y:1,z:sam.pz},{gain:.4})}]);}}
+  if(X.down&&C.t-X.downAt>70&&!X.nudge&&!busy()){X.nudge=true;say([{who:'OFFICER REYES (RADIO)',text:'“Boys. Down here. Now.”',time:1.6,act:()=>sound('c6Static',{x:sam.px,y:1,z:sam.pz},{gain:.4})}]);}
+  if(X.down&&C.t-X.downAt>130)carry('lower',WP(8.6,18.4),Math.PI,{after:lowerStart});}
  function radioTwice(){const X=C.gal,ic=WPa(WS.intercom);ic.y=FLOOR.gallery+2.1;mark('the radio');
   for(const c of [jamie,sam])stand(c,null);
   say([{wait:.2,act:()=>sound('c6Static',{x:sam.px,y:1.2,z:sam.pz},{gain:.6})},{who:'OFFICER REYES (RADIO)',text:'“Sam, it’s Reyes. Stay right where you are. Don’t come down.”',time:3.2},
@@ -684,7 +700,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    {who:'OFFICER REYES (RADIO)',text:'“Say again?”',time:1},{who:'SAM',text:'“You said it twice. The second time it came from up here. From the end of the gallery.”',by:'sam',time:3.2},{wait:2.4},
    {who:'OFFICER REYES (RADIO)',text:'“…I said it once.”',time:1.4},{who:'MR. BRANDT (RADIO)',text:'“That old intercom picks up radio traffic sometimes. Bleed-over.”',time:2.8},{wait:1.8},
    {who:'OFFICER REYES (RADIO)',text:'“Come down here. All three of you. Right now. The stairs at the south end.”',time:3,act:()=>{for(const c of [jamie,sam])c.lookAt=null;}}],
-   {then:()=>{X.down=true;X.downAt=C.t;objective('Go down to Reyes.','The stairs at the south end of the gallery.');follow(true);}});}
+   {then:()=>{X.down=true;X.downAt=C.t;works.prints.visible=true;objective('Go down to Reyes.','The stairs at the south end of the gallery.');follow(true);}});}
  function lookSpeaker(){if(C.looked.has('speaker'))return;C.looked.add('speaker');const ic=WPa(WS.intercom);closeLook({x:ic.x,y:FLOOR.gallery+1.9,z:ic.z+.15},{back:.6,eye:1.42,kind:'speaker',floor:FLOOR.gallery});C.lookDur=6;
   const close=Math.hypot(sam.px-ic.x,sam.pz-ic.z)<6;say([{who:'',text:'The speaker’s cable is cut. The end of it is green with corrosion.',time:3.4},...(close?[{who:'SAM',text:'“It’s not connected to anything.”',by:'sam',time:1.6}]:[])]);}
  // ---- below: the landing, 2B, the junction chamber -------------------------------------------------------------------------------------
@@ -701,12 +717,30 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   say([{who:'SAM',text:'“‘Pull and hold to stop leaf. Release: leaf lowers. Fail-safe.’”',by:'sam',time:3},
    {who:'MR. BRANDT',text:'“That’s the hand brake. Return spring’s busted. Been asking for the part since June.”',from:brandt,time:3.4},
    {who:'MR. BRANDT',text:'“If you ever have to use it, you hold it. You let go, she drops.”',from:brandt,time:2.6},{who:'SAM',text:'“Okay.”',by:'sam',time:.8},
-   {who:'MR. BRANDT',text:'“Line Two’s at the end. Come look.”',from:brandt,time:1.6,act:()=>{const gr=WP(9.6,34.2);brandt.walk([[gr.x,gr.z]],{speed:.9,then:a=>{a.faceTo(WPa(WS.Jlamp).x,WPa(WS.Jlamp).z+3);}});
-    const rr=WP(8.4,33.6);later(.8,()=>reyes.walk([[WP(9,22).x,WP(9,22).z],[rr.x,rr.z]],{speed:.9,then:a=>{a.faceTo(WP(9,37).x,WP(9,37).z);a.gest('flashlight');}}));}}],
-   {then:()=>{C.low.stage='j';objective('Follow Brandt to Line Two.','The far end of the junction chamber.');follow(true);stand(jamie,null);}});}
+   {wait:.6}],{then:printsBeat});}
+ // the wet prints on the landing: out from under the gate to the foot of the stairs, a pair there facing up, and back
+ const PRINTS_AT={x:8,z:16.95};
+ function printsBeat(){const X=C.low;X.stage='prints';X.printsAt=C.t;mark('the prints');const pq=WP(PRINTS_AT.x,PRINTS_AT.z,FLOOR.low);
+  stand(jamie,WP(8.9,17.9),{look:()=>pq,keep:true,max:.8,leash:30,gesture:GEST.tense(.5)});
+  say([{who:'JAMIE',text:'“Guys. Look down.”',by:'jamie',time:1.4,face:'afraid',act:()=>{jamie.lookAt=pq;}},{wait:1.2},{who:'SAM',text:'“Those are shoes.”',by:'sam',time:1.2},
+   {who:'JAMIE',text:'“Those are his. The checkers on the bottom. His Vans. He wore them every single day.”',by:'jamie',time:3.4},
+   {who:'MR. BRANDT',text:'“Nobody’s been down here since I pulled the rack yesterday morning.”',from:brandt,time:2.6,act:()=>{brandt.lookAt=pq;}},
+   {who:'SAM',text:'“They’re wet. Everything else down here is dry.”',by:'sam',time:2.2,face:'concerned'},{wait:1.4},
+   {who:'SAM',text:'“They come out from under the gate. To here. And they stop. Both feet. Pointing up the stairs.”',by:'sam',time:4,act:()=>{sam.lookAt=WP(8,12,FLOOR.gallery+1.4);}},
+   {wait:1.2},{who:'JAMIE',text:'“Up at the gallery.”',by:'jamie',time:1.4,act:()=>{jamie.lookAt=WP(8,11,FLOOR.gallery+1.6);}},{wait:1},{who:'JAMIE',text:'“…At us.”',by:'jamie',time:1.2,face:'terrified'},{wait:1.6},
+   {who:'OFFICER REYES',text:'“Nobody step on them.”',from:reyes,time:1.4,act:()=>{reyes.lookAt=pq;}},
+   {who:'OFFICER REYES',text:'“Dispatch, twelve. I need county ID out to the Mill Creek works. Footwear impressions. Fresh.”',from:reyes,time:3.8,act:()=>{reyes.gest('radio');sound('squelch',reyes.pos,{gain:.4});}},
+   {who:'DISPATCH (RADIO)',text:'“Twelve, county ID is committed at Whippoorwill. Could be a couple hours.”',time:3,act:()=>reyes.gest(null)},{wait:1},
+   {who:'OFFICER REYES',text:'“…Ray. Where do they go?”',from:reyes,time:1.4},{who:'MR. BRANDT',text:'“Back under two-B. Toward Line Two.”',from:brandt,time:2},
+   {who:'MR. BRANDT',text:'“Line Two’s at the end. Come look. Stay on the walkway side.”',from:brandt,time:2.4,act:()=>{brandt.lookAt=null;const gr=WP(9.6,34.2);brandt.walk([[gr.x,gr.z]],{speed:.9,then:a=>{a.faceTo(WPa(WS.Jlamp).x,WPa(WS.Jlamp).z+3);}});
+    const rr=WP(8.4,33.6);later(.8,()=>{reyes.lookAt=null;reyes.walk([[WP(9,22).x,WP(9,22).z],[rr.x,rr.z]],{speed:.9,then:a=>{a.faceTo(WP(9,37).x,WP(9,37).z);a.gest('flashlight');}});});}}],
+   {then:()=>{C.low.stage='j';objective('Follow Brandt to Line Two.','The far end of the junction chamber.');follow(true);stand(jamie,null);for(const c of [jamie,sam])c.lookAt=null;}});}
+ function lookPrints(){if(C.looked.has('prints'))return;C.looked.add('prints');const q=WP(PRINTS_AT.x,PRINTS_AT.z,FLOOR.low);closeLook({x:q.x,y:q.y,z:q.z},{back:.55,eye:1.0,kind:'prints',floor:FLOOR.low});C.lookDur=6;mark('the prints, close');
+  say([{who:'',text:'Small. Narrower than yours. The checkerboard of the sole, sharp at the edges, still shining.',time:4},{who:'',text:'Whoever stood here was looking up.',time:2.6}]);}
  function updateLower(dt){const X=C.low;X.t+=dt;const p=me();
   if(X.stage==='j'&&near(WP(9,33),4.2))grilleStart();
-  if(X.stage==='j'&&C.t-(X.jAt??=C.t)>70&&!X.nudge&&!busy()){X.nudge=true;say([{who:'MR. BRANDT',text:'“Down here. Watch your step, it’s slick.”',from:brandt}]);}}
+  if(X.stage==='j'&&C.t-(X.jAt??=C.t)>70&&!X.nudge&&!busy()){X.nudge=true;say([{who:'MR. BRANDT',text:'“Down here. Watch your step, it’s slick.”',from:brandt}]);}
+  if(X.stage==='j'&&C.t-X.jAt>130)carry('line-two',WP(9,31.4),Math.PI,{after:grilleStart});}
  // ---- Line Two: the bell, the figure up the pipe, and the grille ----------------------------------------------------------------------------
  const AXSTAND={x:9.6,z:49.5};
  function grilleStart(){if(C.gr)return;go('e6-grille');checkpoint('c6-grille');C.gr={t:0,stage:'look',seen:0};mark('Line Two');
@@ -867,6 +901,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const cA=WPa(WS.cruiser);k.carA.show(true);k.carA.park(cA.x,cA.z,Math.PI*.98);k.carA.lights=true;k.carA.headlights=true;
   const b2=WP(31,14);k.carB.show(true);k.carB.park(b2.x,b2.z,Math.PI*.6);k.carB.lights=true;k.carB.headlights=false;
   const c3=WP(33,-10);car3.show(true);car3.park(c3.x,c3.z,-Math.PI*.4);car3.lights=true;car3.headlights=true;
+  works.prints.visible=false;// (the water came through the landing)
   rescue.g.visible=true;rescue.g.position.set(26,0,-15);rescue.g.rotation.y=Math.PI/2;works.ST.amber=true;
   const [f1,f2]=cast.fire;const q1=WP(22.8,-3.2),q2=WP(14.6,31.2);f1.show(true);f1.place(q1.x,q1.z,-Math.PI/2);f1.gest('fold');f2.show(true);f2.place(q2.x,q2.z,0);f2.gest('flashlight');
   const bq=WP(24.2,-11);brandt.show(true);brandt.place(bq.x,bq.z,Math.PI);brandt.gest('fold');
@@ -912,13 +947,14 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(d>.05&&p.walking&&(p.speed||0)>.3){C.splashT=(C.splashT||0)+dt*(p.speed||1);if(C.splashT>.55){C.splashT=0;sound('splash',{x:p.x,y:p.y??0,z:p.z},{gain:.25+d*.5});}}}
  // ---- the story never waits forever ---------------------------------------------------------------------------------------------------------------
  function landing(x,z){const ok=(a,b)=>nav.walkable(a,b,{r:.3});if(ok(x,z))return [x,z];for(let r=.5;r<=6;r+=.5)for(let i=0;i<16;i++){const t2=i/16*Math.PI*2,a=x+Math.sin(t2)*r,b=z+Math.cos(t2)*r;if(ok(a,b))return [a,b];}return [x,z];}
- function carry(why,q0,a,{after=null}={}){if(C.fadeOut>=0)return;C.flags['carried-'+why]=true;mark('carried on: '+why);C.fadeOut=0;
-  C.after=()=>{const r=o.roam,q=landing(q0.x,q0.z);o.placePlayer({x:q[0],z:q[1],a,mode:'walk',bike:{x:r.x,z:r.z,a:r.a}});
+ function carry(why,q0,a,{after=null}={}){if(C.fadeOut>=0)return;C.flags['carried-'+why]=true;mark('carried on: '+why);C.fadeOut=0;if(C.view==='camera')closeView();if(C.view==='look')endLook();
+  const w0=Array.isArray(q0)?{x:q0[0],z:q0[1]}:q0;
+  C.after=()=>{const r=o.roam,q=landing(w0.x,w0.z);o.placePlayer({x:q[0],z:q[1],a,mode:'walk',bike:{x:r.x,z:r.z,a:r.a}});
    const J=landing(q[0]-Math.sin(a)*1.3+Math.cos(a)*.9,q[1]+Math.cos(a)*1.3+Math.sin(a)*.9),Sq=landing(q[0]-Math.sin(a)*1.6-Math.cos(a)*.9,q[1]+Math.cos(a)*1.6-Math.sin(a)*.9);
    for(const [c,w] of [[jamie,J],[sam,Sq]]){if(c.gone)continue;const bk=c.bike.group.visible?{x:c.bx,z:c.bz,a:c.ba,kick:c.kick,fall:c.fall}:null;comp.putFoot(c,w[0],w[1],a,{bike:bk});c.follow=null;}
    C.fadeIn=0;after?.();if(C.match)for(const c of [jamie,sam])if(!c.gone&&!C.spot[c.key])c.follow='walk';};}
  // ---- the spots F works on ----------------------------------------------------------------------------------------------------------------------------
- function spots(){const out=[],ph=S.phase,p=me();if(C.view||C.fadeOut>=0||posed())return out;
+ function spots(){const out=[],ph=S.phase,p=me();if(C.view||C.fadeOut>=0||posed()||phys.playerBusy())return out;
   const add=(id,label,q,fc,r=2.4,o2={})=>out.push({id,label,at:q,face:fc||q,r,wide:true,...o2});
   if(ph==='d6-room'||ph==='d6-phone'){if(!C.flags.up)return out;
    // (a small room, everything within reach of everything: what you look at is what F takes)
@@ -934,11 +970,18 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(/^d6-(street|creek)$/.test(ph)&&!C.looked.has('corner')&&near(BW.corner,6))add('c6-corner','Look down Briarwood',BW.stop,BW.stop,6);
   if(ph==='e6-garage'){if(C.flags.camBack&&C.inv.camera!=='have')add('c6-camback','Take the camera',reyes.person.parts.rhand.getWorldPosition(new THREE.Vector3()),null,3);
    if(C.inv.plan&&!C.flags.planLook)add('c6-plan','Look at the plan',TL(-.05,-.02,.73),null,2.6,{look:true,size:.45,cone:.14});if(!C.looked.has('wx'))add('c6-wx','Listen to the weather radio',wxRadio.position,null,2.6,{look:true,size:.2,cone:.14});
-   if(C.rec?.stage==='go'){const car=k.carA;add('c6-car','Get in Reyes’s car',car.pos.clone().setY(car.pos.y+1),null,3.4);}}
+   if(C.rec?.stage==='go'){const car=k.carA;add('c6-car','Get in Reyes’s car',car.pos.clone().setY(car.pos.y+1),null,3.4);}
+   if(C.inv.plan&&!C.looked.has('file')&&folderP.state==='placed'&&folderP.obj.visible)add('c6-file','Read the photocopies',folderP.obj.getWorldPosition(new THREE.Vector3()),null,2.6,{look:true,size:.24,cone:.12});}
   if(/^e6-/.test(ph)&&ph!=='e6-garage'){if(C.wk?.stage==='lights'&&!C.inv.flashlight)add('c6-light','Take the flashlight',brandt.person.parts.rhand.getWorldPosition(new THREE.Vector3()),null,3);
    if(!C.looked.has('channel')&&near(WS.channel?WP(8,-20):WP(8,-20),4))add('c6-channel','Look at the channel',WP(7,-20,-1.5),null,4);
-   if(ph==='e6-house'||ph==='e6-yard'){if(C.wk?.stage==='house'&&!C.flags.helmetSeen)add('c6-helmet','Look at the helmet',WP(WS.helmet[0],WS.helmet[1],FLOOR.house+.9),null,2.4,{look:true,size:.3,cone:.14});if(C.wk?.stage==='house'||C.wk?.stage==='down')if(!C.flags.logSeen)add('c6-log','Read the gate log',WP(WS.log[0],WS.log[1],FLOOR.house+.8),null,2.4,{look:true,size:.26,cone:.14});}
-   if(ph==='e6-gallery'&&C.gal?.echo&&!C.looked.has('speaker'))add('c6-speaker','Look at the speaker',WP(8,-13.6,FLOOR.gallery+1.9),null,2.6);}
+   if((ph==='e6-house'||ph==='e6-yard')&&zone()==='house'){if(C.wk?.stage==='house'&&!C.flags.helmetSeen)add('c6-helmet','Look at the helmet',WP(WS.helmet[0],WS.helmet[1],FLOOR.house+.9),null,2.4,{look:true,size:.3,cone:.14});if(C.wk?.stage==='house'||C.wk?.stage==='down')if(!C.flags.logSeen)add('c6-log','Read the gate log',WP(WS.log[0],WS.log[1],FLOOR.house+.8),null,2.4,{look:true,size:.26,cone:.14});}
+   if(ph==='e6-gallery'&&C.gal?.echo&&!C.looked.has('speaker'))add('c6-speaker','Look at the speaker',WP(8,-13.6,FLOOR.gallery+1.9),null,2.6);
+   // (what there is to look at, if you look: the bar screen from the yard, the switchgear, the gauges)
+   const z0=zone();
+   if(!C.looked.has('rack')&&(z0==='yard')&&near(WP(7.6,-24.6),5))add('c6-rack','Look at the bar screen',WP(4,-24.6,-2.6),null,5.5,{look:true,size:1.6,cone:.08});
+   if(!C.looked.has('panel')&&z0==='house'&&C.wk?.stage!=='lights')add('c6-panel','Look at the switchgear',WP(WS.panel[0],WS.panel[1]+.1,FLOOR.house+1.55),null,2.8,{look:true,size:.9,cone:.06});
+   if(!C.looked.has('gauge')&&(z0==='gallery'||z0==='bridge')&&ph==='e6-gallery')add('c6-gauge','Look at the staff gauge',WP(.5,-1.6,FLOOR.bed+2.6),null,8.5,{look:true,size:.5,cone:.05});
+   if(!C.looked.has('prints')&&works.prints.visible&&(z0==='L'||z0==='stair2')&&C.low?.stage!=='gate')add('c6-prints','Look at the footprints',WP(PRINTS_AT.x,PRINTS_AT.z,FLOOR.low),null,2.6,{look:true,size:.35,cone:.12});}
   const lk=(size,cone=.14)=>({look:true,size,cone});
   if(ph==='n6-hold'||ph==='n6-double'){if(C.hold?.stage==='pin'&&!C.inv.pin)add('c6-pin','Pull the locking pin',new THREE.Vector3(works.pinAt.stow.x,works.pinAt.stow.y,works.pinAt.stow.z),null,2,lk(.2,.2));
    if(C.inv.pin==='hand')add('c6-insert','Push the pin through the guide',new THREE.Vector3(works.pinAt.hole.x,works.pinAt.hole.y,works.pinAt.hole.z),null,1.9,lk(.2,.2));
@@ -959,6 +1002,21 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   else if(id==='c6-corner'){C.looked.add('corner');say([{who:'',text:'He rang twice. He always rang twice.',time:2.8}]);}
   else if(id==='c6-camback')takeCameraBack();else if(id==='c6-plan')lookPlan();else if(id==='c6-car')toWorks();
   else if(id==='c6-wx'){C.looked.add('wx');say([{who:'WEATHER RADIO',text:'“…stay out of low-lying areas and away from drainage channels. Turn around, don’t drown…”',time:3.6}]);}
+  else if(id==='c6-prints')lookPrints();
+  else if(id==='c6-file'){C.looked.add('file');const q=TL(-.55,.1,.74);closeLook({x:q.x,y:q.y,z:q.z},{back:.5,eye:1.3,kind:'file',floor:drive(0,0).y});C.lookDur=15;mark('the photocopies');
+   say([{who:'',text:'Photocopies. “Supplementary report, case 91-0821.” Typed. A coffee ring through the middle of it.',time:4.2},
+    {who:'',text:'“8/27. 0640. Isolation gate 2B found open. Padlock missing. K-9 would not enter Line Two.”',time:4.4},
+    {who:'',text:'Under it, the township blotter. August 23, 1966. “2350. Bicycle bell heard at the Mill Street culvert. W. Keller.”',time:4.8},
+    ...(Math.hypot(sam.px-me().x,sam.pz-me().z)<4?[{who:'SAM',text:'“A bell. Twice. That’s what Alex did.”',by:'sam',time:2}]:[])]);}
+  else if(id==='c6-rack'){C.looked.add('rack');const q=WP(4,-24.6,-2.6);closeLook({x:q.x,y:q.y,z:q.z},{back:4.6,eye:1.5,kind:'rack'});C.lookDur=8;
+   say([{who:'',text:'The bar screen, steel bars slanting into the brown water. Leaves. A tire. A cooler lid. Sticks packed in like a beaver dam.',time:4.6},
+    {who:'MR. BRANDT',text:'“That’s where it was. Hung on the bars by the strap, like somebody hung it there.”',from:brandt,time:3.4,act:()=>{brandt.lookAt=q;}}]);}
+  else if(id==='c6-panel'){C.looked.add('panel');const q=WP(WS.panel[0],WS.panel[1]+.1,FLOOR.house+1.55);closeLook({x:q.x,y:q.y,z:q.z},{back:1.3,eye:1.5,kind:'panel',floor:FLOOR.house});C.lookDur=8;
+   say([{who:'',text:'Green steel doors, stenciled. MAIN. 2A. 2B. PUMP. The handle under 2B is padlocked down.',time:4},
+    {who:'MR. BRANDT',text:'“Two-B’s on its own breaker. If the main goes, the brake is all that holds her up.”',from:brandt,time:3.2}]);}
+  else if(id==='c6-gauge'){C.looked.add('gauge');const q=WP(.5,-1.6,FLOOR.bed+2.6);closeLook({x:q.x,y:q.y,z:q.z},{back:6.2,eye:1.45,kind:'gauge',floor:FLOOR.gallery});C.lookDur=7;
+   say([{who:'',text:'The staff gauge on the pier. The brown water is over the five-foot mark, and moving fast.',time:3.6},
+    {who:'SAM',text:'“It was under four when we came in. I looked.”',by:'sam',time:2,face:'concerned'}]);}
   else if(id==='c6-light')takeLight();else if(id==='c6-channel')lookChannel();else if(id==='c6-helmet')lookHelmet();else if(id==='c6-log')lookLog();else if(id==='c6-speaker')lookSpeaker();
   else if(id==='c6-pin')pullPin();else if(id==='c6-insert')tryPin();else if(id==='c6-crank')crank();
   else if(id==='c6-bang')sealedAct('bang');else if(id==='c6-pull')sealedAct('pull');else if(id==='c6-port')sealedAct('port');else if(id==='c6-crank2')sealedAct('crank');
@@ -1089,7 +1147,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(section==='c6-camera'){return;}
    C.inv.camera='have';home.cameraOnDesk(false);ff('reviewed');C.reviewAt=C.t-10;hh(HOUR.phone);ringPhone();quiet();return;}
   ff('awake','up','reviewed','ring','answered','called');C.inv.camera='have';home.cameraOnDesk(false);
-  if(section==='c6-ride'){hh(HOUR.ride);const st=HS.stoop,bk=main(home.P.drivD+1,home.P.side*9.4),road=main(home.P.drivD+1,0);o.placePlayer({x:st.x,z:st.z,a:headingTo(st.x,st.z,road.x,road.z),mode:'walk',bike:{x:bk.x,z:bk.z,a:headingTo(bk.x,bk.z,road.x,road.z)}});
+  if(section==='c6-ride'){hh(HOUR.ride);const [sx,sz]=landing(HS.stoop.x,HS.stoop.z),bk=main(home.P.drivD+1,home.P.side*9.4),road=main(home.P.drivD+1,0);o.placePlayer({x:sx,z:sz,a:headingTo(sx,sz,road.x,road.z),mode:'walk',bike:{x:bk.x,z:bk.z,a:headingTo(bk.x,bk.z,road.x,road.z)}});
    boysAtSams();meetingStage(true);go('d6-ride');objective('Ride to Sam’s.','Oak Hollow, toward the oak. The ranch with the blue garage trim.');return;}
   // ---- Sam's garage ----
   const atMeeting=()=>{boysAtSams();meetingStage(true);const q=mp('you'),bk=drive(1.3,5.4);o.placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,TL(0,0).x,TL(0,0).z),mode:'walk',bike:{x:bk.x,z:bk.z,a:driveA(1.3,5.4)}});};
@@ -1104,7 +1162,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   // ---- the streets ----
   if(ix<=SECTIONS6.indexOf('c6-oak')){hh(HOUR.oak);const s0=LOOK.stop;o.placePlayer({x:s0.x,z:s0.z,a:headingTo(s0.x,s0.z,LOOK.oak.x,LOOK.oak.z),mode:'walk',bike:{x:main(LOOKOUT.stop.d-1,-1.6).x,z:main(LOOKOUT.stop.d-1,-1.6).z,a:headingTo(s0.x,s0.z,LOOK.oak.x,LOOK.oak.z)}});
    const jb=main(LOOKOUT.stop.d-2,1.5),sb=main(LOOKOUT.stop.d-3,-2.8);comp.putFoot(jamie,jb.x+.8,jb.z,headingTo(jb.x,jb.z,LOOK.oak.x,LOOK.oak.z),{bike:{x:jb.x,z:jb.z,a:headingTo(jb.x,jb.z,LOOK.oak.x,LOOK.oak.z),kick:1}});
-   comp.putFoot(sam,sb.x-.8,sb.z,headingTo(sb.x,sb.z,LOOK.oak.x,LOOK.oak.z),{bike:{x:sb.x,z:sb.z,a:headingTo(sb.x,sb.z,LOOK.oak.x,LOOK.oak.z),kick:1}});follow(true);go('d6-oak');C.oak={t:0};oakTalk();quiet();oakTalk();return;}
+   comp.putFoot(sam,sb.x-.8,sb.z,headingTo(sb.x,sb.z,LOOK.oak.x,LOOK.oak.z),{bike:{x:sb.x,z:sb.z,a:headingTo(sb.x,sb.z,LOOK.oak.x,LOOK.oak.z),kick:1}});follow(true);go('d6-oak');C.oak={t:0};quiet();oakTalk();return;}
   ff('oakDone');
   const onStreet=(d,a=Math.PI)=>{const q=main(d,-2.4),hd2=headingTo(q.x,q.z,main(d-10,-2.4).x,main(d-10,-2.4).z);o.placePlayer({x:q.x,z:q.z,a:hd2,mode:'ride',speed:2.5});const j=main(d+3.5,-1.4),s=main(d+5.5,-3);comp.putRiding(jamie,j.x,j.z,hd2,2.5);comp.putRiding(sam,s.x,s.z,hd2,2.5);follow(true);jamie.follow='ride';sam.follow='ride';void a;};
   if(section==='c6-street'){hh(HOUR.oak+.2);onStreet(900);go('d6-street');C.st={t:0};objective('Meet Officer Reyes at Briarwood.','Back down Oak Hollow, where Alex turned.');return;}
@@ -1133,9 +1191,10 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(section==='c6-gallery'||section==='c6-radio'){hh(HOUR.works+.16);inGallery(8,4);brandt.place(WPa(WS.L).x,WPa(WS.L).z,0);reyes.place(WPa(WS.L).x-.8,WPa(WS.L).z,0);go('e6-yard');C.wk={t:60,stage:'down'};galleryStart();if(section==='c6-radio'){C.gal.t=33;C.gal.flick=true;}quiet();return;}
   ff('radio');C.gal={t:99,flick:true,radio:true,echo:true,down:true,downAt:C.t};
   works.WATER.chan.want=works.WATER.chan.y=-4.0;C.stormTo=C.storm=.85;C.rainTo=C.rain=.8;
+  works.prints.visible=true;
   if(section==='c6-lower'){hh(HOUR.works+.3);const q=WP(8,15.4);o.placePlayer({x:q.x,z:q.z,a:Math.PI,mode:'walk',bike:{x:WP(40,8).x,z:WP(40,8).z,a:0}});comp.putFoot(jamie,WP(8,13.4).x,WP(8,13.4).z,Math.PI,{bike:null});comp.putFoot(sam,WP(8,12.6).x,WP(8,12.6).z,Math.PI,{bike:null});
    reyes.place(WPa(WS.L).x-.8,WPa(WS.L).z,0);brandt.place(WPa(WS.L).x+.6,WPa(WS.L).z+1.2,0);go('e6-gallery');follow(true);quiet();lowerStart();return;}
-  C.low={t:90,stage:'j'};ff('plate');
+  C.low={t:90,stage:'j'};ff('plate');works.prints.visible=true;
   const inJ=(z,a=Math.PI)=>{const q=WP(9,z);o.placePlayer({x:q.x,z:q.z,a,mode:'walk',bike:{x:WP(40,8).x,z:WP(40,8).z,a:0}});comp.putFoot(jamie,WP(8.4,z+.9).x,WP(8.4,z+.9).z,a,{bike:null});follow(true);};
   const samAtPlate=()=>{const sp=WP(GATE.sam.x,GATE.sam.z);comp.putFoot(sam,sp.x,sp.z,headingTo(sp.x,sp.z,WP(GATE.lever.x+.1,GATE.z+.21).x,WP(GATE.lever.x+.1,GATE.z+.21).z),{bike:null});stand(sam,[sp.x,sp.z],{look:()=>WP(GATE.lever.x+.1,GATE.z+.21,FLOOR.low+1.55),keep:true,max:.6,leash:40});};
   if(section==='c6-grille'||section==='c6-grate-scare'){hh(HOUR.works+.42);inJ(31.6);samAtPlate();brandt.place(WP(9.6,34.2).x,WP(9.6,34.2).z,0);reyes.place(WP(8.4,33.6).x,WP(8.4,33.6).z,0);reyes.gest('flashlight');go('e6-lower');quiet();grilleStart();
@@ -1173,7 +1232,8 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   canDismount:()=>!posed()&&!C.view&&S.phase!=='c6-black'&&!inWorks()&&!(nav.room===home.nav),
   canRemount:()=>!C.view&&!posed()&&!inWorks()&&!/^(d6-(room|phone|meet)|e6-garage)$/.test(S.phase)&&!(S.phase==='d6-jamie'),
   closeBag:()=>{if(inv.isOpen){inv.close();return true;}return false;},inventoryReady:()=>owns(S.phase)&&S.phase!=='c6-black',
-  C,home,works,cast,props,storm,inv,FIREPIC,firePicture,silInView,sky,WP,TL,SHIRT,PIN,car3,rescue,brain});
+  C,home,works,cast,props,storm,inv,FIREPIC,firePicture,silInView,sky,WP,TL,SHIRT,PIN,car3,rescue,brain,
+  JAM:{door:JDOOR,step:JSTEP,foyer:JFOYER,drive:JDRIVE,bike:JBIKE},BW,LOOK,GRILLE_Z,AXSTAND});
  Object.defineProperties(A6,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,inv:{...C.inv},looked:[...C.looked].sort(),
    zone:zone(p),gate:{gap:+works.GS.gap.toFixed(3),mode:works.GS.mode,held:works.GS.held},water:Object.fromEntries(Object.entries(works.WATER).map(([kk,w])=>[kk,+w.y.toFixed(3)])),power:works.ST.power,

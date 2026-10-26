@@ -326,6 +326,18 @@ export function createWorks({scene,camera,sfx=()=>{}}){
   {const b=S.cyl(new THREE.Group(),0,0,0,.14,.3,new THREE.MeshStandardMaterial({color:0xd8d040,roughness:.6}));const g=b.parent;add(g,'J',10.8,27,0);}
   {const g=new THREE.Group();S.cyl(g,0,0,0,.1,.06,new THREE.MeshStandardMaterial({color:0xb02a2a,roughness:.5}));add(g,'L',8,19,0);}}
  // ---- merge what doesn't move -----------------------------------------------------------------------------------------------
+ // ---- wet footprints in the landing: a kid's sneakers (the checkerboard sole), out from under 2B to the foot of the stairs, a pair
+ // side by side there facing up toward the gallery, and back. Fresh: everything else down here is dry. (Shown from the moment
+ // the boys are told to come down; nobody sees them appear.)
+ const prints=new THREE.Group();prints.name='landing-prints';prints.visible=false;root.add(prints);keep.add(prints);
+ {const tex=paper(64,160,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='rgba(20,18,16,.95)';g.beginPath();g.ellipse(w/2,h*.3,w*.42,h*.27,0,0,7);g.fill();g.beginPath();g.ellipse(w/2,h*.78,w*.34,h*.19,0,0,7);g.fill();
+   g.globalCompositeOperation='destination-out';for(let y=8;y<h-6;y+=9)for(let x=6+((y/9)%2)*7;x<w-4;x+=14){g.fillStyle='rgba(0,0,0,.55)';g.fillRect(x,y,6,6);}});
+  const mat=new THREE.MeshStandardMaterial({color:0x1a1714,map:tex,transparent:true,opacity:.62,roughness:.12,metalness:0,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2});mat.name='wet-print';
+  const geo=new THREE.PlaneGeometry(.1,.25);geo.rotateX(-Math.PI/2);
+  const put=(x,z,a,s=1)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,FLOOR.low+.006,z);m.rotation.y=a;m.scale.set(s,1,1);prints.add(m);};
+  // out: from the gate to the stairs (heading -z), left and right; the pair at the bottom step; back, a little to the side
+  const walk=(x0,z0,x1,z1,off)=>{const n=Math.round(Math.hypot(x1-x0,z1-z0)/.34),a=Math.atan2(x1-x0,z1-z0)+Math.PI;for(let i=0;i<n;i++){const t=i/n,x=x0+(x1-x0)*t,z=z0+(z1-z0)*t,sd=i%2?1:-1;put(x+Math.cos(a)*.09*sd+off,z-Math.sin(a)*.09*sd,a,sd);}};
+  walk(9.2,22.5,8.25,17.25,0);put(7.88,16.95,Math.PI,-1);put(8.12,16.95,Math.PI,1);walk(8.6,17.35,9.6,22.5,0);}
  const batches=bake(root,keep);
  for(const L of POOL)root.add(L);
  // ---- state --------------------------------------------------------------------------------------------------------------------------
@@ -396,11 +408,13 @@ export function createWorks({scene,camera,sfx=()=>{}}){
   return groundAt(q.x,q.z);}
  // (walking: in a place, clear of what stands there; through 2B only with the leaf high enough (low: only ducking); in J and L not
  // where the water is deeper than a kid can stand in)
+ function stand(x,z){const Z=zoneAt(x,z,0);if(!Z)return false;if(Z==='gate'&&GS.gap<(nav.ducking?1.02:1.45))return false;
+  if((Z==='J'||Z==='gate')&&WATER.J.y-FLOOR.low>1.05)return false;if(Z==='L'&&WATER.L.y-FLOOR.low>1.05)return false;return true;}
  const nav={inside:(x,z)=>{const q=toLocal(x,z);return q.x>BOX.x0&&q.x<BOX.x1&&q.z>BOX.z0&&q.z<BOX.z1;},
-  walkable:(x,z,r=.28)=>{const q=toLocal(x,z),Z=zoneAt(q.x,q.z,r);if(!Z)return false;if(inO(q.x,q.z,r))return false;
-   if(Z==='gate'){if(GS.gap<(nav.ducking?1.02:1.45))return false;}
-   if((Z==='J'||Z==='gate')&&WATER.J.y-FLOOR.low>1.05)return false;if(Z==='L'&&WATER.L.y-FLOOR.low>1.05)return false;
-   return true;},
+  // (the body's whole footprint on open floor: the point and eight round it, each in some place, so where two places join,
+  // a door, the top of a flight of stairs, there is no seam)
+  walkable:(x,z,r=.28)=>{const q=toLocal(x,z);if(!stand(q.x,q.z)||inO(q.x,q.z,r))return false;
+   if(r>0)for(let i=0;i<8;i++){const a=i*Math.PI/4;if(!stand(q.x+Math.cos(a)*r,q.z+Math.sin(a)*r))return false;}return true;},
   floorAt,heading:0,ducking:false};
  // the dark under the ground (0 outside, 1 below): for the light, the rain and the sound
  function cave(x,z){const q=toLocal(x,z),Z=zoneAt(q.x,q.z,0);if(Z==='house'||Z==='door')return .42;if(Z==='stair1')return lerp(1,.42,clamp((q.x-9.5)/4.75,0,1));if(Z==='gallery'||Z==='bridge'||Z==='stair2'||Z==='L'||Z==='J'||Z==='gate')return 1;return 0;}
@@ -408,10 +422,10 @@ export function createWorks({scene,camera,sfx=()=>{}}){
  function blockers(out){if(GS.gap<1.02){const c=local(9,GATE.z);for(const dx of [-1,0,1])out.push({x:c.x+dx,z:c.z,r:.5,speed:0});}}
  function attach(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();}
  function reset(){Object.assign(GS,{gap:GATE.open,v:0,mode:'up',held:false,pinned:false,slamAt:-1,crankUp:0,port:0,portOpen:false,lever:0});Object.assign(ST,{power:true,alarm:0,t:0,southGate:0,cover:0,grille:0,grilleShake:0,grilleLock:true,wheelSpin:0,amber:false});
-  for(const w of Object.values(WATER)){w.y=w.want=w===WATER.chan?-4.8:FLOOR.low-.03;w.rate=.05;}for(const L of lampOrder){L.level=L.want=0;L.flick=0;}for(const P of POOL)P.intensity=0;pinTo('stow');nav.ducking=false;place();}
+  for(const w of Object.values(WATER)){w.y=w.want=w===WATER.chan?-4.8:FLOOR.low-.03;w.rate=.05;}for(const L of lampOrder){L.level=L.want=0;L.flick=0;}for(const P of POOL)P.intensity=0;pinTo('stow');nav.ducking=false;prints.visible=false;place();}
  reset();
  function setLamp(id,want,{rate=4,flick=0}={}){const L=LAMPS[id];if(L){L.want=want;L.rate=rate;L.flick=flick;}}
  function lamps(zone,want,o){for(const L of lampOrder)if(!L.emerg&&(zone==='*'||L.zone===zone||L.id.startsWith(zone)))setLamp(L.id,want,o);}
- return {root,GS,ST,WATER,LAMPS,POOL,nav,cave,zoneAt:(wx,wz,r=0)=>{const q=toLocal(wx,wz);return zoneAt(q.x,q.z,r);},blockers,attach,reset,update,setLamp,lamps,pinTo,pinAt,leaf,lever,pin,crank,grille,cover,southGate,shutter,truck,batches,
+ return {root,GS,ST,WATER,LAMPS,POOL,nav,cave,zoneAt:(wx,wz,r=0)=>{const q=toLocal(wx,wz);return zoneAt(q.x,q.z,r);},blockers,attach,reset,update,setLamp,lamps,pinTo,pinAt,leaf,lever,pin,crank,grille,cover,southGate,shutter,truck,batches,prints,
   forest,trees:trees.length,mainGates,wheels,local,toLocal,groundAt};
 }
