@@ -25,7 +25,9 @@ function merge(group){group.updateMatrixWorld(true);const p=[],n=[],u=[];
   p.push(...a.position.array);n.push(...a.normal.array);if(a.uv)u.push(...a.uv.array);else for(let i=0;i<a.position.count;i++)u.push(0,0);g.dispose();});
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(u,2));g.computeBoundingSphere();return g;
 }
-export function createPineForest(trees,parent){
+// place(t): where a tree stands ({x,y,z} in the world) for a forest somewhere other than Pine Ridge (Chapter Six's creek valley);
+// without it, as always, Pine Ridge's plan point and ground.
+export function createPineForest(trees,parent,place=null){
  const K=createKit(),time={value:0},bark=pineMaterial(0x645747,'wood'),leaves=[true,false].map(pine=>{
   const m=new THREE.MeshStandardMaterial({color:pine?0x9aa879:0xabb781,emissive:pine?0x566146:0x5e6944,emissiveIntensity:.16,map:foliageTexture(pine),alphaTest:.38,side:THREE.DoubleSide,roughness:1});
   m.onBeforeCompile=s=>{s.uniforms.c5Wind=time;s.vertexShader='uniform float c5Wind;\n'+s.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
@@ -59,7 +61,7 @@ export function createPineForest(trees,parent){
  for(const [key,ts] of cells){const v=+key.split(':')[2];for(let lod=0;lod<3;lod++){const p=prototypes[v][lod];
   for(const [geo,mat,foliage] of [[p.wood,bark,false],[p.leaf,leaves[p.pine?0:1],true]]){
    const mesh=new THREE.InstancedMesh(geo,mat,ts.length);mesh.name=foliage?'pine-needle-canopy':'pine-bark-trunks';mesh.castShadow=lod===0;mesh.receiveShadow=true;mesh.userData.c5Lod=lod;
-   for(let i=0;i<ts.length;i++){const t=ts[i],q=PW(t.e,t.n),j=(t.seed%97)/97;dummy.position.set(q.x,heightAt(q.x,q.z)-.04,q.z);dummy.rotation.set(0,t.seed*.01,0);dummy.scale.set(t.size*(.9+j*.18),t.size*(.92+j*.16),t.size);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);color.setScalar(.83+j*.26);mesh.setColorAt(i,color);}
+   for(let i=0;i<ts.length;i++){const t=ts[i],q=place?place(t):PW(t.e,t.n),j=(t.seed%97)/97;dummy.position.set(q.x,(place?q.y:heightAt(q.x,q.z))-.04,q.z);dummy.rotation.set(0,t.seed*.01,0);dummy.scale.set(t.size*(.9+j*.18),t.size*(.92+j*.16),t.size);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);color.setScalar(.83+j*.26);mesh.setColorAt(i,color);}
    mesh.computeBoundingSphere();mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;parent.add(mesh);batches.push(mesh);geometryBytes+=mesh.instanceMatrix.array.byteLength+mesh.instanceColor.array.byteLength;
   }
  }}

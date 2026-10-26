@@ -245,6 +245,21 @@ export function createAudio({context=null,random=Math.random}={}){
   blinds(t,o){for(let k=0;k<8;k++)burst(t+k*.03+random()*.01,.02,.03,'bandpass',3200+random()*1800,3,o);},
   thud(t,o){burst(t,.12,.12,'lowpass',260,.8,o);tone(70,t,.2,.08,'sine',o,48);},
  });
+ // Chapter Six: a 2011 cordless phone ringing, the storm, the works (its gate, its grille, its alarm), a radio's squelch.
+ Object.assign(SFX,{
+  phoneRing(t,o){for(let k=0;k<24;k++){const f=k%2?1318:1046,a=t+k*.05;const c=shot(ctx.createOscillator()),g=gain(),b=filt('bandpass',1300,1.2);c.type='square';c.frequency.setValueAtTime(f,a);env(g,a,.004,.035,.045,'lin');c.connect(b).connect(g).connect(o);c.start(a);c.stop(a+.06);}},
+  c6Thunder(t,o){const n=shot(ctx.createBufferSource());n.buffer=noise;n.loop=true;const lp=filt('lowpass',140,.7),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.32,t+.6);g.gain.linearRampToValueAtTime(.22,t+1.4);g.gain.linearRampToValueAtTime(.3,t+2.1);g.gain.exponentialRampToValueAtTime(.001,t+5.5);n.connect(lp).connect(g).connect(o);n.start(t,random()*2);n.stop(t+5.6);
+   for(let k=0;k<5;k++)burst(t+.4+k*.7+random()*.3,.5,.08,'lowpass',260,.7,o);},
+  c6Crack(t,o){burst(t,.05,.5,'highpass',900,.6,o);burst(t+.02,.3,.4,'lowpass',1800,.7,o);tone(48,t,1.2,.35,'sine',o,30);const n=shot(ctx.createBufferSource());n.buffer=noise;n.loop=true;const lp=filt('lowpass',200,.7),g=gain();g.gain.setValueAtTime(.4,t+.05);g.gain.exponentialRampToValueAtTime(.001,t+4.5);n.connect(lp).connect(g).connect(o);n.start(t,random()*2);n.stop(t+4.6);},
+  c6Slam(t,o){tone(42,t,1.4,.5,'sine',o,28);burst(t,.18,.6,'lowpass',900,.6,o);for(const [f,v,d] of [[231,.09,2.2],[473,.06,1.6],[918,.035,1.1],[1640,.02,.7]])tone(f,t+.005,d,v,'sine',o,f*.985);burst(t+.03,.5,.2,'bandpass',700,.6,o);burst(t+.08,.8,.12,'highpass',1500,.5,o);},
+  c6Grate(t,o){burst(t,.08,.55,'lowpass',1500,.6,o);tone(60,t,.4,.28,'sine',o,40);for(let k=0;k<11;k++){const a=t+.02+k*.045+random()*.02;burst(a,.04,.22/(1+k*.35),'bandpass',1800+random()*2200,3.5,o);tone(900+random()*1400,a,.25,.03/(1+k*.3),'sine',o);}tone(311,t,1.1,.06,'sine',o,305);tone(622,t,.7,.03,'sine',o);},
+  c6Horn(t,o){for(const f of [415,523]){const c=shot(ctx.createOscillator()),g=gain(),b=filt('bandpass',900,1.4);c.type='square';c.frequency.setValueAtTime(f,t);env(g,t,.05,.07,1.1,'lin');c.connect(b).connect(g).connect(o);c.start(t);c.stop(t+1.25);}},
+  c6Clank(t,o){burst(t,.02,.35,'bandpass',3200,4,o);tone(2210,t,.35,.06,'sine',o,2180);tone(1290,t,.22,.05,'sine',o);burst(t,.06,.15,'lowpass',600,.8,o);},
+  c6Grind(t,o){for(let k=0;k<26;k++)burst(t+k*.032+random()*.01,.03,.08*(1-k/30),'bandpass',380+random()*260,2,o);tone(64,t,.9,.1,'sawtooth',o,58);},
+  c6Splash(t,o){burst(t,.35,.32,'bandpass',700,.6,o);burst(t+.04,.5,.15,'highpass',2400,.5,o);for(let k=0;k<6;k++)burst(t+.12+k*.06+random()*.04,.08,.05,'bandpass',1200+random()*1800,1.5,o);},
+  c6Static(t,o){burst(t,.04,.12,'highpass',1600,.7,o);const n=shot(ctx.createBufferSource());n.buffer=noise;n.loop=true;const b=filt('bandpass',2400,.8),g=gain();g.gain.setValueAtTime(.05,t);g.gain.linearRampToValueAtTime(.03,t+.35);g.gain.linearRampToValueAtTime(0,t+.45);n.connect(b).connect(g).connect(o);n.start(t,random()*2);n.stop(t+.5);tone(1180,t,.05,.015,'square',o);},
+  c6Hit(t,o){burst(t,.06,.4,'lowpass',700,.7,o);tone(85,t,.25,.18,'sine',o,50);burst(t+.01,.03,.12,'bandpass',2600,2,o);},
+ });
  // A speech-like on/off pattern for voices heard through a radio or a wall.
  // The syllable phase is accumulated from a slowly wandering rate. (It used to be the clock times
  // that rate, whose real frequency grows with the clock: by the time you reach the friends' windows
@@ -280,6 +295,14 @@ export function createAudio({context=null,random=Math.random}={}){
   if(kind==='hum'){const a=ctx.createOscillator(),b=ctx.createOscillator();a.frequency.value=120;b.frequency.value=240;a.connect(gain(.6)).connect(out);b.connect(gain(.25)).connect(out);a.start();b.start();return {out,pan,vol:.012,ref:3,far:30};}
   if(kind==='sprinkler'){const g2=gain(1);g2.connect(out);let ph=0,back=0;return {out,pan,vol:.06,ref:6,far:60,update(s2,t,dist,dt){ph+=dt;if(back>0){back-=dt;if(Math.floor(back*30)!==Math.floor((back+dt)*30))burst(t,.015,.25,'highpass',2600,.7,g2);return;}
     if(ph>.16){ph=0;burst(t,.03,.6,'highpass',2400,.7,g2);if(random()<.04)back=1.2;}}};}
+  // Chapter Six: rain on everything (a wide hiss and its patter), the river in the works (a roar that rises with the level),
+  // the works' alarm horn (on and off), a standby generator.
+  if(kind==='rain'){const a=src(),b=src(),ga=gain(.7),gb=gain(0);a.connect(filt('highpass',900,.4)).connect(filt('lowpass',7200,.5)).connect(ga).connect(out);b.connect(filt('bandpass',2600,1.6)).connect(gb).connect(out);
+   return {out,pan,vol:.07,ref:9999,far:99999,steady:true,update(s2,t,dist,dt){for(let k=0;k<3;k++)if(random()<dt*40*(s2.level||0)){gb.gain.setValueAtTime(.4+random()*.4,t+random()*.03);gb.gain.exponentialRampToValueAtTime(.01,t+.05);}}};}
+  if(kind==='surge'){const a=src(),b=src(),ga=gain(.8),gb=gain(.3);a.connect(filt('lowpass',420,.6)).connect(ga).connect(out);b.connect(filt('bandpass',1100,.6)).connect(gb).connect(out);let ph=random()*9;
+   return {out,pan,vol:.11,ref:10,far:120,update(s2,t,dist,dt){ph+=dt;ga.gain.setTargetAtTime(.6+.25*Math.sin(ph*.9)+.15*Math.sin(ph*2.7),t,.2);gb.gain.setTargetAtTime(.25+.2*Math.sin(ph*1.9+1),t,.15);}};}
+  if(kind==='alarm'){const g2=gain(1);g2.connect(out);let ph=0;return {out,pan,vol:.09,ref:12,far:200,update(s2,t,dist,dt){ph+=dt;if(ph>1.6){ph=0;SFX.c6Horn(t,g2);}}};}
+  if(kind==='generator'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=29;const lp=filt('lowpass',160);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('bandpass',300,.9)).connect(gain(.25)).connect(out);return {out,pan,vol:.08,ref:8,far:90};}
   if(kind==='mower'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=96;const lp=filt('lowpass',650),am=gain(.6),lfo=ctx.createOscillator(),d=gain(.35);lfo.frequency.value=7;lfo.connect(d).connect(am.gain);o.connect(lp).connect(am).connect(out);o.start();lfo.start();const n=src();n.connect(filt('bandpass',400,.8)).connect(gain(.2)).connect(out);return {out,pan,vol:.09,ref:40};}
   const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=48;const lp=filt('lowpass',320);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('lowpass',500)).connect(gain(.25)).connect(out);return {out,pan,vol:.18,ref:10};}
  return {ensure,setEnabled,setVolume,sfx,bell,bell3,voice,recording,stopRecording,memory,indoors,footstep,call,callName,ending,leaving,reset,update,REC,get loops(){return loops;},get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;},get body(){return {...body};},get phone(){return phone;}};

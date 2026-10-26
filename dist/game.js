@@ -20,6 +20,7 @@ import {createChapter2} from './chapter2.js';
 import {createChapter3} from './chapter3.js';
 import {createChapter4} from './chapter4.js';
 import {createChapter5} from './chapter5.js';
+import {createChapter6} from './chapter6.js';
 import {createTension} from './tension.js';
 import {createCaptionTone} from './captions.js';
 import {createDevChapters,DEV_SCENES} from './dev-chapters.js';// TEMPORARY: private playtest build only
@@ -36,8 +37,8 @@ scene.fog=new THREE.FogExp2(0xe3ac8d,.008);
 const hemi=new THREE.HemisphereLight(0xe8e3d3,0x68675d,2.0);scene.add(hemi);
 const sunlight=new THREE.DirectionalLight(0xffd09b,2.7);sunlight.castShadow=true;sunlight.shadow.mapSize.set(2048,2048);Object.assign(sunlight.shadow.camera,{left:-60,right:60,top:60,bottom:-60,near:1,far:240});sunlight.shadow.bias=-.0005;sunlight.shadow.normalBias=.023;sunlight.shadow.camera.layers.enable(1);scene.add(sunlight,sunlight.target);// layer 1: the world's merged shadow proxies
 // A real-time sky, shifting from late afternoon into the blue of a remembered evening; stars wait for the very end.
-const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{dusk:{value:0},night:{value:0},day:{value:0}},vertexShader:'varying vec3 v; void main(){v=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
- fragmentShader:`varying vec3 v;uniform float dusk,night,day;
+const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{dusk:{value:0},night:{value:0},day:{value:0},storm:{value:0},flash:{value:0}},vertexShader:'varying vec3 v; void main(){v=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+ fragmentShader:`varying vec3 v;uniform float dusk,night,day,storm,flash;
  float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
  float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+1.),f.x),f.y);}
  float cloud(vec2 p){return noise(p)*.55+noise(p*2.03)*.27+noise(p*4.07)*.12+noise(p*8.1)*.06;}
@@ -53,6 +54,9 @@ const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:
  vec3 cloudColor=mix(vec3(.94,.78,.65),vec3(.70,.48,.59),blue);cloudColor=mix(cloudColor,vec3(.22,.25,.36),night);cloudColor=mix(cloudColor,vec3(.97,.97,.96),day);
  col=mix(col,cloudColor,wisps*.65);vec2 cell=floor(n.xz/(h+.1)*180.);float stars=step(.9985,hash(cell))*smoothstep(.2,.5,h);
  col+=vec3(.78,.85,1.)*stars*smoothstep(.4,1.,night)*.35;
+ // (Chapter Six: a thunderstorm's low ceiling, heavier toward the horizon, and the sheet of a lightning flash)
+ float deck=.62+.38*cloud(uv*vec2(1.3,3.1)+vec2(storm*2.,1.7));vec3 cover=mix(vec3(.47,.5,.53),vec3(.1,.11,.14),night)*deck;
+ col=mix(col,cover,storm*mix(.97,.82,h));col+=vec3(.78,.82,.92)*flash*(.55+.45*deck)*storm;
  gl_FragColor=vec4(col,1.);}`});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);
 
@@ -101,7 +105,7 @@ function showCaption(who,text,time=7.5){$('subtitle').replaceChildren();if(who){
 function say(who,text,time){if(who&&!ui.settings.captions){$('subtitle').style.opacity=0;ctx.speaker=who;captionTimer=time??7.5;return;}showCaption(who,text,time);}
 function start(){if(state!=='intro')return;ui.closePanels();state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;cockpit.visible=true;self.group.visible=true;if(!audio)setSound(true);else if(!muted)setSound(true);showCaption('','There’s still a little light.',5.5);}
 // (what you carry, in Chapter Five: closed by Escape, by the pause and by the end)
-function closeBag(){try{const inv=chapter5?.GR?.inv;if(inv?.isOpen){inv.close();return true;}}catch{}return false;}
+function closeBag(){try{return !!chapter5?.closeBag?.();}catch{}return false;}
 function pause(){if(!active())return;closeBag();resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();down?.clear();ui.prompt(null);$('pause').hidden=false;audio?.setEnabled(false);}
 function resume(){if(state!=='paused')return;ui.closePanels();state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
 function finish(kind){closeBag();state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();down?.clear();ui.clear();setAct('');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;$('objective')?.classList.remove('on');audio?.ending(kind);}
@@ -121,7 +125,7 @@ function jumpTo(section){ui.closePanels();resetState();state='intro';start();cap
 function showContinue(){const b=$('continue');if(!b)return;const s=chapter.saved();b.hidden=!s;if(s){const w=$('continue-where');if(w)w.textContent=s.label;b.onclick=()=>jumpTo(s.section);}}
 
 // The end of Chapter Three leads on: Chapter Four, from its own beginning (the next afternoon).
-function nextChapter(){if(state!=='ended')return;const five=!!chapter4.finished;/* (Chapter Four's end card leads to Chapter Five; Chapter Three's to Four) */ui.closePanels();resetState();state='intro';start();captionTimer=0;$('subtitle').style.opacity=0;friends.settle();ambient.skipTo(LOOKOUT.stop.d);nextMemory=memories.length;finaleT=40;ctx.finale=40;callDone=true;startNight(five?'chapter5':'chapter4');}
+function nextChapter(){if(state!=='ended')return;const six=!!chapter5.finished,five=!!chapter4.finished;/* (Chapter Five's end card leads to Chapter Six; Four's to Five; Three's to Four) */ui.closePanels();resetState();state='intro';start();captionTimer=0;$('subtitle').style.opacity=0;friends.settle();ambient.skipTo(LOOKOUT.stop.d);nextMemory=memories.length;finaleT=40;ctx.finale=40;callDone=true;startNight(six?'chapter6':five?'chapter5':'chapter4');}
 if($('next-chapter'))$('next-chapter').onclick=nextChapter;
 $('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;if($('end-title'))$('end-title').onclick=toTitle;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>action();
 if($('restart'))$('restart').onclick=()=>{$('pause').hidden=true;reset();};if($('to-title'))$('to-title').onclick=toTitle;
@@ -354,6 +358,8 @@ const chapter3=createChapter3(chOpts,chapter.kit,chapter2);chapter2.next=chapter
 const chapter4=createChapter4(chOpts,chapter.kit,chapter2,chapter3);chapter3.next=chapter4;
 // Chapter Five is the next day, at Pine Ridge (chapter5.js); Chapter Four's end card leads to it.
 const chapter5=createChapter5(chOpts,chapter.kit,chapter2,chapter3,chapter4);chapter4.next=chapter5;
+// Chapter Six is the next morning, back in Oak Hollow, and the Mill Creek works that afternoon (chapter6.js); Chapter Five's end card leads to it.
+const chapter6=createChapter6(chOpts,chapter.kit,{chapter2,chapter3,chapter4,chapter5});chapter5.next=chapter6;
 const chapter3Art=createChapterThreeArt({scene,world,chapter,chapter3,camera,nav,foot});
 const chapter4Art=createChapterFourArt({scene,world,chapter,chapter3,chapter4,camera,nav});
 function playerState(){const walk=state==='c1-walk';
@@ -426,7 +432,7 @@ function startNight(how='ride',section=null){
  const p=groundPoint(distance,lateral);roam.x=p.x;roam.z=p.z;roam.a=heading(distance)+yawOffset+(how==='wake'?Math.PI:0);roam.omega=0;roam.lock=false;roam.brake=0;roam.steer=null;
  contact.reset();bikeY=null;prevYaw=null;mouseYaw=mousePitch=look=headPitch=glance=0;manualLook=false;steerIn=0;kick=0;
  state='c1-ride';cockpit.visible=true;self.group.visible=true;$('ride-ui').hidden=true;
- document.body.classList.add('riding');if(how==='jump'){chapter.jump(section);return;}if(how==='chapter4'){chapter4.begin();return;}if(how==='chapter5'){chapter5.begin();return;}
+ document.body.classList.add('riding');if(how==='jump'){chapter.jump(section);return;}if(how==='chapter4'){chapter4.begin();return;}if(how==='chapter5'){chapter5.begin();return;}if(how==='chapter6'){chapter6.begin();return;}
  nostalgia.mark('leaving',clock);if(how!=='wake')audio?.leaving();chapter.begin(how);}
 // Riding at night.
 function updateNightRide(dt){
@@ -604,6 +610,11 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
   sunlight.intensity*=1.05;scene.fog.density*=.88;renderer.toneMappingExposure+=.025;
  }
  if(L4?.fill>0){const f=L4.fill;hemi.intensity+=(Math.max(hemi.intensity,1.22)-hemi.intensity)*f;hemi.color.lerp(_c1.set(0xedece1),.52*f);hemi.groundColor.lerp(_c2.set(0x625b4e),.55*f);}
+ // (Chapter Six: a storm's grey cover and rain haze; a lightning flash; below ground at the works, only the lamps down there and what you carry)
+ skyMat.uniforms.storm.value=L4?.storm||0;skyMat.uniforms.flash.value=L4?.flash||0;
+ if(L4?.storm>0){const s=L4.storm;scene.fog.color.lerp(_c1.set(0x6f767c).lerp(_c2.set(0x1c2128),night),.8*s);scene.fog.density+=.011*s*s;hemi.color.lerp(_c1.set(0xb4bcc4),.55*s);hemi.intensity*=1-.32*s;sunlight.intensity*=1-.86*s;sunlight.color.lerp(_c1.set(0xd8dde2),.6*s);renderer.toneMappingExposure-=.04*s;}
+ if(L4?.flash>0){const f=L4.flash*(L4.cave?1-L4.cave*.85:1);hemi.intensity+=2.6*f;hemi.color.lerp(_c1.set(0xdfe6ff),.6*f);scene.fog.color.lerp(_c2.set(0xa9b2c8),.5*f);}
+ if(L4?.cave>0){const cv=L4.cave;hemi.intensity*=1-.86*cv;hemi.groundColor.lerp(_c1.set(0x0b0c10),cv);sunlight.intensity*=1-cv;scene.fog.color.lerp(_c1.set(0x07080b),cv*.92);scene.fog.density=scene.fog.density*(1-cv)+.032*cv;renderer.toneMappingExposure+=.22*cv;}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);
  else if(state==='walking')updateWalk(dt);
@@ -706,7 +717,7 @@ for(const k of ['sensitivity','quality'])applySetting(k,ui.settings[k]);showCont
 // ---- TEMPORARY (private playtest build only; not in the shipped game): DEV — CHAPTER → SCENE ------------------
 // Starts at the true beginning of a chapter through the game's own hand-over code, or at one of its scenes
 // through the game's own checkpoint/QA initializers (dev-chapters.js).
-const dev=createDevChapters({chapter,chapter2,chapter3,chapter4,chapter5,nextChapter,friends,ambient,ending,interact,memory,tension,captionTone,foot,ui,world,roam,skyMat,sunlight,hemi,$,update,jumpTo,leave,
+const dev=createDevChapters({chapter,chapter2,chapter3,chapter4,chapter5,chapter6,nextChapter,friends,ambient,ending,interact,memory,tension,captionTone,foot,ui,world,roam,skyMat,sunlight,hemi,$,update,jumpTo,leave,
  audio:()=>audio,walk:()=>({x:+wx.toFixed(3),z:+wz.toFixed(3),a:+wa.toFixed(3)}),
  resetGame:()=>{ui.closePanels();resetState();state='intro';start();},
  // The last stretch of the street before the lookout: everyone already home (the game's own settlement, as
@@ -736,7 +747,7 @@ const jumpParam=typeof location!=='undefined'&&(location.search||'').match(/[?&]
 requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
-if(qa)window.lastLight={dev,devStart,devScene,DEV_SCENES,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,chapter4,chapter5,nextChapter,shoot,readPixels,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
+if(qa)window.lastLight={dev,devStart,devScene,DEV_SCENES,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,chapter4,chapter5,chapter6,nextChapter,shoot,readPixels,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
  get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside})),
   onFoot:{stamina:foot.stamina,crouch:foot.crouch,height:foot.height,sprint:foot.sprint,owned:foot.owned,on:foot.on},roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state,chapter2:chapter2.state,chapter3:chapter3.state,chapter4:chapter4.state,tension:tension.state,captionTone:captionTone.state,memory:memory.state,day:ctx.day||0};},
  jump:jumpTo,chapter,chapter2,memory,get memCast(){return memCast;},roam,nav,drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},

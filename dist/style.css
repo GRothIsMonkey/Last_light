@@ -90,6 +90,7 @@ body.night1 .wordmark{opacity:0;transition:opacity 1.5s}
 #chapter-card.on{opacity:1}
 #chapter-card h2{margin:0;font:400 clamp(30px,4.2vw,58px)/1.2 Georgia,serif;letter-spacing:.32em;padding-left:.32em;text-transform:uppercase;color:#efe4cf;text-shadow:0 2px 24px #05070fa0}
 #chapter-card .eyebrow{letter-spacing:4px;color:#e6dccab0}#chapter-card .eyebrow:empty{display:none}
+#chapter-card .card-sub{font:400 clamp(15px,1.6vw,22px)/1.6 Georgia,serif;letter-spacing:.28em;padding-left:.28em;text-transform:uppercase;color:#e6dccad0;text-align:center}#chapter-card .card-sub small{display:block;font-size:.66em;letter-spacing:.34em;color:#e6dccaa0;margin-top:6px}#chapter-card .card-sub:empty{display:none}
 #fade.warm{background:#3b2f27}
 body.remembering #world{filter:none}
 body.remembering .vignette{box-shadow:inset 0 0 180px #30291c35}

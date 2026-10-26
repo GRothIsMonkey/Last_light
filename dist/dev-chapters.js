@@ -19,6 +19,8 @@
 //     Three's own ending card, then the card's own "Chapter Four" button (nextChapter → chapter4.begin()).
 //   * Chapter Five: the same from Chapter Four's last scene (chapter4-end): its ending card, then its own "Chapter Five"
 //     button (nextChapter → chapter5.begin()).
+//   * Chapter Six: the same from Chapter Five's last scene (chapter5-end): its ending card, then its own "Chapter Six"
+//     button (nextChapter → chapter6.begin()).
 // The checkpoint scenes cannot know what earlier beats left behind (which windows were tapped, the
 // flashlight Jamie gave you, the siren, Chapter Two's evidence and police flags…). That history comes from
 // HISTORY (dev-chapter-history.js), which is GENERATED from a natural playthrough
@@ -42,7 +44,7 @@
 //     moment, through the departures in between, as a player would;
 //   * approach: the last stretch of the street to the lookout (the game rides the rest when you do).
 import {HISTORY,TIMESTAMPS,SCENE_HISTORY} from './dev-chapter-history.js';
-export const DEV_CHAPTERS=[{n:0,label:'Prologue',phase:null},{n:1,label:'Chapter One',phase:'leave'},{n:2,label:'Chapter Two',phase:'c2-black'},{n:3,label:'Chapter Three',phase:'c3-black'},{n:4,label:'Chapter Four',phase:'c4-black'},{n:5,label:'Chapter Five',phase:'c5-black'}];
+export const DEV_CHAPTERS=[{n:0,label:'Prologue',phase:null},{n:1,label:'Chapter One',phase:'leave'},{n:2,label:'Chapter Two',phase:'c2-black'},{n:3,label:'Chapter Three',phase:'c3-black'},{n:4,label:'Chapter Four',phase:'c4-black'},{n:5,label:'Chapter Five',phase:'c5-black'},{n:6,label:'Chapter Six',phase:'c6-black'}];
 // The scenes of each chapter, in story order. The first of each list is the chapter's own start.
 export const DEV_SCENES={
  0:[{id:'start',label:'Start (new game)',chapter:0},{id:'group-ride',label:'Group Ride',warp:150},{id:'alex-hears',label:'Alex Before Briarwood (“Did you guys hear that?”)',warp:355},
@@ -108,10 +110,23 @@ export const DEV_SCENES={
   {id:'c5-run',label:'Run (escape start)',jump:'c5-run'},{id:'c5-route-a',label:'Escape Route A (the road)',jump:'c5-route-a',save:'c5-run'},
   {id:'c5-route-c',label:'Escape Route C (the dam)',jump:'c5-route-c',save:'c5-run'},{id:'c5-boundary',label:'Camp Boundary (the gate)',jump:'c5-boundary',save:'c5-run'},
   {id:'c5-aftermath',label:'Aftermath (the lamp in the lot)',jump:'c5-aftermath',save:'c5-run'},{id:'c5-second-discovery',label:'The Last Picture',jump:'c5-second-discovery'},
-  {id:'chapter5-end',label:'Chapter Five Ending (one light)',jump:'chapter5-end'}]};
+  {id:'chapter5-end',label:'Chapter Five Ending (one light)',jump:'chapter5-end'}],
+ 6:[{id:'chapter6',label:'Chapter Six Start',chapter:6},{id:'c6-room',label:'The Morning After (Alex’s camera)',jump:'c6-room'},
+  {id:'c6-phone',label:'Sam’s Phone Call',jump:'c6-phone'},{id:'c6-meeting',label:'The Adult Meeting (Sam’s garage)',jump:'c6-meeting'},
+  {id:'c6-shirt',label:'The Gold Shirt (Alex’s dad)',jump:'c6-shirt'},{id:'c6-photos',label:'The Pictures (the silhouette)',jump:'c6-photos'},
+  {id:'c6-oak',label:'Old Oak (“It looked exactly like me.”)',jump:'c6-oak'},{id:'c6-street',label:'Familiar Streets',jump:'c6-street'},
+  {id:'c6-anomaly',label:'Neighborhood Anomaly (the doorway)',jump:'c6-anomaly'},{id:'c6-creek',label:'The Creek Drain (the helmet)',jump:'c6-creek'},
+  {id:'c6-records',label:'Drainage Records (Reyes)',jump:'c6-records'},{id:'c6-map',label:'The 1958 Plan (Sam’s map)',jump:'c6-map'},
+  {id:'c6-works',label:'Drainage Works Entry (the storm)',jump:'c6-works'},{id:'c6-gatehouse',label:'The Gatehouse (the log)',jump:'c6-gatehouse'},
+  {id:'c6-radio',label:'Radio Anomaly (“Behind you.”)',jump:'c6-radio'},{id:'c6-lower',label:'The Lower Chamber (the hand brake)',jump:'c6-lower'},
+  {id:'c6-grate-scare',label:'Grate Scare (Alex at the grille)',jump:'c6-grate-scare'},{id:'c6-emergency',label:'Rising Water (the gate comes down)',jump:'c6-emergency'},
+  {id:'c6-hold',label:'Gate Release (Sam holds it)',jump:'c6-hold'},{id:'c6-double',label:'Duplicate Reveal (two Sams)',jump:'c6-double'},
+  {id:'c6-sealed',label:'Post-Disappearance (the gate shut)',jump:'c6-sealed'},{id:'c6-rescue',label:'Rescue Attempt',jump:'c6-rescue'},
+  {id:'c6-aftermath',label:'Aftermath (two hours later)',jump:'c6-aftermath'},{id:'c6-testimony',label:'Reyes (“I saw them both.”)',jump:'c6-testimony'},
+  {id:'chapter6-end',label:'Chapter Six Ending (the end card)',jump:'chapter6-end'}]};
 
 export function createDevChapters(g){
- const {chapter,chapter2,chapter3,chapter4,chapter5}=g,comp=chapter.companions,K=chapter.kit;
+ const {chapter,chapter2,chapter3,chapter4,chapter5,chapter6}=g,comp=chapter.companions,K=chapter.kit;
  // Every per-run state object emptied completely before the chapters' own reset()/fresh() refill them
  // (their fresh() functions refill a fixed list of keys; anything else would otherwise survive).
  function clearObject(o,keep=[]){if(!o)return;for(const k of Object.keys(o))if(!keep.includes(k))delete o[k];}
@@ -130,7 +145,7 @@ export function createDevChapters(g){
  // over's resetState() + start() as its first step): one start(), so the pointer lock is requested once per click.
  function clear({restart=true}={}){
   g.audio()?.stopRecording?.();
-  if(chapter5)clearObject(chapter5.C);if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
+  if(chapter6)clearObject(chapter6.C);if(chapter5)clearObject(chapter5.C);if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
   // Chapter One's shared state: the dialogue queue array is kept as the same array (other code holds it).
   const q=K.S.queue;clearObject(K.S);K.S.queue=q;q.length=0;
   rebirth();
@@ -161,6 +176,7 @@ export function createDevChapters(g){
   else if(n===3){g.jumpTo('chapter2-end');runUntil(()=>phase()==='c3-black');}
   else if(n===4){g.jumpTo('chapter3-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n===5){g.jumpTo('chapter4-end');runUntil(()=>G().state==='ended');g.nextChapter();}
+  else if(n===6){g.jumpTo('chapter5-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n!==0)throw new Error('dev start: no chapter '+n);
   if(history)applyHistory(n);
   return phase();}
@@ -204,6 +220,7 @@ export function createDevChapters(g){
    chapter3:{C:plain(chapter3.C),state:plain(chapter3.state),old:chapter3.old.group.visible,evidence:chapter3.evidence.visible,phone:chapter3.phone.visible,figure:chapter3.figure.group.visible,amb:plain(chapter3.amb)},
    chapter4:chapter4?{C:plain(chapter4.C),state:(st=>{if(st?.photos)delete st.photos.rendered;return st;})(plain(chapter4.state))}:null,// (which of Alex's pictures are already rendered is a cache, not state)
    chapter5:chapter5?{C:plain(chapter5.C),state:plain(chapter5.state)}:null,
+   chapter6:chapter6?{C:plain(chapter6.C),state:plain(chapter6.state)}:null,
    companions:comp.all.map(c=>({key:c.key,active:c.active,mode:c.mode,follow:c.follow||null,script:!!c.script,visible:!!c.person?.group?.visible,bikeVisible:!!c.bike?.group?.visible,
     p:pos({x:c.px,z:c.pz}),b:pos({x:c.bx,z:c.bz}),pa:r(c.pa),ba:r(c.ba),speed:r(c.speed),flash:!!c.flash,lookAt:!!c.lookAt,lookPlayer:!!c.lookPlayer,hidden:!!c.hidden,poi:!!c.poi})),
    people:{officer:person(chapter.officer),officer2:person(chapter.officer2),dad:person(chapter.dad),mom:person(chapter.mom),neighbor:person(chapter.neighbor),adults:(chapter.adults||[]).map(person),
