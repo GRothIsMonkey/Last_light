@@ -21,7 +21,7 @@ export function chapterSixTools(T0){
  const gap=()=>{const p=me();return Math.max(0,...boys().map(c=>Math.hypot((c.mode==='ride'?c.bx:c.px)-p.x,(c.mode==='ride'?c.bz:c.pz)-p.z)));};
  const offBike=()=>{if(h.night.state==='c1-ride'){release('KeyW');press('KeyS');until(()=>h.night.speed<.05,8);release('KeyS');tap('KeyF');until(()=>h.night.state==='c1-walk',4);wait(.3);}};
  const onBike=()=>{for(let k=0;k<3&&h.night.state==='c1-walk';k++){const r=h.night.roam;approach({x:r.x,z:r.z},1.0);faceTo(r.x,r.z);wait(.2);
-  if(!/bike/i.test(h.ui.promptText||'')&&process.env.TRACE6)console.log('  (no bike prompt: '+(h.ui.promptText||'')+' d='+Math.hypot(me().x-r.x,me().z-r.z).toFixed(2)+')');tap('KeyF');until(()=>h.night.state==='c1-ride',4);}};
+  if(!/bike/i.test(h.ui.promptText||'')&&globalThis.process?.env?.TRACE6)console.log('  (no bike prompt: '+(h.ui.promptText||'')+' d='+Math.hypot(me().x-r.x,me().z-r.z).toFixed(2)+')');tap('KeyF');until(()=>h.night.state==='c1-ride',4);}};
  const rideTo=(pts,max=200,r=2.8,stop=null)=>{h.drive(pts,{r});const ok=until(()=>!h.driving||!!stop?.(),max);h.stopDriving();return ok;};
  // straight lines in a room or at the works (their own walkable, no street graph): leg by leg
  const walkLine=(pts,o={})=>walkTo(pts.map(q=>Array.isArray(q)?q:[q.x,q.z]),{r:.35,max:40,...o});
@@ -62,7 +62,7 @@ export function playChapterSix(T,label,{fromCard=true,dev=false,from=null,to=nul
  const lines=()=>watch.lines;const said=t=>watch.lines.some(l=>l.includes(t));
  const clock0=()=>h.snapshot.clock;let t0=clock0(),tSeg=t0;const lap=k=>{const t=clock0();watch.minutes[k]=+((t-tSeg)/60).toFixed(2);tSeg=t;};
  const ph=()=>S().phase;
- const note=(...a)=>{if(process.env.TRACE6){const p=me();console.log('['+(clock0()-t0).toFixed(1)+'s '+ph()+' '+p.x.toFixed(1)+','+p.z.toFixed(1)+']',...a);}};
+ const note=(...a)=>{if(globalThis.process?.env?.TRACE6){const p=me();console.log('['+(clock0()-t0).toFixed(1)+'s '+ph()+' '+p.x.toFixed(1)+','+p.z.toFixed(1)+']',...a);}};
 
  if(seg('morning')){
   if(from==='morning'||entered){if(from==='morning'&&!cont){h.jump('chapter6-start');}}
@@ -268,7 +268,7 @@ export function playChapterSix(T,label,{fromCard=true,dev=false,from=null,to=nul
 
 // The chapter's own checks: every jump and DEV scene, Continue, the story going on for a player who stands still, the gate and the
 // water, and the earlier chapters exactly as they were after Chapter Six has run.
-export async function runChapterSixChecks(T){
+export async function runChapterSixChecks(T,cap=null){
  const {h,advance,check,element,metrics}=T,X=chapterSixTools(T),{A6,C6,S,until,wait,me,boys,gap,faceTo}=X;
  const M6=metrics['chapter6']||(metrics['chapter6']={});
  // ---- every jump ----
@@ -318,6 +318,12 @@ export async function runChapterSixChecks(T){
  // ---- every DEV scene of Chapter Six ----
  const dev={};for(const sc of DEV_SCENES[6]||[]){try{const ph=h.devScene(6,sc.id);advance(.5);dev[sc.id]={ok:true,phase:S().phase,owned:A6.owns(S().phase)||S().phase==='c6-black'};}catch(e){dev[sc.id]={ok:false,err:String(e).slice(0,300)};}}
  check(`Chapter Six: every DEV scene (${Object.keys(dev).length}) starts, in Chapter Six`,()=>{assert.ok(Object.keys(dev).length>=20);const bad=Object.entries(dev).filter(([,r])=>!r.ok||!r.owned);assert.deepEqual(bad,[]);});
+ // ---- DEV start at Chapter Six: the same state as arriving from Chapter Five's end card; switching leaves nothing behind ----
+ if(cap?.natural?.[6]){const {compare,far,strict}=await import('./dev-chapters-sim.mjs');const devAt=()=>{const ph=h.devStart(6);advance(1/30);return {ph,snap:h.dev.snapshot()};};
+  const {ph,snap}=devAt(),d=compare(cap.natural[6],snap,6,.04).filter(x=>!/^(chapter6\.C\.(t|pt|h|minute|lastEvent|sounds)|chapter6\.state\.(t|h|clock|sounds|guard)|chapter5\.C\.(t|pt|h|minute|lastEvent)|chapter5\.state\.(t|h|clock|where\.(e|n))|game\.clock)/.test(x[0])),f=far(cap.natural[6],snap);
+  check(`DEV start at Chapter Six (phase ${ph}): the same state as arriving from Chapter Five's end card (${d.length} differences)`,()=>{assert.deepEqual(d,[],JSON.stringify(d.slice(0,12)));assert.deepEqual(f,[]);});
+  const clean6=devAt().snap,sw=[];for(const n of [6,1,6,5,6,0,3,6]){const s2=(n===6?devAt().snap:(h.devStart(n),h.dev.snapshot()));if(n===6){const dd=strict(clean6,s2,6);if(dd.length)sw.push({n,d:dd.slice(0,6)});}}
+  check('DEV switching 6→1→6→5→6→0→3→6 in one session: every Chapter Six start identical to a clean one',()=>assert.deepEqual(sw,[],JSON.stringify(sw)));M6.dev={differences:d.length,switchingLeaks:sw.length};}
  // ---- the earlier chapters as they were: nothing of Chapter Six left in them ----
  const clean={};for(const sec of ['chapter5-start','c5-camp','c4-library','c3-tunnel-entrance','chapter2-start']){h.jump(sec);advance(.5);
   clean[sec]={works:!!A6.works.root.parent,storm:!!A6.storm.rain.parent,home:!!A6.home.root.parent&&A6.home.root.visible!==false,room:h.nav.room===A6.home.nav||h.nav.room===A6.works.nav,sky:+(h.skyMat.uniforms.storm?.value||0),phase:S().phase,owned:A6.owns(S().phase)};}

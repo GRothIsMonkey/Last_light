@@ -55,8 +55,8 @@ const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:
  col=mix(col,cloudColor,wisps*.65);vec2 cell=floor(n.xz/(h+.1)*180.);float stars=step(.9985,hash(cell))*smoothstep(.2,.5,h);
  col+=vec3(.78,.85,1.)*stars*smoothstep(.4,1.,night)*.35;
  // (Chapter Six: a thunderstorm's low ceiling, heavier toward the horizon, and the sheet of a lightning flash)
- float deck=.62+.38*cloud(uv*vec2(1.3,3.1)+vec2(storm*2.,1.7));vec3 cover=mix(vec3(.47,.5,.53),vec3(.1,.11,.14),night)*deck;
- col=mix(col,cover,storm*mix(.97,.82,h));col+=vec3(.78,.82,.92)*flash*(.55+.45*deck)*storm;
+ float deck=.62+.38*cloud(uv*vec2(1.3,3.1)+vec2(storm*2.,1.7)),sk=smoothstep(0.,.55,storm);vec3 cover=mix(mix(vec3(.5,.53,.56),vec3(.3,.33,.33),smoothstep(.45,1.,storm)),vec3(.1,.11,.14),night)*deck;
+ col=mix(col,cover,sk*mix(.98,.86,h));col+=vec3(.78,.82,.92)*flash*(.55+.45*deck)*sk;
  gl_FragColor=vec4(col,1.);}`});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);
 
@@ -359,7 +359,9 @@ const chapter4=createChapter4(chOpts,chapter.kit,chapter2,chapter3);chapter3.nex
 // Chapter Five is the next day, at Pine Ridge (chapter5.js); Chapter Four's end card leads to it.
 const chapter5=createChapter5(chOpts,chapter.kit,chapter2,chapter3,chapter4);chapter4.next=chapter5;
 // Chapter Six is the next morning, back in Oak Hollow, and the Mill Creek works that afternoon (chapter6.js); Chapter Five's end card leads to it.
-const chapter6=createChapter6(chOpts,chapter.kit,{chapter2,chapter3,chapter4,chapter5});chapter5.next=chapter6;
+// (built on its own seeded random numbers, so building it leaves the sequence the earlier chapters draw from exactly as it was)
+const chapter6=(()=>{const own=Math.random;let a=0x6c0ffee;Math.random=()=>{a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};
+ try{return createChapter6(chOpts,chapter.kit,{chapter2,chapter3,chapter4,chapter5});}finally{Math.random=own;}})();chapter5.next=chapter6;
 const chapter3Art=createChapterThreeArt({scene,world,chapter,chapter3,camera,nav,foot});
 const chapter4Art=createChapterFourArt({scene,world,chapter,chapter3,chapter4,camera,nav});
 function playerState(){const walk=state==='c1-walk';
@@ -612,7 +614,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  if(L4?.fill>0){const f=L4.fill;hemi.intensity+=(Math.max(hemi.intensity,1.22)-hemi.intensity)*f;hemi.color.lerp(_c1.set(0xedece1),.52*f);hemi.groundColor.lerp(_c2.set(0x625b4e),.55*f);}
  // (Chapter Six: a storm's grey cover and rain haze; a lightning flash; below ground at the works, only the lamps down there and what you carry)
  skyMat.uniforms.storm.value=L4?.storm||0;skyMat.uniforms.flash.value=L4?.flash||0;
- if(L4?.storm>0){const s=L4.storm;scene.fog.color.lerp(_c1.set(0x6f767c).lerp(_c2.set(0x1c2128),night),.8*s);scene.fog.density+=.011*s*s;hemi.color.lerp(_c1.set(0xb4bcc4),.55*s);hemi.intensity*=1-.32*s;sunlight.intensity*=1-.86*s;sunlight.color.lerp(_c1.set(0xd8dde2),.6*s);renderer.toneMappingExposure-=.04*s;}
+ if(L4?.storm>0){const s=Math.min(1,L4.storm*1.3);scene.fog.color.lerp(_c1.set(0x6f767c).lerp(_c2.set(0x1c2128),night),.8*s);scene.fog.density+=.011*s*s;hemi.color.lerp(_c1.set(0xb4bcc4),.55*s);hemi.intensity*=1-.32*s;sunlight.intensity*=1-.86*s;sunlight.color.lerp(_c1.set(0xd8dde2),.6*s);renderer.toneMappingExposure-=.04*s;}
  if(L4?.flash>0){const f=L4.flash*(L4.cave?1-L4.cave*.85:1);hemi.intensity+=2.6*f;hemi.color.lerp(_c1.set(0xdfe6ff),.6*f);scene.fog.color.lerp(_c2.set(0xa9b2c8),.5*f);}
  if(L4?.cave>0){const cv=L4.cave;hemi.intensity*=1-.86*cv;hemi.groundColor.lerp(_c1.set(0x0b0c10),cv);sunlight.intensity*=1-cv;scene.fog.color.lerp(_c1.set(0x07080b),cv*.92);scene.fog.density=scene.fog.density*(1-cv)+.032*cv;renderer.toneMappingExposure+=.22*cv;}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);

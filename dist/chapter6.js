@@ -76,7 +76,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const A6={};
  function sound(name,pos,opts){(C.sounds||={})[name]=(C.sounds[name]||0)+1;o.sfx?.(name,pos,opts);}
  const home=createHome({scene,world,camera,shoot:o.shoot});
- const works=createWorks({scene,camera,sfx:(n,p,op)=>sound(n,p,op)});
+ const works=createWorks({scene,camera,sfx:(n,p,op)=>sound(n,p,op),car:world.car});
  const cast=createCast6({scene,nav,camera});const {samDad,brandt,AX,SAM2,JAMIE2}=cast;
  const props=createProps6();
  const storm=createStorm({scene,camera,sfx:(n,p,op)=>sound(n,p,op)});
@@ -114,7 +114,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const lightsYellow=[0,1,2].map(i=>{const m=props.radioMesh(0xc9a227);m.visible=false;return m;});void lightsYellow;
  // ---- the campfire picture, again: the three of them at the fire, from the trees (and up the bank behind them) ------------------
  const FIRE=PSPOT.campfire,SEATS=SOLIDS.filter(q=>q.kind==='log').map(q=>{const de=FIRE[0]-q.c[0],dn=FIRE[1]-q.c[1],l=Math.hypot(de,dn)||1;return {seat:q.c,face:hd(de,dn),front:[q.c[0]+de/l*.8,q.c[1]+dn/l*.8]};});
- const studio=['player','jamie','sam'].map(key=>{const p=createPerson({...CAST[key],expressive:true});p.group.visible=false;p.group.name='studio-'+key;scene.add(p.group);const f=createFace(p,CAST[key]);p.face=f;chapter5Appearance(p,CAST[key]).enable(true);return p;});
+ const studio=['player','jamie','sam'].map(key=>{const p=createPerson({...CAST[key],expressive:true});p.group.visible=false;p.group.name='studio-'+key;scene.add(p.group);const f=createFace(p,CAST[key]);p.face=f;chapter5Appearance(p,CAST[key]).enable(true);f.update(1/30,{clock:0});/* (a face is built on its first update; until then its mouth has no shape) */return p;});
  const shade=createPerson({...CAST.alex,clothes:{...CAST.alex.clothes,shirt:0x2a2622,trim:0x2a2622,pants:0x1e1c1a,socks:0x1e1c1a,shoes:0x161412}});shade.group.visible=false;shade.group.name='studio-up-the-bank';scene.add(shade.group);
  const FIREPIC={canvas:null,sil:{x:.7,y:.45},rendered:false};
  function fireCam(){const a=SEATS[3].face+Math.PI,f=PW(...FIRE),back=PW(FIRE[0]+Math.sin(a)*12,FIRE[1]+Math.cos(a)*12),cam=new THREE.PerspectiveCamera(48,640/480,.1,300);cam.position.set(back.x,pineHeight(back.x,back.z)+1.55,back.z);cam.lookAt(f.x,pineHeight(f.x,f.z)+.6,f.z);cam.updateMatrixWorld();return {cam,a};}

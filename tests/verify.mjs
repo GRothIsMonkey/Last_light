@@ -405,6 +405,9 @@ const J1=JUNCTIONS[0];const r1=ride('first ride');finalStop('first ride');chapte
 if(!process.env.NO_CHAPTER4)playChapterFour(T2,'first ride');
 // Chapter Five, on from Chapter Four's end card (its "Chapter Five" button), the next day to one light across the water.
 if(!process.env.NO_CHAPTER4&&!process.env.NO_CHAPTER5)playChapterFive(T2,'first ride');
+// Chapter Six, on from Chapter Five's end card (its "Chapter Six" button): the next morning, the works, the water, to its end card.
+const {playChapterSix,runChapterSixChecks}=await import('./chapter6-sim.mjs');
+if(!process.env.NO_CHAPTER4&&!process.env.NO_CHAPTER5&&!process.env.NO_CHAPTER6)playChapterSix(T2,'first ride');
 if(process.env.ONLY==='dev-record'){const {recordHistory}=await import('./dev-chapters-sim.mjs');console.log(JSON.stringify(recordHistory(h,devCapture,fs,root+'dev-chapter-history.js',advance),null,1));process.exit(0);}
 if(process.env.ONLY==='dev'){if(process.env.DEV_RAW)for(const n of [1,2,3]){const d=devDiff(devNorm(devCapture.natural[n]),devNorm((h.devStart(n),h.dev.snapshot())));console.log('RAW',n,JSON.stringify({how:devCapture.how[n]}));for(const x of d)console.log('RAW',n,JSON.stringify(x));
   const S=h.chapter.kit.S,ph=S.phase;for(let i=0;i<900&&S.phase===ph;i++)advance(1/30);const o=h.dev.snapshot();o.phase=S.phase;for(const x of devDiff(devNorm(devCapture.opened[n]),devNorm(o)))console.log('OPEN',n,JSON.stringify(x));}
@@ -550,6 +553,8 @@ if(!process.env.NO_CHAPTER4){await runChapterFourChecks(T2,devCapture);h.jump('c
 // then the whole chapter again from its own start the other way (Jamie's way under the gate, the dam).
 if(!process.env.NO_CHAPTER4&&!process.env.NO_CHAPTER5){await runChapterFiveChecks(T2,devCapture);
  playChapterFive(T2,'Chapter Five replay',{fromCard:false,route:'C',choice:'jamie'});}
+// Chapter Six's own checks: every jump, DEV start and scene, Continue, the idle fallbacks, the gate, and the earlier chapters after it.
+if(!process.env.NO_CHAPTER4&&!process.env.NO_CHAPTER5&&!process.env.NO_CHAPTER6)await runChapterSixChecks(T2,devCapture);
 // TEMPORARY (private playtest build): the dev chapter selector equals natural arrival; switching leaks nothing.
 await runDevChapterChecks(T2,devCapture);
 

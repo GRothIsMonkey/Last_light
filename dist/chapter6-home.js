@@ -36,7 +36,7 @@ export function createHome({scene,world,camera,shoot=null}){
  // (the room lit as a room in the morning: a little of its own light, the way the bounce from the window fills it)
  const paint=mat(0xc9cdb8,{emissive:0x9a9c88,emissiveIntensity:.11,roughness:.95});artSurface(paint,'plaster');paint.userData.keep=true;
  const hallPaint=mat(0xd8cdb4,{emissive:0xa09684,emissiveIntensity:.1,roughness:.95});artSurface(hallPaint,'plaster');
- const ceil=mat(0xece8de,{emissive:0xc2beb2,emissiveIntensity:.14});
+ const ceil=mat(0xece8de,{emissive:0xc2beb2,emissiveIntensity:.32});
  const carpet=mat(0x6f7686,{emissive:0x3c404a,emissiveIntensity:.09,roughness:1});artSurface(carpet,'carpet');
  const boards=mat(0x9a7a56,{emissive:0x4a3a28,emissiveIntensity:.08,roughness:.7});artSurface(boards,'timber');
  const trim=mat(0xefe9dc,{emissive:0x7a776e,emissiveIntensity:.08});
@@ -84,8 +84,10 @@ export function createHome({scene,world,camera,shoot=null}){
  {const m=new THREE.Mesh(drape(.62,1.75),curtain);m.position.set(R.x1-.09,FL+1.3,SIDE.z-.22);m.rotation.y=Math.PI/2;root.add(m);const m2=m.clone();m2.position.z=SIDE.z+.3;root.add(m2);}
  K.pipe(root,[WIN.x-WIN.w/2-.3,FL+2.2,R.z1-.09],[WIN.x+WIN.w/2+.3,FL+2.2,R.z1-.09],.012,mat(0xb8b0a0,{metalness:.5}));
  // the sun through the front window, across the desk onto the carpet: a shaft of dust and a patch of light
- const shaftTex=paper(64,256,(g,w,h)=>{const s=g.createLinearGradient(0,0,0,h);s.addColorStop(0,'rgba(255,240,200,.55)');s.addColorStop(1,'rgba(255,240,200,0)');g.fillStyle=s;g.fillRect(0,0,w,h);});
- const shaftM=new THREE.MeshBasicMaterial({map:shaftTex,color:0xfff2d2,transparent:true,opacity:shaftTex?.32:.08,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,fog:false});
+ const shaftTex=paper(64,256,(g,w,h)=>{const s=g.createLinearGradient(0,0,0,h);s.addColorStop(0,'rgba(255,240,200,.55)');s.addColorStop(1,'rgba(255,240,200,0)');g.fillStyle=s;g.fillRect(0,0,w,h);
+  // (soft at the sides too: a shaft of light has no edge)
+  g.globalCompositeOperation='destination-in';const x=g.createLinearGradient(0,0,w,0);x.addColorStop(0,'rgba(0,0,0,0)');x.addColorStop(.3,'rgba(0,0,0,1)');x.addColorStop(.7,'rgba(0,0,0,1)');x.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=x;g.fillRect(0,0,w,h);});
+ const shaftM=new THREE.MeshBasicMaterial({map:shaftTex,color:0xfff2d2,transparent:true,opacity:shaftTex?.22:.06,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,fog:false});
  const shaft=new THREE.Mesh(new THREE.PlaneGeometry(1.1,2.2),shaftM);shaft.position.set(WIN.x-.2,FL+.95,R.z1-.75);shaft.rotation.set(-.6,.25,0);shaft.name='your-room-sun';root.add(shaft);
  const patchM=new THREE.MeshBasicMaterial({color:0xfff0c8,transparent:true,opacity:.2,depthWrite:false,blending:THREE.AdditiveBlending,polygonOffset:true,polygonOffsetFactor:-2});
  const patch=new THREE.Mesh(new THREE.PlaneGeometry(1.1,.9),patchM);patch.rotation.x=-Math.PI/2;patch.position.set(WIN.x-.35,FL+.006,R.z1-1.55);root.add(patch);

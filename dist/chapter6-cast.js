@@ -57,7 +57,7 @@ export function createCast6({scene,nav,camera}){
  // ---- the two that are not people --------------------------------------------------------------------------------------------
  // A body built as Chapter Five builds the boys, standing somewhere, that can stand, walk, run and stop; and look.
  function figure(cast,name){const person=createPerson({...cast,expressive:true});person.group.name=name;person.group.visible=false;scene.add(person.group);
-  const face=createFace(person,cast);person.face=face;const art=chapter5Appearance(person,cast);art.enable(true);person.group.traverse(o=>{if(o.isMesh)o.castShadow=true;});
+  const face=createFace(person,cast);person.face=face;const art=chapter5Appearance(person,cast);art.enable(true);face.update(1/30,{clock:0});person.group.traverse(o=>{if(o.isMesh)o.castShadow=true;});
   const F={person,face,art,pose:newPose(),hold:newPose(),x:0,z:0,y:0,a:0,t:0,v:0,gait:0,mode:'off',path:null,pi:0,speed:0,tilt:0,tiltTo:0,look:0,lookTo:0,ground:null,reach:0,reachTo:0,crouch:0,
    copy:null,lag:.55,ring:[],ringT:0,copyW:0,copyWTo:0,hit:0,still:0,
    show(on,{x,z,a,y}={}){person.group.visible=!!on;F.mode=on?'stand':'off';if(on){F.x=x;F.z=z;F.a=a??F.a;F.y=y??(nav.groundY(x,z));F.v=0;F.path=null;F.t=0;F.tilt=F.tiltTo=0;F.look=F.lookTo=0;F.reach=F.reachTo=0;F.hit=0;F.ring.length=0;face.set('neutral',{hold:99});}},

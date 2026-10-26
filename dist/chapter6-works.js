@@ -72,7 +72,7 @@ export function groundAt(x,z){
  if(x>-6.3&&x<6.3&&z<46)y=Math.min(y,FLOOR.bed);// the channel's bed
  return y;}
 
-export function createWorks({scene,camera,sfx=()=>{}}){
+export function createWorks({scene,camera,sfx=()=>{},car=null}){
  const root=new THREE.Group();root.name='chapter6-works';root.position.set(W0.x,0,W0.z);
  const S=makeShapes(),keep=new Set();
  // ---- materials (one of each, shared; metre-scaled patterns from the Chapter Three and Five libraries) -----------------
@@ -99,8 +99,10 @@ export function createWorks({scene,camera,sfx=()=>{}}){
  const slab=(r,y,m,th=.1)=>S.slab(root,(r.x0+r.x1)/2,y-th/2,(r.z0+r.z1)/2,r.x1-r.x0,th,r.z1-r.z0,m);
  slab(R(7,36,-26,-14.5),FLOOR.yard,gravel);slab(R(14,36,-14.5,22),FLOOR.yard,gravel);
  slab(R(22,36,-1,6),FLOOR.yard+.004,asphalt,.02);// the patched apron from the gate
- const puddleM=new THREE.MeshStandardMaterial({color:0x2a2e32,roughness:.08,metalness:.4,transparent:true,opacity:.75,polygonOffset:true,polygonOffsetFactor:-3});puddleM.name='puddles';
- for(const [x,z,w,d] of [[27,2,2.6,1.4],[24.5,-6,1.6,1.1],[31,12,2.2,1.2],[18,6,1.4,.9],[20,15,2.4,1.5],[11,-20,1.8,1]]){const q=S.plane(root,x,FLOOR.yard+.012,z,w,d,puddleM,{rx:-Math.PI/2});q.scale.set(1,1,1);}
+  // (puddles: soft-edged, the grey of the sky in them; never a hole in the ground)
+ const pudTex=paper(128,128,(g,w,h)=>{const r=g.createRadialGradient(w/2,h/2,w*.18,w/2,h/2,w/2);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.75,'rgba(255,255,255,.75)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,w,h);});
+ const puddleM=new THREE.MeshStandardMaterial({color:0x6c737a,alphaMap:pudTex,roughness:.04,metalness:.55,transparent:true,opacity:pudTex?.62:.35,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-3});puddleM.name='puddles';
+ for(const [x,z,w,d] of [[27,2,2.6,1.4],[24.5,-6,1.6,1.1],[31,12,2.2,1.2],[18,6,1.4,.9],[20,15,2.4,1.5],[11,-20,1.8,1]]){const q=new THREE.Mesh(new THREE.CircleGeometry(.5,20),puddleM);q.rotation.x=-Math.PI/2;q.scale.set(w,d,1);q.position.set(x,FLOOR.yard+.012,z);q.renderOrder=1;root.add(q);keep.add(q);}
  // ---- the channel: concrete walls, the upstream reach, the gate chamber, the downstream reach to the culverts ----------
  const cw=(x,z0,z1,y0,y1,m=conc,t=.4)=>S.slab(root,x,(y0+y1)/2,(z0+z1)/2,t,y1-y0,z1-z0,m);
  cw(-6.2,-70,46,FLOOR.bed-.4,.4);cw(6.2,-70,-14.5,FLOOR.bed-.4,.4);cw(6.2,12,46,FLOOR.bed-.4,FLOOR.gallery+.2);
@@ -160,7 +162,7 @@ export function createWorks({scene,camera,sfx=()=>{}}){
    S.slab(root,6.22,p.y0-.03,(p.z0+p.z1)/2,.1,.06,p.z1-p.z0,rust);for(let z=p.z0+.12;z<p.z1;z+=.22)S.pipe(root,[6.1,p.y0,z],[6.1,p.y1,z],.016,rust,5);}}
  cw(12.2,16.2,32.3,FLOOR.low-.2,LJ.ceil+.4,oldConc,.4);cw(12.2,34.1,36.4,FLOOR.low-.2,LJ.ceil+.4,oldConc,.4);// east wall (the ladder well between)
  // L's north wall: the pieces either side of the stair's opening, and over it
- S.slab(root,6.6,(FLOOR.low+LJ.ceil)/2,16.0,.8,LJ.ceil-FLOOR.low,.4,conc);S.slab(root,10.5,(FLOOR.low+LJ.ceil)/2,16.0,3.1,LJ.ceil-FLOOR.low,.4,conc);S.slab(root,8,FLOOR.gallery-.3,16.0,2.2,.9,.4,conc);
+ S.slab(root,6.6,(FLOOR.low+LJ.ceil)/2,16.0,.8,LJ.ceil-FLOOR.low,.4,conc);S.slab(root,10.5,(FLOOR.low+LJ.ceil)/2,16.0,3.1,LJ.ceil-FLOOR.low,.4,conc);S.slab(root,8.6,(LJ.ceil-.02+FLOOR.gallery+1.45)/2,16.05,4.2,FLOOR.gallery+1.45-LJ.ceil+.02,.5,conc);// (the landing's ceiling stepping up to the stairs'; the opening the full height of the landing, for headroom on the stairs)
  // the gate wall between L and J, with 2B's opening; the guides; the headstock above the opening (rack, pawl, brake drum)
  S.slab(root,6.9,(FLOOR.low+LJ.ceil)/2,GATE.z,1.4,LJ.ceil-FLOOR.low,.4,conc);S.slab(root,11.2,(FLOOR.low+LJ.ceil)/2,GATE.z,1.6,LJ.ceil-FLOOR.low,.4,conc);
  S.slab(root,9,(FLOOR.low+GATE.open+LJ.ceil)/2,GATE.z,2.8,LJ.ceil-FLOOR.low-GATE.open,.4,conc);
@@ -232,8 +234,10 @@ export function createWorks({scene,camera,sfx=()=>{}}){
   for(const [x,z,ry,w] of [[18.3,H.z0,0,2.2],[16.2,H.z1,0,2],[H.x1,-.1,Math.PI/2,2.2]])S.plane(root,x,1.85,z,w,1.1,glass,{ry});
   // the steel door, standing open against the wall; the step; the sign over it
   const door=S.slab(root,H.x1+.48,1.07,H.door.z0-.05,.05,2.1,1.05,green);door.rotation.y=-.2;S.slab(root,H.x1+.4,.08,(H.door.z0+H.door.z1)/2,.6,.16,1.4,conc);
-  const sign=paper(512,256,(g,w,h)=>{g.fillStyle='#e9e4d6';g.fillRect(0,0,w,h);g.strokeStyle='#1f3a2a';g.lineWidth=10;g.strokeRect(8,8,w-16,h-16);g.fillStyle='#1f3a2a';g.textAlign='center';g.font='bold 30px Arial';g.fillText('OAK HOLLOW TWP. PUBLIC WORKS',w/2,62);
-   g.font='bold 40px Arial';g.fillText('MILL CREEK ISOLATION WORKS',w/2,124);g.font='26px Arial';g.fillText('GATE STRUCTURE NO. 2  ·  1958',w/2,172);g.fillStyle='#a02a20';g.font='bold 22px Arial';g.fillText('AUTHORIZED PERSONNEL ONLY',w/2,222);});
+  const sign=paper(512,256,(g,w,h)=>{g.fillStyle='#e9e4d6';g.fillRect(0,0,w,h);g.strokeStyle='#1f3a2a';g.lineWidth=10;g.strokeRect(8,8,w-16,h-16);g.textAlign='center';
+   // (each line no wider than the board)
+   const line=(t,px,y,c,bold=true)=>{g.fillStyle=c;g.font=`${bold?'bold ':''}${px}px Arial`;const k=Math.min(1,(w-56)/g.measureText(t).width);g.font=`${bold?'bold ':''}${Math.floor(px*k)}px Arial`;g.fillText(t,w/2,y);};
+   line('OAK HOLLOW TWP. PUBLIC WORKS',28,62,'#1f3a2a');line('MILL CREEK ISOLATION WORKS',40,124,'#1f3a2a');line('GATE STRUCTURE NO. 2  ·  1958',26,172,'#1f3a2a',false);line('AUTHORIZED PERSONNEL ONLY',22,222,'#a02a20');});
   S.plane(root,H.x1+.14,2.75,-1.6,1.9,.95,new THREE.MeshStandardMaterial({map:sign,color:sign?0xffffff:0xe9e4d6,roughness:.6}),{ry:Math.PI/2,name:'works-sign'});
   // inside: the switchgear along the north wall (dials for the three gates, the level chart), the desk, the bin, the log
   const panelTex=paper(1024,384,(g,w,h)=>{g.fillStyle='#4a5e52';g.fillRect(0,0,w,h);g.strokeStyle='#22302a';g.lineWidth=6;for(let i=1;i<4;i++){g.beginPath();g.moveTo(w*i/4,0);g.lineTo(w*i/4,h);g.stroke();}
@@ -279,11 +283,12 @@ export function createWorks({scene,camera,sfx=()=>{}}){
  // ---- Brandt's truck: a white Public Works pickup, an amber bar on the cab ------------------------------------------------------
  const truck=new THREE.Group();truck.name='public-works-truck';root.add(truck);
  {const white=new THREE.MeshStandardMaterial({color:0xe8e8e2,roughness:.35,metalness:.3}),glassT=new THREE.MeshStandardMaterial({color:0x1c2228,roughness:.08,metalness:.5}),tire=new THREE.MeshStandardMaterial({color:0x151515,roughness:.9}),amber=new THREE.MeshStandardMaterial({color:0x6a4a10,emissive:0xffa020,emissiveIntensity:0,roughness:.4});
-  S.slab(truck,0,.75,0,1.95,.7,5.4,white);S.slab(truck,0,1.45,-.75,1.9,.8,2.0,white);S.slab(truck,0,1.55,-1.72,1.8,.6,.06,glassT,{rx:-.35});for(const s of [-1,1])S.slab(truck,s*.96,1.5,-.75,.04,.5,1.7,glassT);
-  S.slab(truck,0,1.18,1.55,1.95,.2,2.3,white);for(const s of [-1,1])S.slab(truck,s*.95,1.25,1.55,.08,.35,2.3,white);S.slab(truck,0,1.98,-.75,1.2,.12,.25,amber);truck.userData.amber=amber;
-  for(const [x,z] of [[-.85,-1.65],[.85,-1.65],[-.85,1.7],[.85,1.7]]){const w=S.cyl(truck,x,.38,z,.38,.28,tire,{rz:Math.PI/2});void w;}
+  if(car){keep.add(truck);const body=new THREE.Group();body.rotation.y=-Math.PI/2;truck.add(body);car(body,'pickup',0xe8e8e2);S.slab(truck,0,1.93,-.55,1.2,.1,.24,amber);}// (the town's pickup; its cab toward -z)
+  else{S.slab(truck,0,.75,0,1.95,.7,5.4,white);S.slab(truck,0,1.45,-.75,1.9,.8,2.0,white);S.slab(truck,0,1.55,-1.72,1.8,.6,.06,glassT,{rx:-.35});for(const s of [-1,1])S.slab(truck,s*.96,1.5,-.75,.04,.5,1.7,glassT);
+  S.slab(truck,0,1.18,1.55,1.95,.2,2.3,white);for(const s of [-1,1])S.slab(truck,s*.95,1.25,1.55,.08,.35,2.3,white);S.slab(truck,0,1.98,-.75,1.2,.12,.25,amber);
+  for(const [x,z] of [[-.85,-1.65],[.85,-1.65],[-.85,1.7],[.85,1.7]]){const w=S.cyl(truck,x,.38,z,.38,.28,tire,{rz:Math.PI/2});void w;}}truck.userData.amber=amber;
   const door=paper(256,128,(g,w,h)=>{g.fillStyle='#e8e8e2';g.fillRect(0,0,w,h);g.fillStyle='#1f5a3a';g.beginPath();g.arc(48,64,36,0,7);g.fill();g.fillStyle='#e8e8e2';g.font='bold 22px Arial';g.textAlign='center';g.fillText('OH',48,72);g.fillStyle='#1f5a3a';g.textAlign='left';g.font='bold 20px Arial';g.fillText('OAK HOLLOW TWP.',94,54);g.fillText('PUBLIC WORKS',94,84);});
-  for(const s of [-1,1])S.plane(truck,s*.985,.95,-.75,1.3,.65,new THREE.MeshStandardMaterial({map:door,color:door?0xffffff:0xe8e8e2,roughness:.4}),{ry:s*Math.PI/2});
+  for(const s of [-1,1])S.plane(truck,s*(car?1.012:.985),car?.82:.95,-.75,1.1,.55,new THREE.MeshStandardMaterial({map:door,color:door?0xffffff:0xe8e8e2,roughness:.4,polygonOffset:true,polygonOffsetFactor:-2}),{ry:s*Math.PI/2});
   truck.position.set(SPOT.truck[0],0,SPOT.truck[1]);truck.rotation.y=Math.PI/2+.15;}
  // ---- the trees around the valley (Chapter Five's forest kit, placed here) ------------------------------------------------
  const rnd=seeded(6160),trees=[];
@@ -422,7 +427,7 @@ export function createWorks({scene,camera,sfx=()=>{}}){
  function blockers(out){if(GS.gap<1.02){const c=local(9,GATE.z);for(const dx of [-1,0,1])out.push({x:c.x+dx,z:c.z,r:.5,speed:0});}}
  function attach(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();}
  function reset(){Object.assign(GS,{gap:GATE.open,v:0,mode:'up',held:false,pinned:false,slamAt:-1,crankUp:0,port:0,portOpen:false,lever:0});Object.assign(ST,{power:true,alarm:0,t:0,southGate:0,cover:0,grille:0,grilleShake:0,grilleLock:true,wheelSpin:0,amber:false});
-  for(const w of Object.values(WATER)){w.y=w.want=w===WATER.chan?-4.8:FLOOR.low-.03;w.rate=.05;}for(const L of lampOrder){L.level=L.want=0;L.flick=0;}for(const P of POOL)P.intensity=0;pinTo('stow');nav.ducking=false;prints.visible=false;place();}
+  for(const w of Object.values(WATER)){w.y=w.want=w===WATER.chan?-4.8:FLOOR.low-.03;w.rate=.05;}for(const L of lampOrder){L.level=0;L.want=L.emerg?1:0;L.flick=0;}for(const P of POOL)P.intensity=0;pinTo('stow');nav.ducking=false;prints.visible=false;place();}
  reset();
  function setLamp(id,want,{rate=4,flick=0}={}){const L=LAMPS[id];if(L){L.want=want;L.rate=rate;L.flick=flick;}}
  function lamps(zone,want,o){for(const L of lampOrder)if(!L.emerg&&(zone==='*'||L.zone===zone||L.id.startsWith(zone)))setLamp(L.id,want,o);}
