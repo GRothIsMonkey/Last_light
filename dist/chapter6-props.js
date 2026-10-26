@@ -95,6 +95,17 @@ export function createProps6(){
  const log=new THREE.Group();log.name='gate-log';S.box(log,0,.006,0,.44,.012,.3,mat(0x2a3a2a));const pg=new THREE.Mesh(new THREE.PlaneGeometry(.2,.28),canvasMat(512,720,logArt));pg.rotation.x=-Math.PI/2;pg.position.set(.11,.014,0);log.add(pg);const pg2=new THREE.Mesh(new THREE.PlaneGeometry(.2,.28),mat(0xece6cf));pg2.rotation.x=-Math.PI/2;pg2.position.set(-.11,.014,0);log.add(pg2);
  // a grey blanket (a firefighter puts it round Jamie)
  const blanket=new THREE.Mesh((()=>{const g=new THREE.PlaneGeometry(1.1,.9,8,8),p=g.attributes.position;for(let i=0;i<p.count;i++)p.setZ(i,Math.sin(p.getX(i)*7)*.03+Math.cos(p.getY(i)*5)*.02);g.computeVertexNormals();return g;})(),mat(0x6a6e72,{roughness:1,side:THREE.DoubleSide}));blanket.name='blanket';
- for(const o of [plan,folder,bag,notebook,radio,wxRadio,helmet,bin,log,blanket])o.traverse(q=>{if(q.isMesh){q.castShadow=true;q.receiveShadow=true;}});
- return {plan,planM,mark,rolled,planMarks,folder,bag,notebook,radio,radioMesh,wxRadio,helmet,bin,log,blanket};
+ // Sam's notebook: spiral-bound, open flat; his week on the left page, WATER and its arrows on the right
+ const samNotes=new THREE.Group();samNotes.name='sam-notebook';
+ {const hand=(g,lines,x0,y0,lh,font)=>{g.fillStyle='#24324a';g.font=font;lines.forEach((t,i)=>{if(t)g.fillText(t,x0+(i%3)*.6,y0+i*lh);});};
+  const ruled=(g,w,h)=>{g.fillStyle='#f6f3e8';g.fillRect(0,0,w,h);g.strokeStyle='rgba(90,130,190,.35)';g.lineWidth=2;for(let y=86;y<h;y+=40){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}g.strokeStyle='rgba(200,80,80,.45)';g.beginPath();g.moveTo(52,0);g.lineTo(52,h);g.stroke();};
+  const left=canvasMat(512,720,(g,w,h)=>{ruled(g,w,h);const f='bold 21px "Comic Sans MS","Bradley Hand","Segoe Print",cursive';
+   hand(g,['WHAT HAPPENED','SUN 8/21  8:02pm  Alex down Briarwood.','  rang twice. Gone. Bell at the creek.','  his BIKE. police (Reyes: "okay")','MON 8/22  the recording. night: tunnel.','  HELMET on a ledge. DRY.','  the old bike. we ran.','TUE 8/23  downtown. TV = Alex at','  Pine Ridge. phone "Jamie?" Lyric.','WED 8/24  camp. J S A + 4 marks.','  shirt (Owl). JAMIE x2','THU 8/25  2am "Jamie" calls me','  from our yard. NOT JAMIE.'],60,78,40,f);});
+  const right=canvasMat(512,720,(g,w,h)=>{ruled(g,w,h);g.strokeStyle='#24324a';g.lineWidth=3;g.strokeRect(150,44,200,58);g.fillStyle='#24324a';g.font='bold 40px "Comic Sans MS","Bradley Hand",cursive';g.fillText('WATER',178,90);
+   const f='20px "Comic Sans MS","Bradley Hand","Segoe Print",cursive';hand(g,['creek (Briarwood) -> culvert','  -> Line 4 -> woods -> outfall','Pine Ridge = reservoir','dogs sit down at culverts','1966 bell @ Mill St culvert','1991 "pale" in Mill St culvert','  (Line 2?)','','where does it all GO?'],60,158,40,f);
+   g.strokeStyle='#24324a';g.lineWidth=2;g.beginPath();g.moveTo(250,104);g.lineTo(250,140);g.stroke();g.beginPath();g.moveTo(60,500);g.lineTo(300,500);g.stroke();});
+  for(const [i,m] of [[0,left],[1,right]]){const pg=new THREE.Mesh(new THREE.PlaneGeometry(.15,.21),m);pg.rotation.set(-Math.PI/2,0,(i?1:-1)*.02);pg.position.set(i?.077:-.077,.006,0);samNotes.add(pg);}
+  S.box(samNotes,0,.002,0,.31,.004,.215,mat(0x2c4a7a));for(let k=0;k<9;k++){const r=new THREE.Mesh(new THREE.TorusGeometry(.007,.0015,4,10),mat(0x9a9a9a,{metalness:.7,roughness:.3}));r.position.set(0,.008,-.095+k*.024);r.rotation.y=Math.PI/2;samNotes.add(r);}}
+ for(const o of [plan,folder,bag,notebook,radio,wxRadio,helmet,bin,log,blanket,samNotes])o.traverse(q=>{if(q.isMesh){q.castShadow=true;q.receiveShadow=true;}});
+ return {plan,planM,mark,rolled,planMarks,folder,bag,notebook,radio,radioMesh,wxRadio,helmet,bin,log,blanket,samNotes};
 }

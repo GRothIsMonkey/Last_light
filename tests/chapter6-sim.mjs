@@ -79,7 +79,7 @@ export function playChapterSix(T,label,{fromCard=true,dev=false,from=null,to=nul
   check(`${label}: you wake in bed and get up yourself`,()=>{assert.ok(A6.C.flags.up);assert.equal(A6.C.pose,null);});
   const HS=A6.home.SPOTS;
   const near=(q,r)=>approach(q,r);const lookF=(q,id)=>{faceV(q);W(.1);return X.act(id,3);};
-  note('up');if(looks){near(HS.window,1.3);note('window');if(lookF(HS.window,'c6-window'))U(()=>A6.C.view===null&&quiet(),15);near(HS.cork,1.2);note('cork');if(lookF(HS.cork,'c6-cork'))U(()=>A6.C.view===null&&quiet(),15);}
+  note('up');if(looks){near(HS.window,1.3);note('window');if(lookF(HS.window,'c6-window'))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),15);near(HS.cork,1.2);note('cork');if(lookF(HS.cork,'c6-cork'))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),15);}
   note('looks done');near(A6.home.CAMERA_AT(),1.0);faceV(A6.home.CAMERA_AT());W(.1);note('desk',spot()?.id);
   check(`${label}: Alex's camera on your desk, F picks it up`,()=>{assert.equal(spot()?.id,'c6-cam');});X.act('c6-cam');U(()=>C6().inv.camera==='have'&&!A6.C.flags?.reach,4);W(.8);
   tap('KeyV');U(()=>A6.C.view==='camera',2);U(()=>A6.C.flags.reviewed,6);T.snap?.('c6-room-camera');
@@ -125,7 +125,7 @@ export function playChapterSix(T,label,{fromCard=true,dev=false,from=null,to=nul
   check(`${label}: the old oak: the three of them`,()=>{assert.ok(A6.C.oak?.talk);});
   U(()=>A6.C.oak.done,160);T.snap?.('c6-oak');
   check(`${label}: "It looked exactly like me." / "It looked at me like I was the one who wasn't supposed to be there."`,()=>{for(const t of ['It looked exactly like me.','It looked at me like I was the one who wasn’t supposed to be there.','pine needle','chose to dismount'])assert.ok(said(t),t);});
-  if(looks){const c=A6.LOOK.chalk;approach(c,1.8);faceV({x:c.x,y:c.y,z:c.z});W(.1);if(X.act('c6-chalk',3))U(()=>A6.C.view===null&&quiet(),15);}
+  if(looks){const c=A6.LOOK.chalk;approach(c,1.8);faceV({x:c.x,y:c.y,z:c.z});W(.1);if(X.act('c6-chalk',3))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),15);}
   U(()=>ph()==='d6-street',30);note('street');
   // back down Oak Hollow toward Briarwood: Jamie's house on the way
   onBike();{const L=where();rideTo([...along(L.d,840,-1.6)],120);}
@@ -166,7 +166,8 @@ export function playChapterSix(T,label,{fromCard=true,dev=false,from=null,to=nul
   check(`${label}: the 1958 plan, Sam reading it: Line Two (Mill Street, brick, 1908), Line Four (Briarwood), where they meet; the helmet in the bar screen`,()=>{
    for(const t of ['Line Four','Line Two. Mill Street','They meet. Right here.','Ruth Ann Carver','found open. Padlock missing','kid’s bike helmet out of it yesterday','Stay with him.','I will.'])assert.ok(said(t),t);
    for(const m of ['alex','line4','dw','rac','meet','works','rack'])assert.ok(A6.props.planMarks.has(m),'mark '+m);});
-  if(looks){const f=A6.TL(-.55,.1,.74);approach(f,1.2);faceV(f);W(.1);note('file spot',spot()?.id);if(X.act('c6-file',3))U(()=>A6.C.view===null&&quiet(),25);}
+  if(looks){const f=A6.TL(-.55,.1,.74);approach(f,1.2);faceV(f);W(.1);note('file spot',spot()?.id);if(X.act('c6-file',3))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),25);
+   const nb=A6.props.samNotes.getWorldPosition(f.clone());approach(nb,1.1);faceV(nb);W(.1);note('notes spot',spot()?.id);if(X.act('c6-notes',3))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),30);}
   const car=K.carA;approach(car.pos,2.6);faceV(car.pos.clone().setY(car.pos.y+1));W(.1);X.act('c6-car',6);U(()=>ph()==='e6-yard'&&A6.C.fadeIn<0,10);
   lap('records');}
  if(seg('works')){
@@ -174,24 +175,24 @@ export function playChapterSix(T,label,{fromCard=true,dev=false,from=null,to=nul
   check(`${label}: the Mill Creek isolation works, half past three, the storm coming in`,()=>{assert.equal(ph(),'e6-yard');assert.match(element('date').innerHTML,/3:\d\d PM/);assert.ok(C6().storm>.4,'storm '+C6().storm);assert.ok(A6.works.root.parent,'the works in the scene');});
   U(()=>A6.C.wk.stage==='lights',40);const B=A6.cast.brandt;approach(B.pos,1.4);faceV(B.person.parts.rhand.getWorldPosition(B.pos.clone()));W(.1);X.act('c6-light',6);U(()=>C6().inv.flashlight,4);
   check(`${label}: Mr. Brandt, Public Works, hands you a flashlight`,()=>{assert.ok(C6().inv.flashlight);assert.ok(said('Thirty-one years with the township'));});
-  if(looks){const q=WP(8.6,-20);approach(q,1.5);faceV(WP(7,-20,-1.5));W(.1);if(X.act('c6-channel',3))U(()=>A6.C.view===null&&quiet(),15);
-   approach(WP(8.4,-23.6),.8);faceV(WP(4,-24.6,-2.6));W(.1);note('rack spot',spot()?.id);if(X.act('c6-rack',3))U(()=>A6.C.view===null&&quiet(),15);}
+  if(looks){const q=WP(8.6,-20);approach(q,1.5);faceV(WP(7,-20,-1.5));W(.1);if(X.act('c6-channel',3))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),15);
+   approach(WP(8.4,-23.6),.8);faceV(WP(4,-24.6,-2.6));W(.1);note('rack spot',spot()?.id);if(X.act('c6-rack',3))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),15);}
   approach(WP(18.5,-3.9),.6);U(()=>ph()==='e6-house',10);note('in the gatehouse');
   {const hb=WP(17.2,1.2,.25+.9);approach(hb,1.2);faceV(hb);W(.1);note('helmet spot',spot()?.id);X.act('c6-helmet',4);}
   U(()=>C6().inv.helmet==='reyes',40);T.snap?.('c6-helmet');
   check(`${label}: Alex's helmet (red, 17, the broken strap) identified, bagged by Reyes`,()=>{assert.ok(said('That’s his.'));assert.ok(said('Seventeen'));assert.equal(C6().inv.helmet,'reyes');});
-  if(looks){const lg=WP(18.6,1.25,.25+.8);approach(lg,1.2);faceV(lg);W(.1);if(X.act('c6-log',3))U(()=>A6.C.view===null,15);
-   const pn=WP(17.2,-7.2,.25+1.55);approach(WP(17.2,-5.6),.6);faceV(pn);W(.1);note('panel spot',spot()?.id);if(X.act('c6-panel',3))U(()=>A6.C.view===null&&quiet(),15);}
+  if(looks){const lg=WP(18.6,1.25,.25+.8);approach(lg,1.2);faceV(lg);W(.1);if(X.act('c6-log',3))U(()=>A6.C.view===null&&!A6.C.pose,15);
+   const pn=WP(17.2,-7.2,.25+1.55);approach(WP(17.2,-5.6),.6);faceV(pn);W(.1);note('panel spot',spot()?.id);if(X.act('c6-panel',3))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),15);}
   U(()=>A6.C.wk.stage==='down',60);note('down');
   check(`${label}: Sam gets Brandt's spare radio; the boys to the gallery, "not one step past it"`,()=>{assert.ok(C6().inv.radio);assert.ok(said('Not one step past it'));});
   approach(WP(8,-4),.8);U(()=>ph()==='e6-gallery',20);note('gallery');
-  if(looks){approach(WP(7.2,-1.6),.6);faceV(WP(.5,-1.6,-5.5+2.6));W(.1);note('gauge spot',spot()?.id);if(X.act('c6-gauge',3))U(()=>A6.C.view===null&&quiet(),12);}
+  if(looks){approach(WP(7.2,-1.6),.6);faceV(WP(.5,-1.6,-5.5+2.6));W(.1);note('gauge spot',spot()?.id);if(X.act('c6-gauge',3))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),12);}
   approach(WP(8,6),.8);U(()=>A6.C.gal?.echo,60);
   // the voice behind them: turn round, look at the speaker at the dead end
   {const ic=WP(8,-13.6,-3+1.9);U(()=>{faceV(ic);return false;},2);}
   U(()=>A6.C.gal.down,60);
   check(`${label}: the radio, twice: the second time from behind them, the intercom with its cable cut`,()=>{assert.ok(said('REYES — BEHIND YOU')||watch.lines.some(l=>/^REYES — BEHIND YOU/.test(l)));assert.ok(said('I said it once.'));});
-  if(looks){const ic=WP(8,-13.6,-3+1.9);approach(WP(8,-12.6),.8);faceV(ic);W(.1);if(X.act('c6-speaker',3))U(()=>A6.C.view===null&&quiet(),12);}
+  if(looks){const ic=WP(8,-13.6,-3+1.9);approach(WP(8,-12.6),.8);faceV(ic);W(.1);if(X.act('c6-speaker',3))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),12);}
   lap('works');}
  if(seg('below')){
   if(from!=='below'||cont){approach(WP(8,12.2),.6);approach(WP(8,17.4),.8);}
@@ -242,7 +243,7 @@ export function playChapterSix(T,label,{fromCard=true,dev=false,from=null,to=nul
   if(from!=='after'||cont)U(()=>ph()==='n6-sealed',10);
   U(()=>A6.C.sl.stage==='free',30);note('sealed, free');
   {const g=WP(9,22.85,LOW+1.2);approach(WP(9,22.1),.4);faceV(g);W(.1);X.act('c6-bang',3);U(()=>quiet(),10);}
-  {const q=WP(9,22.85,LOW+1.55);faceV(q);W(.1);note('port spot',spot()?.id);if(X.act('c6-port',3))U(()=>A6.C.view===null&&quiet(),15);T.snap?.('c6-port');}
+  {const q=WP(9,22.85,LOW+1.55);faceV(q);W(.1);note('port spot',spot()?.id);if(X.act('c6-port',3))U(()=>A6.C.view===null&&!A6.C.pose&&quiet(),15);T.snap?.('c6-port');}
   U(()=>A6.C.sl.stage==='up',60);note('up');
   check(`${label}: the gate won't open; Reyes calls fire and rescue; the manhole on the bank`,()=>{assert.ok(said('fire and rescue'));assert.ok(said('manhole'));});
   approach(WP(8,13),.6);approach(WP(9,-6.9),.6);approach(WP(18,-3.9),.6);approach(WP(23,-3.9),.6);U(()=>ph()==='n6-rescue',10);note('rescue');
@@ -322,7 +323,11 @@ export async function runChapterSixChecks(T,cap=null){
  if(cap?.natural?.[6]){const {compare,far,strict}=await import('./dev-chapters-sim.mjs');const devAt=()=>{const ph=h.devStart(6);advance(1/30);return {ph,snap:h.dev.snapshot()};};
   const {ph,snap}=devAt(),d=compare(cap.natural[6],snap,6,.04).filter(x=>!/^(chapter6\.C\.(t|pt|h|minute|lastEvent|sounds)|chapter6\.state\.(t|h|clock|sounds|guard)|chapter5\.C\.(t|pt|h|minute|lastEvent)|chapter5\.state\.(t|h|clock|where\.(e|n))|game\.clock)/.test(x[0])),f=far(cap.natural[6],snap);
   check(`DEV start at Chapter Six (phase ${ph}): the same state as arriving from Chapter Five's end card (${d.length} differences)`,()=>{assert.deepEqual(d,[],JSON.stringify(d.slice(0,12)));assert.deepEqual(f,[]);});
-  const clean6=devAt().snap,sw=[];for(const n of [6,1,6,5,6,0,3,6]){const s2=(n===6?devAt().snap:(h.devStart(n),h.dev.snapshot()));if(n===6){const dd=strict(clean6,s2,6);if(dd.length)sw.push({n,d:dd.slice(0,6)});}}
+  // (one field is left out: Chapter Four's downtown streetlight clock, which Start over does not reset and which is only
+  // overwritten when Chapter Four runs; a start of Chapter Five re-runs Chapter Four's ending, a start of Chapter Six does
+  // not. Chapter Six never reads it.)
+  const dormant=x=>/^chapter4\.state\.presence\.clock$/.test(x[0]);
+  const clean6=devAt().snap,sw=[];for(const n of [6,1,6,5,6,0,3,6]){const s2=(n===6?devAt().snap:(h.devStart(n),h.dev.snapshot()));if(n===6){const dd=strict(clean6,s2,6).filter(x=>!dormant(x));if(dd.length)sw.push({n,d:dd.slice(0,6)});}}
   check('DEV switching 6→1→6→5→6→0→3→6 in one session: every Chapter Six start identical to a clean one',()=>assert.deepEqual(sw,[],JSON.stringify(sw)));M6.dev={differences:d.length,switchingLeaks:sw.length};}
  // ---- the earlier chapters as they were: nothing of Chapter Six left in them ----
  const clean={};for(const sec of ['chapter5-start','c5-camp','c4-library','c3-tunnel-entrance','chapter2-start']){h.jump(sec);advance(.5);

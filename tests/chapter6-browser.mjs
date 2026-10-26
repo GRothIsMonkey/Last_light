@@ -61,7 +61,7 @@ const installWalk=()=>ev(async()=>{const L=lastLight,{playChapterSix}=await impo
   let clock=0;const caps=window.__caps=[],fails=[],passed=[],metrics={};
   const h=new Proxy(L,{get(t,k){if(k==='snapshot'){const s=L.state;return {state:s.state,clock,speed:s.speed};}
    if(k==='night'){const s=L.state;return {state:s.state,wx:s.walk.x,wz:s.walk.z,wa:s.walk.a,speed:s.speed,fade:s.fade,roam:L.roam};}return Reflect.get(t,k);}});
-  const advance=s=>{const n=Math.ceil(s*30-1e-9);for(let i=0;i<n;i++)L.step(1/30);clock+=n/30;};
+  const advance=(s,each)=>{const n=Math.ceil(s*30-1e-9);for(let i=0;i<n;i++){L.step(1/30);clock+=1/30;each?.();}};
   const key=(type,code)=>dispatchEvent(Object.assign(new Event(type),{code}));
   const press=c=>key('keydown',c),release=c=>key('keyup',c),tap=c=>{press(c);release(c);};
   const element=id=>{const el=document.getElementById(id);return el&&new Proxy(el,{get(t,k){if(k==='children')return Array.from(t.children);const v=t[k];return typeof v==='function'?v.bind(t):v;},set(t,k,v){t[k]=v;return true;}});};

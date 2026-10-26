@@ -614,7 +614,7 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  if(L4?.fill>0){const f=L4.fill;hemi.intensity+=(Math.max(hemi.intensity,1.22)-hemi.intensity)*f;hemi.color.lerp(_c1.set(0xedece1),.52*f);hemi.groundColor.lerp(_c2.set(0x625b4e),.55*f);}
  // (Chapter Six: a storm's grey cover and rain haze; a lightning flash; below ground at the works, only the lamps down there and what you carry)
  skyMat.uniforms.storm.value=L4?.storm||0;skyMat.uniforms.flash.value=L4?.flash||0;
- if(L4?.storm>0){const s=Math.min(1,L4.storm*1.3);scene.fog.color.lerp(_c1.set(0x6f767c).lerp(_c2.set(0x1c2128),night),.8*s);scene.fog.density+=.011*s*s;hemi.color.lerp(_c1.set(0xb4bcc4),.55*s);hemi.intensity*=1-.32*s;sunlight.intensity*=1-.86*s;sunlight.color.lerp(_c1.set(0xd8dde2),.6*s);renderer.toneMappingExposure-=.04*s;}
+ if(L4?.storm>0){const s=Math.min(1,L4.storm*1.3);scene.fog.color.lerp(_c1.set(0x555c61).lerp(_c2.set(0x1c2128),night),.85*s);scene.fog.density+=.011*s*s;hemi.color.lerp(_c1.set(0xb4bcc4),.55*s);hemi.intensity*=1-.32*s;sunlight.intensity*=1-.86*s;sunlight.color.lerp(_c1.set(0xd8dde2),.6*s);renderer.toneMappingExposure-=.04*s;}
  if(L4?.flash>0){const f=L4.flash*(L4.cave?1-L4.cave*.85:1);hemi.intensity+=2.6*f;hemi.color.lerp(_c1.set(0xdfe6ff),.6*f);scene.fog.color.lerp(_c2.set(0xa9b2c8),.5*f);}
  if(L4?.cave>0){const cv=L4.cave;hemi.intensity*=1-.86*cv;hemi.groundColor.lerp(_c1.set(0x0b0c10),cv);sunlight.intensity*=1-cv;scene.fog.color.lerp(_c1.set(0x07080b),cv*.92);scene.fog.density=scene.fog.density*(1-cv)+.032*cv;renderer.toneMappingExposure+=.22*cv;}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);

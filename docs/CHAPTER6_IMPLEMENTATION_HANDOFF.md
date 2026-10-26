@@ -25,10 +25,11 @@ section below; **Continue** on the title returns to the last checkpoint; the pri
 ## Length
 
 The scripted, direct simulation player (it goes straight to each objective and reads each optional thing once) takes
-**about 35 minutes** of game time from Chapter Five's end card to Chapter Six's (see the test report for the measured
-number per act). It never wanders: no exploring the streets, the yard, the gatehouse or the chambers beyond what the
-story asks. A first-time player who looks around should land in the requested **40–50 minutes**; that is an estimate,
-not a measurement, and the human playtest is what will confirm it. Nothing is timed against the player, and every beat
+**33.3 minutes** of game time from Chapter Five's end card to Chapter Six's (the Chromium walkthrough, the same player
+in the page: 33.0; the test report has the number per segment). It never wanders: no exploring the streets, the yard, the gatehouse or the chambers beyond what the
+story asks. A first-time player who looks around should land at about **43–50 minutes**; that is an estimate, not a
+measurement. In direct play Acts I, II and V are inside their requested ranges and **Acts III (~4.3 min) and IV
+(~7.5 min) are short of theirs**; the human playtest should time those two in particular. Nothing is timed against the player, and every beat
 has a time fallback, so a player who stands still is carried on (the sim's idle check runs every beat that way).
 
 How the requested acts map onto the chapter, with the measured direct time of each part (from the report):
@@ -111,7 +112,9 @@ Creek Isolation Works, Gate Structure No. 2**; **Line Two**, Mill Street, brick,
 the bell at the Mill Street culvert; and 1991's Public Works report: gate 2B found open, the padlock missing, the dog
 would not enter Line Two. "…They meet. Right here." Then the trash rack: Public Works pulled a kid's helmet out of it
 yesterday morning. "Red? With a seventeen?" Reyes radios for Brandt: "if you're coming, come now. The creek's coming
-up." **F** on the photocopies (optional): the 1991 supplementary report and the 1966 blotter.
+up." **F** on the photocopies (optional): the 1991 supplementary report and the 1966 blotter. **F** on Sam's notebook
+(optional): his list of the week, Sunday 8:02 PM to Thursday 2 AM, and on the other page one boxed word, WATER, with
+everything under it ("The creek. The culvert. The reservoir. Every time, there's water.").
 
 **The argument.** Reyes: "You three stay here." Sam: somebody has to say if it's his; his dad is at the camp. Sam's
 dad: "Absolutely not." Reyes, after a while: they ride with him, look at the helmet in the gatehouse, up top where it's
@@ -163,7 +166,7 @@ pushes it at the guide: the holes don't line up ("It won't go in!" / "She has to
 go UP! It only stops!"). The crank (optional) spins with nothing on the other end of it.
 
 **The other Sam.** The lamp at the far end of J comes on with the power dead, and under it stands **Sam** — while Sam
-is at the brake, both seen through the gap under the leaf, both in Reyes's line of sight where he crouches at the gate.
+is at the brake, both seen through the gap under the leaf, both in Reyes's line of sight from where he stands at the left of the gap, his light under the leaf.
 "Sam?" "What?" "…Who's that?" Jamie: "Don't look at him. Sam. Don't look at him." It holds still, copying the real
 Sam's pose a beat late, smiles, takes a step, and runs at the brake (the second jump scare). The leaf slams down.
 "GUYS—" The light at the end goes out. **Sam is on the other side, and then he isn't anywhere.**
