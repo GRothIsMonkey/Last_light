@@ -17,6 +17,7 @@ import {createActor,ADULTS,headingTo,wrap} from './people.js';
 import {createPerson,newPose,standPose,walkPose,applyPose,copyPose,P as PI} from './rig.js';
 import {createFace} from './faces.js';
 import {chapter5Appearance} from './chapter5-models.js';
+import {chapter6Appearance} from './chapter6-models.js';
 import {CAST} from './cast.js';
 import {clamp,damp,smooth} from './chapter6-kit.js';
 
@@ -44,7 +45,7 @@ function helmet(person,color=0x1a1a1a,{brim=.15,shield=null}={}){const g=new THR
  const dome=new THREE.Mesh(new THREE.SphereGeometry(.125,18,10,0,Math.PI*2,0,Math.PI/2),m);dome.scale.set(1,.9,1.15);dome.position.y=.03;g.add(dome);
  const rim=new THREE.Mesh(new THREE.CylinderGeometry(.13+brim,.135+brim,.012,24),m);rim.position.set(0,.03,.04);rim.scale.z=1.15;g.add(rim);
  if(shield){const s=new THREE.Mesh(new THREE.PlaneGeometry(.07,.06),new THREE.MeshStandardMaterial({color:shield,roughness:.5}));s.position.set(0,.08,-.13);s.rotation.x=-.3;g.add(s);}
- person.parts.head.add(g);g.traverse(o=>{if(o.isMesh)o.castShadow=true;});return g;}
+ g.userData.c6Equipment=true;person.parts.head.add(g);g.traverse(o=>{if(o.isMesh)o.castShadow=true;});return g;}
 
 export function createCast6({scene,nav,camera}){
  const samDad=createActor(scene,nav,ADULTS6.samDad,{seed:61});
@@ -65,7 +66,7 @@ export function createCast6({scene,nav,camera}){
    go(pts,{speed=1.1,accel=2,then=null}={}){F.path=pts.slice();F.pi=0;F.speed=speed;F.accel=accel;F.then=then;F.mode='walk';},
    stop(){F.path=null;F.mode='stand';F.v=0;},
    lookAt(q){F.lookTo=q?clamp(-wrap(headingTo(F.x,F.z,q.x,q.z)-F.a),-1.1,1.1):0;}};
-  return F;}
+  F.art6=chapter6Appearance(person,cast,{cursed:true});F.art6.enable(true);return F;}
  const AX=figure(CAST.alex,'line-two-figure');
  const SAM2=figure(CAST.sam,'the-other-sam');
  // (and Jamie, as he was on the stairs of his own house that morning: Chapter Five's double again, in daylight)
@@ -79,7 +80,10 @@ export function createCast6({scene,nav,camera}){
   if(F.v>.08){F.gait+=F.v*dt/(F.v>2.4?1.6:1.05);walkPose(p,F.gait,Math.max(.8,F.v),{look:F.look*.4});if(F.v>2.4){p[PI.lean]+=.22;p[PI.root+1]-=.03;}}
   else standPose(p,0,{look:F.look,shift:0});
   // the stillness: no breath, no weight shift; a head that tilts a little too far and stays there
-  p[PI.hy]=F.look;p[PI.roll]=(p[PI.roll]||0)+F.tilt*.3;p[PI.hp]+=F.tilt*.12;
+  // Recognition first, then wrong timing: the eyes find you before the head follows.
+  // A measured delay and a small fixed asymmetry, never a flailing broken rig.
+  if(F===JAMIE2&&eye&&F.t>.7){const desired=clamp(-wrap(headingTo(F.x,F.z,eye.x,eye.z)-F.a),-.55,.55);F.look=damp(F.look,desired,F.t>1.35?2.5:.02,dt);}
+  p[PI.hy]=F.look;p[PI.roll]=(p[PI.roll]||0)+F.tilt*.18;p[PI.hp]+=F.tilt*.12;
   // copying: the real one's posture, a moment late (the pose recorded each frame, played back lag seconds on)
   if(F.copy){F.ringT+=dt;F.ring.push({t:F.ringT,p:Float32Array.from(F.copy())});while(F.ring.length>2&&F.ring[1].t<F.ringT-F.lag)F.ring.shift();
    if(F.copyW>.01&&F.ring.length){const old=F.ring[0].p;for(const k of [PI.lh,PI.lh+1,PI.lh+2,PI.rh,PI.rh+1,PI.rh+2,PI.lean,PI.twist])p[k]+=(old[k]-p[k])*F.copyW;}}
@@ -87,7 +91,7 @@ export function createCast6({scene,nav,camera}){
   if(F.reach>.01){const w=F.reach,y=p[PI.root+1];for(const [o,s] of [[PI.lh,-1],[PI.rh,1]]){p[o]+=(s*.2-p[o])*w;p[o+1]+=(y+.38-p[o+1])*w;p[o+2]+=(-.42-p[o+2])*w;}p[PI.lean]+=.12*w;}
   if(F.hit>0)p[PI.lean]-=.25*F.hit;
   if(F.ground)F.y=F.ground(F.x,F.z);F.person.group.position.set(F.x,F.y-F.crouch,F.z);F.person.group.rotation.set(0,-F.a,0);applyPose(F.person,p);
-  F.face.update?.(dt,{clock:F.t,talk:0,speech:null,visible:true});}
+  F.face.update?.(dt,{clock:F.t,talk:0,speech:null,visible:true});F.art6.update(dt,{clock:F.t,eye});}
  function update(dt,ctx){for(const a of actors)if(a.visible)a.update(dt,ctx);for(const F of [AX,SAM2,JAMIE2])updateFigure(F,dt,ctx);}
  function reset(){for(const a of actors){a.show(false);a.lookAt=null;a.gest(null);a.path=null;a.mode='stand';}for(const F of [AX,SAM2,JAMIE2]){F.show(false);F.copy=null;F.copyW=F.copyWTo=0;F.crouch=0;F.ground=null;}}
  return {samDad,brandt,fire,actors,AX,SAM2,JAMIE2,update,reset,blockers(out){for(const a of actors)if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});for(const F of [AX,SAM2])if(F.mode!=='off'&&F.person.group.visible&&F.blocks)out.push({x:F.x,z:F.z,r:.3,speed:0});}};

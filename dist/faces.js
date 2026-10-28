@@ -47,7 +47,7 @@ export function createFace(person,cast={},{enabled=true}={}){const head=person.p
  const mouth=new THREE.Mesh(mGeo,mat);mouth.name='face-mouth';mouth.frustumCulled=false;mouth.castShadow=false;head.add(mouth);
  const bQ=2*3,bPos=new Float32Array(bQ*6*3),bGeo=new THREE.BufferGeometry();bGeo.setAttribute('position',new THREE.BufferAttribute(bPos,3));bGeo.setAttribute('normal',new THREE.BufferAttribute(new Float32Array(bQ*6*3).map((_,i)=>i%3===2?-1:0),3));
  const brows=new THREE.Mesh(bGeo,new THREE.MeshStandardMaterial({color:hairC,roughness:.9,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));brows.name='face-brows';brows.frustumCulled=false;brows.castShadow=false;head.add(brows);
- const ex=Object.fromEntries(KEYS.map(k=>[k,0])),want=Object.fromEntries(KEYS.map(k=>[k,0]));
+ const ex=Object.fromEntries(KEYS.map(k=>[k,k==='wide'?1:0])),want=Object.fromEntries(KEYS.map(k=>[k,0]));
  const S={name:'neutral',hold:0,mood:'neutral',open:0,round:0,keys:null,speakT:0,speakDur:0,blinkT:0,dirty:true,last:'',talking:false,enabled:true};
  let qi=0;
  const quad=(pos,col,i,ax,ay,bx,by,cx,cy,dx,dy,z,c)=>{const v=[[ax,ay],[bx,by],[cx,cy],[ax,ay],[cx,cy],[dx,dy]];for(let k=0;k<6;k++){const o=(i*6+k)*3;pos[o]=v[k][0]*size;pos[o+1]=v[k][1]*size;pos[o+2]=z*size;if(col){col[o]=c.r;col[o+1]=c.g;col[o+2]=c.b;}}};

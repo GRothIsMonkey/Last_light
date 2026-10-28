@@ -329,6 +329,9 @@ export function createChapter1(o){
   // Cast and cars.
   for(const a of adults)a.update(dt,{eye});police.update(dt,eye);updateSiren(dt);
   comp.update(dt,{player:{...p,bx:p.bike.x,bz:p.bike.z},eye,clock:S.t,speaker:speaking(),inView,poi:S.poiFor||null,obstacles:blockers().filter(b=>!comp.all.some(c=>Math.hypot(c.bx-b.x,c.bz-b.z)<.01||Math.hypot(c.px-b.x,c.pz-b.z)<.01))});
+  // Chapter Six contact/facial overlays must follow the shared actor/companion poses.
+  // The chapter owns the guard and restores all presentation on exit.
+  api.afterActors6?.(dt,{eye});
   updateFlashlights(dt);updateClue(dt);flyMat.uniforms.uTime.value=S.t;flyMat.uniforms.uScale.value=(o.renderer?.domElement?.height||900)*.9;
   for(let i=0;i<FN;i++){const h=flyHome[i],t=S.t*.3+i;fly[i*3]=h.x+Math.sin(t*.7)*1.2;fly[i*3+1]=nav.baseY?.(h.x,h.z)+.5+Math.sin(t*.5)*.4+(i%3)*.35;fly[i*3+2]=h.z+Math.cos(t*.6)*1.2;}flyGeo.attributes.position.needsUpdate=true;
   sources();attention();}

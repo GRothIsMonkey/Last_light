@@ -27,6 +27,7 @@
 // Walking: every place has one floor (the levels are laid out so none is over another): nav.setRoom(works.nav).
 // Local metres: x east, z south (downstream), y up from the yard. The world: x + W0.x, z + W0.z.
 import * as THREE from './three.module.js';
+import {dressWorks} from './chapter6-atmosphere.js';
 import {paper,bake,makeShapes,clamp,damp,smooth,lerp} from './chapter6-kit.js';
 import {artSurface} from './art-surfaces.js';
 import {pineMaterial} from './pine-materials.js';
@@ -344,6 +345,7 @@ export function createWorks({scene,camera,sfx=()=>{},car=null}){
   const walk=(x0,z0,x1,z1,off)=>{const n=Math.round(Math.hypot(x1-x0,z1-z0)/.34),a=Math.atan2(x1-x0,z1-z0)+Math.PI;for(let i=0;i<n;i++){const t=i/n,x=x0+(x1-x0)*t,z=z0+(z1-z0)*t,sd=i%2?1:-1;put(x+Math.cos(a)*.09*sd+off,z-Math.sin(a)*.09*sd,a,sd);}};
   walk(9.2,22.5,8.25,17.25,0);put(7.88,16.95,Math.PI,-1);put(8.12,16.95,Math.PI,1);walk(8.6,17.35,9.6,22.5,0);}
  const batches=bake(root,keep);
+ const weathering=dressWorks(root,{floor:FLOOR.low,lamps:LAMPS,leaf});
  for(const L of POOL)root.add(L);
  // ---- state --------------------------------------------------------------------------------------------------------------------------
  const GS={gap:GATE.open,v:0,mode:'up',held:false,pinned:false,slamAt:-1,crankUp:0,port:0,lever:0};// gap: bottom of the leaf over the floor
@@ -361,7 +363,7 @@ export function createWorks({scene,camera,sfx=()=>{},car=null}){
  pinTo('stow');
  // ---- every frame ----------------------------------------------------------------------------------------------------------------------
  const lampOrder=Object.values(LAMPS);
- function update(dt,{eye}={}){ST.t+=dt;waterT.value+=dt;const t=ST.t;
+ function update(dt,{eye}={}){weathering.update(ST.t,WATER);ST.t+=dt;waterT.value+=dt;const t=ST.t;
   // the gate: up (power), coming down on the governor, held (the hand brake), dropping, shut
   if(GS.mode==='down'){if(GS.held){GS.v=0;}else{GS.v=Math.min(GS.v+dt*.25,.13);GS.gap=Math.max(0,GS.gap-GS.v*dt);}if(GS.gap<=0){GS.mode='shut';sfx('c6Slam',local(9,GATE.z,FLOOR.low+1));}}
   else if(GS.mode==='drop'){GS.v=Math.min(GS.v+dt*9.8,5);GS.gap=Math.max(0,GS.gap-GS.v*dt);if(GS.gap<=0){GS.mode='shut';GS.slamAt=t;}}

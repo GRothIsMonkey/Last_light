@@ -78,9 +78,13 @@ export function createProps6(){
  const folder=new THREE.Group();folder.name='whitcomb-file';S.box(folder,0,.004,0,.24,.006,.31,mat(0xd8b878));
  const pages=[0,1].map(i=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(.215,.28),canvasMat(768,1000,(g,w,h)=>fileArt(g,w,h,i)));m.rotation.set(-Math.PI/2,0,i?.06:-.03);m.position.set(i?.05:-.02,.009+i*.002,i?.03:0);folder.add(m);return m;});void pages;
  // the evidence bag: brown paper, folded over, its label filled in (Reyes writes it at the table)
- const bag=new THREE.Group();bag.name='evidence-bag';S.box(bag,0,.15,0,.26,.3,.07,mat(0xa88a5c,{roughness:1}));S.box(bag,0,.31,0,.26,.03,.075,mat(0x98784c,{roughness:1}));
+ const bag=new THREE.Group();bag.name='evidence-bag';const paperM=mat(0xa88a5c,{roughness:1,side:THREE.DoubleSide}),bagSides=[];
+ for(const side of [-1,1]){const geo=new THREE.PlaneGeometry(.26,.30,12,10),p=geo.attributes.position;for(let i=0;i<p.count;i++)p.setZ(i,.0025*Math.sin(p.getX(i)*51+p.getY(i)*13)+.001*Math.sin(p.getY(i)*90));geo.computeVertexNormals();const m=new THREE.Mesh(geo,paperM);m.position.set(0,.15,side*.058);if(side<0)m.rotation.y=Math.PI;bag.add(m);bagSides.push(m);}
+ for(const side of [-1,1]){const m=S.box(bag,side*.13,.15,0,.002,.30,.116,paperM);bagSides.push(m);}
+ S.box(bag,0,.002,0,.26,.004,.116,paperM);const bagTop=S.box(bag,0,.31,0,.26,.03,.075,mat(0x98784c,{roughness:1}));
+ bag.userData.setOpen=open=>{bagTop.visible=!open;for(let i=0;i<2;i++)bagSides[i].position.z=(i?1:-1)*(open?.058:.035);for(let i=2;i<4;i++)bagSides[i].scale.z=open?.116:.07;};bag.userData.setOpen(false);
  const label=new THREE.Mesh(new THREE.PlaneGeometry(.2,.13),canvasMat(256,170,(g,w,h)=>{g.fillStyle='#f4f2ea';g.fillRect(0,0,w,h);g.fillStyle='#b02020';g.font='bold 18px Arial';g.fillText('EVIDENCE  · OHPD',8,22);g.fillStyle='#222';g.font='12px Arial';
-  ['CASE 11-0821   ITEM 3','DESC: shirt, gold, boys, collar','FROM: Camp Whippoorwill, "Owl"','DATE: 8/24/11  ~1930 (per wit.)','OFC: REYES  #212'].forEach((t,i)=>g.fillText(t,8,48+i*24));}));label.position.set(0,.16,.037);bag.add(label);
+  ['CASE 11-0821   ITEM 3','DESC: shirt, gold, boys, collar','FROM: Camp Whippoorwill, "Owl"','DATE: 8/24/11  ~1930 (per wit.)','OFC: REYES  #212'].forEach((t,i)=>g.fillText(t,8,48+i*24));}));label.position.set(0,.16,.060);bag.add(label);
  // Reyes's notebook and pen
  const notebook=new THREE.Group();notebook.name='reyes-notebook';S.box(notebook,0,0,0,.09,.012,.14,mat(0x2a2a2e));S.box(notebook,0,.007,0,.085,.002,.135,mat(0xf2f0e6));
  // a handheld radio (the township's: grey, a stubby antenna, a belt clip); a weather radio for the workbench
@@ -94,7 +98,12 @@ export function createProps6(){
  // the gate log, open on the desk
  const log=new THREE.Group();log.name='gate-log';S.box(log,0,.006,0,.44,.012,.3,mat(0x2a3a2a));const pg=new THREE.Mesh(new THREE.PlaneGeometry(.2,.28),canvasMat(512,720,logArt));pg.rotation.x=-Math.PI/2;pg.position.set(.11,.014,0);log.add(pg);const pg2=new THREE.Mesh(new THREE.PlaneGeometry(.2,.28),mat(0xece6cf));pg2.rotation.x=-Math.PI/2;pg2.position.set(-.11,.014,0);log.add(pg2);
  // a grey blanket (a firefighter puts it round Jamie)
- const blanket=new THREE.Mesh((()=>{const g=new THREE.PlaneGeometry(1.1,.9,8,8),p=g.attributes.position;for(let i=0;i<p.count;i++)p.setZ(i,Math.sin(p.getX(i)*7)*.03+Math.cos(p.getY(i)*5)*.02);g.computeVertexNormals();return g;})(),mat(0x6a6e72,{roughness:1,side:THREE.DoubleSide}));blanket.name='blanket';
+ const blanket=new THREE.Mesh((()=>{const g=new THREE.BufferGeometry(),v=[],ix=[],cols=48,rows=20;
+  for(let j=0;j<=rows;j++)for(let i=0;i<=cols;i++){const t=j/rows,a=(-.94+i/cols*1.88)*Math.PI,r=.20+.025*t+.007*Math.sin(a*12+t*2),front=Math.max(0,-Math.cos(a));v.push(Math.sin(a)*r,.19-.57*t+.012*Math.sin(a*7)*t,Math.cos(a)*(.115+.02*t)-front*.15*t*t);if(i<cols&&j<rows){const n=j*(cols+1)+i;ix.push(n,n+1,n+cols+1,n+1,n+cols+2,n+cols+1);}}
+  g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));g.setIndex(ix);g.computeVertexNormals();return g;})(),mat(0x727b84,{roughness:1,side:THREE.DoubleSide}));blanket.name='blanket';
+ const rescueSeat=new THREE.Group();rescueSeat.name='rescue-stool';const frame=mat(0x9b9e9b,{metalness:.65,roughness:.4}),fabric=mat(0x34424b);
+ S.box(rescueSeat,0,.965,0,.42,.07,.34,fabric);for(const x of [-.17,.17]){S.pipe(rescueSeat,[x,.02,-.14],[x,.93,.14],.014,frame);S.pipe(rescueSeat,[x,.02,.14],[x,.93,-.14],.014,frame);}S.pipe(rescueSeat,[-.17,.06,-.14],[.17,.06,-.14],.012,frame);S.pipe(rescueSeat,[-.17,.06,.14],[.17,.06,.14],.012,frame);
+
  // Sam's notebook: spiral-bound, open flat; his week on the left page, WATER and its arrows on the right
  const samNotes=new THREE.Group();samNotes.name='sam-notebook';
  {const hand=(g,lines,x0,y0,lh,font)=>{g.fillStyle='#24324a';g.font=font;lines.forEach((t,i)=>{if(t)g.fillText(t,x0+(i%3)*.6,y0+i*lh);});};
@@ -106,6 +115,6 @@ export function createProps6(){
    g.strokeStyle='#24324a';g.lineWidth=2;g.beginPath();g.moveTo(250,104);g.lineTo(250,140);g.stroke();g.beginPath();g.moveTo(60,500);g.lineTo(300,500);g.stroke();});
   for(const [i,m] of [[0,left],[1,right]]){const pg=new THREE.Mesh(new THREE.PlaneGeometry(.15,.21),m);pg.rotation.set(-Math.PI/2,0,(i?1:-1)*.02);pg.position.set(i?.077:-.077,.006,0);samNotes.add(pg);}
   S.box(samNotes,0,.002,0,.31,.004,.215,mat(0x2c4a7a));for(let k=0;k<9;k++){const r=new THREE.Mesh(new THREE.TorusGeometry(.007,.0015,4,10),mat(0x9a9a9a,{metalness:.7,roughness:.3}));r.position.set(0,.008,-.095+k*.024);r.rotation.y=Math.PI/2;samNotes.add(r);}}
- for(const o of [plan,folder,bag,notebook,radio,wxRadio,helmet,bin,log,blanket,samNotes])o.traverse(q=>{if(q.isMesh){q.castShadow=true;q.receiveShadow=true;}});
- return {plan,planM,mark,rolled,planMarks,folder,bag,notebook,radio,radioMesh,wxRadio,helmet,bin,log,blanket,samNotes};
+ for(const o of [plan,folder,bag,notebook,radio,wxRadio,helmet,bin,log,blanket,rescueSeat,samNotes])o.traverse(q=>{if(q.isMesh){q.castShadow=true;q.receiveShadow=true;}});
+ return {plan,planM,mark,rolled,planMarks,folder,bag,notebook,radio,radioMesh,wxRadio,helmet,bin,log,blanket,rescueSeat,samNotes};
 }

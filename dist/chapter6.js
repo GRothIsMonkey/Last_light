@@ -39,7 +39,10 @@ import {createCompanionBrain} from './companion-brain.js';
 import {createInventory} from './inventory.js';
 import {LOOKOUT} from './layout.js';
 import {makeCameraModel} from './alex-camera.js';
-import {dressCamera,clothShirt} from './chapter5-props.js';
+import {dressCamera} from './chapter5-props.js';
+import {chapter6Appearance} from './chapter6-models.js';
+import {createThreshold} from './chapter6-atmosphere.js';
+import {createEvidenceCloth} from './chapter6-cloth.js';
 import {createHome} from './chapter6-home.js';
 import {createWorks,SPOT as WS,GATE,MANHOLE,FLOOR} from './chapter6-works.js';
 import {createCast6,rescueTruck} from './chapter6-cast.js';
@@ -98,10 +101,13 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const drive=(x,z)=>SHW(gxS+x,gzS+z),driveA=(x,z)=>{const a=drive(x,z),b=drive(x,z+5);return headingTo(a.x,a.z,b.x,b.z);};
  const JH=world.homes.jamie,JHW=(x,z)=>{const p=JH.toWorld(x,z);return {x:p.x,z:p.z,y:p.ground};};
  const JDOOR=JHW(JH.doorX,JH.front+.2),JSTEP=JHW(JH.doorX,JH.stepFront+.5),JFOYER=JHW(JH.doorX-JH.gs*.25,JH.front-1.9),JDRIVE=JHW(JH.gx,JH.gfront+6.5),JBIKE=JHW(JH.gx-.6,JH.gfront+5.2);
+ const threshold=createThreshold(scene,JH);
+ const meetingLight=new THREE.PointLight(0xd3d9e0,4.5,5.0,2);meetingLight.name='c6-garage-fill';
  const BW={corner:side(16,-2.4),creek:side(99.4,6.2),car:side(110,-3),reyes:side(100.6,6.9),stop:side(84,3),gap:side(100.2,31)};
  const LOOK={oak:main(LOOKOUT.oak.d,LOOKOUT.oak.lat),bench:main(LOOKOUT.bench.d,LOOKOUT.bench.lat),chalk:main(LOOKOUT.chalk.d,LOOKOUT.chalk.lat),stop:main(LOOKOUT.stop.d,LOOKOUT.stop.lat)};
  // ---- props of the morning: the shirt in Sam's bag, the camera in Reyes's hand ------------------------------------------------
- const shirt=new THREE.Group();shirt.name='c6-alex-shirt';clothShirt(shirt);const SHIRT=phys.prop('c6-shirt',shirt,{grip:{p:[0,.12,.03],r:[0,0,0]}});SHIRT.hide();
+ const shirt=new THREE.Group();shirt.name='c6-alex-shirt';const cloth=createEvidenceCloth(shirt);const SHIRT=phys.prop('c6-shirt',shirt,{grip:{p:[0,0,0],r:[0,0,0]}});SHIRT.hide();
+ const brushP=phys.prop('c6-toothbrush',home.domestic.brush,{grip:{p:[-.03,.04,.025],r:[0,0,-Math.PI/2]}}),spoonP=phys.prop('c6-spoon',home.domestic.spoon,{grip:{p:[.035,.044,.022],r:[0,Math.PI/2,0]}});
  const camHand=dressCamera(makeCameraModel()).group;camHand.name='camera-with-reyes';camHand.visible=false;reyes.person.parts.rhand.add(camHand);camHand.position.set(0,.05,.03);camHand.rotation.set(-1.1,0,0);
  const radioHand=props.radioMesh(0x3a3c3a);radioHand.visible=false;sam.person.parts.rhand.add(radioHand);radioHand.position.set(0,.06,.03);radioHand.rotation.set(-.4,0,0);
  const reyesRadio=props.radioMesh(0x1e1f22);reyes.person.parts.torso?.add(reyesRadio);reyesRadio.scale.setScalar(.9);reyesRadio.position.set(-.1,.12,-.11);reyesRadio.rotation.set(0,0,-.3);reyesRadio.visible=false;
@@ -116,6 +122,16 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const FIRE=PSPOT.campfire,SEATS=SOLIDS.filter(q=>q.kind==='log').map(q=>{const de=FIRE[0]-q.c[0],dn=FIRE[1]-q.c[1],l=Math.hypot(de,dn)||1;return {seat:q.c,face:hd(de,dn),front:[q.c[0]+de/l*.8,q.c[1]+dn/l*.8]};});
  const studio=['player','jamie','sam'].map(key=>{const p=createPerson({...CAST[key],expressive:true});p.group.visible=false;p.group.name='studio-'+key;scene.add(p.group);const f=createFace(p,CAST[key]);p.face=f;chapter5Appearance(p,CAST[key]).enable(true);f.update(1/30,{clock:0});/* (a face is built on its first update; until then its mouth has no shape) */return p;});
  const shade=createPerson({...CAST.alex,clothes:{...CAST.alex.clothes,shirt:0x2a2622,trim:0x2a2622,pants:0x1e1c1a,socks:0x1e1c1a,shoes:0x161412}});shade.group.visible=false;shade.group.name='studio-up-the-bank';scene.add(shade.group);
+ // Enable after Chapter Five's presentation, restore before it. This ordering matters:
+ // earlier chapters must get their exact geometries/materials and face visibility back.
+ const appearances6=new Map();
+ const addAppearance=(p,spec,actor=null)=>{if(p&&!appearances6.has(p))appearances6.set(p,chapter6Appearance(p,spec,{actor}));};
+ for(const c of [jamie,sam])addAppearance(c.person,CAST[c.key],c);
+ for(const f of o.friends?.list||[])addAppearance(f.person,CAST[f.key]||CAST[f.name?.toLowerCase()]||CAST.jamie,f);
+ addAppearance(o.self,CAST.player);for(const a of [reyes,dad,officer,...cast.actors])addAppearance(a.person,a.spec,a);
+ studio.forEach((p,i)=>addAppearance(p,CAST[['player','jamie','sam'][i]]));
+ let savedTorchVisible=null;
+ function presentation6(on){if(on&&savedTorchVisible===null)savedTorchVisible=k.torchO.visible;if(!on&&savedTorchVisible!==null){k.torchO.visible=savedTorchVisible;savedTorchVisible=null;}for(const v of appearances6.values())v.enable(on);}
  const FIREPIC={canvas:null,sil:{x:.7,y:.45},rendered:false};
  function fireCam(){const a=SEATS[3].face+Math.PI,f=PW(...FIRE),back=PW(FIRE[0]+Math.sin(a)*12,FIRE[1]+Math.cos(a)*12),cam=new THREE.PerspectiveCamera(48,640/480,.1,300);cam.position.set(back.x,pineHeight(back.x,back.z)+1.55,back.z);cam.lookAt(f.x,pineHeight(f.x,f.z)+.6,f.z);cam.updateMatrixWorld();return {cam,a};}
  function silAt(){const {a}=fireCam(),d=20,e=FIRE[0]-Math.sin(a)*d+Math.cos(a)*2.4,n=FIRE[1]-Math.cos(a)*d-Math.sin(a)*2.4,w=PW(e,n);return {x:w.x,z:w.z,y:pineHeight(w.x,w.z)};}
@@ -235,10 +251,10 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // The light: a plain August morning; the afternoon going grey; the storm; an evening under it. Indoors (your room, the
  // gatehouse) a little of it; below ground at the works none but the lamps.
  function sky(h=C.h){const q=(a,b)=>smooth((h-a)/(b-a));let day=1-.5*q(18.4,19.6)-.5*q(19.6,20.25),p=.3*q(18.6,19.7)+.7*q(19.7,20.3),night=.6*q(19.95,20.4)+.3*q(20.4,21),deep=.15*q(20.2,21);
-  const cv=inWorks(camera.position)?works.cave(camera.position.x,camera.position.z):home.root.parent&&home.inRoom(camera.position.x,camera.position.z)?.12:home.root.parent&&home.inHall(camera.position.x,camera.position.z)?.25:0;
-  return {day,p,night,deep,fill:0,storm:C.storm,flash:storm.flash*(C.storm>.3?1:0),cave:cv};}
+  const cv=/^(d6-meet|e6-garage)$/.test(S.phase)?.46:inWorks(camera.position)?works.cave(camera.position.x,camera.position.z):home.root.parent&&home.inRoom(camera.position.x,camera.position.z)?.43:home.root.parent&&home.inHall(camera.position.x,camera.position.z)?.52:0;
+  return {day,p,night,deep,fill:0,storm:Math.max(C.storm,C.h<12?.26:0),flash:storm.flash*(C.storm>.3?1:0),cave:cv};}
  // ---- the world as this chapter finds it -----------------------------------------------------------------------------------------
- function common(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);ch5.presentation(true);if(!props.plan.parent)scene.add(props.plan);storm.attach(true);o.foot.arms=phys.arms;}
+ function common(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);ch5.presentation(true);presentation6(true);if(!props.plan.parent)scene.add(props.plan);storm.attach(true);o.foot.arms=phys.arms;}
  function dayWorld(){A.day=1;A.night=0;ch2.day=1;S.deep=A.deep=0;o.flashShadow?.(false);o.nightRendering?.(false);o.attachFlashlight?.(true);ambient.night?.(false);ambient.morning?.(true);
   for(const a of [...k.adults,...ch2.extra,...Object.values(ch3.people||{})]){a.show(false);a.lookAt=null;a.gest(null);a.path=null;a.mode='stand';}cast.reset();
   police.reset?.();k.carA.show(false);k.carB.show(false);car3.show(false);ch2.flyers.visible=true;ch2.found.group.visible=false;ch2.tape.visible=false;for(const b of ch2.beams)b.on=false;ch2.samBeam&&(ch2.samBeam.on=false);
@@ -272,12 +288,30 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function opening(){go('d6-room');date(C.h);C.fadeIn=0;C.room={t:0};checkpoint('chapter6-start');
   const b=HS.bed;pose({x:b.x,z:b.z},{y:b.y+.62,yaw:headingTo(b.x,b.z,HS.door.x,HS.door.z)+.5,pitch:.42});C.pose.slow=.01;C.pose.w=1;
   say([{wait:2.6},{who:'',text:'Thursday.',time:2.4},{wait:2},{who:'',text:'For a second it was just a morning.',time:3.6}],{then:()=>{C.flags.awake=true;}});}
- function getUp(){if(C.flags.up)return;C.flags.up=true;unpose();mark('up');C.room.upAt=C.t;}
+ function getUp(){if(C.flags.up)return;C.flags.up=true;unpose();mark('up');C.room.upAt=C.t;objective('Get ready for the day.','Bathroom through the door by the dresser; breakfast beyond the hall. Alex’s camera is on your desk.');}
+ function routineStart(id){if(C.routine||phys.playerBusy())return;
+  if(id==='curtains'){o.roam.walkLock=true;phys.playerReach({at:()=>HS.curtains,carry:false,onContact:()=>{home.openCurtains();C.flags.curtains=true;sound('cloth',HS.curtains,{gain:.2});},then:()=>{o.roam.walkLock=false;}});return;}
+  const item=id==='brush'?brushP:id==='breakfast'?spoonP:null,target=id==='wash'?HS.wash:id==='brush'?HS.brush:HS.breakfast;
+  C.routine={id,t:0,progress:0,ready:false,duration:id==='wash'?3.2:id==='brush'?6:7.2,item};o.roam.walkLock=true;
+  phys.playerReach({at:()=>target,carry:!!item,onContact:()=>{if(id==='wash'){home.domestic.ST.tap=true;sound('water',target,{gain:.22});}if(item){item.holdBy(o.self,'r');phys.playerHold('r',item,{at:id==='brush'?[.18,1.16,-.38]:[.14,1.05,-.31]});}},then:()=>{if(C.routine)C.routine.ready=true;}});
+ }
+ function routineFinish(done){const r=C.routine;if(!r)return;phys.ME.act=null;phys.ME.extra.length=0;phys.playerHold('r',null);if(r.item){r.item.hide();home.domestic.restoreProp(r.id==='brush'?'brush':'spoon');}home.domestic.ST.tap=false;
+  if(done){home.domestic.ST[r.id]=1;C.flags['routine-'+r.id]=true;mark('morning: '+r.id);}C.routine=null;o.roam.walkLock=false;
+  if(C.flags.ring&&!C.flags.answered)objective('Answer the phone.','In the hall, by the front door.');else if(C.flags.called)objective('Go to Sam’s.','Finish getting ready if you want. Bring Alex’s camera.');else objective('Get ready for the day.','Wash up, brush your teeth, eat breakfast. Alex’s camera is on the desk.');
+ }
+ function updateRoutine(dt){const r=C.routine;if(!r)return;r.t+=dt;if(!r.ready)return;const active=!!o.held?.('KeyF');if(active)r.progress=Math.min(r.duration,r.progress+dt);
+  if(r.id==='wash')phys.ME.extra=[(p,{toLocal,dt,foot})=>{const q=HS.wash,L=toLocal(new THREE.Vector3(q.x,q.y-.07,q.z));
+   r.lean=damp(r.lean??foot.extraEye.f,clamp(foot.extraEye.f+Math.hypot(L.x,L.z)-.42,0,.55),6,dt);foot.extraEye.f=r.lean;
+   const wave=active?Math.sin(r.progress*12)*.015:0;for(const[k,s]of[[PI.lh,-1],[PI.rh,1]]){p[k]=L.x+s*(.035+wave);p[k+1]=L.y;p[k+2]=L.z;p[s<0?PI.le:PI.re]=s*.7;}}];
+  if(r.id==='breakfast'&&active)home.domestic.ST.breakfast=r.progress/r.duration;
+  if(r.item&&phys.ME.hold.r){const p=r.progress,wave=active?Math.sin(p*(r.id==='brush'?18:3.2)):0;phys.ME.hold.r.at=r.id==='brush'?[.18+wave*.018,1.16,-.38]:[.14,1.04+.22*(.5+.5*wave),-.31+.07*wave];}
+  if(r.progress>=r.duration)routineFinish(true);
+ }
  function lookThing(id,target,lines,{eye=1.42,back=.7}={}){if(C.looked.has(id)&&id!=='window')return;C.looked.add(id);closeLook(target,{eye,back,kind:id,floor:home.root.position.y+home.P.floor});C.lookDur=Math.max(3.2,lines.reduce((a,l)=>a+(l.time||2.4)+.3,0)+1);say(lines);}
  function takeCamera(){if(C.inv.camera||phys.playerBusy())return;o.roam.walkLock=true;
   phys.playerReach({at:()=>home.CAMERA_AT(),onContact:()=>{home.cameraOnDesk(false);C.inv.camera='have';sound('click',HS.desk,{gain:.2});mark('Alex’s camera');},then:()=>{o.roam.walkLock=false;
    objective('Look at the last picture.','V: Alex’s camera. A / D: the pictures.');}});}
- function updateRoom(dt){const X=C.room;X.t+=dt;home.update(dt);
+ function updateRoom(dt){const X=C.room;X.t+=dt;home.update(dt);if(!X.windowShot&&X.t>.4){X.windowShot=true;home.renderView();}updateRoutine(dt);
   if(!C.flags.up&&(X.t>16||(C.flags.awake&&X.t>7&&(o.held?.('KeyW')||o.held?.('KeyS')||o.held?.('KeyF')||o.held?.('Space')))))getUp();
   if(C.view==='look'){C.lookT+=dt;if(C.lookT>(C.lookDur||4)&&!busy())endLook();}
   // the camera: the last picture, looked at long enough to see it
@@ -289,7 +323,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(C.t-C.ringAt>55&&!C.flags.momGot&&!busy()&&!phys.playerBusy()){C.flags.momGot=true;home.ring(false);say([{who:'MOM (KITCHEN)',text:'“Hello? …Hi, Sam. Hang on.”',time:2},{who:'MOM (KITCHEN)',text:'“Hon! It’s Sam! Pick up in the hall!”',time:2.2}],
     {then:()=>{if(C.flags.answered)return;carry('phone',HS.phoneStand,headingTo(HS.phoneStand.x,HS.phoneStand.z,HS.phone.x,HS.phone.z),{after:()=>{C.flags.answered=true;home.holdPhone(true);o.roam.walkLock=true;objective('');call();}});}});}}
   if(C.flags.called&&!C.flags.outT)C.flags.outT=C.t;
-  if(C.flags.called&&C.t-C.flags.outT>75&&C.fadeOut<0&&!busy()&&!C.flags.outAuto&&!phys.playerBusy()){C.flags.outAuto=true;if(!C.inv.camera){C.inv.camera='have';home.cameraOnDesk(false);}goOutside();}}
+  if(C.flags.called&&C.t-C.flags.outT>75&&C.fadeOut<0&&!busy()&&!C.flags.outAuto&&!phys.playerBusy()&&!C.routine){C.flags.outAuto=true;if(!C.inv.camera){C.inv.camera='have';home.cameraOnDesk(false);}goOutside();}}
  function reviewed(){if(C.flags.reviewed)return;C.flags.reviewed=true;C.reviewAt=C.t;mark('the picture from the trees');T?.set?.(.18,{rise:.03,why:'the picture'});
   say([{wait:.6},{who:'',text:'The three of you at the fire. From the trees.',time:3},{who:'',text:`${FIRE_TIME.replace('PM',' PM')}. Sam read it out loud last night, like that would make it make sense.`,time:4.4},{who:'',text:'The camera never left your pocket.',time:3}]);}
  function ringPhone(){if(C.flags.ring)return;C.flags.ring=true;C.ringAt=C.t;home.ring(true);sound('phoneRing',HS.phone,{gain:.8});if(C.view==='camera')closeView();if(C.view==='look')endLook();if(!C.flags.up)getUp();
@@ -323,7 +357,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function meetingStage(on){const SG=world.garages.sam;
   if(on){SG?.set?.(1);G5.build();G5.layTable();for(const P of [...G5.S.items,...G5.S.bars,G5.S.sock,G5.S.map,G5.S.cam,G5.S.jbagP])P?.hide();
    // the bag on the table, the shirt in it
-   if(C.inv.shirt==='sam'){SHIRT.storeIn(G5.S.bag);}
+   if(C.inv.shirt==='sam'){const b=TL(.57,.2,.736);G5.S.bagP.place(b,new THREE.Euler(0,-driveA(0,0)+Math.PI,0));SHIRT.storeIn(G5.S.bag);}
    const rp=mp('reyes'),dp=mp('dad'),sd=mp('samDad');const tc=TL(0,0);
    reyes.show(true);reyes.place(rp.x,rp.z,headingTo(rp.x,rp.z,tc.x,tc.z));reyes.gest('fold');reyes.lookAt=null;
    dad.show(true);dad.place(dp.x,dp.z,headingTo(dp.x,dp.z,tc.x,tc.z));dad.gest('fold');
@@ -353,10 +387,10 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   say([{until:()=>C.flags.shirtOnTable||C.meet.t>20},{wait:1.6,act:()=>{for(const a of [reyes,samDad])a.lookAt=TL(0,0,.75);dad.gest(null);const d2=TL(-.55,.25,0);dad.walk([[d2.x,d2.z]],{speed:.7,then:a=>{a.faceTo(TL(0,0).x,TL(0,0).z);a.lookAt=TL(0,0,.75);}});}},
    {wait:3.4},{who:'ALEX’S DAD',text:'“Where.”',from:dad,time:1.6},
    {who:'SAM',text:'“Camp Whippoorwill. Past Pine Ridge. It was on a nail. In the last cabin.”',by:'sam',time:3.4,face:'sad'},
-   {wait:1.6,act:()=>{dad.gest('hold');C.flags.dadHands=true;}},{wait:2.6},{who:'ALEX’S DAD',text:'“…It’s damp.”',from:dad,time:1.6},
+   {wait:1.6,act:()=>{dad.gest(null);C.flags.dadHands=true;C.shirtAct={stage:'lift',t:0};}},{wait:2.6},{who:'ALEX’S DAD',text:'“…It’s damp.”',from:dad,time:1.6},
    {who:'SAM',text:'“It was wet yesterday. When we found it.”',by:'sam',time:2.2},{wait:2.4},
    {who:'ALEX’S DAD',text:'“His mother bought this at the outlet mall. He hated the collar.”',from:dad,time:3.4},{wait:1.4},
-   {who:'ALEX’S DAD',text:'“He wore it anyway. Because she liked it.”',from:dad,time:2.8,act:()=>{dad.gest('head');}},{wait:3.4,act:()=>{dad.gest('hold');}},
+   {who:'ALEX’S DAD',text:'“He wore it anyway. Because she liked it.”',from:dad,time:2.8,act:()=>{if(C.shirtAct)C.shirtAct.hesitate=3.4;}},{wait:3.4},
    {who:'OFFICER REYES',text:'“Sir.”',from:reyes,time:1},{wait:1.2},{who:'OFFICER REYES',text:'“I’m going to need to take it.”',from:reyes,time:2},{wait:2.8},
    {who:'ALEX’S DAD',text:'“…Yeah.”',from:dad,time:1.2,act:()=>handShirt()},{until:()=>C.flags.bagged||C.meet.t>90},{wait:.6},
    {who:'OFFICER REYES',text:'“Recovered August twenty-fourth, around seven-thirty P.M. Camp Whippoorwill. The last cabin— what’s it called?”',from:reyes,time:4.6,act:()=>{reyes.gest('talk');}},
@@ -367,10 +401,49 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    {who:'OFFICER REYES',text:'“Four marks.”',from:reyes,time:1.2},{wait:.8},{who:'SAM’S DAD',text:'“Show him the pictures.”',from:samDad,time:1.6}],
    {then:()=>{C.meet.stage='pictures';C.flags.showPics=true;objective('Show Officer Reyes the pictures.','Alex’s camera. F, by Reyes.');}});}
  // Alex's dad folds it the way his mother would, and it goes into the bag Reyes holds open
- function handShirt(){const toR=()=>reyes.person.parts.rhand.getWorldPosition(new THREE.Vector3());dad.gest(null);
-  SHIRT.holdBy(dad.person,'r');later(1.4,()=>{const rp=reyes.pos;dad.walk([[rp.x+(dad.x-rp.x)*.55,rp.z+(dad.z-rp.z)*.55]],{speed:.6,then:a=>{a.faceTo(rp.x,rp.z);a.gest('point',toR());
-   later(.9,()=>{SHIRT.holdBy(reyes.person,'r');reyes.gest(null);later(.8,()=>{SHIRT.hide();bagHand.visible=true;C.inv.shirt='reyes';C.flags.bagged=true;sound('cloth',reyes.pos,{gain:.3});mark('the shirt, bagged');
-     const bp=TL(-.42,-.1,.72);bagHand.position.set(bp.x,bp.y,bp.z);bagHand.rotation.set(0,-driveA(0,0),0);a.gest('fold');const back=mp('dad');a.walk([[back.x,back.z]],{speed:.6,then:b=>{b.faceTo(TL(0,0).x,TL(0,0).z);b.gest('fold');}});});});}});});}
+ function handShirt(){dad.gest(null);reyes.gest(null);C.shirtAct={stage:'fold',t:0};cloth.setFold(1);}
+ const clothHands=[new THREE.Vector3(),new THREE.Vector3()],vCloth=new THREE.Vector3();
+ function handWorld(person,side){person.group.updateMatrixWorld(true);return person.parts[side+'hand'].getWorldPosition(new THREE.Vector3());}
+ function handsAt(actor,points,w=1,{bow=.12,bend=0}={}){const p=actor.pose;actor.person.group.updateMatrixWorld(true);
+  p[PI.root+1]-=bend;p[PI.lean]+=bend*.6;p[PI.hp]=clamp(p[PI.hp]-bow*.45,-.68,.4);
+  for(const [i,s,k] of [[0,'l',PI.lh],[1,'r',PI.rh]]){vCloth.copy(points[i]);actor.person.group.worldToLocal(vCloth);for(let j=0;j<3;j++)p[k+j]+=(vCloth.getComponent(j)-p[k+j])*w;p[s==='l'?PI.le:PI.re]=s==='l'?-.7:.7;}
+  applyPose(actor.person,p);actor.person.group.updateMatrixWorld(true);}
+ const localHands=(actor,width=.12,y=1.00,z=-.29)=>[-1,1].map(s=>actor.person.group.localToWorld(new THREE.Vector3(s*width,y,z)));
+ function updateShirt(dt){const X=C.shirtAct;let anchors=null;
+  if(X){X.t+=dt;const t=X.t;dad.lookAt=TL(0,0,.84);reyes.lookAt=shirt.position;
+   if(X.stage==='lift'){
+    const rest=localHands(dad),table=[TL(-.19,-.05,.74),TL(.09,-.05,.74)].map(q=>new THREE.Vector3(q.x,q.y,q.z)),u=smooth(t/.85);
+    const targets=t<.9?rest.map((q,i)=>q.lerp(table[i],u)):table.map((q,i)=>q.lerp(rest[i],smooth((t-.9)/1.5)));
+    handsAt(dad,targets,1,{bow:.22,bend:t<1.2?.12*(1-smooth((t-.85)/.5)):0});
+    if(t>.9&&SHIRT.holder!==dad.person){SHIRT.holdBy(dad.person,'r',{p:[0,0,0],r:[0,0,0],hang:true});sound('cloth',shirt.position,{gain:.22});}
+    if(t>2.5){X.stage='cradle';X.t=0;}
+   }else if(X.stage==='cradle'){
+    const hes=X.hesitate||0;X.hesitate=Math.max(0,hes-dt);handsAt(dad,localHands(dad,.12,1.01,-.30),1,{bow:hes>0?.25:.17});
+   }else if(X.stage==='fold'){
+    handsAt(dad,localHands(dad,.12-.035*smooth(t/2.5),1.01,-.29),1,{bow:.22});
+    if(t>3.1){X.stage='offer';X.t=0;X.from=localHands(dad,.085,1.01,-.29);X.to=localHands(reyes,.085,1.01,-.30);}
+   }else if(X.stage==='offer'){
+    // Both people meet at one physical contact, then the receiver brings it back.
+    const midpoint=X.from.map((p,i)=>p.clone().lerp(X.to[i],.5)),u=smooth(t/1.5);
+    handsAt(dad,X.from.map((p,i)=>p.clone().lerp(midpoint[i],u)),1,{bow:.15});handsAt(reyes,X.to.map((p,i)=>p.clone().lerp(midpoint[i],u)),1,{bow:.10});
+    if(t>1.6){SHIRT.holdBy(reyes.person,'r',{p:[0,0,0],r:[0,0,0],hang:true});X.stage='receive';X.t=0;X.from=midpoint;sound('cloth',shirt.position,{gain:.2});}
+   }else if(X.stage==='receive'){
+    handsAt(reyes,X.from.map((p,i)=>p.clone().lerp(localHands(reyes,.085,1.0,-.28)[i],smooth(t/1.3))),1,{bow:.18});
+    handsAt(dad,localHands(dad,.12,.89,-.18),1-smooth(t/2),{bow:.24});
+    if(t>1.6){X.stage='bag';X.t=0;bagHand.userData.setOpen(true);bagHand.visible=true;const bp=TL(-.42,-.1,.72);bagHand.position.set(bp.x,bp.y,bp.z);bagHand.rotation.set(0,-driveA(0,0),0);}
+   }else if(X.stage==='bag'){
+    const bp=bagHand.position,targets=[new THREE.Vector3(bp.x-.06,bp.y+.30,bp.z),new THREE.Vector3(bp.x+.06,bp.y+.30,bp.z)];
+    handsAt(reyes,localHands(reyes,.085,1,-.28).map((p,i)=>p.lerp(targets[i],smooth(t/1.3))),1,{bow:.2,bend:.07});
+    if(t>1.5){SHIRT.hide();bagHand.userData.setOpen(false);C.inv.shirt='reyes';C.flags.bagged=true;mark('the shirt, bagged');C.shirtAct=null;dad.gest('brace');reyes.gest(null);}
+   }
+   if(SHIRT.held){const owner=SHIRT.holder;anchors=['l','r'].map(s=>handWorld(owner,s));}
+  }
+  phys.sync();
+  if(SHIRT.held&&!anchors)anchors=[null,handWorld(SHIRT.holder,SHIRT.side)];
+  // The collar stays upright under gravity rather than inheriting a turning wrist.
+  if(SHIRT.held){const owner=SHIRT.holder;shirt.quaternion.copy(owner.group.quaternion);if(anchors?.[0])shirt.position.copy(anchors[0]).add(anchors[1]).multiplyScalar(.5);}
+  cloth.update(dt,{prop:SHIRT,left:anchors?.[0],right:anchors?.[1],floor:SHIRT.state==='placed'?TL(0,0,.734).y:null});
+ }
  // the pictures: you hold the camera, Reyes looks over your shoulder; each one gets its own words
  function showPictures(){if(C.view||!C.inv.camera)return;C.flags.showing=true;const q=camBeside(-1,.55,.55)();reyes.walk([[q.x,q.z]],{speed:.8,then:a=>{a.lookAt=camera.position;}});
   openCamera(C.pics.register>=0?C.pics.register:0);objective('Show Officer Reyes the pictures.','A / D: the pictures. W: zoom.');}
@@ -471,12 +544,12 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(!X.stop&&d!==null&&d<815&&d>700){X.stop=true;jamieHome();}
   if(!X.stop&&X.t>260&&!busy()&&!X.nudge){X.nudge=true;say([{who:'SAM',text:'“Briarwood. It’s back that way.”',by:'sam'}]);}
   if(!X.stop&&X.t>380){X.stop=true;carry('street',[JDRIVE.x+2.2,JDRIVE.z+3.2],headingTo(JDRIVE.x,JDRIVE.z,JDOOR.x,JDOOR.z),{after:jamieHome});}}
- function jamieHome(){go('d6-jamie');const A2=C.anom={t:0,stage:'ride',seen:0,seenTotal:0,shown:false,gone:false,cue:false};mark('Jamie’s house');
+ function jamieHome(){threshold.show(true);go('d6-jamie');const A2=C.anom={t:0,stage:'ride',seen:0,seenTotal:0,shown:false,gone:false,cue:false};mark('Jamie’s house');
   say([{who:'JAMIE',text:'“Hang on. I gotta tell my mom where I am. She’ll freak.”',by:'jamie',time:2.4}]);
   const stop=JBIKE;comp.run(jamie,[...(jamie.mode==='ride'?[comp.steps.rideTo(jamie,[[JDRIVE.x,JDRIVE.z],[stop.x,stop.z]],{vmax:3,vend:0}),comp.steps.brake(jamie,.3),comp.steps.dismount(jamie),comp.steps.kickstand(jamie)]:[]),
    comp.steps.walkTo(jamie,[[JSTEP.x,JSTEP.z],[JDOOR.x+(JSTEP.x-JDOOR.x)*.25,JDOOR.z+(JSTEP.z-JDOOR.z)*.25]],{speed:1.4}),comp.steps.turnTo(jamie,()=>headingTo(JSTEP.x,JSTEP.z,JDOOR.x,JDOOR.z),.4)],{then:()=>{A2.stage='door';A2.doorAt=C.t;}});
   stand(sam,[JDRIVE.x+.8,JDRIVE.z+1.6],{look:()=>JDOOR,keep:true,max:1.8});objective('Wait for Jamie.');}
- function updateJamie(dt){const X=C.anom;X.t+=dt;const p=me(),dp=dist2(p,JDOOR);const doorV=world.doors.jamie;
+ function updateJamie(dt){threshold.update(C.t);const X=C.anom;X.t+=dt;const p=me(),dp=dist2(p,JDOOR);const doorV=world.doors.jamie;
   if(X.stage==='door'){if(dp>34&&C.t-X.doorAt<50){if(!X.callBack&&!busy()){X.callBack=true;say([{who:'SAM',text:'“Hey! He’s just at his house!”',by:'sam'}]);}return;}
    X.stage='calling';C.jdoor=0;const opening=()=>{C.jdoor=Math.min(.9,C.jdoor+.05);if(C.jdoor<.9)later(.03,opening);};opening();sound('doorOpen',JDOOR,{gain:.5});void doorV;
    say([{wait:.6},{who:'JAMIE',text:'“Mom?”',by:'jamie',time:1},{wait:1.2},{who:'JAMIE',text:'“MOM?”',by:'jamie',time:1.1},{wait:1.6},
@@ -490,7 +563,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    else if(X.seenTotal>1.0||X.seen>0)X.lostAt=X.lostAt??C.t;
    // gone: the first moment it is not watched (once it has been, long enough), or when the foyer's lamp blinks after a while
    if(X.seenTotal>1.0&&!now)vanish('unwatched');
-   if(X.seenTotal>4.8&&!X.cue){X.cue=true;X.cueAt=C.t;}if(X.cue&&C.t-X.cueAt>.25)vanish('the lamp');
+   if(X.seenTotal>4.8&&!X.cue){X.cue=true;X.cueAt=C.t;threshold.blink(C.t);}if(X.cue&&C.t-X.cueAt>.25)vanish('the lamp');
    // never looked: Sam saw it (the fallback); then it is gone when nobody is looking
    if(!C.flags.anomSeen&&C.t-X.shownAt>7&&!X.samSaw&&!busy()){X.samSaw=true;sam.lookAt=JDOOR;say([{who:'SAM',text:'“Jamie. …Is somebody home?”',by:'sam',time:2,face:'afraid'}]);}
    if(!C.flags.anomSeen&&X.samSaw&&C.t-X.shownAt>12&&!now)vanish('Sam saw');}
@@ -911,9 +984,9 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const bq=WP(24.2,-11);brandt.show(true);brandt.place(bq.x,bq.z,Math.PI);brandt.gest('fold');
   const rq=WP(24.5,8.6);reyes.show(true);reyes.place(rq.x,rq.z,headingTo(rq.x,rq.z,WP(22,-4).x,WP(22,-4).z));reyes.gest('fold');reyes.lookAt=null;
   officer.show(true);const oq=WP(25.6,7.2);officer.place(oq.x,oq.z,headingTo(oq.x,oq.z,rq.x,rq.z));officer.gest('fold');
-  // Jamie in the open back door of the car, a blanket round him
+  // Jamie on a low rescue stool beside the cruiser, wrapped in a blanket
   const jq=WP(24.6,11.6);comp.putFoot(jamie,jq.x,jq.z,-Math.PI*.55,{bike:null});jamie.bike.group.visible=false;jamie.follow=null;stand(jamie,[jq.x,jq.z],{look:()=>WP(21,-2,1),keep:true,max:.3,gesture:GEST.sit(1),leash:99});
-  const bl=props.blanket;if(!bl.parent)jamie.person.parts.torso.add(bl);bl.visible=true;bl.position.set(0,.05,.04);bl.rotation.set(0,Math.PI,0);bl.scale.setScalar(.5);
+  const bl=props.blanket;if(!bl.parent)jamie.person.parts.torso.add(bl);bl.visible=true;bl.position.set(0,0,0);bl.rotation.set(0,0,0);bl.scale.setScalar(1);scene.add(props.rescueSeat);props.rescueSeat.position.set(jq.x,jq.y||0,jq.z);
   sam.gone=true;sam.person.group.visible=false;sam.bike.group.visible=false;comp.release(sam);
   S.flashOn=false;ch2.samBeam&&(ch2.samBeam.on=false);}
  function afterStart(){go('n6-after');checkpoint('c6-aftermath');afterStage();C.af={t:0,stage:'jamie'};mark('later');objective('');C.fadeIn=0;C.flags.hurry=false;T?.set?.(.3,{rise:-.2,why:'later'});
@@ -959,11 +1032,12 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    for(const [c,w] of [[jamie,J],[sam,Sq]]){if(c.gone)continue;const bk=c.bike.group.visible?{x:c.bx,z:c.bz,a:c.ba,kick:c.kick,fall:c.fall}:null;comp.putFoot(c,w[0],w[1],a,{bike:bk});c.follow=null;}
    C.fadeIn=0;after?.();if(C.match)for(const c of [jamie,sam])if(!c.gone&&!C.spot[c.key])c.follow='walk';};}
  // ---- the spots F works on ----------------------------------------------------------------------------------------------------------------------------
- function spots(){const out=[],ph=S.phase,p=me();if(C.view||C.fadeOut>=0||posed()||phys.playerBusy())return out;
+ function spots(){const out=[],ph=S.phase,p=me();if(C.view||C.fadeOut>=0||posed()||phys.playerBusy()||C.routine)return out;
   const add=(id,label,q,fc,r=2.4,o2={})=>out.push({id,label,at:q,face:fc||q,r,wide:true,...o2});
   if(ph==='d6-room'||ph==='d6-phone'){if(!C.flags.up)return out;
    // (a small room, everything within reach of everything: what you look at is what F takes)
    const lk=(size,cone=.12)=>({look:true,size,cone});
+   for(const [id,label,q] of [['curtains','Draw the curtains',HS.curtains],['wash','Wash your face',HS.wash],['brush','Brush your teeth',HS.brush],['breakfast','Eat breakfast',HS.breakfast]])if(!(id==='curtains'?C.flags.curtains:C.flags['routine-'+id]))add('c6-routine-'+id,label,q,null,1.45,lk(.22,.16));
    if(!C.inv.camera)add('c6-cam','Pick up Alex’s camera',home.CAMERA_AT(),null,1.9,lk(.22,.16));
    if(!C.looked.has('window'))add('c6-window','Look outside',HS.window,null,2.6,lk(.5));if(!C.looked.has('cork'))add('c6-cork','Look at the photo strip',HS.cork,null,2.2,lk(.3));
    if(!C.looked.has('calendar'))add('c6-calendar','Look at the calendar',HS.calendar,null,2.2,lk(.26));if(!C.looked.has('trophies'))add('c6-trophies','Look at the trophies',HS.trophies,null,2.2,lk(.3));
@@ -997,6 +1071,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(ph==='n6-rescue'&&C.rs?.stage==='lift'&&!C.rs.lifted)add('c6-lift','Help lift the cover',WP(MANHOLE.x,MANHOLE.z,FLOOR.pad+.1),null,2.4);
   return out;}
  function act(id){
+  if(id.startsWith('c6-routine-')){routineStart(id.slice(11));return;}
   if(id==='c6-cam')takeCamera();else if(id==='c6-phone')answer();else if(id==='c6-out')goOutside();
   else if(id==='c6-window')lookThing('window',HS.window,[{who:'',text:'Somebody’s mower, down the street. A sprinkler. A car going by slow.',time:3.2},{who:'',text:'Everything going on like it always did.',time:2.8}],{back:.75});
   else if(id==='c6-cork')lookThing('cork',HS.cork,[{who:'',text:'June. The four of you in the photo booth at the mall.',time:3},{who:'',text:'Alex wouldn’t take his helmet off. His mom made him promise.',time:3.4}],{back:.6});
@@ -1038,6 +1113,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function openCamera(i){photo.open(i);C.view='camera';C.viewT=0;o.roam.walkLock=true;}
  function closeView(){if(C.view==='camera')photo.close();if(C.view==='look')return endLook();C.view=null;if(!posed())o.roam.walkLock=false;if(C.meet&&C.flags.showing&&!C.flags.copy){C.flags.showing=false;}}
  function key(code,repeat){if(!mine(S.phase))return false;
+  if(C.routine){if(code==='KeyS'&&!repeat)routineFinish(false);if(['KeyF','KeyV','KeyI','Tab','KeyW','KeyA','KeyD','KeyS','Space','KeyC'].includes(code))return true;}
   if((code==='KeyI'||code==='Tab')&&!inv.isOpen&&(C.view||C.fadeOut>=0||C.endT>=0||S.phase==='c6-black'))return true;if(inv.key(code,repeat))return true;
   if(S.phase==='d6-room'&&!C.flags.up&&!repeat&&['KeyW','KeyS','KeyA','KeyD','KeyF','Space'].includes(code)){if(C.flags.awake||C.room?.t>3)getUp();return true;}
   if(code==='KeyT'&&!C.view){return !C.inv.flashlight;}
@@ -1049,6 +1125,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function pan(dx,dy){if(!mine(S.phase))return false;if(C.view==='camera'){photo.pan(dx,dy);return true;}return false;}
  function wheel(dy){if(!mine(S.phase)||C.view!=='camera')return false;photo.zoomBy(dy<0?1:-1);return true;}
  function hint(){const ph=S.phase;
+  if(C.routine){const r=C.routine;return [['Hold F',`${r.id==='wash'?'Wash':r.id==='brush'?'Brush':'Eat'} · ${Math.round(r.progress/r.duration*100)}%`],['S','Put it down']];}
   if(C.view==='camera')return [['A / D','Previous / next'],['W / S','Zoom'],...(photo.V.zoom>1.05?[['Mouse','Move around']]:[]),['V','Lower the camera']];
   if(C.view==='look')return C.lookKind==='plan'?null:[['S','Step back']];
   if(ph==='d6-room'&&!C.flags.up&&C.flags.awake)return [['W','Get up']];
@@ -1111,7 +1188,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   // the works and the weather (drawn only where you are)
   if(works.root.parent){works.update(dt,{eye:camera.position});const forced=works.LAMPS['J-c'];if(forced?.force){forced.shown=forced.level=damp(forced.level,1,3,dt);forced.bulb.material.emissiveIntensity=2.6*forced.shown;}}
   const cvNow=inWorks()?works.cave(camera.position.x,camera.position.z):0;storm.update(dt,{storm:C.storm,rain:C.rain,indoor:cvNow>.3?1:0,lightning:/^(e6|n6)-/.test(ph)});
-  cast.update(dt,{eye:camera.position});phys.sync();rescue.update(C.t,rescue.g.visible);updateAmb(dt);
+  cast.update(dt,{eye:camera.position});rescue.update(C.t,rescue.g.visible);updateAmb(dt);
   for(const c of [jamie,sam])if(c.crouch!==undefined&&!c.script&&c.crouch>0&&!/^n6-(flood)$/.test(ph))c.crouch=Math.max(0,c.crouch-dt);
   if(C.fadeIn>=0){C.fadeIn+=dt;o.fade(1-smooth(C.fadeIn/1.6));if(C.fadeIn>=1.6){o.fade(0);C.fadeIn=-1;}}
   if(C.fadeOut>=0){C.fadeOut+=dt;o.fade(smooth(C.fadeOut/.8));if(C.fadeOut>=1){C.fadeOut=-1;const f=C.after;C.after=null;f?.();}}
@@ -1137,14 +1214,21 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.view==='look'&&ph!=='d6-room'&&ph!=='d6-phone'){C.lookT+=dt;if(C.lookDur&&C.lookT>C.lookDur&&!busy()&&C.lookKind!=='plan')endLook();}
   if(C.view==='look'&&C.lookKind==='plan'&&C.rec?.stage!=='plan'&&C.rec?.stage!=='camera')C.flags.planDone=true;
   const L6=sky();A.day=L6.day;A.night=L6.night;ch2.day=A.day;A.shade=0;A.barLight=false;}
+ function afterActors6(dt){if(!owns(S.phase))return;if(/^(d6-meet|e6-garage)$/.test(S.phase)){if(!meetingLight.parent)scene.add(meetingLight);const l=TL(.15,-.7,2.0);meetingLight.position.set(l.x,l.y,l.z);}else meetingLight.removeFromParent();
+  k.torchO.visible=/^(e6-(yard|house|gallery|lower|grille)|n6-)/.test(S.phase);
+  for(const a of [reyes,dad,officer,...cast.actors]){if(!a.visible)continue;const p=a.pose;if(a.lookAt){const head=a.person.parts.head.getWorldPosition(new THREE.Vector3()),to=a.lookAt,want=clamp(Math.atan2((to.y??head.y)-head.y,Math.max(.3,Math.hypot(to.x-head.x,to.z-head.z))),-.60,.4);a.look6=damp(a.look6||0,want,5,dt);p[PI.hp]=a.look6;}else p[PI.hp]*=-1;applyPose(a.person,p);}
+  updateShirt(dt);for(const art of appearances6.values())art.update(dt,{clock:C.t,eye:camera.position,phase:S.phase});
+  if(props.rescueSeat.parent){const q=jamie.person.parts.pelvis.getWorldPosition(new THREE.Vector3()),floor=gy(q.x,q.z);props.rescueSeat.position.set(q.x,floor,q.z);props.rescueSeat.rotation.y=jamie.person.group.rotation.y;props.rescueSeat.scale.y=Math.max(.12,q.y-floor-.07*jamie.person.scale);}}
+ A.afterActors6=afterActors6;
  // ---- lifecycle ------------------------------------------------------------------------------------------------------------------------------------------
  function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='camera')photo.close();inv.reset();
-  if(nav.room===home.nav||nav.room===works.nav)nav.setRoom(null);home.reset();works.attach(false);works.reset();storm.reset();storm.attach(false);cast.reset();rescue.g.visible=false;car3.show(false);
+  if(C.routine)routineFinish(false);brushP.hide();spoonP.hide();
+  if(nav.room===home.nav||nav.room===works.nav)nav.setRoom(null);home.reset();threshold.reset();meetingLight.removeFromParent();works.attach(false);works.reset();storm.reset();storm.attach(false);cast.reset();rescue.g.visible=false;car3.show(false);
   SHIRT.hide();PIN.place?.(new THREE.Vector3(works.pinAt.stow.x,works.pinAt.stow.y,works.pinAt.stow.z),new THREE.Euler(0,0,Math.PI/2));works.pinTo('stow');helmetP.hide();planP.hide();folderP.hide();props.rolled(false);for(const mk of [...props.planMarks])props.planMarks.delete(mk);
   bagHand.visible=false;camHand.visible=false;radioHand.visible=false;reyesRadio.visible=false;wxRadio.visible=false;props.samNotes.removeFromParent();props.bin.removeFromParent();props.log.removeFromParent();props.plan.removeFromParent?.();
-  if(props.blanket.parent)props.blanket.removeFromParent();for(const p of studio)p.group.visible=false;shade.group.visible=false;
+  props.rescueSeat.removeFromParent();if(props.blanket.parent)props.blanket.removeFromParent();for(const p of studio)p.group.visible=false;shade.group.visible=false;
   for(const c of [jamie,sam]){c.gone=false;c.crouch=0;}o.setPace?.(1);works.nav.ducking=false;
-  if(A6.started)ch5.presentation(false);A6.started=false;A6.finished=false;
+  presentation6(false);cloth.reset();if(A6.started)ch5.presentation(false);A6.started=false;A6.finished=false;
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView)o.roam.walkLock=false;fresh();}
  // QA jumps, DEV scenes and Continue: the chapter at one of its moments, with every earlier beat's flags set as playing sets them.
  function jump(section){jumpTo(section);}
@@ -1244,7 +1328,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   canDismount:()=>!posed()&&!C.view&&S.phase!=='c6-black'&&!inWorks()&&!(nav.room===home.nav),
   canRemount:()=>!C.view&&!posed()&&!inWorks()&&!/^(d6-(room|phone|meet)|e6-garage)$/.test(S.phase)&&!(S.phase==='d6-jamie'),
   closeBag:()=>{if(inv.isOpen){inv.close();return true;}return false;},inventoryReady:()=>owns(S.phase)&&S.phase!=='c6-black',
-  C,home,works,cast,props,storm,inv,FIREPIC,firePicture,silInView,sky,WP,TL,SHIRT,PIN,car3,rescue,brain,
+  C,home,works,cast,props,storm,inv,FIREPIC,firePicture,silInView,sky,WP,TL,SHIRT,cloth,appearances6,threshold,PIN,car3,rescue,brain,
   JAM:{door:JDOOR,step:JSTEP,foyer:JFOYER,drive:JDRIVE,bike:JBIKE},BW,LOOK,GRILLE_Z,AXSTAND});
  Object.defineProperties(A6,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,inv:{...C.inv},looked:[...C.looked].sort(),

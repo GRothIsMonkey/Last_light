@@ -35,9 +35,10 @@ const SEG=!!process.env.SEGMENTED,errors=[],warnings=[],checks=[],failed=[],fram
 async function openBrowser(){if(browser)await browser.close().catch(()=>{});browser=await pw.chromium.launch({executablePath:exe,headless:true,args});page=await browser.newPage({viewport:{width:1440,height:900}});
  page.on('pageerror',e=>{errors.push(String(e));console.error('PAGE',String(e));});page.on('crash',()=>{errors.push('page crashed');console.error('PAGE CRASHED');});
  page.on('console',m=>{const t=m.text();if(m.type()==='error'){errors.push(t);console.error('CONSOLE',t);}else if(m.type()==='warning'&&/GL_INVALID|Feedback loop|shader/i.test(t))warnings.push(t);});
+ await page.addInitScript(()=>{window.AudioContext=undefined;window.webkitAudioContext=undefined;});
  await page.goto(`http://127.0.0.1:${server.address().port}/dist/index.html?qa`,{timeout:180000});await page.waitForFunction(()=>window.lastLight,null,{timeout:180000});
  if(process.env.QUALITY)await page.evaluate(q=>{const el=document.getElementById('set-quality');el.value=q;el.dispatchEvent(new Event('change'));},process.env.QUALITY);/* (QUALITY=low: the game's Low setting, less memory) */
- await page.click('#start');await page.evaluate(()=>lastLight.step(.4));}
+ await page.click('#start');await page.evaluate(()=>lastLight.step(.4));if(await page.locator('#sound').getAttribute('aria-pressed')==='true')await page.keyboard.press('m');}
 await openBrowser();
 const check=(name,value,info='')=>{if(value){checks.push(name);console.log('PASS',name);}else{failed.push(name+(info?' '+info:''));console.log('FAIL',name,info);}};
 const ev=(fn,arg)=>page.evaluate(fn,arg);
@@ -83,7 +84,7 @@ const installWalk=()=>ev(async()=>{const L=lastLight,{playChapterSix}=await impo
   for(let i=0;i<w.n;i++)got.caps.push(await ev(i=>{const c=window.__caps[i];window.__caps[i]=null;return c;},i));
   await ev(()=>{const W=window.__walk;W.passed.length=0;W.fails.length=0;window.__caps.length=0;});};
  const SEGS=(process.env.SEGS==='none'?[]:process.env.SEGS?process.env.SEGS.split(','):['morning','meeting','streets','records','works','below','flood','after']),mem=[];
- for(const k of SEGS){const t1=Date.now();if(SEG&&k!=='start'){await harvest();await openBrowser();await installWalk();}const r=await ev(({k,SEG})=>{const W=window.__walk,L=lastLight;
+ for(const [segmentIndex,k] of SEGS.entries()){const t1=Date.now();if(SEG&&segmentIndex>0&&segmentIndex%(+process.env.SEGMENT_BATCH||1)===0){await harvest();await openBrowser();await installWalk();}const r=await ev(({k,SEG})=>{const W=window.__walk,L=lastLight;
    try{W.playChapterSix(W.T,'Chromium',k==='morning'?{fromCard:false,entered:true,to:'morning'}:{from:k,to:k,cont:!SEG});}catch(e){W.fails.push(k+': playthrough threw: '+String(e.stack||e).slice(0,800));}
    globalThis.gc?.();return {phase:L.chapter6.state.phase,clock:+(W.clock/60).toFixed(2),heapMB:Math.round((performance.memory?.usedJSHeapSize||0)/1048576)};},{k,SEG});
   mem.push({segment:k,...r,wallSeconds:Math.round((Date.now()-t1)/1000)});console.log('segment',k,JSON.stringify(mem[mem.length-1]));}
@@ -98,7 +99,7 @@ const installWalk=()=>ev(async()=>{const L=lastLight,{playChapterSix}=await impo
  await snap('99-chapter-six-end-card');
  check('the walkthrough reaches Chapter Six’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Six · Someone Was Here · August 25, 2011, and no Chapter Seven',
   end.state==='ended'&&end.h2==='Chapter Six'&&/LAST LIGHT/i.test(end.text)&&/SOMEONE WAS HERE/i.test(end.text)&&/August 25, 2011/.test(end.text)&&end.next===true,JSON.stringify(end));
- report.walkthrough={scope:SEG?'segmented: Chapter Five end card → real click → the first segment; each later segment in a fresh browser from its own checkpoint, played with inputs (the end card reached by the last)':'continuous: Chapter Five end card → real click → Chapter Six played with inputs to its end card (one page call per segment, no jump between them)',gameMinutes:+(walk.clock/60).toFixed(2),wallSeconds:Math.round((Date.now()-t0)/1000),segments:mem,metrics:walk.metrics,fails:walk.fails};
+ report.walkthrough={scope:SEG?'segmented: Chapter Five end card → real click → the first segment; later segments from their own checkpoints, played with inputs (browser refreshed at the configured segment batch) (the end card reached by the last)':'continuous: Chapter Five end card → real click → Chapter Six played with inputs to its end card (one page call per segment, no jump between them)',gameMinutes:+(walk.clock/60).toFixed(2),wallSeconds:Math.round((Date.now()-t0)/1000),segments:mem,metrics:walk.metrics,fails:walk.fails};
  // ---- the DEV selector: Chapter Six, every scene, with real clicks ---------------------------------------------------------------
  const scenes=process.env.NO_DEV?[]:await ev(()=>lastLight.DEV_SCENES[6].map(s=>({id:s.id,label:s.label})));const dev=[];/* (NO_DEV=1: the walkthrough only) */
  await ev(()=>lastLight.toTitle());
@@ -112,7 +113,7 @@ const installWalk=()=>ev(async()=>{const L=lastLight,{playChapterSix}=await impo
  const gpu=await ev(()=>{const gl=lastLight.renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'unavailable';});
  check('no JavaScript errors',errors.length===0,JSON.stringify(errors.slice(0,4)));check('no WebGL/shader warnings',warnings.length===0,JSON.stringify(warnings.slice(0,3)));
  const tris=frames.map(f=>f.triangles).filter(Number.isFinite);
- report={...report,browser:browser.version(),gpu,triangles:{min:Math.min(...tris),max:Math.max(...tris)},renderLimitation:/SwiftShader/i.test(gpu)?'Software rendering (SwiftShader): render counts are real, frame times are not a real-GPU measurement.':'GPU: '+gpu,audio:'Sound off; audio events are exercised, not listened to.'};
+ report={...report,browser:browser.version(),gpu,triangles:{min:Math.min(...tris),max:Math.max(...tris)},renderLimitation:/SwiftShader/i.test(gpu)?'Software rendering (SwiftShader): render counts are real, frame times are not a real-GPU measurement.':'GPU: '+gpu,audio:'AudioContext disabled and game muted; no listening review.',quality:process.env.QUALITY||'default'};
 }catch(e){report.failure=String(e.stack||e);console.error('FAILED',e);process.exitCode=1;}
 finally{if(failed.length)process.exitCode=1;
  fs.writeFileSync(path.join(out,'chapter6-browser-report.json'),JSON.stringify({...report,runtimeHashes,passed:checks.length,checks,failed,frames,errors,warnings},null,2));

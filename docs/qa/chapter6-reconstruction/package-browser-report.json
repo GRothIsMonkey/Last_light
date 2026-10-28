@@ -1,0 +1,30 @@
+{
+  "file": "Last-Light-Chapter6-Playtest.html",
+  "htmlSHA256": "359851577b00b59d480d7012dbb36a5817e7ffef66123b2cd00ba16b4448c952",
+  "renderer": "Chromium / ANGLE SwiftShader software",
+  "quality": "low",
+  "audio": "Actual AudioContext initializes, then game is muted; no listening review.",
+  "state": {
+    "phase": "d6-room",
+    "creature": true,
+    "width": 1440
+  },
+  "aftermath": {
+    "phase": "n6-after",
+    "blanket": true,
+    "seat": true,
+    "samGone": true
+  },
+  "passed": 6,
+  "checks": [
+    "Local file enters Chapter Six through real DEV controls",
+    "WebGL renders the morning opening",
+    "Embedded creature loads without a server",
+    "No HTTP(S) requests",
+    "No JavaScript or shader errors",
+    "Offline aftermath includes blanket, seat and Sam disappearance without errors"
+  ],
+  "errors": [],
+  "warnings": [],
+  "httpRequests": []
+}

@@ -12,6 +12,8 @@ import {paper,bake,makeShapes,inBox,clamp} from './chapter6-kit.js';
 import {artSurface} from './art-surfaces.js';
 import {makeCameraModel} from './alex-camera.js';
 import {dressCamera} from './chapter5-props.js';
+import {createDomestic} from './chapter6-domestic.js';
+import {roundedBoxGeometry} from './kit.js';
 
 // The house: Chapter Two's (main street, the left side, not a friend's, nearest 455 m along).
 export function homeOf(world){const homes=Object.values(world.homes);return world.houses.filter(h=>h.frameId==='main'&&h.side<0&&!homes.includes(h)&&h.drivD).sort((a,b)=>Math.abs(a.dc-455)-Math.abs(b.dc-455))[0];}
@@ -36,7 +38,7 @@ export function createHome({scene,world,camera,shoot=null}){
  // (the room lit as a room in the morning: a little of its own light, the way the bounce from the window fills it)
  const paint=mat(0xc9cdb8,{emissive:0x9a9c88,emissiveIntensity:.11,roughness:.95});artSurface(paint,'plaster');paint.userData.keep=true;
  const hallPaint=mat(0xd8cdb4,{emissive:0xa09684,emissiveIntensity:.1,roughness:.95});artSurface(hallPaint,'plaster');
- const ceil=mat(0xece8de,{emissive:0xc2beb2,emissiveIntensity:.32});
+ const ceil=mat(0xe0ddd3,{emissive:0xa4aeb2,emissiveIntensity:.12});
  const carpet=mat(0x6f7686,{emissive:0x3c404a,emissiveIntensity:.09,roughness:1});artSurface(carpet,'carpet');
  const boards=mat(0x9a7a56,{emissive:0x4a3a28,emissiveIntensity:.08,roughness:.7});artSurface(boards,'timber');
  const trim=mat(0xefe9dc,{emissive:0x7a776e,emissiveIntensity:.08});
@@ -51,15 +53,15 @@ export function createHome({scene,world,camera,shoot=null}){
  // your room
  wall([R.x0,R.z1],[R.x1,R.z1],[0,-1],[[WIN.x-WIN.w/2-R.x0,WIN.x+WIN.w/2-R.x0,WIN.y-WIN.h/2,WIN.y+WIN.h/2]],paint);
  wall([R.x1,R.z1],[R.x1,R.z0],[-1,0],[[R.z1-(SIDE.z+SIDE.w/2),R.z1-(SIDE.z-SIDE.w/2),SIDE.y-SIDE.h/2,SIDE.y+SIDE.h/2]],paint);
- wall([R.x1,R.z0],[R.x0,R.z0],[0,1],null,paint);
+ wall([R.x1,R.z0],[R.x0,R.z0],[0,1],[[.22,1.14,FL,FL+2.05]],paint);
  wall([R.x0,R.z0],[R.x0,R.z1],[1,0],[[DOOR.z0-R.z0,DOOR.z1-R.z0,FL,FL+2.05]],paint);
- quad([R.x0,FL,R.z0],[R.x0,FL,R.z1],[R.x1,FL,R.z1],[R.x1,FL,R.z0],carpet);quad([R.x0,FL+H,R.z0],[R.x1,FL+H,R.z0],[R.x1,FL+H,R.z1],[R.x0,FL+H,R.z1],ceil);
+ quad([R.x0,FL,R.z0],[R.x0,FL,R.z1],[R.x1,FL,R.z1],[R.x1,FL,R.z0],carpet).position.y=.025;quad([R.x0,FL+H,R.z0],[R.x1,FL+H,R.z0],[R.x1,FL+H,R.z1],[R.x0,FL+H,R.z1],ceil);
  // the hall
  wall([HL.x1,HL.z0],[HL.x1,HL.z1],[-1,0],[[DOOR.z0-HL.z0,DOOR.z1-HL.z0,FL,FL+2.05]],hallPaint);
  wall([HL.x0,HL.z1],[HL.x1,HL.z1],[0,-1],[[FRONT.x-FRONT.w/2-HL.x0,FRONT.x+FRONT.w/2-HL.x0,FL,FL+2.04]],hallPaint);
  wall([HL.x0,HL.z0],[HL.x0,HL.z1],[1,0],null,hallPaint);
  wall([HL.x1,HL.z0],[HL.x0,HL.z0],[0,1],[[.55,1.45,FL,FL+2.04]],hallPaint);
- quad([HL.x0,FL,HL.z0],[HL.x0,FL,HL.z1],[HL.x1,FL,HL.z1],[HL.x1,FL,HL.z0],boards);quad([HL.x0,FL+H,HL.z0],[HL.x1,FL+H,HL.z0],[HL.x1,FL+H,HL.z1],[HL.x0,FL+H,HL.z1],ceil);
+ quad([HL.x0,FL,HL.z0],[HL.x0,FL,HL.z1],[HL.x1,FL,HL.z1],[HL.x1,FL,HL.z0],boards).position.y=.025;quad([HL.x0,FL+H,HL.z0],[HL.x1,FL+H,HL.z0],[HL.x1,FL+H,HL.z1],[HL.x0,FL+H,HL.z1],ceil);
  // the wall between them has two faces and a thickness; a jamb, a door standing open into your room
  K.box(root,3.2,FL+1.02,DOOR.z0-.02,.1,2.04,.04,trim);K.box(root,3.2,FL+1.02,DOOR.z1+.02,.1,2.04,.04,trim);K.box(root,3.2,FL+2.07,(DOOR.z0+DOOR.z1)/2,.1,.06,DOOR.z1-DOOR.z0+.08,trim);
  const door=K.box(root,R.x0+.42,FL+1.01,DOOR.z1+.02,.84,2.0,.04,mat(0xe6dfcf,{emissive:0x6a665c,emissiveIntensity:.08}),{ry:-1.35,name:'your-door'});door.position.set(R.x0+.12,FL+1.01,DOOR.z1+.4);
@@ -78,9 +80,10 @@ export function createHome({scene,world,camera,shoot=null}){
   K.box(root,WIN.x,WIN.y-WIN.h/2-.035,R.z1-.07,WIN.w+.18,.03,.15,trim);K.box(root,WIN.x,WIN.y,R.z1+.03,.03,WIN.h,.02,trim);K.box(root,WIN.x,WIN.y+.05,R.z1+.03,WIN.w,.03,.02,trim);
   for(const [y,hh] of [[SIDE.y-SIDE.h/2-.015,.03],[SIDE.y+SIDE.h/2+.015,.03]])K.box(root,R.x1+r/2-.03,y,SIDE.z,r,hh,SIDE.w+.04,trim);for(const e of [-1,1])K.box(root,R.x1+r/2-.03,SIDE.y,SIDE.z+e*(SIDE.w/2+.015),r,SIDE.h,.03,trim);K.box(root,R.x1-.07,SIDE.y-SIDE.h/2-.035,SIDE.z,.15,.03,SIDE.w+.18,trim);}
  // curtains: thin cotton, half drawn on the front window, nearly shut on the side; the sun comes through them
- const curtain=new THREE.MeshStandardMaterial({color:0x8fa6b8,emissive:0xd8e2e8,emissiveIntensity:.28,roughness:1,side:THREE.DoubleSide,transparent:true,opacity:.86});artSurface(curtain,'textile');
+ const curtain=new THREE.MeshStandardMaterial({color:0x8fa6b8,emissive:0xd8e2e8,emissiveIntensity:.08,roughness:1,side:THREE.DoubleSide,transparent:true,opacity:.92});artSurface(curtain,'textile');
  const drape=(w,h)=>{const g=new THREE.PlaneGeometry(w,h,14,1),p=g.attributes.position;for(let i=0;i<p.count;i++)p.setZ(i,Math.sin(p.getX(i)/w*Math.PI*7)*.025);g.computeVertexNormals();return g;};
- for(const e of [-1,1]){const m=new THREE.Mesh(drape(.42,1.75),curtain);m.position.set(WIN.x+e*(WIN.w/2-.02),FL+1.3,R.z1-.09);root.add(m);}
+ const curtainPanels=[];let curtainsOpen=0,curtainsWant=0;
+ for(const e of [-1,1]){const m=new THREE.Mesh(drape(.42,1.75),curtain);m.position.set(WIN.x+e*(WIN.w/2-.02),FL+1.3,R.z1-.09);root.add(m);curtainPanels.push({m,e,x:m.position.x});}
  {const m=new THREE.Mesh(drape(.62,1.75),curtain);m.position.set(R.x1-.09,FL+1.3,SIDE.z-.22);m.rotation.y=Math.PI/2;root.add(m);const m2=m.clone();m2.position.z=SIDE.z+.3;root.add(m2);}
  K.pipe(root,[WIN.x-WIN.w/2-.3,FL+2.2,R.z1-.09],[WIN.x+WIN.w/2+.3,FL+2.2,R.z1-.09],.012,mat(0xb8b0a0,{metalness:.5}));
  // the sun through the front window, across the desk onto the carpet: a shaft of dust and a patch of light
@@ -88,8 +91,8 @@ export function createHome({scene,world,camera,shoot=null}){
   // (soft at the sides too: a shaft of light has no edge)
   g.globalCompositeOperation='destination-in';const x=g.createLinearGradient(0,0,w,0);x.addColorStop(0,'rgba(0,0,0,0)');x.addColorStop(.3,'rgba(0,0,0,1)');x.addColorStop(.7,'rgba(0,0,0,1)');x.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=x;g.fillRect(0,0,w,h);});
  const shaftM=new THREE.MeshBasicMaterial({map:shaftTex,color:0xfff2d2,transparent:true,opacity:shaftTex?.22:.06,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,fog:false});
- const shaft=new THREE.Mesh(new THREE.PlaneGeometry(1.1,2.2),shaftM);shaft.position.set(WIN.x-.2,FL+.95,R.z1-.75);shaft.rotation.set(-.6,.25,0);shaft.name='your-room-sun';root.add(shaft);
- const patchM=new THREE.MeshBasicMaterial({color:0xfff0c8,transparent:true,opacity:.2,depthWrite:false,blending:THREE.AdditiveBlending,polygonOffset:true,polygonOffsetFactor:-2});
+ const shaft=new THREE.Mesh(new THREE.PlaneGeometry(1.1,2.2),shaftM);shaft.position.set(WIN.x-.2,FL+.95,R.z1-.75);shaft.rotation.set(-.6,.25,0);shaft.name='your-room-sun';shaft.visible=false;root.add(shaft);
+ const patchM=new THREE.MeshBasicMaterial({color:0xfff0c8,transparent:true,opacity:.06,depthWrite:false,blending:THREE.AdditiveBlending,polygonOffset:true,polygonOffsetFactor:-2});
  const patch=new THREE.Mesh(new THREE.PlaneGeometry(1.1,.9),patchM);patch.rotation.x=-Math.PI/2;patch.position.set(WIN.x-.35,FL+.006,R.z1-1.55);root.add(patch);
  // ---- your things ------------------------------------------------------------------------------------------------------
  const solids=[];const solid=(x,z,hw,hd)=>solids.push({x,z,hw,hd});
@@ -98,7 +101,7 @@ export function createHome({scene,world,camera,shoot=null}){
  K.box(root,BED.x,FL+.17,BED.z,BED.w,.3,BED.l,wood);K.box(root,BED.x,FL+.4,BED.z,BED.w-.04,.18,BED.l-.04,mat(0xe9e6dc,{emissive:0x8a887e,emissiveIntensity:.1}));
  {const blanket=new THREE.PlaneGeometry(1.08,1.3,10,10),p=blanket.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i);p.setZ(i,.05+Math.sin(x*6+y*3)*.035+(y<-.4?Math.max(0,-.4-y)*.25:0));}blanket.computeVertexNormals();
   const b=new THREE.Mesh(blanket,mat(0x3d5a7e,{emissive:0x1c2838,emissiveIntensity:.1,side:THREE.DoubleSide}));b.rotation.x=-Math.PI/2;b.position.set(BED.x-.02,FL+.5,BED.z+.32);root.add(b);artSurface(b.material,'textile');}
- K.box(root,BED.x,FL+.56,BED.z-.78,.62,.12,.38,mat(0xf2efe6,{emissive:0x8e8c84,emissiveIntensity:.12}),{rx:-.18});
+ const pillow=new THREE.Mesh(roundedBoxGeometry(.62,.12,.38,.055),mat(0xdedccf));pillow.position.set(BED.x,FL+.56,BED.z-.78);pillow.rotation.x=-.12;root.add(pillow);
  K.box(root,BED.x,FL+.48,BED.z-BED.l/2+.02,BED.w+.04,.64,.05,wood);
  solid(BED.x,BED.z,BED.w/2+.04,BED.l/2+.02);
  // the nightstand: an alarm clock (red numbers), a glass of water, a comic face down
@@ -147,7 +150,7 @@ export function createHome({scene,world,camera,shoot=null}){
  K.box(root,R.x0+.4,FL+.28,DOOR.z0-.35,.32,.5,.2,mat(0x2a3e6a,{roughness:.9}),{ry:.6});solid(R.x0+.45,DOOR.z1+.55,.24,.2);
  // the ceiling light (off: it is morning) and a rug
  K.cyl(root,(R.x0+R.x1)/2,FL+H-.04,(R.z0+R.z1)/2,.18,.06,mat(0xf0ece2,{emissive:0x8a867c,emissiveIntensity:.3}));
- K.box(root,(R.x0+R.x1)/2-.2,FL+.006,(R.z0+R.z1)/2+.2,1.5,.008,1.1,mat(0x8a3a3a,{roughness:1,emissive:0x2a1010,emissiveIntensity:.1}));
+ K.box(root,(R.x0+R.x1)/2-.2,FL+.031,(R.z0+R.z1)/2+.2,1.5,.008,1.1,mat(0x8a3a3a,{roughness:1,emissive:0x2a1010,emissiveIntensity:.1}));
  // ---- the hall: the phone on its table, coats, the kitchen door with the radio behind it, the front door --------------
  const PHONE_T={x:HL.x0+.25,z:1.75};K.box(root,PHONE_T.x,FL+.4,PHONE_T.z,.36,.8,.7,wood);solid(PHONE_T.x,PHONE_T.z,.2,.36);
  const base=new THREE.Group();base.position.set(PHONE_T.x+.02,FL+.8,PHONE_T.z-.1);root.add(base);K.box(base,0,.02,0,.12,.04,.16,mat(0xd8d4c8,{roughness:.5}));K.box(base,0,.045,.05,.03,.01,.03,mat(0x3a9a3a,{emissive:0x3aff3a,emissiveIntensity:.6}));
@@ -158,21 +161,36 @@ export function createHome({scene,world,camera,shoot=null}){
  const handset=handsetMesh();handset.position.set(PHONE_T.x+.02,FL+.8+.09,PHONE_T.z-.1);handset.rotation.set(-.15,0,0);root.add(handset);
  const PHONE_AT=()=>toW(PHONE_T.x+.02,PHONE_T.z-.1,FL+.9);
  for(let i=0;i<3;i++){K.box(root,HL.x0+.03,FL+1.65,HL.z0+.5+i*.28,.04,.04,.04,dark);K.box(root,HL.x0+.1,FL+1.25,HL.z0+.5+i*.28,.12,.75,.26,mat([0x3a4a6a,0x8a3a2a,0x5a6a4a][i],{roughness:1}));}
- const kdoor=K.box(root,HL.x0+1.0,FL+1.02,HL.z0+.03,.9,2.04,.04,mat(0xe6dfcf,{emissive:0x6a665c,emissiveIntensity:.08}),{name:'kitchen-door'});void kdoor;
+
  const glowUnder=new THREE.Mesh(new THREE.PlaneGeometry(.88,.3),new THREE.MeshBasicMaterial({color:0xffd9a0,transparent:true,opacity:.28,depthWrite:false,blending:THREE.AdditiveBlending}));glowUnder.rotation.x=-Math.PI/2;glowUnder.position.set(HL.x0+1.0,FL+.004,HL.z0+.18);root.add(glowUnder);
  const fdoor=K.box(root,FRONT.x,FL+1.02,HL.z1-.03,FRONT.w,2.04,.05,mat(0x6a3a2a,{roughness:.6}),{name:'front-door-inside'});void fdoor;K.cyl(root,FRONT.x-.36,FL+1.0,HL.z1-.07,.025,.04,mat(0xc9b27a,{metalness:.8,roughness:.3}),{rx:Math.PI/2});
  K.box(root,FRONT.x-.75,FL+.03,HL.z1-.4,.6,.03,.4,mat(0x7a6a50,{roughness:1}));for(let i=0;i<4;i++)K.box(root,FRONT.x-.85+i*.17,FL+.06,HL.z1-.45+(i%2)*.08,.1,.07,.26,mat([0xe8e4dc,0x2a2a30,0xc0c0b8,0x5a3a2a][i]),{ry:(i-1.5)*.3});
  const photoTex=paper(128,160,(g,w,h)=>{g.fillStyle='#4a6a8a';g.fillRect(0,0,w,h);g.fillStyle='#e0b898';g.beginPath();g.arc(w/2,h*.4,26,0,7);g.fill();g.fillStyle='#5a6a8a';g.fillRect(w*.25,h*.6,w*.5,h*.4);g.fillStyle='#3a2a20';g.beginPath();g.arc(w/2,h*.33,27,Math.PI,0);g.fill();});
  K.box(root,HL.x1-.01,FL+1.55,HL.z0+1.0,.02,.3,.24,mat(0x2a2a2a));K.plane(root,HL.x1-.022,FL+1.55,HL.z0+1.0,.2,.26,new THREE.MeshStandardMaterial({map:photoTex,color:photoTex?0xffffff:0x4a6a8a}),{ry:-Math.PI/2});
  K.cyl(root,(HL.x0+HL.x1)/2,FL+H-.04,1.4,.14,.05,mat(0xf0ece2,{emissive:0x8a867c,emissiveIntensity:.3}));
+ // Bedroom detail follows the existing collision footprints: nothing is put across a path.
+ const shelfWood=mat(0x695846);artSurface(shelfWood,'timber');
+ for(const y of [1.35,1.73]){K.box(root,DR.x-.03,FL+y,R.z0+.13,1.18,.035,.24,shelfWood);for(const x of [-.4,.4])K.pipe(root,[DR.x+x,FL+y-.18,R.z0+.03],[DR.x+x,FL+y,R.z0+.18],.008,dark);}
+ for(let i=0;i<9;i++)K.box(root,DR.x-.45+i*.085,FL+1.51,R.z0+.14,.064,.28+(i%3)*.025,.15,mat([0x7c8d99,0xa88a61,0x6c7c64,0x8e5550][i%4]),{rz:(i===8?.14:0)});
+ const baseball=new THREE.Mesh(new THREE.SphereGeometry(.033,18,12),mat(0xd7d1bd));baseball.position.set(DR.x+.3,FL+1.78,R.z0+.15);root.add(baseball);
+ // A proper padded desk chair, rolled front edge, and a desk drawer pull.
+ for(const q of chair.children)if(q.isMesh){const size=q.scale.clone();q.geometry=roundedBoxGeometry(size.x,size.y,size.z,Math.min(.025,size.x/3,size.y/3,size.z/3));q.scale.set(1,1,1);}
+ const pad=new THREE.Mesh(roundedBoxGeometry(.41,.055,.39,.025),mat(0x53677c));pad.position.set(0,FL+.49,0);chair.add(pad);
+ K.pipe(root,[DESK.x+.32,DY-.17,DESK.z-.301],[DESK.x+.48,DY-.17,DESK.z-.301],.007,dark);
+ // Scuffed skirting, sockets, coat hooks and a cable that ends at the desk socket.
+ for(const [x,z,ry] of [[R.x0+.016,R.z1-.45,Math.PI/2],[R.x1-.016,R.z0+.7,-Math.PI/2]]){K.box(root,x,FL+.23,z,.015,.10,.075,trim);for(const yy of [.21,.25])K.box(root,x+(ry>0?.010:-.010),FL+yy,z,.005,.014,.008,dark);}
+ K.pipe(root,[DESK.x+.48,FL+.1,R.z1-.02],[DESK.x+.48,DY,DESK.z+.14],.003,dark);
+ const windowLight=new THREE.PointLight(0xc1d3e1,3.0,5.0,2);windowLight.position.set(WIN.x,FL+1.7,R.z1-.25);root.add(windowLight);
+ const domestic=createDomestic({root,FL,H,R,HL,D2,toW,solid});
  // ---- merged by material (what moves stays apart) ----------------------------------------------------------------------
- bake(root,new Set([handset,cam.group,chair,base]));
+ bake(root,new Set([handset,cam.group,chair,base,domestic.root,...curtainPanels.map(q=>q.m)]));
  // ---- where things are (world) ----------------------------------------------------------------------------------------
  const SPOTS={
   bed:{...toW(BED.x,BED.z-.55,FL),eye:FL+.62,a:heading(Math.PI*1.5)},                       // lying down, head on the pillow
   wake:{...toW(BED.x-.9,BED.z-.15)},                                                        // standing up beside the bed
   desk:toW(DESK.x-.3,DESK.z-.62),window:toW(WIN.x,R.z1-.2,FL+1.2),cork:toW(R.x0+.04,R.z0+3.15,FL+1.42),calendar:toW(R.x0+.04,R.z1-.9,FL+1.45),poster:toW(R.x0+.04,R.z0+1.45,FL+1.5),
   clock:toW(NS.x,NS.z,FL+.66),trophies:toW(DR.x,DR.z,FL+1.05),bag:toW(R.x0+.45,DOOR.z1+.55,FL+.4),
+  ...domestic.SPOTS,curtains:toW(WIN.x-WIN.w/2, R.z1-.13,FL+1.1),
   door:toW(3.2,(DOOR.z0+DOOR.z1)/2,FL+1),phone:PHONE_AT(),phoneStand:toW(PHONE_T.x+.65,PHONE_T.z),kitchen:toW(HL.x0+1.0,HL.z0+.1,FL+1.2),
   front:toW(FRONT.x,HL.z1-.35,FL+1.1),frontIn:toW(FRONT.x,HL.z1-.6),
   // outside: the stoop, and your bike at the end of the walk
@@ -180,10 +198,12 @@ export function createHome({scene,world,camera,shoot=null}){
  };
  // ---- nav: the floor and the walls (house frame) ----------------------------------------------------------------------
  const inRoom=(q,r=0)=>q.x>R.x0+r&&q.x<R.x1-r&&q.z>R.z0+r&&q.z<R.z1-r,inHall=(q,r=0)=>q.x>HL.x0+r&&q.x<HL.x1-r&&q.z>HL.z0+r&&q.z<HL.z1-r;
- const inDoor=(q,r=0)=>q.x>HL.x1-.3&&q.x<R.x0+.3&&q.z>DOOR.z0+r&&q.z<DOOR.z1-r;
+ const inExtra=(q,r=0)=>[domestic.B,domestic.KT].some(b=>q.x>b.x0+r&&q.x<b.x1-r&&q.z>b.z0+r&&q.z<b.z1-r);
+ const extraDoor=(q,r=0)=>[[domestic.bathDoor,R.z0],[domestic.kitchenDoor,HL.z0]].some(([x,z])=>Math.abs(q.x-x)<.46-Math.min(r,.25)&&Math.abs(q.z-z)<.52);
+ const inDoor=(q,r=0)=>q.x>HL.x1-.45&&q.x<R.x0+.45&&q.z>DOOR.z0+r&&q.z<DOOR.z1-r;
  const nav={inside:(x,z)=>{const q=toL(x,z);return q.x>-W2-.2&&q.x<W2+.2&&q.z>-D2-.2&&q.z<D2+.2;},
-  walkable:(x,z,r=.28)=>{const q=toL(x,z);if(!(inRoom(q,r)||inHall(q,r)||inDoor(q,Math.min(r,.25))))return false;return !solids.some(b=>inBox(q.x,q.z,b,r));},
-  floorAt:()=>O.ground+FL,heading:A};
+  walkable:(x,z,r=.28)=>{const q=toL(x,z);if(!(inRoom(q,r)||inHall(q,r)||inDoor(q,Math.min(r,.25))||inExtra(q,r)||extraDoor(q,r)))return false;return !solids.some(b=>inBox(q.x,q.z,b,r));},
+  floorAt:()=>O.ground+FL+.025,heading:A};
  // ---- the view out of the front window (rendered once, the street as it is this morning) --------------------------------
  let viewRT=null;
  function renderView(){if(!shoot||viewRT||typeof THREE.WebGLRenderTarget!=='function')return false;try{viewRT=new THREE.WebGLRenderTarget(512,384,{colorSpace:THREE.SRGBColorSpace});const c=new THREE.PerspectiveCamera(62,512/384,.1,300);
@@ -195,11 +215,11 @@ export function createHome({scene,world,camera,shoot=null}){
   else if(!on&&held){root.add(handset);handset.position.set(PHONE_T.x+.02,FL+.8+.09,PHONE_T.z-.1);handset.rotation.set(-.15,0,0);held=null;}}
  // ---- Alex's camera: on the desk, or in your hand (the chapter's photo model takes over from there) ---------------------
  function cameraOnDesk(on){cam.group.visible=on;}
- let ringT=-1;
+ let ringT=-1,homeTime=0;
  function ring(on){ringT=on?0:-1;}
- function update(dt){if(ringT>=0){ringT+=dt;const k=(ringT%3)<1.6;base.children[1].material.emissiveIntensity=k&&Math.sin(ringT*30)>0?1.6:.4;handset.rotation.z=held?handset.rotation.z:k?Math.sin(ringT*70)*.012:0;}}
+ function update(dt){homeTime+=dt;domestic.update(dt,homeTime);curtainsOpen+=(curtainsWant-curtainsOpen)*(1-Math.exp(-dt*3));for(const q of curtainPanels){q.m.position.x=q.x+q.e*.25*curtainsOpen;q.m.scale.x=1-.55*curtainsOpen;}windowLight.intensity=2.1+curtainsOpen*.9;if(ringT>=0){ringT+=dt;const k=(ringT%3)<1.6;base.children[1].material.emissiveIntensity=k&&Math.sin(ringT*30)>0?1.6:.4;handset.rotation.z=held?handset.rotation.z:k?Math.sin(ringT*70)*.012:0;}}
  function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();}
- function reset(){holdPhone(false);ring(false);cameraOnDesk(true);show(false);}
- return {P,root,SPOTS,nav,toW,toL,heading,R,HL,WIN,show,reset,update,renderView,holdPhone,cameraOnDesk,ring,CAMERA_AT,handset,base,
-  get ringing(){return ringT>=0;},get viewRendered(){return !!viewRT;},inRoom:(x,z)=>inRoom(toL(x,z)),inHall:(x,z)=>inHall(toL(x,z))};
+ function reset(){domestic.reset();homeTime=0;curtainsOpen=curtainsWant=0;holdPhone(false);ring(false);cameraOnDesk(true);show(false);}
+ return {P,root,SPOTS,nav,toW,toL,heading,R,HL,WIN,domestic,openCurtains:()=>{curtainsWant=1;},show,reset,update,renderView,holdPhone,cameraOnDesk,ring,CAMERA_AT,handset,base,
+  get ringing(){return ringT>=0;},get viewRendered(){return !!viewRT;},inRoom:(x,z)=>inRoom(toL(x,z)),inHall:(x,z)=>inHall(toL(x,z))||inExtra(toL(x,z))};
 }
