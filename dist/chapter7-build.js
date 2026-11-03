@@ -144,7 +144,11 @@ export function periodCar(style='59',{body=0x7a9a9a,roofC=0xe8e2d0,seed=1}={}){c
 export const streetLamp=new THREE.MeshStandardMaterial({color:0xf6e8c8,emissive:0xffcf88,emissiveIntensity:0,roughness:.4});streetLamp.name='c7-street-lamp';
 export function streetlight({h=7.2,arm=1.8}={}){const g=new THREE.Group();g.name='c7-streetlight';const K=makeShapes(),m=mat(0x5a5650,{metalness:.4,roughness:.6});
  K.cyl(g,0,h/2,0,.09,h,m,{r2:.07});K.pipe(g,[0,h-.2,0],[arm,h+.15,0],.04,m,6);const head=K.box(g,arm+.15,h+.1,0,.55,.14,.26,m);void head;const lamp=K.box(g,arm+.15,h+.02,0,.45,.03,.2,streetLamp);lamp.name='lamp';g.userData.lamp=new THREE.Vector3(arm+.15,h,0);return g;}
-export function mailbox({c=0x2a2a2c,flag=true}={}){const g=new THREE.Group();g.name='c7-mailbox';const K=makeShapes();K.box(g,0,.55,0,.08,1.1,.08,mat(0x6a5a4a,{},'timber'));K.box(g,0,1.18,0,.22,.24,.46,mat(c,{metalness:.3,roughness:.5}));if(flag)K.box(g,.12,1.25,.1,.02,.18,.05,mat(0xb02a22));return g;}
+// a mailbox on its post; name: the family's name painted on both sides in white letters
+export function mailbox({c=0x2a2a2c,flag=true,name=null}={}){const g=new THREE.Group();g.name='c7-mailbox';const K=makeShapes();K.box(g,0,.55,0,.08,1.1,.08,mat(0x6a5a4a,{},'timber'));K.box(g,0,1.18,0,.22,.24,.46,mat(c,{metalness:.3,roughness:.5}));if(flag)K.box(g,.12,1.25,.1,.02,.18,.05,mat(0xb02a22));
+ if(name){const t=paper(256,64,(x,w,h)=>{x.clearRect(0,0,w,h);x.fillStyle='rgba(240,236,224,.95)';x.font='bold 40px Georgia';x.textAlign='center';x.textBaseline='middle';x.fillText(name,w/2,h/2+2);});
+  if(t){const m=new THREE.MeshStandardMaterial({map:t,transparent:true,roughness:.7});for(const s of [-1,1]){const pl=new THREE.Mesh(new THREE.PlaneGeometry(.4,.1),m);pl.position.set(s*.112,1.16,0);pl.rotation.y=s*Math.PI/2;pl.name='mailbox-name';g.add(pl);}}}
+ return g;}
 export function utilityPole({h=9}={}){const g=new THREE.Group();g.name='c7-pole';const K=makeShapes(),m=mat(0x5a4a3a,{},'timber');K.cyl(g,0,h/2,0,.14,h,m,{r2:.11});K.box(g,0,h-.6,0,2.2,.12,.12,m);for(const x of [-.9,0,.9])K.cyl(g,x,h-.5,0,.04,.12,mat(0x5a7a6a,{roughness:.3}));return g;}
 export function trashCan({c=0x5a5f62}={}){const g=new THREE.Group();g.name='c7-can';const K=makeShapes(),m=mat(c,{metalness:.45,roughness:.5});K.cyl(g,0,.42,0,.28,.84,m,{r2:.3,sides:16});K.cyl(g,0,.87,0,.31,.06,m,{sides:16});K.cyl(g,0,.92,0,.06,.04,m);return g;}
 export function fenceRun(g,pts,{h=1.2,style='picket',c=0xe8e4d8}={}){const K=makeShapes(),m=mat(c,{},style==='board'?'timber':null);

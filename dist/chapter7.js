@@ -479,7 +479,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    // the bikes: when you first get off yours here, Jamie leaves his beside it, pointed out
    if(!C.flags.bikesLeft&&p.walking&&me().bike){C.flags.bikesLeft=true;C.bikesAt={x:me().bike.x,z:me().bike.z,a:me().bike.a};mark('the bikes left');if(!busy())say([J('Leave them pointed out. So we can just go.',{time:2.2}),J('Sam always— yeah.',{time:1.6})]);}
    if(!X.dark&&C.h>18.1&&!busy()){X.dark=true;say([J('…Was it this dark? It was like five o’clock.',{time:2.6,face:'worried'})]);}
-   if(!X.seenYou&&X.t-X.lostAt>20&&Math.hypot(p.x-court.SPOT.fenceA.x,p.z-court.SPOT.fenceA.z)>15&&!busy()){X.seenYou=true;
+   // somebody here has a phone: knock (the first door, nothing; the second, somebody comes to it and does not open it)
+   if(!X.knockAsk&&X.t-X.lostAt>5&&!busy()&&!C.view){X.knockAsk=true;X.knocks=0;say([J('Somebody’s gotta have a phone. Come on.',{time:2.2}),J('We knock, we say we’re lost. That’s all.',{time:2.4})],{then:()=>{if(X.knocks<2)objective('Find a phone.','Knock on a door. Stay together.');}});}
+   if(!X.seenYou&&(X.knocks>=2&&X.t-X.knockedAt>9||X.t-X.lostAt>80)&&Math.hypot(p.x-court.SPOT.fenceA.x,p.z-court.SPOT.fenceA.z)>15&&!busy()){X.seenYou=true;
     say([{act:()=>{radioHand.visible=true;sound('c6Static',jamie.person.group.position,{gain:.35});}},RR('…I can see you. By the fence. Jamie, why are you just standing there? Turn around.',{time:3.6}),
      J('We’re not by any fence. We’re— Reyes, we’re not by a fence.',{time:2.8,face:'afraid'}),{wait:.5,act:()=>sound('c6Static',jamie.person.group.position,{gain:.5})},J('Reyes?',{time:1.2}),{wait:1.6,act:()=>{radioHand.visible=false;}}]);}
    // the house with its lights on (when it is dark enough to see in, or when you come to it)
@@ -488,6 +490,13 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function fenceBeat(){const X=C.ct;X.fence=true;mark('the fence');T?.set?.(.5,{rise:.15,why:'the fence'});sound('c5WoodStrike',court.SPOT.fenceA,{gain:.9});
   say([J('No. No no no. We just came through here. This was OPEN.',{time:3,face:'terrified'}),{wait:.4,act:()=>sound('c5WoodStrike',court.SPOT.fenceA,{gain:1})},J('REYES!',{time:1.2}),
    {wait:1.2},RR('…I hear something. Keep yelling…',{time:2.2,act:()=>sound('c6Static',jamie.person.group.position,{gain:.4})}),J('REYES! WE’RE HERE!',{time:1.6}),{wait:2.6},N('Nothing. Static.',{time:2})],{then:()=>afterFence()});}
+ function knockCourt(id){const X=C.ct,q=court.SPOT.doors[id];if(!q||X.knocking||(X.knocks||0)>=2)return;X.knocking=true;(X.knocked||=new Set()).add(id);X.knocks=(X.knocks||0)+1;mark('knock: '+id);
+  sound('tap',q,{gain:1});stand(jamie,()=>({x:q.stand.x+.9,z:q.stand.z}),{look:()=>q,keep:true,max:.8});
+  if(X.knocks===1){later(2.4,()=>say([{wait:.6},N('Nothing. Somewhere inside, a television, the sound turned low.',{time:3.4}),J('Hello? …We just need a phone.',{time:2.2}),{wait:1.6},J('Nobody’s coming.',{time:1.6,face:'worried'}),J('Try another one.',{time:1.6})],{then:()=>{X.knocking=false;stand(jamie,null);follow(true);jamie.follow='walk';}}));}
+  else{// footsteps inside, coming to the door; they stop on the other side of it; nobody opens it
+   for(let i=0;i<6;i++)later(2.2+i*.55,()=>sound(i%2?'thud':'c7Board',q,{gain:.22+i*.05}));
+   later(5.6,()=>{T?.set?.(.62,{rise:.2,why:'the door'});say([N('Footsteps inside. Coming to the door.',{time:2.4}),N('They stop on the other side of it.',{time:2.4}),{wait:1.2},J('…Hello?',{time:1.2,face:'afraid'}),{wait:2.4},N('Nobody opens it.',{time:2}),
+    J('…There’s somebody right there. Right behind it.',{time:2.6,face:'terrified'}),J('Go. Go, go.',{time:1.4,face:'terrified'})],{then:()=>{X.knocking=false;X.knockedAt=X.t;objective('Find a way back to Reyes.','Stay together.');stand(jamie,null);follow(true);jamie.follow='walk';}});});}}
  function afterFence(){const X=C.ct;if(X.stage==='lost')return;X.stage='lost';X.lostAt=X.t;court.ST.fenceA=true;objective('Find a way back to Reyes.','Stay together.');}
  // the newspaper on the lawn, the '59 sedan, the sign at the head of the street
  function lookNewspaper(){if(C.view)return;C.looked.add('newspaper');const pg=pageMesh(newspaper1966(),{w:.26,h:.34,color:0xe6dcc0});
@@ -766,6 +775,8 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   A.rideBoost=1;A.rideFov=0;face(jamie,'terrified',8);}
  // ---- the grab and the struggle -----------------------------------------------------------------------------------------------------
  function grabStart(){go('n7-grab');C.gb={t:0,stage:'grab',yanks:0,grip:1,pull:0,s:0};mark('it has Jamie');T?.set?.(1,{rise:1,why:'Jamie'});
+  // (time to get to him: however far you rode on, you can reach him running before it has him in the lane)
+  {const p=me(),d0=Math.hypot(p.x-JL.x,p.z-JL.z);C.gb.giveUp=clamp(6+d0/3.2,11,22);C.gb.d0=+d0.toFixed(1);}
   const mouth=court.SPOT.mouth;C.gb.mouth=mouth;
   // it takes his ankle, and goes backwards toward the lane, low, dragging him; he claws at the grass
   H.script([{to:()=>{const f=jamieAnkle();return [f.x+(JL.x-f.x)*0-JL.dir.x*.6,f.z-JL.dir.z*.6];},speed:3,state:'crouch',low:.6,free:true,look:()=>jamieAnkle(),near:.5,max:1.2},
@@ -944,7 +955,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(!C.looked.has('chalk'))add('c7-chalk','Look at the chalk',LK.chalk,3,lk(.5,.1));}
   if(/^e7-(court|dining|house)$/.test(ph)&&court.inRegionAt(p.x,p.z)&&!court.inHouseAt(p.x,p.z)){if(!C.looked.has('newspaper'))add('c7-newspaper','Pick up the newspaper',court.SPOT.newspaper,2.2,lk(.3,.14));
    if(!C.looked.has('car'))add('c7-car','Look at the car',{...court.SPOT.fifty9,y:court.G0+1},4,lk(1.2,.08));if(!C.looked.has('sign'))add('c7-sign','Look at the street sign',{...court.SPOT.sign,y:court.G0+2.7},4,lk(.4,.1));
-   if(C.flags.windowHit&&!C.looked.has('crack'))add('c7-crack','Look at the window',court.SPOT.diningWindow,4,lk(.6,.1));}
+   if(C.flags.windowHit&&!C.looked.has('crack'))add('c7-crack','Look at the window',court.SPOT.diningWindow,4,lk(.6,.1));
+   for(const [id,q] of [['mbDining',court.SPOT.mbDining],['mbGreen',court.SPOT.mbGreen]])if(!C.looked.has(id))add('c7-'+id,'Read the mailbox',q,2.0,lk(.3,.16));
+   if(ph==='e7-court'&&C.ct?.stage==='lost'&&C.ct.knockAsk&&(C.ct.knocks||0)<2&&!C.ct.knocking)for(const [id,q] of Object.entries(court.SPOT.doors))if(q&&Math.hypot(p.x-q.x,p.z-q.z)<3.2)add('c7-door-'+id,C.ct.knocked?.has?.(id)?'Knock again':'Knock',q,3.2,lk(.6,.14));}
   if(/^e7-(house|reveal)$/.test(ph)&&inGreen()){if(!C.looked.has('testpattern'))add('c7-testpattern','Look at the television',{...HW(-1.75,-.9),y:court.G0+HH.F+.75},2.6,lk(.4,.12));if(!C.looked.has('clock'))add('c7-clock','Look at the clock',{...HW(-2.2,-4.4),y:court.G0+HH.F+1.9},2.6,lk(.3,.12));}
   if(ph==='e7-stalk'||(ph==='e7-reveal'&&C.gh?.hideNow)){if(C.hiding)add('c7-unhide','Come out',camera.position.clone().add(new THREE.Vector3(0,-.3,0)),5);
    else for(const [id,h] of Object.entries(HGd.hides)){const w=HW(h.x,h.z);if(Math.hypot(p.x-w.x,p.z-w.z)<1.9)add('c7-hide-'+id,h.label,{...w,y:w.y+1},2.2);}}
@@ -984,6 +997,10 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   else if(id==='c7-clock'){C.looked.add('clock');const q=HW(-2.2,-4.4);closeLook({x:q.x,y:court.G0+HH.F+1.9,z:q.z},{back:1.1,eye:1.5,kind:'clock'});C.lookDur=4.5;say([N('A starburst clock. Stopped at 7:42.',{time:3})]);}
   else if(id.startsWith('c7-hide-'))hide(id.slice(8));else if(id==='c7-unhide')unhide();
   else if(id==='c7-shut')shutDoor();else if(id==='c7-push')pushDresser('you');
+  else if(id.startsWith('c7-door-'))knockCourt(id.slice(8));
+  else if(id==='c7-mbDining'||id==='c7-mbGreen'){const k2=id.slice(3),q=court.SPOT[k2],jn=near({x:jamie.px,z:jamie.pz},5);C.looked.add(k2);closeLook(q,{back:.75,eye:1.42,kind:'mailbox'});C.lookDur=6.5;mark('the mailbox: '+k2);
+   say(k2==='mbDining'?[N('CARVER, in white letters on the side of the mailbox.',{time:3}),...(jn?[J('Carver.',{time:1.2}),J('Like the girl. Ruth Ann Carver. Nineteen sixty-six.',{time:2.8,face:'afraid'})]:[])]
+    :[N('WHITCOMB.',{time:2}),...(jn?[J('…Danny Whitcomb.',{time:1.8,face:'afraid'}),J('The green bike.',{time:1.6})]:[])]);}
   else if(id==='c7-calendar')lookCalendar();else if(id==='c7-trace')lookTrace();else if(id==='c7-oldbike')lookOldBike();else if(id==='c7-bell')ringOldBell();else if(id==='c7-wedding')lookWedding();
   else if(id==='c7-hallwindow')giantStart();else if(id==='c7-climb')climbOut();else if(id==='c7-drop'){C.flags.dropped=true;dropDown();go('e7-out');}
   else if(id==='c7-grab')grabHand();else if(id==='c7-gum')pickGum();else if(id==='c7-call')callName();
@@ -1240,6 +1257,8 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(section==='chapter7-end'){toRoom(4.2,3.7,4.2,4.7);lookOutside();quiet();C.endT=0;return;}}
  // ---- the api -----------------------------------------------------------------------------------------------------------------------------------------
  Object.assign(A7,{SECTIONS:SECTIONS7,ALIAS:ALIAS7,LABEL:LABEL7,owns,handles,begin:()=>{A7.started=true;begin();},update,spots,act,sources,blockers,reset,jump,hint,key,pan,wheel,
+  // (QA, for the visual review: where to stand in the garage to see the side door; where Reyes's head is)
+  garageView:()=>{const q=drive(0,-3.2),sd=sideDoorAt?.inside||drive(1.5,-5);return {x:q.x,z:q.z,a:headingTo(q.x,q.z,sd.x,sd.z)};},reyesHead:()=>reyes.person.parts.head.getWorldPosition(new THREE.Vector3()),
   jamieSweep:()=>null,officerAim:()=>{const ph=S.phase;if(/^n7-(lookout|grab|taken|gone|after)$/.test(ph)&&reyes.visible)return court.SPOT.fieldFar;return null;},
   light:()=>owns(S.phase)?sky():null,longThrow:()=>null,
   canDismount:()=>!posed()&&!C.view&&S.phase!=='c7-black'&&!/^(n7-(chase|lookout|grab))$/.test(S.phase)&&!inSams(),

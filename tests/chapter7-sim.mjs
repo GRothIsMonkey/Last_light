@@ -149,7 +149,12 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   offBike();const F=SP.fenceA;approach({x:court.regW(-8,22).x,z:court.regW(-8,22).z},1.0,{pad:8});approach(court.L3(-5,12,'A'),.8);approach(court.L3(0,6,'A'),.9);U(()=>A7.C.ct?.stage==='lost',30);settle(30);
   check(`${label}: a board fence across the lane they came through ("This was OPEN.")`,()=>{assert.ok(A7.C.ct.fence);assert.ok(said('This was OPEN')||said('There’s a FENCE'));});
   // back out to the street, toward the lit window
-  note('back out',approach(court.L3(-8,22,'A'),1.0));note('the street',approach(court.W3(-6,40),1.4,{pad:10}));note('up it',approach(court.W3(-1,58),1.4,{pad:10}));
+  note('back out',approach(court.L3(-8,22,'A'),1.0));note('the street',approach(court.W3(-6,40),1.4,{pad:10}));
+  // somebody must have a phone: knock (twice: the first door, nobody; then footsteps come to it and stop, and nobody opens it)
+  U(()=>A7.C.ct?.knockAsk,20);settle(10);const D1=SP.doors.a1;
+  for(let k=0;k<2;k++){note('knock',approach(D1.stand,.6,{pad:10}),act('c7-door-a1',{at:D1,r:1.6,max:10}));U(()=>!A7.C.ct.knocking,30);settle(10);}
+  check(`${label}: you knock: nobody; you knock again: footsteps come to the door and stop, and nobody opens it`,()=>{assert.equal(A7.C.ct.knocks,2);assert.ok(said('Nobody’s coming'));assert.ok(said('Right behind it'));});
+  note('up it',approach(court.W3(-1,58),1.4,{pad:10}));
   U(()=>A7.C.ct?.lights,90);note('lights');
   check(`${label}: the clock runs fast here (it is getting dark), Reyes says he sees you by a fence`,()=>{assert.ok(A7.C.h>18.5,'h='+A7.C.h);assert.ok(said('By the fence'));});
   lap('court');
@@ -229,7 +234,7 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   // run to him; F: his hand; hold on; pull
   const hand=()=>{h.chapter.kit.jamie.person.group.updateMatrixWorld(true);return h.chapter.kit.jamie.person.parts.rhand.getWorldPosition(new (h.camera.position.constructor)());};
   note('to him',Math.hypot(me().x-hand().x,me().z-hand().z).toFixed(1));
-  U(()=>{const q=hand();const d=Math.hypot(me().x-q.x,me().z-q.z);if(d>1.2){faceV(q);press('KeyW');if(d>3)press('ShiftLeft');else release('ShiftLeft');}else{release('KeyW');release('ShiftLeft');}return spot()?.id==='c7-grab';},10);release('KeyW');release('ShiftLeft');tap('KeyF');
+  U(()=>{const q=hand();const d=Math.hypot(me().x-q.x,me().z-q.z);if(d>1.2){faceV(q);press('KeyW');if(d>3)press('ShiftLeft');else release('ShiftLeft');}else{release('KeyW');release('ShiftLeft');}return spot()?.id==='c7-grab';},20);release('KeyW');release('ShiftLeft');tap('KeyF');
   U(()=>A7.C.gb?.stage==='struggle',3);
   check(`${label}: your hands on his wrist (the struggle)`,()=>{assert.equal(A7.C.gb.stage,'struggle');assert.ok(C7().jamie.grip);});
   press('KeyF');press('KeyS');const ts=A7.C.t;U(()=>A7.C.gb?.stage==='lost',20);release('KeyS');release('KeyF');M7.struggleSeconds=+(A7.C.t-ts).toFixed(1);

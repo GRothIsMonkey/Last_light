@@ -104,7 +104,12 @@ porches, hedges, mailboxes, streetlights, wires on poles, trash cans, cars at th
 restrained: two '59s and a wagon, one boxy mid-eighties sedan; a newspaper on a lawn dated TUESDAY, AUGUST 23, 1966;
 a street sign, OLD MILL CT. Reyes on the radio: *"Seeing what? I'm right behind you. I'm in the bend."* … *"It's the
 field. There's nobody here."* When you go back, the lane you came through is shut by a board fence (*"This was
-OPEN."*). Reyes again, impossibly: *"…I can see you. By the fence."* The light goes faster than it should.
+OPEN."*). Jamie: somebody must have a phone. **Knock** (optional, prompted): at the first door nobody comes, a
+television somewhere inside with the sound turned low; knock again and footsteps come to the door from inside and stop
+on the other side of it, and nobody opens it (*"There's somebody right there. Right behind it."*). The names on the
+mailboxes can be read: the house with its lights on is the CARVERs' (Ruth Ann Carver, 1966, from Chapters Four and
+Six), the house with the green door the WHITCOMBs' (Danny Whitcomb, 1991). Reyes again, impossibly: *"…I can see you.
+By the fence."* The light goes faster than it should.
 
 **The dining room.** A house with its lights on. Through the front window a family at dinner with the television on —
 father, mother, a girl, a boy, dressed for 1966. They do not move, not even to breathe. Then their heads turn to the
@@ -293,7 +298,10 @@ door · upstairs: August 1991, Sam's page, the old bike (0417, AR) and its bell 
 bikes under the streetlight.
 
 **Mystery tracker (new or advanced; nothing explained).** Old Mill Court: vacated in 1974, still reachable through the
-lane's middle; an older street's people at dinner who turn and come at the glass; the clock running fast there. A
+lane's middle; an older street's people at dinner who turn and come at the glass, in the house whose mailbox says CARVER (Ruth
+Ann Carver went missing on Tuesday, August 23, 1966 — the date on the court's newspaper); the green door's mailbox says
+WHITCOMB (Danny Whitcomb, August 21, 1991 — the boy's room upstairs, the calendar); somebody behind a door who comes to
+it and does not open it; the clock running fast there. A
 second creature (the long, low hunter) distinct from the smiling one: it hunts by sight and sound, takes Jamie, and is
 seen first in Sam's garage. Something far larger behind the court's roofs. Voices on the radio that are not their
 owners (Sam's; Reyes's "I can see you. By the fence."). A boy's room stopped in August 1991 (the 21st). Sam's page,

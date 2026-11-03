@@ -123,6 +123,8 @@ export function createCourt({scene,world,sfx=()=>{}}){
  // ---- the houses ----------------------------------------------------------------------------------------------------------------
  // each: centre (frame), the way its front faces (unit), the shell's options; front yards to the sidewalk, driveways to garages
  const facing=(fx,fz)=>Math.atan2(-fx,-fz);
+ // the names on the mailboxes (the court as it was): the house with its lights on is the Carvers'; the green door, the Whitcombs'
+ const NAMES={a1:'HADLEY',dining:'CARVER',a3:'MORROW',a4:'PRICE',a5:'LANGE',green:'WHITCOMB',b1:'DUNN',b2:'FOSTER',b3:'KESSLER',b4:'BYRNE',b5:'OWENS',b6:'TALBOT'},MB={},DOORS={};
  const LOTS=[
   {id:'a1',x:10,z:42,f:[-1,0],o:{w:12,d:8.6,wall:0xd8cba8,roof:0x5a4a3e,door:0x6a3a2a,garage:{side:1,w:3.8},lit:.5,seed:11,shutters:0x3a4a3a}},
   {id:'dining',x:10,z:68,f:[-1,0],o:{w:10.5,d:8.6,wall:0xa9b8b0,roof:0x40454a,door:0x8a2a22,lit:.7,seed:12,windows:[[-2.6]],porch:{w:2.6,d:1.6},doorX:-.9,F:.5}},
@@ -147,14 +149,15 @@ export function createCourt({scene,world,sfx=()=>{}}){
   const fw=(u,v)=>({x:L.x+Math.cos(a)*u+Math.sin(a)*v,z:L.z-Math.sin(a)*u+Math.cos(a)*v});
   const dw=fw(p.doorX,-p.D/2-1.2),road=fw(p.doorX,-p.D/2-6.6);strip(dw.x,dw.z,road.x,road.z,1.1,G0+.05,concrete,.04);
   if(gw){const g0=fw(gs*(p.W/2+gw/2),-p.D*.425-.2),g1=fw(gs*(p.W/2+gw/2),-p.D/2-7.6);strip(g0.x,g0.z,g1.x,g1.z,gw-.3,G0+.04,concrete,.04);}
-  const mb=mailbox({c:[0x2a2a2c,0x3a5a3a,0x5a2a2a][L.o.seed%3]}),mq=fw(p.doorX+1.6,-p.D/2-6.9);mb.position.set(mq.x,G0,mq.z);mb.rotation.y=a;court.add(mb);solids.push({x:mq.x,z:mq.z,hw:.15,hd:.25,a:-a});}
+  const mb=mailbox({c:[0x2a2a2c,0x3a5a3a,0x5a2a2a][L.o.seed%3],name:NAMES[L.id]}),mq=fw(p.doorX+1.6,-p.D/2-6.9);mb.position.set(mq.x,G0,mq.z);mb.rotation.y=a;court.add(mb);solids.push({x:mq.x,z:mq.z,hw:.15,hd:.25,a:-a});MB[L.id]={x:mq.x,z:mq.z};
+  {const dq=fw(p.doorX,-p.D/2-.05),sq=fw(p.doorX,-p.D/2-1.1);DOORS[L.id]={x:dq.x,y:G0+p.F+1.25,z:dq.z,stand:{x:sq.x,z:sq.z}};}}
  // ---- the house with the green door (its own interior) ----------------------------------------------------------------------------
  const GL=LOTS.find(l=>l.horror),HG=createHorrorHouse({wallpaper:paper(256,256,(g,w,h)=>{g.fillStyle='#b9a983';g.fillRect(0,0,w,h);g.fillStyle='rgba(90,70,40,.25)';for(let y=0;y<h;y+=32)for(let x=(y/32)%2*16;x<w;x+=32){g.beginPath();g.ellipse(x,y,6,10,0,0,7);g.fill();}})});
  {const sh=houseShell({w:HH.W,d:HH.D,stories:2,h:2.9,floorY:HH.F,wall:0xb9b4a0,roof:0x3a3634,door:0x2f5a3a,skip:['body','front'],lit:0,seed:50,porch:{w:3.4,d:1.9},doorX:0,pitch:.5});
   sh.g.position.set(GL.x,G0,GL.z);sh.g.rotation.y=GL.a;court.add(sh.g);HG.g.position.set(GL.x,G0,GL.z);HG.g.rotation.y=GL.a;court.add(HG.g);houses.green={...GL,parts:sh,inside:HG};
   // (the shell's own windows sit on the real walls: dark glass; the porch roof is the shell's)
   const fw=(u,v)=>({x:GL.x+Math.cos(GL.a)*u+Math.sin(GL.a)*v,z:GL.z-Math.sin(GL.a)*u+Math.cos(GL.a)*v});const dw=fw(0,-HH.D/2-2.2),road=fw(0,-HH.D/2-6.8);strip(dw.x,dw.z,road.x,road.z,1.1,G0+.05,concrete,.04);
-  const mb=mailbox({c:0x2a3a2a}),mq=fw(1.6,-HH.D/2-6.9);mb.position.set(mq.x,G0,mq.z);mb.rotation.y=GL.a;court.add(mb);solids.push({x:mq.x,z:mq.z,hw:.15,hd:.25,a:-GL.a});}
+  const mb=mailbox({c:0x2a3a2a,name:NAMES.green}),mq=fw(1.6,-HH.D/2-6.9);mb.position.set(mq.x,G0,mq.z);mb.rotation.y=GL.a;court.add(mb);solids.push({x:mq.x,z:mq.z,hw:.15,hd:.25,a:-GL.a});MB.green={x:mq.x,z:mq.z};}
  // house frame <-> court frame for the green door house
  const hToC=(hx,hz)=>({x:GL.x+Math.cos(GL.a)*hx+Math.sin(GL.a)*hz,z:GL.z-Math.sin(GL.a)*hx+Math.cos(GL.a)*hz});
  const cToH=(x,z)=>{const dx=x-GL.x,dz=z-GL.z,c=Math.cos(GL.a),s=Math.sin(GL.a);return {x:dx*c-dz*s,z:dx*s+dz*c};};
@@ -313,6 +316,10 @@ export function createCourt({scene,world,sfx=()=>{}}){
  const L3=(x,z,copy)=>copy==='real'?{...R3(x,z),y:laneFloor(x,z)}:copy==='B'?W3(x+COPY_B.x,z+COPY_B.z,laneFloor(x,z)):W3(x,z,laneFloor(x,z));
  const H3=(hx,hz,y=null,lv='g')=>{const c=hToC(hx,hz);return W3(c.x,c.z,y??G0+HG.floorAt(hx,hz,lv));};
  const SPOT={
+  // the two mailboxes worth reading
+  mbDining:W3(MB.dining.x,MB.dining.z,G0+1.18),mbGreen:W3(MB.green.x,MB.green.z,G0+1.18),
+  // the front doors you can knock on, lost in the court (the first houses up the street from the lane)
+  doors:Object.fromEntries(['a1','a4','a5'].map(k=>{const d=DOORS[k],w=W3(d.x,d.z,d.y),st=regW(d.stand.x,d.stand.z);return [k,{...w,stand:{x:st.x,z:st.z}}];})),
   // the lookout side
   cul:R3(15.4,-20.6),mouth:R3(0,-.8),inLane:R3(0,3),bend1:R3(0,12),fieldOut:R3(-8,30),fieldFar:R3(-14,48),reyesField:R3(-12,40),curb:R3(9.6,-11.6),post:R3(1.75,.3),
   // the court
