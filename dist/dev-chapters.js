@@ -21,6 +21,8 @@
 //     button (nextChapter → chapter5.begin()).
 //   * Chapter Six: the same from Chapter Five's last scene (chapter5-end): its ending card, then its own "Chapter Six"
 //     button (nextChapter → chapter6.begin()).
+//   * Chapter Seven: the same from Chapter Six's last scene (chapter6-end): its ending card, then its own "Chapter Seven"
+//     button (nextChapter → chapter7.begin()).
 // The checkpoint scenes cannot know what earlier beats left behind (which windows were tapped, the
 // flashlight Jamie gave you, the siren, Chapter Two's evidence and police flags…). That history comes from
 // HISTORY (dev-chapter-history.js), which is GENERATED from a natural playthrough
@@ -123,10 +125,29 @@ export const DEV_SCENES={
   {id:'c6-hold',label:'Gate Release (Sam holds it)',jump:'c6-hold'},{id:'c6-double',label:'Duplicate Reveal (two Sams)',jump:'c6-double'},
   {id:'c6-sealed',label:'Post-Disappearance (the gate shut)',jump:'c6-sealed'},{id:'c6-rescue',label:'Rescue Attempt',jump:'c6-rescue'},
   {id:'c6-aftermath',label:'Aftermath (two hours later)',jump:'c6-aftermath'},{id:'c6-testimony',label:'Reyes (“I saw them both.”)',jump:'c6-testimony'},
-  {id:'chapter6-end',label:'Chapter Six Ending (the end card)',jump:'chapter6-end'}]};
+  {id:'chapter6-end',label:'Chapter Six Ending (the end card)',jump:'chapter6-end'}],
+ 7:[{id:'chapter7',label:'Chapter Seven Start',chapter:7},{id:'c7-bedroom',label:'Sam’s Bedroom',jump:'c7-bedroom'},
+  {id:'c7-family',label:'Family Conversation (Sam’s parents)',jump:'c7-family'},{id:'c7-fan',label:'The Fan',jump:'c7-fan',save:'c7-bedroom'},
+  {id:'c7-gum',label:'The Gum',jump:'c7-gum',save:'c7-bedroom'},{id:'c7-garage',label:'Garage Disturbance (first glimpse)',jump:'c7-garage'},
+  {id:'c7-reyes',label:'Reyes Investigation',jump:'c7-reyes'},{id:'c7-map',label:'Old Map (the 1958 plan)',jump:'c7-map',save:'c7-reyes'},
+  {id:'c7-curb',label:'Jamie on the Curb',jump:'c7-curb'},{id:'c7-lookout',label:'The End of the Street (Reyes)',jump:'c7-lookout'},
+  {id:'c7-lane',label:'Wrong Street Entrance (the lane)',jump:'c7-lane',save:'c7-lookout'},{id:'c7-court',label:'Old Mill Court',jump:'c7-court'},
+  {id:'c7-separation',label:'Reyes Separated (the fence)',jump:'c7-separation',save:'c7-court'},{id:'c7-dining',label:'The Lit Window',jump:'c7-dining',save:'c7-court'},
+  {id:'c7-dining-scare',label:'Dining-Room Scare',jump:'c7-dining-scare',save:'c7-court'},{id:'c7-house',label:'Horror House (the green door)',jump:'c7-house',save:'c7-court'},
+  {id:'c7-reveal',label:'Creature Reveal (the stairs)',jump:'c7-reveal',save:'c7-house'},{id:'c7-stalk',label:'Stealth Encounter',jump:'c7-stalk'},
+  {id:'c7-door',label:'The Door (it hammers)',jump:'c7-door',save:'c7-stalk'},{id:'c7-clues',label:'Historical Clues (1991)',jump:'c7-clues'},
+  {id:'c7-trace',label:'Sam Trace (the page)',jump:'c7-trace',save:'c7-clues'},{id:'c7-old-bike',label:'The Old Green Bike',jump:'c7-old-bike',save:'c7-clues'},
+  {id:'c7-giant',label:'Giant Reveal (the window)',jump:'c7-giant',save:'c7-clues'},{id:'c7-out',label:'The Porch Roof',jump:'c7-out',save:'c7-clues'},
+  {id:'c7-bikes',label:'Back to the Bikes',jump:'c7-bikes'},{id:'c7-chase',label:'Bicycle Escape',jump:'c7-chase',save:'c7-bikes'},
+  {id:'c7-lookout-attack',label:'Out at the Oak (the attack)',jump:'c7-lookout-attack',save:'c7-bikes'},{id:'c7-grab',label:'Jamie Grab',jump:'c7-grab',save:'c7-bikes'},
+  {id:'c7-struggle',label:'Rescue Struggle',jump:'c7-struggle',save:'c7-bikes'},{id:'c7-taken',label:'Jamie Taken',jump:'c7-taken',save:'c7-bikes'},
+  {id:'c7-gum-pickup',label:'Gum Pickup',jump:'c7-gum-pickup',save:'c7-bikes'},{id:'c7-after',label:'Later (the lookout at night)',jump:'c7-after'},
+  {id:'c7-forgetting',label:'Forgetting (Reyes, the photos)',jump:'c7-forgetting',save:'c7-after'},{id:'c7-sams',label:'Sam’s Room, That Night',jump:'c7-sams'},
+  {id:'c7-photo',label:'Final Photograph',jump:'c7-photo',save:'c7-sams'},{id:'c7-names',label:'The Names (the notebook)',jump:'c7-names',save:'c7-sams'},
+  {id:'c7-window',label:'The Final Image',jump:'c7-window',save:'c7-sams'},{id:'chapter7-end',label:'Chapter Seven Ending (the end card)',jump:'chapter7-end'}]};
 
 export function createDevChapters(g){
- const {chapter,chapter2,chapter3,chapter4,chapter5,chapter6}=g,comp=chapter.companions,K=chapter.kit;
+ const {chapter,chapter2,chapter3,chapter4,chapter5,chapter6,chapter7}=g,comp=chapter.companions,K=chapter.kit;
  // Every per-run state object emptied completely before the chapters' own reset()/fresh() refill them
  // (their fresh() functions refill a fixed list of keys; anything else would otherwise survive).
  function clearObject(o,keep=[]){if(!o)return;for(const k of Object.keys(o))if(!keep.includes(k))delete o[k];}
@@ -145,7 +166,7 @@ export function createDevChapters(g){
  // over's resetState() + start() as its first step): one start(), so the pointer lock is requested once per click.
  function clear({restart=true}={}){
   g.audio()?.stopRecording?.();
-  if(chapter6)clearObject(chapter6.C);if(chapter5)clearObject(chapter5.C);if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
+  if(chapter7)clearObject(chapter7.C);if(chapter6)clearObject(chapter6.C);if(chapter5)clearObject(chapter5.C);if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
   // Chapter One's shared state: the dialogue queue array is kept as the same array (other code holds it).
   const q=K.S.queue;clearObject(K.S);K.S.queue=q;q.length=0;
   rebirth();
@@ -177,6 +198,7 @@ export function createDevChapters(g){
   else if(n===4){g.jumpTo('chapter3-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n===5){g.jumpTo('chapter4-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n===6){g.jumpTo('chapter5-end');runUntil(()=>G().state==='ended');g.nextChapter();}
+  else if(n===7){g.jumpTo('chapter6-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n!==0)throw new Error('dev start: no chapter '+n);
   if(history)applyHistory(n);
   return phase();}
@@ -221,6 +243,7 @@ export function createDevChapters(g){
    chapter4:chapter4?{C:plain(chapter4.C),state:(st=>{if(st?.photos)delete st.photos.rendered;return st;})(plain(chapter4.state))}:null,// (which of Alex's pictures are already rendered is a cache, not state)
    chapter5:chapter5?{C:plain(chapter5.C),state:plain(chapter5.state)}:null,
    chapter6:chapter6?{C:plain(chapter6.C),state:plain(chapter6.state)}:null,
+   chapter7:chapter7?{C:plain(chapter7.C),state:plain(chapter7.state)}:null,
    companions:comp.all.map(c=>({key:c.key,active:c.active,mode:c.mode,follow:c.follow||null,script:!!c.script,visible:!!c.person?.group?.visible,bikeVisible:!!c.bike?.group?.visible,
     p:pos({x:c.px,z:c.pz}),b:pos({x:c.bx,z:c.bz}),pa:r(c.pa),ba:r(c.ba),speed:r(c.speed),flash:!!c.flash,lookAt:!!c.lookAt,lookPlayer:!!c.lookPlayer,hidden:!!c.hidden,poi:!!c.poi})),
    people:{officer:person(chapter.officer),officer2:person(chapter.officer2),dad:person(chapter.dad),mom:person(chapter.mom),neighbor:person(chapter.neighbor),adults:(chapter.adults||[]).map(person),

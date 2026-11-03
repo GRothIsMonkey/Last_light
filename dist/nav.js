@@ -95,14 +95,14 @@ export function createNav(world){
  function groundY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='pine')return PN.groundY(x,z,L.w);if(L.street==='town')return TN.groundY(x,z,L.w);if(L.street==='side2')return B2.point(L.u,L.v).y+side2Authored(L.u,L.v);if(L.street==='drain')return DN.groundY(x,z,L.q);if(L.street==='woods')return WN.groundY(x,z,L.w);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y+sideAuthored(L.u,L.v):world.groundY(L.d,L.lat);}
  function baseY(x,z,L=locate(x,z)){if(L.street==='room')return room.floorAt(x,z);if(L.street==='pine')return PN.baseY(x,z,L.w);if(L.street==='town')return TN.baseY(x,z,L.w);if(L.street==='side2')return B2.point(L.u,L.v).y;if(L.street==='drain')return DN.groundY(x,z,L.q);if(L.street==='woods')return WN.baseY(x,z,L.w);if(L.street==='easement')return EN.groundY(L.s,L.t);return L.street==='side'?B.point(L.u,L.v).y:groundPoint(L.d,L.lat).y;}
  // The street's direction here (for the bike's gentle settling along it), either way along.
- function streetHeading(x,z,L=locate(x,z)){if(L.street==='room')return room.heading||0;if(L.street==='pine')return PN.heading(x,z,L.w);if(L.street==='town')return TN.heading(x,z,L.w);if(L.street==='side2')return B2.heading(L.u);if(L.street==='drain')return DN.heading(x,z,L.q);if(L.street==='woods')return WN.heading(x,z,L.w);if(L.street==='easement')return EZ.heading;return L.street==='side'?B.heading(L.u):heading(Math.min(L.d,CUL));}
+ function streetHeading(x,z,L=locate(x,z)){if(L.street==='room')return room.headingAt?.(x,z)??room.heading??0;if(L.street==='pine')return PN.heading(x,z,L.w);if(L.street==='town')return TN.heading(x,z,L.w);if(L.street==='side2')return B2.heading(L.u);if(L.street==='drain')return DN.heading(x,z,L.q);if(L.street==='woods')return WN.heading(x,z,L.w);if(L.street==='easement')return EZ.heading;return L.street==='side'?B.heading(L.u):heading(Math.min(L.d,CUL));}
  // (a friend's garage door, down: its doorway is a wall)
  const doorShut=(x,z,r)=>doorways.some(D=>{const g=world.garages[D.key];if(!g||g.open>.85)return false;const c=Math.cos(D.rot),sn=Math.sin(D.rot),dx=x-D.x,dz=z-D.z,lx=dx*c-dz*sn,lz=dx*sn+dz*c;return Math.abs(lx)<D.hw+r&&Math.abs(lz)<D.hd+r;});
  const garageAt=(x,z,r)=>pineOpen?!!gRoom.blocked(x,z,r,WALL)||(doorways.length>0&&doorShut(x,z,r)):!!gBox.blocked(x,z,r,WALL);
  const solid=(x,z,r)=>!!world.space.blocked(x,z,r,SOLID)||!!walls.blocked(x,z,r,WALL)||garageAt(x,z,r);
  const inCreek=(u,v)=>Math.abs(u-C.u)<C.half+.5&&Math.abs(v)>H+XS.walk+.15;
  // Bikes: streets, sidewalks and curbs as before, plus whole driveways and front lawns now.
- function rideable(x,z,{lawn=true,r=.3}={}){const L=locate(x,z);if(L.street==='easement'||L.street==='room'||L.street==='drain')return false;// bikes stay on the street side of the fence, and outside the drain
+ function rideable(x,z,{lawn=true,r=.3}={}){const L=locate(x,z);if(L.street==='room')return !!room.rideable?.(x,z,{lawn,r});/* (Chapter Seven: a region that says it can be ridden; every other room cannot) */if(L.street==='easement'||L.street==='drain')return false;// bikes stay on the street side of the fence, and outside the drain
   if(L.street==='woods')return WN.rideable(x,z,L.w)&&!solid(x,z,r*.6);// the old road, and the pad at its end
   if(L.street==='town'){if(townEdge(L.w))return false;return TN.rideable(x,z,{lawn,r},L.w);}
   if(L.street==='pine')return PN.rideable(x,z,{lawn,r},L.w);
@@ -135,7 +135,7 @@ export function createNav(world){
   if(world.obstacles.some(o=>!o.house&&!o.soft&&d>o.d0-r&&d<o.d1+r&&lat>o.l0-r&&lat<o.l1+r))return false;
   return !solid(x,z,r*.8);}
  // Surface under a walker's feet, for footsteps.
- function surface(x,z,L=locate(x,z)){if(L.street==='room')return 'floor';if(L.street==='pine')return PN.surface(x,z,L.w);if(L.street==='town')return TN.surface(x,z,L.w);if(L.street==='side2'){const a=Math.abs(L.v),H2=J2.half;return a<=H2||(a>=H2+XS.strip&&a<=H2+XS.walk)?'asphalt':'grass';}if(L.street==='drain')return DN.surface(x,z,L.q);if(L.street==='woods')return WN.surface(x,z,L.w);if(L.street==='easement')return EN.surface(L.s,L.t);if(L.street==='side'){const a=Math.abs(L.v);return a<=H?'asphalt':a>=H+XS.strip&&a<=H+XS.walk?'asphalt':inCreek(L.u,L.v)?'grass':'grass';}
+ function surface(x,z,L=locate(x,z)){if(L.street==='room')return room.surface?.(x,z)||'floor';if(L.street==='pine')return PN.surface(x,z,L.w);if(L.street==='town')return TN.surface(x,z,L.w);if(L.street==='side2'){const a=Math.abs(L.v),H2=J2.half;return a<=H2||(a>=H2+XS.strip&&a<=H2+XS.walk)?'asphalt':'grass';}if(L.street==='drain')return DN.surface(x,z,L.q);if(L.street==='woods')return WN.surface(x,z,L.w);if(L.street==='easement')return EN.surface(L.s,L.t);if(L.street==='side'){const a=Math.abs(L.v);return a<=H?'asphalt':a>=H+XS.strip&&a<=H+XS.walk?'asphalt':inCreek(L.u,L.v)?'grass':'grass';}
   const a=Math.abs(L.lat);return a<=CF||(a>=CF+XS.strip&&a<=CF+XS.walk)||L.d>=CUL&&Math.hypot(L.lat,L.d-1142)<11?'asphalt':'grass';}
  // Is there a house (or the far neighborhood) right here? For sound: walls between you and a siren.
  const FAR=new Set(['far-house']),wallAt=(x,z)=>!!walls.blocked(x,z,0,WALL)||garageAt(x,z,0)||!!world.space.blocked(x,z,0,FAR);
@@ -165,6 +165,7 @@ export function createNav(world){
   const path=[];for(let i=0;i<pts.length-1;){let j=pts.length-1;while(j>i+1&&!clear(pts[i],pts[j]))j--;path.push([pts[j].x,pts[j].z]);i=j;}return path;
  }
  // A room you are inside for a while (Chapter Three: Alex's): {inside(x,z), walkable(x,z,r), floorY}; null to leave.
+ // (optional: rideable(x,z,{lawn,r}) and surface(x,z), for a region a bike can go into: Chapter Seven's)
  function setRoom(r){room=r||null;}
  function setTown(on){townOpen=!!on;}
  // Mill Street's road north out of town (to Pine Ridge) is open only in Chapter Five: before that the town ends past its

@@ -260,6 +260,27 @@ export function createAudio({context=null,random=Math.random}={}){
   c6Static(t,o){burst(t,.04,.12,'highpass',1600,.7,o);const n=shot(ctx.createBufferSource());n.buffer=noise;n.loop=true;const b=filt('bandpass',2400,.8),g=gain();g.gain.setValueAtTime(.05,t);g.gain.linearRampToValueAtTime(.03,t+.35);g.gain.linearRampToValueAtTime(0,t+.45);n.connect(b).connect(g).connect(o);n.start(t,random()*2);n.stop(t+.5);tone(1180,t,.05,.015,'square',o);},
   c6Hit(t,o){burst(t,.06,.4,'lowpass',700,.7,o);tone(85,t,.25,.18,'sine',o,50);burst(t+.01,.03,.12,'bandpass',2600,2,o);},
  });
+ // Chapter Seven: the hunter (its weight on a floor, its knuckles on a road, its breath, the sound it makes when it has seen
+ // you, a strike), a window struck from inside, a door hammered, floorboards, a body dragged on grass, a pencil, and far off
+ // something very large settling against houses. First-draft synthesis like the rest; to be replaced by recorded sound.
+ Object.assign(SFX,{
+  c7Step(t,o){burst(t,.09,.34,'lowpass',240,.8,o);tone(52,t,.16,.16,'sine',o,38);burst(t+.015,.04,.05,'bandpass',900+random()*300,1.4,o);},
+  c7Gallop(t,o){for(const k of [0,.07]){burst(t+k,.06,.3,'lowpass',320,.8,o);tone(60,t+k,.11,.12,'sine',o,40);}burst(t+.02,.05,.06,'bandpass',1800+random()*600,2,o);},
+  c7Breath(t,o){const n=shot(ctx.createBufferSource());n.buffer=noise;const b=filt('bandpass',520,1.6),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.09,t+.5);g.gain.linearRampToValueAtTime(.02,t+.9);g.gain.linearRampToValueAtTime(.07,t+1.25);g.gain.linearRampToValueAtTime(0,t+1.9);n.connect(b).connect(g).connect(o);n.start(t,random()*2);n.stop(t+2);tone(78,t+.2,1.3,.03,'sawtooth',o,70);},
+  c7Snarl(t,o){for(const [f,d,v] of [[180,.7,.07],[260,.5,.05],[96,.9,.08]]){const c=shot(ctx.createOscillator()),b=filt('bandpass',f*3,1.2),g=gain();c.type='sawtooth';c.frequency.setValueAtTime(f,t);c.frequency.linearRampToValueAtTime(f*1.9,t+d*.35);c.frequency.exponentialRampToValueAtTime(f*.7,t+d);env(g,t,.04,v,d,'lin');c.connect(b).connect(g).connect(o);c.start(t);c.stop(t+d+.1);}burst(t,.8,.08,'highpass',2600,.6,o);burst(t+.05,.6,.1,'bandpass',1400,.8,o);},
+  c7Strike(t,o){burst(t,.08,.55,'lowpass',900,.7,o);tone(70,t,.3,.24,'sine',o,40);burst(t+.02,.05,.2,'bandpass',2400,1.8,o);burst(t+.09,.12,.12,'lowpass',500,.8,o);},
+  c7Glass(t,o){burst(t,.05,.6,'lowpass',800,.7,o);tone(64,t,.3,.25,'sine',o,44);for(let k=0;k<14;k++){const a=t+.01+k*.022+random()*.015;burst(a,.03,.14/(1+k*.25),'bandpass',3200+random()*3800,5,o);tone(2400+random()*2600,a,.25,.012,'sine',o);}const n=shot(ctx.createBufferSource());n.buffer=noise;const b=filt('bandpass',5200,3),g=gain();g.gain.setValueAtTime(.05,t+.05);g.gain.exponentialRampToValueAtTime(.001,t+1.6);n.connect(b).connect(g).connect(o);n.start(t,random()*2);n.stop(t+1.7);},
+  c7Pane(t,o){for(let k=0;k<3;k++)burst(t+k*.06,.02,.05,'bandpass',4200+random()*900,4,o);tone(1900,t,.5,.015,'sine',o,1880);},
+  c7Door(t,o){tone(48,t,.45,.36,'sine',o,34);burst(t,.12,.62,'lowpass',700,.6,o);for(let k=0;k<6;k++)burst(t+.03+k*.04,.04,.12/(k+1),'bandpass',1200+random()*900,1.6,o);burst(t+.2,.3,.06,'highpass',3000,.6,o);},
+  c7Board(t,o){const c=shot(ctx.createOscillator()),b=filt('bandpass',420,6),g=gain();c.type='sawtooth';c.frequency.setValueAtTime(110,t);c.frequency.linearRampToValueAtTime(96,t+.7);env(g,t,.15,.06,.7,'lin');c.connect(b).connect(g).connect(o);c.start(t);c.stop(t+.95);burst(t,.04,.04,'lowpass',300,.8,o);},
+  c7Drag(t,o){const n=shot(ctx.createBufferSource());n.buffer=noise;const b=filt('bandpass',700,.8),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12,t+.1);g.gain.linearRampToValueAtTime(.08,t+.6);g.gain.linearRampToValueAtTime(0,t+.9);n.connect(b).connect(g).connect(o);n.start(t,random()*2);n.stop(t+.95);},
+  c7Furniture(t,o){for(let k=0;k<18;k++)burst(t+k*.04+random()*.015,.04,.07*(1-k/22),'bandpass',260+random()*240,1.8,o);tone(58,t,.8,.07,'sawtooth',o,52);burst(t+.75,.08,.18,'lowpass',500,.8,o);},
+  c7Pencil(t,o){for(let k=0;k<9;k++)burst(t+k*.045+random()*.02,.03,.03,'highpass',3600+random()*1500,2,o);},
+  c7Groan(t,o){const n=shot(ctx.createBufferSource());n.buffer=noise;n.loop=true;const lp=filt('lowpass',90,.8),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.55,t+1.5);g.gain.linearRampToValueAtTime(.3,t+4);g.gain.linearRampToValueAtTime(0,t+7);n.connect(lp).connect(g).connect(o);n.start(t,random()*2);n.stop(t+7.2);
+   tone(31,t,6.5,.4,'sine',o,26);tone(44,t+.8,5,.18,'triangle',o,39);for(let k=0;k<9;k++)burst(t+.6+k*.62+random()*.3,.18,.06,'bandpass',300+random()*500,1.2,o);},
+  c7Gum(t,o){burst(t,.02,.05,'bandpass',2600,2,o);burst(t+.07,.015,.025,'bandpass',2000,2,o);},
+  c7Fall(t,o){burst(t,.14,.5,'lowpass',500,.7,o);tone(66,t,.22,.2,'sine',o,44);burst(t+.03,.1,.12,'bandpass',1500,1,o);burst(t+.18,.2,.05,'highpass',2400,.6,o);},
+ });
  // A speech-like on/off pattern for voices heard through a radio or a wall.
  // The syllable phase is accumulated from a slowly wandering rate. (It used to be the clock times
  // that rate, whose real frequency grows with the clock: by the time you reach the friends' windows

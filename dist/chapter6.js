@@ -176,8 +176,10 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const later=(sec,fn)=>C.timers.push({at:C.t+sec,fn});
  const mark=why=>{C.lastEvent=C.t;if(why)T?.note?.(why);};
  const mine=ph=>typeof ph==='string'&&/^(c6|d6|e6|n6)-/.test(ph);
- const owns=mine;
- const handles=sec=>SECTIONS6.includes(sec)||!!ALIAS6[sec];
+ // (Chapter Seven picks up the next morning: chapter7.js has its phases, sections and everything in them; while one of
+ // its phases runs, every call below is handed to it, as Chapter Five hands this file its own)
+ const owns=ph=>mine(ph)||!!A6.next?.owns(ph),nextOwns=()=>!!A6.next?.owns(S.phase);
+ const handles=sec=>SECTIONS6.includes(sec)||!!ALIAS6[sec]||!!A6.next?.handles?.(sec);
  function card(on,{title='Chapter Six',eyebrow='LAST LIGHT',sub=''}={}){const el=$('chapter-card');if(!el)return;if(on){const e=el.querySelector?.('.eyebrow'),h=el.querySelector?.('h2'),s=el.querySelector?.('.card-sub');if(e)e.textContent=eyebrow;if(h)h.textContent=title;if(s)s.innerHTML=sub;el.classList.add('on');}else{el.classList.remove('on');const s=el.querySelector?.('.card-sub');if(s)s.innerHTML='';}C.cardOn=on;}
  // a line: by (who's speaking, for the face and the head), face (the speaker's expression), faces (the listeners')
  const by=l=>{if(l.text===undefined&&!l.face&&!l.faces)return l;const from=l.by==='jamie'?jamie:l.by==='sam'?sam:l.from,act0=l.act;
@@ -1018,7 +1020,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
     {wait:1.4,act:()=>{reyes.gest('radio');reyes.lookAt=null;}},{who:'OFFICER REYES',text:'“…Sam?”',from:reyes,time:1,act:()=>sound('c6Static',rp,{gain:.4})},{wait:3.2},{who:'',text:'Static.',time:2},{wait:2.6}],
     {then:()=>{X.stage='end';C.endT=0;checkpoint('chapter6-end');}});}}
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p'),eb=el.querySelector?.('.eyebrow');if(eb)eb.textContent='LAST LIGHT';if(h)h.innerHTML='Chapter Six';if(pp)pp.innerHTML='SOMEONE WAS HERE<br>August 25, 2011.';}
-  const nb=$('next-chapter');if(nb)nb.hidden=true;A6.finished=true;o.finish();}
+  const nb=$('next-chapter');if(nb){nb.hidden=!A6.next;if(A6.next)nb.innerHTML='Chapter Seven <span>→</span>';}A6.finished=true;o.finish();}
  // ---- the water's pull on your legs, and what it sounds like underfoot --------------------------------------------------------------------------
  function waterPace(dt){const p=me(),z=zone();let d=0;if(z==='L')d=works.WATER.L.y-FLOOR.low;else if(z==='J'||z==='gate')d=works.WATER.J.y-FLOOR.low;d=Math.max(0,d);
   o.setPace?.(clamp(1-d*.85,.45,1));nav.ducking=false;works.nav.ducking=(o.foot.crouch||0)>.5;
@@ -1032,7 +1034,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    for(const [c,w] of [[jamie,J],[sam,Sq]]){if(c.gone)continue;const bk=c.bike.group.visible?{x:c.bx,z:c.bz,a:c.ba,kick:c.kick,fall:c.fall}:null;comp.putFoot(c,w[0],w[1],a,{bike:bk});c.follow=null;}
    C.fadeIn=0;after?.();if(C.match)for(const c of [jamie,sam])if(!c.gone&&!C.spot[c.key])c.follow='walk';};}
  // ---- the spots F works on ----------------------------------------------------------------------------------------------------------------------------
- function spots(){const out=[],ph=S.phase,p=me();if(C.view||C.fadeOut>=0||posed()||phys.playerBusy()||C.routine)return out;
+ function spots(){if(nextOwns())return A6.next.spots();const out=[],ph=S.phase,p=me();if(C.view||C.fadeOut>=0||posed()||phys.playerBusy()||C.routine)return out;
   const add=(id,label,q,fc,r=2.4,o2={})=>out.push({id,label,at:q,face:fc||q,r,wide:true,...o2});
   if(ph==='d6-room'||ph==='d6-phone'){if(!C.flags.up)return out;
    // (a small room, everything within reach of everything: what you look at is what F takes)
@@ -1070,7 +1072,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    add('c6-port','Look through the port',WP(GATE.port.x,22.85,FLOOR.low+GATE.port.y),null,1.9,lk(.18,.12));add('c6-crank2','Turn the crank',WP(GATE.crank.x,GATE.crank.z,FLOOR.low+1.05),null,1.9,lk(.3));}
   if(ph==='n6-rescue'&&C.rs?.stage==='lift'&&!C.rs.lifted)add('c6-lift','Help lift the cover',WP(MANHOLE.x,MANHOLE.z,FLOOR.pad+.1),null,2.4);
   return out;}
- function act(id){
+ function act(id){if(nextOwns()){A6.next.act(id);return;}
   if(id.startsWith('c6-routine-')){routineStart(id.slice(11));return;}
   if(id==='c6-cam')takeCamera();else if(id==='c6-phone')answer();else if(id==='c6-out')goOutside();
   else if(id==='c6-window')lookThing('window',HS.window,[{who:'',text:'Somebody’s mower, down the street. A sprinkler. A car going by slow.',time:3.2},{who:'',text:'Everything going on like it always did.',time:2.8}],{back:.75});
@@ -1112,7 +1114,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const canCamera=()=>C.inv.camera==='have'&&me().walking&&!C.view&&C.fadeOut<0&&S.phase!=='c6-black'&&!posed();
  function openCamera(i){photo.open(i);C.view='camera';C.viewT=0;o.roam.walkLock=true;}
  function closeView(){if(C.view==='camera')photo.close();if(C.view==='look')return endLook();C.view=null;if(!posed())o.roam.walkLock=false;if(C.meet&&C.flags.showing&&!C.flags.copy){C.flags.showing=false;}}
- function key(code,repeat){if(!mine(S.phase))return false;
+ function key(code,repeat){if(nextOwns())return A6.next.key(code,repeat);if(!mine(S.phase))return false;
   if(C.routine){if(code==='KeyS'&&!repeat)routineFinish(false);if(['KeyF','KeyV','KeyI','Tab','KeyW','KeyA','KeyD','KeyS','Space','KeyC'].includes(code))return true;}
   if((code==='KeyI'||code==='Tab')&&!inv.isOpen&&(C.view||C.fadeOut>=0||C.endT>=0||S.phase==='c6-black'))return true;if(inv.key(code,repeat))return true;
   if(S.phase==='d6-room'&&!C.flags.up&&!repeat&&['KeyW','KeyS','KeyA','KeyD','KeyF','Space'].includes(code)){if(C.flags.awake||C.room?.t>3)getUp();return true;}
@@ -1122,9 +1124,9 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(code==='KeyW'||code==='ArrowUp'){photo.zoomBy(1);return true;}if(code==='KeyS'||code==='ArrowDown'){photo.zoomBy(-1);return true;}return ['Space','KeyQ','KeyE','KeyC','KeyT','KeyF'].includes(code);}
   if(C.view==='look'){if((code==='KeyS'||code==='ArrowDown')&&!busy()&&C.lookKind!=='plan'){if(!repeat)endLook();return true;}if((code==='KeyS'||code==='ArrowDown')&&C.lookKind==='plan'&&C.flags.planDone){if(!repeat)endLook();return true;}return ['KeyW','KeyA','KeyD','Space','KeyC','KeyS'].includes(code);}
   return false;}
- function pan(dx,dy){if(!mine(S.phase))return false;if(C.view==='camera'){photo.pan(dx,dy);return true;}return false;}
- function wheel(dy){if(!mine(S.phase)||C.view!=='camera')return false;photo.zoomBy(dy<0?1:-1);return true;}
- function hint(){const ph=S.phase;
+ function pan(dx,dy){if(nextOwns())return A6.next.pan(dx,dy);if(!mine(S.phase))return false;if(C.view==='camera'){photo.pan(dx,dy);return true;}return false;}
+ function wheel(dy){if(nextOwns())return A6.next.wheel(dy);if(!mine(S.phase)||C.view!=='camera')return false;photo.zoomBy(dy<0?1:-1);return true;}
+ function hint(){if(nextOwns())return A6.next.hint?.()??null;const ph=S.phase;
   if(C.routine){const r=C.routine;return [['Hold F',`${r.id==='wash'?'Wash':r.id==='brush'?'Brush':'Eat'} · ${Math.round(r.progress/r.duration*100)}%`],['S','Put it down']];}
   if(C.view==='camera')return [['A / D','Previous / next'],['W / S','Zoom'],...(photo.V.zoom>1.05?[['Mouse','Move around']]:[]),['V','Lower the camera']];
   if(C.view==='look')return C.lookKind==='plan'?null:[['S','Step back']];
@@ -1133,7 +1135,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.inv.flashlight&&!o.foot.on&&inWorks()&&(works.cave(camera.position.x,camera.position.z)>.5)&&!C.flags.tHint){return [['T','Flashlight']];}
   return null;}
  // ---- sounds in the world, what is in the way --------------------------------------------------------------------------------------------------------
- function sources(out){const ph=S.phase,p=me();
+ function sources(out){if(nextOwns()){A6.next.sources(out);return;}const ph=S.phase,p=me();
   if(/^d6-(room|phone)$/.test(ph)){out.push({id:'c6-kitchen-radio',kind:'radio',pos:HS.kitchen,level:.5,muffle:.6});const m=main(home.P.dc+60,14);out.push({id:'c6-mower',kind:'mower',pos:{x:m.x,y:1,z:m.z},level:.55,muffle:.5});}
   if(/^d6-(ride|street|oak)$/.test(ph)){const m=main(470,18);out.push({id:'c6-mower',kind:'mower',pos:{x:m.x,y:1,z:m.z},level:.7});}
   if(ph==='e6-garage'&&wxRadio.visible)out.push({id:'c6-wx',kind:'radio',pos:wxRadio.position,level:.6});
@@ -1143,7 +1145,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(!works.ST.power&&works.ST.alarm)out.push({id:'c6-alarm',kind:'alarm',pos:works.local(9,20,-3.5),level:.9});
    if(ph==='n6-after'){out.push({id:'c6-gen',kind:'generator',pos:works.local(24.8,-12,1),level:.8});out.push({id:'c6-radio-yard',kind:'radio',pos:reyes.pos,level:.35});}
    if(C.sirens&&ph==='n6-rescue')out.push({id:'c6-sirens',kind:'siren',pos:works.local(60,-40,2),level:.5,mode:'wail'});}}
- function blockers(){const out=[];cast.blockers(out);if(inWorks())works.blockers(out);if(reyes.visible&&inWorks())out.push({x:reyes.x,z:reyes.z,r:.34,speed:0});
+ function blockers(){if(nextOwns())return A6.next.blockers();const out=[];cast.blockers(out);if(inWorks())works.blockers(out);if(reyes.visible&&inWorks())out.push({x:reyes.x,z:reyes.z,r:.34,speed:0});
   if(S.phase==='d6-meet'||S.phase==='e6-garage')G5.blockers(out);return out;}
  function updateAmb(dt){const ph=S.phase,p=me(),cv=inWorks(p)?works.cave(p.x,p.z):0;let want;
   if(/^d6-(room|phone)$/.test(ph))want={traffic:.25,life:.6,insects:.35,wind:.15,forest:0,tunnel:0,water:0};
@@ -1151,9 +1153,9 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   else want={traffic:0,life:0,insects:0,wind:(.8+C.storm*.5)*(1-cv*.85),forest:.2,tunnel:cv,water:.6};
   for(const kk in want)C.amb[kk]=damp(C.amb[kk]??0,want[kk],.6,dt);}
  // Jamie's flashlight, when it is on: where he points it (at the far end; at the gate; at the water)
- function jamieSweep(t){const ph=S.phase;if(ph==='n6-double'&&SAM2.mode!=='off')return {x:SAM2.x,y:SAM2.y+1.1,z:SAM2.z};if(/^n6-(flood|hold|sealed)$/.test(ph))return WP(9,24.5,FLOOR.low+.9);
+ function jamieSweep(t){if(nextOwns())return A6.next.jamieSweep?.(t)??null;const ph=S.phase;if(ph==='n6-double'&&SAM2.mode!=='off')return {x:SAM2.x,y:SAM2.y+1.1,z:SAM2.z};if(/^n6-(flood|hold|sealed)$/.test(ph))return WP(9,24.5,FLOOR.low+.9);
   const c=jamie,x=c.px,z=c.pz,a=c.pa+Math.sin(t*.6)*.45;return {x:x+Math.sin(a)*6,y:gy(x+Math.sin(a)*6,z-Math.cos(a)*6),z:z-Math.cos(a)*6};}
- function officerAim(){const ph=S.phase;if(ph==='e6-grille'&&AX.mode!=='off')return {x:AX.x,y:AX.y+1.1,z:AX.z};if(ph==='e6-grille'||ph==='e6-lower')return WP(9.2,40,FLOOR.low+.9);
+ function officerAim(){if(nextOwns())return A6.next.officerAim?.()??null;const ph=S.phase;if(ph==='e6-grille'&&AX.mode!=='off')return {x:AX.x,y:AX.y+1.1,z:AX.z};if(ph==='e6-grille'||ph==='e6-lower')return WP(9.2,40,FLOOR.low+.9);
   if(ph==='n6-double'&&SAM2.mode!=='off')return {x:SAM2.x,y:SAM2.y+1,z:SAM2.z};if(/^n6-(flood|hold)$/.test(ph))return WP(GATE.sam.x,GATE.sam.z,FLOOR.low+1);if(ph==='n6-sealed')return WP(9,23,FLOOR.low+1);
   if(ph==='n6-rescue')return WP(MANHOLE.x,MANHOLE.z,-1);return null;}
  // ---- minds: the mood and what is worth a look, by where the chapter is ------------------------------------------------------------------------------
@@ -1179,7 +1181,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   else if(ph==='n6-after')mood='tense';
   brain.setScene({mood,pois,goal});}
  // ---- every frame ----------------------------------------------------------------------------------------------------------------------------------------
- function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase;mind();
+ function update(dt){if(nextOwns()){A6.next.update(dt);return;}C.t+=dt;C.pt+=dt;const ph=S.phase;mind();
   if(C.jdoor!=null)world.doors.jamie?.set(C.jdoor);// (Jamie's front door, while this chapter has it: the prologue's own door logic shuts it every frame first)
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
   clock(dt);updatePose(dt);match(dt);guard(dt);standAll();photo.update(dt);if(C.view==='camera'){C.viewT+=dt;if(photo.current&&!photo.current.canvas&&!photo.current.lead)photo.take(photo.V.i);}
@@ -1214,14 +1216,14 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.view==='look'&&ph!=='d6-room'&&ph!=='d6-phone'){C.lookT+=dt;if(C.lookDur&&C.lookT>C.lookDur&&!busy()&&C.lookKind!=='plan')endLook();}
   if(C.view==='look'&&C.lookKind==='plan'&&C.rec?.stage!=='plan'&&C.rec?.stage!=='camera')C.flags.planDone=true;
   const L6=sky();A.day=L6.day;A.night=L6.night;ch2.day=A.day;A.shade=0;A.barLight=false;}
- function afterActors6(dt){if(!owns(S.phase))return;if(/^(d6-meet|e6-garage)$/.test(S.phase)){if(!meetingLight.parent)scene.add(meetingLight);const l=TL(.15,-.7,2.0);meetingLight.position.set(l.x,l.y,l.z);}else meetingLight.removeFromParent();
+ function afterActors6(dt){if(!mine(S.phase))return;if(/^(d6-meet|e6-garage)$/.test(S.phase)){if(!meetingLight.parent)scene.add(meetingLight);const l=TL(.15,-.7,2.0);meetingLight.position.set(l.x,l.y,l.z);}else meetingLight.removeFromParent();
   k.torchO.visible=/^(e6-(yard|house|gallery|lower|grille)|n6-)/.test(S.phase);
   for(const a of [reyes,dad,officer,...cast.actors]){if(!a.visible)continue;const p=a.pose;if(a.lookAt){const head=a.person.parts.head.getWorldPosition(new THREE.Vector3()),to=a.lookAt,want=clamp(Math.atan2((to.y??head.y)-head.y,Math.max(.3,Math.hypot(to.x-head.x,to.z-head.z))),-.60,.4);a.look6=damp(a.look6||0,want,5,dt);p[PI.hp]=a.look6;}else p[PI.hp]*=-1;applyPose(a.person,p);}
   updateShirt(dt);for(const art of appearances6.values())art.update(dt,{clock:C.t,eye:camera.position,phase:S.phase});
   if(props.rescueSeat.parent){const q=jamie.person.parts.pelvis.getWorldPosition(new THREE.Vector3()),floor=gy(q.x,q.z);props.rescueSeat.position.set(q.x,floor,q.z);props.rescueSeat.rotation.y=jamie.person.group.rotation.y;props.rescueSeat.scale.y=Math.max(.12,q.y-floor-.07*jamie.person.scale);}}
  A.afterActors6=afterActors6;
  // ---- lifecycle ------------------------------------------------------------------------------------------------------------------------------------------
- function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='camera')photo.close();inv.reset();
+ function reset(){A6.next?.reset();const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='camera')photo.close();inv.reset();
   if(C.routine)routineFinish(false);brushP.hide();spoonP.hide();
   if(nav.room===home.nav||nav.room===works.nav)nav.setRoom(null);home.reset();threshold.reset();meetingLight.removeFromParent();works.attach(false);works.reset();storm.reset();storm.attach(false);cast.reset();rescue.g.visible=false;car3.show(false);
   SHIRT.hide();PIN.place?.(new THREE.Vector3(works.pinAt.stow.x,works.pinAt.stow.y,works.pinAt.stow.z),new THREE.Euler(0,0,Math.PI/2));works.pinTo('stow');helmetP.hide();planP.hide();folderP.hide();props.rolled(false);for(const mk of [...props.planMarks])props.planMarks.delete(mk);
@@ -1231,7 +1233,7 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   presentation6(false);cloth.reset();if(A6.started)ch5.presentation(false);A6.started=false;A6.finished=false;
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView)o.roam.walkLock=false;fresh();}
  // QA jumps, DEV scenes and Continue: the chapter at one of its moments, with every earlier beat's flags set as playing sets them.
- function jump(section){jumpTo(section);}
+ function jump(section){if(A6.next?.handles?.(section)&&!SECTIONS6.includes(section)&&!ALIAS6[section]){reset();A6.next.jump(section);return;}jumpTo(section);}
  function jumpTo(section){section=ALIAS6[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();minds();A6.started=true;
   if(section==='chapter6-start'){begin();return;}
   common();dayWorld();objective('');phys.reset();o.foot.arms=phys.arms;cameraPictures();
@@ -1324,13 +1326,13 @@ export function createChapter6(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const W0x=()=>works.local(0,0).x,W0z=()=>works.local(0,0).z;
  // ---- the api --------------------------------------------------------------------------------------------------------------------------------------------
  Object.assign(A6,{SECTIONS:SECTIONS6,ALIAS:ALIAS6,LABEL:LABEL6,owns,handles,begin:()=>{A6.started=true;begin();},update,spots,act,sources,blockers,reset,jump,hint,key,pan,wheel,jamieSweep,officerAim,
-  light:()=>owns(S.phase)?sky():null,longThrow:()=>null,
-  canDismount:()=>!posed()&&!C.view&&S.phase!=='c6-black'&&!inWorks()&&!(nav.room===home.nav),
-  canRemount:()=>!C.view&&!posed()&&!inWorks()&&!/^(d6-(room|phone|meet)|e6-garage)$/.test(S.phase)&&!(S.phase==='d6-jamie'),
-  closeBag:()=>{if(inv.isOpen){inv.close();return true;}return false;},inventoryReady:()=>owns(S.phase)&&S.phase!=='c6-black',
+  light:()=>nextOwns()?A6.next.light():mine(S.phase)?sky():null,longThrow:(h,a)=>nextOwns()?A6.next.longThrow?.(h,a)??null:null,
+  canDismount:()=>nextOwns()?A6.next.canDismount():!posed()&&!C.view&&S.phase!=='c6-black'&&!inWorks()&&!(nav.room===home.nav),
+  canRemount:()=>nextOwns()?A6.next.canRemount():!C.view&&!posed()&&!inWorks()&&!/^(d6-(room|phone|meet)|e6-garage)$/.test(S.phase)&&!(S.phase==='d6-jamie'),
+  closeBag:()=>{if(inv.isOpen){inv.close();return true;}return !!A6.next?.closeBag?.();},inventoryReady:()=>nextOwns()?!!A6.next.inventoryReady?.():mine(S.phase)&&S.phase!=='c6-black',
   C,home,works,cast,props,storm,inv,FIREPIC,firePicture,silInView,sky,WP,TL,SHIRT,cloth,appearances6,threshold,PIN,car3,rescue,brain,
   JAM:{door:JDOOR,step:JSTEP,foyer:JFOYER,drive:JDRIVE,bike:JBIKE},BW,LOOK,GRILLE_Z,AXSTAND});
- Object.defineProperties(A6,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
+ Object.defineProperties(A6,{amb:{get:()=>nextOwns()?A6.next.amb:C.amb},viewing:{get:()=>nextOwns()?A6.next.viewing:C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,inv:{...C.inv},looked:[...C.looked].sort(),
    zone:zone(p),gate:{gap:+works.GS.gap.toFixed(3),mode:works.GS.mode,held:works.GS.held},water:Object.fromEntries(Object.entries(works.WATER).map(([kk,w])=>[kk,+w.y.toFixed(3)])),power:works.ST.power,
    storm:+C.storm.toFixed(3),rain:+C.rain.toFixed(3),samGone:!!sam.gone,sam2:SAM2.mode!=='off'&&SAM2.person.group.visible,ax:AX.mode!=='off'&&AX.person.group.visible,jamie2:JAMIE2.mode!=='off'&&JAMIE2.person.group.visible,
