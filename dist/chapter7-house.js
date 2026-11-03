@@ -114,7 +114,7 @@ export function createSamHouse({scene,world,shoot=null}){
  // ---- spots (house frame, then world) ----
  const L=(x,z,y=0)=>toW(x,z,FL+y);
  const SPOTS={
-  front:L(DOOR.front.x,D2-t-.5),stoop:toW(DOOR.front.x,P.stepFront+.55,0),enter:L(DOOR.front.x,D2-t-.75),
+  front:L(DOOR.front.x,D2-t-.5),door:L(DOOR.front.x,D2-t-.04,1.1),stoop:toW(DOOR.front.x,P.stepFront+.55,0),enter:L(DOOR.front.x,D2-t-.75),
   couch:L(-3.2,1.75),tv:L(-3.2,4.3,1),kitchenTable:L(-3.0,-2.0,.78),chairs:CHAIRS.map(([x,z,a])=>({...L(x,z),a:heading(-a)})),
   samDoor:L(1.5,2.45),samIn:L(3.2,2.6),fan:L(W2-t-1.35,1.6,.3),photo:L(3.95,D2-t-.25,.86),notebook:L(3.4,D2-t-.32,.77),gum:L(W2-t-.3,4.02,.57),
   shelf:L(2.4,3.75,1.05),games:L(3.0,1.5,.9),helmet:L(2.1,DOOR.sam.z1,.95),hoodie:L(3.55,D2-t-1.1,.7),fish:L(W2-t-.38,4.0,.58),window:L(4.2,D2-t-.05,1.45),bed:L(W2-t-.55,2.45,.5),

@@ -73,6 +73,14 @@ if(process.env.ONLY==='chapter6'){const {playChapterSix,runChapterSixChecks}=awa
  if(!process.env.PLAY_ONLY)try{await runChapterSixChecks(T6);}catch(e){fails.push('checks threw: '+String(e.stack||e).slice(0,800));}
  const runtimeHashes=Object.fromEntries(fs.readdirSync(root).sort().filter(n=>fs.statSync(root+n).isFile()).map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(root+n)).digest('hex')]));
  console.log(JSON.stringify({runtimeHashes,passed:checks.length,failed:fails,metrics,phase:h.chapter.kit.S.phase,state:(({phase,flags,inv,zone,gate,water})=>({phase,flags,inv,zone,gate,water}))(h.chapter6.state),watch:h.chapter6.__watch&&{...h.chapter6.__watch,lines:undefined}},null,1));process.exit(fails.length?1:0);}
+// ONLY=chapter7: Chapter Seven alone (from Chapter Six's end card, or FROM=<segment> by its jump; TO=<segment> stops after it).
+if(process.env.ONLY==='chapter7'){const {playChapterSeven,runChapterSevenChecks}=await import('./chapter7-sim.mjs');const fails=[];
+ const soft=(name,fn)=>{try{fn();checks.push(name);console.log('ok  ',name);}catch(e){fails.push(name+': '+String(e.message).slice(0,500));console.log('FAIL',name,String(e.message).slice(0,500));}};
+ const T7={h,advance,press,release,tap,check:soft,element,metrics,groundPoint,W};let r=null;
+ if(!process.env.CHECKS_ONLY)try{r=playChapterSeven(T7,'Chapter Seven',{fromCard:process.env.FROMCARD!=='0',from:process.env.FROM||null,to:process.env.TO||null});}catch(e){fails.push('playthrough threw: '+String(e.stack||e).slice(0,1500));}
+ if(process.env.LINES&&r)console.log(r.lines().join('\n'));
+ if(!process.env.PLAY_ONLY)try{await runChapterSevenChecks(T7);}catch(e){fails.push('checks threw: '+String(e.stack||e).slice(0,1200));}
+ console.log(JSON.stringify({passed:checks.length,failed:fails,metrics:{chapter7:metrics.chapter7},phase:h.chapter.kit.S.phase,state:(({phase,flags,inv,hunter,jamie,court,fails,marks})=>({phase,flags,inv,hunter,jamie,court,fails,marks}))(h.chapter7.state)},null,1));process.exit(fails.length?1:0);}
 // ONLY=companions: Chapter Five's companion acceptance tests (A–H) alone, for development.
 if(process.env.ONLY==='companions'){const {chapterFiveTools}=await import('./chapter5-sim.mjs');const {runCompanionTests}=await import('./chapter5-companions.mjs');const fails=[];
  const soft=(name,fn)=>{try{fn();checks.push(name);console.log('ok  ',name);}catch(e){fails.push(name+': '+String(e.message).slice(0,500));console.log('FAIL',name,String(e.message).slice(0,500));}};

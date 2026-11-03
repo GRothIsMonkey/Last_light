@@ -21,10 +21,10 @@ import {bake,inBox,clamp} from './chapter6-kit.js';
 import {seeded} from './kit.js';
 
 // ---- the house with the green door --------------------------------------------------------------------------------------------
-export const HH={W:10,D:9,F:.6,H1:2.75,UP:3.5,H2:2.5};// ground floor at F; upstairs floor at UP
+export const HH={W:10,D:9,F:.6,H1:2.75,UP:3.5,H2:2.5,UCX:1.65};// ground floor at F; upstairs floor at UP; the upstairs hall's half width (wider than the core below: a way past the stairwell on each side)
 export const STAIR={x0:-.5,x1:.5,z0:-1.6,z1:2.6};// rising toward the back (+z), F at z0 to UP at z1
 export function createHorrorHouse({wallpaper=null}={}){
- const g=new THREE.Group();g.name='c7-green-door-house';const B=createBuild(g),{K}=B,{F:FN}=createFurniture();const {W,D,F,H1,UP,H2}=HH,hw=W/2,hd=D/2,t=.14;
+ const g=new THREE.Group();g.name='c7-green-door-house';const B=createBuild(g),{K}=B,{F:FN}=createFurniture();const {W,D,F,H1,UP,H2,UCX:ucx}=HH,hw=W/2,hd=D/2,t=.14;
  const ext=mat(0xb9b4a0,{},'housepaint'),plaster=mat(0xcfc6b0,{},'plaster'),paperM=wallpaper?new THREE.MeshStandardMaterial({map:wallpaper,roughness:.92}):mat(0xb8a888,{},'plaster');
  const boards=mat(0x7a5a3a,{},'timber'),carpet=mat(0x6a5a44,{},'carpet'),ceil=mat(0xd8d2c2),trim=mat(C7.trim),green=mat(0x2f5a3a,{roughness:.55},'timber'),kitchenTile=mat(0xc8c2a8,{roughness:.6},'mineral');
  const walls=[],solids=[],doors={},hides={},spots={};
@@ -45,13 +45,13 @@ export function createHorrorHouse({wallpaper=null}={}){
  const cx=1.2;W2([-cx,-1],[-cx,3],{});W2([cx,-1],[cx,3],{});W2([-cx,-1],[-.55,-1],{});W2([.55,-1],[cx,-1],{});W2([-cx,3],[cx,3],{holes:[[.8,1.6,0,2.0]]});// (the closet under the stair: its door from the back hall)
  W2([-hw,0],[-cx,0],{holes:[[.8,2.4,0,2.05]]});W2([cx,0],[hw,0],{holes:[[1.4,3.0,0,2.05]]});// living|den, dining|kitchen
  W2([-cx,-hd],[-cx,-1],{holes:[[.7,2.7,0,2.2]]});W2([cx,-hd],[cx,-1],{holes:[[.7,2.7,0,2.2]]});// foyer|living, foyer|dining (wide openings)
- W2([-cx,3],[-cx,hd],{holes:[[.15,1.25,0,2.05]]});W2([cx,3],[cx,hd],{holes:[[.15,1.25,0,2.05]]});// back hall|den, back hall|kitchen
+ W2([-cx,3],[-cx,hd],{holes:[[.1,1.35,0,2.05]]});W2([cx,3],[cx,hd],{holes:[[.1,1.35,0,2.05]]});// back hall|den, back hall|kitchen
  W2([3.6,3.2],[hw,3.2],{holes:[[.15,.95,0,2.0]]});W2([3.6,3.2],[3.6,hd],{});// the pantry
  W2([-hw,3.4],[-3.8,3.4],{holes:[[.15,.95,0,2.0]]});W2([-3.8,3.4],[-3.8,hd],{});// the den closet
  // upstairs: the hall round the stairwell (x -1.2..1.2 whole depth), the rooms either side
- W2([-cx,-hd],[-cx,0],{lv:'u',holes:[[2.9,3.8,0,2.05]]});W2([-cx,0],[-cx,hd],{lv:'u',holes:[[2.85,3.75,0,2.05]]});// storeroom door (z -1.6..-.7), the boy's room door (z 2.85..3.75)
- W2([cx,-hd],[cx,0],{lv:'u',holes:[[2.9,3.8,0,2.05]]});W2([cx,0],[cx,hd],{lv:'u',holes:[]});// parents' room door; the bathroom is shut (its door is drawn)
- W2([-hw,0],[-cx,0],{lv:'u'});W2([cx,0],[hw,0],{lv:'u'});
+ W2([-ucx,-hd],[-ucx,0],{lv:'u',holes:[[2.85,3.85,0,2.05]]});W2([-ucx,0],[-ucx,hd],{lv:'u',holes:[[2.8,3.8,0,2.05]]});// storeroom door (z -1.65..-.65), the boy's room door (z 2.8..3.8)
+ W2([ucx,-hd],[ucx,0],{lv:'u',holes:[[2.85,3.85,0,2.05]]});W2([ucx,0],[ucx,hd],{lv:'u',holes:[]});// parents' room door; the bathroom is shut (its door is drawn)
+ W2([-hw,0],[-ucx,0],{lv:'u'});W2([ucx,0],[hw,0],{lv:'u'});
  // floors and ceilings
  B.floor(-hw,-hd,hw,hd,F,boards);B.floor(cx,0,hw,hd,F+.005,kitchenTile);for(const [x0,z0,x1,z1] of [[-hw,-hd,-cx,0],[cx,-hd,hw,0]])K.slab(g,(x0+x1)/2,F+.005,(z0+z1)/2,x1-x0-.6,.01,z1-z0-.6,carpet,{shadow:false});
  // the ground floor's ceiling with the stairwell hole; upstairs floor the same
@@ -66,31 +66,33 @@ export function createHorrorHouse({wallpaper=null}={}){
  doors.front=B.door(-.47,-hd+.02,{w:.94,h:2.06,rot:0,swing:-1.5,m:green,y:F,name:'front-door'});
  doors.closet=B.door(-.4,3.02,{w:.8,h:2,rot:0,swing:1.4,y:F,name:'stair-closet'});doors.pantry=B.door(3.75,3.18,{w:.8,h:2,rot:0,swing:-1.4,y:F,name:'pantry'});
  doors.den=B.door(-4.85,3.42,{w:.8,h:2,rot:0,swing:-1.4,y:F,name:'den-closet'});doors.back=B.door(2.5,hd-.02,{w:.86,h:2.03,rot:0,swing:0,y:F,name:'back-door'});
- doors.boy=B.door(-cx-.02,2.85,{w:.9,h:2.03,rot:-Math.PI/2,swing:-1.45,y:UP,name:'boy-door'});doors.store=B.door(-cx-.02,-1.6,{w:.9,h:2.03,rot:-Math.PI/2,swing:-1.45,y:UP,name:'store-door'});
- doors.parents=B.door(cx+.02,-.7,{w:.9,h:2.03,rot:Math.PI/2,swing:1.45,y:UP,name:'parents-door'});K.slab(g,cx+.03,UP+1.02,2.2,.04,2.03,.86,mat(0x8a6a4a,{},'timber'),{name:'bath-door'});
+ doors.boy=B.door(-ucx-.02,2.8,{w:.98,h:2.03,rot:-Math.PI/2,swing:-1.45,y:UP,name:'boy-door'});doors.store=B.door(-ucx-.02,-1.65,{w:.98,h:2.03,rot:-Math.PI/2,swing:-1.45,y:UP,name:'store-door'});
+ doors.parents=B.door(ucx+.02,-.65,{w:.98,h:2.03,rot:Math.PI/2,swing:1.45,y:UP,name:'parents-door'});K.slab(g,ucx+.03,UP+1.02,2.2,.04,2.03,.86,mat(0x8a6a4a,{},'timber'),{name:'bath-door'});
  for(const d of Object.values(doors))d.set(0);
  // ---- furniture (ground) ----
  const put=(o,x,z,{a=0,y=F,solid=null,h=null}={})=>{o.position.set(x,y,z);o.rotation.y=a;g.add(o);if(solid){const s={x,z,hw:solid[0],hd:solid[1],a:-a,h:h??1,lv:y>=UP-.1?'u':'g'};solids.push(s);}return o;};
  // living room: 1960s (a console set playing, a couch with a plastic cover, a starburst clock, a floor lamp)
  const tvScreen=new THREE.MeshStandardMaterial({color:0x111418,emissive:0x8a9aa8,emissiveIntensity:0,roughness:.2});tvScreen.name='c7-console-screen';
- put(FN.console({screen:tvScreen}),-3.1,-4.15,{a:0,solid:[.66,.27],h:1.0});put(FN.couch({w:2.0,m:mat(0x6a7a5a,{},'textile')}),-3.0,-.95,{a:Math.PI,solid:[1.02,.46],h:.85});
- put(FN.coffee({}),-3.0,-2.3,{solid:[.56,.29],h:.42});put(FN.lamp({lit:true}),-4.55,-.7,{solid:[.2,.2],h:1.6});put(FN.armchair(),-4.4,-2.6,{a:-Math.PI/2,solid:[.42,.42],h:.9});put(FN.rug({w:2.4,d:1.8,c:0x7a4a32}),-3,-2.3);
+ // (laid out round the way through: the arch from the foyer, across the rug, out the door to the den; the set against the
+ //  core wall, the couch along the side wall facing it, the armchair under the clock)
+ put(FN.console({screen:tvScreen}),-1.55,-.9,{a:Math.PI/2,solid:[.66,.27],h:1.0});put(FN.couch({w:2.0,m:mat(0x6a7a5a,{},'textile')}),-4.5,-1.7,{a:-Math.PI/2,solid:[1.02,.46],h:.85});
+ put(FN.lamp({lit:true}),-4.6,-.35,{solid:[.2,.2],h:1.6});put(FN.armchair(),-2.5,-4.0,{a:Math.PI,solid:[.42,.42],h:.9});put(FN.rug({w:2.4,d:1.8,c:0x7a4a32}),-3,-1.8);
  const clock=new THREE.Group();clock.name='starburst-clock';for(let k=0;k<12;k++){const r=K.slab(clock,0,0,0,.02,.36,.01,mat(0xb89a4a,{metalness:.6,roughness:.4}));r.rotation.z=k*Math.PI/6;}K.cyl(clock,0,0,0,.08,.03,mat(0xd8cfa8),{rx:Math.PI/2});put(clock,-2.2,-4.42,{y:F+1.9});
  // den: a desk, a closet (hide), shelves
- put(FN.desk({w:1.1}),-4.3,1.4,{a:-Math.PI/2,solid:[.56,.31],h:.78});put(FN.chair(),-3.7,1.4,{a:-Math.PI/2,solid:[.22,.22],h:.9});put(FN.shelf({w:1.0,h:1.9}),-2.1,.25,{a:Math.PI,solid:[.5,.17],h:1.9});
+ put(FN.desk({w:1.1}),-4.3,1.4,{a:-Math.PI/2,solid:[.56,.31],h:.78});put(FN.chair(),-3.7,1.4,{a:-Math.PI/2,solid:[.22,.22],h:.9});put(FN.shelf({w:.9,h:1.9}),-1.75,.3,{a:Math.PI,solid:[.45,.17],h:1.9});
  // kitchen: counters along the back and right, a stove, a fridge (tall), a table
- put(FN.counter({w:2.4}),2.5,4.15,{a:Math.PI,solid:[1.2,.33],h:.92});put(FN.fridge({c:0xd8c88a}),4.6,1.0,{a:-Math.PI/2,solid:[.38,.36],h:1.7});put(FN.stove({c:0xd8c88a}),4.65,2.1,{a:-Math.PI/2,solid:[.38,.34],h:1.0});
- put(FN.table({w:1.1,d:.8}),2.6,1.6,{solid:[.56,.41],h:.76});for(const [x,z,a] of [[2.6,.95,0],[2.6,2.25,Math.PI]])put(FN.chair({}),x,z,{a,solid:[.22,.22],h:.9});
- // dining room: table and chairs, the hutch (tall)
- put(FN.table({w:1.8,d:.95}),3.1,-2.4,{solid:[.92,.5],h:.76});for(const [x,z,a] of [[2.5,-3.15,0],[3.7,-3.15,0],[2.5,-1.65,Math.PI],[3.7,-1.65,Math.PI]])put(FN.chair({}),x,z,{a,solid:[.22,.22],h:.95});
- {const hutch=new THREE.Group();hutch.name='hutch';K.box(hutch,0,.45,0,1.4,.9,.48,mat(C7.walnut,{},'timber'));K.box(hutch,0,1.4,.1,1.4,1.0,.3,mat(C7.walnut,{},'timber'));for(let k=0;k<5;k++)K.cyl(hutch,-.5+k*.25,1.25,0,.09,.012,mat(0xe8e2d0),{rx:Math.PI/2-.2});put(hutch,4.7,-2.4,{a:-Math.PI/2,solid:[.72,.25],h:1.9});}
+ put(FN.counter({w:1.25}),2.95,4.15,{a:Math.PI,solid:[.63,.33],h:.92});put(FN.fridge({c:0xd8c88a}),4.6,1.0,{a:-Math.PI/2,solid:[.38,.36],h:1.7});put(FN.stove({c:0xd8c88a}),4.65,2.1,{a:-Math.PI/2,solid:[.38,.34],h:1.0});
+ // (no table in here: the dining room is through the wide doorway)
+ // dining room: the table toward the front window, its chairs, the hutch on the side wall (tall); the way round it to the kitchen
+ put(FN.table({w:1.4,d:.85}),3.3,-2.9,{solid:[.72,.45],h:.76});for(const [x,z,a] of [[2.95,-3.55,0],[3.65,-3.55,0],[2.95,-2.25,Math.PI],[3.65,-2.25,Math.PI]])put(FN.chair({}),x,z,{a,solid:[.22,.22],h:.95});
+ {const hutch=new THREE.Group();hutch.name='hutch';K.box(hutch,0,.45,0,1.4,.9,.48,mat(C7.walnut,{},'timber'));K.box(hutch,0,1.4,.1,1.4,1.0,.3,mat(C7.walnut,{},'timber'));for(let k=0;k<5;k++)K.cyl(hutch,-.5+k*.25,1.25,0,.09,.012,mat(0xe8e2d0),{rx:Math.PI/2-.2});put(hutch,4.72,-1.2,{a:-Math.PI/2,solid:[.72,.25],h:1.9});}
  put(FN.rug({w:1.2,d:2.2,c:0x5a3a2a}),0,-3.0);
  // ---- upstairs ----
  // the boy's room, August 1991: bed, desk under the side window, a calendar, a poster, a small TV and console, clothes
  put(FN.bed({cover:0x2a4a6a}),-3.95,3.1,{a:-Math.PI/2,solid:[.53,1.03],h:.75,y:UP});put(FN.desk({w:1.2}),-4.55,.95,{a:Math.PI/2,solid:[.62,.31],h:.78,y:UP});
  put(FN.chair(),-4.0,.95,{a:Math.PI/2,solid:[.22,.22],h:.9,y:UP});
  // (the dresser Jamie pushes against the door: its own group, never baked, its solid moved with it; the little set on top)
- const dresser=FN.dresser({w:1.0});dresser.name='boy-dresser';const crt=FN.crt({w:.36});crt.position.y=.83;dresser.add(crt);put(dresser,-1.75,1.0,{a:Math.PI/2,solid:[.52,.26],h:.85,y:UP});const dresserSolid=solids[solids.length-1];put(FN.rug({w:1.6,d:1.2,c:0x2a3a5a}),-3,2.2,{y:UP});
+ const dresser=FN.dresser({w:1.0});dresser.name='boy-dresser';const crt=FN.crt({w:.36});crt.position.y=.83;dresser.add(crt);put(dresser,-ucx-.55,1.0,{a:Math.PI/2,solid:[.52,.26],h:.85,y:UP});const dresserSolid=solids[solids.length-1];put(FN.rug({w:1.6,d:1.2,c:0x2a3a5a}),-3,2.2,{y:UP});
  // parents' room (sixties): a bed, a vanity, a lamp; storeroom: boxes, a sewing table, the old bike's spot
  put(FN.bed({w:1.5,cover:0xb89a7a,rumpled:false}),3.5,-2.4,{a:Math.PI/2,solid:[.78,1.03],h:.8,y:UP});put(FN.dresser({w:1.3,m:mat(0xd8cfba)}),4.6,-.6,{a:-Math.PI/2,solid:[.66,.26],h:.85,y:UP});
  put(FN.lamp({h:.6,lit:false}),4.55,-4.1,{y:UP+.0});
@@ -98,13 +100,13 @@ export function createHorrorHouse({wallpaper=null}={}){
  put(FN.table({w:.9,d:.5}),-2.0,-4.0,{y:UP,solid:[.46,.26],h:.76});
  // ---- hiding places (where a hidden kid stands), the stair top, the window over the porch ----
  hides.pantry={x:4.3,z:3.9,door:'pantry',lv:'g',label:'Hide in the pantry'};hides.den={x:-4.4,z:3.95,door:'den',lv:'g',label:'Hide in the closet'};hides.stair={x:0,z:3.75,door:'closet',lv:'g',label:'Hide in the closet under the stairs',inner:{x:0,z:2.4}};
- spots.foyer={x:0,z:-3.6};spots.stairFoot={x:0,z:-2.2};spots.stairTop={x:0,z:3.1};spots.boyDoor={x:-1.6,z:3.3};spots.boyIn={x:-3,z:2.4};spots.hallWindow={x:0,z:-4.1};spots.porchRoof={x:0,z:-5.6};
+ spots.foyer={x:0,z:-3.6};spots.stairFoot={x:0,z:-2.2};spots.stairTop={x:0,z:3.1};spots.boyDoor={x:-ucx-.4,z:3.3};spots.boyIn={x:-3,z:2.4};spots.hallWindow={x:0,z:-4.1};spots.porchRoof={x:0,z:-5.6};
  spots.kitchen={x:2.6,z:3.0};spots.calendar={x:-5,y:UP+1.55,z:2.05};spots.desk={x:-4.6,y:UP+.8,z:.95};spots.sideWindow={x:-2.8,y:UP+1.5,z:hd};spots.bike={x:-3.6,z:-2.5};
- spots.dresserStart={x:-1.75,z:1.0};spots.dresserBlock={x:-1.6,z:3.3};
+ spots.dresserStart={x:-ucx-.55,z:1.0};spots.dresserBlock={x:-ucx-.4,z:3.3};spots.dresserAfter={x:-ucx-.55,z:1.25};// (dragged back off the door afterwards: near where it stood, clear of the bed's foot)
  // the creature's map of the ground floor: rooms and doorways (house frame), and the loop it walks
- const graph={nodes:[{id:'foyer',x:0,z:-3.2},{id:'stairFoot',x:0,z:-2.0},{id:'livingArch',x:-1.7,z:-2.6,pause:1.4},{id:'living',x:-3.4,z:-2.2},{id:'livingDoor',x:-3.4,z:-.3,pause:1.2},
-  {id:'den',x:-3.0,z:1.8},{id:'denDoor',x:-1.7,z:3.7,pause:1.5},{id:'backHall',x:0,z:3.7},{id:'kitchenDoor',x:1.7,z:3.7,pause:1.2},{id:'kitchen',x:2.9,z:2.6},
-  {id:'kitchenDining',x:3.4,z:-.3,pause:1.4},{id:'dining',x:2.2,z:-2.4},{id:'diningArch',x:1.7,z:-2.6,pause:1.3},{id:'pantryFront',x:4.0,z:2.7},{id:'denCloset',x:-4.4,z:2.8}],
+ const graph={nodes:[{id:'foyer',x:0,z:-3.2},{id:'stairFoot',x:0,z:-2.0},{id:'livingArch',x:-1.7,z:-2.6,pause:1.4},{id:'living',x:-3.2,z:-2.4},{id:'livingDoor',x:-3.3,z:-.35,pause:1.2},
+  {id:'den',x:-2.7,z:1.9},{id:'denDoor',x:-1.7,z:3.7,pause:1.5},{id:'backHall',x:0,z:3.7},{id:'kitchenDoor',x:1.7,z:3.7,pause:1.2},{id:'kitchen',x:2.6,z:2.5},
+  {id:'kitchenDining',x:3.4,z:-.3,pause:1.4},{id:'dining',x:2.0,z:-1.3},{id:'diningArch',x:1.7,z:-2.6,pause:1.3},{id:'pantryFront',x:3.2,z:2.5},{id:'denCloset',x:-4.4,z:2.8}],
   edges:[['foyer','stairFoot'],['foyer','livingArch'],['livingArch','living'],['living','livingDoor'],['livingDoor','den'],['den','denDoor'],['denDoor','backHall'],['backHall','kitchenDoor'],
    ['kitchenDoor','kitchen'],['kitchen','kitchenDining'],['kitchenDining','dining'],['dining','diningArch'],['diningArch','foyer'],['kitchen','pantryFront'],['den','denCloset']],
   loop:['foyer','livingArch','living','livingDoor','den','denDoor','backHall','kitchenDoor','kitchen','kitchenDining','dining','diningArch']};

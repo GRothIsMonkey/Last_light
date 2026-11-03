@@ -26,10 +26,10 @@ const _v=new THREE.Vector3();
 
 export function createHunterAI({model,nav,sightClear=()=>true,sfx=()=>{},mark=()=>{}}){
  const M=model,D=M.drive;
- const AI={mode:'off',t:0,modeT:0,speed:0,radius:.4,nav,graph:null,route:null,steps:[],step:null,stepT:0,path:[],pathI:0,goal:null,
+ const AI={mode:'off',t:0,modeT:0,speed:0,radius:.3,nav,graph:null,route:null,steps:[],step:null,stepT:0,path:[],pathI:0,goal:null,
   targets:[],meter:new Map(),lastKnown:null,lastSeenT:-99,alertT:0,lookT:0,searchLeft:0,patrolI:0,patrolRoute:[],pauseT:0,
   onCatch:null,onSpot:null,catchR:1.25,sightRange:15,fov:1.25,runSpeed:4.1,walkSpeed:1.25,stalkSpeed:.9,stepAcc:0,breathT:3,
-  chase:null,log:{spotted:0,alerts:0,searches:0,caught:0,heard:0,lost:0,blocked:0,steps:0},trace:[],
+  chase:null,log:{spotted:0,alerts:0,searches:0,caught:0,heard:0,lost:0,blocked:0,stuck:0,steps:0},trace:[],
  };
  // ---- moving over the ground -------------------------------------------------------------------------------------------------
  const ok=(x,z,r=AI.radius)=>!nav||nav.walkable(x,z,r);
@@ -39,18 +39,37 @@ export function createHunterAI({model,nav,sightClear=()=>true,sfx=()=>{},mark=()
   const want=headingTo(M.x,M.z,tx,tz);M.heading+=clamp(wrap(want-M.heading),-turnRate*dt,turnRate*dt);
   // (it moves where it faces, a little: a hard turn slows it; it never slides sideways much)
   const align=Math.max(.25,Math.cos(wrap(want-M.heading))),v=Math.min(speed*align,d/dt),nx=M.x+Math.sin(M.heading)*v*dt,nz=M.z-Math.cos(M.heading)*v*dt;
-  if(free||ok(nx,nz)){M.x=nx;M.z=nz;}
-  else if(ok(nx,M.z)){M.x=nx;}else if(ok(M.x,nz)){M.z=nz;}
-  else{const sx=M.x+Math.sin(want)*v*dt,sz=M.z-Math.cos(want)*v*dt;if(ok(sx,sz)){M.x=sx;M.z=sz;}else AI.log.blocked++;}
+  // (squeezed somewhere tighter than its size, a corner it came round too close: it may move on a narrower body, never through a wall)
+  const okk=ok(M.x,M.z)?(x,z)=>ok(x,z):(x,z)=>ok(x,z,AI.radius*.5);
+  if(free||okk(nx,nz)){M.x=nx;M.z=nz;}
+  else if(okk(nx,M.z)){M.x=nx;}else if(okk(M.x,nz)){M.z=nz;}
+  else{let moved=false;for(const k of [0,.5,-.5,1.0,-1.0]){const a=want+k,sx=M.x+Math.sin(a)*v*dt*.8,sz=M.z-Math.cos(a)*v*dt*.8;if(okk(sx,sz)){M.x=sx;M.z=sz;moved=true;break;}}if(!moved)AI.log.blocked++;}
   AI.speed=damp(AI.speed,v,8,dt);return d;}
  // ---- the graph (rooms, doorways): A* between nodes -------------------------------------------------------------------------
- function setGraph(G){AI.graph=G?{nodes:G.nodes.map(n=>({...n})),adj:new Map()}:null;if(!G)return;for(const n of AI.graph.nodes)AI.graph.adj.set(n.id,[]);
+ function setGraph(G){AI.graph=G?{nodes:G.nodes.map(n=>({...n})),adj:new Map()}:null;AI.bounds=null;if(!G)return;for(const n of AI.graph.nodes)AI.graph.adj.set(n.id,[]);
   for(const [a,b] of G.edges){AI.graph.adj.get(a)?.push(b);AI.graph.adj.get(b)?.push(a);}}
  const node=id=>AI.graph?.nodes.find(n=>n.id===id);
  function nearestNode(x,z,{visible=false}={}){let best=null,bd=1e9;for(const n of AI.graph?.nodes||[]){const d=Math.hypot(n.x-x,n.z-z);if(d<bd&&(!visible||lineClear(x,z,n.x,n.z))){bd=d;best=n;}}return best;}
  function lineClear(x0,z0,x1,z1,r=.25){const n=Math.ceil(Math.hypot(x1-x0,z1-z0)/.2);for(let i=1;i<n;i++)if(!ok(x0+(x1-x0)*i/n,z0+(z1-z0)*i/n,r))return false;return true;}
+ // Indoors the rooms are small and the doorways narrow for something its size: a fine grid over the house (the nav's own
+ // walkable, at its radius), searched from where it stands to the goal, then pulled straight wherever a line is clear.
+ // The graph's nodes only bound the grid (and are the fallback if the grid finds nothing).
+ function gridPath(x0,z0,x1,z1){const G=AI.graph;if(!G||!nav)return null;
+  const b=AI.bounds||(AI.bounds=(()=>{let a=1e9,c=-1e9,e=1e9,f=-1e9;for(const n of G.nodes){a=Math.min(a,n.x);c=Math.max(c,n.x);e=Math.min(e,n.z);f=Math.max(f,n.z);}return {x0:a-2.5,x1:c+2.5,z0:e-2.5,z1:f+2.5};})());
+  const st=.2,nx=Math.ceil((b.x1-b.x0)/st)+1,nz=Math.ceil((b.z1-b.z0)/st)+1,cell=new Uint8Array(nx*nz),prev=new Int32Array(nx*nz).fill(-1);
+  const P=k=>({x:b.x0+(k%nx)*st,z:b.z0+Math.floor(k/nx)*st}),K=(x,z)=>{const i=Math.round((x-b.x0)/st),j=Math.round((z-b.z0)/st);return i<0||j<0||i>=nx||j>=nz?-1:j*nx+i;};
+  const free=k=>{if(!cell[k]){const q=P(k);cell[k]=ok(q.x,q.z)?1:2;}return cell[k]===1;};
+  const s0=K(x0,z0);if(s0<0)return null;const q=[s0];prev[s0]=s0;let end=-1,best=s0,bd=1e9;
+  for(let n=0;n<q.length;n++){const k=q[n],c=P(k),d=Math.hypot(c.x-x1,c.z-z1);if(d<bd){bd=d;best=k;}if(d<=.22){end=k;break;}const i=k%nx,j=Math.floor(k/nx);
+   for(const [a,bb] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const ii=i+a,jj=j+bb;if(ii<0||jj<0||ii>=nx||jj>=nz)continue;const kk=jj*nx+ii;if(prev[kk]>=0)continue;
+    if(!free(kk)&&Math.hypot(P(kk).x-x0,P(kk).z-z0)>.5)continue;// (standing somewhere tight: out of it first)
+    if(a&&bb&&(!free(j*nx+ii)||!free(jj*nx+i)))continue;prev[kk]=k;q.push(kk);}}
+  const tail=end>=0?end:best;if(bd>1.2&&end<0)return null;const pts=[];for(let k=tail;;k=prev[k]){pts.unshift(P(k));if(k===s0)break;}
+  const out=[];let i=0;while(i<pts.length-1){let j=pts.length-1;while(j>i+1&&!lineClear(pts[i].x,pts[i].z,pts[j].x,pts[j].z,AI.radius))j--;out.push([pts[j].x,pts[j].z]);i=j;}
+  if(end>=0)out.push([x1,z1]);return out.length?out:null;}
  function planTo(x,z){AI.path=[];AI.pathI=0;AI.goal={x,z};
-  if(lineClear(M.x,M.z,x,z,AI.radius*.8)||!AI.graph){AI.path=[[x,z]];return;}
+  if(lineClear(M.x,M.z,x,z,AI.radius)||!AI.graph){AI.path=[[x,z]];return;}
+  const gp=gridPath(M.x,M.z,x,z);if(gp){AI.path=gp;return;}
   const a=nearestNode(M.x,M.z,{visible:true})||nearestNode(M.x,M.z),b=nearestNode(x,z,{visible:true})||nearestNode(x,z);if(!a||!b){AI.path=[[x,z]];return;}
   const open=[{id:a.id,g:0,f:0,p:null}],seen=new Map([[a.id,open[0]]]);let end=null;
   while(open.length){open.sort((p,q)=>p.f-q.f);const c=open.shift();if(c.id===b.id){end=c;break;}const cn=node(c.id);
@@ -59,8 +78,11 @@ export function createHunterAI({model,nav,sightClear=()=>true,sfx=()=>{},mark=()
   // skip the first node if we can already see the second
   const pts=ids.map(id=>{const n=node(id);return [n.x,n.z];});if(pts.length>1&&lineClear(M.x,M.z,pts[1][0],pts[1][1],AI.radius*.8))pts.shift();
   AI.path=[...pts,[x,z]];}
- function followPath(speed,dt){if(!AI.path.length)return true;const [px,pz]=AI.path[AI.pathI];const d=stepToward(px,pz,speed,dt);
-  if(d<.35){AI.pathI++;if(AI.pathI>=AI.path.length){AI.path=[];return true;}}return false;}
+ function followPath(speed,dt){if(!AI.path.length)return true;const [px,pz]=AI.path[AI.pathI];const x0=M.x,z0=M.z,d=stepToward(px,pz,speed,dt);
+  // (held up on a corner or a doorframe: plan again from where it is; held up again and again, give that point up)
+  AI.stuckT=Math.hypot(M.x-x0,M.z-z0)<speed*dt*.15?(AI.stuckT||0)+dt:0;
+  if(AI.stuckT>.6){AI.stuckT=0;AI.stuckN=(AI.stuckN||0)+1;AI.log.stuck=(AI.log.stuck||0)+1;if(AI.stuckN>3||!AI.goal){AI.stuckN=0;AI.path=[];return true;}planTo(AI.goal.x,AI.goal.z);return false;}
+  if(d<.35){AI.stuckN=0;AI.pathI++;if(AI.pathI>=AI.path.length){AI.path=[];return true;}}return false;}
  // ---- perception ---------------------------------------------------------------------------------------------------------
  // a target: {id, pos:()=>({x,y,z} eye), crouch:()=>0..1, hidden:()=>bool, moving:()=>speed, lit:()=>0..1, catchable}
  function setTargets(list){AI.targets=list||[];for(const T of AI.targets)if(!AI.meter.has(T.id))AI.meter.set(T.id,0);}
@@ -92,7 +114,11 @@ export function createHunterAI({model,nav,sightClear=()=>true,sfx=()=>{},mark=()
    const s=AI.step;if(s.state)M.setState(s.state);if(s.low!=null)D.low=s.low;if('look' in s)D.look=typeof s.look==='function'?null:s.look;if('reach' in s)D.reach=s.reach;if(s.sound)sfx(s.sound,{x:M.x,y:M.y+1,z:M.z},{gain:s.gain??1});}
   const s=AI.step;AI.stepT+=dt;if(typeof s.look==='function')D.look=s.look();if(typeof s.reach==='function')D.reach=s.reach();
   let done=false;
-  if(s.to){const q=typeof s.to==='function'?s.to():s.to;const d=stepToward(q[0],q[1],s.speed??AI.walkSpeed,dt,{turnRate:s.turn??5,free:!!s.free});done=d<(s.near??.3);D.speed=AI.speed;}
+  if(s.to){const q=typeof s.to==='function'?s.to():s.to;
+   // (on the nav, not free: the way round walls to it, planned once, then walked; free steps go straight: stairs, set pieces)
+   if(!s.free&&AI.graph&&!s._plan){s._plan=true;planTo(q[0],q[1]);}
+   if(!s.free&&AI.path.length&&s._plan){followPath(s.speed??AI.walkSpeed,dt);done=!AI.path.length||Math.hypot(q[0]-M.x,q[1]-M.z)<(s.near??.3);}
+   else{const d=stepToward(q[0],q[1],s.speed??AI.walkSpeed,dt,{turnRate:s.turn??5,free:!!s.free});done=d<(s.near??.3);}D.speed=AI.speed;}
   else if(s.wait!=null){D.speed=damp(D.speed,0,6,dt);AI.speed=0;done=AI.stepT>=s.wait;}
   else if(s.face!=null){const a=Array.isArray(s.face)?headingTo(M.x,M.z,s.face[0],s.face[1]):s.face;M.heading+=clamp(wrap(a-M.heading),-(s.turn??3)*dt,(s.turn??3)*dt);done=Math.abs(wrap(a-M.heading))<.03||AI.stepT>2;}
   else if(s.act){s.act();done=true;}else if(s.until){D.speed=damp(D.speed,0,6,dt);done=!!s.until();}
@@ -127,8 +153,8 @@ export function createHunterAI({model,nav,sightClear=()=>true,sfx=()=>{},mark=()
   if(!AI.hit&&AI.modeT>.28){AI.hit=true;const d=p?Math.hypot(p.x-M.x,p.z-M.z):9;if(d<AI.catchR+.6){AI.log.caught++;mark('caught '+T.id);sfx('c7Strike',{x:M.x,y:M.y+1.4,z:M.z},{gain:1.2});AI.onCatch?.(T);}else{setMode('pursue');}}}
  // ---- the chase (outdoors, along a route) -----------------------------------------------------------------------------------
  // route: [[x,z],...]; rider(): {x,z,speed}; gap(): the distance it keeps behind (it closes on a slow rider)
- function chaseStart(route,{rider,gap=()=>8,s0=0,onCatch=null,lat=()=>0}){const pts=route.map(([x,z])=>({x,z}));let s=0;for(let i=0;i<pts.length;i++){if(i)s+=Math.hypot(pts[i].x-pts[i-1].x,pts[i].z-pts[i-1].z);pts[i].s=s;}
-  AI.chase={pts,len:s,s:s0,rider,gap,onCatch,lat,slowT:0,v:0};setMode('chase');M.setState('run');D.low=1;}
+ function chaseStart(route,{rider,gap=()=>8,s0=0,onCatch=null,lat=()=>0,grace=0}){const pts=route.map(([x,z])=>({x,z}));let s=0;for(let i=0;i<pts.length;i++){if(i)s+=Math.hypot(pts[i].x-pts[i-1].x,pts[i].z-pts[i-1].z);pts[i].s=s;}
+  AI.chase={pts,len:s,s:s0,rider,gap,onCatch,lat,slowT:0,v:0,grace};setMode('chase');M.setState('run');D.low=1;}
  function routeAt(s){const P=AI.chase.pts;if(s<=0)return {x:P[0].x,z:P[0].z,a:headingTo(P[0].x,P[0].z,P[1].x,P[1].z)};for(let i=1;i<P.length;i++)if(P[i].s>=s){const a=P[i-1],b=P[i],t=(s-a.s)/((b.s-a.s)||1);return {x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,a:headingTo(a.x,a.z,b.x,b.z)};}const L=P[P.length-1];return {x:L.x,z:L.z,a:0};}
  function project(x,z){const P=AI.chase.pts;let best=0,bd=1e9;for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i],dx=b.x-a.x,dz=b.z-a.z,l2=dx*dx+dz*dz||1,t=clamp(((x-a.x)*dx+(z-a.z)*dz)/l2,0,1),px=a.x+dx*t,pz=a.z+dz*t,d=Math.hypot(x-px,z-pz);if(d<bd){bd=d;best=a.s+(b.s-a.s)*t;}}return best;}
  function runChase(dt){const C=AI.chase,R=C.rider(),sp=project(R.x,R.z),want=sp-C.gap(R);
@@ -136,7 +162,8 @@ export function createHunterAI({model,nav,sightClear=()=>true,sfx=()=>{},mark=()
   C.slowT=R.speed<2.2?C.slowT+dt:Math.max(0,C.slowT-dt*2);const press=C.slowT>1.2?6:0;
   const v=clamp(R.speed+(want-C.s)*1.1+press,0,12.5);C.v=damp(C.v,v,4,dt);C.s=Math.min(C.len,C.s+C.v*dt);
   const q=routeAt(C.s),lat=C.lat(C.s);M.x=q.x+Math.cos(q.a)*lat;M.z=q.z+Math.sin(q.a)*lat;M.heading=q.a;M.y=floorAt(M.x,M.z);AI.speed=C.v;D.speed=C.v;D.look={x:R.x,y:M.y+1,z:R.z};
-  const d=Math.hypot(R.x-M.x,R.z-M.z);C.dist=d;if(d<1.6&&R.speed<3.2&&!C.caught){C.caught=true;AI.log.caught++;mark('chase: caught');C.onCatch?.();}}
+  // (the first moments are the rider's: feet on the pedals; after that a rider it reaches who is not getting away is caught)
+  const d=Math.hypot(R.x-M.x,R.z-M.z);C.dist=d;if(AI.modeT>C.grace&&d<1.6&&R.speed<3.2&&!C.caught){C.caught=true;AI.log.caught++;mark('chase: caught');C.onCatch?.();}}
  // ---- every frame --------------------------------------------------------------------------------------------------------
  function update(dt){AI.t+=dt;AI.modeT+=dt;if(AI.mode==='off')return;
   if(AI.mode==='script')runScript(dt);else if(AI.mode==='chase')runChase(dt);else if(AI.mode==='attack')runAttack(dt);else think(dt);
