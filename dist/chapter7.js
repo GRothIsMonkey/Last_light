@@ -231,7 +231,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const a=headingTo(CURB.x,CURB.z,STEP.x,STEP.z);o.placePlayer({x:CURB.x,z:CURB.z,a,mode:'walk',bike:{x:yourBikeAt.x,z:yourBikeAt.z,a:driveA(1.1,-1.2)}});
   comp.putFoot(jamie,STEP.x+.4,STEP.z+.2,headingTo(STEP.x,STEP.z,CURB.x,CURB.z),{bike:{x:jamieBikeAt.x,z:jamieBikeAt.z,a:driveA(-1.5,-1),kick:1}});jamie.follow=null;}
  function begin(){fresh();go('c7-black');C.cardT=0;o.fade(1);common();dayWorld();comp.reset();minds();phys.reset();o.foot.arms=phys.arms;objective('');T?.reset?.();C.h=HOUR.start;
-  placeOutsideSams();photoRender();}
+  placeOutsideSams();PH.state='four';photoRender();}
  function opening(){go('d7-step');date(C.h);C.fadeIn=0;checkpoint('chapter7-start');C.st={t:0};mark('Sam’s house');
   // Jamie on the step, elbows on his knees (he has been here twenty minutes)
   comp.run(jamie,[phys.sit(jamie,{seat:()=>({x:STEP.x+.3,z:STEP.z+.1,y:STEP.y+.02,a:headingTo(STEP.x,STEP.z,CURB.x,CURB.z)}),h:.36,hands:'knees',until:()=>!!C.flags.jamieUp,look:()=>camera.position})]);
@@ -274,7 +274,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(!C.flags.gum&&X.t>(C.flags.notebook?14:55)&&!busy()&&!C.view)gumBeat();
   if(X.fanOffAt!=null&&!X.dadFan&&C.t-X.fanOffAt>2.4)dadAndTheFan();
   // the garage: when the room has had its moment (the notebook and the gum), or after a while anyway
-  if(!C.flags.noise&&((C.flags.notebook&&C.flags.gum&&X.t>(X.readyAt??=X.t+10))||X.t>200)&&!busy()&&!C.view&&!X.dadFan)garageNoise();
+  if(!C.flags.noise&&((C.flags.notebook&&C.flags.gum&&X.t>(X.readyAt??=X.t+10))||X.t>200)&&!busy()&&!C.view&&(!X.dadFan||X.dadDone))garageNoise();// (never while his dad is in the room with the fan)
   if(X.dadFan&&!X.dadDone)updateDadFan(dt);}
  // the fan: you turn it off; his dad comes in from the hall and turns it back on
  function fanOff(){if(!house.ST.fan||phys.playerBusy())return;o.roam.walkLock=true;const f=HS.fan;
@@ -431,6 +431,8 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   reyes.show(false);k.carA.lights=false;k.carA.headlights=true;}
  function updateRide(dt){const X=C.rd;X.t+=dt;const p=me();const car=k.carA;
   if(p.riding&&!X.rolling&&X.t>1){X.rolling=true;car.go([[LK.car.x,LK.car.z]],{speed:()=>{const d=Math.hypot(car.x-p.x,car.z-p.z);return clamp((d-12)*.6,0,7.5);},then:()=>{X.parked=true;}});}
+  // (the first thing he ever said to you on a bike, in the Prologue; not a race now)
+  if(p.riding&&p.speed>2.2&&X.t>6&&!X.echo&&!busy()){X.echo=true;say([J('Race you to the end of the street.',{time:2.2}),{wait:1.6},J('…That’s what I said on Sunday. Before any of it.',{time:2.8,face:'sad'}),{wait:.8},J('Sam said racing on Oak Hollow was how people got hit by cars.',{time:3,face:'amused'})]);}
   if(near(LK.stop,16)&&!X.there){X.there=true;lookoutStart();}}
  function lookoutStart(){go('e7-lookout');checkpoint('c7-lookout');C.h=Math.max(C.h,HOUR.lookout);C.hMin=HOUR.lookout;mark('the lookout');C.lk={t:0,stage:'arrive'};
   court.attach(true);court.ST.portalA=false;nav.setRoom(court.nav);
@@ -578,7 +580,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.fails.stalk>=1)later(2,()=>say([J(C.fails.stalk>=2?'Wait for it. When it goes in the den— when you hear it in there— go. Dining room, then the stairs.':'It goes round. Like a circle. When it’s on the other side, we go.',{time:3.4})]));
   else later(3,()=>say([J('It goes round. Like a circle. When it’s on the other side, we go.',{time:3,face:'terrified'})]));}
  function jamieHelps(){const X=C.sk;X.helped=true;mark('Jamie throws a can');const far=HW(-3.4,1.8);
-  later(.5,()=>{sound('c6Clank',far,{gain:1.1});sound('c5WoodStrike',far,{gain:.6});H.hear({x:far.x,z:far.z},3,{id:'a can, thrown'});H.meter.set('player',.2);});
+  later(.5,()=>{sound('c6Clank',far,{gain:1.1});sound('c5WoodStrike',far,{gain:.6});H.hear({x:far.x,z:far.z},3,{id:'a can, thrown',force:true});});
   later(.9,()=>say([J('GO!',{time:1})]));}
  function jamieSeen(){mark('it saw Jamie');face(jamie,'terrified',4);}
  function caught(T2){const X=C.sk||C.ch;if(!X||X.caught)return;X.caught=true;const which=C.sk?'stalk':'chase';C.fails[which]++;const fails={...C.fails};mark('caught ('+T2.id+')');sound('c7Strike',camera.position,{gain:1.4});T?.set?.(1,{rise:1,why:'caught'});
@@ -643,7 +645,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    J('That’s his. That’s his WRITING.',{time:2,face:'shocked'}),J('“Batteries for the batteries.” That’s HIS joke—',{time:2.6,face:'hopeful'}),...(C.inv.notebook==='have'?[N('The torn edge looks like the stub in his notebook. Almost.',{time:3.2})]:[]),
    {wait:1},J('…It could do that. It did his voice. It could do his writing.',{time:3.2,face:'afraid'}),J('…It’s old. Look at it. How is it old.',{time:2.6})]});mark('Sam’s page');}
  function lookOldBike(){C.looked.add('oldbike');const b=HW(-3.6,-2.5,'u');closeLook({x:b.x,y:b.y+.6,z:b.z},{back:1.2,eye:1.42,kind:'oldbike',floor:b.y});C.lookDur=11;
-  say([N('The old green bike. Leaning against the boxes, wet, a puddle spreading under it on the boards.',{time:4}),N('OAK HOLLOW TWP. 0417 on the frame. And scratched into the paint, A R.',{time:3.6}),
+  say([N('The old green bike. The Meadowlark. Leaning against the boxes, wet, a puddle spreading under it on the boards.',{time:4.4}),N('The township sticker on the frame: OAK HOLLOW TWP. 0417. And scratched into the paint, A R.',{time:3.8}),
    ...(near({x:jamie.px,z:jamie.pz},5)?[J('Why is it always where we are.',{time:2.2,face:'afraid'})]:[])]);mark('the old bike');}
  function ringOldBell(){C.flags.bell=true;const b=HW(-3.6,-2.5,'u');const a=o.audio?.();a?.bell?.({x:b.x,y:b.y+1,z:b.z},.9);later(.32,()=>a?.bell?.({x:b.x,y:b.y+1,z:b.z},.9));sound('oldBell',{x:b.x,y:b.y+1,z:b.z},{gain:.2});mark('the bell rings');T?.set?.(.6,{rise:.2,why:'the bell'});
   say([N('It rings. Clear. Twice.',{time:2.4}),...(near({x:jamie.px,z:jamie.pz},6)?[J('…It doesn’t ring. It’s never rung. It CLICKS.',{time:2.8,face:'terrified'}),J('Don’t touch it again.',{time:1.8})]:[])]);}
@@ -696,7 +698,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
     if(jamie.mode==='ride'){jamie.speed=Math.max(jamie.speed,3.5);}}},{wait:.5,state:'alert',reach:null}],{then:()=>chaseStart()});
   later(.3,()=>say([J('GO! GO GO GO!',{time:1.6,face:'terrified'})]));if(!me().riding){C.flags.mountForced=true;}}
  // ---- the chase: down leg A, round the bend, up leg B, into the other lane --------------------------------------------------------
- function chaseStart(){go('n7-chase');C.ch={t:0,stage:'chase',cut:false};mark('the chase');objective('Ride.','Toward the lights. Don’t stop.');A.rideBoost=1.22;A.rideFov=7;C.flags.hurry=true;
+ function chaseStart(){go('n7-chase');C.ch={t:0,stage:'chase',cut:false};mark('the chase');objective('Ride.','Toward the lights. Don’t stop.');A.rideBoost=1.08;A.rideFov=7;C.flags.hurry=true;
   court.ST.portalB=true;court.ST.fenceB=false;court.police.visible=true;
   const R=court.routeWorld(),p=me();let i0=0,bd=1e9;R.forEach(([x,z],i)=>{const d=Math.hypot(x-p.x,z-p.z);if(d<bd){bd=d;i0=i;}});
   const route=[[HM.x,HM.z],...R.slice(i0)];C.ch.route=route;C.ch.i0=i0;
@@ -956,7 +958,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(C.gt?.lights&&court.ST.portalB&&Math.abs(q.x)<1.3&&q.z<-3)add('c7-climb','Climb out onto the porch roof',{...HW(0,-4.6,'u'),y:court.G0+HH.UP+1.2},2.4);}
   if(ph==='n7-grab'&&C.gb?.stage==='grab'&&JL.held){const h=jamieHand();if(dist2(p,h)<1.8)add('c7-grab','Grab his hand',h,2.2);}
   if(/^n7-(taken|gone)$/.test(ph)){if(C.inv.gum==='grass'&&C.gumAt)add('c7-gum','Pick up the gum',C.gumAt,1.8,lk(.15,.2));if(ph==='n7-gone'&&!(C.gn?.callT>0))out.push({id:'c7-call',label:'Call his name',at:camera.position.clone().add(new THREE.Vector3(0,-.2,0)),face:camera.position.clone(),r:9,wide:true});}
-  if(ph==='n7-sams'&&inSams(p)){const rm=house.room(p.x,p.z);if(rm==='sam'){if(house.ST.fan&&!C.flags.fanOffNight&&!C.sn?.fanBeat)add('c7-fan','Turn off the fan',HS.fan,1.8,lk(.3,.16));
+  if(/^n7-(sams|names)$/.test(ph)&&inSams(p)){const rm=house.room(p.x,p.z);if(rm==='sam'){if(house.ST.fan&&!C.flags.fanOffNight&&!C.sn?.fanBeat)add('c7-fan','Turn off the fan',HS.fan,1.8,lk(.3,.16));
     if(C.flags.forgetFan&&!C.flags.photoSeenNight)add('c7-photo','Pick up the photograph',HS.photo,1.9,lk(.18,.16));if(C.flags.forgetPhoto&&!C.flags.names)add('c7-write','Write in Sam’s notebook',HS.notebook,2,lk(.2,.18));
     if(C.flags.lookOutside)add('c7-window','Look outside',HS.window,2.4,lk(.5,.14));}}
   return out;}
@@ -995,7 +997,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.view==='look'&&C.lookKind==='map'){if(mapKey(code))return true;return ['KeyW','KeyS','Space','KeyC'].includes(code);}
   if(C.view==='look'){const locked=['names','window'].includes(C.lookKind);if((code==='KeyS'||code==='ArrowDown')&&!busy()&&!locked){if(!repeat)endLook();return true;}return ['KeyW','KeyA','KeyD','Space','KeyC','KeyS'].includes(code)||(locked&&code==='KeyF');}
   if(S.phase==='n7-grab'&&C.gb?.stage==='struggle')return ['KeyF','KeyS','KeyW','KeyA','KeyD','Space'].includes(code);
-  if(S.phase==='n7-names')return code==='KeyF';
+  if(S.phase==='n7-names'&&!C.flags.names)return code==='KeyF';// (F writes, while there is writing to do; then it is yours again)
   if(C.hiding&&['KeyW','KeyA','KeyS','KeyD','Space'].includes(code))return true;
   return false;}
  function pan(dx,dy){if(!mine(S.phase))return false;if(C.view==='inspect'){C.inspect.yaw+=dx*.006;C.inspect.pitch=clamp(C.inspect.pitch+dy*.006,-1.2,1.2);return true;}
@@ -1124,7 +1126,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function jump(section){jumpTo(section);}
  function jumpTo(section){section=ALIAS7[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();minds();A7.started=true;
   if(section==='chapter7-start'){begin();return;}
-  common();dayWorld();objective('');phys.reset();o.foot.arms=phys.arms;photoRender();
+  common();dayWorld();objective('');phys.reset();o.foot.arms=phys.arms;
+  // (the photograph is the four of you until that night in Sam's room, on every jump, whatever was played before)
+  PH.state=SECTIONS7.indexOf(section)>=SECTIONS7.indexOf('c7-sams')?'one':'four';photoRender();
   const ix=SECTIONS7.indexOf(section),ff=(...ks)=>{for(const kk of ks)C.flags[kk]=true;},hh=h=>{C.h=h;C.hMin=h;C.minute=-1;date(h);},quiet=()=>{S.queue.length=0;S.line=null;};
   const yourBike=()=>({x:yourBikeAt.x,z:yourBikeAt.z,a:driveA(1.1,-1.2)});
   // (Jamie where he would be: behind you in the hall, or by the nightstand where the gum was; never in Sam's doorway)

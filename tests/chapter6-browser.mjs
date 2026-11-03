@@ -97,8 +97,8 @@ const installWalk=()=>ev(async()=>{const L=lastLight,{playChapterSix}=await impo
  const end=await ev(()=>({state:lastLight.state.state,h2:document.querySelector('#ending h2').textContent,
   text:document.getElementById('ending').textContent.replace(/\s+/g,' ').trim(),next:document.getElementById('next-chapter').hidden}));
  await snap('99-chapter-six-end-card');
- check('the walkthrough reaches Chapter Six’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Six · Someone Was Here · August 25, 2011, and no Chapter Seven',
-  end.state==='ended'&&end.h2==='Chapter Six'&&/LAST LIGHT/i.test(end.text)&&/SOMEONE WAS HERE/i.test(end.text)&&/August 25, 2011/.test(end.text)&&end.next===true,JSON.stringify(end));
+ check('the walkthrough reaches Chapter Six’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Six · Someone Was Here · August 25, 2011, and it offers Chapter Seven',
+  end.state==='ended'&&end.h2==='Chapter Six'&&/LAST LIGHT/i.test(end.text)&&/SOMEONE WAS HERE/i.test(end.text)&&/August 25, 2011/.test(end.text)&&end.next===false,JSON.stringify(end));
  report.walkthrough={scope:SEG?'segmented: Chapter Five end card → real click → the first segment; later segments from their own checkpoints, played with inputs (browser refreshed at the configured segment batch) (the end card reached by the last)':'continuous: Chapter Five end card → real click → Chapter Six played with inputs to its end card (one page call per segment, no jump between them)',gameMinutes:+(walk.clock/60).toFixed(2),wallSeconds:Math.round((Date.now()-t0)/1000),segments:mem,metrics:walk.metrics,fails:walk.fails};
  // ---- the DEV selector: Chapter Six, every scene, with real clicks ---------------------------------------------------------------
  const scenes=process.env.NO_DEV?[]:await ev(()=>lastLight.DEV_SCENES[6].map(s=>({id:s.id,label:s.label})));const dev=[];/* (NO_DEV=1: the walkthrough only) */

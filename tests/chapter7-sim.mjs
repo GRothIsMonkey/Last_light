@@ -241,7 +241,8 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   W(1.5);note('into the lane',approach(SP.mouth,1.0,{pad:8}),approach(SP.inLane,1.0),approach(SP.bend1,1.0),approach(court.R3(-6,12),.8));
   check(`${label}: in the lane, nothing (the lane comes out in the field)`,()=>{assert.equal(ph(),'n7-gone');assert.equal(C7().hunter.visible,false);});
   tap('KeyF');W(.5);
-  const g=A7.C.gumAt;if(g){approach(g,.8,{pad:10});act('c7-gum',{at:g,r:.9,max:8});}U(()=>C7().inv.gum==='have',6);
+  // (back out of the lane the way you came, then across the grass to where it fell)
+  const g=A7.C.gumAt;if(g){note('back out to the gum',approach(SP.bend1,1.0),approach(SP.inLane,1.0),approach(SP.mouth,1.0,{pad:8}),approach(g,.8,{pad:10}),act('c7-gum',{at:g,r:.9,max:8}));}U(()=>C7().inv.gum==='have',6);
   check(`${label}: the gum, picked up out of the grass`,()=>assert.equal(C7().inv.gum,'have'));
   U(()=>ph()==='n7-after',140);lap('abduction');}
  // ---- later: the lookout at night; Sam's room ----
@@ -252,14 +253,14 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
  if(seg('night')){
   U(()=>ph()==='n7-sams',10);settle(30);approach(HS.samIn,.6);U(()=>A7.C.sn?.inRoom,6);
   act('c7-fan',{at:HS.fan,r:1.0,max:8});U(()=>A7.C.flags.forgetFan,30);settle(12);
-  check(`${label}: the fan: his dad turns it back on and does not know why (this morning he knew)`,()=>{assert.ok(said('I don’t know why'));assert.ok(said('He can’t sleep without that')||from==='night');});
+  check(`${label}: the fan: his dad turns it back on and does not know why (this morning he knew)`,()=>{assert.ok(said('I don’t know why'));assert.ok(said('He can’t sleep without that')||(from&&from!=='house'));});
   act('c7-photo',{at:HS.photo,r:.9,max:10});U(()=>A7.C.view==='inspect',4);W(3);
   check(`${label}: the same photograph: only you, at the oak, with your bike`,()=>{assert.equal(C7().photo,'one');assert.ok(A7.C.flags.altered);});
   settle(10);tap('KeyS');U(()=>!A7.C.view,3);U(()=>A7.C.flags.forgetPhoto,10);settle(8);
   check(`${label}: "That's a nice one of you."`,()=>assert.ok(said('nice one of you')));
   act('c7-write',{at:HS.notebook,r:1.0,max:8});U(()=>ph()==='n7-names',4);press('KeyF');U(()=>A7.C.flags.names,12);release('KeyF');
   check(`${label}: you write their names (ALEX, JAMIE, SAM), and they are kept for Chapter Eight`,()=>{assert.equal(A7.C.wr.text,'ALEX\nJAMIE\nSAM');const s=JSON.parse(globalThis.localStorage.getItem('lastlight.chapter7'));assert.deepEqual(s.names,['ALEX','JAMIE','SAM']);});
-  U(()=>A7.C.flags.lookOutside,12);act('c7-window',{at:HS.window,r:1.2,max:8});
+  U(()=>A7.C.flags.lookOutside,12);note('his window',act('c7-window',{at:HS.window,r:1.2,max:8}),A7.C.flags.lookOutside,!!h.chapter.pose);
   U(()=>h.snapshot.state==='ended',40);
   check(`${label}: four bikes under the streetlight; yours; the end card (LAST LIGHT · Chapter Seven · The Street That Wasn't There), no Chapter Eight`,()=>{
    assert.equal(h.snapshot.state,'ended');assert.match(element('ending').querySelector?.('h2')?.innerHTML||'Chapter Seven',/Chapter Seven/);assert.equal(element('next-chapter').hidden,true);assert.ok(said('Yours'));});
@@ -277,12 +278,13 @@ export async function runChapterSevenChecks(T){const {h,check,element,metrics}=T
  // the creature is not the drain creature: a different model, a different id
  check('chapter 7: the hunter is its own thing (chapter7_hunter, not the drain creature)',()=>{assert.equal(A7.HM.id,'chapter7_hunter');assert.notEqual(A7.HM.root,h.chapter3.creature?.group);assert.equal(A7.HM.source,'stand-in');});
  // capture and retry in the stealth encounter
- {h.jump('c7-stalk');T.advance(.5);const hm=A7.HM;// walk straight at it, standing
-  let caught=false;until(()=>{const q={x:hm.x,z:hm.z};faceTo(q.x,q.z);T.press('KeyW');caught=!!A7.C.sk?.caught;return caught;},40);T.release('KeyW');
+ {h.jump('c7-stalk');T.advance(.5);const hm=A7.HM;// out of the pantry (the checkpoint starts you hidden there), into the kitchen, and stand there in the open
+  if(A7.C.hiding)act('c7-unhide',{max:3});approach(court.H3(2.4,2.2),.5,{pad:6});
+  let caught=false;until(()=>{faceTo(hm.x,hm.z);caught=!!A7.C.sk?.caught;return caught;},70);
   until(()=>ph()==='e7-stalk'&&!A7.C.sk?.caught,10);
   check('chapter 7: walking into it in the stealth: it catches you, and you are back at the stealth checkpoint (not the chapter start)',()=>{assert.ok(caught);assert.equal(ph(),'e7-stalk');assert.equal(C7().fails.stalk,1);});}
  // it cannot see you in a closet (unless it watched you go in)
- {h.jump('c7-stalk');T.advance(.3);act('c7-hide-pantry',{max:4});T.advance(25);check('chapter 7: hidden in the pantry for 25 s: not caught',()=>{assert.equal(A7.C.hiding,'pantry');assert.ok(!A7.C.sk.caught);});}
+ {h.jump('c7-stalk');T.advance(.3);if(!A7.C.hiding)act('c7-hide-pantry',{max:4});T.advance(25);check('chapter 7: hidden in the pantry for 25 s: not caught',()=>{assert.equal(A7.C.hiding,'pantry');assert.ok(!A7.C.sk.caught);});}
  // sight through walls: it does not know where you are through a wall
  {h.jump('c7-stalk');T.advance(.3);const H=A7.H,hT=court.H3(-3.0,1.8),pT=court.H3(3.0,1.8);// den and kitchen: the core between
   const e=new (h.camera.position.constructor)(hT.x,hT.y+2,hT.z);check('chapter 7: no line of sight through the stair core (den to kitchen)',()=>{assert.equal(court.HG.sight(-3,2.6,1.8,3,2.0,1.8),false);});}

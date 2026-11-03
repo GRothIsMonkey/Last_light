@@ -259,8 +259,9 @@ export function playChapterSix(T,label,{fromCard=true,dev=false,from=null,to=nul
   check(`${label}: Jamie: "He held it for me."; the firefighters: the grille open, nothing in the pipe`,()=>{for(const t of ['He held it for me.','The grille at the end was open','nothing in there','I was gonna ask him for gum'])assert.ok(said(t),t);});
   check(`${label}: Reyes: "I saw them both. At the same time." — and on his radio, "…I've got it."`,()=>{assert.ok(said('I saw them both. At the same time.'));assert.ok(said('I’ve got it.'));});
   U(()=>h.snapshot.state==='ended',10);
-  check(`${label}: the end card: LAST LIGHT · Chapter Six · Someone Was Here · August 25, 2011; no Chapter Seven`,()=>{assert.equal(h.snapshot.state,'ended');const el=element('ending');assert.equal(el.hidden,false);
-   assert.equal(element('next-chapter').hidden,true,'no next chapter');});
+  // (Chapter Seven exists now: the card offers it, and only that)
+  check(`${label}: the end card: LAST LIGHT · Chapter Six · Someone Was Here · August 25, 2011; it offers Chapter Seven`,()=>{assert.equal(h.snapshot.state,'ended');const el=element('ending');assert.equal(el.hidden,false);
+   assert.equal(element('next-chapter').hidden,false,'Chapter Seven offered');assert.match(element('next-chapter').innerHTML,/Chapter Seven/);});
   check(`${label}: Sam missing, never confirmed dead; never seen again after the gate`,()=>{assert.ok(C6().samGone);assert.equal(watch.samVisibleAfter,0);assert.ok(!watch.lines.some(l=>/\b(dead|died|body|drowned)\b/i.test(l)),'no word of death');});
   lap('after');
   M6.minutes={...watch.minutes,total:+((clock0()-t0)/60).toFixed(2)};}

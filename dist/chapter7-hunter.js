@@ -100,8 +100,10 @@ export function createHunterAI({model,nav,sightClear=()=>true,sfx=()=>{},mark=()
    if(s>0){m=Math.min(1.2,m+dt*s*(AI.mode==='pursue'?3:1.35));if(T.catchable!==false){AI.lastKnown={x:T.pos().x,z:T.pos().z,id:T.id};AI.lastSeenT=AI.t;}}
    else m=Math.max(0,m-dt*.32);AI.meter.set(T.id,m);if(m>bm){bm=m;best=T;}}
   return {best,level:bm};}
- function hear(pos,loud=1,{id='noise'}={}){if(AI.mode==='off'||AI.mode==='script'||AI.mode==='chase'||AI.mode==='attack')return false;const d=Math.hypot(pos.x-M.x,pos.z-M.z);
-  if(d>9*loud)return false;AI.log.heard++;mark('it heard '+id);if(AI.mode==='pursue'&&AI.t-AI.lastSeenT<1.5)return true;
+ // (force: something thrown on purpose, close and loud: it turns to that even mid-pursuit, and loses who it was after)
+ function hear(pos,loud=1,{id='noise',force=false}={}){if(AI.mode==='off'||AI.mode==='script'||AI.mode==='chase'||AI.mode==='attack')return false;const d=Math.hypot(pos.x-M.x,pos.z-M.z);
+  if(d>9*loud)return false;AI.log.heard++;mark('it heard '+id);if(AI.mode==='pursue'&&AI.t-AI.lastSeenT<1.5&&!force)return true;
+  if(force){for(const k of AI.meter.keys())AI.meter.set(k,Math.min(AI.meter.get(k),.2));AI.chasing=null;AI.lastSeenT=-99;AI.alerted=false;}
   AI.lastKnown={x:pos.x,z:pos.z,id};setMode('search');D.look={x:pos.x,y:floorAt(pos.x,pos.z)+1,z:pos.z};M.setState('alert');AI.alertT=.6;return true;}
  // ---- modes -------------------------------------------------------------------------------------------------------------
  function setMode(m){if(AI.mode===m)return;AI.trace.push([+AI.t.toFixed(2),m]);if(AI.trace.length>60)AI.trace.shift();AI.mode=m;AI.modeT=0;AI.path=[];AI.pathI=0;
@@ -157,11 +159,17 @@ export function createHunterAI({model,nav,sightClear=()=>true,sfx=()=>{},mark=()
   AI.chase={pts,len:s,s:s0,rider,gap,onCatch,lat,slowT:0,v:0,grace};setMode('chase');M.setState('run');D.low=1;}
  function routeAt(s){const P=AI.chase.pts;if(s<=0)return {x:P[0].x,z:P[0].z,a:headingTo(P[0].x,P[0].z,P[1].x,P[1].z)};for(let i=1;i<P.length;i++)if(P[i].s>=s){const a=P[i-1],b=P[i],t=(s-a.s)/((b.s-a.s)||1);return {x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,a:headingTo(a.x,a.z,b.x,b.z)};}const L=P[P.length-1];return {x:L.x,z:L.z,a:0};}
  function project(x,z){const P=AI.chase.pts;let best=0,bd=1e9;for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i],dx=b.x-a.x,dz=b.z-a.z,l2=dx*dx+dz*dz||1,t=clamp(((x-a.x)*dx+(z-a.z)*dz)/l2,0,1),px=a.x+dx*t,pz=a.z+dz*t,d=Math.hypot(x-px,z-pz);if(d<bd){bd=d;best=a.s+(b.s-a.s)*t;}}return best;}
- function runChase(dt){const C=AI.chase,R=C.rider(),sp=project(R.x,R.z),want=sp-C.gap(R);
-  // it runs at the rider's own speed plus what it takes to hold its distance; a rider who slows is caught up with
-  C.slowT=R.speed<2.2?C.slowT+dt:Math.max(0,C.slowT-dt*2);const press=C.slowT>1.2?6:0;
-  const v=clamp(R.speed+(want-C.s)*1.1+press,0,12.5);C.v=damp(C.v,v,4,dt);C.s=Math.min(C.len,C.s+C.v*dt);
-  const q=routeAt(C.s),lat=C.lat(C.s);M.x=q.x+Math.cos(q.a)*lat;M.z=q.z+Math.sin(q.a)*lat;M.heading=q.a;M.y=floorAt(M.x,M.z);AI.speed=C.v;D.speed=C.v;D.look={x:R.x,y:M.y+1,z:R.z};
+ function runChase(dt){const C=AI.chase,R=C.rider(),sp=project(R.x,R.z);
+  // it runs at the rider's own speed plus what it takes to hold its distance; a rider who slows is caught up with: the
+  // distance it keeps closes to nothing over a second and a half once you have been slow for more than a second
+  C.slowT=AI.modeT<C.grace?0:R.speed<2.2?C.slowT+dt:Math.max(0,C.slowT-dt*2);const close=clamp((C.slowT-1.2)/1.5,0,1),cl=close*close*(3-2*close);
+  const want=sp-C.gap(R)*(1-cl)+cl*.6;
+  const v=clamp(R.speed+(want-C.s)*1.1+cl*3,0,12.5);C.v=damp(C.v,v,4,dt);C.s=Math.min(C.len,C.s+C.v*dt);
+  const q=routeAt(C.s),lat=C.lat(C.s);M.x=q.x+Math.cos(q.a)*lat;M.z=q.z+Math.sin(q.a)*lat;M.heading=q.a;
+  // (closing on a rider who has stopped, wherever on the road: it leaves its line and goes straight at them)
+  if(cl>0){const dx=M.x-R.x,dz=M.z-R.z,dl=Math.hypot(dx,dz)||1,tx=R.x+dx/dl*1.0,tz=R.z+dz/dl*1.0;// (to an arm's length from you, on its side)
+   M.x+=(tx-M.x)*cl;M.z+=(tz-M.z)*cl;const a=headingTo(M.x,M.z,R.x,R.z);M.heading=q.a+wrap(a-q.a)*cl;}
+  M.y=floorAt(M.x,M.z);AI.speed=C.v;D.speed=C.v;D.look={x:R.x,y:M.y+1,z:R.z};
   // (the first moments are the rider's: feet on the pedals; after that a rider it reaches who is not getting away is caught)
   const d=Math.hypot(R.x-M.x,R.z-M.z);C.dist=d;if(AI.modeT>C.grace&&d<1.6&&R.speed<3.2&&!C.caught){C.caught=true;AI.log.caught++;mark('chase: caught');C.onCatch?.();}}
  // ---- every frame --------------------------------------------------------------------------------------------------------

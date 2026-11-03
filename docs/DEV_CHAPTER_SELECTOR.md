@@ -9,6 +9,26 @@ rebuild can be playtested from any chapter. Everything below applies there uncha
 rebuild's evidence is in `docs/qa/dev-chapters-rebuild/` (the files in `docs/qa/dev-chapters/` are the
 playtest build's, kept as they were).
 
+## On `claude/chapter7-the-street-that-wasnt-there`: Chapter Seven added
+
+A **Chapter Seven** button joins the picker (after Chapter Six) with 40 scenes, in story order: *Chapter Seven Start*,
+*Jamie on the Step (Sam’s house)*, *Sam’s Bedroom*, *Family Conversation (Sam’s parents)*, *The Fan*, *The Gum*, *Garage Disturbance (first glimpse)*,
+*Reyes Investigation*, *Old Map (the 1958 plan)*, *Jamie on the Curb*, *The Ride Down Oak Hollow*, *The End of the
+Street (Reyes)*, *Wrong Street
+Entrance (the lane)*, *Old Mill Court*, *Reyes Separated (the fence)*, *The Lit Window*, *Dining-Room Scare*, *Horror
+House (the green door)*, *Creature Reveal (the stairs)*, *Stealth Encounter*, *The Door (it hammers)*, *Historical Clues
+(1991)*, *Sam Trace (the page)*, *The Old Green Bike*, *Giant Reveal (the window)*, *The Porch Roof*, *Back to the
+Bikes*, *Bicycle Escape*, *Out at the Oak (the attack)*, *Jamie Grab*, *Rescue Struggle*, *Jamie Taken*, *Gum
+Pickup*, *Later (the lookout at night)*, *Forgetting (Reyes, the photos)*, *Sam’s Room, That Night*, *Final
+Photograph*, *The Names (the notebook)*, *The Final Image*, *Chapter Seven Ending (the end card)*.
+
+*Chapter Seven Start* plays Chapter Six's ending to its card and presses **Chapter Seven** on it (the natural way in).
+Every other scene is `chapter7.jump(section)`, which builds the state a player arriving there would have: what Jamie
+carries (the gum is on the nightstand, then Jamie's, then in the grass, then yours), whether you have Sam's notebook,
+the photograph's state (four of you until the evening, only you after), the doors of the green-door house, the clock,
+the checkpoint. Chapters 0–6 scenes are unchanged; switching from a Chapter Seven scene to an earlier chapter's leaves
+nothing of Chapter Seven in the world (the chapter's checks start Chapters Six, Five and Four after it).
+
 ## On `codex/astra-chapter5-ultra-visual-reconstruction`
 
 The same 37 Chapter Five scenes and names remain. Chapter Five applies the new body meshes and detailed flashlight; leaving restores the accepted earlier-chapter presentation. Run and both escape-route scenes retain the physical double. Camp Boundary places it on the approach behind the player. At the gate, approach the bar and press **F** to pull while Sam holds the latch; recovery opens it after 55 seconds if necessary. Crossing closes the gate and blacks out the camp. The shore recovery explicitly transitions to the lot after a little walking, or 24 seconds stationary. Evidence, save identifiers, the last photograph and the ending are retained.
