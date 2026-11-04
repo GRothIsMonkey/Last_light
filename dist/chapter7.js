@@ -125,7 +125,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function updatePose(dt){const P2=C.pose;if(!P2)return;P2.w=P2.release?Math.max(0,P2.w-dt*1.5):Math.min(1,P2.w+dt/(P2.slow||1.1));if(P2.release&&P2.w<=0){C.pose=null;k.setPose(null);if(!C.view)o.roam.walkLock=false;}}
  const posed=()=>!!C.pose&&!C.pose.release;
  const gy=(x,z)=>nav.groundY(x,z);
- function closeLook(target,{back=.62,eye=1.42,floor=null,kind=null,dur=null}={}){const p=me(),a=headingTo(p.x,p.z,target.x,target.z),q={x:target.x-Math.sin(a)*back,z:target.z+Math.cos(a)*back};const fy=floor??gy(q.x,q.z);
+ function closeLook(target,{back=.62,eye=1.42,floor=null,kind=null,dur=null,yaw=null}={}){const p=me(),a=yaw??headingTo(p.x,p.z,target.x,target.z),q={x:target.x-Math.sin(a)*back,z:target.z+Math.cos(a)*back};const fy=floor??gy(q.x,q.z);
   const dy=target.y-(fy+eye),pitch=Math.atan2(dy,back);pose(q,{y:fy+eye,yaw:a,pitch});C.view='look';C.lookKind=kind;C.lookAt=target;C.lookT=0;C.lookDur=dur;}
  function endLook(){if(C.view!=='look')return;C.view=null;C.lookKind=null;unpose();}
  // ---- Jamie (Chapter Six's ways: he rides when you ride, walks when you walk, stands where a scene asks) ------------------------
@@ -305,7 +305,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const lines=C.flags.altered?[N('July. You, at the oak, with your bike. Sam’s mom took it.',{time:3.6})]
    :[N('July. The four of you at the oak with your bikes. Sam’s mom took it. She made you stand still for five minutes.',{time:4.4}),
      ...(near({x:jamie.px,z:jamie.pz},3.5)?[J('Alex is doing the face.',{time:1.8,face:'amused'}),J('He always did the face.',{time:2,face:'sad'})]:[])];
-  inspect(g,{dist:.36,kind:'photo',spin:Math.PI,lines});mark(C.flags.altered?'the photograph, now':'the photograph');}
+  // (at night, in his dark room, the picture held up catches what light there is from the street: enough to see who is in it)
+  if(/^n7-/.test(S.phase))house.photoMat.emissive.setScalar(.26);
+  inspect(g,{dist:.36,kind:'photo',spin:Math.PI,lines,onClose:()=>house.photoMat.emissive.setHex(0)});mark(C.flags.altered?'the photograph, now':'the photograph');}
  // his notebook: read it, keep it
  function readNotebook(){if(C.view)return;const pg=pageMesh(notebookPage(C.flags.names?'names':'notes',{names:'ALEX\nJAMIE\nSAM'}));pg.name='notebook-page';
   const lines=C.flags.names?[N('ALEX. JAMIE. SAM.',{time:2.6})]:[N('Sam’s notebook. His square printing. Times, places, who was there.',{time:3.6}),N('“Why does Line Four bend around nothing? (behind the oak)”',{time:3.6}),
@@ -544,7 +546,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const HGd=court.HG,HW=(hx,hz,lv='g')=>court.H3(hx,hz,null,lv);
  const houseLocal=(x,z)=>{const q=court.regL(x,z);return court.cToH(q.x,q.z);};
  // the boy's room's calendar on its wall (August 1991), facing into the room from the wall it shares with the storeroom
- const CAL={x:-3.3,z:.04,y:HH.UP+1.5};
+ const CAL={x:-3.3,z:.085,y:HH.UP+1.5};// (on the wall face: the wall is .14 thick, its face at .07)
  // the old green bike in the storeroom: the Meadowlark (the same build as every other time it is seen), leaning on its
  // side against the boxes, wet, a dark puddle spreading under it on the boards
  const oldBike=(()=>{const ob=makeOldBike(),g=ob.group;g.name='c7-old-bike';const at=HW(-3.6,-2.45,'u'),y=court.G0+HH.UP,a=headingTo(at.x,at.z,HW(-3.6,-1.4,'u').x,HW(-3.6,-1.4,'u').z);
@@ -795,7 +797,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const a=jamie.ba,bx=jamie.bx,bz=jamie.bz;comp.release(jamie);scene.attach(jamie.person.group);jamie.person.group.visible=true;
   // his bike goes down where it was hit
   jamie.bike.group.rotation.z=1.35;jamie.bike.group.position.y=gy(bx,bz)+.05;C.jBikeDown={x:bx,z:bz};
-  let land={x:bx,z:bz};for(const [f,sd] of [[2.6,1.2],[2.2,0],[1.8,-1.0],[1.4,0],[.8,0]]){const c={x:bx+Math.sin(a)*f+Math.cos(a)*sd,z:bz-Math.cos(a)*f+Math.sin(a)*sd};if(nav.walkable(c.x,c.z,{r:.3})){land=c;break;}}Object.assign(JL,{on:true,x:land.x,z:land.z,y:gy(land.x,land.z),t:0,phase:'thrown',from:{x:bx,z:bz,y:gy(bx,bz)+.9},grip:false,dragS:0});
+  let land={x:bx,z:bz};for(const [f,sd] of [[2.6,1.2],[2.2,0],[1.8,-1.0],[1.4,0],[.8,0]]){const c={x:bx+Math.sin(a)*f+Math.cos(a)*sd,z:bz-Math.cos(a)*f+Math.sin(a)*sd};if(nav.walkable(c.x,c.z,{r:.3})){land=c;break;}}Object.assign(JL,{on:true,x:land.x,z:land.z,y:gy(land.x,land.z),t:0,phase:'thrown',from:{x:bx,z:bz,y:gy(bx,bz)+.9},grip:false,dragS:0,hand:null,q:null});
   // you: the bike stops under you, and you are off it, down in the grass
   o.roam.brake=1;later(.25,()=>{const p=me();sound('c7Fall',camera.position,{gain:1.2});const a2=p.a;let q={x:p.x,z:p.z};
    for(const [f,sd] of [[1.1,0],[.8,.5],[.8,-.5],[.5,0],[0,.9],[0,-.9]]){const c={x:p.x+Math.sin(a2)*f+Math.cos(a2)*sd,z:p.z-Math.cos(a2)*f+Math.sin(a2)*sd};if(nav.walkable(c.x,c.z,{r:.32})){q=c;break;}}
@@ -814,7 +816,10 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   objective('JAMIE.','Get to him. F: grab his hand.');}
  function jamieAnkle(){// his right ankle in the world (feet at JL's origin)
   return new THREE.Vector3(JL.x,JL.y+.1,JL.z);}
- function jamieHand(){jamie.person.group.updateMatrixWorld(true);return jamie.person.parts.rhand.getWorldPosition(new THREE.Vector3());}
+ // (while he is down, his hand where he was last laid out: the friends' own riding update, which runs before he is laid down
+ //  each frame, puts his body back on its bike's origin in between, and a hand read there sent the struggle's view across the map)
+ function jamieHand(){if(JL.on){if(JL.hand)return JL.hand.clone();return new THREE.Vector3(JL.x+JL.dir.x*1.9,JL.y+.25,JL.z+JL.dir.z*1.9);}
+  jamie.person.group.updateMatrixWorld(true);return jamie.person.parts.rhand.getWorldPosition(new THREE.Vector3());}
  function grabHand(){const X=C.gb;if(X.stage!=='grab'||X.grip0)return;X.grip0=true;X.stage='struggle';X.st=0;go('n7-grab');mark('you have his hand');sound('c7Drag',jamieHand(),{gain:.5});
   JL.grip=true;phys.ME.extra.push(gripArms);C.gripFn=gripArms;objective('HOLD ON.','Hold F. Pull back: S.');
   say([J('DON’T LET GO— DON’T LET GO—',{time:2,face:'terrified'})]);}
@@ -837,7 +842,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    else if(X.stage==='grab'&&(X.t>X.giveUp||L<.5)){/* (you never reached him: it goes on without you having held him) */X.stage='lost';X.never=true;takenStart();}}
   if(X.stage==='grab'&&!X.grip0&&JL.held&&dist2(p,jamieHand())<1.7&&!busy()){}// (F: in spots)
   // your pose while you hold on: down on your knees behind his hands, pulled along
-  if(X.stage==='struggle'){const h=jamieHand(),bx=h.x+JL.dir.x*.62,bz=h.z+JL.dir.z*.62;if(!C.pose||C.pose.release)pose({x:bx,z:bz},{y:gy(bx,bz)+.95,yaw:headingTo(bx,bz,c.x,c.z),pitch:-.35,slow:.35});
+  if(X.stage==='struggle'){const h=jamieHand(),bx=h.x+JL.dir.x*.62,bz=h.z+JL.dir.z*.62;if(!C.pose||C.pose.release)pose({x:bx,z:bz},{y:gy(bx,bz)+.95,yaw:headingTo(bx,bz,c.x,c.z),pitch:-.6,slow:.35});
+   // (looking down at his hands in yours, his face, and along him to the thing that has his ankle, which the view keeps as it drags)
+   {let d=headingTo(C.pose.x,C.pose.z,c.x,c.z)-C.pose.yaw;d=Math.atan2(Math.sin(d),Math.cos(d));C.pose.yaw+=d*Math.min(1,dt*3);}
    C.pose.x=damp(C.pose.x,bx,10,dt);C.pose.z=damp(C.pose.z,bz,10,dt);C.pose.y=gy(bx,bz)+.95+Math.sin(C.t*31)*.006*X.pull;}}
  function letGo(){const X=C.gb;if(X.stage==='lost')return;X.stage='lost';X.lostAt=C.t;mark('his hand goes out of yours');sound('c7Strike',jamieHand(),{gain:1.3});
   JL.grip=false;const i=phys.ME.extra.indexOf(gripArms);if(i>=0)phys.ME.extra.splice(i,1);
@@ -945,7 +952,8 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   // (the view through his window, rendered from just outside it and a little up, past the corner of the garage, at the four
   //  bikes under the streetlight across the street; shown bright on the glass, the room dark around it)
   {const mid=main(SH.drivD-1.5,3.75),eye=house.toW(4.2,house.P.depth/2+2.2,house.FL+1.75);house.renderView('night-bikes',{from:eye,look:{x:mid.x,y:gy(mid.x,mid.z)+.7,z:mid.z},bright:1.0});}
-  const w=HS.window;closeLook({x:w.x,y:w.y,z:w.z},{back:.62,eye:1.42,kind:'window',floor:HS.couch.y});C.lookDur=null;
+  // (square on to the glass, whatever corner of the room you were standing in: from the desk the line to it is at a slant)
+  const w=HS.window,ins=house.toW(4.2,house.P.depth/2-2,house.FL+1.45);closeLook({x:w.x,y:w.y,z:w.z},{back:.62,eye:1.42,kind:'window',floor:HS.couch.y,yaw:headingTo(ins.x,ins.z,w.x,w.z)});C.lookDur=null;
   say([{wait:1.6},N('Under the streetlight across the street, four bikes stand in a row. The way you used to ride.',{time:4.4}),{wait:.8},N('Alex’s. Jamie’s. Sam’s.',{time:3}),{wait:1.4},N('Yours.',{time:2.6})],
    {then:()=>{later(2.6,()=>{C.endT=0;});}});}
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p'),eb=el.querySelector?.('.eyebrow');if(eb)eb.textContent='LAST LIGHT';if(h)h.innerHTML='Chapter Seven';if(pp)pp.innerHTML='THE STREET THAT WASN’T THERE<br>August 26, 2011.';}
@@ -971,7 +979,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
     for(const kk of keys){studio[kk].person.group.visible=false;studio[kk].bike.group.visible=false;}}}catch{for(const kk of ['player','jamie','sam','alex']){cast.studio[kk].person.group.visible=false;cast.studio[kk].bike.group.visible=false;}}
   if(!ok)photoSketch(cv.g,PHOTO.w,PHOTO.h,{who});const g=cv.g;g.fillStyle='rgba(255,138,58,.95)';g.font='bold 16px monospace';g.fillText("'11 7 16",PHOTO.w-96,PHOTO.h-14);cv.rendered=ok;return cv;}
  function photoRender(){if(!PH.four){PH.four=photoCanvas(['player','jamie','sam','alex']);PH.fourTex=texOf(PH.four);}if(!PH.one){PH.one=photoCanvas(['player']);PH.oneTex=texOf(PH.one);}photoState(PH.state);}
- function photoState(s){PH.state=s;C.flags&&(C.flags.altered=s==='one');const m=house.photoMat,t=s==='one'?PH.oneTex:PH.fourTex;if(t){m.map=t;m.color.setHex(0xffffff);}else{m.map=null;m.color.setHex(s==='one'?0xc8b896:0xd8c8a0);}m.needsUpdate=true;}
+ function photoState(s){PH.state=s;C.flags&&(C.flags.altered=s==='one');const m=house.photoMat,t=s==='one'?PH.oneTex:PH.fourTex;if(t){m.map=t;m.emissiveMap=t;m.color.setHex(0xffffff);}else{m.map=null;m.emissiveMap=null;m.color.setHex(s==='one'?0xc8b896:0xd8c8a0);}m.emissive.setHex(0);m.needsUpdate=true;}
  // ---- the spots F works on ---------------------------------------------------------------------------------------------------------
  const V3=q=>new THREE.Vector3(q.x,q.y??gy(q.x,q.z),q.z);
  function spots(){const out=[],ph=S.phase,p=me();
@@ -1094,16 +1102,19 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   else{const dx=p.x-JL.x,dz=p.z-JL.z,l=Math.hypot(dx,dz)||1;JL.dir={x:dx/l,z:dz/l};}
   _by.set(JL.dir.x,0,JL.dir.z);_bx.set(JL.dir.z,0,-JL.dir.x);_m4.makeBasis(_bx,_by,_bz);_q1.setFromRotationMatrix(_m4);
   if(JL.phase==='thrown'){const u=Math.min(1,JL.t/.55),f=JL.from;g.position.set(f.x+(JL.x-f.x)*u,f.y+(JL.y+.12-f.y)*u+Math.sin(u*Math.PI)*.9,f.z+(JL.z-f.z)*u);
-   _q2.setFromEuler(new THREE.Euler(0,-headingTo(f.x,f.z,JL.x,JL.z),0));g.quaternion.copy(_q2).slerp(_q1,smooth(u));if(u>=1){JL.phase='down';sound('c7Fall',g.position,{gain:1});}}
-  else{g.position.set(JL.x,JL.y+.12,JL.z);g.quaternion.slerp(_q1,1-Math.exp(-14*dt));}
+   _q2.setFromEuler(new THREE.Euler(0,-headingTo(f.x,f.z,JL.x,JL.z),0));g.quaternion.copy(_q2).slerp(_q1,smooth(u));if(u>=1){JL.phase='down';JL.q=g.quaternion.clone();sound('c7Fall',g.position,{gain:1});}}
+  // (his lying orientation is kept here: the friends' riding update, which still thinks of him as on his bike, stands his body
+  //  upright again every frame before this, and a turn eased from there each frame left him half sat up, his head a metre up)
+  else{g.position.set(JL.x,JL.y+.12,JL.z);if(!JL.q)JL.q=_q1.clone();JL.q.slerp(_q1,1-Math.exp(-14*dt));g.quaternion.copy(JL.q);}
   // his body: arms up over his head (toward you), clawing; one knee up; his head lifted to look at you
   const P2=JL.pose,t=JL.t;standPose(P2,t,{});const claw=Math.sin(t*7.1),claw2=Math.sin(t*6.3+1.3);
   P2[PI.lh]=-.22;P2[PI.lh+1]=1.72+.12*claw;P2[PI.lh+2]=-.1+.08*claw2;P2[PI.rh]=.22;P2[PI.rh+1]=1.72+.12*claw2;P2[PI.rh+2]=-.1+.08*claw;
   P2[PI.le]=-.8;P2[PI.le+1]=.1;P2[PI.le+2]=.3;P2[PI.re]=.8;P2[PI.re+1]=.1;P2[PI.re+2]=.3;
   P2[PI.lf]=-.14;P2[PI.lf+1]=.28+.1*Math.max(0,claw);P2[PI.lf+2]=-.32;P2[PI.rf]=.1;P2[PI.rf+1]=.05;P2[PI.rf+2]=0;P2[PI.hp]=.55;P2[PI.hy]=.15*Math.sin(t*2.1);
-  if(JL.grip){g.updateMatrixWorld(true);const ch=camera.position.clone().add(new THREE.Vector3(0,-.3,0)),L=g.worldToLocal(ch);const k2=Math.min(1,1.0/Math.max(.5,L.length()));
-   P2[PI.rh]=L.x*k2*.9;P2[PI.rh+1]=Math.min(1.95,L.y*k2);P2[PI.rh+2]=L.z*k2*.9;}
-  applyPose(jamie.person,P2);jamie.person.face?.set?.('terrified',{hold:2});}
+  // (the hand you hold reaches from his shoulder toward you, an arm's length at most: solved from his feet it stopped at his waist)
+  if(JL.grip){g.updateMatrixWorld(true);const ch=camera.position.clone().add(new THREE.Vector3(0,-.3,0)),L=g.worldToLocal(ch),S={x:.19,y:1.22,z:0},dx=L.x-S.x,dy=L.y-S.y,dz=L.z-S.z,l=Math.hypot(dx,dy,dz)||1,k2=Math.min(1,.6/l);
+   P2[PI.rh]=S.x+dx*k2;P2[PI.rh+1]=S.y+dy*k2;P2[PI.rh+2]=S.z+dz*k2;}
+  applyPose(jamie.person,P2);jamie.person.face?.set?.('terrified',{hold:2});g.updateMatrixWorld(true);JL.hand=jamie.person.parts.rhand.getWorldPosition(JL.hand||new THREE.Vector3());}
  // ---- minds: Jamie's mood by where the chapter is ------------------------------------------------------------------------------------------
  function mind(){const ph=S.phase,key=ph+(C.flags.hurry?'!':'');if(C.mindKey===key)return;C.mindKey=key;let mood='relaxed';
   if(/^d7-(house|reyes|map)$/.test(ph))mood='relaxed';else if(/^d7-(garage)$/.test(ph))mood='tense';else if(/^e7-(court)$/.test(ph))mood='tense';else if(/^e7-(dining|house|reveal|stalk|door)$/.test(ph))mood='danger';
@@ -1252,7 +1263,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   ff('stalked');lightsGreen();HGd.doors.boy.set(.85);HGd.doors.store.set(.8);HGd.doors.parents.set(.75);
   if(section==='c7-door'){inHouse(0,3.3,'u',[-2,3.3],-.6,3.9,'u');doorStart();comp.release(jamie);comp.putFoot(jamie,HW(-.6,3.9,'u').x,HW(-.6,3.9,'u').z,0,{bike:jamieBikeState()});C.jlv='u';follow(true);jamie.follow='walk';C.jStair=false;return;}
   ff('doorShut');HGd.doors.boy.set(.85);
-  if(ix<=SECTIONS7.indexOf('c7-giant')){const at={'c7-clues':[-3,1.9,[-3.3,.04]],'c7-trace':[-3.9,1.4,[-4.6,.95]],'c7-old-bike':[-2.4,-2.2,[-3.6,-2.5]],'c7-giant':[0,-3.4,[0,-4.5]]}[section]||[-3,2.2,[-5,2]];
+  if(ix<=SECTIONS7.indexOf('c7-giant')){const at={'c7-clues':[-3,1.9,[-3.3,.085]],'c7-trace':[-3.9,1.4,[-4.6,.95]],'c7-old-bike':[-2.4,-2.2,[-3.6,-2.5]],'c7-giant':[0,-3.4,[0,-4.5]]}[section]||[-3,2.2,[-5,2]];
    inHouse(at[0],at[1],'u',at[2],-HH.UCX-.35,3.95,'u');upstairsStart();quiet();C.up.unblock=1;{const s1=HGd.spots.dresserAfter;HGd.moveDresser(s1.x,s1.z,Math.PI/2);}
    if(section==='c7-trace'||section==='c7-old-bike'||section==='c7-giant')C.looked.add('calendar');if(section==='c7-old-bike'||section==='c7-giant'){C.looked.add('trace');ff('trace');}
    if(section==='c7-giant'){C.looked.add('oldbike');C.up.down=true;giantStart();}return;}
@@ -1273,10 +1284,12 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const downScene=()=>{nav.setRoom(court.nav);police.attach?.(true);const car=k.carA;car.show(true);car.park(LK.car.x,LK.car.z,headingTo(LK.car.x,LK.car.z,LK.car2.x,LK.car2.z));car.lights=true;
    const land=court.R3(9,-9),me0=court.R3(12.6,-13.4);o.placePlayer({x:me0.x,z:me0.z,a:headingTo(me0.x,me0.z,land.x,land.z),mode:'walk',bike:{x:me0.x+1,z:me0.z-1,a:0}});
    comp.release(jamie);scene.attach(jamie.person.group);jamie.person.group.visible=true;jamie.bike.group.visible=true;jamie.bike.group.position.set(land.x+1.5,gy(land.x,land.z)+.05,land.z-1);jamie.bike.group.rotation.z=1.35;
-   Object.assign(JL,{on:true,x:land.x,z:land.z,y:gy(land.x,land.z),t:1,phase:'down',from:{x:land.x,z:land.z,y:land.y},grip:false,held:false});HM.show(true);const hp=court.R3(7.6,-7.4);H.place(hp.x,hp.z,headingTo(hp.x,hp.z,land.x,land.z));
+   Object.assign(JL,{on:true,x:land.x,z:land.z,y:gy(land.x,land.z),t:1,phase:'down',from:{x:land.x,z:land.z,y:land.y},grip:false,held:false,hand:null,q:null});HM.show(true);const hp=court.R3(7.6,-7.4);H.place(hp.x,hp.z,headingTo(hp.x,hp.z,land.x,land.z));
    reyes.show(true);const rf=court.SPOT.fieldFar;reyes.place(rf.x,rf.z,0);reyes.gest('flashlight');go('n7-lookout');C.lo={t:5,stage:'leap'};};
   if(section==='c7-grab'){downScene();quiet();grabStart();return;}
-  if(section==='c7-struggle'){downScene();grabStart();quiet();JL.held=true;const h=jamieHand(),me1={x:h.x+JL.dir.x*.7,z:h.z+JL.dir.z*.7};o.placePlayer({x:me1.x,z:me1.z,a:headingTo(me1.x,me1.z,h.x,h.z),mode:'walk',bike:{x:me1.x+1,z:me1.z,a:0}});grabHand();return;}
+  if(section==='c7-struggle'){downScene();grabStart();quiet();JL.held=true;
+   // (it already has his ankle: put it there, or the view you hold on in looks back up the street to where it started)
+   {const f=jamieAnkle(),hx=f.x-JL.dir.x*.6,hz=f.z-JL.dir.z*.6;H.place(hx,hz,headingTo(hx,hz,f.x,f.z));}JL.hand=null;const h=jamieHand(),me1={x:h.x+JL.dir.x*.7,z:h.z+JL.dir.z*.7};o.placePlayer({x:me1.x,z:me1.z,a:headingTo(me1.x,me1.z,h.x,h.z),mode:'walk',bike:{x:me1.x+1,z:me1.z,a:0}});grabHand();return;}
   if(section==='c7-taken'){downScene();grabStart();quiet();JL.held=true;C.gb.stage='lost';C.gb.never=true;takenStart();return;}
   ff('jamieTaken');jamie.gone=true;jamie.person.group.visible=false;
   if(section==='c7-gum-pickup'){nav.setRoom(court.nav);police.attach?.(true);const car=k.carA;car.show(true);car.park(LK.car.x,LK.car.z,headingTo(LK.car.x,LK.car.z,LK.car2.x,LK.car2.z));car.lights=true;

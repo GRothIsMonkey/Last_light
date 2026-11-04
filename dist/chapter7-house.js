@@ -33,10 +33,13 @@ export function createSamHouse({scene,world,shoot=null}){
  const panes=[];
  const pane=(x,z,ry,w=1.2,h=1.25,sill=.85,name='pane')=>{const m=new THREE.MeshStandardMaterial({color:0xdde6ee,emissive:0xb8c8d6,emissiveIntensity:.55,roughness:.4});const p=K.plane(root,x,FL+sill+h/2,z,w,h,m,{ry,name});panes.push({mesh:p,m,x,z,ry});return p;};
  B.wall([-W2+t,D2-t],[W2-t,D2-t],{y0:FL,y1:FL+H,m:plaster,holes:[[DOOR.front.x-.48+W2-t,DOOR.front.x+.48+W2-t,0,2.08],win(W2-t-4.0),win(W2-t+4.2,1.3)]});
- pane(-4.0,D2-t-.02,Math.PI,1.2,1.25,.85,'living-window');const samWin=pane(4.2,D2-t-.02,Math.PI,1.3,1.25,.85,'sam-window');
+ // (the panes stand a little in from the wall: the street house's own glass, the house these rooms are inside, is set into the
+ // same wall a few centimetres in from its face, and in front of a pane at the wall it covered the view with its own)
+ const PIN=.09;
+ pane(-4.0,D2-t-PIN,Math.PI,1.2,1.25,.85,'living-window');const samWin=pane(4.2,D2-t-PIN,Math.PI,1.3,1.25,.85,'sam-window');
  B.wall([W2-t,D2-t],[W2-t,-D2+t],{y0:FL,y1:FL+H,m:plaster});B.wall([W2-t,-D2+t],[-W2+t,-D2+t],{y0:FL,y1:FL+H,m:plaster,holes:[win(W2-t+3.6,1.4,1.0,1.0),win(W2-t+1.2,.9)]});
- pane(-3.6,-D2+t+.02,0,1.4,1.0,1.0,'kitchen-window');
- B.wall([-W2+t,-D2+t],[-W2+t,D2-t],{y0:FL,y1:FL+H,m:plaster,holes:[win(D2-t+2.6,1.2)]});pane(-W2+t+.02,2.6,-Math.PI/2,1.2,1.25,.85,'side-window');
+ pane(-3.6,-D2+t+PIN,0,1.4,1.0,1.0,'kitchen-window');
+ B.wall([-W2+t,-D2+t],[-W2+t,D2-t],{y0:FL,y1:FL+H,m:plaster,holes:[win(D2-t+2.6,1.2)]});pane(-W2+t+PIN,2.6,-Math.PI/2,1.2,1.25,.85,'side-window');
  // inside walls: living|kitchen (an arch), the hall's two sides, Sam's door, the back corridor, the closed doors
  B.wall([-W2+t,.8],[.6,.8],{y0:FL,y1:FL+H,m:plaster,holes:[[DOOR.arch.x0+W2-t,DOOR.arch.x1+W2-t,0,2.1]]});
  B.wall([.6,-1.0],[.6,D2-t],{y0:FL,y1:FL+H,m:plaster,holes:[[DOOR.kitchenHall.z0+1.0,DOOR.kitchenHall.z1+1.0,0,2.05],[3.95,5.6,0,2.1]]});// (the hall opens to the living room at its front end)
@@ -92,7 +95,7 @@ export function createSamHouse({scene,world,shoot=null}){
  const items={};
  // the photograph (in a wooden frame, on the desk: the four of them at the oak, last July)
  const photoMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.6});photoMat.name='c7-group-photo';
- {const g=new THREE.Group();g.name='group-photo';K.slab(g,0,0,0,.26,.2,.02,mat(0x5a3e28,{},'timber'));const p=K.plane(g,0,0,.012,.22,.165,photoMat,{name:'photo'});void p;K.slab(g,0,-.04,-.05,.02,.14,.1,mat(0x5a3e28,{},'timber')).rotation.x=.4;
+ {const g=new THREE.Group();g.name='group-photo';K.slab(g,0,0,0,.26,.2,.02,mat(0x5a3e28,{},'timber'));const p=K.plane(g,0,0,.012,.22,.165,photoMat,{name:'photo'});void p;K.slab(g,0,-.04,-.08,.02,.14,.1,mat(0x5a3e28,{},'timber')).rotation.x=.4;// (the stand, tilted, wholly behind the frame: further forward its top corner came through the picture)
   g.position.set(3.95,FL+.86,D2-t-.25);g.rotation.set(-.12,Math.PI,0);root.add(g);items.photo=g;}
  // his notebook (spiral, green), open a little; a pencil
  {const g=new THREE.Group();g.name='sam-notebook';K.box(g,0,.006,0,.17,.012,.23,mat(0x3a6a4a,{roughness:.7}));for(let k=0;k<12;k++)K.cyl(g,-.085,.012,-.1+k*.018,.006,.02,mat(0x9a9a9a,{metalness:.6}),{rz:Math.PI/2});

@@ -21,7 +21,8 @@ export function chapterSevenTools(T0){
  // To within r of q on foot: a fine grid search over the nav's own walkable (as Chapter Six's sim does), with what is in your
  // way: people standing (Jamie walking after you steps aside when you walk into him: he is not a wall; standing where the
  // chapter put him, he is), low things (the game does not let you walk through a bike or a can), and your own bike standing
- // where you got off it. Standing clear, the way never cuts a corner it could not walk; wedged somewhere, out of it first.
+ // where you got off it. Standing clear, the way never cuts a corner it could not walk; wedged somewhere, out of it first
+ // (through what the game itself lets you stand in: never into a car or a wall).
  function solidRoute(to,r=0,step=.1,pad=6){const p=me(),J=h.chapter.kit?.jamie,yields=J&&J.active&&J.follow==='walk'&&!J.script,rb=h.night.roam;
   const BL=(h.chapter.blockers?.(true)||[]).filter(b=>!(yields&&Math.hypot(b.x-J.px,b.z-J.pz)<.08)&&Math.hypot(b.x-p.x,b.z-p.z)>b.r+.3);
   if(p.walking&&rb&&Number.isFinite(rb.x)&&Math.hypot(rb.x-p.x,rb.z-p.z)>.55)BL.push({x:rb.x,z:rb.z,r:.2});
@@ -31,14 +32,29 @@ export function chapterSevenTools(T0){
   const [si,sj]=I(p.x,p.z),prev=new Map([[key(si,sj),null]]),q=[[si,sj]];let end=null,best=null,bd=1e9;
   for(let n=0;n<q.length&&n<250000;n++){const [i,j]=q[n],c=P(i,j),d=Math.hypot(c.x-to.x,c.z-to.z);if(d<bd){bd=d;best=[i,j];}if(d<=Math.max(r,step*.8)){end=[i,j];break;}
    for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const ii=i+a,jj=j+b,k=key(ii,jj);if(ii<0||jj<0||ii>nx||jj>nz||prev.has(k))continue;const w=P(ii,jj);
-    if(!ok(w.x,w.z)&&!(tight&&Math.hypot(w.x-p.x,w.z-p.z)<.7))continue;prev.set(k,[i,j]);q.push([ii,jj]);}}
+    if(!ok(w.x,w.z)&&!(tight&&Math.hypot(w.x-p.x,w.z-p.z)<.7&&h.nav.walkable(w.x,w.z)&&!BL.some(b=>Math.hypot(b.x-w.x,b.z-w.z)<b.r+.2)))continue;prev.set(k,[i,j]);q.push([ii,jj]);}}
   const tail=end||best;if(!tail)return [];const pts=[];for(let c=tail;c;c=prev.get(key(c[0],c[1])))pts.unshift(P(c[0],c[1]));
   const clear=(a,b)=>{const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.1);for(let k=1;k<=n;k++)if(!ok(a.x+(b.x-a.x)*k/n,a.z+(b.z-a.z)*k/n))return false;return true;};
   const out=[];for(let i=0;i<pts.length-1;){let j=pts.length-1;while(j>i+1&&!clear(pts[i],pts[j]))j--;out.push([pts[j].x,pts[j].z]);i=j;}return out;}
- const approach=(q,r=.9,o={})=>{const path=solidRoute(q,r,.1,o.pad??6);if(!path.length)return Math.hypot(me().x-q.x,me().z-q.z)<=r+.4;return walkTo(path,{r:.08,max:60,...o});};
+ // (a walker pushed sideways on the way, round Jamie, can end up wedged on a corner the route only grazed: like a player,
+ // it stops pushing after a moment (longer than Jamie takes to step round someone walking into him) and finds the way
+ // again from where it stands: first a short step back out the way it can actually walk (open all along, as the game's
+ // own walking checks it), the most toward where it is going, then a new way from there)
+ const unwedge=q=>{const p=me();let best=null,bs=-9;
+  for(let k=0;k<24;k++){const a=k*Math.PI/12,dx=Math.sin(a),dz=-Math.cos(a);let open=true;for(let s=.04;s<=.46;s+=.04)if(!h.nav.walkable(p.x+dx*s,p.z+dz*s)){open=false;break;}if(!open)continue;
+   const e={x:p.x+dx*.45,z:p.z+dz*.45},sc=((q.x-p.x)*dx+(q.z-p.z)*dz)/(Math.hypot(q.x-p.x,q.z-p.z)||1)+(h.nav.walkable(e.x,e.z,{r:.36})?1:0);if(sc>bs){bs=sc;best=e;}}
+  if(best)walkTo([[best.x,best.z]],{r:.1,max:1.5});return !!best;};
+ const approach=(q,r=.9,o={})=>{const clock=()=>h.snapshot.clock,end=clock()+(o.max??60);
+  for(let k=0;k<5;k++){const path=solidRoute(q,r,.1,o.pad??6);if(!path.length)return Math.hypot(me().x-q.x,me().z-q.z)<=r+.4;
+   let last=me(),lastT=clock(),wedged=false;
+   const ok=walkTo(path,{r:.08,...o,max:Math.max(.5,end-clock()),stop:()=>{if(o.stop?.())return true;const p=me();if(Math.hypot(p.x-last.x,p.z-last.z)>.05){last=p;lastT=clock();return false;}return wedged=clock()-lastT>1.6;}});
+   if(!wedged||clock()>=end)return ok;
+   if(globalThis.process?.env?.TRACE7){const p=me();console.log('  (wedged at',p.x.toFixed(2),p.z.toFixed(2),'- stepping out and finding the way again)');}
+   unwedge(q);}
+  return false;};
  const settle=(max=30)=>until(()=>quiet()&&!A7.C.view,max);
  const ride=(pts,{max=160,r=2.4,hard=false,stop=null}={})=>{if(hard)press('ShiftLeft');h.drive(pts.map(q=>Array.isArray(q)?q:[q.x,q.z]),{r,stop:false});const ok=until(()=>!h.driving||!!stop?.(),max);h.stopDriving();if(hard)release('ShiftLeft');return ok;};
- return {...X,T,A7,C7,S,ph,quiet,spot,faceV,act,approach,settle,ride};
+ return {...X,T,A7,C7,S,ph,quiet,spot,faceV,act,approach,settle,ride,solidRoute};
 }
 
 export const SEG7=['house','garage','reyes','afternoon','court','green','upstairs','chase','abduction','after','night'];
@@ -197,7 +213,8 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
  if(seg('upstairs')){
   // (a thing upstairs, at its height over the upstairs floor: what you look at to be offered it)
   const U3=(x,z,dy)=>court.H3(x,z,court.G0+court.HG.HH.UP+dy,'u');
-  note('the room',approach(court.H3(-3.6,1.9,null,'u'),.5,{pad:6}));note('the calendar',act('c7-calendar',{at:U3(-3.3,.04,1.5),r:1.8,max:8}));settle(14);tap('KeyS');U(()=>!A7.C.view,3);
+  U(()=>!A7.C.up||A7.C.up.unblock==null||A7.C.up.unblock>=1,6);// (Jamie drags the dresser back off the door first: until then there is no way into the room)
+  note('the room',approach(court.H3(-3.6,1.9,null,'u'),.5,{pad:6}));note('the calendar',act('c7-calendar',{at:U3(-3.3,.085,1.5),r:1.8,max:8}));settle(14);tap('KeyS');U(()=>!A7.C.view,3);
   note('the desk',act('c7-trace',{at:U3(-4.55,.95,.8),r:1.6,max:8}));settle(24);tap('KeyS');U(()=>!A7.C.view,3);
   check(`${label}: the 1991 calendar; a page in Sam's writing, yellow, as if years old`,()=>{assert.ok(A7.C.flags.trace);assert.ok(said('That’s his WRITING'));assert.ok(said('could do his writing'));});
   // (out of the boy's room, down the hall past the stairwell, into the storeroom)
@@ -234,11 +251,18 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   // run to him; F: his hand; hold on; pull
   const hand=()=>{h.chapter.kit.jamie.person.group.updateMatrixWorld(true);return h.chapter.kit.jamie.person.parts.rhand.getWorldPosition(new (h.camera.position.constructor)());};
   note('to him',Math.hypot(me().x-hand().x,me().z-hand().z).toFixed(1));
-  U(()=>{const q=hand();const d=Math.hypot(me().x-q.x,me().z-q.z);if(d>1.2){faceV(q);press('KeyW');if(d>3)press('ShiftLeft');else release('ShiftLeft');}else{release('KeyW');release('ShiftLeft');}return spot()?.id==='c7-grab';},20);release('KeyW');release('ShiftLeft');tap('KeyF');
+  // (straight at him, running; held up by something on the way, a way round it, the way a player steers)
+  {let last=me(),lastT=h.snapshot.clock;
+   U(()=>{const q=hand();const d=Math.hypot(me().x-q.x,me().z-q.z);if(d>1.2){faceV(q);press('KeyW');if(d>3)press('ShiftLeft');else release('ShiftLeft');}else{release('KeyW');release('ShiftLeft');}
+    const p=me();if(Math.hypot(p.x-last.x,p.z-last.z)>.05||d<=1.2){last=p;lastT=h.snapshot.clock;}
+    else if(h.snapshot.clock-lastT>1){release('KeyW');release('ShiftLeft');note('held up on the way to him: a way round');approach(q,1.0,{sprint:true,max:2.5,stop:()=>spot()?.id==='c7-grab'});last=me();lastT=h.snapshot.clock;}
+    return spot()?.id==='c7-grab';},20);}
+  release('KeyW');release('ShiftLeft');tap('KeyF');
   U(()=>A7.C.gb?.stage==='struggle',3);
   check(`${label}: your hands on his wrist (the struggle)`,()=>{assert.equal(A7.C.gb.stage,'struggle');assert.ok(C7().jamie.grip);});
-  press('KeyF');press('KeyS');const ts=A7.C.t;U(()=>A7.C.gb?.stage==='lost',20);release('KeyS');release('KeyF');M7.struggleSeconds=+(A7.C.t-ts).toFixed(1);
-  check(`${label}: you hold on (${M7.struggleSeconds} s); his hand goes out of yours; the gum falls`,()=>{assert.ok(M7.struggleSeconds>=5);assert.ok(A7.C.flags.gumDropped);});
+  // (and while you hold on, your view is there, behind his hands: never anywhere else)
+  press('KeyF');press('KeyS');const ts=A7.C.t;let camFar=0;U(()=>{if(A7.C.gb?.stage==='struggle'&&A7.C.gb.st>.8){const q=hand(),c=h.camera.position;camFar=Math.max(camFar,Math.hypot(c.x-q.x,c.z-q.z));}return A7.C.gb?.stage==='lost';},20);release('KeyS');release('KeyF');M7.struggleSeconds=+(A7.C.t-ts).toFixed(1);M7.struggleView=+camFar.toFixed(2);
+  check(`${label}: you hold on (${M7.struggleSeconds} s, the view within ${M7.struggleView} m of his hand); his hand goes out of yours; the gum falls`,()=>{assert.ok(M7.struggleSeconds>=5);assert.ok(camFar<2.5,'view '+camFar);assert.ok(A7.C.flags.gumDropped);});
   U(()=>A7.C.flags.jamieTaken,20);
   check(`${label}: it drags him into the lane, round the bend, and he is gone (never seen dead: gone)`,()=>{assert.ok(A7.C.flags.jamieTaken);assert.equal(C7().jamie.visible,false);});
   check(`${label}: while it held him his feet stayed in its hand (${watch.heldFrames} frames, ${watch.attachErr} off)`,()=>{assert.ok(watch.heldFrames>100);assert.equal(watch.attachErr,0);});

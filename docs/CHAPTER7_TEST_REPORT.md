@@ -43,6 +43,11 @@ The input-driven simulation and the Chromium frames found these; each is fixed o
   never reach him.
 * An act-only beat in a line list reached the caption timer with no text (a crash in the garage aftermath).
 * The stealth checkpoint now starts you hidden in the pantry with Jamie (it used to drop you in the open kitchen).
+* At the oak, only the old paving's band was walkable beyond the lookout's own bounds: running to Jamie across the lawn
+  beside it you met a wall nobody could see (the continuous run stopped there). The open lawn beside the band is
+  walkable now (below the lane's mouth and outside the lookout only; the lookout's oak, bench and fences still stand).
+* While you held Jamie's hand the view flew to the far end of the map: his hand was read at a moment when the friends'
+  riding update had put his body back at its bike's origin. It is read from where he was last laid down.
 
 **Wrong but not blocking**
 * The photograph's state did not follow the section on jumps (a jump back to the morning after the night showed the
@@ -50,6 +55,11 @@ The input-driven simulation and the Chromium frames found these; each is fixed o
 * Jamie's thrown can did not actually draw the hunter off you (it ignored the noise mid-pursuit).
 * QA jumps put Jamie in Sam's doorway (in your way); Jamie now waits where he would be.
 * The court's door and mailbox spots were placed in the court's own frame, not the world's.
+* Jamie, taken off his bike, was drawn half sat up for as long as he was down (his head a metre off the ground): the
+  friends' update stood him upright every frame and the chapter only eased part of the way back. He lies flat now, on
+  his back, his ankles in its hand; the hand you hold reaches from his shoulder toward you (it reached from his feet and
+  stopped at his waist); the view while you hold on looks down at his hands and his face and keeps it in view as it
+  drags.
 
 **Seen in the frames**
 * The hunter's stand-in read as a pale cartoon in daylight (beige skin, a heavy brow, round eyes): now dark and a little
@@ -61,7 +71,36 @@ The input-driven simulation and the Chromium frames found these; each is fixed o
   Seven's rooms are shown and given back after.
 * Someone standing about today stood in front of Sam in last July's photograph: everyone the world has about is now
   out of the picture while it is taken.
-* Sam's kitchen ceiling read black; it is lit like the walls.
+* Sam's kitchen ceiling read black (the street house's own ceiling showed through under it); it sits lower now.
+* The reveal's hand on the boy's-room doorframe could not be seen from the foot of the stairs (the stairwell shows only
+  a slot of the upstairs): the hand now comes round the newel post at the top of the stairs, inside that slot.
+* The boy's-room calendar had no object on the wall (the look floated in a window); the old green bike was not in the
+  storeroom at all (only its look and its bell): both are there now (the bike is the game's own Meadowlark build).
+* The family at the table showed only the tops of their heads over a high sill: the picture window is lower and wider
+  and the table nearer it.
+* Old Mill Court stayed in broad daylight until the green-door house; the light now runs ahead of the clock there.
+* Jamie, taken off his bike, stood upright in the grass (the friends' own update stood him back up after the chapter laid
+  him down): he is posed after it now.
+* The names were written at a grazing angle (the page unreadable); the last look out of Sam's window showed a dark pane
+  (the view was rendered into the corner of the garage): it is rendered past the garage at the four bikes, bright.
+* Jamie's knock request could leak into the dining-room scene on a jump; it only comes before the lights.
+* A dark box stood over Sam in last July's photograph: it was the frame's own wooden stand, its top corner through the
+  front of the picture. The stand is wholly behind the frame now. At night the photograph in your hand was nearly black;
+  in his dark room it now catches a little light from the street, enough to see that only you are in it.
+* The 1991 calendar was inside the boy's-room wall (the wall is 14 cm thick; it hung 3 cm behind its face): on the wall now.
+* The large thing behind the roofs was the colour of the sky (the dusk haze took it at a hundred metres): it is out of
+  the haze, a dark shape against it.
+* The old paving at the lane's mouth read as railway sleepers (dark slabs laid one per 0.8 m): slabs of uneven length
+  meeting at cracks, now and then a gap.
+* Sam's window showed the street house's own glass (part of the street's geometry, a few centimetres inside the pane),
+  not the view: the panes stand in front of it now. The last look out of it was taken along the line from wherever you
+  stood (from the desk, at a slant along the wall): it is square on to the glass, at the four bikes.
+
+**The simulation's own player (not the game)**
+* After drifting round Jamie it could end up wedged on a corner it had only grazed (the '59 sedan in the court, after the
+  knocks): it now stops pushing, steps out the way it can walk and finds the way again; its escape from a tight spot no
+  longer goes through a car.
+* In the continuous run it set off upstairs before Jamie had dragged the dresser off the door: it waits for him.
 
 
 ## Not verified

@@ -101,7 +101,7 @@ export function createHorrorHouse({wallpaper=null}={}){
  // ---- hiding places (where a hidden kid stands), the stair top, the window over the porch ----
  hides.pantry={x:4.3,z:3.9,door:'pantry',lv:'g',label:'Hide in the pantry'};hides.den={x:-4.4,z:3.95,door:'den',lv:'g',label:'Hide in the closet'};hides.stair={x:0,z:3.75,door:'closet',lv:'g',label:'Hide in the closet under the stairs',inner:{x:0,z:2.4}};
  spots.foyer={x:0,z:-3.6};spots.stairFoot={x:0,z:-2.2};spots.stairTop={x:0,z:3.1};spots.boyDoor={x:-ucx-.4,z:3.3};spots.boyIn={x:-3,z:2.4};spots.hallWindow={x:0,z:-4.1};spots.porchRoof={x:0,z:-5.6};
- spots.kitchen={x:2.6,z:3.0};spots.calendar={x:-3.3,y:UP+1.5,z:.04};spots.desk={x:-4.6,y:UP+.8,z:.95};spots.sideWindow={x:-2.8,y:UP+1.5,z:hd};spots.bike={x:-3.6,z:-2.5};
+ spots.kitchen={x:2.6,z:3.0};spots.calendar={x:-3.3,y:UP+1.5,z:.085};spots.desk={x:-4.6,y:UP+.8,z:.95};spots.sideWindow={x:-2.8,y:UP+1.5,z:hd};spots.bike={x:-3.6,z:-2.5};
  spots.dresserStart={x:-ucx-.55,z:1.0};spots.dresserBlock={x:-ucx-.4,z:3.3};spots.dresserAfter={x:-ucx-.55,z:1.25};// (dragged back off the door afterwards: near where it stood, clear of the bed's foot)
  // the creature's map of the ground floor: rooms and doorways (house frame), and the loop it walks
  const graph={nodes:[{id:'foyer',x:0,z:-3.2},{id:'stairFoot',x:0,z:-2.0},{id:'livingArch',x:-1.7,z:-2.6,pause:1.4},{id:'living',x:-3.2,z:-2.4},{id:'livingDoor',x:-3.3,z:-.35,pause:1.2},

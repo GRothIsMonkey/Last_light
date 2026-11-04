@@ -26,6 +26,7 @@
 // that answers for the lookout corner, the real lane and its patch of field, and the whole far region. It can be ridden.
 import * as THREE from './three.module.js';
 import {groundPoint} from './route.js';
+import {LOOKOUT} from './layout.js';
 import {streetCoords} from './terrain.js';
 import {mat,C7,createBuild,houseShell,periodCar,streetlight,streetLamp,mailbox,utilityPole,trashCan,fenceRun,hedgeRun,yardTree,glassLit,porchGlow,paper} from './chapter7-build.js';
 import {createHorrorHouse,createDiningRoom,HH,STAIR,PIC} from './chapter7-interiors.js';
@@ -89,9 +90,12 @@ export function createCourt({scene,world,sfx=()=>{}}){
  const realLane=buildLane('lane-real');real.add(realLane.g);
  // the old paving across the corner of the lookout (from the cul-de-sac's edge to the lane): broken, grass through it
  const CON=[[15,-20.2],[0,-.4]];
- {const g=new THREE.Group();g.name='old-court-paving';real.add(g);const m=mat(0x4a4842,{roughness:1},'roadwear'),r=seeded(1958);
+ {const g=new THREE.Group();g.name='old-court-paving';real.add(g);const m=mat(0x57554e,{roughness:1},'roadwear'),r=seeded(1958);
   const [a,b]=CON,L=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/L,dz=(b[1]-a[1])/L,n=Math.ceil(L/.8);
-  for(let k=0;k<n;k++){if(r()<.18)continue;const u=(k+.5)*L/n,x=a[0]+dx*u,z=a[1]+dz*u;const w=realW(x,z);const piece=K.slab(g,x+(r()-.5)*.3,0,z,2.4+r()*.8,.025,.75,m,{shadow:false});piece.position.y=realFloor(w.x,w.z)-.005;piece.rotation.y=-Math.atan2(dz,dx)+Math.PI/2+(r()-.5)*.12;}
+  // (slabs of uneven length, most of them meeting at a crack, now and then a gap where the grass has taken the rest:
+  // laid one per .8 m they read as railway sleepers)
+  void n;for(let u=.3,k=0;u<L-.5;k++){const len=Math.min(L-.3-u,1.2+r()*1.6);if(r()>.15){const um=u+len/2,x=a[0]+dx*um,z=a[1]+dz*um,w=realW(x,z),gap=r()<.7?.03+r()*.05:.25+r()*.35;
+    const piece=K.slab(g,x+(r()-.5)*.25,0,z,2.3+r()*1.0,.025,Math.max(.4,len-gap),m,{shadow:false});piece.position.y=realFloor(w.x,w.z)+.002+(k%3)*.0015;piece.rotation.y=-Math.atan2(dz,dx)+Math.PI/2+(r()-.5)*.06;}u+=len;}
   // the old curbstones, here and there in the grass along one side (the court's curb; the clue)
   const curb=mat(0x9a968a,{},'mineral');for(let k=0;k<9;k++){const u=2+k*2.3,x=a[0]+dx*u-dz*1.65,z=a[1]+dz*u+dx*1.65;const w=realW(x,z);const c=K.slab(g,x,0,z,1.1,.16,.18,curb);c.position.y=realFloor(w.x,w.z)+.03;c.rotation.y=-Math.atan2(dz,dx)+(r()-.5)*.15;c.rotation.z=(r()-.5)*.1;}}
  // the patch of field the lane comes out in, and the brush along its edges (its natural limits)
@@ -205,7 +209,8 @@ export function createCourt({scene,world,sfx=()=>{}}){
  // ---- the far row and the giant ------------------------------------------------------------------------------------------------
  const far=[];for(const [z,k] of [[50,0],[82,1],[112,2],[140,3]]){const p=houseShell({w:10,d:8.6,stories:k===1?2:1,h:2.6,wall:[0xb8b0a0,0xa8b0a8,0xc0b098,0xb0a898][k],roof:0x3a3a3c,lit:.15,seed:80+k});p.g.position.set(46,G0,z);p.g.rotation.y=facing(-1,0);court.add(p.g);far.push(p);}
  const giant=new THREE.Group();giant.name='chapter7-the-large-thing';court.add(giant);giant.visible=false;
- const gm=new THREE.MeshStandardMaterial({color:0x14110f,roughness:.55,metalness:.05});gm.name='c7-large-thing';
+ // (out of the fog: at a hundred metres the dusk haze took it to the colour of the sky; it is seen as a shape against it)
+ const gm=new THREE.MeshStandardMaterial({color:0x23202b,roughness:.55,metalness:.05,fog:false});gm.name='c7-large-thing';
  {// its back: a long rounded mass behind the far row, mostly below the roofs
   const back=new THREE.Mesh(new THREE.SphereGeometry(1,28,18),gm);back.scale.set(22,15,44);back.position.set(92,G0-6,96);back.name='back';giant.add(back);
   const ridge=new THREE.Group();ridge.name='ridge';giant.add(ridge);for(let k=0;k<9;k++){const r=new THREE.Mesh(new THREE.SphereGeometry(1,10,8),gm);r.scale.set(3.2,4.4+Math.sin(k*1.7)*1.2,4);r.position.set(84+Math.sin(k)*2,G0+7.5+Math.sin(k*.9)*1.2,62+k*8.5);ridge.add(r);}
@@ -258,13 +263,21 @@ export function createCourt({scene,world,sfx=()=>{}}){
  const inRealArea=(q)=>{if(inLane(q.x,q.z))return true;if(q.x>FIELD.x0-1&&q.x<FIELD.x1+1&&q.z>FIELD.z0&&q.z<FIELD.z1+1)return true;
   // the old paving across the lookout's corner: a band 4 m wide from the cul-de-sac's edge to the lane
   const [a,b]=CON,dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,u=clamp(((q.x-a[0])*dx+(q.z-a[1])*dz)/l,0,1);return Math.hypot(q.x-a[0]-dx*u,q.z-a[1]-dz*u)<2.2&&u>0&&u<=1;};
+ // (beside the band, out past the lookout's own bounds, is open lawn. Oak Hollow's nav ends at the lookout's edge, and in the
+ //  grass beside the paving that edge was a wall nobody could see, where Jamie is dragged. That lawn is walked like the band:
+ //  only below the lane's mouth (not into its hedges), away from the cul-de-sac's lots, and only where the lookout's own nav
+ //  says no (inside the lookout it still decides: its oak, its bench); its fences are still fences)
+ const outLookout=(x,z)=>{const s=streetCoords(x,z),b=LOOKOUT.bounds;return s.d>b.d0+4&&(s.d>b.d1||s.lat<b.l0||s.lat>b.l1);};
+ const inMargin=(q,x,z)=>{if(q.z>-1.2)return false;const [a,b]=CON,dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz,u=clamp(((q.x-a[0])*dx+(q.z-a[1])*dz)/l,0,1);
+  return Math.hypot(q.x-a[0]-dx*u,q.z-a[1]-dz*u)<6&&outLookout(x,z);};
+ const inRealOpen=(q,x,z)=>inRealArea(q)||inMargin(q,x,z);
  const nav={kind:'chapter7-region',
-  inside(x,z){if(!ST.active)return false;const q=regL(x,z);if(inRegion(q))return true;const r=realL(x,z);return inRealArea(r);},
+  inside(x,z){if(!ST.active)return false;const q=regL(x,z);if(inRegion(q))return true;const r=realL(x,z);return inRealOpen(r,x,z);},
   walkable(x,z,r=.28){const q=regL(x,z);if(inRegion(q)){if(inLane(q.x,q.z))return laneWalk(q.x,q.z,r,{fenced:ST.fenceA});const b={x:q.x-COPY_B.x,z:q.z-COPY_B.z};if(inLane(b.x,b.z))return laneWalk(b.x,b.z,r,{fenced:ST.fenceB});return courtWalk(q.x,q.z,r);}
    const p=realL(x,z);if(inLane(p.x,p.z))return laneWalk(p.x,p.z,r);if(p.x>FIELD.x0&&p.x<FIELD.x1&&p.z>FIELD.z0&&p.z<FIELD.z1)return p.x>FIELD.x0+.8+r&&p.x<FIELD.x1-.8-r&&p.z<FIELD.z1-.8-r;
-   return inRealArea(p)&&realOpen(x,z,r);},
+   return inRealOpen(p,x,z)&&realOpen(x,z,r);},
   rideable(x,z,{r=.3}={}){const q=regL(x,z);if(inRegion(q)){if(inLane(q.x,q.z))return laneWalk(q.x,q.z,r,{fenced:ST.fenceA});const b={x:q.x-COPY_B.x,z:q.z-COPY_B.z};if(inLane(b.x,b.z))return laneWalk(b.x,b.z,r,{fenced:ST.fenceB});return courtWalk(q.x,q.z,r,{ride:true});}
-   const p=realL(x,z);if(inLane(p.x,p.z))return laneWalk(p.x,p.z,r);if(p.x>FIELD.x0&&p.x<FIELD.x1&&p.z>FIELD.z0&&p.z<FIELD.z1)return p.x>FIELD.x0+.8+r&&p.x<FIELD.x1-.8-r&&p.z<FIELD.z1-.8-r;return inRealArea(p)&&realOpen(x,z,r);},
+   const p=realL(x,z);if(inLane(p.x,p.z))return laneWalk(p.x,p.z,r);if(p.x>FIELD.x0&&p.x<FIELD.x1&&p.z>FIELD.z0&&p.z<FIELD.z1)return p.x>FIELD.x0+.8+r&&p.x<FIELD.x1-.8-r&&p.z<FIELD.z1-.8-r;return inRealOpen(p,x,z)&&realOpen(x,z,r);},
   floorAt(x,z){const q=regL(x,z);if(inRegion(q)){if(inLane(q.x,q.z,-.8))return laneFloor(q.x,q.z);const b={x:q.x-COPY_B.x,z:q.z-COPY_B.z};if(inLane(b.x,b.z,-.8))return laneFloor(b.x,b.z);
     if(inHouseBox(q.x,q.z,1.2)){const h=cToH(q.x,q.z);if(porch(h)&&!(Math.abs(h.x)<HH.W/2&&h.z>-HH.D/2+.05))return porchY(h);if(Math.abs(h.x)<HH.W/2+.1&&Math.abs(h.z)<HH.D/2+.1)return G0+HG.floorAt(h.x,h.z,ST.level);}
     return G0;}

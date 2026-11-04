@@ -8,6 +8,7 @@
 //  * the DEV selector: Chapter Seven chosen with real clicks, each of its scenes started with START SCENE, captured.
 // QA_OUTPUT (default docs/qa/chapter7-the-street-that-wasnt-there) receives the captures, chapter7-browser-report.json and
 // a gallery. Memory: SEGMENTED=1 plays each segment in a fresh browser (from its checkpoint); DEV_BATCH scenes per browser.
+// NO_DEV=1: the walkthrough only; DEV_ONLY=1: the DEV scenes only.
 // Renders are software (SwiftShader): frame times here say nothing about a real GPU.
 import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);let pw;for(const p of [null,process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'/opt/node-tools/node_modules','/opt/node22/lib/node_modules'])try{pw=p?require(p+'/playwright'):require('playwright');break;}catch{}
@@ -48,6 +49,8 @@ const snap=async(name)=>{await ev(()=>{for(const id of ['objective','objective-n
  await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:86,timeout:300000});frames.push({name,...info});console.log('Captured',name,info.phase,info.calls,info.triangles);if(memoryMB>0)await ev(()=>globalThis.gc?.());};
 let report={};
 try{
+ // (DEV_ONLY=1: the DEV selector's scenes only, no hand-over and no walkthrough)
+ if(!process.env.DEV_ONLY){
  // ---- the hand-over: Chapter Six's ending, its card, the button ---------------------------------------------------------------
  const card6=await ev(()=>{const L=lastLight;L.jump('chapter6-end');for(let i=0;i<160*30&&L.state.state!=='ended';i++)L.step(1/30);
   return {state:L.state.state,h2:document.querySelector('#ending h2').textContent,next:!document.getElementById('next-chapter').hidden,label:document.getElementById('next-chapter').textContent};});
@@ -101,6 +104,7 @@ const installWalk=()=>ev(async()=>{const L=lastLight,{playChapterSeven}=await im
  check('the walkthrough reaches Chapter Seven’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Seven · The Street That Wasn’t There · August 26, 2011, and no Chapter Eight',
   end.state==='ended'&&end.h2==='Chapter Seven'&&/LAST LIGHT/i.test(end.text)&&/STREET THAT WASN.T THERE/i.test(end.text)&&/August 26, 2011/.test(end.text)&&end.next===true,JSON.stringify(end));
  report.walkthrough={scope:SEG?'segmented: Chapter Six end card → real click → the first segment; later segments from their own checkpoints, played with inputs (browser refreshed at the configured segment batch) (the end card reached by the last)':'continuous: Chapter Five end card → real click → Chapter Six played with inputs to its end card (one page call per segment, no jump between them)',gameMinutes:+(walk.clock/60).toFixed(2),wallSeconds:Math.round((Date.now()-t0)/1000),segments:mem,metrics:walk.metrics,fails:walk.fails};
+ }
  // ---- the DEV selector: Chapter Seven, every scene, with real clicks ---------------------------------------------------------------
  const scenes=process.env.NO_DEV?[]:await ev(()=>lastLight.DEV_SCENES[7].map(s=>({id:s.id,label:s.label})));const dev=[];/* (NO_DEV=1: the walkthrough only) */
  await ev(()=>lastLight.toTitle());

@@ -258,20 +258,37 @@ assets were changed. See the test report for the regression runs.
 
 ## 5. Known limitations and risks (for the playtest)
 
+* **The length is short of the request.** The simulation's direct player takes about 23–26 game minutes from Chapter
+  Six's end card to Chapter Seven's (the test report has the number per segment) against the requested 45–55. A
+  first-time player who reads the room, the map, the court, the boy's room and the forgetting will take longer — by the
+  ratio earlier chapters used (direct × 1.3–1.5) roughly 30–40 minutes — but that is an estimate, and it is still under
+  the target. The playtest should time it; the cheapest places to deepen it are the court (more doors, more to read),
+  the green-door house's ground floor and the aftermath.
 * **The hunter is a placeholder.** A procedural stand-in, not an authored model: no skin, no texture, IK-driven
-  limbs. It is staged to read in silhouette and darkness, but it will look like what it is up close. The adapter is
-  ready for a real model (the guide).
+  limbs. It is dark and staged to read in silhouette (it is good on the landing at the top of the stairs and on the
+  road at dusk), but close up in daylight (the garage) it looks like what it is. The adapter is ready for a real model
+  (the guide).
 * **Rough-draft art.** Sam's house, the court's houses, the green-door house and the large thing are first-draft
   geometry with runtime materials.
 * **Audio is unverified by ear** (muted runs only).
 * **Stealth tuning** is from simulation only: how readable the patrol is, and whether the house is too easy or too
   hard for a person, needs a human.
-* **The chase** is short for a careful rider in direct play (about 46 s for the sim's hard-riding player against a
-  60–90 s target); a person riding normally will take longer, but this needs timing in the playtest.
+* **The chase** is at the short end for a hard rider in direct play (about 51–56 s for the sim's player, who holds
+  Shift the whole way, against a 60–90 s target); a person riding normally will take longer, but this needs timing.
 * **The garage glimpse** depends on the player looking toward the side door; if they don't, it goes anyway after a few
   seconds (heard, barely seen).
-* **Jamie in tight rooms**: he steps aside when walked into, but in the very narrow places (Sam's doorway, the boy's
-  room by the bed) a player can bump him for a moment.
+* **Jamie in tight places**: he steps back when walked into; where there is no room to (a doorway, between a car and a
+  porch) he steps round you after a moment and comes on behind you. It works, but it is a small pop, not an animation.
+* **Jamie down is re-posed by the chapter every frame.** While he is on the ground (taken off his bike, held, dragged)
+  the friends' system still treats him as riding and stands his body back on his bike each frame; the chapter lays him
+  down again after it (position, lying orientation, and the hand you hold, kept in its own state). It is correct in
+  every check and frame, but a proper "down" state in `companions.js` would be cleaner and is the first thing to do if
+  the abduction is reworked.
+* **The lawn at the lane's mouth has an edge.** Beside the old paving the open grass is walkable for 6 m (Chapter Seven
+  only); past that the lookout's own bounds still stop you, in grass that looks the same. Nobody needs to go there, but
+  a player wandering off the paving will meet it.
+* **The large thing** is out of the dusk haze so that it reads against the sky; it is a crisp dark shape, which a real
+  silhouette model should keep.
 * **Software rendering** in every automated browser run: frame times say nothing about a real GPU.
 
 ## 6. Private playtest
