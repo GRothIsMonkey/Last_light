@@ -115,6 +115,30 @@ export function createSamHouse({scene,world,shoot=null}){
  const poster=paper(240,320,(g,w,h)=>{g.fillStyle='#1d3a52';g.fillRect(0,0,w,h);g.fillStyle='#3a6a5a';g.beginPath();g.ellipse(120,180,90,40,-.3,0,7);g.fill();g.fillStyle='#d8d0b0';g.font='bold 24px Arial';g.textAlign='center';g.fillText('BIG BASS',120,48);g.font='14px Arial';g.fillText('PINE RIDGE · 2009',120,300);});
  {const p=FN.poster({w:.5,h:.66,tex:poster});put(p,W2-t-.015,2.9,{a:-Math.PI/2,y:FL+1.55});}
  {const f=new THREE.Group();f.name='wooden-fish';K.box(f,0,.025,0,.1,.03,.025,mat(0x9a6a3a,{},'timber'));const tl=K.box(f,.06,.025,0,.03,.04,.02,mat(0x9a6a3a,{},'timber'));tl.rotation.z=.6;put(f,W2-t-.38,4.0,{y:FL+.55});items.fish={x:W2-t-.38,y:FL+.58,z:4.0};}
+ // ---- what you and his dad go looking for (the expanded morning): on top of the shelf, the Tour de Oak Hollow, rolled up;
+ //  a jar of gum wrappers folded into stars; his desk drawer (this year's school pictures); a shoe box in the knee space of
+ //  his desk; his watch on the dresser. In the kitchen, the answering machine, its plug lying on the counter.
+ {const g=new THREE.Group();g.name='tour-tube';K.cyl(g,0,0,0,.045,.74,mat(0xb08a5a,{roughness:.8}),{rx:Math.PI/2});for(const z of [.37,-.37])K.cyl(g,0,0,z,.047,.02,mat(0x3a3a3a),{rx:Math.PI/2});
+  g.position.set(2.4,FL+1.69,3.8);root.add(g);items.tube=g;}
+ {const g=new THREE.Group();g.name='wrapper-jar';K.cyl(g,0,.07,0,.05,.14,new THREE.MeshStandardMaterial({color:0xcfe0e8,roughness:.1,transparent:true,opacity:.35}));
+  for(let k=0;k<16;k++){const s2=K.box(g,Math.sin(k*2.3)*.026,.02+k*.0065,Math.cos(k*1.7)*.026,.018,.006,.018,mat([0x2e8a4a,0xe8e4d8,0x3a6a4a][k%3]));s2.rotation.set(k,k*.7,0);}
+  g.position.set(2.42,FL+1.08,4.08);root.add(g);items.stars=g;}
+ const DRW={x:3.9,y:FL+.56,z:D2-t-.645};
+ {const g=new THREE.Group();g.name='desk-drawer';const pm=mat(C7.pine,{},'timber');K.box(g,0,0,0,.4,.2,.02,pm);K.box(g,0,.02,.22,.38,.12,.42,pm);K.box(g,0,0,-.02,.1,.025,.02,mat(0xb89a5a,{metalness:.6}));
+  K.box(g,.02,.085,.2,.2,.01,.26,mat(0xe8e0c8));K.box(g,-.1,.085,.3,.06,.012,.08,mat(0x2a6a9a));// the picture packet; a pencil sharpener
+  g.position.set(DRW.x,DRW.y,DRW.z);root.add(g);items.drawer=g;
+  const cav=K.plane(root,DRW.x,DRW.y,DRW.z+.02,.38,.18,mat(0x120e0a),{ry:Math.PI,name:'drawer-cavity'});cav.visible=false;items.drawerCavity=cav;}
+ {const g=new THREE.Group();g.name='shoe-box';K.box(g,0,.06,0,.34,.12,.21,mat(0xd8d0c0));K.box(g,0,.125,0,.35,.02,.22,mat(0x2a2a2e));
+  g.position.set(3.25,FL+.02,D2-t-.32);g.rotation.y=.2;root.add(g);items.shoebox=g;}
+ {const g=new THREE.Group();g.name='sam-watch';K.box(g,0,.006,0,.036,.012,.04,mat(0x1a1a1c,{roughness:.4}));for(const z of [.05,-.05])K.box(g,0,.004,z,.022,.004,.07,mat(0x2a2a2c));
+  K.box(g,0,.013,0,.026,.002,.026,mat(0x8a9a8a));K.box(g,0,.007,.07,.024,.006,.015,mat(0xd8d2b8));g.position.set(3.62,FL+.845,1.42);g.rotation.y=.6;root.add(g);items.watch=g;}
+ const ledM=new THREE.MeshStandardMaterial({color:0x3a0a0a,emissive:0xff2a1a,emissiveIntensity:0,roughness:.4});ledM.name='c7-machine-led';
+ {const g=new THREE.Group();g.name='answering-machine';K.box(g,0,.03,0,.22,.06,.16,mat(0x1c1c1e,{roughness:.5}));K.box(g,-.04,.062,.02,.09,.004,.05,mat(0x3a4a3a));
+  for(let k=0;k<4;k++)K.box(g,.03+k*.018,.062,-.04,.012,.006,.012,mat(0x4a4a4c));K.box(g,.085,.064,.045,.012,.006,.012,ledM);
+  g.position.set(-2.55,FL+.93,-4.42);root.add(g);items.machine=g;}
+ {const cm=mat(0xe8e4dc),c1=K.box(root,-2.47,FL+.937,-4.3,.008,.008,.22,cm),c2=K.box(root,-2.38,FL+.937,-4.16,.008,.008,.12,cm);c1.rotation.y=.3;c2.rotation.y=-.5;
+  const plug=K.box(root,-2.34,FL+.942,-4.1,.03,.018,.04,mat(0xf2efe6));plug.rotation.y=-.5;for(const s2 of [-1,1]){const pr=K.box(root,-2.34+s2*.006,FL+.942,-4.077,.002,.008,.016,mat(0xc8b070,{metalness:.7}));pr.rotation.y=-.5;}
+  K.slab(root,-2.62,FL+1.1,-4.632,.07,.11,.01,mat(0xf2efe6));for(const s2 of [-1,1])K.slab(root,-2.62+s2*.012,FL+1.1,-4.626,.004,.02,.004,mat(0x2a2a2a));}
  // ---- spots (house frame, then world) ----
  const L=(x,z,y=0)=>toW(x,z,FL+y);
  const SPOTS={
@@ -123,6 +147,7 @@ export function createSamHouse({scene,world,shoot=null}){
   samDoor:L(1.5,2.45),samIn:L(3.2,2.6),fan:L(W2-t-1.35,1.6,.3),photo:L(3.95,D2-t-.25,.86),notebook:L(3.4,D2-t-.32,.77),gum:L(W2-t-.3,4.02,.57),
   shelf:L(2.4,3.75,1.05),games:L(3.0,1.5,.9),helmet:L(2.1,DOOR.sam.z1,.95),hoodie:L(3.55,D2-t-1.1,.7),fish:L(W2-t-.38,4.0,.58),window:L(4.2,D2-t-.05,1.45),bed:L(W2-t-.55,2.45,.5),
   bedEdge:L(W2-t-1.1,2.6),desk:L(3.55,D2-t-.95),hall:L(1.4,1.2),kitchen:L(-2.0,-.6),fridge:L(-.15,-3.7,1.25),dadStand:L(1.6,2.55),momStand:L(-1.4,-2.6),
+  tube:L(2.4,3.8,1.69),stars:L(2.42,4.08,1.12),drawer:L(3.9,D2-t-.7,.56),shoebox:L(3.25,D2-t-.4,.1),watch:L(3.62,1.42,.85),machine:L(-2.55,-4.42,.96),plug:L(-2.34,-4.1,.94),machineStand:L(-2.4,-3.5),dadKitchen:L(-3.0,-.75),momKitchen:L(-4.35,-3.3),
  };
  // ---- the window views (rendered from just outside the glass, the street as it is: once by day, once at night) ----
  const viewRT={};
@@ -139,14 +164,18 @@ export function createSamHouse({scene,world,shoot=null}){
  // ---- nav ----
  const inR=(q,b,r=0)=>q.x>b.x0+r&&q.x<b.x1-r&&q.z>b.z0+r&&q.z<b.z1-r;
  const gaps=[// doorways between rooms (x0,x1,z0,z1 in the house frame)
-  {x0:DOOR.arch.x0+.1,x1:DOOR.arch.x1-.1,z0:.4,z1:1.2},{x0:.3,x1:.9,z0:DOOR.kitchenHall.z0+.1,z1:DOOR.kitchenHall.z1-.1},{x0:.3,x1:.9,z0:2.95,z1:D2-t-.1},{x0:1.9,x1:2.5,z0:DOOR.sam.z0+.1,z1:DOOR.sam.z1-.1},{x0:1.9,x1:2.5,z0:-.3,z1:.4}];
+  // (each reaches well into the rooms either side: at a walker's size the rooms stop short of the wall, and a doorway that only
+  //  just met them left a seam two centimetres wide to get through, where someone coming at it on a slant stuck on the frame)
+  {x0:DOOR.arch.x0+.1,x1:DOOR.arch.x1-.1,z0:.2,z1:1.4},{x0:-.2,x1:1.4,z0:DOOR.kitchenHall.z0+.1,z1:DOOR.kitchenHall.z1-.1},{x0:-.2,x1:1.4,z0:2.95,z1:D2-t-.1},{x0:1.4,x1:3.0,z0:DOOR.sam.z0+.04,z1:DOOR.sam.z1-.04},{x0:1.4,x1:3.0,z0:-.3,z1:.4}];
  const inside=(x,z)=>{const q=toL(x,z);return q.x>-W2-.25&&q.x<W2+.1&&q.z>-D2-.25&&q.z<D2+.25;};
  const nav={inside,
   walkable:(x,z,r=.28)=>{const q=toL(x,z);const room=[R.living,R.hall,R.sam,R.kitchen,R.back].some(b=>inR(q,b,r))||gaps.some(g=>q.x>g.x0&&q.x<g.x1&&q.z>g.z0&&q.z<g.z1);if(!room)return false;return !solids.some(b=>inBox(q.x,q.z,b,r));},
   floorAt:()=>O.ground+FL+.02,heading:A,surface:()=>'floor'};
  // ---- moving parts, every frame ----
- const ST={fan:true,spin:0,t:0};
- function update(dt){ST.t+=dt;ST.spin=clamp(ST.spin+(ST.fan?1:-1)*dt*1.4,0,1);blades.rotation.z-=dt*ST.spin*22;}
+ const ST={fan:true,spin:0,t:0,machine:'off',drawer:0,drawerT:0};
+ function update(dt){ST.t+=dt;ST.spin=clamp(ST.spin+(ST.fan?1:-1)*dt*1.4,0,1);blades.rotation.z-=dt*ST.spin*22;
+  ST.drawerT=clamp(ST.drawerT+(ST.drawer?1:-1)*dt*2.4,0,1);const u=ST.drawerT*ST.drawerT*(3-2*ST.drawerT);items.drawer.position.z=DRW.z-.3*u;items.drawerCavity.visible=u>.05;
+  ledM.emissiveIntensity=ST.machine==='blink'?(Math.sin(ST.t*5.5)>0?2.4:.04):ST.machine==='on'?2.4:0;}
  // The street's own stand-in room behind Sam's side window (houses.js buildRoom: a lit box with a bed, a lamp and a poster, so
  // the window shows something from the road) stands where this kitchen is. While these rooms are shown its triangles are
  // folded to nothing (every triangle wholly inside its box, in the merged street meshes), and given back after.
@@ -166,8 +195,9 @@ export function createSamHouse({scene,world,shoot=null}){
     else{for(let k=1;k<3;k++){const src=on?sv[0]:sv[k];pos.setXYZ(t+k,src[0],src[1],src[2]);}}});
    if(idx)idx.needsUpdate=true;else pos.needsUpdate=true;}}
  function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();foldFake(on);}
- const keep=new Set([...Object.values(doors).map(d=>d.pivot),fan,items.photo,items.notebook,items.gum]);bake(root,keep);
- function reset(){ST.fan=true;ST.spin=1;doors.sam.set(.55);items.gum.visible=true;items.notebook.visible=true;items.photo.visible=true;lightsOut(false);show(false);}
+ const keep=new Set([...Object.values(doors).map(d=>d.pivot),fan,items.photo,items.notebook,items.gum,items.tube,items.drawer,items.drawerCavity,items.shoebox,items.watch,items.machine]);bake(root,keep);
+ function reset(){ST.fan=true;ST.spin=1;doors.sam.set(.55);items.gum.visible=true;items.notebook.visible=true;items.photo.visible=true;
+  ST.machine='off';ST.drawer=0;ST.drawerT=0;items.drawer.position.z=DRW.z;items.drawerCavity.visible=false;for(const kk of ['tube','shoebox','watch'])items[kk].visible=true;lightsOut(false);show(false);}
  const home=(x,z)=>{const q=toL(x,z);return inR(q,R.sam,-.05)?'sam':inR(q,R.kitchen,-.05)?'kitchen':inR(q,R.living,-.05)?'living':inR(q,R.hall,-.05)?'hall':null;};
  return {P,root,toW,toL,heading,R,SPOTS,nav,doors,items,photoMat,fan,ST,update,show,reset,renderView,lightsOut,room:home,tvScreen,FL,solids,
   inHouse:(x,z)=>{const q=toL(x,z);return q.x>-W2&&q.x<W2&&q.z>-D2&&q.z<D2;}};

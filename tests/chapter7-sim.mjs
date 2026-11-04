@@ -34,7 +34,7 @@ export function chapterSevenTools(T0){
    for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const ii=i+a,jj=j+b,k=key(ii,jj);if(ii<0||jj<0||ii>nx||jj>nz||prev.has(k))continue;const w=P(ii,jj);
     if(!ok(w.x,w.z)&&!(tight&&Math.hypot(w.x-p.x,w.z-p.z)<.7&&h.nav.walkable(w.x,w.z)&&!BL.some(b=>Math.hypot(b.x-w.x,b.z-w.z)<b.r+.2)))continue;prev.set(k,[i,j]);q.push([ii,jj]);}}
   const tail=end||best;if(!tail)return [];const pts=[];for(let c=tail;c;c=prev.get(key(c[0],c[1])))pts.unshift(P(c[0],c[1]));
-  const clear=(a,b)=>{const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.1);for(let k=1;k<=n;k++)if(!ok(a.x+(b.x-a.x)*k/n,a.z+(b.z-a.z)*k/n))return false;return true;};
+  const clear=(a,b)=>{const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.04);for(let k=1;k<=n;k++)if(!ok(a.x+(b.x-a.x)*k/n,a.z+(b.z-a.z)*k/n))return false;return true;};
   const out=[];for(let i=0;i<pts.length-1;){let j=pts.length-1;while(j>i+1&&!clear(pts[i],pts[j]))j--;out.push([pts[j].x,pts[j].z]);i=j;}return out;}
  // (a walker pushed sideways on the way, round Jamie, can end up wedged on a corner the route only grazed: like a player,
  // it stops pushing after a moment (longer than Jamie takes to step round someone walking into him) and finds the way
@@ -49,7 +49,7 @@ export function chapterSevenTools(T0){
    let last=me(),lastT=clock(),wedged=false;
    const ok=walkTo(path,{r:.08,...o,max:Math.max(.5,end-clock()),stop:()=>{if(o.stop?.())return true;const p=me();if(Math.hypot(p.x-last.x,p.z-last.z)>.05){last=p;lastT=clock();return false;}return wedged=clock()-lastT>1.6;}});
    if(!wedged||clock()>=end)return ok;
-   if(globalThis.process?.env?.TRACE7){const p=me();console.log('  (wedged at',p.x.toFixed(2),p.z.toFixed(2),'- stepping out and finding the way again)');}
+   if(globalThis.process?.env?.TRACE7){const p=me(),J=h.chapter.kit?.jamie;console.log('  (wedged at',p.x.toFixed(2),p.z.toFixed(2),'- stepping out and finding the way again)',J?'jamie '+J.mode+' '+(+J.px).toFixed(2)+','+(+J.pz).toFixed(2)+' script '+!!J.script+' follow '+J.follow:'','blockers',JSON.stringify((h.chapter.blockers?.(true)||[]).filter(b=>Math.hypot(b.x-p.x,b.z-p.z)<3).map(b=>[+b.x.toFixed(2),+b.z.toFixed(2),b.r])),'walk',h.nav.walkable(p.x,p.z),h.nav.walkable(p.x,p.z,{r:.31}));}
    unwedge(q);}
   return false;};
  const settle=(max=30)=>until(()=>quiet()&&!A7.C.view,max);
@@ -108,6 +108,23 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   // the gum: Jamie finds it
   U(()=>A7.C.inv.gum==='jamie',90);settle(12);
   check(`${label}: Jamie takes the gum ("I'm gonna give it back to him.")`,()=>{assert.equal(C7().inv.gum,'jamie');assert.ok(said('give it back to him'));});
+  // (the expanded morning) the tube on top of his shelf: down, unrolled, turned over
+  U(()=>!!A7.C.mem,40);settle(12);note('the tube');
+  act('c7-tube',{at:HS.tube,r:1.0,max:12});U(()=>A7.C.view==='inspect'&&C7().lookKind==='tour',8);settle(45);
+  for(let i=0;i<14&&!A7.C.mem?.back;i++){tap('KeyD');W(.12);}U(()=>A7.C.flags.memory,40);settle(20);if(A7.C.view)tap('KeyS');U(()=>!A7.C.view,3);
+  check(`${label}: the Tour de Oak Hollow: Alex through the Hendersons' clothesline; on the back, the rules and four signatures`,()=>{assert.ok(A7.C.flags.memory);assert.ok(said('clothesline'));assert.ok(said('Four signatures'));});
+  // his dad's list: the desk drawer (this year's school pictures), under the desk (the shoe box), the dresser (his watch)
+  U(()=>A7.C.dl?.stage==='look',45);settle(5);note('his dad’s list');
+  act('c7-drawer',{at:HS.drawer,r:1.0,max:10});U(()=>A7.C.view==='inspect',4);settle(20);tap('KeyS');U(()=>!A7.C.view,3);settle(14);
+  act('c7-shoebox',{at:HS.shoebox,r:1.1,max:10});U(()=>!A7.C.view,25);settle(16);
+  act('c7-watch',{at:HS.watch,r:1.0,max:10});U(()=>A7.C.view==='inspect',4);settle(14);tap('KeyS');U(()=>!A7.C.view,3);settle(18);
+  check(`${label}: his dad's list: this year's school pictures, his shoes (Vans, six and a half), his watch left on the dresser`,()=>{assert.equal(A7.C.dl.found.size,3);assert.ok(said('Six and a half'));assert.ok(said('sleeps in it'));});
+  // the machine in the kitchen: a message from Thursday at three in the morning; its cord; again
+  U(()=>!!A7.C.mc,40);settle(14);note('the machine');
+  act('c7-machine',{at:HS.machine,r:1.1,max:12});U(()=>A7.C.mc?.stage==='cord',70);settle(6);
+  act('c7-cord',{at:HS.plug,r:1.0,max:10});U(()=>A7.C.mc?.stage==='again',30);settle(6);
+  act('c7-machine',{at:HS.machine,r:1.1,max:10});U(()=>A7.C.flags.machineDone,12);settle(8);
+  check(`${label}: the answering machine plays Sunday night's ride (Alex: "Did you guys hear that?" Sam: "Save me a spot tomorrow."); it isn't plugged in`,()=>{assert.ok(said('Did you guys hear that'));assert.ok(said('Save me a spot tomorrow'));assert.ok(said('not plugged in'));assert.ok(A7.C.flags.machineDone);});
   lap('house');}
  // ---- the garage ----
  if(seg('garage')){

@@ -95,6 +95,43 @@ export function notebookPage(kind,{names=''}={}){const cv=canvas(512,680);if(!cv
   sam(g,13);g.fillStyle='rgba(42,47,58,.35)';g.fillText('(a page torn out)',150,340);}
  else if(kind==='names'){ruled(g,w,h);g.fillStyle='#2a2a30';g.font='bold 54px "Courier New", monospace';const parts=String(names).split('\n');parts.forEach((s,i)=>g.fillText(s,100,190+i*110));}
  return cv;}
+// ---- the Tour de Oak Hollow (summer 2010): a poster the four of them made, rolled up on top of Sam's shelf ----------------------
+// front: the route round the block in marker, the finish at the oak, the times (Sam's columns, Alex's protest); back: the rules
+export function tourPoster(side){const cv=canvas(768,512);if(!cv)return null;const {g}=cv,w=768,h=512;
+ g.fillStyle='#f3efe2';g.fillRect(0,0,w,h);g.strokeStyle='rgba(0,0,0,.06)';for(let k=0;k<9;k++){g.beginPath();g.moveTo(0,k*60+30);g.lineTo(w,k*60+22);g.stroke();}// fold creases
+ const marker=(c,wd=4)=>{g.strokeStyle=c;g.fillStyle=c;g.lineWidth=wd;g.lineCap='round';g.lineJoin='round';};
+ if(side==='front'){
+  marker('#1d4a9a',6);g.font='bold 46px "Comic Sans MS", "Chalkboard SE", sans-serif';g.fillText('THE TOUR DE OAK HOLLOW',34,62);g.font='bold 24px "Comic Sans MS", sans-serif';marker('#c0392b');g.fillText('SUMMER 2010  *  OFFICIAL  *',40,96);
+  // the route: down Oak Hollow, Briarwood, the hill, back up, the finish at the oak
+  marker('#2a2a2a',5);g.beginPath();g.moveTo(120,440);g.lineTo(120,170);g.quadraticCurveTo(122,140,160,138);g.lineTo(330,138);g.lineTo(330,300);g.quadraticCurveTo(300,330,250,330);g.lineTo(160,330);g.stroke();
+  g.font='16px "Comic Sans MS", sans-serif';g.fillText('START',96,462);g.fillText('BRIARWOOD',190,128);g.fillText('THE HILL',338,240);g.fillText('(NO SHORTCUTS)',176,352);
+  marker('#2e7a3a',4);g.beginPath();g.arc(120,150,22,0,7);g.stroke();g.fillText('OAK = FINISH',148,176);
+  // Alex's shortcut, through the Hendersons' yard, in red, crossed out
+  marker('#c0392b',3);g.setLineDash([8,6]);g.beginPath();g.moveTo(330,220);g.lineTo(140,300);g.stroke();g.setLineDash([]);g.font='bold 15px "Comic Sans MS", sans-serif';g.fillText('HENDERSONS',196,262);
+  // the times
+  marker('#2a2a2a',2);g.font='bold 20px "Courier New", monospace';g.fillText('LAP TIMES',430,150);g.strokeRect(420,160,320,236);
+  const rows=[['S.','2:47   2:45   2:44',''],['J.','2:50   DNF    2:44','(CHAIN)'],['A.','2:41   2:38   1:55!!',''],['*','2:52   2:46   2:43*','']];
+  g.font='18px "Courier New", monospace';rows.forEach((r,i)=>{g.fillStyle='#2a2a2a';g.fillText(r[0],432,196+i*50);g.fillText(r[1],470,196+i*50);if(r[2]){g.font='12px "Courier New"';g.fillText(r[2],600,214+i*50);g.font='18px "Courier New", monospace';}});
+  // DQ stamped over Alex's 1:55 (a potato stamp, red, crooked); his protest in the margin
+  g.save();g.translate(640,282);g.rotate(-.18);marker('#c0392b',3);g.strokeRect(-46,-20,92,38);g.font='bold 26px "Courier New"';g.fillText('DQ',-18,8);g.restore();
+  g.save();g.translate(560,446);g.rotate(.05);g.fillStyle='#7a2a8a';g.font='bold 21px "Comic Sans MS", sans-serif';g.fillText('PROTEST!!!! - ALEX',0,0);g.restore();
+  g.fillStyle='#2a2a2a';g.font='italic 14px Georgia';g.fillText('* best time this summer',430,420);}
+ else{
+  marker('#1d4a9a',5);g.font='bold 40px "Comic Sans MS", sans-serif';g.fillText('TOUR RULES',60,70);g.fillStyle='#2a2f3a';g.font='22px "Courier New", monospace';
+  ['1. NO SHORTCUTS (ALEX)','2. HELMETS','3. SAME ROUTE EVERY TIME','4. WHEN THE STREETLIGHTS COME ON','   YOU GO HOME','5. NOBODY GETS LEFT BEHIND'].forEach((t2,i)=>g.fillText(t2,64,130+i*42));
+  g.font='13px "Courier New"';g.fillText('- by Sam',600,370);
+  // four signatures: Sam's square printing, Jamie's big J, Alex's scrawl right across, and yours
+  marker('#2a2f3a',2);g.font='20px "Courier New"';g.fillText('SAM',70,430);marker('#2a6a2a',4);g.font='bold 34px "Comic Sans MS", sans-serif';g.fillText('J',200,436);g.font='20px "Comic Sans MS"';g.fillText('amie',224,436);
+  marker('#7a2a8a',3);g.beginPath();g.moveTo(320,440);for(let k=0;k<14;k++)g.lineTo(330+k*14,428+Math.sin(k*1.7)*14);g.stroke();g.font='bold 16px "Comic Sans MS"';g.fillText('ALEX!!',560,452);
+  marker('#3a3a3a',2);g.beginPath();g.moveTo(70,480);g.quadraticCurveTo(110,452,150,478);g.quadraticCurveTo(180,494,210,470);g.stroke();g.font='11px Georgia';g.fillText('(you)',220,484);}
+ return cv;}
+// this year's school pictures: a sheet of wallets, one cut out
+export function schoolPictures(){const cv=canvas(512,640);if(!cv)return null;const {g}=cv,w=512,h=640;g.fillStyle='#f4f1ea';g.fillRect(0,0,w,h);
+ g.fillStyle='#2a2a2a';g.font='bold 16px Arial';g.fillText('OAK HOLLOW ELEMENTARY  2010-11',28,34);g.font='13px Arial';g.fillText('GRADE 6  -  WALLETS (8)',28,54);
+ for(let k=0;k<8;k++){const cx=40+(k%2)*230,cy=74+Math.floor(k/2)*136;if(k===5){g.strokeStyle='#bbb';g.setLineDash([4,4]);g.strokeRect(cx,cy,200,124);g.setLineDash([]);g.fillStyle='#e8e4da';g.fillRect(cx+2,cy+2,196,120);continue;}
+  g.fillStyle='#5a7a9a';g.fillRect(cx,cy,200,124);g.fillStyle='#c4906a';g.beginPath();g.ellipse(cx+100,cy+62,30,36,0,0,7);g.fill();g.fillStyle='#2a1c14';g.beginPath();g.ellipse(cx+100,cy+38,36,20,0,Math.PI,0);g.fill();g.fillRect(cx+64,cy+36,72,12);
+  g.fillStyle='#6d9a8a';g.fillRect(cx+60,cy+98,80,26);g.fillStyle='#1a1a1a';g.beginPath();g.arc(cx+90,cy+60,3,0,7);g.arc(cx+110,cy+60,3,0,7);g.fill();g.strokeStyle='#7a4a3a';g.lineWidth=2;g.beginPath();g.arc(cx+100,cy+74,9,.2,Math.PI-.2);g.stroke();}
+ return cv;}
 // ---- Old Mill Court's paper ------------------------------------------------------------------------------------------------------
 export function newspaper1966(){const cv=canvas(512,680);if(!cv)return null;const {g}=cv,w=512,h=680;
  g.fillStyle='#e6dcc0';g.fillRect(0,0,w,h);g.fillStyle='#1e1a14';g.font='bold 40px Georgia';g.textAlign='center';g.fillText('The Oak Hollow Courier',w/2,58);
