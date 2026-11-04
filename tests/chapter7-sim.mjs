@@ -401,7 +401,9 @@ export async function runChapterSevenChecks(T){const {h,check,element,metrics}=T
  const said7=w=>(A7.C.marks||[]).some(m=>m[1]===w);
  const court=A7.court,SP=court.SPOT,M7=metrics['chapter7']||(metrics['chapter7']={});
  // every DEV scene starts where it says and nothing throws
- check(`chapter 7: every DEV Chapter Seven scene starts (${DEV_SCENES[7].length} scenes: the 40 of the first draft and the expansion's)`,()=>{const sc=DEV_SCENES[7];assert.ok(sc.length>=40+EXPANSION_SCENES.length);for(const id of EXPANSION_SCENES)assert.ok(sc.some(s=>s.id===id),'DEV scene '+id);for(const s of sc){if(s.chapter!=null)continue;h.jump(s.jump);T.advance(.6);assert.match(ph(),/^(c7|d7|e7|n7)-/,s.id);}});
+ check(`chapter 7: every DEV Chapter Seven scene starts (${DEV_SCENES[7].length} scenes: the 40 of the first draft and the expansion's)`,()=>{const sc=DEV_SCENES[7];assert.ok(sc.length>=40+EXPANSION_SCENES.length);for(const id of EXPANSION_SCENES)assert.ok(sc.some(s=>s.id===id),'DEV scene '+id);
+  // (the expansion's scenes: you start on your feet somewhere you can stand, never inside a wall or a piece of furniture; or hidden, or holding something)
+  for(const id of EXPANSION_SCENES){h.jump(id);T.advance(.6);const p=me();assert.ok(A7.C.hiding||A7.C.view||h.nav.walkable(p.x,p.z,{r:.22}),'DEV scene '+id+' starts where you can stand');}for(const s of sc){if(s.chapter!=null)continue;h.jump(s.jump);T.advance(.6);assert.match(ph(),/^(c7|d7|e7|n7)-/,s.id);}});
  // the creature is not the drain creature: a different model, a different id
  check('chapter 7: the hunter is its own thing (chapter7_hunter, not the drain creature)',()=>{assert.equal(A7.HM.id,'chapter7_hunter');assert.notEqual(A7.HM.root,h.chapter3.creature?.group);assert.equal(A7.HM.source,'stand-in');});
  // capture and retry in the stealth encounter
@@ -424,6 +426,12 @@ export async function runChapterSevenChecks(T){const {h,check,element,metrics}=T
   check('chapter 7: the egg timer rings; it hears it from the stairs (in range) and goes to it; a sound 40 m off is not heard',()=>{assert.ok(L&&L.heard,'heard');assert.ok(['search','script','patrol'].includes(C7().hunter.mode));assert.equal(far,false);});}
  // (expanded) the Langes': Continue comes back to the open door; the scare's figure is gone after it
  {h.jump('c7-lange-in');T.advance(.3);const saved=h.chapter.saved?.();check('chapter 7: inside the Langes\' the checkpoint is the Langes\' (Continue: the open door)',()=>{assert.equal(saved?.section,'c7-lange');});}
+ // (expanded) the Langes', the other choice: leave. It comes into the front room after you (the couch goes); Jamie between; out
+ {h.jump('c7-lange-in');T.advance(.5);const LG=court.lange,LSP=LG.spots;act('c7-lg-phone',{at:A7.lgP(LSP.phone),r:.9,max:12});until(()=>A7.C.lg?.stage==='presence',60);settle(10);
+  until(()=>!!A7.C.choice,60);tap('Digit1');until(()=>A7.C.lg?.stage==='leave',4);approach(court.LW3(-.9,-1.9),.45,{pad:6});approach(court.LW3(-1.5,-3.0),.45,{pad:6});
+  until(()=>{const F=A7.LF.F;faceV({x:F.x,y:F.y+1.4,z:F.z});return A7.C.lg?.stage==='flee';},16);const couch=!!LG.props.couch.hit;
+  approach(court.SPOT.langeDoor,.8,{pad:8});approach(court.SPOT.langeWalk,1.0,{pad:8});until(()=>!!A7.C.choice,40);tap('Digit1');until(()=>A7.C.lg?.stage==='done',20);
+  check('chapter 7: the Langes\', choosing to leave: it comes into the front room after you through the couch, Jamie between; out, the argument, then on',()=>{assert.equal(A7.C.lg.choice,'leave');assert.equal(A7.C.lg.burst,'front');assert.ok(couch);assert.equal(A7.C.lg.stage,'done');assert.equal(A7.C.lg.answer,'sam');});}
  // (expanded) Reyes's page: kept, in what you carry
  {h.jump('c7-record');until(()=>A7.C.view==='inspect',30);for(let i=0;i<3&&!C7().flags.indentSeen;i++){tap('KeyD');T.advance(.5);}until(()=>C7().flags.indentSeen,4);
   for(let i=0;i<4&&A7.C.view;i++){settle(30);tap('KeyS');until(()=>!A7.C.view,2);}

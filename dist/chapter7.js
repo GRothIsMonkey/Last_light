@@ -1330,7 +1330,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   say([{wait:1.2},R('Read it back to me. Tell me if I got it right.',{time:2.6})],{then:()=>{const pg=pageMesh(reyesPage({altered:false}),{w:.18,h:.24,color:0xf6f3e6});
    inspect(pg,{dist:.33,kind:'reyes-page',restore:false,plane:true,onClose:()=>{pg.removeFromParent();afterMom();},lines:[N('His notebook, in blue ballpoint, pressed hard into the page.',{time:3}),N('21:38. 2ND JUV. MISSING. JAMIE, 12. Blue cap, orange shirt. His bike. The marks, nine meters to the path. The cap. The gum.',{time:5.6}),R('That’s right? …That’s right.',{time:2})]});}});}
  // Jamie's mom: two things she asks you; then the picture on her phone
- function afterMom(){const X=C.af;if(X.stage==='mom')return;X.stage='mom';X.momAt=X.t;mark('Jamie’s mom asks you');const jm=cast.jamieMom,p=me(),q={x:p.x+Math.sin(p.a)*1.3,z:p.z-Math.cos(p.a)*1.3};
+ function afterMom(){const X=C.af;if(X.stage==='asks')return;X.stage='asks';X.momAt=X.t;mark('Jamie’s mom asks you');const jm=cast.jamieMom,p=me(),q={x:p.x+Math.sin(p.a)*1.3,z:p.z-Math.cos(p.a)*1.3};
   jm.walk([[q.x,q.z]],{speed:1.9,then:a=>{const p1=me();a.faceTo(p1.x,p1.z);a.lookAt=camera.position;}});
   later(2.4,()=>say([...(X.capReyes?[{act:()=>{X.capWithMom=true;}},{who:'JAMIE’S MOM',text:'“Is that his? That’s his. That’s his cap.”',from:jm,time:2.6,act:()=>jm.gest('head')}]:[]),
    {who:'JAMIE’S MOM',text:'“What was he wearing? Tell me exactly. They keep asking me and I can’t— you tell me.”',from:jm,time:3.8}],
