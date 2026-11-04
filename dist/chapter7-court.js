@@ -30,6 +30,7 @@ import {LOOKOUT} from './layout.js';
 import {streetCoords} from './terrain.js';
 import {mat,C7,createBuild,houseShell,periodCar,streetlight,streetLamp,mailbox,utilityPole,trashCan,fenceRun,hedgeRun,yardTree,glassLit,porchGlow,paper} from './chapter7-build.js';
 import {createHorrorHouse,createDiningRoom,HH,STAIR,PIC} from './chapter7-interiors.js';
+import {createLangeHouse,LANGE} from './chapter7-lange.js';
 import {createPineForest} from './pine-forest.js';
 import {bake,inBox,clamp,damp,smooth,makeShapes} from './chapter6-kit.js';
 import {seeded} from './kit.js';
@@ -134,7 +135,8 @@ export function createCourt({scene,world,sfx=()=>{}}){
   {id:'dining',x:10,z:68,f:[-1,0],o:{w:10.5,d:8.6,wall:0xa9b8b0,roof:0x40454a,door:0x8a2a22,lit:.7,seed:12,windows:[[-2.6]],porch:{w:2.6,d:1.6},doorX:-.9,F:.5}},
   {id:'a3',x:10,z:96,f:[-1,0],o:{w:10,d:8.6,stories:1,wall:0xe0dccd,roof:0x4a3a32,door:0x2a3a5a,pitch:.75,chimney:-1,lit:.3,seed:13}},
   {id:'a4',x:-26,z:44,f:[1,0],o:{w:11,d:8.8,stories:2,h:2.6,wall:0xc9a48a,roof:0x3a3a3c,door:0x3a2a1a,garage:{side:-1,w:3.6},lit:.4,seed:14}},
-  {id:'a5',x:-26,z:70,f:[1,0],o:{w:12,d:8.6,wall:0x9fb3c2,roof:0x4a4a4c,door:0xd8d2c0,lit:.6,seed:15,shutters:0x2a3a4a}},
+  // (the Langes': its own rooms inside, built of walls; the shell gives it its roof, windows, steps and a doorway)
+  {id:'a5',x:-26,z:70,f:[1,0],lange:true,o:{w:LANGE.W,d:LANGE.D,wall:0x9fb3c2,roof:0x4a4a4c,door:0xd8d2c0,lit:.6,seed:15,shutters:0x2a3a4a,doorX:LANGE.doorX,skip:['body'],openDoor:true}},
   {id:'green',x:-26,z:96,f:[1,0],horror:true},
   {id:'b1',x:-50,z:44,f:[-1,0],o:{w:11,d:8.6,wall:0xb8c4b0,roof:0x45484a,lit:.5,seed:21,garage:{side:-1,w:3.6}}},
   {id:'b2',x:-50,z:72,f:[-1,0],o:{w:10,d:8.6,stories:2,h:2.6,wall:0xd6d0c0,roof:0x3e3a36,lit:.35,seed:22,shutters:0x5a2a2a}},
@@ -148,7 +150,7 @@ export function createCourt({scene,world,sfx=()=>{}}){
  for(const L of LOTS){const a=facing(L.f[0],L.f[1]);L.a=a;
   if(L.horror){continue;}
   const p=houseShell(L.o);p.g.position.set(L.x,G0,L.z);p.g.rotation.y=a;court.add(p.g);houses[L.id]={...L,parts:p};
-  const gw=L.o.garage?(L.o.garage.w||3.6):0,gs=L.o.garage?.side||0;houseBoxes.push({x:L.x,z:L.z,a:-a,hw:p.W/2+(gw?gw/2:0)+.05,hd:p.D/2+.05,ox:gs*gw/2});
+  const gw=L.o.garage?(L.o.garage.w||3.6):0,gs=L.o.garage?.side||0;if(!L.lange)houseBoxes.push({x:L.x,z:L.z,a:-a,hw:p.W/2+(gw?gw/2:0)+.05,hd:p.D/2+.05,ox:gs*gw/2});
   // a front walk and a driveway; a mailbox by the walk
   const fw=(u,v)=>({x:L.x+Math.cos(a)*u+Math.sin(a)*v,z:L.z-Math.sin(a)*u+Math.cos(a)*v});
   const dw=fw(p.doorX,-p.D/2-1.2),road=fw(p.doorX,-p.D/2-6.6);strip(dw.x,dw.z,road.x,road.z,1.1,G0+.05,concrete,.04);
@@ -165,6 +167,11 @@ export function createCourt({scene,world,sfx=()=>{}}){
  // house frame <-> court frame for the green door house
  const hToC=(hx,hz)=>({x:GL.x+Math.cos(GL.a)*hx+Math.sin(GL.a)*hz,z:GL.z-Math.sin(GL.a)*hx+Math.cos(GL.a)*hz});
  const cToH=(x,z)=>{const dx=x-GL.x,dz=z-GL.z,c=Math.cos(GL.a),s=Math.sin(GL.a);return {x:dx*c-dz*s,z:dx*s+dz*c};};
+ // ---- the Langes' (No. 5): its rooms, in its own frame -----------------------------------------------------------------------------------
+ const LL=LOTS.find(l=>l.lange),lange=createLangeHouse({outside:mat(LL.o.wall,{},'housepaint')});lange.g.position.set(LL.x,G0,LL.z);lange.g.rotation.y=LL.a;court.add(lange.g);houses.a5.inside=lange;
+ const lToC=(lx,lz)=>({x:LL.x+Math.cos(LL.a)*lx+Math.sin(LL.a)*lz,z:LL.z-Math.sin(LL.a)*lx+Math.cos(LL.a)*lz});
+ const cToL=(x,z)=>{const dx=x-LL.x,dz=z-LL.z,c=Math.cos(LL.a),s=Math.sin(LL.a);return {x:dx*c-dz*s,z:dx*s+dz*c};};
+ const inLangeBox=(x,z,pad=0)=>{const q=cToL(x,z);return Math.abs(q.x)<lange.hw+pad&&Math.abs(q.z)<lange.hd+pad;};
  // ---- the dining room (in the dining house's frame) ---------------------------------------------------------------------------------
  const DL=houses.dining,dining=createDiningRoom({D:DL.parts.D,F:DL.parts.F});{dining.g.position.set(DL.x,G0,DL.z);dining.g.rotation.y=DL.a;court.add(dining.g);}
  // (its shell is solid: open the shell's body where the room is, by putting the room in front of it: the shell's front wall
@@ -233,9 +240,10 @@ export function createCourt({scene,world,sfx=()=>{}}){
   if(x>60&&x<135&&z>40&&z<160)continue;trees.push({e:x,n:z,kind:fr()<.4?'pine':'oak',seed:(fr()*1e6)|0,size:.9+fr()*.5});}
  const forestG=new THREE.Group();forestG.name='court-forest';court.add(forestG);const forest=createPineForest(trees,forestG,t=>({x:t.e,y:G0-.1,z:t.n}));
  // ---- bake the static court -----------------------------------------------------------------------------------------------------
- const keepC=new Set([giant,police,dining.g,HG.g,forestG,copyA.fenceG,copyB.fenceG,pressed.g,...Object.values(cars).map(c=>c.g),...lamps.map(l=>l.g),...poles.map(p=>p.g),...cans,...glows]);
+ const keepC=new Set([giant,police,dining.g,HG.g,lange.g,forestG,copyA.fenceG,copyB.fenceG,pressed.g,...Object.values(cars).map(c=>c.g),...lamps.map(l=>l.g),...poles.map(p=>p.g),...cans,...glows]);
  for(const h of Object.values(houses))if(h.parts?.g)keepC.add(h.parts.g);
  bake(court,keepC);for(const h of Object.values(houses))if(h.parts?.g&&h.id!=='green'&&h.id!=='dining')bake(h.parts.g,new Set([h.parts.roof,h.parts.porchLight]));
+ bake(lange.g,new Set(lange.moving));
  // ---- nav ---------------------------------------------------------------------------------------------------------------------------------
  const segHit=(w,x,z,r)=>{const dx=w.bx-w.ax,dz=w.bz-w.az,l=dx*dx+dz*dz||1,u=clamp(((x-w.ax)*dx+(z-w.az)*dz)/l,0,1);return Math.hypot(x-w.ax-dx*u,z-w.az-dz*u)<r+w.t/2;};
  const houseHit=(x,z,r)=>houseBoxes.some(b=>{const c=Math.cos(b.a),s=Math.sin(b.a),dx=x-b.x,dz=z-b.z,lx=dx*c+dz*s-(b.ox||0),lz=-dx*s+dz*c;return Math.abs(lx)<b.hw+r&&Math.abs(lz)<b.hd+r;});
@@ -255,6 +263,8 @@ export function createCourt({scene,world,sfx=()=>{}}){
    if(doorway(q,r))return !ride&&HG.doors.front.open>.55;
    if(Math.abs(q.x)<HH.W/2+.1&&Math.abs(q.z)<HH.D/2+.1)return !ride&&HG.walkable(q.x,q.z,r,ST.level);
    if(Math.abs(q.x)<HH.W/2+.2+r&&Math.abs(q.z)<HH.D/2+.2+r)return false;}
+  // the Langes': inside it (or touching its walls), its own rooms and doorway
+  if(inLangeBox(x,z,r+.05)){const q=cToL(x,z);return !ride&&lange.walkable(q.x,q.z,r);}
   if(houseHit(x,z,r))return false;
   for(const s of solids)if(inBox(x,z,s,ride?r*.6:r))return false;
   for(const w of walls)if(segHit(w,x,z,r))return false;
@@ -280,9 +290,10 @@ export function createCourt({scene,world,sfx=()=>{}}){
    const p=realL(x,z);if(inLane(p.x,p.z))return laneWalk(p.x,p.z,r);if(p.x>FIELD.x0&&p.x<FIELD.x1&&p.z>FIELD.z0&&p.z<FIELD.z1)return p.x>FIELD.x0+.8+r&&p.x<FIELD.x1-.8-r&&p.z<FIELD.z1-.8-r;return inRealOpen(p,x,z)&&realOpen(x,z,r);},
   floorAt(x,z){const q=regL(x,z);if(inRegion(q)){if(inLane(q.x,q.z,-.8))return laneFloor(q.x,q.z);const b={x:q.x-COPY_B.x,z:q.z-COPY_B.z};if(inLane(b.x,b.z,-.8))return laneFloor(b.x,b.z);
     if(inHouseBox(q.x,q.z,1.2)){const h=cToH(q.x,q.z);if(porch(h)&&!(Math.abs(h.x)<HH.W/2&&h.z>-HH.D/2+.05))return porchY(h);if(Math.abs(h.x)<HH.W/2+.1&&Math.abs(h.z)<HH.D/2+.1)return G0+HG.floorAt(h.x,h.z,ST.level);}
+    {const l=cToL(q.x,q.z);if(Math.abs(l.x)<lange.hw+.2&&Math.abs(l.z)<lange.hd+.2)return G0+lange.F;if(Math.abs(l.x-lange.doorX)<.85&&l.z<=-lange.hd&&l.z>-lange.hd-1.25)return G0+lange.floorAt(l.x,l.z);}
     return G0;}
    const p=realL(x,z);if(inLane(p.x,p.z,-.8))return laneFloor(p.x,p.z);return realFloor(x,z);},
-  surface(x,z){const q=regL(x,z);if(inRegion(q)){if(inHouseBox(q.x,q.z,.2))return 'floor';const onRoad=Math.abs(q.x-LEG.A)<ROAD+2.2||Math.abs(q.x-LEG.B)<ROAD+2.2||(q.z>BEND.z&&Math.abs(Math.hypot(q.x-BEND.x,q.z-BEND.z)-BEND.r)<ROAD+2.2);return onRoad?'asphalt':'grass';}
+  surface(x,z){const q=regL(x,z);if(inRegion(q)){if(inHouseBox(q.x,q.z,.2)||inLangeBox(q.x,q.z,.1))return 'floor';const onRoad=Math.abs(q.x-LEG.A)<ROAD+2.2||Math.abs(q.x-LEG.B)<ROAD+2.2||(q.z>BEND.z&&Math.abs(Math.hypot(q.x-BEND.x,q.z-BEND.z)-BEND.r)<ROAD+2.2);return onRoad?'asphalt':'grass';}
    const p=realL(x,z);return inLane(p.x,p.z)?'asphalt':'grass';},
   // the street's own direction here (the bike settles along it): the legs run along z, the bend round its centre, a lane along its stretch
   headingAt(x,z){const q=regL(x,z),inR=inRegion(q),p=inR?q:realL(x,z);let dx=0,dz=1;
@@ -318,16 +329,17 @@ export function createCourt({scene,world,sfx=()=>{}}){
  function update(dt,{camera=null,dusk=0}={}){ST.dusk=dusk;streetLamp.emissiveIntensity=2.4*smooth((dusk-.15)/.5);glassLit.emissiveIntensity=1.1*smooth((dusk-.05)/.6);porchGlow.emissiveIntensity=2*smooth((dusk-.2)/.4);
   for(const g of glows)g.material.opacity=.65*smooth((dusk-.25)/.5);
   if(police.visible){polT+=dt;const k=Math.floor(polT*3.2)%2;pR.material.opacity=k?.95:.15;pB.material.opacity=k?.15:.95;}
-  updateGiant(dt);forest.update(dt,camera);}
+  updateGiant(dt);forest.update(dt,camera);if(ST.active)lange.update(dt);}
  function setActive(on){ST.active=on;}
  function attach(on){for(const g of [real,court]){if(on&&!g.parent)scene.add(g);else if(!on&&g.parent)g.removeFromParent();}ST.active=on;}
- function reset(){Object.assign(ST,{level:'g',porch:true,fenceA:true,fenceB:true,portalA:false,portalB:false,dusk:0,active:false});HG.reset();GI.t=-1;GI.stage='off';GI.creaked=false;giant.visible=false;police.visible=false;
+ function reset(){Object.assign(ST,{level:'g',porch:true,fenceA:true,fenceB:true,portalA:false,portalB:false,dusk:0,active:false});HG.reset();lange.reset();GI.t=-1;GI.stage='off';GI.creaked=false;giant.visible=false;police.visible=false;
   const roof=pressed.roof;if(roof){roof.rotation.z=0;roof.position.y=pressed.top;}const pole=poles[1];if(pole)pole.g.rotation.z=0;
   for(const c of cans)c.rotation.set(0,0,0);attach(false);}
  // ---- spots (world points) the chapter stages things at -----------------------------------------------------------------------------
  const W3=(x,z,y=null)=>{const w=regW(x,z);return {x:w.x,y:y??G0,z:w.z};};const R3=(x,z)=>{const w=realW(x,z);return {x:w.x,y:realFloor(w.x,w.z),z:w.z};};
  const L3=(x,z,copy)=>copy==='real'?{...R3(x,z),y:laneFloor(x,z)}:copy==='B'?W3(x+COPY_B.x,z+COPY_B.z,laneFloor(x,z)):W3(x,z,laneFloor(x,z));
  const H3=(hx,hz,y=null,lv='g')=>{const c=hToC(hx,hz);return W3(c.x,c.z,y??G0+HG.floorAt(hx,hz,lv));};
+ const LW3=(lx,lz,y=null)=>{const c=lToC(lx,lz);return W3(c.x,c.z,y??G0+lange.floorAt(lx,lz));};
  const SPOT={
   // the two mailboxes worth reading
   mbDining:W3(MB.dining.x,MB.dining.z,G0+1.18),mbGreen:W3(MB.green.x,MB.green.z,G0+1.18),
@@ -341,6 +353,8 @@ export function createCourt({scene,world,sfx=()=>{}}){
   greenRoad:W3(LEG.A,96),greenWalk:W3(-17,96),greenDoor:H3(0,-HH.D/2-.6,G0+HH.F),porchRoof:H3(0,-HH.D/2-1.0,G0+HH.F+2.55),porchDrop:H3(1.2,-HH.D/2-2.8,G0),
   bendMid:W3(BEND.x,BEND.z+BEND.r),legBTop:W3(LEG.B,32),copyBMouth:W3(LEG.B,30.5),copyBP1:L3(P1.x,P1.z,'B'),copyAP1:L3(P1.x,P1.z,'A'),realP1:L3(P1.x,P1.z,'real'),
   fenceA:L3(0,FENCE_Z+.6,'A'),fenceB:L3(0,FENCE_Z+.6,'B'),cutA:W3(-31,118),cutB:W3(-45,118),
+  // the Langes': in front of its door, on its walk out to the street
+  langeDoor:LW3(LANGE.doorX,-LANGE.D/2-1.1),langeWalk:LW3(LANGE.doorX,-LANGE.D/2-4.2),langeStreet:LW3(LANGE.doorX,-LANGE.D/2-7.6),
  };
  // the chase: the road from the bikes, down leg A, round the bend, up leg B, into copy B to its portal (frame points)
  const ROUTE=[[LEG.A+1.6,36],[LEG.A+1.2,60],[LEG.A,90],[LEG.A,BEND.z]];for(let k=1;k<=12;k++){const a=k/12*Math.PI;ROUTE.push([BEND.x+Math.cos(a)*BEND.r,BEND.z+Math.sin(a)*BEND.r]);}
@@ -349,6 +363,7 @@ export function createCourt({scene,world,sfx=()=>{}}){
  // the creature's shortcut across the inner block (it is seen between the houses, then comes out ahead on leg B)
  const CUT=[[LEG.A-5,104],[-30,108],[-38,110],[-46,108],[LEG.B+5,100]];
  return {real,court,nav,ST,G0,TH,realW,realL,regW,regL,headingOf,frameDir,laneFloor,realFloor,houses,cars,lamps,poles,cans,giant,police,dining,HG,hToC,cToH,H3,W3,R3,L3,SPOT,ROUTE,routeWorld,CUT,
-  portal,DA,DB,inLane,attach,setActive,reset,update,giantStart,GI,setBaseNav,FENCE_Z,LOTS,
+  portal,DA,DB,inLane,attach,setActive,reset,update,giantStart,GI,setBaseNav,FENCE_Z,LOTS,lange,lToC,cToL,LW3,
+  inLangeAt:(x,z,pad=0)=>{const q=regL(x,z);return inRegion(q)&&inLangeBox(q.x,q.z,pad);},langeLocal:(x,z)=>{const q=regL(x,z);return cToL(q.x,q.z);},
   get inCourt(){return null;},inRegionAt:(x,z)=>inRegion(regL(x,z)),inRealAt:(x,z)=>inRealArea(realL(x,z)),inHouseAt:(x,z)=>{const q=regL(x,z);return inRegion(q)&&inHouseBox(q.x,q.z,0);}};
 }

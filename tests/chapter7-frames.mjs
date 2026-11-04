@@ -62,9 +62,42 @@ const SHOTS=[
  ['25-names','The names, in your hand',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-names');F.run(.8);F.key('keydown','KeyF');F.until(()=>A.C.flags.names,14);F.key('keyup','KeyF');F.run(1);}],
  ['26-final-image','Four bikes under the streetlight',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-window');F.run(.6);A.act('c7-window');F.run(7);}],
  ['27-end-card','The end card',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('chapter7-end');F.until(()=>L.state.state==='ended',40);F.run(1);}],
+ // ---- the expansion: the Langes' (Old Mill Court, No. 5) ----
+ ['x10-lange-door','The Langes’: the door that was shut, standing open, the TV’s light inside',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-lange');F.run(1.5);const d=A.court.SPOT.langeDoor;F.face({x:d.x,y:d.y+1.3,z:d.z});F.run(.3);}],
+ ['x11-lange-front','The front room: a 1959 set on a test card, the couch, the Courier and an ashtray, the cigarette still going',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-lange-in');F.run(.4);const w=A.court.LW3(-1.2,-3.6),t=A.lgP({x:-4.6,y:A.LGH.F+.7,z:-1.6});
+   L.placePlayer({x:w.x,z:w.z,a:Math.atan2(t.x-w.x,-(t.z-w.z)),mode:'walk',bike:{x:w.x+30,z:w.z+30,a:0}});F.run(1.2);F.face(t);F.run(.3);}],
+ ['x12-lange-kitchen','The kitchen: dinner for three, one plate untouched and still steaming; the cap on the chair',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-lange-in');F.run(.4);const w=A.court.LW3(1.2,-1.0),t=A.lgP({x:3.2,y:A.LGH.F+.75,z:-2.2});
+   L.placePlayer({x:w.x,z:w.z,a:Math.atan2(t.x-w.x,-(t.z-w.z)),mode:'walk',bike:{x:w.x+30,z:w.z+30,a:0}});F.run(1.2);F.face(t);F.run(.3);}],
+ ['x13-lange-phone','The phone, and the board beside it: Ruth Ann Carver, 1966; Danny Whitcomb, 1991; an empty pin',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-lange-in');F.run(.4);const w=A.court.LW3(.9,-3.2);
+   L.placePlayer({x:w.x,z:w.z,a:0,mode:'walk',bike:{x:w.x+30,z:w.z+30,a:0}});F.run(.5);A.act('c7-lg-phone');F.run(3.5);}],
+ ['x14-lange-bath-door','The hall: the light under the bathroom door, and a shadow across it',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-lange-in');F.run(.4);A.C.lg.stage='presence';A.C.lg.presAt=A.C.lg.t;A.C.lg.hallAt=A.C.lg.t;A.LGH.feetAt(true,-.12);A.LGH.strain(.8);
+   const w=A.court.LW3(-2.4,.95),t=A.lgP({x:-.2,y:A.LGH.F+.55,z:1.55});L.placePlayer({x:w.x,z:w.z,a:Math.atan2(t.x-w.x,-(t.z-w.z)),mode:'walk',bike:{x:w.x+30,z:w.z+30,a:0}});F.run(1.0);F.face(t);F.run(.3);}],
+ ['x15-lange-drawings','His room: three drawings over the bed, the same picture three times (R.A.C. 1966, D.W. 1991, and one with no name yet)',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-lange-scare');F.run(.5);A.act('c7-lg-drawings');F.run(2.4);}],
+ ['x16-lange-burst','It comes out of the bathroom and through his door; the chair goes',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-lange-scare');F.run(.5);A.act('c7-lg-drawings');F.until(()=>!!A.C.lg.burst,30);
+   const fig=()=>{const f=A.LF.F;return {x:f.x,y:f.y+1.4,z:f.z};};F.until(()=>A.LF.F.path&&A.LF.F.path.i>=5,3,()=>F.face(fig()));F.run(.12,()=>F.face(fig()));}],
+ ['x17-lange-loom','It stands too close, mouth open; Jamie between you and it, arms out',()=>{const L=lastLight,A=L.chapter7,F=__f;const fig=()=>{const f=A.LF.F;return {x:f.x,y:f.y+1.45,z:f.z};};F.until(()=>A.C.lg.stage==='loom',3,()=>F.face(fig()));F.run(.9,()=>F.face(fig()));}],// (goes on from x16)
+ ['x18-lange-front-burst','The other choice (leave): it comes into the front room after you; the couch goes',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-lange-in');F.run(.4);Object.assign(A.C.lg,{stage:'leave',leaveAt:A.C.lg.t,phoned:true,shoved:true,choice:'leave'});
+   const w=A.court.LW3(-1.3,-3.2),t=A.lgP({x:-2.4,y:A.LGH.F+1.3,z:.2});L.placePlayer({x:w.x,z:w.z,a:Math.atan2(t.x-w.x,-(t.z-w.z)),mode:'walk',bike:{x:w.x+30,z:w.z+30,a:0}});F.face(t);
+   F.until(()=>!!A.C.lg.burst,3);const fig=()=>{const f=A.LF.F;return {x:f.x,y:f.y+1.4,z:f.z};};F.until(()=>A.C.lg.stage==='loom',4,()=>F.face(fig()));F.run(.5,()=>F.face(fig()));}],
+ // ---- the expansion: Sam's house, Reyes's second look ----
+ ['x01-tour-poster','The Tour de Oak Hollow poster, out of the tube',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-memory');F.run(.6);F.until(()=>!!A.C.mem,20);A.act('c7-tube');F.run(3);}],
+ ['x02-machine','The answering machine on the kitchen counter, its cord',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-machine');F.run(1);const q=A.house.SPOTS.machine;F.face(q);F.run(.3);}],
+ ['x03-records-map','The map: MH-12, the streetlight schedule, the crayon circle',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-records');F.run(2);A.MAPV.mh=true;A.MAPV.photo=true;A.MAPV.sched=true;A.MAPV.crayon=1;A.MAPV.overlay=.2;F.run(.5);}],
+ // ---- the expansion: the green-door house ----
+ ['x20-green-star','A folded gum-wrapper star on the second stair',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-green-star');F.run(1);const s=A.court.HG.extra.starAt,w=A.court.H3(s.x,s.z);F.face({x:w.x,y:A.court.G0+s.y,z:w.z});F.run(.3);}],
+ ['x21-green-prints','Wet prints across the kitchen, out of the closet under the stairs',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-green-star');F.run(.5);const w=A.court.H3(1.5,1.4),t=A.court.H3(2.8,2.6);
+   L.placePlayer({x:w.x,z:w.z,a:Math.atan2(t.x-w.x,-(t.z-w.z)),mode:'walk',bike:{x:w.x+40,z:w.z+40,a:0}});F.run(.8);F.face({x:t.x,y:A.court.G0+A.court.HG.HH.F,z:t.z});F.run(.3);}],
+ ['x22-pantry-hand','In the pantry: its hand on the edge of the door',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-stalk');F.run(.5);F.until(()=>A.C.sk?.check?.phase==='open',20);F.key('keydown','Space');
+   const hd=()=>A.HM.sockets.head.getWorldPosition(new L.camera.position.constructor());F.run(.6,()=>F.face(hd()));}],
+ ['x23-pantry-head','Its head in the gap; you hold your breath',()=>{const L=lastLight,A=L.chapter7,F=__f;const hd=()=>A.HM.sockets.head.getWorldPosition(new L.camera.position.constructor());F.until(()=>A.C.sk?.check?.phase==='head',6,()=>F.face(hd()));F.run(1.2,()=>F.face(hd()));}],
+ ['x24-rug-lift','The rug: Jamie lifts the dresser',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-rug');F.run(.5);F.until(()=>A.C.dr?.rug?.up,12);F.run(.25);const d=A.court.HG.dresser.getWorldPosition(new L.camera.position.constructor());F.face({x:d.x,y:d.y+.3,z:d.z});F.run(.1);}],
+ // ---- the expansion: later ----
+ ['x30-evidence','Showing Reyes: his flashlight on the marks in the grass',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-evidence');F.until(()=>A.C.af?.go,15);const E=A.C.af.E;L.placePlayer({x:E.marks.x+1.5,z:E.marks.z+1.5,a:0,mode:'walk',bike:null});F.run(.4);A.act('c7-ev-marks');F.run(4.5);F.face({x:E.marks.x,y:L.camera.position.y-1.4,z:E.marks.z});F.run(.2);}],
+ ['x31-mom-phone','Her phone: the pool, nobody on the towel',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-mom');F.until(()=>!!A.C.choice,20);A.key('Digit1');F.until(()=>!!A.C.choice,20);A.key('Digit1');F.until(()=>A.C.view==='inspect',20);F.run(2.5);}],
+ ['x32-record-light','His page an hour later, turned to the light: JAMIE pressed into the paper',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-record');F.until(()=>A.C.view==='inspect',20);F.run(.5);A.key('KeyD');F.run(.2);A.key('KeyD');F.run(.4);}],
 ];
 const want=process.env.SHOTS?new Set(process.env.SHOTS.split(',')):null,list=SHOTS.filter(s=>!want||want.has(s[0])),BATCH=+process.env.BATCH||6;
-try{for(const [i,[name,note,fn]] of list.entries()){const cont=i>0&&/^(05|11|12|14|15)-/.test(name);if(!cont&&i%BATCH===0)await open();else if(!cont&&!page)await open();
+try{for(const [i,[name,note,fn]] of list.entries()){const cont=i>0&&/^(05|11|12|14|15|x17|x23)-/.test(name);if(!cont&&i%BATCH===0)await open();else if(!cont&&!page)await open();
   try{await page.evaluate(`(${fn.toString()})()`);await snap(name,note);}catch(e){errors.push(name+': '+String(e.message||e).slice(0,300));console.log('ERR',name,String(e.message||e).slice(0,300));}
   await page.evaluate(()=>globalThis.gc?.());}}
 finally{fs.writeFileSync(path.join(out,'frames.json'),JSON.stringify({frames,errors},null,2));await browser?.close();server.close();console.log(JSON.stringify({frames:frames.length,errors}));}

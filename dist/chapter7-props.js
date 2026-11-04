@@ -174,3 +174,48 @@ export function samPage(){const cv=canvas(512,680);if(!cv)return null;const {g}=
  g.fillStyle='rgba(120,90,40,.18)';for(let k=0;k<9;k++){g.beginPath();g.arc(Math.random()*w,Math.random()*h,20+Math.random()*60,0,7);g.fill();}
  g.fillStyle='rgba(42,47,58,.8)';g.font='16px "Courier New", monospace';['THURSDAY','','FLASHLIGHT  X','BATTERIES  X','BATTERIES FOR THE BATTERIES  X','','THE WATER GOES BOTH WAYS','','DONT LET J GO FIRST'].forEach((s,i)=>g.fillText(s,60,80+i*28));
  g.strokeStyle='rgba(42,47,58,.7)';g.lineWidth=2;g.beginPath();g.moveTo(60,380);g.lineTo(420,380);g.stroke();g.fillStyle='#d8d0b0';g.beginPath();g.moveTo(w,0);for(let y=0;y<=h;y+=12)g.lineTo(w-14-Math.sin(y*.7)*5,y);g.lineTo(w,h);g.fill();return cv;}
+
+// ---- (expanded) later, at the lookout ----------------------------------------------------------------------------------------------
+// Officer Reyes's notebook page, blue ballpoint pressed hard. 'altered': the same page an hour later, when nobody can keep the second
+// boy in their head: the name is not in the ink any more, and the line that said SECOND does not. indent(): what the pen pressed into
+// the paper where the name was (seen only with the page turned to the light).
+export const REYES_NAME_AT={x:58,y:136};
+export function reyesPage({altered=false}={}){const cv=canvas(384,512);if(!cv)return null;const {g}=cv,w=384,h=512;
+ g.fillStyle='#f6f3e6';g.fillRect(0,0,w,h);g.strokeStyle='rgba(120,150,190,.45)';g.lineWidth=1;for(let y=60;y<h;y+=26){g.beginPath();g.moveTo(14,y);g.lineTo(w-14,y);g.stroke();}
+ g.strokeStyle='rgba(200,90,90,.5)';g.beginPath();g.moveTo(40,0);g.lineTo(40,h);g.stroke();for(let x=30;x<w;x+=34){g.fillStyle='#d8d4c4';g.beginPath();g.arc(x,12,5,0,7);g.fill();}
+ g.fillStyle='#1f3c8a';g.font='italic 19px "Comic Sans MS", "Segoe Print", cursive';
+ const L=altered?['FRI 8/26   21:38','JUV. MISSING —','','   (12)  blue cap, orange shirt','Bike down in grass, W of','   path mouth.  PHOTO 1','Drag marks (2), heels,','   ~9 m to path.  PHOTO 2','Cap (?) in grass.  PHOTO 3','Gum, spearmint — witness','   keeps it.  PHOTO 4','                    — R.']
+  :['FRI 8/26   21:38','2ND JUV. MISSING —','JAMIE','   (12)  blue cap, orange shirt','Bike down in grass, W of','   path mouth.  PHOTO 1','Drag marks (2), heels,','   ~9 m to path.  PHOTO 2','Cap (blue) in grass.  PHOTO 3','Gum, spearmint — witness','   keeps it.  PHOTO 4','                    — R.'];
+ L.forEach((s,i)=>{if(i===2&&!altered){g.font='bold italic 24px "Comic Sans MS", "Segoe Print", cursive';g.fillText(s,REYES_NAME_AT.x,REYES_NAME_AT.y);g.font='italic 19px "Comic Sans MS", "Segoe Print", cursive';return;}g.fillText(s,48,52+i*26-(i>2?0:0));});
+ if(altered){g.strokeStyle='rgba(31,60,138,.35)';g.lineWidth=1.5;g.beginPath();g.moveTo(54,138);g.lineTo(150,138);g.stroke();}
+ return cv;}
+export function reyesIndent(){const cv=canvas(384,512);if(!cv)return null;const {g}=cv;g.clearRect(0,0,384,512);
+ g.font='bold italic 24px "Comic Sans MS", "Segoe Print", cursive';
+ // (pressed in: a light edge and a dark edge, like a groove catching the light)
+ g.fillStyle='rgba(255,255,255,.95)';g.fillText('JAMIE',REYES_NAME_AT.x-1.2,REYES_NAME_AT.y-1.2);g.fillStyle='rgba(60,55,40,.75)';g.fillText('JAMIE',REYES_NAME_AT.x+1.2,REYES_NAME_AT.y+1.2);
+ g.fillStyle='rgba(200,195,180,.9)';g.fillText('JAMIE',REYES_NAME_AT.x,REYES_NAME_AT.y);return cv;}
+// Jamie's mom's phone: the pool, last week (Aug 19). The deck, the deep end, a striped towel, his bike against the fence. Nobody on the
+// towel: a damp shape on it where somebody sat.
+export function poolPhoto(){const cv=canvas(360,640);if(!cv)return null;const {g}=cv,w=360,h=640;
+ g.fillStyle='#0c0d10';g.fillRect(0,0,w,h);g.fillStyle='#e8e8e8';g.font='13px Arial';g.fillText('9:47',16,22);g.fillText('Aug 19, 2011  3:42 PM',w-150,22);
+ const y0=60,ph=430;g.save();g.beginPath();g.rect(0,y0,w,ph);g.clip();
+ // sky and fence
+ g.fillStyle='#9cc4e4';g.fillRect(0,y0,w,90);g.strokeStyle='rgba(120,120,120,.8)';g.lineWidth=1;for(let x=-40;x<w+40;x+=12){g.beginPath();g.moveTo(x,y0+60);g.lineTo(x+40,y0+150);g.stroke();g.beginPath();g.moveTo(x+40,y0+60);g.lineTo(x,y0+150);g.stroke();}
+ g.fillStyle='#7a9a5a';g.fillRect(0,y0+150,w,20);
+ // the bike against the fence (orange frame)
+ g.strokeStyle='#d8702a';g.lineWidth=4;g.beginPath();g.arc(250,y0+140,18,0,7);g.stroke();g.beginPath();g.arc(305,y0+140,18,0,7);g.stroke();g.beginPath();g.moveTo(250,y0+140);g.lineTo(272,y0+112);g.lineTo(305,y0+140);g.moveTo(272,y0+112);g.lineTo(296,y0+112);g.stroke();
+ // the deck
+ g.fillStyle='#d8d2c0';g.fillRect(0,y0+170,w,ph-170);g.fillStyle='rgba(0,0,0,.06)';for(let x=0;x<w;x+=40)g.fillRect(x,y0+170,2,ph-170);
+ // the water, the deep end
+ g.fillStyle='#2a8ac8';g.beginPath();g.moveTo(0,y0+330);g.lineTo(w,y0+300);g.lineTo(w,y0+ph);g.lineTo(0,y0+ph);g.fill();g.fillStyle='rgba(255,255,255,.35)';for(let k=0;k<14;k++)g.fillRect((k*53)%w,y0+340+(k*29)%80,30,3);
+ g.fillStyle='#1a1a1a';g.font='bold 16px Arial';g.fillText('9 FT',30,y0+322);
+ // the towel, striped, spread out; a can; flip-flops
+ g.save();g.translate(150,y0+230);g.rotate(-.08);const st=['#c83a3a','#f0e8d8','#3a6ac8','#f0e8d8'];for(let i=0;i<8;i++){g.fillStyle=st[i%4];g.fillRect(-70,-40+i*10,140,10);}
+ // (the damp shape where somebody sat: darker, a kid's shape)
+ g.fillStyle='rgba(30,30,40,.22)';g.beginPath();g.ellipse(-8,4,26,16,0,0,7);g.fill();g.beginPath();g.ellipse(-30,-6,9,12,.4,0,7);g.fill();g.beginPath();g.ellipse(18,14,16,7,.2,0,7);g.fill();g.restore();
+ g.fillStyle='#c8382a';g.fillRect(232,y0+222,12,20);g.fillStyle='#e8e8e8';g.fillRect(232,y0+222,12,3);
+ g.fillStyle='#2a2a2a';g.beginPath();g.ellipse(80,y0+270,10,18,.3,0,7);g.fill();g.beginPath();g.ellipse(98,y0+268,10,18,.2,0,7);g.fill();
+ g.restore();
+ g.fillStyle='#202228';g.fillRect(0,y0+ph,w,h-y0-ph);g.fillStyle='#bfc4cc';g.font='14px Arial';g.fillText('Camera Roll',16,y0+ph+30);g.fillStyle='#4a90e2';g.fillText('Share',w-60,y0+ph+30);
+ for(let k=0;k<4;k++){g.fillStyle=['#3a4a5a','#5a6a4a','#6a5a4a','#2a8ac8'][k];g.fillRect(16+k*84,y0+ph+50,76,76);}
+ return cv;}

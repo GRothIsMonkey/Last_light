@@ -198,9 +198,40 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   for(let k=0;k<2;k++){note('knock',approach(D1.stand,.6,{pad:10}),act('c7-door-a1',{at:D1,r:1.6,max:10}));U(()=>!A7.C.ct.knocking,30);settle(10);}
   check(`${label}: you knock: nobody; you knock again: footsteps come to the door and stop, and nobody opens it`,()=>{assert.equal(A7.C.ct.knocks,2);assert.ok(said('Nobody’s coming'));assert.ok(said('Right behind it'));});
   note('up it',approach(court.W3(-1,58),1.4,{pad:10}));
-  U(()=>A7.C.ct?.lights,90);note('lights');
+  // (the expanded court) the Langes', No. 5: a door up the street that was shut comes open on its own; a TV on inside
+  U(()=>A7.C.lg&&A7.C.lg.stage!=='open',90);settle(12);note('the Langes’ door');lap('court');
+  check(`${label}: after Reyes sees you "by a fence", a door up the street that was shut comes open on its own (the Langes', No. 5)`,()=>{assert.ok(said('By the fence'));assert.ok(A7.court.lange.doors.front.open>.9);assert.ok(said('That one. The blue one'));});
+  const LW=(x,z)=>court.LW3(x,z),LG=court.lange,LSP=LG.spots,lgP=A7.lgP;
+  note('to the door',approach(SP.langeDoor,.7,{pad:10}));U(()=>A7.C.lg?.atDoor,10);settle(20);
+  note('in',approach(LW(LG.doorX,-LG.hd+1.3),.5,{pad:6}));U(()=>A7.C.lg?.stage==='in',10);settle(8);
+  check(`${label}: inside the Langes' (a checkpoint): "It smells like dinner."`,()=>{assert.equal(A7.C.lg.stage,'in');assert.equal(A7.C.lastCheckpoint,'c7-lange');});
+  if(looks){note('the television',act('c7-lg-tv',{at:lgP(LSP.tv),r:1.7,max:12}));settle(12);U(()=>!A7.C.view,10);
+   note('the Courier',act('c7-lg-courier',{at:lgP(LSP.courier),r:1.0,max:12}));U(()=>A7.C.view==='inspect',4);settle(18);tap('KeyS');U(()=>!A7.C.view,3);
+   note('dinner',act('c7-lg-dinner',{at:lgP(LSP.dinner),r:1.3,max:14}));settle(12);U(()=>!A7.C.view,10);
+   note('the cap',act('c7-lg-cap',{at:lgP(LSP.cap),r:1.0,max:12}));U(()=>A7.C.view==='inspect',4);settle(12);tap('KeyS');U(()=>!A7.C.view,3);
+   note('the calendar',act('c7-lg-calendar',{at:lgP(LSP.calendar),r:1.0,max:12}));settle(10);U(()=>!A7.C.view,10);
+   check(`${label}: an evening a minute old, from the wrong years: a 1959 set on a test card, the Courier of April 1974, dinner still warm, a damp cap, October 1983`,()=>{for(const k of ['lg-tv','lg-courier','lg-dinner','lg-cap','lg-calendar'])assert.ok(A7.C.looked.has(k),k);assert.ok(said('APRIL 11, 1974')||said('April 11, 1974'));assert.ok(said('still damp'));});}
+  note('the phone',act('c7-lg-phone',{at:lgP(LSP.phone),r:.9,max:14}));U(()=>A7.C.lg?.stage==='presence',60);settle(14);
+  check(`${label}: the phone: no dial tone; far off, a television; close, somebody breathing. Beside it, Ruth Ann Carver (1966) and Danny Whitcomb (1991) on one board, and an empty pin`,()=>{assert.ok(said('somebody breathing'));assert.ok(said('Ruth Ann Carver. August 1966'));assert.ok(said('Danny Whitcomb. August 1991'));assert.ok(said('third pin'));});
+  // the hall: the light under the bathroom door, a shadow across it; listen at it
+  note('the hall',approach(LW(1.9,-.6),.5,{pad:6}),approach(LW(1.9,.95),.45,{pad:6}),approach(LW(-.25,.95),.4,{pad:6}));U(()=>A7.C.lg?.hallAt!=null,6);settle(6);
+  note('listen',act('c7-lg-listen',{at:lgP(LSP.bathDoor),r:.9,max:12}));U(()=>A7.C.lg?.shoved,25);U(()=>!!A7.C.choice,12);
+  check(`${label}: something in the bathroom: the door strains on its latch, a shadow under it, breathing at the height of your face; the door is shoved from inside, a picture comes off the wall`,()=>{assert.ok(A7.C.lg.shoved);assert.ok(said('breathing. Slow'));assert.ok(A7.court.lange.ST.picT>0);assert.ok(A7.C.sounds.doorSlam>0);});
+  // the choice (leave, or look): look
+  tap('Digit2');U(()=>A7.C.lg?.stage==='look',4);settle(6);
+  note('his room',approach(LW(-2.75,1.0),.45,{pad:6}),approach(LW(-3.2,2.5),.45,{pad:6}),approach(LW(-4.45,3.0),.4,{pad:6}));
+  note('the drawings',act('c7-lg-drawings',{at:lgP(LSP.drawings),r:1.5,max:12}));U(()=>A7.C.lg?.drew,4);
+  U(()=>!!A7.C.lg?.burst,40);note('it comes out');
+  check(`${label}: you chose to look: three drawings over the bed, the same picture (a streetlight, four bikes): R.A.C. 1966, D.W. 1991, and a faint one, no name yet, 2011`,()=>{assert.equal(A7.C.lg.choice,'look');assert.ok(said('R.A.C., 1966'));assert.ok(said('No name on it. 2011'));});
+  U(()=>{const F=A7.LF.F;faceV({x:F.x,y:F.y+1.45,z:F.z});return A7.C.lg?.stage==='flee';},16);
+  check(`${label}: it comes out of the bathroom, fast, along the hall (the table goes), through the chair, and stops too close; Jamie gets in front of you; it goes back the way it came`,()=>{const P=A7.court.lange.props,why=()=>'route '+JSON.stringify((A7.C.lg.route||[]).map(q=>{const l=court.langeLocal(q[0],q[1]);return [+l.x.toFixed(2),+l.z.toFixed(2)];}));assert.ok(P.hall.hit,why());assert.ok(P.chair.hit,why());assert.ok(said('GET BACK'));assert.ok(A7.C.flags.langeScare);assert.equal(A7.LF.person.group.visible,false);});
+  // out of the house; the door shuts behind you; the argument on the lawn
+  note('out',approach(LW(-2.7,1.0),.45,{pad:6}),approach(LW(-2.6,-.3),.45,{pad:6}),approach(LW(-1.45,-2.9),.45,{pad:6}),approach(SP.langeDoor,.8,{pad:8}),approach(SP.langeWalk,1.0,{pad:8}));
+  U(()=>A7.C.lg?.stage==='recover',15);U(()=>!!A7.C.choice,40);
+  check(`${label}: outside, Jamie: "Was that a PERSON?"; the drawings were Ruth Ann Carver's and Danny Whitcomb's; "I'm going back to the fence"`,()=>{assert.ok(said('was that a PERSON'));assert.ok(said('That’s Ruth Ann Carver'));assert.ok(said('going back to the fence'));});
+  tap('Digit3');U(()=>A7.C.lg?.stage==='done',20);
+  U(()=>A7.C.ct?.lights,30);note('lights');lap('lange');
   check(`${label}: the clock runs fast here (it is getting dark), Reyes says he sees you by a fence`,()=>{assert.ok(A7.C.h>18.5,'h='+A7.C.h);assert.ok(said('By the fence'));});
-  lap('court');
   // the dining room
   U(()=>ph()==='e7-dining',30);note('to the window',approach(SP.diningLook,1.2,{pad:10}));faceV(SP.diningWindow);
   U(()=>{faceV(SP.diningWindow);return A7.C.dn?.stage==='after';},60);W(3.5);
@@ -213,6 +244,16 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   check(`${label}: Sam's voice on the radio ("The one with the green door. Upstairs.")`,()=>assert.ok(said('green door')||from==='green'));
   approach(SP.greenDoor,1.0,{pad:10});U(()=>A7.C.gh?.inside||(A7.C.gh?.opening>=1),12);W(.6);approach(court.H3(0,-2.6),.6,{pad:6});U(()=>A7.C.gh?.inside,8);settle(14);
   check(`${label}: inside; the footsteps upstairs stop`,()=>{assert.ok(A7.C.gh.inside);});
+  // (expanded) before it comes down: the radio in the den, wet prints across the kitchen, a folded star on the stairs
+  const GXW=q=>{const w=court.H3(q.x,q.z);return {x:w.x,y:court.G0+q.y,z:w.z};},GX=A7.court.HG.extra;
+  if(looks){note('the den',approach(court.H3(-1.5,-2.6),.5,{pad:6}),approach(court.H3(-3.2,-1.4),.5,{pad:6}),approach(court.H3(-3.3,.6),.5,{pad:6}),approach(court.H3(-3.7,1.75),.45,{pad:6}));
+   note('the radio',act('c7-radio',{at:GXW(GX.radioAt),r:1.1,max:10}));settle(16);U(()=>!A7.C.view,6);
+   note('the kitchen',approach(court.H3(-1.7,3.7),.45,{pad:6}),approach(court.H3(.9,3.7),.45,{pad:6}),approach(court.H3(2.3,2.2),.45,{pad:6}));
+   note('the prints',act('c7-prints',{at:{...court.H3(2.6,2.75),y:court.G0+court.HG.HH.F},r:1.4,max:10}));settle(14);U(()=>!A7.C.view,10);
+   note('round to the front',approach(court.H3(3.3,-.4),.45,{pad:6}),approach(court.H3(2.0,-2.4),.45,{pad:6}),approach(court.H3(.4,-2.9),.45,{pad:6}));
+   check(`${label}: before it comes down: the radio says Reyes's words back ("It's the field. There's nobody here."); wet prints, too long, out of the closet under the stairs`,()=>{assert.ok(said('Word for word'));assert.ok(said('toes spread out like fingers'));});}
+  note('the star',approach(court.H3(0,-2.35),.4,{pad:6}),act('c7-star',{at:GXW(GX.starAt),r:1.3,max:10}));U(()=>A7.C.view==='inspect',4);settle(16);tap('KeyS');U(()=>!A7.C.view,3);
+  check(`${label}: a star folded out of a spearmint wrapper on the stairs ("Sam makes these." "Anybody can fold a star, though.")`,()=>{assert.ok(A7.C.flags.star);assert.ok(said('Anybody can fold a star'));});
   // the foot of the stairs: look up
   approach(court.H3(0,-2.3),.4,{pad:6});const top=court.H3(0,2.9,null,'u');top.y+=1.4;U(()=>{faceV(top);return ph()==='e7-reveal';},50);
   // watch it at the top (the hand, the shoulder, the head), then run to the pantry before it is down
@@ -220,21 +261,34 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   check(`${label}: at the top of the stairs a hand round the corner, the head turns, it comes out`,()=>{assert.ok(A7.HM.visible);assert.equal(C7().hunter.mode,'script');});
   note('to the pantry',approach(court.H3(2.0,-2.6),.6,{pad:6}),approach(court.H3(3.4,-.3),.5,{pad:6}),approach(court.H3(4.1,2.7),.5,{pad:6}));note('hide',act('c7-hide-pantry',{max:16}));
   U(()=>ph()==='e7-stalk',20);note('stalk',A7.C.hiding);
-  check(`${label}: it reaches the bottom and hunts (you are in the pantry)`,()=>{assert.equal(ph(),'e7-stalk');assert.ok(['patrol','search','pursue'].includes(C7().hunter.mode));});
-  // the stealth: wait until it is on the far side (the den / living room), come out, dining room, the stairs, up
+  check(`${label}: it reaches the bottom and hunts (you are in the pantry)`,()=>{assert.equal(ph(),'e7-stalk');assert.ok(['patrol','search','pursue','script'].includes(C7().hunter.mode));});
+  // (expanded) it comes to the pantry: its hand on the edge of the door, the door wider, its head in the gap: hold your breath
+  const holdBreath=()=>{U(()=>['hand','open','head'].includes(A7.C.sk?.check?.phase)||A7.C.sk?.stage==='watch',30);if(A7.C.sk?.check){note('hold your breath');press('Space');U(()=>!A7.C.sk?.check,14);release('Space');}};
+  holdBreath();U(()=>A7.C.sk?.stage==='watch'||A7.C.sk?.caught,12);
+  check(`${label}: it comes to the pantry; its hand on the edge of the door; its head in the gap; you hold your breath and it does not find you; then it waits at the foot of the stairs`,()=>{assert.equal(A7.C.sk.stage,'watch');assert.ok(!A7.C.sk.caught);assert.ok(said('hold your breath'));assert.equal(A7.C.lastCheckpoint,'c7-stairs');});
+  // the stealth: the timer on the counter, wound; out the back way (the back hall, the den) while it rings; it goes to it; round to the front, up
   const hloc=()=>{const q=court.regL(A7.HM.x,A7.HM.z);return court.cToH(q.x,q.z);};let tries=0;
-  const goUp=()=>{U(()=>{const q=hloc();return q.x<-1.4&&q.z>-.5&&C7().hunter.mode==='patrol';},70);tap('KeyF');W(.3);
-   approach(court.H3(3.4,-.4),.4,{pad:6});approach(court.H3(2.3,-2.4),.4,{pad:6});approach(court.H3(.9,-2.6),.4,{pad:6});approach(court.H3(0,-1.9),.3,{pad:6});
+  const goUp=()=>{U(()=>{const q=hloc();return Math.hypot(q.x-.45,q.z+2.75)<1.3||(A7.C.sk?.stage!=='watch'&&A7.C.sk?.stage!=='check');},25);W(1.5);settle(14);if(A7.C.hiding){tap('KeyF');W(.4);}
+   if(!A7.C.sk.timer&&A7.court.HG.extra.timer.visible){note('the timer',approach(court.H3(2.55,3.3),.35,{pad:6}),act('c7-timer',{at:GXW(GX.timerAt),r:.9,max:8}));U(()=>!!A7.C.sk?.timer,2);}
+   note('the back way',A7.C.sk?.timer?.t,approach(court.H3(1.6,3.7),.4,{pad:6}),approach(court.H3(-.3,3.75),.4,{pad:6}),approach(court.H3(-1.75,3.7),.4,{pad:6}));
+   // (in the den doorway: wait for it to leave the stairs for what it heard)
+   U(()=>{const q=hloc(),L=A7.C.sk?.lure;return (L&&C7().hunter.mode!=='patrol'&&q.x>1.4&&q.z>-3)||(A7.C.sk?.learned||0)>=1||A7.C.sk?.caught;},45);note('it went',JSON.stringify(hloc()),A7.C.sk?.lure?.id,C7().hunter.mode);
+   approach(court.H3(-2.6,2.6),.45,{pad:6});approach(court.H3(-3.3,-.5),.4,{pad:6});approach(court.H3(-2.6,-2.3),.4,{pad:6});approach(court.H3(-.8,-2.6),.4,{pad:6});approach(court.H3(0,-1.9),.3,{pad:6});
    walkTo([[court.H3(0,-.5).x,court.H3(0,-.5).z],[court.H3(0,1.6).x,court.H3(0,1.6).z],[court.H3(0,2.9,null,'u').x,court.H3(0,2.9,null,'u').z]],{r:.15,max:20});};
-  while(tries++<3&&ph()==='e7-stalk'){goUp();U(()=>ph()!=='e7-stalk'||A7.C.sk?.caught,3);if(A7.C.sk?.caught){note('caught; again');U(()=>ph()==='e7-stalk'&&!A7.C.sk?.caught,12);approach(court.H3(4.1,2.7),.5,{pad:6});act('c7-hide-pantry',{max:6});}}
+  while(tries++<3&&ph()==='e7-stalk'){goUp();U(()=>ph()!=='e7-stalk'||A7.C.sk?.caught,3);if(A7.C.sk?.caught){note('caught; again');U(()=>ph()==='e7-stalk'&&!A7.C.sk?.caught,12);}}
+  check(`${label}: the egg timer, wound: it rings in the kitchen, it goes to it and breaks it, and after that it looks into the closets as it goes round`,()=>{assert.ok(A7.C.sk.timer?.rang);assert.ok((A7.C.sk.learned||0)>=1);});
   M7.stealthFails=C7().fails.stalk;
   check(`${label}: up the stairs without it catching you (failed ${C7().fails.stalk} time(s) first)`,()=>{assert.equal(ph(),'e7-door');assert.equal(C7().level,'u');});
   // the room at the top: shut the door; the dresser; it hammers; it goes
-  approach(court.H3(-2.2,2.6,null,'u'),.5,{pad:6});act('c7-shut',{at:court.H3(-1.2,3.3,null,'u'),r:1.4,max:8});W(1);act('c7-push',{max:6});
+  approach(court.H3(-2.2,2.6,null,'u'),.5,{pad:6});act('c7-shut',{at:court.H3(-1.2,3.3,null,'u'),r:1.4,max:8});W(1);
+  // (expanded) the dresser will not slide: it stands on the rug. Jamie lifts it; pull the rug out while it is up; then push
+  approach(court.H3(-2.75,1.75,null,'u'),.45,{pad:6});act('c7-push',{max:6});U(()=>A7.C.dr?.rug?.stage==='lift',12);
+  U(()=>A7.C.dr?.rug?.up,6);W(.25);act('c7-rug',{max:4});U(()=>A7.C.dr?.rug?.stage==='out',4);settle(4);act('c7-push',{max:6});
+  check(`${label}: the dresser stands on a rug and will not slide; Jamie lifts it and you pull the rug out; then the dresser goes against the door`,()=>{assert.equal(A7.C.dr.rug.stage,'out');assert.ok(A7.C.dr.pushed);assert.ok(said('it’s on the RUG'));});
   U(()=>A7.C.dr?.hit===2,30);
   check(`${label}: the door shut, the dresser against it, and it hits the door twice`,()=>{assert.ok(A7.C.dr.shut);assert.ok(A7.C.dr.pushed);assert.equal(A7.C.dr.hit,2);});
   U(()=>ph()==='e7-upstairs',60);settle(14);
-  check(`${label}: it goes; from the window, up the street`,()=>{assert.ok(said('going up the street'));});
+  check(`${label}: it goes; from the window, up the street; Jamie against the dresser with the star ("If it's his, he was in this house.")`,()=>{assert.ok(said('going up the street'));assert.ok(said('he was in this house'));});
   lap('green');}
  // ---- upstairs: what is here; the large thing; the lights; the porch roof ----
  if(seg('upstairs')){
@@ -303,8 +357,22 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   U(()=>ph()==='n7-after',140);lap('abduction');}
  // ---- later: the lookout at night; Sam's room ----
  if(seg('after')){
-  U(()=>ph()==='n7-after',10);U(()=>A7.C.af?.stage==='done',150);
-  check(`${label}: Jamie's mom ("You were WITH him."); her pictures have no Jamie in them; Reyes has to read Sam's name off his notebook`,()=>{assert.ok(said('You were WITH him'));assert.ok(said('nobody in this one'));assert.ok(said('His name is Sam'));});
+  U(()=>ph()==='n7-after',10);
+  // (expanded) show Reyes where: his bike, his cap, the marks in the grass, the gum; he photographs them and writes it down
+  U(()=>A7.C.af?.go,60);settle(4);const AF=()=>A7.C.af,EV=()=>AF().E,gyy=(q,dy=0)=>({x:q.x,y:h.nav.groundY(q.x,q.z)+dy,z:q.z});
+  for(const [k,dy,r] of [['bike',.4,2.2],['cap',.05,1.6],['marks',0,2.2]]){if(AF().shown?.[k])continue;note('show '+k,approach(gyy(EV()[k]),r*.7,{pad:8}),act('c7-ev-'+k,{at:gyy(EV()[k],dy),r,max:10}));U(()=>!AF().busyR,30);settle(8);}
+  if(C7().inv.gum==='have'){const RY=h.chapter.kit.officer2;note('show gum',approach({x:RY.x,z:RY.z},2.0,{pad:8}),act('c7-ev-gum',{at:{x:RY.x,y:h.nav.groundY(RY.x,RY.z)+1.3,z:RY.z},r:2.6,max:10}));U(()=>!AF().busyR,30);}
+  const putDown=()=>{for(let i=0;i<4&&A7.C.view;i++){settle(40);tap('KeyS');U(()=>!A7.C.view,2);}};
+  U(()=>A7.C.view==='inspect'&&C7().lookKind==='reyes-page',40);putDown();
+  check(`${label}: Reyes, shown his bike, his cap, the drag marks and the gum, photographs each and writes it down: "2ND JUV. MISSING. JAMIE, 12."`,()=>{assert.ok(AF().photos>=3,'photos '+AF().photos);assert.ok(said('2ND JUV. MISSING. JAMIE'));});
+  // his mother: two questions; then her phone (the pool: nobody on the towel)
+  U(()=>!!A7.C.choice,30);tap('Digit1');U(()=>!!A7.C.choice,20);tap('Digit2');U(()=>A7.C.view==='inspect'&&C7().lookKind==='mom-phone',20);putDown();
+  check(`${label}: Jamie's mom asks what he was wearing and what he said; on her phone, the pool: nobody on the towel, a damp shape where somebody sat`,()=>{assert.ok(said('What was he wearing'));assert.ok(said('nobody on the towel'));});
+  // the forgetting: one juvenile, the cap nobody's, Sam's name; then his page, an hour later: turn it to the light
+  U(()=>A7.C.view==='inspect'&&C7().lookKind==='reyes-page-now',120);settle(10);for(let i=0;i<3&&!C7().flags.indentSeen;i++){tap('KeyD');W(.5);}U(()=>C7().flags.indentSeen,6);putDown();
+  U(()=>A7.C.af?.stage==='done',40);
+  check(`${label}: Jamie's mom ("You were WITH him."); the dispatcher says one juvenile; the cap in her hands is nobody's; her pictures have no Jamie in them; Reyes has to read Sam's name off his notebook`,()=>{assert.ok(said('You were WITH him'));assert.ok(said('one juvenile missing. One'));assert.ok(said('I don’t know whose this is'));assert.ok(said('nobody in this one'));assert.ok(said('His name is Sam'));});
+  check(`${label}: his page, an hour later: no name in the ink, no SECOND; turned to the light, JAMIE pressed into the paper (you keep it)`,()=>{assert.ok(C7().flags.indentSeen);assert.ok(C7().flags.reyesPage);assert.ok(said('Pressed into the paper'));});
   U(()=>ph()==='n7-sams',20);lap('after');}
  if(seg('night')){
   U(()=>ph()==='n7-sams',10);settle(30);approach(HS.samIn,.6);U(()=>A7.C.sn?.inRoom,6);
@@ -327,10 +395,12 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
 }
 
 // ---- targeted checks (each from its own jump) -----------------------------------------------------------------------------------
+// (the DEV scenes the expansion added: Sam's house, Reyes's second look, the Langes')
+export const EXPANSION_SCENES=['c7-memory','c7-search','c7-machine','c7-records','c7-lange','c7-lange-in','c7-lange-scare','c7-green-star','c7-stairs','c7-rug','c7-evidence','c7-mom','c7-record'];
 export async function runChapterSevenChecks(T){const {h,check,element,metrics}=T,X=chapterSevenTools(T),{A7,C7,ph,until,wait,me,faceTo,walkTo,approach,act,settle,faceV,spot,tap,press,release}=X;
  const court=A7.court,SP=court.SPOT,M7=metrics['chapter7']||(metrics['chapter7']={});
  // every DEV scene starts where it says and nothing throws
- check('chapter 7: every DEV Chapter Seven scene starts (40 scenes)',()=>{const sc=DEV_SCENES[7];assert.equal(sc.length,40);for(const s of sc){if(s.chapter!=null)continue;h.jump(s.jump);T.advance(.6);assert.match(ph(),/^(c7|d7|e7|n7)-/,s.id);}});
+ check(`chapter 7: every DEV Chapter Seven scene starts (${DEV_SCENES[7].length} scenes: the 40 of the first draft and the expansion's)`,()=>{const sc=DEV_SCENES[7];assert.ok(sc.length>=40+EXPANSION_SCENES.length);for(const id of EXPANSION_SCENES)assert.ok(sc.some(s=>s.id===id),'DEV scene '+id);for(const s of sc){if(s.chapter!=null)continue;h.jump(s.jump);T.advance(.6);assert.match(ph(),/^(c7|d7|e7|n7)-/,s.id);}});
  // the creature is not the drain creature: a different model, a different id
  check('chapter 7: the hunter is its own thing (chapter7_hunter, not the drain creature)',()=>{assert.equal(A7.HM.id,'chapter7_hunter');assert.notEqual(A7.HM.root,h.chapter3.creature?.group);assert.equal(A7.HM.source,'stand-in');});
  // capture and retry in the stealth encounter

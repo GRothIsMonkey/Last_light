@@ -72,7 +72,10 @@ export function createHorrorHouse({wallpaper=null}={}){
  // ---- furniture (ground) ----
  const put=(o,x,z,{a=0,y=F,solid=null,h=null}={})=>{o.position.set(x,y,z);o.rotation.y=a;g.add(o);if(solid){const s={x,z,hw:solid[0],hd:solid[1],a:-a,h:h??1,lv:y>=UP-.1?'u':'g'};solids.push(s);}return o;};
  // living room: 1960s (a console set playing, a couch with a plastic cover, a starburst clock, a floor lamp)
- const tvScreen=new THREE.MeshStandardMaterial({color:0x111418,emissive:0x8a9aa8,emissiveIntensity:0,roughness:.2});tvScreen.name='c7-console-screen';
+ const tpTex=paper(256,192,(c,w,h)=>{c.fillStyle='#3a4044';c.fillRect(0,0,w,h);c.strokeStyle='#d8dcd8';c.lineWidth=3;c.beginPath();c.arc(w/2,h/2,70,0,7);c.stroke();c.beginPath();c.arc(w/2,h/2,40,0,7);c.stroke();
+  c.fillStyle='#c8ccc8';for(let k=0;k<16;k++){const a=k/16*Math.PI*2;c.beginPath();c.moveTo(w/2+Math.cos(a)*74,h/2+Math.sin(a)*74);c.lineTo(w/2+Math.cos(a+.12)*96,h/2+Math.sin(a+.12)*96);c.lineTo(w/2+Math.cos(a-.12)*96,h/2+Math.sin(a-.12)*96);c.fill();}
+  c.fillRect(w/2-1,h/2-70,2,140);c.fillRect(w/2-70,h/2-1,140,2);c.font='bold 16px Arial';c.textAlign='center';c.fillStyle='#e8ece8';c.fillText('WOHT 9',w/2,h/2+6);});
+ const tvScreen=new THREE.MeshStandardMaterial({color:0x111418,emissive:0x8a9aa8,emissiveIntensity:0,roughness:.2,map:tpTex||null,emissiveMap:tpTex||null});tvScreen.name='c7-console-screen';
  // (laid out round the way through: the arch from the foyer, across the rug, out the door to the den; the set against the
  //  core wall, the couch along the side wall facing it, the armchair under the clock)
  put(FN.console({screen:tvScreen}),-1.55,-.9,{a:Math.PI/2,solid:[.66,.27],h:1.0});put(FN.couch({w:2.0,m:mat(0x6a7a5a,{},'textile')}),-4.5,-1.7,{a:-Math.PI/2,solid:[1.02,.46],h:.85});
@@ -92,7 +95,7 @@ export function createHorrorHouse({wallpaper=null}={}){
  put(FN.bed({cover:0x2a4a6a}),-3.95,3.1,{a:-Math.PI/2,solid:[.53,1.03],h:.75,y:UP});put(FN.desk({w:1.2}),-4.55,.95,{a:Math.PI/2,solid:[.62,.31],h:.78,y:UP});
  put(FN.chair(),-4.0,.95,{a:Math.PI/2,solid:[.22,.22],h:.9,y:UP});
  // (the dresser Jamie pushes against the door: its own group, never baked, its solid moved with it; the little set on top)
- const dresser=FN.dresser({w:1.0});dresser.name='boy-dresser';const crt=FN.crt({w:.36});crt.position.y=.83;dresser.add(crt);put(dresser,-ucx-.55,1.0,{a:Math.PI/2,solid:[.52,.26],h:.85,y:UP});const dresserSolid=solids[solids.length-1];put(FN.rug({w:1.6,d:1.2,c:0x2a3a5a}),-3,2.2,{y:UP});
+ const dresser=FN.dresser({w:1.0});dresser.name='boy-dresser';const crt=FN.crt({w:.36});crt.position.y=.83;dresser.add(crt);put(dresser,-ucx-.55,1.0,{a:Math.PI/2,solid:[.52,.26],h:.85,y:UP});const dresserSolid=solids[solids.length-1];const rug=FN.rug({w:1.5,d:1.6,c:0x2a3a5a});rug.name='boy-rug';put(rug,-2.55,1.1,{y:UP});// (the dresser stands on it: the dresser will not slide until it is out)
  // parents' room (sixties): a bed, a vanity, a lamp; storeroom: boxes, a sewing table, the old bike's spot
  put(FN.bed({w:1.5,cover:0xb89a7a,rumpled:false}),3.5,-2.4,{a:Math.PI/2,solid:[.78,1.03],h:.8,y:UP});put(FN.dresser({w:1.3,m:mat(0xd8cfba)}),4.6,-.6,{a:-Math.PI/2,solid:[.66,.26],h:.85,y:UP});
  put(FN.lamp({h:.6,lit:false}),4.55,-4.1,{y:UP+.0});
@@ -106,9 +109,9 @@ export function createHorrorHouse({wallpaper=null}={}){
  // the creature's map of the ground floor: rooms and doorways (house frame), and the loop it walks
  const graph={nodes:[{id:'foyer',x:0,z:-3.2},{id:'stairFoot',x:0,z:-2.0},{id:'livingArch',x:-1.7,z:-2.6,pause:1.4},{id:'living',x:-3.2,z:-2.4},{id:'livingDoor',x:-3.3,z:-.35,pause:1.2},
   {id:'den',x:-2.7,z:1.9},{id:'denDoor',x:-1.7,z:3.7,pause:1.5},{id:'backHall',x:0,z:3.7},{id:'kitchenDoor',x:1.7,z:3.7,pause:1.2},{id:'kitchen',x:2.6,z:2.5},
-  {id:'kitchenDining',x:3.4,z:-.3,pause:1.4},{id:'dining',x:2.0,z:-1.3},{id:'diningArch',x:1.7,z:-2.6,pause:1.3},{id:'pantryFront',x:3.2,z:2.5},{id:'denCloset',x:-4.4,z:2.8}],
+  {id:'kitchenDining',x:3.4,z:-.3,pause:1.4},{id:'dining',x:2.0,z:-1.3},{id:'diningArch',x:1.7,z:-2.6,pause:1.3},{id:'pantryFront',x:3.2,z:2.5},{id:'denCloset',x:-4.4,z:2.8},{id:'stairWatch',x:.45,z:-2.75,pause:7}],
   edges:[['foyer','stairFoot'],['foyer','livingArch'],['livingArch','living'],['living','livingDoor'],['livingDoor','den'],['den','denDoor'],['denDoor','backHall'],['backHall','kitchenDoor'],
-   ['kitchenDoor','kitchen'],['kitchen','kitchenDining'],['kitchenDining','dining'],['dining','diningArch'],['diningArch','foyer'],['kitchen','pantryFront'],['den','denCloset']],
+   ['kitchenDoor','kitchen'],['kitchen','kitchenDining'],['kitchenDining','dining'],['dining','diningArch'],['diningArch','foyer'],['kitchen','pantryFront'],['den','denCloset'],['foyer','stairWatch'],['stairWatch','stairFoot']],
   loop:['foyer','livingArch','living','livingDoor','den','denDoor','backHall','kitchenDoor','kitchen','kitchenDining','dining','diningArch']};
  // practical lights' positions (the chapter's pool lights go here): the living room lamp, the kitchen, the upstairs hall
  const lamps={living:{x:-4.5,y:F+1.55,z:-.75},kitchen:{x:2.6,y:F+2.5,z:2.2},hall:{x:0,y:UP+2.3,z:-2.5},boy:{x:-3.2,y:UP+2.3,z:2.4}};
@@ -142,11 +145,32 @@ export function createHorrorHouse({wallpaper=null}={}){
    for(const s of solids)if(s.lv===lv&&inBox(x,z,s,.01)&&y-base<s.h)return false;
    if(lv==='g'&&x>-cx&&x<cx&&z>-1.0&&z<3.0&&!(x>-.5&&x<.5&&y>stairY(z)-.05))return false;}
   return true;}
- const keep=new Set([...Object.values(doors).flatMap(d=>[d.pivot]),clock,dresser]);bake(g,keep);
+ // ---- (expanded) what is downstairs before it comes down -------------------------------------------------------------------------
+ // a star folded out of a spearmint wrapper, on the second tread; wet prints out of the closet under the stairs, round through
+ // the back hall, the kitchen and the dining room to the foot of the stairs; a transistor radio on the den desk; an egg timer
+ // on the kitchen counter
+ const extra={};
+ {const sh=new THREE.Shape();for(let k=0;k<10;k++){const a=k/10*Math.PI*2-Math.PI/2,r=k%2?.009:.022,x=Math.cos(a)*r,y=Math.sin(a)*r;if(k)sh.lineTo(x,y);else sh.moveTo(x,y);}sh.closePath();
+  const geo=new THREE.ExtrudeGeometry(sh,{depth:.005,bevelEnabled:true,bevelThickness:.003,bevelSize:.002,bevelSegments:1});geo.center();
+  const star=new THREE.Mesh(geo,mat(0x2e8a4a,{metalness:.45,roughness:.35}));star.name='c7-wrapper-star';star.rotation.set(-Math.PI/2,0,.4);
+  const k=1,z=STAIR.z0+(k+.5)/16*(STAIR.z1-STAIR.z0),y=F+(k+1)*(UP-F)/16-.01+.005;star.position.set(.2,y,z);g.add(star);extra.star=star;extra.starAt={x:.2,y,z};}
+ {const tex=paper(32,64,(c,w,h)=>{c.clearRect(0,0,w,h);c.fillStyle='rgba(0,0,0,.9)';c.beginPath();c.ellipse(w/2,h*.62,w*.22,h*.3,0,0,7);c.fill();
+   for(let k=0;k<5;k++){const a=-1.0+k*.5;c.beginPath();c.ellipse(w/2+Math.sin(a)*w*.36,h*.24-Math.cos(a)*h*.12,w*.06,h*.07,a*.6,0,7);c.fill();}});
+  const wet=new THREE.MeshStandardMaterial({color:0x101216,roughness:.06,metalness:.3,transparent:true,map:tex,depthWrite:false}),wetFaint=wet.clone();wetFaint.opacity=.45;
+  const path=[[0,3.15],[.5,3.6],[1.3,3.75],[2.2,3.2],[2.9,2.3],[3.4,1.0],[3.4,-.4],[2.7,-1.2],[1.9,-2.0],[1.2,-2.55],[.5,-2.3],[.12,-1.8]];
+  let carry=0,side=1;extra.prints=[];for(let i=0;i<path.length-1;i++){const [x0,z0]=path[i],[x1,z1]=path[i+1],L=Math.hypot(x1-x0,z1-z0),dx=(x1-x0)/L,dz=(z1-z0)/L;
+   for(let u=carry;u<L;u+=.62){const x=x0+dx*u+dz*.09*side,z=z0+dz*u-dx*.09*side,onTile=x>cx&&z>0,pl=K.plane(g,x,F+(onTile?.009:.013),z,.13,.3,onTile?wet:wetFaint,{rx:-Math.PI/2,ry:Math.atan2(-dx,-dz),name:'c7-wet-print'});extra.prints.push(pl);side=-side;carry=u+.62-L;}}}
+ {const r=new THREE.Group();r.name='c7-den-radio';K.box(r,0,.075,0,.26,.15,.08,mat(0x6a3a22,{},'textile'));K.box(r,.05,.08,-.042,.13,.08,.004,mat(0xc8c0a8,{metalness:.5}));K.cyl(r,-.08,.08,-.045,.025,.012,mat(0xd8d0b8,{metalness:.6}),{rx:Math.PI/2});K.cyl(r,.1,.2,0,.004,.12,mat(0xb8b8b0,{metalness:.8}));
+  r.position.set(-4.42,F+.74,1.72);r.rotation.y=-Math.PI/2;g.add(r);extra.radio=r;extra.radioAt={x:-4.42,y:F+.82,z:1.72};}
+ {const tm=new THREE.Group();tm.name='c7-egg-timer';K.cyl(tm,0,.022,0,.034,.044,mat(0xf0ece0,{roughness:.4}));K.cyl(tm,0,.05,0,.03,.012,mat(0xc8382a,{roughness:.4}));K.box(tm,0,.058,-.012,.006,.006,.02,mat(0x2a2a2a));
+  tm.position.set(2.55,F+.913,3.95);g.add(tm);extra.timer=tm;extra.timerAt={x:2.55,y:F+.95,z:3.95};}
+ extra.rug=rug;const rug0={x:rug.position.x,z:rug.position.z};
+ const keep=new Set([...Object.values(doors).flatMap(d=>[d.pivot]),clock,dresser,rug,extra.star,extra.radio,extra.timer]);bake(g,keep);
  const dresser0={x:dresser.position.x,z:dresser.position.z,a:dresser.rotation.y};
  function moveDresser(x,z,a){dresser.position.set(x,UP,z);dresser.rotation.y=a;dresserSolid.x=x;dresserSolid.z=z;dresserSolid.a=-a;}
- function reset(){for(const d of Object.values(doors))d.set(0);moveDresser(dresser0.x,dresser0.z,dresser0.a);tvScreen.emissiveIntensity=0;}
- return {g,doors,hides,spots,graph,lamps,walls,solids,walkable,floorAt,levelAfter,sight,inStair,stairY,tvScreen,dresser,moveDresser,reset,HH};
+ function reset(){for(const d of Object.values(doors))d.set(0);moveDresser(dresser0.x,dresser0.z,dresser0.a);tvScreen.emissiveIntensity=0;
+  extra.star.visible=true;extra.timer.visible=true;extra.timer.rotation.set(0,0,0);extra.timer.position.y=F+.913;extra.radio.visible=true;rug.position.set(rug0.x,UP,rug0.z);rug.rotation.set(0,0,0);rug.scale.set(1,1,1);}
+ return {g,doors,hides,spots,graph,lamps,walls,solids,walkable,floorAt,levelAfter,sight,inStair,stairY,tvScreen,dresser,moveDresser,reset,HH,extra,rug0};
 }
 
 // ---- the dining house's dining room ----------------------------------------------------------------------------------------------

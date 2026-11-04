@@ -40,23 +40,23 @@ import {createCourt,P1 as LANE_P1,LEG as COURT_LEG} from './chapter7-court.js';
 import {STAIR,HH} from './chapter7-interiors.js';
 import {createHunterModel,HUNTER_ID} from './chapter7-creature.js';
 import {createHunterAI} from './chapter7-hunter.js';
-import {createCast7} from './chapter7-cast.js';
+import {createCast7,createLangeFigure} from './chapter7-cast.js';
 import {makeOldBike} from './old-bike.js';
 import {poseBike} from './rig.js';
-import {canvas,texOf,photoSketch,PHOTO,planCanvas,modernCanvas,drawMapView,MAP,notebookPage,newspaper1966,calendar1991,samPage,tourPoster,schoolPictures} from './chapter7-props.js';
+import {canvas,texOf,photoSketch,PHOTO,planCanvas,modernCanvas,drawMapView,MAP,notebookPage,newspaper1966,calendar1991,samPage,tourPoster,schoolPictures,reyesPage,reyesIndent,poolPhoto} from './chapter7-props.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
 
 // QA jumps and DEV scenes, in story order (each starts a little before its moment).
 export const SECTIONS7=['chapter7-start','c7-step','c7-family','c7-bedroom','c7-fan','c7-gum','c7-memory','c7-search','c7-machine','c7-garage','c7-reyes','c7-map','c7-records','c7-curb','c7-ride','c7-lookout','c7-lane',
- 'c7-court','c7-separation','c7-dining','c7-dining-scare','c7-house','c7-reveal','c7-stalk','c7-door','c7-clues','c7-trace','c7-old-bike','c7-giant','c7-out','c7-bikes',
- 'c7-chase','c7-lookout-attack','c7-grab','c7-struggle','c7-taken','c7-gum-pickup','c7-after','c7-forgetting','c7-sams','c7-photo','c7-names','c7-window','chapter7-end'];
+ 'c7-court','c7-separation','c7-lange','c7-lange-in','c7-lange-scare','c7-dining','c7-dining-scare','c7-house','c7-green-star','c7-reveal','c7-stalk','c7-stairs','c7-door','c7-rug','c7-clues','c7-trace','c7-old-bike','c7-giant','c7-out','c7-bikes',
+ 'c7-chase','c7-lookout-attack','c7-grab','c7-struggle','c7-taken','c7-gum-pickup','c7-after','c7-evidence','c7-mom','c7-forgetting','c7-record','c7-sams','c7-photo','c7-names','c7-window','chapter7-end'];
 export const ALIAS7={'c7-start':'chapter7-start','c7-tour':'c7-memory','c7-belongings':'c7-search','c7-answering-machine':'c7-machine','c7-house-morning':'c7-family','c7-room':'c7-bedroom','c7-investigation':'c7-reyes','c7-old-map':'c7-map','c7-second-investigation':'c7-records','c7-streetlights':'c7-records','c7-jamie':'c7-curb',
- 'c7-wrong-street':'c7-lane','c7-reyes-radio':'c7-separation','c7-window-scare':'c7-dining-scare','c7-horror-house':'c7-house','c7-creature':'c7-reveal','c7-stealth':'c7-stalk',
- 'c7-historical':'c7-clues','c7-sam-trace':'c7-trace','c7-meadowlark':'c7-old-bike','c7-vantage':'c7-giant','c7-escape':'c7-chase','c7-attack':'c7-lookout-attack','c7-rescue':'c7-struggle',
- 'c7-gone':'c7-taken','c7-gum-drop':'c7-gum-pickup','c7-aftermath':'c7-after','c7-final-photo':'c7-photo','c7-notebook':'c7-names','c7-final-image':'c7-window','c7-end':'chapter7-end'};
+ 'c7-wrong-street':'c7-lane','c7-reyes-radio':'c7-separation','c7-open-door':'c7-lange','c7-secondary-house':'c7-lange','c7-lange-house':'c7-lange-in','c7-langes':'c7-lange-in','c7-bathroom':'c7-lange-scare','c7-window-scare':'c7-dining-scare','c7-horror-house':'c7-house','c7-creature':'c7-reveal','c7-stealth':'c7-stalk',
+ 'c7-historical':'c7-clues','c7-star':'c7-green-star','c7-wrapper-star':'c7-green-star','c7-closet-check':'c7-stalk','c7-pantry':'c7-stalk','c7-timer':'c7-stairs','c7-distraction':'c7-stairs','c7-dresser':'c7-rug','c7-barricade':'c7-rug','c7-sam-trace':'c7-trace','c7-meadowlark':'c7-old-bike','c7-vantage':'c7-giant','c7-escape':'c7-chase','c7-attack':'c7-lookout-attack','c7-rescue':'c7-struggle',
+ 'c7-gone':'c7-taken','c7-gum-drop':'c7-gum-pickup','c7-aftermath':'c7-after','c7-show-reyes':'c7-evidence','c7-reyes-evidence':'c7-evidence','c7-jamies-mom':'c7-mom','c7-pool-photo':'c7-mom','c7-notebook-page':'c7-record','c7-indentation':'c7-record','c7-final-photo':'c7-photo','c7-notebook':'c7-names','c7-final-image':'c7-window','c7-end':'chapter7-end'};
 // Checkpoints (silent; Continue on the title comes back here). A failure in the house or the chase comes back to its own.
 export const LABEL7={'chapter7-start':'The house without Sam','c7-bedroom':'Sam’s room','c7-search':'Sam’s things','c7-garage':'The garage','c7-reyes':'Officer Reyes','c7-records':'The plate and the streetlights','c7-curb':'That afternoon',
- 'c7-lookout':'The end of the street','c7-court':'Old Mill Court','c7-house':'The house with the green door','c7-stalk':'Something is hunting us','c7-clues':'Upstairs',
+ 'c7-lookout':'The end of the street','c7-court':'Old Mill Court','c7-lange':'The house with its door open','c7-house':'The house with the green door','c7-stalk':'Something is hunting us','c7-stairs':'It is waiting at the stairs','c7-clues':'Upstairs',
  'c7-bikes':'Jamie’s last ride','c7-after':'Later','c7-sams':'Sam’s room, that night','chapter7-end':'The street that wasn’t there'};
 const PHASES=['c7-black','d7-step','d7-house','d7-garage','d7-reyes','d7-map','d7-curb','e7-ride','e7-lookout','e7-lane','e7-court','e7-dining','e7-house','e7-reveal','e7-stalk',
  'e7-door','e7-upstairs','e7-giant','e7-out','n7-bikes','n7-chase','n7-lookout','n7-grab','n7-taken','n7-gone','n7-after','n7-sams','n7-names','n7-window','n7-end'];
@@ -79,6 +79,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const house=createSamHouse({scene,world,shoot:o.shoot});
  const court=createCourt({scene,world,sfx:(n,p,op)=>sound(n,p,op)});court.setBaseNav(nav);
  const cast=createCast7({scene,nav});
+ const LF=createLangeFigure({scene});// (Mrs. Lange, No. 5)
  const HM=createHunterModel({scene});
  const samDad=ch6.cast.samDad,samMom=ch4.samMom;
  const brain=createCompanionBrain({nav,comp});
@@ -174,7 +175,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // ---- the clock and the sky ------------------------------------------------------------------------------------------------
  // (in the court the clock does not keep time: from five it runs fast, steadily, until it is dark; nowhere else)
  const RATE={day:4/3600,court:2.2/230,night:2/3600};
- function clock(dt){const ph=S.phase;let r=0;if(/^d7-/.test(ph))r=RATE.day;else if(ph==='e7-court'&&C.h<HOUR.dining)r=RATE.court;else if(/^(e7|n7)-/.test(ph))r=RATE.night;
+ function clock(dt){const ph=S.phase;let r=0;if(/^d7-/.test(ph))r=RATE.day;else if(ph==='e7-court'&&C.h<HOUR.dining)r=C.lg?.inside?RATE.night:RATE.court;else if(/^(e7|n7)-/.test(ph))r=RATE.night;
   C.h+=r*dt;if(C.hMin!==undefined&&C.h<C.hMin)C.h=Math.min(C.hMin,C.h+dt/60);const m=Math.floor(C.h*60+1e-6);if(m!==C.minute&&ph!=='c7-black'){C.minute=m;date(C.h);}}
  const date=h=>o.setDate(`AUGUST 26, 2011 <i></i> ${fmt(h)}`);
  const inSams=(p=camera.position)=>house.root.parent&&house.inHouse(p.x,p.z);
@@ -183,7 +184,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   // (in Old Mill Court the light goes faster than the clock: up to most of an hour ahead, the longer you are there)
   if(court.ST.active){const p0=me();if(court.inRegionAt(p0.x,p0.z))h+=.7*clamp((C.h-HOUR.court)/1.5,0,1);}
   const q=(a,b)=>smooth((h-a)/(b-a));let day=1-.5*q(18.4,19.6)-.5*q(19.6,20.25),p=.3*q(18.6,19.7)+.7*q(19.7,20.3),night=.6*q(19.95,20.4)+.3*q(20.4,21),deep=.15*q(20.2,21);
-  const cv=inSams()?(S.phase==='n7-sams'||S.phase==='n7-names'||S.phase==='n7-window'?.75:.44):inGreen()?.62:C.inGarage?.4:0;
+  const cv=inSams()?(S.phase==='n7-sams'||S.phase==='n7-names'||S.phase==='n7-window'?.75:.44):inGreen()?.62:inLange(camera.position)?.55:C.inGarage?.4:0;
   return {day,p,night,deep,fill:0,storm:0,flash:0,cave:cv};}
  // ---- what you carry (I) -------------------------------------------------------------------------------------------------------
  function items(){const I=C.inv,carry=[],found=[];
@@ -192,6 +193,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(I.radio)found.push({id:'radio',name:'Reyes’s radio',note:'Channel three. Jamie has it.'});
   if(C.flags.photoSeen)found.push({id:'photo',name:'The photograph',note:C.flags.altered?'You, at the oak, with your bike.':'The four of you at the oak. July.'});
   if(C.flags.marked)found.push({id:'court',name:'Old Mill Court',note:'1958. Vacated 1974. Past the oak.'});
+  if(C.flags.reyesPage)found.push({id:'reyes-page',name:'Officer Reyes’s page',note:'No name in the ink. JAMIE, pressed into the paper.'});
   return {carry,found};}
  const inv=createInventory({items,use:id=>{if(id==='notebook'){inv.close();readNotebook();}}});
  // ---- holding something up to look at it (the photograph, a page, the gum): it comes to you, the mouse turns it --------------------
@@ -204,7 +206,10 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function endInspect(){const I=C.inspect;if(!I)return;const {obj,prev}=I;holder.remove(obj);
   if(I.restore&&prev.parent){prev.parent.add(obj);obj.position.copy(prev.pos);obj.quaternion.copy(prev.q);obj.scale.copy(prev.scale);obj.visible=prev.visible;}
   holder.removeFromParent();C.view=null;C.inspect=null;C.lookKind=null;if(!posed())o.roam.walkLock=false;const f=I.onClose;f?.();}
- function updateInspect(dt){const I=C.inspect;if(!I)return;I.t+=dt;I.obj.rotation.set(.12+I.pitch,I.yaw,0);}
+ function updateInspect(dt){const I=C.inspect;if(!I)return;I.t+=dt;I.obj.rotation.set(.12+I.pitch,I.yaw,0);
+  if(I.kind==='reyes-page-now'){const ov=I.obj.userData.indent;const k2=clamp((Math.abs(I.yaw)+Math.abs(I.pitch)*.8-.32)*2.6,0,.92);if(ov)ov.material.opacity=k2;
+   if(k2>.55&&!C.flags.indentSeen){C.flags.indentSeen=true;mark('the name, pressed into the paper');later(.3,()=>say([N('Pressed into the paper, where the ink isn’t: JAMIE.',{time:3.4}),R('…Keep it. Somebody has to.',{time:2.4,face:'tired'})]));}
+   if(!C.flags.indentSeen&&I.t>14&&!I.nudged&&!busy()){I.nudged=true;say([R('Tilt it. Tilt it to the light.',{time:2})]);}}}
  // a page (a canvas) on a little card held up
  function pageMesh(cv,{w=.17,h=.225,color=0xfbfaf4}={}){const t=texOf(cv),m=new THREE.MeshBasicMaterial({map:t,color:t?0xffffff:color});const g=new THREE.Group();g.add(new THREE.Mesh(new THREE.PlaneGeometry(w,h),m));g.userData.tex=t;g.userData.cv=cv;return g;}
  // ---- the map on the kitchen table (the 2009 map; the 1958 plan on tracing paper over it) --------------------------------------
@@ -611,7 +616,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // ---- Old Mill Court --------------------------------------------------------------------------------------------------------------
  function courtStart(){go('e7-court');checkpoint('c7-court');C.ct={t:0,stage:'out'};C.h=Math.max(C.h,HOUR.court);reyes.show(false);k.carA.show(false);mark('Old Mill Court');T?.set?.(.3,{rise:.05,why:'the court'});}
  function courtFrame(p=me()){return court.regL(p.x,p.z);}
- function updateCourt(dt){const X=C.ct;X.t+=dt;const p=me(),q=courtFrame(p);
+ function updateCourt(dt){const X=C.ct;X.t+=dt;const p=me(),q=courtFrame(p);if(C.lg)updateLange(dt);
   if(X.stage==='out'&&q.z>27.5&&!busy()){X.stage='radio';X.outAt=X.t;mark('out on the street');
    stand(jamie,null);say([{wait:.8},J('…What.',{time:1.4,face:'shocked'}),J('This isn’t— there’s nothing back here. There’s a field.',{time:2.8,face:'afraid'}),
     {wait:.6,act:()=>{radioHand.visible=true;}},J('Reyes? Officer Reyes. Are you— are you seeing this?',{time:2.8}),{wait:.8},RR('Seeing what? I’m right behind you. I’m in the bend.',{time:2.6,act:()=>sound('c6Static',jamie.person.group.position,{gain:.3})}),
@@ -628,12 +633,14 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(!X.dark&&C.h>18.1&&!busy()){X.dark=true;say([J('…Was it this dark? It was like five o’clock.',{time:2.6,face:'worried'})]);}
    // somebody here has a phone: knock (the first door, nothing; the second, somebody comes to it and does not open it)
    if(!X.knockAsk&&!X.lights&&!X.seenYou&&X.t-X.lostAt>5&&!busy()&&!C.view){X.knockAsk=true;X.knocks=0;say([J('Somebody’s gotta have a phone. Come on.',{time:2.2}),J('We knock, we say we’re lost. That’s all.',{time:2.4})],{then:()=>{if(X.knocks<2)objective('Find a phone.','Knock on a door. Stay together.');}});}
-   if(!X.seenYou&&(X.knocks>=2&&X.t-X.knockedAt>9||X.t-X.lostAt>80)&&Math.hypot(p.x-court.SPOT.fenceA.x,p.z-court.SPOT.fenceA.z)>15&&!busy()){X.seenYou=true;
+   if(!X.seenYou&&(X.knocks>=2&&X.t-X.knockedAt>9||X.t-X.lostAt>80)&&Math.hypot(p.x-court.SPOT.fenceA.x,p.z-court.SPOT.fenceA.z)>15&&!busy()){X.seenYou=true;X.seenAt=X.t;
     say([{act:()=>{radioHand.visible=true;sound('c6Static',jamie.person.group.position,{gain:.35});}},RR('…I can see you. By the fence. Jamie, why are you just standing there? Turn around.',{time:3.6}),
      J('We’re not by any fence. We’re— Reyes, we’re not by a fence.',{time:2.8,face:'afraid'}),{wait:.5,act:()=>sound('c6Static',jamie.person.group.position,{gain:.5})},J('Reyes?',{time:1.2}),{wait:1.6,act:()=>{radioHand.visible=false;}}]);}
-   // the house with its lights on (when it is dark enough to see in, or when you come to it)
-   const dw=court.SPOT.diningWalk;if(!X.lights&&(C.h>=HOUR.dining-.15||Math.hypot(p.x-dw.x,p.z-dw.z)<16)&&X.seenYou&&!busy()){X.lights=true;C.h=Math.max(C.h,HOUR.dining-.05);
-    say([J('There’s people. There’s people in there.',{time:2.2,face:'hopeful'}),J('Maybe they have a phone.',{time:1.8})],{then:()=>{objective('The house with its lights on.','Across the lawn. Its front window.');diningStart();}});}}}
+   // the Langes' door, standing open (a phone, they think)
+   if(X.seenYou&&!X.lange&&!X.lights&&!busy()&&!C.view&&X.t-(X.seenAt??0)>2.5)langeOpens();
+   // the house with its lights on (when it is dark enough to see in, or when you come to it; after the Langes')
+   const dw=court.SPOT.diningWalk,lgDone=!X.lange||C.lg?.stage==='done';if(!X.lights&&lgDone&&(C.h>=HOUR.dining-.15||Math.hypot(p.x-dw.x,p.z-dw.z)<16||(C.lg&&C.lg.t-C.lg.doneAt>1.2))&&X.seenYou&&!busy()){X.lights=true;C.h=Math.max(C.h,HOUR.dining-.05);
+    say([...(X.lange?[J('…Look. Across the street.',{time:1.8,face:'worried'})]:[]),J('There’s people. There’s people in there.',{time:2.2,face:'hopeful'}),J('Maybe they have a phone.',{time:1.8})],{then:()=>{objective('The house with its lights on.','Across the lawn. Its front window.');diningStart();}});}}}
  function fenceBeat(){const X=C.ct;X.fence=true;mark('the fence');T?.set?.(.5,{rise:.15,why:'the fence'});sound('c5WoodStrike',court.SPOT.fenceA,{gain:.9});
   say([J('No. No no no. We just came through here. This was OPEN.',{time:3,face:'terrified'}),{wait:.4,act:()=>sound('c5WoodStrike',court.SPOT.fenceA,{gain:1})},J('REYES!',{time:1.2}),
    {wait:1.2},RR('…I hear something. Keep yelling…',{time:2.2,act:()=>sound('c6Static',jamie.person.group.position,{gain:.4})}),J('REYES! WE’RE HERE!',{time:1.6}),{wait:2.6},N('Nothing. Static.',{time:2})],{then:()=>afterFence()});}
@@ -645,6 +652,140 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    later(5.6,()=>{T?.set?.(.62,{rise:.2,why:'the door'});say([N('Footsteps inside. Coming to the door.',{time:2.4}),N('They stop on the other side of it.',{time:2.4}),{wait:1.2},J('…Hello?',{time:1.2,face:'afraid'}),{wait:2.4},N('Nobody opens it.',{time:2}),
     J('…There’s somebody right there. Right behind it.',{time:2.6,face:'terrified'}),J('Go. Go, go.',{time:1.4,face:'terrified'})],{then:()=>{X.knocking=false;X.knockedAt=X.t;objective('Find a way back to Reyes.','Stay together.');stand(jamie,null);follow(true);jamie.follow='walk';}});});}}
  function afterFence(){const X=C.ct;if(X.stage==='lost')return;X.stage='lost';X.lostAt=X.t;court.ST.fenceA=true;objective('Find a way back to Reyes.','Stay together.');}
+ // ---- the Langes' (No. 5): the door that was shut is standing open; inside, an evening a minute old; somebody in the bathroom ----
+ // (after Reyes says he can see you by the fence, before it is dark enough for the Carvers' window: a phone, they think)
+ const LGH=court.lange,LS=LGH.spots,LG3=(lx,lz,y=null)=>court.LW3(lx,lz,y),lgP=s=>LG3(s.x,s.z,s.y!=null?court.G0+s.y:null);
+ const inLange=(p=me())=>court.ST.active&&court.inLangeAt(p.x,p.z);
+ const langeRoom=(p=me())=>{if(!inLange(p))return null;const q=court.langeLocal(p.x,p.z);return LGH.room(q.x,q.z);};
+ const cvOf=t=>t?.userData?.canvas?{c:t.userData.canvas}:null;
+ // a place beside you (to your right and a little behind, or the other side, or behind): where Jamie keeps close
+ const besideMe=(d=.9)=>{const p=me(),a=p.a,r={x:Math.cos(a),z:Math.sin(a)},b={x:-Math.sin(a),z:Math.cos(a)};
+  for(const [s,k] of [[1,.45],[-1,.45],[0,1]]){const q={x:p.x+r.x*d*s*.85+b.x*d*k,z:p.z+r.z*d*s*.85+b.z*d*k};if(nav.walkable(q.x,q.z,{r:.3}))return q;}return {x:p.x+b.x*d,z:p.z+b.z*d};};
+ // (Jamie, arms out to the sides and back: stay behind me)
+ const shield=p=>{p[PI.lh]=-.44;p[PI.lh+1]=1.0;p[PI.lh+2]=.2;p[PI.rh]=.44;p[PI.rh+1]=1.0;p[PI.rh+2]=.2;p[PI.le]=-.9;p[PI.le+1]=.1;p[PI.le+2]=.4;p[PI.re]=.9;p[PI.re+1]=.1;p[PI.re+2]=.4;p[PI.lean]-=.04;};
+ function langeLights(on){if(!on){for(const i of [1,2,3])light(i,null);return;}const L=LGH.lamps;
+  light(1,lgP(L.front),{intensity:1.5,dist:6.5,color:0xffc890});light(2,lgP(L.kitchen),{intensity:1.7,dist:7,color:0xffe6c0});light(3,lgP(L.tv),{intensity:.5,dist:4,color:0xb8c8ff});}
+ function langeOpens(){const X=C.ct;X.lange=true;C.lg={t:0,stage:'open',opening:0};mark('the Langes’ door opens');const d=court.SPOT.langeDoor;sound('c7Door',d,{gain:.6});langeLights(true);
+  say([{wait:.4},N('A latch, somewhere up the street. A door coming open.',{time:3}),{wait:.6},J('…That one. The blue one.',{time:2,face:'worried'}),
+   ...(X.knocked?.has?.('a5')?[J('We knocked on that one. Nobody came. Now it’s open.',{time:2.8,face:'afraid'})]:[J('That door was shut. I looked right at it.',{time:2.4,face:'afraid'})]),
+   {wait:.5},J('There’s a TV on in there. …Somebody’s home.',{time:2.4}),J('A phone. They’ve gotta have a phone. Come on.',{time:2.4})],
+   {then:()=>{if(C.lg.stage==='open')C.lg.stage='door';C.lg.doorAt=C.lg.t;objective('The open door.','The blue house. A phone. Stay together.');}});}
+ function updateLange(dt){const X=C.lg;if(!X)return;X.t+=dt;const p=me(),rm=langeRoom(p),d=court.SPOT.langeDoor,dd=Math.hypot(p.x-d.x,p.z-d.z);
+  // the door: in, slowly, on its own; the TV's light, uneven
+  if(X.opening<1){X.opening=Math.min(1,X.opening+dt*.42);LGH.doors.front.set(smooth(X.opening));}
+  if(X.closing!=null&&X.closing>0){X.closing=Math.max(0,X.closing-dt*.5);LGH.doors.front.set(smooth(X.closing));if(X.closing===0){sound('click',d,{gain:.6});X.closing=null;}}
+  if(!LGH.ST.tvOff&&LIGHTS[3].intensity>0&&X.stage!=='burst'&&X.stage!=='loom'&&X.stage!=='retreat')LIGHTS[3].intensity=.38+.18*Math.abs(Math.sin(C.t*7.7))*(.6+.4*Math.sin(C.t*1.9));
+  X.inside=!!rm;
+  if((X.stage==='door'||X.stage==='open')&&dd<2.6&&!X.atDoor&&!busy()){X.atDoor=true;
+   stand(jamie,LG3(LGH.doorX+1.05,-LGH.hd-1.35),{look:()=>lgP({...LS.inFront,y:LGH.F+1.4}),keep:true,max:1.6});
+   say([J('Hello?',{time:1}),{wait:1.2},J('Hi— sorry. We knocked before. We’re lost. We just need to use your phone.',{time:3.2}),{wait:1.4},N('Nobody answers. The television, low. Somewhere inside, a tap dripping.',{time:3.4}),
+    J('…They’re probably out back.',{time:1.8}),J('We’ll just— we’ll be really quick.',{time:2})],{then:()=>{stand(jamie,null);follow(true);jamie.follow='walk';if(X.stage==='door')objective('Find the phone.','Quietly.');}});}
+  if((X.stage==='door'||X.stage==='open')&&rm){X.stage='in';X.inAt=X.t;checkpoint('c7-lange');mark('inside the Langes’');T?.set?.(.4,{rise:.05,why:'the Langes’'});
+   later(1.2,()=>{if(!busy())say([J('…It smells like dinner.',{time:1.8,face:'worried'}),J('Hello?',{time:1})]);});objective('Find the phone.','Quietly.');}
+  if(X.stage==='in'){if(rm==='kitchen'&&!X.kitchen){X.kitchen=true;if(!busy())later(.6,()=>{if(!busy())say([J('Somebody’s eating. Was eating.',{time:2,face:'afraid'})]);});}
+   if(!X.phoned&&!X.nudge&&X.t-X.inAt>55&&!busy()&&!C.view){X.nudge=true;say([J('The phone’s gotta be in the kitchen. On the wall. Come on.',{time:2.6})]);}}
+  if(X.stage==='presence'){
+   if(rm==='hall'&&!X.hallAt){X.hallAt=X.t;LGH.feetTo(.05,1.6);sound('c7Step',lgP({...LS.bathDoor,y:LGH.F+.1}),{gain:.25});later(2.4,()=>{if(!X.shoved)LGH.feetTo(-.35,1.8);});
+    if(!busy())say([J('Don’t. Don’t go near it.',{time:1.8,face:'terrified'})]);}
+   if(!X.shoved&&!X.listening&&(X.hallAt!=null?X.t-X.hallAt>24:X.t-X.presAt>42)&&!busy()&&!C.view)langeShove();}
+  if(X.stage==='look'){if(rm==='boy'&&X.inBoy==null)X.inBoy=X.t;
+   if(!X.burst&&(X.drew?X.t-X.drewAt>X.drewDur:(X.inBoy!=null&&X.t-X.inBoy>25)||X.t-X.lookAt>45)&&!C.choice)langeBurst('boy');}
+  if(X.stage==='leave'){const q=court.langeLocal(p.x,p.z);
+   if(!X.burst&&rm==='front'&&q.z<-1.95&&!C.choice)langeBurst('front');
+   else if(!X.burst&&X.t-X.leaveAt>30&&!X.pulled&&!busy()){X.pulled=true;say([J('COME ON. Out. OUT.',{time:1.6,face:'terrified'})]);}}
+  if(X.stage==='flee'&&!rm&&dd>1.0&&(!inLange(p))){X.stage='out';X.outAt=X.t;mark('out of the Langes’');X.closing=1;
+   later(1.4,()=>{langeLights(false);LGH.ST.smoke=false;LGH.ST.steam=false;});
+   say([{wait:1.2},N('Behind you, the door swings shut on its own. The lights inside go out.',{time:3.4})]);}
+  if(X.stage==='out'&&(X.t-X.outAt>4.5||dd>4)&&!busy())langeRecover();}
+ // ---- what is in it ----
+ function langeAct(w){const X=C.lg,jn=near({x:jamie.px,z:jamie.pz},4.5),fl=court.G0+LGH.F;if(w!=='listen')C.looked.add('lg-'+w);mark('the Langes’: '+w);
+  if(w==='tv'){closeLook(lgP(LS.tv),{back:1.6,eye:1.3,kind:'lg-tv',floor:fl});C.lookDur=7.5;
+   say([N('A console set on legs, the kind with the speaker cloth. A test card: WOHT CHANNEL 9. PLEASE STAND BY.',{time:4.4}),N('The tone, turned almost all the way down.',{time:2.6}),...(jn?[J('There’s no channel nine. There’s never been a channel nine.',{time:2.8,face:'worried'})]:[])]);}
+  else if(w==='courier'){const pg=pageMesh(cvOf(LGH.pages.courier),{w:.26,h:.34,color:0xe8dcbc});
+   inspect(pg,{dist:.38,kind:'lg-courier',restore:false,plane:true,onClose:()=>pg.removeFromParent(),lines:[N('The Courier, folded open on the coffee table, by an ashtray. The cigarette in it is still going.',{time:4}),
+    N('Thursday, April 11, 1974. TOWNSHIP VACATES OLD MILL COURT.',{time:3.6}),N('“Mrs. E. Lange, of No. 5, could not be reached for comment.”',{time:3.4}),
+    ...(jn?[J('Seventy-four. The one on the lawn was sixty-six.',{time:2.6,face:'worried'}),J('No. 5. That’s this one. This is her house.',{time:2.4,face:'afraid'})]:[])]});}
+  else if(w==='dinner'){closeLook(lgP(LS.dinner),{back:.85,eye:1.35,kind:'lg-dinner',floor:fl});C.lookDur=8;
+   say([N('Dinner for three. Two plates eaten from. One not touched: meatloaf, peas, a glass of milk with the cold still beaded on it.',{time:4.8}),N('Steam, a little, off the meat.',{time:2.2}),...(jn?[J('Somebody was just sitting here. Like— just.',{time:2.4,face:'afraid'})]:[])]);}
+  else if(w==='cap'){const cp=LGH.g.getObjectByName('lange-cap');
+   inspect(cp,{dist:.36,kind:'lg-cap',spin:Math.PI*.8,lines:[N('A boy’s ball cap, on the chair at the untouched plate. Oak Hollow Little League.',{time:3.6}),N('Inside the band, in marker: T. LANGE. The band is still damp.',{time:3.4}),...(jn?[J('…Where is he, then?',{time:2,face:'afraid'})]:[])]});}
+  else if(w==='calendar'){closeLook(lgP(LS.calendar),{back:.7,eye:1.45,kind:'lg-calendar',floor:fl});C.lookDur=6.5;
+   say([N('A calendar from Lange Fuel & Oil. October 1983. Nothing written on it.',{time:3.6}),...(jn?[J('The TV, the paper, this. Nothing in here’s the same year.',{time:3,face:'worried'})]:[])]);}
+  else if(w==='board'){const pg=pageMesh(cvOf(LGH.pages.board),{w:.3,h:.246,color:0xb48a5a});
+   inspect(pg,{dist:.36,kind:'lg-board',restore:false,plane:true,onClose:()=>pg.removeFromParent(),lines:[N('A cork board by the phone. A grocery list. Two clippings. A pin with nothing on it.',{time:3.8})]});}
+  else if(w==='parents'){sound('tap',lgP(LS.parentsDoor),{gain:.5});say([N('Locked. And something on the other side of it, leaning on it: it doesn’t give at all.',{time:3.6}),...(jn?[J('Don’t. Leave it.',{time:1.6,face:'afraid'})]:[])]);}
+  else if(w==='phone')langePhone();else if(w==='listen')langeListen();else if(w==='drawings')langeDrawings();}
+ function langePhone(){const X=C.lg;X.phoned=true;mark('the Langes’ phone');const q=lgP(LS.phone);const mid=LG3((LS.phone.x+LS.board.x)/2,(LS.phone.z+LS.board.z)/2,court.G0+LGH.F+1.47);closeLook(mid,{back:.95,eye:1.45,kind:'lg-phone',floor:court.G0+LGH.F});C.lookDur=null;
+  LGH.handset.visible=false;sound('click',q,{gain:.6});
+  say([N('The receiver is heavy and cold. No dial tone.',{time:3}),{wait:.4,act:()=>sound('c6Static',q,{gain:.12})},N('Something on the line, very far off: a television. The same tone as the one in the front room.',{time:4.2}),
+   {wait:.8,act:()=>sound('c7Breath',q,{gain:.4})},N('And under it, close to the receiver, somebody breathing.',{time:3.4}),J('Hang up. Hang it UP.',{time:1.6,face:'terrified'}),
+   {act:()=>{LGH.handset.visible=true;sound('click',q,{gain:.8});}},{wait:.6},
+   N('Pinned to a cork board beside the phone: two clippings from the Courier, gone yellow by different amounts.',{time:4}),
+   N('GIRL, 11, MISSING. Ruth Ann Carver. August 1966.',{time:3.2}),N('BOY STILL MISSING. Danny Whitcomb. August 1991.',{time:3.2}),
+   J('Ninety-one. In a house nobody’s lived in since seventy-four.',{time:3,face:'afraid'}),N('And a third pin, with nothing on it but a torn corner of newsprint.',{time:3.4})],
+   {then:()=>{endLook();langePresence();}});}
+ function langePresence(){const X=C.lg;if(X.stage!=='in')return;X.stage='presence';X.presAt=X.t;mark('somebody in the bathroom');const bd=lgP(LS.bathDoor);
+  LGH.strain(.9);LGH.feetAt(true,-.15);sound('c7Door',bd,{gain:.5});later(1.8,()=>LGH.strain(0));T?.set?.(.62,{rise:.2,why:'the bathroom door'});
+  stand(jamie,()=>besideMe(.9),{look:()=>bd,keep:true,max:2.2});
+  say([{wait:.9},J('…That was down the hall.',{time:2,face:'afraid'}),{wait:.6},J('Hello? Is somebody— we’re sorry, we just—',{time:2.6,face:'afraid'}),{wait:1.4},N('Nothing. Down the hall, the light is on under the bathroom door.',{time:3.2})],
+   {then:()=>{objective('Somebody is in the house.','The hall. The light under the door.');}});}
+ function langeListen(){const X=C.lg;X.listened=true;X.listening=true;const bd=lgP(LS.bathDoor);closeLook({...bd,y:court.G0+LGH.F+1.45},{back:.55,eye:1.5,kind:'lg-door',floor:court.G0+LGH.F});C.lookDur=null;
+  LGH.feetTo(-.2,.8);say([{wait:.8},N('Nothing behind the door.',{time:2.2}),{wait:1.2,act:()=>sound('c7Breath',bd,{gain:.55})},N('Then breathing. Slow. Right on the other side of it, at the height of your face.',{time:4})],{then:()=>{X.listening=false;langeShove();}});}
+ function langeShove(){const X=C.lg;if(X.shoved)return;X.shoved=true;X.shoveAt=X.t;mark('the door, shoved from inside');const bd=lgP(LS.bathDoor);
+  LGH.shove();LGH.strain(0);sound('doorSlam',bd,{gain:1.3});sound('c7Strike',bd,{gain:.7});LGH.pictureFalls();later(.45,()=>sound('c7Glass',lgP({x:.62,y:LGH.F+.1,z:1.45}),{gain:.7}));
+  o.foot.land=.05;T?.set?.(.86,{rise:.5,why:'the bathroom door'});later(.9,()=>LGH.feetAt(false));
+  if(C.view==='look')later(.45,()=>endLook());face(jamie,'terrified',6);
+  later(.6,()=>say([J('Get AWAY from it—',{time:1.4,face:'terrified'}),J('We’re going. We’re going right NOW.',{time:2.2,face:'terrified'})],{then:()=>langeDecide()}));}
+ function langeDecide(){const X=C.lg;X.stage='decide';objective('Leave. Or look.','');
+  choose([{id:'leave',label:'“Okay. We go.”'},{id:'look',label:'“Wait— the drawings in his room. Four bikes.”'}],{then:id=>langeChose(id),timeout:20,fallback:'leave'});}
+ function langeChose(id){const X=C.lg;X.choice=id;
+  if(id==='look'){X.stage='look';X.lookAt=X.t;say([J('What? No— NO.',{time:1.4,face:'terrified'}),{wait:.4},J('…Okay. Fast. FAST.',{time:1.6,face:'afraid'})],{then:()=>objective('The boy’s room.','Fast.')});
+   stand(jamie,()=>besideMe(.95),{look:()=>lgP({...LS.boyDoor,y:LGH.F+1.3}),keep:true,max:2.6});}
+  else{X.stage='leave';X.leaveAt=X.t;say([J('Go. Go, go.',{time:1.4,face:'terrified'})],{then:()=>objective('Get out.','The front door.')});stand(jamie,()=>besideMe(1.0),{look:()=>lgP({...LS.frontGap,y:LGH.F+1.3}),keep:true,max:2.6});}}
+ function langeDrawings(){const X=C.lg;X.drew=true;X.drewAt=X.t;closeLook(lgP(LS.drawings),{back:1.15,eye:1.5,kind:'lg-drawings',floor:court.G0+LGH.F});C.lookDur=null;
+  const lines=[N('Three drawings taped up over the bed. The same picture, three times.',{time:3.4}),N('A streetlight and its light. Four bikes in a row under it. Nobody on them.',{time:3.8}),
+   N('R.A.C., 1966, in blue crayon. D.W., 1991, in red marker.',{time:3.6}),N('The third is in pencil, so faint it’s hardly there. No name on it. 2011.',{time:4}),J('…Four bikes.',{time:1.6,face:'afraid'})];
+  X.drewDur=lines.reduce((a,l)=>a+(l.time||2)+.3,0)+.8;say(lines);}
+ // ---- it comes out: along the hall, through what is in the way, at you; Jamie between; it stands; it goes back -------------------
+ function langeBurst(where){const X=C.lg;if(X.burst)return;X.burst=where;X.stage='burst';X.burstAt=X.t;mark('it comes out of the bathroom ('+where+')');
+  if(C.view==='look')endLook();else if(C.view==='inspect')endInspect();S.queue.length=0;S.line=null;T?.set?.(.98,{rise:.8,why:'the Langes’ bathroom'});
+  const fy=court.G0+LGH.F+.01,pl=court.langeLocal(me().x,me().z);
+  LGH.doors.bath.set(1);LGH.bathLight(false);LGH.ST.tvOff=true;light(3,lgP(LGH.lamps.bath),{intensity:1.3,dist:5,color:0xd8e6ff});sound('doorSlam',lgP({...LS.bathDoor,y:LGH.F+1.2}),{gain:1.5});
+  // the way: out of the bathroom, along the hall past its table, then into the room you are in; it stops short of you
+  const via=where==='boy'?[LS.bathOut,LS.hallMid,LS.hallTable,LS.hallWest,LS.boyIn]:[LS.bathOut,LS.hallMid,LS.hallTable,LS.hallWest,LS.frontGap,LS.frontIn];
+  let pts=via.slice(),last=pts[pts.length-1],d=Math.hypot(pl.x-last.x,pl.z-last.z);while(d<1.25&&pts.length>2){pts.pop();last=pts[pts.length-1];d=Math.hypot(pl.x-last.x,pl.z-last.z);}
+  const k=clamp((d-1.45)/(d||1),0,1),stop={x:last.x+(pl.x-last.x)*k,z:last.z+(pl.z-last.z)*k};if(LGH.walkable(stop.x,stop.z,.18))pts.push(stop);
+  const at={};pts.forEach((q,i)=>{const w=lgP({...q,y:LGH.F+.5});
+   if(q===LS.hallTable)at[i]=()=>{LGH.strike('hall',{x:-.92,z:-.38},{dist:.42,spin:.6});sound('c7Furniture',w,{gain:1.2});later(.25,()=>sound('c7Glass',w,{gain:.6}));};
+   if(q===LS.boyIn){const nx=stop.x-q.x,nz=stop.z-q.z,nl=Math.hypot(nx,nz)||1;at[i]=()=>{LGH.strike('chair',{x:nx/nl,z:nz/nl},{dist:.75,spin:1.3,tip:1.45});sound('c7Furniture',w,{gain:1.35});};}
+   if(q===LS.frontIn)at[i]=()=>{LGH.strike('couch',{x:-.25,z:-.97},{dist:.38,spin:-.22});LGH.strike('coffee',{x:-.6,z:-.8},{dist:.25,spin:.3});sound('c7Furniture',w,{gain:1.4});};});
+  X.route=pts.map(q=>{const w=LG3(q.x,q.z);return [w.x,w.z];});const s0=LG3(LS.bathIn.x,LS.bathIn.z);LF.place(s0.x,s0.z,headingTo(s0.x,s0.z,X.route[0][0],X.route[0][1]),fy);
+  LF.run(X.route,{speed:4.9,look:()=>camera.position,at,then:()=>langeLoom()});
+  for(let i=0;i<9;i++)later(.12+i*.17,()=>sound('c7Step',{x:LF.F.x,y:fy,z:LF.F.z},{gain:.75}));
+  // Jamie: between you and it, arms out
+  face(jamie,'terrified',8);stand(jamie,()=>{const p=me(),fx=LF.F.x,fz=LF.F.z;return {x:p.x+(fx-p.x)*.4,z:p.z+(fz-p.z)*.4};},{look:()=>({x:LF.F.x,y:fy+1.5,z:LF.F.z}),keep:true,max:4.2,gesture:shield});
+  say([{wait:.8},J('NO—',{time:1,face:'terrified'})]);}
+ function langeLoom(){const X=C.lg;X.stage='loom';X.loomAt=X.t;mark('it stands there, too close');sound('c7Breath',{x:LF.F.x,y:court.G0+LGH.F+1.6,z:LF.F.z},{gain:.9});
+  LF.loom(()=>camera.position,{dur:2.1,then:()=>langeRetreat()});say([J('GET BACK— GET AWAY FROM US—',{time:1.8,face:'terrified'})]);}
+ function langeRetreat(){const X=C.lg;X.stage='retreat';mark('it goes back the way it came');const back=X.route.slice(0,-1).reverse(),s0=LG3(LS.bathIn.x,LS.bathIn.z);back.push([s0.x,s0.z]);
+  LF.run(back,{speed:3.9,back:true,look:()=>camera.position,then:()=>{LF.show(false);LGH.doors.bath.set(0);sound('doorSlam',lgP({...LS.bathDoor,y:LGH.F+1.2}),{gain:1.2});light(3,null);
+   X.stage='flee';X.fleeAt=X.t;C.flags.langeScare=true;jamieOut();
+   say([{wait:.5},J('GO. GO!',{time:1.2,face:'terrified'})],{then:()=>objective('Get out.','The front door.')});}});}
+ // (Jamie runs for the front door ahead of you, and waits on the lawn: he does not trail you through the doorways)
+ function jamieOut(){const jq=court.langeLocal(jamie.px,jamie.pz),back=jq.z>-.3,path=[...(jq.z>1.55?[[-2.75,2.05]]:[]),...(back?[[-2.75,1.0],[-2.5,.1],[-1.6,-.6]]:[]),[-1.5,-3.0],[-1.5,-4.5],[-1.5,-6.4]].map(([x,z])=>{const w=LG3(x,z);return [w.x,w.z];});
+  stand(jamie,null);follow(false);const wait=LG3(LGH.doorX+1.6,-LGH.hd-3.3);comp.run(jamie,[comp.steps.walkTo(jamie,path,{speed:3.4})],{then:()=>stand(jamie,wait,{look:()=>court.SPOT.langeDoor,keep:true,max:1.2})});}
+ function langeRecover(){const X=C.lg;X.stage='recover';mark('outside again');const look=X.choice==='look';C.hMin=Math.max(C.hMin??0,HOUR.dining-.1);
+  stand(jamie,()=>besideMe(1.1),{look:()=>camera.position,keep:true,max:2});
+  say([J('What WAS that. Was that— was that a PERSON?',{time:2.6,face:'terrified'}),{wait:.6},
+   ...(look?[J('You went IN there. I said we go, and you went in there.',{time:2.8,face:'afraid'}),{wait:.4},J('Those drawings. R.A.C. That’s Ruth Ann Carver. D.W., that’s Danny Whitcomb.',{time:3.6,face:'afraid'}),J('And the last one didn’t have a name on it yet.',{time:2.8,face:'terrified'})]
+    :[J('It came right at you. It came right AT you.',{time:2.4,face:'afraid'}),{wait:.4},J('That board. By the phone. Ruth Ann Carver and Danny Whitcomb, on the same board.',{time:3.6,face:'afraid'}),J('And a pin with nothing on it.',{time:2,face:'terrified'})]),
+   {wait:.8},J('I’m going back to the fence. I’m climbing it. I don’t care what Reyes said.',{time:3.2,face:'afraid'})],
+   {then:()=>choose([{id:'sam',label:'“We’re not leaving without Sam.”'},{id:'fence',label:'“Okay. The fence.”'},{id:'together',label:'“We stay together. Whatever we do.”'}],{then:id=>langeAnswer(id),timeout:20,fallback:'together'})});}
+ function langeAnswer(id){const X=C.lg;X.answer=id;
+  const L=id==='sam'?[J('Sam’s not HERE. There’s nobody here. There’s just— THAT.',{time:3,face:'terrified'}),{wait:.8},J('…Okay. Okay. But we don’t go in anywhere else. Promise.',{time:3,face:'sad'})]
+   :id==='fence'?[J('Okay.',{time:1}),{wait:1},J('…It’ll still be a fence. Even if we get over it, it’s the same field. Isn’t it.',{time:3.4,face:'sad'})]
+   :[J('…Yeah. Yeah.',{time:1.4}),J('Together. But we don’t go in anywhere else.',{time:2.6})];
+  say(L,{then:()=>{X.stage='done';X.doneAt=X.t;stand(jamie,null);follow(true);jamie.follow='walk';objective('Find a way back to Reyes.','Stay together.');}});}
  // the newspaper on the lawn, the '59 sedan, the sign at the head of the street
  function lookNewspaper(){if(C.view)return;C.looked.add('newspaper');const pg=pageMesh(newspaper1966(),{w:.26,h:.34,color:0xe6dcc0});
   inspect(pg,{dist:.38,kind:'newspaper',restore:false,plane:true,onClose:()=>pg.removeFromParent(),lines:[N('The Oak Hollow Courier. Tuesday, August twenty-third, 1966. Dry, not yellow. This morning’s.',{time:4}),
@@ -708,7 +849,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(X.closing!=null&&X.closing>0){X.closing=Math.max(0,X.closing-dt*.55);HGd.doors.front.set(X.closing);if(X.closing===0){sound('click',HW(0,-4.4),{gain:.6});later(1,()=>say([J('…It’s stuck again.',{time:1.8,face:'afraid'})],{then:()=>{objective('Upstairs.','Sam said upstairs.');}}));}}
    const foot=HGd.spots.stairFoot,dF=Math.hypot(q.x-foot.x,q.z-foot.z);const top=HW(0,2.9,'u');top.y+=1.4;
    // (only once the footsteps have stopped: it is waiting up there, and it knows you are in the house)
-   if(X.stopped&&((dF<1.8&&k.camLooksAt(top,.86))||X.t-X.inAt>45)){if(!X.revealed&&!busy())reveal();}}}
+   // (the folded star on the second step first: then, at the foot of the stairs looking up, it is there)
+   if(!C.flags.star&&!X.starHint&&X.t-X.inAt>14&&!busy()&&!C.view){X.starHint=true;say([J('What’s that— on the stairs. On the step.',{time:2.2})]);}
+   if(X.stopped&&!C.view&&(C.flags.star||X.t-X.inAt>110)&&((dF<1.8&&k.camLooksAt(top,.86))||X.t-X.inAt>(C.flags.star?80:120))){if(!X.revealed&&!busy())reveal();}}}
  function lightsGreen(){const L=HGd.lamps;light(1,HW(L.living.x,L.living.z),{intensity:1.8,dist:6,color:0xffc890});LIGHTS[1].position.y=court.G0+L.living.y;
   light(2,HW(L.kitchen.x,L.kitchen.z),{intensity:1.4,dist:6,color:0xe8eef0});LIGHTS[2].position.y=court.G0+L.kitchen.y;
   light(3,HW(L.boy.x,L.boy.z,'u'),{intensity:1.6,dist:6,color:0xffd0a0});LIGHTS[3].position.y=court.G0+L.boy.y;HGd.tvScreen.emissiveIntensity=.7;}
@@ -728,6 +871,20 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   for(let i=0;i<9;i++)later(6.6+i*.62,()=>sound(i%2?'c7Step':'c7Board',HM.sockets.hips.getWorldPosition(new THREE.Vector3()),{gain:.9}));
   face(jamie,'terrified',10);
   say([{wait:1.4},J('…Oh my god.',{time:1.6,face:'terrified'}),{wait:2},J('Oh my god oh my god—',{time:1.8}),{wait:1.2},J('Back. Back, back—',{time:1.6})],{then:()=>{X.hideNow=true;objective('Hide.','Through the dining room. The kitchen. F: hide.');jamieHides();}});}
+ // ---- (expanded) before it comes down: what is in the house -------------------------------------------------------------------
+ const GX=()=>HGd.extra,gxW=(q,lv='g')=>{const w=HW(q.x,q.z,lv);return {x:w.x,y:court.G0+q.y,z:w.z};};
+ function pickStar(){if(C.view)return;C.flags.star=true;mark('the folded star');const st=GX().star,jn=true;stand(jamie,()=>besideMe(1.0),{look:()=>camera.position,keep:true,max:2.4});later(14,()=>{if(C.gh&&!C.gh.revealed){stand(jamie,null);follow(true);jamie.follow='walk';}});
+  inspect(st,{dist:.2,kind:'star',spin:.6,onClose:()=>{st.visible=false;},lines:[N('A star, folded out of a gum wrapper. Spearmint. The silver side out, the way you fold them so they shine.',{time:4.2}),
+   ...(jn?[J('…Sam makes these. He’s got a whole jar of them.',{time:2.6,face:'hopeful'}),J('He was here. He was HERE.',{time:1.8,face:'hopeful'}),{wait:.8},J('…Anybody can fold a star, though. Right?',{time:2.6,face:'worried'}),N('Jamie takes it from you, carefully, like it could tear.',{time:3})]:[N('Sam folds these. He has a jar of them on his shelf.',{time:2.8})])]});}
+ function lookPrints(){if(C.view)return;C.looked.add('prints');const q=HW(2.6,2.75);closeLook({x:q.x,y:court.G0+HH.F,z:q.z},{back:.95,eye:1.25,kind:'prints',floor:court.G0+HH.F});C.lookDur=9.5;mark('the wet prints');
+  say([N('Wet prints across the kitchen floor. Bare. Too long, too narrow, the toes spread out like fingers.',{time:4.2}),N('They come out of the closet under the stairs, and go round through the dining room, toward the front.',{time:4}),
+   ...(near({x:jamie.px,z:jamie.pz},5)?[J('Whose foot is that.',{time:1.6,face:'afraid'}),J('Whose foot IS that.',{time:1.6,face:'terrified'})]:[])]);}
+ function radioOn(){if(C.view)return;const q=gxW(GX().radioAt);C.looked.add('radio');
+  if(!C.sk){closeLook(q,{back:.75,eye:1.35,kind:'radio',floor:court.G0+HH.F});C.lookDur=null;sound('click',q,{gain:.5});mark('the radio');
+   say([{act:()=>sound('c6Static',q,{gain:.35})},N('A transistor radio on the desk. Static, and under the static, a voice.',{time:3.4}),
+    {who:'THE RADIO',text:'“…It’s the field. There’s nobody here.”',time:3,act:()=>sound('c6Static',q,{gain:.25})},
+    J('That’s— that’s what Reyes said. Before. Word for word.',{time:2.8,face:'afraid'}),{act:()=>sound('click',q,{gain:.5})},N('You turn it off.',{time:1.6})],{then:()=>endLook()});return;}
+  radioLure();}
  const JPANTRY={x:4.62,z:4.12};// (Jamie's place in the pantry: at the back, beside where you crouch)
  function jamieHides(){const P2=HW(JPANTRY.x,JPANTRY.z),door=HW(4.15,2.7);stand(jamie,null);follow(false);
   comp.run(jamie,[comp.steps.walkTo(jamie,[[HW(2.4,-2.6).x,HW(2.4,-2.6).z],[HW(3.4,-.3).x,HW(3.4,-.3).z],[door.x,door.z],[P2.x,P2.z]],{speed:3.2})],{then:()=>{jamie.crouch=.3;C.jHide='pantry';stand(jamie,P2,{look:()=>camera.position,keep:true,max:.3});}});}
@@ -745,9 +902,52 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   HL.level='g';C.lv='g';court.ST.level='g';C.jlv='g';H.setGraph(houseGraph());H.setTargets([playerTarget(),jamieTarget()]);H.catchR=1.25;H.runSpeed=C.fails.stalk>=2?3.5:4.0;H.sightRange=C.fails.stalk>=2?11:13.5;
   if(H.mode!=='pursue'){const loop=HGd.graph.loop;H.patrol(loop);H.patrolI=1;}
   H.onCatch=T2=>caught(T2);H.onSpot=T2=>{mark('it saw '+T2.id);if(T2.id==='player'&&!C.sk.helped&&C.sk.t>3)jamieHelps();else if(T2.id==='jamie')jamieSeen();};
-  objective('Get upstairs without it seeing you.','It walks the rooms. Go the other way round. F: hide.');
-  if(C.fails.stalk>=1)later(2,()=>say([J(C.fails.stalk>=2?'Wait for it. When it goes in the den— when you hear it in there— go. Dining room, then the stairs.':'It goes round. Like a circle. When it’s on the other side, we go.',{time:3.4})]));
-  else later(3,()=>say([J('It goes round. Like a circle. When it’s on the other side, we go.',{time:3,face:'terrified'})]));}
+  H.stalkSpeed=.9;objective('Stay hidden.','It is looking for you. F: hide.');
+  later(1.4,()=>{if(C.sk&&C.sk.stage==='hunt'&&C.hiding)say([J('(Don’t move. Don’t move.)',{time:2,face:'terrified'})]);});}
+ // ---- (expanded) the closets: it comes and looks; the stairs: it waits at them; a noise: it goes; and then it knows ----------------
+ // where it stands to look into each closet (house frame), and the step it takes into the doorway
+ const HIDE_LOOK={pantry:{front:{x:3.98,z:2.62},step:{x:4.1,z:2.98}},den:{front:{x:-4.42,z:2.7},step:{x:-4.45,z:3.04}}};
+ // (where you stand to get into each one: in front of its door)
+ const HIDE_FRONT={pantry:{x:4.15,z:2.7},den:{x:-4.45,z:2.8},stair:{x:0,z:3.75}};
+ const LEARNED_LOOP=['stairWatch','livingArch','living','livingDoor','den','denCloset','denDoor','backHall','kitchenDoor','kitchen','pantryFront','kitchenDining','dining','diningArch'];
+ function doorEdge(id){const d=HGd.doors[HGd.hides[id].door],p=d.pivot,a=p.rotation.y;const w=HW(p.position.x+Math.cos(a)*.8,p.position.z-Math.sin(a)*.8);return {x:w.x,y:court.G0+HH.F+1.15,z:w.z};}
+ // it comes to the closet you are in, its hand on the edge of the door; the door opens wider; its head in the gap; hold your breath
+ function checkHide(id,{after='watch'}={}){const X=C.sk,L=HIDE_LOOK[id];if(!L){if(after==='watch')watchStairs();return;}X.checked=true;X.check={id,phase:'come',t:0,after};if(after==='watch')X.stage='check';mark('it comes to the '+id);
+  const fr=HW(L.front.x,L.front.z),st=HW(L.step.x,L.step.z),hp=HW(HGd.hides[id].x,HGd.hides[id].z),edge=()=>doorEdge(id);H.setTargets([]);
+  H.script([{to:[fr.x,fr.z],speed:1.1,state:'stalk',low:.3,near:.35},{face:[hp.x,hp.z]},
+   {act:()=>{X.check.phase='hand';say([J('(It’s here. Don’t move— hold your breath—)',{time:2.4,face:'terrified'})]);}},
+   {wait:1.3,state:'peek',low:.45,reach:edge,look:edge},
+   {act:()=>{X.check.phase='open';sound('creak',hp,{gain:.7});}},
+   {wait:.9,state:'peek',low:.5,reach:edge,look:()=>camera.position},
+   {to:[st.x,st.z],speed:.35,state:'peek',free:true,reach:edge,look:()=>camera.position,max:1.4},
+   {act:()=>{X.check.phase='head';X.check.headT=0;sound('c7Breath',hp,{gain:1});}},
+   {wait:3.2,state:'peek',low:.62,reach:edge,look:()=>camera.position},
+   {act:()=>{X.check.phase='leave';sound('c7Breath',hp,{gain:.5});}},
+   {to:[fr.x,fr.z],speed:.5,state:'stalk',free:true,reach:null,look:()=>camera.position,max:2},{wait:.4,state:'idle',reach:null}],
+   {then:()=>{const c=X.check;X.check=null;mark('it lets the door go');if(c?.after==='loop')learnedLoop({at:(X.resumeAt??10)});else watchStairs();}});}
+ // after looking, it goes and stands at the foot of the stairs: it knows where you want to go
+ function watchStairs(){const X=C.sk;if(!X)return;X.stage='watch';X.watchAt=X.t;X.stairsCp=true;H.setTargets([playerTarget(),jamieTarget()]);H.patrol(['stairWatch']);mark('it waits at the foot of the stairs');checkpoint('c7-stairs');
+  later(2.6,()=>{if(C.sk!==X||X.stage!=='watch')return;say([J('(It’s at the stairs.)',{time:1.8,face:'afraid'}),J('(It’s just— standing at the bottom of the stairs. Waiting.)',{time:2.8,face:'terrified'}),{wait:1},
+   J('(The timer. On the counter. Wind it up, and we go out the back way, round, while it looks.)',{time:3.8,face:'afraid'})],{then:()=>{if(X.stage==='watch')objective('It is waiting at the foot of the stairs.','Make a noise somewhere else: the egg timer on the kitchen counter. Then the back way round.');}});});}
+ function windTimer(){const X=C.sk;if(!X||X.timer)return;const pos=gxW(GX().timerAt);X.timer={t:0,ring:7,pos,tick:0};mark('the timer, wound');sound('click',pos,{gain:.6});
+  objective('Get out of the kitchen.','The back way: the back hall, the den, round to the front.');say([J('(Go— the back way—)',{time:1.6,face:'afraid'})]);}
+ function radioLure(){const X=C.sk;if(!X||X.radio)return;const pos=gxW(GX().radioAt);X.radio=true;mark('the radio, on');sound('click',pos,{gain:.6});
+  for(let i=0;i<8;i++)later(i*.45,()=>sound('c6Static',pos,{gain:.55}));later(.3,()=>{const heard=H.hear(pos,2.2,{id:'the radio'});X.lure={id:'radio',pos,at:X.t,heard};});
+  say([J('(Go— GO—)',{time:1.2,face:'afraid'})]);}
+ // there, at what it heard: it breaks it; and after that it looks in the closets as it goes round
+ function learn(L){const X=C.sk;L.done=true;X.learned=(X.learned||0)+1;mark('it learns ('+L.id+')');const q=L.pos;
+  H.script([{face:[q.x,q.z]},{wait:.6,state:'peek',reach:()=>q,look:()=>q},{act:()=>{sound('c7Strike',q,{gain:1.1});sound('c6Clank',q,{gain:.8});if(L.id==='timer')GX().timer.visible=false;else GX().radio.visible=false;}},
+   {wait:.9,state:'alert',reach:null,look:()=>({x:q.x,y:q.y+.4,z:q.z})},
+   // (and it stands there, turning its head: where are they)
+   {wait:2.6,state:'idle',look:()=>({x:HM.x+Math.sin(C.t*1.3)*4,y:HM.y+1.3,z:HM.z-Math.cos(C.t*1.3)*4})}],{then:()=>{X.resumeAt=L.id==='timer'?10:5;learnedLoop({at:X.resumeAt});}});
+  later(1.4,()=>say([J(X.learned===1?'(It broke it. It just— broke it.)':'(It knows that’s us. It knows.)',{time:2.2,face:'terrified'})]));}
+ function learnedLoop({at=0}={}){const X=C.sk;X.stage='learned';H.setTargets([playerTarget(),jamieTarget()]);H.stalkSpeed=.9+.18*(X.learned||1);H.patrol(LEARNED_LOOP);H.patrolI=at;
+  if(!X.loopSaid){X.loopSaid=true;later(2.2,()=>say([J('(It’s looking in the closets now. It goes round. Like a circle.)',{time:3.2,face:'afraid'}),J('(When it’s on the other side— the stairs.)',{time:2.2})],{then:()=>objective('Get upstairs without it seeing you.','It walks the rooms, and looks in the closets now. Go the other way round.')}));}}
+ // (going round, at a closet: the door opened, a look in, on; if you are in it, the close look)
+ function quickCheck(hid){const X=C.sk,L=HIDE_LOOK[hid];if(!L)return;X.resumeAt=H.patrolI+1;if(C.hiding===hid){checkHide(hid,{after:'loop'});return;}
+  const fr=HW(L.front.x,L.front.z),hp=HW(HGd.hides[hid].x,HGd.hides[hid].z),edge=()=>doorEdge(hid);X.peek={id:hid,open:false};mark('it looks in the '+hid);
+  H.script([{to:[fr.x,fr.z],speed:1.0,state:'stalk',near:.45},{face:[hp.x,hp.z]},{wait:.6,state:'peek',reach:edge,look:edge},{act:()=>{X.peek.open=true;sound('creak',hp,{gain:.5});}},
+   {wait:1.5,state:'peek',reach:edge,look:()=>hp},{act:()=>{X.peek.open=false;}},{wait:.4,state:'idle',reach:null}],{then:()=>{X.peek=null;learnedLoop({at:X.resumeAt});}});}
  function jamieHelps(){const X=C.sk;X.helped=true;mark('Jamie throws a can');const far=HW(-3.4,1.8);
   later(.5,()=>{sound('c6Clank',far,{gain:1.1});sound('c5WoodStrike',far,{gain:.6});H.hear({x:far.x,z:far.z},3,{id:'a can, thrown',force:true});});
   later(.9,()=>say([J('GO!',{time:1})]));}
@@ -756,12 +956,32 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   // a short, physical end: it is on you, the view goes over, black
   const p=me();pose({x:p.x,z:p.z},{y:camera.position.y-.9,yaw:p.a+.6,pitch:-.9,slow:.25});o.fade(1);C.capturedT=0;
   say([N(T2.id==='jamie'?'It has Jamie.':'It has you.',{time:2.4})]);
-  later(2.6,()=>{const sec=which==='stalk'?'c7-stalk':'c7-bikes';jumpTo(sec);Object.assign(C.fails,fails);C.fadeIn=0;o.fade(1);mark('again: '+sec);if(which==='stalk'){H.runSpeed=C.fails.stalk>=2?3.5:4.0;H.sightRange=C.fails.stalk>=2?11:13.5;}});}
+  const back=which==='stalk'?(X.stairsCp?'c7-stairs':'c7-stalk'):'c7-bikes';
+  later(2.6,()=>{const sec=back;jumpTo(sec);Object.assign(C.fails,fails);C.fadeIn=0;o.fade(1);mark('again: '+sec);if(which==='stalk'){H.runSpeed=C.fails.stalk>=2?3.5:4.0;H.sightRange=C.fails.stalk>=2?11:13.5;}});}
  function updateStalk(dt){const X=C.sk;if(!X||X.caught)return;X.t+=dt;const p=me(),q=houseLocal(p.x,p.z);
   // sprinting is heard; doors are heard
   if((me().speed||0)>3.2&&(o.foot.crouch||0)<.3){X.noiseT=(X.noiseT||0)+dt;if(X.noiseT>.6){X.noiseT=0;H.hear({x:p.x,z:p.z},.9,{id:'running'});}}
   // Jamie: in the pantry until you go; then right behind you (crouched), never in front
   if(C.jHide==='pantry'&&!C.hiding&&Math.hypot(q.x-HGd.hides.pantry.x,q.z-HGd.hides.pantry.z)>2.2&&!X.jamieOut&&H.mode!=='pursue'){X.jamieOut=true;C.jHide=null;stand(jamie,()=>{const a=me().a;return {x:p.x-Math.sin(a)*1.4,z:p.z+Math.cos(a)*1.4};},{look:()=>({x:HM.x,y:HM.y+1.6,z:HM.z}),keep:true,max:.6});jamie.crouch=.25;}
+  // (expanded) it comes to the closet you hid in; the door opens wider; its head in the gap: hold your breath (Space) or it hears you
+  if(X.stage==='hunt'&&!X.checked&&C.hiding&&X.t>3.2&&H.mode!=='pursue'&&HIDE_LOOK[C.hiding])checkHide(C.hiding);
+  else if(X.stage==='hunt'&&!X.checked&&!C.hiding&&X.t>10&&H.mode==='patrol')watchStairs();
+  if(X.check){const c=X.check,d=HGd.doors[HGd.hides[c.id].door];c.t+=dt;
+   if(c.phase==='open'||c.phase==='head')d.set(Math.min(.62,d.open+dt*.45));else if(c.phase==='leave')d.set(Math.max(.3,d.open-dt*.5));
+   if(['hand','open','head'].includes(c.phase)&&C.hiding!==c.id){X.check=null;mark('out of the closet with it right there');caught(playerTarget());return;}
+   if(c.phase==='head'){c.headT+=dt;const holding=!!o.held?.('Space');c.held=(c.held||0)+(holding?dt:0);
+    if(c.headT>.75&&!holding){X.check=null;mark('it hears you breathe');sound('c7Snarl',camera.position,{gain:1});caught(playerTarget());return;}}}
+  if(X.peek){const d=HGd.doors[HGd.hides[X.peek.id].door];d.set(X.peek.open?Math.min(.9,d.open+dt*.8):Math.max(.25,d.open-dt*.8));}
+  // the timer: ticking; then it rings (and what hears it comes to it)
+  if(X.timer&&!X.timer.rang){const T2=X.timer;T2.t+=dt;T2.tick+=dt;if(T2.tick>.5){T2.tick=0;sound('tap',T2.pos,{gain:.14});}GX().timer.rotation.y=-T2.t*.5;
+   if(T2.t>=T2.ring){T2.rang=true;mark('the timer rings');for(let i=0;i<12;i++)later(i*.1,()=>sound(i%2?'tap':'c6Clank',T2.pos,{gain:i%2?.55:.3}));const heard=H.hear(T2.pos,2.2,{id:'the timer'});X.lure={id:'timer',pos:T2.pos,at:X.t,heard};}}
+  if(X.lure&&!X.lure.done&&H.mode==='search'&&H.lastKnown?.id==='the '+X.lure.id&&Math.hypot(HM.x-X.lure.pos.x,HM.z-X.lure.pos.z)<1.5)learn(X.lure);
+  // (a noise it heard and went to, that it lost on the way: it comes back to the stairs, and the next noise works no better)
+  if(X.lure&&!X.lure.done&&H.mode==='patrol'&&X.t-X.lure.at>25){X.lure.done=true;learnedLoop({at:0});}
+  // (it waits at the stairs a long time: Jamie goes for the timer himself)
+  if(X.stage==='watch'&&!X.timer&&X.t-X.watchAt>90&&!X.jamieTimer&&!busy()){X.jamieTimer=true;say([J('(I’ll do it. Stay here.)',{time:1.8,face:'afraid'})],{then:()=>{if(!X.timer)windTimer();}});}
+  // going round, it looks in the closets it passes
+  if(X.stage==='learned'&&H.mode==='patrol'&&!X.check&&!X.peek){for(const [nid,hid] of [['denCloset','den'],['pantryFront','pantry']]){const n=H.node(nid);if(n&&Math.hypot(HM.x-n.x,HM.z-n.z)<.6&&X.t-((X.peeked||={})[hid]??-99)>20){X.peeked[hid]=X.t;quickCheck(hid);break;}}}
   // up the stairs and off the top: the room at the top of the stairs
   if(C.lv==='u'&&q.z>2.4&&!X.up){X.up=true;mark('upstairs');H.setTargets([]);doorStart();}}
  // hiding (a closet, the pantry): in, the door nearly shut; out
@@ -776,14 +996,28 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   comp.run(jamie,[comp.steps.walkTo(jamie,[[HW(2.6,-1.5).x,HW(2.6,-1.5).z],[HW(1.6,-2.6).x,HW(1.6,-2.6).z],[HW(0,-2.2).x,HW(0,-2.2).z],[HW(0,2.7).x,HW(0,2.7).z],[top.x,top.z],[boy.x,boy.z]],{speed:2.8})],
    {then:()=>{C.jlv='u';jamie.crouch=0;stand(jamie,boy,{look:()=>HW(-HH.UCX,3.3,'u'),keep:true,max:.6});}});C.jStair=true;}
  function shutDoor(){const X=C.dr;if(X.shut)return;X.shut=true;X.closing=1;mark('the door, shut');sound('doorSlam',HW(-HH.UCX,3.3,'u'),{gain:.5});
-  H.hear(HW(-HH.UCX,3.3,'u'),5,{id:'a door shut'});objective('The dresser.','Against the door. F.');
-  later(.8,()=>say([J('The dresser— help me—',{time:1.6,face:'terrified'})]));later(5,()=>{if(!X.pushed)pushDresser('jamie');});}
- function pushDresser(who){const X=C.dr;if(X.pushed)return;X.pushed=true;X.pushT=0;mark('the dresser ('+who+')');sound('c7Furniture',HW(-HH.UCX-.4,2.0,'u'),{gain:.9});
+  objective('The dresser.','Against the door. F.');
+  later(.8,()=>say([J('The dresser— help me—',{time:1.6,face:'terrified'})]));
+  // (it heard that: up the stairs, and it stands at the top of them; you hear every tread)
+  later(1.0,()=>{if(C.dr!==X)return;const foot=HW(0,-2.0),top=HW(0,2.4,'u');H.setTargets([]);H.setMode('script');HM.show(true);const up=HL.level==='u';
+   H.script([...(up?[]:[{to:[foot.x,foot.z],speed:2.6,state:'run',low:.5},{to:[top.x,top.z],speed:.9,state:'walk',low:.3,free:true,keepY:false},{act:()=>{HL.level='u';X.upTop=true;}}]),
+    {until:()=>X.pushed,state:'idle',look:()=>HW(-HH.UCX,3.3,'u')}]);
+   for(let i=0;i<10;i++)later(1.4+i*.62,()=>{if(!X.pushed)sound(i%2?'c7Step':'c7Board',HW(0,-1.4+i*.42),{gain:.8});});});
+  X.shutAt=X.t;}
+ // the dresser will not slide: it stands on the rug. Jamie lifts; you pull the rug out from under it while it is up
+ function rugStuck(){const X=C.dr;if(X.rug||X.pushed)return;X.rug={stage:'stuck',t:0,cycle:0};sound('c7Furniture',HW(-2.2,1.0,'u'),{gain:.5});mark('the dresser will not move: the rug');
+  stand(jamie,()=>HW(-2.2,.3,'u'),{look:()=>HW(-2.2,1.0,'u'),keep:true,max:1.6});
+  say([J('It won’t— it’s on the RUG— it won’t slide—',{time:2,face:'terrified'}),J('I’ll lift it. When I lift, pull the rug out. When I say.',{time:3,face:'afraid'})],{then:()=>{if(X.rug.stage==='stuck'){X.rug.stage='lift';X.rug.t=0;objective('Pull the rug out from under it.','When Jamie lifts the dresser. F.');}}});}
+ function pullRug(who){const X=C.dr,R=X?.rug;if(!R||R.stage!=='lift')return;
+  if(who==='you'&&!R.up){R.miss=(R.miss||0)+1;mark('the rug: too soon');say([J(R.miss>1?'WAIT for it— when it’s UP—':'Not yet— when I lift—',{time:1.6,face:'afraid'})]);return;}
+  R.stage='out';R.outT=0;mark('the rug, out ('+who+')');sound('c7Drag',HW(-2.6,1.2,'u'),{gain:.9});
+  say([J('PUSH— PUSH IT—',{time:1.2,face:'terrified'})],{then:()=>{if(!X.pushed)objective('Push it against the door.','F.');}});if(who==='jamie')later(.7,()=>pushDresser('jamie'));}
+ function pushDresser(who){const X=C.dr;if(X.pushed)return;if(who==='you'&&X.rug?.stage!=='out'){rugStuck();return;}X.pushed=true;X.pushT=0;mark('the dresser ('+who+')');sound('c7Furniture',HW(-HH.UCX-.4,2.0,'u'),{gain:.9});
   // (Jamie behind it, shoving, as it goes: then against it, holding)
   stand(jamie,()=>{const d=HGd.dresser.position;return HW(d.x,d.z-.82,'u');},{look:()=>HW(-HH.UCX-.4,3.3,'u'),keep:true,max:.3});objective('Hold it.','');
   // it comes up: the stairs, the door, the hits
-  later(2.2,()=>{HL.level='g';const foot=HW(0,-2.0),top=HW(0,2.4,'u'),door=HW(-HH.UCX+.6,3.3,'u');H.setMode('script');HM.show(true);
-   H.script([{to:[foot.x,foot.z],speed:2.6,state:'run',low:.6},{to:[top.x,top.z],speed:2.0,state:'walk',low:.3,free:true},{act:()=>{HL.level='u';}},{to:[door.x,door.z],speed:1.4,state:'walk',low:.3,free:true},
+  later(X.upTop?.6:2.2,()=>{const foot=HW(0,-2.0),top=HW(0,2.4,'u'),door=HW(-HH.UCX+.6,3.3,'u'),up=X.upTop;if(!up)HL.level='g';H.setMode('script');HM.show(true);
+   H.script([...(up?[]:[{to:[foot.x,foot.z],speed:2.6,state:'run',low:.6},{to:[top.x,top.z],speed:2.0,state:'walk',low:.3,free:true},{act:()=>{HL.level='u';}}]),{to:[door.x,door.z],speed:1.4,state:'walk',low:.3,free:true},
     {face:[HW(-2,3.3,'u').x,HW(-2,3.3,'u').z]},{wait:.8,state:'idle',look:()=>HW(-2,3.3,'u')},
     {act:()=>hitDoor(1)},{wait:1.6,state:'hit',reach:()=>HW(-HH.UCX-.05,3.3,'u'),reachL:null},{act:()=>hitDoor(2)},{wait:2.2,state:'hit'},{act:()=>{sound('c7Drag',HW(-HH.UCX,3.3,'u'),{gain:.8});}},{wait:3,state:'idle',reach:null},
     {to:[top.x,top.z],speed:1.0,state:'walk',free:true},{act:()=>{HL.level='g';}},{to:[foot.x,foot.z],speed:1.0,state:'walk',free:true},{act:()=>{HGd.doors.front.set(1);sound('doorOpen',HW(0,-4.4),{gain:.8});}},
@@ -793,10 +1027,20 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const dr=HGd.dresser;HGd.moveDresser(dr.position.x+.05*n,dr.position.z-.02,dr.rotation.y);mark('the door, hit '+n);
   if(n===1)later(.4,()=>say([J('HOLD IT— hold it—',{time:1.6,face:'terrified'})]));}
  function updateDoor(dt){const X=C.dr;if(!X)return;X.t+=dt;const d=HGd.doors.boy;
+  if(X.shut&&!X.rug&&!X.pushed&&X.shutAt!=null&&X.t-X.shutAt>9)rugStuck();
+  const R=X.rug;if(R?.stage==='lift'&&!X.pushed){R.t+=dt;const ph2=R.t%3.2,up=ph2>1.0&&ph2<2.5;const dr=HGd.dresser;
+   if(up&&!R.up){R.up=true;R.cycle++;sound('c7Furniture',HW(-2.2,1.0,'u'),{gain:.4});face(jamie,'terrified',3);say([J(R.cycle===1?'NOW—':R.cycle%2?'NOW! Pull—':'Now— NOW—',{time:1,face:'terrified'})]);}
+   if(!up&&R.up){R.up=false;sound('c5WoodStrike',HW(-2.2,1.0,'u'),{gain:.45});}
+   const lift=up?smooth(Math.min(1,(ph2-1.0)/.25))*(1-smooth((ph2-2.25)/.25)):0;dr.rotation.z=.08*lift;dr.position.y=HH.UP+.05*lift;
+   if(R.t>34&&!R.heave){R.heave=true;say([J('MOVE—',{time:1,face:'terrified'})]);R.up=true;pullRug('jamie');}}
+  else if(HGd.dresser.rotation.z!==0&&!X.pushed){HGd.dresser.rotation.z=0;HGd.dresser.position.y=HH.UP;}
+  if(R?.stage==='out'&&R.outT<1){R.outT=Math.min(1,R.outT+dt/.5);const u=smooth(R.outT),rg=HGd.extra.rug,r0=HGd.rug0;rg.position.set(r0.x-1.15*u,HH.UP,r0.z+.2*u);rg.scale.set(1-.4*u,1,1);rg.rotation.y=.3*u;HGd.dresser.rotation.z=0;HGd.dresser.position.y=HH.UP;}
   if(X.closing!=null&&X.closing>0){X.closing=Math.max(0,X.closing-dt*2.4);d.set(X.closing);}
   if(X.shakeT>0){X.shakeT-=dt;d.pivot.rotation.y=-Math.PI/2+Math.sin(C.t*60)*.03*(X.shakeT/.45);}
   if(X.pushed&&X.pushT<1){X.pushT=Math.min(1,X.pushT+dt/1.5);const a=smooth(X.pushT),s0=HGd.spots.dresserStart,s1=HGd.spots.dresserBlock;HGd.moveDresser(s0.x+(s1.x-s0.x)*a,s0.z+(s1.z-s0.z)*a,Math.PI/2);}
-  if(X.gone&&!X.after&&!busy()){X.after=true;say([{wait:1.4},J('…It’s going up the street.',{time:2}),J(C.bikesAt?'It’s going toward the bikes.':'It’s just— walking. Like it lives here.',{time:2.2,face:'afraid'})],{then:()=>upstairsStart()});}}
+  if(X.gone&&!X.after&&!busy()){X.after=true;say([{wait:1.4},J('…It’s going up the street.',{time:2}),J(C.bikesAt?'It’s going toward the bikes.':'It’s just— walking. Like it lives here.',{time:2.2,face:'afraid'}),
+    // (the room held: Jamie, down against the dresser, the star in his hand)
+    ...(C.flags.star?[{wait:1.2},N('Jamie slides down with his back against the dresser. He has the star in his hand.',{time:3.4}),J('…If it’s his, he was in this house.',{time:2.6,face:'sad'}),J('He was right here.',{time:1.8,face:'sad'})]:[J('…We’re okay. We’re okay.',{time:2,face:'sad'})])],{then:()=>upstairsStart()});}}
  // ---- upstairs: what is up here ---------------------------------------------------------------------------------------------------------
  function upstairsStart(){go('e7-upstairs');checkpoint('c7-clues');C.up={t:0};
   // (Jamie drags the dresser off the door again, and opens it: they listen; nothing)
@@ -1030,20 +1274,97 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   say([{wait:2.4,act:()=>{jm.walk([[rq.x-1.6,rq.z-.4]],{speed:2.4});}},{who:'JAMIE’S MOM',text:'“Where is he? WHERE IS HE?”',from:jm,time:2,face:'terrified'},
    {act:()=>{reyes.place(rq.x,rq.z,headingTo(rq.x,rq.z,jm.x,jm.z));reyes.gest('brace');reyes.lookAt=jm.person.group.position;}},R('Ma’am— ma’am. We have everyone out there. Everyone.',{time:2.8}),
    {wait:.8,act:()=>{jm.lookAt=camera.position;}},{who:'JAMIE’S MOM',text:'“You were with him.”',from:jm,time:1.8},{who:'JAMIE’S MOM',text:'“You were WITH him.”',from:jm,time:2.2,face:'sad'},
-   {wait:2.4,act:()=>{jm.gest('head');jm.walk([[c2.x+1.6,c2.z]],{speed:1});}},{wait:3}],{then:()=>afterB()});
+   {wait:2.4,act:()=>{jm.gest('head');jm.walk([[c2.x+1.6,c2.z]],{speed:1});}},{wait:3}],{then:()=>afterEvidence()});
   C.flags.forgetReyes=true;C.flags.forgetPhotoMom=true;}
  function afterB(){const jm=cast.jamieMom,b=LK.bench,c2=main(1118,2.6);C.af.stage='forget';mark('the forgetting');
   say([{who:'OFFICER',text:'“Description for the second one?”',from:officer,time:2.2},R('Twelve. Blue cap. Orange shirt. His name is Jamie.',{time:3,act:()=>{reyes.gest('fold');reyes.lookAt=officer.person.group.position;}}),
-   {who:'JAMIE’S MOM',text:'“I have a picture— I have one from the pool, last week—”',from:jm,time:3,act:()=>{jm.gest('phone');}},{wait:1.6},
-   {who:'JAMIE’S MOM',text:'“…He was right there. He was RIGHT there.”',from:jm,time:2.6},{who:'OFFICER',text:'“Ma’am— there’s nobody in this one.”',from:officer,time:2.2},
+   {who:'JAMIE’S MOM',text:'“Look at it. You look at it. He’s right there.”',from:jm,time:2.6,act:()=>{jm.gest('phone');}},{wait:1.4},{who:'OFFICER',text:'“Ma’am— there’s nobody in this one.”',from:officer,time:2.2},
    {who:'JAMIE’S MOM',text:'“He’s in all of these. He’s in— where is—”',from:jm,time:2.8,face:'terrified'},{who:'OFFICER',text:'“A school picture is fine, ma’am. Anything.”',from:officer,time:2.4},
+   {wait:1.2,act:()=>sound('c6Static',{x:officer.x,y:gy(officer.x,officer.z)+1.2,z:officer.z},{gain:.35})},{who:'DISPATCH (RADIO)',text:'“…all units, Oak Hollow Drive, end of the street: one juvenile missing. One.”',time:3.6},
+   R('Two. TWO.',{time:1.4,face:'tired'}),{wait:1.2},R('…Two.',{time:1.4}),
+   ...(C.af?.capWithMom?[{wait:.8},{who:'OFFICER',text:'“Ma’am, is that— whose hat is that? Is that evidence?”',from:officer,time:2.6},{wait:1.4},{who:'JAMIE’S MOM',text:'“…I don’t—”',from:jm,time:1.4},
+    {who:'JAMIE’S MOM',text:'“I don’t know whose this is.”',from:jm,time:2.2,act:()=>{C.af.capDown=true;mark('the cap, nobody’s');capOnHood();}}]:[]),
    {wait:2.2},{who:'OFFICER',text:'“And the other one. From yesterday. The Mill Creek kid.”',from:officer,time:2.8},{wait:.6},R('…S—',{time:1.2}),
    {act:()=>{reyes.gest('phone');mark('Reyes looks at his notebook');}},{wait:2.4},R('Sam.',{time:1.4}),{wait:.8},R('His name is Sam.',{time:1.8}),{wait:2.6},
-   {act:()=>{reyes.gest('fold');reyes.lookAt=camera.position;const rq2=main(LOOKOUT.bench.d-1.1,LOOKOUT.bench.lat+.2);reyes.walk([[rq2.x,rq2.z]],{speed:.8,then:a=>{a.faceTo(b.x,b.z);}});}},{wait:1.6},
-   R('Your bike’s in my trunk. Jamie’s too. I’ll bring them back tomorrow.',{time:3}),R('I’m taking you to Sam’s. Your mom’s meeting us there. That’s where everybody is.',{time:3.4})],{then:()=>{C.af.stage='done';later(1.6,()=>toSams());}});void c2;}
+   {act:()=>{reyes.gest('fold');reyes.lookAt=camera.position;const p0=me(),rq2=C.af?.notes?{x:p0.x+Math.sin(p0.a)*1.4,z:p0.z-Math.cos(p0.a)*1.4}:main(LOOKOUT.bench.d-1.1,LOOKOUT.bench.lat+.2);reyes.walk([[rq2.x,rq2.z]],{speed:.8,then:a=>{const p1=me();a.faceTo(p1.x,p1.z);}});}},{wait:1.6}],
+   {then:()=>{if(C.af?.notes)afterRecord();else afterLeave();}});void c2;}
+ function afterLeave(){say([R('Your bike’s in my trunk. Jamie’s too. I’ll bring them back tomorrow.',{time:3}),R('I’m taking you to Sam’s. Your mom’s meeting us there. That’s where everybody is.',{time:3.4})],{then:()=>{C.af.stage='done';later(1.6,()=>toSams());}});}
+ // ---- (expanded) later: show Reyes where; Jamie's mom asks you; her phone; what his notebook says an hour later ----------------------------
+ // the evidence in the grass: his bike where it went down, his cap, the two marks his heels made to the mouth of the path
+ const capMesh=(()=>{const g=new THREE.Group();g.name='c7-jamies-cap';const blue=new THREE.MeshStandardMaterial({color:0x1e2f6a,roughness:.85});
+  const crown=new THREE.Mesh(new THREE.SphereGeometry(.1,16,10,0,Math.PI*2,0,Math.PI/2),blue);crown.scale.set(1,.8,1.1);g.add(crown);
+  const bill=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.008,16,1,false,-Math.PI*.35,Math.PI*.7),blue);bill.position.set(0,.004,-.07);bill.scale.set(1,1,1.2);g.add(bill);g.visible=false;scene.add(g);return g;})();
+ const marksG=(()=>{const g=new THREE.Group();g.name='c7-drag-marks';g.visible=false;scene.add(g);return g;})();
+ function evidencePlaces(){const sp=court.SPOT,R3=court.R3,mouth=sp.mouth;
+  const bike=C.jBikeDown?{x:C.jBikeDown.x,z:C.jBikeDown.z}:(()=>{const q=R3(6.2,-8.6);return {x:q.x,z:q.z};})();
+  const land=(JL.x||JL.z)&&Math.hypot(JL.x-mouth.x,JL.z-mouth.z)<25?{x:JL.x,z:JL.z}:(()=>{const q=R3(3.6,-6.2);return {x:q.x,z:q.z};})();
+  const at=u=>({x:land.x+(mouth.x-land.x)*u,z:land.z+(mouth.z-land.z)*u});const cap=(()=>{const q=at(.62),dx=mouth.x-land.x,dz=mouth.z-land.z,l=Math.hypot(dx,dz)||1;return {x:q.x-dz/l*.55,z:q.z+dx/l*.55};})();
+  return {bike,land,mouth:{x:mouth.x,z:mouth.z},marks:at(.35),cap,at};}
+ function evidenceProps(on,E){capMesh.visible=on;marksG.visible=on;if(!on)return;
+  capMesh.position.set(E.cap.x,gy(E.cap.x,E.cap.z)+.02,E.cap.z);capMesh.rotation.set(.25,.8,.15);
+  if(!marksG.children.length){const m=new THREE.MeshStandardMaterial({color:0x26281a,roughness:1,transparent:true,opacity:.82,depthWrite:false});
+   const dx=E.mouth.x-E.land.x,dz=E.mouth.z-E.land.z,L=Math.hypot(dx,dz)||1,nx=-dz/L,nz=dx/L,n=Math.ceil(L/.45);
+   for(const sd of [-1,1])for(let k=0;k<n;k++){const u0=k/n,u1=(k+1)/n,wob=Math.sin(k*1.7+sd)*.04,x0=E.land.x+dx*u0+nx*(.13*sd+wob),z0=E.land.z+dz*u0+nz*(.13*sd+wob),x1=E.land.x+dx*u1+nx*(.13*sd+wob),z1=E.land.z+dz*u1+nz*(.13*sd+wob);
+    const seg=new THREE.Mesh(new THREE.PlaneGeometry(.09+.03*Math.sin(k*2.3),Math.hypot(x1-x0,z1-z0)+.05),m);seg.rotation.order='YXZ';seg.rotation.set(-Math.PI/2,Math.atan2(-(x1-x0),-(z1-z0)),0);
+    seg.position.set((x0+x1)/2,gy((x0+x1)/2,(z0+z1)/2)+.018,(z0+z1)/2);marksG.add(seg);}}
+  // his bike, where it went down (in the dark, on its side)
+  const jb=jamie.bike.group;jb.visible=true;jb.position.set(E.bike.x,gy(E.bike.x,E.bike.z)+.05,E.bike.z);jb.rotation.set(0,jb.rotation.y,1.35);}
+ function flashAt(q){const X=C.af;X.photos=(X.photos||0)+1;sound('click',q,{gain:.9});light(3,{x:q.x,y:gy(q.x,q.z)+1.5,z:q.z},{intensity:10,dist:7,color:0xffffff});later(.12,()=>light(3,null));mark('photo '+X.photos);}
+ function afterEvidence(){const X=C.af;X.stage='show';X.shown={};mark('show me where');unpose();o.roam.walkLock=false;
+  // (up off the bench, on your feet: your bike is in his trunk)
+  {const s0=main(LOOKOUT.bench.d+.9,LOOKOUT.bench.lat-.4);o.placePlayer({x:s0.x,z:s0.z,a:headingTo(s0.x,s0.z,reyes.x,reyes.z),mode:'walk',bike:null});}const E=evidencePlaces();X.E=E;evidenceProps(true,E);
+  reyes.gest('fold');reyes.lookAt=camera.position;
+  say([{wait:1},R('Hey. Look at me. You’re okay. You’re okay.',{time:2.4}),R('I need you to show me where. Exactly where it happened. Can you do that?',{time:3.4}),R('Take your time.',{time:1.4})],
+   {then:()=>{X.go=true;objective('Show Officer Reyes where it happened.','His bike. His cap. The marks in the grass. And the gum. F: show him.');}});}
+ function showEvidence(kind){const X=C.af,E=X.E;if(!X.go||X.shown[kind]||X.busyR)return;X.busyR=true;X.shown[kind]=true;mark('shown: '+kind);const p=me();
+  const q=kind==='gum'?{x:p.x,z:p.z}:kind==='bike'?E.bike:kind==='cap'?E.cap:E.marks,qy={x:q.x,y:gy(q.x,q.z)+(kind==='gum'?1.1:.15),z:q.z};
+  const st=(()=>{const a=headingTo(q.x,q.z,p.x,p.z);return kind==='gum'?{x:p.x+Math.sin(p.a)*1.1,z:p.z-Math.cos(p.a)*1.1}:{x:q.x+Math.sin(a)*1.1,z:q.z-Math.cos(a)*1.1};})();
+  const done=()=>{X.busyR=false;light(2,null);reyes.gest('fold');reyes.lookAt=camera.position;};
+  const lines={bike:[R('His bike.',{time:1.4}),R('It went down here. He came off it, here.',{time:2.6}),{act:()=>flashAt(qy)},{wait:.8},{act:()=>sound('c7Pencil',qy,{gain:.6})},R('Okay. Okay.',{time:1.4})],
+   marks:[N('Two long marks in the grass, pressed flat, a heel’s width apart. They go to the mouth of the path.',{time:4.2}),R('Heels.',{time:1.2}),R('He was dragged. Both heels. All the way to the path.',{time:3,face:'tired'}),{act:()=>flashAt(qy)},
+    {act:()=>{light(2,{x:E.mouth.x,y:gy(E.mouth.x,E.mouth.z)+1.2,z:E.mouth.z},{intensity:2,dist:5,color:0xeef2ff});}},N('At the mouth of the path the marks stop. Past it the grass stands up straight, like nothing went in.',{time:4.2})],
+   cap:[R('Is this his?',{time:1.4}),N('His blue cap. The one he turns backwards when he rides.',{time:3}),{act:()=>flashAt(qy)},{wait:.6,act:()=>{capMesh.visible=false;X.capReyes=true;}},R('I’ll give it to his mom.',{time:2})],
+   gum:[R('What’s that?',{time:1.2}),N('The pack of gum. Spearmint. Sam’s. Jamie’s.',{time:2.8}),R('Where was it?',{time:1.4}),N('You point at the grass where it was.',{time:2.4}),{act:()=>flashAt(qy)},{wait:.6},R('Keep it. Keep it safe for him.',{time:2.4,face:'tired'})]}[kind];
+  reyes.walk([[st.x,st.z]],{speed:1.7,then:a=>{a.faceTo(q.x,q.z);a.gest(kind==='gum'?'fold':'flashlight');a.lookAt=qy;if(kind!=='gum')light(2,{x:q.x,y:gy(q.x,q.z)+1.3,z:q.z},{intensity:2.2,dist:4,color:0xeef2ff});say(lines,{then:done});}});}
+ function reyesNotes(){const X=C.af;X.notes=true;mark('Reyes’s notes, as he wrote them');reyes.gest('phone');sound('c7Pencil',{x:reyes.x,y:gy(reyes.x,reyes.z)+1.2,z:reyes.z},{gain:.6});
+  say([{wait:1.2},R('Read it back to me. Tell me if I got it right.',{time:2.6})],{then:()=>{const pg=pageMesh(reyesPage({altered:false}),{w:.18,h:.24,color:0xf6f3e6});
+   inspect(pg,{dist:.33,kind:'reyes-page',restore:false,plane:true,onClose:()=>{pg.removeFromParent();afterMom();},lines:[N('His notebook, in blue ballpoint, pressed hard into the page.',{time:3}),N('21:38. 2ND JUV. MISSING. JAMIE, 12. Blue cap, orange shirt. His bike. The marks, nine meters to the path. The cap. The gum.',{time:5.6}),R('That’s right? …That’s right.',{time:2})]});}});}
+ // Jamie's mom: two things she asks you; then the picture on her phone
+ function afterMom(){const X=C.af;if(X.stage==='mom')return;X.stage='mom';X.momAt=X.t;mark('Jamie’s mom asks you');const jm=cast.jamieMom,p=me(),q={x:p.x+Math.sin(p.a)*1.3,z:p.z-Math.cos(p.a)*1.3};
+  jm.walk([[q.x,q.z]],{speed:1.9,then:a=>{const p1=me();a.faceTo(p1.x,p1.z);a.lookAt=camera.position;}});
+  later(2.4,()=>say([...(X.capReyes?[{act:()=>{X.capWithMom=true;}},{who:'JAMIE’S MOM',text:'“Is that his? That’s his. That’s his cap.”',from:jm,time:2.6,act:()=>jm.gest('head')}]:[]),
+   {who:'JAMIE’S MOM',text:'“What was he wearing? Tell me exactly. They keep asking me and I can’t— you tell me.”',from:jm,time:3.8}],
+   {then:()=>choose([{id:'cap',label:'“His blue cap. His orange shirt.”'},{id:'dunno',label:'“…I don’t know. I don’t remember.”'}],{then:id=>momQ1(id),timeout:20,fallback:'cap'})}));}
+ function momQ1(id){const jm=cast.jamieMom;C.af.q1=id;
+  say(id==='cap'?[{who:'JAMIE’S MOM',text:'“His orange shirt. The one with the hole in the sleeve he won’t let me throw out.”',from:jm,time:3.6}]
+   :[{who:'JAMIE’S MOM',text:'“You were WITH him. All day you were with him—”',from:jm,time:2.6,face:'terrified'},{wait:.8},{who:'JAMIE’S MOM',text:'“…I’m sorry. I’m sorry. It’s okay.”',from:jm,time:2.4,face:'sad'}],
+   {then:()=>say([{wait:.4},{who:'JAMIE’S MOM',text:'“Did he say anything? Before. Did he say anything to you?”',from:jm,time:3}],{then:()=>choose([{id:'together',label:'“He said we stay together.”'},{id:'gum',label:'“He said he’d give Sam his gum back.”'}],{then:id2=>momQ2(id2),timeout:20,fallback:'together'})})});}
+ function momQ2(id){const jm=cast.jamieMom;C.af.q2=id;
+  say([...(id==='together'?[{who:'JAMIE’S MOM',text:'“…Stay together. That’s him. That’s exactly him.”',from:jm,time:3}]:[{who:'JAMIE’S MOM',text:'“…Sam’s gum. He would. He would do that.”',from:jm,time:2.8}]),
+   {wait:.6},{who:'JAMIE’S MOM',text:'“Look— look. This is him last week. At the pool. You were there.”',from:jm,time:3.2,act:()=>jm.gest('phone')}],{then:()=>momPhone()});}
+ function momPhone(){const jm=cast.jamieMom,ph=new THREE.Group();ph.name='c7-moms-phone';
+  const body=new THREE.Mesh(new THREE.BoxGeometry(.075,.14,.009),new THREE.MeshStandardMaterial({color:0x18181c,roughness:.4}));ph.add(body);const scr=pageMesh(poolPhoto(),{w:.066,h:.118,color:0x2a8ac8});scr.position.z=.0047;ph.add(scr);mark('her phone');
+  inspect(ph,{dist:.24,kind:'mom-phone',restore:false,plane:true,onClose:()=>{ph.removeFromParent();momAfter();},lines:[
+   N('Her phone. A picture from the pool: the deck, the deep end, a striped towel, a bike against the fence.',{time:4.4}),
+   {who:'JAMIE’S MOM',text:'“He’s right there. On the towel. Doing the thing with his fingers, the bunny ears.”',from:jm,time:3.6},
+   N('There is nobody on the towel. There is a damp shape on it, where somebody was sitting.',{time:4}),
+   {who:'JAMIE’S MOM',text:'“Why are you looking at me like that? He’s RIGHT THERE.”',from:jm,time:3,face:'terrified'}]});}
+ function momAfter(){const X=C.af;X.stage='forget';const jm=cast.jamieMom;jm.walk([[officer.x+1.3,officer.z]],{speed:1.4,then:a=>{a.faceTo(officer.x,officer.z);}});later(1.6,()=>afterB());}
+ function updateAfter(dt){const X=C.af;if(!X)return;X.t+=dt;
+  if(X.stage==='show'&&X.go&&!X.busyR){const p=me(),d=Math.hypot(p.x-reyes.x,p.z-reyes.z);X.rT=(X.rT||0)-dt;
+   if(d>3.2&&X.rT<=0){X.rT=1.2;const a=p.a,q={x:p.x-Math.sin(a)*1.3+Math.cos(a)*.9,z:p.z+Math.cos(a)*1.3+Math.sin(a)*.9};if(nav.walkable(q.x,q.z,{r:.3}))reyes.walk([[q.x,q.z]],{speed:1.8,then:a2=>{a2.lookAt=camera.position;}});}
+   if(['bike','cap','marks','gum'].every(k2=>X.shown[k2]||(k2==='gum'&&C.inv.gum!=='have'))&&!X.notes&&!busy()&&!C.view)reyesNotes();}}
+ function capOnHood(){const c=k.carB;const q=c?.group?.position||{x:officer.x,z:officer.z};capMesh.visible=true;capMesh.position.set(q.x+.4,gy(q.x,q.z)+1.0,q.z);capMesh.rotation.set(0,1.2,0);}
+ // what his notebook says now: the ink has nothing where the name was; the paper still has it, pressed in, turned to the light
+ function afterRecord(){const X=C.af;X.stage='record';mark('the page, an hour later');
+  say([R('…I wrote it down. I know I wrote his name down.',{time:2.8,face:'tired'}),R('Look. Look at this. Is that— is that my writing?',{time:3})],{then:()=>{
+   const g=new THREE.Group();g.name='c7-reyes-page-now';const pg=pageMesh(reyesPage({altered:true}),{w:.18,h:.24,color:0xf6f3e6});g.add(pg);
+   const it=texOf(reyesIndent()),ov=new THREE.Mesh(new THREE.PlaneGeometry(.18,.24),new THREE.MeshBasicMaterial({map:it,transparent:true,opacity:0,depthWrite:false,color:it?0xffffff:0xc8c4b4}));ov.position.z=.0006;g.add(ov);g.userData.indent=ov;
+   inspect(g,{dist:.33,kind:'reyes-page-now',restore:false,plane:true,onClose:()=>{g.removeFromParent();C.flags.reyesPage=true;afterLeave();},lines:[N('His page. The same blue ballpoint: JUV. MISSING, 12. Blue cap, orange shirt. Where the name was, nothing.',{time:4.6}),
+    N('The line that said SECOND does not say it.',{time:2.6}),N('But he pressed hard. Turn it to the light.',{time:2.6})]});X.recordAt=X.t;}});}
  function toSams(){if(C.fadeOut>=0)return;C.fadeOut=0;C.after=()=>samsNight();}
  // ---- Sam's room, that night ---------------------------------------------------------------------------------------------------------------
- function samsNight(){go('n7-sams');checkpoint('c7-sams');C.h=Math.max(C.h,HOUR.sams);C.hMin=HOUR.sams;C.minute=-1;C.sn={t:0,stage:'in'};mark('Sam’s, that night');unpose();
+ function samsNight(){go('n7-sams');checkpoint('c7-sams');evidenceProps(false);jamie.bike.group.visible=false;C.h=Math.max(C.h,HOUR.sams);C.hMin=HOUR.sams;C.minute=-1;C.sn={t:0,stage:'in'};mark('Sam’s, that night');unpose();
   for(const a of [reyes,officer,cast.jamieMom,...(ch2.extra||[])])a.show(false);k.carA.show(false);k.carB.show(false);police.attach?.(false);court.attach(false);
   house.show(true);house.reset();house.show(true);house.lightsOut(true);nav.setRoom(house.nav);house.items.gum.visible=false;house.items.notebook.visible=false;photoState('one');
   houseAdults('night');light(0,{...HS.kitchenTable,y:HS.kitchenTable.y+1.4},{intensity:2.2,dist:7,color:0xffd2a0});light(1,{...HS.bed,y:HS.bed.y+1.6},{intensity:1.6,dist:5.5,color:0xffd6aa});light(2,null);light(3,null);
@@ -1138,15 +1459,26 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(ph==='d7-reyes'&&C.rx?.stage==='notebook'&&C.inv.notebook==='have')add('c7-give','Show Officer Reyes the notebook',reyes.person.parts.rhand.getWorldPosition(new THREE.Vector3()),3);}
   if(ph==='e7-lookout'){if(!C.looked.has('curbstones'))add('c7-curbstones','Look at the ground',court.SPOT.curb,3.6,lk(.6,.1));if(!C.looked.has('post'))add('c7-post','Look at the post',{...court.SPOT.post,y:court.SPOT.post.y+1.1},2.6,lk(.2,.14));
    if(!C.looked.has('chalk'))add('c7-chalk','Look at the chalk',LK.chalk,3,lk(.5,.1));}
-  if(/^e7-(court|dining|house)$/.test(ph)&&court.inRegionAt(p.x,p.z)&&!court.inHouseAt(p.x,p.z)){if(!C.looked.has('newspaper'))add('c7-newspaper','Pick up the newspaper',court.SPOT.newspaper,2.2,lk(.3,.14));
+  if(ph==='e7-court'&&C.lg&&inLange(p)){const X=C.lg,rm=langeRoom(p);
+   if(X.stage==='in'||X.stage==='presence'){
+    if(rm==='front'){if(!C.looked.has('lg-tv'))add('c7-lg-tv','Look at the television',lgP(LS.tv),3,lk(.45,.12));if(!C.looked.has('lg-courier'))add('c7-lg-courier','Pick up the newspaper',lgP(LS.courier),2.2,lk(.25,.16));}
+    if(rm==='kitchen'){if(!C.looked.has('lg-dinner'))add('c7-lg-dinner','Look at the table',lgP(LS.dinner),2.4,lk(.35,.14));if(!C.looked.has('lg-cap'))add('c7-lg-cap','Pick up the cap',lgP(LS.cap),2.0,lk(.15,.18));
+     if(!C.looked.has('lg-calendar'))add('c7-lg-calendar','Look at the calendar',lgP(LS.calendar),2.4,lk(.2,.14));if(!X.phoned)add('c7-lg-phone','Use the phone',lgP(LS.phone),2.2,lk(.2,.18));else if(!C.looked.has('lg-board'))add('c7-lg-board','Look at the board',lgP(LS.board),2.2,lk(.25,.16));}
+    if(rm==='hall'&&!C.looked.has('lg-parents'))add('c7-lg-parents','Try the door',lgP(LS.parentsDoor),1.8,lk(.4,.16));
+    if(X.stage==='presence'&&!X.listened&&!X.shoved&&rm==='hall')add('c7-lg-listen','Listen at the door',lgP(LS.bathDoor),1.9,lk(.5,.16));}
+   if(X.stage==='look'&&rm==='boy'&&!X.drew)add('c7-lg-drawings','Look at the drawings',lgP(LS.drawings),2.8,lk(.4,.12));}
+  if(/^e7-(court|dining|house)$/.test(ph)&&court.inRegionAt(p.x,p.z)&&!court.inHouseAt(p.x,p.z)&&!inLange(p)){if(!C.looked.has('newspaper'))add('c7-newspaper','Pick up the newspaper',court.SPOT.newspaper,2.2,lk(.3,.14));
    if(!C.looked.has('car'))add('c7-car','Look at the car',{...court.SPOT.fifty9,y:court.G0+1},4,lk(1.2,.08));if(!C.looked.has('sign'))add('c7-sign','Look at the street sign',{...court.SPOT.sign,y:court.G0+2.7},4,lk(.4,.1));
    if(C.flags.windowHit&&!C.looked.has('crack'))add('c7-crack','Look at the window',court.SPOT.diningWindow,4,lk(.6,.1));
    for(const [id,q] of [['mbDining',court.SPOT.mbDining],['mbGreen',court.SPOT.mbGreen]])if(!C.looked.has(id))add('c7-'+id,'Read the mailbox',q,2.0,lk(.3,.16));
    if(ph==='e7-court'&&C.ct?.stage==='lost'&&C.ct.knockAsk&&(C.ct.knocks||0)<2&&!C.ct.knocking)for(const [id,q] of Object.entries(court.SPOT.doors))if(q&&Math.hypot(p.x-q.x,p.z-q.z)<3.2)add('c7-door-'+id,C.ct.knocked?.has?.(id)?'Knock again':'Knock',q,3.2,lk(.6,.14));}
+  if(ph==='e7-house'&&C.gh?.stage==='in'&&inGreen()&&(C.lv||'g')==='g'){const q=houseLocal(p.x,p.z);if(!C.flags.star)add('c7-star','Pick up the folded paper',gxW(GX().starAt),2.2,lk(.08,.22));
+   if(!C.looked.has('prints')&&q.x>1.2&&q.z>0)add('c7-prints','Look at the floor',{...HW(2.6,2.75),y:court.G0+HH.F},2.8,lk(.5,.14));if(!C.looked.has('radio')&&q.x<-1.2&&q.z>0)add('c7-radio','Turn on the radio',gxW(GX().radioAt),2.0,lk(.15,.18));}
   if(/^e7-(house|reveal)$/.test(ph)&&inGreen()){if(!C.looked.has('testpattern'))add('c7-testpattern','Look at the television',{...HW(-1.75,-.9),y:court.G0+HH.F+.75},2.6,lk(.4,.12));if(!C.looked.has('clock'))add('c7-clock','Look at the clock',{...HW(-2.2,-4.4),y:court.G0+HH.F+1.9},2.6,lk(.3,.12));}
   if(ph==='e7-stalk'||(ph==='e7-reveal'&&C.gh?.hideNow)){if(C.hiding)add('c7-unhide','Come out',camera.position.clone().add(new THREE.Vector3(0,-.3,0)),5);
-   else for(const [id,h] of Object.entries(HGd.hides)){const w=HW(h.x,h.z);if(Math.hypot(p.x-w.x,p.z-w.z)<1.9)add('c7-hide-'+id,h.label,{...w,y:w.y+1},2.2);}}
-  if(ph==='e7-door'){const q=houseLocal(p.x,p.z);if(!C.dr.shut&&q.x<-HH.UCX&&q.z>0&&C.lv==='u')add('c7-shut','Shut the door',{...HW(-HH.UCX,3.3,'u'),y:court.G0+HH.UP+1.1},2.6);if(C.dr.shut&&!C.dr.pushed)add('c7-push','Push the dresser against the door',{...HW(-HH.UCX-.55,1.0,'u'),y:court.G0+HH.UP+.6},2.2);}
+   else for(const [id,h] of Object.entries(HGd.hides)){const w=HW(h.x,h.z),fq=HIDE_FRONT[id],f=fq?HW(fq.x,fq.z):w;if(Math.hypot(p.x-w.x,p.z-w.z)<1.1||Math.hypot(p.x-f.x,p.z-f.z)<1.35)add('c7-hide-'+id,h.label,{...w,y:w.y+1},2.2);}
+   if(ph==='e7-stalk'&&!C.hiding&&C.sk&&!C.sk.check){if(!C.sk.timer&&GX().timer.visible)add('c7-timer','Wind the timer',gxW(GX().timerAt),1.9,lk(.1,.22));if(!C.sk.radio&&GX().radio.visible&&C.sk.stage!=='hunt')add('c7-radio','Turn on the radio',gxW(GX().radioAt),1.9,lk(.15,.2));}}
+  if(ph==='e7-door'){const q=houseLocal(p.x,p.z);if(!C.dr.shut&&q.x<-HH.UCX&&q.z>0&&C.lv==='u')add('c7-shut','Shut the door',{...HW(-HH.UCX,3.3,'u'),y:court.G0+HH.UP+1.1},2.6);if(C.dr.shut&&!C.dr.pushed){if(C.dr.rug?.stage==='lift')add('c7-rug','Pull the rug',{...HW(-2.75,1.1,'u'),y:court.G0+HH.UP+.05},2.4);else if(!C.dr.rug||C.dr.rug.stage==='out')add('c7-push','Push the dresser against the door',{...HW(-HH.UCX-.55,1.0,'u'),y:court.G0+HH.UP+.6},2.2);}}
   if(/^e7-(upstairs|giant)$/.test(ph)){const q=houseLocal(p.x,p.z);
    if(!C.looked.has('calendar'))add('c7-calendar','Look at the calendar',{...HW(CAL.x,CAL.z,'u'),y:court.G0+CAL.y},2.6,lk(.25,.14));
    if(!C.looked.has('trace'))add('c7-trace','Look at the paper on the desk',{...HW(-4.55,.95,'u'),y:court.G0+HH.UP+.8},2.2,lk(.2,.14));
@@ -1154,6 +1486,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(!C.looked.has('wedding'))add('c7-wedding','Look at the picture',{...HW(4.6,-.6,'u'),y:court.G0+HH.UP+.95},2.4,lk(.2,.14));
    if(C.up?.down&&!C.gt)add('c7-hallwindow','Look out the window',{...HW(0,-4.5,'u'),y:court.G0+HH.UP+1.5},2.6,lk(.6,.12));
    if(C.gt?.lights&&court.ST.portalB&&Math.abs(q.x)<1.3&&q.z<-3)add('c7-climb','Climb out onto the porch roof',{...HW(0,-4.6,'u'),y:court.G0+HH.UP+1.2},2.4);}
+  if(ph==='n7-after'&&C.af?.stage==='show'&&C.af.go&&!C.af.busyR){const X=C.af,E=X.E;if(!X.shown.bike)add('c7-ev-bike','Show him Jamie’s bike',{x:E.bike.x,y:gy(E.bike.x,E.bike.z)+.4,z:E.bike.z},3.2,lk(.6,.14));
+   if(!X.shown.cap)add('c7-ev-cap','Show him the cap',{x:E.cap.x,y:gy(E.cap.x,E.cap.z)+.05,z:E.cap.z},2.6,lk(.2,.16));if(!X.shown.marks)add('c7-ev-marks','Show him the marks in the grass',{x:E.marks.x,y:gy(E.marks.x,E.marks.z),z:E.marks.z},3.2,lk(.7,.12));
+   if(!X.shown.gum&&C.inv.gum==='have'&&Math.hypot(p.x-reyes.x,p.z-reyes.z)<3.4)add('c7-ev-gum','Show him the gum',{x:reyes.x,y:gy(reyes.x,reyes.z)+1.3,z:reyes.z},3.6);}
   if(ph==='n7-grab'&&C.gb?.stage==='grab'&&JL.held){const h=jamieHand();if(dist2(p,h)<1.8)add('c7-grab','Grab his hand',h,2.2);}
   if(/^n7-(taken|gone)$/.test(ph)){if(C.inv.gum==='grass'&&C.gumAt)add('c7-gum','Pick up the gum',C.gumAt,1.8,lk(.15,.2));if(ph==='n7-gone'&&!(C.gn?.callT>0))out.push({id:'c7-call',label:'Call his name',at:camera.position.clone().add(new THREE.Vector3(0,-.2,0)),face:camera.position.clone(),r:9,wide:true});}
   if(/^n7-(sams|names)$/.test(ph)&&inSams(p)){const rm=house.room(p.x,p.z);if(rm==='sam'){if(house.ST.fan&&!C.flags.fanOffNight&&!C.sn?.fanBeat)add('c7-fan','Turn off the fan',HS.fan,1.8,lk(.3,.16));
@@ -1182,13 +1517,16 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   else if(id==='c7-testpattern'){C.looked.add('testpattern');const q=HW(-1.75,-.9);closeLook({x:q.x,y:court.G0+HH.F+.65,z:q.z},{back:1.4,eye:1.3,kind:'tv'});C.lookDur=5;say([N('A test pattern: circles and wedges and a station number nobody has used in years. A thin tone you feel more than hear.',{time:4.2})]);}
   else if(id==='c7-clock'){C.looked.add('clock');const q=HW(-2.2,-4.4);closeLook({x:q.x,y:court.G0+HH.F+1.9,z:q.z},{back:1.1,eye:1.5,kind:'clock'});C.lookDur=4.5;say([N('A starburst clock. Stopped at 7:42.',{time:3})]);}
   else if(id.startsWith('c7-hide-'))hide(id.slice(8));else if(id==='c7-unhide')unhide();
+  else if(id==='c7-star')pickStar();else if(id==='c7-prints')lookPrints();else if(id==='c7-radio')radioOn();else if(id==='c7-timer')windTimer();else if(id==='c7-rug')pullRug('you');
   else if(id==='c7-shut')shutDoor();else if(id==='c7-push')pushDresser('you');
   else if(id.startsWith('c7-door-'))knockCourt(id.slice(8));
+  else if(id.startsWith('c7-lg-'))langeAct(id.slice(6));
   else if(id==='c7-mbDining'||id==='c7-mbGreen'){const k2=id.slice(3),q=court.SPOT[k2],jn=near({x:jamie.px,z:jamie.pz},5);C.looked.add(k2);closeLook(q,{back:.75,eye:1.42,kind:'mailbox'});C.lookDur=6.5;mark('the mailbox: '+k2);
    say(k2==='mbDining'?[N('CARVER, in white letters on the side of the mailbox.',{time:3}),...(jn?[J('Carver.',{time:1.2}),J('Like the girl. Ruth Ann Carver. Nineteen sixty-six.',{time:2.8,face:'afraid'})]:[])]
     :[N('WHITCOMB.',{time:2}),...(jn?[J('…Danny Whitcomb.',{time:1.8,face:'afraid'}),J('The green bike.',{time:1.6})]:[])]);}
   else if(id==='c7-calendar')lookCalendar();else if(id==='c7-trace')lookTrace();else if(id==='c7-oldbike')lookOldBike();else if(id==='c7-bell')ringOldBell();else if(id==='c7-wedding')lookWedding();
   else if(id==='c7-hallwindow')giantStart();else if(id==='c7-climb')climbOut();else if(id==='c7-drop'){C.flags.dropped=true;dropDown();go('e7-out');}
+  else if(id.startsWith('c7-ev-'))showEvidence(id.slice(6));
   else if(id==='c7-grab')grabHand();else if(id==='c7-gum')pickGum();else if(id==='c7-call')callName();
   else if(id==='c7-write')writeStart();else if(id==='c7-window')lookOutside();}
  // ---- keys, the mouse, the hint row --------------------------------------------------------------------------------------------------
@@ -1196,7 +1534,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.capturedT!=null&&C.fadeIn<0&&S.phase!=='c7-black'&&C.sk?.caught)return true;
   if((code==='KeyI'||code==='Tab')&&!inv.isOpen&&(C.view||C.fadeOut>=0||C.endT>=0||S.phase==='c7-black'||C.choice))return true;if(inv.key(code,repeat))return true;
   if(C.choice){const m=/^(Digit|Numpad)([1-3])$/.exec(code);if(m){if(!repeat)pick(+m[2]-1);return true;}return ['KeyF','KeyW','KeyA','KeyS','KeyD','Space'].includes(code);}
-  if(C.view==='inspect'){if((code==='KeyS'||code==='ArrowDown'||code==='KeyF')&&!repeat&&C.inspect?.t>.35){endInspect();return true;}if(code==='KeyA'){C.inspect.yaw-=.25;return true;}if(code==='KeyD'){C.inspect.yaw+=.25;return true;}return ['KeyW','Space','KeyC','KeyS'].includes(code);}
+  if(C.view==='inspect'){if((code==='KeyS'||code==='ArrowDown'||code==='KeyF')&&!repeat&&C.inspect?.t>.35&&(C.inspect.kind!=='reyes-page-now'||C.flags.indentSeen||C.inspect.t>30)&&!(['reyes-page','mom-phone'].includes(C.inspect.kind)&&busy())){endInspect();return true;}if(code==='KeyA'){C.inspect.yaw-=.25;return true;}if(code==='KeyD'){C.inspect.yaw+=.25;return true;}return ['KeyW','Space','KeyC','KeyS'].includes(code);}
   if(C.view==='look'&&C.lookKind==='map'){if(mapKey(code))return true;return ['KeyW','KeyS','Space','KeyC'].includes(code);}
   if(C.view==='look'){const locked=['names','window'].includes(C.lookKind);if((code==='KeyS'||code==='ArrowDown')&&!busy()&&!locked){if(!repeat)endLook();return true;}return ['KeyW','KeyA','KeyD','Space','KeyC','KeyS'].includes(code)||(locked&&code==='KeyF');}
   if(S.phase==='n7-grab'&&C.gb?.stage==='struggle')return ['KeyF','KeyS','KeyW','KeyA','KeyD','Space'].includes(code);
@@ -1208,11 +1546,13 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function wheel(dy){if(!mine(S.phase))return false;if(C.view==='look'&&C.lookKind==='map'){MAPV.overlay=clamp(MAPV.overlay+(dy<0?.25:-.25),0,1);drawMap();return true;}return false;}
  function hint(){const ph=S.phase;
   if(C.choice)return C.choice.options.map((op,i)=>[String(i+1),op.label]);
+  if(C.view==='inspect'&&C.inspect?.kind==='reyes-page-now'&&!C.flags.indentSeen)return [['A / D','Turn it to the light']];
   if(C.view==='inspect')return [['Mouse / A D','Turn it'],['S','Put it down']];
   if(C.view==='look'&&C.lookKind==='map')return C.mp?.stage==='look'?[['Mouse','The pencil'],['A / D','The 1958 plan'],['F','Mark it']]:null;
   if(C.view==='look'&&C.lookKind==='names')return C.flags.names?null:[['Hold F','Write']];
   if(C.view==='look')return ['window'].includes(C.lookKind)?null:[['S','Step back']];
   if(ph==='n7-grab'&&C.gb?.stage==='struggle')return [['Hold F',`Hold on · ${Math.round(C.gb.grip*100)}%`],['S','Pull']];
+  if(C.hiding&&C.sk?.check&&['hand','open','head'].includes(C.sk.check.phase))return [['Hold Space','Hold your breath'],['F','Come out']];
   if(C.hiding)return [['F','Come out']];
   if(ph==='e7-stalk'&&!C.hiding)return [['C','Crouch'],['F','Hide (by a door)']];
   if(ph==='n7-chase')return [['W + Shift','Ride hard'],['A / D','Steer']];
@@ -1273,7 +1613,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    const jq=houseLocal(jamie.px,jamie.pz);if(jamie.mode==='foot'&&court.inHouseAt(jamie.px,jamie.pz)&&HGd.inStair(jq.x,jq.z))C.jlv=(jq.z-STAIR.z0)/(STAIR.z1-STAIR.z0)>.5?'u':'g';else if(!court.inHouseAt(jamie.px,jamie.pz))C.jlv='g';}
   court.ST.level=C.lv||'g';
   if(house.root.parent)house.update(dt);if(court.ST.active)court.update(dt,{camera,dusk:sky().p});wallCal.visible=!!court.ST.active;oldBike.visible=!!court.ST.active;
-  cast.update(dt,{eye:camera.position});H.update(dt);updateGum(dt);updateInspect(dt);
+  cast.update(dt,{eye:camera.position});LF.update(dt,{clock:C.t});H.update(dt);updateGum(dt);updateInspect(dt);
   for(const a of [samDad,samMom,cast.jamieMom])if(a.visible)a.update(dt,{eye:camera.position});updateAmb(dt);
   if(C.dn?.shake>0){C.dn.shake-=dt;court.dining.frame.position.x+=Math.sin(C.t*70)*.004*(C.dn.shake/.5);}
   if(C.bk?.carHit>0){C.bk.carHit-=dt;const c=C.bk.car;if(c)c.g.rotation.z=Math.sin(C.t*40)*.04*(C.bk.carHit/.5);}
@@ -1298,6 +1638,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   else if(ph==='e7-giant'){updateGiant(dt);updateUpstairs(dt);}
   else if(ph==='e7-out'){if(C.flags.dropped&&C.flags.out&&!C.bk&&near(me().bike,24))bikesStart();else if(C.flags.dropped&&!C.bk&&C.t-(C.outT2??=C.t)>20)bikesStart();}
   else if(ph==='n7-bikes')updateBikes(dt);
+  else if(ph==='n7-after')updateAfter(dt);
   else if(ph==='n7-chase')updateChase(dt);
   else if(ph==='n7-lookout')updateOakOut(dt);
   else if(ph==='n7-grab'||ph==='n7-taken')updateGrab(dt);
@@ -1321,9 +1662,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // ---- lifecycle ---------------------------------------------------------------------------------------------------------------------------------
  const GUM0=(()=>{const g=house.items.gum;return {parent:g.parent,pos:g.position.clone(),rot:g.rotation.clone()};})();
  function reset(){const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='inspect')endInspect();if(C.view==='look')C.view=null;inv.reset();C.choice=null;
-  if(nav.room===house.nav||nav.room===court.nav)nav.setRoom(null);house.reset();court.reset();cast.reset();H.reset();HM.show(false);HL.level='g';lightsOn(false);
+  if(nav.room===house.nav||nav.room===court.nav)nav.setRoom(null);house.reset();court.reset();cast.reset();LF.reset();H.reset();HM.show(false);HL.level='g';lightsOn(false);
   for(const a of [samDad,samMom,cast.jamieMom]){a.show(false);a.lookAt=null;a.gest(null);a.path=null;a.mode='stand';}
-  mapMesh.visible=false;mapMesh.removeFromParent();if(C.wr?.page)C.wr.page.removeFromParent();C.pencil?.removeFromParent();holder.removeFromParent();
+  mapMesh.visible=false;mapMesh.removeFromParent();capMesh.visible=false;marksG.visible=false;if(C.wr?.page)C.wr.page.removeFromParent();C.pencil?.removeFromParent();holder.removeFromParent();
   for(const f of [gripArms,writeArm]){const i=phys.ME.extra.indexOf(f);if(i>=0)phys.ME.extra.splice(i,1);}
   {const g=house.items.gum;GUM0.parent.add(g);g.position.copy(GUM0.pos);g.rotation.copy(GUM0.rot);g.visible=true;}
   JL.on=false;JL.held=false;JL.grip=false;radioHand.visible=false;world.sideDoors.sam?.set(0);
@@ -1397,6 +1738,18 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   ff('fenceSeen');
   if(section==='c7-separation'){hh(HOUR.court+.05);const f=court.SPOT.fenceA,w=court.regW(-8,24),f2=court.regW(0,8);void w;o.placePlayer({x:f2.x,z:f2.z,a:headingTo(f2.x,f2.z,f.x,f.z),mode:'ride',speed:0});
    const j=court.regW(0,10);comp.putRiding(jamie,j.x,j.z,headingTo(j.x,j.z,f.x,f.z),0);jamie.follow='ride';follow(true);go('e7-court');checkpoint('c7-court');C.ct={t:12,stage:'back',backAt:0};quiet();return;}
+  // the Langes' (after Reyes sees you by a fence; before the Carvers' lights): at its open door, inside it, in the boy's room
+  if(/^c7-lange/.test(section)){C.ct={t:120,stage:'lost',lostAt:0,fence:true,dark:true,seenYou:true,seenAt:0,knockAsk:true,knocks:2,knockedAt:0,lange:true};C.bikesAt={x:court.SPOT.bikes[0].x,z:court.SPOT.bikes[0].z,a:court.SPOT.bikeA};ff('bikesLeft');
+   hh(HOUR.court+1.3);go('e7-court');lightsOn(true);langeLights(true);LGH.doors.front.set(1);
+   const putL=(lx,lz,look,jx,jz)=>{const w=LG3(lx,lz),l=LG3(look[0],look[1]),j=LG3(jx,jz),b=C.bikesAt;o.placePlayer({x:w.x,z:w.z,a:headingTo(w.x,w.z,l.x,l.z),mode:'walk',bike:{x:b.x,z:b.z,a:b.a}});
+    const jb=court.SPOT.bikes[1];comp.putFoot(jamie,j.x,j.z,headingTo(j.x,j.z,w.x,w.z),{bike:{x:jb.x,z:jb.z,a:court.SPOT.bikeA,kick:1}});follow(true);};
+   if(section==='c7-lange'){putL(LGH.doorX,-LGH.hd-4.4,[LGH.doorX,0],LGH.doorX+1.2,-LGH.hd-5.0);checkpoint('c7-court');C.lg={t:30,stage:'door',opening:1,doorAt:0};objective('The open door.','The blue house. A phone. Stay together.');return;}
+   checkpoint('c7-lange');
+   if(section==='c7-lange-in'){putL(-.9,-1.9,[3.2,-2.3],-1.7,-2.6);C.lg={t:30,stage:'in',opening:1,inAt:0,atDoor:true,inside:true};objective('Find the phone.','Quietly.');return;}
+   // (the bathroom door has been shoved from inside, the picture is down; you said you would look)
+   putL(-4.4,2.75,[-4.85,4.1],-3.6,2.3);LGH.pictureFalls();LGH.ST.picT=1;LGH.feetAt(false);for(const id of ['lg-tv','lg-courier','lg-dinner','lg-cap','lg-calendar'])C.looked.add(id);
+   C.lg={t:60,stage:'look',opening:1,inAt:0,atDoor:true,inside:true,phoned:true,presAt:20,hallAt:25,listened:true,shoved:true,shoveAt:30,choice:'look',lookAt:58,inBoy:58};
+   stand(jamie,()=>besideMe(.95),{look:()=>lgP({...LS.boyDoor,y:LGH.F+1.3}),keep:true,max:2.6});objective('The boy’s room.','Fast.');return;}
   C.ct={t:120,stage:'lost',lostAt:0,fence:true,dark:true,seenYou:true,lights:true,knockAsk:true,knocks:2,knockedAt:0};C.bikesAt={x:court.SPOT.bikes[0].x,z:court.SPOT.bikes[0].z,a:court.SPOT.bikeA};ff('bikesLeft');
   hh(HOUR.dining);
   if(section==='c7-dining'){inCourt(1.2,60);go('e7-court');checkpoint('c7-court');diningStart();objective('The house with its lights on.','Across the lawn. Its front window.');return;}
@@ -1409,13 +1762,20 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const inHouse=(hx,hz,lv='g',look=null,jx=null,jz=null,jlv=null)=>{const w=HW(hx,hz,lv),l=look?HW(look[0],look[1],lv):HW(0,0,lv);C.lv=lv;court.ST.level=lv;
    o.placePlayer({x:w.x,z:w.z,a:headingTo(w.x,w.z,l.x,l.z),mode:'walk',bike:{x:C.bikesAt.x,z:C.bikesAt.z,a:C.bikesAt.a}});
    const jw=HW(jx??hx+.9,jz??hz-.6,jlv??lv);C.jlv=jlv??lv;comp.putFoot(jamie,jw.x,jw.z,headingTo(jw.x,jw.z,l.x,l.z),{bike:{...jamieBikeState()}});follow(true);jamie.follow='walk';};
-  if(section==='c7-reveal'){inHouse(0,-2.9,'g',[0,2.6],.8,-3.6);go('e7-house');checkpoint('c7-house');C.gh={t:10,stage:'in',inside:true,shut:true,inAt:0,stopped:true};lightsGreen();quiet();creatureUpstairs();reveal();return;}
+  if(section==='c7-green-star'){inHouse(0,-3.7,'g',[0,-1.2],.8,-4.1);go('e7-house');checkpoint('c7-house');C.gh={t:10,stage:'in',inside:true,shut:true,inAt:0,stopped:true};lightsGreen();quiet();creatureUpstairs();H.script([{wait:999,state:'idle',look:()=>camera.position}]);objective('Upstairs.','Sam said upstairs.');return;}
+  if(section==='c7-reveal'){ff('star');GX().star.visible=false;inHouse(0,-2.9,'g',[0,2.6],.8,-3.6);go('e7-house');checkpoint('c7-house');C.gh={t:10,stage:'in',inside:true,shut:true,inAt:0,stopped:true};lightsGreen();quiet();creatureUpstairs();reveal();return;}
   ff('revealed');
   // (the stealth's checkpoint: you and Jamie in the pantry, the door nearly shut; it is at the foot of the stairs)
   if(section==='c7-stalk'){inHouse(3.2,2.6,'g',[1.6,3.7],JPANTRY.x,JPANTRY.z);lightsGreen();C.jHide='pantry';stand(jamie,HW(JPANTRY.x,JPANTRY.z),{look:()=>camera.position,keep:true,max:.3});jamie.crouch=.3;
    const sf=HW(0,-2.0);HL.level='g';H.place(sf.x,sf.z,0);HM.show(true);stalkStart();hide('pantry');return;}
+  // (it has looked in the pantry and gone to wait at the foot of the stairs: you are still in there)
+  if(section==='c7-stairs'){inHouse(3.2,2.6,'g',[1.6,3.7],JPANTRY.x,JPANTRY.z);lightsGreen();C.jHide='pantry';stand(jamie,HW(JPANTRY.x,JPANTRY.z),{look:()=>camera.position,keep:true,max:.3});jamie.crouch=.3;
+   const sw=HW(.45,-2.75);HL.level='g';H.place(sw.x,sw.z,0);HM.show(true);stalkStart();hide('pantry');C.sk.checked=true;watchStairs();quiet();return;}
   ff('stalked');lightsGreen();HGd.doors.boy.set(.85);HGd.doors.store.set(.8);HGd.doors.parents.set(.75);
+  {const sf=HW(0,-2.0);HL.level='g';H.place(sf.x,sf.z,0);}// (it is downstairs: it comes up when the door shuts)
   if(section==='c7-door'){inHouse(0,3.3,'u',[-2,3.3],-.6,3.9,'u');doorStart();comp.release(jamie);comp.putFoot(jamie,HW(-.6,3.9,'u').x,HW(-.6,3.9,'u').z,0,{bike:jamieBikeState()});C.jlv='u';follow(true);jamie.follow='walk';C.jStair=false;return;}
+  if(section==='c7-rug'){inHouse(-2.7,1.9,'u',[-2.2,1.0],-2.2,.35,'u');doorStart();comp.release(jamie);comp.putFoot(jamie,HW(-2.2,.35,'u').x,HW(-2.2,.35,'u').z,0,{bike:jamieBikeState()});C.jlv='u';C.jStair=false;
+   HGd.doors.boy.set(0);shutDoor();C.dr.closing=0;quiet();rugStuck();return;}
   ff('doorShut');HGd.doors.boy.set(.85);
   if(ix<=SECTIONS7.indexOf('c7-giant')){const at={'c7-clues':[-3,1.9,[-3.3,.085]],'c7-trace':[-3.9,1.4,[-4.6,.95]],'c7-old-bike':[-2.4,-2.2,[-3.6,-2.5]],'c7-giant':[0,-3.4,[0,-4.5]]}[section]||[-3,2.2,[-5,2]];
    inHouse(at[0],at[1],'u',at[2],-HH.UCX-.35,3.95,'u');upstairsStart();quiet();C.up.unblock=1;{const s1=HGd.spots.dresserAfter;HGd.moveDresser(s1.x,s1.z,Math.PI/2);}
@@ -1453,6 +1813,11 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   ff('gumPicked');C.inv.gum='have';house.items.gum.visible=false;
   if(section==='c7-after'){afterStart();C.fadeIn=-1;o.fade(0);return;}
   if(section==='c7-forgetting'){afterStart();C.fadeIn=-1;o.fade(0);quiet();afterB();return;}
+  if(section==='c7-evidence'){afterStart();C.fadeIn=-1;o.fade(0);quiet();cast.jamieMom.place(main(1119,1.4).x,main(1119,1.4).z,0);afterEvidence();return;}
+  if(section==='c7-mom'||section==='c7-record'){afterStart();C.fadeIn=-1;o.fade(0);quiet();const E=evidencePlaces();Object.assign(C.af,{E,shown:{bike:true,cap:true,marks:true,gum:true},go:true,notes:true,capReyes:true});evidenceProps(true,E);capMesh.visible=false;unpose();
+   const b=LK.bench,s0=main(LOOKOUT.bench.d+1.6,LOOKOUT.bench.lat-1.2);o.placePlayer({x:s0.x,z:s0.z,a:headingTo(s0.x,s0.z,LK.car.x,LK.car.z),mode:'walk',bike:null});void b;
+   if(section==='c7-mom'){cast.jamieMom.place(main(1119,1.4).x,main(1119,1.4).z,0);afterMom();return;}
+   Object.assign(C.af,{q1:'cap',q2:'together',capWithMom:true,capDown:true});capOnHood();const p0=me(),rq=main(LOOKOUT.bench.d+.4,LOOKOUT.bench.lat-1.4);reyes.place(rq.x,rq.z,headingTo(rq.x,rq.z,p0.x,p0.z));afterRecord();return;}
   ff('forgetReyes','forgetPhotoMom');hh(HOUR.sams);
   samsNight();C.fadeIn=-1;o.fade(0);if(section==='c7-sams')return;
   quiet();C.sn.inRoom=true;C.sn.roomAt=0;C.sn.fanBeat=true;ff('forgetFan');const toRoom=(hx,hz,lx,lz)=>{const q=house.toW(hx,hz),l=house.toW(lx,lz);o.placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,l.x,l.z),mode:'walk',bike:yourBike()});};
@@ -1469,9 +1834,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   jamieSweep:()=>null,officerAim:()=>{const ph=S.phase;if(/^n7-(lookout|grab|taken|gone|after)$/.test(ph)&&reyes.visible)return court.SPOT.fieldFar;return null;},
   light:()=>owns(S.phase)?sky():null,longThrow:()=>null,
   canDismount:()=>!posed()&&!C.view&&S.phase!=='c7-black'&&!/^(n7-(chase|lookout|grab))$/.test(S.phase)&&!inSams(),
-  canRemount:()=>!C.view&&!posed()&&!inSams()&&!inGreen()&&!/^(d7-(house|reyes|map)|n7-(grab|taken|gone|after|sams|names|window))$/.test(S.phase),
+  canRemount:()=>!C.view&&!posed()&&!inSams()&&!inGreen()&&!inLange()&&!/^(d7-(house|reyes|map)|n7-(grab|taken|gone|after|sams|names|window))$/.test(S.phase),
   closeBag:()=>{if(inv.isOpen){inv.close();return true;}return false;},inventoryReady:()=>owns(S.phase)&&S.phase!=='c7-black',
-  C,house,court,cast,HM,H,HL,JL,LIGHTS,PH,MAPV,photoRender,photoState,inv,sky,brain,HUNTER_ID,STEP,CURB,sideDoorAt,LK,
+  C,house,court,cast,HM,H,HL,JL,LIGHTS,PH,MAPV,photoRender,photoState,inv,sky,brain,HUNTER_ID,STEP,CURB,sideDoorAt,LK,LF,LGH,lgP,inLange,langeRoom,
   get started(){return A7._started;},set started(v){A7._started=v;}});
  Object.defineProperties(A7,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,lookKind:C.lookKind,inv:{...C.inv},looked:[...C.looked].sort(),
@@ -1479,6 +1844,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    hunter:{mode:H.mode,state:HM.state,visible:HM.visible,x:+HM.x.toFixed(2),z:+HM.z.toFixed(2),level:HL.level,log:{...H.log},meter:Object.fromEntries(H.meter),source:HM.source,trace:H.trace.slice(-12)},
    jamie:{gone:!!jamie.gone,visible:jamie.person.group.visible,mode:jamie.mode,held:JL.held,down:JL.on,grip:JL.grip},
    court:{active:!!court.ST.active,portalA:court.ST.portalA,portalB:court.ST.portalB,inRegion:court.ST.active?court.inRegionAt(p.x,p.z):false,giant:court.GI.stage},
+   lange:C.lg?{stage:C.lg.stage,choice:C.lg.choice||null,burst:C.lg.burst||null,answer:C.lg.answer||null,room:langeRoom(p),figure:{visible:LF.person.group.visible,state:LF.F.state}}:null,
    cross:C.lastCross||null,sounds:{...C.sounds},guard:C.guardLog?{...C.guardLog}:null,marks:(C.marks||[]).slice(-30),endT:+C.endT.toFixed(2)};}}});
  return A7;
 }

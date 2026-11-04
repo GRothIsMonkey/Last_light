@@ -73,7 +73,7 @@ export function createFurniture(){const K=makeShapes();
   crt({w=.42,screen=null}={}){const g=G('crt-tv');K.box(g,0,w*.38,.04,w,w*.76,w*.8,mat(0x2e2e30,{roughness:.5}));const sc=K.plane(g,0,w*.4,-w*.36,w*.78,w*.56,screen||mat(0x10141a,{roughness:.2,emissive:0x0,emissiveIntensity:0}));sc.name='screen';return g;},
   // a 1960s console: a wooden cabinet on legs, the screen on the left, the speaker cloth on the right
   console({screen=null}={}){const g=G('console-tv');K.box(g,0,.62,0,1.3,.7,.5,dk);for(const [x,z] of [[-.58,-.2],[.58,-.2],[-.58,.2],[.58,.2]])K.cyl(g,x,.13,z,.025,.26,dk,{r2:.015});
-   K.box(g,.32,.62,-.255,.5,.5,.01,mat(0x9a8a6a,{},'textile'));const sc=K.plane(g,-.24,.64,-.257,.56,.44,screen||mat(0x0c0f12,{emissive:0x0}));sc.name='screen';return g;},
+   K.box(g,.32,.62,-.255,.5,.5,.01,mat(0x9a8a6a,{},'textile'));const sc=K.plane(g,-.24,.64,-.257,.56,.44,screen||mat(0x0c0f12,{emissive:0x0}),{ry:Math.PI});sc.name='screen';/* (facing out, -z) */return g;},
   fridge({h=1.7,c=0xd8d4c0}={}){const g=G('fridge');K.box(g,0,h/2,0,.76,h,.7,mat(c,{roughness:.4}));K.box(g,0,h*.66,-.351,.74,.01,.01,mat(0x8a8a86));K.box(g,-.3,h*.8,-.37,.03,.3,.03,mat(C7.chrome,{metalness:.8,roughness:.3}));K.box(g,-.3,h*.4,-.37,.03,.4,.03,mat(C7.chrome,{metalness:.8,roughness:.3}));return g;},
   stove({c=0xe2dccd}={}){const g=G('stove');K.box(g,0,.45,0,.76,.9,.66,mat(c,{roughness:.45}));for(const [x,z] of [[-.18,-.15],[.18,-.15],[-.18,.15],[.18,.15]])K.cyl(g,x,.905,z,.09,.01,mat(0x2a2a2a));K.box(g,0,1.02,.3,.76,.25,.05,mat(c));K.box(g,0,.45,-.335,.62,.5,.01,mat(0x2a2a2c,{roughness:.3}));return g;},
   counter({w=1.8,d=.62,top=0xc8bfa8,body=wood}={}){const g=G('counter');K.box(g,0,.44,0,w,.86,d,body);K.box(g,0,.895,0,w+.03,.035,d+.03,mat(top,{roughness:.5}));for(let x=-w/2+.3;x<w/2;x+=.6)K.box(g,x,.5,-d/2-.005,.55,.7,.01,dk);return g;},
@@ -116,7 +116,8 @@ export function houseShell(o){const g=new THREE.Group();g.name='c7-house';const 
   for(const x of [-W*.25,W*.25])addWin(x,y,D/2+.005,0);for(const z of [-D*.2,D*.2]){addWin(-W/2-.005,y,z,-Math.PI/2,.9);addWin(W/2+.005,y,z,Math.PI/2,.9);}}
  // the front door, steps, a porch light
  const dx=o.doorX??(W*.08);
- if(!skip.has('front')){const dm=mat(o.door||0x7a3a2a,{roughness:.6});K.slab(g,dx,F+1.02,-D/2-.02,.94,2.04,.06,dm,{name:'front-door'});K.slab(g,dx,F+1.02,-D/2-.03,1.08,2.16,.04,trim);
+ if(!skip.has('front')&&o.openDoor){for(const s of [-1,1])K.slab(g,dx+s*.53,F+1.06,-D/2-.03,.07,2.14,.08,trim);K.slab(g,dx,F+2.15,-D/2-.03,1.13,.07,.08,trim);}// (a doorway: its leaf is the house's own)
+ else if(!skip.has('front')){const dm=mat(o.door||0x7a3a2a,{roughness:.6});K.slab(g,dx,F+1.02,-D/2-.02,.94,2.04,.06,dm,{name:'front-door'});K.slab(g,dx,F+1.02,-D/2-.03,1.08,2.16,.04,trim);
   K.cyl(g,dx+.35,F+1,-D/2-.07,.03,.05,mat(0xb89a5a,{metalness:.7,roughness:.35}),{rx:Math.PI/2});}
  const steps=Math.max(1,Math.round(F/.18));for(let k=0;k<steps;k++)K.slab(g,dx,(k+.5)*F/steps,-D/2-.35-(steps-1-k)*.3,1.6,F/steps,.3+(steps-1-k)*0,mat(C7.concrete,{},'mineral'));
  if(o.porch){const pw=o.porch.w||3.4,pd=o.porch.d||1.8;K.slab(g,dx,F-.05,-D/2-pd/2,pw,.1,pd,mat(0x9a948a,{},'mineral'));for(const s of [-1,1])K.slab(g,dx+s*(pw/2-.1),F+1.25,-D/2-pd+.12,.12,2.4,.12,trim);
