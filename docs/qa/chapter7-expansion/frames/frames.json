@@ -1,0 +1,265 @@
+{
+  "frames": [
+    {
+      "name": "x10-lange-door",
+      "note": "The Langes’: the door that was shut, standing open, the TV’s light inside",
+      "phase": "e7-court",
+      "calls": 338,
+      "triangles": 80568,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x11-lange-front",
+      "note": "The front room: a 1959 set on a test card, the couch, the Courier and an ashtray, the cigarette still going",
+      "phase": "e7-court",
+      "calls": 261,
+      "triangles": 121494,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x12-lange-kitchen",
+      "note": "The kitchen: dinner for three, one plate untouched and still steaming; the cap on the chair",
+      "phase": "e7-court",
+      "calls": 414,
+      "triangles": 78022,
+      "caption": "JAMIE“Somebody’s eating. Was eating.”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x13-lange-phone",
+      "note": "The phone, and the board beside it: Ruth Ann Carver, 1966; Danny Whitcomb, 1991; an empty pin",
+      "phase": "e7-court",
+      "calls": 271,
+      "triangles": 78668,
+      "caption": "The receiver is heavy and cold. No dial tone.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x14-lange-bath-door",
+      "note": "The hall: the light under the bathroom door, and a shadow across it",
+      "phase": "e7-court",
+      "calls": 467,
+      "triangles": 81684,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x15-lange-drawings",
+      "note": "His room: three drawings over the bed, the same picture three times (R.A.C. 1966, D.W. 1991, and one with no name yet)",
+      "phase": "e7-court",
+      "calls": 211,
+      "triangles": 75738,
+      "caption": "Three drawings taped up over the bed. The same picture, three times.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x16-lange-burst",
+      "note": "It comes out of the bathroom and through his door; the chair goes",
+      "phase": "e7-court",
+      "calls": 586,
+      "triangles": 131036,
+      "caption": "JAMIE“…Four bikes.”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x17-lange-loom",
+      "note": "It stands too close, mouth open; Jamie between you and it, arms out",
+      "phase": "e7-court",
+      "calls": 584,
+      "triangles": 135800,
+      "caption": "JAMIE“NO—”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x18-lange-front-burst",
+      "note": "The other choice (leave): it comes into the front room after you; the couch goes",
+      "phase": "e7-court",
+      "calls": 335,
+      "triangles": 137788,
+      "caption": "JAMIE“NO—”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x01-tour-poster",
+      "note": "The Tour de Oak Hollow poster, out of the tube",
+      "phase": "d7-house",
+      "calls": 261,
+      "triangles": 278488,
+      "caption": "JAMIE“On top of his shelf. The tube. He KEPT it?”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x02-machine",
+      "note": "The answering machine on the kitchen counter, its cord",
+      "phase": "d7-house",
+      "calls": 214,
+      "triangles": 428870,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x03-records-map",
+      "note": "The map: MH-12, the streetlight schedule, the crayon circle",
+      "phase": "d7-map",
+      "calls": 426,
+      "triangles": 1058658,
+      "caption": "OFFICER REYES“Look at this. Brandt took me down into the junction chamber this morning. Under the wo",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x20-green-star",
+      "note": "A folded gum-wrapper star on the second stair",
+      "phase": "e7-house",
+      "calls": 273,
+      "triangles": 71210,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "x21-green-prints",
+      "note": "Wet prints across the kitchen, out of the closet under the stairs",
+      "phase": "e7-house",
+      "calls": 102,
+      "triangles": 62502,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "x22-pantry-hand",
+      "note": "In the pantry: its hand on the edge of the door",
+      "phase": "e7-stalk",
+      "calls": 314,
+      "triangles": 84510,
+      "caption": "JAMIE“(It’s here. Don’t move— hold your breath—)”",
+      "hunter": {
+        "state": "peek",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "x23-pantry-head",
+      "note": "Its head in the gap; you hold your breath",
+      "phase": "e7-stalk",
+      "calls": 162,
+      "triangles": 82180,
+      "caption": "JAMIE“(It’s here. Don’t move— hold your breath—)”",
+      "hunter": {
+        "state": "peek",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "x24-rug-lift",
+      "note": "The rug: Jamie lifts the dresser",
+      "phase": "e7-door",
+      "calls": 188,
+      "triangles": 89944,
+      "caption": "JAMIE“The dresser— help me—”",
+      "hunter": {
+        "state": "idle",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "x30-evidence",
+      "note": "Showing Reyes: his flashlight on the marks in the grass",
+      "phase": "n7-after",
+      "calls": 137,
+      "triangles": 180454,
+      "caption": "OFFICER REYES“Take your time.”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x31-mom-phone",
+      "note": "Her phone: the pool, nobody on the towel",
+      "phase": "n7-after",
+      "calls": 548,
+      "triangles": 691896,
+      "caption": "Her phone. A picture from the pool: the deck, the deep end, a striped towel, a bike against the fenc",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x32-record-light",
+      "note": "His page an hour later, turned to the light: JAMIE pressed into the paper",
+      "phase": "n7-after",
+      "calls": 525,
+      "triangles": 661974,
+      "caption": "His page. The same blue ballpoint: JUV. MISSING, 12. Blue cap, orange shirt. Where the name was, not",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    }
+  ],
+  "errors": []
+}
