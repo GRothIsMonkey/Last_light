@@ -262,3 +262,24 @@ The frames in `docs/qa/chapter7-expansion/frames/` were taken during the beats (
   listened to any of it.
 * Not human-playtested. Pacing, difficulty of the held breath and the rug timing, and whether the new scenes read as
   frightening rather than busy all need a person.
+
+## Private playtest
+
+* **Private build (claude.ai):** https://claude.ai/artifact/L1fN5BuNwnFqwM96VWYBC5 — "Last Light Chapter Seven
+  Expanded", a new link, published from commit `4555571` (the commit after it adds only this section). Private to its
+  owner until shared from the page's Share menu. It is `dist/` as is, except that the drain creature's `.glb` (which
+  the host does not serve) is carried as base64 text with a staged `creature.js` that decodes it to the identical
+  bytes, and the page is titled "Last Light Chapter Seven Expanded". Checked before publishing in Chromium, served the
+  way the host serves it: it loads, the creature asset decodes, DEV shows Chapter Seven, and seven scenes across the
+  chapter start (Jamie on the step, the Tour memory, the Langes' bathroom, it waits at the stairs, the rug, Reyes's page,
+  the final image) with no errors. The first draft's build (https://claude.ai/artifact/635uLM7EZYgWma8PRKQjum) was not
+  changed and still plays the first draft.
+* **Offline package:** `Last-Light-Chapter7-Expanded-Playtest.zip` (3,863,563 bytes, SHA-256
+  `72dfda4ca95f43a90afe25ce46bccfccce55039086ddc0ec6fa73b55263fe10c`; sent with the delivery; built by
+  `PLAYTEST_CHAPTER=7 node tools/package-playtest.mjs <dir>` from commit `4555571`, clean tree): one HTML file,
+  `Last-Light-Chapter7-Playtest.html`, that opens from disk with no server, plus `START-HERE.txt`, `manifest.json` with
+  every source file's hash, and the licences. Checked after extracting the ZIP, from `file://` in headless Chromium:
+  four scenes start (the creature reveal, the Langes' bathroom, Reyes's page, the names) with no errors. It has not
+  been opened in branded Chrome or Edge, which this environment does not have; both run the same engine.
+* Start: title screen → **DEV** → **Chapter Seven** → a scene → **START SCENE**; or play Chapter Six to its end card and
+  press **Chapter Seven**. **M** turns the sound on; nobody has listened to it yet.
