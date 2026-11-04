@@ -1296,10 +1296,12 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const bill=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.008,16,1,false,-Math.PI*.35,Math.PI*.7),blue);bill.position.set(0,.004,-.07);bill.scale.set(1,1,1.2);g.add(bill);g.visible=false;scene.add(g);return g;})();
  const marksG=(()=>{const g=new THREE.Group();g.name='c7-drag-marks';g.visible=false;scene.add(g);return g;})();
  function evidencePlaces(){const sp=court.SPOT,R3=court.R3,mouth=sp.mouth;
-  const bike=C.jBikeDown?{x:C.jBikeDown.x,z:C.jBikeDown.z}:(()=>{const q=R3(6.2,-8.6);return {x:q.x,z:q.z};})();
+  // (where his bike went down, if that was here by the path; if it was out on the road, Reyes has walked it back here)
+  const bike=C.jBikeDown&&Math.hypot(C.jBikeDown.x-mouth.x,C.jBikeDown.z-mouth.z)<20&&nav.walkable(C.jBikeDown.x,C.jBikeDown.z,{r:.3})?{x:C.jBikeDown.x,z:C.jBikeDown.z}:(()=>{const q=R3(7.2,-9.8);return {x:q.x,z:q.z};})();
   const land=(JL.x||JL.z)&&Math.hypot(JL.x-mouth.x,JL.z-mouth.z)<25?{x:JL.x,z:JL.z}:(()=>{const q=R3(3.6,-6.2);return {x:q.x,z:q.z};})();
-  const at=u=>({x:land.x+(mouth.x-land.x)*u,z:land.z+(mouth.z-land.z)*u});const cap=(()=>{const q=at(.62),dx=mouth.x-land.x,dz=mouth.z-land.z,l=Math.hypot(dx,dz)||1;return {x:q.x-dz/l*.55,z:q.z+dx/l*.55};})();
-  return {bike,land,mouth:{x:mouth.x,z:mouth.z},marks:at(.35),cap,at};}
+  const at=u=>({x:land.x+(mouth.x-land.x)*u,z:land.z+(mouth.z-land.z)*u});const cap=(()=>{const q=at(.78),dx=mouth.x-land.x,dz=mouth.z-land.z,l=Math.hypot(dx,dz)||1;return {x:q.x-dz/l*1.0,z:q.z+dx/l*1.0};})();
+  // (each with its own ground: the marks where he went down, the cap near the path, his bike off to the side)
+  return {bike,land,mouth:{x:mouth.x,z:mouth.z},marks:at(.18),cap,at};}
  function evidenceProps(on,E){capMesh.visible=on;marksG.visible=on;if(!on)return;
   capMesh.position.set(E.cap.x,gy(E.cap.x,E.cap.z)+.02,E.cap.z);capMesh.rotation.set(.25,.8,.15);
   if(!marksG.children.length){const m=new THREE.MeshStandardMaterial({color:0x26281a,roughness:1,transparent:true,opacity:.82,depthWrite:false});
@@ -1486,9 +1488,10 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(!C.looked.has('wedding'))add('c7-wedding','Look at the picture',{...HW(4.6,-.6,'u'),y:court.G0+HH.UP+.95},2.4,lk(.2,.14));
    if(C.up?.down&&!C.gt)add('c7-hallwindow','Look out the window',{...HW(0,-4.5,'u'),y:court.G0+HH.UP+1.5},2.6,lk(.6,.12));
    if(C.gt?.lights&&court.ST.portalB&&Math.abs(q.x)<1.3&&q.z<-3)add('c7-climb','Climb out onto the porch roof',{...HW(0,-4.6,'u'),y:court.G0+HH.UP+1.2},2.4);}
-  if(ph==='n7-after'&&C.af?.stage==='show'&&C.af.go&&!C.af.busyR){const X=C.af,E=X.E;if(!X.shown.bike)add('c7-ev-bike','Show him Jamie’s bike',{x:E.bike.x,y:gy(E.bike.x,E.bike.z)+.4,z:E.bike.z},3.2,lk(.6,.14));
-   if(!X.shown.cap)add('c7-ev-cap','Show him the cap',{x:E.cap.x,y:gy(E.cap.x,E.cap.z)+.05,z:E.cap.z},2.6,lk(.2,.16));if(!X.shown.marks)add('c7-ev-marks','Show him the marks in the grass',{x:E.marks.x,y:gy(E.marks.x,E.marks.z),z:E.marks.z},3.2,lk(.7,.12));
-   if(!X.shown.gum&&C.inv.gum==='have'&&(X.shown.bike||X.shown.cap||X.shown.marks))out.push({id:'c7-ev-gum',label:'Show him the gum',at:camera.position.clone().add(new THREE.Vector3(0,-.4,0)),face:camera.position.clone(),r:9,wide:true});}
+  // (in the dark: each is offered when you stand by it, whichever way you are looking)
+  if(ph==='n7-after'&&C.af?.stage==='show'&&C.af.go&&!C.af.busyR){const X=C.af,E=X.E;if(!X.shown.bike)add('c7-ev-bike','Show him Jamie’s bike',{x:E.bike.x,y:gy(E.bike.x,E.bike.z)+.4,z:E.bike.z},1.8);
+   if(!X.shown.cap)add('c7-ev-cap','Show him the cap',{x:E.cap.x,y:gy(E.cap.x,E.cap.z)+.05,z:E.cap.z},1.5);if(!X.shown.marks)add('c7-ev-marks','Show him the marks in the grass',{x:E.marks.x,y:gy(E.marks.x,E.marks.z),z:E.marks.z},1.7);
+   if(!X.shown.gum&&C.inv.gum==='have'&&X.shown.bike&&X.shown.cap&&X.shown.marks)out.push({id:'c7-ev-gum',label:'Show him the gum',at:camera.position.clone().add(new THREE.Vector3(0,-.4,0)),face:camera.position.clone(),r:9,wide:true});}
   if(ph==='n7-grab'&&C.gb?.stage==='grab'&&JL.held){const h=jamieHand();if(dist2(p,h)<1.8)add('c7-grab','Grab his hand',h,2.2);}
   if(/^n7-(taken|gone)$/.test(ph)){if(C.inv.gum==='grass'&&C.gumAt)add('c7-gum','Pick up the gum',C.gumAt,1.8,lk(.15,.2));if(ph==='n7-gone'&&!(C.gn?.callT>0))out.push({id:'c7-call',label:'Call his name',at:camera.position.clone().add(new THREE.Vector3(0,-.2,0)),face:camera.position.clone(),r:9,wide:true});}
   if(/^n7-(sams|names)$/.test(ph)&&inSams(p)){const rm=house.room(p.x,p.z);if(rm==='sam'){if(house.ST.fan&&!C.flags.fanOffNight&&!C.sn?.fanBeat)add('c7-fan','Turn off the fan',HS.fan,1.8,lk(.3,.16));

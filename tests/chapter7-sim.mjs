@@ -360,7 +360,7 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   U(()=>ph()==='n7-after',10);
   // (expanded) show Reyes where: his bike, his cap, the marks in the grass, the gum; he photographs them and writes it down
   U(()=>A7.C.af?.go,60);settle(4);const AF=()=>A7.C.af,EV=()=>AF().E,gyy=(q,dy=0)=>({x:q.x,y:h.nav.groundY(q.x,q.z)+dy,z:q.z});
-  for(const [k,dy,r] of [['bike',.4,2.2],['cap',.05,1.6],['marks',0,2.2]]){if(AF().shown?.[k])continue;note('show '+k,approach(gyy(EV()[k]),r*.7,{pad:8}),act('c7-ev-'+k,{at:gyy(EV()[k],dy),r,max:10}));U(()=>!AF().busyR,30);settle(8);}
+  for(const [k,dy,r] of [['bike',.4,1.6],['cap',.05,1.2],['marks',0,1.5]])for(let tryN=0;tryN<3&&!AF().shown?.[k];tryN++){note('show '+k,tryN,approach(gyy(EV()[k]),.5,{pad:8}),act('c7-ev-'+k,{at:gyy(EV()[k],dy),r,max:10}),JSON.stringify({sp:spot()?.id,view:A7.C.view,choice:!!A7.C.choice,walking:me().walking,busyR:AF().busyR}));U(()=>!AF().busyR,30);settle(8);}
   if(C7().inv.gum==='have'){note('show gum',act('c7-ev-gum',{max:10}));U(()=>!AF().busyR,30);}
   const putDown=()=>{for(let i=0;i<4&&A7.C.view;i++){settle(40);tap('KeyS');U(()=>!A7.C.view,2);}};
   U(()=>A7.C.view==='inspect'&&C7().lookKind==='reyes-page',40);putDown();
