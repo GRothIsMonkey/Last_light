@@ -47,15 +47,15 @@ import {canvas,texOf,photoSketch,PHOTO,planCanvas,modernCanvas,drawMapView,MAP,n
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
 
 // QA jumps and DEV scenes, in story order (each starts a little before its moment).
-export const SECTIONS7=['chapter7-start','c7-step','c7-family','c7-bedroom','c7-fan','c7-gum','c7-memory','c7-search','c7-machine','c7-garage','c7-reyes','c7-map','c7-curb','c7-ride','c7-lookout','c7-lane',
+export const SECTIONS7=['chapter7-start','c7-step','c7-family','c7-bedroom','c7-fan','c7-gum','c7-memory','c7-search','c7-machine','c7-garage','c7-reyes','c7-map','c7-records','c7-curb','c7-ride','c7-lookout','c7-lane',
  'c7-court','c7-separation','c7-dining','c7-dining-scare','c7-house','c7-reveal','c7-stalk','c7-door','c7-clues','c7-trace','c7-old-bike','c7-giant','c7-out','c7-bikes',
  'c7-chase','c7-lookout-attack','c7-grab','c7-struggle','c7-taken','c7-gum-pickup','c7-after','c7-forgetting','c7-sams','c7-photo','c7-names','c7-window','chapter7-end'];
-export const ALIAS7={'c7-start':'chapter7-start','c7-tour':'c7-memory','c7-belongings':'c7-search','c7-answering-machine':'c7-machine','c7-house-morning':'c7-family','c7-room':'c7-bedroom','c7-investigation':'c7-reyes','c7-old-map':'c7-map','c7-jamie':'c7-curb',
+export const ALIAS7={'c7-start':'chapter7-start','c7-tour':'c7-memory','c7-belongings':'c7-search','c7-answering-machine':'c7-machine','c7-house-morning':'c7-family','c7-room':'c7-bedroom','c7-investigation':'c7-reyes','c7-old-map':'c7-map','c7-second-investigation':'c7-records','c7-streetlights':'c7-records','c7-jamie':'c7-curb',
  'c7-wrong-street':'c7-lane','c7-reyes-radio':'c7-separation','c7-window-scare':'c7-dining-scare','c7-horror-house':'c7-house','c7-creature':'c7-reveal','c7-stealth':'c7-stalk',
  'c7-historical':'c7-clues','c7-sam-trace':'c7-trace','c7-meadowlark':'c7-old-bike','c7-vantage':'c7-giant','c7-escape':'c7-chase','c7-attack':'c7-lookout-attack','c7-rescue':'c7-struggle',
  'c7-gone':'c7-taken','c7-gum-drop':'c7-gum-pickup','c7-aftermath':'c7-after','c7-final-photo':'c7-photo','c7-notebook':'c7-names','c7-final-image':'c7-window','c7-end':'chapter7-end'};
 // Checkpoints (silent; Continue on the title comes back here). A failure in the house or the chase comes back to its own.
-export const LABEL7={'chapter7-start':'The house without Sam','c7-bedroom':'Sam’s room','c7-search':'Sam’s things','c7-garage':'The garage','c7-reyes':'Officer Reyes','c7-curb':'That afternoon',
+export const LABEL7={'chapter7-start':'The house without Sam','c7-bedroom':'Sam’s room','c7-search':'Sam’s things','c7-garage':'The garage','c7-reyes':'Officer Reyes','c7-records':'The plate and the streetlights','c7-curb':'That afternoon',
  'c7-lookout':'The end of the street','c7-court':'Old Mill Court','c7-house':'The house with the green door','c7-stalk':'Something is hunting us','c7-clues':'Upstairs',
  'c7-bikes':'Jamie’s last ride','c7-after':'Later','c7-sams':'Sam’s room, that night','chapter7-end':'The street that wasn’t there'};
 const PHASES=['c7-black','d7-step','d7-house','d7-garage','d7-reyes','d7-map','d7-curb','e7-ride','e7-lookout','e7-lane','e7-court','e7-dining','e7-house','e7-reveal','e7-stalk',
@@ -208,9 +208,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // a page (a canvas) on a little card held up
  function pageMesh(cv,{w=.17,h=.225,color=0xfbfaf4}={}){const t=texOf(cv),m=new THREE.MeshBasicMaterial({map:t,color:t?0xffffff:color});const g=new THREE.Group();g.add(new THREE.Mesh(new THREE.PlaneGeometry(w,h),m));g.userData.tex=t;g.userData.cv=cv;return g;}
  // ---- the map on the kitchen table (the 2009 map; the 1958 plan on tracing paper over it) --------------------------------------
- const MAPV={cv:canvas(MAP.w,MAP.h),plan:planCanvas(),modern:modernCanvas(),overlay:0,cursor:{x:.5,y:.62},mark:null,hint:0};
+ const MAPV={cv:canvas(MAP.w,MAP.h),plan:planCanvas(),modern:modernCanvas(),overlay:0,cursor:{x:.5,y:.62},mark:null,hint:0,mh:false,photo:false,sched:false,crayon:0,mark2:null,schedMark:null,hint2:0};
  const mapTex=texOf(MAPV.cv),mapMesh=new THREE.Mesh(new THREE.PlaneGeometry(.92,.69),new THREE.MeshBasicMaterial({map:mapTex,color:mapTex?0xffffff:0xe8e4d8}));mapMesh.name='c7-maps-on-the-table';mapMesh.visible=false;
- function drawMap(){drawMapView(MAPV.cv,{plan:MAPV.plan,modern:MAPV.modern,overlay:MAPV.overlay,cursor:MAPV.cursor,mark:MAPV.mark,hint:MAPV.hint});if(mapTex)mapTex.needsUpdate=true;}
+ function drawMap(){drawMapView(MAPV.cv,{plan:MAPV.plan,modern:MAPV.modern,overlay:MAPV.overlay,cursor:MAPV.cursor,mark:MAPV.mark,hint:MAPV.hint,mh:MAPV.mh,photo:MAPV.photo,sched:MAPV.sched,crayon:MAPV.crayon,mark2:MAPV.mark2,schedMark:MAPV.schedMark,hint2:MAPV.hint2});if(mapTex)mapTex.needsUpdate=true;}
  // ---- a choice (three things you could say): number keys, shown on the hint row ---------------------------------------------------
  function choose(options,{then,timeout=25,fallback=null}){C.choice={options,then,t:0,timeout,fallback};}
  function pick(i){const ch=C.choice;if(!ch||!ch.options[i])return;C.choice=null;mark('chose: '+ch.options[i].id);ch.then(ch.options[i].id);}
@@ -476,20 +476,32 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    R('Your friend asked a good question. Look at these with me.',{time:2.6,face:'determined'})],{then:()=>{mapStage();}});}
  // the map: lay the plan over the street map, find what is on both, mark where the court began
  function mapStage(){go('d7-map');C.mp={t:0,tries:0,stage:'look',wrong:0};mark('the maps');const tbl=HS.kitchenTable;
-  mapMesh.visible=true;mapMesh.position.set(tbl.x,tbl.y+.005,tbl.z);mapMesh.rotation.set(-Math.PI/2,0,house.P.worldRot);MAPV.overlay=.0;MAPV.mark=null;MAPV.hint=0;MAPV.cursor={x:.5,y:.62};drawMap();
+  mapMesh.visible=true;mapMesh.position.set(tbl.x,tbl.y+.005,tbl.z);mapMesh.rotation.set(-Math.PI/2,0,house.P.worldRot);MAPV.overlay=.0;MAPV.mark=null;MAPV.hint=0;MAPV.cursor={x:.5,y:.62};Object.assign(MAPV,{mh:false,photo:false,sched:false,crayon:0,mark2:null,schedMark:null,hint2:0});drawMap();
   closeLook({x:tbl.x,y:tbl.y,z:tbl.z},{back:.42,eye:1.05,kind:'map',floor:HS.couch.y});C.lookDur=null;
   objective('Find where Old Mill Court was.','Mouse: the pencil · A / D: the 1958 plan · F: mark it');
   say([N('The township’s street map, 2009. And on tracing paper over it, the 1958 storm plan. The same blocks. The same scale.',{time:4.4})]);}
- function mapKey(code){const M=C.mp;if(!M||M.stage!=='look')return false;
+ function mapKey(code){const M=C.mp;if(!M||!['look','mh','sched'].includes(M.stage))return false;
   if(code==='KeyA'||code==='ArrowLeft'){MAPV.overlay=Math.max(0,MAPV.overlay-.5);drawMap();M.toggled=true;return true;}
   if(code==='KeyD'||code==='ArrowRight'){MAPV.overlay=Math.min(1,MAPV.overlay+.5);drawMap();M.toggled=true;if(!M.oldSeen&&MAPV.overlay>.9){M.oldSeen=true;mark('the old plan over the new');say([N('On the old plan Oak Hollow Drive doesn’t stop. It goes on past the end of the street, past a tree, into a horseshoe of numbered lots.',{time:4.8}),N('OLD MILL CT. Stamped across it in red: VACATED 1974.',{time:3.2})]);}return true;}
-  if(code==='KeyF'){placeMark();return true;}return false;}
+  if(code==='KeyF'){if(M.stage==='mh')placeMH();else if(M.stage==='sched')placeSched();else placeMark();return true;}return false;}
  function placeMark(){const M=C.mp;M.tries++;MAPV.mark={...MAPV.cursor};drawMap();sound('c7Pencil',HS.kitchenTable,{gain:.5});
   const d=Math.hypot(MAPV.mark.x-MAP.target.x,(MAPV.mark.y-MAP.target.y)*.75);
   if(d<.075){mapSolved('you');return;}
   M.wrong++;const W=[[J('That’s just— no. Nothing’s different there.',{time:2.2})],[R('Look at the end of Oak Hollow. Where the two don’t match.',{time:2.8})],[MOM('Where the street ends. Where you boys always are.',{time:2.8})]];
   say(W[Math.min(M.wrong-1,W.length-1)]);}
- function updateMap(dt){const M=C.mp;if(!M||M.stage!=='look')return;M.t+=dt;if(busy())return;
+ function updateMap(dt){const M=C.mp;if(!M)return;
+  if(M.stage==='mh'&&!busy()){M.t2+=dt;
+   if(M.t2>20&&!M.g1){M.g1=true;say([J('The plate says twelve. Find twelve on the old one.',{time:2.6})]);}
+   else if(M.t2>45&&!M.g2){M.g2=true;say([R('They number them up from the creek. Ten, eleven… on Line Four.',{time:3.2})]);}
+   else if(M.t2>70&&!M.g3){M.g3=true;MAPV.hint2=1;drawMap();say([MOM('There. By the tree.',{time:1.8})]);}
+   else if(M.t2>100&&!M.g4){M.g4=true;say([J('There. Twelve.',{time:1.6})],{then:()=>{MAPV.cursor={...MAP.mh12};mhSolved('jamie');}});}}
+  if(M.stage==='sched'&&!busy()){M.t3+=dt;
+   if(M.t3>20&&!M.s1){M.s1=true;say([J('One of these isn’t a street anymore.',{time:2.2})]);}
+   else if(M.t3>50&&!M.s2){M.s2=true;say([R('Read the names. Which one shouldn’t be on there.',{time:2.6})]);}
+   else if(M.t3>85&&!M.s3){M.s3=true;say([J('Old Mill Court. It says Old Mill Court.',{time:2.4})],{then:()=>{MAPV.cursor={x:(MAP.sched.x0+MAP.sched.x1)/2,y:MAP.sched.row0+MAP.sched.odd*MAP.sched.dy};schedSolved('jamie');}});}}
+  // (Reyes lifts the tracing paper off the street map; under it, what was not there)
+  if(M.stage==='lift'){M.liftT+=dt;MAPV.overlay=Math.max(0,1-M.liftT/1.4);MAPV.crayon=M.liftT>1.2?Math.min(1,(M.liftT-1.2)/.5):0;drawMap();if(M.liftT>1.8&&!busy())mapCrayon();}
+  if(M.stage!=='look')return;M.t+=dt;if(busy())return;
   if(M.t>18&&!M.h1){M.h1=true;say([J('The streets don’t line up at the top. Look at the end of Oak Hollow.',{time:3})]);}
   else if(M.t>40&&!M.h2){M.h2=true;say([R('Surveyors drew the trees they meant to keep. Find something that’s on both.',{time:3.4})]);}
   else if(M.t>62&&!M.h3){M.h3=true;MAPV.hint=1;MAPV.overlay=Math.max(MAPV.overlay,.5);drawMap();say([MOM('That’s the oak. Isn’t it? The tree at the end of your street.',{time:3.2,face:'concerned'})]);}
@@ -499,8 +511,39 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    R('Vacated in seventy-four. They took it out when they put the storm line in.',{time:3.2}),DAD('There’s nothing back there. It’s a field.',{time:2.2}),
    R('Line Four bends around it. Like it’s still there.',{time:2.6}),{wait:.5},MOM('Sam drew that. Look.',{time:1.8,face:'sad'}),N('In his notebook: the end of the street, the oak, and a dotted line going on past it. A question mark.',{time:3.8}),
    {wait:.4},R('In sixty-six and in ninety-one the dogs went down Line Four to the end of the court’s right-of-way and sat down. Both times.',{time:4.4}),R('That doesn’t mean anything.',{time:1.8}),
-   J('It means something.',{time:1.8,face:'determined'}),{wait:.8},
-   R('I’m going to go look at it this afternoon.',{time:2.2}),J('We’re coming.',{time:1.4}),R('No.',{time:1}),{wait:1.2},
+   J('It means something.',{time:1.8,face:'determined'})],{then:()=>mapSecond()});}
+ // ---- (the investigation, expanded) the plate in the junction chamber; the streetlight schedule; under the tracing paper ----------
+ function mapSecond(){const M=C.mp;M.stage='mh';M.t2=0;M.wrong2=0;checkpoint('c7-records');Object.assign(MAPV,{photo:true,mh:true,overlay:1});drawMap();mark('the plate in the junction chamber');
+  objective('The plate in Reyes’s picture.','Find it on the old plan. F: mark it.');
+  say([{wait:.6},R('Look at this. Brandt took me down into the junction chamber this morning. Under the works.',{time:3.6,act:()=>reyes.gest('phone')}),
+   R('There’s a plate bolted to the wall where Line Four comes in. I took a picture of it.',{time:3.2}),N('A flash on wet concrete. A plate, rusted at the edges: OAK HOLLOW TWP. MH-12. O.M.C. 1959.',{time:4.2}),
+   R('O.M.C. Old Mill Court. Where’s twelve?',{time:2.4,act:()=>reyes.gest(null)})]);}
+ function placeMH(){const M=C.mp;MAPV.mark2={...MAPV.cursor};drawMap();sound('c7Pencil',HS.kitchenTable,{gain:.5});
+  if(Math.hypot(MAPV.mark2.x-MAP.mh12.x,(MAPV.mark2.y-MAP.mh12.y)*.75)<.035){mhSolved('you');return;}
+  M.wrong2++;const W=[[J('That’s eleven. It goes up from the creek.',{time:2.2})],[R('Twelve. Follow Line Four from the creek, up toward the court.',{time:3})],[J('Where the court starts. Right where the court starts.',{time:2.4})]];
+  say(W[Math.min(M.wrong2-1,W.length-1)]);}
+ function mhSolved(who){const M=C.mp;if(M.stage!=='mh')return;M.stage='mhDone';MAPV.mark2={...MAP.mh12};MAPV.hint2=0;drawMap();C.flags.mh12=who;mark('MH-12 ('+who+')');
+  say([{wait:.5},R('Twelve.',{time:1.2}),R('That’s under the grass at the end of your street. Right where that old paving is.',{time:3.4}),J('We sit on that. Every night. That’s where we leave our bikes.',{time:3,face:'afraid'}),
+   {wait:.8},R('And this. Brandt’s office faxed it over with the plan. The streetlight schedule.',{time:3.2,act:()=>{MAPV.sched=true;drawMap();}}),
+   R('Every lamp the township pays the electric company for. Every street.',{time:2.8})],{then:()=>{M.stage='sched';M.t3=0;M.wrong3=0;objective('The streetlight schedule.','One line on it is wrong. F: mark it.');}});}
+ function placeSched(){const M=C.mp,S=MAP.sched,c2=MAPV.cursor;const i=Math.round((c2.y-S.row0+.008)/S.dy),inX=c2.x>S.x0&&c2.x<S.x1;sound('c7Pencil',HS.kitchenTable,{gain:.5});
+  if(inX&&i>=0&&i<S.rows.length){MAPV.schedMark=i;drawMap();}
+  if(inX&&i===S.odd){schedSolved('you');return;}
+  M.wrong3++;const W=[[J('That’s just a regular street. That one’s real.',{time:2.2})],[R('One of those streets isn’t there anymore.',{time:2.4})],[MOM('The one that’s a field.',{time:1.8})]];
+  say(W[Math.min(M.wrong3-1,W.length-1)]);}
+ function schedSolved(who){const M=C.mp;if(M.stage!=='sched')return;M.stage='lamps';MAPV.schedMark=MAP.sched.odd;drawMap();C.flags.lamps=who;mark('the streetlights ('+who+')');
+  say([{wait:.5},R('Old Mill Court. Four lamps. Active.',{time:2.4}),R('Billed last month.',{time:1.8}),DAD('It’s a field. There’s no court.',{time:2.2}),
+   R('Somebody’s been paying for four streetlights on a street that’s been a field since 1974.',{time:3.6}),{wait:.6},
+   R('There’s a junction box in that chamber. Brandt said it was dead. I watched the meter on it turn.',{time:3.8,face:'worried'}),{wait:1},
+   R('Let me see the street map under that.',{time:2})],{then:()=>{M.stage='lift';M.liftT=0;mark('the tracing paper, lifted');}});}
+ function mapCrayon(){const M=C.mp;M.stage='crayon';C.flags.crayon=true;mark('the crayon');T?.set?.(.35,{rise:.1,why:'the map'});
+  say([{wait:1},N('Under the tracing paper, on the township’s map: a circle in red crayon around the spot. A date beside it, in a child’s hand.',{time:4.4}),
+   J('…Was that there before?',{time:1.8,face:'afraid'}),MOM('That’s crayon.',{time:1.6}),
+   R('This came off the township’s printer at nine o’clock this morning. I watched it come out.',{time:3.6}),{wait:.8},
+   R('Eight twenty-one, ninety-one.',{time:2.2}),{wait:1},R('That’s the day the Whitcomb boy went missing.',{time:2.8,face:'worried'}),
+   J('Somebody circled it twenty years ago. On a map from this morning.',{time:3.2,face:'afraid'})],{then:()=>{M.stage='after';mapFinish();}});}
+ function mapFinish(){const M=C.mp;
+  say([{wait:.8},R('I’m going to go look at it this afternoon.',{time:2.2}),J('We’re coming.',{time:1.4}),R('No.',{time:1}),{wait:1.2},
    MOM('…Take them. Please.',{time:2,face:'sad'}),{wait:.6},MOM('He’d want them to go. And I’d rather they were with you than out there by themselves.',{time:3.6}),{wait:1},
    R('Four-thirty. You stay where I can see you. The whole time.',{time:3}),J('The whole time.',{time:1.6}),{wait:.6},
    R('And take this back. It’s his. Keep it safe.',{time:2.4,act:()=>{C.inv.notebook='have';C.flags.notebookBack=true;}})],{then:()=>{endLook();mapMesh.visible=false;M.stage='done';later(1.2,()=>toCurb());}});}
@@ -1161,7 +1204,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.hiding&&['KeyW','KeyA','KeyS','KeyD','Space'].includes(code))return true;
   return false;}
  function pan(dx,dy){if(!mine(S.phase))return false;if(C.view==='inspect'){C.inspect.yaw+=dx*.006;C.inspect.pitch=clamp(C.inspect.pitch+dy*.006,-1.2,1.2);return true;}
-  if(C.view==='look'&&C.lookKind==='map'&&C.mp?.stage==='look'){MAPV.cursor.x=clamp(MAPV.cursor.x+dx*.0011,.02,.98);MAPV.cursor.y=clamp(MAPV.cursor.y+dy*.0011,.02,.98);drawMap();return true;}return false;}
+  if(C.view==='look'&&C.lookKind==='map'&&['look','mh','sched'].includes(C.mp?.stage)){MAPV.cursor.x=clamp(MAPV.cursor.x+dx*.0011,.02,.98);MAPV.cursor.y=clamp(MAPV.cursor.y+dy*.0011,.02,.98);drawMap();return true;}return false;}
  function wheel(dy){if(!mine(S.phase))return false;if(C.view==='look'&&C.lookKind==='map'){MAPV.overlay=clamp(MAPV.overlay+(dy<0?.25:-.25),0,1);drawMap();return true;}return false;}
  function hint(){const ph=S.phase;
   if(C.choice)return C.choice.options.map((op,i)=>[String(i+1),op.label]);
@@ -1326,8 +1369,10 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    quiet();garageNoise();return;}
   ff('jamieUp','mayRoom','inRoom','notebook','photoSeen','gum','fanOff','noise');C.inv.notebook='have';C.inv.gum='jamie';house.items.notebook.visible=false;house.items.gum.visible=false;
   // ---- Act II ----
-  if(ix<=SECTIONS7.indexOf('c7-map')){hh(HOUR.reyes);C.gr={t:30,stage:'after',done:true,dad:true};tableStage();C.fadeIn=-1;o.fade(0);
-   if(section==='c7-reyes')return;quiet();C.rx.stage='reading';mapStage();return;}
+  if(ix<=SECTIONS7.indexOf('c7-records')){hh(HOUR.reyes);C.gr={t:30,stage:'after',done:true,dad:true};tableStage();C.fadeIn=-1;o.fade(0);
+   if(section==='c7-reyes')return;quiet();C.rx.stage='reading';mapStage();if(section==='c7-map')return;
+   // (the second look: the court found; Reyes's photograph)
+   quiet();C.mp.stage='solved';MAPV.mark={...MAP.target};MAPV.overlay=1;ff('marked');C.flags.markedBy='you';drawMap();mapSecond();return;}
   ff('marked','notebookBack');C.inv.notebook='have';C.inv.radio=true;
   if(section==='c7-curb'){hh(HOUR.curb);curbStage();C.fadeIn=-1;o.fade(0);return;}
   ff('curbUp');C.flags.jamieTalk='look';

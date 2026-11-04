@@ -149,6 +149,16 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   const M=A7.MAPV,tgt={x:.575,y:.27};let guard=0;while((Math.abs(M.cursor.x-tgt.x)>.012||Math.abs(M.cursor.y-tgt.y)>.012)&&guard++<200){h.chapter4.pan((tgt.x-M.cursor.x)/.0011*.5,(tgt.y-M.cursor.y)/.0011*.5);W(.05);}
   tap('KeyF');U(()=>A7.C.mp?.stage==='solved',4);
   check(`${label}: you mark where Old Mill Court began (past the oak)`,()=>{assert.ok(A7.C.flags.marked);assert.equal(A7.C.flags.markedBy,'you');});
+  // (the second look) Reyes's photograph of the plate in the junction chamber: find MH-12 on the old plan
+  const moveTo=tg=>{let gd=0;while((Math.abs(M.cursor.x-tg.x)>.01||Math.abs(M.cursor.y-tg.y)>.01)&&gd++<200){h.chapter4.pan((tg.x-M.cursor.x)/.0011*.5,(tg.y-M.cursor.y)/.0011*.5);W(.05);}};
+  U(()=>A7.C.mp?.stage==='mh',90);settle(20);note('MH-12');moveTo({x:.6,y:.24});tap('KeyF');U(()=>A7.C.mp?.stage!=='mh',4);
+  check(`${label}: from Reyes's photograph of the plate (MH-12, O.M.C. 1959) you find MH-12 on the old plan: under the grass at the end of your street`,()=>{assert.equal(A7.C.flags.mh12,'you');assert.ok(said('Where’s twelve'));});
+  // the streetlight schedule: the line that is wrong
+  U(()=>A7.C.mp?.stage==='sched',40);settle(6);note('the schedule');moveTo({x:.82,y:.86});tap('KeyF');U(()=>A7.C.mp?.stage!=='sched',4);U(()=>['lift','crayon','after','done'].includes(A7.C.mp?.stage),40);
+  check(`${label}: the streetlight schedule: four lamps on Old Mill Court, active, billed last month; the meter in the chamber was turning`,()=>{assert.equal(A7.C.flags.lamps,'you');assert.ok(said('meter on it turn'));});
+  // Reyes lifts the tracing paper: on this morning's map, a circle in red crayon and a date
+  U(()=>A7.C.flags.crayon,40);U(()=>['after','done'].includes(A7.C.mp?.stage),60);
+  check(`${label}: under the tracing paper, on this morning's print of the map: a circle in red crayon round the spot, and 8/21/91`,()=>{assert.ok(A7.C.flags.crayon);assert.ok(A7.MAPV.crayon>.9);assert.ok(said('printer at nine'));assert.ok(said('Whitcomb'));});
   U(()=>ph()==='d7-curb',140);
   check(`${label}: "Four-thirty. You stay where I can see you."`,()=>{assert.ok(said('You stay where I can see you'));assert.ok(said('Sam drew that'));});
   lap('reyes');}

@@ -42,7 +42,10 @@ export function photoSketch(g,w,h,{who=['player','jamie','sam','alex']}={}){
 // ---- the maps (the same scale and frame: north up; Oak Hollow Drive runs up the middle to its end) ---------------------------------
 // The frame's anchor points (fractions): where Oak Hollow Drive ends today (the cul-de-sac), the oak, and where the court
 // went. The modern map's cul-de-sac is at CUL; the 1958 plan has the street going on past it (no cul-de-sac) into the court.
-export const MAP={w:1024,h:768,cul:{x:.5,y:.36},oak:{x:.555,y:.31},court:{x:.6,y:.2},target:{x:.575,y:.27},sams:{x:.465,y:.52},jamie:{x:.535,y:.68}};
+export const MAP={w:1024,h:768,cul:{x:.5,y:.36},oak:{x:.555,y:.31},court:{x:.6,y:.2},target:{x:.575,y:.27},sams:{x:.465,y:.52},jamie:{x:.535,y:.68},
+ // (the second look: the manholes on Line Four, numbered up from the creek; MH-12 at the court's mouth; the streetlight schedule)
+ mh:[{n:10,x:.86,y:.34},{n:11,x:.7,y:.3},{n:12,x:.6,y:.24},{n:13,x:.61,y:.16}],mh12:{x:.6,y:.24},
+ sched:{x0:.655,x1:.985,y0:.635,rows:['OAK HOLLOW DR|14|ACTIVE','BRIARWOOD LN|9|ACTIVE','SUMMERFIELD RD|11|ACTIVE','MILL CREEK RD|6|ACTIVE','OLD MILL CT|4|ACTIVE','MILL ST (WORKS)|3|ACTIVE'],row0:.705,dy:.04,odd:4}};
 function streets(g,w,h,{old=false}={}){g.lineCap='round';g.lineJoin='round';
  const road=(pts,wd)=>{g.lineWidth=wd;g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x*w,y*h):g.moveTo(x*w,y*h));g.stroke();};
  // Oak Hollow Drive, up the middle, and its cross streets
@@ -72,11 +75,31 @@ export function modernCanvas(){const cv=canvas(MAP.w,MAP.h);if(!cv)return null;c
  // Sam's own pencil, already on it: his house, Jamie's, an X at the creek
  g.strokeStyle='#4a4a52';g.lineWidth=2;g.font='italic 14px Georgia';g.fillStyle='#4a4a52';g.beginPath();g.arc(MAP.sams.x*w,MAP.sams.y*h,9,0,7);g.stroke();g.fillText('me',MAP.sams.x*w-34,MAP.sams.y*h+4);
  g.beginPath();g.arc(MAP.jamie.x*w,MAP.jamie.y*h,9,0,7);g.stroke();g.fillText('J',MAP.jamie.x*w+14,MAP.jamie.y*h+5);return cv;}
-// the view on the table: the modern map, the plan over it at some opacity, your pencil and its mark
-export function drawMapView(cv,{plan,modern,overlay=0,cursor=null,mark=null,hint=0}){if(!cv)return;const {g,c}=cv,w=c.width,h=c.height;g.clearRect(0,0,w,h);
- if(modern)g.drawImage(modern.c,0,0,w,h);if(plan&&overlay>.01){g.globalAlpha=overlay*.82;g.drawImage(plan.c,0,0,w,h);g.globalAlpha=1;}
+// the view on the table: the modern map, the plan over it at some opacity, your pencil and its mark; and, the second time,
+// the manholes on the plan, Reyes's photograph of the plate in the junction chamber, the streetlight schedule, and the crayon
+export function drawMapView(cv,{plan,modern,overlay=0,cursor=null,mark=null,hint=0,mh=false,photo=false,sched=false,crayon=0,mark2=null,schedMark=null,hint2=0}){if(!cv)return;const {g,c}=cv,w=c.width,h=c.height;g.clearRect(0,0,w,h);
+ if(modern)g.drawImage(modern.c,0,0,w,h);
+ // (on the 2009 map, under the tracing paper: a circle in red crayon round MH-12, and a date, in a child's hand)
+ if(crayon>0){g.save();g.globalAlpha=Math.min(1,crayon)*.85;g.strokeStyle='#c8322a';g.lineWidth=5;g.lineCap='round';g.beginPath();for(let k=0;k<=46;k++){const a=k/40*Math.PI*2,r=34+Math.sin(k*1.9)*3+k*.12;const x=MAP.mh12.x*w+Math.cos(a)*r*1.15,y=MAP.mh12.y*h+Math.sin(a)*r;k?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();
+  g.fillStyle='#c8322a';g.font='bold 22px "Comic Sans MS", "Chalkboard SE", sans-serif';g.save();g.translate(MAP.mh12.x*w+44,MAP.mh12.y*h+46);g.rotate(-.12);g.fillText('8/21/91',0,0);g.restore();g.restore();}
+ if(plan&&overlay>.01){g.globalAlpha=overlay*.82;g.drawImage(plan.c,0,0,w,h);
+  if(mh){g.strokeStyle='#2a3e64';g.fillStyle='#2a3e64';g.lineWidth=2;g.font='bold 13px "Courier New"';for(const m of MAP.mh){g.beginPath();g.arc(m.x*w,m.y*h,9,0,7);g.stroke();g.beginPath();g.moveTo(m.x*w-6,m.y*h);g.lineTo(m.x*w+6,m.y*h);g.stroke();g.fillText('MH-'+m.n,m.x*w+12,m.y*h-8);}}
+  g.globalAlpha=1;}
  if(hint>0){g.strokeStyle=`rgba(200,60,40,${.35*hint})`;g.lineWidth=3;g.beginPath();g.arc(MAP.oak.x*w,MAP.oak.y*h,40,0,7);g.stroke();}
  if(mark){g.strokeStyle='#2a2a30';g.lineWidth=4;g.beginPath();g.moveTo(mark.x*w-12,mark.y*h-12);g.lineTo(mark.x*w+12,mark.y*h+12);g.moveTo(mark.x*w+12,mark.y*h-12);g.lineTo(mark.x*w-12,mark.y*h+12);g.stroke();}
+ if(mark2){g.strokeStyle='#2a2a30';g.lineWidth=3;g.beginPath();g.arc(mark2.x*w,mark2.y*h,16,0,7);g.stroke();}
+ if(hint2>0){g.strokeStyle=`rgba(200,60,40,${.35*hint2})`;g.lineWidth=3;g.beginPath();g.arc(MAP.mh12.x*w,MAP.mh12.y*h,46,0,7);g.stroke();}
+ // Reyes's photograph from the junction chamber this morning (a flash on a concrete wall; a plate bolted to it)
+ if(photo){const x0=.03*w,y0=.05*h,pw=.29*w,ph=.27*h;g.fillStyle='#f4f1ea';g.fillRect(x0-6,y0-6,pw+12,ph+34);g.fillStyle='#3a3a36';g.fillRect(x0,y0,pw,ph);
+  const gr=g.createRadialGradient(x0+pw*.45,y0+ph*.42,10,x0+pw*.45,y0+ph*.42,pw*.7);gr.addColorStop(0,'rgba(220,220,210,.55)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x0,y0,pw,ph);
+  g.fillStyle='#7a5a3a';g.fillRect(x0+pw*.18,y0+ph*.26,pw*.56,ph*.44);g.strokeStyle='#4a3420';g.lineWidth=3;g.strokeRect(x0+pw*.18,y0+ph*.26,pw*.56,ph*.44);
+  g.fillStyle='#e8dcc0';g.font='bold 15px "Courier New"';g.fillText('OAK HOLLOW TWP',x0+pw*.22,y0+ph*.38);g.font='bold 24px "Courier New"';g.fillText('MH-12',x0+pw*.32,y0+ph*.52);g.font='bold 14px "Courier New"';g.fillText('O.M.C.  1959',x0+pw*.26,y0+ph*.64);
+  g.fillStyle='#1a1a1a';g.font='italic 14px Georgia';g.fillText('junction chamber, 8/26, 8:40 a.m.',x0,y0+ph+20);}
+ // the streetlight schedule (a fax from Public Works): every lamp the township pays the electric company for
+ if(sched){const S=MAP.sched,x0=S.x0*w,x1=S.x1*w,y0=S.y0*h;g.fillStyle='#f6f4ee';g.fillRect(x0,y0,x1-x0,h*.34);g.strokeStyle='#8a8a86';g.lineWidth=1;g.strokeRect(x0,y0,x1-x0,h*.34);
+  g.fillStyle='#2a2a2a';g.font='bold 12px "Courier New"';g.fillText('OAK HOLLOW TWP - PUBLIC WORKS',x0+8,y0+16);g.font='11px "Courier New"';g.fillText('STREETLIGHT SCHEDULE   BILLED 08/2011',x0+8,y0+32);
+  g.fillText('STREET              LAMPS  STATUS',x0+8,y0+48);S.rows.forEach((r,i)=>{const [nm,n,st]=r.split('|'),y=(S.row0+i*S.dy)*h;g.font='13px "Courier New"';g.fillText(nm.padEnd(18,' '),x0+8,y);g.fillText(String(n).padStart(3,' '),x0+180,y);g.fillText(st,x0+232,y);});
+  if(schedMark){const y=(S.row0+schedMark*S.dy)*h-5;g.strokeStyle='#2a2a30';g.lineWidth=2.5;g.beginPath();g.ellipse((x0+x1)/2,y,(x1-x0)/2-4,13,0,0,7);g.stroke();}}
  if(cursor){g.strokeStyle='rgba(40,40,48,.9)';g.lineWidth=2;g.beginPath();g.arc(cursor.x*w,cursor.y*h,7,0,7);g.stroke();g.beginPath();g.moveTo(cursor.x*w,cursor.y*h-14);g.lineTo(cursor.x*w,cursor.y*h-8);g.moveTo(cursor.x*w,cursor.y*h+8);g.lineTo(cursor.x*w,cursor.y*h+14);g.stroke();}}
 
 // ---- Sam's notebook -----------------------------------------------------------------------------------------------------------------

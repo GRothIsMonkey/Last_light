@@ -130,7 +130,7 @@ export const DEV_SCENES={
   {id:'c7-family',label:'Family Conversation (Sam’s parents)',jump:'c7-family'},{id:'c7-fan',label:'The Fan',jump:'c7-fan',save:'c7-bedroom'},
   {id:'c7-gum',label:'The Gum',jump:'c7-gum',save:'c7-bedroom'},{id:'c7-memory',label:'Sam’s Childhood Memory (the Tour de Oak Hollow)',jump:'c7-memory',save:'c7-bedroom'},
   {id:'c7-search',label:'Searching Sam’s Belongings (his dad’s list)',jump:'c7-search'},{id:'c7-machine',label:'The Answering Machine (not plugged in)',jump:'c7-machine',save:'c7-search'},{id:'c7-garage',label:'Garage Disturbance (first glimpse)',jump:'c7-garage'},
-  {id:'c7-reyes',label:'Reyes Investigation',jump:'c7-reyes'},{id:'c7-map',label:'Old Map (the 1958 plan)',jump:'c7-map',save:'c7-reyes'},
+  {id:'c7-reyes',label:'Reyes Investigation',jump:'c7-reyes'},{id:'c7-map',label:'Old Map (the 1958 plan)',jump:'c7-map',save:'c7-reyes'},{id:'c7-records',label:'Reyes’s Second Investigation (the plate, the streetlights)',jump:'c7-records'},
   {id:'c7-curb',label:'Jamie on the Curb',jump:'c7-curb'},{id:'c7-ride',label:'The Ride Down Oak Hollow',jump:'c7-ride',save:'c7-curb'},{id:'c7-lookout',label:'The End of the Street (Reyes)',jump:'c7-lookout'},
   {id:'c7-lane',label:'Wrong Street Entrance (the lane)',jump:'c7-lane',save:'c7-lookout'},{id:'c7-court',label:'Old Mill Court',jump:'c7-court'},
   {id:'c7-separation',label:'Reyes Separated (the fence)',jump:'c7-separation',save:'c7-court'},{id:'c7-dining',label:'The Lit Window',jump:'c7-dining',save:'c7-court'},
