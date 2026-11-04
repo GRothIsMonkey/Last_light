@@ -113,7 +113,7 @@ const installWalk=()=>ev(async()=>{const L=lastLight,{playChapterSeven}=await im
   const s=await ev(()=>{const c=lastLight.chapter.companions.all.filter(c=>!c.gone&&(c.active||c.person.group.visible));/* (down, held, dragged: Jamie is out of the friends' system but there) */return {phase:lastLight.chapter7.state.phase,state:lastLight.state.state,boys:c.length,photo:lastLight.chapter7.state.photo,gum:lastLight.chapter7.state.inv?.gum};});
   dev.push({...sc,...s});await snap('dev-'+sc.id);await ev(()=>lastLight.toTitle());}
  // (Jamie with you until he is taken; after that nobody: Sam is missing throughout)
- const after=new Set(['c7-gum-pickup','c7-after','c7-forgetting','c7-sams','c7-photo','c7-names','c7-window','chapter7-end']);
+ const after=new Set(['c7-gum-pickup','c7-after','c7-evidence','c7-mom','c7-forgetting','c7-record','c7-sams','c7-photo','c7-names','c7-window','chapter7-end']);
  if(scenes.length)check(`DEV: all ${scenes.length} Chapter Seven scenes start from the selector (real clicks) in a Chapter Seven phase; Jamie there until he is taken, nobody after`,dev.every(d=>/^(c7|d7|e7|n7)-/.test(d.phase)&&d.boys===(after.has(d.id)?0:1)),JSON.stringify(dev.filter(d=>!(/^(c7|d7|e7|n7)-/.test(d.phase)&&d.boys===(after.has(d.id)?0:1)))));
  report.dev=dev;
  const gpu=await ev(()=>{const gl=lastLight.renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');return ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):'unavailable';});
