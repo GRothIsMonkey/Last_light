@@ -293,8 +293,18 @@ assets were changed. See the test report for the regression runs.
 
 ## 6. Private playtest
 
-See the delivery message and the test report for whether a private build was published and its link. No link is
-recorded here unless it was actually created.
+* **Private build (claude.ai):** https://claude.ai/artifact/635uLM7EZYgWma8PRKQjum — "Last Light Chapter Seven",
+  published from commit `df89ec4` (version 1). Private to its owner until shared from the page's Share menu. It is
+  `dist/` as is, except that the drain creature's `.glb` (which the host does not serve) is carried as base64 text with
+  a staged `creature.js` that decodes it to the identical bytes, and the page is titled "Last Light Chapter Seven", as
+  the Chapter Six build was done. Checked before publishing in Chromium (served the way the host serves it): it loads,
+  DEV shows Chapter Seven, five scenes across the chapter start, no errors.
+* **Offline package:** `Last-Light-Chapter7-Playtest.zip` (sent with the delivery; built by
+  `PLAYTEST_CHAPTER=7 node tools/package-playtest.mjs <dir>` from commit `df89ec4`, clean tree): one HTML file that opens
+  from disk in desktop Chrome or Edge with no server, plus `START-HERE.txt`, a manifest with every source file's hash,
+  and the licences. Checked from `file://` in Chromium (two Chapter Seven scenes, no errors).
+* Start: title screen → **DEV** → **Chapter Seven** → a scene → **START SCENE**; or play Chapter Six to its end card and
+  press **Chapter Seven**. Sound is on the **M** key; nobody has listened to it yet.
 
 ## 7. For the vault (once accepted — not done here)
 
