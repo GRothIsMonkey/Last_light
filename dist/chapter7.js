@@ -863,7 +863,12 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function dropGum(){if(C.flags.gumDropped)return;C.flags.gumDropped=true;C.inv.gum='grass';const g=house.items.gum;scene.attach(g);g.visible=true;
   const from=new THREE.Vector3(JL.x+JL.dir.x*.75,JL.y+.4,JL.z+JL.dir.z*.75);g.position.copy(from);C.gumFall={v:new THREE.Vector3(JL.dir.x*.6+.4,1.1,JL.dir.z*.6),t:0};mark('the gum falls');sound('c7Gum',from,{gain:.5});}
  function updateGum(dt){const F=C.gumFall;if(!F)return;const g=house.items.gum;F.t+=dt;if(F.done)return;F.v.y-=9.8*dt;g.position.addScaledVector(F.v,dt);g.rotation.x+=dt*7;g.rotation.z+=dt*4;
-  const fy=gy(g.position.x,g.position.z)+.012;if(g.position.y<fy){g.position.y=fy;if(Math.abs(F.v.y)>1.2){F.v.y*=-.25;F.v.x*=.4;F.v.z*=.4;sound('c7Gum',g.position,{gain:.35});}else{F.done=true;g.rotation.set(0,g.rotation.y,0);C.gumAt={x:g.position.x,y:g.position.y,z:g.position.z};mark('the gum, in the grass');}}}
+  const fy=gy(g.position.x,g.position.z)+.012;if(g.position.y<fy){g.position.y=fy;if(Math.abs(F.v.y)>1.2){F.v.y*=-.25;F.v.x*=.4;F.v.z*=.4;sound('c7Gum',g.position,{gain:.35});}else{F.done=true;g.rotation.set(0,g.rotation.y,0);
+    // (it ends up where you can get to it: thrown off his hand by the lane's mouth it could land in the hedge, under it, or
+    //  past where the ground can be walked, and there it could never be picked up; it is in the grass at the nearest place)
+    if(!nav.walkable(g.position.x,g.position.z,{r:.35}))for(let rr=.25,found=false;rr<=3.5&&!found;rr+=.25)for(let k=0;k<16;k++){const a=k*Math.PI/8+rr,x=g.position.x+Math.sin(a)*rr,z=g.position.z-Math.cos(a)*rr;
+      if(nav.walkable(x,z,{r:.35})){g.position.set(x,gy(x,z)+.012,z);found=true;break;}}
+    C.gumAt={x:g.position.x,y:g.position.y,z:g.position.z};mark('the gum, in the grass');}}}
  // ---- after: you, the lane that is only a lane, the gum; Reyes ----------------------------------------------------------------------------
  function goneStart(){go('n7-gone');C.gn={t:0,calls:0};const sp=court.SPOT;
   reyes.show(true);reyes.place(sp.fieldFar.x,sp.fieldFar.z,0);reyes.gest('flashlight');later(4,()=>{reyes.walk([[sp.fieldOut.x,sp.fieldOut.z],[court.realW(-8,12).x,court.realW(-8,12).z],[sp.bend1.x,sp.bend1.z],[sp.inLane.x,sp.inLane.z]],{speed:2.6,then:a=>{a.lookAt=camera.position;reyesArrives2();}});
@@ -1123,6 +1128,8 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // ---- every frame -----------------------------------------------------------------------------------------------------------------------------
  function update(dt){C.t+=dt;C.pt+=dt;const ph=S.phase;mind();court.ST.level=C.lv||'g';
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
+  // (Sam's window by day: the street across from it, rendered once the morning is set and you are in his house)
+  if(/^d7-/.test(ph)&&!C.dayView&&inSams()&&C.t>.3)C.dayView=house.renderView('day')?'day':'none';
   clock(dt);updatePose(dt);match(dt);guard(dt);standAll();inv.update();if(inv.isOpen&&(C.view||posed()||C.fadeOut>=0||C.endT>=0))inv.close();
   // the lane's crossing (your last position to this one)
   const p=me();if(C.prevP&&Math.hypot(p.x-C.prevP.x,p.z-C.prevP.z)<3)crossing(C.prevP,p);C.prevP={x:p.x,z:p.z};

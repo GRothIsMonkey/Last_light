@@ -132,8 +132,10 @@ export function createSamHouse({scene,world,shoot=null}){
    const rt=viewRT[which]||(viewRT[which]=new THREE.WebGLRenderTarget(768,576,{colorSpace:THREE.SRGBColorSpace}));
    const c=new THREE.PerspectiveCamera(50,768/576,.1,300),e=from||toW(4.2,D2+.8,FL+1.45),f=look||toW(4.2-2.2,D2+18,FL+.8);c.position.set(e.x,e.y,e.z);c.lookAt(f.x,f.y,f.z);c.updateMatrixWorld();
    const was=root.visible;root.visible=false;staged?.(true);const ok=shoot({cam:c,target:rt});staged?.(false);root.visible=was;
-   if(ok){const m=panes.find(p=>p.mesh===samWin).m;m.map=rt.texture;m.color.setHex(0xffffff);m.emissiveIntensity=bright??(which==='night'?.05:.25);m.emissive.setHex(0xffffff);m.emissiveMap=rt.texture;m.needsUpdate=true;}return ok;}catch{root.visible=true;return false;}}
- function lightsOut(night){for(const p of panes){if(p.m.map)continue;p.m.emissiveIntensity=night?.03:.55;p.m.color.setHex(night?0x10141c:0xdde6ee);}tvScreen.emissiveIntensity=night?.2:.5;}
+   // (the view shows as itself, by its own light: lit by the room's daylight as well, the morning street burned out to white)
+   if(ok){const m=panes.find(p=>p.mesh===samWin).m;m.userData.view=which;m.map=rt.texture;m.color.setHex(0x0b0b0b);m.emissiveIntensity=bright??(which==='night'?.45:.92);m.emissive.setHex(0xffffff);m.emissiveMap=rt.texture;m.needsUpdate=true;}return ok;}catch{root.visible=true;return false;}}
+ // (at night the morning's view comes off his window: the plain dark glass, until the last look out of it renders the night)
+ function lightsOut(night){for(const p of panes){if(night&&p.m.userData.view==='day'){p.m.map=null;p.m.emissiveMap=null;p.m.emissive.setHex(0xb8c8d6);p.m.userData.view=null;p.m.needsUpdate=true;}if(p.m.map)continue;p.m.emissiveIntensity=night?.03:.55;p.m.color.setHex(night?0x10141c:0xdde6ee);}tvScreen.emissiveIntensity=night?.2:.5;}
  // ---- nav ----
  const inR=(q,b,r=0)=>q.x>b.x0+r&&q.x<b.x1-r&&q.z>b.z0+r&&q.z<b.z1-r;
  const gaps=[// doorways between rooms (x0,x1,z0,z1 in the house frame)

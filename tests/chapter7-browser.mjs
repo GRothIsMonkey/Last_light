@@ -110,7 +110,7 @@ const installWalk=()=>ev(async()=>{const L=lastLight,{playChapterSeven}=await im
  await ev(()=>lastLight.toTitle());
  for(const [i,sc] of scenes.entries()){if(SEG&&i%(+process.env.DEV_BATCH||6)===0){await openBrowser();await ev(()=>lastLight.toTitle());}await page.click('[data-dev-chapter="7"]',{timeout:300000});await page.selectOption('#dev-scene',sc.id);await page.click('#dev-start',{timeout:300000});
   await page.waitForFunction(()=>!document.body.classList.contains('dev-starting'),null,{timeout:300000});await ev(()=>lastLight.step(1.5));
-  const s=await ev(()=>{const c=lastLight.chapter.companions.all.filter(c=>c.active&&!c.gone);return {phase:lastLight.chapter7.state.phase,state:lastLight.state.state,boys:c.length,photo:lastLight.chapter7.state.photo,gum:lastLight.chapter7.state.inv?.gum};});
+  const s=await ev(()=>{const c=lastLight.chapter.companions.all.filter(c=>!c.gone&&(c.active||c.person.group.visible));/* (down, held, dragged: Jamie is out of the friends' system but there) */return {phase:lastLight.chapter7.state.phase,state:lastLight.state.state,boys:c.length,photo:lastLight.chapter7.state.photo,gum:lastLight.chapter7.state.inv?.gum};});
   dev.push({...sc,...s});await snap('dev-'+sc.id);await ev(()=>lastLight.toTitle());}
  // (Jamie with you until he is taken; after that nobody: Sam is missing throughout)
  const after=new Set(['c7-gum-pickup','c7-after','c7-forgetting','c7-sams','c7-photo','c7-names','c7-window','chapter7-end']);

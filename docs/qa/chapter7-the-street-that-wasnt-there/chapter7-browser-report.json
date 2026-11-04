@@ -1,5 +1,113 @@
 {
-  "failure": "page.evaluate: Target crashed \n    at ev (/home/user/Last_light/tests/chapter7-browser.mjs:45:25)\n    at harvest (/home/user/Last_light/tests/chapter7-browser.mjs:83:40)\n    at /home/user/Last_light/tests/chapter7-browser.mjs:88:148",
+  "walkthrough": {
+    "scope": "segmented: Chapter Six end card → real click → the first segment; later segments from their own checkpoints, played with inputs (browser refreshed at the configured segment batch) (the end card reached by the last)",
+    "gameMinutes": 22.14,
+    "wallSeconds": 1084,
+    "segments": [
+      {
+        "segment": "house",
+        "phase": "d7-garage",
+        "clock": 2.48,
+        "heapMB": 1066,
+        "wallSeconds": 28
+      },
+      {
+        "segment": "garage",
+        "phase": "d7-garage",
+        "clock": 0.74,
+        "heapMB": 1109,
+        "wallSeconds": 112
+      },
+      {
+        "segment": "reyes",
+        "phase": "d7-curb",
+        "clock": 2.18,
+        "heapMB": 1095,
+        "wallSeconds": 100
+      },
+      {
+        "segment": "afternoon",
+        "phase": "e7-lookout",
+        "clock": 2.45,
+        "heapMB": 1090,
+        "wallSeconds": 122
+      },
+      {
+        "segment": "court",
+        "phase": "e7-house",
+        "clock": 4.18,
+        "heapMB": 1096,
+        "wallSeconds": 93
+      },
+      {
+        "segment": "green",
+        "phase": "e7-upstairs",
+        "clock": 2.13,
+        "heapMB": 1086,
+        "wallSeconds": 112
+      },
+      {
+        "segment": "upstairs",
+        "phase": "e7-out",
+        "clock": 1.92,
+        "heapMB": 1079,
+        "wallSeconds": 111
+      },
+      {
+        "segment": "chase",
+        "phase": "n7-lookout",
+        "clock": 1.64,
+        "heapMB": 1071,
+        "wallSeconds": 92
+      },
+      {
+        "segment": "abduction",
+        "phase": "n7-after",
+        "clock": 1.64,
+        "heapMB": 1103,
+        "wallSeconds": 124
+      },
+      {
+        "segment": "after",
+        "phase": "n7-sams",
+        "clock": 1.27,
+        "heapMB": 1101,
+        "wallSeconds": 79
+      },
+      {
+        "segment": "night",
+        "phase": "n7-end",
+        "clock": 1.52,
+        "heapMB": 1098,
+        "wallSeconds": 85
+      }
+    ],
+    "metrics": {
+      "chapter7": {
+        "minutes": {
+          "night": 1.52
+        },
+        "total": 1.52,
+        "phases": 4,
+        "bad": 0,
+        "jumps": 0,
+        "gapMax": {},
+        "samSeen": 0,
+        "jamieVisibleAfter": 0
+      }
+    },
+    "fails": []
+  },
+  "dev": [],
+  "browser": "153.0.8010.12",
+  "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "triangles": {
+    "min": 43314,
+    "max": 1064573
+  },
+  "renderLimitation": "Software rendering (SwiftShader): render counts are real, frame times are not a real-GPU measurement.",
+  "audio": "AudioContext disabled and game muted; no listening review.",
+  "quality": "default",
   "runtimeHashes": {
     "dist/THREE-LICENSE.txt": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d",
     "dist/adult-art.js": "07ab447ff682d430620a073814491b3a44e0f7c6603b685048e2b4c0ff1868a5",
@@ -40,15 +148,15 @@
     "dist/chapter6-storm.js": "2926715e02feb0567999793cbeef8285a26d91966f734ec11fdefef06fc09808",
     "dist/chapter6-works.js": "e76ff90f55087279877146ec17fcf46fb9f1dbe5c6d8e57aab773b729e7e1179",
     "dist/chapter6.js": "a353480b6f17f7b81a9dbfc27a7fb5788a61c9627eb998baced799c94b4af0fd",
-    "dist/chapter7-build.js": "47f7ae320aee4f6d9010a3ec7e855c2798da6ed299b4813b3b84f0b07c193011",
+    "dist/chapter7-build.js": "1907169c467269a3748e2041ff62627ff24528ffdd62cbac56d9eb9f44876b69",
     "dist/chapter7-cast.js": "4c7c82181cb698b7d680f385ee5e4ca39f5f49b31b5ac01f59628b89925d2dc5",
-    "dist/chapter7-court.js": "d583d89bfb72afd0402d7c77c11d39ef9b52f79a73160a760199b91d1638b459",
-    "dist/chapter7-creature.js": "c53b3a2cc67c31762d942c8dcd213f6a2c965c4a70870fc273acfb537aba8b14",
-    "dist/chapter7-house.js": "704ce5da276bc141285cc5b6107e332dd342e597204271789698944bebe1d43d",
+    "dist/chapter7-court.js": "c4f387e35498cd85f32d27ee09143d5a41591cd49ab32fb02620d5dcd7c14e02",
+    "dist/chapter7-creature.js": "f2ebfa1778928786ca403527490f71a4bc98d22abf806c41c17947e649b932f7",
+    "dist/chapter7-house.js": "e91ff82849f49fb77ac4383d708f81ae0a5bf9b4c7c28ee533066d10d8197689",
     "dist/chapter7-hunter.js": "fa46b33fe5a67fda849bf1948db3657e866b96de931079105f1ba2e7b4beca52",
-    "dist/chapter7-interiors.js": "c519445c22ff5d1c41d2a999da56235dee485aa40d0971ea1ff6ab5437d822a5",
-    "dist/chapter7-props.js": "3344bd56b55efb4598cdd2c4c2d6780f27018c9e4fc2b458e88050833d5e7154",
-    "dist/chapter7.js": "d62ad51ccc3d131094a54073cad6066c1c56c023d8a3d35eaf10ea0d33920b33",
+    "dist/chapter7-interiors.js": "70ce6602612c46e9d5850cdfab2c60f346f6f79bbaeec968b989479402ddb34b",
+    "dist/chapter7-props.js": "19f201d0e02a50e5b15eea4d17d58a5773715ec965b8916d8aac6b39181eb8f4",
+    "dist/chapter7.js": "eccdfd970427a5bbf6d51f72c6ce6a0210d66fe02830c263b936f5cad679c64c",
     "dist/companion-brain.js": "8807d63f35534552f331e25ccde619ac947c1ce25dc5ca3e53bc7eeabca90e64",
     "dist/companions.js": "bc19dfd6d1f4f510a21616f575dd9cf4fe68d53369f38d572ab92ad18c63b80c",
     "dist/creature-asset.js": "cfd431397910ec8b899c38fff6d498299cc631c22e735aeb3ea8b811b8bf2be4",
@@ -113,10 +221,75 @@
     "dist/woods.js": "e3ff8a8531f865f4448c27c4da87a6187150d02f6cb0b9e3819b071a4f5e9c4b",
     "dist/world.js": "7ae1df7dc5df8cb493ef26514691450250a6ae43435d508e4cf96388c4de5ffc"
   },
-  "passed": 2,
+  "passed": 67,
   "checks": [
     "Chapter Six ends on its card, with a \"Chapter Seven\" button",
-    "the button opens Chapter Seven on its card over black: LAST LIGHT · Chapter Seven · The Street That Wasn’t There · Friday, August 26, 2011"
+    "the button opens Chapter Seven on its card over black: LAST LIGHT · Chapter Seven · The Street That Wasn’t There · Friday, August 26, 2011",
+    "Chromium: black, the card, then outside Sam's house on Friday morning",
+    "Chromium: Jamie on the step (\"I couldn't knock.\")",
+    "Chromium: inside, Sam's mom and dad",
+    "Chromium: Sam's room (the fan running)",
+    "Chromium: the fan off, his dad turns it back on (\"He can't sleep without that.\")",
+    "Chromium: the photograph in your hand (the four of you at the oak)",
+    "Chromium: Sam's notebook taken (one page torn out)",
+    "Chromium: Jamie takes the gum (\"I'm gonna give it back to him.\")",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: a noise in the garage",
+    "Chromium: something low by the side door, a long hand on the floor, gone out the side door (seen 0.57 s)",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: Reyes at the kitchen table (nothing found; the grille open)",
+    "Chromium: you mark where Old Mill Court began (past the oak)",
+    "Chromium: \"Four-thirty. You stay where I can see you.\"",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: Jamie on the curb (\"I keep thinking I'm gonna tell him about this.\"), and three things to say",
+    "Chromium: you answer him; Reyes: ride down, he follows; the radio to Jamie",
+    "Chromium: the end of the street (Reyes behind you in the car)",
+    "Chromium: Reyes: \"the court started about… there\"; the lane behind the oak",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: round the two bends, and out onto a street (the crossing: A)",
+    "Chromium: \"There's nothing back here. There's a field.\" Reyes, on the radio: the field, nobody",
+    "Chromium: a board fence across the lane they came through (\"This was OPEN.\")",
+    "Chromium: you knock: nobody; you knock again: footsteps come to the door and stop, and nobody opens it",
+    "Chromium: the clock runs fast here (it is getting dark), Reyes says he sees you by a fence",
+    "Chromium: the family at the table; heads turn one by one; the father comes at the glass and hits it (it cracks)",
+    "Chromium: after the hit he is still there, at the glass, then goes back to his chair",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: Sam's voice on the radio (\"The one with the green door. Upstairs.\")",
+    "Chromium: inside; the footsteps upstairs stop",
+    "Chromium: at the top of the stairs a hand round the corner, the head turns, it comes out",
+    "Chromium: it reaches the bottom and hunts (you are in the pantry)",
+    "Chromium: up the stairs without it catching you (failed 0 time(s) first)",
+    "Chromium: the door shut, the dresser against it, and it hits the door twice",
+    "Chromium: it goes; from the window, up the street",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: the 1991 calendar; a page in Sam's writing, yellow, as if years old",
+    "Chromium: the old green bike, wet, 0417, AR; its bell rings, twice",
+    "Chromium: from the hall window something very large moves behind the roofs (the far roof gives); then the lights past a hedge",
+    "Chromium: out onto the porch roof, and drop",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: at the bikes it comes over the car at you; Jamie: \"GO!\"",
+    "Chromium: down the court, round the bend, up the other side, into the other lane, and out at the oak (51.8 s; closest 0.36 m)",
+    "Chromium: the chase took 45-110 s and it cut across (seen between the houses) and came at you from the side",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: out of the lane it comes over you and takes Jamie off his bike; you are off yours",
+    "Chromium: your hands on his wrist (the struggle)",
+    "Chromium: you hold on (12.3 s, the view within 0.9 m of his hand); his hand goes out of yours; the gum falls",
+    "Chromium: it drags him into the lane, round the bend, and he is gone (never seen dead: gone)",
+    "Chromium: while it held him his feet stayed in its hand (552 frames, 0 off)",
+    "Chromium: in the lane, nothing (the lane comes out in the field)",
+    "Chromium: the gum, picked up out of the grass",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: Jamie's mom (\"You were WITH him.\"); her pictures have no Jamie in them; Reyes has to read Sam's name off his notebook",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "Chromium: the fan: his dad turns it back on and does not know why (this morning he knew)",
+    "Chromium: the same photograph: only you, at the oak, with your bike",
+    "Chromium: \"That's a nice one of you.\"",
+    "Chromium: you write their names (ALEX, JAMIE, SAM), and they are kept for Chapter Eight",
+    "Chromium: four bikes under the streetlight; yours; the end card (LAST LIGHT · Chapter Seven · The Street That Wasn't There), no Chapter Eight",
+    "Chromium: nothing non-finite; Sam never seen; Jamie never seen after he is taken",
+    "the walkthrough reaches Chapter Seven’s end card by inputs alone, with sound off: LAST LIGHT · Chapter Seven · The Street That Wasn’t There · August 26, 2011, and no Chapter Eight",
+    "no JavaScript errors",
+    "no WebGL/shader warnings"
   ],
   "failed": [],
   "frames": [
@@ -130,15 +303,579 @@
     },
     {
       "name": "01-chapter-seven-card",
-      "calls": 421,
-      "triangles": 500118,
+      "calls": 425,
+      "triangles": 500262,
       "phase": "c7-black",
       "time": "AUGUST 21, 2011  7:42 PM",
       "caption": "There’s still a little light."
+    },
+    {
+      "name": "02-black-the-card-then-outside-sam-s-house-on-friday-morning",
+      "phase": "d7-step",
+      "time": "AUGUST 26, 2011  9:37 AM",
+      "caption": "There’s still a little light.",
+      "calls": 425,
+      "triangles": 500262,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-jamie-on-the-step-i-couldn-t-knock",
+      "phase": "d7-step",
+      "time": "AUGUST 26, 2011  9:38 AM",
+      "caption": "JAMIE“I couldn’t knock.”",
+      "calls": 380,
+      "triangles": 489926,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-inside-sam-s-mom-and-dad",
+      "phase": "d7-house",
+      "time": "AUGUST 26, 2011  9:40 AM",
+      "caption": "SAM’S MOM“Nothing’s moved. I didn’t want to move anything.”",
+      "calls": 198,
+      "triangles": 414782,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-sam-s-room-the-fan-running",
+      "phase": "d7-house",
+      "time": "AUGUST 26, 2011  9:40 AM",
+      "caption": "JAMIE“Is that weird? That’s weird.”",
+      "calls": 294,
+      "triangles": 277825,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "06-the-fan-off-his-dad-turns-it-back-on-he-can-t-sleep-without-that",
+      "phase": "d7-house",
+      "time": "AUGUST 26, 2011  9:42 AM",
+      "caption": "SAM’S DAD“He can’t sleep without that.”",
+      "calls": 181,
+      "triangles": 344364,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "07-the-photograph-in-your-hand-the-four-of-you-at-the-oak",
+      "phase": "d7-house",
+      "time": "AUGUST 26, 2011  9:42 AM",
+      "caption": "July. The four of you at the oak with your bikes. Sam’s mom took it. She made you stand st",
+      "calls": 205,
+      "triangles": 404400,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "08-sam-s-notebook-taken-one-page-torn-out",
+      "phase": "d7-house",
+      "time": "AUGUST 26, 2011  9:44 AM",
+      "caption": "JAMIE“…Spearmint.”",
+      "calls": 143,
+      "triangles": 320589,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "09-jamie-takes-the-gum-i-m-gonna-give-it-back-to-him",
+      "phase": "d7-garage",
+      "time": "AUGUST 26, 2011  9:46 AM",
+      "caption": "The street. A police car across the way with nobody in it. Mrs. Kowalski on her porch, wat",
+      "calls": 169,
+      "triangles": 262056,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "10-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "d7-garage",
+      "time": "AUGUST 26, 2011  9:46 AM",
+      "caption": "The street. A police car across the way with nobody in it. Mrs. Kowalski on her porch, wat",
+      "calls": 169,
+      "triangles": 262056,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-a-noise-in-the-garage",
+      "phase": "d7-garage",
+      "time": "AUGUST 26, 2011  9:40 AM",
+      "caption": "JAMIE“…Is somebody in the garage?”",
+      "calls": 271,
+      "triangles": 306796,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-something-low-by-the-side-door-a-long-hand-on-the-floor-gone-out-th",
+      "phase": "d7-garage",
+      "time": "AUGUST 26, 2011  9:43 AM",
+      "caption": "SAM’S DAD“Come inside. Officer Reyes is here.”",
+      "calls": 134,
+      "triangles": 239344,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "d7-garage",
+      "time": "AUGUST 26, 2011  9:43 AM",
+      "caption": "SAM’S DAD“Come inside. Officer Reyes is here.”",
+      "calls": 134,
+      "triangles": 239344,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-reyes-at-the-kitchen-table-nothing-found-the-grille-open",
+      "phase": "d7-reyes",
+      "time": "AUGUST 26, 2011  10:44 AM",
+      "caption": "OFFICER REYES“His mom says Sam was writing everything down. A notebook.”",
+      "calls": 515,
+      "triangles": 1064573,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-you-mark-where-old-mill-court-began-past-the-oak",
+      "phase": "d7-map",
+      "time": "AUGUST 26, 2011  10:47 AM",
+      "caption": "JAMIE“The streets don’t line up at the top. Look at the end of Oak Hollow.”",
+      "calls": 441,
+      "triangles": 993488,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-four-thirty-you-stay-where-i-can-see-you",
+      "phase": "d7-curb",
+      "time": "AUGUST 26, 2011  10:51 AM",
+      "caption": "OFFICER REYES“And take this back. It’s his. Keep it safe.”",
+      "calls": 292,
+      "triangles": 666326,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "d7-curb",
+      "time": "AUGUST 26, 2011  10:51 AM",
+      "caption": "OFFICER REYES“And take this back. It’s his. Keep it safe.”",
+      "calls": 292,
+      "triangles": 666326,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-jamie-on-the-curb-i-keep-thinking-i-m-gonna-tell-him-about-this-and",
+      "phase": "d7-curb",
+      "time": "AUGUST 26, 2011  4:16 PM",
+      "caption": "JAMIE“And he’d say something like, “Technically it’s a court.””",
+      "calls": 292,
+      "triangles": 666326,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-you-answer-him-reyes-ride-down-he-follows-the-radio-to-jamie",
+      "phase": "e7-ride",
+      "time": "AUGUST 26, 2011  4:18 PM",
+      "caption": "JAMIE“I won’t.”",
+      "calls": 292,
+      "triangles": 666326,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-the-end-of-the-street-reyes-behind-you-in-the-car",
+      "phase": "e7-lookout",
+      "time": "AUGUST 26, 2011  4:42 PM",
+      "caption": "JAMIE“Sam said racing on Oak Hollow was how people got hit by cars.”",
+      "calls": 236,
+      "triangles": 226872,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-reyes-the-court-started-about-there-the-lane-behind-the-oak",
+      "phase": "e7-lookout",
+      "time": "AUGUST 26, 2011  4:43 PM",
+      "caption": "OFFICER REYES“Stay where I can see you. Don’t go past the bend.”",
+      "calls": 239,
+      "triangles": 219852,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "06-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "e7-lookout",
+      "time": "AUGUST 26, 2011  4:44 PM",
+      "caption": "OFFICER REYES“Stay where I can see you. Don’t go past the bend.”",
+      "calls": 135,
+      "triangles": 191580,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-round-the-two-bends-and-out-onto-a-street-the-crossing-a",
+      "phase": "e7-court",
+      "time": "AUGUST 26, 2011  4:42 PM",
+      "caption": "There’s still a little light.",
+      "calls": 76,
+      "triangles": 122102,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-there-s-nothing-back-here-there-s-a-field-reyes-on-the-radio-the-fi",
+      "phase": "e7-court",
+      "time": "AUGUST 26, 2011  5:24 PM",
+      "caption": "REYES (RADIO)“Stay where you are. I’m coming back up the path.”",
+      "calls": 708,
+      "triangles": 110838,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-a-board-fence-across-the-lane-they-came-through-this-was-open",
+      "phase": "e7-court",
+      "time": "AUGUST 26, 2011  5:46 PM",
+      "caption": "JAMIE“Sam always— yeah.”",
+      "calls": 53,
+      "triangles": 43314,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-you-knock-nobody-you-knock-again-footsteps-come-to-the-door-and-sto",
+      "phase": "e7-court",
+      "time": "AUGUST 26, 2011  6:27 PM",
+      "caption": "JAMIE“Go. Go, go.”",
+      "calls": 350,
+      "triangles": 58000,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "06-the-clock-runs-fast-here-it-is-getting-dark-reyes-says-he-sees-you-",
+      "phase": "e7-court",
+      "time": "AUGUST 26, 2011  6:37 PM",
+      "caption": "JAMIE“Reyes?”",
+      "calls": 491,
+      "triangles": 78292,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "07-the-family-at-the-table-heads-turn-one-by-one-the-father-comes-at-t",
+      "phase": "e7-dining",
+      "time": "AUGUST 26, 2011  7:15 PM",
+      "caption": "JAMIE“JESUS— go, GO—”",
+      "calls": 388,
+      "triangles": 106868,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "08-after-the-hit-he-is-still-there-at-the-glass-then-goes-back-to-his-",
+      "phase": "e7-dining",
+      "time": "AUGUST 26, 2011  7:15 PM",
+      "caption": "JAMIE“JESUS— go, GO—”",
+      "calls": 388,
+      "triangles": 106868,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "09-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "e7-house",
+      "time": "AUGUST 26, 2011  7:16 PM",
+      "caption": "JAMIE“But what if it’s him.”",
+      "calls": 386,
+      "triangles": 106852,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-sam-s-voice-on-the-radio-the-one-with-the-green-door-upstairs",
+      "phase": "e7-house",
+      "time": "AUGUST 26, 2011  7:33 PM",
+      "caption": "There’s still a little light.",
+      "calls": 116,
+      "triangles": 54228,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-inside-the-footsteps-upstairs-stop",
+      "phase": "e7-house",
+      "time": "AUGUST 26, 2011  7:33 PM",
+      "caption": "JAMIE“It’s— hang on—”",
+      "calls": 380,
+      "triangles": 76244,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-at-the-top-of-the-stairs-a-hand-round-the-corner-the-head-turns-it-",
+      "phase": "e7-reveal",
+      "time": "AUGUST 26, 2011  7:33 PM",
+      "caption": "JAMIE“…Oh my god.”",
+      "calls": 340,
+      "triangles": 73218,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-it-reaches-the-bottom-and-hunts-you-are-in-the-pantry",
+      "phase": "e7-stalk",
+      "time": "AUGUST 26, 2011  7:34 PM",
+      "caption": "JAMIE“Back. Back, back—”",
+      "calls": 870,
+      "triangles": 200922,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "06-up-the-stairs-without-it-catching-you-failed-0-time-s-first",
+      "phase": "e7-door",
+      "time": "AUGUST 26, 2011  7:34 PM",
+      "caption": "JAMIE“It goes round. Like a circle. When it’s on the other side, we go.”",
+      "calls": 198,
+      "triangles": 68092,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "07-the-door-shut-the-dresser-against-it-and-it-hits-the-door-twice",
+      "phase": "e7-door",
+      "time": "AUGUST 26, 2011  7:35 PM",
+      "caption": "JAMIE“HOLD IT— hold it—”",
+      "calls": 163,
+      "triangles": 68446,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "08-it-goes-from-the-window-up-the-street",
+      "phase": "e7-upstairs",
+      "time": "AUGUST 26, 2011  7:37 PM",
+      "caption": "JAMIE“It’s going toward the bikes.”",
+      "calls": 135,
+      "triangles": 66654,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "09-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "e7-upstairs",
+      "time": "AUGUST 26, 2011  7:37 PM",
+      "caption": "JAMIE“It’s going toward the bikes.”",
+      "calls": 135,
+      "triangles": 66654,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-the-1991-calendar-a-page-in-sam-s-writing-yellow-as-if-years-old",
+      "phase": "e7-upstairs",
+      "time": "AUGUST 26, 2011  7:40 PM",
+      "caption": "JAMIE“…It’s old. Look at it. How is it old.”",
+      "calls": 469,
+      "triangles": 139460,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-the-old-green-bike-wet-0417-ar-its-bell-rings-twice",
+      "phase": "e7-upstairs",
+      "time": "AUGUST 26, 2011  7:41 PM",
+      "caption": "JAMIE“Don’t touch it again.”",
+      "calls": 462,
+      "triangles": 142318,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-from-the-hall-window-something-very-large-moves-behind-the-roofs-th",
+      "phase": "e7-giant",
+      "time": "AUGUST 26, 2011  7:42 PM",
+      "caption": "JAMIE“We need the bikes. We can’t outrun it. We SAW it.”",
+      "calls": 433,
+      "triangles": 117032,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-out-onto-the-porch-roof-and-drop",
+      "phase": "e7-out",
+      "time": "AUGUST 26, 2011  7:42 PM",
+      "caption": "JAMIE“We need the bikes. We can’t outrun it. We SAW it.”",
+      "calls": 338,
+      "triangles": 81896,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "06-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "e7-out",
+      "time": "AUGUST 26, 2011  7:42 PM",
+      "caption": "JAMIE“We need the bikes. We can’t outrun it. We SAW it.”",
+      "calls": 338,
+      "triangles": 81896,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-at-the-bikes-it-comes-over-the-car-at-you-jamie-go",
+      "phase": "n7-chase",
+      "time": "AUGUST 26, 2011  8:25 PM",
+      "caption": "JAMIE“GO! GO GO GO!”",
+      "calls": 565,
+      "triangles": 185506,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-down-the-court-round-the-bend-up-the-other-side-into-the-other-lane",
+      "phase": "n7-lookout",
+      "time": "AUGUST 26, 2011  8:27 PM",
+      "caption": "JAMIE“GO— I’m behind you—”",
+      "calls": 808,
+      "triangles": 145954,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-the-chase-took-45-110-s-and-it-cut-across-seen-between-the-houses-a",
+      "phase": "n7-lookout",
+      "time": "AUGUST 26, 2011  8:27 PM",
+      "caption": "JAMIE“REYES! REYES!”",
+      "calls": 418,
+      "triangles": 669141,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "n7-lookout",
+      "time": "AUGUST 26, 2011  8:27 PM",
+      "caption": "JAMIE“REYES! REYES!”",
+      "calls": 418,
+      "triangles": 669141,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-out-of-the-lane-it-comes-over-you-and-takes-jamie-off-his-bike-you-",
+      "phase": "n7-grab",
+      "time": "AUGUST 26, 2011  8:24 PM",
+      "caption": "JAMIE“REYES! REYES!”",
+      "calls": 252,
+      "triangles": 329046,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-your-hands-on-his-wrist-the-struggle",
+      "phase": "n7-grab",
+      "time": "AUGUST 26, 2011  8:24 PM",
+      "caption": "JAMIE“NO— NO NO—”",
+      "calls": 351,
+      "triangles": 544902,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-you-hold-on-12-3-s-the-view-within-0-9-m-of-his-hand-his-hand-goes-",
+      "phase": "n7-grab",
+      "time": "AUGUST 26, 2011  8:24 PM",
+      "caption": "JAMIE“PLEASE—”",
+      "calls": 210,
+      "triangles": 209284,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-it-drags-him-into-the-lane-round-the-bend-and-he-is-gone-never-seen",
+      "phase": "n7-gone",
+      "time": "AUGUST 26, 2011  8:24 PM",
+      "caption": "JAMIE“PLEASE—”",
+      "calls": 351,
+      "triangles": 544902,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "06-while-it-held-him-his-feet-stayed-in-its-hand-552-frames-0-off",
+      "phase": "n7-gone",
+      "time": "AUGUST 26, 2011  8:24 PM",
+      "caption": "JAMIE“PLEASE—”",
+      "calls": 351,
+      "triangles": 544902,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "07-in-the-lane-nothing-the-lane-comes-out-in-the-field",
+      "phase": "n7-gone",
+      "time": "AUGUST 26, 2011  8:25 PM",
+      "caption": "OFFICER REYES“HEY— HEY! WHO’S THERE—”",
+      "calls": 73,
+      "triangles": 103344,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "08-the-gum-picked-up-out-of-the-grass",
+      "phase": "n7-gone",
+      "time": "AUGUST 26, 2011  8:25 PM",
+      "caption": "OFFICER REYES“WHERE’S JAMIE?”",
+      "calls": 88,
+      "triangles": 214563,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "09-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "n7-after",
+      "time": "AUGUST 26, 2011  8:27 PM",
+      "caption": "OFFICER REYES“Come here. Come here. Stay with me.”",
+      "calls": 89,
+      "triangles": 209675,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-jamie-s-mom-you-were-with-him-her-pictures-have-no-jamie-in-them-re",
+      "phase": "n7-after",
+      "time": "AUGUST 26, 2011  9:44 PM",
+      "caption": "OFFICER REYES“I’m taking you to Sam’s. Your mom’s meeting us there. That’s where everybody",
+      "calls": 204,
+      "triangles": 229166,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "n7-sams",
+      "time": "AUGUST 26, 2011  9:44 PM",
+      "caption": "OFFICER REYES“I’m taking you to Sam’s. Your mom’s meeting us there. That’s where everybody",
+      "calls": 83,
+      "triangles": 139506,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "02-the-fan-his-dad-turns-it-back-on-and-does-not-know-why-this-morning",
+      "phase": "n7-sams",
+      "time": "AUGUST 26, 2011  10:25 PM",
+      "caption": "SAM’S DAD“Was it always on? I don’t…”",
+      "calls": 197,
+      "triangles": 346955,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "03-the-same-photograph-only-you-at-the-oak-with-your-bike",
+      "phase": "n7-sams",
+      "time": "AUGUST 26, 2011  10:25 PM",
+      "caption": "July. You, at the oak, with your bike. Sam’s mom took it.",
+      "calls": 180,
+      "triangles": 344512,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "04-that-s-a-nice-one-of-you",
+      "phase": "n7-sams",
+      "time": "AUGUST 26, 2011  10:25 PM",
+      "caption": "SAM’S DAD“That’s a nice one of you.”",
+      "calls": 180,
+      "triangles": 344512,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "05-you-write-their-names-alex-jamie-sam-and-they-are-kept-for-chapter-",
+      "phase": "n7-names",
+      "time": "AUGUST 26, 2011  10:25 PM",
+      "caption": "SAM’S DAD“That’s a nice one of you.”",
+      "calls": 121,
+      "triangles": 278827,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "06-four-bikes-under-the-streetlight-yours-the-end-card-last-light-chap",
+      "phase": "n7-end",
+      "time": "AUGUST 26, 2011  10:27 PM",
+      "caption": "Yours.",
+      "calls": 208,
+      "triangles": 339199,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "07-nothing-non-finite-sam-never-seen-jamie-never-seen-after-he-is-take",
+      "phase": "n7-end",
+      "time": "AUGUST 26, 2011  10:27 PM",
+      "caption": "Yours.",
+      "calls": 208,
+      "triangles": 339199,
+      "overlay": "test-drawn text"
+    },
+    {
+      "name": "99-chapter-seven-end-card",
+      "calls": 208,
+      "triangles": 339199,
+      "phase": "n7-end",
+      "time": "AUGUST 26, 2011  10:27 PM",
+      "caption": "Yours."
     }
   ],
-  "errors": [
-    "page crashed"
-  ],
+  "errors": [],
   "warnings": []
 }

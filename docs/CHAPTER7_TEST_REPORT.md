@@ -9,19 +9,67 @@ nobody listened to them.
 
 | Check | Result and scope |
 |---|---|
-| Chapter Seven playthrough (`ONLY=chapter7 node tests/verify.mjs`) | __SIM_RESULT__ |
-| Chapter Seven targeted checks (same run) | __CHECKS_RESULT__ |
-| Chapter Six regression (`ONLY=chapter6 node tests/verify.mjs`) | __REG6_RESULT__ |
-| Chromium walkthrough (`SEGMENTED=1 NO_DEV=1 node tests/chapter7-browser.mjs`) | __BROWSER_RESULT__ |
-| Chromium key frames during the beats (`node tests/chapter7-frames.mjs`) | __FRAMES_RESULT__ |
+| Chapter Seven playthrough (`ONLY=chapter7 node tests/verify.mjs`) | **53 passed, 0 failed.** One continuous run from Chapter Six's end card (its **Chapter Seven** button) to Chapter Seven's end card, played with inputs only (walking, riding, looking, F, hiding, the mouse on the map, holding on, writing): every beat of the five acts is a check (the knocks, the dining room, the reveal, the stealth, the door, the large thing, the chase, the abduction, the forgetting, the names, the window, the card with no Chapter Eight). 22.4 game minutes. |
+| Chapter Seven targeted checks (same run) | **13 passed, 0 failed.** All 40 DEV scenes start; the hunter is its own creature (not the drain creature); walking into it in the stealth gets you caught and back at the stealth checkpoint; hiding in the pantry for 25 s is safe; no sight line through the stair core; stopping in the chase gets you caught and back at the bikes; the photograph is the four of you before the abduction and only you after it on every jump; the gum's path (nightstand → Jamie → the grass → you); Continue offers the last checkpoint; Chapters Six, Five and Four start clean after Chapter Seven; the adapter loads a skinned `.glb` (the existing drain creature's file, as a stand-in test of the loading path), falls back for missing clips and keeps its sockets. |
+| Chapter Six regression (`ONLY=chapter6 node tests/verify.mjs`) | **80 passed, 0 failed.** Chapter Five's end card → Chapter Six played by inputs to its end card, which now offers Chapter Seven; its targeted checks, including all 25 of its DEV scenes and "after it has run, the earlier chapters start exactly as before". |
+| Chromium walkthrough (`SEGMENTED=1 NO_DEV=1 BROWSER_MEMORY_MB=3000 node tests/chapter7-browser.mjs`) | **67 passed, 0 failed, 1077 s.** Chapter Six's end card, a real click on its **Chapter Seven** button, the chapter card; then all eleven segments played in the page by the simulation's player (inputs only), each segment in a fresh browser from its own checkpoint (the container cannot hold one software-GL page for the whole chapter), to Chapter Seven's end card; 62 beat checks, 65 captures; no JavaScript errors; no WebGL or shader warnings. Triangles per frame 43k–1.06M. |
+| Chromium DEV scenes (`SEGMENTED=1 DEV_ONLY=1 node tests/chapter7-browser.mjs`) | **3 passed, 0 failed.** The title's DEV panel, **Chapter Seven**, each of its 40 scenes chosen and started with real clicks (six per fresh browser), captured in `dev/`: every one starts in a Chapter Seven phase, with Jamie there until he is taken and nobody after; no JavaScript errors; no WebGL or shader warnings. |
+| Chromium key frames during the beats (`node tests/chapter7-frames.mjs`) | **27 frames, 0 page errors.** Each taken during its beat after a QA jump and the game's own update (the garage glimpse, the hand on the newel post, the father at the glass, the large thing, holding on to Jamie, the four bikes), in `frames/` with `frames.json`; every one looked at (below). Draw calls 108–746, triangles 73k–1.06M per frame (software GL). |
 
 ## Length (direct play)
 
-__LENGTH__
+Game minutes per segment, from Chapter Six's end card to Chapter Seven's, for the simulation's direct player (it goes
+straight to each objective, reads only what a check needs, and holds Shift in the chase). The Chromium walkthrough, which
+plays the same inputs in the page, agrees within a few seconds per segment.
+
+| Segment | Minutes | | Segment | Minutes |
+|---|---|---|---|---|
+| The house (the step, his room, the fan, the photograph, the notebook, the gum) | 2.50 | | The green-door house (the reveal, the stealth, the door) | 2.31 |
+| The garage | 0.65 | | Upstairs (the boy's room, the old bike, the large thing, the porch roof) | 1.95 |
+| Reyes and the map | 2.20 | | The chase (51.4 s riding) | 1.63 |
+| The afternoon (the curb, the ride, the lookout, the lane) | 2.46 | | The abduction (12.3 s holding on; the gum) | 1.77 |
+| Old Mill Court (the fence, the knocks, the lights) | 3.05 | | Later (Jamie's mother, Reyes) | 1.28 |
+| The dining room | 1.04 | | Sam's room that night (the photograph, the names, the window) | 1.52 |
+
+**Total: 22.4 minutes** of direct play, against the 45–55 the chapter was asked for. This is a floor, not an estimate of a
+first play: a person reads the room, the map, the court, the boy's room and the forgetting, gets caught in the stealth,
+and rides at their own pace. By the ratio earlier chapters showed between this player and a person (about 1.3–1.5×)
+a first play would be roughly 30–35 minutes, still under the target. The playtest should time it.
+
+Other numbers from the same run: stealth failures before getting upstairs 0 (and a separate check that it does catch
+you if you walk into it); the garage glimpse on screen 0.57 s; while you hold on, the view stays within 0.88 m of
+Jamie's hand; while it holds him, his feet stay in its hand on every frame checked (0 off); Sam never seen; Jamie never
+seen after he is taken; nothing non-finite.
 
 ## Visual review
 
-__VISUAL__
+Every key frame in `docs/qa/chapter7-the-street-that-wasnt-there/frames/` (taken during the beats, software GL, sound
+off) was looked at by eye after the last fixes. What each shows, and what is still rough:
+
+| Frame | What it shows | Notes |
+|---|---|---|
+| 01 Sam's room | The desk, the photograph on it, his shelves, the bed, the window bright with the morning street | |
+| 02 The fan | The box fan on the floor at the foot of the bed, blades turning behind the grilles | |
+| 03 The photograph | Last July at the oak: the four of them and their bikes | |
+| 04–05 The garage | It, low by the side door under the one dim light; its hand on the frame | The stand-in: up close in daylight it reads as a smooth dark figure, which is what it is (placeholder) |
+| 06 Reyes | Reyes and Sam's dad at the kitchen table | |
+| 07 The map | The 2009 map, the 1958 plan over it, the vacated court, SHEET 2 OF 7 | |
+| 08 The lane | The old broken paving to the hedged lane behind the oak | |
+| 09 Old Mill Court | The court in afternoon light: the '59 sedan, mailboxes, poles, the houses | |
+| 10–12 The dining room | The family at the table through the picture window; the heads turn; the father at the glass, which cracks | |
+| 13–15 The reveal | A hand round the newel post at the top of the stairs; on the landing; coming down | Silhouettes against the upstairs light |
+| 16 The stealth | It in the living-room doorway, lit from behind; the hide prompts | |
+| 17 The boy's room | The August 1991 calendar on the wall | |
+| 18 The old bike | The green Meadowlark in the storeroom, wet, AR on the frame | |
+| 19 The large thing | A dark shape behind the far roofs, a limb lifting | Crisp against the haze (out of the fog on purpose) |
+| 20 The chase | It on all fours along the curb at dusk | Small in the frame at that moment |
+| 21 The grab | At the lane's mouth it has Jamie | Jamie is low behind his bike in this view |
+| 22 Holding on | Jamie on his back, its hands on his ankles, your hands reaching for his | |
+| 23 The gum | The gum in the grass by his bike | Small (a pack of gum) |
+| 24 The photograph, that night | Only you, at the oak, with your bike | |
+| 25 The names | ALEX, JAMIE, SAM on the notebook page, the pencil | |
+| 26 The window | Four bikes across the street, the houses lit | |
+| 27 The end card | LAST LIGHT · Chapter Seven · The Street That Wasn't There | |
 
 ## Findings fixed during verification
 
@@ -46,6 +94,8 @@ The input-driven simulation and the Chromium frames found these; each is fixed o
 * At the oak, only the old paving's band was walkable beyond the lookout's own bounds: running to Jamie across the lawn
   beside it you met a wall nobody could see (the continuous run stopped there). The open lawn beside the band is
   walkable now (below the lane's mouth and outside the lookout only; the lookout's oak, bench and fences still stand).
+* The gum, knocked out of Jamie's hand at the first yank, could land in the lane's hedge or past the walkable ground when
+  he was taken right at the lane's mouth, and then could never be picked up: it settles in the nearest grass you can reach.
 * While you held Jamie's hand the view flew to the far end of the map: his hand was read at a moment when the friends'
   riding update had put his body back at its bike's origin. It is read from where he was last laid down.
 
@@ -94,7 +144,9 @@ The input-driven simulation and the Chromium frames found these; each is fixed o
   meeting at cracks, now and then a gap.
 * Sam's window showed the street house's own glass (part of the street's geometry, a few centimetres inside the pane),
   not the view: the panes stand in front of it now. The last look out of it was taken along the line from wherever you
-  stood (from the desk, at a slant along the wall): it is square on to the glass, at the four bikes.
+  stood (from the desk, at a slant along the wall): it is square on to the glass, at the four bikes. By day his window was
+  a plain glowing pane (the morning view was never rendered): the street across from it is rendered once you are in his
+  house, shown by its own light, and taken off the glass at night.
 
 **The simulation's own player (not the game)**
 * After drifting round Jamie it could end up wedged on a corner it had only grazed (the '59 sedan in the court, after the
@@ -118,7 +170,8 @@ ONLY=chapter7 node tests/verify.mjs                       # the playthrough and 
 ONLY=chapter7 PLAY_ONLY=1 FROM=green TO=upstairs node tests/verify.mjs   # some segments only (TRACE7=1 to trace)
 ONLY=chapter7 CHECKS_ONLY=1 node tests/verify.mjs        # the targeted checks only
 ONLY=chapter6 node tests/verify.mjs                       # Chapter Six (its end card now offers Chapter Seven)
-SEGMENTED=1 node tests/chapter7-browser.mjs               # Chromium walkthrough + DEV scenes (NO_DEV=1: walkthrough only)
+SEGMENTED=1 node tests/chapter7-browser.mjs               # Chromium walkthrough + DEV scenes (NO_DEV=1: walkthrough only;
+                                                          #   DEV_ONLY=1: DEV scenes only; QA_OUTPUT=dir for the captures)
 node tests/chapter7-frames.mjs                            # the key frames, taken during the beats
 ```
 

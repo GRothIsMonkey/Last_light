@@ -258,11 +258,11 @@ assets were changed. See the test report for the regression runs.
 
 ## 5. Known limitations and risks (for the playtest)
 
-* **The length is short of the request.** The simulation's direct player takes about 23–26 game minutes from Chapter
-  Six's end card to Chapter Seven's (the test report has the number per segment) against the requested 45–55. A
-  first-time player who reads the room, the map, the court, the boy's room and the forgetting will take longer — by the
-  ratio earlier chapters used (direct × 1.3–1.5) roughly 30–40 minutes — but that is an estimate, and it is still under
-  the target. The playtest should time it; the cheapest places to deepen it are the court (more doors, more to read),
+* **The length is short of the request.** The simulation's direct player takes 22.4 game minutes from Chapter Six's
+  end card to Chapter Seven's (the test report has the number per segment) against the requested 45–55. A first-time
+  player who reads the room, the map, the court, the boy's room and the forgetting will take longer — by the ratio
+  earlier chapters used (direct × 1.3–1.5) roughly 30–35 minutes — but that is an estimate, and it is still under the
+  target. The playtest should time it; the cheapest places to deepen it are the court (more doors, more to read),
   the green-door house's ground floor and the aftermath.
 * **The hunter is a placeholder.** A procedural stand-in, not an authored model: no skin, no texture, IK-driven
   limbs. It is dark and staged to read in silhouette (it is good on the landing at the top of the stairs and on the
