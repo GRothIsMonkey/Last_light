@@ -427,7 +427,7 @@ export async function runChapterSevenChecks(T){const {h,check,element,metrics}=T
  // (expanded) the Langes': Continue comes back to the open door; the scare's figure is gone after it
  {h.jump('c7-lange-in');T.advance(.3);const saved=h.chapter.saved?.();check('chapter 7: inside the Langes\' the checkpoint is the Langes\' (Continue: the open door)',()=>{assert.equal(saved?.section,'c7-lange');});}
  // (expanded) the Langes', the other choice: leave. It comes into the front room after you (the couch goes); Jamie between; out
- {h.jump('c7-lange-in');T.advance(.5);const LG=court.lange,LSP=LG.spots;act('c7-lg-phone',{at:A7.lgP(LSP.phone),r:.9,max:12});until(()=>A7.C.lg?.stage==='presence',60);settle(10);
+ {h.jump('c7-lange-in');T.advance(.5);const LG=court.lange,LSP=LG.spots;approach(court.LW3(.4,-1.9),.4,{pad:6});approach(court.LW3(.75,-3.3),.35,{pad:6});act('c7-lg-phone',{at:A7.lgP(LSP.phone),r:.9,max:12});until(()=>A7.C.lg?.stage==='presence',60);settle(10);
   until(()=>!!A7.C.choice,60);tap('Digit1');until(()=>A7.C.lg?.stage==='leave',4);approach(court.LW3(-.9,-1.9),.45,{pad:6});approach(court.LW3(-1.5,-3.0),.45,{pad:6});
   until(()=>{const F=A7.LF.F;faceV({x:F.x,y:F.y+1.4,z:F.z});return A7.C.lg?.stage==='flee';},16);const couch=!!LG.props.couch.hit;
   approach(court.SPOT.langeDoor,.8,{pad:8});approach(court.SPOT.langeWalk,1.0,{pad:8});until(()=>!!A7.C.choice,40);tap('Digit1');until(()=>A7.C.lg?.stage==='done',20);
