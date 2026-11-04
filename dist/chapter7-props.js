@@ -179,7 +179,7 @@ export function samPage(){const cv=canvas(512,680);if(!cv)return null;const {g}=
 // Officer Reyes's notebook page, blue ballpoint pressed hard. 'altered': the same page an hour later, when nobody can keep the second
 // boy in their head: the name is not in the ink any more, and the line that said SECOND does not. indent(): what the pen pressed into
 // the paper where the name was (seen only with the page turned to the light).
-export const REYES_NAME_AT={x:58,y:136};
+export const REYES_NAME_AT={x:58,y:106};
 export function reyesPage({altered=false}={}){const cv=canvas(384,512);if(!cv)return null;const {g}=cv,w=384,h=512;
  g.fillStyle='#f6f3e6';g.fillRect(0,0,w,h);g.strokeStyle='rgba(120,150,190,.45)';g.lineWidth=1;for(let y=60;y<h;y+=26){g.beginPath();g.moveTo(14,y);g.lineTo(w-14,y);g.stroke();}
  g.strokeStyle='rgba(200,90,90,.5)';g.beginPath();g.moveTo(40,0);g.lineTo(40,h);g.stroke();for(let x=30;x<w;x+=34){g.fillStyle='#d8d4c4';g.beginPath();g.arc(x,12,5,0,7);g.fill();}
@@ -187,7 +187,7 @@ export function reyesPage({altered=false}={}){const cv=canvas(384,512);if(!cv)re
  const L=altered?['FRI 8/26   21:38','JUV. MISSING —','','   (12)  blue cap, orange shirt','Bike down in grass, W of','   path mouth.  PHOTO 1','Drag marks (2), heels,','   ~9 m to path.  PHOTO 2','Cap (?) in grass.  PHOTO 3','Gum, spearmint — witness','   keeps it.  PHOTO 4','                    — R.']
   :['FRI 8/26   21:38','2ND JUV. MISSING —','JAMIE','   (12)  blue cap, orange shirt','Bike down in grass, W of','   path mouth.  PHOTO 1','Drag marks (2), heels,','   ~9 m to path.  PHOTO 2','Cap (blue) in grass.  PHOTO 3','Gum, spearmint — witness','   keeps it.  PHOTO 4','                    — R.'];
  L.forEach((s,i)=>{if(i===2&&!altered){g.font='bold italic 24px "Comic Sans MS", "Segoe Print", cursive';g.fillText(s,REYES_NAME_AT.x,REYES_NAME_AT.y);g.font='italic 19px "Comic Sans MS", "Segoe Print", cursive';return;}g.fillText(s,48,52+i*26-(i>2?0:0));});
- if(altered){g.strokeStyle='rgba(31,60,138,.35)';g.lineWidth=1.5;g.beginPath();g.moveTo(54,138);g.lineTo(150,138);g.stroke();}
+ if(altered){g.strokeStyle='rgba(31,60,138,.35)';g.lineWidth=1.5;g.beginPath();g.moveTo(54,109);g.lineTo(150,109);g.stroke();}
  return cv;}
 export function reyesIndent(){const cv=canvas(384,512);if(!cv)return null;const {g}=cv;g.clearRect(0,0,384,512);
  g.font='bold italic 24px "Comic Sans MS", "Segoe Print", cursive';

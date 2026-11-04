@@ -152,7 +152,7 @@ export function createHorrorHouse({wallpaper=null}={}){
  const extra={};
  {const sh=new THREE.Shape();for(let k=0;k<10;k++){const a=k/10*Math.PI*2-Math.PI/2,r=k%2?.009:.022,x=Math.cos(a)*r,y=Math.sin(a)*r;if(k)sh.lineTo(x,y);else sh.moveTo(x,y);}sh.closePath();
   const geo=new THREE.ExtrudeGeometry(sh,{depth:.005,bevelEnabled:true,bevelThickness:.003,bevelSize:.002,bevelSegments:1});geo.center();
-  const star=new THREE.Mesh(geo,mat(0x2e8a4a,{metalness:.45,roughness:.35}));star.name='c7-wrapper-star';star.rotation.set(-Math.PI/2,0,.4);
+  const star=new THREE.Mesh(geo,mat(0x9cd0ac,{metalness:.55,roughness:.25,emissive:0x2a5a3a,emissiveIntensity:.7}));star.name='c7-wrapper-star';star.rotation.set(-Math.PI/2,0,.4);star.scale.setScalar(1.5);
   const k=1,z=STAIR.z0+(k+.5)/16*(STAIR.z1-STAIR.z0),y=F+(k+1)*(UP-F)/16-.01+.005;star.position.set(.2,y,z);g.add(star);extra.star=star;extra.starAt={x:.2,y,z};}
  {const tex=paper(32,64,(c,w,h)=>{c.clearRect(0,0,w,h);c.fillStyle='rgba(0,0,0,.9)';c.beginPath();c.ellipse(w/2,h*.62,w*.22,h*.3,0,0,7);c.fill();
    for(let k=0;k<5;k++){const a=-1.0+k*.5;c.beginPath();c.ellipse(w/2+Math.sin(a)*w*.36,h*.24-Math.cos(a)*h*.12,w*.06,h*.07,a*.6,0,7);c.fill();}});

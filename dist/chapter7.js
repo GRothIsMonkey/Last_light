@@ -912,19 +912,19 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const LEARNED_LOOP=['stairWatch','livingArch','living','livingDoor','den','denCloset','denDoor','backHall','kitchenDoor','kitchen','pantryFront','kitchenDining','dining','diningArch'];
  function doorEdge(id){const d=HGd.doors[HGd.hides[id].door],p=d.pivot,a=p.rotation.y;const w=HW(p.position.x+Math.cos(a)*.8,p.position.z-Math.sin(a)*.8);return {x:w.x,y:court.G0+HH.F+1.15,z:w.z};}
  // it comes to the closet you are in, its hand on the edge of the door; the door opens wider; its head in the gap; hold your breath
- function checkHide(id,{after='watch'}={}){const X=C.sk,L=HIDE_LOOK[id];if(!L){if(after==='watch')watchStairs();return;}X.checked=true;X.check={id,phase:'come',t:0,after};if(after==='watch')X.stage='check';mark('it comes to the '+id);
+ function checkHide(id,{after='watch'}={}){const X=C.sk,L=HIDE_LOOK[id];if(!L){if(after==='watch')watchStairs();return;}X.checked=true;const chk=X.check={id,phase:'come',t:0,after};const live=()=>C.sk===X&&X.check===chk;if(after==='watch')X.stage='check';mark('it comes to the '+id);
   const fr=HW(L.front.x,L.front.z),st=HW(L.step.x,L.step.z),hp=HW(HGd.hides[id].x,HGd.hides[id].z),edge=()=>doorEdge(id);H.setTargets([]);
   H.script([{to:[fr.x,fr.z],speed:1.1,state:'stalk',low:.3,near:.35},{face:[hp.x,hp.z]},
-   {act:()=>{X.check.phase='hand';say([J('(It’s here. Don’t move— hold your breath—)',{time:2.4,face:'terrified'})]);}},
+   {act:()=>{if(!live())return;chk.phase='hand';say([J('(It’s here. Don’t move— hold your breath—)',{time:2.4,face:'terrified'})]);}},
    {wait:1.3,state:'peek',low:.45,reach:edge,look:edge},
-   {act:()=>{X.check.phase='open';sound('creak',hp,{gain:.7});}},
+   {act:()=>{if(!live())return;chk.phase='open';sound('creak',hp,{gain:.7});}},
    {wait:.9,state:'peek',low:.5,reach:edge,look:()=>camera.position},
    {to:[st.x,st.z],speed:.35,state:'peek',free:true,reach:edge,look:()=>camera.position,max:1.4},
-   {act:()=>{X.check.phase='head';X.check.headT=0;sound('c7Breath',hp,{gain:1});}},
+   {act:()=>{if(!live())return;chk.phase='head';chk.headT=0;sound('c7Breath',hp,{gain:1});}},
    {wait:3.2,state:'peek',low:.62,reach:edge,look:()=>camera.position},
-   {act:()=>{X.check.phase='leave';sound('c7Breath',hp,{gain:.5});}},
+   {act:()=>{if(!live())return;chk.phase='leave';sound('c7Breath',hp,{gain:.5});}},
    {to:[fr.x,fr.z],speed:.5,state:'stalk',free:true,reach:null,look:()=>camera.position,max:2},{wait:.4,state:'idle',reach:null}],
-   {then:()=>{const c=X.check;X.check=null;mark('it lets the door go');if(c?.after==='loop')learnedLoop({at:(X.resumeAt??10)});else watchStairs();}});}
+   {then:()=>{if(!live())return;X.check=null;mark('it lets the door go');if(chk.after==='loop')learnedLoop({at:(X.resumeAt??10)});else watchStairs();}});}
  // after looking, it goes and stands at the foot of the stairs: it knows where you want to go
  function watchStairs(){const X=C.sk;if(!X)return;X.stage='watch';X.watchAt=X.t;X.stairsCp=true;H.setTargets([playerTarget(),jamieTarget()]);H.patrol(['stairWatch']);mark('it waits at the foot of the stairs');checkpoint('c7-stairs');
   later(2.6,()=>{if(C.sk!==X||X.stage!=='watch')return;say([J('(It’s at the stairs.)',{time:1.8,face:'afraid'}),J('(It’s just— standing at the bottom of the stairs. Waiting.)',{time:2.8,face:'terrified'}),{wait:1},
@@ -945,9 +945,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(!X.loopSaid){X.loopSaid=true;later(2.2,()=>say([J('(It’s looking in the closets now. It goes round. Like a circle.)',{time:3.2,face:'afraid'}),J('(When it’s on the other side— the stairs.)',{time:2.2})],{then:()=>objective('Get upstairs without it seeing you.','It walks the rooms, and looks in the closets now. Go the other way round.')}));}}
  // (going round, at a closet: the door opened, a look in, on; if you are in it, the close look)
  function quickCheck(hid){const X=C.sk,L=HIDE_LOOK[hid];if(!L)return;X.resumeAt=H.patrolI+1;if(C.hiding===hid){checkHide(hid,{after:'loop'});return;}
-  const fr=HW(L.front.x,L.front.z),hp=HW(HGd.hides[hid].x,HGd.hides[hid].z),edge=()=>doorEdge(hid);X.peek={id:hid,open:false};mark('it looks in the '+hid);
-  H.script([{to:[fr.x,fr.z],speed:1.0,state:'stalk',near:.45},{face:[hp.x,hp.z]},{wait:.6,state:'peek',reach:edge,look:edge},{act:()=>{X.peek.open=true;sound('creak',hp,{gain:.5});}},
-   {wait:1.5,state:'peek',reach:edge,look:()=>hp},{act:()=>{X.peek.open=false;}},{wait:.4,state:'idle',reach:null}],{then:()=>{X.peek=null;learnedLoop({at:X.resumeAt});}});}
+  const fr=HW(L.front.x,L.front.z),hp=HW(HGd.hides[hid].x,HGd.hides[hid].z),edge=()=>doorEdge(hid);const pk=X.peek={id:hid,open:false};const live=()=>C.sk===X&&X.peek===pk;mark('it looks in the '+hid);
+  H.script([{to:[fr.x,fr.z],speed:1.0,state:'stalk',near:.45},{face:[hp.x,hp.z]},{wait:.6,state:'peek',reach:edge,look:edge},{act:()=>{if(live()){pk.open=true;sound('creak',hp,{gain:.5});}}},
+   {wait:1.5,state:'peek',reach:edge,look:()=>hp},{act:()=>{if(live())pk.open=false;}},{wait:.4,state:'idle',reach:null}],{then:()=>{if(!live())return;X.peek=null;learnedLoop({at:X.resumeAt});}});}
  function jamieHelps(){const X=C.sk;X.helped=true;mark('Jamie throws a can');const far=HW(-3.4,1.8);
   later(.5,()=>{sound('c6Clank',far,{gain:1.1});sound('c5WoodStrike',far,{gain:.6});H.hear({x:far.x,z:far.z},3,{id:'a can, thrown',force:true});});
   later(.9,()=>say([J('GO!',{time:1})]));}
@@ -968,9 +968,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   else if(X.stage==='hunt'&&!X.checked&&!C.hiding&&X.t>10&&H.mode==='patrol')watchStairs();
   if(X.check){const c=X.check,d=HGd.doors[HGd.hides[c.id].door];c.t+=dt;
    if(c.phase==='open'||c.phase==='head')d.set(Math.min(.62,d.open+dt*.45));else if(c.phase==='leave')d.set(Math.max(.3,d.open-dt*.5));
-   if(['hand','open','head'].includes(c.phase)&&C.hiding!==c.id){X.check=null;mark('out of the closet with it right there');caught(playerTarget());return;}
+   if(['hand','open','head'].includes(c.phase)&&C.hiding!==c.id){X.check=null;mark('out of the closet with it right there');H.script([{wait:3,state:'alert',look:()=>camera.position}]);caught(playerTarget());return;}
    if(c.phase==='head'){c.headT+=dt;const holding=!!o.held?.('Space');c.held=(c.held||0)+(holding?dt:0);
-    if(c.headT>.75&&!holding){X.check=null;mark('it hears you breathe');sound('c7Snarl',camera.position,{gain:1});caught(playerTarget());return;}}}
+    if(c.headT>.75&&!holding){X.check=null;mark('it hears you breathe');sound('c7Snarl',camera.position,{gain:1});H.script([{wait:3,state:'alert',look:()=>camera.position}]);caught(playerTarget());return;}}}
   if(X.peek){const d=HGd.doors[HGd.hides[X.peek.id].door];d.set(X.peek.open?Math.min(.9,d.open+dt*.8):Math.max(.25,d.open-dt*.8));}
   // the timer: ticking; then it rings (and what hears it comes to it)
   if(X.timer&&!X.timer.rang){const T2=X.timer;T2.t+=dt;T2.tick+=dt;if(T2.tick>.5){T2.tick=0;sound('tap',T2.pos,{gain:.14});}GX().timer.rotation.y=-T2.t*.5;
@@ -1475,7 +1475,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(ph==='e7-house'&&C.gh?.stage==='in'&&inGreen()&&(C.lv||'g')==='g'){const q=houseLocal(p.x,p.z);if(!C.flags.star)add('c7-star','Pick up the folded paper',gxW(GX().starAt),2.2,lk(.08,.22));
    if(!C.looked.has('prints')&&q.x>1.2&&q.z>0)add('c7-prints','Look at the floor',{...HW(2.6,2.75),y:court.G0+HH.F},2.8,lk(.5,.14));if(!C.looked.has('radio')&&q.x<-1.2&&q.z>0)add('c7-radio','Turn on the radio',gxW(GX().radioAt),2.0,lk(.15,.18));}
   if(/^e7-(house|reveal)$/.test(ph)&&inGreen()){if(!C.looked.has('testpattern'))add('c7-testpattern','Look at the television',{...HW(-1.75,-.9),y:court.G0+HH.F+.75},2.6,lk(.4,.12));if(!C.looked.has('clock'))add('c7-clock','Look at the clock',{...HW(-2.2,-4.4),y:court.G0+HH.F+1.9},2.6,lk(.3,.12));}
-  if(ph==='e7-stalk'||(ph==='e7-reveal'&&C.gh?.hideNow)){if(C.hiding)add('c7-unhide','Come out',camera.position.clone().add(new THREE.Vector3(0,-.3,0)),5);
+  if(ph==='e7-stalk'||(ph==='e7-reveal'&&C.gh?.hideNow)){if(C.hiding&&!(C.sk?.check&&['hand','open','head'].includes(C.sk.check.phase)))add('c7-unhide','Come out',camera.position.clone().add(new THREE.Vector3(0,-.3,0)),5);
    else for(const [id,h] of Object.entries(HGd.hides)){const w=HW(h.x,h.z),fq=HIDE_FRONT[id],f=fq?HW(fq.x,fq.z):w;if(Math.hypot(p.x-w.x,p.z-w.z)<1.1||Math.hypot(p.x-f.x,p.z-f.z)<1.35)add('c7-hide-'+id,h.label,{...w,y:w.y+1},2.2);}
    if(ph==='e7-stalk'&&!C.hiding&&C.sk&&!C.sk.check){if(!C.sk.timer&&GX().timer.visible)add('c7-timer','Wind the timer',gxW(GX().timerAt),1.9,lk(.1,.22));if(!C.sk.radio&&GX().radio.visible&&C.sk.stage!=='hunt')add('c7-radio','Turn on the radio',gxW(GX().radioAt),1.9,lk(.15,.2));}}
   if(ph==='e7-door'){const q=houseLocal(p.x,p.z);if(!C.dr.shut&&q.x<-HH.UCX&&q.z>0&&C.lv==='u')add('c7-shut','Shut the door',{...HW(-HH.UCX,3.3,'u'),y:court.G0+HH.UP+1.1},2.6);if(C.dr.shut&&!C.dr.pushed){if(C.dr.rug?.stage==='lift')add('c7-rug','Pull the rug',{...HW(-2.75,1.1,'u'),y:court.G0+HH.UP+.05},2.4);else if(!C.dr.rug||C.dr.rug.stage==='out')add('c7-push','Push the dresser against the door',{...HW(-HH.UCX-.55,1.0,'u'),y:court.G0+HH.UP+.6},2.2);}}
@@ -1488,7 +1488,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(C.gt?.lights&&court.ST.portalB&&Math.abs(q.x)<1.3&&q.z<-3)add('c7-climb','Climb out onto the porch roof',{...HW(0,-4.6,'u'),y:court.G0+HH.UP+1.2},2.4);}
   if(ph==='n7-after'&&C.af?.stage==='show'&&C.af.go&&!C.af.busyR){const X=C.af,E=X.E;if(!X.shown.bike)add('c7-ev-bike','Show him Jamie’s bike',{x:E.bike.x,y:gy(E.bike.x,E.bike.z)+.4,z:E.bike.z},3.2,lk(.6,.14));
    if(!X.shown.cap)add('c7-ev-cap','Show him the cap',{x:E.cap.x,y:gy(E.cap.x,E.cap.z)+.05,z:E.cap.z},2.6,lk(.2,.16));if(!X.shown.marks)add('c7-ev-marks','Show him the marks in the grass',{x:E.marks.x,y:gy(E.marks.x,E.marks.z),z:E.marks.z},3.2,lk(.7,.12));
-   if(!X.shown.gum&&C.inv.gum==='have'&&Math.hypot(p.x-reyes.x,p.z-reyes.z)<3.4)add('c7-ev-gum','Show him the gum',{x:reyes.x,y:gy(reyes.x,reyes.z)+1.3,z:reyes.z},3.6);}
+   if(!X.shown.gum&&C.inv.gum==='have'&&(X.shown.bike||X.shown.cap||X.shown.marks))out.push({id:'c7-ev-gum',label:'Show him the gum',at:camera.position.clone().add(new THREE.Vector3(0,-.4,0)),face:camera.position.clone(),r:9,wide:true});}
   if(ph==='n7-grab'&&C.gb?.stage==='grab'&&JL.held){const h=jamieHand();if(dist2(p,h)<1.8)add('c7-grab','Grab his hand',h,2.2);}
   if(/^n7-(taken|gone)$/.test(ph)){if(C.inv.gum==='grass'&&C.gumAt)add('c7-gum','Pick up the gum',C.gumAt,1.8,lk(.15,.2));if(ph==='n7-gone'&&!(C.gn?.callT>0))out.push({id:'c7-call',label:'Call his name',at:camera.position.clone().add(new THREE.Vector3(0,-.2,0)),face:camera.position.clone(),r:9,wide:true});}
   if(/^n7-(sams|names)$/.test(ph)&&inSams(p)){const rm=house.room(p.x,p.z);if(rm==='sam'){if(house.ST.fan&&!C.flags.fanOffNight&&!C.sn?.fanBeat)add('c7-fan','Turn off the fan',HS.fan,1.8,lk(.3,.16));
@@ -1552,7 +1552,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.view==='look'&&C.lookKind==='names')return C.flags.names?null:[['Hold F','Write']];
   if(C.view==='look')return ['window'].includes(C.lookKind)?null:[['S','Step back']];
   if(ph==='n7-grab'&&C.gb?.stage==='struggle')return [['Hold F',`Hold on · ${Math.round(C.gb.grip*100)}%`],['S','Pull']];
-  if(C.hiding&&C.sk?.check&&['hand','open','head'].includes(C.sk.check.phase))return [['Hold Space','Hold your breath'],['F','Come out']];
+  if(C.hiding&&C.sk?.check&&['hand','open','head'].includes(C.sk.check.phase))return [['Hold Space','Hold your breath']];
   if(C.hiding)return [['F','Come out']];
   if(ph==='e7-stalk'&&!C.hiding)return [['C','Crouch'],['F','Hide (by a door)']];
   if(ph==='n7-chase')return [['W + Shift','Ride hard'],['A / D','Steer']];
