@@ -35,3 +35,10 @@ Unchanged: the geometry (all 23,820 triangles; it was not decimated), the skin a
 At load time (`dist/creature-asset.js`, `dist/creature.js`), without changing the file: the model is turned to face exactly along its heading, scaled from centimetres to metres × 1.35, and set with its lowest point on the ground; the idle clip plays, and its limbs, spine and head are moved procedurally on top of it (its gait, rearing, clawing, looking), since the file has no locomotion. The material gets the same small "catch light" shader addition as the other figures in the drain (a little more of its own colour where a flashlight beam lands on it from far off).
 
 The monster's design was not changed.
+
+## Chapter Seven
+
+Chapter Seven adds **no third-party assets**. Its places, people, props, paper, the hunter's stand-in and its sounds are
+all generated at runtime by the game's own code (`dist/chapter7*.js`, `dist/audio.js`). The hunter's adapter can load a
+replacement `.glb` later; any such model must be recorded here first (source, author, licence, SHA-256), as
+`docs/CHAPTER7_CREATURE_ASSET_GUIDE.md` requires.

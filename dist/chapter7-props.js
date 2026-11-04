@@ -60,7 +60,7 @@ export function planCanvas(){const cv=canvas(MAP.w,MAP.h);if(!cv)return null;con
  g.font='12px Courier New';g.fillText('EXIST. OAK 30"',MAP.oak.x*w+24,MAP.oak.y*h-2);g.fillText('TO REMAIN',MAP.oak.x*w+24,MAP.oak.y*h+12);
  g.setLineDash([6,5]);g.strokeStyle='#5a7a9a';g.lineWidth=2;g.beginPath();g.moveTo(.6*w,.24*h);g.lineTo(.7*w,.3*h);g.lineTo(.86*w,.34*h);g.stroke();g.setLineDash([]);g.fillStyle='#5a7a9a';g.fillText('LINE 4  24" RCP',.72*w,.32*h);
  g.fillStyle='#2a3e64';g.font='bold 20px Courier New';g.fillText('OLD MILL CT.',.6*w,.105*h);g.font='bold 15px Courier New';g.fillText('OAK HOLLOW DR.',.515*w,.8*h);g.fillText('R.O.W. 50\'',.53*w,.38*h);
- g.font='bold 15px Courier New';g.fillText('OAK HOLLOW TWP. - STORM SEWER PLAN - SHEET 3 OF 7',24,h-50);g.font='13px Courier New';g.fillText('DRAWN 6/1958  W.K.  -  REVISED 4/1974',24,h-28);
+ g.font='bold 15px Courier New';g.fillText('OAK HOLLOW TWP. - STORM SEWER PLAN - SHEET 2 OF 7',24,h-50);g.font='13px Courier New';g.fillText('DRAWN 6/1958  W.K.  -  REVISED 4/1974',24,h-28);
  g.save();g.translate(.66*w,.16*h);g.rotate(-.25);g.strokeStyle='rgba(170,40,40,.8)';g.lineWidth=3;g.strokeRect(-110,-26,220,52);g.fillStyle='rgba(170,40,40,.85)';g.font='bold 18px Courier New';g.fillText('VACATED 1974',-82,-4);g.font='12px Courier New';g.fillText('R.O.W. RETAINED - DRAINAGE',-92,16);g.restore();
  return cv;}
 export function modernCanvas(){const cv=canvas(MAP.w,MAP.h);if(!cv)return null;const {g}=cv,w=MAP.w,h=MAP.h;

@@ -127,9 +127,11 @@ starburst clock stopped at 7:42), a den, a back hall, a kitchen with a pantry, a
 stair with a closet under it; upstairs a boy's room, a storeroom, the parents' room and a hall window over the porch
 roof. The front door sticks, then swings shut behind you and sticks again. Footsteps overhead stop.
 
-**The reveal.** At the foot of the stairs, looking up: at the top a hand comes round the boy's-room doorframe, then a
-shoulder; the head turns to you; the body follows it out onto the landing; it stands; it comes down, one tread at a
-time. Jamie: *"Back. Back, back—"* and runs for the pantry.
+**The reveal.** At the foot of the stairs, looking up through the stairwell: at the top, on the left, a long hand
+comes round the newel post from the hall where it has been standing out of sight (the stairwell shows only a slot of the
+upstairs, so the corner of the stair opening is the frame it comes round); the head leans out after it and turns to you;
+a shoulder; the body follows it out onto the landing, a hunched silhouette against the hall; it stands; it comes down,
+one tread at a time. Jamie: *"Back. Back, back—"* and runs for the pantry.
 
 **The stealth.** Hide (F: the pantry, the den closet, the closet under the stairs). It walks the ground floor in a
 loop, stops in doorways to listen and turns its head. It sees with a field of view, range and line of sight (walls,

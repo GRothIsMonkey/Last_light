@@ -1,0 +1,356 @@
+{
+  "frames": [
+    {
+      "name": "01-sams-room",
+      "note": "Sam’s room, the morning: the desk, the photograph in its frame, the fan",
+      "phase": "d7-house",
+      "calls": 183,
+      "triangles": 342161,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "02-the-fan",
+      "note": "The box fan by the bed, running",
+      "phase": "d7-house",
+      "calls": 226,
+      "triangles": 352629,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "03-photo-four",
+      "note": "The photograph in your hand: the four of you at the oak",
+      "phase": "d7-house",
+      "calls": 274,
+      "triangles": 306822,
+      "caption": "July. The four of you at the oak with your bikes. Sam’s mom took it. She made you stand still for fi",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "04-garage-glimpse",
+      "note": "The garage: low by the side door, the head turned to you",
+      "phase": "d7-garage",
+      "calls": 203,
+      "triangles": 263674,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "crouch",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "05-garage-hand",
+      "note": "The garage: a long hand flat on the floor; then out the side door",
+      "phase": "d7-garage",
+      "calls": 233,
+      "triangles": 332054,
+      "caption": "JAMIE“What was that?”",
+      "hunter": {
+        "state": "crouch",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "06-reyes-table",
+      "note": "Officer Reyes at Sam’s kitchen table",
+      "phase": "d7-reyes",
+      "calls": 385,
+      "triangles": 738138,
+      "caption": "OFFICER REYES“I’m sorry. I don’t have good news. I don’t have any news.”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "07-the-map",
+      "note": "The 1958 plan over the 2009 map (the old plan showing)",
+      "phase": "d7-map",
+      "calls": 425,
+      "triangles": 1058114,
+      "caption": "The township’s street map, 2009. And on tracing paper over it, the 1958 storm plan. The same blocks.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "08-the-lane",
+      "note": "The lane behind the oak (the right-of-way), late afternoon",
+      "phase": "e7-lookout",
+      "calls": 144,
+      "triangles": 207420,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "09-old-mill-court",
+      "note": "Old Mill Court from the head of the street",
+      "phase": "e7-court",
+      "calls": 729,
+      "triangles": 106210,
+      "caption": "JAMIE“…What.”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "10-dining-still",
+      "note": "The family at the table, not moving (through the window)",
+      "phase": "e7-dining",
+      "calls": 375,
+      "triangles": 130080,
+      "caption": "JAMIE“Somebody’s gotta have a phone. Come on.”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "11-dining-heads",
+      "note": "Their heads turned to you",
+      "phase": "e7-dining",
+      "calls": 375,
+      "triangles": 130080,
+      "caption": "JAMIE“We knock, we say we’re lost. That’s all.”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "12-dining-glass",
+      "note": "The father at the glass (the hit)",
+      "phase": "e7-dining",
+      "calls": 366,
+      "triangles": 125584,
+      "caption": "JAMIE“We knock, we say we’re lost. That’s all.”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "13-reveal-hand",
+      "note": "The top of the stairs: a hand round the doorframe",
+      "phase": "e7-reveal",
+      "calls": 379,
+      "triangles": 75746,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "peek",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "14-reveal-landing",
+      "note": "It comes out onto the landing, looking at you",
+      "phase": "e7-reveal",
+      "calls": 390,
+      "triangles": 76518,
+      "caption": "JAMIE“…Oh my god.”",
+      "hunter": {
+        "state": "stalk",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "15-reveal-stairs",
+      "note": "It comes down",
+      "phase": "e7-reveal",
+      "calls": 323,
+      "triangles": 73606,
+      "caption": "JAMIE“Back. Back, back—”",
+      "hunter": {
+        "state": "stalk",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "16-stealth",
+      "note": "The stealth: it walks the rooms (from the kitchen door)",
+      "phase": "e7-stalk",
+      "calls": 617,
+      "triangles": 144316,
+      "caption": "JAMIE“It goes round. Like a circle. When it’s on the other side, we go.”",
+      "hunter": {
+        "state": "stalk",
+        "mode": "patrol",
+        "visible": true
+      }
+    },
+    {
+      "name": "17-boys-room",
+      "note": "The boy’s room, August 1991",
+      "phase": "e7-upstairs",
+      "calls": 367,
+      "triangles": 102448,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "18-old-bike",
+      "note": "The old green bike in the storeroom",
+      "phase": "e7-upstairs",
+      "calls": 451,
+      "triangles": 138672,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "19-giant",
+      "note": "From the hall window: something far too large behind the roofs",
+      "phase": "e7-giant",
+      "calls": 406,
+      "triangles": 103682,
+      "caption": "JAMIE“…What is that.”",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "20-chase",
+      "note": "The chase: it comes behind you on the court",
+      "phase": "n7-chase",
+      "calls": 215,
+      "triangles": 74792,
+      "caption": "JAMIE“It’s right behind us!”",
+      "hunter": {
+        "state": "run",
+        "mode": "chase",
+        "visible": true
+      }
+    },
+    {
+      "name": "21-grab",
+      "note": "At the oak: its hand on Jamie’s ankle",
+      "phase": "n7-grab",
+      "calls": 218,
+      "triangles": 203395,
+      "caption": "JAMIE“NO— NO NO—”",
+      "hunter": {
+        "state": "drag",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "22-struggle",
+      "note": "Your hands on his wrist",
+      "phase": "n7-grab",
+      "calls": 181,
+      "triangles": 182214,
+      "caption": "JAMIE“DON’T LET GO— DON’T LET GO—”",
+      "hunter": {
+        "state": "drag",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "23-gum",
+      "note": "The gum in the grass",
+      "phase": "n7-gone",
+      "calls": 108,
+      "triangles": 156658,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "24-photo-one",
+      "note": "The same photograph that night: only you",
+      "phase": "n7-sams",
+      "calls": 138,
+      "triangles": 261592,
+      "caption": "July. You, at the oak, with your bike. Sam’s mom took it.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "25-names",
+      "note": "The names, in your hand",
+      "phase": "n7-names",
+      "calls": 168,
+      "triangles": 321487,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "26-final-image",
+      "note": "Four bikes under the streetlight",
+      "phase": "n7-window",
+      "calls": 208,
+      "triangles": 339199,
+      "caption": "Under the streetlight across the street, four bikes stand in a row. The way you used to ride.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "27-end-card",
+      "note": "The end card",
+      "phase": "n7-end",
+      "calls": 208,
+      "triangles": 339199,
+      "caption": "There’s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    }
+  ],
+  "errors": []
+}

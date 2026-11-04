@@ -54,7 +54,7 @@ Where the chapter uses them:
 | State | Used for |
 |---|---|
 | `crouch` | The garage: low by the side door, looking at you. The bikes: waiting low behind cover. |
-| `peek` | A hand round the boy's-room doorframe at the top of the stairs (with `drive.reach` on the frame). |
+| `peek` | A hand round the newel post at the top of the stairs, the head leaning out after it (with `drive.reach` on the post). |
 | `stalk` | Coming out of the doorway, down the stairs, the patrol round the ground floor. |
 | `walk` | Searching; leaving the house up the street. |
 | `alert` | It has noticed something: it stops and its head turns. |

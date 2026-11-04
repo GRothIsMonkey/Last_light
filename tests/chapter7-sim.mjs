@@ -174,7 +174,7 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   approach(court.H3(0,-2.3),.4,{pad:6});const top=court.H3(0,2.9,null,'u');top.y+=1.4;U(()=>{faceV(top);return ph()==='e7-reveal';},50);
   // watch it at the top (the hand, the shoulder, the head), then run to the pantry before it is down
   const t1=A7.C.t;U(()=>{const hd=A7.HM.sockets.head.getWorldPosition(new (h.camera.position.constructor)());faceV(hd);return A7.C.t-t1>4.2;},6);
-  check(`${label}: at the top of the stairs a hand round the doorframe, the head turns, it comes out`,()=>{assert.ok(A7.HM.visible);assert.equal(C7().hunter.mode,'script');});
+  check(`${label}: at the top of the stairs a hand round the corner, the head turns, it comes out`,()=>{assert.ok(A7.HM.visible);assert.equal(C7().hunter.mode,'script');});
   note('to the pantry',approach(court.H3(2.0,-2.6),.6,{pad:6}),approach(court.H3(3.4,-.3),.5,{pad:6}),approach(court.H3(4.1,2.7),.5,{pad:6}));note('hide',act('c7-hide-pantry',{max:16}));
   U(()=>ph()==='e7-stalk',20);note('stalk',A7.C.hiding);
   check(`${label}: it reaches the bottom and hunts (you are in the pantry)`,()=>{assert.equal(ph(),'e7-stalk');assert.ok(['patrol','search','pursue'].includes(C7().hunter.mode));});
@@ -197,7 +197,7 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
  if(seg('upstairs')){
   // (a thing upstairs, at its height over the upstairs floor: what you look at to be offered it)
   const U3=(x,z,dy)=>court.H3(x,z,court.G0+court.HG.HH.UP+dy,'u');
-  note('the room',approach(court.H3(-3.6,1.9,null,'u'),.5,{pad:6}));note('the calendar',act('c7-calendar',{at:U3(-5,2.05,1.55),r:1.6,max:8}));settle(14);tap('KeyS');U(()=>!A7.C.view,3);
+  note('the room',approach(court.H3(-3.6,1.9,null,'u'),.5,{pad:6}));note('the calendar',act('c7-calendar',{at:U3(-3.3,.04,1.5),r:1.8,max:8}));settle(14);tap('KeyS');U(()=>!A7.C.view,3);
   note('the desk',act('c7-trace',{at:U3(-4.55,.95,.8),r:1.6,max:8}));settle(24);tap('KeyS');U(()=>!A7.C.view,3);
   check(`${label}: the 1991 calendar; a page in Sam's writing, yellow, as if years old`,()=>{assert.ok(A7.C.flags.trace);assert.ok(said('That’s his WRITING'));assert.ok(said('could do his writing'));});
   // (out of the boy's room, down the hall past the stairwell, into the storeroom)

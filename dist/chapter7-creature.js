@@ -59,7 +59,8 @@ function ik(a,t,l1,l2,pole,mid,end){_a.subVectors(t,a);let d=_a.length();const m
 // ---- the stand-in -------------------------------------------------------------------------------------------------------------
 function standIn(){
  const g=new THREE.Group();g.name='chapter7-hunter-standin';
- const skin=new THREE.MeshStandardMaterial({color:0x8d8479,roughness:.74,metalness:0});skin.name='hunter-skin';
+ // (dark, a little wet: it reads as a shape against light, a sheen where light crosses it, never a pale doll)
+ const skin=new THREE.MeshStandardMaterial({color:0x2c2a27,roughness:.42,metalness:.05});skin.name='hunter-skin';
  const dark=new THREE.MeshStandardMaterial({color:0x0c0a09,roughness:.95});dark.name='hunter-socket';
  const wet=new THREE.MeshStandardMaterial({color:0x14100e,roughness:.12,metalness:.1});wet.name='hunter-eye';
  const nail=new THREE.MeshStandardMaterial({color:0x4a4034,roughness:.5});nail.name='hunter-nail';
@@ -88,12 +89,12 @@ function standIn(){
  const hands={l:hand(-1),r:hand(1)};
  // the head: long, narrow, eye sockets too deep, a jaw that hangs open further than a jaw should
  const head=new THREE.Group();head.name='head';g.add(head);
- const skull=new THREE.Mesh(new THREE.SphereGeometry(.13,14,12),skin);skull.scale.set(.95,1.15,1.45);skull.position.set(0,.04,-.05);skull.castShadow=true;head.add(skull);
- const brow=new THREE.Mesh(new THREE.SphereGeometry(.1,10,6),skin);brow.scale.set(1.15,.4,.8);brow.position.set(0,.07,-.17);head.add(brow);
- for(const s of [-1,1]){const so=new THREE.Mesh(new THREE.SphereGeometry(.036,10,8),dark);so.scale.set(1,.85,.6);so.position.set(s*.048,.035,-.205);head.add(so);
-  const e=new THREE.Mesh(new THREE.SphereGeometry(.014,8,6),wet);e.position.set(s*.048,.035,-.214);head.add(e);}
+ const skull=new THREE.Mesh(new THREE.SphereGeometry(.13,16,12),skin);skull.scale.set(.78,1.05,1.85);skull.position.set(0,.05,-.07);skull.castShadow=true;head.add(skull);
+ // (no brow: the skull runs smooth into two holes set too far forward and too close together; a glint far back in each)
+ for(const s of [-1,1]){const so=new THREE.Mesh(new THREE.SphereGeometry(.03,10,8),dark);so.scale.set(.9,1.2,.8);so.position.set(s*.036,.045,-.255);head.add(so);
+  const e=new THREE.Mesh(new THREE.SphereGeometry(.007,8,6),wet);e.position.set(s*.036,.045,-.262);head.add(e);}
  const jaw=new THREE.Group();jaw.position.set(0,-.03,-.06);head.add(jaw);
- const jm=new THREE.Mesh(new THREE.SphereGeometry(.1,12,8,0,Math.PI*2,Math.PI*.45,Math.PI*.55),skin);jm.scale.set(.9,1.1,1.6);jm.position.set(0,.03,-.07);jm.castShadow=true;jaw.add(jm);
+ const jm=new THREE.Mesh(new THREE.SphereGeometry(.1,12,8,0,Math.PI*2,Math.PI*.45,Math.PI*.55),skin);jm.scale.set(.75,1.2,1.9);jm.position.set(0,.03,-.1);jm.castShadow=true;jaw.add(jm);
  const mouth=new THREE.Mesh(new THREE.SphereGeometry(.07,10,6),gum);mouth.scale.set(.9,.35,1.3);mouth.position.set(0,-.01,-.1);jaw.add(mouth);
  for(let k=0;k<9;k++){const t=new THREE.Mesh(new THREE.ConeGeometry(.007,.028,4),nail);const a=-.9+k*.225;t.position.set(Math.sin(a)*.07,.012,-.09-Math.cos(a)*.08);t.rotation.x=Math.PI;jaw.add(t);}
  return {g,S,ribs,blades,joints,hands,head,jaw,skin};}

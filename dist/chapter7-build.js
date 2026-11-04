@@ -62,10 +62,14 @@ export function createFurniture(){const K=makeShapes();
   lamp({h=1.5,shade=0xe8dcc0,lit=false}={}){const g=G('lamp');K.cyl(g,0,.02,0,.16,.04,mat(0x3a3530));K.cyl(g,0,h/2,0,.015,h,mat(0x9a8a6a,{metalness:.5}));
    const s=K.cyl(g,0,h,0,.2,.26,mat(shade,{emissive:0xffcf8a,emissiveIntensity:lit?.9:0,side:THREE.DoubleSide}),{r2:.13});s.name='lamp-shade';return g;},
   // a box fan on the floor, its blades on their own group (spin it)
-  boxFan(){const g=G('box-fan');const body=mat(0xdedad0,{roughness:.6});K.box(g,0,.28,0,.5,.5,.14,body);K.box(g,0,.04,0,.24,.06,.24,body);
-   const grill=mat(0x8a8a86,{metalness:.4,roughness:.5});for(let k=-4;k<=4;k++){K.box(g,k*.05,.28,-.075,.006,.44,.006,grill);K.box(g,k*.05,.28,.075,.006,.44,.006,grill);}
-   const blades=new THREE.Group();blades.name='fan-blades';blades.position.set(0,.28,0);g.add(blades);for(let k=0;k<5;k++){const b=K.box(blades,0,.1,0,.08,.18,.008,mat(0xc8c4ba,{side:THREE.DoubleSide}));b.position.set(Math.sin(k*1.2566)*.1,Math.cos(k*1.2566)*.1,0);b.rotation.set(.35,0,-k*1.2566);}
-   K.cyl(blades,0,0,0,.04,.04,mat(0x6a6a66),{rx:Math.PI/2});K.box(g,.2,.47,-.072,.05,.03,.01,mat(0x4a4a46));g.userData.blades=blades;return g;},
+  // a box fan: an open square frame (you see the blades turning through the grilles), a dark round shroud, a stand, a knob
+  boxFan(){const g=G('box-fan');const body=mat(0xdedad0,{roughness:.6}),W=.5,T=.14,th=.045,cy=.28;
+   K.box(g,0,cy+W/2-th/2,0,W,th,T,body);K.box(g,0,cy-W/2+th/2,0,W,th,T,body);K.box(g,-W/2+th/2,cy,0,th,W-2*th,T,body);K.box(g,W/2-th/2,cy,0,th,W-2*th,T,body);
+   K.box(g,0,.04,0,.24,.06,.24,body);
+   const ring=new THREE.Mesh(new THREE.RingGeometry(.175,.205,32),mat(0x3a3a38,{side:THREE.DoubleSide}));ring.position.set(0,cy,0);g.add(ring);
+   const grill=mat(0x8a8a86,{metalness:.4,roughness:.5});for(let k=-4;k<=4;k++){K.box(g,k*.045,cy,-T/2+.004,.006,W-2*th,.006,grill);K.box(g,k*.045,cy,T/2-.004,.006,W-2*th,.006,grill);}
+   const blades=new THREE.Group();blades.name='fan-blades';blades.position.set(0,cy,0);g.add(blades);for(let k=0;k<5;k++){const b=K.box(blades,0,.1,0,.085,.17,.008,mat(0xe8e4da,{side:THREE.DoubleSide}));b.position.set(Math.sin(k*1.2566)*.095,Math.cos(k*1.2566)*.095,0);b.rotation.set(.35,0,-k*1.2566);}
+   K.cyl(blades,0,0,0,.045,.05,mat(0x5a5a56),{rx:Math.PI/2});K.cyl(g,.17,cy+W/2+.012,0,.022,.024,mat(0x2a2a2a));g.userData.blades=blades;return g;},
   crt({w=.42,screen=null}={}){const g=G('crt-tv');K.box(g,0,w*.38,.04,w,w*.76,w*.8,mat(0x2e2e30,{roughness:.5}));const sc=K.plane(g,0,w*.4,-w*.36,w*.78,w*.56,screen||mat(0x10141a,{roughness:.2,emissive:0x0,emissiveIntensity:0}));sc.name='screen';return g;},
   // a 1960s console: a wooden cabinet on legs, the screen on the left, the speaker cloth on the right
   console({screen=null}={}){const g=G('console-tv');K.box(g,0,.62,0,1.3,.7,.5,dk);for(const [x,z] of [[-.58,-.2],[.58,-.2],[-.58,.2],[.58,.2]])K.cyl(g,x,.13,z,.025,.26,dk,{r2:.015});

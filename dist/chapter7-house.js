@@ -27,7 +27,7 @@ export function createSamHouse({scene,world,shoot=null}){
   kitchen:{x0:-W2+t,x1:.6,z0:-D2+t,z1:.8},back:{x0:2.2,x1:W2-t,z0:-.4,z1:1.2}};
  const DOOR={front:{x:P.doorX,w:.94},sam:{z0:2.0,z1:2.9},arch:{x0:-3.7,x1:-1.0},kitchenHall:{z0:-.8,z1:.5},back:{z0:-.25,z1:1.05}};
  const plaster=mat(0xd6cfbd,{emissive:0x8a8474,emissiveIntensity:.1,roughness:.95},'plaster'),samWall=mat(0x9fb0b8,{emissive:0x56646a,emissiveIntensity:.1,roughness:.95},'plaster');
- const carpet=mat(0x7a7262,{emissive:0x302c26,emissiveIntensity:.08,roughness:1},'carpet'),samCarpet=mat(0x5a6470,{roughness:1},'carpet'),vinyl=mat(0xc8bfa4,{roughness:.6},'mineral'),ceil=mat(0xe0ddd3,{emissive:0x9aa0a4,emissiveIntensity:.12});
+ const carpet=mat(0x7a7262,{emissive:0x302c26,emissiveIntensity:.08,roughness:1},'carpet'),samCarpet=mat(0x5a6470,{roughness:1},'carpet'),vinyl=mat(0xc8bfa4,{roughness:.6},'mineral'),ceil=mat(0xe0ddd3,{emissive:0x9aa0a4,emissiveIntensity:.42});
  const win=(u,w=1.2,sill=.85,h=1.25)=>[u-w/2,u+w/2,sill,sill+h];
  // outer walls (inside faces), with the front door, windows (each with a view pane)
  const panes=[];
@@ -46,7 +46,7 @@ export function createSamHouse({scene,world,shoot=null}){
  // floors and ceilings
  B.floor(R.living.x0,R.living.z0,R.hall.x1,R.living.z1,FL+.02,carpet);B.floor(R.hall.x0,R.hall.z0,R.hall.x1,R.living.z0,FL+.02,carpet);B.floor(R.kitchen.x0,R.kitchen.z0,R.kitchen.x1,R.kitchen.z1,FL+.02,vinyl);
  B.floor(R.sam.x0,R.sam.z0,R.sam.x1,R.sam.z1,FL+.02,samCarpet);B.floor(R.back.x0,R.back.z0,R.back.x1,R.back.z1,FL+.02,carpet);
- B.ceiling(-W2+t,-D2+t,W2-t,D2-t,FL+H,ceil);
+ B.ceiling(-W2+t,-D2+t,W2-t,D2-t,FL+H-.18,ceil);// (a little under the street house's own ceiling, which would otherwise show through dark)
  // doors: Sam's (open a little), the parents' and the bathroom (shut), the closet; the front door's inside
  const doors={sam:B.door(2.21,DOOR.sam.z0,{w:.88,rot:-Math.PI/2,swing:1.3,y:FL,name:'sam-door'}),parents:B.door(3.0,-.39,{w:.86,rot:0,swing:0,y:FL,name:'parents-door'}),
   bath:B.door(1.0,-.99,{w:.82,rot:0,swing:0,y:FL,name:'bath-door'}),laundry:B.door(W2-t-.02,DOOR.back.z0,{w:.86,rot:-Math.PI/2,swing:0,y:FL,name:'laundry-door'})};
@@ -82,7 +82,8 @@ export function createSamHouse({scene,world,shoot=null}){
  const S=R.sam;
  const bed=put(FN.bed({w:1.0,l:2.0,cover:0x3a5a6a}),W2-t-.55,2.45,{a:Math.PI,solid:[.53,1.03]});void bed;
  const night=new THREE.Group();K.box(night,0,.27,0,.42,.54,.38,mat(C7.pine,{},'timber'));put(night,W2-t-.3,4.0,{solid:[.21,.19]});
- const fan=FN.boxFan();put(fan,W2-t-1.35,1.6,{a:-.4,solid:[.27,.1]});const blades=fan.userData.blades;
+ // (the fan on the floor at the foot of the bed, blowing across it)
+ const fan=FN.boxFan();put(fan,W2-t-1.35,1.6,{a:-2.06,solid:[.27,.1]});const blades=fan.userData.blades;
  const desk=put(FN.desk({w:1.2,m:mat(C7.pine,{},'timber')}),3.55,D2-t-.33,{a:0,solid:[.62,.31]});void desk;
  put(FN.chair({m:mat(C7.pine,{},'timber')}),3.55,D2-t-.95,{a:Math.PI,solid:[.22,.22]});
  const shelf=put(FN.shelf({w:.9,h:1.6,n:4,m:mat(C7.pine,{},'timber')}),2.38,3.8,{a:-Math.PI/2,solid:[.46,.16]});void shelf;
@@ -122,11 +123,13 @@ export function createSamHouse({scene,world,shoot=null}){
  };
  // ---- the window views (rendered from just outside the glass, the street as it is: once by day, once at night) ----
  const viewRT={};
- function renderView(which='day',{staged=null}={}){if(!shoot||typeof THREE.WebGLRenderTarget!=='function')return false;try{
-   const rt=viewRT[which]||(viewRT[which]=new THREE.WebGLRenderTarget(512,384,{colorSpace:THREE.SRGBColorSpace}));
-   const c=new THREE.PerspectiveCamera(58,512/384,.1,300),e=toW(4.2,D2+.8,FL+1.45),f=toW(4.2-2.2,D2+18,FL+.8);c.position.set(e.x,e.y,e.z);c.lookAt(f.x,f.y,f.z);c.updateMatrixWorld();
+ // (from: a world point to look from; look: a world point to look at. By default from just outside the glass toward the
+ //  street; the last look of the chapter passes its own, past the garage's corner, at the streetlight across the street)
+ function renderView(which='day',{staged=null,from=null,look=null,bright=null}={}){if(!shoot||typeof THREE.WebGLRenderTarget!=='function')return false;try{
+   const rt=viewRT[which]||(viewRT[which]=new THREE.WebGLRenderTarget(768,576,{colorSpace:THREE.SRGBColorSpace}));
+   const c=new THREE.PerspectiveCamera(50,768/576,.1,300),e=from||toW(4.2,D2+.8,FL+1.45),f=look||toW(4.2-2.2,D2+18,FL+.8);c.position.set(e.x,e.y,e.z);c.lookAt(f.x,f.y,f.z);c.updateMatrixWorld();
    const was=root.visible;root.visible=false;staged?.(true);const ok=shoot({cam:c,target:rt});staged?.(false);root.visible=was;
-   if(ok){const m=panes.find(p=>p.mesh===samWin).m;m.map=rt.texture;m.color.setHex(0xffffff);m.emissiveIntensity=which==='night'?.05:.25;m.emissive.setHex(0xffffff);m.emissiveMap=rt.texture;m.needsUpdate=true;}return ok;}catch{root.visible=true;return false;}}
+   if(ok){const m=panes.find(p=>p.mesh===samWin).m;m.map=rt.texture;m.color.setHex(0xffffff);m.emissiveIntensity=bright??(which==='night'?.05:.25);m.emissive.setHex(0xffffff);m.emissiveMap=rt.texture;m.needsUpdate=true;}return ok;}catch{root.visible=true;return false;}}
  function lightsOut(night){for(const p of panes){if(p.m.map)continue;p.m.emissiveIntensity=night?.03:.55;p.m.color.setHex(night?0x10141c:0xdde6ee);}tvScreen.emissiveIntensity=night?.2:.5;}
  // ---- nav ----
  const inR=(q,b,r=0)=>q.x>b.x0+r&&q.x<b.x1-r&&q.z>b.z0+r&&q.z<b.z1-r;
@@ -139,7 +142,25 @@ export function createSamHouse({scene,world,shoot=null}){
  // ---- moving parts, every frame ----
  const ST={fan:true,spin:0,t:0};
  function update(dt){ST.t+=dt;ST.spin=clamp(ST.spin+(ST.fan?1:-1)*dt*1.4,0,1);blades.rotation.z-=dt*ST.spin*22;}
- function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();}
+ // The street's own stand-in room behind Sam's side window (houses.js buildRoom: a lit box with a bed, a lamp and a poster, so
+ // the window shows something from the road) stands where this kitchen is. While these rooms are shown its triangles are
+ // folded to nothing (every triangle wholly inside its box, in the merged street meshes), and given back after.
+ const fake=world.interiors?.[P.key+'-room']||world.interiors?.['sam-room'];let fold=null;
+ function foldFake(on){if(!fake)return;
+  if(!fold){fold=[];const s=Math.sign(fake.x0)||1,xa=Math.min(fake.x0,fake.x0-s*fake.depth)-.03,xb=Math.max(fake.x0,fake.x0-s*fake.depth)+.03,za=fake.zc-fake.width/2-.03,zb=fake.zc+fake.width/2+.03;
+   const inBoxW=(wx,wy,wz)=>{const q=toL(wx,wz),y=wy-O.ground;return q.x>=xa&&q.x<=xb&&q.z>=za&&q.z<=zb&&y>=P.floor-.05&&y<=P.floor+2.6;};
+   const v=new THREE.Vector3(),c=new THREE.Vector3();
+   scene.traverse(o=>{if(!o.isMesh||!o.geometry?.attributes?.position)return;for(let q=o;q;q=q.parent)if(q===root)return;
+    o.updateMatrixWorld();const g=o.geometry;g.boundingBox||g.computeBoundingBox();if(!g.boundingBox)return;c.copy(g.boundingBox.min).add(g.boundingBox.max).multiplyScalar(.5).applyMatrix4(o.matrixWorld);
+    const half=g.boundingBox.max.clone().sub(g.boundingBox.min).length()/2;if(Math.hypot(c.x-O.x,c.z-O.z)>half+P.w+P.depth)return;
+    const pos=g.attributes.position,idx=g.index,n=idx?idx.count:pos.count,inside=i=>{v.fromBufferAttribute(pos,i).applyMatrix4(o.matrixWorld);return inBoxW(v.x,v.y,v.z);};const tris=[];
+    for(let t=0;t<n;t+=3){const a=idx?idx.getX(t):t,b=idx?idx.getX(t+1):t+1,d=idx?idx.getX(t+2):t+2;if(inside(a)&&inside(b)&&inside(d))tris.push(t);}
+    if(tris.length)fold.push({g,tris,saved:tris.map(t=>idx?[idx.getX(t),idx.getX(t+1),idx.getX(t+2)]:[0,1,2].map(k=>[pos.getX(t+k),pos.getY(t+k),pos.getZ(t+k)]))});});}
+  for(const F of fold){const g=F.g,idx=g.index,pos=g.attributes.position;
+   F.tris.forEach((t,i)=>{const sv=F.saved[i];if(idx){if(on){idx.setX(t+1,sv[0]);idx.setX(t+2,sv[0]);}else{idx.setX(t+1,sv[1]);idx.setX(t+2,sv[2]);}}
+    else{for(let k=1;k<3;k++){const src=on?sv[0]:sv[k];pos.setXYZ(t+k,src[0],src[1],src[2]);}}});
+   if(idx)idx.needsUpdate=true;else pos.needsUpdate=true;}}
+ function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();foldFake(on);}
  const keep=new Set([...Object.values(doors).map(d=>d.pivot),fan,items.photo,items.notebook,items.gum]);bake(root,keep);
  function reset(){ST.fan=true;ST.spin=1;doors.sam.set(.55);items.gum.visible=true;items.notebook.visible=true;items.photo.visible=true;lightsOut(false);show(false);}
  const home=(x,z)=>{const q=toL(x,z);return inR(q,R.sam,-.05)?'sam':inR(q,R.kitchen,-.05)?'kitchen':inR(q,R.living,-.05)?'living':inR(q,R.hall,-.05)?'hall':null;};

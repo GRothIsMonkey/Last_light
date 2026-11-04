@@ -101,7 +101,7 @@ export function createHorrorHouse({wallpaper=null}={}){
  // ---- hiding places (where a hidden kid stands), the stair top, the window over the porch ----
  hides.pantry={x:4.3,z:3.9,door:'pantry',lv:'g',label:'Hide in the pantry'};hides.den={x:-4.4,z:3.95,door:'den',lv:'g',label:'Hide in the closet'};hides.stair={x:0,z:3.75,door:'closet',lv:'g',label:'Hide in the closet under the stairs',inner:{x:0,z:2.4}};
  spots.foyer={x:0,z:-3.6};spots.stairFoot={x:0,z:-2.2};spots.stairTop={x:0,z:3.1};spots.boyDoor={x:-ucx-.4,z:3.3};spots.boyIn={x:-3,z:2.4};spots.hallWindow={x:0,z:-4.1};spots.porchRoof={x:0,z:-5.6};
- spots.kitchen={x:2.6,z:3.0};spots.calendar={x:-5,y:UP+1.55,z:2.05};spots.desk={x:-4.6,y:UP+.8,z:.95};spots.sideWindow={x:-2.8,y:UP+1.5,z:hd};spots.bike={x:-3.6,z:-2.5};
+ spots.kitchen={x:2.6,z:3.0};spots.calendar={x:-3.3,y:UP+1.5,z:.04};spots.desk={x:-4.6,y:UP+.8,z:.95};spots.sideWindow={x:-2.8,y:UP+1.5,z:hd};spots.bike={x:-3.6,z:-2.5};
  spots.dresserStart={x:-ucx-.55,z:1.0};spots.dresserBlock={x:-ucx-.4,z:3.3};spots.dresserAfter={x:-ucx-.55,z:1.25};// (dragged back off the door afterwards: near where it stood, clear of the bed's foot)
  // the creature's map of the ground floor: rooms and doorways (house frame), and the loop it walks
  const graph={nodes:[{id:'foyer',x:0,z:-3.2},{id:'stairFoot',x:0,z:-2.0},{id:'livingArch',x:-1.7,z:-2.6,pause:1.4},{id:'living',x:-3.2,z:-2.4},{id:'livingDoor',x:-3.3,z:-.35,pause:1.2},
@@ -151,26 +151,26 @@ export function createHorrorHouse({wallpaper=null}={}){
 
 // ---- the dining house's dining room ----------------------------------------------------------------------------------------------
 // The room is in the dining house's frame: the picture window in the front wall (z=-D/2) at x=PIC.x, the room behind it.
-export const PIC={x:2.3,w:2.3,h:1.45,sill:.95};
-export function createDiningRoom({D=8.6,F=.5,tvTex=null}={}){const g=new THREE.Group();g.name='c7-dining-room';const B=createBuild(g),{K}=B,{F:FN}=createFurniture();const hd=D/2;
+export const PIC={x:2.3,w:2.3,h:1.55,sill:.62};// (a low, wide picture window: from the lawn you see them at the table, not just the tops of their heads)
+export function createDiningRoom({D=8.6,F=.5,tvTex=null}={}){const g=new THREE.Group();g.name='c7-dining-room';const B=createBuild(g),{K}=B,{F:FN}=createFurniture();const hd=D/2,TZ=-hd+1.75;// (the table nearer the window)
  const paperM=mat(0xa8a078,{},'plaster'),boards=mat(0x6a4a30,{},'timber');
  const R={x0:PIC.x-2.4,x1:PIC.x+2.4,z0:-hd+.12,z1:-hd+4.4};
  // its own three walls and ceiling (the house's front wall, with the picture window, is the house's)
  B.wall([R.x0,R.z0],[R.x0,R.z1],{y0:F,y1:F+2.6,m:paperM});B.wall([R.x1,R.z0],[R.x1,R.z1],{y0:F,y1:F+2.6,m:paperM});B.wall([R.x0,R.z1],[R.x1,R.z1],{y0:F,y1:F+2.6,m:paperM,holes:[[3.1,4.0,0,2.05]]});
  B.floor(R.x0,R.z0,R.x1,R.z1,F,boards);B.ceiling(R.x0,R.z0,R.x1,R.z1,F+2.6,mat(0xd8d0bc));
- const table=FN.table({w:1.9,d:1.0});table.position.set(PIC.x,F,-hd+2.1);table.rotation.y=Math.PI/2;g.add(table);
+ const table=FN.table({w:1.9,d:1.0});table.position.set(PIC.x,F,TZ);table.rotation.y=Math.PI/2;g.add(table);
  // the places: four plates, glasses, a dish in the middle
- for(const [dx,dz] of [[0,-.7],[0,.7],[-.32,0],[.32,0]]){K.cyl(g,PIC.x+dx,F+.76,-hd+2.1+dz,.12,.01,mat(0xf2eee2));}
- K.cyl(g,PIC.x,F+.79,-hd+2.1,.16,.06,mat(0xc8b890,{roughness:.4}));
+ for(const [dx,dz] of [[0,-.7],[0,.7],[-.32,0],[.32,0]]){K.cyl(g,PIC.x+dx,F+.76,TZ+dz,.12,.01,mat(0xf2eee2));}
+ K.cyl(g,PIC.x,F+.79,TZ,.16,.06,mat(0xc8b890,{roughness:.4}));
  // the chairs where they sit: north head, south head, two along the far side (facing the window)
- const seats=[{id:'father',x:PIC.x,z:-hd+2.1+1.15,a:Math.PI},{id:'mother',x:PIC.x,z:-hd+2.1-1.15,a:0},{id:'girl',x:PIC.x-.55,z:-hd+2.1+.0,a:Math.PI/2},{id:'boy',x:PIC.x+.55,z:-hd+2.1,a:Math.PI/2}];
+ const seats=[{id:'father',x:PIC.x,z:TZ+1.15,a:Math.PI},{id:'mother',x:PIC.x,z:TZ-1.15,a:0},{id:'girl',x:PIC.x-.55,z:TZ+.0,a:Math.PI/2},{id:'boy',x:PIC.x+.55,z:TZ,a:Math.PI/2}];
  // (the room's frame: the picture window faces -z; seats' a is the heading in this frame)
- seats[0]={id:'father',x:PIC.x+1.15,z:-hd+2.1,a:-Math.PI/2};seats[1]={id:'mother',x:PIC.x-1.15,z:-hd+2.1,a:Math.PI/2};seats[2]={id:'girl',x:PIC.x-.42,z:-hd+2.75,a:0};seats[3]={id:'boy',x:PIC.x+.42,z:-hd+2.75,a:0};
+ seats[0]={id:'father',x:PIC.x+1.15,z:TZ,a:-Math.PI/2};seats[1]={id:'mother',x:PIC.x-1.15,z:TZ,a:Math.PI/2};seats[2]={id:'girl',x:PIC.x-.42,z:TZ+.65,a:0};seats[3]={id:'boy',x:PIC.x+.42,z:TZ+.65,a:0};
  for(const s of seats){const c=FN.chair({});c.position.set(s.x,F,s.z);c.rotation.y=-s.a;g.add(c);}
  const tvScreen=new THREE.MeshStandardMaterial({color:0x111418,emissive:0x9aaab8,emissiveIntensity:0,roughness:.2,map:tvTex||null});tvScreen.name='c7-dining-tv';
  const tv=FN.console({screen:tvScreen});tv.position.set(R.x0+.45,F,-hd+3.6);tv.rotation.y=Math.PI*.75;g.add(tv);
  const hutch=new THREE.Group();K.box(hutch,0,.95,0,1.5,1.9,.45,mat(0x5a3a26,{},'timber'));hutch.position.set(PIC.x+.6,F,R.z1-.3);hutch.rotation.y=Math.PI;g.add(hutch);
- const lamp=new THREE.Group();lamp.name='hanging-lamp';K.cyl(lamp,0,0,0,.004,.7,mat(0x2a2a2a));K.cyl(lamp,0,-.4,0,.28,.22,mat(0xe8d8b0,{emissive:0xffcf8a,emissiveIntensity:.9,side:THREE.DoubleSide}),{r2:.1});lamp.position.set(PIC.x,F+2.6,-hd+2.1);g.add(lamp);
+ const lamp=new THREE.Group();lamp.name='hanging-lamp';K.cyl(lamp,0,0,0,.004,.7,mat(0x2a2a2a));K.cyl(lamp,0,-.4,0,.28,.22,mat(0xe8d8b0,{emissive:0xffcf8a,emissiveIntensity:.9,side:THREE.DoubleSide}),{r2:.1});lamp.position.set(PIC.x,F+2.6,TZ);g.add(lamp);
  // the glass: real, see-through; the crack (hidden until it is struck), on the outside face
  const glass=K.plane(g,PIC.x,F+PIC.sill+PIC.h/2,-hd-.02,PIC.w,PIC.h,glassClear);glass.rotation.y=Math.PI;glass.name='picture-glass';
  const crackTex=paper(512,320,(c,w,h)=>{c.clearRect(0,0,w,h);const r=seeded(66);c.strokeStyle='rgba(235,240,245,.85)';c.lineCap='round';
