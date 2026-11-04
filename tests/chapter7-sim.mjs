@@ -276,7 +276,9 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
    approach(court.H3(-2.6,2.6),.45,{pad:6});approach(court.H3(-3.3,-.5),.4,{pad:6});approach(court.H3(-2.6,-2.3),.4,{pad:6});approach(court.H3(-.8,-2.6),.4,{pad:6});approach(court.H3(0,-1.9),.3,{pad:6});
    walkTo([[court.H3(0,-.5).x,court.H3(0,-.5).z],[court.H3(0,1.6).x,court.H3(0,1.6).z],[court.H3(0,2.9,null,'u').x,court.H3(0,2.9,null,'u').z]],{r:.15,max:20});};
   while(tries++<3&&ph()==='e7-stalk'){goUp();U(()=>ph()!=='e7-stalk'||A7.C.sk?.caught,3);if(A7.C.sk?.caught){note('caught; again');U(()=>ph()==='e7-stalk'&&!A7.C.sk?.caught,12);}}
-  check(`${label}: the egg timer, wound: it rings in the kitchen, it goes to it and breaks it, and after that it looks into the closets as it goes round`,()=>{assert.ok(A7.C.sk.timer?.rang);assert.ok((A7.C.sk.learned||0)>=1);});
+  // (whether it has finished breaking the timer when you reach the top depends on how fast you were round: it has heard it and gone)
+  M7.timerLearnedBeforeUp=(A7.C.sk.learned||0)>=1;
+  check(`${label}: the egg timer, wound: it rings in the kitchen; it hears it (by its hearing range) and leaves the stairs for it; you go round the other way and up`,()=>{assert.ok(A7.C.sk.timer?.rang);assert.ok(A7.C.sk.lure?.heard);assert.equal(A7.C.sk.lure.id,'timer');});
   M7.stealthFails=C7().fails.stalk;
   check(`${label}: up the stairs without it catching you (failed ${C7().fails.stalk} time(s) first)`,()=>{assert.equal(ph(),'e7-door');assert.equal(C7().level,'u');});
   // the room at the top: shut the door; the dresser; it hammers; it goes
