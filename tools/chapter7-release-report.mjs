@@ -44,6 +44,8 @@ Runtime source commit: \`${sim.recoveredIdenticalSourceCommit}\`. Accepted gamep
 
 The workspace rolled back after a completed 94-check run. Its full per-assertion JSON did not survive; \`reports/simulation-recovered-summary.json\` preserves the recorded totals and metrics and clearly identifies that limitation. The source was recovered exactly. Reconstructing the former commit’s bytes from the recovered tree, original parent, identity, message and timestamp produces the former tested SHA \`${sim.originalTestedCommit}\`. The proof is in \`reports/source-equivalence.json\`. The fresh 19-check report and final capture/package reports retain their complete records.
 
+A later workspace rollback also removed the first release-record commit (a05fa59b65cf46610e75fc494aacf0b99a0e402b). The complete nine-check offline JSON and review UI totals were recovered from the recorded successful execution; their screenshots were not retained. The rebuilt playable has exactly the same SHA-256 as the tested HTML. This recovery changes release documentation, not the game.
+
 Every runtime hash in the fresh regression report matches the final captures and offline package. Offline HTML SHA-256: \`${offline.htmlSHA256}\`.
 
 ## Captured rendering cost

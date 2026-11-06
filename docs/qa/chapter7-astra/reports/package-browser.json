@@ -1,0 +1,53 @@
+{
+  "recordType": "Recovered complete JSON result from the completed offline test; screenshots lost in workspace rollback",
+  "file": "Last-Light-Chapter7-Playtest.html",
+  "htmlSHA256": "523185bd165269ec0e9bbe83b362f72b0a0d69b43300b02170f1a12ba525d3a9",
+  "audio": "AudioContext initializes, then the game is muted. No listening review.",
+  "renderer": "Chromium with ANGLE SwiftShader",
+  "opening": {
+    "phase": "d7-step",
+    "photo": {
+      "four": true,
+      "one": true
+    },
+    "render": {
+      "frame": 5,
+      "calls": 502,
+      "triangles": 513764,
+      "points": 649,
+      "lines": 3931
+    },
+    "asset": true
+  },
+  "hunter": {
+    "phase": "e7-reveal",
+    "visible": true,
+    "render": {
+      "frame": 6,
+      "calls": 517,
+      "triangles": 172774,
+      "points": 691,
+      "lines": 0
+    }
+  },
+  "ending": {
+    "state": "ended",
+    "photo": "one",
+    "taken": true
+  },
+  "passed": 9,
+  "checks": [
+    "Normal Start opens the prologue",
+    "Local file enters Chapter Seven through real DEV controls",
+    "Both embedded photographs render",
+    "The earlier chapter creature asset loads offline",
+    "Offline hunter reveal renders",
+    "Offline ending reaches its end card",
+    "Ending retains the solitary photograph",
+    "No network requests are needed",
+    "No JavaScript or shader errors"
+  ],
+  "errors": [],
+  "warnings": [],
+  "httpRequests": []
+}

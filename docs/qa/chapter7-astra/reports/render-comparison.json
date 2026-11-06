@@ -1,0 +1,158 @@
+{
+  "renderer": "Chromium / ANGLE SwiftShader",
+  "viewport": [
+    1440,
+    900
+  ],
+  "quality": "Medium (default)",
+  "fpsNotMeasured": true,
+  "views": [
+    {
+      "name": "a01-foyer-from-entry",
+      "beforeCalls": 416,
+      "afterCalls": 538,
+      "beforeTriangles": 77162,
+      "afterTriangles": 173896
+    },
+    {
+      "name": "a03-jamie",
+      "beforeCalls": 465,
+      "afterCalls": 484,
+      "beforeTriangles": 928401,
+      "afterTriangles": 932849
+    },
+    {
+      "name": "a04-after-grip",
+      "beforeCalls": 92,
+      "afterCalls": 85,
+      "beforeTriangles": 121132,
+      "afterTriangles": 144309
+    },
+    {
+      "name": "01-sams-room",
+      "beforeCalls": 238,
+      "afterCalls": 275,
+      "beforeTriangles": 390497,
+      "afterTriangles": 398601
+    },
+    {
+      "name": "09-old-mill-court",
+      "beforeCalls": 881,
+      "afterCalls": 1184,
+      "beforeTriangles": 115578,
+      "afterTriangles": 237458
+    },
+    {
+      "name": "13-reveal-hand",
+      "beforeCalls": 398,
+      "afterCalls": 512,
+      "beforeTriangles": 76106,
+      "afterTriangles": 171296
+    },
+    {
+      "name": "14-reveal-landing",
+      "beforeCalls": 394,
+      "afterCalls": 504,
+      "beforeTriangles": 76680,
+      "afterTriangles": 170374
+    },
+    {
+      "name": "21-grab",
+      "beforeCalls": 217,
+      "afterCalls": 251,
+      "beforeTriangles": 203191,
+      "afterTriangles": 243330
+    },
+    {
+      "name": "22-struggle",
+      "beforeCalls": 198,
+      "afterCalls": 212,
+      "beforeTriangles": 195601,
+      "afterTriangles": 231636
+    },
+    {
+      "name": "23-gum",
+      "beforeCalls": 108,
+      "afterCalls": 101,
+      "beforeTriangles": 156478,
+      "afterTriangles": 179655
+    },
+    {
+      "name": "24-photo-one",
+      "beforeCalls": 143,
+      "afterCalls": 148,
+      "beforeTriangles": 261944,
+      "afterTriangles": 267086
+    },
+    {
+      "name": "26-final-image",
+      "beforeCalls": 208,
+      "afterCalls": 208,
+      "beforeTriangles": 339199,
+      "afterTriangles": 344015
+    },
+    {
+      "name": "x11-lange-front",
+      "beforeCalls": 261,
+      "afterCalls": 357,
+      "beforeTriangles": 121494,
+      "afterTriangles": 217802
+    },
+    {
+      "name": "x12-lange-kitchen",
+      "beforeCalls": 414,
+      "afterCalls": 556,
+      "beforeTriangles": 78022,
+      "afterTriangles": 168354
+    },
+    {
+      "name": "x14-lange-bath-door",
+      "beforeCalls": 467,
+      "afterCalls": 611,
+      "beforeTriangles": 81684,
+      "afterTriangles": 174144
+    },
+    {
+      "name": "x16-lange-burst",
+      "beforeCalls": 586,
+      "afterCalls": 810,
+      "beforeTriangles": 131036,
+      "afterTriangles": 263502
+    },
+    {
+      "name": "x17-lange-loom",
+      "beforeCalls": 584,
+      "afterCalls": 804,
+      "beforeTriangles": 135800,
+      "afterTriangles": 268510
+    },
+    {
+      "name": "x20-green-star",
+      "beforeCalls": 273,
+      "afterCalls": 365,
+      "beforeTriangles": 71210,
+      "afterTriangles": 151834
+    },
+    {
+      "name": "x22-pantry-hand",
+      "beforeCalls": 306,
+      "afterCalls": 903,
+      "beforeTriangles": 82830,
+      "afterTriangles": 353410
+    },
+    {
+      "name": "x23-pantry-head",
+      "beforeCalls": 162,
+      "afterCalls": 273,
+      "beforeTriangles": 82564,
+      "afterTriangles": 156342
+    },
+    {
+      "name": "x30-evidence",
+      "beforeCalls": 137,
+      "afterCalls": 130,
+      "beforeTriangles": 180454,
+      "afterTriangles": 203631
+    }
+  ]
+}

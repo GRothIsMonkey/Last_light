@@ -1,0 +1,11 @@
+{
+  "recordType": "Recovered result from completed review UI check",
+  "pairs": 21,
+  "imagesDecoded": 42,
+  "comparisonModes": [
+    "both",
+    "before",
+    "after"
+  ],
+  "errors": []
+}
