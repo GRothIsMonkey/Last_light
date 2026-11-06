@@ -42,6 +42,12 @@ export function fallActs(X){
    yield* looking(CM.at('hBoard',1.15),[N('A green steel board. Brass tags, typed, one for each chamber, a needle under every one.',{time:3.6}),N('CH. 1 — A.R. — 9/58. CONN. LOST 2/66.',{time:3}),N('CH. 4 — R.A.C. — 8/66. CONN. LOST 3/79.',{time:3}),
     N('CH. 7 — E.L. · T.L. — 4/74. CH. 14 — D.W. — 8/91. VACATED 9/91 — BREACH.',{time:4}),N('Fifteen, sixteen, seventeen: no tags. Three needles, all of them down on the pin.',{time:3.4}),N('Along the bottom: BARRIER 1. BARRIER 2. BARRIER 3 (ORIGINAL, 1958). All three of those needles are moving.',{time:4.2})],{back:2.6,eye:1.5,kind:'board',min:2});
    yield* lines([SM('Fifteen was mine. I watched a needle like that, in my door. It was up the whole time I was in there.',{time:3.6,face:'afraid'}),AL('Mine too. It went down when you opened it.',{time:2.4}),
+    // (what Alex learned of it, in there: what it is, why it takes people, Danny, the long one, the places, the forgetting)
+    SM('D.W. That’s Danny. Ninety-one. Vacated: he got out of his.',{time:2.8,face:'afraid'}),AL('Not all the way out. You saw what he is.',{time:2.2,face:'tired'}),
+    AL('It’s alive. It’s just big. It’s under all of it: the court, the lines, out to the camp.',{time:3.2,face:'tired'}),
+    AL('It learns you. Your voice, the stuff you’d say. Then it makes another you and goes and gets whoever comes looking. The bell’s the same. It rings the bell because we come.',{time:5.6,face:'afraid'}),
+    AL('It makes places out of what it took. The court. The Langes’. My room.',{time:3}),AL('And the long one brings you back when you get out. That’s all it’s for.',{time:3,face:'afraid'}),
+    J('And everybody forgot you.',{time:1.6,face:'sad'}),AL('It takes you out of people. The longer it has you, the more of you is gone. Out there, too.',{time:3.6,face:'sad'}),
     R('Those chambers weren’t just holding the children.',{time:2.6}),SM('They were holding something else.',{time:2.2,face:'afraid'})]);
    sound('c8Impact',CM.at('hWindow',-8),{gain:1.6});C.shake=.9;T?.jolt?.(1,{rise:1,hold:20,why:'it, through the wall'});
    yield* lines([{wait:.4},SM('When we got out, the walls started moving.',{time:2.4}),R('The connections were keeping it in place.',{time:2.6}),Y('We let it out?',{time:1.4}),R('You got your friends back.',{time:2.2}),
@@ -233,7 +239,7 @@ export function fallActs(X){
   const at=WP(19.6,-3.9);o.placePlayer({x:at.x,z:at.z,a:Math.PI/2,mode:'walk',bike:null});threeAtWorks(at);checkpoint('c8-staging');C.fadeIn=0;C.mood='tense';C.mindKey=null;
   task('staging',(function*(){
    yield* lines([{wait:1},N('The Mill Creek works. Brandt’s truck, a generator, a light on a pole. The creek is roaring down its channel, high and brown.',{time:4}),
-    BR('It’s coming up the lines. Line Four, the old court, Mill Street. It’s in all of it.',{time:3}),R('Tell them.',{time:1})]);
+    BR('It’s coming up the lines. Line Four, the old court, Mill Street, the reservoir line out to the camp. It’s in all of it.',{time:3}),R('Tell them.',{time:1})]);
    objective('The binder.','On the desk in the gatehouse: Procedure 7.');offer('procedure','Read the procedure',()=>WP(18.6,1.25,.25+.85),{r:2.6,look:true,size:.4,cone:.14,fn:()=>task('proc',(function*(){
     yield* reading('procedure',[N('EMERGENCY DRAWDOWN. O.M.C. ISOLATION STRUCTURE (1959). PROCEDURE 7.',{time:3.4}),N('1. Close outer routes: main gates 1 and 2; the Line 4 drawdown gate in the gallery. 2. Open the drawdown ports in junction J. Line Two runs it to the court.',{time:5}),
      N('3. At the plug platform, drive out latch pins A, B and C. The plug drops. The central junction floods and collapses. Rupture isolated.',{time:4.6}),N('Stamped across it: NOT TO BE OPERATED WHILE CHAMBERS OCCUPIED. Approved: no.',{time:3.6})]);C.flags.procRead=true;})())});
