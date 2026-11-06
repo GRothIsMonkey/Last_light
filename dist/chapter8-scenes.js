@@ -539,7 +539,10 @@ export function scenes8(X){
   'c8-sam-door':()=>{Object.assign(C.flags,{split:true,danny:true,cPower:true,ruth:true});sceneWing('sam');const q=CM.at('samDoor');o.placePlayer({x:q.x+.6,z:q.z-1.6,a:Math.PI,mode:'walk',bike:null});},
   'c8-retrieval':()=>sceneRetrieval('r'),'c8-jamie':()=>sceneRetrieval('r'),'c8-jamie-door':()=>sceneRetrieval('r'),'c8-shift':()=>sceneAlex('shift'),'c8-made':()=>sceneAlex('made'),'c8-alex':()=>sceneAlex('alex'),'c8-alex-free':()=>sceneAlex('alex'),
   'c8-reunion':()=>sceneReunion('r'),'c8-alarm':()=>sceneReunion('r')};
- const FALL=fallActs({...X,CM,sceneBikes,enterComplex,lightsBelow,hideReyesBelow,stageBikes,BIKES,bikeAt,MH,fieldG,nightStreet,q8,hide,stand3,D,updateDanny});
+ // (a copy of the context with this file's places added; Alex is a live getter, as he comes and goes: a spread would freeze it)
+ const FX={...X,CM,sceneBikes,enterComplex,lightsBelow,hideReyesBelow,stageBikes,BIKES,bikeAt,MH,fieldG,nightStreet,q8,hide,stand3,D,updateDanny};
+ Object.defineProperty(FX,'alex',{get:()=>X.alex,set:v=>{X.alex=v;},enumerable:true,configurable:true});
+ const FALL=fallActs(FX);
  X.sceneTruth=FALL.sceneTruth;
  function jump(section){const f=SCENE[section]||FALL.SCENE?.[section];if(!f){begin();return;}C.where='';f();if(section!=='chapter8-start'){C.fadeIn=-1;o.fade(0);}}
  return {begin,jump,update,afterActors,key,pan,wheel,hint,sources,blockers,reset,updateDanny,MH,officerAim:()=>FALL.officerAim?.()??null,

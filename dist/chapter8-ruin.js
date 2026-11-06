@@ -92,7 +92,14 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
   H.door=K.box(H.g,dp[0],dp[1],dp[2],.95,2.05,.06,mat(0x5a2f22),{ry:-ry});
   const gp=Q.hasGarage?at(Q.gx??sideK*(Q.w/2-2),(Q.gfront??front*Q.depth/2)+front*.04,.95):at(sideK*(Q.w/2-2.4),dz,.95);H.garageAt={x:gp[0],y:gp[1],z:gp[2]};
   H.garage=K.box(H.g,gp[0],gp[1]+.2,gp[2],2.6,1.5,.08,mat(0xd8d2c4),{ry:-ry});H.garage.rotation.set(front*.14,-ry,0,'YXZ');
-  H.jackAt=(()=>{const p=at(dx+sideK*.9,dz+front*.7,0);return {x:p[0],y:p[1],z:p[2]};})();H.lawn=(()=>{const p=P(Q.u-1,10.5);return p;})();H.street=P(Q.u+8,-6.4);
+  // (the yard between the door and the garage is the hole now: the door is got at from the east side of the house, where the
+  // header's low end is; the jack goes under that end; her car is at the curb past the lawn, its trunk toward the house)
+  H.at=(x,z,y=0)=>{const p=at(x,z,y);return {x:p[0],y:p[1],z:p[2]};};
+  H.jackAt=H.at(dx-sideK*.8,dz+front*.55,0);H.jamb=H.at(dx-sideK*1.35,dz+front*.85,0);H.lawn=P(Q.u+7.6,11.6);H.street=P(Q.u+8,-6.4);H.inside=H.at(dx,dz-front*1.2,0);
+  {const c=P(Q.u+14,7.7),c2=P(Q.u+15,7.7),tx=c2.x-c.x,tz=c2.z-c.z,tl=Math.hypot(tx,tz)||1,ux=tx/tl,uz=tz/tl,car=new THREE.Group();car.name='c8-henderson-car';makeCar(KT,car,'wagon',0x8a8a92);
+   car.position.set(c.x,nav.groundY(c.x,c.z),c.z);car.rotation.y=Math.atan2(-ux,-uz);H.g.add(car);H.car=car;
+   H.trunkAt={x:c.x-ux*2.75,y:car.position.y,z:c.z-uz*2.75};H.carBlocks=[-1.7,-.6,.6,1.7].map(k=>({x:c.x+ux*k,z:c.z+uz*k,r:.95}));
+   const lid=K.box(car,0,1.38,2.62,1.62,.05,.92,KT.mat(0x8a8a92,{roughness:.38,metalness:.25}));lid.rotation.x=-1.1;lid.name='c8-trunk-lid';H.trunkLid=lid;}
   const jk=new THREE.Group();jk.name='c8-jack';const r=H.jackAt;jk.position.set(r.x,r.y,r.z);H.g.add(jk);K.box(jk,0,.1,0,.3,.2,.5,mat(0xb83a2a,{roughness:.5,metalness:.4}));K.pipe(jk,[0,.2,0],[0,.6,0],.04,pipeM);H.jack=jk;
   H.post=K.box(H.g,r.x,r.y+1.1,r.z,.09,.08,.09,timber);}
  // the burning house and the gas line at its curb; the fire grows and takes the garage after a while
@@ -138,7 +145,7 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
  const truck=rescueTruck();truck.g.visible=false;root.add(truck.g);{const t=P(905,-2.6),t2=P(915,-2.6);truck.g.position.set(t.x,t.y,t.z);truck.g.rotation.y=-Math.atan2(t2.x-t.x,-(t2.z-t.z))+Math.PI;}
  const ST={stage:0,heave:0};
  // ---- walking and riding: what is not there any more ---------------------------------------------------------------------
- const blocksAll=()=>[...(ST.stage>=1?[...(F.blocks||[]),...(POLE.blocks||[])]:[])];
+ const blocksAll=()=>[...(ST.stage>=1?[...(F.blocks||[]),...(POLE.blocks||[]),...(H.g.visible&&H.carBlocks||[])]:[])];
  function inPit(x,z,r=0){for(const k of ['sams','under','heave']){const p=pits[k];if(!p.g.visible)continue;const dx=x-p.c.x,dz=z-p.c.z,u=dx*Math.sin(p.h0)-dz*Math.cos(p.h0),v=dx*Math.cos(p.h0)+dz*Math.sin(p.h0);if((u/(p.a+r))**2+(v/(p.b+r))**2<1)return p;}return null;}
  function blocked(x,z,r=.3){if(inPit(x,z,r+.25))return true;for(const b of blocksAll())if(Math.hypot(x-b.x,z-b.z)<b.r+r)return true;if(HEND&&H.g.visible&&H.cut){const q=new THREE.Vector3(x,H.cut.m.elements[13],z).applyMatrix4(H.cut.inv);if(Math.abs(q.x)<1.25&&Math.abs(q.z)<1.25)return true;}return false;}
  const BB=(()=>{const a=P(850,-40),b=P(1060,40);return {x0:Math.min(a.x,b.x)-30,x1:Math.max(a.x,b.x)+30,z0:Math.min(a.z,b.z)-30,z1:Math.max(a.z,b.z)+30};})();
@@ -175,5 +182,7 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
  function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();if(!on){stage(0);}}
  function reset(){stage(0);F.spread=0;truck.g.visible=false;if(H.jack){H.jack.position.y=H.jackAt.y;}if(H.header){H.header.rotation.z=(H.sideK||1)*.32;}if(H.door)H.door.visible=true;if(H.garage){H.garage.position.y=H.garageAt.y+.2;}}
  reset();
- return {root,pits,H,F,POLE,HV,sedan,heaveCar,truck,ST,room,stage,heave,update,sources,show,reset,inPit,blocked,cuts,syncCuts,P,BB};
+ // (where on the town's streets a point is, the ruin room being over all of it: the street name, d along, lat across)
+ const locate=(x,z)=>room.inside(x,z)?base(()=>nav.locate(x,z)):nav.locate(x,z);
+ return {root,pits,H,F,POLE,HV,sedan,heaveCar,truck,ST,room,stage,heave,update,sources,show,reset,inPit,blocked,cuts,syncCuts,P,BB,locate};
 }

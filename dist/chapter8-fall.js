@@ -112,12 +112,12 @@ export function fallActs(X){
   task('surface',(function*(){
    yield* lines([{wait:1.2},N('The field. Grey light in the east, not dawn yet. Sirens, a lot of them, all over town.',{time:3.6}),N('The air smells like gas and smoke and wet dirt.',{time:2.6})]);
    objective('The street.','Down from the oak.');
-   yield* until(()=>{const L=nav.locate(me().x,me().z);return L.d<1128||C.pt>120;});
-   yield* lines([N('Oak Hollow Drive. From the cul-de-sac you can see down it.',{time:2.6}),N('Halfway to Sam’s the road isn’t there. The whole width of it is a hole. The Hendersons’ garage has gone down into it.',{time:4.2}),
+   yield* until(()=>{const L=ruin.locate(me().x,me().z);return L.d<1128||C.pt>120;});
+   yield* lines([N('Oak Hollow Drive. From the cul-de-sac you can see down it.',{time:2.6}),N('Halfway to Sam’s the road isn’t there. The whole width of it is a hole. The Hendersons’ front yard has gone down into it, and the garage end of their house with it.',{time:4.2}),
     N('Past Sam’s, a house is burning. Fire is coming straight up out of the curb in front of it like a torch.',{time:3.6}),N('A pole is down across the sidewalk. The wires on it are spitting.',{time:3}),
     SM('That’s our street.',{time:1.4,face:'shocked'}),AL('It got out. It got all the way out.',{time:2,face:'terrified'})]);
    // down at Summerfield: the road lifts, splits, goes, with a car on it; something under the intersection the size of the intersection
-   yield* until(()=>{const L=nav.locate(me().x,me().z);return L.d<1100||C.pt>220;});
+   yield* until(()=>{const L=ruin.locate(me().x,me().z);return L.d<1100||C.pt>220;});
    ruin.heave();C.shake=.4;later(3.4,()=>{C.shake=.9;T?.jolt?.(1,{rise:1,hold:14,why:'Summerfield'});});later(4.6,()=>{const p=ruin.pits.heave;presence.set(4,{root:[p.c.x,p.c.y-p.depth,p.c.z],dir:[0,1,.1],len:15,r0:2.8,r1:.5,state:'emerge',speed:1.2});});
    later(9,()=>presence.retract(4));
    yield* lines([{wait:.4},N('Down at Summerfield the street comes up. All of it, at once, like something underneath it stood up.',{time:4}),{wait:1.2},N('It splits. A car that was stopped in the middle of the intersection goes down into it nose first, its lights still on.',{time:4.2}),
@@ -126,51 +126,88 @@ export function fallActs(X){
    sceneStreet('street');})());}
  // ---- Act V, scene 13: the Hendersons'; Jamie -----------------------------------------------------------------------------------------------------------------
  const JD={on:false,x:0,z:0,a:0};
+ // (both hands up over his head, flat under the beam: holding the front of the house up off the doorway)
+ const _hv=new THREE.Vector3();
+ const holdUp=c=>p=>{const g=c.person.group;g.updateMatrixWorld(true);const y=gy(c.px,c.pz)+1.74;
+  for(const [i,sd] of [[PI.lh,-1],[PI.rh,1]]){_hv.set(c.px+Math.cos(c.pa)*.2*sd+Math.sin(c.pa)*.06,y,c.pz+Math.sin(c.pa)*.2*sd-Math.cos(c.pa)*.06);g.worldToLocal(_hv);p[i]=_hv.x;p[i+1]=_hv.y;p[i+2]=_hv.z;}
+  p[PI.le]=-1;p[PI.le+1]=-.3;p[PI.le+2]=.2;p[PI.re]=1;p[PI.re+1]=-.3;p[PI.re+2]=.2;};
  function sceneStreet(from='street'){go('g8-street');if(from!=='street'){surfaceWorld();const at=main(1060,-1);o.placePlayer({x:at.x,z:at.z,a:headingTo(at.x,at.z,main(1030,0).x,main(1030,0).z),mode:'walk',bike:null});fourOut({x:at.x,z:at.z+1});}
-  const Hh=ruin.H;C.h=Math.max(C.h,HOUR.street);C.hMin=HOUR.street;date(C.h);checkpoint('c8-hendersons');C.mood='escape';C.mindKey=null;
+  // (Continue from the garage resumes with the door open and Jamie gone in; from Jamie, with him on the lawn)
+  const resume=from==='garage'||from==='death'?from:null;
+  const Hh=ruin.H;C.h=Math.max(C.h,HOUR.street);C.hMin=HOUR.street;date(C.h);if(!resume)checkpoint('c8-hendersons');C.mood='escape';C.mindKey=null;
   for(const a of [mrsH,mrH,lily])a.show(false);
+  // Reyes ran on ahead to his car, past the hole, and has it turned round with its lights on
+  {const car=k.carA;reyes.show(true);reyes.place(car.x+1.2,car.z+1.4,headingTo(car.x,car.z,Hh.doorAt.x,Hh.doorAt.z));reyes.gest('flashlight');}
   task('street',(function*(){
-   // Mrs. Henderson on her lawn, screaming at her own front door; her father-in-law and her girl inside
+   if(!resume){
+   // Mrs. Henderson on what is left of her lawn (the east end of it: the rest is the hole), screaming at her own front door
    mrsH.show(true);const mq=Hh.lawn;mrsH.place(mq.x,mq.z,headingTo(mq.x,mq.z,Hh.doorAt.x,Hh.doorAt.z));mrsH.gest?.('point',Hh.doorAt);
    yield* lines([V('MRS. HENDERSON','Lily! LILY! The door won’t— it won’t open— my father-in-law is in the garage— somebody HELP me!',{time:4}),J('That’s the Hendersons’. That’s Lily.',{time:1.6,face:'afraid'})]);
-   objective('Help them.','The front door. The header’s come down on it.');
+   // the hunter is up here too: across the road beyond the hole, low and quick, from one yard into the next
+   task('roam',(function*(){const a=main(1004,-24),b=main(1002,26);HM.show(true);H.reset();HM.show(true);H.place(a.x,a.z,0);
+    H.script([{to:()=>[b.x,b.z],speed:6.5,state:'run',free:true},{act:()=>{HM.show(false);H.reset();}}]);mark('it is up here too');
+    yield* wait(1.2);yield* lines([SM('Past the hole— did you see—',{time:1.6,face:'afraid'}),R('I saw it. Keep moving. Help her.',{time:1.6})]);})());
+   objective('Help them.','The front door. The beam over it has come down.');
    yield* until(()=>near(Hh.doorAt,5)||C.pt>200);
    yield* lines([SM('The beam over the door’s come down. It’s pinning it. Lift the beam and it’ll open.',{time:3,face:'determined'}),SM('A jack. Her car. Every car has one.',{time:2.2})]);
-   // the jack: out of the trunk; under the header; pumped while Jamie pulls the door
-   const trunk=main(Hh.P.u-4.5,9.6);trunk.y=gy(trunk.x,trunk.z);
+   // the jack: out of her trunk (her car is at the curb past the lawn); under the low end of the header; pumped while Jamie pulls the door
+   const trunk=Hh.trunkAt||main(Hh.P.u+11,7.7);if(Hh.trunkLid)Hh.trunkLid.visible=true;
    offer('jack','Take the jack',{x:trunk.x,y:trunk.y+.8,z:trunk.z},{r:2.4,fn:()=>{C.flags.haveJack=true;sound('c6Clank',trunk,{gain:.6});}});
    yield* until(()=>C.flags.jack||C.pt>320);
    offer('jackset','Put the jack under the beam',{x:Hh.jackAt.x,y:Hh.jackAt.y+.4,z:Hh.jackAt.z},{r:2.2,fn:()=>{C.flags.jackSet=true;Hh.jack.visible=true;}});
    yield* until(()=>C.flags.jackset||C.pt>380);
-   stand(jamie,{x:Hh.doorAt.x+.6,z:Hh.doorAt.z+(Hh.front||1)*.9},{look:()=>Hh.doorAt});
+   stand(jamie,Hh.jamb||{x:Hh.doorAt.x,z:Hh.doorAt.z},{look:()=>Hh.doorAt});
    offer('pump','Pump the jack',{x:Hh.jackAt.x,y:Hh.jackAt.y+.4,z:Hh.jackAt.z},{r:2.2,hold:5,tick:(dt,v)=>{Hh.post.position.y=Hh.jackAt.y+1.1+v*.4;Hh.header.rotation.z=(Hh.sideK||1)*.32*(1-v*.8);if(Math.random()<dt*3)sound('c6Clank',Hh.jackAt,{gain:.35});},
     fn:()=>{C.flags.doorFree=true;Hh.door.visible=false;sound('c7Door',Hh.doorAt,{gain:1});}});
    yield* until(()=>C.flags.doorFree||C.pt>520);
-   lily.show(true);lily.place(Hh.doorAt.x,Hh.doorAt.z,headingTo(Hh.doorAt.x,Hh.doorAt.z,Hh.lawn.x,Hh.lawn.z));lily.walk([[Hh.lawn.x+.3,Hh.lawn.z]],{speed:1.6});
-   yield* lines([N('The door swings. Lily comes out of the dark hall into her mother’s arms.',{time:3}),V('MRS. HENDERSON','Grandpa— Grandpa’s in the garage— he can’t get out from under it—',{time:3})]);
-   // the garage: its door sagged, a gap under it; the old man in there; Jamie goes under it and holds it up
-   mrH.show(true);const gq=Hh.garageAt;mrH.place(gq.x,gq.z-(Hh.front||1)*1.6,0);
-   yield* lines([J('I’ve got him. I can hold it. Go— get them to the car!',{time:2.4,face:'determined'}),SM('Jamie—',{time:.8}),J('GO! I’ve GOT it!',{time:1.2,face:'determined'})]);
-   C.jamieHold=true;stand(jamie,{x:gq.x,z:gq.z+(Hh.front||1)*.25},{look:()=>({x:gq.x,y:gq.y+1.2,z:gq.z})});ruin.H.garage.position.y=gq.y+.55;
-   objective('Get Lily and her mom to Reyes’s car.','Round the hole. Stay off the edge.');
+   lily.show(true);lily.place(Hh.doorAt.x,Hh.doorAt.z,headingTo(Hh.doorAt.x,Hh.doorAt.z,Hh.lawn.x,Hh.lawn.z));lily.walk([[Hh.jamb.x,Hh.jamb.z],[Hh.lawn.x+.3,Hh.lawn.z]],{speed:1.6});
+   yield* lines([N('The door swings. Lily comes out of the dark hall into her mother’s arms.',{time:3}),V('MRS. HENDERSON','Grandpa— Grandpa’s in the garage— the ceiling came down in there— he can’t get out from under it—',{time:3.4})]);
+   // the garage is through the house; the front of the house is leaning on the jack and the jack is going: Jamie goes in for him
+   sound('c8Creak',Hh.jackAt,{gain:1});Hh.header.rotation.z=(Hh.sideK||1)*.1;
+   yield* lines([N('The jack’s post is bending. The whole front of the house is leaning on it.',{time:2.8}),J('I’ll get him. I’ll hold it. Go— get them to the car!',{time:2.4,face:'determined'}),SM('Jamie—',{time:.8}),J('GO! I’ve GOT it!',{time:1.2,face:'determined'})]);
+   C.jamieHold=true;stand(jamie,null);walkTo(jamie,Hh.jamb,{speed:2.2,then:c=>{c.person.group.visible=false;c.follow=null;}});later(1.6,()=>{if(C.jamieHold)jamie.person.group.visible=false;});
+   say([N('Jamie ducks in under the beam, into the dark hall.',{time:2.6})]);}
+   else{// (the door open, the jack under the header; Lily with her mom on the lawn; Jamie gone in)
+    Object.assign(C.flags,{jack:true,haveJack:true,jackset:true,jackSet:true,pump:true,doorFree:true});Hh.door.visible=false;Hh.jack.visible=true;Hh.post.position.y=Hh.jackAt.y+1.5;Hh.header.rotation.z=(Hh.sideK||1)*.1;if(Hh.trunkLid)Hh.trunkLid.visible=true;
+    mrsH.show(true);mrsH.place(Hh.lawn.x,Hh.lawn.z,headingTo(Hh.lawn.x,Hh.lawn.z,Hh.doorAt.x,Hh.doorAt.z));lily.show(true);lily.place(Hh.lawn.x+.5,Hh.lawn.z-.3,headingTo(Hh.lawn.x,Hh.lawn.z,Hh.doorAt.x,Hh.doorAt.z));
+    const at=main(Hh.P.u+9,4);o.placePlayer({x:at.x,z:at.z,a:headingTo(at.x,at.z,main(Hh.P.u+7,-6).x,main(Hh.P.u+7,-6).z),mode:'walk',bike:null});
+    if(resume==='garage'){C.jamieHold=true;comp.putFoot?.(jamie,Hh.jamb.x,Hh.jamb.z,0);jamie.person.group.visible=false;jamie.follow=null;}}
+   if(resume!=='death'){
+   objective('Get Lily and her mom to Reyes’s car.','Round the hole: the far side of the street. Stay off the edge.');
    C.escort=[mrsH,lily];C.escortT=0;
    checkpoint('c8-garage');
-   yield* until(()=>{const car=k.carA;return Math.hypot(me().x-car.x,me().z-car.z)<5||C.pt>800;});
-   // it comes out of the hole beside the house
-   const p=ruin.pits.sams,eq=p.W(p.a*.4,p.b*.85);HM.show(true);H.reset();HM.show(true);H.place(eq.x,eq.z,0);
-   yield* lines([N('Behind you, at the edge of the hole, a long hand comes up over the broken asphalt. Then the rest of it.',{time:3.6}),SM('JAMIE!',{time:.9,face:'terrified'})]);
-   mrH.walk([[Hh.lawn.x-1,Hh.lawn.z+1.6],[main(Hh.P.u-6,-6.6).x,main(Hh.P.u-6,-6.6).z]],{speed:.9});X.alex&&walkTo(X.alex,{x:Hh.lawn.x-.6,z:Hh.lawn.z+1.2},{speed:2.6});
-   yield* wait(2.4);
-   // Jamie lets the door go when Mr. Henderson is out, and runs; it is faster than him
-   C.jamieHold=false;ruin.H.garage.position.y=gq.y+.2;sound('c7Door',gq,{gain:1.1});stand(jamie,null);
-   const jT=main(Hh.P.u-2,-5.6);walkTo(jamie,jT,{speed:3.6});
-   H.script([{to:()=>[jamie.px,jamie.pz],speed:6,state:'run',free:true,near:1.6},{act:()=>{C.jamieHit=C.t;sound('c7Strike',{x:jamie.px,y:1,z:jamie.pz},{gain:1.5});C.shake=.7;JD.on=true;JD.x=jamie.px;JD.z=jamie.pz;JD.a=jamie.pa;jamie.script=null;jamie.follow=null;mark('JAMIE');}},
+   // (it comes once you are round the corner of the hole, on the street's far side: the house in plain sight across it)
+   yield* until(()=>{const car=k.carA,L=ruin.locate(me().x,me().z);return (L.lat<-3.6&&L.d<1027)||Math.hypot(me().x-car.x,me().z-car.z)<6||C.pt>800;});
+   // Mr. Henderson out of the doorway under Jamie's arms; Jamie holding the beam up off it with his back
+   const door=Hh.doorAt,step=Hh.jamb;mrH.show(true);mrH.place(step.x,step.z,headingTo(step.x,step.z,Hh.lawn.x,Hh.lawn.z));
+   jamie.person.group.visible=true;comp.putFoot?.(jamie,step.x,step.z,headingTo(step.x,step.z,Hh.lawn.x,Hh.lawn.z));stand(jamie,step,{look:()=>({x:Hh.lawn.x,y:1,z:Hh.lawn.z}),gesture:holdUp(jamie)});
+   const via=[[Hh.lawn.x-.4,Hh.lawn.z-1.2],[main(Hh.P.u+7,-5.5).x,main(Hh.P.u+7,-5.5).z],[main(1012,-7.4).x,main(1012,-7.4).z],[k.carA.x+1.6,k.carA.z+1.2]];
+   mrH.walk(via,{speed:1});
+   S.lookTarget={x:step.x,y:1.2,z:step.z};
+   yield* lines([N('Across the hole, Mr. Henderson comes out of the doorway on his hands and knees, under Jamie’s arms. Jamie has the beam on his back.',{time:3.8})]);
+   for(const a of [mrsH,lily])a.walk([[k.carA.x+(a===lily?1.9:2.4),k.carA.z+(a===lily?.4:1)]],{speed:2.4});C.escort=null;
+   X.alex&&walkTo(X.alex,{x:k.carA.x+.8,z:k.carA.z+2.2},{speed:2.6});
+   // Jamie lets the beam go when Mr. Henderson is clear of it, and runs for it, across the lawn for the street
+   C.jamieHold=false;Hh.header.rotation.z=(Hh.sideK||1)*.62;Hh.post.position.y=Hh.jackAt.y+.6;sound('c7Door',door,{gain:1.1});sound('c8Collapse',door,{gain:.8});stand(jamie,null);
+   const jT=main(Hh.P.u+7,-5.6),j1=main(Hh.P.u+5.2,9.2),j2=main(Hh.P.u+6.6,2.4);
+   comp.run(jamie,[comp.steps.walkTo(jamie,[[j1.x,j1.z],[j2.x,j2.z],[jT.x,jT.z]],{speed:4.4})],{then:()=>{}});jamie.follow=null;
+   yield* wait(1.7);
+   // it comes up out of the hole by the Hendersons' steps, behind him; it is faster than he is
+   const up=ruin.pits.under,eq=up.W(up.a*.86,-up.b*.15);HM.show(true);H.reset();HM.show(true);H.place(eq.x,eq.z,headingTo(eq.x,eq.z,jamie.px,jamie.pz));
+   H.script([{wait:.35,state:'crouch',look:()=>({x:jamie.px,y:1,z:jamie.pz})},{to:()=>[jamie.px,jamie.pz],speed:6.6,state:'run',free:true,near:1.6},{act:()=>{C.jamieHit=C.t;sound('c7Strike',{x:jamie.px,y:1,z:jamie.pz},{gain:1.5});C.shake=.7;JD.on=true;JD.x=jamie.px;JD.z=jamie.pz;JD.a=jamie.pa;jamie.script=null;jamie.follow=null;mark('JAMIE');S.lookTarget={x:jamie.px,y:.5,z:jamie.pz};}},
     {wait:1.4,state:'crouch',look:()=>({x:JD.x,y:.4,z:JD.z})},{act:()=>{for(let i=0;i<3;i++)later(i*.35,()=>sound('c8Shot',reyes.pos||camera.position,{gain:1.2}));}},{wait:.8,state:'hit'},
     {to:()=>[eq.x,eq.z],speed:5,state:'run',free:true},{act:()=>{HM.show(false);H.reset();}}]);
+   S.lookTarget={x:eq.x,y:1,z:eq.z};
+   say([N('Behind him, by the steps, a long hand comes up over the broken edge of the lawn. Then the rest of it.',{time:3}),SM('JAMIE!',{time:.9,face:'terrified'})]);
    yield* until(()=>C.jamieHit||C.pt>900,12);
    C.flags.jamieDead=true;T?.jolt?.(1,{rise:1,hold:30,why:'Jamie'});
-   yield* lines([N('It reaches him on the lawn before the curb, and throws him, the whole of him, against the side of the Hendersons’ car.',{time:4}),{wait:.6},N('Reyes is firing. Three times. It goes back down into the hole.',{time:3})]);
-   checkpoint('c8-jamie-death');
+   yield* lines([N('It reaches him at the curb. It hits him once, the whole weight of it, and he goes down and doesn’t get up.',{time:4.2}),{wait:.6},N('Reyes is firing. Three times. It goes back down into the hole.',{time:3})]);
+   S.lookTarget=null;}
+   else{// (Jamie where it left him, on the lawn short of the curb; the Hendersons at Reyes's car; the header down over the door)
+    C.flags.jamieDead=true;C.jamieHold=false;Hh.header.rotation.z=(Hh.sideK||1)*.62;const jd=main(Hh.P.u+5.4,8.6);JD.on=true;JD.x=jd.x;JD.z=jd.z;JD.a=0;stand(jamie,null);comp.putFoot?.(jamie,jd.x,jd.z,0);jamie.script=null;jamie.follow=null;jamie.person.group.visible=true;
+    for(const [a,dx,dz] of [[mrsH,2.4,1],[lily,1.9,.4],[mrH,1.6,1.2]]){a.show(true);a.place(k.carA.x+dx,k.carA.z+dz,headingTo(k.carA.x,k.carA.z,jd.x,jd.z));}
+    const at=main(1022,-7);o.placePlayer({x:at.x,z:at.z,a:headingTo(at.x,at.z,jd.x,jd.z),mode:'walk',bike:null});}
+   if(resume!=='death')checkpoint('c8-jamie-death');
    objective('Jamie.','');offer('jamie-kneel','Jamie',()=>({x:JD.x,y:gy(JD.x,JD.z)+.3,z:JD.z}),{r:2.4});
    yield* until(()=>C.flags['jamie-kneel']||C.pt>1100);
    yield* looking({x:JD.x,y:gy(JD.x,JD.z)+.25,z:JD.z},[{wait:1.6},N('He’s on his back in the grass, one arm under him. His eyes are open. He isn’t breathing.',{time:4}),{wait:1.4},
@@ -213,6 +250,8 @@ export function fallActs(X){
     objective('Close main gate 1A.','The handwheel on the operating bridge. Hold F. Back off when the water heaves.');
     if(C.pt<1){const p0=me();if(!nav.walkable(p0.x,p0.z)){const q=WP(7.8,-2);o.placePlayer({x:q.x,z:q.z,a:-Math.PI/2,mode:'walk',bike:null});}}
     brandt?.show(true);const bq=WP(3.2,.9);brandt?.place(bq.x,bq.z,Math.PI);
+    // (the bridge is one person wide: Sam and Alex watch from the bank, Sam calling the machinery, Alex the water)
+    {const sq=WP(16.2,-6.2),aq=WP(16.4,-2.6);joinFoot(sam,sq,-Math.PI/2);stand(sam,sq,{look:()=>WP(-3.2,.9,-1.6),max:1});const A3=X.alex;if(A3){joinFoot(A3,aq,-Math.PI/2);stand(A3,aq,{look:()=>WP(-2,6,-3),max:1});}}
     const wheel=works.wheels?.[0],wq=WP(-3.2,.9,-3+1.1);let surges=0;
     offer('gate1a','Turn the handwheel',wq,{r:1.8,hold:8,tick:(dt,v)=>{if(wheel)wheel.rotation.z+=dt*4;const g=works.mainGates?.[0];if(g)g.leaf.position.y=lerp(g.y,g.y-2.2,v);if(Math.random()<dt*2)sound('c6Grind',wq,{gain:.4});},fn:()=>{C.flags.gateA=true;}});
     const surgeAt=()=>({x:WP(-2,9).x,y:-5,z:WP(-2,9).z});
@@ -254,6 +293,7 @@ export function fallActs(X){
    // C. the plug: the catwalk over the main chamber; three pins; it, below and through the wall, at the catwalk
    if(from==='plug'){enterComplex('iwNorth',Math.PI);lightsBelow('I');presence.show(true);presence.showMass(true,{at:W(1,90,-2),r:11});const A2=X.enlistAlex();joinFoot(sam,CM.at('iwNorth'),Math.PI);joinFoot(A2,{x:CM.at('iwNorth').x,z:CM.at('iwNorth').z-1},Math.PI);
     reyes.show(true);reyes.place(CM.at('iwNorth').x,CM.at('iwNorth').z-2,Math.PI);brandt?.show(true);brandt?.place(CM.at('iwNorth').x,CM.at('iwNorth').z-3,Math.PI);checkpoint('c8-plug');}
+   if(from!=='hatch'){
    C.mood='danger';C.mindKey=null;
    presence.set(0,{root:[W(1,86,-4).x,-4,W(1,86,-4).z],dir:[0,.2,-1],len:20,r0:3.4,r1:.6,state:'probe',probe:[W(-2,72,2).x,2,W(-2,72,2).z]});presence.set(2,{root:[W(1,74,-14).x,-14,W(1,74,-14).z],dir:[0,1,0],len:16,r0:3,r1:.7,state:'probe',probe:[W(0,74,-2).x,-2,W(0,74,-2).z]});
    objective('The plug platform.','Along the catwalk to the south end.');
@@ -269,7 +309,11 @@ export function fallActs(X){
    later(1.1,()=>{sound('c8Impact',CM.at('throat',-12),{gain:1.8});C.shake=1.4;presence.impact(CM.at('throat',-11),{n:40,power:2});for(let i=0;i<6;i++)presence.retract(i);presence.lean(-.4);});
    yield* lines([N('The hangers sing. The plug goes, the whole drum of it, straight down into the throat, and the chamber jumps like a struck bell.',{time:4.4}),{wait:1},N('The water from Line Two pours in over it. What was in the room goes back under, all of it, the way it came.',{time:4}),
     {wait:1.6},N('And then, under the noise of the water, something you had stopped hearing so long ago you’d forgotten it was there: nothing. It’s gone quiet.',{time:4.6})]);
-   presence.showMass(false);C.flags.sealed=true;checkpoint('c8-hatch');
+   presence.showMass(false);C.flags.sealed=true;checkpoint('c8-hatch');}
+   else{// (Continue from the hatch: the plug down, the pins out, the chamber full and quiet; the roof coming in)
+    enterComplex('ipPins',Math.PI);lightsBelow('I');presence.show(true);presence.showMass(false);CM.ST.plugWant=1;CM.ST.plugDrop=1;CM.ST.pins=[2,2,2];for(let i=0;i<3;i++)C.flags['pin'+i]=true;C.flags.sealed=true;
+    const A2=X.enlistAlex();joinFoot(sam,{x:CM.at('ipPins').x-1.6,z:CM.at('ipPins').z-.9},Math.PI);joinFoot(A2,{x:CM.at('ipLadder').x,z:CM.at('ipLadder').z-.6},Math.PI);
+    reyes.show(true);reyes.place(CM.at('ipPins').x-2.4,CM.at('ipPins').z-1.6,Math.PI);brandt?.show(true);brandt?.place(CM.at('ipPins').x-3,CM.at('ipPins').z-2.4,Math.PI);C.mood='danger';C.mindKey=null;}
    // the way out: the service ladder up through the roof of the chamber, to the field; the hatch at the top; Alex holds it
    yield* lines([BR('It’s coming down. All of it. The ladder— GO!',{time:1.8})]);objective('The ladder.','South end of the platform. Up.');
    hazard({at:{x:CM.at('iwMid').x,y:4,z:CM.at('iwMid').z},r:2,warn:2.6,section:'c8-hatch',n:18,fatal:true});
@@ -291,7 +335,7 @@ export function fallActs(X){
   task('oak',(function*(){
    yield* lines([{wait:2.4},N('The old oak. He’s sitting against it. You don’t remember getting him here.',{time:3.4}),{wait:2}]);
    objective('Alex.','');offer('alex-sit','Sit with him',()=>({x:OAK.x,y:OAK.y+.7,z:OAK.z}),{r:2.4});
-   yield* until(()=>C.flags['alex-sit']||C.pt>120);
+   yield* until(()=>C.flags['alex-sit']||C.pt>120);unoffer('alex-sit');
    const s=me();closeLook({x:OAK.x,y:OAK.y+.62,z:OAK.z},{back:.95,eye:.85,kind:'alex'});C.lockLook=true;
    yield* lines([{wait:2.4},AL('Did we stop it?',{time:1.8,face:'tired'}),{wait:1.4},Y('Yeah.',{time:1}),{wait:1},AL('Good.',{time:1.2,face:'tired'}),{wait:3.2},
     AL('Where’s Jamie?',{time:1.4,face:'tired'}),{wait:4.6},N('Nobody says anything.',{time:2.4}),{wait:3},N('He understands.',{time:2.2}),{wait:2.6},
@@ -311,13 +355,13 @@ export function fallActs(X){
   task('ride',(function*(){
    yield* lines([{wait:2.4},N('Saturday. The sun not up yet but nearly.',{time:3}),{wait:1}]);
    objective('Ride.','Down Oak Hollow Drive. The school.');
-   yield* until(()=>{const L=nav.locate(me().x,me().z);return L.d<1000||C.pt>240;});
+   yield* until(()=>{const L=ruin.locate(me().x,me().z);return L.d<1000||C.pt>240;});
    yield* lines([N('Past Sam’s. His garage door is open. His mom’s car is gone.',{time:3}),{wait:6}]);
-   yield* until(()=>{const L=nav.locate(me().x,me().z);return L.d<900||C.pt>360;});
+   yield* until(()=>{const L=ruin.locate(me().x,me().z);return L.d<900||C.pt>360;});
    yield* lines([N('The Kowalskis’ house is a black frame with smoke going up out of it, straight, because there isn’t any wind.',{time:4}),{wait:5}]);
-   yield* until(()=>{const L=nav.locate(me().x,me().z);return L.d<800||C.pt>480;});
+   yield* until(()=>{const L=ruin.locate(me().x,me().z);return L.d<800||C.pt>480;});
    yield* lines([N('Jamie’s house. The red chair on the porch.',{time:2.6}),{wait:8}]);
-   yield* until(()=>{const L=nav.locate(me().x,me().z);return L.d<680||C.pt>600;});
+   yield* until(()=>{const L=ruin.locate(me().x,me().z);return L.d<680||C.pt>600;});
    yield* lines([{wait:1},SM('I keep thinking they’re right behind us.',{time:2.4,face:'sad'})]);
    C.lookBack=0;C.wantLook=true;objective('','');
    yield* until(()=>C.lookedBack||C.pt>660);C.wantLook=false;
@@ -328,7 +372,7 @@ export function fallActs(X){
   for(const a of PEOPLE)if(a.visible)a.update(dt,{eye:camera.position});
   // the people you are getting out: they follow you, a little behind, round the hole
   if(C.escort){C.escortT+=dt;const p=me();C.escort.forEach((a,i)=>{if(!a.visible)return;const d=Math.hypot(a.x-p.x,a.z-p.z);if(d>2.2+i*.8&&!a.walking&&C.escortT>.4){const back=1.4+i*.9,q={x:p.x-Math.sin(p.a)*back+(i?.6:-.6),z:p.z+Math.cos(p.a)*back};if(nav.walkable(q.x,q.z,{r:.3}))a.walk([[q.x,q.z]],{speed:d>6?2.4:1.5});}});}
-  if(ph==='n8-ride'&&C.wantLook){const f=new THREE.Vector3();camera.getWorldDirection(f);const p=me(),back=-(f.x*Math.sin(p.a)-f.z*Math.cos(p.a));if(back>.55){C.lookBack+=dt;if(C.lookBack>1.2)C.lookedBack=true;}}
+  if(ph==='n8-ride'&&C.wantLook){const f=new THREE.Vector3();camera.getWorldDirection(f);const p=me(),back=-(f.x*Math.sin(p.a)-f.z*Math.cos(p.a));/* (over your shoulder: riding, the head turns to about 106 degrees, so past 97 counts; on foot, anything behind) */if(back>.12){C.lookBack+=dt;if(C.lookBack>.9)C.lookedBack=true;}else C.lookBack=Math.max(0,C.lookBack-dt*.5);}
   if(ph==='n8-ride'&&C.endT>=0){C.endT+=dt;o.fade(smooth(C.endT/4));if(C.endT>4.6){go('n8-end');X.end();}}
   if(C.alexSit&&X.alex){const c=X.alex;c.follow=null;}}
  function afterActors(dt){
@@ -346,8 +390,8 @@ export function fallActs(X){
  function blockers(out){for(const a of PEOPLE)if(a.visible)out.push({x:a.x,z:a.z,r:.3,speed:0});if(JD.on)out.push({x:JD.x,z:JD.z,r:.5,speed:0});}
  function reset(){for(const a of PEOPLE){a.show(false);a.path=null;}JD.on=false;C.alexSit=false;C.escort=null;C.jamieHold=false;if(C.boardMesh)C.boardMesh.removeFromParent();if(works?.attach&&C.where==='works')works.attach(false);}
  const SCENE={'c8-truth':()=>sceneTruth('t'),'c8-breach':()=>sceneBreach('breach'),'c8-escape':()=>sceneBreach('escape'),'c8-ladder':()=>sceneBreach('escape'),
-  'c8-surface':()=>sceneSurface('surface'),'c8-street':()=>sceneStreet('s'),'c8-hendersons':()=>sceneStreet('s'),'c8-garage':()=>sceneStreet('s'),'c8-jamie-death':()=>sceneStreet('s'),
-  'c8-staging':()=>sceneStaging('staging'),'c8-gates':()=>sceneOp('gates'),'c8-ports':()=>sceneOp('ports'),'c8-line-two':()=>sceneOp('line-two'),'c8-plug':()=>sceneOp('plug'),'c8-hatch':()=>sceneOp('plug'),
+  'c8-surface':()=>sceneSurface('surface'),'c8-street':()=>sceneStreet('s'),'c8-hendersons':()=>sceneStreet('s'),'c8-garage':()=>sceneStreet('garage'),'c8-jamie-death':()=>sceneStreet('death'),
+  'c8-staging':()=>sceneStaging('staging'),'c8-gates':()=>sceneOp('gates'),'c8-ports':()=>sceneOp('ports'),'c8-line-two':()=>sceneOp('line-two'),'c8-plug':()=>sceneOp('plug'),'c8-hatch':()=>sceneOp('hatch'),
   'c8-oak':()=>sceneOak('oak'),'c8-alex-death':()=>sceneOak('oak'),'c8-ride':()=>sceneRide('jump'),'c8-look-back':()=>sceneRide('jump'),'chapter8-end':()=>{sceneRide('jump');C.endT=0;}};
  return {sceneTruth,update,afterActors,officerAim,key,hint,sources,blockers,reset,SCENE,canDismount:()=>S.phase==='n8-ride',canRemount:()=>S.phase==='n8-ride',PEOPLE,JD,OAK};
 }

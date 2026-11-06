@@ -16,7 +16,13 @@ export function chapterEightTools(T0){
  const offerAt=id=>{const f=A8.C.offers.get(id);if(!f)return null;const a=typeof f.at==='function'?f.at():f.at;return a?{x:a.x,y:a.y??0,z:a.z}:null;};
  const faceV=v=>{const c=h.camera.position;faceTo(v.x,v.z,Math.atan2((v.y??c.y)-c.y,Math.hypot(v.x-c.x,v.z-c.z)));};
  // to within r of a point, by the nav's own walkable (a fine grid, with a wide pad under the court)
- const approach=(q,r=.9,o={})=>{if(!q)return false;if(Math.hypot(me().x-q.x,me().z-q.z)<=r)return true;const path=route(q,r,.1,o.pad??8);if(!path.length)return Math.hypot(me().x-q.x,me().z-q.z)<=r+.4;return walkTo(path,{r:.08,max:o.max??60,sprint:!!o.sprint,stop:o.stop});};
+ // (walking a path: stuck a moment against someone standing in the next step, or a corner, it steps aside and goes on, as you would)
+ function walk8(pts,{r=.08,max=60,sprint=false,stop=null}={}){let i=0,last=me(),lt=h.snapshot.clock,side=0;
+  const ok=until(()=>{if(stop?.())return true;const p=me();while(i<pts.length&&Math.hypot(pts[i][0]-p.x,pts[i][1]-p.z)<Math.max(r,.12))i++;if(i>=pts.length)return true;const t=h.snapshot.clock;
+   if(Math.hypot(p.x-last.x,p.z-last.z)>.25){last=p;lt=t;}
+   else if(t-lt>1.2){side++;const a=Math.atan2(pts[i][0]-p.x,-(pts[i][1]-p.z))+(side%2?1.5:-1.5);faceTo(p.x+Math.sin(a)*2,p.z-Math.cos(a)*2);press('KeyW');T.advance(.4);last=me();lt=h.snapshot.clock;}
+   faceTo(pts[i][0],pts[i][1]);press('KeyW');if(sprint)press('ShiftLeft');return false;},max);release('KeyW');release('ShiftLeft');T.advance(.3);return ok;}
+ const approach=(q,r=.9,o={})=>{if(!q)return false;if(Math.hypot(me().x-q.x,me().z-q.z)<=r)return true;const path=route(q,r,.1,o.pad??8);if(!path.length)return Math.hypot(me().x-q.x,me().z-q.z)<=r+.4;return walk8(path,{r:.08,max:o.max??60,sprint:!!o.sprint,stop:o.stop});};
  const via=(pts,o={})=>{for(const p of pts){if(!approach(p,o.r??.8,o))return false;}return true;};
  const P=n=>CM.at(n);
  // wait for an offer, go to it, look at it, take it (tap F, or hold F until it is done)
@@ -24,7 +30,7 @@ export function chapterEightTools(T0){
  function take(id,{max=90,r=1.2,hold=false,stop=null,pad=8,tries=4}={}){dbg(id,'wait offer; have',offers().join(','),'t',h.snapshot.clock.toFixed(1));if(!until(()=>offers().includes(id)||!!stop?.(),max)){dbg(id,'NO OFFER');return false;}if(stop?.())return false;dbg(id,'offered at',JSON.stringify(offerAt(id)),'me',me().x.toFixed(1),me().z.toFixed(1));
   for(let k=0;k<tries;k++){const at=offerAt(id);if(!at)return !offers().includes(id);approach(at,r,{pad});faceV(at);let got=false;
    until(()=>{const s=spot();const a2=offerAt(id);if(a2)faceV(a2);if(s?.id===id){got=true;return true;}return !offers().includes(id);},4);
-   if(!got){dbg(id,'not targeted; spot',spot()?.id,'dist',Math.hypot(me().x-at.x,me().z-at.z).toFixed(2));if(!offers().includes(id))return true;continue;}
+   if(!got){dbg(id,'not targeted; spot',spot()?.id,'dist',Math.hypot(me().x-at.x,me().z-at.z).toFixed(2),'spots8',A8.spots().map(s=>s.id).join(','),'view',A8.C.view,'pose',!!A8.C.pose,'fade',A8.C.fadeOut,'kit',(h.chapter.spots?.()||[]).map(s=>s.id).join(','));if(!offers().includes(id))return true;continue;}
    if(!hold){tap('KeyF');wait(.2);return true;}
    press('KeyF');const ok=until(()=>{const a2=offerAt(id);if(a2)faceV(a2);return !offers().includes(id)||!!stop?.();},hold);release('KeyF');wait(.2);if(!offers().includes(id))return true;}
   return !offers().includes(id);}
@@ -159,18 +165,22 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   check(`${label}: the street from the oak: the road gone, the fire, the pole; Summerfield goes down with a car`,()=>{assert.equal(A8.state.ruin.stage,1);assert.notEqual(A8.state.ruin.heave,'flat');assert.ok(said('That’s our street.'));});lap('surface');}
  if(inSeg('street')){until(()=>ph()==='g8-street',10);const Hh=A8.ruin.H;
   approach(Hh.doorAt,3.5,{pad:14});take('jack',{max:60,r:1.6,pad:14});take('jackset',{max:30,r:1.5,pad:12});take('pump',{hold:14,r:1.5,max:30});
-  until(()=>A8.C.escort,60);approach({x:h.chapter.kit.carA.x,z:h.chapter.kit.carA.z},4,{pad:16});until(()=>A8.C.flags.jamieDead,60);
-  take('jamie-kneel',{max:40,r:2,pad:14});until(()=>offers().includes('car2'),120);
-  check(`${label}: the Hendersons': the jack, the door, Lily; Jamie under the garage door; it comes out of the hole; Jamie is dead`,()=>{assert.ok(A8.C.flags.doorFree);assert.ok(A8.C.flags.jamieDead);assert.ok(said('I’m so sorry.'));});
+  // (round the hole: down the east side of it, along the far side of the street, toward Reyes's car)
+  const u=Hh.P.u,car=()=>({x:h.chapter.kit.carA.x,z:h.chapter.kit.carA.z});
+  until(()=>A8.C.escort,60);via([M8d(u+7,-5.8),M8d(1018,-7.4)],{r:1.2,pad:10});until(()=>A8.C.flags.jamieDead,60);
+  via([M8d(u+6,-6.6)],{r:1.2,pad:10});take('jamie-kneel',{max:40,r:2,pad:12});until(()=>offers().includes('car2'),120);
+  via([M8d(u+7,-5.8),M8d(1012,-7.4)],{r:1.2,pad:10});approach(car(),4,{pad:10});
+  check(`${label}: the Hendersons': the jack, the door, Lily; Jamie holds the doorway for Mr. Henderson; it comes out of the hole; Jamie is dead`,()=>{assert.ok(A8.C.flags.doorFree);assert.ok(A8.C.flags.jamieDead);assert.ok(said('I’m so sorry.'));});
   take('car2',{max:30,r:3});until(()=>ph()==='g8-staging',20);lap('street');}
  if(inSeg('staging')){until(()=>ph()==='g8-staging',10);take('procedure',{max:40,r:2.2,pad:14});putDown(60);until(()=>ph()==='n8-op',80);
   check(`${label}: the drawdown nobody would use while anyone was in there; "There aren't now."`,()=>{assert.ok(A8.C.flags.procRead);assert.ok(said('There aren’t now.'));});lap('staging');}
  if(inSeg('op')){until(()=>ph()==='n8-op',10);
   // A: the main gate (back off when it rears), the gallery's drain gate
-  retry(()=>{until(()=>offers().includes('gate1a'),40);const at=offerAt('gate1a');approach(at,1.1,{pad:14});faceV(at);
+  retry(()=>{until(()=>offers().includes('gate1a'),40);const at=offerAt('gate1a');if(!at)return false;approach(at,1.1,{pad:14});faceV(at);
    until(()=>{const hz=A8.C.haz.find(z=>!z.fell);if(hz&&Math.hypot(hz.at.x-me().x,hz.at.z-me().z)<hz.r+1.4){release('KeyF');const away={x:me().x+(me().x-hz.at.x)*2,z:me().z+(me().z-hz.at.z)*2};approach(away,.6,{pad:6,max:4});return false;}
     if(Math.hypot(at.x-me().x,at.z-me().z)>1.4){approach(at,1.1,{pad:6,max:6});faceV(at);}if(spot()?.id==='gate1a')press('KeyF');return !offers().includes('gate1a')||!!A8.C.failing;},120);release('KeyF');return !A8.C.failing;});
-  take('dd',{hold:8,r:1.2,max:60,pad:20});until(()=>offers().includes('port'),60);take('port',{hold:10,r:1.2,max:30});until(()=>offers().includes('jladder'),30);take('jladder',{hold:6,r:1.4,max:20});
+  // (B is the gallery under the bank: down its steps at the east end of the bridge, along to the north end, the old speaker)
+  until(()=>offers().includes('dd'),30);via([X.WP(7.8,-1.6),X.WP(8,-4),X.WP(8,-8.5)],{r:1,pad:8});take('dd',{hold:8,r:1.2,max:60,pad:10});until(()=>offers().includes('port'),60);take('port',{hold:10,r:1.2,max:30});until(()=>offers().includes('jladder'),30);take('jladder',{hold:6,r:1.4,max:20});
   until(()=>A8.C.lastCheckpoint==='c8-plug',40);
   // C: along the catwalk; the pins, against the wall when it comes
   approach(P('ipPins'),2.5,{pad:12});

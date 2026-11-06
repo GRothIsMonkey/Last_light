@@ -63,7 +63,9 @@ export const SAVE8='lastlight.chapter8';// what the aftermath will find: who cam
 
 export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapter5:ch5,chapter6:ch6,chapter7:ch7}){
  const {scene,world,nav,camera,ambient,$}=o,{S,comp,jamie,sam}=k,A=k.api,T=o.tension,police=k.police;
- const me=k.me,talk=k.talk,busy=k.busy,objective=k.objective,go=k.go,main=k.main;
+ const me=k.me,talk=k.talk,busy=k.busy,objective=k.objective,main=k.main;
+ // (a scene's own clock starts at its phase: every scene's fallback timings are counted from when it began)
+ const go=ph=>{k.go(ph);C.pt=0;};
  const reyes=k.officer2,officer=k.officer,phys=ch5.phys;
  for(const p of PHASES)k.DEEP[p]=0;
  if(k.CHECKPOINT)Object.assign(k.CHECKPOINT,LABEL8);
