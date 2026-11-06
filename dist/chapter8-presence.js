@@ -69,6 +69,10 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
   for(let k=0;k<n;k++){const D=deb[di];di=(di+1)%DN;D.on=true;D.p.set(at.x+(Math.random()-.5)*.8,at.y+.3+Math.random()*.4,at.z+(Math.random()-.5)*.8);const a=Math.random()*6.283,sp=(2+Math.random()*5)*power;
    D.v.set(Math.cos(a)*sp,(3+Math.random()*5)*power,Math.sin(a)*sp);D.r=(.06+Math.random()*.22)*(kind==='asphalt'?1.2:1);D.w.set(Math.random()*9,Math.random()*9,Math.random()*9);D.rest=0;P.log.debris++;}
   for(let k=0;k<4;k++){const U2=dust[ui];ui=(ui+1)%dust.length;U2.s.visible=true;U2.t=0;U2.life=4+Math.random()*3;U2.s.position.set(at.x+(Math.random()-.5)*2,at.y+.6,at.z+(Math.random()-.5)*2);U2.v.set((Math.random()-.5)*.6,.35+Math.random()*.3,(Math.random()-.5)*.6);}}
+ // the warning before something comes down: grit and a thread of dust from overhead, at the place it will land
+ function trickle(at,{h=3,n=2}={}){for(let k=0;k<n;k++){const D=deb[di];di=(di+1)%DN;D.on=true;D.p.set(at.x+(Math.random()-.5)*1.6,at.y+h-.1,at.z+(Math.random()-.5)*1.6);
+   D.v.set((Math.random()-.5)*.3,-.5-Math.random(),(Math.random()-.5)*.3);D.r=.025+Math.random()*.05;D.w.set(Math.random()*4,Math.random()*4,Math.random()*4);D.rest=0;}
+  if(Math.random()<.35){const U2=dust[ui];ui=(ui+1)%dust.length;U2.s.visible=true;U2.t=0;U2.life=1.6+Math.random();U2.s.position.set(at.x+(Math.random()-.5),at.y+h-.6,at.z+(Math.random()-.5));U2.v.set(0,-.45,0);}}
  // ---- every frame ------------------------------------------------------------------------------------------------------
  function update(dt){U.t.value+=dt;
   for(const L of limbs){if(L.state==='hidden')continue;L.t+=dt;const w=L.speed;
@@ -94,7 +98,7 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
  function show(on){if(on&&!group.parent)scene.add(group);else if(!on&&group.parent)group.removeFromParent();}
  function reset(){for(const L of limbs){L.state='hidden';L.ext=0;place(L);}mass.visible=false;M.lean=M.leanTo=0;for(const D of deb){D.on=false;}for(const U2 of dust)U2.s.visible=false;P.impacts=0;for(const k of Object.keys(P.log))P.log[k]=0;}
  reset();
- Object.assign(P,{set,strike,probe,drag,retract,hide,tipOf,impact,update,show,reset,setFloor:f=>{floorAt=f;},
+ Object.assign(P,{set,strike,probe,drag,retract,hide,tipOf,impact,trickle,update,show,reset,setFloor:f=>{floorAt=f;},
   showMass(on,{at=null,r=9,squash=null}={}){mass.visible=!!on;if(at)M.at.set(at.x,at.y,at.z);M.r=r;if(squash)M.squash.set(...squash);},lean(v){M.leanTo=v;},
   get active(){return limbs.some(L=>L.state!=='hidden')||mass.visible;}});
  return P;

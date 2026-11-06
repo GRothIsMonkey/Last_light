@@ -49,7 +49,7 @@ export function fallActs(X){
    sceneBreach('breach');})());}
  // ---- Act IV, scene 11: it comes through the barrier; the way out comes apart ----------------------------------------------------------------------------------
  function sceneBreach(from='breach'){go('f8-breach');const A2=X.enlistAlex();
-  if(from!=='breach'||!A2.active){enterComplex(from==='escape'?'kMid':'hMid',from==='escape'?Math.PI:Math.PI);joinFoot(sam,CM.at('hWest'),Math.PI);joinFoot(jamie,CM.at('kSouth'),Math.PI);joinFoot(A2,CM.at('hMid'),Math.PI);reyes.show(true);reyes.place(CM.at('hEast').x-2,CM.at('hEast').z,Math.PI);reyes.gest('flashlight');Object.assign(C.flags,{samOut:true,anchor1:true,anchor2:true,anchor3:true,board:true});C.inv.radio='have';}
+  if(from!=='breach'||!A2.active){enterComplex('hMid',Math.PI);joinFoot(sam,CM.at('hWest'),Math.PI);joinFoot(jamie,CM.at('kSouth'),Math.PI);joinFoot(A2,CM.at('hMid'),Math.PI);reyes.show(true);reyes.place(CM.at('hEast').x-2,CM.at('hEast').z,Math.PI);reyes.gest('flashlight');Object.assign(C.flags,{samOut:true,anchor1:true,anchor2:true,anchor3:true,board:true});C.inv.radio='have';}
   boardMesh();lightsBelow('K');C.h=Math.max(C.h,HOUR.breach);C.hMin=HOUR.breach;date(C.h);presence.show(true);
   task('breach',(function*(){
    if(from==='breach'){
@@ -68,21 +68,24 @@ export function fallActs(X){
     yield* lines([N('The long thing from the houses goes past the end of the hall flat out, on its knuckles. It doesn’t even look at you.',{time:3.6}),J('It’s RUNNING. From THAT.',{time:1.4,face:'terrified'})]);}
    checkpoint('c8-escape');C.mood='escape';C.mindKey=null;presence.show(true);presence.showMass(true,{at:W(1,90,-2),r:11});
    objective('Get out.','North. The way you came. The crew room if the hall is down.');
-   // the south hall comes down between you and the crew room's door: the way is round through the crew room
-   hazard({at:W(3.5,41,-3),r:1.6,warn:2.2,section:'c8-escape',n:24,power:1.2,onFall:()=>{CM.extraSolids.push({x:3.5,z:41,hw:1.6,hd:1.4,id:'K-fall'});mark('the south hall is down');say([AL('This way! Through the crew room! The back!',{time:1.8,face:'determined'})]);}});
+   // the 1974 hall comes down ahead of you as you run into it, past the crew room's door and short of the junction:
+   // the way north is gone; Alex knows the way round (in at the crew room's double door, out at its back door)
+   task('k-fall',(function*(){yield* until(()=>CM.L(me().x,me().z).z<45||C.pt>40);
+    hazard({at:W(3.5,35,-3),r:1.2,warn:1.1,section:'c8-escape',n:26,power:1.3,fatal:false,onFall:()=>{CM.extraSolids.push({x:3.5,z:35,hw:1.7,hd:1.5,id:'K-fall'});mark('the south hall is down');say([AL('This way! Through the crew room! The back!',{time:1.8,face:'determined'})]);}});})());
    const A3=X.alex;for(const c of [sam,jamie,A3].filter(Boolean)){c.footBoost=1.5;}
    yield* until(()=>{const id=CM.cellIdAt(me().x,me().z);return id==='J'||C.pt>900;});
    // the junction hall: the west wing's water coming in; a beam down; the bulkhead's frame twisting
-   CM.ST.waterWant=.5;sound('c6Splash',CM.at('jWest',0),{gain:1.2});hazard({at:W(4,26.5,-3),r:1.5,warn:2,section:'c8-escape',n:20});
-   later(1.2,()=>{CM.setDoor('bulkhead',.42);sound('c8Metal',CM.at('bulkhead',1.4),{gain:1.3});C.shake=.6;});
+   // (a beam over the place you came in by: grit on your shoulders first; you keep moving or it has you)
+   {const q=me();CM.ST.waterWant=.5;sound('c6Splash',CM.at('jWest',0),{gain:1.2});hazard({at:{x:q.x,y:-3,z:q.z},h:4.1,r:1.4,warn:1.8,section:'c8-escape',n:20,onFall:()=>mark('the beam comes down behind you')});}
+   later(1.2,()=>{CM.setDoor('bulkhead',.42);CM.ST.duck.bulkhead=.36;C.duck=[1.9,2.5,3.1,3.7,4.3,4.9,5.3].map(x=>W(x,22));sound('c8Metal',CM.at('bulkhead',1.4),{gain:1.3});C.shake=.6;});
    yield* lines([SM('The door’s coming down— it’s jammed, it’s twisting—',{time:2.2,face:'afraid'}),J('UNDER IT! Get under!',{time:1.4})]);
    objective('Under the bulkhead.','Crouch (C).');
-   yield* until(()=>{const id=CM.cellIdAt(me().x,me().z);return id==='B'||C.pt>1100;});
+   yield* until(()=>{const id=CM.cellIdAt(me().x,me().z);return (id==='B'&&CM.L(me().x,me().z).z<21.2)||C.pt>1100;});C.duck=null;
    // the gallery: up through the floor, in the middle of it; then the crane comes off its rail
    presence.set(3,{root:[W(3,14,-8).x,-8,W(3,14,-8).z],dir:[0,1,0],len:13,r0:2.6,r1:.5,state:'emerge',speed:2.2});sound('c8Collapse',W(3,14,-3),{gain:1.6});C.shake=1;presence.impact(W(3,14,-3),{n:30,power:1.6});
    CM.extraSolids.push({x:3,z:14,hw:2.6,hd:2.6,id:'limb'});
    later(1,()=>{presence.strike(3,W(-6,14,-2.5),{hold:2.6,onLand:()=>{C.shake=.8;}});});
-   hazard({at:W(-2,14,-3),r:2.2,warn:3.2,section:'c8-escape',n:26,power:1.4,onFall:()=>{CM.ST.crane=1;}});
+   hazard({at:W(-2,14,-3),h:7,r:2.2,warn:3.2,section:'c8-escape',n:26,power:1.4,onFall:()=>{CM.ST.crane=1;}});
    yield* lines([R('ROUND IT! The side! Stay by the wall!',{time:1.8})]);
    yield* until(()=>{const id=CM.cellIdAt(me().x,me().z);return id==='S1'||id==='A'||C.pt>1300;});
    checkpoint('c8-ladder');

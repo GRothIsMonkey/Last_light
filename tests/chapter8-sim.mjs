@@ -131,11 +131,15 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   retry(()=>{o.light(false);return patientHold('jlever',{hideId:['hide-E3','hide-E1']});});
   approach(P('jMid'),1.5,{pad:12,sprint:true});until(()=>said('You look worse.'),60);until(()=>ph()==='e8-alex',40);
   check(`${label}: Jamie: it brings him back to his cell; Sam holds the grille; Jamie's door; it hits the grille; "You look awful." "You look worse."`,()=>{assert.ok(said('You actually came back.'));assert.ok(A8.C.flags.anchor2);});lap('retrieval');}
- if(inSeg('alex')){until(()=>ph()==='e8-alex',10);via([P('kMid'),P('hMid'),P('f0In'),P('f0Mid'),P('f0End'),P('f1In'),P('f1Mid')],{r:1,pad:10});
+ const marked=w=>A8.C.marks.some(m=>m[1]===w);
+ if(inSeg('alex')){until(()=>ph()==='e8-alex',10);via([P('kMid'),P('hMid'),P('f0In'),P('f0Mid')],{r:1,pad:10});
+  // halfway down, look back the way you came: the door to the gallery is a wall
+  until(()=>marked('behind you, a wall'),20);const back=P('f0Door');for(let k=0;k<60&&!said('Where’s the door?');k++){faceV({x:back.x+1,y:-1.5,z:back.z});T.advance(1/15);}
+  via([P('f0End'),P('f1In'),P('f1Mid')],{r:1,pad:10});until(()=>marked('his door'),60);approach(P('alexDoor'),2.2,{pad:8});
   until(()=>A8.C.flickWant,120);o.light(true);for(let k=0;k<4;k++){tap('KeyT');wait(.4);}until(()=>offers().includes('alever'),40);take('alever',{hold:14,r:1.2,max:40});
   until(()=>A8.C.flags.anchor3,20);via([P('f1In'),P('f0End'),P('f0Mid'),P('f0In'),P('hMid'),P('kSouth'),P('gDoor'),P('gIn')],{r:1,pad:10,sprint:true});until(()=>ph()==='e8-reunion',30);
   check(`${label}: Alex: "It keeps bringing you here."; at the same time (your light, twice); two handles; the last one out`,()=>{assert.ok(said('It keeps bringing you here.'));assert.ok(said('We’re taking you home.'));assert.ok(A8.C.flags.anchor3);});lap('alex');}
- if(inSeg('reunion')){until(()=>ph()==='e8-reunion',10);until(()=>offers().includes('t-alex'),40);for(const id of ['t-jamie','t-sam','t-alex','show-notebook','show-camera','give-gum']){take(id,{max:10,r:1.8});until(quiet,30);}
+ if(inSeg('reunion')){until(()=>ph()==='e8-reunion',10);until(()=>offers().includes('t-alex'),40);for(const id of ['t-jamie','t-sam','t-sam','t-alex','t-alex','t-alex']){until(quiet,30);take(id,{max:12,r:1.8});until(quiet,30);}
   until(()=>ph()==='f8-truth',220);
   check(`${label}: all four of them: "I thought I wasn't going to see you guys again." … "Can we just go home?"; the alarm; Reyes on the radio`,()=>{assert.ok(said('I thought I wasn’t going to see you guys again.'));assert.ok(said('Can we just go home?'));assert.equal(A8.state.inv.radio,'have');});lap('reunion');}
  // ---- Act IV -------------------------------------------------------------------------------------------------------------------
@@ -143,10 +147,12 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   check(`${label}: the anchor board: the tags (A.R., R.A.C., E.L./T.L., D.W.), three blank rows, three needles down; "We let it out?" "You got your friends back."`,()=>{assert.ok(A8.C.flags.board);assert.ok(said('We let it out?'));assert.ok(said('You got your friends back.'));});lap('truth');}
  if(inSeg('breach')){until(()=>ph()==='f8-breach',10);
   retry(()=>{until(()=>A8.C.lastCheckpoint==='c8-escape',60);via([P('kSouth'),{x:P('kMid').x,z:P('kMid').z+3.2}],{r:1,pad:10,sprint:true});
-   via([P('gDoor'),P('gIn'),P('gBack'),P('gdMid'),P('jMid')],{r:.9,pad:10,sprint:true});press('KeyC');approach(P('bulkhead'),.8,{pad:10});approach(P('galleryMid'),1,{pad:10});release('KeyC');
-   via([{x:P('galleryW').x,z:P('galleryW').z+5},P('stairFoot'),P('stairTop'),P('arrive')],{r:1,pad:12,sprint:true});return true;});
+   const clearOf=()=>until(()=>!A8.C.haz.some(z=>!z.fell&&z.fatal!==false),8);
+   for(const q of [P('gDoor'),P('gIn'),P('gBack'),P('gdMid'),P('jMid')]){clearOf();approach(q,.9,{pad:10,sprint:true});}
+   clearOf();press('KeyC');wait(.6);approach(P('bulkhead'),.8,{pad:10});approach({x:P('bulkhead').x,z:P('bulkhead').z-1.6},.8,{pad:10});release('KeyC');
+   for(const [n,q] of [['w1',{x:P('galleryW').x+3,z:P('galleryW').z+5}],['w2',{x:P('galleryW').x+3,z:P('galleryW').z-4}],['foot',P('stairFoot')],['top',P('stairTop')],['arrive',P('arrive')]]){clearOf();if(A8.C.failing)return false;approach(q,n==='foot'?.4:1,{pad:12,sprint:true});}return !A8.C.failing;});
   take('climbup',{hold:8,r:1.2,max:60});until(()=>ph()==='g8-surface',20);
-  check(`${label}: it comes through the barrier; the hunter runs from it; the way out comes down behind you; the ladder`,()=>{assert.ok(A8.state.presence.log.impacts>3);assert.ok(said('It’s RUNNING. From THAT.'));});lap('breach');}
+  check(`${label}: it comes through the barrier; the hunter runs from it; the way out comes down behind you; the ladder`,()=>{assert.ok(said('The ribs break outward'));assert.ok(said('It’s RUNNING. From THAT.'));assert.equal(ph(),'g8-surface');});lap('breach');}
  // ---- Act V --------------------------------------------------------------------------------------------------------------------
  const M8d=(d,l)=>{const q=T0.groundPoint(d,l);return {x:q.x,z:q.z};};
  if(inSeg('surface')){until(()=>ph()==='g8-surface',10);approach(M8d(1126,-1),2,{pad:12});approach(M8d(1096,-2),2,{pad:12});until(()=>ph()==='g8-street',90);

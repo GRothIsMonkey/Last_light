@@ -166,7 +166,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // ---- hazards: something about to come down where you are (dust first, a crack, then it falls) ------------------------------------------
  // hazard({at, r, warn, onFall, fatal}): warn seconds of dust and creaking, then it falls; inside r when it does: fail
  function hazard(h){const z={t:0,warn:1.6,r:1.8,fatal:true,...h,fell:false};C.haz.push(z);sound('c8Creak',z.at,{gain:.8});return z;}
- function updateHazards(dt){const p=me();for(const z of C.haz){if(z.fell)continue;z.t+=dt;if(z.t>=z.warn){z.fell=true;presence.impact({x:z.at.x,y:z.at.y,z:z.at.z},{n:z.n||16,power:z.power||1});C.shake=Math.max(C.shake,.45);
+ function updateHazards(dt){const p=me();for(const z of C.haz){if(z.fell)continue;z.t+=dt;z.gt=(z.gt||0)-dt;if(z.gt<=0&&z.t<z.warn){z.gt=.12;presence.trickle(z.at,{h:z.h||3.2,n:z.t>z.warn*.6?3:2});}if(z.t>=z.warn){z.fell=true;presence.impact({x:z.at.x,y:z.at.y,z:z.at.z},{n:z.n||16,power:z.power||1});C.shake=Math.max(C.shake,.45);
    if(z.fatal&&Math.hypot(p.x-z.at.x,p.z-z.at.z)<z.r)fail(z.section||C.lastCheckpoint||'chapter8-start','under the fall');z.onFall?.();}}C.haz=C.haz.filter(z=>!z.fell||z.t<z.warn+.1);}
  // ---- the hunter here: a place to search, who it can see, and where a catch sends you ------------------------------------------------------
  function huntStart({ids,route,at,catchTo,fov=1.25,range=15,speedK=1,extra=[],cells=null,filter=null}){const G=X.graph(ids,{extra});H.reset();H.setGraph(G);H.place(at.x,at.z,0);HM.show(true);
@@ -228,7 +228,9 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   const h=SC?.hint?.();if(h)return h;if(C.hiding)return [['F','Come out']];
   if(C.holdOn&&C.offers.get(C.holdOn))return [['Hold F',C.offers.get(C.holdOn).label+' '+Math.round((C.hold[C.holdOn]||0)*100)+'%']];return null;}
  function sources(out){if(!mine(S.phase))return;SC?.sources?.(out);ruin.sources(out);}
- function blockers(){const out=[];for(const a of [reyes,brandt,...fire,samDad,samMom].filter(Boolean))if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});SC?.blockers?.(out);return out;}
+ function blockers(){const out=[];for(const a of [reyes,brandt,...fire,samDad,samMom].filter(Boolean))if(a.visible)out.push({x:a.x,z:a.z,r:.34,speed:0});
+  if(C.duck&&!((o.foot.crouch??0)>.45))for(const q of C.duck)out.push({x:q.x,z:q.z,r:.3,speed:0});// (under a jammed door: only crouching)
+ SC?.blockers?.(out);return out;}
  // ---- every frame -------------------------------------------------------------------------------------------------------------------------
  function update(dt){C.dt=dt;C.t+=dt;C.pt+=dt;const ph=S.phase;mind();
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}

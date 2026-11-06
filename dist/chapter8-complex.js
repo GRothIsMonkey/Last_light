@@ -77,7 +77,7 @@ export const OPENINGS=[
  {a:'J',b:'K',z:32,r:[2,5],h:3},
  {a:'J',b:'GD',z:32,r:[-4,-2.2],h:2.6},
  {a:'GD',b:'G',z:36,r:[-4,-2.2],h:2.4,door:'Gback'},
- {a:'K',b:'G',x:2,r:[38,39.4],h:2.15,door:'G'},
+ {a:'K',b:'G',x:2,r:[37.6,39.8],h:2.15,door:'G'},// (a double door: the crew came through it in pairs)
  {a:'K',b:'H',z:44,r:[2,5],h:3},
  {a:'H',b:'F0',x:18,r:[45,47],h:2.4,door:'F0'},
  {a:'F0',b:'F1',z:64,r:[18.2,21.4],h:2.4},
@@ -254,7 +254,7 @@ export function createComplex({scene,sfx=()=>{}}){
  ];
  const extraSolids=[];// (the chapter's own: debris, a fallen beam, a closed barrier leaf)
  const inCellI=(c,x,z,r)=>x>c.x0+WT+r&&x<c.x1-WT-r&&z>c.z0+WT+r&&z<c.z1-WT-r;
- function openingAt(x,z,r,{walk=true}={}){for(const o of OPENINGS){if(o.window&&walk)continue;if(o.door&&doorOpen.get(o.door)<(walk?.62:.3))continue;
+ function openingAt(x,z,r,{walk=true}={}){for(const o of OPENINGS){if(o.window&&walk)continue;if(o.door&&doorOpen.get(o.door)<(walk?(ST.duck?.[o.door]??.62):.3))continue;/* (a door jammed part way: ST.duck says how low it may be and still be got under) */
    if(o.x!=null){if(Math.abs(x-o.x)<WT+.7&&z>o.r[0]+r&&z<o.r[1]-r)return o;}else if(Math.abs(z-o.z)<WT+.7&&x>o.r[0]+r&&x<o.r[1]-r)return o;}return null;}
  function cellAt(x,z,{pad=0}={}){for(const c of cell.values())if(x>=c.x0-pad&&x<=c.x1+pad&&z>=c.z0-pad&&z<=c.z1+pad&&!c.o.visual)return c;for(const c of cell.values())if(x>=c.x0&&x<=c.x1&&z>=c.z0&&z<=c.z1)return c;return null;}
  function solidAt(x,z,r){for(const [sx,sz,hw,hd] of SOLIDS)if(Math.abs(x-sx)<hw+r&&Math.abs(z-sz)<hd+r)return true;
@@ -295,7 +295,7 @@ export function createComplex({scene,sfx=()=>{}}){
   trolley.position.x=-2+ST.crane*6;hook.position.x=-2+ST.crane*6;}
  function reset(){for(const D of Object.values(DOORS)){D.set(0);D.want=0;doorOpen.set(D.o.door,0);}
   for(const id of ['B1','B2','C','G','Gback','D1','D2','E1','E3','bulkhead','F0','den'])setDoor(id,1,{instant:true});
-  Object.assign(ST,{barrier:1,barrierWant:1,grille:1,grilleWant:1,plugDrop:0,plugWant:0,valve:0,valveV:0,leverJ:0,leverA:[0,0],pins:[0,0,0],water:0,waterWant:0,shift:0,made:0,crane:0});
+  Object.assign(ST,{barrier:1,barrierWant:1,grille:1,grilleWant:1,plugDrop:0,plugWant:0,valve:0,valveV:0,leverJ:0,leverA:[0,0],pins:[0,0,0],water:0,waterWant:0,shift:0,made:0,crane:0,duck:{}});
   extraSolids.length=0;made.visible=true;for(const c of made.children)c.visible=true;made.position.set(0,0,0);made.rotation.set(0,0,0);made.scale.set(1,1,1);update(0);}
  function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();ST.active=!!on;}
  reset();

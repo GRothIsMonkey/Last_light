@@ -421,26 +421,26 @@ export function scenes8(X){
  function sceneAlex(from='shift'){go('e8-alex');if(from!=='shift'||!X.friendsNow().includes(jamie)){enterComplex('hMid',Math.PI/2);joinFoot(sam,CM.at('hWest'),Math.PI/2);joinFoot(jamie,CM.at('hMid'),Math.PI/2);C.flags.samOut=C.flags.anchor1=C.flags.anchor2=true;}
   lightsBelow('F');C.h=Math.max(C.h,HOUR.alex);C.hMin=HOUR.alex;date(C.h);CM.setDoor('alexCell',0,{instant:true});CM.setDoor('F0',1,{instant:true});checkpoint(from==='alex'?'c8-alex':'c8-shift');
   task('alex',(function*(){
-   if(from==='shift'){objective('Find Alex.','South, past the big gallery. The corridor on the east side.');
-    yield* until(()=>CM.cellIdAt(me().x,me().z)==='F0'||C.pt>700);
+   if(from==='shift'){objective('Find Alex.','South, past the big gallery. The corridor on the east side.');mark('find Alex');
+    yield* until(()=>CM.cellIdAt(me().x,me().z)==='F0'||C.pt>700);mark('the corridor');
     yield* lines([SM('He’s down here. The farthest one. I could hear it go down here with him, every time.',{time:3})]);
     // the corridor: it gets longer while you are not looking; the way back is a wall when you turn round; the lamps are not where they were
     const backWall=new THREE.Mesh(new THREE.BoxGeometry(.25,2.8,3.6),CM.mats.conc);backWall.position.set(CX.x+18.15,-1.6,CX.z+46);backWall.visible=false;scene.add(backWall);C.backWall=backWall;
     yield* until(()=>{const p=me();return p.z>CX.z+52;},120);
-    yield* until(()=>!lookingAt(CM.at('f0Door',1),.4)||C.pt>800,20);backWall.visible=true;CM.extraSolids.push({x:18,z:46,hw:.3,hd:1.8,id:'back'});CM.setDoor('F0',0,{instant:true});
+    yield* until(()=>!lookingAt(CM.at('f0Door',1),.4)||C.pt>800,20);backWall.visible=true;mark('behind you, a wall');CM.extraSolids.push({x:18,z:46,hw:.3,hd:1.8,id:'back'});CM.setDoor('F0',0,{instant:true});
     yield* until(()=>lookingAt({x:CX.x+19,y:-1.5,z:CX.z+46},.75)||C.pt>820,25);
     yield* lines([J('The door. Where’s the door?',{time:1.4,face:'terrified'}),SM('Don’t. Keep going. It’s doing it on purpose.',{time:2,face:'afraid'})]);
-    yield* until(()=>CM.cellIdAt(me().x,me().z)==='F1'||C.pt>900);checkpoint('c8-made');}
+    yield* until(()=>CM.cellIdAt(me().x,me().z)==='F1'||C.pt>900);checkpoint('c8-made');mark('the room it made');}
    // the room it made: Alex's bedroom, here; too clean; then it stops being able to hold itself together
    if(from==='shift'||from==='made'){
     yield* lines([N('A bedroom. Alex’s bedroom. His quilt, his desk, his poster. The window shows the creek behind his house at night.',{time:4}),J('That’s— that’s his room.',{time:1.6,face:'shocked'}),SM('It isn’t. Look at it. Nothing’s been touched. It made it.',{time:2.6,face:'afraid'})]);
-    yield* wait(1.4);C.madeT=0;C.flags.madeBreak=true;sound('c7Groan',CM.at('f1Mid',0),{gain:.9});
+    yield* wait(1.4);C.madeT=0;C.flags.madeBreak=true;mark('it comes apart');sound('c7Groan',CM.at('f1Mid',0),{gain:.9});
     yield* lines([N('The poster’s ink runs down off it. The quilt goes grey and stiff and then it’s concrete. The window has nothing behind it but the wall.',{time:4.6}),
      SM('That’s what the court was. That’s what that whole street was.',{time:2.6,face:'afraid'}),J('Mrs. Lange.',{time:1.4,face:'afraid'})]);
     yield* until(()=>C.madeT>7,12);}
    checkpoint('c8-alex');
    // his door: him inside; he's had them come to the door before; proving it, by what they do right now
-   objective('Alex’s door.','');yield* until(()=>near(CM.at('alexDoor'),3)||C.pt>1100);
+   objective('Alex’s door.','');mark('his door');yield* until(()=>near(CM.at('alexDoor'),3)||C.pt>1100);mark('at his door');
    if(C.backWall){C.backWall.visible=false;CM.extraSolids.splice(0);CM.setDoor('F0',1,{instant:true});}
    light(4,CM.at('alexIn',1.4),{intensity:1.6,dist:5,color:0xc0b0a8,flicker:.3});
    yield* lines([N('Through the door’s little window: Alex. Sitting on the cot, his knees up, his shirt gone, in somebody’s grey coverall too big for him. He looks up.',{time:4.4}),
@@ -468,7 +468,7 @@ export function scenes8(X){
  const q8=t=>'“'+t+'”';
  // ---- Act III, scene 9: the crew room; all four of them -----------------------------------------------------------------------------------------------------
  function sceneReunion(from='reunion'){go('e8-reunion');const A2=X.enlistAlex();
-  if(from!=='reunion'||!A2.active){enterComplex('gIn',-Math.PI/2);joinFoot(sam,CM.at('gDoor'),-Math.PI/2);joinFoot(jamie,CM.at('kMid'),-Math.PI/2);joinFoot(A2,CM.at('gIn'),-Math.PI/2);C.flags.samOut=C.flags.anchor1=C.flags.anchor2=C.flags.anchor3=true;}
+  if(from!=='reunion'||!A2.active){enterComplex('gIn',-Math.PI/2);const g=CM.at('gTable');joinFoot(sam,{x:g.x-1.1,z:g.z+.9},0);joinFoot(jamie,{x:g.x+1.3,z:g.z-.7},-Math.PI/2);joinFoot(A2,{x:g.x+.2,z:g.z+1.3},-Math.PI/2);C.flags.samOut=C.flags.anchor1=C.flags.anchor2=C.flags.anchor3=true;}
   lightsBelow('K');C.h=Math.max(C.h,HOUR.reunion);C.hMin=HOUR.reunion;date(C.h);checkpoint('c8-reunion');C.mood='relaxed';C.mindKey=null;
   for(const c of [sam,jamie,A2])c.brain&&brain.enable(c,true);
   task('reunion',(function*(){
@@ -476,16 +476,22 @@ export function scenes8(X){
     stand3(),{wait:1.2},AL('I thought I wasn’t going to see you guys again.',{time:2.2,face:'sad'}),J('We’re all here.',{time:1.4,face:'hopeful'}),SM('Let’s get out.',{time:1.2}),AL('Can we just go home?',{time:1.6,face:'tired'})]);
    objective('','');
    // what you can do here, before anyone says go: talk to them; show Alex the notebook and his camera; give Sam his gum
-   offer('t-jamie','Talk to Jamie',()=>({x:jamie.px,y:1.2+gy(jamie.px,jamie.pz),z:jamie.pz}),{r:2.4,fn:()=>say([J('So do I get a parade? I feel like I should get a parade. Or a sandwich.',{time:3,face:'amused'}),Y('A sandwich.',{time:1}),J('A big one.',{time:1.2,face:'grin'}),{wait:.6},J('…I was so scared, man.',{time:1.8,face:'sad'})])});
-   offer('t-sam','Talk to Sam',()=>({x:sam.px,y:1.2+gy(sam.px,sam.pz),z:sam.pz}),{r:2.4,fn:()=>say([SM('Lockers. First-aid kit. A lantern that works. There’s a radio, 1974. It’s dead.',{time:3.2}),SM('Batteries for the batteries.',{time:1.6,face:'relieved'}),{wait:.4},SM('That was a joke.',{time:1.2})])});
-   offer('t-alex','Talk to Alex',()=>({x:A2.px,y:1+gy(A2.px,A2.pz),z:A2.pz}),{r:2.4,fn:()=>say([AL('Sunday. I heard the bell. Like every night. On Briarwood I stopped at the creek, and the old bike was down there. In the water.',{time:4.6,face:'tired'}),
-    AL('I just wanted to look at it.',{time:1.6}),{wait:1},AL('I got out once. There’s a pipe off the end room. It goes forever. I came up in a box in the woods. The camp.',{time:4,face:'sad'}),
-    AL('I took soup. I left my shirt. I cut our letters in the wall so somebody would know. Then the lights found me. And it brought me back.',{time:4.8,face:'sad'})])});
-   offer('show-notebook','Show Alex the notebook',()=>({x:A2.px,y:1+gy(A2.px,A2.pz),z:A2.pz}),{r:2.4,when:()=>C.inv.notebook==='have',fn:()=>say([N('Sam’s notebook. The page with the three names on it, in your writing.',{time:3}),AL('You wrote us down.',{time:1.6,face:'sad'}),Y('Everybody was forgetting.',{time:1.8}),AL('…Not you.',{time:1.2})])});
-   offer('show-camera','Give Alex his camera',()=>({x:A2.px,y:1+gy(A2.px,A2.pz),z:A2.pz}),{r:2.4,when:()=>C.inv.camera==='have',fn:()=>{C.inv.camera='alex';say([AL('My camera.',{time:1.2,face:'hopeful'}),N('He goes back through the pictures. Stops at the last one: the three of you at the fire, from the trees.',{time:3.6}),AL('I didn’t take that.',{time:1.4,face:'afraid'}),SM('Nobody did.',{time:1.2})]);}});
-   offer('give-gum','Give Sam the gum',()=>({x:sam.px,y:1.2+gy(sam.px,sam.pz),z:sam.pz}),{r:2.4,when:()=>C.inv.gum==='have',fn:()=>{C.inv.gum='sam';say([SM('My gum.',{time:1,face:'surprised'}),J('I told you I’d give it back.',{time:1.6,face:'grin'}),SM('…Did he ask twice?',{time:1.4,face:'amused'}),Y('He didn’t ask once.',{time:1.4})]);}});
-   const t0=C.t;yield* until(()=>(C.flags['t-alex']&&C.t-t0>40&&!busy())||C.t-t0>160);
-   for(const id of ['t-jamie','t-sam','t-alex','show-notebook','show-camera','give-gum'])unoffer(id);
+   offer('t-jamie','Talk to Jamie',()=>({x:jamie.px,y:1.1+gy(jamie.px,jamie.pz),z:jamie.pz}),{r:2.6,look:true,size:.45,cone:.1,fn:()=>say([J('So do I get a parade? I feel like I should get a parade. Or a sandwich.',{time:3,face:'amused'}),Y('A sandwich.',{time:1}),J('A big one.',{time:1.2,face:'grin'}),{wait:.6},J('…I was so scared, man.',{time:1.8,face:'sad'})])});
+   // (each of them is one conversation, a beat at a time: F again for the next thing; the prompt says what it is)
+   const SAMB=[{label:'Talk to Sam',fn:()=>say([SM('Lockers. First-aid kit. A lantern that works. There’s a radio, 1974. It’s dead.',{time:3.2}),SM('Batteries for the batteries.',{time:1.6,face:'relieved'}),{wait:.4},SM('That was a joke.',{time:1.2})])},
+    {label:'Give Sam the gum',when:()=>C.inv.gum==='have',fn:()=>{C.inv.gum='sam';say([SM('My gum.',{time:1,face:'surprised'}),J('I told you I’d give it back.',{time:1.6,face:'grin'}),SM('…Did he ask twice?',{time:1.4,face:'amused'}),Y('He didn’t ask once.',{time:1.4})]);}}];
+   const ALEXB=[{label:'Talk to Alex',fn:()=>say([AL('Sunday. I heard the bell. Like every night. On Briarwood I stopped at the creek, and the old bike was down there. In the water.',{time:4.6,face:'tired'}),
+     AL('I just wanted to look at it.',{time:1.6}),{wait:1},AL('I got out once. There’s a pipe off the end room. It goes forever. I came up in a box in the woods. The camp.',{time:4,face:'sad'}),
+     AL('I took soup. I left my shirt. I cut our letters in the wall so somebody would know. Then the lights found me. And it brought me back.',{time:4.8,face:'sad'})])},
+    {label:'Show Alex the notebook',when:()=>C.inv.notebook==='have',fn:()=>say([N('Sam’s notebook. The page with the three names on it, in your writing.',{time:3}),AL('You wrote us down.',{time:1.6,face:'sad'}),Y('Everybody was forgetting.',{time:1.8}),AL('…Not you.',{time:1.2})])},
+    {label:'Give Alex his camera',when:()=>C.inv.camera==='have',fn:()=>{C.inv.camera='alex';say([AL('My camera.',{time:1.2,face:'hopeful'}),N('He goes back through the pictures. Stops at the last one: the three of you at the fire, from the trees.',{time:3.6}),AL('I didn’t take that.',{time:1.4,face:'afraid'}),SM('Nobody did.',{time:1.2})]);}}];
+   const convo=(id,who2,beats)=>{let i=0;const next=()=>{while(i<beats.length&&beats[i].when&&!beats[i].when())i++;return beats[i];};
+    offer(id,next()?.label||'',()=>({x:who2().px,y:1.1+gy(who2().px,who2().pz),z:who2().pz}),{r:2.6,look:true,size:.45,cone:.1,once:false,when:()=>!busy()&&!!next(),fn:()=>{const b=next();if(!b)return;i++;C.flags[id+'-'+i]=true;b.fn();const n2=next();if(n2)C.offers.get(id).label=n2.label;else unoffer(id);}});};
+   convo('t-sam',()=>sam,SAMB);convo('t-alex',()=>X.alex,ALEXB);
+   // (the moment lasts: until every conversation has been had, or a minute and a quarter after Alex has told them what happened)
+   const t0=C.t;let alexAt=null;yield* until(()=>{if(C.flags['t-alex-1']&&alexAt===null)alexAt=C.t;const all=!C.offers.has('t-sam')&&!C.offers.has('t-alex')&&!!C.flags['t-jamie'];
+    return (!busy()&&(all||(alexAt!==null&&C.t-alexAt>75)))||C.t-t0>240;});
+   for(const id of ['t-jamie','t-sam','t-alex'])unoffer(id);
    yield* quiet();yield* wait(2);
    // the alarm: an old klaxon; red lamps; and Jamie's radio, the one Reyes gave him, from the floor of the east wing
    C.flags.alarm=true;lightsBelow('K');sound('c8Alarm',CM.at('hMid',2),{gain:.9});C.alarmOn=true;
