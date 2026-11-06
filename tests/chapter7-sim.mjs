@@ -388,8 +388,9 @@ export function playChapterSeven(T,label,{fromCard=true,from=null,to=null,cont=f
   check(`${label}: you write their names (ALEX, JAMIE, SAM), and they are kept for Chapter Eight`,()=>{assert.equal(A7.C.wr.text,'ALEX\nJAMIE\nSAM');const s=JSON.parse(globalThis.localStorage.getItem('lastlight.chapter7'));assert.deepEqual(s.names,['ALEX','JAMIE','SAM']);});
   U(()=>A7.C.flags.lookOutside,12);note('his window',act('c7-window',{at:HS.window,r:1.2,max:8}),A7.C.flags.lookOutside,!!h.chapter.pose);
   U(()=>h.snapshot.state==='ended',40);
-  check(`${label}: four bikes under the streetlight; yours; the end card (LAST LIGHT · Chapter Seven · The Street That Wasn't There), no Chapter Eight`,()=>{
-   assert.equal(h.snapshot.state,'ended');assert.match(element('ending').querySelector?.('h2')?.innerHTML||'Chapter Seven',/Chapter Seven/);assert.equal(element('next-chapter').hidden,true);assert.ok(said('Yours'));});
+  // (Chapter Eight now follows: the end card offers it, as Chapter Six's offered Chapter Seven)
+  check(`${label}: four bikes under the streetlight; yours; the end card (LAST LIGHT · Chapter Seven · The Street That Wasn't There), then Chapter Eight`,()=>{
+   assert.equal(h.snapshot.state,'ended');assert.match(element('ending').querySelector?.('h2')?.innerHTML||'Chapter Seven',/Chapter Seven/);assert.equal(element('next-chapter').hidden,false);assert.match(element('next-chapter').innerHTML,/Chapter Eight/);assert.ok(said('Yours'));});
   lap('night');}
  M7.minutes={...watch.minutes};M7.total=+Object.values(watch.minutes).reduce((a,b)=>a+b,0).toFixed(2);M7.phases=watch.phases.length;M7.bad=watch.bad;M7.jumps=watch.jumps;M7.gapMax={...watch.gapMax};M7.samSeen=watch.samSeen;M7.jamieVisibleAfter=watch.jamieVisibleAfter;
  check(`${label}: nothing non-finite; Sam never seen; Jamie never seen after he is taken`,()=>{assert.equal(watch.bad,0);assert.equal(watch.samSeen,0);assert.equal(watch.jamieVisibleAfter,0);});

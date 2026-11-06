@@ -1,3 +1,15 @@
+# Last Light — Chapter Eight: The Night Oak Hollow Fell
+
+On `claude/chapter8-fullgame-story-integration`, from the recovered Astra Chapter Seven commit `27ad0b6fcd361c023a735cf9ec8ff61e144e69e3` (base `e24f6638721da8e5f2b74b9565cb0f9598f06cbb`, full history). `main` is untouched.
+
+- **Chapter Eight, playable start to end.** Seventeen scenes in five acts, from Sam's house at 10:42 PM on Friday to the last ride at dawn on Saturday, ending on its own end card (the aftermath is not implemented). Stealth under the court, three different rescues, the reunion and the truth, a real escape with structural hazards, the surface catastrophe on the real street, the Hendersons' rescue and Jamie's death, the three-part final operation (gates and the Chapter Six drawdown gate; the ports and Line Two; the plug's pins), Alex's death at the oak, the look back on the empty road.
+- **Prologue to Chapter Seven.** Optional foreshadowing only: the healed AR carving, the Line 4 plate, the sealed 1974 access, the creature's injured hand and its fear, A. Rowan No. 0417 and Danny Whitcomb's fingers in the Courier, Valve Vault 3, Chapter Six's drawdown gate (the voice stops when it seats), Mrs. Lange's note. Nothing approved was removed.
+- **Systems.** 49 sections, 33 aliases, 24 named Continue checkpoints (resume points start where they say), 39 DEV scenes; failures (the hunter, Danny, falling structure, the operation's hazards) return to the checkpoint of where they happened.
+- **Verified.** One continuous input-driven run from Chapter Seven's end card to Chapter Eight's end card (20 story checks) plus 9 chapter checks; per-chapter regression suites; twenty Chromium frames reviewed. Details and limits in `CHAPTER8_TEST_REPORT.md`.
+- **Known limits.** No human playtest; no real-GPU performance measurement; procedural art in the game's existing style; synthesized audio.
+
+---
+
 # Chapter Seven — Astra visual reconstruction
 
 Continues the accepted Chapter Seven expansion from `e24f663` on `codex/astra-chapter7-final-polish`. Rebuilds the chapter’s materials, room dressing, streets, lighting, cast presentation and existing hunter scares. Jamie and Mrs. Lange receive distinct facial and wardrobe detail; the rescue hand contact, evidence framing, photographs and final bicycles are improved.
