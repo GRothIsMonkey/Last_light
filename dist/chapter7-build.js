@@ -8,6 +8,9 @@ import * as THREE from './three.module.js';
 import {artSurface} from './art-surfaces.js';
 import {paper,makeShapes} from './chapter6-kit.js';
 import {seeded} from './kit.js';
+import {finish,wallPrintArt} from './chapter7-finishes.js';
+import {dressFacade} from './chapter7-street-art.js';
+import {cushion} from './chapter7-rooms-art.js';
 
 const mats=new Map();
 // a material, shared by colour and options; kind: an art-surfaces recipe (plaster, timber, carpet, textile, housepaint...)
@@ -27,7 +30,20 @@ export const porchGlow=new THREE.MeshStandardMaterial({color:0xfff0c8,emissive:0
 export function createBuild(root){const K=makeShapes(),g0=root;
  // a straight wall (a box) from a to b, thickness t, from y0 to y1, with openings; returns its parts
  function wall(a,b,{y0=0,y1=2.5,t=.12,m,holes=[],g=g0,name='wall'}={}){const L=Math.hypot(b[0]-a[0],b[1]-a[1]),ang=Math.atan2(b[1]-a[1],b[0]-a[0]),out=[];
-  const piece=(u0,u1,v0,v1)=>{if(u1-u0<.01||v1-v0<.01)return;const um=(u0+u1)/2,x=a[0]+Math.cos(ang)*um,z=a[1]+Math.sin(ang)*um;out.push(K.slab(g,x,(v0+v1)/2,z,u1-u0,v1-v0,t,m,{ry:-ang,name}));};
+  const piece=(u0,u1,v0,v1)=>{
+   const w=u1-u0,h=v1-v0;if(w<.01||h<.01)return;
+   const um=(u0+u1)/2,x=a[0]+Math.cos(ang)*um,z=a[1]+Math.sin(ang)*um;
+   const panel=K.slab(g,x,(v0+v1)/2,z,w,h,t,m,{ry:-ang,name});
+   // Align the print across the separate geometry above and below each opening.
+   const uv=panel.geometry.attributes.uv;
+   for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)+u0,uv.getY(i)+v0-y0);
+   out.push(panel);
+   if(t<.065||name==='lange-skin')return;
+   const trim=mat(0xa3967c,{roughness:.74});
+   if(v0===y0){K.slab(g,x,y0+.066,z,w,.13,t+.040,trim,{ry:-ang});
+    K.slab(g,x,y0+.142,z,w,.025,t+.052,mat(0xc6b697),{ry:-ang});}
+   if(v1===y1)K.slab(g,x,y1-.07,z,w,.07,t+.046,trim,{ry:-ang});
+  };
   const hs=holes.slice().sort((p,q)=>p[0]-q[0]);let u=0;for(const [h0,h1,v0,v1] of hs){piece(u,h0,y0,y1);piece(h0,h1,y0,y0+v0);piece(h0,h1,y0+v1,y1);u=h1;}piece(u,L,y0,y1);return out;}
  function floor(x0,z0,x1,z1,y,m,{g=g0,t=.06,name='floor'}={}){return K.slab(g,(x0+x1)/2,y-t/2,(z0+z1)/2,x1-x0,t,z1-z0,m,{name,shadow:false});}
  function ceiling(x0,z0,x1,z1,y,m,{g=g0}={}){return K.slab(g,(x0+x1)/2,y+.03,(z0+z1)/2,x1-x0,.06,z1-z0,m,{name:'ceiling',shadow:false});}
@@ -47,19 +63,31 @@ export function createFurniture(){const K=makeShapes();
  const G=(name)=>{const g=new THREE.Group();g.name=name;return g;};
  const wood=mat(C7.oak,{},'timber'),dk=mat(C7.walnut,{},'timber'),pine=mat(C7.pine,{},'timber');
  const F={
-  bed({w=1.0,l=2.0,cover=0x4a6a8a,frame=wood,rumpled=true}={}){const g=G('bed');K.box(g,0,.2,0,w+.06,.28,l+.06,frame);K.box(g,0,.43,0,w,.2,l-.02,mat(0xe8e4da,{},'textile'));
-   const c=K.box(g,0,.56,.1,w+.04,.08,l*.8,mat(cover,{},'textile'));if(rumpled){c.rotation.z=.02;const r=K.box(g,.12,.62,.2,w*.6,.08,.5,mat(cover,{},'textile'));r.rotation.set(.1,.3,.05);}
-   K.box(g,0,.62,-l/2+.25,w*.7,.13,.38,mat(0xf2efe6,{},'textile'));K.box(g,0,.7,-l/2-.02,w+.06,1,.06,frame);return g;},
+  bed({w=1.0,l=2.0,cover=0x4a6a8a,frame=wood,rumpled=true}={}){const g=G('bed');
+   K.box(g,0,.22,0,w+.06,.24,l+.06,frame);cushion(g,0,.42,0,w,.22,l-.02,mat(0xe8e2d5,{},'textile'),.065);
+   const quilt=cushion(g,0,.54,.16,w+.045,.14,l*.79,finish('weave',0xbccbd0),.06);
+   if(rumpled)quilt.rotation.z=.012;
+   cushion(g,0,.605,-l*.23,w+.04,.065,.215,mat(cover,{},'textile'),.03);
+   cushion(g,-.025,.595,-l/2+.25,w*.70,.15,.39,mat(0xf1ead7,{},'textile'),.07).rotation.y=.065;
+   K.box(g,0,.59,-l/2-.035,w+.08,.55,.075,frame);return g;},
   desk({w=1.2,d=.6,h=.74,m=wood}={}){const g=G('desk');K.box(g,0,h-.02,0,w,.04,d,m);for(const sx of [-1,1])K.box(g,sx*(w/2-.03),h/2-.02,0,.04,h-.04,d-.02,m);K.box(g,w/2-.25,h-.2,0,.44,.24,d-.04,m);K.box(g,w/2-.25,h-.2,-d/2+.005,.4,.2,.01,mat(0x6a4a30));return g;},
-  chair({m=wood,seat=.45}={}){const g=G('chair');K.box(g,0,seat,0,.44,.04,.42,m);for(const [x,z] of [[-.19,-.18],[.19,-.18],[-.19,.18],[.19,.18]])K.box(g,x,seat/2,z,.035,seat,.035,m);K.box(g,0,seat+.36,.19,.44,.5,.035,m);return g;},
+  chair({m=wood,seat=.45}={}){const g=G('chair');K.box(g,0,seat,0,.44,.04,.42,m);for(const [x,z] of [[-.19,-.18],[.19,-.18],[-.19,.18],[.19,.18]])K.box(g,x,seat/2,z,.035,seat,.035,m);for(const x of [-.19,-.062,.062,.19])K.box(g,x,seat+.25,.19,.034,.48,.033,m);cushion(g,0,seat+.48,.19,.45,.095,.048,m,.019);return g;},
   dresser({w=1.1,d=.48,h=.82,m=wood}={}){const g=G('dresser');K.box(g,0,h/2,0,w,h,d,m);for(let k=0;k<3;k++){K.box(g,0,.15+k*.25,-d/2-.005,w-.06,.2,.01,dk);K.box(g,0,.15+k*.25,-d/2-.02,.12,.025,.02,mat(0xb89a5a,{metalness:.6}));}return g;},
   shelf({w=.9,d=.3,h=1.8,n=5,m=wood}={}){const g=G('shelf');for(const sx of [-1,1])K.box(g,sx*(w/2-.02),h/2,0,.03,h,d,m);K.box(g,0,h/2,d/2-.01,w,h,.015,m);for(let k=0;k<n;k++)K.box(g,0,.05+k*(h-.1)/(n-1),0,w-.04,.025,d,m);return g;},
-  couch({w=2.1,d=.9,m=mat(0x7a6a52,{},'textile')}={}){const g=G('couch');K.box(g,0,.24,0,w,.3,d,m);K.box(g,0,.62,d/2-.12,w,.5,.24,m);for(const s of [-1,1])K.box(g,s*(w/2-.1),.46,0,.2,.32,d,m);for(let k=0;k<3;k++)K.box(g,(k-1)*w*.3,.43,-.05,w*.3-.03,.1,d-.3,m);return g;},
-  armchair({m=mat(0x8a5a3a,{},'textile')}={}){const g=G('armchair');K.box(g,0,.24,0,.85,.3,.8,m);K.box(g,0,.64,.3,.85,.55,.2,m);for(const s of [-1,1])K.box(g,s*.36,.46,0,.14,.3,.8,m);return g;},
+  couch({w=2.1,d=.9,m=mat(0x7a6a52,{},'textile')}={}){const g=G('couch');
+   cushion(g,0,.24,0,w,.28,d-.05,m,.065);
+   for(const side of [-1,1]){cushion(g,side*(w/2-.09),.45,0,.18,.36,d,m,.08);K.box(g,side*w*.39,.075,.29,.11,.11,.10,dk);}
+   for(let i=0;i<3;i++){const x=(i-1)*w*.283;cushion(g,x,.423,-.06,w*.28,.142,d*.69,m,.060);
+    cushion(g,x,.63,d*.32,w*.285,.44,.19,m,.075).rotation.x=-.13;}
+   cushion(g,-w*.32,.59,.035,.32,.28,.13,finish('weave',0xd3c8a7),.06).rotation.z=-.28;return g;},
+  armchair({m=mat(0x8a5a3a,{},'textile')}={}){const g=G('armchair');
+   cushion(g,0,.26,0,.84,.32,.78,m,.085);cushion(g,0,.42,-.065,.64,.13,.56,m,.06);
+   cushion(g,0,.64,.29,.77,.50,.19,m,.085).rotation.x=-.09;
+   for(const s of [-1,1])cushion(g,s*.35,.46,0,.17,.30,.77,m,.068);return g;},
   table({w=1.6,d=.9,h=.75,m=wood}={}){const g=G('table');K.box(g,0,h-.025,0,w,.05,d,m);for(const [x,z] of [[-1,-1],[1,-1],[-1,1],[1,1]])K.box(g,x*(w/2-.08),(h-.05)/2,z*(d/2-.08),.06,h-.05,.06,m);return g;},
   coffee({w=1.1,d=.55,m=wood}={}){const g=G('coffee-table');K.box(g,0,.4,0,w,.04,d,m);for(const [x,z] of [[-1,-1],[1,-1],[-1,1],[1,1]])K.box(g,x*(w/2-.06),.2,z*(d/2-.06),.04,.4,.04,m);return g;},
-  rug({w=2,d=1.4,c=0x8a3a30}={}){const g=G('rug');K.slab(g,0,.006,0,w,.01,d,mat(c,{},'carpet'),{shadow:false});return g;},
-  lamp({h=1.5,shade=0xe8dcc0,lit=false}={}){const g=G('lamp');K.cyl(g,0,.02,0,.16,.04,mat(0x3a3530));K.cyl(g,0,h/2,0,.015,h,mat(0x9a8a6a,{metalness:.5}));
+  rug({w=2,d=1.4,c=0x8a3a30}={}){const g=G('rug');K.box(g,0,.005,0,w,.01,d,mat(c,{},'carpet'));K.plane(g,0,.0115,0,w,d,finish('rug',0xe6d3b4),{rx:-Math.PI/2});return g;},
+  lamp({h=1.5,shade=0xe8dcc0,lit=false}={}){const g=G('lamp');K.cyl(g,0,.02,0,.16,.04,mat(0x3a3530));K.cyl(g,0,h/2,0,.015,h,mat(0x9a8a6a,{metalness:.5}));K.cyl(g,0,.09,0,.086,.14,dk,{r2:.053});
    const s=K.cyl(g,0,h,0,.2,.26,mat(shade,{emissive:0xffcf8a,emissiveIntensity:lit?.9:0,side:THREE.DoubleSide}),{r2:.13});s.name='lamp-shade';return g;},
   // a box fan on the floor, its blades on their own group (spin it)
   // a box fan: an open square frame (you see the blades turning through the grilles), a dark round shroud, a stand, a knob
@@ -70,14 +98,16 @@ export function createFurniture(){const K=makeShapes();
    const grill=mat(0x8a8a86,{metalness:.4,roughness:.5});for(let k=-4;k<=4;k++){K.box(g,k*.045,cy,-T/2+.004,.006,W-2*th,.006,grill);K.box(g,k*.045,cy,T/2-.004,.006,W-2*th,.006,grill);}
    const blades=new THREE.Group();blades.name='fan-blades';blades.position.set(0,cy,0);g.add(blades);for(let k=0;k<5;k++){const b=K.box(blades,0,.1,0,.085,.17,.008,mat(0xe8e4da,{side:THREE.DoubleSide}));b.position.set(Math.sin(k*1.2566)*.095,Math.cos(k*1.2566)*.095,0);b.rotation.set(.35,0,-k*1.2566);}
    K.cyl(blades,0,0,0,.045,.05,mat(0x5a5a56),{rx:Math.PI/2});K.cyl(g,.17,cy+W/2+.012,0,.022,.024,mat(0x2a2a2a));g.userData.blades=blades;return g;},
-  crt({w=.42,screen=null}={}){const g=G('crt-tv');K.box(g,0,w*.38,.04,w,w*.76,w*.8,mat(0x2e2e30,{roughness:.5}));const sc=K.plane(g,0,w*.4,-w*.36,w*.78,w*.56,screen||mat(0x10141a,{roughness:.2,emissive:0x0,emissiveIntensity:0}));sc.name='screen';return g;},
+  crt({w=.42,screen=null}={}){const g=G('crt-tv');K.box(g,0,w*.38,.04,w,w*.76,w*.8,mat(0x2e2e30,{roughness:.5}));const sc=K.plane(g,0,w*.4,-w*.36,w*.78,w*.56,screen||mat(0x10141a,{roughness:.2,emissive:0x0,emissiveIntensity:0}),{ry:Math.PI});sc.name='screen';return g;},
   // a 1960s console: a wooden cabinet on legs, the screen on the left, the speaker cloth on the right
   console({screen=null}={}){const g=G('console-tv');K.box(g,0,.62,0,1.3,.7,.5,dk);for(const [x,z] of [[-.58,-.2],[.58,-.2],[-.58,.2],[.58,.2]])K.cyl(g,x,.13,z,.025,.26,dk,{r2:.015});
-   K.box(g,.32,.62,-.255,.5,.5,.01,mat(0x9a8a6a,{},'textile'));const sc=K.plane(g,-.24,.64,-.257,.56,.44,screen||mat(0x0c0f12,{emissive:0x0}),{ry:Math.PI});sc.name='screen';/* (facing out, -z) */return g;},
+   K.box(g,.32,.62,-.255,.5,.5,.01,mat(0x9a8a6a,{},'textile'));const sc=K.plane(g,-.24,.64,-.257,.56,.44,screen||mat(0x0c0f12,{emissive:0x0}),{ry:Math.PI});for(let i=0;i<15;i++)K.box(g,.10+i*.030,.64,-.266,.007,.48,.008,dk);
+   for(const x of [.20,.40])K.cyl(g,x,.34,-.268,.027,.032,mat(C7.chrome,{metalness:.45}),{rx:Math.PI/2});
+   sc.name='screen';/* (facing out, -z) */return g;},
   fridge({h=1.7,c=0xd8d4c0}={}){const g=G('fridge');K.box(g,0,h/2,0,.76,h,.7,mat(c,{roughness:.4}));K.box(g,0,h*.66,-.351,.74,.01,.01,mat(0x8a8a86));K.box(g,-.3,h*.8,-.37,.03,.3,.03,mat(C7.chrome,{metalness:.8,roughness:.3}));K.box(g,-.3,h*.4,-.37,.03,.4,.03,mat(C7.chrome,{metalness:.8,roughness:.3}));return g;},
   stove({c=0xe2dccd}={}){const g=G('stove');K.box(g,0,.45,0,.76,.9,.66,mat(c,{roughness:.45}));for(const [x,z] of [[-.18,-.15],[.18,-.15],[-.18,.15],[.18,.15]])K.cyl(g,x,.905,z,.09,.01,mat(0x2a2a2a));K.box(g,0,1.02,.3,.76,.25,.05,mat(c));K.box(g,0,.45,-.335,.62,.5,.01,mat(0x2a2a2c,{roughness:.3}));return g;},
   counter({w=1.8,d=.62,top=0xc8bfa8,body=wood}={}){const g=G('counter');K.box(g,0,.44,0,w,.86,d,body);K.box(g,0,.895,0,w+.03,.035,d+.03,mat(top,{roughness:.5}));for(let x=-w/2+.3;x<w/2;x+=.6)K.box(g,x,.5,-d/2-.005,.55,.7,.01,dk);return g;},
-  frame({w=.25,h=.2,art=null,c=0x3a2a1c}={}){const g=G('picture');K.slab(g,0,0,0,w,h,.02,mat(c));const p=K.plane(g,0,0,-.012,w*.82,h*.8,art||mat(0xd0c8b0));p.rotation.y=Math.PI;p.name='picture';return g;},
+  frame({w=.25,h=.2,art=null,c=0x3a2a1c}={}){const g=G('picture');K.slab(g,0,0,0,w,h,.02,mat(c));const p=K.plane(g,0,0,-.012,w*.82,h*.8,art||wallPrintArt('mill'));p.rotation.y=Math.PI;p.name='picture';return g;},
   poster({w=.6,h=.85,tex=null}={}){const g=G('poster');const m=tex?new THREE.MeshStandardMaterial({map:tex,roughness:.9}):mat(0x8a8a90);const p=K.plane(g,0,0,0,w,h,m);p.name='poster';return g;},
   cabinet({w=.8,d=.35,h=.7,y=1.5,m=wood}={}){const g=G('wall-cabinet');K.box(g,0,y,0,w,h,d,m);K.box(g,0,y,-d/2-.005,w-.05,h-.05,.01,dk);return g;},
   closet({w=1,h=2.05}){const g=G('closet');K.box(g,0,h/2,0,w,h,.04,mat(0xe8e2d4));return g;},
@@ -91,7 +121,7 @@ export function createFurniture(){const K=makeShapes();
 //     floorY (the ground floor above the ground), skip: names not to build (a house that has its own front: 'front')}
 // The house's frame: x across the front, front at z=-d/2 facing -z, y from the ground.
 export function houseShell(o){const g=new THREE.Group();g.name='c7-house';const K=makeShapes(),r=seeded(o.seed||7);
- const W=o.w||10,D=o.d||9,st=o.stories||1,H=o.h||2.8,F=o.floorY??.45,top=F+st*H,wall=mat(o.wall||0xc9bfa6,{},'housepaint'),trim=mat(o.trim||C7.trim),roof=mat(o.roof||0x47474a,{},'roofgrain');
+ const W=o.w||10,D=o.d||9,st=o.stories||1,H=o.h||2.8,F=o.floorY??.45,top=F+st*H,wall=finish('siding',o.wall||0xc9bfa6),trim=mat(o.trim||C7.trim),roof=finish('shingles',new THREE.Color(o.roof||0x47474a).lerp(new THREE.Color(0xb4aba0),.34).getHex());
  const skip=new Set(o.skip||[]),parts={g,windows:[],door:null,porchLight:null};
  // foundation and body
  K.slab(g,0,F/2,0,W+.1,F,D+.1,mat(C7.concrete,{},'mineral'),{name:'foundation'});
@@ -102,7 +132,7 @@ export function houseShell(o){const g=new THREE.Group();g.name='c7-house';const 
  for(const s of [-1,1]){const sl=Math.hypot(span/2+ov,rise+ov*pitch),p=K.slab(roofG,0,0,0,front?sl:len,.08,front?len:sl,roof);
   if(front){p.position.set(s*(span/4+ov/2)*.98,rise/2-ov*pitch/2,0);p.rotation.z=-s*Math.atan(pitch);}else{p.position.set(0,rise/2-ov*pitch/2,s*(span/4+ov/2)*.98);p.rotation.x=s*Math.atan(pitch);}}
  // gable ends (triangles)
- {const tri=new THREE.BufferGeometry(),hw=span/2;tri.setAttribute('position',new THREE.Float32BufferAttribute([-hw,0,0,hw,0,0,0,rise,0],3));tri.computeVertexNormals();
+ {const tri=new THREE.BufferGeometry(),hw=span/2;tri.setAttribute('position',new THREE.Float32BufferAttribute([-hw,0,0,hw,0,0,0,rise,0],3));tri.setAttribute('uv',new THREE.Float32BufferAttribute([0,0,span,0,span/2,rise],2));tri.computeVertexNormals();
   const ends=front?[[0,-D/2],[0,D/2]]:[[-W/2,0],[W/2,0]];for(const [x,z] of ends){for(const flip of [0,Math.PI]){const m=new THREE.Mesh(tri,wall);m.position.set(x,0,z);m.rotation.y=(front?0:Math.PI/2)+flip;m.castShadow=true;roofG.add(m);}}}
  parts.roof=roofG;parts.top=top;parts.rise=rise;
  if(o.chimney){K.slab(g,o.chimney*W*.3,top+rise*.6,D*.15,.6,rise*1.4+.8,.6,mat(C7.brick,{},'mineral'),{name:'chimney'});}
@@ -117,7 +147,7 @@ export function houseShell(o){const g=new THREE.Group();g.name='c7-house';const 
  // the front door, steps, a porch light
  const dx=o.doorX??(W*.08);
  if(!skip.has('front')&&o.openDoor){for(const s of [-1,1])K.slab(g,dx+s*.53,F+1.06,-D/2-.03,.07,2.14,.08,trim);K.slab(g,dx,F+2.15,-D/2-.03,1.13,.07,.08,trim);}// (a doorway: its leaf is the house's own)
- else if(!skip.has('front')){const dm=mat(o.door||0x7a3a2a,{roughness:.6});K.slab(g,dx,F+1.02,-D/2-.02,.94,2.04,.06,dm,{name:'front-door'});K.slab(g,dx,F+1.02,-D/2-.03,1.08,2.16,.04,trim);
+ else if(!skip.has('front')){const dm=mat(o.door||0x7a3a2a,{roughness:.6});K.slab(g,dx,F+1.02,-D/2-.02,.94,2.04,.06,dm,{name:'front-door'});for(const side of [-1,1])K.slab(g,dx+side*.503,F+1.035,-D/2-.05,.072,2.1,.065,trim);K.slab(g,dx,F+2.09,-D/2-.05,1.08,.08,.065,trim);
   K.cyl(g,dx+.35,F+1,-D/2-.07,.03,.05,mat(0xb89a5a,{metalness:.7,roughness:.35}),{rx:Math.PI/2});}
  const steps=Math.max(1,Math.round(F/.18));for(let k=0;k<steps;k++)K.slab(g,dx,(k+.5)*F/steps,-D/2-.35-(steps-1-k)*.3,1.6,F/steps,.3+(steps-1-k)*0,mat(C7.concrete,{},'mineral'));
  if(o.porch){const pw=o.porch.w||3.4,pd=o.porch.d||1.8;K.slab(g,dx,F-.05,-D/2-pd/2,pw,.1,pd,mat(0x9a948a,{},'mineral'));for(const s of [-1,1])K.slab(g,dx+s*(pw/2-.1),F+1.25,-D/2-pd+.12,.12,2.4,.12,trim);
@@ -128,6 +158,7 @@ export function houseShell(o){const g=new THREE.Group();g.name='c7-house';const 
   for(let k=1;k<4;k++)K.slab(g,gx,k*.52,-D*.425-.05,gw-.5,.02,.02,trim);parts.garage={x:gx,w:gw};}
  // gutters along the eaves (front and back)
  if(!front)for(const s of [-1,1])K.slab(g,0,top-.02,s*(D/2+ov*.9),len,.08,.1,trim);
+ dressFacade(g,{w:W,d:D,f:F,top,door:dx,seed:o.seed||7,porch:o.porch});
  parts.W=W;parts.D=D;parts.F=F;parts.H=H;parts.doorX=dx;return parts;}
 
 // ---- cars by period ------------------------------------------------------------------------------------------------------------
@@ -166,10 +197,6 @@ export function fenceRun(g,pts,{h=1.2,style='picket',c=0xe8e4d8}={}){const K=mak
 export function hedgeRun(g,pts,{h=2.6,w=1.1,c=0x3d5a2c,seed=3}={}){const K=makeShapes(),r=seeded(seed),m=mat(c,{roughness:1},'lawn'),m2=mat(c-0x060a04,{roughness:1},'lawn');
  for(let i=0;i<pts.length-1;i++){const [x0,z0]=pts[i],[x1,z1]=pts[i+1],L=Math.hypot(x1-x0,z1-z0),a=Math.atan2(z1-z0,x1-x0);
   K.slab(g,(x0+x1)/2,h/2,(z0+z1)/2,L+w*.6,h,w,m,{ry:-a});const n=Math.ceil(L/.9);
-  for(let k=0;k<n;k++){const u=(k+r())/n,x=x0+(x1-x0)*u,z=z0+(z1-z0)*u;const b=new THREE.Mesh(new THREE.IcosahedronGeometry(.55+r()*.35,0),r()<.5?m:m2);b.position.set(x+(r()-.5)*w*.6,h-.15+r()*.3,z+(r()-.5)*w*.6);b.scale.set(1.2,.7+r()*.3,1.2);b.castShadow=true;g.add(b);}}}
-// a yard tree (deciduous): trunk and a few lumps of crown
-export function yardTree({h=7,r0=2.6,seed=1,c=0x4e6a32}={}){const g=new THREE.Group();g.name='c7-tree';const K=makeShapes(),rn=seeded(seed),bark=mat(0x5a4a3a,{},'bark3'),leaf=mat(c,{roughness:1},'lawn'),leaf2=mat(c+0x080a04,{roughness:1},'lawn');
- K.cyl(g,0,h*.3,0,.22,h*.6,bark,{r2:.15});for(let k=0;k<3;k++){const a=k*2.1+rn();K.pipe(g,[0,h*.5,0],[Math.cos(a)*1.2,h*.72,Math.sin(a)*1.2],.09,bark,6);}
- for(let k=0;k<9;k++){const a=rn()*6.28,rr=rn()*r0*.75,b=new THREE.Mesh(new THREE.IcosahedronGeometry(r0*(.45+rn()*.3),1),rn()<.5?leaf:leaf2);b.position.set(Math.cos(a)*rr,h*.68+rn()*h*.3,Math.sin(a)*rr);b.scale.y=.75;b.castShadow=true;b.receiveShadow=true;g.add(b);}return g;}
+  for(let k=0;k<n;k++){const u=(k+r())/n,x=x0+(x1-x0)*u,z=z0+(z1-z0)*u;const b=new THREE.Mesh(new THREE.IcosahedronGeometry(.55+r()*.35,1),r()<.5?m:m2);b.position.set(x+(r()-.5)*w*.6,h-.15+r()*.3,z+(r()-.5)*w*.6);b.scale.set(1.2,.7+r()*.3,1.2);b.castShadow=true;g.add(b);}}}
 // canvas helpers
 export {paper};

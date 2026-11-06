@@ -14,6 +14,9 @@ import * as THREE from './three.module.js';
 import {mat,C7,createBuild,createFurniture,glassLit,paper} from './chapter7-build.js';
 import {bake,inBox,clamp} from './chapter6-kit.js';
 
+import {finish,wallPrintArt} from './chapter7-finishes.js';
+import {dressSam} from './chapter7-rooms-art.js';
+
 export function createSamHouse({scene,world,shoot=null}){
  const P=world.homes.sam,W2=P.w/2,D2=P.depth/2,FL=P.floor,t=.15,H=2.42;
  const O=P.toWorld(0,0),A=P.worldRot,cs=Math.cos(A),sn=Math.sin(A);
@@ -26,8 +29,8 @@ export function createSamHouse({scene,world,shoot=null}){
  const R={living:{x0:-W2+t,x1:.6,z0:.8,z1:D2-t},hall:{x0:.6,x1:2.2,z0:-1.0,z1:D2-t},sam:{x0:2.2,x1:W2-t,z0:1.2,z1:D2-t},
   kitchen:{x0:-W2+t,x1:.6,z0:-D2+t,z1:.8},back:{x0:2.2,x1:W2-t,z0:-.4,z1:1.2}};
  const DOOR={front:{x:P.doorX,w:.94},sam:{z0:2.0,z1:2.9},arch:{x0:-3.7,x1:-1.0},kitchenHall:{z0:-.8,z1:.5},back:{z0:-.25,z1:1.05}};
- const plaster=mat(0xd6cfbd,{emissive:0x8a8474,emissiveIntensity:.1,roughness:.95},'plaster'),samWall=mat(0x9fb0b8,{emissive:0x56646a,emissiveIntensity:.1,roughness:.95},'plaster');
- const carpet=mat(0x7a7262,{emissive:0x302c26,emissiveIntensity:.08,roughness:1},'carpet'),samCarpet=mat(0x5a6470,{roughness:1},'carpet'),vinyl=mat(0xc8bfa4,{roughness:.6},'mineral'),ceil=mat(0xe0ddd3,{emissive:0x9aa0a4,emissiveIntensity:.42});
+ const plaster=mat(0xd6cfbd,{emissive:0x8a8474,emissiveIntensity:.1,roughness:.95},'plaster'),samWall=finish('stripe',0xe7f0e9);
+ const carpet=mat(0x7a7262,{emissive:0x302c26,emissiveIntensity:.08,roughness:1},'carpet'),samCarpet=mat(0x5a6470,{roughness:1},'carpet'),vinyl=finish('tile',0xecdfc2),ceil=mat(0xe0ddd3,{emissive:0x9aa0a4,emissiveIntensity:.42});
  const win=(u,w=1.2,sill=.85,h=1.25)=>[u-w/2,u+w/2,sill,sill+h];
  // outer walls (inside faces), with the front door, windows (each with a view pane)
  const panes=[];
@@ -101,8 +104,8 @@ export function createSamHouse({scene,world,shoot=null}){
  {const g=new THREE.Group();g.name='sam-notebook';K.box(g,0,.006,0,.17,.012,.23,mat(0x3a6a4a,{roughness:.7}));for(let k=0;k<12;k++)K.cyl(g,-.085,.012,-.1+k*.018,.006,.02,mat(0x9a9a9a,{metalness:.6}),{rz:Math.PI/2});
   K.box(g,.12,.006,.02,.008,.008,.17,mat(0xd8b040));g.position.set(3.4,FL+.765,D2-t-.32);g.rotation.y=.25;root.add(g);items.notebook=g;}
  // the gum: a green pack of spearmint (the same pack Jamie takes, and drops)
- {const g=new THREE.Group();g.name='gum';const gumTex=paper(64,32,(c,w,h)=>{c.fillStyle='#2e8a4a';c.fillRect(0,0,w,h);c.fillStyle='#f2f0e8';c.fillRect(0,11,w,10);c.fillStyle='#1d5a30';c.font='bold 9px Arial';c.fillText('SPEARMINT',6,19);});
-  K.box(g,0,.01,0,.076,.02,.033,new THREE.MeshStandardMaterial({map:gumTex,color:gumTex?0xffffff:0x2e8a4a,roughness:.5}));g.position.set(W2-t-.3,FL+.565,4.02);g.rotation.y=.4;root.add(g);items.gum=g;}
+ {const g=new THREE.Group();g.name='gum';const gumTex=paper(256,128,(c,w,h)=>{c.scale(4,4);w/=4;h/=4;c.fillStyle='#2e8a4a';c.fillRect(0,0,w,h);c.fillStyle='#f2f0e8';c.fillRect(0,11,w,10);c.fillStyle='#1d5a30';c.font='bold 9px Arial';c.fillText('SPEARMINT',5,19);c.fillStyle='#a6b5a0';for(const x of [0,60]){c.fillRect(x,0,4,32);c.fillStyle='#d2d4b3';c.fillRect(x+1,0,1,32);}c.fillStyle='#e5e5bc';c.font='4px Georgia';c.fillText('FIVE  STICKS',17,27);});
+  K.box(g,0,.01,0,.084,.022,.041,new THREE.MeshStandardMaterial({map:gumTex,color:gumTex?0xffffff:0x2e8a4a,emissive:0x586d44,emissiveIntensity:.30,metalness:.13,roughness:.38}));g.position.set(W2-t-.3,FL+.565,4.02);g.rotation.y=.4;root.add(g);items.gum=g;}
  // batteries and flashlights on the shelf
  for(let k=0;k<3;k++)K.cyl(root,2.4,FL+1.1,3.55+k*.13,.022,.15,mat([0x2a2a2a,0xb03020,0x2a3a6a][k],{roughness:.4}),{rx:Math.PI/2});
  for(let k=0;k<8;k++)K.cyl(root,2.42,FL+.65,3.55+k*.05,.008,.05,mat(k%2?0xc8a838:0x1a1a1a,{metalness:.5}));items.batteries={x:2.4,y:FL+1.0,z:3.75};
@@ -112,7 +115,7 @@ export function createSamHouse({scene,world,shoot=null}){
  {const hd=K.box(root,3.55,FL+.75,D2-t-1.08,.42,.1,.3,mat(0x4a5a6a,{},'textile'));hd.rotation.x=.2;K.box(root,3.55,FL+.62,D2-t-1.22,.4,.3,.06,mat(0x4a5a6a,{},'textile'));items.hoodie={x:3.55,y:FL+.7,z:D2-t-1.1};}
  // the pump by the closet, a poster (a bass, jumping), the wooden fish on the nightstand
  K.cyl(root,W2-t-.15,FL+.35,1.35,.02,.62,mat(0x2a2a2a));
- const poster=paper(240,320,(g,w,h)=>{g.fillStyle='#1d3a52';g.fillRect(0,0,w,h);g.fillStyle='#3a6a5a';g.beginPath();g.ellipse(120,180,90,40,-.3,0,7);g.fill();g.fillStyle='#d8d0b0';g.font='bold 24px Arial';g.textAlign='center';g.fillText('BIG BASS',120,48);g.font='14px Arial';g.fillText('PINE RIDGE · 2009',120,300);});
+ const poster=wallPrintArt('summer').map;
  {const p=FN.poster({w:.5,h:.66,tex:poster});put(p,W2-t-.015,2.9,{a:-Math.PI/2,y:FL+1.55});}
  {const f=new THREE.Group();f.name='wooden-fish';K.box(f,0,.025,0,.1,.03,.025,mat(0x9a6a3a,{},'timber'));const tl=K.box(f,.06,.025,0,.03,.04,.02,mat(0x9a6a3a,{},'timber'));tl.rotation.z=.6;put(f,W2-t-.38,4.0,{y:FL+.55});items.fish={x:W2-t-.38,y:FL+.58,z:4.0};}
  // ---- what you and his dad go looking for (the expanded morning): on top of the shelf, the Tour de Oak Hollow, rolled up;
@@ -160,7 +163,7 @@ export function createSamHouse({scene,world,shoot=null}){
    // (the view shows as itself, by its own light: lit by the room's daylight as well, the morning street burned out to white)
    if(ok){const m=panes.find(p=>p.mesh===samWin).m;m.userData.view=which;m.map=rt.texture;m.color.setHex(0x0b0b0b);m.emissiveIntensity=bright??(which==='night'?.45:.92);m.emissive.setHex(0xffffff);m.emissiveMap=rt.texture;m.needsUpdate=true;}return ok;}catch{root.visible=true;return false;}}
  // (at night the morning's view comes off his window: the plain dark glass, until the last look out of it renders the night)
- function lightsOut(night){for(const p of panes){if(night&&p.m.userData.view==='day'){p.m.map=null;p.m.emissiveMap=null;p.m.emissive.setHex(0xb8c8d6);p.m.userData.view=null;p.m.needsUpdate=true;}if(p.m.map)continue;p.m.emissiveIntensity=night?.03:.55;p.m.color.setHex(night?0x10141c:0xdde6ee);}tvScreen.emissiveIntensity=night?.2:.5;}
+ function lightsOut(night){morning.visible=!night;for(const p of panes){if(night&&p.m.userData.view==='day'){p.m.map=null;p.m.emissiveMap=null;p.m.emissive.setHex(0xb8c8d6);p.m.userData.view=null;p.m.needsUpdate=true;}if(p.m.map)continue;p.m.emissiveIntensity=night?.03:.55;p.m.color.setHex(night?0x10141c:0xdde6ee);}tvScreen.emissiveIntensity=night?.2:.5;}
  // ---- nav ----
  const inR=(q,b,r=0)=>q.x>b.x0+r&&q.x<b.x1-r&&q.z>b.z0+r&&q.z<b.z1-r;
  const gaps=[// doorways between rooms (x0,x1,z0,z1 in the house frame)
@@ -195,7 +198,8 @@ export function createSamHouse({scene,world,shoot=null}){
     else{for(let k=1;k<3;k++){const src=on?sv[0]:sv[k];pos.setXYZ(t+k,src[0],src[1],src[2]);}}});
    if(idx)idx.needsUpdate=true;else pos.needsUpdate=true;}}
  function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();foldFake(on);}
- const keep=new Set([...Object.values(doors).map(d=>d.pivot),fan,items.photo,items.notebook,items.gum,items.tube,items.drawer,items.drawerCavity,items.shoebox,items.watch,items.machine]);bake(root,keep);
+ const morning=dressSam(root,{F:FL,W:W2,D:D2,H});
+ const keep=new Set([morning,...Object.values(doors).map(d=>d.pivot),fan,items.photo,items.notebook,items.gum,items.tube,items.drawer,items.drawerCavity,items.shoebox,items.watch,items.machine]);bake(root,keep);
  function reset(){ST.fan=true;ST.spin=1;doors.sam.set(.55);items.gum.visible=true;items.notebook.visible=true;items.photo.visible=true;
   ST.machine='off';ST.drawer=0;ST.drawerT=0;items.drawer.position.z=DRW.z;items.drawerCavity.visible=false;for(const kk of ['tube','shoebox','watch'])items[kk].visible=true;lightsOut(false);show(false);}
  const home=(x,z)=>{const q=toL(x,z);return inR(q,R.sam,-.05)?'sam':inR(q,R.kitchen,-.05)?'kitchen':inR(q,R.living,-.05)?'living':inR(q,R.hall,-.05)?'hall':null;};

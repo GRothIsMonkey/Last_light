@@ -15,6 +15,9 @@ import * as THREE from './three.module.js';
 import {mat,createBuild,createFurniture,paper} from './chapter7-build.js';
 import {inBox,clamp,smooth} from './chapter6-kit.js';
 
+import {finish,wallPrintArt} from './chapter7-finishes.js';
+import {dressLange} from './chapter7-rooms-art.js';
+
 export const LANGE={W:12,D:8.6,F:.45,doorX:-1.5,H:2.8};
 
 // ---- the pages the chapter holds up (canvas textures; null without a canvas) -----------------------------------------------
@@ -48,9 +51,15 @@ export const LANGE_PAGES={courier:courierPage,board:boardPage,drawing:drawingPag
 
 export function createLangeHouse({W=LANGE.W,D=LANGE.D,F=LANGE.F,doorX=LANGE.doorX,outside=null}={}){
  const g=new THREE.Group();g.name='c7-lange-house';const B=createBuild(g),{K}=B,{F:FN}=createFurniture();const hw=W/2,hd=D/2,t=.12,H=LANGE.H;
- const wallM=mat(0xc9bfa4,{emissive:0x5a5244,emissiveIntensity:.12,roughness:.95},'plaster'),hallM=mat(0xa8b4a0,{emissive:0x46503e,emissiveIntensity:.1,roughness:.95},'plaster');
- const boards=mat(0x6a4a30,{},'timber'),lino=mat(0xc8c0a0,{roughness:.6},'mineral'),tile=mat(0xd8dcd8,{roughness:.4},'mineral');
- const duskPane=new THREE.MeshStandardMaterial({color:0x34465a,emissive:0x22344a,emissiveIntensity:.55,roughness:.12,metalness:.2});duskPane.name='c7-lange-dusk-pane';
+ const wallM=finish('rose',0xf2e4cd),hallM=finish('fern',0xcdd3be);
+ const boards=finish('oak',0xcdac88),lino=finish('tile',0xd6cbab),tile=finish('tile',0xd8e0d4);
+ dressLange(g,{F,W,D,H});
+ const duskView=paper(256,256,(c,w,h)=>{
+  const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#263b4a');sky.addColorStop(.7,'#6d797b');sky.addColorStop(1,'#3e4c4b');c.fillStyle=sky;c.fillRect(0,0,w,h);
+  c.fillStyle='#24322f';for(let i=0;i<15;i++){const x=i*21-15,y=159+Math.sin(i*2.7)*22;c.beginPath();c.ellipse(x,y,18+Math.sin(i)*6,32,0,0,Math.PI*2);c.fill();c.fillRect(x-2,y,4,120);}
+  c.fillStyle='#293738';c.beginPath();c.moveTo(125,211);c.lineTo(185,168);c.lineTo(254,204);c.lineTo(254,256);c.lineTo(125,256);c.fill();c.fillStyle='#6a756d';c.fillRect(184,214,18,24);
+ });
+ const duskPane=new THREE.MeshStandardMaterial({map:duskView,color:0xaab5b3,emissive:0x738c96,emissiveMap:duskView,emissiveIntensity:.28,roughness:.29,metalness:.04});duskPane.name='c7-lange-dusk-pane';
  // ---- walls: the outside four (plaster in, the house's paint out), then the rooms -----------------------------------------------
  const ti=outside?.1:t,ex=hw-(outside?.02:0)-ti/2,ez=hd-(outside?.02:0)-ti/2,frontHole=u0=>[[doorX+u0-.5,doorX+u0+.5,0,2.1]];
  B.wall([-ex,-ez],[ex,-ez],{y0:F,y1:F+H,t:ti,m:wallM,holes:frontHole(ex)});B.wall([ex,-ez],[ex,ez],{y0:F,y1:F+H,t:ti,m:wallM});B.wall([ex,ez],[-ex,ez],{y0:F,y1:F+H,t:ti,m:wallM});B.wall([-ex,ez],[-ex,-ez],{y0:F,y1:F+H,t:ti,m:wallM});
@@ -107,7 +116,7 @@ export function createLangeHouse({W=LANGE.W,D=LANGE.D,F=LANGE.F,doorX=LANGE.door
  const hallT=new THREE.Group();hallT.name='lange-hall-table';K.box(hallT,0,.38,0,.9,.04,.3,mat(0x5a3a26,{},'timber'));for(const [x,z] of [[-.4,-.12],[.4,-.12],[-.4,.12],[.4,.12]])K.box(hallT,x,.18,z,.03,.36,.03,mat(0x5a3a26,{},'timber'));
  const hallLamp=new THREE.Group();K.cyl(hallLamp,0,.06,0,.07,.12,mat(0x8a8a6a));K.cyl(hallLamp,0,.24,0,.13,.16,mat(0xf0e4c8,{emissive:0xffd8a0,emissiveIntensity:.35}),{r2:.08});hallLamp.position.set(-.25,.4,0);hallT.add(hallLamp);
  K.cyl(hallT,.22,.43,0,.09,.05,mat(0xc8b890));put(hallT,-1.45,1.4,{solid:[.45,.15]});
- const pic=new THREE.Group();pic.name='lange-picture';K.slab(pic,0,0,0,.42,.32,.02,mat(0x3a2a1c));K.plane(pic,0,0,.012,.36,.26,mat(0x8a9aa0),{});pic.rotation.order='YXZ';put(pic,.62,1.525,{y:F+1.55,a:Math.PI});
+ const pic=new THREE.Group();pic.name='lange-picture';K.slab(pic,0,0,0,.42,.32,.02,mat(0x3a2a1c));K.plane(pic,0,0,.012,.36,.26,wallPrintArt('mill'),{});pic.rotation.order='YXZ';put(pic,.62,1.525,{y:F+1.55,a:Math.PI});
  const glowTex=paper(64,32,(c,w,h)=>{const gr=c.createLinearGradient(0,0,0,h);gr.addColorStop(0,'rgba(255,235,200,0)');gr.addColorStop(.55,'rgba(255,228,180,.55)');gr.addColorStop(1,'rgba(255,236,200,1)');c.fillStyle=gr;c.fillRect(0,0,w,h);const sd=c.createLinearGradient(0,0,w,0);sd.addColorStop(0,'rgba(0,0,0,1)');sd.addColorStop(.12,'rgba(0,0,0,0)');sd.addColorStop(.88,'rgba(0,0,0,0)');sd.addColorStop(1,'rgba(0,0,0,1)');c.globalCompositeOperation='destination-out';c.fillStyle=sd;c.fillRect(0,0,w,h);});
  const feetTex=paper(64,32,(c,w,h)=>{c.clearRect(0,0,w,h);for(const x of [20,44]){const r=c.createRadialGradient(x,h-4,1,x,h-4,13);r.addColorStop(0,'rgba(0,0,0,1)');r.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=r;c.fillRect(0,0,w,h);}});
  const strip=K.plane(g,-.2,F+.013,1.43,.78,.22,new THREE.MeshBasicMaterial({color:0xffffff,map:glowTex,transparent:true,opacity:.9,depthWrite:false}),{rx:-Math.PI/2,name:'lange-bath-light'});

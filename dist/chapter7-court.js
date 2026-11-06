@@ -28,12 +28,15 @@ import * as THREE from './three.module.js';
 import {groundPoint} from './route.js';
 import {LOOKOUT} from './layout.js';
 import {streetCoords} from './terrain.js';
-import {mat,C7,createBuild,houseShell,periodCar,streetlight,streetLamp,mailbox,utilityPole,trashCan,fenceRun,hedgeRun,yardTree,glassLit,porchGlow,paper} from './chapter7-build.js';
+import {mat,C7,createBuild,houseShell,periodCar,streetlight,streetLamp,mailbox,utilityPole,trashCan,fenceRun,hedgeRun,glassLit,porchGlow,paper} from './chapter7-build.js';
 import {createHorrorHouse,createDiningRoom,HH,STAIR,PIC} from './chapter7-interiors.js';
 import {createLangeHouse,LANGE} from './chapter7-lange.js';
 import {createPineForest} from './pine-forest.js';
 import {bake,inBox,clamp,damp,smooth,makeShapes} from './chapter6-kit.js';
 import {seeded} from './kit.js';
+
+import {verge,remnant,streetJoints} from './chapter7-street-art.js';
+import {finish} from './chapter7-finishes.js';
 
 export const LANE={d:1171,lat:21.6};             // the lane's mouth, in Oak Hollow Drive's coordinates (past the field fence's end)
 export const REGION={x:1500,z:-1000};             // where copy A's mouth is (far beyond anything Oak Hollow draws)
@@ -80,7 +83,7 @@ export function createCourt({scene,world,sfx=()=>{}}){
   // the canopy: overgrown lumps meeting over the lane (the light comes down green and broken)
   const leaf=mat(0x34502a,{roughness:1},'lawn');const cr=seeded(4419);
   for(const [x0,z0,x1,z1] of [[0,0,0,12],[0,12,-8,12],[-8,12,-8,26]]){const L=Math.hypot(x1-x0,z1-z0),n=Math.ceil(L/1.1);for(let k=0;k<=n;k++){const u=k/n,x=x0+(x1-x0)*u,z=z0+(z1-z0)*u;
-   for(const s of [-1,1]){if(cr()<.25)continue;const b=new THREE.Mesh(new THREE.IcosahedronGeometry(1+cr()*.5,0),leaf);const px=x+(x0===x1?s*(.6+cr()*.5):0),pz=z+(z0===z1?s*(.6+cr()*.5):0);b.position.set(px,laneFloor(x,z)+3.2+cr()*.5,pz);b.scale.set(1.3,.55,1.3);b.castShadow=true;g.add(b);}}}
+   for(const s of [-1,1]){if(cr()<.25)continue;const b=new THREE.Mesh(new THREE.IcosahedronGeometry(1+cr()*.5,1),leaf);const px=x+(x0===x1?s*(.6+cr()*.5):0),pz=z+(z0===z1?s*(.6+cr()*.5):0);b.position.set(px,laneFloor(x,z)+3.2+cr()*.5,pz);b.scale.set(1.3,.55,1.3);b.castShadow=true;g.add(b);}}}
   // a township marker post at the mouth; the copies' board fence past the first bend
   {const p=K.slab(g,1.75,laneFloor(1.7,.3)+.6,.3,.1,1.2,.1,mat(0xd8d2b0));void p;const tag=K.slab(g,1.75,laneFloor(1.7,.3)+1.12,.24,.12,.16,.02,mat(0x2a6a3a));void tag;}
   let fenceG=null;if(fence){fenceG=new THREE.Group();fenceG.name='lane-fence';fenceRun(fenceG,[[-1.5,FENCE_Z],[1.5,FENCE_Z]],{h:2.3,style:'board',c:0x7a6a54});fenceG.position.y=laneFloor(0,FENCE_Z);g.add(fenceG);}
@@ -90,19 +93,21 @@ export function createCourt({scene,world,sfx=()=>{}}){
  const real=new THREE.Group();real.name='chapter7-lookout-lane';real.position.set(O.x,0,O.z);real.rotation.y=TH;
  const realLane=buildLane('lane-real');real.add(realLane.g);
  // the old paving across the corner of the lookout (from the cul-de-sac's edge to the lane): broken, grass through it
+ const fieldCover=new Set();
  const CON=[[15,-20.2],[0,-.4]];
- {const g=new THREE.Group();g.name='old-court-paving';real.add(g);const m=mat(0x57554e,{roughness:1},'roadwear'),r=seeded(1958);
-  const [a,b]=CON,L=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/L,dz=(b[1]-a[1])/L,n=Math.ceil(L/.8);
+ {const g=new THREE.Group();g.name='old-court-paving';real.add(g);const r=seeded(1958);
+  const [a,b]=CON,L=Math.hypot(b[0]-a[0],b[1]-a[1]),dx=(b[0]-a[0])/L,dz=(b[1]-a[1])/L;
   // (slabs of uneven length, most of them meeting at a crack, now and then a gap where the grass has taken the rest:
   // laid one per .8 m they read as railway sleepers)
-  void n;for(let u=.3,k=0;u<L-.5;k++){const len=Math.min(L-.3-u,1.2+r()*1.6);if(r()>.15){const um=u+len/2,x=a[0]+dx*um,z=a[1]+dz*um,w=realW(x,z),gap=r()<.7?.03+r()*.05:.25+r()*.35;
-    const piece=K.slab(g,x+(r()-.5)*.25,0,z,2.3+r()*1.0,.025,Math.max(.4,len-gap),m,{shadow:false});piece.position.y=realFloor(w.x,w.z)+.002+(k%3)*.0015;piece.rotation.y=-Math.atan2(dz,dx)+Math.PI/2+(r()-.5)*.06;}u+=len;}
+  const localFloor=(x,z)=>{const w=realW(x,z);return realFloor(w.x,w.z);};
+  fieldCover.add(remnant(g,a,b,localFloor));
+  fieldCover.add(verge(g,[[3,-5,3.6,3.2,290],[7,-11,3.4,6,240],[1.1,-.6,2.3,2.1,140]],localFloor,7245));
   // the old curbstones, here and there in the grass along one side (the court's curb; the clue)
   const curb=mat(0x9a968a,{},'mineral');for(let k=0;k<9;k++){const u=2+k*2.3,x=a[0]+dx*u-dz*1.65,z=a[1]+dz*u+dx*1.65;const w=realW(x,z);const c=K.slab(g,x,0,z,1.1,.16,.18,curb);c.position.y=realFloor(w.x,w.z)+.03;c.rotation.y=-Math.atan2(dz,dx)+(r()-.5)*.15;c.rotation.z=(r()-.5)*.1;}}
  // the patch of field the lane comes out in, and the brush along its edges (its natural limits)
  const FIELD={x0:-30,x1:9,z0:24,z1:58};
  {const g=new THREE.Group();g.name='field-brush';real.add(g);const r=seeded(1974);for(const [pts,seed] of [[[[-30,26],[-30,58],[9,58]],41],[[[9,58],[9,30]],42]]){const hg=new THREE.Group();hedgeRun(hg,pts,{h:1.6,w:1.6,seed,c:0x4a5a30});hg.traverse(o=>{if(o.isMesh){const w=realW(o.position.x,o.position.z);o.position.y+=realFloor(w.x,w.z)-.1;}});g.add(hg);}void r;}
- bake(real);
+ bake(real,fieldCover);
  // ---- the far region: the court ---------------------------------------------------------------------------------------------
  const court=new THREE.Group();court.name='chapter7-old-mill-court';court.position.set(REGION.x,0,REGION.z);court.rotation.y=TH;
  const copyA=buildLane('lane-copy-a',{fence:true});court.add(copyA.g);
@@ -115,7 +120,7 @@ export function createCourt({scene,world,sfx=()=>{}}){
    geo2.computeVertexNormals();const mound=new THREE.Mesh(geo2,mat(C7.lawn,{roughness:1},'lawn'));mound.position.set(off[0],0,off[1]);mound.receiveShadow=true;mound.name='lane-mound';court.add(mound);}}
  // roads, curbs, sidewalks (legs and the bend), driveways
  const asphalt=mat(C7.asphalt,{roughness:.95},'roadwear'),concrete=mat(C7.concrete,{},'mineral'),curbM=mat(0xb0ada4,{},'mineral');
- const strip=(x0,z0,x1,z1,w,y,m,h=.04)=>{const L=Math.hypot(x1-x0,z1-z0);const s=K.slab(court,(x0+x1)/2,y-h/2,(z0+z1)/2,w,h,L,m,{shadow:false});s.rotation.y=-Math.atan2(x1-x0,z1-z0);return s;};
+ const strip=(x0,z0,x1,z1,w,y,m,h=.04)=>{const L=Math.hypot(x1-x0,z1-z0);const s=K.slab(court,(x0+x1)/2,y-h/2,(z0+z1)/2,w,h,L,m,{shadow:false});s.rotation.y=Math.atan2(x1-x0,z1-z0);return s;};
  for(const [x,z0,z1] of [[LEG.A,HEAD_Z,BEND.z],[LEG.B,HEAD_Z+2,BEND.z]]){strip(x,z0,x,z1,ROAD*2,G0+.02,asphalt);for(const s of [-1,1]){strip(x+s*(ROAD+.15),z0,x+s*(ROAD+.15),z1,.3,G0+.13,curbM,.16);strip(x+s*5.6,z0,x+s*5.6,z1,1.25,G0+.07,concrete,.06);}}
  {const n=24;for(let k=0;k<n;k++){const a0=k/n*Math.PI,a1=(k+1)/n*Math.PI;
    // (the bend: leg A at angle 0, BEND.x+r = -8; round through the far side to leg B at angle pi)
@@ -158,7 +163,7 @@ export function createCourt({scene,world,sfx=()=>{}}){
   const mb=mailbox({c:[0x2a2a2c,0x3a5a3a,0x5a2a2a][L.o.seed%3],name:NAMES[L.id]}),mq=fw(p.doorX+1.6,-p.D/2-6.9);mb.position.set(mq.x,G0,mq.z);mb.rotation.y=a;court.add(mb);solids.push({x:mq.x,z:mq.z,hw:.15,hd:.25,a:-a});MB[L.id]={x:mq.x,z:mq.z};
   {const dq=fw(p.doorX,-p.D/2-.05),sq=fw(p.doorX,-p.D/2-1.1);DOORS[L.id]={x:dq.x,y:G0+p.F+1.25,z:dq.z,stand:{x:sq.x,z:sq.z}};}}
  // ---- the house with the green door (its own interior) ----------------------------------------------------------------------------
- const GL=LOTS.find(l=>l.horror),HG=createHorrorHouse({wallpaper:paper(256,256,(g,w,h)=>{g.fillStyle='#b9a983';g.fillRect(0,0,w,h);g.fillStyle='rgba(90,70,40,.25)';for(let y=0;y<h;y+=32)for(let x=(y/32)%2*16;x<w;x+=32){g.beginPath();g.ellipse(x,y,6,10,0,0,7);g.fill();}})});
+ const GL=LOTS.find(l=>l.horror),HG=createHorrorHouse();
  {const sh=houseShell({w:HH.W,d:HH.D,stories:2,h:2.9,floorY:HH.F,wall:0xb9b4a0,roof:0x3a3634,door:0x2f5a3a,skip:['body','front'],lit:0,seed:50,porch:{w:3.4,d:1.9},doorX:0,pitch:.5});
   sh.g.position.set(GL.x,G0,GL.z);sh.g.rotation.y=GL.a;court.add(sh.g);HG.g.position.set(GL.x,G0,GL.z);HG.g.rotation.y=GL.a;court.add(HG.g);houses.green={...GL,parts:sh,inside:HG};
   // (the shell's own windows sit on the real walls: dark glass; the porch roof is the shell's)
@@ -168,7 +173,7 @@ export function createCourt({scene,world,sfx=()=>{}}){
  const hToC=(hx,hz)=>({x:GL.x+Math.cos(GL.a)*hx+Math.sin(GL.a)*hz,z:GL.z-Math.sin(GL.a)*hx+Math.cos(GL.a)*hz});
  const cToH=(x,z)=>{const dx=x-GL.x,dz=z-GL.z,c=Math.cos(GL.a),s=Math.sin(GL.a);return {x:dx*c-dz*s,z:dx*s+dz*c};};
  // ---- the Langes' (No. 5): its rooms, in its own frame -----------------------------------------------------------------------------------
- const LL=LOTS.find(l=>l.lange),lange=createLangeHouse({outside:mat(LL.o.wall,{},'housepaint')});lange.g.position.set(LL.x,G0,LL.z);lange.g.rotation.y=LL.a;court.add(lange.g);houses.a5.inside=lange;
+ const LL=LOTS.find(l=>l.lange),lange=createLangeHouse({outside:finish('siding',LL.o.wall)});lange.g.position.set(LL.x,G0,LL.z);lange.g.rotation.y=LL.a;court.add(lange.g);houses.a5.inside=lange;
  const lToC=(lx,lz)=>({x:LL.x+Math.cos(LL.a)*lx+Math.sin(LL.a)*lz,z:LL.z-Math.sin(LL.a)*lx+Math.cos(LL.a)*lz});
  const cToL=(x,z)=>{const dx=x-LL.x,dz=z-LL.z,c=Math.cos(LL.a),s=Math.sin(LL.a);return {x:dx*c-dz*s,z:dx*s+dz*c};};
  const inLangeBox=(x,z,pad=0)=>{const q=cToL(x,z);return Math.abs(q.x)<lange.hw+pad&&Math.abs(q.z)<lange.hd+pad;};
@@ -202,8 +207,8 @@ export function createCourt({scene,world,sfx=()=>{}}){
   const s=new THREE.Group();s.name='street-sign';K.cyl(s,0,1.4,0,.04,2.8,mat(0x8a8a86,{metalness:.5}));for(const a of [0,Math.PI/2]){const b=K.slab(s,0,2.75,0,.9,.22,.02,new THREE.MeshStandardMaterial({map:tex,color:tex?0xffffff:0x1f5a3a,roughness:.5}));b.rotation.y=a;}
   s.position.set(LEG.A+5.3,G0,HEAD_Z+1.8);court.add(s);solids.push({x:LEG.A+5.3,z:HEAD_Z+1.8,hw:.1,hd:.1,a:0});}
  // yard trees
- const tr=seeded(707);for(const [x,z,h] of [[18,55,7.5],[19,84,8],[-34,57,7],[-35,84,8.5],[-43,62,7.2],[-42,88,7.6],[-94,56,8],[-95,84,7],[-38,124,9],[-12,140,7],[-64,140,7.4],[21,30,6.5],[-97,32,7]]){
-  const t=yardTree({h,seed:(tr()*1e6)|0});t.position.set(x,G0,z);court.add(t);solids.push({x,z,hw:.3,hd:.3,a:0});}
+ const yardTrees=[],tr=seeded(707);for(const [x,z,h] of [[18,55,7.5],[19,84,8],[-34,57,7],[-35,84,8.5],[-43,62,7.2],[-42,88,7.6],[-94,56,8],[-95,84,7],[-38,124,9],[-12,140,7],[-64,140,7.4],[21,30,6.5],[-97,32,7]]){
+  yardTrees.push({e:x,n:z,kind:'oak',seed:(tr()*1e6)|0,size:h/9.5});solids.push({x,z,hw:.3,hd:.3,a:0});}
  // fences: back fences down the middle of the inner block, a few side fences; hedges round the whole (its natural limits)
  const walls=[];const fenceW=(pts,o)=>{const g=new THREE.Group();fenceRun(g,pts,o);g.position.y=G0;court.add(g);for(let i=0;i<pts.length-1;i++)walls.push({ax:pts[i][0],az:pts[i][1],bx:pts[i+1][0],bz:pts[i+1][1],t:.12,h:o.h||1.2,fence:true});};
  fenceW([[-38,32],[-38,102]],{h:1.7,style:'board',c:0x8a7a62});
@@ -238,10 +243,16 @@ export function createCourt({scene,world,sfx=()=>{}}){
  // ---- the forest round it all (Chapter Five's kit) ----------------------------------------------------------------------------------------
  const fr=seeded(7417),trees=[];for(let i=0;i<1200&&trees.length<300;i++){const a=fr()*Math.PI*2,d=120+fr()*110,x=-38+Math.cos(a)*d,z=100+Math.sin(a)*d*.95;
   if(x>60&&x<135&&z>40&&z<160)continue;trees.push({e:x,n:z,kind:fr()<.4?'pine':'oak',seed:(fr()*1e6)|0,size:.9+fr()*.5});}
- const forestG=new THREE.Group();forestG.name='court-forest';court.add(forestG);const forest=createPineForest(trees,forestG,t=>({x:t.e,y:G0-.1,z:t.n}));
+ const forestG=new THREE.Group();forestG.name='court-forest';court.add(forestG);const forest=createPineForest([...yardTrees,...trees],forestG,t=>({x:t.e,y:G0-.1,z:t.n}));
  // ---- bake the static court -----------------------------------------------------------------------------------------------------
+ const forestEye={position:new THREE.Vector3()};
  const keepC=new Set([giant,police,dining.g,HG.g,lange.g,forestG,copyA.fenceG,copyB.fenceG,pressed.g,...Object.values(cars).map(c=>c.g),...lamps.map(l=>l.g),...poles.map(p=>p.g),...cans,...glows]);
  for(const h of Object.values(houses))if(h.parts?.g)keepC.add(h.parts.g);
+ streetJoints(court,[LEG.A,LEG.B],BEND,ROAD,G0);
+ for(const leg of [LEG.A,LEG.B])for(const side of [-1,1]){
+  const pts=[39,59,78,102,116].map(z=>[leg+side*6.52,z,.52,3.1,54]);
+  keepC.add(verge(court,pts,()=>G0,Math.round(941+leg*side)));
+ }
  bake(court,keepC);for(const h of Object.values(houses))if(h.parts?.g&&h.id!=='green'&&h.id!=='dining')bake(h.parts.g,new Set([h.parts.roof,h.parts.porchLight]));
  bake(lange.g,new Set(lange.moving));
  // ---- nav ---------------------------------------------------------------------------------------------------------------------------------
@@ -329,7 +340,8 @@ export function createCourt({scene,world,sfx=()=>{}}){
  function update(dt,{camera=null,dusk=0}={}){ST.dusk=dusk;streetLamp.emissiveIntensity=2.4*smooth((dusk-.15)/.5);glassLit.emissiveIntensity=1.1*smooth((dusk-.05)/.6);porchGlow.emissiveIntensity=2*smooth((dusk-.2)/.4);
   for(const g of glows)g.material.opacity=.65*smooth((dusk-.25)/.5);
   if(police.visible){polT+=dt;const k=Math.floor(polT*3.2)%2;pR.material.opacity=k?.95:.15;pB.material.opacity=k?.15:.95;}
-  updateGiant(dt);forest.update(dt,camera);if(ST.active)lange.update(dt);}
+  updateGiant(dt);if(camera){const eye=regL(camera.position.x,camera.position.z);forestEye.position.set(eye.x,camera.position.y,eye.z);}
+  forest.update(dt,camera?forestEye:null);if(ST.active)lange.update(dt);}
  function setActive(on){ST.active=on;}
  function attach(on){for(const g of [real,court]){if(on&&!g.parent)scene.add(g);else if(!on&&g.parent)g.removeFromParent();}ST.active=on;}
  function reset(){Object.assign(ST,{level:'g',porch:true,fenceA:true,fenceB:true,portalA:false,portalB:false,dusk:0,active:false});HG.reset();lange.reset();GI.t=-1;GI.stage='off';GI.creaked=false;giant.visible=false;police.visible=false;

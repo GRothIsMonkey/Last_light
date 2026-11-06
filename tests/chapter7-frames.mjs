@@ -6,8 +6,10 @@
 // SHOTS=a,b,... takes only those; QA_OUTPUT (default docs/qa/chapter7-the-street-that-wasnt-there/frames) gets the jpgs
 // and frames.json. BATCH (default 6): shots per browser (software GL memory).
 import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import {createRequire} from 'node:module';
+import {createHash} from 'node:crypto';
 const require=createRequire(import.meta.url);let pw;for(const p of [null,'/opt/node22/lib/node_modules'])try{pw=p?require(p+'/playwright'):require('playwright');break;}catch{}
 const repo=path.resolve('.'),root=path.join(repo,'dist'),out=path.resolve(process.env.QA_OUTPUT||'docs/qa/chapter7-the-street-that-wasnt-there/frames');fs.mkdirSync(out,{recursive:true});
+const runtimeHashes=Object.fromEntries(fs.readdirSync(root).filter(n=>fs.statSync(path.join(root,n)).isFile()).sort().map(n=>['dist/'+n,createHash('sha256').update(fs.readFileSync(path.join(root,n))).digest('hex')]));
 const types={js:'application/javascript',css:'text/css',html:'text/html',glb:'model/gltf-binary',json:'application/json',png:'image/png',jpg:'image/jpeg'};
 const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.split('?')[0]);if(u==='/favicon.ico'){res.writeHead(204);return res.end();}
  const file=path.join(repo,u.replace(/^\//,''));if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}
@@ -15,7 +17,7 @@ const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.sp
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const args=['--no-sandbox','--disable-dev-shm-usage','--enable-precise-memory-info','--js-flags=--expose-gc'];if(!process.env.BROWSER_GPU)args.push('--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist');
 let browser,page;const errors=[],frames=[];
-async function open(){if(browser)await browser.close().catch(()=>{});browser=await pw.chromium.launch({headless:true,args});page=await browser.newPage({viewport:{width:1440,height:900}});
+async function open(){if(browser)await browser.close().catch(()=>{});browser=await pw.chromium.launch({executablePath:process.env.BROWSER_PATH||undefined,headless:true,args});page=await browser.newPage({viewport:{width:1440,height:900}});
  page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.addInitScript(()=>{window.AudioContext=undefined;window.webkitAudioContext=undefined;});
  await page.goto(`http://127.0.0.1:${server.address().port}/dist/index.html?qa`,{timeout:180000});await page.waitForFunction(()=>window.lastLight,null,{timeout:180000});
@@ -33,6 +35,10 @@ const snap=async(name,note='')=>{await page.evaluate(()=>{for(const id of ['obje
 // [name, note, page function] continuations taken in order after it (the beat goes on between them).
 const A7='lastLight.chapter7';
 const SHOTS=[
+ ['a01-foyer-from-entry','The whole foyer from the player’s entry, after the footsteps stop',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-green-star');F.run(1.6);const p=A.court.H3(-.12,-1.02);p.y+=1.32;F.face(p);F.run(.3);}],
+ ['a03-jamie','Jamie at the curb in daylight, shortly before the ride',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-curb');F.run(1.4);const j=L.chapter.kit.jamie.person,head=j.parts.head.getWorldPosition(new L.camera.position.constructor()),p=j.group.position,dx=L.camera.position.x-p.x,dz=L.camera.position.z-p.z,d=Math.hypot(dx,dz)||1;L.placePlayer({x:p.x+dx/d*1.5,z:p.z+dz/d*1.5,a:0,mode:'walk'});F.run(.25,()=>F.face(head));}],
+ ['a04-after-grip','The empty lane after Jamie has gone, at the gum checkpoint',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-gum-pickup');F.run(1);const p=A.court.SPOT.mouth;F.face({x:p.x,y:p.y+1.05,z:p.z});F.run(.2);}],
+
  ['01-sams-room','Sam’s room, the morning: the desk, the photograph in its frame, the fan',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-fan');F.run(1.2);F.face(A.house.SPOTS.photo);F.run(.4);}],
  ['02-the-fan','The box fan by the bed, running',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-fan');F.run(.8);F.face(A.house.SPOTS.fan);F.run(.3);}],
  ['03-photo-four','The photograph in your hand: the four of you at the oak',()=>{const L=lastLight,A=L.chapter7,F=__f;L.jump('c7-fan');F.run(.5);A.act('c7-photo');F.run(2.6);}],
@@ -100,4 +106,4 @@ const want=process.env.SHOTS?new Set(process.env.SHOTS.split(',')):null,list=SHO
 try{for(const [i,[name,note,fn]] of list.entries()){const cont=i>0&&/^(05|11|12|14|15|x17|x23)-/.test(name);if(!cont&&i%BATCH===0)await open();else if(!cont&&!page)await open();
   try{await page.evaluate(`(${fn.toString()})()`);await snap(name,note);}catch(e){errors.push(name+': '+String(e.message||e).slice(0,300));console.log('ERR',name,String(e.message||e).slice(0,300));}
   await page.evaluate(()=>globalThis.gc?.());}}
-finally{fs.writeFileSync(path.join(out,'frames.json'),JSON.stringify({frames,errors},null,2));await browser?.close();server.close();console.log(JSON.stringify({frames:frames.length,errors}));}
+finally{fs.writeFileSync(path.join(out,'frames.json'),JSON.stringify({runtimeHashes,frames,errors},null,2));await browser?.close();server.close();console.log(JSON.stringify({frames:frames.length,errors}));}

@@ -21,12 +21,16 @@ import {bake,inBox,clamp} from './chapter6-kit.js';
 import {seeded} from './kit.js';
 
 // ---- the house with the green door --------------------------------------------------------------------------------------------
+import {finish} from './chapter7-finishes.js';
+import {dressGreen} from './chapter7-rooms-art.js';
+
 export const HH={W:10,D:9,F:.6,H1:2.75,UP:3.5,H2:2.5,UCX:1.65};// ground floor at F; upstairs floor at UP; the upstairs hall's half width (wider than the core below: a way past the stairwell on each side)
 export const STAIR={x0:-.5,x1:.5,z0:-1.6,z1:2.6};// rising toward the back (+z), F at z0 to UP at z1
-export function createHorrorHouse({wallpaper=null}={}){
+export function createHorrorHouse(){
  const g=new THREE.Group();g.name='c7-green-door-house';const B=createBuild(g),{K}=B,{F:FN}=createFurniture();const {W,D,F,H1,UP,H2,UCX:ucx}=HH,hw=W/2,hd=D/2,t=.14;
- const ext=mat(0xb9b4a0,{},'housepaint'),plaster=mat(0xcfc6b0,{},'plaster'),paperM=wallpaper?new THREE.MeshStandardMaterial({map:wallpaper,roughness:.92}):mat(0xb8a888,{},'plaster');
- const boards=mat(0x7a5a3a,{},'timber'),carpet=mat(0x6a5a44,{},'carpet'),ceil=mat(0xd8d2c2),trim=mat(C7.trim),green=mat(0x2f5a3a,{roughness:.55},'timber'),kitchenTile=mat(0xc8c2a8,{roughness:.6},'mineral');
+ const ext=finish('siding',0xc4bdab),plaster=finish('fern',0xd7d4b7);
+ const boards=finish('oak',0xc9aa86),carpet=mat(0x6a5a44,{},'carpet'),ceil=mat(0xd8d2c2),trim=mat(C7.trim),green=mat(0x335342,{roughness:.42},'timber'),kitchenTile=finish('tile',0xdad5b9);
+ dressGreen(g,{F,UP,H2});
  const walls=[],solids=[],doors={},hides={},spots={};
  // a wall in the plan (both floors): from a to b at a level; holes along it; it also blocks the nav and sight
  const W2=(a,b,{lv='g',holes=[],m=plaster,th=t,ext:outside=false}={})=>{const y0=lv==='g'?F:UP,y1=lv==='g'?F+H1:UP+H2;B.wall(a,b,{y0,y1,t:th,m,holes,name:outside?'outer-wall':'wall'});
@@ -177,10 +181,10 @@ export function createHorrorHouse({wallpaper=null}={}){
 // The room is in the dining house's frame: the picture window in the front wall (z=-D/2) at x=PIC.x, the room behind it.
 export const PIC={x:2.3,w:2.3,h:1.55,sill:.62};// (a low, wide picture window: from the lawn you see them at the table, not just the tops of their heads)
 export function createDiningRoom({D=8.6,F=.5,tvTex=null}={}){const g=new THREE.Group();g.name='c7-dining-room';const B=createBuild(g),{K}=B,{F:FN}=createFurniture();const hd=D/2,TZ=-hd+1.75;// (the table nearer the window)
- const paperM=mat(0xa8a078,{},'plaster'),boards=mat(0x6a4a30,{},'timber');
+ const plaster=finish('rose',0xd4c6a6),boards=finish('oak',0xb99779);
  const R={x0:PIC.x-2.4,x1:PIC.x+2.4,z0:-hd+.12,z1:-hd+4.4};
  // its own three walls and ceiling (the house's front wall, with the picture window, is the house's)
- B.wall([R.x0,R.z0],[R.x0,R.z1],{y0:F,y1:F+2.6,m:paperM});B.wall([R.x1,R.z0],[R.x1,R.z1],{y0:F,y1:F+2.6,m:paperM});B.wall([R.x0,R.z1],[R.x1,R.z1],{y0:F,y1:F+2.6,m:paperM,holes:[[3.1,4.0,0,2.05]]});
+ B.wall([R.x0,R.z0],[R.x0,R.z1],{y0:F,y1:F+2.6,m:plaster});B.wall([R.x1,R.z0],[R.x1,R.z1],{y0:F,y1:F+2.6,m:plaster});B.wall([R.x0,R.z1],[R.x1,R.z1],{y0:F,y1:F+2.6,m:plaster,holes:[[3.1,4.0,0,2.05]]});
  B.floor(R.x0,R.z0,R.x1,R.z1,F,boards);B.ceiling(R.x0,R.z0,R.x1,R.z1,F+2.6,mat(0xd8d0bc));
  const table=FN.table({w:1.9,d:1.0});table.position.set(PIC.x,F,TZ);table.rotation.y=Math.PI/2;g.add(table);
  // the places: four plates, glasses, a dish in the middle

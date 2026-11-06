@@ -54,7 +54,7 @@ export function createLangeFigure({scene}){
    // bent forward from the hips, low; the arms out ahead (back: still reaching, at you); on her toes
    const lean=R.back?.22:.46;P2[PI.lean]+=lean;P2[1]-=.05;P2[PI.roll]+=.1*Math.sin(t*5.3);
    for(const [o,sd,e] of [[PI.lh,-1,PI.le],[PI.rh,1,PI.re]]){P2[o]=sd*(.13+.03*Math.sin(t*13+sd));P2[o+1]=.98+.05*Math.sin(t*9+sd*2);P2[o+2]=-.56;P2[e]=sd*.6;P2[e+1]=-.25;P2[e+2]=.5;}
-   F.tiltWant=.42*Math.sign(Math.sin(t*2.6+.4));
+   F.tiltWant=.26*Math.sign(Math.sin(t*2.6+.4));
    P2[PI.lfp]=-.35;P2[PI.rfp]=-.35;}
   else{standPose(P2,t,{shift:.3});
    if(F.state==='loom'){F.loomT+=dt;const u=F.loomT;
@@ -62,7 +62,7 @@ export function createLangeFigure({scene}){
     P2[PI.lean]+=.34;P2[PI.roll]+=.16*Math.sign(Math.sin(u*2.1))*Math.min(1,Math.abs(Math.sin(u*2.1))*3);P2[1]-=.02*Math.sin(u*31)*Math.exp(-u);
     // (the arms hanging out in front of her, low, twitching; the head rolled right over to one side, then jerked to the other)
     for(const [o,sd,e] of [[PI.lh,-1,PI.le],[PI.rh,1,PI.re]]){P2[o]=sd*(.19+.02*Math.sin(u*23+sd*2));P2[o+1]=.86+.03*Math.sin(u*(17+sd*3));P2[o+2]=-.34;P2[e]=sd*.7;P2[e+1]=-.3;P2[e+2]=.35;}
-    F.tiltWant=[-1.05,.9,-1.0,.95,-1.1][Math.floor(u/.55)%5];
+    F.tiltWant=[-.48,.38,-.58,.48,-.56][Math.floor(u/.55)%5];
     if(L)F.a=turn(F.a,want,dt*3);
     if(u>=F.loomDur){F.state='still';const th=F.then;F.then=null;th?.();}}}
   P2[PI.hy]=F.head+F.jerk;P2[PI.hp]=-.12;if(F.state!=='run'&&F.state!=='loom')F.tiltWant=.3;
@@ -117,6 +117,6 @@ export function createCast7({scene,nav}){
  const jamieMom=createActor(scene,nav,JAMIE_MOM,{seed:91});
  // ---- the studio: the four of them and their bikes (for the photograph) ----------------------------------------------------
  const studio={};for(const k of ['player','jamie','sam','alex']){const p=createPerson({...CAST[k],expressive:true});p.group.visible=false;p.group.name='c7-studio-'+k;scene.add(p.group);
-  const f=createFace(p,CAST[k]);p.face=f;f.update(1/30,{clock:0});const b=createBike(CAST[k].bike);b.group.visible=false;b.group.name='c7-studio-bike-'+k;scene.add(b.group);studio[k]={person:p,bike:b,pose:newPose()};}
+  const f=createFace(p,CAST[k]);p.face=f;f.update(1/30,{clock:0});const b=createBike(CAST[k].bike);b.group.traverse(m=>{if(m.isLineSegments){m.material.color.setHex(0x66675d);m.material.opacity=.62;m.material.transparent=true;m.material.depthWrite=false;}});b.group.visible=false;b.group.name='c7-studio-bike-'+k;scene.add(b.group);studio[k]={person:p,bike:b,pose:newPose()};}
  return {fam,D,seatAll,show,turnHeads,lunge,update,reset,jamieMom,studio,actors:[jamieMom]};
 }

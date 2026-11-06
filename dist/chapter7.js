@@ -30,7 +30,7 @@
 // mind); people: chapter7-cast.js; paper: chapter7-props.js; building kit: chapter7-build.js.
 import * as THREE from './three.module.js';
 import {headingTo,wrap} from './people.js';
-import {P as PI,newPose,standPose,sitPose,applyPose,blendPose,copyPose} from './rig.js';
+import {P as PI,newPose,standPose,sitPose,applyPose,blendPose,copyPose,shoulderPos} from './rig.js';
 import {CAST} from './cast.js';
 import {createCompanionBrain} from './companion-brain.js';
 import {createInventory} from './inventory.js';
@@ -40,7 +40,10 @@ import {createCourt,P1 as LANE_P1,LEG as COURT_LEG} from './chapter7-court.js';
 import {STAIR,HH} from './chapter7-interiors.js';
 import {createHunterModel,HUNTER_ID} from './chapter7-creature.js';
 import {createHunterAI} from './chapter7-hunter.js';
-import {createCast7,createLangeFigure} from './chapter7-cast.js';
+import {heelMark,fridayYards} from './chapter7-street-art.js';
+import {portrait} from './chapter7-portraits.js';
+import {chapter6Appearance} from './chapter6-models.js';
+import {createCast7,createLangeFigure,MRS_LANGE,JAMIE_MOM} from './chapter7-cast.js';
 import {makeOldBike} from './old-bike.js';
 import {poseBike} from './rig.js';
 import {canvas,texOf,photoSketch,PHOTO,planCanvas,modernCanvas,drawMapView,MAP,notebookPage,newspaper1966,calendar1991,samPage,tourPoster,schoolPictures,reyesPage,reyesIndent,poolPhoto} from './chapter7-props.js';
@@ -93,9 +96,14 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(!inA&&!inB)return true;if(inA!==inB)return false;const ha=court.cToH(qa.x,qa.z),hb=court.cToH(qb.x,qb.z);return court.HG.sight(ha.x,ay-court.G0,ha.z,hb.x,by-court.G0,hb.z);}
  const H=createHunterAI({model:HM,nav:hunterNav,sightClear,sfx:(n,p,op)=>sound(n,p,op),mark:w=>mark(w)});
  // ---- the lights this chapter brings (always the same four while it plays: no shader changes mid-scene) -------------------------
- const LIGHTS=[0,1,2,3].map(i=>{const l=new THREE.PointLight(0xffd6a0,0,9,2);l.name='c7-light-'+i;return l;});
- function lightsOn(on){for(const l of LIGHTS){if(on&&!l.parent)scene.add(l);else if(!on&&l.parent)l.removeFromParent();if(!on)l.intensity=0;}}
- function light(i,q,{intensity=3,dist=9,color=0xffd6a0}={}){const l=LIGHTS[i];if(!q){l.intensity=0;return;}l.position.set(q.x,q.y,q.z);l.intensity=intensity;l.distance=dist;l.color.setHex(color);}
+ const LIGHTS=[0,1,2,3].map(i=>{const l=new THREE.PointLight(0xffd6a0,0,9,2);l.name='c7-light-'+i;l.userData.detection={intensity:0,position:new THREE.Vector3()};return l;});
+ function lightsOn(on){for(const l of LIGHTS){if(on&&!l.parent)scene.add(l);else if(!on&&l.parent)l.removeFromParent();if(!on)l.intensity=l.userData.detection.intensity=0;}}
+ // Brighter art lights retain accepted fixture values for hunter detection.
+ function light(i,q,{intensity=3,dist=9,color=0xffd6a0,detectionIntensity=intensity,visualOnly=false}={}){
+  const l=LIGHTS[i],d=l.userData.detection;
+  if(!visualOnly){d.intensity=q?detectionIntensity:0;if(q)d.position.set(q.x,q.y,q.z);}
+  if(!q){l.intensity=0;return;}l.position.set(q.x,q.y,q.z);l.intensity=intensity;l.distance=dist;l.color.setHex(color);
+ }
  // ---- state ------------------------------------------------------------------------------------------------------------------
  function fresh(){for(const key of Object.keys(C))delete C[key];Object.assign(C,{t:0,pt:0,h:HOUR.start,flags:{},timers:[],cardT:-1,fadeIn:-1,fadeOut:-1,endT:-1,after:null,pose:null,match:false,want:null,wantT:0,
   spot:{jamie:null,sam:null},view:null,lookKind:null,minute:-1,sounds:{},amb:{traffic:.5,insects:.5,wind:.4,life:1,forest:0,tunnel:0,water:0},
@@ -185,7 +193,8 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(court.ST.active){const p0=me();if(court.inRegionAt(p0.x,p0.z))h+=.7*clamp((C.h-HOUR.court)/1.5,0,1);}
   const q=(a,b)=>smooth((h-a)/(b-a));let day=1-.5*q(18.4,19.6)-.5*q(19.6,20.25),p=.3*q(18.6,19.7)+.7*q(19.7,20.3),night=.6*q(19.95,20.4)+.3*q(20.4,21),deep=.15*q(20.2,21);
   const cv=inSams()?(S.phase==='n7-sams'||S.phase==='n7-names'||S.phase==='n7-window'?.75:.44):inGreen()?.62:inLange(camera.position)?.55:C.inGarage?.4:0;
-  return {day,p,night,deep,fill:0,storm:0,flash:0,cave:cv};}
+  const lateSun=q(15.4,17.4)*(1-q(18.7,20));
+  return {day:day-.29*lateSun,p:p+.32*lateSun,night,deep,fill:0,storm:0,flash:0,cave:cv};}
  // ---- what you carry (I) -------------------------------------------------------------------------------------------------------
  function items(){const I=C.inv,carry=[],found=[];
   if(I.notebook==='have')carry.push({id:'notebook',name:'Sam’s notebook',state:C.flags.names?'ALEX · JAMIE · SAM':'His square printing',action:'Read'});
@@ -220,8 +229,26 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function choose(options,{then,timeout=25,fallback=null}){C.choice={options,then,t:0,timeout,fallback};}
  function pick(i){const ch=C.choice;if(!ch||!ch.options[i])return;C.choice=null;mark('chose: '+ch.options[i].id);ch.then(ch.options[i].id);}
  // ---- how the cast looks (Chapter Six's reconstruction: the same Jamie, the same Reyes; Sam's parents with them) -------------------
- const extraArt=new Map();
- function presentation7(on){for(const v of ch6.appearances6.values())v.enable(on);for(const v of extraArt.values())v.enable(on);}
+ const extraArt=new Map(),portraits=[];
+ function dress(person,spec,actor=null) {
+  if(!person)return;
+  const shared=ch6.appearances6.get(person),base=shared||chapter6Appearance(person,spec,{actor});
+  if(!shared)extraArt.set(person,base);
+  portraits.push(portrait(person,spec,base));
+ }
+ dress(jamie.person,CAST.jamie,jamie);dress(sam.person,CAST.sam,sam);dress(o.self,CAST.player);
+ for(const a of [reyes,officer,samDad,samMom])dress(a.person,a.spec,a);
+ dress(cast.jamieMom.person,JAMIE_MOM,cast.jamieMom);dress(LF.person,MRS_LANGE);
+ for(const f of Object.values(cast.fam))dress(f.person,f.spec);
+ for(const [key,model] of Object.entries(cast.studio))dress(model.person,CAST[key]);
+ const yards=fridayYards(world.homes);
+ function presentation7(on){
+  if(on&&!yards.parent)scene.add(yards);else if(!on)yards.removeFromParent();
+  if(!on)for(const v of portraits)v.enable(false);
+  for(const v of ch6.appearances6.values())v.enable(on);
+  for(const v of extraArt.values())v.enable(on);
+  if(on)for(const v of portraits)v.enable(true);
+ }
  // ---- the world as this chapter finds it ----------------------------------------------------------------------------------------
  function common(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);ch5.presentation(true);presentation7(true);lightsOn(true);o.foot.arms=phys.arms;if(!mapMesh.parent)scene.add(mapMesh);}
  function dayWorld(){A.day=1;A.night=0;ch2.day=1;S.deep=A.deep=0;o.flashShadow?.(false);o.nightRendering?.(false);o.attachFlashlight?.(true);ambient.night?.(false);ambient.morning?.(true);
@@ -443,7 +470,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(X.stage==='after'&&X.afterT!=null&&C.t-X.afterT>2&&!X.dad)garageAfter();}
  function creatureInGarage(){const sd=sideDoorAt;if(!sd)return;const q=sd.inside;H.place(q.x-.4*SH.gs,q.z+.3,headingTo(q.x,q.z,drive(0,1).x,drive(0,1).z));HL.level='g';
   HM.drive.low=.75;HM.setState('crouch');H.setMode('script');H.script([{wait:99,state:'crouch',low:.8,look:()=>camera.position}]);
-  world.sideDoors.sam?.set(.25);light(1,{x:sd.inside.x,y:sd.inside.y+2.2,z:sd.inside.z},{intensity:.55,dist:5,color:0xc8ccd4});
+  world.sideDoors.sam?.set(.25);light(1,{x:sd.inside.x,y:sd.inside.y+2.2,z:sd.inside.z},{intensity:3.4,detectionIntensity:.55,dist:7,color:0xb9cac7});
   // what it has knocked down: a can on the floor, still rolling
   sound('c7Breath',q,{gain:.5});}
  function creatureLeaves(seen){const X=C.gr,sd=sideDoorAt;mark(seen?'it is seen, and goes':'it goes');T?.set?.(.82,{rise:.5,why:'something in the garage'});X.stage='after';
@@ -663,8 +690,8 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   for(const [s,k] of [[1,.45],[-1,.45],[0,1]]){const q={x:p.x+r.x*d*s*.85+b.x*d*k,z:p.z+r.z*d*s*.85+b.z*d*k};if(nav.walkable(q.x,q.z,{r:.3}))return q;}return {x:p.x+b.x*d,z:p.z+b.z*d};};
  // (Jamie, arms out to the sides and back: stay behind me)
  const shield=p=>{p[PI.lh]=-.44;p[PI.lh+1]=1.0;p[PI.lh+2]=.2;p[PI.rh]=.44;p[PI.rh+1]=1.0;p[PI.rh+2]=.2;p[PI.le]=-.9;p[PI.le+1]=.1;p[PI.le+2]=.4;p[PI.re]=.9;p[PI.re+1]=.1;p[PI.re+2]=.4;p[PI.lean]-=.04;};
- function langeLights(on){if(!on){for(const i of [1,2,3])light(i,null);return;}const L=LGH.lamps;
-  light(1,lgP(L.front),{intensity:1.5,dist:6.5,color:0xffc890});light(2,lgP(L.kitchen),{intensity:1.7,dist:7,color:0xffe6c0});light(3,lgP(L.tv),{intensity:.5,dist:4,color:0xb8c8ff});}
+ function langeLights(on){if(!on){for(const i of [1,2,3])light(i,null);light(0,null,{visualOnly:true});return;}const L=LGH.lamps;
+  light(1,lgP(L.front),{intensity:6.4,detectionIntensity:1.5,dist:7.4,color:0xffcf95});light(2,lgP(L.kitchen),{intensity:4.2,detectionIntensity:1.7,dist:7,color:0xffe3b6});light(3,lgP(L.tv),{intensity:2.5,detectionIntensity:.5,dist:5,color:0xb0c7d4});light(0,lgP({x:-1.17,y:LGH.F+1.94,z:1.30}),{intensity:4.6,dist:5,color:0xffcd90,visualOnly:true});}
  function langeOpens(){const X=C.ct;X.lange=true;C.lg={t:0,stage:'open',opening:0};mark('the Langes’ door opens');const d=court.SPOT.langeDoor;sound('c7Door',d,{gain:.6});langeLights(true);
   say([{wait:.4},N('A latch, somewhere up the street. A door coming open.',{time:3}),{wait:.6},J('…That one. The blue one.',{time:2,face:'worried'}),
    ...(X.knocked?.has?.('a5')?[J('We knocked on that one. Nobody came. Now it’s open.',{time:2.8,face:'afraid'})]:[J('That door was shut. I looked right at it.',{time:2.4,face:'afraid'})]),
@@ -674,7 +701,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   // the door: in, slowly, on its own; the TV's light, uneven
   if(X.opening<1){X.opening=Math.min(1,X.opening+dt*.42);LGH.doors.front.set(smooth(X.opening));}
   if(X.closing!=null&&X.closing>0){X.closing=Math.max(0,X.closing-dt*.5);LGH.doors.front.set(smooth(X.closing));if(X.closing===0){sound('click',d,{gain:.6});X.closing=null;}}
-  if(!LGH.ST.tvOff&&LIGHTS[3].intensity>0&&X.stage!=='burst'&&X.stage!=='loom'&&X.stage!=='retreat')LIGHTS[3].intensity=.38+.18*Math.abs(Math.sin(C.t*7.7))*(.6+.4*Math.sin(C.t*1.9));
+  if(!LGH.ST.tvOff&&LIGHTS[3].intensity>0&&X.stage!=='burst'&&X.stage!=='loom'&&X.stage!=='retreat')LIGHTS[3].intensity=LIGHTS[3].userData.detection.intensity=.38+.18*Math.abs(Math.sin(C.t*7.7))*(.6+.4*Math.sin(C.t*1.9));
   X.inside=!!rm;
   if((X.stage==='door'||X.stage==='open')&&dd<2.6&&!X.atDoor&&!busy()){X.atDoor=true;
    stand(jamie,LG3(LGH.doorX+1.05,-LGH.hd-1.35),{look:()=>lgP({...LS.inFront,y:LGH.F+1.4}),keep:true,max:1.6});
@@ -798,7 +825,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   D.crack.material.opacity=0;D.tvScreen.emissiveIntensity=.9;court.dining.lamp.visible=true;
   const tb=court.regW(DL.x+Math.cos(DL.a)*D.seats[0].x*.0+Math.sin(DL.a)*(-D.D/2+2.1)+Math.cos(DL.a)*2.3,DL.z-Math.sin(DL.a)*2.3+Math.cos(DL.a)*(-D.D/2+2.1));light(0,{x:tb.x,y:court.G0+D.F+2.25,z:tb.z},{intensity:2.6,dist:7,color:0xffcf90});}
  function updateDining(dt){const X=C.dn;if(!X)return;X.t+=dt;const p=me(),W2=court.SPOT.diningWindow;const D=court.dining;
-  D.tvScreen.emissiveIntensity=.55+.35*Math.abs(Math.sin(C.t*7.3))*(.6+.4*Math.sin(C.t*1.7));LIGHTS[0].intensity=(2.2+.5*Math.sin(C.t*7.3))*(X.stage==='done'?1:1);
+  D.tvScreen.emissiveIntensity=.55+.35*Math.abs(Math.sin(C.t*7.3))*(.6+.4*Math.sin(C.t*1.7));LIGHTS[0].userData.detection.intensity=(2.2+.5*Math.sin(C.t*7.3))*(X.stage==='done'?1:1);if(S.phase==='e7-dining')LIGHTS[0].intensity=LIGHTS[0].userData.detection.intensity;
   const d=Math.hypot(p.x-W2.x,p.z-W2.z);const looking=k.camLooksAt(W2,.9)&&d<6.5;X.seen+=looking?dt:0;
   if(X.stage==='approach'){if(d<9&&!X.jamieNear){X.jamieNear=true;stand(jamie,()=>{const a=headingTo(W2.x,W2.z,p.x,p.z);return {x:W2.x+Math.sin(a)*3.4+Math.cos(a)*1.1,z:W2.z-Math.cos(a)*3.4+Math.sin(a)*1.1};},{look:()=>W2,keep:true,max:.8});}
    if((X.seen>1.2||(d<7&&X.t>40))&&!busy()){X.stage='still';X.stillAt=X.t;mark('the family at the table');T?.set?.(.45,{rise:.05,why:'the window'});
@@ -852,9 +879,11 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    // (the folded star on the second step first: then, at the foot of the stairs looking up, it is there)
    if(!C.flags.star&&!X.starHint&&X.t-X.inAt>14&&!busy()&&!C.view){X.starHint=true;say([J('What’s that— on the stairs. On the step.',{time:2.2})]);}
    if(X.stopped&&!C.view&&(C.flags.star||X.t-X.inAt>110)&&((dF<1.8&&k.camLooksAt(top,.86))||X.t-X.inAt>(C.flags.star?80:120))){if(!X.revealed&&!busy())reveal();}}}
- function lightsGreen(){const L=HGd.lamps;light(1,HW(L.living.x,L.living.z),{intensity:1.8,dist:6,color:0xffc890});LIGHTS[1].position.y=court.G0+L.living.y;
-  light(2,HW(L.kitchen.x,L.kitchen.z),{intensity:1.4,dist:6,color:0xe8eef0});LIGHTS[2].position.y=court.G0+L.kitchen.y;
-  light(3,HW(L.boy.x,L.boy.z,'u'),{intensity:1.6,dist:6,color:0xffd0a0});LIGHTS[3].position.y=court.G0+L.boy.y;HGd.tvScreen.emissiveIntensity=.7;}
+ function lightsGreen(){const L=HGd.lamps;light(1,HW(L.living.x,L.living.z),{intensity:5.3,detectionIntensity:1.8,dist:7.2,color:0xf5ba85});LIGHTS[1].userData.detection.position.y=LIGHTS[1].position.y=court.G0+L.living.y;
+  light(2,HW(L.kitchen.x,L.kitchen.z),{intensity:4.1,detectionIntensity:1.4,dist:7,color:0xc4d5cf});LIGHTS[2].userData.detection.position.y=LIGHTS[2].position.y=court.G0+L.kitchen.y;
+  light(3,HW(L.boy.x,L.boy.z,'u'),{intensity:4.7,detectionIntensity:1.6,dist:6.8,color:0xdacd99});LIGHTS[3].userData.detection.position.y=LIGHTS[3].position.y=court.G0+L.boy.y;HGd.tvScreen.emissiveIntensity=.7;
+  const landing=HW(.08,2.86,'u');landing.y=court.G0+HH.UP+1.55;
+  light(0,landing,{intensity:9.4,dist:8.2,color:0xbbd5cd,visualOnly:true});}
  // the reveal: at the top of the stairs, a hand round the corner (the newel post), the head leans out and turns, the body follows; it comes down
  function reveal(){const X=C.gh;X.revealed=true;go('e7-reveal');mark('the hand round the corner at the top of the stairs');T?.set?.(.7,{rise:.2,why:'the stairs'});HL.level='u';
   // (seen from the foot of the stairs, through the stairwell: a long hand comes round the newel post at the top on the left,
@@ -896,7 +925,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // ---- the stealth: it walks the rooms; get past it to the stairs ------------------------------------------------------------------------
  const playerTarget=(()=>{let T0=null;return ()=>T0||(T0={id:'player',pos:()=>camera.position,crouch:()=>clamp(o.foot.crouch||0,0,1),hidden:()=>!!C.hiding,watchedIn:()=>!!C.hideSeen,moving:()=>me().speed||0,lit:()=>litAt(camera.position),catchable:true});})();
  const jamieTarget=(()=>{let T0=null;return ()=>T0||(T0={id:'jamie',pos:()=>{const p=jamie.person.parts.head.getWorldPosition(new THREE.Vector3());return p;},crouch:()=>clamp((jamie.crouch||0)*3,0,1),hidden:()=>C.jHide==='pantry'&&Math.hypot(jamie.px-HW(JPANTRY.x,JPANTRY.z).x,jamie.pz-HW(JPANTRY.x,JPANTRY.z).z)<.8,moving:()=>jamie.walkV||0,lit:()=>.7,catchable:true});})();
- function litAt(q){let s=.35;for(const l of LIGHTS){if(l.intensity<=0)continue;const d=l.position.distanceTo(q);s+=l.intensity*.25/(1+d*d*.3);}return clamp(s,0,1);}
+ function litAt(q){let s=.35;for(const source of LIGHTS){const l=source.userData.detection;if(l.intensity<=0)continue;const d=l.position.distanceTo(q);s+=l.intensity*.25/(1+d*d*.3);}return clamp(s,0,1);}
  function houseGraph(){const G=HGd.graph;return {nodes:G.nodes.map(n=>{const w=HW(n.x,n.z);return {...n,x:w.x,z:w.z};}),edges:G.edges};}
  function stalkStart({live=false}={}){go('e7-stalk');if(!live)checkpoint('c7-stalk');else checkpoint('c7-stalk');C.sk={t:0,stage:'hunt',helped:false,caught:false};mark('it is hunting');
   HL.level='g';C.lv='g';court.ST.level='g';C.jlv='g';H.setGraph(houseGraph());H.setTargets([playerTarget(),jamieTarget()]);H.catchR=1.25;H.runSpeed=C.fails.stalk>=2?3.5:4.0;H.sightRange=C.fails.stalk>=2?11:13.5;
@@ -906,7 +935,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   later(1.4,()=>{if(C.sk&&C.sk.stage==='hunt'&&C.hiding)say([J('(Don’t move. Don’t move.)',{time:2,face:'terrified'})]);});}
  // ---- (expanded) the closets: it comes and looks; the stairs: it waits at them; a noise: it goes; and then it knows ----------------
  // where it stands to look into each closet (house frame), and the step it takes into the doorway
- const HIDE_LOOK={pantry:{front:{x:3.98,z:2.62},step:{x:4.1,z:2.98}},den:{front:{x:-4.42,z:2.7},step:{x:-4.45,z:3.04}}};
+ const HIDE_LOOK={pantry:{front:{x:3.98,z:2.34},step:{x:4.1,z:2.70}},den:{front:{x:-4.42,z:2.42},step:{x:-4.45,z:2.76}}};
  // (where you stand to get into each one: in front of its door)
  const HIDE_FRONT={pantry:{x:4.15,z:2.7},den:{x:-4.45,z:2.8},stair:{x:0,z:3.75}};
  const LEARNED_LOOP=['stairWatch','livingArch','living','livingDoor','den','denCloset','denDoor','backHall','kitchenDoor','kitchen','pantryFront','kitchenDining','dining','diningArch'];
@@ -1198,7 +1227,14 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   JL.grip=true;phys.ME.extra.push(gripArms);C.gripFn=gripArms;objective('HOLD ON.','Hold F. Pull back: S.');
   say([J('DON’T LET GO— DON’T LET GO—',{time:2,face:'terrified'})]);}
  // your hands on his wrist (first person: both arms to his hand, held there)
- function gripArms(p,{toLocal:tl}){const w=jamieHand(),L=tl(w.clone());for(const [o2,e,s] of [[PI.rh,PI.re,1],[PI.lh,PI.le,-1]]){p[o2]=L.x+s*.04;p[o2+1]=L.y-.02;p[o2+2]=L.z+.02;p[e]=s*.75;p[e+1]=-.35;p[e+2]=.5;}}
+ function gripArms(p,{toLocal:tl}){
+  const L=tl(jamieHand()),shoulder=shoulderPos(p,-1,new THREE.Vector3()).add(shoulderPos(p,1,new THREE.Vector3())).multiplyScalar(.5);
+  const reach=L.clone().sub(shoulder),distance=reach.length(),bend=Math.min(.55,Math.max(0,distance-.36));
+  // Kneel and lean from the hips so both wrists can reach without stretching
+  // the skeleton. Feet retain their ground targets while the knees fold.
+  if(distance>.001){reach.multiplyScalar(bend/distance);p[PI.root]+=reach.x;p[PI.root+1]+=reach.y;p[PI.root+2]+=reach.z;}
+  for(const [o2,e,s] of [[PI.rh,PI.re,1],[PI.lh,PI.le,-1]]){p[o2]=L.x+s*.022;p[o2+1]=L.y-.012;p[o2+2]=L.z+.014;p[e]=s*.75;p[e+1]=-.35;p[e+2]=.5;}
+ }
  function updateGrab(dt){const X=C.gb;if(!X)return;X.t+=dt;const p=me(),mouth=X.mouth,c=HM;
   // the drag: it goes back toward the lane mouth; jerks; you slow it pulling back, not enough
   if(JL.held&&X.stage!=='lost'){const toM={x:mouth.x-c.x,z:mouth.z-c.z},L=Math.hypot(toM.x,toM.z)||1,dir={x:toM.x/L,z:toM.z/L};
@@ -1216,10 +1252,10 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    else if(X.stage==='grab'&&(X.t>X.giveUp||L<.5)){/* (you never reached him: it goes on without you having held him) */X.stage='lost';X.never=true;takenStart();}}
   if(X.stage==='grab'&&!X.grip0&&JL.held&&dist2(p,jamieHand())<1.7&&!busy()){}// (F: in spots)
   // your pose while you hold on: down on your knees behind his hands, pulled along
-  if(X.stage==='struggle'){const h=jamieHand(),bx=h.x+JL.dir.x*.62,bz=h.z+JL.dir.z*.62;if(!C.pose||C.pose.release)pose({x:bx,z:bz},{y:gy(bx,bz)+.95,yaw:headingTo(bx,bz,c.x,c.z),pitch:-.6,slow:.35});
+  if(X.stage==='struggle'){const h=jamieHand(),bx=h.x+JL.dir.x*.22,bz=h.z+JL.dir.z*.22;if(!C.pose||C.pose.release)pose({x:bx,z:bz},{y:gy(bx,bz)+.61,yaw:headingTo(bx,bz,c.x,c.z),pitch:-.6,slow:.35});
    // (looking down at his hands in yours, his face, and along him to the thing that has his ankle, which the view keeps as it drags)
    {let d=headingTo(C.pose.x,C.pose.z,c.x,c.z)-C.pose.yaw;d=Math.atan2(Math.sin(d),Math.cos(d));C.pose.yaw+=d*Math.min(1,dt*3);}
-   C.pose.x=damp(C.pose.x,bx,10,dt);C.pose.z=damp(C.pose.z,bz,10,dt);C.pose.y=gy(bx,bz)+.95+Math.sin(C.t*31)*.006*X.pull;}}
+   C.pose.x=damp(C.pose.x,bx,10,dt);C.pose.z=damp(C.pose.z,bz,10,dt);C.pose.y=gy(bx,bz)+.61+Math.sin(C.t*31)*.006*X.pull;}}
  function letGo(){const X=C.gb;if(X.stage==='lost')return;X.stage='lost';X.lostAt=C.t;mark('his hand goes out of yours');sound('c7Strike',jamieHand(),{gain:1.3});
   JL.grip=false;const i=phys.ME.extra.indexOf(gripArms);if(i>=0)phys.ME.extra.splice(i,1);
   // you go over backwards into the grass; you see it take him round the bend
@@ -1304,10 +1340,13 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   return {bike,land,mouth:{x:mouth.x,z:mouth.z},marks:at(.18),cap,at};}
  function evidenceProps(on,E){capMesh.visible=on;marksG.visible=on;if(!on)return;
   capMesh.position.set(E.cap.x,gy(E.cap.x,E.cap.z)+.02,E.cap.z);capMesh.rotation.set(.25,.8,.15);
-  if(!marksG.children.length){const m=new THREE.MeshStandardMaterial({color:0x26281a,roughness:1,transparent:true,opacity:.82,depthWrite:false});
+  const trackKey=[E.land.x,E.land.z,E.mouth.x,E.mouth.z].join('/');
+  if(marksG.userData.site!==trackKey){
+   for(const strip of [...marksG.children]){strip.geometry.dispose();strip.removeFromParent();}
+   marksG.userData.site=trackKey;const m=marksG.userData.ink??=heelMark();
    const dx=E.mouth.x-E.land.x,dz=E.mouth.z-E.land.z,L=Math.hypot(dx,dz)||1,nx=-dz/L,nz=dx/L,n=Math.ceil(L/.45);
    for(const sd of [-1,1])for(let k=0;k<n;k++){const u0=k/n,u1=(k+1)/n,wob=Math.sin(k*1.7+sd)*.04,x0=E.land.x+dx*u0+nx*(.13*sd+wob),z0=E.land.z+dz*u0+nz*(.13*sd+wob),x1=E.land.x+dx*u1+nx*(.13*sd+wob),z1=E.land.z+dz*u1+nz*(.13*sd+wob);
-    const seg=new THREE.Mesh(new THREE.PlaneGeometry(.09+.03*Math.sin(k*2.3),Math.hypot(x1-x0,z1-z0)+.05),m);seg.rotation.order='YXZ';seg.rotation.set(-Math.PI/2,Math.atan2(-(x1-x0),-(z1-z0)),0);
+    const seg=new THREE.Mesh(new THREE.PlaneGeometry(.16+.04*Math.sin(k*2.3),Math.hypot(x1-x0,z1-z0)+.05),m);seg.rotation.order='YXZ';seg.rotation.set(-Math.PI/2,Math.atan2(-(x1-x0),-(z1-z0)),0);
     seg.position.set((x0+x1)/2,gy((x0+x1)/2,(z0+z1)/2)+.018,(z0+z1)/2);marksG.add(seg);}}
   // his bike, where it went down (in the dark, on its side)
   const jb=jamie.bike.group;jb.visible=true;jb.position.set(E.bike.x,gy(E.bike.x,E.bike.z)+.05,E.bike.z);jb.rotation.set(0,jb.rotation.y,1.35);}
@@ -1369,7 +1408,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function samsNight(){go('n7-sams');checkpoint('c7-sams');evidenceProps(false);jamie.bike.group.visible=false;C.h=Math.max(C.h,HOUR.sams);C.hMin=HOUR.sams;C.minute=-1;C.sn={t:0,stage:'in'};mark('Sam’s, that night');unpose();
   for(const a of [reyes,officer,cast.jamieMom,...(ch2.extra||[])])a.show(false);k.carA.show(false);k.carB.show(false);police.attach?.(false);court.attach(false);
   house.show(true);house.reset();house.show(true);house.lightsOut(true);nav.setRoom(house.nav);house.items.gum.visible=false;house.items.notebook.visible=false;photoState('one');
-  houseAdults('night');light(0,{...HS.kitchenTable,y:HS.kitchenTable.y+1.4},{intensity:2.2,dist:7,color:0xffd2a0});light(1,{...HS.bed,y:HS.bed.y+1.6},{intensity:1.6,dist:5.5,color:0xffd6aa});light(2,null);light(3,null);
+  houseAdults('night');light(0,{...HS.kitchenTable,y:HS.kitchenTable.y+1.4},{intensity:2.2,dist:7,color:0xffd2a0});light(1,{...HS.bed,y:HS.bed.y+1.6},{intensity:2.6,dist:6,color:0xcbd3c5});light(2,null);light(3,null);
   const q=HS.enter;o.placePlayer({x:q.x,z:q.z,a:house.heading(Math.PI),mode:'walk',bike:{x:yourBikeAt.x,z:yourBikeAt.z,a:0}});C.fadeIn=0;
   say([{wait:1.2},MOM('Come here.',{time:1.2}),MOM('Your mom’s on her way. She’s coming from the station.',{time:2.6}),{wait:.8},MOM('…They told me about Jamie.',{time:2.2,face:'sad'}),{wait:1},
    MOM('Sam would’ve made you all stay home today. He’d have been right. He’s always right about that stuff.',{time:4.2}),{wait:.6},MOM('Go sit. His dad’s in his room. He’s been in there an hour.',{time:3})],
@@ -1405,7 +1444,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const finalBikes=['alex','jamie','sam','player'].map((kk,i)=>({kk,d:-3.9+i*1.6,lat:3.4+((i%2)*.7)}));
  function stageBikes(on){for(const [i,b] of finalBikes.entries()){const S2=cast.studio[b.kk],q=main(SH.drivD+b.d,b.lat),q2=main(SH.drivD+b.d+5,b.lat);S2.bike.group.visible=on;
    if(on){S2.bike.group.position.set(q.x,gy(q.x,q.z),q.z);S2.bike.group.rotation.set(0,-headingTo(q.x,q.z,q2.x,q2.z),.12);void i;}}
-  if(on)light(2,{x:main(SH.drivD-1.5,3.6).x,y:gy(main(SH.drivD,3).x,main(SH.drivD,3).z)+6.5,z:main(SH.drivD-1.5,3.6).z},{intensity:9,dist:13,color:0xffcf8a});}
+  if(on)light(2,{x:main(SH.drivD-1.5,3.6).x,y:gy(main(SH.drivD,3).x,main(SH.drivD,3).z)+5.2,z:main(SH.drivD-1.5,3.6).z},{intensity:36,dist:14,color:0xffcf8a});}
  function lookOutside(){if(C.flags.window)return;C.flags.window=true;go('n7-window');mark('out the window');stageBikes(true);
   // (the view through his window, rendered from just outside it and a little up, past the corner of the garage, at the four
   //  bikes under the streetlight across the street; shown bright on the glass, the room dark around it)
@@ -1419,11 +1458,12 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // ---- the photograph: rendered from the world (the oak, last July's light), with all four of you, and with only you ---------------------------
  const PH={four:null,one:null,state:'four'};
  function photoCanvas(who){const cv=canvas(PHOTO.w,PHOTO.h);if(!cv)return null;let ok=false;
-  try{if(o.shoot&&o.readPixels&&typeof THREE.WebGLRenderTarget==='function'){const studio=cast.studio,o2=main(LOOKOUT.oak.d-3.2,LOOKOUT.oak.lat-3.4);
-    const cam=new THREE.PerspectiveCamera(46,PHOTO.w/PHOTO.h,.1,300),cp=main(LOOKOUT.oak.d-10.5,LOOKOUT.oak.lat-7.5);cam.position.set(cp.x,gy(cp.x,cp.z)+1.25,cp.z);cam.lookAt(o2.x,gy(o2.x,o2.z)+.95,o2.z);cam.updateMatrixWorld();
+  try{if(o.shoot&&o.readPixels&&typeof THREE.WebGLRenderTarget==='function'){const studio=cast.studio,o2=main(LOOKOUT.oak.d-3.36,LOOKOUT.oak.lat-4.18);
+    const cam=new THREE.PerspectiveCamera(34,PHOTO.w/PHOTO.h,.1,300),cp=main(LOOKOUT.oak.d-10.5,LOOKOUT.oak.lat-7.5);cam.position.set(cp.x,gy(cp.x,cp.z)+1.25,cp.z);cam.lookAt(o2.x,gy(o2.x,o2.z)+.95,o2.z);cam.updateMatrixWorld();
     const keys=['player','jamie','sam','alex'];keys.forEach((kk,i)=>{const S2=studio[kk];const on=who.includes(kk);const q=main(LOOKOUT.oak.d-3.6+i*.15,LOOKOUT.oak.lat-6.2+i*1.35),qb=main(LOOKOUT.oak.d-3.0+i*.15,LOOKOUT.oak.lat-6.6+i*1.35);
      S2.person.group.visible=on;S2.bike.group.visible=on;if(!on)return;const a=headingTo(q.x,q.z,cam.position.x,cam.position.z);S2.person.group.position.set(q.x,gy(q.x,q.z),q.z);S2.person.group.rotation.set(0,-a,0);
      standPose(S2.pose,i*1.7,{look:0});S2.pose[PI.rh]=.32;S2.pose[PI.rh+1]=.95;S2.pose[PI.rh+2]=-.25;applyPose(S2.person,S2.pose);S2.person.face?.set?.(kk==='alex'?'grin':kk==='jamie'?'happy':kk==='sam'?'amused':'happy',{hold:9});S2.person.face?.update?.(1/30,{clock:i});
+     extraArt.get(S2.person)?.update(1,{clock:i,eye:cam.position});for(const detail of portraits)if(detail.person===S2.person)detail.update(1,{clock:i});
      S2.bike.group.position.set(qb.x,gy(qb.x,qb.z),qb.z);S2.bike.group.rotation.set(0,-a+Math.PI/2,.1);});
     const rt=new THREE.WebGLRenderTarget(PHOTO.w,PHOTO.h,{colorSpace:THREE.SRGBColorSpace});
     // (last July at the oak: nobody else is in it; whoever the world has standing about today is put out of the picture)
@@ -1435,7 +1475,16 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
     for(const g of PH.swing)H2(g);
     try{if(o.shoot({cam,target:rt,preset:{day:.35,dusk:.32,night:0},sun:[-50,22,40],at:{x:o2.x,y:gy(o2.x,o2.z),z:o2.z}})){const px=o.readPixels(rt,PHOTO.w,PHOTO.h);if(px){ch4.photo.toCanvas(cv,px,{blur:false});ok=true;}}}finally{for(const g of hid)g.visible=true;}rt.dispose?.();
     for(const kk of keys){studio[kk].person.group.visible=false;studio[kk].bike.group.visible=false;}}}catch{for(const kk of ['player','jamie','sam','alex']){cast.studio[kk].person.group.visible=false;cast.studio[kk].bike.group.visible=false;}}
-  if(!ok)photoSketch(cv.g,PHOTO.w,PHOTO.h,{who});const g=cv.g;g.fillStyle='rgba(255,138,58,.95)';g.font='bold 16px monospace';g.fillText("'11 7 16",PHOTO.w-96,PHOTO.h-14);cv.rendered=ok;return cv;}
+  if(!ok)photoSketch(cv.g,PHOTO.w,PHOTO.h,{who});
+  const g=cv.g,w=PHOTO.w,h=PHOTO.h;
+  g.fillStyle='rgba(224,183,128,.10)';g.fillRect(0,0,w,h);
+  const corners=g.createRadialGradient(w*.46,h*.46,w*.18,w*.5,h*.5,w*.67);
+  corners.addColorStop(0,'rgba(46,36,25,0)');corners.addColorStop(1,'rgba(46,36,25,.29)');
+  g.fillStyle=corners;g.fillRect(0,0,w,h);
+  g.strokeStyle='#ded4b9';g.lineWidth=12;g.strokeRect(0,0,w,h);g.fillStyle='#e0d5bc';g.fillRect(0,h-22,w,22);
+  g.fillStyle='#60574b';g.font='italic 13px Georgia';g.fillText('the oak, July',15,h-7);
+  g.fillStyle='rgba(255,177,94,.96)';g.font='bold 14px monospace';g.fillText("'11 7 16",w-83,h-29);
+  cv.rendered=ok;return cv;}
  function photoRender(){if(!PH.four){PH.four=photoCanvas(['player','jamie','sam','alex']);PH.fourTex=texOf(PH.four);}if(!PH.one){PH.one=photoCanvas(['player']);PH.oneTex=texOf(PH.one);}photoState(PH.state);}
  function photoState(s){PH.state=s;C.flags&&(C.flags.altered=s==='one');const m=house.photoMat,t=s==='one'?PH.oneTex:PH.fourTex;if(t){m.map=t;m.emissiveMap=t;m.color.setHex(0xffffff);}else{m.map=null;m.emissiveMap=null;m.color.setHex(s==='one'?0xc8b896:0xd8c8a0);}m.emissive.setHex(0);m.needsUpdate=true;}
  // ---- the spots F works on ---------------------------------------------------------------------------------------------------------
@@ -1608,6 +1657,13 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
   // (Sam's window by day: the street across from it, rendered once the morning is set and you are in his house)
   if(/^d7-/.test(ph)&&!C.dayView&&inSams()&&C.t>.3)C.dayView=house.renderView('day')?'day':'none';
+  // Light from the road and the search party falls sideways across the field.
+  // Slots 0 and 1 leave the dedicated camera flash and Reyes's torch available.
+  if(['n7-grab','n7-taken','n7-gone','n7-after'].includes(ph)){
+   const field=court.R3(3,-6),lane=court.SPOT.mouth;
+   light(0,{x:field.x+1.8,y:field.y+3.4,z:field.z-.6},{intensity:ph==='n7-after'?15:21,dist:18,color:ph==='n7-after'?0xc2d5d1:0xe9c498,visualOnly:true});
+   light(1,{x:lane.x-1.8,y:lane.y+2.1,z:lane.z+.5},{intensity:8.5,dist:13,color:0x9ab8c2,visualOnly:true});
+  }
   clock(dt);updatePose(dt);match(dt);guard(dt);standAll();inv.update();if(inv.isOpen&&(C.view||posed()||C.fadeOut>=0||C.endT>=0))inv.close();
   // the lane's crossing (your last position to this one)
   const p=me();if(C.prevP&&Math.hypot(p.x-C.prevP.x,p.z-C.prevP.z)<3)crossing(C.prevP,p);C.prevP={x:p.x,z:p.z};
@@ -1660,7 +1716,14 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(S.phase==='n7-sams'||S.phase==='n7-names'||S.phase==='n7-window'){const d=samDad;if(d.visible&&!d.walking){sitPose(d.pose,{seat:.5/1.2,legs:'bent',t:C.t,hands:'knees',look:0});d.pose[PI.hp]=-.35;applyPose(d.person,d.pose);}}
   // (Jamie in the grass: posed here, after the friends' own update, so nothing stands him back up; his clothes follow)
   poseJamieDown(dt);
-  for(const art of ch6.appearances6.values())art.update(dt,{clock:C.t,eye:camera.position,phase:S.phase});for(const art of extraArt.values())art.update(dt,{clock:C.t,eye:camera.position,phase:S.phase});}
+  // The on-foot pass precedes the companion pass. Resolve once more against
+  // his current wrist after the yank, rather than the previous frame's wrist.
+  if(JL.grip&&C.gb?.stage==='struggle'){
+   o.self.group.updateMatrixWorld(true);gripArms(o.foot.pose,{toLocal:v=>o.self.group.worldToLocal(v)});applyPose(o.self,o.foot.pose);
+  }
+  for(const art of ch6.appearances6.values())art.update(dt,{clock:C.t,eye:camera.position,phase:S.phase});for(const [person,art] of extraArt)if(person.group.visible)art.update(dt,{clock:C.t,eye:camera.position,phase:S.phase});
+  for(const detail of portraits)detail.update(dt,{clock:C.t});
+ }
  {const prev=A.afterActors6;A.afterActors6=(dt,o2)=>{prev?.(dt,o2);afterActors7(dt,o2);};}
  // ---- lifecycle ---------------------------------------------------------------------------------------------------------------------------------
  const GUM0=(()=>{const g=house.items.gum;return {parent:g.parent,pos:g.position.clone(),rot:g.rotation.clone()};})();
@@ -1839,7 +1902,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   canDismount:()=>!posed()&&!C.view&&S.phase!=='c7-black'&&!/^(n7-(chase|lookout|grab))$/.test(S.phase)&&!inSams(),
   canRemount:()=>!C.view&&!posed()&&!inSams()&&!inGreen()&&!inLange()&&!/^(d7-(house|reyes|map)|n7-(grab|taken|gone|after|sams|names|window))$/.test(S.phase),
   closeBag:()=>{if(inv.isOpen){inv.close();return true;}return false;},inventoryReady:()=>owns(S.phase)&&S.phase!=='c7-black',
-  C,house,court,cast,HM,H,HL,JL,LIGHTS,PH,MAPV,photoRender,photoState,inv,sky,brain,HUNTER_ID,STEP,CURB,sideDoorAt,LK,LF,LGH,lgP,inLange,langeRoom,
+  C,house,court,cast,yards,HM,H,HL,JL,LIGHTS,PH,MAPV,photoRender,photoState,inv,sky,brain,HUNTER_ID,STEP,CURB,sideDoorAt,LK,LF,LGH,lgP,inLange,langeRoom,
   get started(){return A7._started;},set started(v){A7._started=v;}});
  Object.defineProperties(A7,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,lookKind:C.lookKind,inv:{...C.inv},looked:[...C.looked].sort(),

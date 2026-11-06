@@ -20,6 +20,7 @@
 // +Y up, +X its right hand side; root.rotation.y = -heading, as for rig.js people.
 import * as THREE from './three.module.js';
 import {parseCreature} from './creature-asset.js';
+import {roundedBoxGeometry} from './kit.js';
 
 export const HUNTER_ID='chapter7_hunter';
 
@@ -60,28 +61,46 @@ function ik(a,t,l1,l2,pole,mid,end){_a.subVectors(t,a);let d=_a.length();const m
 function standIn(){
  const g=new THREE.Group();g.name='chapter7-hunter-standin';
  // (dark, a little wet: it reads as a shape against light, a sheen where light crosses it, never a pale doll)
- const skin=new THREE.MeshStandardMaterial({color:0x2c2a27,roughness:.42,metalness:.05});skin.name='hunter-skin';
+ const skin=new THREE.MeshStandardMaterial({color:0x524f45,roughness:.54,metalness:.09});skin.name='hunter-skin';
+ // A grazing edge follows forehead, tendons and shoulder blades even when the
+ // recesses fall into shadow. Confined to the replaceable procedural skin.
+ skin.onBeforeCompile=shader=>{
+  shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 c7SkinPoint;').replace('#include <begin_vertex>','#include <begin_vertex>\nc7SkinPoint=position;');
+  shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 c7SkinPoint;').replace('#include <color_fragment>','#include <color_fragment>\nfloat stain7=sin(c7SkinPoint.x*94.0+sin(c7SkinPoint.y*31.0))*sin(c7SkinPoint.y*73.0+c7SkinPoint.z*65.0);diffuseColor.rgb*=.94+stain7*.055;');
+  shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',
+   'float edge7=pow(1.0-abs(dot(normalize(normal),normalize(vViewPosition))),2.7);'+
+   'outgoingLight+=vec3(.032,.046,.043)*edge7*(.38+.62*smoothstep(-.5,.6,normal.x));\n#include <opaque_fragment>');
+ };
+ skin.customProgramCacheKey=()=>'c7-hunter-raking-light-v2';
  const dark=new THREE.MeshStandardMaterial({color:0x0c0a09,roughness:.95});dark.name='hunter-socket';
  const wet=new THREE.MeshStandardMaterial({color:0x14100e,roughness:.12,metalness:.1});wet.name='hunter-eye';
  const nail=new THREE.MeshStandardMaterial({color:0x4a4034,roughness:.5});nail.name='hunter-nail';
  const gum=new THREE.MeshStandardMaterial({color:0x5a2c28,roughness:.6});
  // a unit segment spanning y 0..1, tapering from r0 (at 0) to r1 (at 1), a little lumpy
- const seg=(r0,r1,sides=9)=>{const geo=new THREE.CylinderGeometry(r1,r0,1,sides,4,false);geo.translate(0,.5,0);const p=geo.attributes.position;
-  for(let i=0;i<p.count;i++){const y=p.getY(i),a=Math.atan2(p.getZ(i),p.getX(i)),k=1+.07*Math.sin(a*3+y*7)+.05*Math.sin(y*19+a);p.setX(i,p.getX(i)*k);p.setZ(i,p.getZ(i)*k);}geo.computeVertexNormals();return geo;};
+ const seg=(r0,r1,sides=16)=>{const geo=new THREE.CylinderGeometry(r1,r0,1,sides,14,false);geo.translate(0,.5,0);const p=geo.attributes.position;
+  for(let i=0;i<p.count;i++){const y=p.getY(i),a=Math.atan2(p.getZ(i),p.getX(i)),k=.88+.22*Math.sin(Math.PI*y)+.055*Math.sin(a*3+y*7)+.025*Math.sin(y*19+a);p.setX(i,p.getX(i)*k);p.setZ(i,p.getZ(i)*k);}geo.computeVertexNormals();return geo;};
  const mesh=(geo,m,name)=>{const o=new THREE.Mesh(geo,m);o.name=name;o.castShadow=true;o.receiveShadow=true;g.add(o);return o;};
  const S={
   thighL:mesh(seg(.085,.06),skin,'thigh-l'),thighR:mesh(seg(.085,.06),skin,'thigh-r'),shinL:mesh(seg(.055,.035),skin,'shin-l'),shinR:mesh(seg(.055,.035),skin,'shin-r'),
   footL:mesh(seg(.04,.02,7),skin,'foot-l'),footR:mesh(seg(.04,.02,7),skin,'foot-r'),
   upperL:mesh(seg(.06,.042),skin,'upper-l'),upperR:mesh(seg(.06,.042),skin,'upper-r'),foreL:mesh(seg(.042,.028),skin,'fore-l'),foreR:mesh(seg(.042,.028),skin,'fore-r'),
   spine:mesh(seg(.13,.2,11),skin,'spine'),neck:mesh(seg(.06,.045),skin,'neck'),pelvis:mesh(new THREE.SphereGeometry(.15,10,8),skin,'pelvis'),
+  collarL:mesh(seg(.055,.050),skin,'collar-l'),collarR:mesh(seg(.055,.050),skin,'collar-r'),
+  trapL:mesh(seg(.060,.055),skin,'trapezius-l'),trapR:mesh(seg(.060,.055),skin,'trapezius-r'),
  };
  S.pelvis.scale.set(1.2,.8,.9);
  // ribcage: a hollow-looking barrel with the shoulder blades standing out
  const ribs=mesh(new THREE.SphereGeometry(.2,12,10),skin,'ribs');ribs.scale.set(1.25,1.45,.9);
+ const fascia=new THREE.MeshStandardMaterial({color:0x544e40,roughness:.55,metalness:.09});
+ for(const side of [-1,1])for(let i=0;i<4;i++){
+  const yy=-.048+i*.032,curve=new THREE.CatmullRomCurve3([new THREE.Vector3(side*.02,yy,-.184),new THREE.Vector3(side*.105,yy+.012,-.154),new THREE.Vector3(side*.184,yy+.045,-.064),new THREE.Vector3(side*.186,yy+.060,.03)]);
+  const rib=new THREE.Mesh(new THREE.TubeGeometry(curve,9,.008-i*.0007,5,false),fascia);ribs.add(rib);
+ }
  const blades=[-1,1].map(s=>{const b=mesh(new THREE.SphereGeometry(.09,8,6),skin,'blade');b.scale.set(1,1.5,.45);b.userData.s=s;return b;});
  const joints=['elbowL','elbowR','kneeL','kneeR','shoulderL','shoulderR'].map(n=>{const j=mesh(new THREE.SphereGeometry(n.startsWith('sh')?.07:.045,8,6),skin,n);j.userData.n=n;return j;});
  // hands: a palm and four long fingers (and a thumb), each finger two segments, curled by the drive
- const hand=side=>{const h=new THREE.Group();h.name='hand-'+side;g.add(h);const palm=new THREE.Mesh(new THREE.BoxGeometry(.075,.11,.03),skin);palm.position.y=.055;palm.castShadow=true;h.add(palm);
+ const hand=side=>{const h=new THREE.Group();h.name='hand-'+side;g.add(h);const palm=new THREE.Mesh(roundedBoxGeometry(.075,.11,.038,.016),skin);palm.position.y=.055;palm.castShadow=true;h.add(palm);
+  for(let n=0;n<4;n++){const tendon=new THREE.Mesh(seg(.0045,.006,8),skin);tendon.position.set(-.029+n*.019,.017,-.018);tendon.scale.y=.087;h.add(tendon);}
   const fingers=[];for(let k=0;k<5;k++){const thumb=k===4,f=new THREE.Group();f.position.set(thumb?side*.045:(-.03+k*.02),thumb?.04:.11,0);f.rotation.z=thumb?side*.6:0;h.add(f);
    const a=new THREE.Mesh(seg(.011,.009,6),skin);a.scale.set(1,thumb?.07:.13,1);a.castShadow=true;f.add(a);const j=new THREE.Group();j.position.y=thumb?.07:.13;f.add(j);
    const b=new THREE.Mesh(seg(.009,.004,6),skin);b.scale.set(1,thumb?.05:.11,1);b.castShadow=true;j.add(b);const tip=new THREE.Mesh(new THREE.SphereGeometry(.006,5,4),nail);tip.position.y=thumb?.05:.11;j.add(tip);fingers.push({f,j});}
@@ -89,12 +108,17 @@ function standIn(){
  const hands={l:hand(-1),r:hand(1)};
  // the head: long, narrow, eye sockets too deep, a jaw that hangs open further than a jaw should
  const head=new THREE.Group();head.name='head';g.add(head);
- const skull=new THREE.Mesh(new THREE.SphereGeometry(.13,16,12),skin);skull.scale.set(.78,1.05,1.85);skull.position.set(0,.05,-.07);skull.castShadow=true;head.add(skull);
+ const skull=new THREE.Mesh(new THREE.SphereGeometry(.13,32,24),skin);skull.scale.set(.78,1.19,1.38);skull.position.set(0,.062,-.050);skull.castShadow=true;head.add(skull);
  // (no brow: the skull runs smooth into two holes set too far forward and too close together; a glint far back in each)
- for(const s of [-1,1]){const so=new THREE.Mesh(new THREE.SphereGeometry(.03,10,8),dark);so.scale.set(.9,1.2,.8);so.position.set(s*.036,.045,-.255);head.add(so);
-  const e=new THREE.Mesh(new THREE.SphereGeometry(.007,8,6),wet);e.position.set(s*.036,.045,-.262);head.add(e);}
+ for(const s of [-1,1]){const so=new THREE.Mesh(new THREE.SphereGeometry(.03,16,12),dark);so.scale.set(.87,1.05,.62);so.position.set(s*.036,.045,-.213);head.add(so);
+  const e=new THREE.Mesh(new THREE.SphereGeometry(.006,12,8),wet);e.position.set(s*.036,.045,-.225);head.add(e);
+  const brow=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),skin);brow.scale.set(.040,.020,.029);brow.position.set(s*.039,.075,-.204);brow.rotation.z=s*.20;head.add(brow);}
+ for(const side of [-1,1]){
+  const ridge=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),skin);
+  ridge.position.set(side*.060,.005,-.186);ridge.scale.set(.016,.047,.046);ridge.rotation.z=side*.32;head.add(ridge);
+ }
  const jaw=new THREE.Group();jaw.position.set(0,-.03,-.06);head.add(jaw);
- const jm=new THREE.Mesh(new THREE.SphereGeometry(.1,12,8,0,Math.PI*2,Math.PI*.45,Math.PI*.55),skin);jm.scale.set(.75,1.2,1.9);jm.position.set(0,.03,-.1);jm.castShadow=true;jaw.add(jm);
+ const jm=new THREE.Mesh(new THREE.SphereGeometry(.1,24,16,0,Math.PI*2,Math.PI*.45,Math.PI*.55),skin);jm.scale.set(.73,1.1,1.4);jm.position.set(0,.03,-.07);jm.castShadow=true;jaw.add(jm);
  const mouth=new THREE.Mesh(new THREE.SphereGeometry(.07,10,6),gum);mouth.scale.set(.9,.35,1.3);mouth.position.set(0,-.01,-.1);jaw.add(mouth);
  for(let k=0;k<9;k++){const t=new THREE.Mesh(new THREE.ConeGeometry(.007,.028,4),nail);const a=-.9+k*.225;t.position.set(Math.sin(a)*.07,.012,-.09-Math.cos(a)*.08);t.rotation.x=Math.PI;jaw.add(t);}
  return {g,S,ribs,blades,joints,hands,head,jaw,skin};}
@@ -183,6 +207,8 @@ export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
   // lay the segments
   const S=stand.S;place(S.thighL,J.hipL,J.knL);place(S.thighR,J.hipR,J.knR);place(S.shinL,J.knL,J.anL);place(S.shinR,J.knR,J.anR);place(S.footL,J.anL,J.toeL);place(S.footR,J.anR,J.toeR);
   place(S.upperL,J.shL,J.elL);place(S.upperR,J.shR,J.elR);place(S.foreL,J.elL,J.wrL);place(S.foreR,J.elR,J.wrR);place(S.spine,J.pelvis,J.chest);place(S.neck,J.chest,J.head);
+  place(S.collarL,J.chest,J.shL);place(S.collarR,J.chest,J.shR);
+  const slope=_e.copy(J.chest).lerp(J.head,.30);place(S.trapL,slope,J.shL);place(S.trapR,slope,J.shR);
   S.pelvis.position.copy(J.pelvis).divideScalar(sc);S.pelvis.rotation.set(-W.lean*.5,0,0);
   stand.ribs.position.copy(J.pelvis).lerp(J.chest,.68).divideScalar(sc);stand.ribs.quaternion.setFromUnitVectors(Y,_a.subVectors(J.chest,J.pelvis).normalize());stand.ribs.scale.set(1.25,1.45+Math.sin(t*1.7)*.025,.9);
   for(const b of stand.blades){b.position.copy(J.chest).divideScalar(sc).add(_a.set(b.userData.s*.12,-.05,.11).applyQuaternion(stand.ribs.quaternion));b.quaternion.copy(stand.ribs.quaternion);}
