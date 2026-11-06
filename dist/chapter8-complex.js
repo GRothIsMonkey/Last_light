@@ -129,7 +129,7 @@ export function createComplex({scene,sfx=()=>{}}){
  function wallRun(g,c,side){// one inner wall of a cell, with its openings cut out
   const {x0,x1,z0,z1}=c,top=c.h,base=c.o.ramp?Math.min(c.o.ramp.y0,c.o.ramp.y1):c.y,y1=(c.o.ramp?Math.max(c.o.ramp.y0,c.o.ramp.y1):c.y)+top;
   const ew=side==='e'||side==='w',edge=side==='e'?x1:side==='w'?x0:side==='n'?z0:z1,a=ew?z0:x0,b=ew?z1:x1;
-  const holes=OPENINGS.filter(o=>(o.a===c.id||o.b===c.id)&&(ew?o.x===edge:o.z===edge)).map(o=>{const v0=(o.v0||0)+c.y-base,v1=v0+(o.h-(o.v0||0));return [o.r[0],o.r[1],v0,v1,o];});
+  const holes=OPENINGS.filter(o=>(o.a===c.id||o.b===c.id)&&(ew?o.x===edge:o.z===edge)).map(o=>{const fy=o.window?(CELLS.find(r=>r[0]===o.a)?.[5]??c.y):c.y,v0=(o.v0||0)+fy-base,v1=v0+(o.h-(o.v0||0));return [o.r[0],o.r[1],v0,v1,o];});/* (a window is at the height of the room it is looked out of, in both walls: the main chamber's floor is nine metres lower) */
   const inset=WT/2,pos=edge+(side==='e'||side==='s'?-inset:inset),M=wallM(c.row);
   const piece=(u0,u1,v0,v1)=>{if(u1-u0<.02||v1-v0<.02)return;const um=(u0+u1)/2,w=u1-u0,h=v1-v0;if(ew)K.slab(g,pos,base+(v0+v1)/2,um,WT,h,w,M);else K.slab(g,um,base+(v0+v1)/2,pos,w,h,WT,M);};
   let u=a;for(const [h0,h1,v0,v1] of holes.sort((p,q)=>p[0]-q[0])){piece(u,h0,0,y1-base);piece(h0,h1,0,v0);piece(h0,h1,v1,y1-base);u=h1;}piece(u,b,0,y1-base);
@@ -236,7 +236,14 @@ export function createComplex({scene,sfx=()=>{}}){
   const desk=new THREE.Group();desk.position.set(17.6,-3,70.2);made.add(desk);K.box(desk,0,.38,0,.6,.76,1.3,wood);K.box(desk,.1,.95,.2,.3,.3,.4,m(0x222326,{roughness:.4},null,'monitor'));
   const poster=K.plane(made,22.2,-1.4,72.85,1,.7,m(0x7a3a30,{roughness:1},null,'poster'),{ry:Math.PI});poster.name='c8-made-poster';
   const win=K.plane(made,27.75,-1.5,68.8,1.2,1,m(0x0d1418,{roughness:.2,emissive:0x18324a,emissiveIntensity:.25},null,'made-window'),{ry:-Math.PI/2});win.name='c8-made-window';
-  K.box(made,22,-2.99,68.8,8,.02,6,m(0x7c6a52,{roughness:1},null,'carpet'));K.box(made,26.6,-2.3,72.6,.8,1.4,.5,wood);}
+  K.box(made,22,-2.99,68.8,8,.02,6,m(0x7c6a52,{roughness:1},null,'carpet'));K.box(made,26.6,-2.3,72.6,.8,1.4,.5,wood);
+  // (his lamp, a headboard, a shelf of paperbacks and comics, a chair with yesterday's shirt on it: all where his are, all too neat)
+  K.box(bed,0,.75,-1.02,1.04,1.0,.08,wood);const lamp=new THREE.Group();lamp.position.set(17.7,-3+.76,70.4);made.add(lamp);K.box(lamp,0,.02,0,.16,.04,.16,m(0x2a2a2a,{roughness:.5},null,'lamp-base'));K.box(lamp,0,.2,0,.03,.36,.03,m(0x2a2a2a,{roughness:.5},null,'lamp-stem'));
+  K.box(lamp,0,.42,0,.26,.18,.26,m(0xf2d9a8,{roughness:.8,emissive:0xffc070,emissiveIntensity:.9},null,'lamp-shade'));
+  const shelf=new THREE.Group();shelf.position.set(16.62,-3,66.6);made.add(shelf);K.box(shelf,0,.9,0,.3,1.8,1.2,wood);
+  for(let r=0;r<3;r++)for(let k=0;k<7;k++){const h=.2+((k*37+r*11)%7)*.018;K.box(shelf,.02,.32+r*.5+h/2,-.5+k*.15,.22,h,.11,m([0x8a2a22,0x2a4a7a,0xd8b04a,0x3a6a3a,0xe8e2d0,0x5a3a6a,0xc86a2a][(k+r*3)%7],{roughness:.9},null,'book'));}
+  const chair=new THREE.Group();chair.position.set(18.6,-3,71.1);made.add(chair);K.box(chair,0,.45,0,.45,.05,.45,wood);K.box(chair,0,.75,.2,.45,.6,.05,wood);for(const [x,z] of [[-.2,-.2],[.2,-.2],[-.2,.2],[.2,.2]])K.box(chair,x,.22,z,.04,.45,.04,wood);
+  K.box(chair,0,.52,0,.42,.05,.4,m(0x2a5a8a,{roughness:1},null,'shirt'));}
  lampAt(22,-.35,68.8,true);for(const x of [18.6,23.6])K.box(dg,x,-1.9,73.4,.16,.36,.1,green);
  const alexLevers=[17.6,25.4].map(x=>{const g=new THREE.Group();g.position.set(x,-1.75,73.25);root.add(g);keep.add(g);const r2=new THREE.Mesh(new THREE.BoxGeometry(.05,.5,.05),red);r2.position.y=.25;g.add(r2);return g;});
  K.box(dg,20.3,-2.8,78.6,1.6,.4,.8,steel);// the cot in F2

@@ -142,7 +142,7 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   // halfway down, look back the way you came: the door to the gallery is a wall
   until(()=>marked('behind you, a wall'),20);const back=P('f0Door');for(let k=0;k<60&&!said('Where’s the door?');k++){faceV({x:back.x+1,y:-1.5,z:back.z});T.advance(1/15);}
   via([P('f0End'),P('f1In'),P('f1Mid')],{r:1,pad:10});until(()=>marked('his door'),60);approach(P('alexDoor'),2.2,{pad:8});
-  until(()=>A8.C.flickWant,120);o.light(true);for(let k=0;k<4;k++){tap('KeyT');wait(.4);}until(()=>offers().includes('alever'),40);take('alever',{hold:14,r:1.2,max:40});
+  until(()=>A8.C.flickWant,180);o.light(true);wait(.3);for(let k=0;k<4;k++){tap('KeyT');wait(.4);}until(()=>offers().includes('alever'),40);take('alever',{hold:14,r:1.2,max:40});
   until(()=>A8.C.flags.anchor3,20);via([P('f1In'),P('f0End'),P('f0Mid'),P('f0In'),P('hMid'),P('kSouth'),P('gDoor'),P('gIn')],{r:1,pad:10,sprint:true});until(()=>ph()==='e8-reunion',30);
   check(`${label}: Alex: "It keeps bringing you here."; at the same time (your light, twice); two handles; the last one out`,()=>{assert.ok(said('It keeps bringing you here.'));assert.ok(said('We’re taking you home.'));assert.ok(A8.C.flags.anchor3);});lap('alex');}
  if(inSeg('reunion')){until(()=>ph()==='e8-reunion',10);until(()=>offers().includes('t-alex'),40);for(const id of ['t-jamie','t-sam','t-sam','t-alex','t-alex','t-alex']){until(quiet,30);take(id,{max:12,r:1.8});until(quiet,30);}

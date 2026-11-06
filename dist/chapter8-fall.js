@@ -49,12 +49,15 @@ export function fallActs(X){
    sceneBreach('breach');})());}
  // ---- Act IV, scene 11: it comes through the barrier; the way out comes apart ----------------------------------------------------------------------------------
  function sceneBreach(from='breach'){go('f8-breach');const A2=X.enlistAlex();
-  if(from!=='breach'||!A2.active){enterComplex('hMid',Math.PI);joinFoot(sam,CM.at('hWest'),Math.PI);joinFoot(jamie,CM.at('kSouth'),Math.PI);joinFoot(A2,CM.at('hMid'),Math.PI);reyes.show(true);reyes.place(CM.at('hEast').x-2,CM.at('hEast').z,Math.PI);reyes.gest('flashlight');Object.assign(C.flags,{samOut:true,anchor1:true,anchor2:true,anchor3:true,board:true});C.inv.radio='have';}
+  if(from!=='breach'||!A2.active){enterComplex('hMid',Math.PI);joinFoot(sam,CM.at('hWest'),Math.PI);joinFoot(jamie,CM.at('kSouth'),Math.PI);joinFoot(A2,{x:CM.at('hMid').x-3,z:CM.at('hMid').z-1.5},Math.PI);reyes.show(true);reyes.place(CM.at('hEast').x-2,CM.at('hEast').z,Math.PI);reyes.gest('flashlight');Object.assign(C.flags,{samOut:true,anchor1:true,anchor2:true,anchor3:true,board:true});C.inv.radio='have';}
   boardMesh();lightsBelow('K');C.h=Math.max(C.h,HOUR.breach);C.hMin=HOUR.breach;date(C.h);presence.show(true);
   task('breach',(function*(){
    if(from==='breach'){
     // through the windows: the far end of the main chamber, the original barrier: something pushes on it from behind; the ribs go
     presence.showMass(true,{at:W(1,92,-2),r:11,squash:[1.4,1,.8]});presence.lean(.2);
+    // (everyone at the long windows, out of the line from where you stand; the chamber's own cold lamps still on)
+    light(5,W(1,70,7),{intensity:420,dist:60,color:0xa8bcd8,flicker:.1});S.lookTarget=W(1,80,-1);
+    for(const [c,x,z] of [[jamie,-1.5,51.2],[sam,10,51.2],[A2,12.6,50.8]])if(c)stand(c,W(x,z),{look:()=>W(1,82,-1),max:1});
     yield* lines([N('Through the long windows, the main chamber: a drum of concrete the size of a house hanging over a black hole in the floor. And at the far end, the wall of ribs.',{time:4.6})]);
     presence.lean(.6);sound('c8Collapse',W(1,86,-4),{gain:1.6});C.shake=1;for(let i=0;i<4;i++)later(.3+i*.35,()=>presence.impact(W(-8+i*5,85,-6+i*2),{n:14,power:1.2}));
     CM.barrier.children.forEach((r2,i)=>{if(i<9&&i%2===0){r2.rotation.x=-.25-Math.random()*.2;r2.position.z=85-1.2;}});
@@ -65,7 +68,8 @@ export function fallActs(X){
     yield* wait(2.2);
     // the hunter: out of the chamber, past them in the hall, not after anyone: getting away from it
     HM.show(true);H.reset();HM.show(true);H.place(W(-6,48).x,W(-6,48).z,0);H.script([{to:()=>[W(-6,40).x,W(-6,40).z],speed:5,state:'run',free:true},{to:()=>[W(-4,34).x,W(-4,34).z],speed:5,state:'run',free:true},{act:()=>{HM.show(false);H.reset();}}]);
-    yield* lines([N('The long thing from the houses goes past the end of the hall flat out, on its knuckles. It doesn’t even look at you.',{time:3.6}),J('It’s RUNNING. From THAT.',{time:1.4,face:'terrified'})]);}
+    yield* lines([N('The long thing from the houses goes past the end of the hall flat out, on its knuckles. It doesn’t even look at you.',{time:3.6}),J('It’s RUNNING. From THAT.',{time:1.4,face:'terrified'})]);
+    S.lookTarget=null;for(const c of [jamie,sam,A2])if(c)stand(c,null);}
    checkpoint('c8-escape');C.mood='escape';C.mindKey=null;presence.show(true);presence.showMass(true,{at:W(1,90,-2),r:11});
    objective('Get out.','North. The way you came. The crew room if the hall is down.');
    // the 1974 hall comes down ahead of you as you run into it, past the crew room's door and short of the junction:
@@ -330,7 +334,8 @@ export function fallActs(X){
   Object.assign(C.flags,{jamieDead:true,sealed:true,alexHurt:true,samOut:true,anchor1:true,anchor2:true,anchor3:true});
   const A2=X.enlistAlex();joinFoot(A2,OAK,0);A2.follow=null;A2.brain=null;C.alexSit=true;joinFoot(sam,{x:OAK.x+.9,z:OAK.z+.7},0);leave(jamie);reyes.show(false);k.carA.show(false);
   const at={x:OAK.x-1.4,z:OAK.z+1.4};o.placePlayer({x:at.x,z:at.z,a:headingTo(at.x,at.z,OAK.x,OAK.z),mode:'walk',bike:null});checkpoint('c8-oak');C.fadeIn=0;C.mood='relaxed';C.mindKey=null;
-  stand(sam,{x:OAK.x+.75,z:OAK.z+.55},{look:()=>({x:OAK.x,y:OAK.y+.6,z:OAK.z})});
+  // (Sam sits down in the grass beside him, on his right, and holds his hand)
+  stand(sam,null);sam.script=null;sam.follow=null;C.samSit=true;
   C.amb={traffic:0,insects:.15,wind:.55,life:.3,forest:0,tunnel:0,water:0};
   task('oak',(function*(){
    yield* lines([{wait:2.4},N('The old oak. He’s sitting against it. You don’t remember getting him here.',{time:3.4}),{wait:2}]);
@@ -348,7 +353,7 @@ export function fallActs(X){
    sceneRide('ride');})());}
  // ---- Act V, scene 17: the last ride ---------------------------------------------------------------------------------------------------------------------------------------
  function sceneRide(from='ride'){go('n8-ride');if(from!=='ride'||C.where!=='oak'){nightStreet();cutWorld(world);ruin.show(true);ruin.stage(2);nav.setRoom(ruin.room);lightsOn(true);for(let i=0;i<6;i++)light(i,null);}
-  C.where='ride';C.h=Math.max(C.h,HOUR.ride);C.hMin=HOUR.ride;date(C.h);Object.assign(C.flags,{jamieDead:true,alexDead:true,sealed:true});C.alexSit=false;X.dismissAlex?.();leave(jamie);
+  C.where='ride';C.h=Math.max(C.h,HOUR.ride);C.hMin=HOUR.ride;date(C.h);Object.assign(C.flags,{jamieDead:true,alexDead:true,sealed:true});C.alexSit=false;C.samSit=false;X.dismissAlex?.();leave(jamie);
   const st=main(1131,-1.2),st2=main(1120,-1.2),a=headingTo(st.x,st.z,st2.x,st2.z);o.placePlayer({x:st.x,z:st.z,a,mode:'ride',speed:0});comp.putRiding(sam,main(1132,1.4).x,main(1132,1.4).z,a,0);sam.gone=false;sam.follow='ride';brain.enable(sam,true);
   reyes.show(false);k.carA.show(false);k.carB.show(true);const bq=main(640,-6),bq2=main(630,-6);k.carB.park(bq.x,bq.z,headingTo(bq.x,bq.z,bq2.x,bq2.z));k.carB.lights=true;police.attach?.(true);
   checkpoint('c8-ride');C.fadeIn=from==='ride'?0:-1;C.mood='relaxed';C.mindKey=null;C.amb={traffic:0,insects:.25,wind:.4,life:.4,forest:0,tunnel:0,water:0};
@@ -380,6 +385,9 @@ export function fallActs(X){
   if(JD.on&&jamie.person.group.visible){const g=jamie.person.group,y=gy(JD.x,JD.z);g.position.set(JD.x,y+.12,JD.z);g.rotation.set(-Math.PI/2,0,JD.a*.3,'YXZ');jamie.person.face?.set?.('neutral',{hold:999});}
   // Alex against the oak
   if(C.alexSit&&X.alex){const c=X.alex,pp=c.pose;sitPose(pp,{seat:.06,legs:'bent',t:C.t*(C.flags.alexDead?0:1),hands:'deck',look:0});pp[PI.hp]=C.flags.alexDead?-.5:-.2;const g=c.person.group;g.position.set(OAK.x,OAK.y-.02,OAK.z);g.rotation.set(0,-headingTo(OAK.x,OAK.z,main(1150,0).x,main(1150,0).z),0);applyPose(c.person,pp);c.person.face?.set?.(C.flags.alexDead?'neutral':'tired',{hold:3});}
+  if(C.samSit&&sam.person.group.visible){const c=sam,pp=c.pose,t2=main(1150,0),h=headingTo(OAK.x,OAK.z,t2.x,t2.z),fx=Math.sin(h),fz=-Math.cos(h),rx=Math.cos(h),rz=Math.sin(h),q={x:OAK.x+rx*.74+fx*.14,z:OAK.z+rz*.74+fz*.14};
+   sitPose(pp,{seat:.06,legs:'bent',t:C.t,hands:'deck',look:.4});pp[PI.lh]=-.47;pp[PI.lh+1]=.07;pp[PI.lh+2]=.07;c.px=q.x;c.pz=q.z;c.pa=h-.45;
+   const g=c.person.group;g.position.set(q.x,gy(q.x,q.z)-.02,q.z);g.rotation.set(0,-(h-.45),0);applyPose(c.person,pp);c.person.face?.set?.(C.flags.alexDead?'sad':'afraid',{hold:3});}
   // Jamie holding the garage door up
   if(C.jamieHold){const c=jamie,pp=c.pose;for(const s of [PI.lh,PI.rh]){pp[s+1]=1.95;}applyPose(c.person,pp);}}
  function officerAim(){const ph=S.phase;if(/^(f8|e8|d8)-/.test(ph)&&reyes.visible)return {x:reyes.x+Math.sin(reyes.a)*4,y:-2,z:reyes.z-Math.cos(reyes.a)*4};return null;}

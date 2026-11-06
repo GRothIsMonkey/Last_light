@@ -50,7 +50,11 @@ export function scenes8(X){
   else if(area==='C'){L(0,24,13.2,-.6,{intensity:4,dist:8,color:0xffe0b0,flicker:.1});L(1,43,13.2,-1,{intensity:C.flags.cPower?3:0,dist:6,color:0xffe8c8});}
   else if(area==='J'){L(0,0,27,.9,{intensity:4.5,dist:12});L(1,8,27,.9,{intensity:4.5,dist:12});L(2,-12,27,-.6,{intensity:3,dist:10,flicker:.2});L(3,17,27,-.2,{intensity:3,dist:10});}
   else if(area==='K'){L(0,3.5,34,-.3,{intensity:4,dist:10});L(1,3.5,40,-.3,{intensity:4,dist:10});L(2,-2,39.6,-.5,{intensity:4,dist:8,color:0xffe8c8});L(3,0,48,.9,{intensity:4,dist:12});L(4,12,48,.9,{intensity:4,dist:12,color:C.flags.alarm?0xff3a2a:0xffd6a0});}
-  else if(area==='F'){L(0,19.8,50,-.5,{intensity:3.2,dist:9});L(1,19.8,58,-.5,{intensity:3.2,dist:9,flicker:.3});L(2,22,68.8,-.5,{intensity:3.5,dist:9,color:0xffd8a0});L(3,21,76,-.8,{intensity:1.5,dist:7,color:0xc0a8a0,flicker:.5});}
+  else if(area==='F'){L(0,19.8,50,-.5,{intensity:3.2,dist:9});L(1,19.8,58,-.5,{intensity:3.2,dist:9,flicker:.3});L(2,22,68.8,-.5,{intensity:3.5,dist:9,color:0xffd8a0});L(3,21,76,-.8,{intensity:1.5,dist:7,color:0xc0a8a0,flicker:.5});
+   if(CM.made.visible)L(5,17.7,70.4,-1.55,{intensity:4,dist:7,color:0xffc890});}/* (his desk lamp, in the room it made) */
+  // the main chamber: work lights along the catwalk, and the big cold lamps on the chamber's walls (the plug, the throat, the ribs)
+  else if(area==='I'){L(0,-12.1,60,6.4,{intensity:4,dist:12,color:0xffe0b0});L(1,-12.1,72,6.4,{intensity:4,dist:12,color:0xffe0b0,flicker:.15});L(2,-8,78.2,6.4,{intensity:4.5,dist:12,color:0xffe0b0});
+   L(3,1,66,9,{intensity:320,dist:50,color:0xa8bcd8,flicker:.08});L(4,1,82,5,{intensity:220,dist:40,color:0x9fb2cc,flicker:.12});}
   else if(area==='I'){L(0,-30,61.8,6.4,{intensity:3,dist:12});L(1,-12,66,6.6,{intensity:4,dist:14});L(2,-8,78,6.6,{intensity:5,dist:12});L(3,1,70,-6,{intensity:2.5,dist:30,color:0x9a8a80});}
   C.area=area;}
  const areaOf=id=>!id?null:['A','L4','S1'].includes(id)?'A':['B','B1','B2'].includes(id)?'B':/^C/.test(id)?'C':/^(J|D|E)/.test(id)?'J':['K','G','GD','H'].includes(id)?'K':/^F/.test(id)?'F':['IW','IP','L2'].includes(id)?'I':null;
@@ -418,7 +422,11 @@ export function scenes8(X){
     N('Then a bell, somewhere, once. A long way off, a sound like a dam letting go. Dust comes down out of the ceiling.',{time:4}),J('That’s not good.',{time:1.2,face:'worried'}),SM('Alex. We have to get Alex.',{time:1.8,face:'determined'})]);
    jamie.footBoost=1;minds();sceneAlex('shift');})());}
  // ---- Act III, scene 8: the corridor that moves; the room it made; Alex ----------------------------------------------------------------------------------
- function sceneAlex(from='shift'){go('e8-alex');if(from!=='shift'||!X.friendsNow().includes(jamie)){enterComplex('hMid',Math.PI/2);joinFoot(sam,CM.at('hWest'),Math.PI/2);joinFoot(jamie,CM.at('hMid'),Math.PI/2);C.flags.samOut=C.flags.anchor1=C.flags.anchor2=true;}
+ function sceneAlex(from='shift'){go('e8-alex');
+  // (Continue from the made room starts in its doorway; from his door, in what is left of the room, facing it)
+  if(from!=='shift'||!X.friendsNow().includes(jamie)){const at=from==='made'?'f1In':from==='alex'?'f1Mid':'hMid',to=from==='made'?'f1Mid':from==='alex'?'alexDoor':null,q=CM.at(at),a=to?headingTo(q.x,q.z,CM.at(to).x,CM.at(to).z):Math.PI/2;
+   enterComplex(at,a);if(to){joinFoot(sam,{x:q.x-.9,z:q.z-.6},a);joinFoot(jamie,{x:q.x+.8,z:q.z-.7},a);}else{joinFoot(sam,CM.at('hWest'),Math.PI/2);joinFoot(jamie,CM.at('hMid'),Math.PI/2);}
+   if(from==='alex'){CM.made.visible=false;C.flags.madeBreak=true;}C.flags.samOut=C.flags.anchor1=C.flags.anchor2=true;}
   lightsBelow('F');C.h=Math.max(C.h,HOUR.alex);C.hMin=HOUR.alex;date(C.h);CM.setDoor('alexCell',0,{instant:true});CM.setDoor('F0',1,{instant:true});checkpoint(from==='alex'?'c8-alex':'c8-shift');
   task('alex',(function*(){
    if(from==='shift'){objective('Find Alex.','South, past the big gallery. The corridor on the east side.');mark('find Alex');
@@ -446,8 +454,9 @@ export function scenes8(X){
    yield* lines([N('Through the door’s little window: Alex. Sitting on the cot, his knees up, his shirt gone, in somebody’s grey coverall too big for him. He looks up.',{time:4.4}),
     {who:'ALEX',text:q8('It keeps bringing you here.'),time:2.2},J('Alex. It’s really us.',{time:1.6,face:'hopeful'}),{who:'ALEX',text:q8('That’s what you said last time.'),time:2},
     {who:'ALEX',text:q8('Okay. All of you. At the same time. Jamie, three fingers. Sam, close your eyes. You—'),time:3.6},{who:'ALEX',text:q8('your light. Off and on. Twice.'),time:2}]);
-   C.flicks=0;C.flickWant=true;objective('Your flashlight: off and on, twice.','T.');
-   yield* until(()=>C.flicks>=4||C.pt>1300);C.flickWant=false;
+   C.flicks=0;C.flickWant=true;C.lastOn=undefined;objective('Your flashlight: off and on, twice.','T.');mark('flash: wanted');
+   {const t0=C.pt;let told=false;yield* until(()=>{if(!told&&C.pt-t0>25&&!busy()){told=true;say([SM('Your light. T. Off, on. Off, on.',{time:2.2})]);}return C.flicks>=4||C.pt-t0>150;});}
+   C.flickWant=false;mark('flash: '+C.flicks);
    yield* lines([{wait:1},{who:'ALEX',text:q8('…It always does it after. A second after. Like it’s watching first.'),time:3},{who:'ALEX',text:q8('You did it at the same time.'),time:2},
     Y('We’re taking you home.',{time:1.6}),{wait:.8},{who:'ALEX',text:q8('There’s two handles. Outside. Somebody has to hold both.'),time:2.6}]);
    checkpoint('c8-alex-free');
@@ -505,7 +514,7 @@ export function scenes8(X){
   if(ph==='d8-bikes'&&coverG.parent){const lid=coverG.userData.lid;if(C.coverJump>0){C.coverJump-=dt*1.5;lid.position.y=.03+Math.max(0,Math.sin((1-C.coverJump)*Math.PI))*.12;}mist.material.opacity=(C.flags.breath?.22:.12)*(.6+.4*Math.sin(C.t*1.3));mist.position.set(.15,.6+.1*Math.sin(C.t),0);}
   if(X.X.ST.active){const id=CM.cellIdAt(me().x,me().z),ar=areaOf(id);if(ar&&ar!==C.area&&!C.areaLock)lightsBelow(ar);C.zone=id;}
   // the made room coming apart (its pieces sink, stretch and grey; the poster runs; the window goes to wall)
-  if(C.flags.madeBreak&&C.madeT!=null){C.madeT+=dt;const k2=smooth(C.madeT/7),M=CM.made;for(const [i,ch] of M.children.entries()){ch.position.y=-k2*(.4+((i*.37)%1)*.9);ch.rotation.z=k2*((i%3)-1)*.3;ch.scale.y=1-k2*.7;}if(k2>=1)M.visible=false;}
+  if(C.flags.madeBreak&&C.madeT!=null){C.madeT+=dt;const k2=smooth(C.madeT/7),M=CM.made;for(const [i,ch] of M.children.entries()){ch.position.y=-k2*(.4+((i*.37)%1)*.9);ch.rotation.z=k2*((i%3)-1)*.3;ch.scale.y=1-k2*.7;}if(C.madeT<4.2&&Math.random()<dt*6)light(5,W(17.7,70.4,-1.55),{intensity:4*(1-k2)*Math.random(),dist:7,color:0xffc890});if(k2>=1&&M.visible){M.visible=false;light(5,null);}}
   // Jamie limp over its shoulder (carried), and lying on his cot
   if(C.carryJamie&&HM.root.visible){HM.root.updateMatrixWorld(true);const sh=HM.sockets.chest.getWorldPosition(new THREE.Vector3());jamie.px=sh.x;jamie.pz=sh.z;jamie.py=sh.y-1.05;jamie.holdPlace=true;}
   // the flashlight test at Alex's door: count your switches
@@ -545,6 +554,6 @@ export function scenes8(X){
  const FALL=fallActs(FX);
  X.sceneTruth=FALL.sceneTruth;
  function jump(section){const f=SCENE[section]||FALL.SCENE?.[section];if(!f){begin();return;}C.where='';f();if(section!=='chapter8-start'){C.fadeIn=-1;o.fade(0);}}
- return {begin,jump,update,afterActors,key,pan,wheel,hint,sources,blockers,reset,updateDanny,MH,officerAim:()=>FALL.officerAim?.()??null,
+ return {begin,jump,update,afterActors,key,pan,wheel,hint,sources,blockers,reset,updateDanny,MH,OAK:FALL.OAK,JD:FALL.JD,officerAim:()=>FALL.officerAim?.()??null,
   canDismount:()=>!!FALL.canDismount?.(),canRemount:()=>!!FALL.canRemount?.(),SCENE:{...SCENE,...(FALL.SCENE||{})},MAP,D,film};
 }
