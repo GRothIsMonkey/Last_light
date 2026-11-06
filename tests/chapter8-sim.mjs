@@ -204,19 +204,24 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
 }
 
 export async function runChapterEightChecks(T0){
- const X=chapterEightTools(T0),{h,press,release,tap,until,wait,me,A8,C8,ph,CM,offers,approach,P,take}=X,check=T0.check,T=X.T,element=T0.element;
+ const X=chapterEightTools(T0),{h,press,release,tap,until,wait,me,A8,C8,ph,CM,offers,approach,via,P,take}=X,check=T0.check,T=X.T,element=T0.element;
  // every DEV Chapter Eight scene starts in a Chapter Eight phase, on its feet, somewhere you can stand
  const sc=DEV_SCENES[8]||[];
  check(`chapter 8: every DEV Chapter Eight scene starts (${sc.length} scenes)`,()=>{const bad=[];for(const s of sc){if(!s.jump)continue;h.jump(s.jump);T.advance(1.5);const p=me(),st=A8.state;if(!/^(c8|d8|e8|f8|g8|n8)-/.test(st.phase))bad.push(s.id+': '+st.phase);const riding=h.snapshot.state==='c1-ride'||h.snapshot.state==='riding';if(!(p.walking||riding||h.snapshot.state==='ended'))bad.push(s.id+': not on foot or riding ('+h.snapshot.state+')');if(p.walking&&!h.nav.walkable(p.x,p.z,{r:.2})&&!A8.C.view)bad.push(s.id+': stands in a wall');}assert.deepEqual(bad,[]);});
  check('chapter 8: the barrier can be failed: walk into the pipe and it has you; back at the barrier checkpoint',()=>{h.jump('c8-barrier');until(()=>!!A8.C.hunt,30);let caught=false;
   until(()=>{const q=P('hunterL4');X.faceTo(A8.HM.x,A8.HM.z,0);press('KeyW');if(A8.C.failing)caught=true;return caught;},40);release('KeyW');until(()=>!A8.C.failing,6);T.advance(1);
   assert.ok(caught,'caught');assert.equal(A8.state.phase,'d8-shaft');assert.ok(A8.state.fails['c8-barrier']>=1);});
+ check('chapter 8: the escape can be failed: stop under the beam in the junction hall and it comes down on you; back at the way out',()=>{h.jump('c8-escape');until(()=>A8.C.lastCheckpoint==='c8-escape',20);
+  via([P('kSouth'),{x:P('kMid').x,z:P('kMid').z+3.2},P('gDoor'),P('gIn'),P('gBack'),P('gdMid')],{r:1,pad:10,sprint:true});
+  // step into the hall and stand there, under the grit
+  approach({x:P('gdMid').x,z:P('gdMid').z-2.6},.4,{pad:6});let failed=false;until(()=>{if(A8.C.failing)failed=true;return failed;},8);until(()=>!A8.C.failing,8);T.advance(1);
+  assert.ok(failed,'it came down on you');assert.ok((A8.state.fails['c8-escape']||0)>=1);assert.equal(A8.state.phase,'f8-breach');});
  check('chapter 8: the hunter here is its own instance (not Chapter Seven\'s) and the smiling creature is Chapter Three\'s, with the injury',()=>{assert.notEqual(A8.HM,h.chapter7.HM);assert.ok(h.chapter3.creature.injury?.length>=4||!h.chapter3.creature.loaded,'injury bones');});
  check('chapter 8: Continue offers the last checkpoint',()=>{h.jump('c8-wing');T.advance(1);const s=h.chapter.saved?.();assert.ok(s&&/wing|flooded/i.test(s.label+s.section),JSON.stringify(s));});
  check('chapter 8: then Chapter Seven starts clean (no complex, no ruin, no Alex companion)',()=>{h.jump('c7-court');T.advance(.5);assert.equal(A8.X.ST.active,false);assert.equal(h.chapter.companions.all.length,2);assert.equal(A8.ruin.ST.stage,0);});
  check('chapter 8: then Chapter Six starts clean; its drawdown gate stops the voice in the horn (the demonstration)',()=>{h.jump('c6-gallery');T.advance(.5);const A6=h.chapter6;until(()=>A6.C.gal?.mutter,90);until(()=>A6.C.gal.mutter.n>=1,20);
   const at=A6.DD.at();approach(at,1.2,{pad:18});X.faceV(at);until(()=>h.chapter.spot?.()?.id==='c6-drawdown',6);tap('KeyF');until(()=>A6.C.gal.mutter.done,12);assert.equal(A6.C.gal.mutter.done,'gate');});
- check('chapter 8: earlier-chapter clues exist: Ch1 Line 4 plate, Ch2 sealed access, Ch4 A. Rowan & the hand, Ch5 vault, Ch7 the 1974 line and her note',async()=>{
+ await check('chapter 8: earlier-chapter clues exist: Ch1 Line 4 plate, Ch2 sealed access, Ch4 A. Rowan & the hand, Ch5 vault, Ch7 the 1974 line and her note',async()=>{
   const fs=await import('node:fs');const read=f=>fs.readFileSync(new URL('../dist/'+f,import.meta.url),'utf8');assert.ok(read('chapter1.js').includes('LINE 4 — 1958'));assert.ok(read('chapter2.js').includes('NO ENTRY'));
   assert.ok(read('chapter4.js').includes('A. Rowan'));assert.ok(read('chapter4.js').includes('last two fingers of his left hand'));assert.ok(read('chapter5.js').includes('VALVE VAULT 3'));assert.ok(read('chapter7.js').includes('isolation work at the Line Four junction'));assert.ok(read('chapter7.js').includes('NOT EVEN IF IT SOUNDS LIKE ME'));});
  check('chapter 8: the save the aftermath will read: two home, two lost, the presence sealed',()=>{h.jump('chapter8-end');until(()=>h.snapshot.state==='ended',20);const v=JSON.parse(globalThis.localStorage.getItem('lastlight.chapter8')||'{}');assert.deepEqual(v.home,['YOU','SAM']);assert.deepEqual(v.lost,['JAMIE','ALEX']);});

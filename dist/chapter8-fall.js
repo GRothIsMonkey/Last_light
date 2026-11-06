@@ -302,7 +302,7 @@ export function fallActs(X){
    presence.set(0,{root:[W(1,86,-4).x,-4,W(1,86,-4).z],dir:[0,.2,-1],len:20,r0:3.4,r1:.6,state:'probe',probe:[W(-2,72,2).x,2,W(-2,72,2).z]});presence.set(2,{root:[W(1,74,-14).x,-14,W(1,74,-14).z],dir:[0,1,0],len:16,r0:3,r1:.7,state:'probe',probe:[W(0,74,-2).x,-2,W(0,74,-2).z]});
    objective('The plug platform.','Along the catwalk to the south end.');
    yield* until(()=>near(CM.at('ipPins'),4)||C.pt>500);
-   yield* lines([BR('There. Three pins through the hanger. Drive them out. Brandt’s sledge.',{time:2.6}),SM('A, B, then C. C last. C’s the one holding it.',{time:2.2,face:'determined'}),AL('When it pulls back, it’s going to hit. Get against the wall.',{time:2.4,face:'afraid'})]);
+   yield* lines([BR('There. Three pins through the hanger. Drive them out. Here— my sledge.',{time:2.6}),SM('A, B, then C. C last. C’s the one holding it.',{time:2.2,face:'determined'}),AL('When it pulls back, it’s going to hit. Get against the wall.',{time:2.4,face:'afraid'})]);
    stand(sam,{x:CM.at('ipPins').x-1.6,z:CM.at('ipPins').z-.9},{look:()=>CM.at('ipPins',5)});const A3=X.alex;stand(A3,{x:CM.at('ipLadder').x,z:CM.at('ipLadder').z-.6},{look:()=>CM.at('plug',2)});
    for(let i=0;i<3;i++){const name='ABC'[i];objective('Pin '+name+'.','Hold F: the sledge. Get against the wall when it comes.');
     let strikes=0,since=0;offer('pin'+i,'Drive out pin '+name,()=>{const q=CM.pins[i].getWorldPosition(new THREE.Vector3());return {x:q.x,y:q.y,z:q.z};},{r:2,hold:3.2,tick:(dt,v)=>{CM.ST.pins[i]=v*1.7;if(Math.random()<dt*3)sound('c6Clank',CM.at('ipPins',5),{gain:.7});},fn:()=>{CM.ST.pins[i]=2;sound('c6Clank',CM.at('ipPins',5),{gain:1.3});C.shake=.3;}});
