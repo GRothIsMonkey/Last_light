@@ -26,6 +26,10 @@ export const PERSON={
   lookBack:[6,10],lookAround:[2.5,5],gestures:{hips:1.2,pockets:.8,scratch:1,stretch:.8,shift:1.4,cross:.4,lookAround:1.4},ride:{react:[.35,.7],acc:1.75,brake:3.2,lag:[1.4,3.2]}},
  sam:{react:[.65,1.25],side:-1,lag:2.6,lead:0,curious:[10,17],likes:{map:1.7,sign:1.5,records:1.7,supplies:1.4,view:.8,water:.5,odd:.6,climb:.2},acc:1.35,dec:2.3,walk:1.35,brisk:1.9,jog:2.9,run:3.75,
   lookBack:[3,6],lookAround:[4,7],gestures:{cross:1.4,pockets:1,hips:.6,scratch:.5,stretch:.3,shift:1,lookAround:.7},ride:{react:[.6,1.1],acc:1.3,brake:2.7,lag:[4.2,6.4]}},
+ // (Chapter Eight: Alex, after five days in there: stays close and a little behind, startles at things, looks back a lot,
+ // touches nothing, holds his arms; slower to go ahead than either of them, fast when it is time to run)
+ alex:{react:[.25,.6],side:0,lag:1.7,lead:0,curious:[16,26],likes:{odd:.2,water:.1,climb:.2,view:.3,sign:.4,map:.5,records:.3,supplies:.4},acc:1.6,dec:2.8,walk:1.3,brisk:1.85,jog:3,run:3.85,
+  lookBack:[1.6,3.2],lookAround:[1.4,2.8],gestures:{cross:2.2,pockets:.3,hips:.1,scratch:.4,stretch:0,shift:1.6,lookAround:2},ride:{react:[.5,.9],acc:1.4,brake:2.9,lag:[2.6,4.2]}},
 };
 // How far apart the group stays, by mood: far (beyond this he comes after you), near (within this, stopped, he is
 // with you), space (closest he chooses to stand to you), max (the most he lets you get before running).

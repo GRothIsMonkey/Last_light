@@ -150,10 +150,20 @@ export const DEV_SCENES={
   {id:'c7-evidence',label:'Showing Reyes (his bike, his cap, the marks, the gum)',jump:'c7-evidence',save:'c7-after'},{id:'c7-mom',label:'Jamie’s Mother Asks You (her phone)',jump:'c7-mom',save:'c7-after'},
   {id:'c7-forgetting',label:'Forgetting (Reyes, the photos)',jump:'c7-forgetting',save:'c7-after'},{id:'c7-record',label:'Reyes’s Page, an Hour Later (the name in the paper)',jump:'c7-record',save:'c7-after'},{id:'c7-sams',label:'Sam’s Room, That Night',jump:'c7-sams'},
   {id:'c7-photo',label:'Final Photograph',jump:'c7-photo',save:'c7-sams'},{id:'c7-names',label:'The Names (the notebook)',jump:'c7-names',save:'c7-sams'},
-  {id:'c7-window',label:'The Final Image',jump:'c7-window',save:'c7-sams'},{id:'chapter7-end',label:'Chapter Seven Ending (the end card)',jump:'chapter7-end'}]};
+  {id:'c7-window',label:'The Final Image',jump:'c7-window',save:'c7-sams'},{id:'chapter7-end',label:'Chapter Seven Ending (the end card)',jump:'chapter7-end'}],
+ 8:[{id:'chapter8',label:'Chapter Eight Start',chapter:8},{id:'c8-bikes',label:'The Four Bikes (Sam’s house)',jump:'c8-bikes'},{id:'c8-cover',label:'The Cover in the Road',jump:'c8-cover'},{id:'c8-reyes',label:'Reyes and the Empty Trunk',jump:'c8-reyes'},
+  {id:'c8-field',label:'The Missing Junction (the plans)',jump:'c8-field'},{id:'c8-probe',label:'Finding MH-12',jump:'c8-probe'},{id:'c8-lift',label:'The Dig, the Vent, the Lift',jump:'c8-lift'},{id:'c8-shaft',label:'The Access Chamber',jump:'c8-shaft'},{id:'c8-barrier',label:'The Outer Barrier',jump:'c8-barrier'},
+  {id:'c8-gallery',label:'The Construction Gallery',jump:'c8-gallery'},{id:'c8-stealth',label:'Something Is Searching (stealth)',jump:'c8-stealth'},{id:'c8-office',label:'Annie Rowan and 0417',jump:'c8-office'},{id:'c8-film',label:'The Observation Film',jump:'c8-film'},
+  {id:'c8-corridor',label:'The Service Corridor',jump:'c8-corridor'},{id:'c8-danny',label:'Danny Whitcomb',jump:'c8-danny'},{id:'c8-bulkhead',label:'Through the Bulkhead',jump:'c8-bulkhead'},
+  {id:'c8-wing',label:'The Flooded Wing',jump:'c8-wing'},{id:'c8-ruth',label:'Ruth Ann Carver’s Cell',jump:'c8-ruth'},{id:'c8-sam',label:'Sam',jump:'c8-sam'},{id:'c8-sam-door',label:'Sam’s Door (the valve, the crank)',jump:'c8-sam-door'},
+  {id:'c8-retrieval',label:'The Retrieval Wing',jump:'c8-retrieval'},{id:'c8-jamie-door',label:'Jamie’s Door (the grille)',jump:'c8-jamie-door'},{id:'c8-shift',label:'The Corridor That Moves',jump:'c8-shift'},{id:'c8-made',label:'The Room It Made',jump:'c8-made'},
+  {id:'c8-alex',label:'Alex',jump:'c8-alex'},{id:'c8-alex-free',label:'The Two Handles',jump:'c8-alex-free'},{id:'c8-reunion',label:'All Four of Them (the crew room)',jump:'c8-reunion'},{id:'c8-truth',label:'The Anchor Board',jump:'c8-truth'},
+  {id:'c8-breach',label:'It Breaks Through',jump:'c8-breach'},{id:'c8-escape',label:'The Way Out',jump:'c8-escape'},{id:'c8-surface',label:'Oak Hollow from the Oak',jump:'c8-surface'},{id:'c8-hendersons',label:'The Hendersons’',jump:'c8-hendersons'},
+  {id:'c8-staging',label:'The Works (the drawdown)',jump:'c8-staging'},{id:'c8-gates',label:'The Outer Routes',jump:'c8-gates'},{id:'c8-ports',label:'The Ports',jump:'c8-ports'},{id:'c8-plug',label:'The Plug',jump:'c8-plug'},
+  {id:'c8-oak',label:'The Oak (Alex)',jump:'c8-oak'},{id:'c8-ride',label:'The Last Ride',jump:'c8-ride'},{id:'chapter8-end',label:'Chapter Eight Ending (the end card)',jump:'chapter8-end'}]};
 
 export function createDevChapters(g){
- const {chapter,chapter2,chapter3,chapter4,chapter5,chapter6,chapter7}=g,comp=chapter.companions,K=chapter.kit;
+ const {chapter,chapter2,chapter3,chapter4,chapter5,chapter6,chapter7,chapter8}=g,comp=chapter.companions,K=chapter.kit;
  // Every per-run state object emptied completely before the chapters' own reset()/fresh() refill them
  // (their fresh() functions refill a fixed list of keys; anything else would otherwise survive).
  function clearObject(o,keep=[]){if(!o)return;for(const k of Object.keys(o))if(!keep.includes(k))delete o[k];}
@@ -172,7 +182,7 @@ export function createDevChapters(g){
  // over's resetState() + start() as its first step): one start(), so the pointer lock is requested once per click.
  function clear({restart=true}={}){
   g.audio()?.stopRecording?.();
-  if(chapter7)clearObject(chapter7.C);if(chapter6)clearObject(chapter6.C);if(chapter5)clearObject(chapter5.C);if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
+  if(chapter8)clearObject(chapter8.C);if(chapter7)clearObject(chapter7.C);if(chapter6)clearObject(chapter6.C);if(chapter5)clearObject(chapter5.C);if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
   // Chapter One's shared state: the dialogue queue array is kept as the same array (other code holds it).
   const q=K.S.queue;clearObject(K.S);K.S.queue=q;q.length=0;
   rebirth();
@@ -205,6 +215,7 @@ export function createDevChapters(g){
   else if(n===5){g.jumpTo('chapter4-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n===6){g.jumpTo('chapter5-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n===7){g.jumpTo('chapter6-end');runUntil(()=>G().state==='ended');g.nextChapter();}
+  else if(n===8){g.jumpTo('chapter7-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n!==0)throw new Error('dev start: no chapter '+n);
   if(history)applyHistory(n);
   return phase();}

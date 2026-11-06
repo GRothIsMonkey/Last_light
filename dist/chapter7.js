@@ -730,12 +730,17 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    say([N('A console set on legs, the kind with the speaker cloth. A test card: WOHT CHANNEL 9. PLEASE STAND BY.',{time:4.4}),N('The tone, turned almost all the way down.',{time:2.6}),...(jn?[J('There’s no channel nine. There’s never been a channel nine.',{time:2.8,face:'worried'})]:[])]);}
   else if(w==='courier'){const pg=pageMesh(cvOf(LGH.pages.courier),{w:.26,h:.34,color:0xe8dcbc});
    inspect(pg,{dist:.38,kind:'lg-courier',restore:false,plane:true,onClose:()=>pg.removeFromParent(),lines:[N('The Courier, folded open on the coffee table, by an ashtray. The cigarette in it is still going.',{time:4}),
-    N('Thursday, April 11, 1974. TOWNSHIP VACATES OLD MILL COURT.',{time:3.6}),N('“Mrs. E. Lange, of No. 5, could not be reached for comment.”',{time:3.4}),
+    N('Thursday, April 11, 1974. TOWNSHIP VACATES OLD MILL COURT.',{time:3.6}),N('“…to permit isolation work at the Line Four junction beneath it.”',{time:3.2}),N('“Mrs. E. Lange, of No. 5, could not be reached for comment.”',{time:3.4}),
     ...(jn?[J('Seventy-four. The one on the lawn was sixty-six.',{time:2.6,face:'worried'}),J('No. 5. That’s this one. This is her house.',{time:2.4,face:'afraid'})]:[])]});}
   else if(w==='dinner'){closeLook(lgP(LS.dinner),{back:.85,eye:1.35,kind:'lg-dinner',floor:fl});C.lookDur=8;
    say([N('Dinner for three. Two plates eaten from. One not touched: meatloaf, peas, a glass of milk with the cold still beaded on it.',{time:4.8}),N('Steam, a little, off the meat.',{time:2.2}),...(jn?[J('Somebody was just sitting here. Like— just.',{time:2.4,face:'afraid'})]:[])]);}
   else if(w==='cap'){const cp=LGH.g.getObjectByName('lange-cap');
    inspect(cp,{dist:.36,kind:'lg-cap',spin:Math.PI*.8,lines:[N('A boy’s ball cap, on the chair at the untouched plate. Oak Hollow Little League.',{time:3.6}),N('Inside the band, in marker: T. LANGE. The band is still damp.',{time:3.4}),...(jn?[J('…Where is he, then?',{time:2,face:'afraid'})]:[])]});}
+  else if(w==='note'){closeLook(lgP(LS.note),{back:.65,eye:1.32,kind:'lg-note',floor:fl});C.lookDur=10;
+   // (a physical clue: when the real house was lost, she was keeping her boy in his room, away from whatever was coming, and
+   // she knew it could use her voice; it explains nothing about what she is now, and she is no less frightening for it)
+   say([N('A note taped to his wall, across from the door, where he’d see it from his bed. Pencil, pressed hard.',{time:3.8}),N('TOMMY — STAY IN HERE. KEEP THE LATCH ON. DON’T OPEN IT FOR ANYBODY. NOT EVEN IF IT SOUNDS LIKE ME. I’M RIGHT OUTSIDE. — MOM',{time:6.2}),
+    N('On the inside of his door, high up, a hook-and-eye latch. The screws are still bright.',{time:3.4}),...(jn?[J('Not even if it sounds like her.',{time:2.2,face:'afraid'}),J('…It did that. To us. With Sam’s voice.',{time:2.6,face:'afraid'})]:[])]);}
   else if(w==='calendar'){closeLook(lgP(LS.calendar),{back:.7,eye:1.45,kind:'lg-calendar',floor:fl});C.lookDur=6.5;
    say([N('A calendar from Lange Fuel & Oil. October 1983. Nothing written on it.',{time:3.6}),...(jn?[J('The TV, the paper, this. Nothing in here’s the same year.',{time:3,face:'worried'})]:[])]);}
   else if(w==='board'){const pg=pageMesh(cvOf(LGH.pages.board),{w:.3,h:.246,color:0xb48a5a});
@@ -1454,7 +1459,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   say([{wait:1.6},N('Under the streetlight across the street, four bikes stand in a row. The way you used to ride.',{time:4.4}),{wait:.8},N('Alex’s. Jamie’s. Sam’s.',{time:3}),{wait:1.4},N('Yours.',{time:2.6})],
    {then:()=>{later(2.6,()=>{C.endT=0;});}});}
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p'),eb=el.querySelector?.('.eyebrow');if(eb)eb.textContent='LAST LIGHT';if(h)h.innerHTML='Chapter Seven';if(pp)pp.innerHTML='THE STREET THAT WASN’T THERE<br>August 26, 2011.';}
-  const nb=$('next-chapter');if(nb)nb.hidden=true;A7.finished=true;o.finish();}
+  const nb=$('next-chapter');if(nb){nb.hidden=!A7.next;if(A7.next)nb.innerHTML='Chapter Eight <span>→</span>';}A7.finished=true;o.finish();}
  // ---- the photograph: rendered from the world (the oak, last July's light), with all four of you, and with only you ---------------------------
  const PH={four:null,one:null,state:'four'};
  function photoCanvas(who){const cv=canvas(PHOTO.w,PHOTO.h);if(!cv)return null;let ok=false;
@@ -1516,6 +1521,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
     if(rm==='kitchen'){if(!C.looked.has('lg-dinner'))add('c7-lg-dinner','Look at the table',lgP(LS.dinner),2.4,lk(.35,.14));if(!C.looked.has('lg-cap'))add('c7-lg-cap','Pick up the cap',lgP(LS.cap),2.0,lk(.15,.18));
      if(!C.looked.has('lg-calendar'))add('c7-lg-calendar','Look at the calendar',lgP(LS.calendar),2.4,lk(.2,.14));if(!X.phoned)add('c7-lg-phone','Use the phone',lgP(LS.phone),2.2,lk(.2,.18));else if(!C.looked.has('lg-board'))add('c7-lg-board','Look at the board',lgP(LS.board),2.2,lk(.25,.16));}
     if(rm==='hall'&&!C.looked.has('lg-parents'))add('c7-lg-parents','Try the door',lgP(LS.parentsDoor),1.8,lk(.4,.16));
+    if((rm==='hall'||rm==='boy')&&!C.looked.has('lg-note')&&LS.note)add('c7-lg-note','Read the note',lgP(LS.note),rm==='boy'?2.6:3.8,lk(.24,.12));
     if(X.stage==='presence'&&!X.listened&&!X.shoved&&rm==='hall')add('c7-lg-listen','Listen at the door',lgP(LS.bathDoor),1.9,lk(.5,.16));}
    if(X.stage==='look'&&rm==='boy'&&!X.drew)add('c7-lg-drawings','Look at the drawings',lgP(LS.drawings),2.8,lk(.4,.12));}
   if(/^e7-(court|dining|house)$/.test(ph)&&court.inRegionAt(p.x,p.z)&&!court.inHouseAt(p.x,p.z)&&!inLange(p)){if(!C.looked.has('newspaper'))add('c7-newspaper','Pick up the newspaper',court.SPOT.newspaper,2.2,lk(.3,.14));
@@ -1904,7 +1910,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   closeBag:()=>{if(inv.isOpen){inv.close();return true;}return false;},inventoryReady:()=>owns(S.phase)&&S.phase!=='c7-black',
   C,house,court,cast,yards,HM,H,HL,JL,LIGHTS,PH,MAPV,photoRender,photoState,inv,sky,brain,HUNTER_ID,STEP,CURB,sideDoorAt,LK,LF,LGH,lgP,inLange,langeRoom,
   get started(){return A7._started;},set started(v){A7._started=v;}});
- Object.defineProperties(A7,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
+ Object.defineProperties(A7,{amb:{get:()=>A7.next?.owns(S.phase)?A7.next.amb:C.amb},viewing:{get:()=>A7.next?.owns(S.phase)?A7.next.viewing:C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,lookKind:C.lookKind,inv:{...C.inv},looked:[...C.looked].sort(),
    level:C.lv||'g',jlevel:C.jlv||'g',hiding:C.hiding||null,fails:{...C.fails},photo:PH.state,photoRendered:{four:!!PH.four?.rendered,one:!!PH.one?.rendered},
    hunter:{mode:H.mode,state:HM.state,visible:HM.visible,x:+HM.x.toFixed(2),z:+HM.z.toFixed(2),level:HL.level,log:{...H.log},meter:Object.fromEntries(H.meter),source:HM.source,trace:H.trace.slice(-12)},
@@ -1912,5 +1918,15 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    court:{active:!!court.ST.active,portalA:court.ST.portalA,portalB:court.ST.portalB,inRegion:court.ST.active?court.inRegionAt(p.x,p.z):false,giant:court.GI.stage},
    lange:C.lg?{stage:C.lg.stage,choice:C.lg.choice||null,burst:C.lg.burst||null,answer:C.lg.answer||null,room:langeRoom(p),figure:{visible:LF.person.group.visible,state:LF.F.state}}:null,
    cross:C.lastCross||null,sounds:{...C.sounds},guard:C.guardLog?{...C.guardLog}:null,marks:(C.marks||[]).slice(-30),endT:+C.endT.toFixed(2)};}}});
+ // (Chapter Eight picks up that night: chapter8.js has its phases and sections; while one of them is current, everything
+ // here hands over to it, the way Chapter Six hands over to this chapter)
+ {const nextOwns=()=>!!A7.next?.owns(S.phase),own=A7.owns,hnd=A7.handles;
+  A7.owns=ph=>own(ph)||!!A7.next?.owns(ph);A7.handles=sec=>hnd(sec)||!!A7.next?.handles?.(sec);
+  for(const m of ['update','spots','act','sources','blockers','hint','key','pan','wheel','jamieSweep','officerAim','light','longThrow','canDismount','canRemount','inventoryReady']){const f=A7[m];
+   A7[m]=(...a)=>nextOwns()?(A7.next[m]?A7.next[m](...a):(m==='spots'||m==='blockers'?[]:m==='sources'?undefined:null)):f(...a);}
+  const bag=A7.closeBag;A7.closeBag=()=>bag()||!!A7.next?.closeBag?.();
+  const rs=A7.reset;A7.reset=()=>{A7.next?.reset();rs();};
+  const jp=A7.jump;A7.jump=section=>{if(A7.next?.handles?.(section)&&!SECTIONS7.includes(section)&&!ALIAS7[section]){rs();A7.next.jump(section);return;}jp(section);};
+  /* (amb and viewing ask the next chapter in their own getters, above) */}
  return A7;
 }

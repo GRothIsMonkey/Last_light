@@ -30,8 +30,9 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  const KEYS=new Map();const keysFor=c=>{if(!KEYS.has(c.key))KEYS.set(c.key,dismountKeys(c.geom));return KEYS.get(c.key);};
  const vTmp=new THREE.Vector3();
  const pebble=new THREE.Mesh(new THREE.IcosahedronGeometry(.016,0),new THREE.MeshStandardMaterial({color:0x969187,roughness:1}));scene.add(pebble);pebble.visible=false;
- function reset(){pebble.visible=false;for(const c of all)Object.assign(c,{brain:null,B:null,active:false,boost:1,footBoost:1,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
-  bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side,stall:0,unstick:0,wayT:0,waySide:1,poi:null,gaze:null,route:null,routeT:0,turnHold:0,turnDir:0,tight:0,seated:false,holdPlace:false,sitW:0,then:null});trail.reset();}
+ function reset(){pebble.visible=false;for(const c of all)init(c);trail.reset();}
+ function init(c){Object.assign(c,{brain:null,B:null,active:false,boost:1,footBoost:1,mode:'ride',follow:null,script:null,step:0,bx:0,bz:0,ba:0,speed:0,omega:0,steer:0,lean:0,fall:0,kick:0,crank:c.R.phase,wheel:0,spin:0,astride:1,stand:0,effort:0,
+  bikeY:null,bikePitch:0,px:0,pz:0,pa:0,py:null,gait:0,walkV:0,spinV:0,look:0,lookPitch:0,lookAt:null,lookPlayer:false,holding:false,posed:false,sOn:0,talk:0,glance:2+Math.random()*3,lookT:0,hidden:false,crouch:0,flash:false,slot:0,slotAt:0,formationLag:c.lag,formationSide:c.side,stall:0,unstick:0,wayT:0,waySide:1,poi:null,gaze:null,route:null,routeT:0,turnHold:0,turnDir:0,tight:0,seated:false,holdPlace:false,sitW:0,then:null});}
  // Take a friend over from friends.js (they were inside, or their bike lying where they left it).
  function take(c){if(!c.active){// start from wherever friends.js left the bike
   const g=c.bike.group,f=c.f;c.bx=g.position.x;c.bz=g.position.z;c.ba=-g.rotation.y;c.fall=f.fall||0;c.lean=f.lean||0;c.kick=f.kick||0;c.wheel=f.wheel||0;c.crank=f.crank||0;c.steer=f.steer||0;c.speed=0;c.bikeY=null;}
@@ -315,5 +316,9 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  const motion={routeTo,lineClear,feet,headOf,stepToward,standStill,footLook};
  // (after every pose of the frame: what follows a hand, physical.js)
  const afters=[];const after=fn=>{if(!afters.includes(fn))afters.push(fn);};
- return {list,all,trail,steps:S,run,update,reset,take,release,putRiding,putFoot,blockers,headOf,placeBike,placePerson,feet,motion,after};
+ // (Chapter Eight: Alex, freed, walks with you as a third friend. Enlisted only while that chapter has him: every earlier
+ // chapter's loops over all see exactly the two they always did.)
+ function enlist(key,{lag=4.4,side=0}={}){if(list[key])return list[key];const f=friends.list.find(q=>q.key===key);if(!f)return null;const c=make(f,{lag,side});init(c);list[key]=c;all.push(c);return c;}
+ function dismiss(key){const c=list[key];if(!c||key==='jamie'||key==='sam')return;if(c.active)release(c);c.brain=null;c.script=null;const i=all.indexOf(c);if(i>=0)all.splice(i,1);delete list[key];}
+ return {list,all,trail,steps:S,run,update,reset,take,release,putRiding,putFoot,blockers,headOf,placeBike,placePerson,feet,motion,after,enlist,dismiss};
 }

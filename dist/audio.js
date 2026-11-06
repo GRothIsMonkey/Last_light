@@ -281,6 +281,24 @@ export function createAudio({context=null,random=Math.random}={}){
   c7Gum(t,o){burst(t,.02,.05,'bandpass',2600,2,o);burst(t+.07,.015,.025,'bandpass',2000,2,o);},
   c7Fall(t,o){burst(t,.14,.5,'lowpass',500,.7,o);tone(66,t,.22,.2,'sine',o,44);burst(t+.03,.1,.12,'bandpass',1500,1,o);burst(t+.18,.2,.05,'highpass',2400,.6,o);},
  });
+ // Chapter Eight: the size of it (impacts that come up through the floor, concrete going, the street splitting, a long low
+ // movement under everything), creaking before something falls, wires arcing, hydraulics, steel bending, the 1959 klaxon,
+ // a service revolver, gas, an old projector, and the thing from the drain trying not to cry. First-draft synthesis.
+ Object.assign(SFX,{
+  c8Impact(t,o){tone(38,t,.9,.5,'sine',o,24);tone(52,t,.5,.3,'triangle',o,30);burst(t,.35,.7,'lowpass',260,.7,o);burst(t+.02,.12,.25,'bandpass',900,1,o);for(let k=0;k<8;k++)burst(t+.08+k*.07+random()*.05,.06,.08/(1+k*.4),'bandpass',300+random()*700,1.3,o);},
+  c8Collapse(t,o){tone(30,t,2.4,.45,'sine',o,22);burst(t,.6,.6,'lowpass',320,.6,o);for(let k=0;k<30;k++){const a=t+.05+k*.06+random()*.08;burst(a,.07+random()*.08,.16*(1-k/34),'bandpass',200+random()*1500,1.1,o);}burst(t+.4,1.6,.12,'lowpass',600,.5,o);},
+  c8Crack(t,o){for(let k=0;k<7;k++)burst(t+k*.035,.03,.3/(1+k*.3),'highpass',1800+random()*2000,1.4,o);tone(70,t,.5,.25,'sine',o,40);burst(t,.18,.4,'lowpass',500,.7,o);},
+  c8Rumble(t,o){const n=shot(ctx.createBufferSource());n.buffer=noise;n.loop=true;const lp=filt('lowpass',70,.7),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.7,t+1.2);g.gain.linearRampToValueAtTime(.4,t+3);g.gain.linearRampToValueAtTime(0,t+4.6);n.connect(lp).connect(g).connect(o);n.start(t,random()*2);n.stop(t+4.8);tone(27,t,4.4,.45,'sine',o,24);},
+  c8Creak(t,o){const c=shot(ctx.createOscillator()),b=filt('bandpass',330,5),g=gain();c.type='sawtooth';c.frequency.setValueAtTime(70,t);c.frequency.linearRampToValueAtTime(58,t+1.1);env(g,t,.2,.08,1.2,'lin');c.connect(b).connect(g).connect(o);c.start(t);c.stop(t+1.4);for(let k=0;k<5;k++)burst(t+.3+k*.2+random()*.1,.05,.03,'bandpass',2000+random()*1500,2,o);},
+  c8Arc(t,o){for(let k=0;k<6;k++){burst(t+k*.025+random()*.02,.02,.25,'highpass',3000+random()*3000,.8,o);}tone(120,t,.25,.08,'square',o,118);},
+  c8Hydraulic(t,o){tone(90,t,1.4,.1,'sawtooth',o,110);burst(t,1.3,.06,'bandpass',600,.8,o);burst(t+1.2,.1,.2,'lowpass',500,.7,o);},
+  c8Metal(t,o){for(const f of [180,233,311])tone(f,t,1.6,.07,'sawtooth',o,f*.86);burst(t,.3,.35,'lowpass',700,.7,o);for(let k=0;k<6;k++)burst(t+.1+k*.12,.05,.06,'bandpass',1500+random()*2000,2,o);},
+  c8Alarm(t,o){for(let k=0;k<3;k++){const c=shot(ctx.createOscillator()),b=filt('bandpass',800,1.2),g=gain();c.type='square';c.frequency.setValueAtTime(440,t+k*.6);c.frequency.linearRampToValueAtTime(330,t+k*.6+.5);env(g,t+k*.6,.02,.06,.5,'lin');c.connect(b).connect(g).connect(o);c.start(t+k*.6);c.stop(t+k*.6+.55);}},
+  c8Shot(t,o){burst(t,.04,.9,'highpass',900,.6,o);burst(t,.18,.6,'lowpass',1400,.6,o);tone(110,t,.12,.3,'sine',o,50);burst(t+.05,.6,.1,'lowpass',500,.5,o);},
+  c8Hiss(t,o){const n=shot(ctx.createBufferSource());n.buffer=noise;const b=filt('highpass',2600,.6),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.2,t+.2);g.gain.linearRampToValueAtTime(.12,t+2);g.gain.linearRampToValueAtTime(0,t+3);n.connect(b).connect(g).connect(o);n.start(t,random()*2);n.stop(t+3.1);},
+  c8Film(t,o){for(let k=0;k<6;k++)burst(t+k*.042,.012,.05,'bandpass',1400+random()*400,3,o);tone(55,t,.25,.03,'square',o);},
+  c8Whimper(t,o){for(const [f,d,v,k] of [[520,.5,.04,0],[470,.7,.035,.55],[560,.4,.03,1.3]]){const c=shot(ctx.createOscillator()),b=filt('bandpass',f*2,3),g=gain();c.type='triangle';c.frequency.setValueAtTime(f,t+k);c.frequency.linearRampToValueAtTime(f*.82,t+k+d);env(g,t+k,.06,v,d,'lin');c.connect(b).connect(g).connect(o);c.start(t+k);c.stop(t+k+d+.1);}burst(t,.9,.02,'bandpass',2600,1,o);},
+ });
  // A speech-like on/off pattern for voices heard through a radio or a wall.
  // The syllable phase is accumulated from a slowly wandering rate. (It used to be the clock times
  // that rate, whose real frequency grows with the clock: by the time you reach the friends' windows
@@ -318,6 +336,9 @@ export function createAudio({context=null,random=Math.random}={}){
     if(ph>.16){ph=0;burst(t,.03,.6,'highpass',2400,.7,g2);if(random()<.04)back=1.2;}}};}
   // Chapter Six: rain on everything (a wide hiss and its patter), the river in the works (a roar that rises with the level),
   // the works' alarm horn (on and off), a standby generator.
+  if(kind==='fire'){const n=src(),lp=filt('lowpass',420,.6),g=gain(.5);n.connect(lp).connect(g).connect(out);let next=0;
+   return {out,pan,vol:.16,ref:10,far:120,update(s2,t,dist,dt){next-=dt;if(next<=0){next=.04+random()*.18;burst(t,.02+random()*.05,.25+random()*.3,'bandpass',900+random()*2400,1.5,out);}g.gain.setTargetAtTime(.45+.15*Math.sin(t*3.1),t,.1);}};}
+  if(kind==='gas'){const n=src(),bp=filt('highpass',1800,.5),g=gain(.4);n.connect(bp).connect(g).connect(out);return {out,pan,vol:.12,ref:8,far:90,update(s2,t){g.gain.setTargetAtTime(.38+.06*Math.sin(t*7.3),t,.05);}};}
   if(kind==='rain'){const a=src(),b=src(),ga=gain(.7),gb=gain(0);a.connect(filt('highpass',900,.4)).connect(filt('lowpass',7200,.5)).connect(ga).connect(out);b.connect(filt('bandpass',2600,1.6)).connect(gb).connect(out);
    return {out,pan,vol:.07,ref:9999,far:99999,steady:true,update(s2,t,dist,dt){for(let k=0;k<3;k++)if(random()<dt*40*(s2.level||0)){gb.gain.setValueAtTime(.4+random()*.4,t+random()*.03);gb.gain.exponentialRampToValueAtTime(.01,t+.05);}}};}
   if(kind==='surge'){const a=src(),b=src(),ga=gain(.8),gb=gain(.3);a.connect(filt('lowpass',420,.6)).connect(ga).connect(out);b.connect(filt('bandpass',1100,.6)).connect(gb).connect(out);let ph=random()*9;

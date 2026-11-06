@@ -22,6 +22,8 @@ import {createChapter4} from './chapter4.js';
 import {createChapter5} from './chapter5.js';
 import {createChapter6} from './chapter6.js';
 import {createChapter7} from './chapter7.js';
+import {createChapter8} from './chapter8.js';
+import {scenes8} from './chapter8-scenes.js';
 import {createTension} from './tension.js';
 import {createCaptionTone} from './captions.js';
 import {createDevChapters,DEV_SCENES} from './dev-chapters.js';// TEMPORARY: private playtest build only
@@ -126,7 +128,7 @@ function jumpTo(section){ui.closePanels();resetState();state='intro';start();cap
 function showContinue(){const b=$('continue');if(!b)return;const s=chapter.saved();b.hidden=!s;if(s){const w=$('continue-where');if(w)w.textContent=s.label;b.onclick=()=>jumpTo(s.section);}}
 
 // The end of Chapter Three leads on: Chapter Four, from its own beginning (the next afternoon).
-function nextChapter(){if(state!=='ended')return;const seven=!!chapter6.finished,six=!!chapter5.finished,five=!!chapter4.finished;/* (Chapter Six's end card leads to Chapter Seven; Five's to Six; Four's to Five; Three's to Four) */ui.closePanels();resetState();state='intro';start();captionTimer=0;$('subtitle').style.opacity=0;friends.settle();ambient.skipTo(LOOKOUT.stop.d);nextMemory=memories.length;finaleT=40;ctx.finale=40;callDone=true;startNight(seven?'chapter7':six?'chapter6':five?'chapter5':'chapter4');}
+function nextChapter(){if(state!=='ended')return;const eight=!!chapter7.finished,seven=!!chapter6.finished,six=!!chapter5.finished,five=!!chapter4.finished;/* (Chapter Six's end card leads to Chapter Seven; Five's to Six; Four's to Five; Three's to Four) */ui.closePanels();resetState();state='intro';start();captionTimer=0;$('subtitle').style.opacity=0;friends.settle();ambient.skipTo(LOOKOUT.stop.d);nextMemory=memories.length;finaleT=40;ctx.finale=40;callDone=true;startNight(eight?'chapter8':seven?'chapter7':six?'chapter6':five?'chapter5':'chapter4');}
 if($('next-chapter'))$('next-chapter').onclick=nextChapter;
 $('start').onclick=start;$('sound').onclick=()=>setSound(muted);$('resume').onclick=resume;$('again').onclick=reset;if($('end-title'))$('end-title').onclick=toTitle;$('bell').onclick=bell;if($('act'))$('act').onclick=()=>action();
 if($('restart'))$('restart').onclick=()=>{$('pause').hidden=true;reset();};if($('to-title'))$('to-title').onclick=toTitle;
@@ -369,6 +371,10 @@ const chapter6=(()=>{const own=Math.random;let a=0x6c0ffee;Math.random=()=>{a=(a
 // Chapter Six's end card leads to it. (Its own seeded random numbers too, for the same reason.)
 const chapter7=(()=>{const own=Math.random;let a=0x7c0ffee;Math.random=()=>{a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};
  try{return createChapter7(chOpts,chapter.kit,{chapter2,chapter3,chapter4,chapter5,chapter6});}finally{Math.random=own;}})();chapter6.next=chapter7;
+// Chapter Eight is that same night, from Sam's house, under the court, and the street at dawn (chapter8.js, its scenes in
+// chapter8-scenes.js and chapter8-fall.js); Chapter Seven's end card leads to it. (Its own seeded random numbers too.)
+const chapter8=(()=>{const own=Math.random;let a=0x8c0ffee;Math.random=()=>{a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};
+ try{const c8=createChapter8(chOpts,chapter.kit,{chapter2,chapter3,chapter4,chapter5,chapter6,chapter7});c8.attach(scenes8);return c8;}finally{Math.random=own;}})();chapter7.next=chapter8;
 const chapter3Art=createChapterThreeArt({scene,world,chapter,chapter3,camera,nav,foot});
 const chapter4Art=createChapterFourArt({scene,world,chapter,chapter3,chapter4,camera,nav});
 function playerState(){const walk=state==='c1-walk';
@@ -441,7 +447,7 @@ function startNight(how='ride',section=null){
  const p=groundPoint(distance,lateral);roam.x=p.x;roam.z=p.z;roam.a=heading(distance)+yawOffset+(how==='wake'?Math.PI:0);roam.omega=0;roam.lock=false;roam.brake=0;roam.steer=null;
  contact.reset();bikeY=null;prevYaw=null;mouseYaw=mousePitch=look=headPitch=glance=0;manualLook=false;steerIn=0;kick=0;
  state='c1-ride';cockpit.visible=true;self.group.visible=true;$('ride-ui').hidden=true;
- document.body.classList.add('riding');if(how==='jump'){chapter.jump(section);return;}if(how==='chapter4'){chapter4.begin();return;}if(how==='chapter5'){chapter5.begin();return;}if(how==='chapter6'){chapter6.begin();return;}if(how==='chapter7'){chapter7.begin();return;}
+ document.body.classList.add('riding');if(how==='jump'){chapter.jump(section);return;}if(how==='chapter4'){chapter4.begin();return;}if(how==='chapter5'){chapter5.begin();return;}if(how==='chapter6'){chapter6.begin();return;}if(how==='chapter7'){chapter7.begin();return;}if(how==='chapter8'){chapter8.begin();return;}
  nostalgia.mark('leaving',clock);if(how!=='wake')audio?.leaving();chapter.begin(how);}
 // Riding at night.
 function updateNightRide(dt){
@@ -726,7 +732,7 @@ for(const k of ['sensitivity','quality'])applySetting(k,ui.settings[k]);showCont
 // ---- TEMPORARY (private playtest build only; not in the shipped game): DEV — CHAPTER → SCENE ------------------
 // Starts at the true beginning of a chapter through the game's own hand-over code, or at one of its scenes
 // through the game's own checkpoint/QA initializers (dev-chapters.js).
-const dev=createDevChapters({chapter,chapter2,chapter3,chapter4,chapter5,chapter6,chapter7,nextChapter,friends,ambient,ending,interact,memory,tension,captionTone,foot,ui,world,roam,skyMat,sunlight,hemi,$,update,jumpTo,leave,
+const dev=createDevChapters({chapter,chapter2,chapter3,chapter4,chapter5,chapter6,chapter7,chapter8,nextChapter,friends,ambient,ending,interact,memory,tension,captionTone,foot,ui,world,roam,skyMat,sunlight,hemi,$,update,jumpTo,leave,
  audio:()=>audio,walk:()=>({x:+wx.toFixed(3),z:+wz.toFixed(3),a:+wa.toFixed(3)}),
  resetGame:()=>{ui.closePanels();resetState();state='intro';start();},
  // The last stretch of the street before the lookout: everyone already home (the game's own settlement, as
@@ -756,7 +762,7 @@ const jumpParam=typeof location!=='undefined'&&(location.search||'').match(/[?&]
 requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
-if(qa)window.lastLight={dev,devStart,devScene,DEV_SCENES,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,chapter4,chapter5,chapter6,chapter7,nextChapter,shoot,readPixels,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
+if(qa)window.lastLight={dev,devStart,devScene,DEV_SCENES,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,chapter4,chapter5,chapter6,chapter7,chapter8,nextChapter,shoot,readPixels,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
  get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside})),
   onFoot:{stamina:foot.stamina,crouch:foot.crouch,height:foot.height,sprint:foot.sprint,owned:foot.owned,on:foot.on},roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state,chapter2:chapter2.state,chapter3:chapter3.state,chapter4:chapter4.state,tension:tension.state,captionTone:captionTone.state,memory:memory.state,day:ctx.day||0};},
  jump:jumpTo,chapter,chapter2,memory,get memCast(){return memCast;},roam,nav,drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},
