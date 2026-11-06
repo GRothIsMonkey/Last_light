@@ -323,7 +323,7 @@ export function scenes8(X){
   else if(D.st==='flee'){const v=CM.at('cVent');sp=Math.min(8,2+D.t*10);face(v.x,v.z,10);if(step(v.x,v.z,sp)||D.t>4){D.st='gone';danny.show(false);C.dannyOn=false;sound('c7Drag',v,{gain:.8});}dv.cower=damp(dv.cower||0,.2,6,dt);look=null;}
   if(D.st!=='gone'){dv.speed=sp;dv.look=look;danny.place(D.x,danny.ground(D.x,D.z),D.z,D.a);danny.update(dt);}}
  // ---- Act III, scene 6: the flooded wing; Ruth Ann Carver; Sam ----------------------------------------------------------------------------------------
- function sceneWing(from='wing'){go('e8-sam');if(from!=='wing')enterComplex('jMid',-Math.PI/2);lightsBelow('J');C.h=Math.max(C.h,HOUR.wing);C.hMin=HOUR.wing;date(C.h);CM.setDoor('bulkhead',1,{instant:true});
+ function sceneWing(from='wing'){go('e8-sam');if(from!=='wing'||C.where!=='below'){enterComplex('jMid',-Math.PI/2);if(from==='wing'){const q=W(3.5,23.4),t=CM.at('jMid');o.placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,t.x,t.z),mode:'walk',bike:null});}}/* (jumped to, or Continued: you come in at the bulkhead) */lightsBelow('J');C.h=Math.max(C.h,HOUR.wing);C.hMin=HOUR.wing;date(C.h);CM.setDoor('bulkhead',1,{instant:true});
   CM.setDoor('samCell',0,{instant:true});CM.setDoor('D2',1,{instant:true});if(from==='wing')checkpoint('c8-wing');
   task('wing',(function*(){
    if(from==='wing'){yield* lines([N('The other side of the bulkhead: a hall of green-painted steel. ISOLATION — 1959. Two wings. Water standing in the west one.',{time:4})]);}
@@ -492,7 +492,7 @@ export function scenes8(X){
    const ALEXB=[{label:'Talk to Alex',fn:()=>say([AL('Sunday. I heard the bell. Like every night. On Briarwood I stopped at the creek, and the old bike was down there. In the water.',{time:4.6,face:'tired'}),
      AL('I just wanted to look at it.',{time:1.6}),{wait:1},AL('I got out once. There’s a pipe off the end room. It goes forever. I came up in a box in the woods. The camp.',{time:4,face:'sad'}),
      AL('I took soup. I left my shirt. I cut our letters in the wall so somebody would know. Then the lights found me. And it brought me back.',{time:4.8,face:'sad'})])},
-    {label:'Show Alex the notebook',when:()=>C.inv.notebook==='have',fn:()=>say([N('Sam’s notebook. The page with the three names on it, in your writing.',{time:3}),AL('You wrote us down.',{time:1.6,face:'sad'}),Y('Everybody was forgetting.',{time:1.8}),AL('…Not you.',{time:1.2})])},
+    {label:'Show Alex the notebook',when:()=>C.inv.notebook==='have',fn:()=>say([N('Sam’s notebook. The page with the three names on it, in your writing.',{time:3}),AL('You wrote us down.',{time:1.6,face:'sad'}),Y('Everybody was forgetting. Me too. So I wrote it down.',{time:2.6}),AL('…Keep it. Don’t lose it.',{time:1.6})])},
     {label:'Give Alex his camera',when:()=>C.inv.camera==='have',fn:()=>{C.inv.camera='alex';say([AL('My camera.',{time:1.2,face:'hopeful'}),N('He goes back through the pictures. Stops at the last one: the three of you at the fire, from the trees.',{time:3.6}),AL('I didn’t take that.',{time:1.4,face:'afraid'}),SM('Nobody did.',{time:1.2})]);}}];
    const convo=(id,who2,beats)=>{let i=0;const next=()=>{while(i<beats.length&&beats[i].when&&!beats[i].when())i++;return beats[i];};
     offer(id,next()?.label||'',()=>({x:who2().px,y:1.1+gy(who2().px,who2().pz),z:who2().pz}),{r:2.6,look:true,size:.45,cone:.1,once:false,when:()=>!busy()&&!!next(),fn:()=>{const b=next();if(!b)return;i++;C.flags[id+'-'+i]=true;b.fn();const n2=next();if(n2)C.offers.get(id).label=n2.label;else unoffer(id);}});};

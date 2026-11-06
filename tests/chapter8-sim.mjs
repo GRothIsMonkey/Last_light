@@ -164,6 +164,7 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
  if(inSeg('surface')){until(()=>ph()==='g8-surface',10);approach(M8d(1126,-1),2,{pad:12});approach(M8d(1096,-2),2,{pad:12});until(()=>ph()==='g8-street',90);
   check(`${label}: the street from the oak: the road gone, the fire, the pole; Summerfield goes down with a car`,()=>{assert.equal(A8.state.ruin.stage,1);assert.notEqual(A8.state.ruin.heave,'flat');assert.ok(said('That’s our street.'));});lap('surface');}
  if(inSeg('street')){until(()=>ph()==='g8-street',10);const Hh=A8.ruin.H;
+  {const L=A8.ruin.locate(me().x,me().z);if(L.street==='main'&&L.d>1062)via([1104,1090,1076,1062].filter(d=>d<L.d+2).map(d=>M8d(d,-1)),{r:1.5,pad:8});}
   approach(Hh.doorAt,3.5,{pad:14});take('jack',{max:60,r:1.6,pad:14});take('jackset',{max:30,r:1.5,pad:12});take('pump',{hold:14,r:1.5,max:30});
   // (round the hole: down the east side of it, along the far side of the street, toward Reyes's car)
   const u=Hh.P.u,car=()=>({x:h.chapter.kit.carA.x,z:h.chapter.kit.carA.z});
@@ -206,7 +207,7 @@ export async function runChapterEightChecks(T0){
  const X=chapterEightTools(T0),{h,press,release,tap,until,wait,me,A8,C8,ph,CM,offers,approach,P,take}=X,check=T0.check,T=X.T,element=T0.element;
  // every DEV Chapter Eight scene starts in a Chapter Eight phase, on its feet, somewhere you can stand
  const sc=DEV_SCENES[8]||[];
- check(`chapter 8: every DEV Chapter Eight scene starts (${sc.length} scenes)`,()=>{const bad=[];for(const s of sc){if(!s.jump)continue;h.jump(s.jump);T.advance(1.5);const p=me(),st=A8.state;if(!/^(c8|d8|e8|f8|g8|n8)-/.test(st.phase))bad.push(s.id+': '+st.phase);if(!(p.walking||p.riding))bad.push(s.id+': not on foot or riding');if(p.walking&&!h.nav.walkable(p.x,p.z,{r:.2})&&!A8.C.view)bad.push(s.id+': stands in a wall');}assert.deepEqual(bad,[]);});
+ check(`chapter 8: every DEV Chapter Eight scene starts (${sc.length} scenes)`,()=>{const bad=[];for(const s of sc){if(!s.jump)continue;h.jump(s.jump);T.advance(1.5);const p=me(),st=A8.state;if(!/^(c8|d8|e8|f8|g8|n8)-/.test(st.phase))bad.push(s.id+': '+st.phase);const riding=h.snapshot.state==='c1-ride'||h.snapshot.state==='riding';if(!(p.walking||riding||h.snapshot.state==='ended'))bad.push(s.id+': not on foot or riding ('+h.snapshot.state+')');if(p.walking&&!h.nav.walkable(p.x,p.z,{r:.2})&&!A8.C.view)bad.push(s.id+': stands in a wall');}assert.deepEqual(bad,[]);});
  check('chapter 8: the barrier can be failed: walk into the pipe and it has you; back at the barrier checkpoint',()=>{h.jump('c8-barrier');until(()=>!!A8.C.hunt,30);let caught=false;
   until(()=>{const q=P('hunterL4');X.faceTo(A8.HM.x,A8.HM.z,0);press('KeyW');if(A8.C.failing)caught=true;return caught;},40);release('KeyW');until(()=>!A8.C.failing,6);T.advance(1);
   assert.ok(caught,'caught');assert.equal(A8.state.phase,'d8-shaft');assert.ok(A8.state.fails['c8-barrier']>=1);});

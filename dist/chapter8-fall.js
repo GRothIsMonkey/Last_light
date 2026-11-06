@@ -235,7 +235,7 @@ export function fallActs(X){
    yield* lines([{wait:1},N('The Mill Creek works. Brandt’s truck, a generator, a light on a pole. The creek is roaring down its channel, high and brown.',{time:4}),
     BR('It’s coming up the lines. Line Four, the old court, Mill Street. It’s in all of it.',{time:3}),R('Tell them.',{time:1})]);
    objective('The binder.','On the desk in the gatehouse: Procedure 7.');offer('procedure','Read the procedure',()=>WP(18.6,1.25,.25+.85),{r:2.6,look:true,size:.4,cone:.14,fn:()=>task('proc',(function*(){
-    yield* reading('procedure',[N('EMERGENCY DRAWDOWN. O.M.C. ISOLATION STRUCTURE (1959). PROCEDURE 7.',{time:3.4}),N('1. Close outer routes: main gates 1A and 1B; the Line 4 drawdown gate in the gallery. 2. Open the drawdown ports in junction J. Line Two runs it to the court.',{time:5}),
+    yield* reading('procedure',[N('EMERGENCY DRAWDOWN. O.M.C. ISOLATION STRUCTURE (1959). PROCEDURE 7.',{time:3.4}),N('1. Close outer routes: main gates 1 and 2; the Line 4 drawdown gate in the gallery. 2. Open the drawdown ports in junction J. Line Two runs it to the court.',{time:5}),
      N('3. At the plug platform, drive out latch pins A, B and C. The plug drops. The central junction floods and collapses. Rupture isolated.',{time:4.6}),N('Stamped across it: NOT TO BE OPERATED WHILE CHAMBERS OCCUPIED. Approved: no.',{time:3.6})]);C.flags.procRead=true;})())});
    yield* until(()=>C.flags.procRead||C.pt>300);
    yield* lines([R('They never used it because—',{time:1.4}),SM('Because there were people in there.',{time:2,face:'sad'}),AL('There aren’t now.',{time:1.4,face:'determined'}),{wait:1},
@@ -251,7 +251,7 @@ export function fallActs(X){
   task('op',(function*(){
    if(from==='gates'){checkpoint('c8-gates');C.mood='danger';C.mindKey=null;
     // A. the outer routes: the two main gates on the operating bridge (you and Brandt), and the gallery's Line Four drawdown gate
-    objective('Close main gate 1A.','The handwheel on the operating bridge. Hold F. Back off when the water heaves.');
+    objective('Close main gate 1.','The handwheel on the operating bridge. Hold F. Back off when the water heaves.');
     if(C.pt<1){const p0=me();if(!nav.walkable(p0.x,p0.z)){const q=WP(7.8,-2);o.placePlayer({x:q.x,z:q.z,a:-Math.PI/2,mode:'walk',bike:null});}}
     brandt?.show(true);const bq=WP(3.2,.9);brandt?.place(bq.x,bq.z,Math.PI);
     // (the bridge is one person wide: Sam and Alex watch from the bank, Sam calling the machinery, Alex the water)
@@ -262,7 +262,7 @@ export function fallActs(X){
     while(!C.flags.gateA){yield;if(C.pt>12+surges*14&&surges<4){surges++;const s=surgeAt();presence.set(5,{root:[s.x,-7,s.z],dir:[0,1,-.6],len:9,r0:1.8,r1:.4,state:'emerge',speed:2});sound('c6Splash',s,{gain:1.3});
       say([AL(surges===1?'In the water— BACK! Get back!':'BACK!',{time:1.2,face:'terrified'})]);const z=hazard({at:WP(-1.6,0,-3),r:2.2,warn:2.3,section:'c8-gates',n:18,power:1.2,onFall:()=>{later(1.5,()=>presence.retract(5));}});void z;
       later(2.3,()=>presence.strike(5,WP(-1.6,0,-3),{hold:1}));}}
-    yield* lines([BR('One-B’s down! That’s both!',{time:1.6}),SM('The drain gate. In the gallery. The one by the speaker.',{time:2.2})]);
+    yield* lines([BR('Two’s down! That’s both!',{time:1.6}),SM('The drain gate. In the gallery. The one by the speaker.',{time:2.2})]);
     // the gallery's Line Four drawdown gate (Chapter Six's: the voice stopped when it shut)
     const DD=X.ch6.DD;objective('The Line Four drawdown gate.','North end of the gallery, by the old speaker.');
     offer('dd','Shut the drain gate',()=>DD?DD.at():WP(8.8,-12.15,-3+1),{r:2.2,hold:2.4,tick:(dt,v)=>{if(DD){DD.want=0;DD.open=1-v;DD.update(0);}},fn:()=>{if(DD){DD.want=0;DD.open=0;DD.update(0);}C.flags.dd=true;sound('c6Clank',DD?DD.at():camera.position,{gain:1});}});
