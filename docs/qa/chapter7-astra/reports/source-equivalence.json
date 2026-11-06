@@ -1,0 +1,9 @@
+{
+  "originalCommit": "12ba4d920c8d7a54c0e2aea4b487a84caa9d1038",
+  "recoveredCommit": "5840a1ea99d614f96d0d0c208697d2b9d4626b87",
+  "identicalTree": "02bec678c62c30e2382015c2c371c107686df25c",
+  "originalTimestamp": 1793914720,
+  "originalTimezone": "-0600",
+  "verification": "Reconstructed original commit bytes from this identical tree, original parent, author, committer, message and time. Git object hash equals the prior verified source commit.",
+  "reproducedOriginalCommit": "12ba4d920c8d7a54c0e2aea4b487a84caa9d1038"
+}

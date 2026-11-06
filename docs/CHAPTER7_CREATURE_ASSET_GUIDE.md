@@ -24,8 +24,9 @@ The replacement changes **only** `HUNTER_ASSET` in `dist/chapter7-creature.js` (
 A procedural humanoid about 2.3 m standing, with very long arms, a hunched spine that folds nearly flat when it runs
 on its knuckles, a head that keeps pointing at what it wants while the body does something else, long fingers that
 curl. Joints are solved every frame (two-bone IK for arms and legs); simple tapered segments are laid between them. No
-skinning, no textures, no authored animation. It exists so the chapter can be played and judged for staging, timing and
-readability. **It is a placeholder by design** and should be replaced by an authored model before release.
+skinning or authored animation. The Astra visual pass adds procedural mottling, more substantial anatomical forms,
+and edge shading to this stand-in; it still uses the same joints and semantic sockets. It exists so the chapter can
+be played and judged for staging, timing and readability. **It is a placeholder by design** and should be replaced by an authored model before release.
 
 ## 3. The adapter's interface (what the chapter and the AI use)
 

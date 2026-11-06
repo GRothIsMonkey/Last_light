@@ -1,3 +1,13 @@
+# Chapter Seven — Astra visual reconstruction
+
+Continues the accepted Chapter Seven expansion from `e24f663` on `codex/astra-chapter7-final-polish`. Rebuilds the chapter’s materials, room dressing, streets, lighting, cast presentation and existing hunter scares. Jamie and Mrs. Lange receive distinct facial and wardrobe detail; the rescue hand contact, evidence framing, photographs and final bicycles are improved.
+
+The accepted encounters, dialogue, objectives, progression and ending are preserved. No false-Jamie reflection or additional double encounter is introduced. Earlier chapters restore their original character appearances. The hunter’s replacement-asset interface remains intact.
+
+See `CHAPTER7_ASTRA_HANDOFF.md` and `qa/chapter7-astra/TEST_REPORT.md` for changes, validation and production limits; `qa/chapter7-astra/index.html` contains the matched visual review. The offline Chapter Seven playtest works without a server.
+
+---
+
 # Last Light — Chapter Five: The Place in the Picture (first complete draft)
 
 On `claude/chapter5-pine-ridge`, from `codex/astra-chapter4-repair-pass2` at `c9647772642c0bbb5478bdb04bf36592fcc74919`. The story, routes and behavior of Chapters Zero–Four are unchanged. Chapter Four's end card now offers Chapter Five, and the shared world and engine changes that Pine Ridge needed are listed below; the Chapter Zero–Four regression results are in the test report. See the [handoff](CHAPTER5_PINE_RIDGE_HANDOFF.md) and [verification](TEST_REPORT.md).

@@ -1,0 +1,32 @@
+{
+  "baseline": "e24f6638721da8e5f2b74b9565cb0f9598f06cbb",
+  "sourceCommit": "5840a1ea99d614f96d0d0c208697d2b9d4626b87",
+  "identical_story_calls": 652,
+  "exactOrderedSequenceIdentical": true,
+  "categories": {
+    "N": 115,
+    "R": 82,
+    "go": 44,
+    "objective": 82,
+    "checkpoint": 29,
+    "J": 240,
+    "MOM": 23,
+    "DAD": 31,
+    "RR": 6
+  },
+  "changedRuntimeFiles": [
+    "dist/chapter7-build.js",
+    "dist/chapter7-cast.js",
+    "dist/chapter7-court.js",
+    "dist/chapter7-creature.js",
+    "dist/chapter7-finishes.js",
+    "dist/chapter7-house.js",
+    "dist/chapter7-interiors.js",
+    "dist/chapter7-lange.js",
+    "dist/chapter7-portraits.js",
+    "dist/chapter7-rooms-art.js",
+    "dist/chapter7-street-art.js",
+    "dist/chapter7.js"
+  ],
+  "earlierChapterRuntimeUnchanged": true
+}

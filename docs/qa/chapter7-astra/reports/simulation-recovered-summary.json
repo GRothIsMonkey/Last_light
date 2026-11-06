@@ -1,0 +1,61 @@
+{
+  "recordType": "Recovered result summary; original full JSON lost during workspace rollback",
+  "originalTestedCommit": "12ba4d920c8d7a54c0e2aea4b487a84caa9d1038",
+  "recoveredIdenticalSourceCommit": "5840a1ea99d614f96d0d0c208697d2b9d4626b87",
+  "sourceTree": "02bec678c62c30e2382015c2c371c107686df25c",
+  "identityProof": "source-equivalence.json",
+  "command": "ONLY=chapter7 node --max-old-space-size=2048 tests/verify.mjs",
+  "passed": 94,
+  "failed": 0,
+  "devStartsViaSimulation": 53,
+  "metrics": {
+    "phases": 31,
+    "gameMinutes": 39.51,
+    "stealthFailures": 0,
+    "chaseSeconds": 51.4,
+    "chaseMinimumGapMetres": 0.13,
+    "struggleSeconds": 12.5,
+    "struggleViewMetres": 0.54,
+    "dragFrames": 757,
+    "dragFootMisalignmentFrames": 0,
+    "samSeenFrames": 0,
+    "jamieVisibleAfterTakenFrames": 0,
+    "inheritedFallbackJumps": 8,
+    "minutesBySection": {
+      "house": 7.09,
+      "garage": 0.82,
+      "reyes": 3.76,
+      "afternoon": 2.44,
+      "court": 3.34,
+      "lange": 4.02,
+      "dining": 1.15,
+      "green": 4.07,
+      "upstairs": 1.95,
+      "chase": 1.63,
+      "abduction": 1.76,
+      "after": 6.01,
+      "night": 1.47
+    },
+    "adapter": {
+      "mappedBones": [
+        "hips",
+        "head",
+        "handL",
+        "handR",
+        "grab"
+      ],
+      "clips": 1,
+      "missingSemanticStates": 13,
+      "size": [
+        1.58,
+        1.3,
+        1.75
+      ]
+    }
+  },
+  "limits": [
+    "This file preserves the recorded totals and metrics, not the lost individual assertion log.",
+    "The simulation harness includes eight accepted traversal fallback jumps; this is not a complete browser input-only walkthrough.",
+    "The source tree identity is proven by reconstruction of the original Git commit object hash."
+  ]
+}

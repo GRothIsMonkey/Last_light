@@ -1,0 +1,279 @@
+{
+  "frames": [
+    {
+      "name": "01-sams-room",
+      "note": "Sam\u2019s room, the morning: the desk, the photograph in its frame, the fan",
+      "phase": "d7-house",
+      "calls": 238,
+      "triangles": 390497,
+      "caption": "There\u2019s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "09-old-mill-court",
+      "note": "Old Mill Court from the head of the street",
+      "phase": "e7-court",
+      "calls": 881,
+      "triangles": 115578,
+      "caption": "JAMIE\u201c\u2026What.\u201d",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "13-reveal-hand",
+      "note": "The top of the stairs: a hand round the post at the corner",
+      "phase": "e7-reveal",
+      "calls": 398,
+      "triangles": 76106,
+      "caption": "There\u2019s still a little light.",
+      "hunter": {
+        "state": "peek",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "14-reveal-landing",
+      "note": "It comes out onto the landing, looking at you",
+      "phase": "e7-reveal",
+      "calls": 394,
+      "triangles": 76680,
+      "caption": "JAMIE\u201c\u2026Oh my god.\u201d",
+      "hunter": {
+        "state": "stalk",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "21-grab",
+      "note": "At the oak: its hand on Jamie\u2019s ankle",
+      "phase": "n7-grab",
+      "calls": 217,
+      "triangles": 203191,
+      "caption": "JAMIE\u201cNO\u2014 NO NO\u2014\u201d",
+      "hunter": {
+        "state": "drag",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "22-struggle",
+      "note": "Your hands on his wrist",
+      "phase": "n7-grab",
+      "calls": 198,
+      "triangles": 195601,
+      "caption": "JAMIE\u201cDON\u2019T LET GO\u2014 DON\u2019T LET GO\u2014\u201d",
+      "hunter": {
+        "state": "drag",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "23-gum",
+      "note": "The gum in the grass",
+      "phase": "n7-gone",
+      "calls": 108,
+      "triangles": 156478,
+      "caption": "There\u2019s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "24-photo-one",
+      "note": "The same photograph that night: only you",
+      "phase": "n7-sams",
+      "calls": 143,
+      "triangles": 261944,
+      "caption": "July. You, at the oak, with your bike. Sam\u2019s mom took it.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "26-final-image",
+      "note": "Four bikes under the streetlight",
+      "phase": "n7-window",
+      "calls": 208,
+      "triangles": 339199,
+      "caption": "Under the streetlight across the street, four bikes stand in a row. The way you used to ride.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x11-lange-front",
+      "note": "The front room: a 1959 set on a test card, the couch, the Courier and an ashtray, the cigarette still going",
+      "phase": "e7-court",
+      "calls": 261,
+      "triangles": 121494,
+      "caption": "There\u2019s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x12-lange-kitchen",
+      "note": "The kitchen: dinner for three, one plate untouched and still steaming; the cap on the chair",
+      "phase": "e7-court",
+      "calls": 414,
+      "triangles": 78022,
+      "caption": "JAMIE\u201cSomebody\u2019s eating. Was eating.\u201d",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x14-lange-bath-door",
+      "note": "The hall: the light under the bathroom door, and a shadow across it",
+      "phase": "e7-court",
+      "calls": 467,
+      "triangles": 81684,
+      "caption": "There\u2019s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x16-lange-burst",
+      "note": "It comes out of the bathroom and through his door; the chair goes",
+      "phase": "e7-court",
+      "calls": 586,
+      "triangles": 131036,
+      "caption": "JAMIE\u201c\u2026Four bikes.\u201d",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x17-lange-loom",
+      "note": "It stands too close, mouth open; Jamie between you and it, arms out",
+      "phase": "e7-court",
+      "calls": 584,
+      "triangles": 135800,
+      "caption": "JAMIE\u201cNO\u2014\u201d",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "x20-green-star",
+      "note": "A folded gum-wrapper star on the second stair",
+      "phase": "e7-house",
+      "calls": 273,
+      "triangles": 71210,
+      "caption": "There\u2019s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "x22-pantry-hand",
+      "note": "In the pantry: its hand on the edge of the door",
+      "phase": "e7-stalk",
+      "calls": 306,
+      "triangles": 82830,
+      "caption": "JAMIE\u201c(It\u2019s here. Don\u2019t move\u2014 hold your breath\u2014)\u201d",
+      "hunter": {
+        "state": "peek",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "x23-pantry-head",
+      "note": "Its head in the gap; you hold your breath",
+      "phase": "e7-stalk",
+      "calls": 162,
+      "triangles": 82564,
+      "caption": "JAMIE\u201c(It\u2019s here. Don\u2019t move\u2014 hold your breath\u2014)\u201d",
+      "hunter": {
+        "state": "peek",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "x30-evidence",
+      "note": "Showing Reyes: his flashlight on the marks in the grass",
+      "phase": "n7-after",
+      "calls": 137,
+      "triangles": 180454,
+      "caption": "OFFICER REYES\u201cTake your time.\u201d",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "a01-foyer-from-entry",
+      "note": "The whole foyer from the player\u2019s entry, after the footsteps stop",
+      "phase": "e7-house",
+      "calls": 416,
+      "triangles": 77162,
+      "caption": "There\u2019s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "script",
+        "visible": true
+      }
+    },
+    {
+      "name": "a03-jamie",
+      "note": "Jamie at the curb in daylight, shortly before the ride",
+      "phase": "d7-curb",
+      "calls": 465,
+      "triangles": 928401,
+      "caption": "There\u2019s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "a04-after-grip",
+      "note": "The empty lane after Jamie has gone, at the gum checkpoint",
+      "phase": "n7-gone",
+      "calls": 92,
+      "triangles": 121132,
+      "caption": "There\u2019s still a little light.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    }
+  ],
+  "errors": [],
+  "acceptedCommit": "e24f6638721da8e5f2b74b9565cb0f9598f06cbb"
+}
