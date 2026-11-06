@@ -274,7 +274,9 @@ export function createChapter1(o){
  function spots(){const out=[];const ph=S.phase;if(api.next?.owns(ph))return api.next.spots();
   if((ph==='friends')&&!S.flags.jamieTapped)out.push({id:'tap-jamie',label:'Tap on the window',at:JWin.stand,face:JWin.glass,r:2.6});
   if((ph==='friends')&&!S.flags.samSignal&&S.samTap<3)out.push({id:'tap-sam',label:'Tap on the window',at:SWin.stand,face:SWin.glass,r:2.5});
-  if(ph==='creek'){const c=clue.position;out.push({id:'reflector',label:'Look closer',at:c,face:c,r:1.9});}
+  if(ph==='creek'){const c=clue.position;out.push({id:'reflector',label:'Look closer',at:c,face:c,r:1.9});
+   // (optional, once: the plate on the grate at the end of the channel, and the old brick behind it)
+   if(!S.flags.line4&&!busy()){const g=side(spotsC.grate[0],spotsC.grate[1]-.45),gp={x:g.x,y:nav.groundY(g.x,g.z)-.05,z:g.z};out.push({id:'line4',label:'Look closer',at:gp,face:gp,r:3.2,look:true,size:.5,cone:.16});}}
   return out;}
  // (a spot marked look: what you are actually looking at, among small things close together, wins over the nearest)
  const _lf=new THREE.Vector3(),_ld=new THREE.Vector3();
@@ -282,7 +284,10 @@ export function createChapter1(o){
   for(const s of spots()){if(!p.walking&&!s.ride)continue;const d=dist(p,s.at);if(d>s.r)continue;
    if(s.look){_ld.set(s.at.x-camera.position.x,(s.at.y??camera.position.y)-camera.position.y,s.at.z-camera.position.z);const l=_ld.length()||1,c=_ld.dot(_lf)/l,need=Math.cos(Math.atan((s.size||.12)/l)+(s.cone??.1));if(c>=need&&c>bc){bc=c;bl=s;}continue;}
    if(d>bd)continue;const a=wrap(headingTo(p.x,p.z,s.face.x,s.face.z)-p.a);if(!s.wide&&Math.abs(a)>1.25&&d>.8)continue;best=s;bd=d;}return bl||best;}
- function act(id){if(api.next?.owns(S.phase)){api.next.act(id);return;}if(id==='tap-jamie')tapJamie();else if(id==='tap-sam')tapSam();else if(id==='reflector'&&S.phase==='creek')findClue();}
+ function act(id){if(api.next?.owns(S.phase)){api.next.act(id);return;}if(id==='tap-jamie')tapJamie();else if(id==='tap-sam')tapSam();else if(id==='reflector'&&S.phase==='creek')findClue();
+  else if(id==='line4'&&S.phase==='creek'&&!S.flags.line4){S.flags.line4=true;// (Chapter Eight's network starts here: the old line under the street; nobody makes anything of it)
+   talk([{who:'',text:'On the grate’s frame, an iron plate: OAK HOLLOW TWP. — LINE 4 — 1958.',time:3.4},{who:'',text:'Past the bars the concrete stops. Old brick goes on down, under the yards.',time:3.4},
+    {who:'JAMIE',text:'“It goes under everybody’s houses.”',from:jamie,time:2.2},{who:'SAM',text:'“All the storm drains do. Come on.”',from:sam,time:2.4}]);}}
  // ---- every frame -----------------------------------------------------------------------------------------
  const eye=new THREE.Vector3();
  function update(dt){if(S.phase==='off')return;S.t+=dt;S.pt+=dt;const p=me();eye.copy(camera.position);P.x=p.x;P.z=p.z;

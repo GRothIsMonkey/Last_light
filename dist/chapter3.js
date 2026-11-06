@@ -607,7 +607,14 @@ export function createChapter3(o,k,ch2){
      // generous, never silent: never looked at all, after a long while, it comes anyway
      if(since>40){R2.unseenGo=true;creatureSeen();}}}
    else if(C.t-R2.seenAt>1){CRT.state='creep';R2.creepAt=C.t;}}
-  if(CRT.state==='creep'){const goal=-(w/2-.15);CRT.t=Math.min(goal,CRT.t+.5*dt);CRT.v=CRT.t<goal-.01?.5:0;CRT.pose={crouch:.7};if(C.t-R2.seenAt>3.8)creatureDrop();}
+  if(CRT.state==='creep'){const goal=-(w/2-.15);
+   // (from far down the drain, deeper than anyone has been, something heavy shifts; it stops dead with its head snapped round
+   // to the dark and shivers, low, before it comes on: it is listening to something under the town, and it is afraid of it)
+   if(!R2.deepAt&&C.t-R2.seenAt>1.9){R2.deepAt=C.t;const ds=Math.max(CUL.s+20,Dr.len-6),dq=Dr.at(ds);R2.deepP={x:dq.x,y:Dr.floor(ds)+1,z:dq.z};o.sfx('c7Groan',R2.deepP,{gain:.85});mark('something deeper in the drain; it stops and listens');
+    talk([{who:'',text:'Far down the drain, deeper than the light goes, something heavy shifts.',time:2.6}]);}
+   if(R2.deepAt&&C.t-R2.deepAt<1.7){CRT.v=0;CRT.pose={crouch:1,look:R2.deepP};creature.drive.cower=.65;}
+   else{if(creature.drive.cower)creature.drive.cower=damp(creature.drive.cower,0,5,dt);CRT.t=Math.min(goal,CRT.t+.5*dt);CRT.v=CRT.t<goal-.01?.5:0;CRT.pose={crouch:.7};}
+   if(C.t-R2.seenAt>3.8+(R2.deepAt?1.7:0))creatureDrop();}
   if(CRT.state==='drop'){CRT.phT+=dt;const u=clamp(CRT.phT/.6,0,1),f=CRT.from,to=CRT.to;CRT.t=f.t+(to.t-f.t)*smooth(u);CRT.y=Math.max(0,f.y*(1-u)+to.y*u+.28*Math.sin(Math.PI*u));CRT.v=2.4;CRT.pose={rear:.25*(1-u)};
    if(u>=1){CRT.y=0;R2.landedAt=C.t;creatureLanded();}}
   if(CRT.state==='turn'){CRT.phT+=dt;const u=smooth(clamp(CRT.phT/.6,0,1));CRT.h=CRT.from.h+Math.PI/2*u;CRT.v=1.4;CRT.pose=null;if(CRT.phT>=.6){CRT.state='chase';CRT.v=2.5;}}}
@@ -775,7 +782,11 @@ export function createChapter3(o,k,ch2){
  function safeNow(){if(C.flags.safe)return;C.flags.safe=true;go('n3-safe');date(NIGHT.safe,'PM');checkpoint('chapter3-end');objective('');o.setDrain?.(1);A.remountRange=undefined;A.escape=null;A.rideBoost=undefined;A.rideFov=0;
   T?.ease(.42,{fall:.035,hold:5,why:'the street, the light'});for(const c of [jamie,sam]){c.tight=0;c.boost=1;}
   const gate=Wd.spots.gate,back={x:gate.x,z:gate.z,y:gate.y+1.2};
-  talk([{wait:4.6},{who:'SAM',text:'“That wasn’t Alex.”',from:sam,time:2,gap:1.6},{who:'JAMIE',text:'“…I know.”',from:jamie,time:1.6,gap:2.2},{who:'SAM',text:'“Then what did we follow?”',from:sam,time:2.2,gap:3.6},
+  talk([{wait:4.2},
+   // (its left hand, on the pipe's edge in the beam: Danny Whitcomb's old injury, which Chapter Four's paper names and Chapter
+   // Eight confirms; said before the chapter's last words, so "Then what did we follow?" still goes unanswered)
+   {who:'SAM',text:'“Did you see its hand? On the pipe?”',from:sam,time:2.2,gap:.9},{who:'YOU',text:'“…It didn’t have all its fingers.”',time:2.2,gap:2},
+   {who:'SAM',text:'“That wasn’t Alex.”',from:sam,time:2,gap:1.6},{who:'JAMIE',text:'“…I know.”',from:jamie,time:1.6,gap:2.2},{who:'SAM',text:'“Then what did we follow?”',from:sam,time:2.2,gap:3.6},
    {act:()=>{S.lookTarget=back;for(const c of [jamie,sam])c.lookAt=back;S.jamieAim=null;},wait:4.6},{act:()=>{C.endT=0;},wait:.1}]);}
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Three';if(pp)pp.textContent='August 22, 2011.';}const nb=$('next-chapter');if(nb)nb.hidden=!A3.next;o.finish();}
  // ---- every frame ------------------------------------------------------------------------------------------

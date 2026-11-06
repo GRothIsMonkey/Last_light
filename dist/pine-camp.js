@@ -234,7 +234,16 @@ export function buildCamp(W,out){
   for(const s of [-1,1])B(g,s*hw,f+2.1,.2,.04,.3,.5,M2.dark);
   // the intake: a pipe from the back wall down the bank into the water, a grated headwall at the shore
   const p0=b.F.to(0,-hd2-.4),p1=[-306,497],gy0=heightAt(PW(...p0).x,PW(...p0).z);K.rod(root,[PW(...p0).x,gy0+.3,PW(...p0).z],[PW(...p1).x,.7,PW(...p1).z],.18,M2.metal);
-  const hw2=at(root,p1[0],p1[1],.4,hd(-.6,1)+Math.PI);B(hw2,0,.3,0,2.2,1.2,.4,M2.pier);B(hw2,0,.2,-.21,.8,.6,.02,M2.metal);}
+  const hw2=at(root,p1[0],p1[1],.4,hd(-.6,1)+Math.PI);B(hw2,0,.3,0,2.2,1.2,.4,M2.pier);B(hw2,0,.2,-.21,.8,.6,.02,M2.metal);
+  // (the township's, not the camp's: beside the pump house an older concrete valve vault on the reservoir line, its steel
+  // lid bent up at one corner from underneath, the chain stretched, mud on the frame, a soup-can label in the mud and a
+  // small sneaker print, checkerboard sole. Black water stands half a metre down it; it is not a way in.)
+  {const vx=hw+1.15,vz=.2,old=K.mat(0x8c8a80,{roughness:1}),lid=K.mat(0x4c463e,{roughness:.6,metalness:.55}),mud=K.mat(0x3a3127,{roughness:1});
+   B(g,vx,.07,vz,1.3,.16,1.3,old);B(g,vx,.155,vz,.96,.02,.96,K.mat(0x0b1012,{roughness:.15,metalness:.4}));
+   const L=new THREE.Mesh(new THREE.BoxGeometry(.92,.035,.92),lid);L.position.set(vx-.04,.19,vz+.03);L.rotation.set(.11,0,-.07);g.add(L);L.name='valve-vault-lid';
+   for(let k=0;k<5;k++)B(g,vx+.47,.17+k*.035,vz-.3+k*.012,.03,.022,.05,K.mat(0x6a6460,{roughness:.5,metalness:.7}));
+   B(g,vx-.85,.012,vz+.2,.7,.01,.55,mud);B(g,vx-.8,.02,vz+.05,.07,.004,.09,K.mat(0xc7432f,{roughness:.8}));
+   for(let k=0;k<4;k++)B(g,vx-.62+(k%2)*.022,.019,vz+.38+k*.035,.022,.003,.02,K.mat(0x231d18,{roughness:1}));}}
 
  for(const b of BUILDINGS){if(b.kind==='cabin')cabin(b);else if(b.kind==='office')office(b);else if(b.kind==='lodge')lodge(b);else if(b.kind==='wash')wash(b);else if(b.kind==='mshed')mshed(b);else if(b.kind==='pump')pump(b);}
 

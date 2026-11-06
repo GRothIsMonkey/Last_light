@@ -294,10 +294,15 @@ export function createChapter2(o,k){
   const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p');if(h)h.innerHTML='Chapter Two';if(pp)pp.textContent='August 22, 2011.';}o.finish();}
  // ---- what F does here ---------------------------------------------------------------------------------
  function spots(){if(later())return api.next.spots();const out=[],ph=S.phase;
-  if(ph==='c2-bike'){const m=mountPoint();out.push({id:'c2-inspect',label:'Look closer',at:found.group.position,face:m,r:2.4});}
+  if(ph==='c2-bike'){const m=mountPoint();out.push({id:'c2-inspect',label:'Look closer',at:found.group.position,face:m,r:2.4});
+   // (optional, once: the second opening in the headwall, plated shut; offered only while you look at it)
+   const q=F.sealedAccess;if(q&&!C.flags.sealed&&!busy())out.push({id:'c2-sealed',label:'Look closer',at:q,face:q,r:3.4,look:true,size:.55,cone:.14});}
   if(ph==='m-briarwood'&&C.flags.corner&&!C.memory)out.push({id:'c2-remember',label:'Remember',at:corner.at,face:corner.look,r:11,ride:true,wide:true});
   return out;}
- function act(id){if(later()){api.next.act(id);return;}if(id==='c2-inspect')inspect();else if(id==='c2-remember')remember();}
+ function act(id){if(later()){api.next.act(id);return;}if(id==='c2-inspect')inspect();else if(id==='c2-remember')remember();
+  else if(id==='c2-sealed'&&!C.flags.sealed){C.flags.sealed=true;// (not explained: something under here was closed off on purpose, once)
+   talk([{who:'',text:'Low in the headwall, a second opening, smaller. Somebody plated it over with steel and bolted it shut.',time:3.6},{who:'',text:'The bolts are as thick as your thumb. Faint paint on the steel: TWP. P.W. — 1974 — NO ENTRY.',time:3.8},
+    {who:'SAM',text:'“Why would you bolt a drain shut?”',from:sam,time:2},{who:'JAMIE',text:'“To keep kids out. Like us.”',from:jamie,time:2}]);}}
  function sources(out){if(later()){api.next.sources(out);return;}if(api.day){// a sprinkler or two, the mower far off, radio at the corner
    out.push({id:'radio-am',kind:'radio',pos:officer.pos,level:.8});return;}
   if(S.phase.startsWith('c2-')){const w=SP.water,m=SP.mouth;out.push({id:'channel',kind:'water',pos:new THREE.Vector3(w.x,w.y,w.z),level:.7},{id:'culvert',kind:'culvert',pos:new THREE.Vector3(m.x,m.bed+1,m.z),level:1});

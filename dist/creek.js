@@ -44,6 +44,10 @@ export function buildCreek(W){
   // Where the channel ends: a low wall and a grate, the water going on under the fence line.
   {const v=s*(C.end-.55),top=bank(C.u,s*(C.end+1.2))+.15,g=W.place(f,C.u,v,{y:top});K.box(g,0,-.75,0,.34,1.5,4.6,concrete).name='creek-grate-wall';
    K.box(g,-s*.19,-1.15,0,.04,.9,1.5,dark);for(let k=-6;k<=6;k++)K.box(g,-s*.22,-1.15,k*.11,.03,.92,.025,steel);for(const yy of [-.75,-1.55])K.box(g,-s*.22,yy,0,.035,.03,1.52,steel);
+   // (Chapter One's closer look: the township's cast plate on the frame, LINE 4 1958; and behind the bars the concrete
+   // stops and older brick goes on down, under the yards: something older than the channel runs beneath the street)
+   if(s>0){K.box(g,-s*.235,-.58,.55,.012,.13,.22,K.mat(0x3a3430,{roughness:.6,metalness:.5})).name='line4-plate';
+    const brick=K.mat(0x6e3a2c,{roughness:1});for(let r=0;r<4;r++)for(let c=-3;c<=3;c++)K.box(g,-s*.205,-.86-r*.13,c*.21+(r%2?.1:0)-(r%2&&c===3?.2:0),.012,.11,.19,brick).name='line4-brick';}
    solid(C.u,v,.25,2.4,'wall');}
   // Chain-link along both sides of the strip and across the back, pulled loose by the channel.
   const u0=C.u-C.half-.3,u1=C.u+C.half+.3,back=s*31.5;

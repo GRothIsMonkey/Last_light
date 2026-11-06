@@ -398,6 +398,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   if(C.clues.has('register'))found.push({id:'register',name:'The camp register, 1991',note:C.photos.includes('register3')?'Photographed. August 24, 1991: two bike tracks at the service gate.':'In the camp office.'});
   if(C.clues.has('searchmap'))found.push({id:'searchmap',name:'The search map',note:'Grid seven circled. The pump house.'});
   if(C.clues.has('pantry'))found.push({id:'pantry',name:'The lodge pantry',note:'Cans gone from the dust. Recently.'});
+  if(C.clues.has('vault'))found.push({id:'vault',name:'The valve vault',note:'The township’s. Reservoir line, 1958. Bent up from underneath.'});
   if(C.inv.shirt)found.push({id:'shirt',name:'Alex’s shirt',note:'Gold. The one from the flyers. Wet. In Sam’s bag.'});
   if(G5.S.sockShownAt!=null||C.flags.departure)found.push({id:'sock',name:'Jamie’s sock',note:'One. In Jamie’s bag, “for emergencies.”'});
   return {carry,found};}
@@ -552,6 +553,16 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   stand(jamie,camBeside(1,.35,.7),{look:()=>t});stand(sam,camBeside(-1,.35,.7),{look:()=>t});T?.set?.(.16,{rise:.02,why:'the pantry'});
   say([{who:'JAMIE',text:'“These aren’t dusty.”',by:'jamie',time:1.6},{who:'SAM',text:'“There were more. You can see where they were. In the dust.”',by:'sam',time:3},
    {who:'JAMIE',text:'“Kids?”',by:'jamie',time:1},{who:'SAM',text:'“Kids don’t take soup.”',by:'sam',time:1.6},{wait:1.2},{who:'YOU',text:'“Somebody’s been eating here.”',time:1.8}],{then:()=>{clue('pantry');endLook();}});}
+ // (optional: the township's valve vault beside the pump house: the reservoir line, 1958, its lid bent up from underneath,
+ // the mud and a soup-can label, a small sneaker print; full of black water: not a way in. Nothing is concluded.)
+ function vaultPos(){const b=BLD.pump,[e,n]=b.F.to(b.w/2+1.15,-.2),w=W5(e,n);return {x:w.x,y:gy(w.x,w.z)+.2,z:w.z};}
+ function lookVault(){if(C.flags.vault)return;C.flags.vault=true;const t=vaultPos();closeLook(t,{back:1.15,eye:1.3});C.view='look';C.lookAt=t;C.lookKind='vault';
+  stand(jamie,camBeside(1,.4,.8),{look:()=>t});stand(sam,camBeside(-1,.4,.8),{look:()=>t});
+  say([{who:'',text:'Cast in the lid: OAK HOLLOW TWP. — RESERVOIR LINE — VALVE VAULT 3 — 1958.',time:3.6},
+   {who:'SAM',text:'“That’s not the camp’s. That’s the township’s. It goes back toward town.”',by:'sam',time:3},
+   {who:'',text:'One corner of the lid is bent up from underneath. The chain is stretched. Mud on the frame, a soup-can label, a small sneaker print.',time:4.4},
+   {who:'JAMIE',text:'“Can we get in?”',by:'jamie',time:1.2},{who:'SAM',text:'“It’s full of water. Look at it. You’d drown.”',by:'sam',time:2.4},
+   {wait:.8},{who:'JAMIE',text:'“Somebody’s been in it. Or out of it.”',by:'jamie',time:2.2}],{then:()=>{clue('vault');endLook();}});}
  function lookPhotos(){if(C.flags.photosLook)return;C.flags.photosLook=true;const b=BLD.lodge,[e,n]=b.F.to(0,-b.d/2+.4),w=W5(e,n),t={x:w.x,y:b.y+b.floor+1.7,z:w.z};closeLook(t,{back:1.6,eye:1.42,floor:b.y+b.floor});C.view='look';C.lookAt=t;C.lookKind='photos';
   say([{who:'SAM',text:'“Every summer. Sixty-four to ninety.”',by:'sam'},{who:'JAMIE',text:'“Look at the shorts. Look at the SHORTS.”',by:'jamie'},{who:'SAM',text:'“Then it just stops.”',by:'sam',time:1.6}],{then:()=>{clue('photos');endLook();}});}
  function lookCampMap(){if(C.flags.campMap)return;C.flags.campMap=true;const g=PN.anchors.mapBoard;g.updateMatrixWorld(true);const c=new THREE.Vector3(0,1.4,-.06).applyMatrix4(g.matrixWorld),t={x:c.x,y:c.y,z:c.z};closeLook(t,{back:1.3,eye:1.45});C.view='look';C.lookAt=t;C.lookKind='campmap';
@@ -946,6 +957,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
    if(ph==='d5-camp'){if(inside('office')){if(!C.read.size||C.read.size<REGISTER.length)add('c5-register','Read the register',regPos(),regPos(),1.9);if(!C.flags.searchmap){const R=PN.anchors.searchMap,b=BLD.office,[e,n]=b.F.to(R.x,-R.z),w=W5(e,n);add('c5-searchmap','Look at the map on the board',{x:w.x,y:b.y+R.y,z:w.z},null,2.2);}}
     if(inside('lodge')){if(!C.flags.pantry)add('c5-pantry','Look at the shelves',pantryPos(),null,2.4);if(!C.flags.photosLook){const b=BLD.lodge,[e,n]=b.F.to(0,-b.d/2+.4),w=W5(e,n);add('c5-photos','Look at the photographs',{x:w.x,y:b.y+b.floor+1.6,z:w.z},null,2.8);}}
     if(!C.flags.campMap&&near(SPOT.mapBoard,3)){const q=W5(...SPOT.mapBoard);add('c5-campmap','Look at the camp map',q,q,3);}
+    if(!C.flags.vault&&near(BLD.pump.c,9)){const q=vaultPos();add('c5-vault','Look closer',q,q,3.2);}
     if(near(SPOT.bell,2.6)&&!inAny()){const q=W5(...SPOT.bell);add('c5-bell','Ring the bell',q,q,2.6);}
     if(C.flags.fireOffer&&!C.flags.fire){const q=W5(...SEATS[0].seat);add('c5-fire','Sit down',q,W5(...FIRE),3.2);}}
    if(ph==='e5-owl'&&inside('owl')){if(!C.flags.shirtSeen)add('c5-shirt','Look at the shirt',shirtPos(),null,2.6);if(C.flags.shirtDone&&!C.flags.carvingSeen)add('c5-carving','Look at the carving',carving.position,null,2.2);}}
@@ -953,7 +965,7 @@ export function createChapter5(o,k,ch2,ch3,ch4){
   return out;}
  function act(id){if(nextOwns()){A5.next.act(id);return;}if(id.startsWith('g5-')&&G5.act(id))return;if(id.startsWith('p5-')&&PK.act(id))return;if(PK.holding)PK.drop();if(id.startsWith('c5-gate:')&&GT.act(id))return;if(GR.act(id))return;if(id==='c5-shove'){phys.playerReach({at:()=>GT.barPoint('campL',.75),dur:[.38,.65,.4],carry:false,onContact:()=>shoveGate('you')});return;}if(id==='c5-resit')sitFire();else if(id==='c5-lock')lockBikes();else if(id==='c5-sit')sitDock();else if(id==='c5-map')readMap();
   else if(id==='c5-go')choose('jamie');else if(id==='c5-hear')choose('sam');else if(id==='c5-owl-stuck'){C.flags.owlStuck=true;sound('thud',roomV('owl',0,BLD.owl.d/2,1),{gain:.5});say([{who:'SAM',text:'“It’s stuck. Swollen shut. Leave it.”',by:'sam'}]);}else if(id.startsWith('c5-door-'))openDoor(id.slice(8));else if(id==='c5-register')openRegister();else if(id==='c5-searchmap')lookSearchMap();
-  else if(id==='c5-pantry')lookPantry();else if(id==='c5-photos')lookPhotos();else if(id==='c5-campmap')lookCampMap();else if(id==='c5-bell')ringBell();else if(id==='c5-fire')toFire();
+  else if(id==='c5-pantry')lookPantry();else if(id==='c5-photos')lookPhotos();else if(id==='c5-vault')lookVault();else if(id==='c5-campmap')lookCampMap();else if(id==='c5-bell')ringBell();else if(id==='c5-fire')toFire();
   else if(id==='c5-shirt')lookShirt();else if(id==='c5-carving')lookCarving();else if(id==='c5-window'){if(C.win)C.win.lookT=1;}}
  // ---- Alex's camera: looking at the pictures, and taking new ones of what you find ---------------------------------------------------------
  const canCamera=()=>C.inv.camera&&me().walking&&!C.view&&C.fadeOut<0&&S.phase!=='c5-black'&&!C.lapse&&!(posed()&&!C.lookKind);

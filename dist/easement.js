@@ -135,7 +135,14 @@ export function buildEasement(W){
   // Standing water in the mouth, deepening inside; leaves and branches the last storm left.
   const pool=new THREE.Mesh(new THREE.PlaneGeometry(cu.w-.1,L+.6),W.surfaceMaterial(K.mat(0x1d2a2e,{roughness:.12,metalness:.45}),'water'));pool.rotation.x=-Math.PI/2;pool.position.set(0,.05,-L/2-.1);g.add(pool);
   for(const [x,z,a,l] of [[-.6,.6,.4,1.6],[.5,.2,-.3,1.2],[.1,-.9,.15,1.4],[-.9,-1.6,.6,.9]])K.rod(g,[x-Math.cos(a)*l/2,.1,z-Math.sin(a)*l/2],[x+Math.cos(a)*l/2,.16,z+Math.sin(a)*l/2],.035,0x4a3c2c,.02,5);
-  solid(cu.s-.2,mouth.t-(W2+(wall/2-W2)/2),(wall/2-W2)/2,.3);solid(cu.s-.2,mouth.t+(W2+(wall/2-W2)/2),(wall/2-W2)/2,.3);}
+  solid(cu.s-.2,mouth.t-(W2+(wall/2-W2)/2),(wall/2-W2)/2,.3);solid(cu.s-.2,mouth.t+(W2+(wall/2-W2)/2),(wall/2-W2)/2,.3);
+  // (Chapter Two's closer look: low in the headwall on the path's side, a second, smaller opening that somebody closed on
+  // purpose a long time ago: a steel plate, thumb-thick bolts, a collar of newer concrete. Nothing says why.)
+  {const pe=F.world(31.2,F.pathT(31.2)),side=[-1,1].map(e=>{const v=new THREE.Vector3(e*2.75,.72,.05).applyEuler(g.rotation).add(g.position);return {e,v,d:Math.hypot(v.x-pe.x,v.z-pe.z)};}).sort((a,b)=>a.d-b.d)[0],e=side.e;
+   K.box(g,e*2.75,.72,.02,1.22,1.08,.05,K.mat(0xa6a397,{roughness:1})).name='sealed-access-collar';
+   K.box(g,e*2.75,.72,.055,.9,.78,.025,K.mat(0x4a3f36,{roughness:.55,metalness:.6})).name='sealed-access-plate';
+   for(const [bx,by] of [[-.38,-.32],[0,-.32],[.38,-.32],[-.38,.32],[0,.32],[.38,.32],[-.38,0],[.38,0]])K.cyl(g,e*2.75+bx,.72+by,.075,.028,.03,0x3a322b,8,[Math.PI/2,0,0]).name='sealed-access-bolt';
+   F.sealedAccess={x:side.v.x,y:side.v.y,z:side.v.z};}}
  // Weathering has physical scale: construction joints, mineral runs, exposed aggregate and
  // receding collars. All use the existing static batch; no new lights or collision surfaces.
  {const g=place(cu.s,mouth.t,mouth.bed),H=cu.h,W2=cu.w/2;

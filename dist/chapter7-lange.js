@@ -23,7 +23,7 @@ export const LANGE={W:12,D:8.6,F:.45,doorX:-1.5,H:2.8};
 // ---- the pages the chapter holds up (canvas textures; null without a canvas) -----------------------------------------------
 function courierPage(c,w,h){c.fillStyle='#e8dcbc';c.fillRect(0,0,w,h);c.fillStyle='rgba(150,120,60,.10)';c.fillRect(0,0,w,h);c.fillStyle='#1a1a1a';c.font='bold 44px Georgia';c.textAlign='center';c.fillText('The Oak Hollow Courier',w/2,60);
  c.font='14px Georgia';c.fillText('THURSDAY, APRIL 11, 1974  -  FIFTEEN CENTS',w/2,88);c.fillRect(20,98,w-40,3);c.font='bold 34px Georgia';c.fillText('TOWNSHIP VACATES',w/2,150);c.fillText('OLD MILL COURT',w/2,192);
- c.font='16px Georgia';c.textAlign='left';['Board votes 4-1 to close the street for','the new storm line. Residents to be','relocated by the end of summer. “Nobody','has lived there for years,” the supervisor','said. Mrs. E. Lange, of No. 5, could not','be reached for comment.'].forEach((s,i)=>c.fillText(s,40,240+i*26));
+ c.font='16px Georgia';c.textAlign='left';['Board votes 4-1 to close the street for','the new storm line and to permit isolation','work at the Line Four junction beneath','it. Residents to be relocated by the end','of summer. “Nobody has lived there for','years,” the supervisor said. Mrs. E. Lange,','of No. 5, could not be reached for comment.'].forEach((s,i)=>c.fillText(s,40,232+i*24));
  c.fillStyle='#8a8478';c.fillRect(300,420,180,150);c.fillStyle='#5a564c';for(let k=0;k<5;k++)c.fillRect(312+k*34,500-k*6,22,70+k*6);c.fillStyle='#1a1a1a';c.font='italic 12px Georgia';c.fillText('The court, from the oak.',300,588);
  c.font='bold 18px Georgia';c.fillText('Storm line to run',40,440);c.fillText('under the old mill race',40,462);c.font='14px Georgia';['Engineers say the line','will follow the mill race','from the oak to the creek.'].forEach((s,i)=>c.fillText(s,40,490+i*20));}
 function boardPage(c,w,h){c.fillStyle='#b48a5a';c.fillRect(0,0,w,h);c.fillStyle='rgba(60,40,20,.18)';for(let k=0;k<900;k++){c.fillRect((k*97)%w,(k*53)%h,2,2);}
@@ -41,6 +41,11 @@ function boardPage(c,w,h){c.fillStyle='#b48a5a';c.fillRect(0,0,w,h);c.fillStyle=
  c.save();c.translate(196,300);c.rotate(.5);c.fillStyle='#f2f1ea';c.beginPath();c.moveTo(0,0);c.lineTo(34,4);c.lineTo(22,18);c.lineTo(8,30);c.closePath();c.fill();c.restore();pin(206,306,'#e8c83a');
  // a grocery list, ordinary
  c.save();c.translate(330,300);c.rotate(-.06);c.fillStyle='#f4efd8';c.fillRect(0,0,140,150);c.fillStyle='#3a3aa0';c.font='italic 15px "Comic Sans MS", cursive';['milk','bread','Sanka','liver','peas','film'].forEach((s,i)=>c.fillText(s,14,28+i*21));c.restore();pin(400,302,'#3a8a3a');}
+// Mrs. Lange's note to her boy, taped to his wall where he would see it from his bed: pencil, an adult's hand, pressed hard.
+function notePage(c,w,h){c.fillStyle='#efe6cc';c.fillRect(0,0,w,h);c.fillStyle='rgba(120,95,50,.10)';c.fillRect(0,0,w,h);c.strokeStyle='rgba(90,120,170,.35)';c.lineWidth=1;for(let y=34;y<h;y+=22){c.beginPath();c.moveTo(8,y);c.lineTo(w-8,y);c.stroke();}
+ c.fillStyle='#2b2a2c';c.font='bold 21px "Comic Sans MS", Georgia';c.textAlign='left';
+ ['TOMMY —','STAY IN HERE. KEEP THE','LATCH ON. DON’T OPEN IT FOR','ANYBODY. NOT EVEN IF IT','SOUNDS LIKE ME.','',"I’M RIGHT OUTSIDE.",'— MOM'].forEach((t2,i)=>c.fillText(t2,14,30+i*22));
+ c.fillStyle='rgba(200,190,160,.6)';c.fillRect(w/2-26,0,52,10);}
 function drawingPage(who,year,{faint=false}={}){return (c,w,h)=>{c.fillStyle=faint?'#fbfbf8':year<1980?'#ecdfc0':'#f4f0e4';c.fillRect(0,0,w,h);if(year<1980){c.fillStyle='rgba(120,90,40,.12)';c.fillRect(0,0,w,h);}
  c.lineCap='round';const col=faint?'rgba(70,70,70,.32)':year<1980?'#2a5aa8':'#c83a2a';c.strokeStyle=col;c.fillStyle=col;c.lineWidth=faint?1.4:3;
  // a streetlight, its light; four bikes in a row under it; nobody on them
@@ -82,6 +87,7 @@ export function createLangeHouse({W=LANGE.W,D=LANGE.D,F=LANGE.F,doorX=LANGE.door
   // (the bathroom's opens out, into the hall; hinged on the far side from the boy's room)
   bath:B.door(.2,1.6,{w:.8,h:2.03,rot:Math.PI,swing:-1.5,y:F,name:'lange-bath'}),boy:B.door(-3.2,1.6,{w:.9,h:2.03,rot:0,swing:-1.4,y:F,name:'lange-boy'}),
   parents:B.door(2.4,1.6,{w:.9,h:2.03,rot:0,swing:-1.4,y:F,name:'lange-parents'})};
+ {const lp=doors.boy.pivot,brass=mat(0xc4a560,{metalness:.75,roughness:.3});K.box(lp,.8,1.78,.032,.02,.05,.01,brass).name='lange-latch-eye';K.box(lp,.8,1.71,.034,.012,.11,.008,brass).name='lange-latch-hook';}
  const solids=[];const put=(o,x,z,{a=0,y=F,solid=null}={})=>{o.position.set(x,y,z);o.rotation.y=a;g.add(o);if(solid)solids.push({x,z,hw:solid[0],hd:solid[1],a:-a,o});return o;};
  // ---- the front room: the console set (on: a test card), the couch, the armchair, a lamp; the Courier and an ashtray --------------
  const tvTex=paper(256,192,(c,w,h)=>{c.fillStyle='#202428';c.fillRect(0,0,w,h);const bars=['#c8c8c8','#c8c800','#00c8c8','#00c800','#c800c8','#c80000','#0000c8'];bars.forEach((b,i)=>{c.fillStyle=b;c.fillRect(i*w/7,0,w/7+1,h*.66);});
@@ -127,6 +133,8 @@ export function createLangeHouse({W=LANGE.W,D=LANGE.D,F=LANGE.F,doorX=LANGE.door
  K.box(g,-5.2,F+.62,3.55,.22,.08,.2,mat(0x9a6a3a)).rotation.y=.4;// a ball glove on the bed
  const DRW=[{tex:paper(256,192,drawingPage('R.A.C.',1966)),x:-4.4},{tex:paper(256,192,drawingPage('D.W.',1991)),x:-4.85},{tex:paper(256,192,drawingPage('',2011,{faint:true})),x:-5.3}];// (left to right as you face them: 1966, 1991, 2011)
  for(const d of DRW){const p2=K.plane(g,d.x,F+1.45,iz1-.012,.36,.27,new THREE.MeshStandardMaterial({map:d.tex,color:d.tex?0xffffff:0xf4f0e4,roughness:.9}),{ry:Math.PI,name:'lange-drawing'});p2.rotation.z=(d.x+4.85)*.07;}
+ // (her note, on the wall across from his door, where he would see it from the bed: she was keeping him in here, from it)
+ {const nt=paper(256,192,notePage);K.plane(g,-2.75,F+1.18,iz1-.012,.27,.2,new THREE.MeshStandardMaterial({map:nt,color:nt?0xffffff:0xefe6cc,roughness:.9}),{ry:Math.PI,name:'lange-note'});}
  // a little lamp on the desk (the chapter's light stands at it)
  K.cyl(g,-1.85,F+.76+.12,3.75,.06,.24,mat(0x3a5a3a));K.cyl(g,-1.85,F+1.04,3.75,.11,.14,mat(0xf0e4c8,{emissive:0xffd8a0,emissiveIntensity:.4}),{r2:.07});
  // ---- the bathroom: a tub, a sink (what is in there stands between them) --------------------------------------------------------
@@ -185,7 +193,7 @@ export function createLangeHouse({W=LANGE.W,D=LANGE.D,F=LANGE.F,doorX=LANGE.door
   feet.material.opacity=0;feet.position.x=-.2;bathLight(true);doors.front.set(0);doors.boy.set(.9);doors.bath.set(0);doors.parents.set(0);}
  reset();
  const spots={door:{x:doorX,z:-hd-1.1},inFront:{x:doorX,z:-hd+1.2},tv:{x:-5.2,y:F+.95,z:-1.8},courier:{x:-3.82,y:F+.43,z:-1.62},ashtray:{x:-4.1,y:F+.44,z:-2.05},dinner:{x:TB.x,y:F+.8,z:TB.z+.1},cap:{x:TB.x,y:F+.55,z:TB.z+.8},
-  phone:{x:.13,y:F+1.45,z:-3.55},board:{x:.1,y:F+1.5,z:-2.95},calendar:{x:.08,y:F+1.6,z:-.6},drawings:{x:-4.85,y:F+1.45,z:iz1-.02},bathDoor:{x:-.2,y:F+1.1,z:1.6},hallStand:{x:-.4,z:1.0},parentsDoor:{x:2.85,y:F+1.0,z:1.6},
+  phone:{x:.13,y:F+1.45,z:-3.55},board:{x:.1,y:F+1.5,z:-2.95},calendar:{x:.08,y:F+1.6,z:-.6},drawings:{x:-4.85,y:F+1.45,z:iz1-.02},note:{x:-2.75,y:F+1.18,z:iz1-.02},bathDoor:{x:-.2,y:F+1.1,z:1.6},hallStand:{x:-.4,z:1.0},parentsDoor:{x:2.85,y:F+1.0,z:1.6},
   boyStand:{x:-4.45,z:3.0},boyDoor:{x:-2.75,z:1.6},frontRoom:{x:-1.4,z:-2.6},kitchen:{x:1.6,z:-2.2},
   // the way it comes: out of the bathroom, along the hall (the table), and into the boy's room (the chair) or the front room (the couch)
   bathIn:{x:-.2,z:2.55},bathOut:{x:-.2,z:1.75},hallMid:{x:-.75,z:1.05},hallTable:{x:-1.45,z:1.12},hallWest:{x:-2.55,z:1.05},boyIn:{x:-2.8,z:1.85},boyStop:{x:-3.15,z:2.45},

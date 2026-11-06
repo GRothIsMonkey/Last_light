@@ -63,13 +63,13 @@ const PHASES=['c4-black','d4-sam','d4-bag','d4-photos','d4-ride','d4-town','d4-l
 // The microfilm: five things on the reels (fictional; the township's own paper).
 export const ARCHIVE=[
  {id:'mason-1988',paper:'THE OAK HOLLOW COURIER',date:'TUESDAY, JUNE 14, 1988',page:'PAGE 3',head:'MASON CYCLE MARKS 30 YEARS ON MAIN',
-  body:'Roy Mason, 61, outside his shop at 214 Main St. with the 1958 Meadowlark he built from parts the year he opened. “First bike I ever sold, and I bought it back,” Mason said. It still wears the township’s original license sticker, No. 0417.',
+  body:'Roy Mason, 61, outside his shop at 214 Main St. with the 1958 Meadowlark he built from parts the year he opened. “First bike I ever sold, and I bought it back,” Mason said. The township’s 1958 register lists its first owner as A. Rowan, and it still wears that original license sticker, No. 0417.',
   pic:'mason',cap:'Roy Mason and the shop’s first bicycle.',h:15.3,
-  react:[{who:'JAMIE',text:'“Zero four one seven.”',by:'jamie',time:2},{who:'SAM',text:'“That’s the sticker. On the bike.”',by:'sam',time:2.2},{who:'YOU',text:'“It’s the same bike.”',time:1.8}]},
+  react:[{who:'JAMIE',text:'“Zero four one seven.”',by:'jamie',time:2},{who:'SAM',text:'“That’s the sticker. On the bike.”',by:'sam',time:2.2},{who:'YOU',text:'“It’s the same bike.”',time:1.8},{who:'SAM',text:'“…A. Rowan.”',by:'sam',time:1.6},{who:'JAMIE',text:'“A.R.”',by:'jamie',time:1.4}]},
  {id:'whitcomb-1991',paper:'THE OAK HOLLOW COURIER',date:'MONDAY, AUGUST 26, 1991',page:'PAGE 1',head:'SEARCH FOR MISSING BOY ENTERS FIFTH DAY',
-  body:'Daniel “Danny” Whitcomb, 12, was last seen riding a green bicycle on Mill Street the evening of August 21. Volunteers have searched the creek, the old rail yard and the shoreline of the Pine Ridge reservoir. Anyone with information is asked to call the township police.',
+  body:'Daniel “Danny” Whitcomb, 12, was last seen riding a green bicycle on Mill Street the evening of August 21. He is missing the last two fingers of his left hand, the result of a 1988 accident. Volunteers have searched the creek, the old rail yard and the shoreline of the Pine Ridge reservoir. Anyone with information is asked to call the township police.',
   pic:'portrait',cap:'Danny Whitcomb, in his school picture.',h:16.5,
-  react:[{who:'SAM',text:'“August twenty-first.”',by:'sam',time:2},{who:'JAMIE',text:'“…Twenty years ago.”',by:'jamie',time:2.2}]},
+  react:[{who:'SAM',text:'“August twenty-first.”',by:'sam',time:2},{who:'JAMIE',text:'“…Twenty years ago.”',by:'jamie',time:2.2},{who:'SAM',text:'“Two fingers. Left hand.”',by:'sam',time:1.9},{who:'JAMIE',text:'“…So?”',by:'jamie',time:1.2},{who:'SAM',text:'“Nothing.”',by:'sam',time:1.3}]},
  {id:'bridge-1991',paper:'THE OAK HOLLOW COURIER',date:'WEDNESDAY, SEPTEMBER 4, 1991',page:'PAGE 1',head:'‘IT WAS HIM,’ NEIGHBORS SAY',
   body:'Two Mill Street residents say they saw a boy matching Danny Whitcomb’s description on the Mill Street bridge at dusk Monday, almost two weeks after he disappeared. “I called his name,” one said. “He didn’t answer. He looked at me, and then he walked off toward the creek.” Police say the sighting has not been confirmed.',
   pic:'bridge',cap:'The Mill Street bridge.',h:17.6,
@@ -508,7 +508,12 @@ export function createChapter4(o,k,ch2,ch3){
     if(R2.t>.7&&!R2.k.hideLine){R2.k.hideLine=C.t;say([{who:'SAM',text:'“It’s hiding.”',by:'sam',time:1.5},{wait:.7},{who:'JAMIE',text:'“…From what?”',by:'jamie',time:1.6}],{interrupt:true});}
     /* the answer: far up Main the lights begin to go out, one after another, coming this way */
     if(!C.flags.cascade&&((R2.hideSeen>1.5&&R2.t>4.4)||R2.t>8))cascadeStart(0,{quiet:true});
-    const fr=C.cas?.front??-99;if((C.cas&&((fr>-64&&R2.hideSeen>2)||fr>-44))||(dYou<6.5&&R2.t>.4))crStage('flinch');}
+    const fr=C.cas?.front??-99;
+    /* (each light that dies up the street, it flinches at, and pulls in tighter: plainly afraid of the dark coming, a thin
+       sound out of it like a kid trying not to cry; Jamie sees it shake) */
+    if(C.cas){C.cas.at??=C.t;const step=Math.floor((fr+100)/9);if(step>(R2.k.step??-1)){R2.k.step=step;R2.twitch=.32;if(!R2.k.whimper){R2.k.whimper=C.t;sound('c8Whimper',crHead,{gain:.8});}}
+     if(!R2.k.shake&&C.t-(C.cas.at??C.t)>.8){R2.k.shake=C.t;say([{who:'JAMIE',text:'“It’s shaking.”',by:'jamie',time:1.4}]);}}
+    if((R2.twitch=(R2.twitch||0)-dt)>0){D2.snap=1;dmp('cower',1,14);}if((C.cas&&((fr>-64&&R2.hideSeen>2)||fr>-44))||(dYou<6.5&&R2.t>.4))crStage('flinch');}
    else if(R2.stage==='flinch'){/* it recoils, all of it at once, then runs (the corner's light goes with it, if it had not) */
     crKill('corner',{dur:.7,flick:.9});crKill('corner2',{dur:.5,flick:.9});D2.snap=1;D2.back=1;dmp('cower',.6,10);look=upMain;to(HIDE.u-.2,HIDE.v-.8,2.6);if(R2.t>.5){D2.back=0;crStage('flee');}}
    else if(R2.stage==='flee'){/* back down Second Street for the creek; the light over the street dies as it passes under it */

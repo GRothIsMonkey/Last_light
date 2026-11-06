@@ -24,7 +24,12 @@ export function createEnding(scene,world){
  const carve=new THREE.Group();carve.position.set(oakP.x,oakY+1.32,oakP.z);carve.rotation.y=-heading(o.d)+toward;scene.add(carve);carve.name='oak-carving';
  {const R=.462,cut=[];const letters=[[[0,0],[.06,.16],[.12,0]],[[.03,.07],[.09,.07]],[[.17,0],[.17,.16],[.25,.16],[.26,.11],[.18,.08],[.27,0]]];
   for(const s of letters)for(let i=0;i<s.length-1;i++)for(const [x,y] of [s[i],s[i+1]]){const a=(x-.13)/R;cut.push(-Math.sin(a)*R,y,-Math.cos(a)*R);/* reads left to right from the swing side */}
-  carve.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(cut,3)),new THREE.LineBasicMaterial({color:0x2e2620})));}
+  carve.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(cut,3)),new THREE.LineBasicMaterial({color:0x2e2620})));
+  // (an old cut: the bark has grown back in a swollen lip along both sides of every stroke, a little proud of the trunk,
+  // the way a carving looks after decades and nothing like the chalk on the ground. Nothing says how old.)
+  const lip=[];for(const s of letters)for(let i=0;i<s.length-1;i++){const [x0,y0]=s[i],[x1,y1]=s[i+1],l=Math.hypot(x1-x0,y1-y0)||1,nx=-(y1-y0)/l*.011,ny=(x1-x0)/l*.011;
+   for(const sd of [1,-1])for(const [x,y] of [[x0+nx*sd,y0+ny*sd],[x1+nx*sd,y1+ny*sd]]){const a=(x-.13)/R,r2=R+.004;lip.push(-Math.sin(a)*r2,y,-Math.cos(a)*r2);}}
+  const lipM=new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(lip,3)),new THREE.LineBasicMaterial({color:0x5b4f42}));lipM.name='oak-carving-healed';carve.add(lipM);}
  // The bike that was not there.
  const old=makeOldBike();// one build for every appearance (old-bike.js)
  const bd=o.d+.9,blat=o.lat-1.9,bp=groundPoint(bd,blat);old.group.position.set(bp.x,world.groundY(bd,blat)+.03,bp.z);old.group.rotation.set(0,-heading(bd)+2.2,1.42,'YXZ');old.wheel=1.3;old.steerAngle=.5;old.crankAngle=.8;

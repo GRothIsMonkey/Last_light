@@ -40,7 +40,7 @@ export function createCreature({scene}){
   // 0–1 (striking at something in front of it), crouch 0–1 (low and still), look (a point it turns its head to);
   // Chapter Four adds cower 0–1 (pulled in low, head down, shivering) and back (1: the gait runs backwards, for backing away)
   drive:{speed:0,rear:0,claw:0,crouch:0,look:null,lift:0,cower:0,back:0},phase:0,bob:0};
- let mixer=null,bones=null,rest=null,clipAction=null,clock0=0;const contacts=[];
+ let mixer=null,bones=null,rest=null,clipAction=null,clock0=0;const contacts=[],INJURY=[];
  api.ready=(async()=>{const C=await parseCreature(await loadBytes());
   inner.add(C.root);api.mesh=C.mesh;C.mesh.frustumCulled=false;C.mesh.castShadow=true;C.mesh.receiveShadow=true;C.mesh.name='drain-creature-skin';
   // (catch: a little more of its own colour where a beam lands on it far off; never a glow of its own)
@@ -56,6 +56,12 @@ export function createCreature({scene}){
   inner.position.set(-(box.min.x+box.max.x)/2,-box.min.y,-(box.min.z+box.max.z)/2);
   api.baseY=inner.position.y;inner.updateMatrixWorld(true);for(const k of ['handL','handR','footL','footR']){bones[k].getWorldPosition(v);contacts.push([k,v.y-group.position.y]);}
   api.size={length:+(box.max.z-box.min.z).toFixed(2),width:+(box.max.x-box.min.x).toFixed(2),height:+(box.max.y-box.min.y).toFixed(2)};
+  // An old injury, the same in every appearance: the last two fingers of its left hand end in healed stumps (a short
+  // joint left of each, nothing past it). Applied after the clip every frame, so the idle's finger motion never undoes it.
+  // (Chapter Four's 1991 Courier says Danny Whitcomb lost those two fingers in 1988; Chapter Eight puts the two together.)
+  {const want={ringL015:.4,ringL001016:.02,pinkyL017:.32,pinkyL001018:.02};INJURY.length=0;
+   for(const b of C.skeleton.bones){const k=b.name.replace(/[^a-zA-Z0-9]/g,'');if(want[k]!=null)INJURY.push([b,want[k]]);}
+   api.injury=INJURY.map(([b,s])=>({bone:b.name,scale:s}));for(const [b,s] of INJURY)b.scale.setScalar(s);}
   mixer=new THREE.AnimationMixer(C.root);if(C.clips[0]){clipAction=mixer.clipAction(C.clips[0]);clipAction.play();}
   api.info={...C.info,scale:CREATURE_SCALE,yawCorrection:+yaw.toFixed(4),size:api.size,clip:C.clips[0]?.name};api.triangles=C.info.triangles;api.loaded=true;return api;})()
   .catch(e=>{api.error=String(e&&e.stack||e);if(typeof console!=='undefined')console.error('creature failed to load:',e);return api;});
@@ -119,7 +125,7 @@ export function createCreature({scene}){
   /* (the limbs are measured once, from the model's own rest pose: never from wherever the clip happened to be the
      first time it was shown, which would make where its hands land depend on which chapter showed it first) */
   inner.position.y=api.baseY;if(!LIMBS.length){group.updateMatrixWorld(true);initLimbs();}
-  mixer.update(dt);if(clipAction)clipAction.timeScale=1+D.claw*1.5+Math.min(1,(api.sp||0)/4);
+  mixer.update(dt);for(const [b,s] of INJURY)b.scale.setScalar(s);if(clipAction)clipAction.timeScale=1+D.claw*1.5+Math.min(1,(api.sp||0)/4);
   group.updateMatrixWorld(true);
   const a=api.heading||0,p=group.position;fwd.set(Math.sin(a),0,-Math.cos(a));right.set(Math.cos(a),0,Math.sin(a));
   // where it really went since the last frame (a jump: plant everything where it now stands)
