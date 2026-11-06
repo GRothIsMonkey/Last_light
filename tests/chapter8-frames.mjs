@@ -30,7 +30,8 @@ const snap=async(name,note='')=>{await page.evaluate(()=>{for(const id of ['obje
  await page.screenshot({path:path.join(out,name+'.jpg'),type:'jpeg',quality:86,timeout:300000});frames.push({name,note,...info});console.log('frame',name,JSON.stringify(info));};
 // [name, note, page function that sets the moment up]
 const SHOTS=[
- ['b01-four-bikes','Sam’s house, Friday night: the four bikes, Alex’s back',()=>{const L=lastLight,F=__f,k=L.chapter.kit;L.jump('c8-bikes');F.run(2.5);const j=k.jamie.person.group.position;F.face({x:j.x,y:j.y+1,z:j.z});F.run(.3);}],
+ ['b01-four-bikes','Under the streetlight outside Sam’s, Friday night: the four bikes',()=>{const L=lastLight,F=__f,A=L.chapter8;L.jump('c8-bikes');F.until(()=>A.C.offers.has('bike-alex'),30);const f=A.C.offers.get('bike-alex'),q=typeof f.at==='function'?f.at():f.at;
+   F.place({x:q.x+2.6,z:q.z+2.2},q);F.run(1.2);F.face({x:q.x,y:q.y-.2,z:q.z});F.run(.3);}],
  ['b02-field-cover','The cover in the field, MH-12, open',()=>{const L=lastLight,F=__f,A=L.chapter8;L.jump('c8-field');F.run(2.5);const m=A.SC?.MH?.at||A.CTX?.MH?.at;if(m)F.face({x:m.x,y:m.y,z:m.z});F.run(.3);}],
  ['b03-barrier','The outer barrier under the neighbourhood: the leaf, the crank, the long pipe beyond',()=>{const L=lastLight,F=__f,CM=L.chapter8.X;L.jump('c8-barrier');F.run(2);F.face(CM.at('barrierLeaf',1.2));F.run(.3);}],
  ['b04-gallery','The 1958 construction gallery: columns, the crane rail, the window on the deep shaft',()=>{const L=lastLight,F=__f,CM=L.chapter8.X;L.jump('c8-gallery');F.run(2);F.face(CM.at('galleryMid',-1.2));F.run(.3);}],
@@ -44,6 +45,7 @@ const SHOTS=[
  ['b11-anchor-board','The anchor board in the 1959 hall',()=>{const L=lastLight,F=__f,CM=L.chapter8.X;L.jump('c8-truth');F.run(2);const t=CM.at('hBoard',-1.15);F.place(CM.at('hMid'),t);F.run(.6);F.face(t);F.run(.3);}],
  ['b12-breach','Through the long windows: the ribs breaking outward',()=>{const L=lastLight,F=__f,CM=L.chapter8.X;L.jump('c8-breach');F.run(9,()=>F.face(CM.W(1,80,-2)));}],
  ['b13-surface','Oak Hollow Drive from the cul-de-sac at five in the morning',()=>{const L=lastLight,F=__f,k=L.chapter.kit;L.jump('c8-surface');F.run(3);const q=k.main(1060,0);F.face({x:q.x,y:q.y+1,z:q.z});F.run(.3);}],
+ ['b13b-summerfield','Down at Summerfield: the intersection lifts, splits and goes down with a car',()=>{const L=lastLight,F=__f,A=L.chapter8,k=L.chapter.kit;L.jump('c8-surface');F.run(1);const w=k.main(1092,-1);L.placePlayer({x:w.x,z:w.z,a:0,mode:'walk',bike:null});F.run(.5);const c=A.ruin.pits.heave.c;F.run(9,()=>F.face({x:c.x,y:c.y+1.5,z:c.z}));}],
  ['b14-hendersons','The Hendersons’: the hole where the yard was, the jammed door, her car at the curb',()=>{const L=lastLight,F=__f,A=L.chapter8,k=L.chapter.kit;L.jump('c8-hendersons');F.run(2);const H=A.ruin.H,w=k.main(H.P.u+12,2);F.place(w,H.doorAt);F.run(1);F.face({x:H.doorAt.x,y:H.doorAt.y+.6,z:H.doorAt.z});F.run(.3);}],
  ['b15-after-jamie','After: Jamie on the grass short of the curb (not graphic)',()=>{const L=lastLight,F=__f,A=L.chapter8,k=L.chapter.kit;L.jump('c8-jamie-death');F.run(2.5);const H=A.ruin.H,j=k.main(H.P.u+5.4,8.6);F.face({x:j.x,y:j.y+.3,z:j.z});F.run(.3);}],
  ['b16-works','The Mill Creek works at first light: the staging area',()=>{const L=lastLight,F=__f,A=L.chapter8;L.jump('c8-staging');F.run(3);const W=A.CTX.WP;F.face(W(4,3,-1));F.run(.3);}],
