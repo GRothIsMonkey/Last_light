@@ -33,7 +33,7 @@ node tests/chapter8-package-browser.mjs <folder>/Last-Light-Chapter8-Playtest.ht
 
 ### 2.1 One continuous run, Chapter Seven's end card to Chapter Eight's
 
-`DEBUG8=1 ONLY=chapter8 node tests/verify.mjs` on commit `f7f26d3` (the packaged commit) —
+`DEBUG8=1 ONLY=chapter8 node tests/verify.mjs` on commit `cfd4523` (the packaged commit; later commits change documentation only) —
 **29/29: 20/20 story checks** in a single uninterrupted input-driven run (61.9 minutes of game time), then **9/9
 chapter checks** (`runChapterEightChecks`). (`runChapterEightChecks`). The run begins with one QA jump to Chapter Seven's end card; from there
 everything is input: the end card's button, keys, mouse look and walking.
@@ -63,8 +63,8 @@ everything is input: the end card's button, keys, mouse look and walking.
 
 In that run the simulated player was caught once by the hunter in the construction gallery (`c8-stealth`) and once by
 the water heaving at gate 1 (`c8-gates`); both times the game returned it to that checkpoint and the retry passed.
-Game-time per segment (minutes): bikes 2.2, field 1.5, shaft 0.9, gallery 31.6, corridor 1.7, wing 2.9, retrieval 2.1, Alex 1.9, reunion 1.7,
-truth 1.7, breach 1.1, surface 2.3, street 2.9, staging 0.9, operation 3.0, oak 1.6, ride 2.0. (The gallery is long because the sim waits out the hunter's patrols
+Game-time per segment (minutes): bikes 2.2, field 1.5, shaft 0.9, gallery 31.6, corridor 1.7, wing 2.9, retrieval 2.1, Alex 1.9, reunion 1.9,
+truth 1.7, breach 1.0, surface 2.3, street 3.0, staging 0.9, operation 3.0, oak 1.6, ride 2.0. (The gallery is long because the sim waits out the hunter's patrols
 with patient, safe holds; a person will usually move sooner.)
 
 Chapter checks (all pass): every one of the 39 DEV Chapter Eight scenes starts in a Chapter Eight phase with the player
@@ -76,7 +76,7 @@ gate stops the voice in the horn); the earlier-chapter clues exist in source; th
 written (`home: YOU, SAM; lost: JAMIE, ALEX; presence: sealed`).
 
 Earlier full runs on this branch (before the last fixes) found the defects listed in 2.2; the numbers above are from
-the final run.
+the final run (the same 29/29 was also reached on `f7f26d3`, before the street performance fix).
 
 ### 2.2 Problems the runs found, and what was fixed
 
