@@ -33,7 +33,7 @@ number keys for choices. The objective panel always says what to do next.
 Changes outside the chapter (see the narrative doc for the story side): `dist/game.js` (Chapter Eight after Chapter
 Seven, seeded random numbers, `qa` exposure), `dist/chapter7.js` (its end card offers Chapter Eight; later phases
 handed on through `next`), `dist/chapter6.js` (exports the Line 4 drawdown gate `DD` and the works spots `WS`),
-`dist/companions.js` (`enlist`/`dismiss` for Alex), `dist/companion-brain.js` (Alex's personality),
+`dist/companions.js` (`enlist`/`dismiss` for Alex; a failed route search waits 1.2 s before the next; an opt-in `routeMax` cap on the local search, used only by Chapter Eight), `dist/companion-brain.js` (Alex's personality),
 `dist/audio.js` (13 synthesized `c8*` sounds and the fire/gas loops), `dist/dev-chapters.js` and `dist/index.html`
 (DEV), `dist/creature.js` (the injured hand bones, used in Chapters Three, Four and Eight).
 
@@ -71,7 +71,8 @@ the ladder with the plug down.
   long windows over the main chamber). Doors use each room's own floor.
 - **Alex** is a companion only while Chapter Eight has him (`enlistAlex` / `dismissAlex`). Acts IV–V receive the
   context with a live `alex` getter; a plain object spread would freeze it.
-- **Lights.** Six pooled point lights (`light(i, at, {...})`) plus the flashlight. `lightsBelow(area)` sets them for
+- **Lights.** Six pooled point lights (`light(i, at, {...})`) plus the flashlight. Never add lights to the scene for an effect (the ruin's fire glow and the pole's arc use the pool): a changed light count recompiles every lit material in the town.
+- **Performance on the street.** The ruin's walkability checks run for every probe of every walker and must not allocate; Chapter Eight caps companions' local route search at 24 m on the ruined street (`comp.routeMax`). `lightsBelow(area)` sets them for
   A, B, C, J, K, F and I (the main chamber: catwalk lamps and two big cold lamps, physically-based intensities).
 - **The hunter** is its own instance (`createHunterModel`), not Chapter Seven's; the smiling creature is Chapter
   Three's model with the injured hand.
@@ -84,7 +85,7 @@ the ladder with the plug down.
   (`runChapterEightChecks`). `PLAY_ONLY=1` skips the checks; `FROM=`/`TO=` play a stretch (`bikes`, `field`,
   `shaft`, `gallery`, `corridor`, `wing`, `retrieval`, `alex`, `reunion`, `truth`, `breach`, `surface`, `street`,
   `staging`, `op`, `oak`, `ride`); `DEBUG8=1` prints each interaction and each failure.
-- `node tests/chapter8-frames.mjs` — twenty frames of the chapter in Chromium (SwiftShader), into
+- `node tests/chapter8-frames.mjs` — twenty-two frames of the chapter in Chromium (SwiftShader), into
   `docs/qa/chapter8-the-night-oak-hollow-fell/frames/` with `frames.json`.
 
 ## 6. Known limitations (honest)

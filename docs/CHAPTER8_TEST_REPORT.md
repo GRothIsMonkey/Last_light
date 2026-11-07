@@ -11,7 +11,7 @@ rendering was only exercised with SwiftShader (software GL) in headless Chromium
   drive the game **by inputs**: key presses (W/A/S/D, Shift, C, T, F held or tapped, digits, S), mouse look toward
   targets, walking routes found on the game's own walkability, waiting for the game to offer an interaction before
   using it. They do not set story flags or jump past beats inside a run.
-- **Chromium** (Playwright, SwiftShader, sound off): `tests/chapter8-frames.mjs` captures twenty-one frames of the
+- **Chromium** (Playwright, SwiftShader, sound off): `tests/chapter8-frames.mjs` captures twenty-two frames of the
   chapter during its beats (QA jumps, then the game's own update), saved with `frames.json` under
   `docs/qa/chapter8-the-night-oak-hollow-fell/frames/`; `tests/chapter8-package-browser.mjs` opens the offline
   package from disk.
@@ -102,6 +102,14 @@ These were real defects a player would have hit, found by the input-driven runs 
   resumed in the wrong room; Continue from the garage, from Jamie and from the hatch replayed their scenes.
 - **DEV switching crashed** (Chapter Eight's reset met its emptied state), breaking DEV starts of other chapters
   (found by Chapter Six's suite).
+- **A frame-time and memory storm on the ruined street** (found while capturing frames: Chromium's page process grew
+  to 8-9 GB and was killed): with Sam and Alex left far behind, their short-range route search was asked to cross the
+  whole street, probing the ruin's walkability tens of thousands of times per search, each probe allocating. Measured
+  in the simulation: about 660 ms per frame. Fixed by making the ruin's checks allocation-free, letting a failed search
+  wait 1.2 s before the next, and capping the search's reach on the ruined street (24 m; elsewhere unchanged): about
+  2.5 ms per frame in the same situation, no heap growth; ordinary street frames 1-2 ms as before. The ruin also no
+  longer adds lights to the scene (the fire glow and the pole's arc use the chapter's fixed light pool), and the
+  smoke and dust became soft puffs instead of hard-edged squares.
 
 ## 3. Earlier chapters (regression)
 
@@ -123,18 +131,24 @@ worktree of the recovered Astra commit `27ad0b6`, before any change from this br
 
 ## 4. Visual evidence (Chromium, SwiftShader)
 
-Twenty-one frames, reviewed by eye (`docs/qa/chapter8-the-night-oak-hollow-fell/frames/`). What they show, honestly:
+Twenty-two frames (1440×900), reviewed by eye (`docs/qa/chapter8-the-night-oak-hollow-fell/frames/`, with
+`frames.json`). What they show, honestly:
 
-- **Readable and staged as intended:** the outer barrier; the 1958 film running on the review-room screen; Danny's
-  corridor; Sam's cell door; the crew room with all four boys; the anchor board's text; the breach through the long
+- **Readable and staged as intended:** the four bikes under the streetlight; the outer barrier; the 1958 film running
+  on the review-room screen; Sam's cell door; the room it made (lamp, shelf, poster, window); the crew room with the
+  three of them (the player is the fourth, in first person); the anchor board's text; the breach through the long
   windows (the plug drum, the limbs coming through, the mass behind, the catwalk); the street from the cul-de-sac;
-  the Hendersons' (the house, the fallen beam over the door, the hole, her car); Jamie on the grass at a distance (not
-  graphic); the works; the plug chamber from the catwalk; the oak (Alex against it, Sam beside him holding his hand);
-  the ride; the end card.
+  the Summerfield collapse (tilted slabs, the car nose-down; a closer QA vantage than play gives); the burning house
+  with its smoke; the Hendersons' (the house, the fallen beam over the door, the hole, her car); Jamie on the grass at
+  a distance (not graphic); the works; the plug chamber from the catwalk; the oak (Alex against it, Sam beside him
+  holding his hand); the ride; the end card.
+- **Weak:** the service-corridor frame shows the corridor but not Danny himself (he appears in the beat, not at that
+  jump); the field-cover and gallery frames are dark and framed by the QA jump.
 - **Fixed after the first captures:** the breach (the windows showed a wall), the made bedroom (dark, unreadable),
   the plug chamber (unlit), Sam at the oak (standing, tilted, not holding Alex's hand).
 - **Limits:** software rendering only; props and the Presence are simple procedural geometry; some frames are framed
-  by a QA jump rather than by play.
+  by a QA jump rather than by play. Before the street fix above, two street frames could not be captured because the
+  page process was killed for memory; after it, all 22 were captured, one browser per frame for the street ones.
 
 The offline package check (`tests/chapter8-package-browser.mjs`): *pending (runs after the final continuous run).*
 
