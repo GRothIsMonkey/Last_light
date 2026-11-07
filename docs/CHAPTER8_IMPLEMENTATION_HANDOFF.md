@@ -50,7 +50,7 @@ Where you can be failed and where it sends you:
 | The hunter in the Line Four pipe before the barrier is down | `c8-barrier` |
 | The hunter searching the construction gallery | `c8-stealth` |
 | Danny at the alcoves (standing when he is beside you) | `c8-danny` |
-| The hunter in the flooded wing; in the retrieval wing | `c8-wing` / `c8-retrieval` (and their door checkpoints) |
+| The hunter in the flooded wing; in the retrieval wing | `c8-sam-door` / `c8-jamie-door` |
 | Falling structure in the escape (the beam in the junction hall, the crane in the gallery) | `c8-escape` |
 | The water heaving at gate 1; the strikes at the plug's pins; the roof at the hatch | `c8-gates` / `c8-plug` / `c8-hatch` |
 
