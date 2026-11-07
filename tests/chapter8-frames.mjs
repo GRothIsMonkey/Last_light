@@ -15,7 +15,7 @@ const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.sp
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const args=['--no-sandbox','--disable-dev-shm-usage','--enable-precise-memory-info','--js-flags=--expose-gc'];if(!process.env.BROWSER_GPU)args.push('--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist');
 let browser,page;const errors=[],frames=[];
-async function open(){if(browser)await browser.close().catch(()=>{});browser=await pw.chromium.launch({executablePath:process.env.BROWSER_PATH||undefined,headless:true,args});page=await browser.newPage({viewport:{width:1440,height:900}});
+async function open(){if(browser)await browser.close().catch(()=>{});browser=await pw.chromium.launch({executablePath:process.env.BROWSER_PATH||undefined,headless:true,args});const [VW,VH]=(process.env.VIEW||'1440x900').split('x').map(Number);page=await browser.newPage({viewport:{width:VW,height:VH}});/* (VIEW=1280x720 for the heaviest moments: software GL near this machine's memory limit) */
  page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.addInitScript(()=>{window.AudioContext=undefined;window.webkitAudioContext=undefined;});
  await page.goto(`http://127.0.0.1:${server.address().port}/dist/index.html?qa`,{timeout:180000});await page.waitForFunction(()=>window.lastLight,null,{timeout:180000});
@@ -46,6 +46,7 @@ const SHOTS=[
  ['b12-breach','Through the long windows: the ribs breaking outward',()=>{const L=lastLight,F=__f,CM=L.chapter8.X;L.jump('c8-breach');F.run(9,()=>F.face(CM.W(1,80,-2)));}],
  ['b13-surface','Oak Hollow Drive from the cul-de-sac at five in the morning',()=>{const L=lastLight,F=__f,k=L.chapter.kit;L.jump('c8-surface');F.run(3);const q=k.main(1060,0);F.face({x:q.x,y:q.y+1,z:q.z});F.run(.3);}],
  ['b13b-summerfield','Summerfield from about 30 m (a QA vantage; in play it is seen from up the street): the intersection lifts, splits and takes the car',()=>{const L=lastLight,F=__f,A=L.chapter8,k=L.chapter.kit;L.jump('c8-surface');F.run(1);const w=k.main(904,-2.5);L.placePlayer({x:w.x,z:w.z,a:0,mode:'walk',bike:null});F.run(.4);const c=A.ruin.pits.heave.c;A.ruin.heave();F.run(5.2,()=>F.face({x:c.x,y:c.y+.8,z:c.z}));}],
+ ['b14a-fire','The burning house and the gas fire at the curb, with its smoke',()=>{const L=lastLight,F=__f,A=L.chapter8,k=L.chapter.kit;L.jump('c8-hendersons');F.run(1);const R=A.ruin.F,q=R.gasAt||k.main(941,-5.6),w=k.main(958,-3.5);F.place(w,q);F.run(3);F.face({x:q.x,y:q.y+3,z:q.z});F.run(.3);}],
  ['b14-hendersons','The Hendersons’: the hole where the yard was, the jammed door, her car at the curb',()=>{const L=lastLight,F=__f,A=L.chapter8,k=L.chapter.kit;L.jump('c8-hendersons');F.run(2);const H=A.ruin.H,w=k.main(H.P.u+12,2);F.place(w,H.doorAt);F.run(1);F.face({x:H.doorAt.x,y:H.doorAt.y+.6,z:H.doorAt.z});F.run(.3);}],
  ['b15-after-jamie','After: Jamie on the grass short of the curb (not graphic)',()=>{const L=lastLight,F=__f,A=L.chapter8,k=L.chapter.kit;L.jump('c8-jamie-death');F.run(2.5);const H=A.ruin.H,j=k.main(H.P.u+5.4,8.6);F.face({x:j.x,y:j.y+.3,z:j.z});F.run(.3);}],
  ['b16-works','The Mill Creek works at first light: the staging area',()=>{const L=lastLight,F=__f,A=L.chapter8;L.jump('c8-staging');F.run(3);const W=A.CTX.WP;F.face(W(4,3,-1));F.run(.3);}],
@@ -58,4 +59,5 @@ const want=process.env.SHOTS?new Set(process.env.SHOTS.split(',')):null,list=SHO
 try{for(const [i,[name,note,fn]] of list.entries()){if(i%BATCH===0||!page)await open();
   try{await page.evaluate(`(${fn.toString()})()`);await snap(name,note);}catch(e){errors.push(name+': '+String(e.message||e).slice(0,300));console.log('ERR',name,String(e.message||e).slice(0,300));}
   await page.evaluate(()=>globalThis.gc?.());}}
-finally{fs.writeFileSync(path.join(out,'frames.json'),JSON.stringify({runtimeHashes,frames,errors},null,2));await browser?.close();server.close();console.log(JSON.stringify({frames:frames.length,errors}));}
+finally{/* (SHOTS=…: merge into the existing frames.json, replacing only the frames re-shot) */let all=frames;if(want){try{const old=JSON.parse(fs.readFileSync(path.join(out,'frames.json'),'utf8'));all=[...old.frames.filter(f=>!want.has(f.name)),...frames].sort((a,b)=>a.name.localeCompare(b.name));}catch{}}
+ fs.writeFileSync(path.join(out,'frames.json'),JSON.stringify({runtimeHashes,frames:all,errors},null,2));await browser?.close();server.close();console.log(JSON.stringify({frames:frames.length,errors}));}

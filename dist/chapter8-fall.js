@@ -380,6 +380,10 @@ export function fallActs(X){
    C.endT=0;})());}
  // ---- every frame ------------------------------------------------------------------------------------------------------------------------------------------------------
  function update(dt){const ph=S.phase;
+  // (on the ruined street a friend far behind heads straight for you rather than grid-searching the whole street)
+  {const street=!!ruin.root.parent&&ruin.ST.stage>=1&&C.where!=='works'&&C.where!=='below';const want=street?24:0;if((comp.routeMax===Infinity?0:comp.routeMax)!==want)comp.routeMax=want;}
+  // (the downed pole's arc, on pool light 1 while the street is up: the ruin adds no lights of its own)
+  if(ruin.root.parent&&ruin.ST.stage>=1&&ruin.POLE.g?.visible&&ruin.POLE.light&&C.where!=='works'&&C.where!=='below'){const t=ruin.POLE.tip;light(1,{x:t.x,y:t.y+.4,z:t.z},{intensity:ruin.POLE.light.intensity,dist:9,color:0xbcd8ff});}
   for(const a of PEOPLE)if(a.visible)a.update(dt,{eye:camera.position});
   // the people you are getting out: they follow you, a little behind, round the hole
   if(C.escort){C.escortT+=dt;const p=me();C.escort.forEach((a,i)=>{if(!a.visible)return;const d=Math.hypot(a.x-p.x,a.z-p.z);if(d>2.2+i*.8&&!a.walking&&C.escortT>.4){const back=1.4+i*.9,q={x:p.x-Math.sin(p.a)*back+(i?.6:-.6),z:p.z+Math.cos(p.a)*back};if(nav.walkable(q.x,q.z,{r:.3}))a.walk([[q.x,q.z]],{speed:d>6?2.4:1.5});}});}
@@ -402,7 +406,7 @@ export function fallActs(X){
  function sources(out){const ph=S.phase;if(C.where==='works')out.push({id:'c8-creek',kind:'water',pos:new THREE.Vector3(WP(0,0).x,-3,WP(0,0).z),level:1.2},{id:'c8-gen',kind:'generator',pos:new THREE.Vector3(WP(26,8).x,1,WP(26,8).z),level:.6});
   if(/^g8-/.test(ph)){const t=ruin.truck.g.position;out.push({id:'c8-siren',kind:'siren',pos:new THREE.Vector3(t.x,2,t.z),mode:'wail',level:.6});}}
  function blockers(out){for(const a of PEOPLE)if(a.visible)out.push({x:a.x,z:a.z,r:.3,speed:0});if(JD.on)out.push({x:JD.x,z:JD.z,r:.5,speed:0});}
- function reset(){for(const a of PEOPLE){a.show(false);a.path=null;}JD.on=false;C.alexSit=false;C.escort=null;C.jamieHold=false;if(C.boardMesh)C.boardMesh.removeFromParent();if(works?.attach&&C.where==='works')works.attach(false);}
+ function reset(){comp.routeMax=0;for(const a of PEOPLE){a.show(false);a.path=null;}JD.on=false;C.alexSit=false;C.escort=null;C.jamieHold=false;if(C.boardMesh)C.boardMesh.removeFromParent();if(works?.attach&&C.where==='works')works.attach(false);}
  const SCENE={'c8-truth':()=>sceneTruth('t'),'c8-breach':()=>sceneBreach('breach'),'c8-escape':()=>sceneBreach('escape'),'c8-ladder':()=>sceneBreach('escape'),
   'c8-surface':()=>sceneSurface('surface'),'c8-street':()=>sceneStreet('s'),'c8-hendersons':()=>sceneStreet('s'),'c8-garage':()=>sceneStreet('garage'),'c8-jamie-death':()=>sceneStreet('death'),
   'c8-staging':()=>sceneStaging('staging'),'c8-gates':()=>sceneOp('gates'),'c8-ports':()=>sceneOp('ports'),'c8-line-two':()=>sceneOp('line-two'),'c8-plug':()=>sceneOp('plug'),'c8-hatch':()=>sceneOp('hatch'),

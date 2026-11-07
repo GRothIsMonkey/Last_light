@@ -22,6 +22,7 @@ import {makeCar} from './props.js';
 import {createKit} from './kit.js';
 import {utilityPole} from './chapter7-build.js';
 import {rescueTruck} from './chapter6-cast.js';
+import {puffTexture} from './chapter8-presence.js';
 
 const MAXCUT=12;
 const CUT={n:{value:0},inv:{value:[...Array(MAXCUT)].map(()=>new THREE.Matrix4())},kind:{value:new Float32Array(MAXCUT)}};
@@ -108,7 +109,7 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
   vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader:'varying vec2 vUv;uniform float t,k;float h(vec2 p){return fract(sin(dot(p,vec2(12.9,78.2)))*43758.5);}float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+1.),f.x),f.y);}void main(){vec2 p=vUv;float w=1.-abs(p.x-.5)*2.;float fl=n(vec2(p.x*4.,p.y*3.-t*3.2))*.6+n(vec2(p.x*9.,p.y*7.-t*6.))*.4;float a=smoothstep(0.,.35,w)*smoothstep(1.,.15,p.y)*smoothstep(.2,.75,fl+.35*(1.-p.y))*k;vec3 c=mix(vec3(1.,.35,.05),vec3(1.,.85,.4),smoothstep(.5,1.,fl)*(1.-p.y));gl_FragColor=vec4(c*a*1.6,a);}'});
  flameM.name='c8-flame';
- const smokeM=new THREE.SpriteMaterial({color:0x1d1b1a,transparent:true,opacity:.0,depthWrite:false});smokeM.name='c8-smoke';
+ const smokeM=new THREE.SpriteMaterial({color:0x1d1b1a,map:puffTexture(),transparent:true,opacity:.0,depthWrite:false});smokeM.name='c8-smoke';/* (soft puffs: untextured sprites are hard squares) */
  if(BURN){const Q=BURN,L=(x,z)=>Q.toWorld(x,z),gy0=nav.groundY(L(0,0).x,L(0,0).z);
   const front=(()=>{const a=Q.toWorld(0,-Q.depth/2),b=Q.toWorld(0,Q.depth/2),r=P(Q.u,0);return Math.hypot(a.x-r.x,a.z-r.z)<Math.hypot(b.x-r.x,b.z-r.z)?-1:1;})();F.front=front;const fry=-Math.atan2(-(L(1,0).z-L(0,0).z),L(1,0).x-L(0,0).x);
   const spots=[[0,front*(Q.depth/2+.2),1.2,4.5,5],[-Q.w*.3,front*(Q.depth/2+.2),.9,3.4,4],[Q.w*.32,front*(Q.depth/2+.25),1.4,3,3.6],[Q.w*.42,0,4.2,3.5,4.6]];
@@ -118,7 +119,7 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
   K.pipe(F.g,[cp.x,cp.y-.3,cp.z],[cp.x+.25,cp.y+.25,cp.z+.2],.06,pipeM);
   const pc=crater({d:Q.u+2,lat:-5.8,a:1.7,b:1.4,depth:.9,name:'gas'});pc.g.visible=true;F.g.attach(pc.g);F.pit=pc;F.cut=addCut(1,{x:pc.c.x,y:pc.c.y,z:pc.c.z,sx:1.38,sy:.9,sz:1.68,rot:Math.PI-pc.h0});
   for(let k=0;k<10;k++){const s=new THREE.Sprite(smokeM.clone());s.position.set(L(0,0).x,gy0+4,L(0,0).z);F.g.add(s);F.smoke.push({s,t:k*1.1,life:11});}
-  F.center={...L(0,0),y:gy0};F.light=new THREE.PointLight(0xff8a3a,0,26,1.6);F.light.position.set(L(0,front*(Q.depth/2+1.5)).x,gy0+3,L(0,front*(Q.depth/2+1.5)).z);F.g.add(F.light);
+  F.center={...L(0,0),y:gy0};F.light=new THREE.PointLight(0xff8a3a,0,26,1.6);F.light.position.set(L(0,front*(Q.depth/2+1.5)).x,gy0+3,L(0,front*(Q.depth/2+1.5)).z);/* (not added to the scene: a new light would recompile every lit material in town; the chapter's light pool carries the glow) */
   F.blocks=[{x:cp.x,z:cp.z,r:2.4},{x:L(0,front*(Q.depth/2+1.2)).x,z:L(0,front*(Q.depth/2+1.2)).z,r:3.4}];}
  // the snapped pole: lying from its stump on the lawn side across the sidewalk into the street, wires down and arcing
  const POLE={g:new THREE.Group(),sparks:[],t:0};POLE.g.name='c8-pole';root.add(POLE.g);POLE.g.visible=false;
@@ -130,7 +131,7 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
   const wm=new THREE.MeshBasicMaterial({color:0x111111});for(const off of [-.9,0,.9]){const pts=[];for(let k=0;k<=12;k++){const t=k/12;pts.push(new THREE.Vector3(lerp(base.x,tip.x+off,t),base.y+.15+Math.sin(t*Math.PI)*.5+(1-t)*8.5*(1-t)*.0+.1,lerp(base.z,tip.z+off*.4,t)));}
    const c=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),24,.012,4,false),wm);POLE.g.add(c);}
   const sparkM=new THREE.SpriteMaterial({color:0xcfe4ff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});for(let k=0;k<6;k++){const s=new THREE.Sprite(sparkM.clone());s.position.set(tip.x,tip.y+.15,tip.z);s.scale.set(.25,.25,1);POLE.g.add(s);POLE.sparks.push(s);}
-  POLE.light=new THREE.PointLight(0xbcd8ff,0,9,2);POLE.light.position.set(tip.x,tip.y+.4,tip.z);POLE.g.add(POLE.light);
+  POLE.light=new THREE.PointLight(0xbcd8ff,0,9,2);POLE.light.position.set(tip.x,tip.y+.4,tip.z);/* (likewise: its arc is carried by a pool light, see the chapter) */
   POLE.blocks=[];for(let k=0;k<=6;k++){const t=k/6;POLE.blocks.push({x:lerp(base.x,tip.x,t),z:lerp(base.z,tip.z,t),r:.45});}POLE.blocks.push({x:tip.x,z:tip.z,r:1.6});}
  // the sedan in the Hendersons' hole, nose down; the car in the intersection that goes in with it (staged)
  const sedan=new THREE.Group();sedan.name='c8-sunk-sedan';makeCar(KT,sedan,'sedan',0x6a7a8a);root.add(sedan);sedan.visible=false;
@@ -145,13 +146,17 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
  const truck=rescueTruck();truck.g.visible=false;root.add(truck.g);{const t=P(905,-2.6),t2=P(915,-2.6);truck.g.position.set(t.x,t.y,t.z);truck.g.rotation.y=-Math.atan2(t2.x-t.x,-(t2.z-t.z))+Math.PI;}
  const ST={stage:0,heave:0};
  // ---- walking and riding: what is not there any more ---------------------------------------------------------------------
- const blocksAll=()=>[...(ST.stage>=1?[...(F.blocks||[]),...(POLE.blocks||[]),...(H.g.visible&&H.carBlocks||[])]:[])];
- function inPit(x,z,r=0){for(const k of ['sams','under','heave']){const p=pits[k];if(!p.g.visible)continue;const dx=x-p.c.x,dz=z-p.c.z,u=dx*Math.sin(p.h0)-dz*Math.cos(p.h0),v=dx*Math.cos(p.h0)+dz*Math.sin(p.h0);if((u/(p.a+r))**2+(v/(p.b+r))**2<1)return p;}return null;}
- function blocked(x,z,r=.3){if(inPit(x,z,r+.25))return true;for(const b of blocksAll())if(Math.hypot(x-b.x,z-b.z)<b.r+r)return true;if(HEND&&H.g.visible&&H.cut){const q=new THREE.Vector3(x,H.cut.m.elements[13],z).applyMatrix4(H.cut.inv);if(Math.abs(q.x)<1.25&&Math.abs(q.z)<1.25)return true;}return false;}
+
+ // (called for every walkability probe of everyone on the street: nothing here allocates)
+ const PITS=['sams','under','heave'].map(k=>pits[k]),_cq=new THREE.Vector3(),_wopt={r:.28};
+ function inPit(x,z,r=0){for(let i=0;i<PITS.length;i++){const p=PITS[i];if(!p.g.visible)continue;const dx=x-p.c.x,dz=z-p.c.z,u=dx*Math.sin(p.h0)-dz*Math.cos(p.h0),v=dx*Math.cos(p.h0)+dz*Math.sin(p.h0);if((u/(p.a+r))**2+(v/(p.b+r))**2<1)return p;}return null;}
+ const near=(L,x,z,r)=>{if(!L)return false;for(let i=0;i<L.length;i++){const b=L[i];if(Math.hypot(x-b.x,z-b.z)<b.r+r)return true;}return false;};
+ function blocked(x,z,r=.3){if(inPit(x,z,r+.25))return true;if(ST.stage>=1&&(near(F.blocks,x,z,r)||near(POLE.blocks,x,z,r)||(H.g.visible&&near(H.carBlocks,x,z,r))))return true;
+  if(HEND&&H.g.visible&&H.cut){const q=_cq.set(x,H.cut.m.elements[13],z).applyMatrix4(H.cut.inv);if(Math.abs(q.x)<1.25&&Math.abs(q.z)<1.25)return true;}return false;}
  const BB=(()=>{const a=P(850,-40),b=P(1060,40);return {x0:Math.min(a.x,b.x)-30,x1:Math.max(a.x,b.x)+30,z0:Math.min(a.z,b.z)-30,z1:Math.max(a.z,b.z)+30};})();
  let inner=false;const base=(f)=>{const r=nav.room;nav.setRoom(null);inner=true;try{return f();}finally{inner=false;nav.setRoom(r);}};
  const room={inside:(x,z)=>!inner&&ST.stage>=1&&x>BB.x0&&x<BB.x1&&z>BB.z0&&z<BB.z1,
-  walkable:(x,z,r=.28)=>{const rr=typeof r==='object'?r.r??.28:r;if(blocked(x,z,rr))return false;return base(()=>nav.walkable(x,z,{r:rr}));},
+  walkable:(x,z,r=.28)=>{const rr=typeof r==='object'?r.r??.28:r;if(blocked(x,z,rr))return false;const prev=nav.room;nav.setRoom(null);inner=true;try{_wopt.r=rr;return nav.walkable(x,z,_wopt);}finally{inner=false;nav.setRoom(prev);}},
   rideable:(x,z,o={})=>{if(blocked(x,z,(o.r??.3)+.1))return false;return base(()=>nav.rideable(x,z,o));},
   floorAt:(x,z)=>base(()=>nav.groundY(x,z)),surface:(x,z)=>base(()=>nav.surface(x,z)),headingAt:null};
  // ---- stages: 0 untouched; 1 the breach (everything above, the fire spreading); 2 morning (the fire mostly out, smoke) ------

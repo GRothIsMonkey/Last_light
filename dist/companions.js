@@ -163,12 +163,14 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  // a short walking path, refreshed now and then, and the next point on it is what a step aims at.
  // In the open the straight line is used, as before.
  function lineClear(x0,z0,x1,z1){const n=Math.ceil(Math.hypot(x1-x0,z1-z0)/.35);for(let i=1;i<=n;i++)if(!nav.walkable(x0+(x1-x0)*i/n,z0+(z1-z0)*i/n,{r:.26}))return false;return true;}
+ // (a chapter may cap how far a friend's local search reaches: the grid search is for a driveway, not a street)
+ let routeMax=Infinity;
  function routeTo(c,dt,tx,tz,pl){c.routeT=(c.routeT||0)-dt;
   if(c.routeT<=0){c.routeT=.35;
    // A spot nobody can stand on (inside a hedge, past a fence): aim at where you are instead.
    if(!nav.walkable(tx,tz,{r:.26})){tx=pl.x;tz=pl.z;}
    if(lineClear(c.px,c.pz,tx,tz))c.route=null;
-   else if(!c.route||Math.hypot(c.route.goal[0]-tx,c.route.goal[1]-tz)>1.2||c.route.age>2.5){const path=nav.walkPath({x:c.px,z:c.pz},{x:tx,z:tz});c.route=path.length?{pts:path,goal:[tx,tz],age:0}:null;}}
+   else if(!c.route||Math.hypot(c.route.goal[0]-tx,c.route.goal[1]-tz)>1.2||c.route.age>2.5){if(Math.hypot(tx-c.px,tz-c.pz)>routeMax){c.route=null;c.routeT=1.2;}else{const path=nav.walkPath({x:c.px,z:c.pz},{x:tx,z:tz});c.route=path.length?{pts:path,goal:[tx,tz],age:0}:null;if(!path.length)c.routeT=1.2;/* (no way there just now: a whole search again only after a moment) */}}}
   if(!c.route)return [tx,tz];c.route.age+=dt;const pts=c.route.pts;while(pts.length>1&&Math.hypot(pts[0][0]-c.px,pts[0][1]-c.pz)<.45)pts.shift();return pts[0];}
  // Searching together on foot (Chapter Two): looser than walking after you. Jamie is often a step
  // ahead along the way you face, Sam more often a step behind; they cross to your other side now and
@@ -320,5 +322,6 @@ export function createCompanions({scene,nav,friends,sfx=()=>{},bell=()=>{}}){
  // chapter's loops over all see exactly the two they always did.)
  function enlist(key,{lag=4.4,side=0}={}){if(list[key])return list[key];const f=friends.list.find(q=>q.key===key);if(!f)return null;const c=make(f,{lag,side});init(c);list[key]=c;all.push(c);return c;}
  function dismiss(key){const c=list[key];if(!c||key==='jamie'||key==='sam')return;if(c.active)release(c);c.brain=null;c.script=null;const i=all.indexOf(c);if(i>=0)all.splice(i,1);delete list[key];}
- return {list,all,trail,steps:S,run,update,reset,take,release,putRiding,putFoot,blockers,headOf,placeBike,placePerson,feet,motion,after,enlist,dismiss};
+ return {list,all,trail,steps:S,run,update,reset,take,release,putRiding,putFoot,blockers,headOf,placeBike,placePerson,feet,motion,after,enlist,dismiss,
+  get routeMax(){return routeMax;},set routeMax(v){routeMax=v>0?v:Infinity;}};
 }

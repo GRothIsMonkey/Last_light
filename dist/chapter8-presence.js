@@ -14,6 +14,12 @@
 // Debris (chunks of concrete or asphalt, instanced) fly from where it lands and bounce on the floor function the chapter
 // gives; dust hangs in the air afterwards. The chapter shakes the view by the impact's distance (impact()).
 import * as THREE from './three.module.js';
+import {paper} from './chapter6-kit.js';
+// a soft round puff (white, alpha falling off to the edge) for smoke and dust sprites: without it a sprite is a hard square
+let PUFF;
+export function puffTexture(){if(PUFF!==undefined)return PUFF;PUFF=paper(64,64,(g,w,h)=>{const r=g.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.45,'rgba(255,255,255,.55)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,w,h);
+  for(let k=0;k<14;k++){const x=w/2+(Math.sin(k*2.4)*.3)*w,y=h/2+(Math.cos(k*1.7)*.3)*h,rr=w*(.08+((k*37)%10)/100);const q=g.createRadialGradient(x,y,0,x,y,rr);q.addColorStop(0,'rgba(255,255,255,.18)');q.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=q;g.fillRect(0,0,w,h);}});
+ if(PUFF)PUFF.colorSpace=THREE.NoColorSpace;return PUFF;}
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt)),smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 const SEG=34;// segments per limb
@@ -43,7 +49,7 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
  // ---- debris and dust ------------------------------------------------------------------------------------------------
  const chunkM=new THREE.MeshStandardMaterial({color:0x6e6a62,roughness:.95});chunkM.name='c8-debris';const DN=90,chunks=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,0),chunkM,DN);chunks.name='c8-debris';chunks.frustumCulled=false;chunks.castShadow=true;group.add(chunks);
  const deb=[...Array(DN)].map(()=>({on:false,p:new THREE.Vector3(),v:new THREE.Vector3(),r:.2,rot:new THREE.Euler(),w:new THREE.Vector3(),rest:0}));let di=0;
- const dustM=new THREE.SpriteMaterial({color:0x8d887e,transparent:true,opacity:0,depthWrite:false});dustM.name='c8-dust';
+ const dustM=new THREE.SpriteMaterial({color:0x8d887e,map:puffTexture(),transparent:true,opacity:0,depthWrite:false});dustM.name='c8-dust';
  const dust=[...Array(24)].map(()=>{const s=new THREE.Sprite(dustM.clone());s.visible=false;group.add(s);return {s,t:0,life:0,v:new THREE.Vector3()};});let ui=0;
  const P={limbs,mass,M,U,group,debris:deb,impacts:0,log:{strikes:0,lands:0,debris:0,impacts:0}};
  // ---- the curve: root -> a bend point -> tip, sampled at the extension ------------------------------------------------
