@@ -51,6 +51,38 @@ fire/gas loops), `dist/companions.js` (a third friend can be enlisted while Chap
   plug into the throat of the rupture. That seals the breach physically, not by sacrifice. It costs Jamie and Alex
   anyway, in the open, by the hunter and by the roof.
 
+## 2a. Chronology (as the build presents it)
+
+| When | What | Where the player meets it |
+|---|---|---|
+| 1908 | Line Two built (brick). | Chapter Eight: "Line Two. Brick, 1908." |
+| June 14, 1958 | Annie Rowan (12) buys the green Meadowlark from Roy Mason; township licence No. 0417; she cuts `A.R.` in its frame and in the oak. | Ch. 4 Courier (A. Rowan, 0417); Ch. 8 office: Mason's slip, licence card, school picture; the Prologue's healed carving. |
+| 1958–1959 | Line Four and the drainage expansion break into the cavity; the isolation structure is built (gallery, bulkhead, junction J, chambers, barriers 1–3). Annie is chamber 1 (`A.R. 9/58`). | Ch. 1 plate (LINE 4, 1958); Ch. 8 gallery, 1958 film, anchor board. |
+| August 1966 | Ruth Ann Carver (11) rides toward the Lyric and is taken; chamber 4 (`R.A.C. 8/66`). The engineer's log: "SHE TALKS TO THE WALL. ASKS FOR HER MOTHER." March 12, 1979: "NO RESPONSE. CONNECTION LOST … CH.4 SEALED." | Ch. 8 flooded wing: the 1979 page on her cot ("She was in here thirteen years."). |
+| 1974 | The boundary reaches Old Mill Court; the township vacates it (official reason: foundations, infrastructure). Evelyn and Thomas Lange taken (`E.L. · T.L. 4/74`, lost 6/83). Isolation work at the Line Four junction; the easement's 1974 access plated shut. | Ch. 2 plate; Ch. 7 the court, Mrs. Lange's note and latch, the 1974 Courier line; Ch. 8 the 1974 hall and crew room, the board. |
+| August 21, 1991 | Danny Whitcomb (12), Mill Street, on a green bicycle, missing two fingers of his left hand since 1988, disappears; chamber 14 (`D.W. 8/91`). September 1991: `VACATED — BREACH`: he gets partly out, changed; the Camp Whippoorwill investigation that year comes close to a route; the camp closes. | Ch. 3–5 the smiling creature (the hand, its fear); Ch. 4 the 1991 Courier; Ch. 5 the camp and Valve Vault 3; Ch. 8 the flyer, the alcove, his name, the board. |
+| Before August 21, 2011 | Alex photographs the Meadowlark and hears the copied bell. | Ch. 3–4 (the bell clicks; the camera). |
+| August 21, 2011 (Sunday) | The Prologue ride; Alex is taken that night. | Prologue, Ch. 1. |
+| August 22–26 | The search, the copies, the camp (Ch. 2–5); Sam taken in the Gate 2B emergency, Thursday August 25 (Ch. 6); Jamie dragged away by the hunter, Friday August 26 (Ch. 7). | Ch. 2–7. |
+| Friday Aug 26, 10:42 PM → Saturday Aug 27, dawn | Chapter Eight: under the court past midnight; the rescues; the breach at about 2:20 AM; the street just before five; the works and the operation; the oak at about 6:20; the ride. | Ch. 8 (the date line on screen). |
+
+## 2b. Where the build differs from the proposed treatment, and why
+
+- **The hunter's last scene.** It is not killed on screen: the drawdown sweeps it down Line Two during the operation.
+  Danny is last seen fleeing in Act II; his end is not shown. Both stay open for the aftermath without a cure or a
+  resurrection.
+- **Jamie's death.** The treatment's beats are kept (he helps someone who cannot get out, keeps the escape route open,
+  is caught before reaching safety). The staging was fitted to the real street: Mr. Henderson is trapped in the garage
+  end of the house; Jamie goes in and holds the doorway's fallen beam up while the old man crawls out, then runs, and
+  is caught at the curb within sight of the player across the hole.
+- **The operation's gates.** The works' main gates 1 and 2 (Chapter Six's panel) and the gallery's Line 4 drawdown
+  gate close the outer routes; Gate 2B keeps its Chapter Six role and broken brake and is not reused.
+- **The explanation.** A few concise lines from Alex at the anchor board (what it is, why it takes people, Danny, the
+  long one, the made places, the forgetting) were added to the treatment's exact Truth dialogue so the main path
+  answers the comprehension questions without mandatory documents.
+- **The camp.** Its connection is said on the main path (Brandt: the reservoir line out to the camp; Alex: "out to
+  the camp") and told in full in Alex's optional crew-room account; it is not revisited.
+
 ## 3. Chapter Eight, scene by scene (17 scenes, Acts I–V)
 
 Friday 26 August 2011, 10:42 PM, to Saturday 27 August, dawn.
