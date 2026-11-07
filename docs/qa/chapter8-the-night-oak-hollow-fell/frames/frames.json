@@ -54,14 +54,14 @@
     "dist/chapter7-street-art.js": "3b80054d5305bcf8d023f668d9ac8185862f063f6351d6a620e2017f7aaf2b86",
     "dist/chapter7.js": "0787b905f2abeee3facc9a7aabe149dd7fba0efcf1388377738e334504c7520f",
     "dist/chapter8-complex.js": "c6d0493b44fa1cbe2390064c6542d1b1aa4250508e8da18046340f0b1737330e",
-    "dist/chapter8-fall.js": "5c9e9795fcb09658108c3d2cea7578531547dbed47b6fb1b5912ba71f2c28511",
-    "dist/chapter8-presence.js": "bad1673d4528cff04fee8da7760d43cd290b21c8a64ffe3d7c8e774b621434c9",
+    "dist/chapter8-fall.js": "f2c581930adbbf1d39d138550916a8214e5618700b2c81c83edc8b5e36074946",
+    "dist/chapter8-presence.js": "a297523bf31498ecc5fd8daa9fa083f7615e3c9a7e7a9e0c155b1df85fa913bf",
     "dist/chapter8-props.js": "19e50c3ec9e73863153089622db9aff7c323d32dcbef2fabcdc3156dc899554a",
-    "dist/chapter8-ruin.js": "9c0207b397ef6ff970445dbcb80cb8c6d5df6da1c9588590bc88f986f65c7554",
+    "dist/chapter8-ruin.js": "5cb9b4b1a6272eba673d2e4184add037b7fc0c32993bb6bd439d74e30c2a22b5",
     "dist/chapter8-scenes.js": "c19fdaf50f94acb4b63045cc7762c46c82af6fb2c197016a2ed20be58fa0dad0",
     "dist/chapter8.js": "271dba589d9e90c65731734c6e084c117772eef8bcbce985bbab29b0b545d024",
     "dist/companion-brain.js": "b4c48e4211ce73d4a4660c59865d7c3544974dc65ac9822580db8794b41cd0b7",
-    "dist/companions.js": "0200b40af6ab400c2fa6d8ea92ce06a4a9e2a91dad7d13a351923272bb717aab",
+    "dist/companions.js": "e412900aabe4d05ad6dfbea63afdd57f0ac9fc66c01a74986011baca7f1d8ce6",
     "dist/creature-asset.js": "cfd431397910ec8b899c38fff6d498299cc631c22e735aeb3ea8b811b8bf2be4",
     "dist/creature.js": "87ef8c2d3672023a753e7aa5f1ef529f485bab42da1572f18b455899cc4057e9",
     "dist/creek.js": "3aa270132e50bb24bc18c7aa11ea5e1bba3424e139d6f88a5a48535e18619417",
@@ -124,8 +124,315 @@
     "dist/woods.js": "e3ff8a8531f865f4448c27c4da87a6187150d02f6cb0b9e3819b071a4f5e9c4b",
     "dist/world.js": "7ae1df7dc5df8cb493ef26514691450250a6ae43435d508e4cf96388c4de5ffc"
   },
-  "frames": [],
-  "errors": [
-    "b13b-summerfield: page.evaluate: Target crashed "
-  ]
+  "frames": [
+    {
+      "name": "b01-four-bikes",
+      "note": "Under the streetlight outside Sam’s, Friday night: the four bikes",
+      "phase": "d8-bikes",
+      "calls": 437,
+      "triangles": 463226,
+      "caption": "There’s still a little light.",
+      "objective": "Look at the bikes.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b02-field-cover",
+      "note": "The cover in the field, MH-12, open",
+      "phase": "d8-field",
+      "calls": 135,
+      "triangles": 126947,
+      "caption": "MR. BRANDT“Sheet two. The court’s mouth, 1959. Nobody’s opened this drawer since I started.”",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b03-barrier",
+      "note": "The outer barrier under the neighbourhood: the leaf, the crank, the long pipe beyond",
+      "phase": "d8-shaft",
+      "calls": 156,
+      "triangles": 48326,
+      "caption": "OFFICER REYES“…Hear that?”",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "patrol",
+        "visible": true
+      }
+    },
+    {
+      "name": "b04-gallery",
+      "note": "The 1958 construction gallery: columns, the crane rail, the window on the deep shaft",
+      "phase": "e8-gallery",
+      "calls": 206,
+      "triangles": 64970,
+      "caption": "There’s still a little light.",
+      "objective": "Follow Reyes.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b05-film",
+      "note": "The review room: the 1958 observation film on the screen (wound, running)",
+      "phase": "e8-gallery",
+      "calls": 44,
+      "triangles": 27644,
+      "caption": "Two men in coveralls lift her and carry her away from the cot.",
+      "objective": "Watch.",
+      "hunter": {
+        "state": "stalk",
+        "mode": "patrol",
+        "visible": true
+      }
+    },
+    {
+      "name": "b06-danny",
+      "note": "The service corridor: Danny Whitcomb’s thing at the alcoves",
+      "phase": "e8-danny",
+      "calls": 113,
+      "triangles": 28918,
+      "caption": "There’s still a little light.",
+      "objective": "Find the power.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b07-sam-cell",
+      "note": "The flooded isolation wing: Sam’s cell door",
+      "phase": "e8-sam",
+      "calls": 78,
+      "triangles": 28710,
+      "caption": "Through the grille in the door: Sam. Standing in the water, his arms around himself. He looks at you and backs up to the",
+      "objective": "Cell six.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b08-retrieval",
+      "note": "The retrieval wing: the grille, the drag marks, Jamie’s door",
+      "phase": "e8-jamie",
+      "calls": 72,
+      "triangles": 28178,
+      "caption": "There’s still a little light.",
+      "objective": "The east wing.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b09-made-room",
+      "note": "The room it made for Alex (the reconstruction)",
+      "phase": "e8-alex",
+      "calls": 58,
+      "triangles": 29310,
+      "caption": "A bedroom. Alex’s bedroom. His quilt, his desk, his poster. The window shows the creek behind his house at night.",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b10-reunion",
+      "note": "The crew room: all four of them",
+      "phase": "e8-reunion",
+      "calls": 118,
+      "triangles": 65158,
+      "caption": "The crew room. 1974 paint, lockers, a table, a coffee urn, a calendar from 1991 nobody turned. It’s quiet in here. It ho",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b11-anchor-board",
+      "note": "The anchor board in the 1959 hall",
+      "phase": "f8-truth",
+      "calls": 116,
+      "triangles": 37008,
+      "caption": "OFFICER REYES“Jamie.”",
+      "objective": "Find Reyes.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b12-breach",
+      "note": "Through the long windows: the ribs breaking outward",
+      "phase": "f8-breach",
+      "calls": 140,
+      "triangles": 92978,
+      "caption": "The ribs break outward. Something comes through after them, wet and dark and the width of a road, and doesn’t end.",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b13-surface",
+      "note": "Oak Hollow Drive from the cul-de-sac at five in the morning",
+      "phase": "g8-surface",
+      "calls": 672,
+      "triangles": 626396,
+      "caption": "The field. Grey light in the east, not dawn yet. Sirens, a lot of them, all over town.",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b13b-summerfield",
+      "note": "Summerfield from about 30 m (a QA vantage; in play it is seen from up the street): the intersection lifts, splits and takes the car",
+      "phase": "g8-surface",
+      "calls": 485,
+      "triangles": 872841,
+      "caption": "The air smells like gas and smoke and wet dirt.",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b14-hendersons",
+      "note": "The Hendersons’: the hole where the yard was, the jammed door, her car at the curb",
+      "phase": "g8-street",
+      "calls": 333,
+      "triangles": 698669,
+      "caption": "MRS. HENDERSON“Lily! LILY! The door won’t— it won’t open— my father-in-law is in the garage— somebody HELP me!”",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b14a-fire",
+      "note": "The burning house and the gas fire at the curb, with its smoke",
+      "phase": "g8-street",
+      "calls": 498,
+      "triangles": 910102,
+      "caption": "MRS. HENDERSON“Lily! LILY! The door won’t— it won’t open— my father-in-law is in the garage— somebody HELP me!”",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b15-after-jamie",
+      "note": "After: Jamie on the grass short of the curb (not graphic)",
+      "phase": "g8-street",
+      "calls": 261,
+      "triangles": 309605,
+      "caption": "There’s still a little light.",
+      "objective": "Jamie.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b16-works",
+      "note": "The Mill Creek works at first light: the staging area",
+      "phase": "g8-staging",
+      "calls": 397,
+      "triangles": 416817,
+      "caption": "The Mill Creek works. Brandt’s truck, a generator, a light on a pole. The creek is roaring down its channel, high and br",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b17-plug",
+      "note": "The catwalk over the main chamber: the plug and its pins",
+      "phase": "n8-op",
+      "calls": 133,
+      "triangles": 98394,
+      "caption": "There’s still a little light.",
+      "objective": "The plug platform.",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b18-oak",
+      "note": "The oak: Alex against it, Sam holding his hand",
+      "phase": "n8-oak",
+      "calls": 121,
+      "triangles": 156683,
+      "caption": "The old oak. He’s sitting against it. You don’t remember getting him here.",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b19-look-back",
+      "note": "The last ride: the road behind you",
+      "phase": "n8-ride",
+      "calls": 116,
+      "triangles": 147454,
+      "caption": "Saturday. The sun not up yet but nearly.",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    },
+    {
+      "name": "b20-end-card",
+      "note": "The end card",
+      "phase": "n8-end",
+      "calls": 583,
+      "triangles": 753749,
+      "caption": "Saturday. The sun not up yet but nearly.",
+      "objective": "",
+      "hunter": {
+        "state": "idle",
+        "mode": "off",
+        "visible": false
+      }
+    }
+  ],
+  "errors": []
 }
