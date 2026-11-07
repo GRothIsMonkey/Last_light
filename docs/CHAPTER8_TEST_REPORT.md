@@ -119,7 +119,7 @@ Each chapter's own suite, run on this branch after the Chapter Eight changes:
 |---|---|---|
 | `ONLY=chapter3` | 156/156 pass | |
 | `ONLY=chapter4` | 35/35 pass | |
-| `ONLY=chapter5` | 81/81 pass | |
+| `ONLY=chapter5` | 81/81 pass | Run twice: before and after the shared companion-routing change (81/81 both times). |
 | `ONLY=chapter6` | 80/80 pass | First run: 78/79, the one failure was the DEV-switching crash above; fixed and re-run. |
 | `ONLY=chapter7` | 94/94 pass | First run: 93/94; the one failure asserted that Chapter Seven's end card offers *no* next chapter, which this brief changes on purpose. The assertion now expects Chapter Eight. |
 | Default run (Prologue, Chapters One–Three and their replays, then the DEV selector checks), `TRACE=1 NO_CHAPTER4=1` | 549 checks pass, then the run stops at the pre-existing DEV assertion below | Chapters Four–Six are skipped here because their own suites above cover them. |
@@ -150,7 +150,11 @@ Twenty-two frames (1440×900), reviewed by eye (`docs/qa/chapter8-the-night-oak-
   by a QA jump rather than by play. Before the street fix above, two street frames could not be captured because the
   page process was killed for memory; after it, all 22 were captured, one browser per frame for the street ones.
 
-The offline package check (`tests/chapter8-package-browser.mjs`): *pending (runs after the final continuous run).*
+The offline package check (`tests/chapter8-package-browser.mjs` on `Last-Light-Chapter8-Playtest.html`, built from
+`cfd4523`, 9,355,055 bytes, opened from disk with `file://`): **6/6** — the real DEV controls enter Chapter Eight
+(`d8-bikes`); WebGL renders; the embedded creature loads without a server; the gallery, crew room, Hendersons',
+plug, oak and end jumps start; no HTTP(S) requests; no JavaScript errors. Report and screenshots:
+`docs/qa/chapter8-the-night-oak-hollow-fell/package-browser-report.json`.
 
 ## 5. The narrative comprehension test (brief §13)
 

@@ -1,0 +1,30 @@
+{
+  "file": "Last-Light-Chapter8-Playtest.html",
+  "htmlSHA256": "2b1f332cca28d36493d9c0035e55a4c86b047e77103f0b037b5a412b4aa4a37e",
+  "htmlBytes": 9355055,
+  "renderer": "Chromium / ANGLE SwiftShader software",
+  "start": {
+    "phase": "d8-bikes",
+    "creature": true,
+    "width": 1280
+  },
+  "scenes": {
+    "c8-gallery": "e8-gallery",
+    "c8-reunion": "e8-reunion",
+    "c8-hendersons": "g8-street",
+    "c8-plug": "n8-op",
+    "c8-oak": "n8-oak",
+    "chapter8-end": "n8-ride"
+  },
+  "passed": 6,
+  "checks": [
+    "Local file enters Chapter Eight through the real DEV controls",
+    "WebGL renders",
+    "Embedded creature loads without a server",
+    "Later scenes start from their jumps",
+    "No HTTP(S) requests",
+    "No JavaScript errors"
+  ],
+  "errors": [],
+  "httpRequests": []
+}
