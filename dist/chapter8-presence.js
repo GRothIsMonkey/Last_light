@@ -23,7 +23,7 @@ export function puffTexture(){if(PUFF!==undefined)return PUFF;PUFF=paper(64,64,(
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.exp(-k*dt)),smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 const SEG=34;// segments per limb
-const _a=new THREE.Vector3(),_b=new THREE.Vector3(),_c=new THREE.Vector3(),_d=new THREE.Vector3(),_m=new THREE.Matrix4(),_q=new THREE.Quaternion(),_s=new THREE.Vector3(),_up=new THREE.Vector3(0,1,0);
+const _a=new THREE.Vector3(),_b=new THREE.Vector3(),_c=new THREE.Vector3(),_d=new THREE.Vector3(),_e2=new THREE.Vector3(),_f=new THREE.Vector3(),_m=new THREE.Matrix4(),_q=new THREE.Quaternion(),_q2=new THREE.Quaternion(),_s=new THREE.Vector3(),_up=new THREE.Vector3(0,1,0);
 
 export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
  const group=new THREE.Group();group.name='chapter8-presence';
@@ -39,13 +39,52 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
   float rip=sin(wpI.x*1.7+wpI.z*1.3+uT*1.6)*sin(wpI.y*2.1-uT*1.1);transformed+=normal*rip*.11;vFold=rip;`);
   sh.fragmentShader='varying float vFold;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb*=1.0+.35*smoothstep(.3,.9,vFold);');};
  skin.customProgramCacheKey=()=>'c8-presence-skin';
- const N=6,inst=new THREE.InstancedMesh(new THREE.SphereGeometry(1,14,10),skin,N*SEG);inst.name='c8-presence-limbs';inst.frustumCulled=false;inst.castShadow=true;inst.receiveShadow=true;group.add(inst);
- for(let i=0;i<N*SEG;i++){_m.makeScale(0,0,0);inst.setMatrixAt(i,_m);}
+ // (a segment: an ellipsoid with a ridge round its middle and a keel down its back (local +x), dark on the back and pale and
+ // soft-looking underneath; the instances overlap, so the limb reads as one long jointed thing, not a string of beads)
+ const segGeo=(()=>{const g=new THREE.SphereGeometry(1,18,12),pos=g.attributes.position,col=new Float32Array(pos.count*3),v=new THREE.Vector3();
+  for(let i=0;i<pos.count;i++){v.fromBufferAttribute(pos,i);const ring=1+.13*Math.exp(-((v.y*3.2)**2)),keel=1+.32*Math.pow(Math.max(0,v.x),4)*(1-Math.abs(v.y)),belly=1-.08*Math.max(0,-v.x);
+   v.x*=ring*keel*belly;v.z*=ring*(1+.04*Math.sin(v.y*9));pos.setXYZ(i,v.x,v.y,v.z);const back=Math.max(0,Math.min(1,(v.x+.25)/.9)),c0=[.42,.33,.31],c1=[.1,.075,.07];
+   for(let k=0;k<3;k++)col[i*3+k]=c0[k]+(c1[k]-c0[k])*back;}
+  g.setAttribute('color',new THREE.BufferAttribute(col,3));g.computeVertexNormals();return g;})();
+ skin.vertexColors=true;skin.color.setHex(0xb8a8a4);
+ const N=6,inst=new THREE.InstancedMesh(segGeo,skin,N*SEG);inst.name='c8-presence-limbs';inst.frustumCulled=false;inst.castShadow=true;inst.receiveShadow=true;group.add(inst);
+ // barbs down the back of each limb (hooked, pointing back toward the root) and three long fingers at each tip that spread when it reaches
+ const barbM=new THREE.MeshStandardMaterial({color:0x140f0e,roughness:.4,metalness:.1});barbM.name='c8-presence-barb';
+ const barbs=new THREE.InstancedMesh(new THREE.ConeGeometry(.5,1,6),barbM,N*SEG);barbs.name='c8-presence-barbs';barbs.frustumCulled=false;group.add(barbs);
+ const FIN=3,FSEG=7,fingers=new THREE.InstancedMesh(segGeo,skin,N*FIN*FSEG);fingers.name='c8-presence-fingers';fingers.frustumCulled=false;fingers.castShadow=true;group.add(fingers);
+ for(let i=0;i<N*SEG;i++){_m.makeScale(0,0,0);inst.setMatrixAt(i,_m);barbs.setMatrixAt(i,_m);}for(let i=0;i<N*FIN*FSEG;i++)fingers.setMatrixAt(i,_m.makeScale(0,0,0));
  const limbs=[...Array(N)].map((_,i)=>({i,state:'hidden',t:0,ext:0,root:new THREE.Vector3(),dir:new THREE.Vector3(0,1,0),tip:new THREE.Vector3(),tipV:new THREE.Vector3(),want:new THREE.Vector3(),
-  r0:1.6,r1:.28,len:14,bend:new THREE.Vector3(),probe:new THREE.Vector3(),probeR:1.2,speed:1,onLand:null,landed:false,hold:0,dragTo:null,phase:Math.random()*6,pts:[],seen:0}));
+  r0:1.6,r1:.28,len:14,bend:new THREE.Vector3(),probe:new THREE.Vector3(),probeR:1.2,speed:1,onLand:null,landed:false,hold:0,dragTo:null,phase:Math.random()*6,pts:[],seen:0,splay:.2}));
  // the mass behind the barrier: a huge rounded swell with the ripple, pushed forward by the chapter (lean 0..1)
- const massG=new THREE.SphereGeometry(1,40,28),mass=new THREE.Mesh(massG,skin);mass.name='c8-presence-mass';mass.visible=false;group.add(mass);
- const M={lean:0,leanTo:0,at:new THREE.Vector3(),r:9,squash:new THREE.Vector3(1.3,1,.7)};
+ // the mass: not a ball. A cluster of lobes of different sizes, pressed together (one merged mesh, about a unit across, scaled
+ // by the chapter), their surfaces moved by slow noise so they fold and swell; deep folds dark, the swellings pale and wet
+ const massG=(()=>{const parts=[],R=(k)=>{const x=Math.sin(k*127.1+3.7)*43758.5;return x-Math.floor(x);};
+  const lobes=[[0,0,0,1],[-.62,.28,-.12,.66],[.66,.18,-.08,.7],[-.3,-.52,.1,.58],[.42,-.5,.06,.55],[0,.62,-.2,.6],[-.95,-.15,-.3,.5],[.98,-.2,-.25,.48],[-.55,.75,-.35,.42],[.6,.72,-.35,.44],[.15,-.85,-.15,.45],[-.2,.15,.45,.52],[.35,.05,.42,.46],[-1.18,.45,-.45,.36],[1.2,.5,-.45,.34]];
+  for(const [i,[x,y,z,r]] of lobes.entries()){const g=new THREE.IcosahedronGeometry(r,4);const lob=new Float32Array(g.attributes.position.count).fill(i);g.setAttribute('lobe',new THREE.BufferAttribute(lob,1));
+   g.scale(1+R(i)*.25,1-R(i+9)*.15,1+R(i+3)*.2);g.rotateZ((R(i+5)-.5)*.8);g.translate(x,y,z);parts.push(g);}
+  // (merge by hand: position, normal, lobe)
+  let n=0;for(const g of parts)n+=g.attributes.position.count;const pos=new Float32Array(n*3),nor=new Float32Array(n*3),lob=new Float32Array(n);let o=0;
+  for(const g of parts){const c=g.attributes.position.count;pos.set(g.attributes.position.array,o*3);nor.set(g.attributes.normal.array,o*3);lob.set(g.attributes.lobe.array,o);o+=c;}
+  const m=new THREE.BufferGeometry();m.setAttribute('position',new THREE.BufferAttribute(pos,3));m.setAttribute('normal',new THREE.BufferAttribute(nor,3));m.setAttribute('lobe',new THREE.BufferAttribute(lob,1));return m;})();
+ const flesh=new THREE.MeshStandardMaterial({color:0x5c4743,roughness:.28,metalness:.06});flesh.name='c8-presence-flesh';
+ flesh.onBeforeCompile=sh=>{sh.uniforms.uT=U.t;sh.uniforms.uPress=U.press;
+  const NOISE=`float h3(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
+  float n3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(h3(i),h3(i+vec3(1,0,0)),f.x),mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x),f.y),mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x),mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x),f.y),f.z);}
+  float fbm(vec3 p){return n3(p)*.55+n3(p*2.13)*.28+n3(p*4.37)*.17;}`;
+  sh.vertexShader='uniform float uT,uPress;\nattribute float lobe;\nvarying float vFold;\nvarying float vVein;\n'+NOISE+'\n'+sh.vertexShader.replace('#include <beginnormal_vertex>',`#include <beginnormal_vertex>
+   vec3 q0=position*2.3+vec3(lobe*1.7,uT*.07,uT*.05);float f0=fbm(q0);float e=.06;
+   vec3 gN=vec3(fbm(q0+vec3(e,0,0))-f0,fbm(q0+vec3(0,e,0))-f0,fbm(q0+vec3(0,0,e))-f0)/e;objectNormal=normalize(objectNormal-gN*.22);`).replace('#include <begin_vertex>',`#include <begin_vertex>
+   float wave=sin(position.y*3.1+position.x*1.3-uT*(.6+lobe*.03)+lobe)*.035;transformed+=normal*((f0-.5)*.34+wave+uPress*.05*max(0.,position.z));vFold=f0;vVein=n3(position*9.+lobe);`);
+  sh.fragmentShader='varying float vFold;\nvarying float vVein;\n'+sh.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
+   float ridge=smoothstep(.38,.78,vFold);diffuseColor.rgb*=mix(.32,1.55,ridge);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.42,.3,.29),smoothstep(.62,.9,vFold)*.35);
+   diffuseColor.rgb*=1.-.35*smoothstep(.55,.62,vVein)*(1.-smoothstep(.62,.7,vVein));`).replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
+   {float fr=pow(1.-clamp(dot(normalize(vViewPosition),-normal),0.,1.),3.);totalEmissiveRadiance+=vec3(.05,.06,.07)*fr*(.4+ridge);}`).replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\n roughnessFactor=mix(.6,.18,smoothstep(.4,.8,vFold));');};
+ flesh.customProgramCacheKey=()=>'c8-presence-flesh';U.press={value:0};
+ const mass=new THREE.Mesh(massG,flesh);mass.name='c8-presence-mass';mass.visible=false;mass.castShadow=true;mass.receiveShadow=true;group.add(mass);
+ // fog in front of it, in layers, so it has depth and its edges are lost
+ const fogM=[];const FOG=[...Array(9)].map((_,k)=>{const m=new THREE.SpriteMaterial({map:null,color:0x23201e,transparent:true,opacity:0,depthWrite:false});m.name='c8-presence-fog';fogM.push(m);const s2=new THREE.Sprite(m);s2.visible=false;group.add(s2);return {s:s2,k,ph:k*1.7};});
+ for(const m of fogM)m.map=puffTexture();
+ const M={lean:0,leanTo:0,at:new THREE.Vector3(),r:9,squash:new THREE.Vector3(1.3,1,.7),fog:0};
  // ---- debris and dust ------------------------------------------------------------------------------------------------
  const chunkM=new THREE.MeshStandardMaterial({color:0x6e6a62,roughness:.95});chunkM.name='c8-debris';const DN=90,chunks=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,0),chunkM,DN);chunks.name='c8-debris';chunks.frustumCulled=false;chunks.castShadow=true;group.add(chunks);
  const deb=[...Array(DN)].map(()=>({on:false,p:new THREE.Vector3(),v:new THREE.Vector3(),r:.2,rot:new THREE.Euler(),w:new THREE.Vector3(),rest:0}));let di=0;
@@ -58,8 +97,19 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
  function place(L){const base=L.i*SEG,ext=L.ext;
   for(let s=0;s<SEG;s++){const u=s/(SEG-1);if(L.state==='hidden'||u>ext+.001){_m.makeScale(0,0,0);inst.setMatrixAt(base+s,_m);continue;}
    const uu=Math.min(u,ext);curve(L,uu,_a);curve(L,Math.min(1,uu+.02),_b);_b.sub(_a);if(_b.lengthSq()<1e-8)_b.set(0,1,0);_b.normalize();
-   const r=L.r0+(L.r1-L.r0)*Math.pow(u,.8),wob=1+.08*Math.sin(u*19+L.phase+P.U.t.value*2.2);_q.setFromUnitVectors(_up,_b);_s.set(r*wob,r*1.9,r*wob*.92);_m.compose(_a,_q,_s);inst.setMatrixAt(base+s,_m);}
-  inst.instanceMatrix.needsUpdate=true;}
+   const r=L.r0+(L.r1-L.r0)*Math.pow(u,.8),wob=1+.08*Math.sin(u*19+L.phase+P.U.t.value*2.2);_q.setFromUnitVectors(_up,_b);_s.set(r*wob,r*1.9,r*wob*.92);_m.compose(_a,_q,_s);inst.setMatrixAt(base+s,_m);
+   // a barb on its back, every other segment, raked back toward the root
+   if(s%2===0&&u<.92){_c.set(1,0,0).applyQuaternion(_q);_d.copy(_a).addScaledVector(_c,r*1.05);_q2.setFromUnitVectors(_up,_c.addScaledVector(_b,-1.1).normalize());_s.set(r*.22,r*.85,r*.22);_m.compose(_d,_q2,_s);barbs.setMatrixAt(base+s,_m);}
+   else{_m.makeScale(0,0,0);barbs.setMatrixAt(base+s,_m);}}
+  // the fingers: from the tip, three ways round its axis, spread by splay, curling in toward each other at their ends
+  const fb=L.i*FIN*FSEG;if(L.state==='hidden'||ext<.98){for(let i=0;i<FIN*FSEG;i++)fingers.setMatrixAt(fb+i,_m.makeScale(0,0,0));}
+  else{curve(L,1,_a);curve(L,.97,_b);_b.subVectors(_a,_b).normalize();_c.set(0,1,0);if(Math.abs(_c.dot(_b))>.9)_c.set(1,0,0);_c.cross(_b).normalize();_d.crossVectors(_b,_c);
+   const fl=Math.max(1.2,L.r1*7),fr=Math.max(.05,L.r1*.42);
+   for(let f=0;f<FIN;f++){const ang=f/FIN*Math.PI*2+L.phase,ox=Math.cos(ang),oy=Math.sin(ang),spread=L.splay+.06*Math.sin(P.U.t.value*1.7+f*2);
+    let px=_a.x,py=_a.y,pz=_a.z;for(let k=0;k<FSEG;k++){const u=k/(FSEG-1),bend=spread*(1-u*1.6);
+     const dx=_b.x+(_c.x*ox+_d.x*oy)*bend,dy=_b.y+(_c.y*ox+_d.y*oy)*bend,dz=_b.z+(_c.z*ox+_d.z*oy)*bend,dl=Math.hypot(dx,dy,dz)||1,st=fl/FSEG;
+     px+=dx/dl*st;py+=dy/dl*st;pz+=dz/dl*st;_e2.set(px,py,pz);_f.set(dx/dl,dy/dl,dz/dl);_q.setFromUnitVectors(_up,_f);const rr=fr*(1-u*.75);_s.set(rr,st*.7,rr*.9);_m.compose(_e2,_q,_s);fingers.setMatrixAt(fb+f*FSEG+k,_m);}}}
+  inst.instanceMatrix.needsUpdate=true;barbs.instanceMatrix.needsUpdate=true;fingers.instanceMatrix.needsUpdate=true;}
  // ---- what the chapter asks for ----------------------------------------------------------------------------------------
  // root: where it comes through; dir: the way it comes out; len: how far it reaches; r0/r1: thickness at root and tip
  function set(i,{root,dir=[0,1,0],len=14,r0=1.6,r1=.28,state='emerge',probe=null,speed=1}={}){const L=limbs[i];L.root.set(...root);L.dir.set(...dir).normalize();L.len=len;L.r0=r0;L.r1=r1;L.speed=speed;
@@ -92,9 +142,14 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
    else if(L.state==='retract'){L.ext=Math.max(0,L.ext-dt*.45*w);if(L.ext<=0){L.state='hidden';}}
    // the bend: the root's direction carried out, sagging a little, so it arcs from the wall to wherever its tip is
    _c.copy(L.tip).sub(L.root);const len=_c.length();L.bend.copy(L.root).addScaledVector(L.dir,len*.5).add(_d.set(0,len*.12+Math.sin(U.t.value*.5+L.phase)*.4,0));
+   L.splay=damp(L.splay,L.state==='strike'?.9:L.state==='probe'?.45:L.state==='drag'?.05:.2,3,dt);
    place(L);}
   // the mass leans in and out a little even standing still: it is breathing, or pushing
-  if(mass.visible){M.lean=damp(M.lean,M.leanTo,.6,dt);const br=Math.sin(U.t.value*.9)*.03;mass.position.copy(M.at).add(_c.set(0,0,-M.lean*4));mass.scale.set(M.r*M.squash.x*(1+br),M.r*M.squash.y*(1-br*.5),M.r*M.squash.z*(1+M.lean*.3));}
+  if(mass.visible){M.lean=damp(M.lean,M.leanTo,.6,dt);const br=Math.sin(U.t.value*.9)*.03;mass.position.copy(M.at).add(_c.set(0,0,-M.lean*4));mass.scale.set(M.r*M.squash.x*(1+br),M.r*M.squash.y*(1-br*.5),M.r*M.squash.z*(1+M.lean*.3));
+   U.press.value=M.lean;mass.rotation.y=M.rot||0;
+   for(const F of FOG){F.s.visible=M.fog>0;if(!F.s.visible)continue;const a=F.ph+U.t.value*.05,sp=M.r*(1.1+.25*Math.sin(F.ph)),fx=Math.sin(F.ph*2.3)*M.r*M.squash.x*.9,fy=Math.cos(F.ph*1.7)*M.r*M.squash.y*.55;
+    F.s.position.set(mass.position.x+fx+Math.sin(a)*1.5,mass.position.y+fy,mass.position.z+(M.fogDir||-1)*(M.r*M.squash.z*.6+F.k*.9));F.s.scale.set(sp,sp*.7,1);F.s.material.opacity=M.fog*(.22+.1*Math.sin(a*1.3));}}
+  else for(const F of FOG)F.s.visible=false;
   for(let k=0;k<DN;k++){const D=deb[k];if(!D.on){_m.makeScale(0,0,0);chunks.setMatrixAt(k,_m);continue;}
    if(D.rest<1){D.v.y-=9.8*dt;D.p.addScaledVector(D.v,dt);const f=floorAt(D.p.x,D.p.z);if(D.p.y-D.r<f){D.p.y=f+D.r;if(Math.abs(D.v.y)<1.2){D.v.set(0,0,0);D.rest=1;}else{D.v.y*=-.32;D.v.x*=.55;D.v.z*=.55;}}
     D.rot.x+=D.w.x*dt*(1-D.rest);D.rot.y+=D.w.y*dt*(1-D.rest);}
@@ -102,10 +157,10 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
   chunks.instanceMatrix.needsUpdate=true;
   for(const U2 of dust){if(!U2.s.visible)continue;U2.t+=dt;const k=U2.t/U2.life;if(k>=1){U2.s.visible=false;continue;}U2.s.position.addScaledVector(U2.v,dt);U2.v.multiplyScalar(1-dt*.4);const sc=1.2+k*5;U2.s.scale.set(sc,sc,1);U2.s.material.opacity=.32*Math.sin(Math.PI*Math.min(1,k*1.4))*(1-k);}}
  function show(on){if(on&&!group.parent)scene.add(group);else if(!on&&group.parent)group.removeFromParent();}
- function reset(){for(const L of limbs){L.state='hidden';L.ext=0;place(L);}mass.visible=false;M.lean=M.leanTo=0;for(const D of deb){D.on=false;}for(const U2 of dust)U2.s.visible=false;P.impacts=0;for(const k of Object.keys(P.log))P.log[k]=0;}
+ function reset(){for(const L of limbs){L.state='hidden';L.ext=0;place(L);}mass.visible=false;M.fog=0;for(const F of FOG)F.s.visible=false;M.lean=M.leanTo=0;for(const D of deb){D.on=false;}for(const U2 of dust)U2.s.visible=false;P.impacts=0;for(const k of Object.keys(P.log))P.log[k]=0;}
  reset();
  Object.assign(P,{set,strike,probe,drag,retract,hide,tipOf,impact,trickle,update,show,reset,setFloor:f=>{floorAt=f;},
-  showMass(on,{at=null,r=9,squash=null}={}){mass.visible=!!on;if(at)M.at.set(at.x,at.y,at.z);M.r=r;if(squash)M.squash.set(...squash);},lean(v){M.leanTo=v;},
+  showMass(on,{at=null,r=9,squash=null,fog=.8,fogDir=-1,rot=0}={}){mass.visible=!!on;if(at)M.at.set(at.x,at.y,at.z);M.r=r;if(squash)M.squash.set(...squash);M.fog=fog;M.fogDir=fogDir;M.rot=rot;},lean(v){M.leanTo=v;},
   get active(){return limbs.some(L=>L.state!=='hidden')||mass.visible;}});
  return P;
 }
