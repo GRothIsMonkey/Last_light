@@ -1,0 +1,110 @@
+{
+  "shots": [
+    {
+      "name": "sam-out",
+      "note": "Sam’s rescue: the moment his door opens and he comes out",
+      "phase": "e8-sam",
+      "caption": "Far off, under everything, something moves. A long, heavy sound, like a building settling. The water shivers.",
+      "info": true
+    },
+    {
+      "name": "jamie-out",
+      "note": "Jamie’s rescue: his door opens",
+      "phase": "e8-jamie",
+      "caption": "There’s still a little light.",
+      "info": false
+    },
+    {
+      "name": "alex-door",
+      "note": "Alex’s rescue: at his door, the proof",
+      "phase": "e8-alex",
+      "caption": "There’s still a little light.",
+      "info": true
+    },
+    {
+      "name": "alex-out",
+      "note": "Alex’s rescue: the door open, Alex out",
+      "phase": "e8-alex",
+      "caption": "There’s still a little light.",
+      "info": false
+    },
+    {
+      "name": "reunion",
+      "note": "The reunion in the crew room",
+      "phase": "e8-reunion",
+      "caption": "ALEX“I thought I wasn’t going to see you guys again.”",
+      "info": true
+    },
+    {
+      "name": "breach",
+      "note": "The breach through the windows, mid-beat",
+      "phase": "f8-breach",
+      "caption": "OFFICER REYES“MOVE. Everybody MOVE.”",
+      "info": true
+    },
+    {
+      "name": "escape",
+      "note": "The escape: the junction hall under the jammed bulkhead",
+      "phase": "f8-breach",
+      "caption": "SAM“The door’s coming down— it’s jammed, it’s twisting—”",
+      "info": true
+    },
+    {
+      "name": "street",
+      "note": "The surface: Oak Hollow Drive as you come down from the oak",
+      "phase": "g8-surface",
+      "caption": "Halfway to Sam’s the road isn’t there. The whole width of it is a hole. The Hendersons’ front yard has gone down into it, and the garage end",
+      "info": true
+    },
+    {
+      "name": "jamie-death",
+      "note": "Jamie’s death at the Hendersons’: the moment it reaches him",
+      "phase": "g8-street",
+      "caption": "Behind him, by the steps, a long hand comes up over the broken edge of the lawn. Then the rest of it.",
+      "info": true
+    },
+    {
+      "name": "jamie-after",
+      "note": "After Jamie: the boys and Reyes",
+      "phase": "g8-street",
+      "caption": "There’s still a little light.",
+      "info": true
+    },
+    {
+      "name": "gates",
+      "note": "The final operation: gate 1 on the bridge",
+      "phase": "n8-op",
+      "caption": "ALEX“In the water— BACK! Get back!”",
+      "info": true
+    },
+    {
+      "name": "plug",
+      "note": "The final operation: the pins and the plug",
+      "phase": "n8-op",
+      "caption": "There’s still a little light.",
+      "info": true
+    },
+    {
+      "name": "hatch",
+      "note": "Alex at the hatch",
+      "phase": "n8-op",
+      "caption": "You go through. Sam goes through. Something comes down the shaft behind you, a whole slab of the roof, and hits him.",
+      "info": true
+    },
+    {
+      "name": "alex-death",
+      "note": "Alex at the oak",
+      "phase": "n8-oak",
+      "caption": "ALEX“Where’s Jamie?”",
+      "info": true
+    },
+    {
+      "name": "ride",
+      "note": "The last ride, looking back",
+      "phase": "n8-ride",
+      "caption": "Saturday. The sun not up yet but nearly.",
+      "info": true
+    }
+  ],
+  "errors": []
+}
