@@ -168,12 +168,13 @@ export function createAmbient(scene,world,hooks={}){
  let jamiePorch=0,jamieLit=false;const JAMIE_PORCH=FORMATION.jamie.leaveAt-29;
  // A streetlight that goes out for a moment and comes back (Chapter Four's last image): the Oak Hollow lamp nearest to a
  // point `back` meters from where you are. Only while one is asked for; nothing changes otherwise.
- const blinks=[];
+ const blinks=[];const lampOverride=new Map();
  function blink(p,{back=40,dur=1.8}={}){let best=null,bd=1e9;for(const l of lamps){if(l.d===undefined)continue;const e=Math.abs(Math.hypot(l.at.x-p.x,l.at.z-p.z)-back);if(e<bd){bd=e;best=l;}}if(best)blinks.push({l:best,t:0,dur});return best?best.i:-1;}
  function blinkLevel(l,dt){for(let k=blinks.length-1;k>=0;k--){const b=blinks[k];if(b.l!==l)continue;b.t+=dt;if(b.t>b.dur){blinks.splice(k,1);return null;}const t=b.t;return t<.35?(Math.sin(t*70)>0?.35:.05):t<b.dur-.4?0:(Math.sin(t*55)>.2?1:.25);}return null;}
  function updateLights(dt,ctx){const p=ctx.p,n=ctx.night,lv=lampGlowGeo.attributes.level;
   for(const l of lamps){const since=ctx.distance-l.on;let target=0;if(since>0){const t=since/4.5;target=t<.25?(Math.sin(t*90+l.i)>.2?.5:.05):Math.min(1,.35+t*.9);}if(ctx.finale>0)target=1;if(morningMode)target=0;l.level=damp(l.level,target,since>0&&since<1.2?30:2.2,dt);
    {const bl=blinkLevel(l,dt);if(bl!==null)l.level=bl;}
+   if(lampOverride.size){const ov=lampOverride.get(l.i);if(ov!==undefined)l.level=ov;}// (a chapter that has cut the power: Chapter Eight's street)
    lampLevels[l.i]=l.level;lv.setX(l.i,l.level*(.35+.65*smooth((p-.4)/.3)));pools[l.i].material.opacity=l.level*(.14+.2*n)*smooth((p-.45)/.3);}
   lv.needsUpdate=true;
   world.porchMats.forEach((m,i)=>{const on=smooth((p-porchOn[i])/.06);m.emissiveIntensity=.05+on*1.6;});
@@ -228,5 +229,5 @@ export function createAmbient(scene,world,hooks={}){
  reset();
  // Things in the street a rider should not pass through.
  function blockers(){return carGroup.visible&&car.mode!=='parked'&&Math.abs(car.lat)<5?[{d:car.d,lat:car.lat,half:2.6,width:1.1,speed:car.mode==='drive'?car.v:0}]:[];}
- return {update,reset,sources,time,blockers,pushSwing,swingPosition,night,morning,skipTo,blink,blinkReset:()=>{blinks.length=0;},get flag(){return flag;},get nightMode(){return nightMode;},get morningMode(){return morningMode;},get swing(){return {...pend};},get state(){return {sprinklers:sprinklers.map(s=>s.on),kidVisible:kid.person.group.visible,car:car.mode,lamps:lamps.map(l=>l.level),swing:Math.abs(pend.th)+Math.abs(pend.ph)};}};
+ return {update,reset,sources,time,blockers,pushSwing,swingPosition,night,morning,skipTo,blink,blinkReset:()=>{blinks.length=0;},lampOverride,lamps:()=>lamps.map(l=>({i:l.i,d:l.d,lat:l.lat,at:l.at,frame:l.frame})),get flag(){return flag;},get nightMode(){return nightMode;},get morningMode(){return morningMode;},get swing(){return {...pend};},get state(){return {sprinklers:sprinklers.map(s=>s.on),kidVisible:kid.person.group.visible,car:car.mode,lamps:lamps.map(l=>l.level),swing:Math.abs(pend.th)+Math.abs(pend.ph)};}};
 }

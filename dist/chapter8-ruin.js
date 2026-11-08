@@ -24,13 +24,15 @@ import {utilityPole} from './chapter7-build.js';
 import {rescueTruck} from './chapter6-cast.js';
 import {puffTexture} from './chapter8-presence.js';
 
-const MAXCUT=12;
+const MAXCUT=32;
 const CUT={n:{value:0},inv:{value:[...Array(MAXCUT)].map(()=>new THREE.Matrix4())},kind:{value:new Float32Array(MAXCUT)}};
 let installed=false;
 // Every material of the merged world, once: fragments inside an active cut volume are not drawn. Box (kind 0) or
 // upright elliptic cylinder (kind 1) in the volume's own unit frame. With no cut active it is one loop that exits.
 export function cutWorld(world){if(installed)return 0;installed=true;let n=0;const done=new Set();
- for(const mesh of world.merged){const m=mesh.material;if(!m||done.has(m)||Array.isArray(m))continue;done.add(m);n++;
+ // (the merged neighbourhood, and its wires: those are LineSegments merged by colour and added straight to the scene)
+ const lines=[];world.scene?.children?.forEach(o=>{if(o.isLineSegments&&o.material?.isLineBasicMaterial&&!o.name)lines.push(o);});
+ for(const mesh of [...world.merged,...lines]){const m=mesh.material;if(!m||done.has(m)||Array.isArray(m))continue;done.add(m);n++;
   const prev=m.onBeforeCompile,prevKey=m.customProgramCacheKey?.bind(m);
   m.onBeforeCompile=(sh,r)=>{prev?.call(m,sh,r);sh.uniforms.uCutN=CUT.n;sh.uniforms.uCutInv=CUT.inv;sh.uniforms.uCutK=CUT.kind;
    sh.vertexShader='varying vec3 vCutW;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n{vec4 cw=vec4(transformed,1.);\n#ifdef USE_INSTANCING\ncw=instanceMatrix*cw;\n#endif\nvCutW=(modelMatrix*cw).xyz;}');
@@ -189,5 +191,5 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
  reset();
  // (where on the town's streets a point is, the ruin room being over all of it: the street name, d along, lat across)
  const locate=(x,z)=>room.inside(x,z)?base(()=>nav.locate(x,z)):nav.locate(x,z);
- return {root,pits,H,F,POLE,HV,sedan,heaveCar,truck,ST,room,stage,heave,update,sources,show,reset,inPit,blocked,cuts,syncCuts,P,BB,locate};
+ return {root,pits,H,F,POLE,HV,sedan,heaveCar,truck,ST,room,stage,heave,update,sources,show,reset,inPit,blocked,cuts,syncCuts,addCut,P,BB,locate,base};
 }
