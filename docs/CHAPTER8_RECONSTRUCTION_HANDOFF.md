@@ -2,7 +2,7 @@
 
 **The Night Oak Hollow Fell**, rebuilt after the first draft was played and rejected.
 
-- Branch: `claude/chapter8-major-reconstruction`, started from the rejected draft's exact commit
+- Branch: `claude/chapter8-major-reconstruction` (last code change `e92d191`; packaged and hosted from `2f3a941`, whose `dist/` is identical), started from the rejected draft's exact commit
   `c496d53241b7a82adc7edd8800da367503b5b5a4` (branch `claude/chapter8-fullgame-story-integration`, left untouched).
 - `main` and the earlier Chapter Eight branch were not modified, reset, rebased or merged into.
 - Test results: `docs/CHAPTER8_RECONSTRUCTION_TEST_REPORT.md`. Before/after captures and their review:
@@ -35,7 +35,12 @@ Brandt's leg at pin C, which is why Reyes is carrying him at the hatch). These a
 
 ## 2. How to play it
 
-There is no build step. Serve the repository root over HTTP and open `dist/index.html` (as for every earlier chapter).
+- **Hosted (private artifact, built from `2f3a941`)**: https://claude.ai/artifact/2iBMpwKT8x3id9KNhkuchc — only its owner
+  can open it until it is shared from the page's Share menu.
+- **Offline**: `PLAYTEST_CHAPTER=8 node tools/package-playtest.mjs <folder>` makes one HTML file that runs from disk in
+  desktop Chrome or Edge (the one delivered with this work: `Last-Light-Chapter8-Reconstruction-Playtest.zip`).
+- **From the repository**: there is no build step. Serve the repository root over HTTP and open `dist/index.html` (as
+  for every earlier chapter).
 
 - From the title: play Chapter Seven to its end card and choose **Chapter Eight →**; or
 - **DEV** on the title → **Chapter Eight** → any of its **49** scenes (`DEV_SCENES[8]` in `dist/dev-chapters.js`); or
@@ -122,6 +127,13 @@ Controls are unchanged: WASD/mouse, **F** (hold where the prompt says), **C** cr
 Jamie's death and Alex's are not failure states and have no "save him" prompt.
 
 ## 7. Known limitations (honest)
+
+- **Found by the end-to-end run and fixed late:** the friends' faces were switched off in Chapter Eight (draft bug); the
+  crew room's door could shut on you when you walked in from Alex's escape (you could not move). Both fixed; a
+  chapter-wide "unstuck" safety net was added. Other world changes that could strand a player in a way the scripted
+  runs did not try may remain; the safety net moves you to the nearest walkable spot after a moment if that happens.
+- **Memory:** the game's JS heap is about 1.1–1.25 GB at all times (all chapters are built at load). This predates the
+  reconstruction (the draft measures the same, ~30 MB less). It is a risk on low-memory machines.
 
 - **No voice acting.** Every line is a caption. Crying, sobbing, breathing and the woman's voice are synthesized noise
   shaped to suggest them; they were never listened to by a person during this work (the container has no audio

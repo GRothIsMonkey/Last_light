@@ -177,4 +177,19 @@ and the problems found by looking are in `docs/qa/chapter8-reconstruction/VISUAL
 
 ## 10. Package and hosted build
 
-PACKAGE_PLACEHOLDER
+- **Offline package**: `PLAYTEST_CHAPTER=8 node tools/package-playtest.mjs <folder>`, built from commit `2f3a941`
+  (clean tree; `dist/` identical to the last code commit `e92d191`, which the full run and the regression suites tested).
+  One file, `Last-Light-Chapter8-Playtest.html` (9,712,582 bytes, SHA-256
+  `31cb67a3abb53c2475456f84a34cf3ac0b454071ed6e4e2f8cd4d04d0bb42988`), 125 modules, plus `START-HERE.txt`, the
+  licences and `manifest.json` (branch, commit, per-file source hashes). Zipped: `Last-Light-Chapter8-Reconstruction-
+  Playtest.zip` (4,171,093 bytes, SHA-256 `131371908d6b5a74825ee2e302d34fb3265ccf7ec34dc34351cb917d9817b4e1`).
+  `tests/chapter8-package-browser.mjs` opened it from disk in headless Chromium: **6 of 6 checks passed** (Chapter Eight
+  entered through the real DEV controls; WebGL renders; the embedded creature loads without a server; later scenes
+  start from their jumps; no HTTP(S) requests; no JavaScript errors), report in
+  `docs/qa/chapter8-reconstruction/package-browser-report.json`.
+- **Hosted build** (a private claude.ai artifact; only its owner can open it until it is shared): the same `dist/` files,
+  with the one host-only change the earlier hosted builds also had (artifacts do not serve `.glb`, so the creature model
+  is served as base64 text, `assets/creature/creature.glb.txt`, read by a host-only copy of `creature.js`; the
+  repository's files are unchanged) and the page title "Last Light Chapter Eight". Checked before publishing by
+  serving that exact set locally in headless Chromium: the DEV start of **The Last Ride** lands in the ride with both
+  deaths' grief set, the creature loads, no errors. Not played through by a person.
