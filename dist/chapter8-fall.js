@@ -413,5 +413,5 @@ export function fallActs(X){
   ...STREET.SCENE,
   'c8-staging':()=>sceneStaging('staging'),'c8-gates':()=>sceneOp('gates'),'c8-ports':()=>sceneOp('ports'),'c8-line-two':()=>sceneOp('line-two'),'c8-plug':()=>sceneOp('plug'),'c8-chain':()=>sceneOp('hatch'),
   ...FIN.SCENE};
- return {sceneTruth,update,afterActors,officerAim,key,hint,sources,blockers,reset,SCENE,canDismount:()=>S.phase==='n8-ride',canRemount:()=>S.phase==='n8-ride',PEOPLE,JD,OAK};
+ return {sceneTruth,update,afterActors,officerAim,key,hint,sources,blockers,reset,SCENE,canDismount:()=>S.phase==='n8-ride'&&C.where==='ride',canRemount:()=>S.phase==='n8-ride'&&C.where==='ride',PEOPLE,JD,OAK};
 }

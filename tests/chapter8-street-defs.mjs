@@ -27,6 +27,11 @@ const DEFS8={
 };
 // (more: the Hendersons' side yard and Jamie; the grief after; the sky from several streets)
 Object.assign(DEFS8,{
+ made:{note:'the made things up close (pale, smiling: copies of what it did to Danny, not Danny) and the second hunter',setup:()=>{const L=lastLight,F=__f;L.jump('c8-surface');F.run(2);},
+  frames:[['grin',()=>{const F=__f,L=lastLight,A=L.chapter8,ST=A.SC.STREET,c=ST.CR.a,q=F.main(1150,-2),me=F.main(1150,1.2);F.put(me,0);F.run(.2);c.M.show(true);c.M.place(q.x,q.z,Math.atan2(me.x-q.x,-(me.z-q.z)),L.nav.groundY(q.x,q.z));c.mode='hold';c.watch=false;c.M.setState('idle');F.run(1.2);
+     const h=c.M.eye();F.face({x:h.x,y:h.y,z:h.z});F.run(.05);return {pale:c.pale};}],
+   ['three',()=>{const F=__f,L=lastLight,A=L.chapter8,ST=A.SC.STREET,me=F.main(1150,1.2);for(const [k,d,lat] of [['b',1146,-6],['c',1143,-3.5],['h2',1141,-8]]){const c=ST.CR[k],q=F.main(d,lat);c.M.show(true);c.M.place(q.x,q.z,Math.atan2(me.x-q.x,-(me.z-q.z)),L.nav.groundY(q.x,q.z));c.mode='hold';c.watch=false;c.M.setState(k==='h2'?'stalk':'crouch');c.M.drive.low=k==='h2'?.4:.7;}
+     F.run(1.5);const q=F.main(1143,-5);F.face({x:q.x,y:L.camera.position.y-.3,z:q.z});F.run(.05);return null;}]]},
  hend:{note:'the side yard: Jamie holding the header; it comes up; it takes him; he is down',setup:()=>{const L=lastLight,F=__f;L.jump('c8-yard');F.run(2);const HD=L.chapter8.SC.STREET.HD;F.put(F.main(1012,10.5),0);F.run(.5);},
   frames:[['door',()=>{const F=__f,L=lastLight,A=L.chapter8,HD=A.SC.STREET.HD;F.run(9);F.face({x:HD.sideDoor.x,y:HD.sideDoor.y+1.3,z:HD.sideDoor.z});F.run(.1);return {cap:L.state.caption.slice(0,80)};}],
    ['hunter',()=>{const F=__f,L=lastLight,A=L.chapter8;F.run(5);F.face({x:A.HM.x,y:(A.HM.y||0)+1.2,z:A.HM.z});F.run(.1);return {mode:A.H.mode,vis:A.HM.root.visible};}],

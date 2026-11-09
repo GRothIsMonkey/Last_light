@@ -186,7 +186,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const below=()=>X.ST.active&&X.nav.inside(camera.position.x,camera.position.z);
  function sky(){const ph=S.phase;
   if(below())return {day:0,p:0,night:1,deep:1,fill:0,storm:0,flash:Math.min(1,(C.flash||0)*3),cave:.94};
-  if(/^n8-(oak|ride|end)$/.test(ph)){const k2=smooth((C.h-30.1)/.5);return {day:.18+.42*k2,p:.55-.15*k2,night:.4-.35*k2,deep:0,fill:.1,storm:0,flash:C.apocFlash||0,cave:0,apoc:C.apoc||0,apocDir:APOC_DIR};}
+  if(/^n8-(oak|ride|end)$/.test(ph)){const k2=smooth((C.h-30.1)/.6);return {day:.1+.2*k2,p:.62-.12*k2,night:.5-.3*k2,deep:.05,fill:.08,storm:.35,flash:C.apocFlash||0,cave:0,apoc:Math.max(C.apoc||0,.14-.06*k2),apocDir:APOC_DIR};}
   if(/^(g8|n8-op)/.test(ph)){const k2=smooth((C.h-28.6)/1.4);return {day:.02+.12*k2,p:.18+.2*k2,night:.92-.3*k2,deep:.2*(1-k2),fill:0,storm:0,flash:C.apocFlash||0,cave:inWorksBelow()?.8:0,apoc:C.apoc||0,apocDir:APOC_DIR};}
   return {day:0,p:0,night:1,deep:.45,fill:0,storm:0,flash:0,cave:inSams()?.75:0};}
  // (the glow of the open ground at the court, seen from the neighbourhood: north-east, low)
@@ -232,7 +232,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const CTX={o,k,C,A8,S,X,ruin,presence,H,HM,danny,brandt,fire,reyes,officer,police,samDad,samMom,jamie,sam,get alex(){return alex;},set alex(v){alex=v;},comp,brain,works,WS,WP,B7,ch2,ch3,ch4,ch5,ch6,ch7,
   sound,gy,light,LIGHTS,lightsOn,checkpoint,later,mark,card,say,J,SM,AL,R,RR,BR,BRR,Y,N,V,task,stopTask,wait,until,lines,quiet,offer,unoffer,V3,near,lookingAt,pose,unpose,posed,closeLook,endLook,looking,inspect,endInspect,reading,
   pageMesh,choose,choosing,fail,hazard,huntStart,huntStop,noise,me,go,objective,talk,busy,main,nav,camera,scene,world,stand,walkTo,joinFoot,leave,friendsNow,minds,date,fmt,HOUR,inv,SAVE8,
-  enlistAlex:()=>{if(!alex){alex=comp.enlist('alex',{lag:2.2,side:0});alex.person?.face?.rich?.(true);}return alex;},dismissAlex:()=>{if(alex){alex.person?.face?.rich?.(false);comp.dismiss('alex');alex=null;}},
+  enlistAlex:()=>{if(!alex){alex=comp.enlist('alex',{lag:2.2,side:0});alex.person?.face?.enable?.(true);alex.person?.face?.rich?.(true);}return alex;},dismissAlex:()=>{if(alex){alex.person?.face?.rich?.(false);comp.dismiss('alex');alex=null;}},
   cry,weep,applyGrief,griefFor};
  let SC=null;// (the scenes module, set by attach())
  // ---- prompts --------------------------------------------------------------------------------------------------------------------------------
@@ -284,7 +284,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function afterActors8(dt){if(!owns(S.phase))return;k.torchO&&(k.torchO.visible=false);
   for(const a of [reyes,officer,brandt,...fire,samDad,samMom].filter(Boolean)){if(!a.visible)continue;applyPose(a.person,a.pose);}
   SC?.afterActors?.(dt);
-  if(C.grief?.jamie){for(const c of [sam,alex]){if(!c||c.gone||!c.person.group.visible||c.mode!=='foot'||c.script)continue;copyPose(_gp,c.pose);ACT.slump()(_gp,{clock:C.t});applyPose(c.person,_gp);}}
+  if(C.grief?.jamie){for(const c of [sam,alex]){if(!c||c.gone||!c.person.group.visible||c.mode!=='foot'||c.script||c.posedAt===C.t)continue;copyPose(_gp,c.pose);ACT.slump()(_gp,{clock:C.t});applyPose(c.person,_gp);}}
   if(C.pCry>.05){const k2=C.pCry,b=Math.sin(C.t*1.6)*.01*k2+Math.sin(C.t*31)*.0018*k2+Math.sin(C.t*47+1)*.0012*k2;camera.position.y+=b-.02*k2;camera.position.x+=Math.sin(C.t*23)*.0016*k2;}
   if(C.shake>0){C.shake=Math.max(0,C.shake-dt*.9);const s=C.shake*C.shake*.06;camera.position.x+=Math.sin(C.t*61)*s;camera.position.y+=Math.sin(C.t*47+1)*s*.7;camera.position.z+=Math.cos(C.t*53)*s;}
   for(const art of ch6.appearances6?.values?.()||[])art.update?.(dt,{clock:C.t,eye:camera.position,phase:S.phase});}
@@ -300,10 +300,12 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   A.rideBoost=1;A.rideFov=0;o.setPace?.(1);o.roam.brake=0;holder.removeFromParent();
   if(A8.started)ch5.presentation?.(false);A8.started=false;A8.finished=false;
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView||C.hiding)o.roam.walkLock=false;const fails=C.keepFails||C.fails;fresh();C.fails=fails;}
- function begin(){A8.started=true;richFaces(true);SC.begin();}
+ // (the friends' faces, hands and the rest of the shared character presentation are Chapter Five's; Six and Seven turn it on
+ //  in their own set-up and off in their reset, and so does Eight: without it every face here is the plain one, nothing on it)
+ function begin(){A8.started=true;ch5.presentation?.(true);richFaces(true);SC.begin();}
  function jump(section){jumpTo(section);}
  function jumpTo(section){section=ALIAS8[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();minds();A8.started=true;
-  richFaces(true);griefFor(section);SC.jump(section);richFaces(true);applyGrief();}
+  ch5.presentation?.(true);richFaces(true);griefFor(section);SC.jump(section);richFaces(true);applyGrief();}
  // ---- the end card --------------------------------------------------------------------------------------------------------------------------------
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p'),eb=el.querySelector?.('.eyebrow');if(eb)eb.textContent='LAST LIGHT';if(h)h.innerHTML='Chapter Eight';if(pp)pp.innerHTML='THE NIGHT OAK HOLLOW FELL<br>August 27, 2011.';}
   const nb=$('next-chapter');if(nb)nb.hidden=true;A8.finished=true;

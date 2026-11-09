@@ -135,6 +135,9 @@ export function streetActs(X){
     objective('Down the drive.','Reyes’s car at Sam’s house; the trucks at Summerfield. Stay together.');
     // the first blows under the street, as you come out of the bulb
     yield* until(()=>dNow()<1146||C.pt>60);town.fire('impacts');later(1.8,()=>{davis.show(true);const q=SP(1114,12);davis.place(q.x,q.z,heading(1114)-Math.PI/2);davis.gest('flashlight');davis.lookAt=SP(1120,0);});
+    later(5.2,()=>{const r=runners[0],q=SP(1098,-14),q2=SP(1092,-6.5),q3=SP(1060,-7.5),q4=SP(1030,-9.5);r.show(true);r.place(q.x,q.z,headingTo(q.x,q.z,q2.x,q2.z));r.walk([[q2.x,q2.z],[q3.x,q3.z],[q4.x,q4.z]],{speed:3.6,then:a=>a.show(false)});
+     sound('c7Door',q,{gain:.8});later(2.2,()=>{const c=CR.far3;c.M.show(true);const s0=SP(1104,-19);c.M.place(s0.x,s0.z,headingTo(s0.x,s0.z,q2.x,q2.z),s0.y);send(c,[[1096,-9],[1086,-7],[1060,-8],[1032,-10]],{speed:4.2,state:'run',low:.75,watch:false,then:cc=>hideC(cc)});sound('c8Scrape',s0,{gain:1.1});});
+     later(3.4,()=>say([V('A MAN, RUNNING','Get inside! GET INSIDE! It’s— they’re everywhere, they’re in the—',{time:2.6}),J('Something’s chasing him— there— on the LAWNS—',{time:2.2,face:'terrified'})]));});
     yield* lines([{wait:2.4},J('The windows— all the windows!',{time:1.8,face:'shocked'}),V('MR. DAVIS (ON HIS PORCH)','What the hell was that? What the HELL was that?',{time:2.6}),{wait:3},N('The streetlights go out one after another down the whole length of the drive.',{time:3.4})]);
     // a pale thing in the yard of 1110, calling in a woman's voice; down behind the car in the drive until it has gone by
     objective('Down the drive.','Stay together.');yield* until(()=>dNow()<1131||C.pt>300);
@@ -301,7 +304,7 @@ export function streetActs(X){
     yield* lines([R('Don’t move him— don’t move him— let me— LET ME—',{time:2.6})]);
     objective('Jamie.','');C.flags.wayRound=true;}
    else{C.reyesThere=true;const q=HD.body;reyes.show(true);reyes.place(q.x+.9,q.z+.3,headingTo(q.x+.9,q.z+.3,q.x,q.z));reyes.gest(REYES_CPR);C.flags.wayRound=true;cry(.85,10);}
-   yield* until(()=>near(V3(HD.body),2.6)||C.pt>240,200);
+   yield* until(()=>near(V3(HD.body),2.4)||C.pt>240,200);
    // at him: kneel; his face; Reyes, working on him, and then not
    pose(V3({x:me().x,z:me().z}),{y:gy(me().x,me().z)+.85,look:{x:HD.body.x,z:HD.body.z},pitch:-.55,slow:1.6});cry(1,20);
    yield* lines([N('His eyes are closed. There’s a cut over his eyebrow from the cell, and grass in his hair. He looks like he’s asleep. He doesn’t look like anything happened to him at all.',{time:5.6}),{wait:1.6},
@@ -317,12 +320,12 @@ export function streetActs(X){
    yield* lines([AL('(behind you, on the grass) It’s my fault. It’s because you came for me. If you didn’t come for me he’d—',{time:4.4,face:'crying'}),
     SM('(turning on him) SHUT UP. Don’t— DON’T. Don’t you say that. Don’t you DARE say that.',{time:3.6,face:'anguish'}),{wait:1.2},SM('(the anger going out of him all at once) Don’t... don’t...',{time:2.6,face:'sobbing'})]);
    // and you: stay, as long as you need to. Then his cap.
-   offer('jamie-hand','Hold his hand',()=>V3({x:HD.body.x+.3,y:HD.body.y+.15,z:HD.body.z+.2}),{r:2.6,inPose:true,look:true,size:.5,cone:.35,fn:()=>{C.flags.heldJamie=true;}});
+   offer('jamie-hand','Hold his hand',()=>V3({x:HD.body.x+.3,y:HD.body.y+.15,z:HD.body.z+.2}),{r:3.4,inPose:true,look:true,size:.5,cone:.35,fn:()=>{C.flags.heldJamie=true;}});
    yield* until(()=>C.flags.heldJamie||C.pt>420,120);unoffer('jamie-hand');if(C.flags.heldJamie){cry(1,16);
     yield* lines([N('His hand is still warm. It’s just his hand. It’s just Jamie’s hand, the one he punches your arm with.',{time:4.6}),{wait:2},Y('(you can barely get it out) ...You said we were good at this.',{time:3.4}),{wait:2.6}]);}
    unpose();yield* wait(1.4);
    offer('jamie-cap','Pick up his cap',()=>V3(C.cap.position),{r:2.6,fn:()=>{C.inv.cap='have';C.cap.visible=false;}});
-   yield* until(()=>C.inv.cap==='have'||C.pt>480,60);unoffer('jamie-cap');
+   yield* until(()=>C.inv.cap==='have'||C.pt>560,90);unoffer('jamie-cap');
    if(C.inv.cap==='have')yield* lines([N('His cap is on the grass where it came off. You pick it up. It still smells like him, like grass and that gum.',{time:4})]);
    // Reyes covers him; they have to go (more of them, coming up out of the ground)
    yield* lines([{wait:1,act:()=>{C.flags.covered=true;jamieBody();}},N('Reyes takes off his jacket and lays it over Jamie, all of him but his sneakers.',{time:3.6}),R('(to all of you, his voice not working right) I’m not leaving him. I’m coming back for him. I swear to God. I’m coming back for him.',{time:4.6})]);
@@ -355,7 +358,13 @@ export function streetActs(X){
    yield* until(()=>dNow()<945||C.pt>260,120);
    yield* lines([N('The Kowalskis’ house is burning all along its roof. The gas at the curb roars like a jet.',{time:3.4}),{wait:2},Y('(your voice wrong) He did the dog voice. For Lily. The dumb dog.',{time:3,act:()=>cry(.8,8)}),
     {wait:1.4},SM('Biscuit.',{time:1.2,face:'sobbing'}),{wait:2.4},AL('He’s not even— Biscuit isn’t even real. He doesn’t have a dog.',{time:3.2,face:'crying'}),{wait:2},SM('(a sound that is almost a laugh and isn’t) I know.',{time:2,face:'sobbing'})]);
-   yield* until(()=>dNow()<922||C.pt>400,120);
+   yield* until(()=>dNow()<935||C.pt>330,120);
+   {const cb=k.carB,c=CR.far1;c.roof=null;c.M.show(true);c.M.place(cb.x,cb.z,(cb.a??0)+Math.PI,gy(cb.x,cb.z)+1.55);c.M.setState('crouch');c.M.drive.low=.95;c.mode='hold';c.watch=false;c.look=()=>({x:cb.x,y:gy(cb.x,cb.z)+1.1,z:cb.z});C.carThing=true;
+    yield* lines([N('On the roof of the police car at the corner: one of them. Crouched. Its face pressed down against the windshield, looking in at the empty seats.',{time:4.4}),R('Don’t stop. Don’t stop walking.',{time:1.8})]);
+    yield* until(()=>Math.hypot(me().x-cb.x,me().z-cb.z)<19||C.pt>400,40);C.reyesShots=3;reyes.gest('point',V3({x:cb.x,z:cb.z}));
+    for(let i=0;i<3;i++)later(i*.5,()=>sound('c8Shot',V3(reyes.pos),{gain:1.2}));later(.6,()=>{C.carThing=false;c.look=null;const q=SP(940,30);send(c,[[948,18],[940,30]],{speed:5,state:'run',low:.8,watch:false,then:cc=>hideC(cc)});sound('c8Scrape',V3({x:cb.x,z:cb.z}),{gain:1.2});});
+    yield* lines([{wait:1.2},N('It comes off the car in one long movement and is gone between the houses, faster than anything that size should move.',{time:4}),{wait:.4,act:()=>reyes.gest(null)}]);}
+   yield* until(()=>dNow()<908||C.pt>460,120);
    ruin.heave();yield* lines([{wait:1.2},N('At Summerfield the whole intersection lifts, splits, and goes down, and takes the car that was sitting in it.',{time:4.4}),{wait:2},
     V('MR. BRANDT (BY THE RESCUE TRUCK)','REYES! Over here! Kids— oh, thank God— kids, over here!',{time:3})]);
    C.flags.streetDone=true;mark('to the works');yield* wait(2.4);X.toStaging?.();})());}
@@ -374,6 +383,7 @@ export function streetActs(X){
   if(town.EV.across.t>2.5&&!C.acrossLit){C.acrossLit=true;const f=town.PX.across?.at(0,2.4,3.4)||SP(1026,-14,2);light(2,f,{intensity:46,dist:26,color:0xff7a30,flicker:.55});}
   if(town.EV.trench.t>3.5&&!C.trenchLit&&town.FIELD.mainEnd){C.trenchLit=true;}
   for(const c of Object.values(CR)){crUpdate(c,dt);if(c.roof&&c.M.root.visible)c.M.root.position.y=gy(c.M.x,c.M.z)+c.roof;}
+  if(C.carThing&&CR.far1.M.root.visible){const cb=k.carB;CR.far1.M.root.position.y=gy(cb.x,cb.z)+1.5;}
   for(const a of PEOPLE)if(a.visible)a.update(dt,{eye:camera.position});
   if(town.shake>0)C.shake=Math.max(C.shake,town.shake*.6);
   if(C.yardRun||town.YARD.stage==='go'&&town.YARD.t<7){const Y=town.YARD,p=me(),L2=locate(p.x,p.z);if(L2&&Y.stage==='go'){const hv=Y.hole(L2.d,L2.lat),dist=Math.hypot(L2.d-1024,L2.lat-11.4);if(hv>.12&&Y.t>4.35+dist/11&&!C.failing)fail('c8-garage','the yard went');}}

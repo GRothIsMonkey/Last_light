@@ -238,12 +238,12 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   walkD([[1011,6.5],[1011.5,9]],{r:1});dbgS('side yard');until(()=>A8.C.jamieHeld!=null||A8.C.flags.jamieDead,60);dbgS('it has him');
   {const t1=h.snapshot.clock;until(()=>{if(A8.HM.root.visible)approach({x:A8.HM.x,z:A8.HM.z},1.8,{pad:6,max:1.5,sprint:true});return A8.C.flags.jamieDead||h.snapshot.clock-t1>14;},16);}dbgS('jamie dead '+A8.C.flags.jamieDead);
   // with him: kneel; Reyes; his hand; his cap
-  until(()=>A8.C.flags.jamieDead,20);approach(HD.body,2,{pad:8});
-  take('jamie-hand',{max:120,r:2.2,pad:8});take('jamie-cap',{max:90,r:2.2,pad:8});until(()=>A8.C.flags.jamieMourned,120);dbgS('mourned');
+  until(()=>A8.C.flags.jamieDead,20);approach(HD.body,1.6,{pad:8});
+  take('jamie-hand',{max:120,r:3.2,pad:8});take('jamie-cap',{max:150,r:2.2,pad:8});until(()=>A8.C.flags.jamieMourned,120);dbgS('mourned');
   check(`${label}: Jamie: it takes him to drag him back down; it slams him down at the edge and goes; Sam on his knees; Reyes's CPR, then not; Alex: "It's my fault"; Sam: "Don't you DARE"; his hand; his cap; Reyes's jacket over him`,()=>{
    assert.ok(A8.C.flags.jamieDead);assert.ok(A8.C.grief.jamie);assert.ok(A8.C.flags.heldJamie);assert.equal(A8.C.inv.cap,'have');assert.ok(said('I’m so sorry, kid.'));assert.ok(said('Don’t you DARE say that.'));assert.ok(A8.C.flags.covered);});
   // away: south past Sam's, the Kowalskis' burning; Summerfield goes; Brandt's truck
-  walkD([[1010,4.4],[1004,1.5],[994,1],[980,.5],[960,0],[944,0],[930,0],[918,0],[912,0]],{r:1.6,pad:10,max:120});until(()=>ph()==='g8-staging',60);dbgS('to the works');
+  walkD([[1010,4.4],[1004,1.5],[994,1],[980,.5],[960,0],[944,0],[930,0],[918,0],[908,0],[902,0]],{r:1.6,pad:10,max:160});until(()=>ph()==='g8-staging',60);dbgS('to the works');
   check(`${label}: away from it: "We left him"; "Biscuit isn’t even real"; Summerfield goes down; the works`,()=>{assert.ok(said('We left him on the grass.'));assert.ok(said('Biscuit isn’t even real.'));assert.equal(ph(),'g8-staging');});lap('street');}
  if(inSeg('staging')){until(()=>ph()==='g8-staging',10);take('procedure',{max:40,r:2.2,pad:14});putDown(60);until(()=>ph()==='n8-op',80);
   check(`${label}: the drawdown nobody would use while anyone was in there; "There aren't now."`,()=>{assert.ok(A8.C.flags.procRead);assert.ok(said('There aren’t now.'));});lap('staging');}

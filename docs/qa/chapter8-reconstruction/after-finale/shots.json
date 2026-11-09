@@ -1,0 +1,142 @@
+[
+ {
+  "name": "hatch",
+  "frame": "well",
+  "note": "the top of the well: Alex on the ladder with the chain; the lid comes down on him; lifting it; out on the grass",
+  "phase": "n8-op",
+  "caption": "Grass. Air. The field by the oak, and the sky over it going from red to grey. Sam is on his knees at the edge of the hat",
+  "info": {
+   "mode": "well",
+   "y": -3.6
+  }
+ },
+ {
+  "name": "hatch",
+  "frame": "pinned",
+  "note": "the top of the well: Alex on the ladder with the chain; the lid comes down on him; lifting it; out on the grass",
+  "phase": "n8-op",
+  "caption": "SAM“NO— NO— ALEX—”",
+  "info": {
+   "mode": "pinned",
+   "lid": 0.18
+  }
+ },
+ {
+  "name": "hatch",
+  "frame": "out",
+  "note": "the top of the well: Alex on the ladder with the chain; the lid comes down on him; lifting it; out on the grass",
+  "phase": "n8-op",
+  "caption": "ALEX“(a breath that catches) ...Ow.”",
+  "info": {
+   "mode": "out"
+  }
+ },
+ {
+  "name": "oak",
+  "frame": "two",
+  "note": "the oak: Alex against the trunk, Sam holding his hand; Alex up close; you sitting with him; after",
+  "phase": "n8-oak",
+  "caption": "The old oak. He’s sitting against it. Sam is beside him, holding his hand."
+ },
+ {
+  "name": "oak",
+  "frame": "alex",
+  "note": "the oak: Alex against the trunk, Sam holding his hand; Alex up close; you sitting with him; after",
+  "phase": "n8-oak",
+  "caption": "The old oak. He’s sitting against it. Sam is beside him, holding his hand.",
+  "info": {
+   "expr": null
+  }
+ },
+ {
+  "name": "oak",
+  "frame": "sit",
+  "note": "the oak: Alex against the trunk, Sam holding his hand; Alex up close; you sitting with him; after",
+  "phase": "n8-oak",
+  "caption": "ALEX“It doesn’t hurt that much. It’s just... heavy.”",
+  "info": {
+   "pose": true,
+   "cap": "ALEX“It doesn’t hurt that much. It’s just... heavy.”"
+  }
+ },
+ {
+  "name": "oak",
+  "frame": "sam",
+  "note": "the oak: Alex against the trunk, Sam holding his hand; Alex up close; you sitting with him; after",
+  "phase": "n8-oak",
+  "caption": "ALEX“(very quietly) ...Oh.”",
+  "info": {
+   "sob": 0,
+   "cry": 0,
+   "cap": "ALEX“(very quietly) ...Oh.”"
+  }
+ },
+ {
+  "name": "oak",
+  "frame": "after",
+  "note": "the oak: Alex against the trunk, Sam holding his hand; Alex up close; you sitting with him; after",
+  "phase": "n8-oak",
+  "caption": "SAM“Alex?”",
+  "info": {
+   "dead": true,
+   "cap": "SAM“Alex?”"
+  }
+ },
+ {
+  "name": "walk",
+  "frame": "trench",
+  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
+  "phase": "n8-ride",
+  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
+ },
+ {
+  "name": "walk",
+  "frame": "lean",
+  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
+  "phase": "n8-ride",
+  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
+ },
+ {
+  "name": "walk",
+  "frame": "kesslers",
+  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
+  "phase": "n8-ride",
+  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
+ },
+ {
+  "name": "walk",
+  "frame": "yard",
+  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
+  "phase": "n8-ride",
+  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
+ },
+ {
+  "name": "ride",
+  "frame": "sam",
+  "note": "the last ride: Sam on his bike beside you; the street; Summerfield; the look back",
+  "phase": "n8-ride",
+  "caption": "Saturday. The sun not up yet, but nearly.",
+  "info": {
+   "sob": 0,
+   "cry": 0,
+   "grief": {
+    "jamie": true,
+    "alex": true
+   }
+  }
+ },
+ {
+  "name": "ride",
+  "frame": "summerfield",
+  "note": "the last ride: Sam on his bike beside you; the street; Summerfield; the look back",
+  "phase": "n8-ride",
+  "caption": "Saturday. The sun not up yet, but nearly."
+ },
+ {
+  "name": "ride",
+  "frame": "back",
+  "note": "the last ride: Sam on his bike beside you; the street; Summerfield; the look back",
+  "phase": "n8-ride",
+  "caption": "Saturday. The sun not up yet, but nearly."
+ }
+]

@@ -9,16 +9,19 @@ the 2026 coda is implemented, staged or teased in the build. This document is th
 | Who / what | State at the end card | Where the player saw it |
 |---|---|---|
 | The protagonist | Alive, on his bike on Oak Hollow Drive, riding toward the evacuation point at the school. | The last ride. |
-| Sam | Alive, riding beside him. Rescued from the flooded isolation wing (Act III). Held Alex's hand at the oak. | Scenes 6, 16, 17. |
-| Jamie | **Dead.** Killed by the hunter at the curb in front of the Hendersons' while running from the doorway he held open for Mr. Henderson. Reyes checked him ("…I'm sorry. I'm so sorry.") and promised the firemen would take him. He is not a copy and is not coming back. | Scene 13. |
-| Alex | **Dead.** Hurt by the falling roof slab while holding the hatch for the others at the end of the operation; died sitting against the old oak at the lookout, Sam holding his hand, after "We were supposed to go riding tomorrow." | Scenes 15–16. |
-| Officer Reyes | Alive. Brought the protagonist's and Sam's bikes to the oak. Witnessed the anchor board, the breach, the hunter, Jamie's death, the operation. He saw two Sams at once in Chapter Six; nothing has explained that away. | Throughout. |
-| Mr. Brandt | Alive; read Procedure 7 with them, closed main gate 2 while the protagonist closed gate 1, and brought the sledge for the plug's pins. Knew the works as plumbing; now knows what they were for. | Scenes 14–15. |
-| The Hendersons | Mrs. Henderson, Lily and Mr. Henderson alive, at Reyes's car. Their house's front and garage end went into the hole. | Scene 13. |
-| The hunter (the long thing) | Swept down Line Two by the drawdown during the operation ("the drawdown takes it down Line Two"). Not shown dead. | Scene 15. |
+| Sam | Alive, riding beside him, crying on and off. Rescued from the flooded isolation wing (Act III). Knelt over Jamie; held Alex's hand at the oak and held him after he died. Carries both deaths visibly (face, walk, silences). | Scenes 6, 13, 16, 17. |
+| Jamie | **Dead.** He talked Lily Henderson out of the front room, freed Mr. Henderson in the garage, and held the garage's side-door header up while the old man crawled out. The hunter came up out of the hole at the end of the yard and took him (to drag him back down: what it is for); with Reyes firing and the protagonist running at it, it slammed him down at the edge of the hole and went back into the ground. Reyes tried CPR and stopped; Sam knelt over him; the protagonist held his hand and kept his cap; Reyes covered him with his jacket and swore to come back for him (and did: he is gone from the side yard at dawn). He is not a copy and is not coming back. | Scene 13. |
+| Alex | **Dead.** At the end of the operation the service hatch's counterweight arm was gone; Alex chose to hold its chain from below so the others could climb, and when the chain fouled and he let go to climb the last rungs, the steel lid came down across his back. Sam and the protagonist lifted it and pulled him out. He died sitting against the old oak, Sam holding his hand and then holding him, after "We were supposed to go riding tomorrow." Reyes left his coat over him and stayed. | Scenes 15–16. |
+| Officer Reyes | Alive. Left the protagonist's and Sam's bikes on the road below the trench and follows them to the school. Witnessed the anchor board, the breach, the hunter, Jamie's death (he fired at it and tried to save him), the operation, Alex's death. He saw two Sams at once in Chapter Six; nothing has explained that away. | Throughout. |
+| Mr. Brandt | Alive, **his leg broken** (the catwalk folded under him at the plug's last pin); carried up the service well by Reyes. Read Procedure 7 with them, closed main gate 2, brought the sledge. Knew the works as plumbing; now knows what they were for. | Scenes 14–16. |
+| The Hendersons | Mrs. Henderson, Lily and Mr. Henderson alive (Jamie got Lily and Mr. Henderson out). Their front yard went into the ground; their garage is down. Lily heard Jamie's made-up dog, "Biscuit". | Scene 13. |
+| Mrs. Pruitt | Alive; Jamie and the protagonist lifted her porch awning off her. | Scene 12. |
+| The hunter (the long thing) | Killed Jamie in the Hendersons' side yard and went back into the ground; later swept down Line Two by the drawdown during the operation. Not shown dead. | Scenes 13, 15. |
+| A second hunter | Came up out of the storm line in the trench on Oak Hollow Drive, searched the street, went back down it. Fate open. | Scene 12. |
+| The made things | Pale, smiling, too long in the arm: copies of what it did to Danny Whitcomb, made out of what it has taken (one called for help in a woman's voice; two climbed out of the Hendersons' yard after Jamie died; one was on the police car's roof at the Kowalskis' corner). **Not Danny.** Where they went when the access was sealed is open. | Scenes 12–13. |
 | The smiling creature (Danny Whitcomb, 1991) | Last seen fleeing what was coming, in the service corridor (Act II). His fate is not resolved on screen. | Scene 5. |
 | The Presence (never named in game) | Not killed. The original rupture under Old Mill Court is sealed under the dropped plug and flooded from Line Two; it went quiet. Its accessible connection to the neighbourhood is cut. | Scenes 11, 15. |
-| Oak Hollow | A disaster area at dawn: the road gone into the ground at the Hendersons' and Sam's, the Kowalskis' house burned to a frame, the Summerfield intersection collapsed with a car in it, a pole down, the gas fire at the curb, sirens, an evacuation to the school. | Scenes 12–13, 17. |
+| Oak Hollow | A disaster area at dawn, and it stays that way: Oak Hollow Drive gone into the storm line from about 1050 to 1095 (a car in it, the pole at 1067 down across it, the water main open); the house at 1052 leaning into the trench with its front off; the porch and roof gone at 1081; the Kesslers' (across from the Hendersons') smashed by a limb and burned to a shell; the Hendersons' front yard gone into the ground; windows blown out along the street; the Kowalskis' house burned to a frame; the Summerfield intersection collapsed with a car in it; smoke over the town; responders at Summerfield; an evacuation to the school. | Scenes 12–13, 17. |
 
 The chapter writes this to local storage as `lastlight.chapter8`:
 
@@ -40,8 +43,12 @@ The chapter writes this to local storage as `lastlight.chapter8`:
 - **The transformed victims.** No cure was found or invented. Danny Whitcomb's state is unresolved; the earlier
   victims (Annie Rowan 1958, Ruth Ann Carver 1966, Evelyn and Thomas Lange 1974) are history and records, and what
   the thing made of them.
-- **Witnesses.** Residents ran past things on the street at dawn. Some will remember creatures and impossible events,
-  some will not, some will remember wrongly.
+- **Witnesses.** Residents ran past things on the street at dawn: Mr. Davis on his porch, Mrs. Pruitt, the Hendersons
+  (Lily saw the thing that took Jamie), a neighbour chased across the lawns. Some will remember creatures and impossible
+  events, some will not, some will remember wrongly.
+- **Jamie's cap.** The protagonist picked it up off the grass by the Hendersons' garage and still has it at the end.
+- **The sky.** Everyone in town saw the red deck over Oak Hollow and the thing itself on the skyline over the court
+  before dawn. How that is explained afterwards (weather, fire, gas, nothing) is the aftermath's to decide.
 
 ## 3. The aftermath as briefed (for whoever builds it)
 

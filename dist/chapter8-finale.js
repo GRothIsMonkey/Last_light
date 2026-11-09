@@ -60,9 +60,9 @@ export function finaleActs(X){
  // where people are, round it (hatch-local: -z is the oak side, the ladder side)
  const AT={rimS:hw(.95,0,-.15),rimP:hw(-.95,0,.2),lift:hw(-.55,0,-1.05),grass:hw(0,0,-1.9),reyes:hw(1.6,0,1.4),brandt:hw(2.4,0,1.9)};
  // ---- the field, after: the street's own state, the sky settling, the far fires; no creatures, no people of the street ------------------------
- function fieldWorld({ride=false}={}){CM.show(false);if(nav.room===CM.nav)nav.setRoom(null);presence.reset();presence.show(false);huntStop();o.bikeAway?.(false);
+ function fieldWorld({ride=false}={}){CM.show(false);if(nav.room===CM.nav)nav.setRoom(null);presence.reset();presence.show(false);huntStop();o.bikeAway?.(!ride);
   nightStreet();X.ch3?.creature?.show?.(false);cutWorld(world);ruin.show(true);ruin.stage(2);ruin.truck.g.visible=true;street()?.after?.(true);nav.setRoom(ruin.room);lightsOn(true);for(let i=0;i<6;i++)light(i,null);
-  C.apocWant=ride?.12:.3;C.where=ride?'ride':'oak';C.amb={traffic:0,insects:.2,wind:.45,life:.25,forest:0,tunnel:0,water:0};}
+  C.apocWant=ride?.06:.16;C.where=ride?'ride':'oak';C.amb={traffic:0,insects:.2,wind:.45,life:.25,forest:0,tunnel:0,water:0};}
  // ---- Act V, scene 16a: the ladder, the chain; Alex ----------------------------------------------------------------------------------------------
  function sceneHatch(from='chamber'){go('n8-op');
   task('hatch',(function*(){
@@ -91,7 +91,7 @@ export function finaleActs(X){
    // ---- the top: the grass, the hatch held open from below, Alex's light down the well ------------------------------------------------------
    fieldWorld();hatchShow(true);checkpoint('c8-hatch');C.h=Math.max(C.h,HOUR.oak-.05);C.hMin=HOUR.oak-.05;date(C.h);C.fadeIn=0;
    Object.assign(C.flags,{jamieDead:true,sealed:true,samOut:true,anchor1:true,anchor2:true,anchor3:true});X.C.grief.jamie=true;applyGrief();
-   const A2=X.enlistAlex();A2.follow=null;A2.brain=null;stand(A2,null);A2.script=null;F8.mode='well';F8.y=-3.6;F8.lid=1.25;F8.chainHeld=true;
+   const A2=X.enlistAlex();joinFoot(A2,{x:HAT.x,z:HAT.z},HAT.a);A2.follow=null;A2.brain=null;stand(A2,null);A2.script=null;F8.mode='well';F8.y=-3.6;F8.lid=1.25;F8.chainHeld=true;
    const pq=AT.grass;o.placePlayer({x:pq.x,z:pq.z,a:headingTo(pq.x,pq.z,HAT.x,HAT.z),mode:'walk',bike:null});
    joinFoot(sam,AT.rimS,headingTo(AT.rimS.x,AT.rimS.z,HAT.x,HAT.z));stand(sam,AT.rimS,{look:()=>({x:HAT.x,y:HAT.y-2,z:HAT.z}),gesture:ACT.kneel({side:1,lookPitch:-.6}),max:1});
    reyes.show(true);reyes.place(AT.reyes.x,AT.reyes.z,headingTo(AT.reyes.x,AT.reyes.z,HAT.x,HAT.z));reyes.gest(KNEEL);
@@ -114,10 +114,10 @@ export function finaleActs(X){
    stand(sam,AT.lift,{look:()=>hw(0,.5,.1),gesture:ACT.heave({strain:1}),max:1.6});
    objective('Lift it.','The lid. You and Sam. Hold F.');
    offer('lift-lid','Lift the lid (with Sam)',()=>hw(0,.45,-.2),{r:2.4,hold:3.4,tick:(dt,v)=>{F8.lid=Math.max(F8.lid,.3+v*.75);if(Math.random()<dt*2)sound('c8Creak',hw(0,.3,0),{gain:.5});},release:()=>{},fn:()=>{F8.lid=1.15;sound('c6Clank',hw(0,.4,0),{gain:.8});}});
-   yield* until(()=>C.flags['lift-lid']||C.pt>400);
+   yield* until(()=>C.flags['lift-lid']||C.pt>400);objective('Pull him out.','Under the arms. Hold F.');
    yield* lines([SM('I’ve got it— I’ve got it up— PULL HIM—',{time:1.8,face:'determined'})]);
    offer('pull-alex','Pull him out',()=>hw(0,.2,-.7),{r:2.4,hold:2.6,tick:(dt,v)=>{F8.pull=v;},release:()=>{},fn:()=>{F8.pull=1;}});
-   yield* until(()=>C.flags['pull-alex']||C.pt>460);F8.pull=1;F8.mode='out';F8.lid=.02;sound('c6Clank',hw(0,.4,0),{gain:1.2});C.shake=.3;stand(sam,null);
+   yield* until(()=>C.flags['pull-alex']||C.pt>460);F8.pull=1;F8.mode='out';objective('','');F8.lid=.02;sound('c6Clank',hw(0,.4,0),{gain:1.2});C.shake=.3;stand(sam,null);
    yield* lines([N('You get him under the arms and pull, and he comes out of the hole onto the grass, and Sam lets the lid go and it slams behind him.',{time:4.4}),{wait:1},
     AL('(a breath that catches) ...Ow.',{time:1.4,face:'pain'}),SM('(laughing and crying at once) Ow. He says ow. He says—',{time:2.6,face:'tearful'}),{wait:1.2},
     AL('I can’t— I can’t feel my legs right.',{time:2.4,face:'pain'}),R('(coming over, kneeling) Don’t move him— Alex. Alex, look at me. Where does it hurt?',{time:3.4}),AL('...Everywhere?',{time:1.4,face:'weak'})]);
@@ -126,7 +126,7 @@ export function finaleActs(X){
  const _p=newPose();
  function sceneOak(from='oak'){go('n8-oak');
   if(from!=='carry'){fieldWorld();hatchShow(true);F8.lid=.02;Object.assign(C.flags,{jamieDead:true,sealed:true,alexHurt:true,samOut:true});X.C.grief.jamie=true;applyGrief();}
-  hatch.parent&&(F8.lid=.02);const A2=X.enlistAlex();A2.follow=null;A2.brain=null;stand(A2,null);A2.script=null;C.flags.alexHurt=true;
+  hatch.parent&&(F8.lid=.02);const A2=X.enlistAlex();joinFoot(A2,{x:OAK.x,z:OAK.z},0);A2.follow=null;A2.brain=null;stand(A2,null);A2.script=null;C.flags.alexHurt=true;
   C.h=Math.max(C.h,HOUR.oak);C.hMin=HOUR.oak;date(C.h);checkpoint('c8-oak');C.mood='relaxed';C.mindKey=null;reyes.show(false);brandt?.show(false);
   // he is against the oak (they carried him: you and Sam, Reyes ran for the car's kit); Sam beside him holding his hand
   F8.mode='oak';F8.breath=1;F8.alexDead=false;C.alexSit=false;C.samSit=false;
@@ -210,11 +210,11 @@ export function finaleActs(X){
  const RIDE8={look:0,wantLook:false,lookedBack:false};
  function sceneRide(from='ride'){go('n8-ride');
   if(from!=='walk'){fieldWorld({ride:true});hatchShow(true);F8.lid=.02;}
-  C.where='ride';C.apocWant=.12;C.h=Math.max(C.h,HOUR.ride);C.hMin=HOUR.ride;date(C.h);
+  C.where='ride';C.apocWant=.06;C.h=Math.max(C.h,HOUR.ride);C.hMin=HOUR.ride;date(C.h);
   // whoever comes in here (the ride from the walk, a DEV start, Continue): both of them gone, the grief on them both, Jamie's cap with you
   Object.assign(C.flags,{jamieDead:true,alexDead:true,sealed:true,samOut:true});X.C.grief.jamie=X.C.grief.alex=true;applyGrief();C.inv.cap=C.inv.cap||'have';
   F8.mode=null;X.dismissAlex?.();leave(jamie);C.alexSit=false;C.samSit=false;
-  const st=SP(1042.5,1.2),st2=SP(1032,1.2),a=headingTo(st.x,st.z,st2.x,st2.z);o.placePlayer({x:st.x,z:st.z,a,mode:'ride',speed:0});
+  o.bikeAway?.(false);const st=SP(1042.5,1.2),st2=SP(1032,1.2),a=headingTo(st.x,st.z,st2.x,st2.z);o.placePlayer({x:st.x,z:st.z,a,mode:'ride',speed:0});
   const sq=SP(1043,3.1);comp.putRiding(sam,sq.x,sq.z,a,0);sam.gone=false;sam.follow='ride';brain.enable(sam,true);sam.boost=.82;
   reyes.show(false);k.carA.show(true);{const cq=SP(1060,6.2),cq2=SP(1050,6.2);k.carA.park(cq.x,cq.z,headingTo(cq.x,cq.z,cq2.x,cq2.z));k.carA.lights=true;police.attach?.(true);}
   responders(true);checkpoint('c8-ride');C.fadeIn=from==='walk'?-1:0;C.mood='relaxed';C.mindKey=null;C.amb={traffic:0,insects:.25,wind:.4,life:.4,forest:0,tunnel:0,water:0};
@@ -260,7 +260,7 @@ export function finaleActs(X){
   if(ph==='n8-ride'&&RIDE8.wantLook){camera.getWorldDirection(_v);const p=me(),back=-(_v.x*Math.sin(p.a)-_v.z*Math.cos(p.a));if(back>.12){RIDE8.look+=dt;if(RIDE8.look>.9)RIDE8.lookedBack=true;}else RIDE8.look=Math.max(0,RIDE8.look-dt*.5);}
   if(ph==='n8-ride'&&C.where==='ride'&&!sam.gone){RIDE8.sob=(RIDE8.sob??8)-dt;if(RIDE8.sob<=0){RIDE8.sob=14+Math.random()*16;weep(sam,Math.random()<.5?'crying':'tearful',6+Math.random()*4);}}
   if(ph==='n8-ride'&&C.endT>=0){C.endT+=dt;o.fade(smooth(C.endT/4));if(C.endT>4.6){go('n8-end');X.end();}}}
- function afterActors(dt){const A2=X.alex;if(!A2||!F8.mode)return;const g=A2.person.group;
+ function afterActors(dt){const A2=X.alex;if(!A2||!F8.mode)return;const g=A2.person.group;A2.posedAt=C.t;if(F8.sam)sam.posedAt=C.t;
   if(F8.mode==='well'||F8.mode==='climb'||F8.mode==='last'){// on the ladder in the well: hands up on the rungs, climbing
    const w=hw(0,F8.y,-OPEN/2+.36);g.position.set(w.x,w.y,w.z);g.rotation.set(0,-HAT.a,0);copyPose(_p,A2.pose);
    const ph=F8.mode==='well'?0:F8.t*2.2;ACT.overhead({shake:F8.mode==='well'?.6:.2,lean:-.05})(_p,{clock:F8.t});_p[PP.lh+1]+=Math.sin(ph)*.12;_p[PP.rh+1]-=Math.sin(ph)*.12;_p[PP.lf+1]+=Math.max(0,Math.sin(ph))*.18;_p[PP.rf+1]+=Math.max(0,-Math.sin(ph))*.18;applyPose(A2.person,_p);return;}
