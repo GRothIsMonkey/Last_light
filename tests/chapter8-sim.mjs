@@ -126,28 +126,69 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   check(`${label}: Danny: the flyer (two fingers, left hand), his hand on the alcove, his name; it flees what is coming`,()=>{assert.ok(A8.C.flags.flyer&&A8.C.flags.hand&&A8.C.flags.danny&&A8.C.flags.presence);assert.ok(said('Danny?'));});
   via([P('cIn'),P('galleryMid'),P('bulkhead'),P('jMid')],{r:1.1,pad:12});until(()=>ph()==='e8-sam',20);lap('corridor');}
  // ---- Act III ------------------------------------------------------------------------------------------------------------------
- if(inSeg('wing')){until(()=>ph()==='e8-sam',10);take('ruth',{max:40,r:2});until(()=>A8.C.view==='inspect',10);putDown(40);until(()=>A8.C.flags.ruth,20);
-  approach(P('samDoor'),1.6,{pad:8});chooseKey(1);until(quiet,20);chooseKey(2);until(()=>A8.C.flags.samProven&&offers().includes('valve'),40);
-  take('valve',{hold:12,r:1.4,max:40});
-  retry(()=>{until(()=>offers().includes('hide-D0'),20);take('hide-D0',{max:8,r:1.8});until(()=>A8.HM.root.visible&&Math.hypot(A8.HM.x-me().x,A8.HM.z-me().z)<9,40);until(()=>hunterSafe()&&Math.hypot(A8.HM.x-me().x,A8.HM.z-me().z)>7,40);
-   until(()=>offers().includes('samcrank'),40);return patientHold('samcrank',{hideId:['hide-D2','hide-D1','hide-D0'],extra:()=>{if(offers().includes('pawl')){release('KeyF');take('pawl',{r:1.5,max:6});return true;}return false;}});});
-  until(()=>ph()==='e8-jamie',60);
-  check(`${label}: Sam: what's new can't be copied (the fan); the drain; the seized crank and the catch; out; something far off moves`,()=>{assert.ok(said('He can’t sleep without it.'));assert.ok(said('I thought you were another one.'));assert.ok(said('You found me.'));assert.ok(A8.C.flags.anchor1);});lap('wing');}
- if(inSeg('retrieval')){until(()=>ph()==='e8-jamie',10);approach(P('grille'),5.5,{pad:8});until(()=>offers().includes('jlever'),80);
-  retry(()=>{o.light(false);return patientHold('jlever',{hideId:['hide-E3','hide-E1']});});
-  approach(P('jMid'),1.5,{pad:12,sprint:true});until(()=>said('You look worse.'),60);until(()=>ph()==='e8-alex',40);
-  check(`${label}: Jamie: it brings him back to his cell; Sam holds the grille; Jamie's door; it hits the grille; "You look awful." "You look worse."`,()=>{assert.ok(said('You actually came back.'));assert.ok(A8.C.flags.anchor2);});lap('retrieval');}
  const marked=w=>A8.C.marks.some(m=>m[1]===w);
- if(inSeg('alex')){until(()=>ph()==='e8-alex',10);via([P('kMid'),P('hMid'),P('f0In'),P('f0Mid')],{r:1,pad:10});
-  // halfway down, look back the way you came: the door to the gallery is a wall
-  until(()=>marked('behind you, a wall'),20);const back=P('f0Door');for(let k=0;k<60&&!said('Where’s the door?');k++){faceV({x:back.x+1,y:-1.5,z:back.z});T.advance(1/15);}
-  via([P('f0End'),P('f1In'),P('f1Mid')],{r:1,pad:10});until(()=>marked('his door'),60);approach(P('alexDoor'),2.2,{pad:8});
-  until(()=>A8.C.flickWant,180);o.light(true);wait(.3);for(let k=0;k<4;k++){tap('KeyT');wait(.4);}until(()=>offers().includes('alever'),40);take('alever',{hold:14,r:1.2,max:40});
-  until(()=>A8.C.flags.anchor3,20);via([P('f1In'),P('f0End'),P('f0Mid'),P('f0In'),P('hMid'),P('kSouth'),P('gDoor'),P('gIn')],{r:1,pad:10,sprint:true});until(()=>ph()==='e8-reunion',30);
-  check(`${label}: Alex: "It keeps bringing you here."; at the same time (your light, twice); two handles; the last one out`,()=>{assert.ok(said('It keeps bringing you here.'));assert.ok(said('We’re taking you home.'));assert.ok(A8.C.flags.anchor3);});lap('alex');}
- if(inSeg('reunion')){until(()=>ph()==='e8-reunion',10);until(()=>offers().includes('t-alex'),40);for(const id of ['t-jamie','t-sam','t-sam','t-alex','t-alex','t-alex']){until(quiet,30);take(id,{max:12,r:1.8});until(quiet,30);}
-  until(()=>ph()==='f8-truth',220);
-  check(`${label}: all four of them: "I thought I wasn't going to see you guys again." … "Can we just go home?"; the alarm; Reyes on the radio`,()=>{assert.ok(said('I thought I wasn’t going to see you guys again.'));assert.ok(said('Can we just go home?'));assert.equal(A8.state.inv.radio,'have');});lap('reunion');}
+ const W8=(x,z)=>({x:-2600+x,z:2600+z});
+ if(inSeg('wing')){until(()=>ph()==='e8-sam',10);
+  take('panel',{max:30,r:2.4});until(()=>A8.C.flags.panelSeen,20);until(quiet,20);
+  // down the wing along its north side, clear of the live cable in the middle of it, to the cell the knocking comes from
+  retry(()=>{via([W8(-8,25.6),W8(-14.2,25.6),W8(-17.2,25.6),W8(-18.6,27.4)],{r:.6});return approach(P('samLook'),.7,{pad:6});},3);
+  take('slot',{max:30,r:1.4});until(()=>!!A8.C.choice,40);chooseKey(1);until(quiet,20);until(()=>!!A8.C.choice,20);chooseKey(3);until(()=>A8.C.flags.samTrust,60);until(quiet,40);
+  via([W8(-17.2,25.6),W8(-14.2,25.6),W8(-8,25.6)],{r:.6});take('breaker',{hold:4,r:1.4,max:20});until(()=>A8.C.flags.breakerOff,10);until(quiet,20);
+  until(()=>offers().includes('drain'),30);
+  retry(()=>{for(let k=0;k<6&&offers().includes('drain');k++){
+    take('drain',{hold:30,r:1.3,max:20,stop:()=>A8.C.flags.wingHunt&&!A8.C.flags.wingClear});if(A8.C.failing)return false;
+    // it heard the wheel: behind the pipes, low, light off, until it has gone back up the wing
+    if(A8.C.flags.wingHunt&&!A8.C.flags.wingClear){o.light(false);press('KeyC');take('hide-D0',{max:6,r:2.2});until(()=>A8.C.flags.wingClear||!!A8.C.failing,90);if(A8.C.failing)return false;if(A8.C.hiding)take('unhide',{max:4,r:9});release('KeyC');}}
+   return !A8.C.failing;},4);
+  until(()=>A8.C.flags.drained,20);o.light(true);
+  approach(P('samCrank'),1,{pad:6});take('crank1',{hold:6,r:1.3,max:30});
+  for(let k=0;k<4&&!A8.C.flags.samFree&&A8.X.ST.wedge!==1;k++){if(!until(()=>offers().includes('crank2')||A8.X.DOORS.samCell.want>=.44,30))break;if(offers().includes('crank2'))take('crank2',{hold:4,r:1.4,max:2});}
+  until(()=>offers().includes('pipe'),30);take('pipe',{max:20,r:1.3,pad:8});take('wedge',{hold:4,r:1.5,max:20});until(()=>A8.C.flags.samFree,30);
+  // out: the flood door is coming down. Its brake, held until he is under; then under it yourself, low
+  retry(()=>{if(!until(()=>offers().includes('isoBrake')||!!A8.C.flags.samThrough,90))return false;if(A8.C.flags.samThrough)return true;approach(P('dIsoD'),.9,{pad:6,sprint:true});const at=offerAt('isoBrake');if(!at)return !!A8.C.flags.samThrough;faceV(at);
+   until(()=>{faceV(at);if(spot()?.id==='isoBrake')press('KeyF');return !!A8.C.flags.samThrough||!!A8.C.failing;},50);release('KeyF');if(A8.C.failing)return false;
+   press('KeyC');approach(P('jMid'),1.2,{pad:8});release('KeyC');return !A8.C.failing;},4);
+  until(()=>A8.C.flags.samDone||ph()==='e8-jamie',60);
+  check(`${label}: Sam: a voice from the speaker and knocking from a cell; his own notebook through the door; the breaker, the drain (it comes), the catch, the pipe; the flood door; D3 drops`,()=>{
+   assert.ok(said('It comes out of the grey speaker horn'));assert.ok(said('It’s wet. It’s real.'));assert.ok(said('You came.'));assert.ok(A8.C.flags.wingHunt&&A8.C.flags.samFree&&A8.C.flags.samThrough);assert.equal(A8.X.PANEL.want[0],0);assert.ok(said('D-three. That’s... that’s my cell.'));});lap('wing');}
+ if(inSeg('retrieval')){until(()=>ph()==='e8-jamie',10);press('KeyC');o.light(false);
+  // it brings him back: stay low at the wing's mouth until it has gone back into its room
+  approach(P('eWest'),1,{pad:8});until(()=>A8.C.eHunt||!!A8.C.failing,90);release('KeyC');take('bolts',{max:10,r:1.2});take('grille',{max:20,r:1.3});
+  retry(()=>{press('KeyC');o.light(false);if(offers().includes('grille'))take('grille',{max:10,r:1.3});
+   if(!A8.C.flags.jamieTalk){
+    // at the grille, low, light off, until it goes into its room at the end; then under, to his slot
+    approach(W8(20.5,27.4),.6,{pad:6});press('KeyC');until(()=>(A8.HM.x+2600>34.4&&A8.H.mode==='patrol')||!!A8.C.failing,150);if(A8.C.failing)return false;
+    press('KeyC');approach(P('e2Look'),.6,{pad:6});take('jslot',{max:10,r:1.4});until(()=>A8.C.flags.jamieTalk||!!A8.C.failing,60);if(A8.C.failing)return false;}
+   if(!A8.C.flags.ventOpen){press('KeyC');approach(P('e3Mid'),.6,{pad:6});
+    // behind the open door while it comes up the wing and looks in; out again when it has gone by
+    const tIn=A8.C.t,e3d=W8(31.5,25.9);take('hide-E3',{max:60,r:1.5});if(process.env.DEBUG8)console.log('  [jamie] in E3 at',(me().x+2600).toFixed(1),(me().z-2600).toFixed(1),'hiding',A8.C.hiding,'offers',offers().join(','),'hunter',(A8.HM.x+2600).toFixed(1),A8.H.mode);until(()=>offers().includes('vent')||!!A8.C.failing,40);
+    until(()=>((A8.C.doorCheck?.E3??-99)>tIn&&Math.hypot(A8.HM.x-e3d.x,A8.HM.z-e3d.z)>5.5&&A8.H.mode==='patrol')||!!A8.C.failing,150);if(A8.C.failing)return false;
+    if(process.env.DEBUG8)console.log('  [jamie] waited behind the door; check',A8.C.doorCheck?.E3,'tIn',tIn,'t',A8.C.t.toFixed(1),'hiding',A8.C.hiding,'hunter',(A8.HM.x+2600).toFixed(1),(A8.HM.z-2600).toFixed(1),A8.H.mode);
+    if(A8.C.hiding)take('unhide',{max:4,r:9});
+    // it has looked in and gone on: it won't look again for a while. The bolts, now, low, light off
+    press('KeyC');take('vent',{hold:9,r:1.2,max:10});release('KeyC');if(A8.C.failing||!A8.C.flags.ventOpen)return false;}
+   until(()=>offers().includes('pull')||!!A8.C.failing,40);if(A8.C.failing)return false;take('pull',{hold:5,r:1.4,max:10});return until(()=>A8.C.flags.jamieOut,20);},4);
+  // run: its room, its bore (under the pipe, low), F0, the long hall, the corridor, the crew room; the locker across the door
+  retry(()=>{until(()=>!!A8.C.flags.jamieOut,10);o.light(true);
+   {const ok1=via([P('denIn'),P('denBack')],{r:.8,sprint:true});if(process.env.DEBUG8)console.log('  [run] to the den back',ok1,'me',(me().x+2600).toFixed(1),(me().z-2600).toFixed(1),'hunter',(A8.HM.x+2600).toFixed(1),(A8.HM.z-2600).toFixed(1),A8.H.mode,'failing',!!A8.C.failing,'cell',A8.state.cell);if(!ok1)return false;}press('KeyC');wait(.6);X.walkLine=null;const w8=pts=>{for(const [x,z] of pts){const q=W8(x,z);if(!approach(q,.5,{pad:3,max:8}))return false;}return true;};w8([[39.6,34.5],[39.6,35.6],[39.6,37.3],[39.6,38.4]]);release('KeyC');
+   if(!via([P('e5Mid'),W8(39.6,45.6),P('e6Mid'),P('e6West'),P('f0In'),P('hEast'),P('kSouth'),P('gIn')],{r:.9,sprint:true}))return false;
+   until(()=>offers().includes('locker')||!!A8.C.failing,6);take('locker',{hold:3,r:1.4,max:8});return !A8.C.failing&&A8.X.ST.lockerWant===1;},4);
+  until(()=>A8.C.flags.jamieDone||ph()==='e8-alex',220);
+  check(`${label}: Jamie: it brings him back and bends his door; the grille (Sam); his slot; the duct (he sticks; you pull); it tears the door out; the den and its bore; the locker; E2 drops`,()=>{
+   assert.ok(said('Took you long enough.'));assert.ok(A8.C.flags.latchBent&&A8.C.flags.ventOpen&&A8.C.flags.jamieOut);assert.ok(marked('it tore his door out'));assert.equal(A8.X.PANEL.want[1],0);assert.ok(said('Who’s in F-two.'));});lap('retrieval');}
+ if(inSeg('alex')){until(()=>ph()==='e8-alex',10);
+  via([P('hMid'),P('hEast'),P('f0In'),W8(19.8,49.6)],{r:.9,pad:10});until(()=>A8.C.flags.slid&&A8.X.ST.fa>.8,30);
+  via([P('faNorth'),P('faMid'),P('faSouth'),W8(19.8,58.8),P('f0End'),P('f1In'),P('f1Mid')],{r:.8,pad:10});until(()=>marked('Alex believes it is them')||offers().includes('photo'),90);
+  take('photo',{max:30,r:9});take('under',{max:30,r:1.4,pad:8});until(()=>A8.C.flags.alexTrust,60);
+  take('leverB',{hold:6,r:1.3,max:40,pad:8});until(()=>A8.C.flags.alexOut,90);
+  retry(()=>{until(()=>A8.X.ST.breach>.9||!!A8.C.failing,20);if(!via([P('f2Breach'),P('ilSouth'),W8(15.1,70)],{r:.7,pad:6}))return false;press('KeyC');approach(W8(15.1,65.6),.5,{pad:4});release('KeyC');
+   approach(W8(15.1,63.6),.5,{pad:4});take('alexHand',{max:20,r:1.8});if(!via([P('ilGap'),W8(15.1,58.6),P('ilNorth')],{r:.4,pad:4}))return false;take('hwin',{hold:2,r:1.8,max:20});return approach(P('hWinIn'),.8,{pad:6});},4);
+  via([P('hMid'),P('kSouth'),P('gIn')],{r:1,pad:10,sprint:true});until(()=>ph()==='e8-reunion',60);
+  check(`${label}: Alex: the corridor closes ahead and makes a passage; the room it made; his camera, a picture of the three of you ("They never bleed"); two levers; the room comes apart; the ledge; his hand; the last wall breaks`,()=>{
+   assert.ok(said('That was a corridor a second ago.'));assert.ok(said('Jamie’s bleeding.'));assert.ok(said('They never bleed.'));assert.ok(A8.C.flags.alexOut&&A8.C.flags.alexHand);assert.equal(A8.X.PANEL.want[2],0);assert.ok(A8.X.ST.shear>.5);});lap('alex');}
+ if(inSeg('reunion')){until(()=>ph()==='e8-reunion',10);for(const id of ['gum','camera','bike','sit','ankle','alexStory']){until(quiet,40);take(id,{max:20,r:2.2,pad:6});until(()=>!A8.state.tasks.includes('beat-'+id),60);}
+  until(()=>ph()==='f8-truth'||offers().includes('board'),240);
+  check(`${label}: all four of them, for a while: the gum, the camera (riding tomorrow), the bike, sitting with them; Reyes on the radio`,()=>{assert.ok(said('It still tastes like gum.'));assert.ok(said('So we’re going.'));assert.ok(said('Tomorrow.'));assert.ok(said('This is the worst sleepover ever.'));assert.equal(A8.state.inv.radio,'have');});lap('reunion');}
  // ---- Act IV -------------------------------------------------------------------------------------------------------------------
  if(inSeg('truth')){until(()=>ph()==='f8-truth',10);approach(P('hMid'),1.5,{pad:12});take('board',{max:40,r:4});until(()=>ph()==='f8-breach',120);
   check(`${label}: the anchor board: the tags (A.R., R.A.C., E.L./T.L., D.W.), three blank rows, three needles down; "We let it out?" "You got your friends back."`,()=>{assert.ok(A8.C.flags.board);assert.ok(said('We let it out?'));assert.ok(said('You got your friends back.'));});lap('truth');}

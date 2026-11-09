@@ -41,7 +41,7 @@ import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
 // QA jumps and DEV scenes, in story order (each starts a little before its moment)
 export const SECTIONS8=['chapter8-start','c8-bikes','c8-cover','c8-reyes','c8-field','c8-probe','c8-lift','c8-shaft','c8-barrier',
  'c8-gallery','c8-stealth','c8-office','c8-film','c8-corridor','c8-danny','c8-bulkhead',
- 'c8-wing','c8-ruth','c8-sam','c8-sam-door','c8-retrieval','c8-jamie','c8-jamie-door','c8-shift','c8-made','c8-alex','c8-alex-free',
+ 'c8-wing','c8-ruth','c8-sam','c8-sam-door','c8-sam-out','c8-retrieval','c8-jamie','c8-jamie-door','c8-jamie-run','c8-shift','c8-made','c8-alex','c8-alex-free','c8-ledge',
  'c8-reunion','c8-alarm','c8-truth','c8-breach','c8-escape','c8-ladder',
  'c8-surface','c8-street','c8-hendersons','c8-garage','c8-jamie-death','c8-staging','c8-gates','c8-ports','c8-line-two','c8-plug','c8-hatch',
  'c8-oak','c8-alex-death','c8-ride','c8-look-back','chapter8-end'];
@@ -52,8 +52,8 @@ export const ALIAS8={'c8-start':'chapter8-start','c8-four-bikes':'c8-bikes','c8-
  'c8-redirect':'c8-ports','c8-drop-plug':'c8-plug','c8-alex-dies':'c8-alex-death','c8-last-ride':'c8-ride','c8-end':'chapter8-end'};
 // Checkpoints (silent; Continue on the title comes back here). A failure comes back to the checkpoint of where it happened.
 export const LABEL8={'chapter8-start':'Four bikes','c8-field':'The missing junction','c8-shaft':'MH-12','c8-gallery':'The construction gallery','c8-stealth':'Something is searching',
- 'c8-corridor':'The service corridor','c8-wing':'The flooded wing','c8-sam-door':'Sam’s door','c8-retrieval':'The retrieval wing','c8-jamie-door':'Jamie’s door','c8-shift':'The corridor that moves',
- 'c8-alex':'Alex','c8-reunion':'All four of them','c8-truth':'The anchor board','c8-escape':'The way out','c8-surface':'Oak Hollow','c8-hendersons':'The Hendersons’','c8-staging':'The works',
+ 'c8-corridor':'The service corridor','c8-wing':'The flooded wing','c8-sam':'Sam','c8-sam-door':'Sam’s door','c8-sam-out':'The flood door','c8-retrieval':'The retrieval wing','c8-jamie':'Jamie’s cell','c8-jamie-run':'Its den','c8-shift':'The corridor that moves',
+ 'c8-made':'The room it made','c8-alex':'Alex','c8-ledge':'The ledge','c8-reunion':'All four of them','c8-truth':'The anchor board','c8-escape':'The way out','c8-surface':'Oak Hollow','c8-hendersons':'The Hendersons’','c8-staging':'The works',
  'c8-gates':'The outer routes','c8-ports':'The drawdown','c8-plug':'The plug','c8-oak':'The oak','c8-ride':'The last ride','chapter8-end':'The night Oak Hollow fell'};
 const PHASES=['c8-black','d8-bikes','d8-field','d8-shaft','e8-gallery','e8-danny','e8-sam','e8-jamie','e8-alex','e8-reunion','f8-truth','f8-breach','g8-surface','g8-street','g8-staging','n8-op','n8-oak','n8-ride','n8-end'];
 // (the clock: Friday 10:42 PM at Sam's; past midnight under the court; before five on the street; dawn at the oak)
@@ -78,7 +78,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const ruin=createRuin({scene,world,nav,sfx:(n,p,op)=>sound(n,p,op)});
  const works=ch6.works,WS=ch6.WS||{},WP=ch6.WP||((x,z,y)=>{const w=works.local(x,z);return {x:w.x,z:w.z,y:y??gy(w.x,w.z)};});
  const HM=createHunterModel({scene});HM.root.name='chapter8-hunter';
- const hunterNav={walkable:(x,z,r)=>nav.walkable(x,z,{r}),floorAt:(x,z)=>nav.groundY(x,z)};
+ const hunterNav={walkable:(x,z,r)=>!(C.hunterBlock&&C.hunterBlock(x,z))&&nav.walkable(x,z,{r}),floorAt:(x,z)=>nav.groundY(x,z)};// (a scene can keep it out of a place: the grille Sam holds)
  const sightClear=(ax,ay,az,bx,by,bz)=>X.nav.inside(ax,az)&&X.nav.inside(bx,bz)?X.sight(ax,ay,az,bx,by,bz):true;
  const H=createHunterAI({model:HM,nav:hunterNav,sightClear,sfx:(n,p,op)=>sound(n,p,op),mark:w=>mark(w)});
  const danny=ch3.creature;// (the same thing as in the drain, the downtown street and the camp)
@@ -184,7 +184,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function clock(dt){if(S.phase==='c8-black')return;C.h+=dt/240;if(C.hMin!==undefined&&C.h<C.hMin)C.h=Math.min(C.hMin,C.h+dt/30);const m=Math.floor(C.h*60+1e-6);if(m!==C.minute){C.minute=m;date(C.h);}}
  const below=()=>X.ST.active&&X.nav.inside(camera.position.x,camera.position.z);
  function sky(){const ph=S.phase;
-  if(below())return {day:0,p:0,night:1,deep:1,fill:0,storm:0,flash:0,cave:.94};
+  if(below())return {day:0,p:0,night:1,deep:1,fill:0,storm:0,flash:Math.min(1,(C.flash||0)*3),cave:.94};
   if(/^n8-(oak|ride|end)$/.test(ph)){const k2=smooth((C.h-30.1)/.5);return {day:.18+.42*k2,p:.55-.15*k2,night:.4-.35*k2,deep:0,fill:.1,storm:0,flash:0,cave:0};}
   if(/^(g8|n8-op)/.test(ph)){const k2=smooth((C.h-28.6)/1.4);return {day:.02+.12*k2,p:.18+.2*k2,night:.92-.3*k2,deep:.2*(1-k2),fill:0,storm:0,flash:0,cave:inWorksBelow()?.8:0};}
   return {day:0,p:0,night:1,deep:.45,fill:0,storm:0,flash:0,cave:inSams()?.75:0};}

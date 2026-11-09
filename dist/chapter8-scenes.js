@@ -7,6 +7,7 @@ import {LOOKOUT} from './layout.js';
 import {paper8,PAGES8,createFilm} from './chapter8-props.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
 import {fallActs} from './chapter8-fall.js';
+import {rescueActs} from './chapter8-rescue.js';
 import {CX} from './chapter8-complex.js';
 
 export function scenes8(X){
@@ -322,191 +323,9 @@ export function scenes8(X){
   else if(D.st==='cower'){sp=0;dv.cower=damp(dv.cower||0,1,4,dt);dv.crouch=damp(dv.crouch||0,.9,4,dt);dv.snap=Math.sin(D.t*9)>.6?1:0;look=CM.at('cEnd',0.6);}
   else if(D.st==='flee'){const v=CM.at('cVent');sp=Math.min(8,2+D.t*10);face(v.x,v.z,10);if(step(v.x,v.z,sp)||D.t>4){D.st='gone';danny.show(false);C.dannyOn=false;sound('c7Drag',v,{gain:.8});}dv.cower=damp(dv.cower||0,.2,6,dt);look=null;}
   if(D.st!=='gone'){dv.speed=sp;dv.look=look;danny.place(D.x,danny.ground(D.x,D.z),D.z,D.a);danny.update(dt);}}
- // ---- Act III, scene 6: the flooded wing; Ruth Ann Carver; Sam ----------------------------------------------------------------------------------------
- function sceneWing(from='wing'){go('e8-sam');if(from!=='wing'||C.where!=='below'){enterComplex('jMid',-Math.PI/2);if(from==='wing'){const q=W(3.5,23.4),t=CM.at('jMid');o.placePlayer({x:q.x,z:q.z,a:headingTo(q.x,q.z,t.x,t.z),mode:'walk',bike:null});}}/* (jumped to, or Continued: you come in at the bulkhead) */lightsBelow('J');C.h=Math.max(C.h,HOUR.wing);C.hMin=HOUR.wing;date(C.h);CM.setDoor('bulkhead',1,{instant:true});
-  CM.setDoor('samCell',0,{instant:true});CM.setDoor('D2',1,{instant:true});if(from==='wing')checkpoint('c8-wing');
-  task('wing',(function*(){
-   if(from==='wing'){yield* lines([N('The other side of the bulkhead: a hall of green-painted steel. ISOLATION — 1959. Two wings. Water standing in the west one.',{time:4})]);}
-   if(from==='wing'||from==='ruth'){objective('The west wing.','The water.');
-    offer('ruth','Look in cell four',()=>CM.at('d2In',.6),{r:3,look:true,size:.8,cone:.12,fn:()=>task('ruth',(function*(){
-     yield* lines([N('Cell four. A cot, a blanket gone grey. A girl’s hair ribbon, blue, tied round the cot’s leg. A ticket stub: LYRIC THEATRE — AUG. 23, 1966.',{time:4.6}),
-      N('Under the blanket, on the cot, something small and very still that nobody has moved in a long time. You don’t lift the blanket.',{time:4.2})]);
-     yield* reading('ruth',[N('A page from the township’s log, left on the cot. 8/24/66: CH. 4 OCCUPIED. CARVER, R.A. (11).',{time:3.8}),N('6/70: SHE TALKS TO THE WALL. ASKS FOR HER MOTHER.',{time:3.2}),
-      N('3/12/79: NO RESPONSE. CONNECTION LOST. B-3 SHIFTED 2 IN. CH. 4 SEALED. NO FAMILY CONTACT.',{time:4.4})]);
-     C.flags.ruth=true;yield* lines([{wait:.6},N('Ruth Ann Carver. She rode to the Lyric in 1966. She was in here thirteen years.',{time:3.8})]);})())});
-    yield* until(()=>C.flags.ruth||near(CM.at('samDoor'),4)||C.pt>500);}
-   checkpoint('c8-sam');
-   // Sam's door: him, inside, in the water; it can't be him, unless it's something it couldn't have heard
-   objective('Cell six.','The door with the light behind it.');light(4,CM.at('samIn',1.6),{intensity:2.2,dist:5,color:0xc8d4c8,flicker:.1});
-   yield* until(()=>near(CM.at('samDoor'),2.6)||C.pt>700);
-   yield* lines([N('Through the grille in the door: Sam. Standing in the water, his arms around himself. He looks at you and backs up to the wall.',{time:4.2}),
-    SM('Don’t. Don’t come closer.',{time:1.6,face:'terrified'}),SM('It does you. It’s done you four times. It does everybody. It does what we SAY.',{time:3.4,face:'afraid'}),
-    SM('Say something it couldn’t have heard. Something nobody ever said.',{time:3,face:'afraid'})]);
-   let proven=false,tries=0;
-   while(!proven){tries++;const id=yield* choosing([{id:'race',label:'“Race you to the end of the street.”'},{id:'fan',label:'“Your dad keeps turning your fan back on. He doesn’t know why.”'},{id:'rule',label:'“Nobody gets left behind.”'}],{timeout:45,fallback:tries>1?'fan':'race'});
-    if(id==='fan'){proven=true;yield* lines([Y('Your dad keeps turning your fan back on. He doesn’t know why.',{time:3}),{wait:1.4},SM('…He can’t sleep without it.',{time:2,face:'sad'}),SM('I can’t. He knows that.',{time:1.8,face:'sad'})]);}
-    else if(id==='race')yield* lines([Y('Race you to the end of the street.',{time:1.8}),SM('Jamie said that. On Sunday. It’s HEARD that.',{time:2.4,face:'afraid'})]);
-    else yield* lines([Y('Nobody gets left behind.',{time:1.6}),SM('That’s on the poster. That’s in my head. It’s been IN my head.',{time:2.8,face:'afraid'})]);}
-   C.flags.samProven=true;
-   yield* lines([{wait:.8},SM('I thought you were another one.',{time:2,face:'sad'}),Y('It’s me.',{time:1}),SM('You found me.',{time:1.8,face:'relieved'}),
-    SM('The door goes up with the crank. But not with the water on it. There’s a drain. The big wheel. In the end room.',{time:3.6,face:'determined'})]);
-   checkpoint('c8-sam-door');
-   // the valve, the crank, and it coming back along the wing
-   objective('Drain the wing.','The big wheel in the end room. Hold F.');
-   offer('valve','Turn the drain wheel',()=>CM.at('dValve',1.3),{r:1.9,hold:6,tick:(dt,v)=>{CM.ST.valveV=3;CM.ST.waterWant=-.4*v;if(Math.random()<dt*2)sound('c6Grind',CM.at('dValve',1.3),{gain:.4});},fn:()=>{CM.ST.waterWant=-.42;C.flags.drained=true;sound('c6Splash',CM.at('dValve',0),{gain:.8});}});
-   yield* until(()=>C.flags.drained);
-   // the water going out of the wing is loud: down the hall, something heard it, and comes; it walks the wing, up and back
-   yield* lines([N('The water goes down the wing with a long, ugly sound, down to the ankles.',{time:3}),{wait:.4},N('Out in the hall, in the water, something heavy. Coming this way.',{time:3}),
-    SM('It heard that. Get in a cell— get in four, beside me. When it goes past, the crank.',{time:3,face:'terrified'})]);
-   huntStart({ids:['D','D0','D1','D2'],at:CM.at('jWest'),catchTo:'c8-sam-door',range:12,fov:1.1,speedK:.8,extra:[{id:'Dw',x:CX.x-25,z:CX.z+27,pause:2.6},{id:'De',x:CX.x-7.4,z:CX.z+27,pause:2.2}]});H.patrol(['Dw','De']);
-   offer('hide-D2','Get into cell four',()=>CM.at('d2In',.4),{r:2,once:false,when:()=>!C.hiding,fn:()=>hide('D2',CM.at('d2In'))});
-   offer('hide-D1','Get into cell five',()=>CM.at('d1In',.4),{r:1.8,once:false,when:()=>!C.hiding,fn:()=>hide('D1',CM.at('d1In'))});
-   offer('hide-D0','Get down behind the pipes',()=>CM.at('dHide',.5),{r:2,once:false,when:()=>!C.hiding,fn:()=>hide('D0',CM.at('dHide'))});
-   let warned=0;
-   yield* lines([SM('Now the crank. By my door. When it’s got its back to you.',{time:2.4})]);
-   offer('samcrank','Crank the door up',()=>CM.at('samCrank',1),{r:1.8,hold:5,noise:.55,can:()=>C.flags.pawl||((C.hold.samcrank||0)<.32),blocked:()=>{if(!C.flags.jam){C.flags.jam=true;sound('c6Clank',CM.at('samCrank',1),{gain:.8});say([SM('It’s seized. The pawl— the red catch, by your foot. Knock it up.',{time:2.8})]);offer('pawl','Knock the catch up',()=>CM.at('samCrank',.3),{r:1.8,fn:()=>{C.flags.pawl=true;sound('c6Clank',CM.at('samCrank',.3),{gain:1});}});}},
-    tick:(dt,v)=>{CM.setDoor('samCell',v*.9,{instant:true});if(Math.random()<dt*2.4)sound('c6Grind',CM.at('samCrank',1),{gain:.4});},fn:()=>{CM.setDoor('samCell',1);C.flags.samOut=true;}});
-   while(!C.flags.samOut){yield;warned=samWarn(warned);}
-   huntStop();
-   // Sam out: as he crosses the line of the door something big shifts, far off; a long impact; the water shivers
-   const sq=CM.at('samIn');joinFoot(sam,sq,Math.PI);sam.gone=false;walkTo(sam,CM.at('samDoor'),{speed:1});
-   yield* until(()=>!CM.inCell(sam.px,sam.pz,'D3',-.2)||C.pt>1600);
-   C.flags.anchor1=true;sound('c8Impact',CM.at('jMid',-4),{gain:.9});C.shake=.45;mark('a barrier moved (Sam)');
-   yield* lines([{wait:.4},N('Far off, under everything, something moves. A long, heavy sound, like a building settling. The water shivers.',{time:4}),SM('What was that?',{time:1.2,face:'afraid'}),Y('I don’t know.',{time:1.2}),
-    SM('…Okay.',{time:.8}),SM('Jamie. It took Jamie. I heard him. It brought him past my door.',{time:3,face:'worried'})]);
-   minds();sceneRetrieval('retrieval');})());}
- function samWarn(w){const d=Math.hypot(HM.x-me().x,HM.z-me().z);if(d<8&&w<3&&!busy()&&C.hunt){w++;say([SM(w===1?'Stop. It’s coming back.':w===2?'Get down. Get DOWN.':'Don’t move.',{time:1.4,face:'terrified'})]);}if(d>13&&w>0)w=0;return w;}
- // ---- Act III, scene 7: the retrieval wing; Jamie ---------------------------------------------------------------------------------------------------
- function sceneRetrieval(from='retrieval'){go('e8-jamie');if(from!=='retrieval'){enterComplex('jMid',Math.PI/2);joinFoot(sam,CM.at('jWest'),Math.PI/2);C.flags.samOut=true;C.flags.anchor1=true;}lightsBelow('J');C.h=Math.max(C.h,HOUR.retrieval);C.hMin=HOUR.retrieval;date(C.h);
-  CM.ST.grille=CM.ST.grilleWant=1;CM.setDoor('jamieCell',0,{instant:true});CM.setDoor('den',1,{instant:true});checkpoint('c8-retrieval');
-  task('retrieval',(function*(){
-   objective('The east wing.','The grille.');
-   yield* until(()=>near(CM.at('grille'),6)||C.pt>400);
-   // from behind the grille: it, coming back up the wing with Jamie over its shoulder; his door; it puts him in; his door down
-   HM.show(true);H.reset();HM.show(true);const den=CM.at('denIn'),jd=CM.at('jamieDoor'),ji=CM.at('jamieIn');H.place(den.x,den.z,-Math.PI/2);C.carryJamie=true;
-   jamie.gone=false;comp.putFoot(jamie,den.x,den.z,0,{bike:null});jamie.person.group.visible=true;jamie.follow=null;C.jamieLimp=true;
-   H.script([{to:()=>[jd.x,jd.z+1.4],speed:1.1,state:'walk',free:true},{act:()=>{CM.setDoor('jamieCell',1);sound('c8Hydraulic',jd,{gain:.8});}},{wait:1.4,state:'idle'},
-    {to:()=>[ji.x,ji.z+.4],speed:.8,state:'walk',free:true},{act:()=>{C.carryJamie=false;C.jamieLimp='cot';}},{wait:1.2,state:'crouch'},{to:()=>[jd.x,jd.z+1.6],speed:.9,state:'walk',free:true},
-    {act:()=>{CM.setDoor('jamieCell',0);sound('c7Door',jd,{gain:1});}},{to:()=>[den.x,den.z],speed:1,state:'walk',free:true},{act:()=>{HM.show(false);H.reset();}}]);
-   yield* lines([N('Down the wing, it comes out of the far room. Jamie is over its shoulder. He isn’t moving.',{time:3.6}),SM('Jamie—',{time:.8,face:'terrified'}),{wait:2.4},
-    N('It opens a door with one hand, the way you’d open your own front door. It goes in with him.',{time:3.6}),{wait:3},N('It comes out without him. The door comes down.',{time:2.6})]);
-   yield* until(()=>H.mode!=='script'||C.pt>500,30);
-   yield* lines([SM('He got out. He must’ve got out of it, and it— it brings you back. It brings you BACK.',{time:3.6,face:'afraid'}),N('Along the floor, the drag marks. Dozens of them, from the far room to these doors. Years of them.',{time:3.6})]);
-   checkpoint('c8-jamie-door');
-   // the grille: a counterweight; Sam holds it (if he lets go it drops); you go through to Jamie's door
-   yield* lines([SM('It’s on a counterweight. Like the gate. If I hold this, it stays up. If I let go, it drops.',{time:3.4,face:'determined'}),SM('I’ll hold it. Go.',{time:1.4})]);
-   stand(sam,CM.at('grilleLever'),{look:()=>CM.at('grilleLever',1.2),max:1});yield* until(()=>Math.hypot(sam.px-CM.at('grilleLever').x,sam.pz-CM.at('grilleLever').z)<.6,12);
-   CM.ST.grilleWant=0;sound('c6Grind',CM.at('grille',1.4),{gain:.8});noise(CM.at('grille'),.6,'grille');
-   // (it is in its room at the end, moving about in there: it comes out to a noise, and goes back)
-   huntStart({ids:['E','E1','E2','E3','E4'],at:CM.at('denIn'),catchTo:'c8-jamie-door',range:12,fov:1.1,speedK:.85,extra:[{id:'den1',x:CX.x+39.2,z:CX.z+24.6,pause:3.4},{id:'den2',x:CX.x+39.4,z:CX.z+30.2,pause:2.6},{id:'den3',x:CX.x+36.4,z:CX.z+29.8,pause:1.6}]});H.patrol(['den1','den2','den3','den2']);
-   offer('hide-E3','Get into cell nine',()=>CM.at('e3In',.4),{r:1.8,once:false,when:()=>!C.hiding,fn:()=>hide('E3',CM.at('e3In'))});
-   offer('hide-E1','Get into cell seven',()=>CM.at('e1In',.4),{r:1.8,once:false,when:()=>!C.hiding,fn:()=>hide('E1',CM.at('e1In'))});
-   objective('Jamie’s door.','The lever beside it. Hold F. It will hear the door.');
-   offer('jlever','Hold the lever',()=>CM.at('jamieLever',1),{r:1.7,hold:6,noise:.8,tick:(dt,v)=>{CM.ST.leverJ=1;CM.setDoor('jamieCell',v*.85,{instant:true});if(Math.random()<dt*2)sound('c8Hydraulic',CM.at('jamieDoor',1),{gain:.4});},
-    release:()=>{CM.ST.leverJ=0;},fn:()=>{CM.setDoor('jamieCell',1);C.flags.jamieDoor=true;}});
-   // (it comes out to the noise: hide, wait for it to go back, go on; Sam holds the grille the whole time and tells you when)
-   let warned=0;while(!C.flags.jamieDoor){yield;warned=samWarn(warned);}
-   C.jamieLimp=null;joinFoot(jamie,CM.at('jamieIn'),0);jamie.gone=false;walkTo(jamie,CM.at('jamieDoor'),{speed:1.6});
-   yield* lines([J('…Is it you? Is it really you?',{time:1.8,face:'afraid'}),Y('It’s me.',{time:1})]);
-   yield* until(()=>!CM.inCell(jamie.px,jamie.pz,'E2',-.2)||C.pt>2400);C.flags.anchor2=true;
-   // it comes: run for the grille; Sam lets go behind you; it hits the bars
-   H.script([{to:()=>[CM.at('eMid').x,CM.at('eMid').z],speed:4,state:'run',free:false},{to:()=>[CM.at('grille').x+.7,CM.at('grille').z],speed:4,state:'run'}]);sound('c7Snarl',{x:HM.x,y:1,z:HM.z},{gain:1.2});
-   say([SM('RUN! It’s COMING!',{time:1.2,face:'terrified'})]);objective('Run.','Under the grille.');jamie.footBoost=1.6;walkTo(jamie,CM.at('jEast'),{speed:3.4});
-   yield* until(()=>me().x<CX.x+21.4||C.pt>2600);
-   CM.ST.grilleWant=1;sound('c6Clank',CM.at('grille',1.4),{gain:1.3});C.shake=.5;stand(sam,null);
-   yield* wait(1.2);sound('c7Door',CM.at('grille',1.2),{gain:1.4});C.shake=.6;H.script([{wait:2,state:'alert'},{to:()=>[CM.at('denIn').x,CM.at('denIn').z],speed:1.2,state:'walk'},{act:()=>huntStop()}]);
-   yield* lines([{wait:.6},N('It hits the grille and the grille holds. It looks at the three of you through it. Then it goes back.',{time:3.6})]);
-   sound('c8Impact',CM.at('jMid',-5),{gain:1});C.shake=.55;mark('a barrier moved (Jamie)');
-   yield* lines([J('I thought you weren’t coming.',{time:1.8,face:'sad'}),Y('I’m here.',{time:1}),J('You actually came back.',{time:1.8,face:'relieved'}),{wait:.6},J('You look awful.',{time:1.4,face:'amused',act:()=>{jamie.lookAt=sam.person.group.position;}}),SM('You look worse.',{time:1.4,face:'relieved'}),
-    {wait:2.2},N('For a second all three of you are laughing, too hard, the kind that hurts.',{time:3.4}),{wait:1.6},
-    N('Then a bell, somewhere, once. A long way off, a sound like a dam letting go. Dust comes down out of the ceiling.',{time:4}),J('That’s not good.',{time:1.2,face:'worried'}),SM('Alex. We have to get Alex.',{time:1.8,face:'determined'})]);
-   jamie.footBoost=1;minds();sceneAlex('shift');})());}
- // ---- Act III, scene 8: the corridor that moves; the room it made; Alex ----------------------------------------------------------------------------------
- function sceneAlex(from='shift'){go('e8-alex');
-  // (Continue from the made room starts in its doorway; from his door, in what is left of the room, facing it)
-  if(from!=='shift'||!X.friendsNow().includes(jamie)){const at=from==='made'?'f1In':from==='alex'?'f1Mid':'hMid',to=from==='made'?'f1Mid':from==='alex'?'alexDoor':null,q=CM.at(at),a=to?headingTo(q.x,q.z,CM.at(to).x,CM.at(to).z):Math.PI/2;
-   enterComplex(at,a);if(to){joinFoot(sam,{x:q.x-.9,z:q.z-.6},a);joinFoot(jamie,{x:q.x+.8,z:q.z-.7},a);}else{joinFoot(sam,CM.at('hWest'),Math.PI/2);joinFoot(jamie,CM.at('hMid'),Math.PI/2);}
-   if(from==='alex'){CM.made.visible=false;C.flags.madeBreak=true;}C.flags.samOut=C.flags.anchor1=C.flags.anchor2=true;}
-  lightsBelow('F');C.h=Math.max(C.h,HOUR.alex);C.hMin=HOUR.alex;date(C.h);CM.setDoor('alexCell',0,{instant:true});CM.setDoor('F0',1,{instant:true});checkpoint(from==='alex'?'c8-alex':'c8-shift');
-  task('alex',(function*(){
-   if(from==='shift'){objective('Find Alex.','South, past the big gallery. The corridor on the east side.');mark('find Alex');
-    yield* until(()=>CM.cellIdAt(me().x,me().z)==='F0'||C.pt>700);mark('the corridor');
-    yield* lines([SM('He’s down here. The farthest one. I could hear it go down here with him, every time.',{time:3})]);
-    // the corridor: it gets longer while you are not looking; the way back is a wall when you turn round; the lamps are not where they were
-    const backWall=new THREE.Mesh(new THREE.BoxGeometry(.25,2.8,3.6),CM.mats.conc);backWall.position.set(CX.x+18.15,-1.6,CX.z+46);backWall.visible=false;scene.add(backWall);C.backWall=backWall;
-    yield* until(()=>{const p=me();return p.z>CX.z+52;},120);
-    yield* until(()=>!lookingAt(CM.at('f0Door',1),.4)||C.pt>800,20);backWall.visible=true;mark('behind you, a wall');CM.extraSolids.push({x:18,z:46,hw:.3,hd:1.8,id:'back'});CM.setDoor('F0',0,{instant:true});
-    yield* until(()=>lookingAt({x:CX.x+19,y:-1.5,z:CX.z+46},.75)||C.pt>820,25);
-    yield* lines([J('The door. Where’s the door?',{time:1.4,face:'terrified'}),SM('Don’t. Keep going. It’s doing it on purpose.',{time:2,face:'afraid'})]);
-    yield* until(()=>CM.cellIdAt(me().x,me().z)==='F1'||C.pt>900);checkpoint('c8-made');mark('the room it made');}
-   // the room it made: Alex's bedroom, here; too clean; then it stops being able to hold itself together
-   if(from==='shift'||from==='made'){
-    yield* lines([N('A bedroom. Alex’s bedroom. His quilt, his desk, his poster. The window shows the creek behind his house at night.',{time:4}),J('That’s— that’s his room.',{time:1.6,face:'shocked'}),SM('It isn’t. Look at it. Nothing’s been touched. It made it.',{time:2.6,face:'afraid'})]);
-    yield* wait(1.4);C.madeT=0;C.flags.madeBreak=true;mark('it comes apart');sound('c7Groan',CM.at('f1Mid',0),{gain:.9});
-    yield* lines([N('The poster’s ink runs down off it. The quilt goes grey and stiff and then it’s concrete. The window has nothing behind it but the wall.',{time:4.6}),
-     SM('That’s what the court was. That’s what that whole street was.',{time:2.6,face:'afraid'}),J('Mrs. Lange.',{time:1.4,face:'afraid'})]);
-    yield* until(()=>C.madeT>7,12);}
-   checkpoint('c8-alex');
-   // his door: him inside; he's had them come to the door before; proving it, by what they do right now
-   objective('Alex’s door.','');mark('his door');yield* until(()=>near(CM.at('alexDoor'),3)||C.pt>1100);mark('at his door');
-   if(C.backWall){C.backWall.visible=false;CM.extraSolids.splice(0);CM.setDoor('F0',1,{instant:true});}
-   light(4,CM.at('alexIn',1.4),{intensity:1.6,dist:5,color:0xc0b0a8,flicker:.3});
-   yield* lines([N('Through the door’s little window: Alex. Sitting on the cot, his knees up, his shirt gone, in somebody’s grey coverall too big for him. He looks up.',{time:4.4}),
-    {who:'ALEX',text:q8('It keeps bringing you here.'),time:2.2},J('Alex. It’s really us.',{time:1.6,face:'hopeful'}),{who:'ALEX',text:q8('That’s what you said last time.'),time:2},
-    {who:'ALEX',text:q8('Okay. All of you. At the same time. Jamie, three fingers. Sam, close your eyes. You—'),time:3.6},{who:'ALEX',text:q8('your light. Off and on. Twice.'),time:2}]);
-   C.flicks=0;C.flickWant=true;C.lastOn=undefined;objective('Your flashlight: off and on, twice.','T.');mark('flash: wanted');
-   {const t0=C.pt;let told=false;yield* until(()=>{if(!told&&C.pt-t0>25&&!busy()){told=true;say([SM('Your light. T. Off, on. Off, on.',{time:2.2})]);}return C.flicks>=4||C.pt-t0>150;});}
-   C.flickWant=false;mark('flash: '+C.flicks);
-   yield* lines([{wait:1},{who:'ALEX',text:q8('…It always does it after. A second after. Like it’s watching first.'),time:3},{who:'ALEX',text:q8('You did it at the same time.'),time:2},
-    Y('We’re taking you home.',{time:1.6}),{wait:.8},{who:'ALEX',text:q8('There’s two handles. Outside. Somebody has to hold both.'),time:2.6}]);
-   checkpoint('c8-alex-free');
-   // two levers: you and Sam, both held; Jamie keeps the light on the door
-   objective('Hold your lever with Sam.','The left handle. Hold F.');stand(sam,CM.at('alexLeverB'),{look:()=>CM.at('alexLeverB',1.2),max:1});stand(jamie,{x:CM.at('alexDoor').x+.4,z:CM.at('alexDoor').z-1.6},{look:()=>CM.at('alexDoor',1.1)});
-   offer('alever','Hold the handle',()=>CM.at('alexLeverA',1),{r:1.6,hold:5,can:()=>Math.hypot(sam.px-CM.at('alexLeverB').x,sam.pz-CM.at('alexLeverB').z)<.8,
-    tick:(dt,v)=>{CM.ST.leverA=[1,1];CM.setDoor('alexCell',v*.9,{instant:true});if(Math.random()<dt*2)sound('c8Hydraulic',CM.at('alexDoor',1),{gain:.4});},release:()=>{CM.ST.leverA=[0,0];},fn:()=>{CM.setDoor('alexCell',1);C.flags.alexDoor=true;}});
-   yield* until(()=>C.flags.alexDoor);stand(sam,null);stand(jamie,null);
-   const A2=X.enlistAlex();joinFoot(A2,CM.at('alexIn'),Math.PI);walkTo(A2,CM.at('alexDoor'),{speed:.9});
-   yield* until(()=>!CM.inCell(A2.px,A2.pz,'F2',-.25)||C.pt>1500);C.flags.anchor3=true;
-   // all three out: the last of it goes; the room it made comes down; the far wall cracks; the lights go
-   sound('c8Collapse',CM.at('f2Window',0),{gain:1.4});C.shake=1;T?.jolt?.(1,{rise:1,hold:14,why:'the last one'});mark('a barrier moved (Alex): the last');
-   for(const [x,z,w] of [[21,69,0],[24,66,.8],[19,60,1.4]])hazard({at:{x:CX.x+x,y:-3,z:CX.z+z},r:1.4,warn:1.6+w,section:'c8-alex-free',fatal:false});
-   yield* lines([{wait:.4},N('Everything moves at once. The walls of the room it made fold in. A crack runs up the wall of his cell into the ceiling.',{time:4}),AL('Run. RUN. It knows.',{time:1.6}),SM('This way! The crew room!',{time:1.8})]);
-   objective('Get out of here.','Back to the corridor. The crew room off the south hall.');
-   yield* until(()=>{const id=CM.cellIdAt(me().x,me().z);return id==='G'||C.pt>2000;});
-   sceneReunion('reunion');})());}
- const q8=t=>'“'+t+'”';
- // ---- Act III, scene 9: the crew room; all four of them -----------------------------------------------------------------------------------------------------
- function sceneReunion(from='reunion'){go('e8-reunion');const A2=X.enlistAlex();
-  if(from!=='reunion'||!A2.active){enterComplex('gIn',-Math.PI/2);const g=CM.at('gTable');joinFoot(sam,{x:g.x-1.1,z:g.z+.9},0);joinFoot(jamie,{x:g.x+1.3,z:g.z-.7},-Math.PI/2);joinFoot(A2,{x:g.x+.2,z:g.z+1.3},-Math.PI/2);C.flags.samOut=C.flags.anchor1=C.flags.anchor2=C.flags.anchor3=true;}
-  lightsBelow('K');C.h=Math.max(C.h,HOUR.reunion);C.hMin=HOUR.reunion;date(C.h);checkpoint('c8-reunion');C.mood='relaxed';C.mindKey=null;
-  for(const c of [sam,jamie,A2])c.brain&&brain.enable(c,true);
-  task('reunion',(function*(){
-   yield* lines([{wait:.6},N('The crew room. 1974 paint, lockers, a table, a coffee urn, a calendar from 1991 nobody turned. It’s quiet in here. It holds.',{time:4}),
-    stand3(),{wait:1.2},AL('I thought I wasn’t going to see you guys again.',{time:2.2,face:'sad'}),J('We’re all here.',{time:1.4,face:'hopeful'}),SM('Let’s get out.',{time:1.2}),AL('Can we just go home?',{time:1.6,face:'tired'})]);
-   objective('','');
-   // what you can do here, before anyone says go: talk to them; show Alex the notebook and his camera; give Sam his gum
-   offer('t-jamie','Talk to Jamie',()=>({x:jamie.px,y:1.1+gy(jamie.px,jamie.pz),z:jamie.pz}),{r:2.6,look:true,size:.45,cone:.1,fn:()=>say([J('So do I get a parade? I feel like I should get a parade. Or a sandwich.',{time:3,face:'amused'}),Y('A sandwich.',{time:1}),J('A big one.',{time:1.2,face:'grin'}),{wait:.6},J('…I was so scared, man.',{time:1.8,face:'sad'})])});
-   // (each of them is one conversation, a beat at a time: F again for the next thing; the prompt says what it is)
-   const SAMB=[{label:'Talk to Sam',fn:()=>say([SM('Lockers. First-aid kit. A lantern that works. There’s a radio, 1974. It’s dead.',{time:3.2}),SM('Batteries for the batteries.',{time:1.6,face:'relieved'}),{wait:.4},SM('That was a joke.',{time:1.2})])},
-    {label:'Give Sam the gum',when:()=>C.inv.gum==='have',fn:()=>{C.inv.gum='sam';say([SM('My gum.',{time:1,face:'surprised'}),J('I told you I’d give it back.',{time:1.6,face:'grin'}),SM('…Did he ask twice?',{time:1.4,face:'amused'}),Y('He didn’t ask once.',{time:1.4})]);}}];
-   const ALEXB=[{label:'Talk to Alex',fn:()=>say([AL('Sunday. I heard the bell. Like every night. On Briarwood I stopped at the creek, and the old bike was down there. In the water.',{time:4.6,face:'tired'}),
-     AL('I just wanted to look at it.',{time:1.6}),{wait:1},AL('I got out once. There’s a pipe off the end room. It goes forever. I came up in a box in the woods. The camp.',{time:4,face:'sad'}),
-     AL('I took soup. I left my shirt. I cut our letters in the wall so somebody would know. Then the lights found me. And it brought me back.',{time:4.8,face:'sad'})])},
-    {label:'Show Alex the notebook',when:()=>C.inv.notebook==='have',fn:()=>say([N('Sam’s notebook. The page with the three names on it, in your writing.',{time:3}),AL('You wrote us down.',{time:1.6,face:'sad'}),Y('Everybody was forgetting. Me too. So I wrote it down.',{time:2.6}),AL('…Keep it. Don’t lose it.',{time:1.6})])},
-    {label:'Give Alex his camera',when:()=>C.inv.camera==='have',fn:()=>{C.inv.camera='alex';say([AL('My camera.',{time:1.2,face:'hopeful'}),N('He goes back through the pictures. Stops at the last one: the three of you at the fire, from the trees.',{time:3.6}),AL('I didn’t take that.',{time:1.4,face:'afraid'}),SM('Nobody did.',{time:1.2})]);}}];
-   const convo=(id,who2,beats)=>{let i=0;const next=()=>{while(i<beats.length&&beats[i].when&&!beats[i].when())i++;return beats[i];};
-    offer(id,next()?.label||'',()=>({x:who2().px,y:1.1+gy(who2().px,who2().pz),z:who2().pz}),{r:2.6,look:true,size:.45,cone:.1,once:false,when:()=>!busy()&&!!next(),fn:()=>{const b=next();if(!b)return;i++;C.flags[id+'-'+i]=true;b.fn();const n2=next();if(n2)C.offers.get(id).label=n2.label;else unoffer(id);}});};
-   convo('t-sam',()=>sam,SAMB);convo('t-alex',()=>X.alex,ALEXB);
-   // (the moment lasts: until every conversation has been had, or a minute and a quarter after Alex has told them what happened)
-   const t0=C.t;let alexAt=null;yield* until(()=>{if(C.flags['t-alex-1']&&alexAt===null)alexAt=C.t;const all=!C.offers.has('t-sam')&&!C.offers.has('t-alex')&&!!C.flags['t-jamie'];
-    return (!busy()&&(all||(alexAt!==null&&C.t-alexAt>75)))||C.t-t0>240;});
-   for(const id of ['t-jamie','t-sam','t-alex'])unoffer(id);
-   yield* quiet();yield* wait(2);
-   // the alarm: an old klaxon; red lamps; and Jamie's radio, the one Reyes gave him, from the floor of the east wing
-   C.flags.alarm=true;lightsBelow('K');sound('c8Alarm',CM.at('hMid',2),{gain:.9});C.alarmOn=true;
-   yield* lines([N('A klaxon, 1959, somewhere close. Red lamps come on along the hall.',{time:3}),{wait:1},{who:'RADIO',text:q8('…anybody… this is Reyes. Copy?'),time:2.4},J('That’s— that’s the radio. I had it. He gave it to me.',{time:2.2,face:'surprised'})]);
-   C.inv.radio='have';yield* lines([Y('It’s me. We’ve got them. All three of them.',{time:2.2}),{wait:1.2},RR('…Say again?',{time:1}),Y('All three.',{time:1}),{wait:1.6},RR('Stay— no. The big gallery. The long room with the windows. Come to me.',{time:3.2})]);
-   C.mood=null;C.mindKey=null;X.sceneTruth?.('truth');})());}
+ // ---- Act III (the three rescues, the crew room): chapter8-rescue.js. These forward to it (Danny's corridor ends in the wing).
+ let RESCUE=null;const q8=t=>'“'+t+'”';
+ const sceneWing=f=>RESCUE.SC.sceneWing(f==='wing'||!f?'wing':f),sceneRetrieval=f=>RESCUE.SC.sceneRetrieval(f||'r'),sceneAlex=f=>RESCUE.SC.sceneAlex(f||'shift'),sceneReunion=f=>RESCUE.SC.sceneReunion(f||'r');
  function stand3(){return {act:()=>{const g=CM.at('gTable');stand(jamie,{x:g.x+1.2,z:g.z-.6},{look:()=>({x:g.x,y:-2,z:g.z})});stand(sam,{x:g.x-1.1,z:g.z+.9},{look:()=>({x:g.x,y:-2,z:g.z})});const A2=X.alex;if(A2)stand(A2,{x:g.x+.2,z:g.z+1.3},{look:()=>camera.position});},wait:.2};}
  // ---- every frame: what the scenes keep going -----------------------------------------------------------------------------------------------------------------------
  function update(dt){const ph=S.phase;
@@ -514,26 +333,26 @@ export function scenes8(X){
   if(ph==='d8-bikes'&&coverG.parent){const lid=coverG.userData.lid;if(C.coverJump>0){C.coverJump-=dt*1.5;lid.position.y=.03+Math.max(0,Math.sin((1-C.coverJump)*Math.PI))*.12;}mist.material.opacity=(C.flags.breath?.22:.12)*(.6+.4*Math.sin(C.t*1.3));mist.position.set(.15,.6+.1*Math.sin(C.t),0);}
   if(X.X.ST.active){const id=CM.cellIdAt(me().x,me().z),ar=areaOf(id);if(ar&&ar!==C.area&&!C.areaLock)lightsBelow(ar);C.zone=id;}
   // the made room coming apart (its pieces sink, stretch and grey; the poster runs; the window goes to wall)
-  if(C.flags.madeBreak&&C.madeT!=null){C.madeT+=dt;const k2=smooth(C.madeT/7),M=CM.made;for(const [i,ch] of M.children.entries()){ch.position.y=-k2*(.4+((i*.37)%1)*.9);ch.rotation.z=k2*((i%3)-1)*.3;ch.scale.y=1-k2*.7;}if(C.madeT<4.2&&Math.random()<dt*6)light(5,W(17.7,70.4,-1.55),{intensity:4*(1-k2)*Math.random(),dist:7,color:0xffc890});if(k2>=1&&M.visible){M.visible=false;light(5,null);}}
+  if(C.flags.madeBreak&&C.madeT!=null){C.madeT+=dt;const k2=smooth(C.madeT/7),M=CM.made;for(const [i,ch] of M.children.entries()){const h=ch.userData.home;if(!h||ch.userData.paper)continue;ch.position.copy(h.p);ch.position.y=h.p.y-k2*(.4+((i*.37)%1)*.9);ch.rotation.set(h.r.x,h.r.y,h.r.z+k2*((i%3)-1)*.3);ch.scale.set(h.s.x,h.s.y*(1-k2*.7),h.s.z);}if(C.madeT<4.2&&Math.random()<dt*6)light(5,W(17.7,70.4,-1.55),{intensity:4*(1-k2)*Math.random(),dist:7,color:0xffc890});if(k2>=1&&M.visible){M.visible=false;light(5,null);}}
   // Jamie limp over its shoulder (carried), and lying on his cot
   if(C.carryJamie&&HM.root.visible){HM.root.updateMatrixWorld(true);const sh=HM.sockets.chest.getWorldPosition(new THREE.Vector3());jamie.px=sh.x;jamie.pz=sh.z;jamie.py=sh.y-1.05;jamie.holdPlace=true;}
   // the flashlight test at Alex's door: count your switches
   if(C.flickWant){const on=!!o.foot.on;if(C.lastOn!==undefined&&on!==C.lastOn)C.flicks=(C.flicks||0)+1;C.lastOn=on;}
   if(C.alarmOn&&Math.random()<dt*.25)sound('c8Alarm',CM.at('hMid',2),{gain:.5});
-  FALL.update?.(dt);}
+  RESCUE?.update(dt);FALL.update?.(dt);}
  function afterActors(dt){// Jamie carried / lying down: posed after the companions' own pass
   if(C.carryJamie||C.jamieLimp){const c=jamie;if(c.person.group.visible){const g=c.person.group;if(C.carryJamie){g.position.set(c.px,(c.py??-2)+.1,c.pz);g.rotation.set(0,-HM.heading,Math.PI/2*.95);}else if(C.jamieLimp==='cot'){const q=CM.at('jamieIn');g.position.set(q.x,q.y+.55,q.z+.2);g.rotation.set(-Math.PI/2,0,0);}}}
-  FALL.afterActors?.(dt);}
- function key(code,repeat){if(mapKey(code))return true;if(FALL.key?.(code,repeat))return true;return false;}
+  RESCUE?.afterActors(dt);FALL.afterActors?.(dt);}
+ function key(code,repeat){if(mapKey(code))return true;if(RESCUE?.key(code,repeat))return true;if(FALL.key?.(code,repeat))return true;return false;}
  function pan(dx,dy){return mapPan(dx,dy)||!!FALL.pan?.(dx,dy);}
  function wheel(dy){return mapWheel(dy)||!!FALL.wheel?.(dy);}
  function hint(){if(C.view==='maps')return [['Mouse','Move the pencil'],['A / D','Old plan '+Math.round(MAP.overlay*100)+'%'],['F','Mark'],...(MAP.solved?[['S','Put it down']]:[])];
-  if(C.flickWant)return [['T','Flashlight: off and on, twice']];return FALL.hint?.()??null;}
+  if(C.flickWant)return [['T','Flashlight: off and on, twice']];return RESCUE?.hint()??FALL.hint?.()??null;}
  function sources(out){const ph=S.phase;if(X.X.ST.active){out.push({id:'c8-drip',kind:'culvert',pos:CM.at('galleryMid',2),level:.5});if(C.zone&&/^D/.test(C.zone))out.push({id:'c8-wing-water',kind:'water',pos:CM.at('dMid',0),level:.6});}
-  if(ph==='d8-bikes')out.push({id:'c8-cover-air',kind:'culvert',pos:new THREE.Vector3(COVER.x,COVER.y,COVER.z),level:.7});FALL.sources?.(out);}
- function blockers(out){if(C.dannyOn&&danny.group.visible)out.push({x:D.x,z:D.z,r:.7,speed:0});if(HM.root.visible)out.push({x:HM.x,z:HM.z,r:.5,speed:0});FALL.blockers?.(out);}
+  if(ph==='d8-bikes')out.push({id:'c8-cover-air',kind:'culvert',pos:new THREE.Vector3(COVER.x,COVER.y,COVER.z),level:.7});RESCUE?.sources(out);FALL.sources?.(out);}
+ function blockers(out){if(C.dannyOn&&danny.group.visible)out.push({x:D.x,z:D.z,r:.7,speed:0});if(HM.root.visible)out.push({x:HM.x,z:HM.z,r:.5,speed:0});RESCUE?.blockers(out);FALL.blockers?.(out);}
  function reset(){stageBikes(false);coverG.removeFromParent();fieldG.removeFromParent();Object.assign(D,{st:'off',t:0});C.dannyOn=false;if(C.backWall){C.backWall.removeFromParent();C.backWall=null;}
-  MAP.overlay=.5;MAP.mark=null;MAP.solved=false;MAP.tries=0;CM.screenM.map=null;CM.screenM.needsUpdate=true;if(X.X.made){X.X.made.visible=true;}FALL.reset?.();}
+  MAP.overlay=.5;MAP.mark=null;MAP.solved=false;MAP.tries=0;CM.screenM.map=null;CM.screenM.needsUpdate=true;if(X.X.made){X.X.made.visible=true;for(const ch of X.X.made.children){const h=ch.userData.home;if(h){ch.position.copy(h.p);ch.rotation.copy(h.r);ch.scale.copy(h.s);}}}C.madeT=null;RESCUE?.reset();FALL.reset?.();}
  // ---- begin, jumps -----------------------------------------------------------------------------------------------------------------------------------------------------------
  function begin(){X.fresh();go('c8-black');C.cardT=0;o.fade(1);minds();objective('');T?.reset?.();C.h=HOUR.start;C.inv.flashlight='have';
   task('open',(function*(){yield* wait(6.4);C.fadeIn=0;sceneBikes('start');})());}
@@ -542,17 +361,14 @@ export function scenes8(X){
   'c8-shaft':()=>sceneShaft('shaft'),'c8-barrier':()=>sceneShaft('barrier'),'c8-gallery':()=>sceneGallery('gallery'),'c8-stealth':()=>{C.flags.split=true;sceneGallery('stealth');},
   'c8-office':()=>{C.flags.split=true;sceneGallery('stealth');const q=CM.at('officeIn');o.placePlayer({x:q.x,z:q.z,a:-Math.PI/2,mode:'walk',bike:null});},'c8-film':()=>{C.flags.split=true;C.flags.receipt=true;C.inv.receipt='have';C.flags.annie=true;sceneGallery('stealth');const q=CM.at('reviewIn');o.placePlayer({x:q.x,z:q.z,a:-Math.PI/2,mode:'walk',bike:null});},
   'c8-corridor':()=>{Object.assign(C.flags,{split:true,receipt:true,annie:true,film:true,filmDone:true});sceneCorridor('cor');},'c8-danny':()=>{Object.assign(C.flags,{split:true,receipt:true,annie:true,filmDone:true,flyer:true});C.inv.flyer='have';sceneCorridor('cor');const q=CM.at('cMid');o.placePlayer({x:q.x+6,z:q.z,a:Math.PI/2,mode:'walk',bike:null});},
-  'c8-bulkhead':()=>{Object.assign(C.flags,{split:true,receipt:true,annie:true,filmDone:true,flyer:true,danny:true,cPower:true,breaker:true});sceneWing('wing');},
-  'c8-wing':()=>{Object.assign(C.flags,{split:true,danny:true,cPower:true});sceneWing('wing');},'c8-ruth':()=>{Object.assign(C.flags,{split:true,danny:true,cPower:true});sceneWing('ruth');const q=CM.at('dMid');o.placePlayer({x:q.x+1,z:q.z,a:-Math.PI/2,mode:'walk',bike:null});},
-  'c8-sam':()=>{Object.assign(C.flags,{split:true,danny:true,cPower:true,ruth:true});sceneWing('sam');const q=CM.at('samDoor');o.placePlayer({x:q.x+.6,z:q.z-1.6,a:Math.PI,mode:'walk',bike:null});},
-  'c8-sam-door':()=>{Object.assign(C.flags,{split:true,danny:true,cPower:true,ruth:true});sceneWing('sam');const q=CM.at('samDoor');o.placePlayer({x:q.x+.6,z:q.z-1.6,a:Math.PI,mode:'walk',bike:null});},
-  'c8-retrieval':()=>sceneRetrieval('r'),'c8-jamie':()=>sceneRetrieval('r'),'c8-jamie-door':()=>sceneRetrieval('r'),'c8-shift':()=>sceneAlex('shift'),'c8-made':()=>sceneAlex('made'),'c8-alex':()=>sceneAlex('alex'),'c8-alex-free':()=>sceneAlex('alex'),
-  'c8-reunion':()=>sceneReunion('r'),'c8-alarm':()=>sceneReunion('r')};
+  'c8-bulkhead':()=>{Object.assign(C.flags,{split:true,receipt:true,annie:true,filmDone:true,flyer:true,danny:true,cPower:true});sceneWing('wing');},
+  ...Object.fromEntries(['c8-wing','c8-ruth','c8-sam','c8-sam-door','c8-sam-out','c8-retrieval','c8-jamie','c8-jamie-door','c8-jamie-run','c8-shift','c8-made','c8-alex','c8-alex-free','c8-ledge','c8-reunion','c8-alarm'].map(id=>[id,()=>{Object.assign(C.flags,{split:true,receipt:true,annie:true,film:true,filmDone:true,danny:true,cPower:true});RESCUE.SCENE[id]();}])) };
  // (a copy of the context with this file's places added; Alex is a live getter, as he comes and goes: a spread would freeze it)
  const FX={...X,CM,sceneBikes,enterComplex,lightsBelow,hideReyesBelow,stageBikes,BIKES,bikeAt,MH,fieldG,nightStreet,q8,hide,stand3,D,updateDanny};
  Object.defineProperty(FX,'alex',{get:()=>X.alex,set:v=>{X.alex=v;},enumerable:true,configurable:true});
  const FALL=fallActs(FX);
- X.sceneTruth=FALL.sceneTruth;
+ X.sceneTruth=FALL.sceneTruth;FX.sceneTruth=FALL.sceneTruth;
+ RESCUE=rescueActs(FX);
  function jump(section){const f=SCENE[section]||FALL.SCENE?.[section];if(!f){begin();return;}C.where='';f();if(section!=='chapter8-start'){C.fadeIn=-1;o.fade(0);}}
  return {begin,jump,update,afterActors,key,pan,wheel,hint,sources,blockers,reset,updateDanny,MH,OAK:FALL.OAK,JD:FALL.JD,BIKES,bikeAt,officerAim:()=>FALL.officerAim?.()??null,
   canDismount:()=>!!FALL.canDismount?.(),canRemount:()=>!!FALL.canRemount?.(),SCENE:{...SCENE,...(FALL.SCENE||{})},MAP,D,film};

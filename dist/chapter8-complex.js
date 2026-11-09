@@ -56,6 +56,12 @@ export const CELLS=[
  ['IW',-13.8,-10.4,56,80,4,3.2,{kind:'catwalk'}],
  ['IP',-13.8,-3.6,76.4,80,4,3.2,{kind:'catwalk'}],
  ['L2',-46,-14,60,63.6,4,2.8,{kind:'brick'}],
+ // the reconstruction's additions: the hunter's own way out of its den (a bore, low in places) through to F0; the side passage
+ // the corridor makes for itself; the ledge along the main chamber's east wall from F2 to the broken window of H
+ ['E5',38.5,40.8,31.5,46.8,-3,2.4,{kind:'bore'}],
+ ['E6',21.6,38.5,44.6,46.8,-3,2.4,{kind:'bore'}],
+ ['Fa',21.6,25.6,49.6,58,-3,2.7,{kind:'made'}],
+ ['IL',13.6,16.6,53,79.6,-3,3,{kind:'ledge'}],
 ];
 // Openings in the walls between two cells: on a shared edge at x (an east/west wall) or z (a north/south wall), over a
 // range along it, up to a height. door: a door id (closed doors are walls); window: seen through, never walked through.
@@ -68,7 +74,7 @@ export const OPENINGS=[
  {a:'B',b:'C',x:20,r:[12,14.4],h:2.7,door:'C'},
  {a:'C',b:'Ca1',z:14.4,r:[25,27],h:2.7},{a:'C',b:'Ca2',z:14.4,r:[31,33],h:2.7},{a:'C',b:'Ca3',z:14.4,r:[37,39],h:2.7},
  {a:'B',b:'J',z:22,r:[1.6,5.4],h:3.2,door:'bulkhead'},
- {a:'J',b:'D',x:-6,r:[25,29],h:3},
+ {a:'J',b:'D',x:-6,r:[25,29],h:3,door:'dIso'},// (the wing's flood door, 1959: it drops by itself when the wing floods)
  {a:'D',b:'D0',x:-27,r:[25,29],h:3},
  {a:'D',b:'D1',z:29,r:[-10.3,-8.7],h:2.1,door:'D1'},{a:'D',b:'D2',z:29,r:[-15.3,-13.7],h:2.1,door:'D2'},{a:'D',b:'D3',z:29,r:[-20.6,-18.9],h:2.1,door:'samCell'},
  {a:'J',b:'E',x:14,r:[25,29],h:3},
@@ -83,10 +89,12 @@ export const OPENINGS=[
  {a:'F0',b:'F1',z:64,r:[18.2,21.4],h:2.4},
  {a:'F1',b:'F2',z:73.6,r:[20.2,22.4],h:2.1,door:'alexCell'},
  {a:'L2',b:'IW',x:-14,r:[60,63.6],h:2.8},
+ {a:'E4',b:'E5',z:31.5,r:[38.7,40.6],h:2.2},{a:'E5',b:'E6',x:38.5,r:[44.8,46.6],h:2.2},{a:'E6',b:'F0',x:21.6,r:[44.8,46.6],h:2.2},
+ {a:'F0',b:'Fa',x:21.6,r:[50.2,51.6],h:2.4,door:'fa1'},{a:'F0',b:'Fa',x:21.6,r:[56.2,57.6],h:2.4,door:'fa2'},
+ {a:'F2',b:'IL',x:16.6,r:[75.8,77.4],h:2.2,door:'breach'},{a:'H',b:'IL',z:52,r:[14.2,15.8],h:2.3,door:'hwin'},
  {a:'IW',b:'IP',z:76.4,r:[-13.8,-10.4],h:3},
  // windows: H over the main chamber; F2 onto it; B2's booth window onto B
- {a:'H',b:'I',z:52,r:[-6,16],h:2.6,v0:.95,window:true},
- {a:'F2',b:'I',x:16.4,r:[74.5,79],h:1.9,v0:.9,window:true},
+ {a:'H',b:'I',z:52,r:[-6,13.8],h:2.6,v0:.95,window:true},
  {a:'B2',b:'B',x:-14,r:[19,21],h:1.8,v0:1.05,window:true},
 ];
 export const SPOT={
@@ -102,6 +110,12 @@ export const SPOT={
  f0In:[19.8,47],f0Mid:[19.8,55],f0End:[19.8,63],f1In:[19.8,65.2],f1Mid:[22,68.8],alexDoor:[21.3,73.3],alexIn:[21,76.8],alexLeverA:[17.6,73],alexLeverB:[25.4,73],f2Window:[16.9,76.8],
  l2End:[-45,61.8],l2Mid:[-30,61.8],iwNorth:[-12.1,58],iwMid:[-12.1,68],iwSouth:[-12.1,77.8],ipPins:[-6.2,78.2],ipLadder:[-4.4,79.3],
  plug:[1,72.5],throat:[1,74],barrier:[1,86],
+ // the reconstruction's places
+ jPanel:[9.6,22.6],dIsoD:[-6.9,25.4],dIsoJ:[-5.1,28.9],dHorn:[-9.4,25.3],dBreaker:[-7.4,25.3],dCable:[-15.4,28.25],dPipe:[-14.4,31.9],samSlot:[-19.75,28.85],samLook:[-19.75,27.9],d2In:[-14.5,30.6],
+ eBolts:[16.4,28.4],eHideW:[18.5,23.4],e2Slot:[25.5,25.35],e2Look:[25.5,26.2],e3Vent:[30.25,22.6],e2Vent:[27.0,22.6],e3Mid:[31.5,23.2],denShelf:[40.3,27.3],denBack:[39.6,32.6],e5Mid:[39.6,39],e6Mid:[30,45.7],e6West:[22.6,45.7],
+ fSlide:[19.8,53.6],faMid:[23.6,53.8],faNorth:[23.6,50.9],faSouth:[23.6,56.9],f1Fissure:[22.4,68.6],f1Closet:[21.3,73.0],alexCot:[20.3,78.6],f2Breach:[17.1,76.6],f2Tally:[23.85,77],
+ ilSouth:[15.1,76.6],ilMid:[15.1,67],ilGap:[15.1,61.2],ilNorth:[15.1,54.4],hWin:[15,51.4],hWinIn:[15,50.2],
+ gCouch:[-3.4,42.35],gCot:[-5.3,41.2],gVend:[-.2,36.55],gAid:[-2.6,36.2],gFloor:[-4.3,38.4],gChair:[-1.1,41.2],
 };
 export const W8=(x,z,y=0)=>({x:CX.x+x,z:CX.z+z,y});
 export const L8=(wx,wz)=>({x:wx-CX.x,z:wz-CX.z});
@@ -119,7 +133,7 @@ export function createComplex({scene,sfx=()=>{}}){
  const waterM=new THREE.MeshStandardMaterial({color:0x10181a,roughness:.08,metalness:.55,transparent:true,opacity:.86});waterM.name='c8-water';
  const flesh=new THREE.MeshStandardMaterial({color:0x2a1d1d,roughness:.35,metalness:.05});flesh.name='c8-organic';
  const lampOn=new THREE.MeshStandardMaterial({color:0xfff2d0,emissive:0xffd9a0,emissiveIntensity:1.6});lampOn.name='c8-lamp-on';const lampOff=m(0x9a9488,{roughness:.4},null,'lamp-off');
- const wallM=c=>{const k=c[7]?.kind;return k==='line4'?conc2:k==='brick'?brick:k==='office'||k==='review'||k==='crew'||k==='1974'?paint74:k==='made'?paint74:k==='1959'?paint:k==='wing'||k==='cell'?wet:k==='den'?wet:conc;};
+ const wallM=c=>{const k=c[7]?.kind;return k==='bore'?wet:k==='line4'?conc2:k==='brick'?brick:k==='office'||k==='review'||k==='crew'||k==='1974'?paint74:k==='made'?paint74:k==='1959'?paint:k==='wing'||k==='cell'?wet:k==='den'?wet:conc;};
  const floorOf=c=>{const k=c[7]?.kind;return k==='office'||k==='review'||k==='crew'?lino:k==='brick'?brick:k==='catwalk'?steel:floorM;};
  // ---- the table, indexed --------------------------------------------------------------------------------------------
  const cell=new Map(CELLS.map(c=>[c[0],{id:c[0],x0:c[1],x1:c[2],z0:c[3],z1:c[4],y:c[5],h:c[6],o:c[7]||{},row:c}]));
@@ -140,9 +154,9 @@ export function createComplex({scene,sfx=()=>{}}){
   if(c.o.ramp){const r=c.o.ramp,n=14;for(let i=0;i<n;i++){const za=lerp(r.z0,r.z1,i/n),zb=lerp(r.z0,r.z1,(i+1)/n),y=lerp(r.y0,r.y1,(i+.5)/n);K.slab(g,(x0+x1)/2,y-.09,(za+zb)/2,w,.18,zb-za+.01,floorOf(c.row));}
    K.slab(g,(x0+x1)/2,r.y0-.06,(z0+r.z0)/2,w,.12,r.z0-z0+.01,floorOf(c.row));K.slab(g,(x0+x1)/2,r.y1-.06,(r.z1+z1)/2,w,.12,z1-r.z1+.01,floorOf(c.row));
    for(const s of [x0+.1,x1-.1])K.pipe(g,[s,r.y0+.95,r.z0],[s,r.y1+.95,r.z1],.025,steel,6);}
-  else if(!c.o.visual)K.slab(g,(x0+x1)/2,c.y-.08,(z0+z1)/2,w,.16,d,floorOf(c.row));
-  const top=(c.o.ramp?Math.max(c.o.ramp.y0,c.o.ramp.y1):c.y)+c.h;K.slab(g,(x0+x1)/2,top+.1,(z0+z1)/2,w,.2,d,c.o.kind==='brick'?brick:conc2,{shadow:false});
-  if(c.o.kind!=='catwalk')for(const s of ['n','s','e','w'])wallRun(g,c,s);
+  else if(!c.o.visual&&c.o.kind!=='ledge')K.slab(g,(x0+x1)/2,c.y-.08,(z0+z1)/2,w,.16,d,floorOf(c.row));
+  const top=(c.o.ramp?Math.max(c.o.ramp.y0,c.o.ramp.y1):c.y)+c.h;if(c.o.kind!=='ledge')K.slab(g,(x0+x1)/2,top+.1,(z0+z1)/2,w,.2,d,c.o.kind==='brick'?brick:conc2,{shadow:false});
+  if(c.o.kind!=='catwalk'&&c.o.kind!=='ledge')for(const s of ['n','s','e','w'])wallRun(g,c,s);
   if(c.o.water!=null){const wm=new THREE.Mesh(new THREE.PlaneGeometry(w-WT*2+.02,d-WT*2+.02),waterM);wm.rotation.x=-Math.PI/2;wm.position.set((x0+x1)/2,c.o.water,(z0+z1)/2);wm.name='c8-water-'+c.id;g.add(wm);keep.add(wm);WATER.push({mesh:wm,cell:c,base:c.o.water});}
   return g;}
  const WATER=[],G={};for(const c of cell.values())G[c.id]=buildCell(c);
@@ -150,11 +164,15 @@ export function createComplex({scene,sfx=()=>{}}){
  const DOORS={};
  for(const o of OPENINGS){if(!o.door)continue;const A=cell.get(o.a),B=cell.get(o.b),ew=o.x!=null,w=o.r[1]-o.r[0],um=(o.r[0]+o.r[1])/2,y=Math.max(A.y,B.y),h=o.h;
   const hinged=['B1','B2','G','Gback','D1','D2','E1','E3','C'].includes(o.door),grp=new THREE.Group();grp.name='c8-door-'+o.door;root.add(grp);keep.add(grp);
+  if(['breach','hwin','fa1','fa2'].includes(o.door)){DOORS[o.door]={o,grp,kind:'ghost',open:0,want:0,set(v){this.open=v;}};continue;}// (no leaf: a wall that is broken through, or one that moves; the dressing draws them)
   const edge=ew?o.x:o.z;
   if(hinged){const piv=new THREE.Group();if(ew)piv.position.set(edge,y,o.r[0]);else piv.position.set(o.r[0],y,edge);grp.add(piv);const leaf=new THREE.Mesh(new THREE.BoxGeometry(ew?.05:w,h-.04,ew?w:.05),o.door==='C'?green:paint74);
    leaf.position.set(ew?0:w/2,(h-.04)/2,ew?w/2:0);piv.add(leaf);const kn=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),steel);kn.position.set(ew?.06:w-.08,1.0,ew?w-.08:.06);piv.add(kn);
    DOORS[o.door]={o,grp,piv,kind:'hinge',open:0,want:0,ew,set(v){this.open=v;piv.rotation.y=(ew?-1:1)*v*1.45;}};}
-  else{const leaf=new THREE.Group();grp.add(leaf);const body=new THREE.Mesh(new THREE.BoxGeometry(ew?.14:w+.1,h,ew?w+.1:.14),o.door==='bulkhead'||o.door==='den'?steel:green);leaf.add(body);
+  else{const leaf=new THREE.Group();grp.add(leaf);const bm=o.door==='bulkhead'||o.door==='den'?steel:green;
+   if((o.door==='samCell'||o.door==='jamieCell')&&!ew){// (a real slot through it at a boy's eye height, so you can see who is behind it)
+    const W=w+.1,sy=1.45-h/2,sw=.42,sh=.2;for(const [x,y,bw,bh] of [[0,(-h/2+sy-sh/2)/2,W,sy-sh/2+h/2],[0,(sy+sh/2+h/2)/2,W,h/2-sy-sh/2],[-(sw/2+(W-sw)/4),sy,(W-sw)/2,sh],[(sw/2+(W-sw)/4),sy,(W-sw)/2,sh]]){const b=new THREE.Mesh(new THREE.BoxGeometry(bw,bh,.14),bm);b.position.set(x,y,0);leaf.add(b);}}
+   else{const body=new THREE.Mesh(new THREE.BoxGeometry(ew?.14:w+.1,h,ew?w+.1:.14),bm);leaf.add(body);}
    for(let k=0;k<4;k++){const rib=new THREE.Mesh(new THREE.BoxGeometry(ew?.18:w+.12,.07,ew?w+.12:.18),yellow);rib.position.y=-h/2+.3+k*(h-.6)/3;leaf.add(rib);}
    if(ew)leaf.position.set(edge,y+h/2,um);else leaf.position.set(um,y+h/2,edge);
    DOORS[o.door]={o,grp,leaf,kind:'rise',open:0,want:0,ew,h,y,set(v){this.open=v;leaf.position.y=y+h/2+v*(h-.05);}};}}
@@ -249,6 +267,81 @@ export function createComplex({scene,sfx=()=>{}}){
  K.box(dg,20.3,-2.8,78.6,1.6,.4,.8,steel);// the cot in F2
  // the organic growth near the contact point: where the walls stop being walls (F2, the far end of I)
  for(let k=0;k<26;k++){const a=k*2.399,r2=.2+(k%5)*.08;const b=new THREE.Mesh(new THREE.SphereGeometry(r2,10,8),flesh);b.position.set(16.75,-2.7+((k*.37)%1)*2.4,74+((k*.61)%1)*5.6);b.scale.set(.4,1,1.2);dg.add(b);void a;}
+ // ---- the reconstruction's dressing: what the rescues use (moving things are kept out of the bake) ----------------------------
+ const R8=new THREE.Group();R8.name='c8-rescue-things';root.add(R8);keep.add(R8);
+ const dialTex=(label)=>paper(256,256,(g,w,h)=>{g.fillStyle='#e6e1d2';g.beginPath();g.arc(w/2,h/2,w*.47,0,7);g.fill();g.strokeStyle='#222';g.lineWidth=6;g.stroke();
+  g.strokeStyle='#8a2a22';g.lineWidth=18;g.beginPath();g.arc(w/2,h/2,w*.36,Math.PI*.95,Math.PI*1.2);g.stroke();g.strokeStyle='#2f5a34';g.beginPath();g.arc(w/2,h/2,w*.36,Math.PI*1.75,Math.PI*1.98);g.stroke();
+  g.fillStyle='#222';g.font='bold 30px "Courier New",monospace';g.textAlign='center';g.fillText('LOAD',w/2,h*.7);g.font='bold 44px "Courier New",monospace';g.fillText(label,w/2,h*.88);g.font='bold 18px "Courier New",monospace';g.fillText('NO LOAD',w*.26,h*.62);g.fillText('HELD',w*.78,h*.36);});
+ const mk=(tex,c=0xffffff)=>{const m=new THREE.MeshStandardMaterial({map:tex,color:tex?c:0xe6e1d2,roughness:.6});m.name='c8-dial';return m;};
+ const lampM=c=>{const m=new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:1.4});m.name='c8-panel-lamp';return m;};
+ // J: the BARRIER LOAD panel (1959): one dial and one lamp for each occupied chamber still on the circuit: D3, E2, F2 (the film's gauges)
+ const PANEL={g:new THREE.Group(),needles:[],lamps:[],v:[1,1,1],want:[1,1,1]};PANEL.g.name='c8-load-panel';R8.add(PANEL.g);PANEL.g.position.set(9.6,-3,22.25);
+ K.box(PANEL.g,0,1.55,.12,5.2,2.3,.24,green);K.box(PANEL.g,0,2.86,.16,5.4,.32,.3,steel);
+ {const plate=paper(512,64,(g,w,h)=>{g.fillStyle='#d9d3bf';g.fillRect(0,0,w,h);g.fillStyle='#222';g.font='bold 34px "Courier New",monospace';g.textAlign='center';g.fillText('BARRIER LOAD — CHAMBER CIRCUIT',w/2,44);});
+  const pm=new THREE.Mesh(new THREE.PlaneGeometry(4.6,.42),new THREE.MeshStandardMaterial({map:plate,roughness:.7}));pm.position.set(0,2.86,.32);PANEL.g.add(pm);}
+ ['D3','E2','F2'].forEach((lab,i)=>{const x=-1.65+i*1.65,dm=new THREE.Mesh(new THREE.CircleGeometry(.55,32),mk(dialTex(lab)));dm.position.set(x,1.7,.25);PANEL.g.add(dm);
+  const nd=new THREE.Group();nd.position.set(x,1.7,.27);const bar=new THREE.Mesh(new THREE.BoxGeometry(.035,.46,.012),new THREE.MeshStandardMaterial({color:0x111111}));bar.position.y=.2;nd.add(bar);PANEL.g.add(nd);PANEL.needles.push(nd);
+  const lp=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),lampM(0x6aff7a));lp.position.set(x,.75,.27);PANEL.g.add(lp);PANEL.lamps.push(lp);});
+ {const P2=PANEL.g.clone(true);P2.name='c8-load-panel-h';P2.position.set(14.4,-3,44.38);R8.add(P2);PANEL.twin=P2;// (the same panel, on H's wall beside the anchor board)
+  const nd=[],lp=[];P2.traverse(o=>{if(o.isGroup&&o.children.length===1&&o.children[0].geometry?.parameters?.height===.46)nd.push(o);if(o.isMesh&&o.geometry?.type==='SphereGeometry'){o.material=o.material.clone();lp.push(o);}});PANEL.needles2=nd;PANEL.lamps2=lp;}
+ // the crew room's tall locker by its door, that can be pushed across it
+ const gLocker=new THREE.Group();gLocker.name='c8-g-locker';R8.add(gLocker);K.box(gLocker,0,.95,0,.55,1.9,.6,green);for(let k=0;k<3;k++)K.box(gLocker,.28,.4+k*.55,0,.01,.3,.4,dark);gLocker.position.set(1.45,-3,41.4);
+ // the cell doors that have a boy behind them get a view slot (a steel hood, three bars, the dark behind them)
+ for(const id of ['samCell','jamieCell']){const D=DOORS[id];if(!D?.leaf)continue;const sl=new THREE.Group();sl.name='c8-slot-'+id;D.leaf.add(sl);const fz=D.ew?0:-.08;
+  for(let k=0;k<3;k++){const b=new THREE.Mesh(new THREE.BoxGeometry(.025,.22,.03),steel);b.position.set(-.13+k*.13,1.45-D.h/2,fz-.012);sl.add(b);}
+  const hood=new THREE.Mesh(new THREE.BoxGeometry(.5,.05,.1),steel);hood.position.set(0,1.58-D.h/2,fz-.03);sl.add(hood);}
+ // D: the horn of the old intercom (1959), the breaker for the wing, the lamp cable down in the water, the pipe in D2, the flood door's brake and chain
+ {const hn=new THREE.Group();hn.position.set(-9.4,-1.1,25.32);dg.add(hn);K.cyl(hn,0,0,.12,.07,.22,steel,{rx:Math.PI/2,r2:.16});K.box(hn,0,.18,0,.06,.3,.06,steel);}
+ K.box(dg,-7.4,-1.6,25.27,.7,.95,.16,green);const breaker=new THREE.Group();breaker.position.set(-7.4,-1.55,25.4);R8.add(breaker);{const h=new THREE.Mesh(new THREE.BoxGeometry(.05,.42,.05),red);h.position.y=.18;breaker.add(h);}
+ {const plate=paper(256,64,(g,w,h)=>{g.fillStyle='#d9d3bf';g.fillRect(0,0,w,h);g.fillStyle='#222';g.font='bold 22px "Courier New",monospace';g.textAlign='center';g.fillText('WING D — LIGHTS / PUMP',w/2,40);});const pm=new THREE.Mesh(new THREE.PlaneGeometry(.66,.17),new THREE.MeshStandardMaterial({map:plate,roughness:.7}));pm.position.set(-7.4,-.98,25.36);dg.add(pm);}
+ const liveCable=new THREE.Group();liveCable.name='c8-live-cable';R8.add(liveCable);{const pts=[[-15.6,-.45,28.7],[-15.5,-1.6,28.5],[-15.6,-2.7,28.3],[-15.2,-3.3,28.2]];for(let i=0;i<pts.length-1;i++)K.pipe(liveCable,pts[i],pts[i+1],.02,m(0x1b1b1c,{roughness:.6},null,'cable'),5);lampAt(-15.6,-.45,28.6,false);}
+ const pipeWedge=new THREE.Group();pipeWedge.name='c8-wedge-pipe';R8.add(pipeWedge);K.pipe(pipeWedge,[-.55,0,0],[.55,0,0],.045,steel,8);pipeWedge.position.set(-14.4,-3.38,31.9);pipeWedge.rotation.y=.5;
+ const isoBrake=new THREE.Group();isoBrake.position.set(-6.9,-1.9,25.35);R8.add(isoBrake);{K.box(dg,-6.9,-2.05,25.25,.22,.5,.12,green);const h=new THREE.Mesh(new THREE.BoxGeometry(.05,.5,.05),red);h.position.y=.24;isoBrake.add(h);}
+ const isoChain=new THREE.Group();isoChain.position.set(-5.1,-3,28.95);R8.add(isoChain);for(let k=0;k<14;k++){const l=new THREE.Mesh(new THREE.TorusGeometry(.05,.012,5,10),steel);l.position.y=.2+k*.2;l.rotation.y=k%2?Math.PI/2:0;isoChain.add(l);}K.box(dg,-5.1,.0,28.95,.3,.2,.3,steel);
+ // the drain in D0's floor, the water's way out; a cot and a book in D1 (Ruth Ann's: chapter's own reading), tally marks in D3 (Sam's days)
+ for(let k=0;k<5;k++)K.box(dg,-21.6+k*.03,-2.2+k*.0,30.6+k*.16,.01,.18,.02,m(0x2a2622,{roughness:1},null,'tally'));
+ // E: claws dragged down the cell doors and the den door, at a height no person reaches; the den: what it brought back, and kept
+ const scratch=m(0x1a1714,{roughness:1},null,'scratch');for(const [x,z] of [[18.5,25.1],[25.5,25.1],[31.5,25.1],[33.95,27]])for(let k=0;k<4;k++){const o=K.box(dg,x-.25+k*.11,-.5,z+(x>33?0:-.0),.02,.9,.015,scratch,{rz:.1+k*.03});if(x>33){o.rotation.set(0,Math.PI/2,.1+k*.03);}}
+ {const sh=new THREE.Group();sh.position.set(40.5,-3,27.3);dg.add(sh);K.box(sh,0,.5,0,.5,1,2.6,rust);
+  for(const [y,z,w,h,d,c] of [[1.08,-.9,.3,.16,.22,0x8a2a22],[1.06,-.4,.24,.12,.3,0x2a4a7a],[1.12,.1,.18,.24,.1,0x3a3a3a],[1.05,.6,.28,.1,.16,0xd8c8a0],[1.07,1.05,.22,.14,.3,0x5a3a6a]])K.box(sh,0,y,z,w,h,d,m(c,{roughness:.8},null,'kept'));
+  K.box(sh,.05,1.02,-.9,.32,.04,.24,m(0xd8d0b0,{roughness:.9},null,'lunchbox-lid'));}
+ const jamieShoe=K.box(dg,37.2,-2.93,26.6,.12,.1,.27,m(0xd8d8dc,{roughness:.8},null,'shoe'),{ry:.6});void jamieShoe;
+ const bolts=new THREE.Group();bolts.name='c8-bolts';R8.add(bolts);for(let k=0;k<7;k++){const b=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,.09,6),steel);b.position.set(16.4+((k*.37)%1)*.3,-2.96,28.4+((k*.61)%1)*.3);b.rotation.set(Math.PI/2,k,0);bolts.add(b);}K.box(dg,16.4,-2.97,28.5,.5,.03,.4,wood);
+ const vent=new THREE.Group();vent.name='c8-vent-cover';R8.add(vent);vent.position.set(29.86,-2.62,22.6);{const pl=new THREE.Mesh(new THREE.BoxGeometry(.04,.5,.62),steel);vent.add(pl);for(let k=0;k<5;k++){const sl=new THREE.Mesh(new THREE.BoxGeometry(.05,.03,.5),dark);sl.position.set(-.01,-.18+k*.09,0);vent.add(sl);}for(const [y,z] of [[.21,.27],[.21,-.27],[-.21,.27],[-.21,-.27]]){const b=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.06,6),rust);b.rotation.z=Math.PI/2;b.position.set(-.03,y,z);vent.add(b);}}
+ K.box(dg,29.83,-2.62,22.6,.02,.46,.58,dark);K.box(dg,27.38,-2.62,22.6,.03,.5,.62,dark);// (the duct's mouths, both sides)
+ // E5, E6: the bore it made. Low where a pipe crosses it: you get under on your knees
+ K.pipe(dg,[38.5,-1.85,36.4],[40.8,-1.85,36.4],.28,rust);K.pipe(dg,[30,-1.9,44.6],[30,-1.9,46.8],.24,rust);for(let k=0;k<10;k++)K.box(dg,39.6+((k*.5)%1-.5)*1.4,-2.95,33+k*1.3,.6,.04,.12,m(0x241c18,{roughness:.6},null,'drag'));
+ // F0: the corridor that does not stay the same. The wall that slides across it; the panels over the side passage's mouths;
+ // a stretch of it papered like the upstairs hall of a house in Briarwood, with photographs on the wall
+ const fWall=new THREE.Group();fWall.name='c8-sliding-wall';R8.add(fWall);K.box(fWall,0,1.4,0,3.4,2.8,.2,paint74);fWall.position.set(19.8+3.6,-3,53.6);
+ const faPanels=['fa1','fa2'].map((id,i)=>{const pg=new THREE.Group();pg.name='c8-'+id;R8.add(pg);K.box(pg,0,1.2,0,.2,2.4,1.5,paint74);pg.position.set(21.5,-3,i?56.9:50.9);return pg;});
+ const paper74=m(0x8a7a5a,{roughness:1},null,'wallpaper');const papered=m(0x7d8a6e,{roughness:.95},null,'hall-paper');
+ for(const z of [54,56,58,60,62])for(const x of [18.13,21.47]){K.box(dg,x,-1.6,z,.02,2.6,1.9,papered);}
+ for(const [x,z,c] of [[18.16,55,0x6a5a48],[18.16,58.4,0x4a5a6a],[21.44,57,0x7a4a3a],[21.44,60.6,0x5a6a4a]]){K.box(dg,x,-1.3,z,.03,.5,.4,m(0x2a2522,{roughness:.5},null,'frame'));K.box(dg,x+(x<20?.012:-.012),-1.3,z,.02,.42,.32,m(c,{roughness:.8},null,'photo'));}
+ // F1: the room that was made, its walls papered inside (each panel peels off when it comes apart) and the floor that splits
+ const madeWalls=[];for(const [x,z,w,ry] of [[22.2,64.15,11.4,0],[22.2,73.45,11.4,Math.PI],[16.55,68.8,9.2,Math.PI/2],[27.85,68.8,9.2,-Math.PI/2]]){const n=Math.round(w/1.9);for(let k=0;k<n;k++){const pg=new THREE.Group();const u=-w/2+(k+.5)*w/n;
+   pg.position.set(x+(ry===0||ry===Math.PI?u:0),-3,z+(ry===0||ry===Math.PI?0:u));pg.rotation.y=ry;made.add(pg);const pm=new THREE.Mesh(new THREE.PlaneGeometry(w/n-.02,2.7),m(0x9db0c8,{roughness:.95},null,'boys-wallpaper'));pm.position.y=1.35;pg.add(pm);madeWalls.push({g:pg,ry,k,r:((k*37+z)%10)/10});}}
+ const fissure=new THREE.Group();fissure.name='c8-fissure';R8.add(fissure);fissure.visible=false;{const fm=new THREE.Mesh(new THREE.BoxGeometry(7.4,.05,1),dark);fm.position.set(22.6,-2.99,68.6);fissure.add(fm);
+  for(let k=0;k<8;k++){const e=K.box(fissure,19.2+k*.95,-2.9,68.05+((k*.43)%1)*.2,.9,.12,.25,floorM,{rx:-.25,ry:(k%3-1)*.15});void e;const e2=K.box(fissure,19.2+k*.95,-2.92,69.15-((k*.61)%1)*.2,.9,.12,.25,floorM,{rx:.25,ry:(k%2-.5)*.2});void e2;}}
+ // F2: where Alex has been. His marks on the wall by the cot (days), a map scratched into the paint (the camp, the line out to it, a grate)
+ {const tally=paper(256,256,(g,w,h)=>{g.fillStyle='rgba(0,0,0,0)';g.clearRect(0,0,w,h);g.strokeStyle='rgba(30,26,22,.9)';g.lineWidth=4;for(let i=0;i<5;i++){const x0=30+i*40;for(let k=0;k<4;k++){g.beginPath();g.moveTo(x0+k*7,30);g.lineTo(x0+k*7,80);g.stroke();}if(i<4){g.beginPath();g.moveTo(x0-4,74);g.lineTo(x0+28,36);g.stroke();}}
+   g.lineWidth=3;g.beginPath();g.moveTo(40,200);g.lineTo(120,150);g.lineTo(200,160);g.stroke();g.beginPath();g.arc(206,160,10,0,7);g.stroke();g.font='bold 22px sans-serif';g.fillStyle='rgba(30,26,22,.9)';g.fillText('CAMP',150,235);g.fillText('GRATE',160,138);g.fillText('ME',20,225);});
+  const tm=new THREE.Mesh(new THREE.PlaneGeometry(1.4,1.4),new THREE.MeshStandardMaterial({map:tally,transparent:true,roughness:1}));tm.position.set(23.86,-1.6,77);tm.rotation.y=-Math.PI/2;dg.add(tm);}
+ const breachWall=new THREE.Group();breachWall.name='c8-breach-wall';R8.add(breachWall);for(let i=0;i<3;i++)for(let j=0;j<3;j++){const c=K.box(breachWall,16.66,-3+.38+i*.74,75.9+j*.53+.27,.22,.74,.53,wet);c.userData.home=c.position.clone();c.userData.r=((i*3+j)*.37)%1;}
+ // IL: the ledge: a concrete shelf along the main chamber's east wall, a broken rail, and twenty metres in a gap with only the steel beam across it
+ for(const [z0,z1] of [[53,60],[62.6,79.6]])K.box(dg,15.1,-3.12,(z0+z1)/2,3,.24,z1-z0,floorM);K.box(dg,15.1,-3.08,61.3,.7,.16,2.6,steel);K.box(dg,15.1,-3.4,61.3,.3,.5,2.6,steel);
+ for(let z=54;z<79;z+=1.8){if(z>59&&z<63.4)continue;if((z*7)%5<1.2)continue;K.box(dg,13.75,-2.5,z,.05,1,.05,yellow);}K.box(dg,13.75,-2.0,58,.04,.04,8,yellow);K.box(dg,13.75,-2.0,71,.04,.04,13,yellow);
+ K.pipe(dg,[16.4,-1.95,66],[16.4,-1.95,70],.22,rust);K.pipe(dg,[13.7,-1.85,67.6],[16.5,-1.85,67.6],.12,rust);// (a pipe across it at chest height: duck under)
+ const ledgeFall=new THREE.Group();ledgeFall.name='c8-ledge-fall';R8.add(ledgeFall);K.box(ledgeFall,15.1,-3.12,74.4,3,.24,3,floorM);// (the piece of shelf that goes, behind them)
+ // H: the broken window onto the ledge (glass, and the panel under the sill, both go)
+ const hwinG=new THREE.Group();hwinG.name='c8-h-window';R8.add(hwinG);K.box(hwinG,15,-3+.48,52,1.6,.95,.2,paint);const hg2=new THREE.Mesh(new THREE.PlaneGeometry(1.6,1.6),glass);hg2.position.set(15,-3+1.75,51.95);hwinG.add(hg2);
+ // G: the crew room, lived in: a couch along the back wall, a cot under the lockers' end, a vending machine, the first-aid box, a radio
+ K.box(dg,-3.4,-2.7,42.5,2.6,.42,.85,m(0x5a4a3a,{roughness:1},null,'couch'));K.box(dg,-3.4,-2.25,42.85,2.6,.6,.2,m(0x5a4a3a,{roughness:1},null,'couch'));for(const x of [-4.62,-2.18])K.box(dg,x,-2.5,42.5,.18,.5,.85,m(0x4a3a2a,{roughness:1},null,'couch-arm'));
+ K.box(dg,-5.3,-2.68,41.2,.75,.12,1.9,m(0x3a4a3a,{roughness:1},null,'cot'));for(const [dx,dz] of [[-.3,-.85],[.3,-.85],[-.3,.85],[.3,.85]])K.box(dg,-5.3+dx,-2.85,41.2+dz,.04,.3,.04,steel);
+ K.box(dg,-.2,-2.15,36.45,.9,1.7,.7,m(0x7a2a24,{roughness:.6},null,'vending'));K.box(dg,-.2,-1.9,36.1,.6,.9,.02,m(0x10141a,{roughness:.2},null,'vending-glass'));
+ K.box(dg,-2.6,-1.4,36.1,.45,.35,.12,m(0xd8d2c4,{roughness:.7},null,'first-aid'));K.box(dg,-2.6,-1.4,36.04,.12,.12,.01,red);K.box(dg,-2.6,-1.4,36.04,.04,.24,.012,m(0xf2f2f0,{},null,'cross'));K.box(dg,-2.6,-1.4,36.04,.24,.04,.012,m(0xf2f2f0,{},null,'cross'));
+ for(const [x,z] of [[-1.1,41.3],[-3.3,41.6]]){K.box(dg,x,-2.55,z,.42,.05,.42,wood);K.box(dg,x,-2.27,z+.2,.42,.5,.05,wood);for(const [dx,dz] of [[-.18,-.18],[.18,-.18],[-.18,.18],[.18,.18]])K.box(dg,x+dx,-2.8,z+dz,.04,.45,.04,steel);}
+ for(const ch of made.children)ch.userData.home={p:ch.position.clone(),r:ch.rotation.clone(),s:ch.scale.clone()};for(const P of madeWalls)P.g.userData.paper=true;
  // ---- bake the static parts ------------------------------------------------------------------------------------------
  const baked=bake(root,keep);
  // ---- lights the complex owns (always the same few, moved to wherever you are) ----------------------------------------
@@ -256,16 +349,17 @@ export function createComplex({scene,sfx=()=>{}}){
  const walkCells=[...cell.values()].filter(c=>!c.o.visual);
  const SOLIDS=[// [x,z,hw,hd]: furniture and machinery you walk round (local)
   [-20.6,12.35,.85,.45],[-23.55,12.2,.32,.48],[-15.6,12.8,.58,.33],[-17.5,18.2,.3,.3],[4,30.9,3.55,.45],[-2.2,39.6,1.25,.55],[-5.55,38.25,.3,1.6],[5,51.5,11,.35],
-  [-11.6,20.4,1.25,.65],[-30.15,29.55,.6,.65],[15.6,19.8,.75,.75],[17.8,7.6,.32,.32],[18.6,8.4,.32,.32],[-12.8,7.2,.32,.32],[38,30.5,1.6,.7],[20.3,78.6,.85,.45],[26.6,66.4,.55,1.05],[17.6,70.2,.35,.7],[26.6,72.6,.45,.3],
+  [-11.6,20.4,1.25,.65],[-30.15,29.55,.6,.65],[9.6,22.4,2.6,.25],[-3.4,42.5,1.4,.5],[-5.3,41.2,.4,.95],[-.2,36.45,.45,.35],[40.5,27.3,.3,1.3],[15.6,19.8,.75,.75],[17.8,7.6,.32,.32],[18.6,8.4,.32,.32],[-12.8,7.2,.32,.32],[38,30.5,1.6,.7],[20.3,78.6,.85,.45],[26.6,66.4,.55,1.05],[17.6,70.2,.35,.7],[26.6,72.6,.45,.3],
   ...[-10,-4,2,8,14].flatMap(x=>[10,18].map(z=>[x,z,.32,.32])),
  ];
- const extraSolids=[];// (the chapter's own: debris, a fallen beam, a closed barrier leaf)
+ const extraSolids=[{x:14.1,z:61.3,hw:.5,hd:1.3},{x:16.1,z:61.3,hw:.5,hd:1.3}];// (the chapter's own: debris, a fallen beam, a closed barrier leaf; first: the ledge's gap either side of its beam)
+ const baseSolids=extraSolids.length;
  const inCellI=(c,x,z,r)=>x>c.x0+WT+r&&x<c.x1-WT-r&&z>c.z0+WT+r&&z<c.z1-WT-r;
  function openingAt(x,z,r,{walk=true}={}){for(const o of OPENINGS){if(o.window&&walk)continue;if(o.door&&doorOpen.get(o.door)<(walk?(ST.duck?.[o.door]??.62):.3))continue;/* (a door jammed part way: ST.duck says how low it may be and still be got under) */
    if(o.x!=null){if(Math.abs(x-o.x)<WT+.7&&z>o.r[0]+r&&z<o.r[1]-r)return o;}else if(Math.abs(z-o.z)<WT+.7&&x>o.r[0]+r&&x<o.r[1]-r)return o;}return null;}
  function cellAt(x,z,{pad=0}={}){for(const c of cell.values())if(x>=c.x0-pad&&x<=c.x1+pad&&z>=c.z0-pad&&z<=c.z1+pad&&!c.o.visual)return c;for(const c of cell.values())if(x>=c.x0&&x<=c.x1&&z>=c.z0&&z<=c.z1)return c;return null;}
  function solidAt(x,z,r){for(const [sx,sz,hw,hd] of SOLIDS)if(Math.abs(x-sx)<hw+r&&Math.abs(z-sz)<hd+r)return true;
-  if(ST.barrier<.6&&Math.abs(x+7.6)<.1+r&&z>-4.3&&z<-1.7)return true;if(ST.grille>.4&&Math.abs(x-22)<.08+r&&z>25&&z<29)return true;/* (the outer barrier, down; the grille, down) */for(const b of extraSolids)if(b.on!==false&&Math.abs(x-b.x)<b.hw+r&&Math.abs(z-b.z)<b.hd+r)return true;return false;}
+  if(ST.barrier<.6&&Math.abs(x+7.6)<.1+r&&z>-4.3&&z<-1.7)return true;if(ST.locker>.8&&Math.abs(x-1.62)<.35+r&&Math.abs(z-38.7)<1.1+r)return true;if(ST.slide>.75&&Math.abs(z-53.6)<.14+r&&x>17.9&&x<21.7)return true;if(ST.grille>.62&&Math.abs(x-22)<.08+r&&z>25&&z<29)return true;/* (the outer barrier, down; the grille, down) */for(const b of extraSolids)if(b.on!==false&&Math.abs(x-b.x)<b.hw+r&&Math.abs(z-b.z)<b.hd+r)return true;return false;}
  function walkL(x,z,r=.28){if(solidAt(x,z,r*.8))return false;for(const c of walkCells)if(inCellI(c,x,z,r))return true;const o=openingAt(x,z,r);if(o){const A=cell.get(o.a),B=cell.get(o.b);return !A.o.visual&&!B.o.visual;}return false;}
  function floorL(x,z){const o=openingAt(x,z,0);let c=null;for(const cc of walkCells)if(x>=cc.x0&&x<=cc.x1&&z>=cc.z0&&z<=cc.z1){c=cc;break;}if(!c&&o)c=cell.get(o.a);if(!c)return -3;return cellFloor(c,x,z);}
  const BOX={x0:-48,x1:46,z0:-8,z1:88};
@@ -288,7 +382,7 @@ export function createComplex({scene,sfx=()=>{}}){
    const id=add(x,z,{door,closed:door?()=>doorOpen.get(door)<.62:null});for(const c of [o.a,o.b])for(const q of of.get(c)||[])edges.push([id,q]);}
   for(const e of extra)nodes.push(e);return {nodes,edges};}
  // ---- doors, levers, the barrier, the plug: the chapter moves them; update eases them --------------------------------------
- const ST={active:false,barrier:1,barrierWant:1,crankV:0,grille:1,grilleWant:1,plugDrop:0,plugWant:0,valve:0,valveV:0,leverJ:0,leverA:[0,0],pins:[0,0,0],water:0,waterWant:0,shift:0,made:0,crane:0};
+ const ST={active:false,barrier:1,barrierWant:1,crankV:0,grille:1,grilleWant:1,plugDrop:0,plugWant:0,valve:0,valveV:0,leverJ:0,leverA:[0,0],pins:[0,0,0],water:0,waterWant:0,shift:0,made:0,crane:0,breaker:0,cable:1,wedge:0,vent:0,slide:0,breach:0,ledge:0,hwin:0,madeBreak:0,isoBrake:0,bow:[0,0,0],shear:0,locker:0};
  function setDoor(id,v,{instant=false}={}){const D=DOORS[id];if(!D)return;D.want=v;if(instant){D.set(v);doorOpen.set(id,v);}}
  function update(dt){for(const D of Object.values(DOORS)){if(D.open!==D.want){const sp=D.kind==='rise'?.55:1.6;D.set(D.want>D.open?Math.min(D.want,D.open+dt*sp):Math.max(D.want,D.open-dt*sp));doorOpen.set(D.o.door,D.open);}}
   // the outer barrier: down when barrier=0 (its leaf seated), the crank turns as it goes
@@ -299,15 +393,32 @@ export function createComplex({scene,sfx=()=>{}}){
   for(let i=0;i<3;i++){pins[i].position.x=-7.6+i*1.4+ST.pins[i]*.7;pins[i].visible=ST.pins[i]<1.6;}
   if(ST.plugDrop!==ST.plugWant){ST.plugDrop=Math.min(ST.plugWant,ST.plugDrop+dt*(.25+ST.plugDrop*2.2));}plug.position.y=7.4-ST.plugDrop*22;
   ST.water=damp(ST.water,ST.waterWant,.35,dt);for(const w of WATER)w.mesh.position.y=w.base+ST.water;
-  trolley.position.x=-2+ST.crane*6;hook.position.x=-2+ST.crane*6;}
+  trolley.position.x=-2+ST.crane*6;hook.position.x=-2+ST.crane*6;
+  // the reconstruction's moving things
+  ST.clock=(ST.clock||0)+dt;
+  for(let i=0;i<3;i++){PANEL.v[i]=damp(PANEL.v[i],PANEL.want[i],PANEL.want[i]<PANEL.v[i]?2.2:1.2,dt);const jit=PANEL.want[i]<.5&&PANEL.v[i]>.05?Math.sin(ST.clock*3+i)*.04:0;PANEL.needles[i].rotation.z=-(PANEL.v[i]-.5)*2.2+jit;
+   PANEL.lamps[i].material.color.setHex(PANEL.want[i]>.5?0x6aff7a:0xff3a2a);PANEL.lamps[i].material.emissive.setHex(PANEL.want[i]>.5?0x3aff5a:0xff2a1a);
+   if(PANEL.needles2?.[i]){PANEL.needles2[i].rotation.z=PANEL.needles[i].rotation.z;}if(PANEL.lamps2?.[i]){PANEL.lamps2[i].material.color.copy(PANEL.lamps[i].material.color);PANEL.lamps2[i].material.emissive.copy(PANEL.lamps[i].material.emissive);}}
+  // the barrier: each of its three sections bows out (toward the plug) as its anchor goes; at the end they shear and fall
+  for(const [k,rib] of barrier.children.entries()){const hx=rib.userData.home?.x??rib.position.x,sec=Math.max(0,Math.min(2,Math.floor((hx+12.5)/8.33))),b=ST.bow[sec]||0,sh=clamp((ST.shear-((k*.37)%1)*.5)/.5,0,1);
+   if(rib.userData.home===undefined)rib.userData.home=rib.position.clone();rib.position.copy(rib.userData.home);rib.position.z-=b*1.4+sh*sh*6;rib.rotation.x=-b*.06-sh*1.1*((k%2)?1:.7);rib.position.y-=sh*sh*9;rib.rotation.z=sh*((k%3)-1)*.4+(b>0?Math.sin(ST.clock*7+k)*.004*b:0);}
+  gLocker.position.set(lerp(1.45,1.62,ST.locker),-3,lerp(41.4,38.7,ST.locker));gLocker.rotation.y=ST.locker*.04;
+  breaker.rotation.x=ST.breaker*1.2;isoBrake.rotation.x=ST.isoBrake*1.1;
+  pipeWedge.visible=ST.wedge<2;if(ST.wedge===1){pipeWedge.position.set(-19.75,-3.2,29.12);pipeWedge.rotation.set(0,0,0);}
+  bolts.visible=!ST.boltsTaken;vent.visible=ST.vent<1;if(ST.vent>0&&ST.vent<1){vent.rotation.z=ST.vent*1.3;vent.position.x=29.86+ST.vent*.3;vent.position.y=-2.62-ST.vent*.3;}
+  fWall.position.x=19.8+3.6*(1-ST.slide);faPanels[0].position.y=-3+(ST.fa||0)*2.5;faPanels[1].position.y=-3+(ST.fa||0)*2.5;
+  {const k=ST.madeBreak;for(const P of madeWalls){const e=clamp((k-P.r*.5)/.5,0,1);P.g.children[0].rotation.x=-e*1.25;P.g.children[0].position.y=1.35-e*1.1;P.g.children[0].position.z=e*.6;}fissure.visible=k>.3;fissure.scale.z=1+k*1.6;}
+  for(const c of breachWall.children){const e=clamp((ST.breach-c.userData.r*.4)/.6,0,1);c.position.copy(c.userData.home);c.position.x-=e*e*1.8;c.position.y-=e*e*(1.2+c.userData.r*2.5);c.rotation.z=e*(c.userData.r-.5)*2;c.visible=ST.breach<1||c.userData.r>.5;}
+  ledgeFall.position.y=-ST.ledge*ST.ledge*14;ledgeFall.rotation.x=ST.ledge*.6;ledgeFall.visible=ST.ledge<1;
+  hwinG.children[0].visible=ST.hwin<1;hwinG.children[1].visible=ST.hwin<.5;}
  function reset(){for(const D of Object.values(DOORS)){D.set(0);D.want=0;doorOpen.set(D.o.door,0);}
-  for(const id of ['B1','B2','C','G','Gback','D1','D2','E1','E3','bulkhead','F0','den'])setDoor(id,1,{instant:true});
-  Object.assign(ST,{barrier:1,barrierWant:1,grille:1,grilleWant:1,plugDrop:0,plugWant:0,valve:0,valveV:0,leverJ:0,leverA:[0,0],pins:[0,0,0],water:0,waterWant:0,shift:0,made:0,crane:0,duck:{}});
-  extraSolids.length=0;made.visible=true;for(const c of made.children)c.visible=true;made.position.set(0,0,0);made.rotation.set(0,0,0);made.scale.set(1,1,1);update(0);}
+  for(const id of ['B1','B2','C','G','Gback','D1','D2','E1','E3','bulkhead','F0','den','dIso'])setDoor(id,1,{instant:true});
+  Object.assign(ST,{barrier:1,barrierWant:1,grille:1,grilleWant:1,plugDrop:0,plugWant:0,valve:0,valveV:0,leverJ:0,leverA:[0,0],pins:[0,0,0],water:0,waterWant:0,shift:0,made:0,crane:0,duck:{},breaker:0,cable:1,wedge:0,vent:0,slide:0,breach:0,ledge:0,hwin:0,madeBreak:0,isoBrake:0,boltsTaken:false,bow:[0,0,0],shear:0,locker:0});
+  extraSolids.length=baseSolids;PANEL.v=[1,1,1];PANEL.want=[1,1,1];for(const ch of made.children){const h=ch.userData.home;if(h){ch.position.copy(h.p);ch.rotation.copy(h.r);ch.scale.copy(h.s);}}made.visible=true;for(const c of made.children)c.visible=true;made.position.set(0,0,0);made.rotation.set(0,0,0);made.scale.set(1,1,1);update(0);}
  function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();ST.active=!!on;}
  reset();
  const at=(name,y=null)=>{const s=SPOT[name];const c=cellAt(s[0],s[1]);return {x:CX.x+s[0],z:CX.z+s[1],y:y??(c?cellFloor(c,s[0],s[1]):0)};};
  return {root,nav,sight,graph,cell,cells:cell,DOORS,doorOpen,setDoor,ST,update,reset,show,at,SPOT,W:W8,L:L8,cellAt:(wx,wz)=>cellAt(wx-CX.x,wz-CX.z),cellIdAt:(wx,wz)=>{const x=wx-CX.x,z=wz-CX.z;for(const c of walkCells)if(x>=c.x0&&x<=c.x1&&z>=c.z0&&z<=c.z1)return c.id;const o=openingAt(x,z,0);return o?o.a:null;},
-  floorL,walkL,extraSolids,screen,screenM,proj,plug,throat,barrier,pins,made,leaf,crank,grille,valve,WATER,baked,lampAt,K,mats:{conc,conc2,wet,steel,green,yellow,red,rust,flesh,dark,brick,wood,glass,waterM,lampOn,lampOff,floorM},
+  floorL,walkL,extraSolids,screen,screenM,proj,plug,throat,barrier,pins,made,leaf,crank,grille,valve,WATER,baked,lampAt,K,PANEL,gLocker,breaker,liveCable,pipeWedge,isoBrake,isoChain,bolts,vent,fWall,faPanels,madeWalls,fissure,breachWall,ledgeFall,hwinG,R8,mats:{conc,conc2,wet,steel,green,yellow,red,rust,flesh,dark,brick,wood,glass,waterM,lampOn,lampOff,floorM},
   inCell:(wx,wz,id,r=0)=>{const c=cell.get(id);if(!c)return false;const x=wx-CX.x,z=wz-CX.z;return x>c.x0-r&&x<c.x1+r&&z>c.z0-r&&z<c.z1+r;}};
 }

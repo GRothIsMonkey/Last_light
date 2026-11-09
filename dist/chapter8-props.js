@@ -66,27 +66,56 @@ export function paper8(kind){if(cache.has(kind))return cache.get(kind);const P=P
 // The 1958 observation film, one frame at a time onto the review room's screen (grain, gate weave, a scratch): a chamber
 // with ribbed walls, a cot, a small figure; two men in coveralls lift her and carry her out; the far wall bulges and
 // cracks and dust comes down; they stop; they carry her back and lay her down; the wall stills. t: seconds into the reel.
+// The 1958 observation film (TEST 3, September 1958): silent, black and white. What it shows, plainly: the barrier has three
+// numbered sections, each with a LOAD gauge; a child lies in Chamber 1; while she is there section 1's needle is up and the
+// wall holds; carried out, the needle falls, the section bows and cracks and something presses behind it; carried back,
+// the needle comes up and the wall holds. Intertitles say it in the engineers' own words. FILM8 lists its beats for captions.
+export const FILM8=[[5,'Three sections in the far wall, numbered. A gauge over each one: LOAD. Every needle up.'],[11,'A small room. CHAMBER 1. A girl asleep on a cot. Two men come in for her.'],
+ [18.5,'They carry her out.'],[22,'Over section 1 the needle falls. The section bows out toward the camera and cracks. Something behind it is pushing.'],
+ [33,'They run her back in and lay her down on the cot.'],[38,'The needle comes back up. The wall goes still.'],[43.5,'DO NOT VACATE OCCUPIED CHAMBERS.']];
 export function createFilm(){let cv=null,g=null;try{cv=document.createElement('canvas');cv.width=480;cv.height=360;g=cv.getContext?.('2d')||null;}catch{}
- const tex=g?new THREE.CanvasTexture(cv):null;if(tex)tex.colorSpace=THREE.SRGBColorSpace;const LEN=46;
- function man(x,y,s,lift=0){g.fillStyle='#2a2a2a';g.fillRect(x-9*s,y-62*s,18*s,40*s);g.beginPath();g.arc(x,y-70*s,8*s,0,7);g.fill();g.fillRect(x-8*s,y-22*s,6*s,22*s);g.fillRect(x+2*s,y-22*s,6*s,22*s);g.fillRect(x-14*s,y-58*s+lift,6*s,28*s);g.fillRect(x+8*s,y-58*s+lift,6*s,28*s);}
- function draw(t){if(!g)return;const W=480,Hh=360,jx=Math.sin(t*41)*1.6,jy=Math.cos(t*37)*1.2;g.save();g.fillStyle='#0c0c0c';g.fillRect(0,0,W,Hh);g.translate(jx,jy);
-  const fade=Math.min(1,t/2)*Math.min(1,(LEN-t)/1.5);g.globalAlpha=Math.max(0,fade);
-  g.fillStyle='#6d6d68';g.fillRect(20,20,W-40,Hh-40);g.fillStyle='#5a5a56';g.fillRect(20,250,W-40,90);// floor
-  // the far wall (the barrier): ribs that bulge while she is away from her cot
-  const away=t<10?0:t<26?Math.min(1,(t-10)/4):t<34?Math.max(0,1-(t-26)/5):0,shake=away*Math.sin(t*30)*2.5;
-  for(let i=0;i<9;i++){const bx=40+i*46,bulge=away*(14+8*Math.sin(i*1.7+t*2))*(1-Math.abs(i-4)/6);g.fillStyle=i%2?'#7a7a74':'#666661';g.fillRect(bx+shake-bulge*.2,40-bulge*.4,38+bulge*.4,200+bulge*.5);}
-  if(away>.4){g.strokeStyle='#1c1c1c';g.lineWidth=2;g.beginPath();g.moveTo(200,60);g.lineTo(214,120);g.lineTo(205,170);g.lineTo(226,236);g.stroke();for(let k=0;k<30*away;k++){g.fillStyle='rgba(200,200,190,.5)';g.fillRect(40+((k*97+t*60)%380),40+((k*53+t*120)%200),2,2);}}
-  // the cot, and her (a small figure, a white dress): on it, lifted, carried left, stopped, carried back, laid down
-  g.fillStyle='#3e3e3a';g.fillRect(250,232,120,14);g.fillRect(256,246,6,20);g.fillRect(358,246,6,20);
-  let fx=310,fy=226,lying=1;const P2=t<6?0:t<10?(t-6)/4:t<20?1:t<26?1:t<31?1-(t-26)/5:0;// 0 on the cot .. 1 carried away to the left
-  if(t>=6&&t<31){lying=0;fx=310-P2*230;fy=200;man(fx-30,256,1,-8);man(fx+30,256,1,-8);}
-  if(t>=31)lying=1;
-  g.fillStyle='#e8e8e2';if(lying){g.fillRect(fx-34,fy-8,68,14);g.beginPath();g.arc(fx-40,fy-2,9,0,7);g.fill();}else{g.fillRect(fx-28,fy-6,56,12);g.beginPath();g.arc(fx-32,fy,8,0,7);g.fill();}
-  if(t>=31&&t<38){man(fx-60+Math.min(1,(t-31)/2)*-80,256,1);man(fx+60+Math.min(1,(t-31)/2)*80,256,1);}
+ const tex=g?new THREE.CanvasTexture(cv):null;if(tex)tex.colorSpace=THREE.SRGBColorSpace;const LEN=48;
+ const W=480,Hh=360,sm=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+ function man(x,y,s,lift=0){g.fillStyle='#262624';g.fillRect(x-9*s,y-62*s,18*s,40*s);g.beginPath();g.arc(x,y-70*s,8*s,0,7);g.fill();g.fillRect(x-8*s,y-22*s,6*s,22*s);g.fillRect(x+2*s,y-22*s,6*s,22*s);g.fillRect(x-14*s,y-58*s+lift,6*s,28*s);g.fillRect(x+8*s,y-58*s+lift,6*s,28*s);}
+ function card(lines){g.fillStyle='#0b0b0b';g.fillRect(0,0,W,Hh);g.strokeStyle='#bdbdb4';g.lineWidth=2;g.strokeRect(36,110,W-72,140);g.fillStyle='#dcdcd2';g.textAlign='center';
+  g.font='bold 20px "Courier New", monospace';lines.forEach((l,i)=>g.fillText(l,W/2,150+i*34-(lines.length-2)*14));g.textAlign='left';}
+ function gauge(x,y,v,label){g.fillStyle='#d8d8d0';g.beginPath();g.arc(x,y,20,0,7);g.fill();g.strokeStyle='#222';g.lineWidth=2;g.stroke();
+  g.strokeStyle='#8a2a22';g.lineWidth=4;g.beginPath();g.arc(x,y,15,Math.PI*.95,Math.PI*1.2);g.stroke();// (the red: NO LOAD)
+  const a=Math.PI*(1.05+.9*v);g.strokeStyle='#111';g.lineWidth=2.5;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(a)*16,y+Math.sin(a)*16);g.stroke();
+  g.fillStyle='#dcdcd2';g.font='bold 11px "Courier New", monospace';g.textAlign='center';g.fillText(label,x,y+34);g.textAlign='left';}
+ function wall(t,v1,bulge){// the barrier: three sections (ribs grouped by three), numbered, a gauge over each; section 1 is the left
+  g.fillStyle='#5e5e59';g.fillRect(20,20,W-40,Hh-40);g.fillStyle='#4d4d49';g.fillRect(20,268,W-40,72);
+  const sh=bulge*Math.sin(t*31)*2.4;
+  for(let s=0;s<3;s++){const x0=48+s*134;for(let i=0;i<3;i++){const bx=x0+i*42,b=s===0?bulge*(18+10*Math.sin(i*1.9+t*2.2)):0;g.fillStyle=i%2?'#7a7a74':'#6a6a65';g.fillRect(bx+(s===0?sh:0)-b*.25,78-b*.5,38+b*.5,186+b*.6);}
+   g.fillStyle='#e2e2d8';g.font='bold 26px "Courier New", monospace';g.fillText(String(s+1),x0+52,252);gauge(x0+62,48,s===0?v1:1,'LOAD');}
+  if(bulge>.35){g.strokeStyle='#121212';g.lineWidth=2;g.beginPath();g.moveTo(70,90);g.lineTo(88,140);g.lineTo(76,190);g.lineTo(98,250);g.moveTo(130,96);g.lineTo(118,160);g.lineTo(136,214);g.stroke();
+   // through the widest crack: something dark, long, feeling at the edges
+   g.fillStyle='#0e0d0c';for(let k=0;k<3;k++){const yy=130+k*34+Math.sin(t*3+k)*6;g.beginPath();g.ellipse(92+Math.sin(t*2+k)*4,yy,5+bulge*4,16,.2,0,7);g.fill();}
+   for(let k=0;k<40*bulge;k++){g.fillStyle='rgba(205,205,195,.55)';g.fillRect(40+((k*97+t*50)%150),70+((k*53+t*130)%200),2,2);}}
+  // the cables from each section's foot, off to the left (to the chambers)
+  g.strokeStyle='#2a2a28';g.lineWidth=3;for(let s=0;s<3;s++){g.beginPath();g.moveTo(98+s*134,264);g.lineTo(98+s*134-20,300-s*8);g.lineTo(20,300-s*8);g.stroke();}}
+ function chamber(t,P2,back){// chamber 1: a cot, the girl, the men
+  g.fillStyle='#626260';g.fillRect(20,20,W-40,Hh-40);g.fillStyle='#525250';g.fillRect(20,262,W-40,78);g.fillStyle='#d8d8d0';g.font='bold 22px "Courier New", monospace';g.fillText('CHAMBER 1',300,64);
+  g.strokeStyle='#2a2a28';g.lineWidth=3;g.beginPath();g.moveTo(330,80);g.lineTo(330,214);g.stroke();// (the cable comes down the wall to the head of her cot)
+  g.fillStyle='#3a3a36';g.fillRect(250,232,130,14);g.fillRect(256,246,6,20);g.fillRect(368,246,6,20);
+  let fx=318,fy=224,lying=true;if(P2>0&&P2<1){lying=false;fx=318-P2*260;fy=198;man(fx-30,258,1,-8);man(fx+30,258,1,-8);}else if(P2>=1){fx=-200;}
+  if(back>0&&back<1){lying=false;fx=-60+back*378;fy=198;man(fx-30,258,1,-8);man(fx+30,258,1,-8);}if(back>=1){lying=true;fx=318;fy=224;}
+  if(fx>-100){g.fillStyle='#e6e6de';if(lying){g.fillRect(fx-34,fy-8,68,14);g.beginPath();g.arc(fx-40,fy-2,9,0,7);g.fill();}else{g.fillRect(fx-28,fy-6,56,12);g.beginPath();g.arc(fx-32,fy,8,0,7);g.fill();}}
+  if(t>=10&&t<16&&P2===0){const k=sm((t-12)/3);man(470-k*130,258,1);man(500-k*130,258,1);}}
+ function draw(t){if(!g)return;const jx=Math.sin(t*41)*1.6,jy=Math.cos(t*37)*1.2;g.save();g.fillStyle='#0b0b0b';g.fillRect(0,0,W,Hh);g.translate(jx,jy);
+  const fade=Math.min(1,t/1.5)*Math.min(1,(LEN-t)/1.2);g.globalAlpha=Math.max(0,fade);
+  if(t<4)card(['OAK HOLLOW TWP. — ISOLATION WORKS','OBSERVATION FILM','TEST 3 — SEPT. 1958']);
+  else if(t<10)wall(t,1,0);
+  else if(t<16)chamber(t,0,0);
+  else if(t<18)card(['SUBJECT A.R. REMOVED','FROM CHAMBER 1']);
+  else if(t<21)chamber(t,sm((t-18)/2.6),0);
+  else if(t<30){const k=sm((t-21.4)/2.2);wall(t,1-k,k);}
+  else if(t<32)card(['SECTION 1 FAILING','RETURN SUBJECT']);
+  else if(t<37)chamber(t,1.01,sm((t-32)/3.4));
+  else if(t<42){const k=sm((t-37.6)/2.2);wall(t,k,1-k);}
+  else if(t<47.5)card(['SECTION 1 HOLDS WHILE','CHAMBER 1 IS OCCUPIED.','DO NOT VACATE OCCUPIED CHAMBERS.']);
   g.globalAlpha=1;g.restore();
-  // grain, a scratch, the gate, a title card at the start
   for(let i=0;i<260;i++){const v=Math.random()*80+(Math.random()<.5?0:150);g.fillStyle=`rgba(${v},${v},${v},.10)`;g.fillRect(Math.random()*W,Math.random()*Hh,1.5,1.5);}
-  g.fillStyle='rgba(230,230,220,.25)';g.fillRect((t*37)%W,0,1.4,Hh);
-  if(t<3){g.fillStyle='#0c0c0c';g.fillRect(0,0,W,Hh);g.fillStyle='#d8d8d0';g.font='bold 22px "Courier New", monospace';g.textAlign='center';g.fillText('O.M.C. — TEST 3 — 9/58',W/2,160);g.fillText('SUBJECT A.R. — CH. 1',W/2,196);g.textAlign='left';}
+  g.fillStyle='rgba(230,230,220,.22)';g.fillRect((t*37)%W,0,1.4,Hh);
   if(tex)tex.needsUpdate=true;}
  return {tex,draw,LEN,canvas:cv};}
