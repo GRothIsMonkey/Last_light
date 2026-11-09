@@ -49,7 +49,7 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
  const retry=(fn,n=4)=>{for(let i=0;i<n;i++){const f=fails0();const ok=fn(i);if(ok&&fails0()===f)return true;until(()=>!A8.C.failing,6);wait(1.2);}return false;};
  const hunterNear=(r=9)=>A8.HM.root.visible&&Math.hypot(A8.HM.x-me().x,A8.HM.z-me().z)<r;
  // hold F on an offer, letting go and keeping still while it is close (the stealth pattern for every noisy thing)
- function stealthHold(id,{max=180,near=8.5,far=12}={}){if(!until(()=>offers().includes(id),40))return false;const at=offerAt(id);approach(at,1.1);faceV(at);press('KeyC');
+ function stealthHold(id,{max=180,near=8.5,far=12}={}){if(!until(()=>offers().includes(id),40))return false;if(!A8.C.hunt||!A8.HM.root.visible)return take(id,{hold:Math.min(max,30),r:1.2,max:20,pad:8})&&!A8.C.failing;const at=offerAt(id);approach(at,1.1);faceV(at);press('KeyC');
   const ok=until(()=>{const a2=offerAt(id);if(!a2)return true;faceV(a2);const d=A8.HM.root.visible?Math.hypot(A8.HM.x-me().x,A8.HM.z-me().z):99;if(d<near){release('KeyF');o.light(false);return false;}if(d>far||!A8.HM.root.visible){if(spot()?.id===id)press('KeyF');}return !offers().includes(id)||!!A8.C.failing;},max);
   release('KeyF');release('KeyC');return ok&&!A8.C.failing;}
  const o={light:on=>{if(!!h.foot.on!==on)tap('KeyT');}};
@@ -66,8 +66,8 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
    const at=offerAt(id);if(!at)break;if(Math.hypot(at.x-me().x,at.z-me().z)>1.1){approach(at,1,{pad:8,max:4,stop:()=>!hunterSafe()});continue;}
    faceV(at);if(spot()?.id===id)press('KeyF');else release('KeyF');wait(.2);}
   release('KeyF');release('KeyC');if(A8.C.hiding)take('unhide',{max:4,r:9});return !offers().includes(id)&&!A8.C.failing;}
- function sneakTo(q,r=.8,{max=150}={}){press('KeyC');o.light(false);const t1=h.snapshot.clock;let ok=false;
-  while(h.snapshot.clock-t1<max&&!A8.C.failing){if(Math.hypot(me().x-q.x,me().z-q.z)<=r){ok=true;break;}if(exposed()){release('KeyW');wait(.6);continue;}approach(q,r,{max:2.5,pad:12,stop:()=>exposed()||!!A8.C.failing});}
+ function sneakTo(q,r=.8,{max=150}={}){if(!A8.C.hunt||!A8.HM.root.visible){const ok2=approach(q,r,{pad:12,max:30});return ok2||Math.hypot(me().x-q.x,me().z-q.z)<=r+.6;}press('KeyC');o.light(false);const t1=h.snapshot.clock;let ok=false,best=1e9,bestAt=h.snapshot.clock;
+  while(h.snapshot.clock-t1<max&&!A8.C.failing){const dq=Math.hypot(me().x-q.x,me().z-q.z);if(dq<=r){ok=true;break;}if(dq<best-.15){best=dq;bestAt=h.snapshot.clock;}else if(h.snapshot.clock-bestAt>12&&!exposed())break;if(exposed()){release('KeyW');wait(.6);continue;}approach(q,r,{max:2.5,pad:12,stop:()=>exposed()||!!A8.C.failing});}
   release('KeyC');return ok;}
  const go=s=>{h.jump(s);wait(.4);};
  const at=(n,r=1)=>approach(P(n),r,{pad:10});
