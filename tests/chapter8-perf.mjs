@@ -20,21 +20,24 @@ const MOMENTS=[
  ['the oak: Alex','c8-oak',10],
  ['the last ride, the wrecked street','c8-ride',8],
 ];
-const browser=await pw.chromium.launch({headless:true,args});const page=await browser.newPage({viewport:{width:1280,height:720}});const errs=[];page.on('pageerror',e=>errs.push(String(e)));
-await page.addInitScript(()=>{window.AudioContext=undefined;window.webkitAudioContext=undefined;});
-const t0=Date.now();await page.goto(`http://127.0.0.1:${server.address().port}/dist/index.html?qa`,{timeout:240000});await page.waitForFunction(()=>window.lastLight,null,{timeout:240000});const loadMs=Date.now()-t0;
-await page.click('#start');await page.evaluate(()=>lastLight.step(.4));
-const res=[];
+// (one browser per moment: software GL in one long session runs out of memory long before a real one would)
+let loadMs=null;const res=[],errs=[];
 for(const [name,sec,warm] of MOMENTS){
- const r=await page.evaluate(async([sec,warm])=>{const L=lastLight;if(sec){L.jump(sec);for(let i=0;i<warm*30;i++)L.step(1/30);}
-  const N=60,up=[],rd=[];let info=null;
-  for(let i=0;i<N;i++){const a=performance.now();L.step(1/30);const b=performance.now();info=L.render();const c=performance.now();up.push(b-a);rd.push(c-b);}
-  const q=(arr,p)=>{const s=[...arr].sort((x,y)=>x-y);return +s[Math.min(s.length-1,Math.floor(p*s.length))].toFixed(2);};const R=L.renderer.info;
-  return {phase:L.chapter8.state.phase,updateMs:{median:q(up,.5),p95:q(up,.95)},renderSubmitMsSwiftShader:{median:q(rd,.5),p95:q(rd,.95)},calls:info.calls,triangles:info.triangles,
-   geometries:R.memory.geometries,textures:R.memory.textures,programs:R.programs?.length??null,heapMB:performance.memory?+(performance.memory.usedJSHeapSize/1048576).toFixed(1):null,
-   creaturesShown:Object.values(L.chapter8.SC.STREET?.CR||{}).filter(c=>c.M.root.visible).length};},[sec,warm]);
- res.push({moment:name,section:sec,...r});console.log(name,JSON.stringify(r));}
-await browser.close();server.close();
+ const browser=await pw.chromium.launch({headless:true,args});const page=await browser.newPage({viewport:{width:1280,height:720}});page.on('pageerror',e=>errs.push(String(e)));
+ try{await page.addInitScript(()=>{window.AudioContext=undefined;window.webkitAudioContext=undefined;});
+  const t0=Date.now();await page.goto(`http://127.0.0.1:${server.address().port}/dist/index.html?qa`,{timeout:240000});await page.waitForFunction(()=>window.lastLight,null,{timeout:240000});if(loadMs===null)loadMs=Date.now()-t0;
+  await page.click('#start');await page.evaluate(()=>lastLight.step(.4));
+  const r=await page.evaluate(async([sec,warm])=>{const L=lastLight;if(sec){L.jump(sec);for(let i=0;i<warm*30;i++)L.step(1/30);}
+   const N=60,up=[],rd=[];let info=null;
+   for(let i=0;i<N;i++){const a=performance.now();L.step(1/30);const b=performance.now();info=L.render();const c=performance.now();up.push(b-a);rd.push(c-b);}
+   const q=(arr,p)=>{const s=[...arr].sort((x,y)=>x-y);return +s[Math.min(s.length-1,Math.floor(p*s.length))].toFixed(2);};const R=L.renderer.info;
+   return {phase:L.chapter8.state.phase,updateMs:{median:q(up,.5),p95:q(up,.95)},renderSubmitMsSwiftShader:{median:q(rd,.5),p95:q(rd,.95)},calls:info.calls,triangles:info.triangles,
+    geometries:R.memory.geometries,textures:R.memory.textures,programs:R.programs?.length??null,heapMB:performance.memory?+(performance.memory.usedJSHeapSize/1048576).toFixed(1):null,
+    creaturesShown:Object.values(L.chapter8.SC.STREET?.CR||{}).filter(c=>c.M.root.visible).length};},[sec,warm]);
+  res.push({moment:name,section:sec,...r});console.log(name,JSON.stringify(r));}
+ catch(e){res.push({moment:name,section:sec,error:String(e.message||e).slice(0,200)});console.log('ERR',name,String(e.message||e).slice(0,200));}
+ await browser.close().catch(()=>{});}
+server.close();
 const doc={note:'Headless Chromium 1280x720 on SwiftShader (software GL on this container\'s CPU). updateMs is the game\'s own per-frame JS update; renderSubmitMsSwiftShader is software rasterisation and says nothing about a GPU. Not a frame-rate measurement on real hardware.',
- machine:{cpus:(await import('node:os')).cpus().length,model:(await import('node:os')).cpus()[0]?.model},pageLoadMs:loadMs,errors:errs,moments:res};
+ machine:{cpus:(await import('node:os')).cpus().length,model:(await import('node:os')).cpus()[0]?.model},pageLoadMs:loadMs,errors:errs,moments:res,heapNote:'The JS heap is about 1.1 GB at the title in this build and in the rejected draft alike (the game builds every chapter at load); measured on the draft commit c496d53: 1109.8 MB at the title, 1114.4 MB at c8-street; this build: 1140.3 MB and 1146.1 MB.'};
 fs.writeFileSync(path.join(out,'perf.json'),JSON.stringify(doc,null,1));console.log('wrote',path.join(out,'perf.json'));

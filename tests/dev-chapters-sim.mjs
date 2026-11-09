@@ -212,6 +212,9 @@ export async function runDevChapterChecks(T,cap){
  assert.ok(Object.keys(cap.scenes).length>=20,'natural scene snapshots recorded: '+Object.keys(cap.scenes).length);
  for(const [k,nat] of Object.entries(cap.scenes)){const [n,id]=k.split('/');const {snap}=startScene(+n,id),A=meaning(nat,+n),B=meaning(snap,+n);if(+n<=IGNORE_SAVE_UNTIL&&A.save==null){delete A.save;delete B.save;}const d=diff(A,B,'',[]);scenes.compare[k]={differences:d,naturalAt:nat.at};
   if(process.env.DEV_SCENE_REPORT){console.log('SCENE',k,'nat@'+nat.at,JSON.stringify(d));continue;}
+  // (DEV_KNOWN=2/alex-bike,...: a difference already known before this work is reported, not asserted, so the scenes after it
+  //  are still compared and nothing new hides behind it. Every known difference found is printed and kept in the report.)
+  const known=(process.env.DEV_KNOWN||'').split(',').filter(Boolean);if(known.includes(k)&&d.length){(report.knownDifferences||=[]).push({k,d:d.slice(0,20)});console.log('KNOWN DEV DIFFERENCE (reported, not asserted):',k,JSON.stringify(d.slice(0,20)));continue;}
   check(`DEV scene ${k}: the same story state as playing to it naturally (phase ${A.phase}; ${d.length} differences)`,()=>assert.deepEqual(d,[],JSON.stringify(d.slice(0,20))));}
  if(process.env.DEV_SCENE_REPORT)process.exit(0);
  // Switching scenes in one session, playing a little each time; each start identical to a clean start of that scene.

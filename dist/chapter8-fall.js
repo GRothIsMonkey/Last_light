@@ -72,8 +72,12 @@ export function fallActs(X){
     CM.barrier.children.forEach((r2,i)=>{if(i<9&&i%2===0){r2.rotation.x=-.25-Math.random()*.2;r2.position.z=85-1.2;}});
     presence.set(0,{root:[W(1,86,-4).x,-4,W(1,86,-4).z],dir:[0,.1,-1],len:22,r0:3.4,r1:.6,state:'emerge',speed:1.4});presence.set(1,{root:[W(-6,86,0).x,0,W(-6,86,0).z],dir:[.2,-.1,-1],len:18,r0:2.6,r1:.5,state:'emerge',speed:1.2});
     presence.set(2,{root:[W(1,74,-14).x,-14,W(1,74,-14).z],dir:[0,1,0],len:20,r0:3,r1:.7,state:'emerge',speed:1});
+    later(1.4,()=>{presence.set(3,{root:[W(-9,84,-6).x,-6,W(-9,84,-6).z],dir:[.5,.6,-1],len:24,r0:2.6,r1:.5,state:'probe',probe:[W(-4,58,0).x,0,W(-4,58,0).z],speed:1.3});presence.impact(W(-9,84,-4),{n:20,power:1.4});sound('c8Rip',W(-9,84,-4),{gain:1.4});});
+    later(2.6,()=>{presence.set(4,{root:[W(9,86,-3).x,-3,W(9,86,-3).z],dir:[-.4,.4,-1],len:22,r0:2.4,r1:.5,state:'probe',probe:[W(6,60,1).x,1,W(6,60,1).z],speed:1.2});presence.impact(W(9,86,-2),{n:18,power:1.3});C.shake=.8;});
+    // (the chamber's cold lamps going, one, then the other: then only what light comes through from the hall)
+    later(3.2,()=>{light(5,W(1,70,7),{intensity:420,dist:60,color:0xa8bcd8,flicker:.9});});later(5.4,()=>{light(5,W(1,70,7),{intensity:90,dist:50,color:0x8899aa,flicker:1});});
     yield* lines([N('The ribs break outward. Something comes through after them, wet and dark and the width of a road, and doesn’t end.',{time:4.4}),AL('That’s it. That’s IT.',{time:1.4,face:'terrified'}),R('MOVE. Everybody MOVE.',{time:1.4})]);
-    later(1.5,()=>{presence.strike(0,W(4,54,-2),{onLand:p=>{sound('c7Glass',W(5,52,-1.5),{gain:1.6});C.shake=1;}});});
+    later(1.5,()=>{presence.strike(0,W(4,54,-2),{onLand:p=>{sound('c7Glass',W(5,52,-1.5),{gain:1.6});sound('c8Glass',W(4,52,-1.5),{gain:1.4});C.shake=1.2;presence.impact(W(4,52.4,-1.6),{n:30,power:1.6});CM.ST.hwin=1;light(5,null);light(4,W(4,48,1.6),{intensity:6,dist:14,color:0xff2a1a,flicker:.6});T?.jolt?.(1,{rise:1,hold:12,why:'it came through the window'});}});});
     yield* wait(2.2);
     // the hunter: out of the chamber, past them in the hall, not after anyone: getting away from it
     HM.show(true);H.reset();HM.show(true);H.place(W(-6,48).x,W(-6,48).z,0);H.script([{to:()=>[W(-6,40).x,W(-6,40).z],speed:5,state:'run',free:true},{to:()=>[W(-4,34).x,W(-4,34).z],speed:5,state:'run',free:true},{act:()=>{HM.show(false);H.reset();}}]);

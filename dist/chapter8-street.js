@@ -259,6 +259,8 @@ export function streetActs(X){
    // it comes up out of the hole's end, in the side yard: between you and him. It doesn't look at you. It wants him
    HM.show(true);H.reset();HM.show(true);const up=HD.up;H.place(up.x,up.z,headingTo(up.x,up.z,sd.x,sd.z));C.huntRise=1.5;HM.setState('crawl');sound('c7Snarl',V3(up),{gain:1.6});C.shake=.5;mark('it came up in the side yard');
    H.script([{wait:1.3,state:'peek',low:.6,look:()=>V3(sd)},{to:()=>[lerp(up.x,sd.x,.45),lerp(up.z,sd.z,.45)],speed:1,state:'stalk',low:.5,free:true}]);
+   // (Sam and Alex at the end of the hole, turned to it, watching; Sam half a step toward it, Alex back)
+   {const jw=()=>V3({x:jamie.px,z:jamie.pz});stand(sam,SP(1012.4,8.4),{look:jw,max:4});if(X.alex)stand(X.alex,SP(1010.2,6.6),{look:jw,max:4,gesture:ACT.shake(ACT.hug(null),{k:1})});feel(sam,'anguish',12);if(X.alex)feel(X.alex,'horror',12);}
    yield* lines([SM('JAMIE! JAMIE, IT’S IN THE YARD— IT’S COMING—',{time:2,face:'anguish'}),Y('JAMIE! LET GO! RUN!',{time:1.4}),J('NOT YET! He’s not through! NOT YET!',{time:1.8,face:'terrified'})]);
    reyes.walk([[HD.watch.x+.8,HD.watch.z-.6]],{speed:3.4,then:()=>{reyes.gest('point',V3(HM.root.position));}});later(1.2,()=>{C.reyesFire=true;});
    objective('Jamie.','');

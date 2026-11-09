@@ -1,0 +1,110 @@
+{
+  "shots": [
+    {
+      "name": "sam-out",
+      "note": "Sam’s rescue: the moment he is out of the cell (the flood door)",
+      "phase": "e8-sam",
+      "caption": "He gets up on the second try and stands there in front of you, swaying, and grabs your arm with both hands like you might not be real either",
+      "info": true
+    },
+    {
+      "name": "jamie-out",
+      "note": "Jamie’s rescue: his door, him out",
+      "phase": "e8-jamie",
+      "caption": "JAMIE“Next cell. Go. It comes back—”",
+      "info": false
+    },
+    {
+      "name": "alex-door",
+      "note": "Alex’s rescue: at his door",
+      "phase": "e8-alex",
+      "caption": "YOU“Alex. It’s us. It’s really—”",
+      "info": true
+    },
+    {
+      "name": "alex-out",
+      "note": "Alex’s rescue: Alex out",
+      "phase": "e8-alex",
+      "caption": "The paper comes off the walls in sheets. There’s concrete under it, wet, and something grown over the concrete, pale, like the inside of a s",
+      "info": true
+    },
+    {
+      "name": "reunion",
+      "note": "The reunion in the crew room",
+      "phase": "e8-reunion",
+      "caption": "Nobody says anything for a while. Somewhere under everything, very far off, something enormous is moving. In here, it’s just the lamp, and f",
+      "info": true
+    },
+    {
+      "name": "breach",
+      "note": "The breach through the windows, mid-beat",
+      "phase": "f8-breach",
+      "caption": "OFFICER REYES“MOVE. Everybody MOVE.”",
+      "info": true
+    },
+    {
+      "name": "escape",
+      "note": "The escape: the junction hall under the jammed bulkhead",
+      "phase": "f8-breach",
+      "caption": "SAM“The door’s coming down— it’s jammed, it’s twisting—”",
+      "info": true
+    },
+    {
+      "name": "street",
+      "note": "The surface: Oak Hollow Drive, the trench and the house that fell, from the near lawns",
+      "phase": "g8-surface",
+      "caption": "JAMIE“Mrs. Pruitt! Hang on— we got you!”",
+      "info": true
+    },
+    {
+      "name": "jamie-death",
+      "note": "Jamie’s death: the moment it has him",
+      "phase": "g8-street",
+      "caption": "SAM“IT’S GOT HIM— IT’S TAKING HIM BACK— NO— NO—”",
+      "info": true
+    },
+    {
+      "name": "jamie-after",
+      "note": "After Jamie: Reyes working on him, Sam on his knees",
+      "phase": "g8-street",
+      "caption": "There’s still a little light.",
+      "info": true
+    },
+    {
+      "name": "gates",
+      "note": "The final operation: gate 1 on the bridge",
+      "phase": "n8-op",
+      "caption": "ALEX“In the water— BACK! Get back!”",
+      "info": true
+    },
+    {
+      "name": "plug",
+      "note": "The final operation: the pins and the plug",
+      "phase": "n8-op",
+      "caption": "There’s still a little light.",
+      "info": true
+    },
+    {
+      "name": "hatch",
+      "note": "Alex at the hatch: the lid down across his back",
+      "phase": "n8-op",
+      "caption": "SAM“NO— NO— ALEX—”",
+      "info": "pinned"
+    },
+    {
+      "name": "alex-death",
+      "note": "Alex at the oak",
+      "phase": "n8-oak",
+      "caption": "ALEX“Good.”",
+      "info": true
+    },
+    {
+      "name": "ride",
+      "note": "The last ride, looking back",
+      "phase": "n8-ride",
+      "caption": "Saturday. The sun not up yet, but nearly.",
+      "info": true
+    }
+  ],
+  "errors": []
+}

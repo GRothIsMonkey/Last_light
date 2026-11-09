@@ -118,7 +118,7 @@
   "phase": "g8-street",
   "caption": "SAM“IT’S GOT HIM— IT’S TAKING HIM BACK— NO— NO—”",
   "info": {
-   "held": 1.0333333333333332
+   "held": 1.1
   }
  },
  {
@@ -150,7 +150,7 @@
   "info": {
    "expr": null,
    "sob": 0,
-   "cry": 0
+   "cry": 0.6499997261767242
   }
  },
  {
@@ -161,7 +161,7 @@
   "caption": "There’s still a little light.",
   "info": {
    "sob": 0,
-   "cry": 0
+   "cry": 0.6499999994552986
   }
  },
  {
@@ -173,6 +173,24 @@
   "info": {
    "cap": "SAM“Wake up. You have to wake up. You can’t— you can’t do this, you can’t—”"
   }
+ },
+ {
+  "name": "made",
+  "frame": "grin",
+  "note": "the made things up close (pale, smiling: copies of what it did to Danny, not Danny) and the second hunter",
+  "phase": "g8-surface",
+  "caption": "Up the last rungs into air that smells of gas and smoke and wet earth. And the sky—",
+  "info": {
+   "pale": true
+  }
+ },
+ {
+  "name": "made",
+  "frame": "three",
+  "note": "the made things up close (pale, smiling: copies of what it did to Danny, not Danny) and the second hunter",
+  "phase": "g8-surface",
+  "caption": "The sky is wrong. A low red ceiling over the whole town, churning, lit from underneath. Toward the court it glows like t",
+  "info": null
  },
  {
   "name": "sky",
