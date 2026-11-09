@@ -44,8 +44,8 @@ export const SECTIONS8=['chapter8-start','c8-bikes','c8-cover','c8-reyes','c8-fi
  'c8-gallery','c8-stealth','c8-office','c8-film','c8-corridor','c8-danny','c8-bulkhead',
  'c8-wing','c8-ruth','c8-sam','c8-sam-door','c8-sam-out','c8-retrieval','c8-jamie','c8-jamie-door','c8-jamie-run','c8-shift','c8-made','c8-alex','c8-alex-free','c8-ledge',
  'c8-reunion','c8-alarm','c8-truth','c8-breach','c8-escape','c8-ladder',
- 'c8-surface','c8-trench','c8-street','c8-hendersons','c8-garage','c8-yard','c8-jamie-death','c8-flee','c8-staging','c8-gates','c8-ports','c8-line-two','c8-plug','c8-hatch',
- 'c8-oak','c8-alex-death','c8-ride','c8-look-back','chapter8-end'];
+ 'c8-surface','c8-trench','c8-street','c8-hendersons','c8-garage','c8-yard','c8-jamie-death','c8-flee','c8-staging','c8-gates','c8-ports','c8-line-two','c8-plug','c8-chain','c8-hatch',
+ 'c8-oak','c8-alex-death','c8-walk','c8-ride','c8-look-back','chapter8-end'];
 export const ALIAS8={'c8-start':'chapter8-start','c8-four-bikes':'c8-bikes','c8-missing-junction':'c8-field','c8-mh12':'c8-lift','c8-outer-barrier':'c8-barrier','c8-construction-gallery':'c8-gallery',
  'c8-annie':'c8-office','c8-annie-rowan':'c8-office','c8-0417':'c8-office','c8-observation-film':'c8-film','c8-whitcomb':'c8-danny','c8-smiling-creature':'c8-danny','c8-flooded-wing':'c8-wing',
  'c8-ruth-ann':'c8-ruth','c8-rescue-sam':'c8-sam','c8-rescue-jamie':'c8-jamie','c8-rescue-alex':'c8-alex','c8-reconstruction':'c8-made','c8-four':'c8-reunion','c8-revelation':'c8-truth','c8-anchor-board':'c8-truth',
@@ -55,7 +55,7 @@ export const ALIAS8={'c8-start':'chapter8-start','c8-four-bikes':'c8-bikes','c8-
 export const LABEL8={'chapter8-start':'Four bikes','c8-field':'The missing junction','c8-shaft':'MH-12','c8-gallery':'The construction gallery','c8-stealth':'Something is searching',
  'c8-corridor':'The service corridor','c8-wing':'The flooded wing','c8-sam':'Sam','c8-sam-door':'Sam’s door','c8-sam-out':'The flood door','c8-retrieval':'The retrieval wing','c8-jamie':'Jamie’s cell','c8-jamie-run':'Its den','c8-shift':'The corridor that moves',
  'c8-made':'The room it made','c8-alex':'Alex','c8-ledge':'The ledge','c8-reunion':'All four of them','c8-truth':'The anchor board','c8-escape':'The way out','c8-surface':'Oak Hollow','c8-trench':'The storm line','c8-street':'Mrs. Pruitt','c8-hendersons':'The Hendersons’','c8-garage':'Mr. Henderson','c8-yard':'The side yard','c8-jamie-death':'Jamie','c8-flee':'Away from it','c8-staging':'The works',
- 'c8-gates':'The outer routes','c8-ports':'The drawdown','c8-plug':'The plug','c8-oak':'The oak','c8-ride':'The last ride','chapter8-end':'The night Oak Hollow fell'};
+ 'c8-gates':'The outer routes','c8-ports':'The drawdown','c8-plug':'The plug','c8-chain':'The chain','c8-hatch':'The hatch','c8-oak':'The oak','c8-walk':'The street at sunrise','c8-ride':'The last ride','chapter8-end':'The night Oak Hollow fell'};
 const PHASES=['c8-black','d8-bikes','d8-field','d8-shaft','e8-gallery','e8-danny','e8-sam','e8-jamie','e8-alex','e8-reunion','f8-truth','f8-breach','g8-surface','g8-street','g8-staging','n8-op','n8-oak','n8-ride','n8-end'];
 // (the clock: Friday 10:42 PM at Sam's; past midnight under the court; before five on the street; dawn at the oak)
 const HOUR={start:22.7,field:23.25,shaft:23.6,gallery:23.9,corridor:24.35,wing:24.7,retrieval:25.1,alex:25.5,reunion:25.9,truth:26.2,breach:26.35,surface:28.75,street:28.95,staging:29.4,op:29.6,line2:29.95,oak:30.3,ride:30.45};
@@ -211,7 +211,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // sobs, the view trembling with them, the edges of everything swimming. cry(k, seconds) is a wave of it; the floor stays.
  const SECTION_ORDER=SECTIONS8;
  const after=(sec,than)=>SECTION_ORDER.indexOf(sec)>=SECTION_ORDER.indexOf(than);
- function griefFor(section){const s=ALIAS8[section]||section;if(after(s,'c8-jamie-death')&&s!=='chapter8-start'){C.grief.jamie=true;}if(after(s,'c8-alex-death')){C.grief.alex=true;}applyGrief();}
+ function griefFor(section){const s=ALIAS8[section]||section;if(after(s,'c8-jamie-death')&&s!=='chapter8-start'){C.grief.jamie=true;}if(after(s,'c8-walk')){C.grief.alex=true;}applyGrief();}
  function applyGrief(){const g=C.grief,lvl=(g.jamie?.72:0)+(g.alex?.28:0);for(const c of [sam,alex].filter(Boolean))c.person?.face?.grief?.(lvl);jamie.person?.face?.grief?.(0);
   C.pGrief=Math.max(C.pGrief,lvl);}
  function richFaces(on){for(const c of [jamie,sam,alex].filter(Boolean))c.person?.face?.rich?.(on);}

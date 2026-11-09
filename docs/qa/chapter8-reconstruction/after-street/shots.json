@@ -1,0 +1,205 @@
+[
+ {
+  "name": "surface",
+  "frame": "sky",
+  "note": "up out of MH-12: the sky, the thing on the skyline, the drive",
+  "phase": "g8-surface",
+  "caption": "The sky is wrong. A low red ceiling over the whole town, churning, lit from underneath. Toward the court it glows like t",
+  "info": {
+   "apoc": 0.92,
+   "caption": "The sky is wrong. A low red ceiling over the whole town, churning, lit from unde"
+  }
+ },
+ {
+  "name": "surface",
+  "frame": "drive",
+  "note": "up out of MH-12: the sky, the thing on the skyline, the drive",
+  "phase": "g8-surface",
+  "caption": "The sky is wrong. A low red ceiling over the whole town, churning, lit from underneath. Toward the court it glows like t"
+ },
+ {
+  "name": "surface",
+  "frame": "impacts",
+  "note": "up out of MH-12: the sky, the thing on the skyline, the drive",
+  "phase": "g8-surface",
+  "caption": "And in the glow, past the oak and the trees: it. A hill of it, folds and swellings, and things like arms going up out of",
+  "info": {
+   "events": []
+  }
+ },
+ {
+  "name": "surface",
+  "frame": "made",
+  "note": "up out of MH-12: the sky, the thing on the skyline, the drive",
+  "phase": "g8-surface",
+  "caption": "OFFICER REYES“Hey. HEY. Eyes on me. All of you. My car’s at Sam’s house and there are trucks at Summerfield. We are walk",
+  "info": {
+   "mode": "off",
+   "offers": []
+  }
+ },
+ {
+  "name": "trench",
+  "frame": "go",
+  "note": "the road goes into the storm line; the hunter out of it",
+  "phase": "g8-surface",
+  "caption": "SAM“The road— get BACK, it’s lifting—”"
+ },
+ {
+  "name": "trench",
+  "frame": "hunter",
+  "note": "the road goes into the storm line; the hunter out of it",
+  "phase": "g8-surface",
+  "caption": "OFFICER REYES“Stay on this side! East side! Stay off the edge!”",
+  "info": {
+   "mode": "off",
+   "x": 0
+  }
+ },
+ {
+  "name": "trench",
+  "frame": "lean",
+  "note": "the road goes into the storm line; the hunter out of it",
+  "phase": "g8-surface",
+  "caption": "Down in the hole, in the black mouth of the storm line, something moves. A long arm comes up over the broken edge. Then "
+ },
+ {
+  "name": "limb",
+  "frame": "pruitt",
+  "note": "Mrs. Pruitt; the limb comes down on the house across from the Hendersons",
+  "phase": "g8-surface",
+  "caption": "JAMIE“Mrs. Pruitt! Hang on— we got you!”",
+  "info": {
+   "offers": []
+  }
+ },
+ {
+  "name": "limb",
+  "frame": "limb",
+  "note": "Mrs. Pruitt; the limb comes down on the house across from the Hendersons",
+  "phase": "g8-surface",
+  "caption": "JAMIE“(to you, out of breath, grinning) See? We’re good at this. We’re like... firemen.”"
+ },
+ {
+  "name": "limb",
+  "frame": "hit",
+  "note": "Mrs. Pruitt; the limb comes down on the house across from the Hendersons",
+  "phase": "g8-surface",
+  "caption": "OFFICER REYES“Ma’am, stay with me. Stay right behind me.”",
+  "info": {
+   "across": -1
+  }
+ },
+ {
+  "name": "hend",
+  "frame": "door",
+  "note": "the side yard: Jamie holding the header; it comes up; it takes him; he is down",
+  "phase": "g8-street",
+  "caption": "The side door of the garage. Its whole frame has come down, and Jamie is in the doorway with his arms up, holding the he",
+  "info": {
+   "cap": "The side door of the garage. Its whole frame has come down, and Jamie is in the "
+  }
+ },
+ {
+  "name": "hend",
+  "frame": "hunter",
+  "note": "the side yard: Jamie holding the header; it comes up; it takes him; he is down",
+  "phase": "g8-street",
+  "caption": "JAMIE“Under me— go UNDER— I can hold it— GO!”",
+  "info": {
+   "mode": "off",
+   "vis": false
+  }
+ },
+ {
+  "name": "hend",
+  "frame": "drag",
+  "note": "the side yard: Jamie holding the header; it comes up; it takes him; he is down",
+  "phase": "g8-street",
+  "caption": "SAM“IT’S GOT HIM— IT’S TAKING HIM BACK— NO— NO—”",
+  "info": {
+   "held": 1.0333333333333332
+  }
+ },
+ {
+  "name": "hend",
+  "frame": "down",
+  "note": "the side yard: Jamie holding the header; it comes up; it takes him; he is down",
+  "phase": "g8-street",
+  "caption": "He hits the grass at the edge of the hole, hard, and doesn’t move.",
+  "info": {
+   "cap": "He hits the grass at the edge of the hole, hard, and doesn’t move."
+  }
+ },
+ {
+  "name": "death",
+  "frame": "reyes",
+  "note": "after: Reyes working on him; Sam on his knees; Alex; you holding his hand; the faces",
+  "phase": "g8-street",
+  "caption": "There’s still a little light.",
+  "info": {
+   "cap": "There’s still a little light."
+  }
+ },
+ {
+  "name": "death",
+  "frame": "sam",
+  "note": "after: Reyes working on him; Sam on his knees; Alex; you holding his hand; the faces",
+  "phase": "g8-street",
+  "caption": "There’s still a little light.",
+  "info": {
+   "expr": null,
+   "sob": 0,
+   "cry": 0
+  }
+ },
+ {
+  "name": "death",
+  "frame": "alex",
+  "note": "after: Reyes working on him; Sam on his knees; Alex; you holding his hand; the faces",
+  "phase": "g8-street",
+  "caption": "There’s still a little light.",
+  "info": {
+   "sob": 0,
+   "cry": 0
+  }
+ },
+ {
+  "name": "death",
+  "frame": "covered",
+  "note": "after: Reyes working on him; Sam on his knees; Alex; you holding his hand; the faces",
+  "phase": "g8-street",
+  "caption": "SAM“Wake up. You have to wake up. You can’t— you can’t do this, you can’t—”",
+  "info": {
+   "cap": "SAM“Wake up. You have to wake up. You can’t— you can’t do this, you can’t—”"
+  }
+ },
+ {
+  "name": "sky",
+  "frame": "cul",
+  "note": "the red sky and the thing on the skyline, from several streets",
+  "phase": "g8-street",
+  "caption": "SAM“(walking, not looking at anything) We left him. We left him on the grass.”"
+ },
+ {
+  "name": "sky",
+  "frame": "hend",
+  "note": "the red sky and the thing on the skyline, from several streets",
+  "phase": "g8-street",
+  "caption": "SAM“(walking, not looking at anything) We left him. We left him on the grass.”"
+ },
+ {
+  "name": "sky",
+  "frame": "sams",
+  "note": "the red sky and the thing on the skyline, from several streets",
+  "phase": "g8-street",
+  "caption": "SAM“(walking, not looking at anything) We left him. We left him on the grass.”"
+ },
+ {
+  "name": "sky",
+  "frame": "south",
+  "note": "the red sky and the thing on the skyline, from several streets",
+  "phase": "g8-street",
+  "caption": "SAM“(walking, not looking at anything) We left him. We left him on the grass.”"
+ }
+]

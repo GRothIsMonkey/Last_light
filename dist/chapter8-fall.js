@@ -10,6 +10,8 @@ import {paper8} from './chapter8-props.js';
 import {cutWorld} from './chapter8-ruin.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
 import {streetActs} from './chapter8-street.js';
+import {ACT as ACT8} from './chapter8-acting.js';
+import {finaleActs} from './chapter8-finale.js';
 
 export function fallActs(X){
  const {o,k,C,S,presence,H,HM,danny,brandt,reyes,police,jamie,sam,comp,brain,ch2,ch6,works,WP,sound,gy,light,lightsOn,checkpoint,later,mark,say,J,SM,AL,R,RR,BR,BRR,Y,N,V,
@@ -313,6 +315,8 @@ export function fallActs(X){
    stand(sam,{x:CM.at('ipPins').x-1.6,z:CM.at('ipPins').z-.9},{look:()=>CM.at('ipPins',5)});const A3=X.alex;stand(A3,{x:CM.at('ipLadder').x,z:CM.at('ipLadder').z-.6},{look:()=>CM.at('plug',2)});
    for(let i=0;i<3;i++){const name='ABC'[i];objective('Pin '+name+'.','Hold F: the sledge. Get against the wall when it comes.');
     let strikes=0,since=0;offer('pin'+i,'Drive out pin '+name,()=>{const q=CM.pins[i].getWorldPosition(new THREE.Vector3());return {x:q.x,y:q.y,z:q.z};},{r:2,hold:3.2,tick:(dt,v)=>{CM.ST.pins[i]=v*1.7;if(Math.random()<dt*3)sound('c6Clank',CM.at('ipPins',5),{gain:.7});},fn:()=>{CM.ST.pins[i]=2;sound('c6Clank',CM.at('ipPins',5),{gain:1.3});C.shake=.3;}});
+    if(i===2&&!C.flags.brandtHurt){C.flags.brandtHurt=true;const bq=brandt?{x:brandt.x,y:6,z:brandt.z}:CM.at('ipPins',5);presence.strike(0,bq,{hold:.6});later(.5,()=>{sound('c6Clank',bq,{gain:1.4});C.shake=.8;brandt?.gest?.((p,w,t)=>{ACT8.floor({arms:'lap',lean:-.4})(p,{clock:t});});});
+     yield* lines([{wait:1},N('It comes up under the catwalk where Brandt is standing. The grating folds. Brandt goes down hard with his leg under him and doesn’t get up.',{time:4.4}),BR('(through his teeth) Leg. It’s my leg. Keep going— C, kid, the last one— keep GOING—',{time:3.4})]);}
     while(!C.flags['pin'+i]){yield;since+=C.dt;if(since>7.5&&strikes<3){since=0;strikes++;const tgt={x:CM.at('ipPins').x,y:5,z:CM.at('ipPins').z+.2};say([AL('IT’S COMING! THE WALL!',{time:1.2,face:'terrified'})]);
       hazard({at:tgt,r:1.6,warn:2.1,section:'c8-plug',n:16,power:1,fatal:true});later(2.1,()=>presence.strike(0,tgt,{hold:.8}));}}}
    // the plug drops; seats in the throat; the water fills the chamber under it; everything it had in the room is pushed back under the plug
@@ -325,15 +329,8 @@ export function fallActs(X){
     enterComplex('ipPins',Math.PI);lightsBelow('I');presence.show(true);presence.showMass(false);CM.ST.plugWant=1;CM.ST.plugDrop=1;CM.ST.pins=[2,2,2];for(let i=0;i<3;i++)C.flags['pin'+i]=true;C.flags.sealed=true;
     const A2=X.enlistAlex();joinFoot(sam,{x:CM.at('ipPins').x-1.6,z:CM.at('ipPins').z-.9},Math.PI);joinFoot(A2,{x:CM.at('ipLadder').x,z:CM.at('ipLadder').z-.6},Math.PI);
     reyes.show(true);reyes.place(CM.at('ipPins').x-2.4,CM.at('ipPins').z-1.6,Math.PI);brandt?.show(true);brandt?.place(CM.at('ipPins').x-3,CM.at('ipPins').z-2.4,Math.PI);C.mood='danger';C.mindKey=null;}
-   // the way out: the service ladder up through the roof of the chamber, to the field; the hatch at the top; Alex holds it
-   yield* lines([BR('It’s coming down. All of it. The ladder— GO!',{time:1.8})]);objective('The ladder.','South end of the platform. Up.');
-   hazard({at:{x:CM.at('iwMid').x,y:4,z:CM.at('iwMid').z},r:2,warn:2.6,section:'c8-hatch',n:18,fatal:true});
-   offer('upLadder','Climb',()=>CM.at('ipLadder',1.4),{r:1.8,hold:2});
-   yield* until(()=>C.flags.upLadder||C.pt>1800);
-   yield* lines([N('The hatch at the top is jammed half open, its counterweight gone. Alex gets his shoulder under it and holds it.',{time:3.8}),AL('GO. Go, I’ve got it—',{time:1.4,face:'determined'}),
-    N('You go through. Sam goes through. Something comes down the shaft behind you, a whole slab of the roof, and hits him.',{time:4}),SM('ALEX!',{time:.9,face:'terrified'}),
-    N('You and Sam get him by the arms and pull him up out of it into the grass. He’s light. He was always the light one.',{time:4.2})]);
-   C.flags.alexHurt=true;sceneOak('oak');})());}
+   // the way out: the service ladder up its south well to the hatch in the field; the chain; Alex (chapter8-finale.js)
+   FIN.sceneHatch('chamber');})());}
  // ---- Act V, scene 16: the oak; Alex --------------------------------------------------------------------------------------------------------------------------------------
  const OAK=(()=>{const q=main(LOOKOUT.oak.d-.6,LOOKOUT.oak.lat-1.15);return {x:q.x,z:q.z,y:gy(q.x,q.z)};})();
  function sceneOak(from='oak'){go('n8-oak');CM.show(false);if(nav.room===CM.nav||nav.room===works?.nav)nav.setRoom(null);works?.attach?.(false);presence.reset();huntStop();for(const a of PEOPLE)a.show(false);brandt?.show(false);
@@ -388,10 +385,9 @@ export function fallActs(X){
   for(const a of PEOPLE)if(a.visible)a.update(dt,{eye:camera.position});
   // the people you are getting out: they follow you, a little behind, round the hole
   if(C.escort){C.escortT+=dt;const p=me();C.escort.forEach((a,i)=>{if(!a.visible)return;const d=Math.hypot(a.x-p.x,a.z-p.z);if(d>2.2+i*.8&&!a.walking&&C.escortT>.4){const back=1.4+i*.9,q={x:p.x-Math.sin(p.a)*back+(i?.6:-.6),z:p.z+Math.cos(p.a)*back};if(nav.walkable(q.x,q.z,{r:.3}))a.walk([[q.x,q.z]],{speed:d>6?2.4:1.5});}});}
-  if(ph==='n8-ride'&&C.wantLook){const f=new THREE.Vector3();camera.getWorldDirection(f);const p=me(),back=-(f.x*Math.sin(p.a)-f.z*Math.cos(p.a));/* (over your shoulder: riding, the head turns to about 106 degrees, so past 97 counts; on foot, anything behind) */if(back>.12){C.lookBack+=dt;if(C.lookBack>.9)C.lookedBack=true;}else C.lookBack=Math.max(0,C.lookBack-dt*.5);}
-  if(ph==='n8-ride'&&C.endT>=0){C.endT+=dt;o.fade(smooth(C.endT/4));if(C.endT>4.6){go('n8-end');X.end();}}
+  FIN.update(dt);
   if(C.alexSit&&X.alex){const c=X.alex;c.follow=null;}}
- function afterActors(dt){STREET.afterActors(dt);
+ function afterActors(dt){STREET.afterActors(dt);FIN.afterActors(dt);
   // Jamie on the lawn: on his back, still
   if(JD.on&&jamie.person.group.visible){const g=jamie.person.group,y=gy(JD.x,JD.z);g.position.set(JD.x,y+.12,JD.z);g.rotation.set(-Math.PI/2,0,JD.a*.3,'YXZ');jamie.person.face?.set?.('neutral',{hold:999});}
   // Alex against the oak
@@ -405,15 +401,17 @@ export function fallActs(X){
  function key(code){return false;}
  function hint(){if(S.phase==='n8-ride'&&C.wantLook)return [['Mouse / Q','Look back']];return null;}
  function sources(out){const ph=S.phase;if(C.where==='works')out.push({id:'c8-creek',kind:'water',pos:new THREE.Vector3(WP(0,0).x,-3,WP(0,0).z),level:1.2},{id:'c8-gen',kind:'generator',pos:new THREE.Vector3(WP(26,8).x,1,WP(26,8).z),level:.6});
-  if(/^g8-/.test(ph)){const t=ruin.truck.g.position;out.push({id:'c8-siren',kind:'siren',pos:new THREE.Vector3(t.x,2,t.z),mode:'wail',level:.6});}STREET.sources(out);}
- function blockers(out){for(const a of PEOPLE)if(a.visible)out.push({x:a.x,z:a.z,r:.3,speed:0});if(JD.on)out.push({x:JD.x,z:JD.z,r:.5,speed:0});STREET.blockers(out);}
- function reset(){STREET.reset();comp.routeMax=0;for(const a of PEOPLE){a.show(false);a.path=null;}JD.on=false;C.alexSit=false;C.escort=null;C.jamieHold=false;if(C.boardMesh)C.boardMesh.removeFromParent();if(works?.attach&&C.where==='works')works.attach(false);}
+  if(/^g8-/.test(ph)){const t=ruin.truck.g.position;out.push({id:'c8-siren',kind:'siren',pos:new THREE.Vector3(t.x,2,t.z),mode:'wail',level:.6});}STREET.sources(out);FIN.sources(out);}
+ function blockers(out){for(const a of PEOPLE)if(a.visible)out.push({x:a.x,z:a.z,r:.3,speed:0});if(JD.on)out.push({x:JD.x,z:JD.z,r:.5,speed:0});STREET.blockers(out);FIN.blockers(out);}
+ function reset(){STREET.reset();FIN.reset();comp.routeMax=0;for(const a of PEOPLE){a.show(false);a.path=null;}JD.on=false;C.alexSit=false;C.escort=null;C.jamieHold=false;if(C.boardMesh)C.boardMesh.removeFromParent();if(works?.attach&&C.where==='works')works.attach(false);}
  // the street (Act V's first half: Oak Hollow falling, the things in it, the Hendersons', Jamie): chapter8-street.js
  X.toStaging=()=>{C.fadeOut=0;C.after=()=>sceneStaging('staging');};
  const STREET=streetActs(X);X.STREET=STREET;
+ // the end (the hatch and Alex; the oak; the street at sunrise; the last ride): chapter8-finale.js
+ const FIN=finaleActs(X);X.FIN=FIN;
  const SCENE={'c8-truth':()=>sceneTruth('t'),'c8-breach':()=>sceneBreach('breach'),'c8-escape':()=>sceneBreach('escape'),'c8-ladder':()=>sceneBreach('escape'),
   ...STREET.SCENE,
-  'c8-staging':()=>sceneStaging('staging'),'c8-gates':()=>sceneOp('gates'),'c8-ports':()=>sceneOp('ports'),'c8-line-two':()=>sceneOp('line-two'),'c8-plug':()=>sceneOp('plug'),'c8-hatch':()=>sceneOp('hatch'),
-  'c8-oak':()=>sceneOak('oak'),'c8-alex-death':()=>sceneOak('oak'),'c8-ride':()=>sceneRide('jump'),'c8-look-back':()=>sceneRide('jump'),'chapter8-end':()=>{sceneRide('jump');C.endT=0;}};
+  'c8-staging':()=>sceneStaging('staging'),'c8-gates':()=>sceneOp('gates'),'c8-ports':()=>sceneOp('ports'),'c8-line-two':()=>sceneOp('line-two'),'c8-plug':()=>sceneOp('plug'),'c8-chain':()=>sceneOp('hatch'),
+  ...FIN.SCENE};
  return {sceneTruth,update,afterActors,officerAim,key,hint,sources,blockers,reset,SCENE,canDismount:()=>S.phase==='n8-ride',canRemount:()=>S.phase==='n8-ride',PEOPLE,JD,OAK};
 }

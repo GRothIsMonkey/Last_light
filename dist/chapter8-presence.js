@@ -25,11 +25,15 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),damp=(a,b,k,dt)=>a+(b-a)*(1-Math.
 const SEG=34;// segments per limb
 const _a=new THREE.Vector3(),_b=new THREE.Vector3(),_c=new THREE.Vector3(),_d=new THREE.Vector3(),_e2=new THREE.Vector3(),_f=new THREE.Vector3(),_m=new THREE.Matrix4(),_q=new THREE.Quaternion(),_q2=new THREE.Quaternion(),_s=new THREE.Vector3(),_up=new THREE.Vector3(0,1,0);
 
-export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
+export function createPresence({scene,sfx=()=>{},floorAt=()=>0,sky=false}){
  const group=new THREE.Group();group.name='chapter8-presence';
- const U={t:{value:0},wet:{value:1}};
+ const U={t:{value:0},wet:{value:1},glow:{value:sky?1:0}};
+ // (sky: the instance on the skyline, seen from the street at dawn: a silhouette against the deck, lit from underneath by the fires
+ //  and the open ground: dark, a red under-glow, a hot rim. Its own programs: the one under the court is never lit this way)
+ const GLOW=sky?`{vec3 wN=inverseTransformDirection(normal,viewMatrix);float under=clamp(-wN.y*.85+.18,0.,1.);float frg=pow(1.-clamp(dot(normalize(vViewPosition),-normal),0.,1.),2.2);
+   totalEmissiveRadiance+=uGlow*(vec3(.36,.05,.018)*under*under+vec3(.5,.11,.035)*frg*.8);}`:'';
  // the skin: dark, wet, a slow ripple along its length (vertex), a little paler in the folds (fragment): never emissive
- const skin=new THREE.MeshStandardMaterial({color:0x2a2120,roughness:.32,metalness:.08});skin.name='c8-presence-skin';
+ const skin=new THREE.MeshStandardMaterial({color:sky?0x140e0d:0x2a2120,roughness:.32,metalness:.08});skin.name='c8-presence-skin';
  skin.onBeforeCompile=sh=>{sh.uniforms.uT=U.t;sh.vertexShader='uniform float uT;\nvarying float vFold;\n'+sh.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
   #ifdef USE_INSTANCING
    vec3 wpI=(instanceMatrix*vec4(position,1.)).xyz;
@@ -37,8 +41,8 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
    vec3 wpI=position;
   #endif
   float rip=sin(wpI.x*1.7+wpI.z*1.3+uT*1.6)*sin(wpI.y*2.1-uT*1.1);transformed+=normal*rip*.11;vFold=rip;`);
-  sh.fragmentShader='varying float vFold;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb*=1.0+.35*smoothstep(.3,.9,vFold);');};
- skin.customProgramCacheKey=()=>'c8-presence-skin';
+  sh.uniforms.uGlow=U.glow;sh.fragmentShader='uniform float uGlow;\nvarying float vFold;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb*=1.0+.35*smoothstep(.3,.9,vFold);').replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n'+GLOW);};
+ skin.customProgramCacheKey=()=>'c8-presence-skin'+(sky?'-sky':'');
  // (a segment: an ellipsoid with a ridge round its middle and a keel down its back (local +x), dark on the back and pale and
  // soft-looking underneath; the instances overlap, so the limb reads as one long jointed thing, not a string of beads)
  const segGeo=(()=>{const g=new THREE.SphereGeometry(1,18,12),pos=g.attributes.position,col=new Float32Array(pos.count*3),v=new THREE.Vector3();
@@ -66,8 +70,8 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
   let n=0;for(const g of parts)n+=g.attributes.position.count;const pos=new Float32Array(n*3),nor=new Float32Array(n*3),lob=new Float32Array(n);let o=0;
   for(const g of parts){const c=g.attributes.position.count;pos.set(g.attributes.position.array,o*3);nor.set(g.attributes.normal.array,o*3);lob.set(g.attributes.lobe.array,o);o+=c;}
   const m=new THREE.BufferGeometry();m.setAttribute('position',new THREE.BufferAttribute(pos,3));m.setAttribute('normal',new THREE.BufferAttribute(nor,3));m.setAttribute('lobe',new THREE.BufferAttribute(lob,1));return m;})();
- const flesh=new THREE.MeshStandardMaterial({color:0x5c4743,roughness:.28,metalness:.06});flesh.name='c8-presence-flesh';
- flesh.onBeforeCompile=sh=>{sh.uniforms.uT=U.t;sh.uniforms.uPress=U.press;
+ const flesh=new THREE.MeshStandardMaterial({color:sky?0x2a1a17:0x5c4743,roughness:.28,metalness:.06});flesh.name='c8-presence-flesh';
+ flesh.onBeforeCompile=sh=>{sh.uniforms.uT=U.t;sh.uniforms.uPress=U.press;sh.uniforms.uGlow=U.glow;
   const NOISE=`float h3(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
   float n3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(h3(i),h3(i+vec3(1,0,0)),f.x),mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x),f.y),mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x),mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x),f.y),f.z);}
   float fbm(vec3 p){return n3(p)*.55+n3(p*2.13)*.28+n3(p*4.37)*.17;}`;
@@ -75,11 +79,12 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0}){
    vec3 q0=position*2.3+vec3(lobe*1.7,uT*.07,uT*.05);float f0=fbm(q0);float e=.06;
    vec3 gN=vec3(fbm(q0+vec3(e,0,0))-f0,fbm(q0+vec3(0,e,0))-f0,fbm(q0+vec3(0,0,e))-f0)/e;objectNormal=normalize(objectNormal-gN*.22);`).replace('#include <begin_vertex>',`#include <begin_vertex>
    float wave=sin(position.y*3.1+position.x*1.3-uT*(.6+lobe*.03)+lobe)*.035;transformed+=normal*((f0-.5)*.34+wave+uPress*.05*max(0.,position.z));vFold=f0;vVein=n3(position*9.+lobe);`);
-  sh.fragmentShader='varying float vFold;\nvarying float vVein;\n'+sh.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
+  sh.fragmentShader='uniform float uGlow;\nvarying float vFold;\nvarying float vVein;\n'+sh.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
    float ridge=smoothstep(.38,.78,vFold);diffuseColor.rgb*=mix(.32,1.55,ridge);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.42,.3,.29),smoothstep(.62,.9,vFold)*.35);
    diffuseColor.rgb*=1.-.35*smoothstep(.55,.62,vVein)*(1.-smoothstep(.62,.7,vVein));`).replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
-   {float fr=pow(1.-clamp(dot(normalize(vViewPosition),-normal),0.,1.),3.);totalEmissiveRadiance+=vec3(.05,.06,.07)*fr*(.4+ridge);}`).replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\n roughnessFactor=mix(.6,.18,smoothstep(.4,.8,vFold));');};
- flesh.customProgramCacheKey=()=>'c8-presence-flesh';U.press={value:0};
+   {float fr=pow(1.-clamp(dot(normalize(vViewPosition),-normal),0.,1.),3.);totalEmissiveRadiance+=vec3(.05,.06,.07)*fr*(.4+ridge)*(1.-uGlow);}
+   ${GLOW}`).replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\n roughnessFactor=mix(.6,.18,smoothstep(.4,.8,vFold));');};
+ flesh.customProgramCacheKey=()=>'c8-presence-flesh'+(sky?'-sky':'');U.press={value:0};
  const mass=new THREE.Mesh(massG,flesh);mass.name='c8-presence-mass';mass.visible=false;mass.castShadow=true;mass.receiveShadow=true;group.add(mass);
  // fog in front of it, in layers, so it has depth and its edges are lost
  const fogM=[];const FOG=[...Array(9)].map((_,k)=>{const m=new THREE.SpriteMaterial({map:null,color:0x23201e,transparent:true,opacity:0,depthWrite:false});m.name='c8-presence-fog';fogM.push(m);const s2=new THREE.Sprite(m);s2.visible=false;group.add(s2);return {s:s2,k,ph:k*1.7};});

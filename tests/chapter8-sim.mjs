@@ -260,16 +260,26 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   for(let i=0;i<3;i++){retry(()=>{until(()=>offers().includes('pin'+i)||A8.C.flags['pin'+i],30);if(A8.C.flags['pin'+i])return true;const at=offerAt('pin'+i);
     until(()=>{const hz=A8.C.haz.find(z=>!z.fell);if(hz&&Math.hypot(hz.at.x-me().x,hz.at.z-me().z)<hz.r+1){release('KeyF');approach({x:P('ipPins').x-3.4,z:P('ipPins').z-1.2},.6,{pad:4,max:4});return false;}
      if(Math.hypot(at.x-me().x,at.z-me().z)>1.5){approach(at,1.2,{pad:4,max:6});}faceV(at);if(spot()?.id==='pin'+i)press('KeyF');return !offers().includes('pin'+i)||!!A8.C.failing;},90);release('KeyF');return !A8.C.failing;});}
-  until(()=>offers().includes('upLadder'),60);take('upLadder',{hold:6,r:1.4,max:20});until(()=>ph()==='n8-oak',60);
+  // the chain: Alex takes it; up the ladder; at the top the lid comes down on him: lift it with Sam, pull him out
+  approach(P('ipLadder'),1.6,{pad:10});until(()=>offers().includes('upLadder'),90);take('upLadder',{hold:6,r:1.6,max:20});
+  take('lift-lid',{hold:8,r:2.2,max:120,pad:8});take('pull-alex',{hold:6,r:2.2,max:30,pad:8});until(()=>ph()==='n8-oak',60);
+  check(`${label}: the chain: Alex holds the hatch's counterweight chain so the rest of you can climb; the lid comes down on him as he comes up; you and Sam lift it and pull him out`,()=>{
+   assert.ok(said('I’m the light one.'));assert.ok(A8.C.flags['lift-lid']&&A8.C.flags['pull-alex']);});
   check(`${label}: the gates, the drain gate (Chapter Six's), the ports, Line Two, three pins, the plug; it goes quiet; Alex holds the hatch`,()=>{assert.ok(A8.C.flags.gateA&&A8.C.flags.dd&&A8.C.flags.port);assert.ok(A8.C.flags.sealed);assert.ok(A8.C.flags.alexHurt);});lap('op');}
- if(inSeg('oak')){until(()=>ph()==='n8-oak',10);take('alex-sit',{max:30,r:2});until(()=>ph()==='n8-ride',160);
-  check(`${label}: the oak: "Did we stop it?" "Yeah." "Good." … "We were supposed to go riding tomorrow." Alex dies; your view is yours`,()=>{assert.ok(said('Did we stop it?'));assert.ok(said('We were supposed to go riding tomorrow.'));assert.ok(A8.C.flags.alexDead);});lap('oak');}
- if(inSeg('ride')){until(()=>ph()==='n8-ride',10);wait(4);const pts=[];for(let d=1120;d>=650;d-=15){const lat=(d>1004&&d<1034)?-6.6:(d>860&&d<884)?6.9:(d>930&&d<970)?2.6:-1.6;const q=T0.groundPoint(d,lat);pts.push([q.x,q.z]);}
+ if(inSeg('oak')){until(()=>ph()==='n8-oak',10);take('alex-sit',{max:60,r:2.2});
+  // sitting with him: his hand; Sam; stay; get up when you are ready
+  for(const id of ['alex-hand','look-sam','stay','get-up'])take(id,{max:200,r:4,pad:6});until(()=>ph()==='n8-ride',60);
+  check(`${label}: the oak: "Did we stop it?" "Yeah." "Good." … the bikes he kept thinking about; "We were supposed to go riding tomorrow."; his hand; Sam; he dies; Sam holds him; Reyes kneels with Sam; you get up when you are ready`,()=>{
+   assert.ok(said('Did we stop it?'));assert.ok(said('We were supposed to go riding tomorrow.'));assert.ok(said('I kept thinking about the bikes.'));assert.ok(A8.C.flags.alexDead);assert.ok(A8.C.flags.alexHand&&A8.C.flags.lookedSam&&A8.C.flags.stayed);assert.ok(A8.C.grief.alex);});lap('oak');
+  // on foot with Sam, down past the hole and the house that fell, to the bikes
+  walkD([[1150,4.5],[1132,5],[1112,6],[1104,7],[1096,8.8],[1080,9.4],[1064,9],[1054,6],[1046,3]],{r:1.4,pad:12,max:160});take('bike',{max:60,r:2.4,pad:8});
+  check(`${label}: the street at sunrise: on foot with Sam past the trench, the leaning house, the Kesslers' shell, the Hendersons' yard; your bike where Reyes left it`,()=>{assert.ok(said('The house at 1052 is still leaning into it.'));assert.ok(A8.C.flags.bike);});}
+ if(inSeg('ride')){until(()=>ph()==='n8-ride',10);wait(4);const pts=[];for(let d=1034;d>=650;d-=15){const lat=(d>860&&d<884)?6.9:(d>930&&d<970)?2.6:-1.6;const q=T0.groundPoint(d,lat);pts.push([q.x,q.z]);}
   press('KeyW');X.rideTo(pts,260,3);release('KeyW');until(()=>A8.C.wantLook,60);
   // look back: the road behind you
   for(let k=0;k<80&&!A8.C.lookedBack;k++){h.look(Math.PI*.9,0);T.advance(1/30);}h.look(0,0);
   until(()=>h.snapshot.state==='ended',30);
-  check(`${label}: the last ride: Sam, two bikes; "I keep thinking they're right behind us."; the road behind is empty; the end card`,()=>{assert.ok(said('I keep thinking they’re right behind us.'));assert.ok(said('The road behind you is empty.'));assert.equal(element('ending').hidden,false);assert.ok(/Chapter Eight/.test(element('ending').querySelector?.('h2')?.innerHTML??'Chapter Eight'));});
+  check(`${label}: the last ride: Sam, two bikes; "I keep thinking they're right behind us."; the road behind is empty; the end card`,()=>{assert.ok(said('I keep thinking they’re right behind us.'));assert.ok(said('The road behind you is empty.'));assert.ok(A8.C.grief.jamie&&A8.C.grief.alex);assert.equal(element('ending').hidden,false);assert.ok(/Chapter Eight/.test(element('ending').querySelector?.('h2')?.innerHTML??'Chapter Eight'));});
   lap('ride');}
  M8.minutes=+((h.snapshot.clock-t0)/60).toFixed(2);M8.segments=seg;M8.fails=C8().fails;
  return {lines:()=>lines,said};

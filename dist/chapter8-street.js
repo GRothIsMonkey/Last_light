@@ -38,7 +38,7 @@ export function streetActs(X){
  const crouched=()=>(o.foot.crouch??0)>.45;
  const hold=(c,q,g,look)=>stand(c,q,{gesture:g,look:look||null,max:1.2});
  // ---- the thing, on the skyline: its own body (a second instance of the presence, huge, never fogged out) ----------------------------
- const SKY=createPresence({scene,sfx:(n,p,op)=>sound(n,p,op),floorAt:(x,z)=>town.floorAt(x,z)});
+ const SKY=createPresence({scene,sfx:(n,p,op)=>sound(n,p,op),floorAt:(x,z)=>town.floorAt(x,z),sky:true});
  SKY.group.name='chapter8-presence-skyline';SKY.group.traverse(o2=>{if(o2.material){const ms=Array.isArray(o2.material)?o2.material:[o2.material];for(const m of ms)m.fog=false;}});
  const BODY=SP(1262,46,-6),RISE=[[1222,18,58],[1236,70,64],[1205,-34,52],[1270,-8,66],[1190,92,48]];
  function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+8,z:BODY.z},r:46,squash:[1.7,1.05,1.25],fog:.0});SKY.lean(.2);
@@ -98,8 +98,9 @@ export function streetActs(X){
    jackAt:HAt(gx-gs*1.4,gf+.35),sideDoor:HAt(ow+gs*.55,gf-gd*.55),side:HAt(ow+gs*.62,gf-.75),beam:HAt(ow+gs*.62,gf-.55,2.05),corner:HAt(ow+gs*.9,gf+.7),
    out:HAt(ow+gs*1.6,gf+3.2),grab:HAt(ow+gs*1.0,gf-1.6),body:HAt(ow+gs*1.75,gf+3.0),cap:HAt(ow+gs*2.6,gf+2.2),up:HAt(ow-gs*1.6,gf+4.4),watch:HAt(ow+gs*3.4,gf+8.6),street:SP(1010,4.4)};})();
  // the beam over the side path (the garage roof's corner, come down): Jamie under it, holding it
- const beam=new THREE.Group();beam.name='c8-sag-beam';{const m=new THREE.MeshStandardMaterial({color:0x6a4c32,roughness:.85});m.name='c8-beam';const b=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,3.4),m);b.castShadow=true;beam.add(b);
-  const r=new THREE.Mesh(new THREE.BoxGeometry(2.6,.12,3.2),new THREE.MeshStandardMaterial({color:HQ.roofColor??0x584e48,roughness:.9}));r.position.set(-.9,.18,0);r.rotation.z=.25;beam.add(r);}
+ const beam=new THREE.Group();beam.name='c8-door-header';{const m=new THREE.MeshStandardMaterial({color:0x6a4c32,roughness:.85});m.name='c8-beam';const b=new THREE.Mesh(new THREE.BoxGeometry(.16,.2,1.5),m);b.castShadow=true;beam.add(b);
+  // (the header and what came down with it: the top of the door frame, a broken stud, a sheet of siding hanging)
+  const st=new THREE.Mesh(new THREE.BoxGeometry(.09,1.1,.09),m);st.position.set(0,.45,.62);st.rotation.x=.5;beam.add(st);const sh=new THREE.Mesh(new THREE.BoxGeometry(.04,.7,1.2),new THREE.MeshStandardMaterial({color:HQ.wall??0xb8a890,roughness:.9}));sh.position.set(.06,.3,-.1);sh.rotation.x=-.2;beam.add(sh);}
  // ---- the world up here ----------------------------------------------------------------------------------------------------------------------------------
  function streetWorld(){CM.show(false);if(nav.room===CM.nav)nav.setRoom(null);presence.reset();presence.show(true);huntStop();o.bikeAway?.(true);
   nightStreet();X.ch3?.creature?.show?.(false);cutWorld(world);ruin.show(true);ruin.stage(1);ruin.truck.g.visible=true;
@@ -244,9 +245,9 @@ export function streetActs(X){
    objective('The side yard.','Round the end of the hole. Get them out.');
    yield* until(()=>near(V3(HD.sideDoor),10)||C.pt>60,45);
    // the side door: its frame coming down; Jamie under the header with his arms up, holding it, while the old man crawls out under him
-   const sd=HD.sideDoor,ry=-HQ.worldRot+Math.PI/2;beam.position.set(sd.x,sd.y+2,sd.z);beam.rotation.set(0,ry,.16);scene.add(beam);sound('c8Collapse',V3(HD.garageFront),{gain:1.4});town.hurt(town.PX.hend,'garage',.6);C.shake=.6;
+   const sd=HD.sideDoor,ry=-HQ.worldRot+Math.PI/2;beam.position.set(sd.x,sd.y+1.86,sd.z);beam.rotation.set(0,ry,.1);scene.add(beam);sound('c8Collapse',V3(HD.garageFront),{gain:1.4});town.hurt(town.PX.hend,'garage',.6);C.shake=.6;
    town.dust(V3({x:sd.x,y:sd.y+2.2,z:sd.z}),{n:4,r:1.2,rise:.5,size:[1.5,4],life:4,a:.45});
-   stand(jamie,null);jamie.person.group.visible=true;hold(jamie,sd,ACT.overhead({shake:1,lean:.08}),()=>V3(HD.street));feel(jamie,'terrified',14);
+   stand(jamie,null);jamie.person.group.visible=true;{const a=headingTo(sd.x,sd.z,HD.street.x,HD.street.z);comp.putFoot(jamie,sd.x,sd.z,a,{bike:null});jamie.follow=null;}hold(jamie,sd,ACT.overhead({shake:1,lean:.08}),()=>V3(HD.street));feel(jamie,'terrified',14);
    mrH.show(true);const inside=HAt(HD.ow-HD.gs*.6,HD.gf-HD.gd*.55);mrH.place(inside.x,inside.z,headingTo(inside.x,inside.z,sd.x,sd.z));mrH.gest((p,w,t)=>{ACT.crawl({speed:.6})(p,{clock:t});});
    S.lookTarget=V3({x:sd.x,y:sd.y+1.5,z:sd.z});
    yield* lines([N('The side door of the garage. Its whole frame has come down, and Jamie is in the doorway with his arms up, holding the header off the opening with everything he has.',{time:5}),
@@ -284,7 +285,7 @@ export function streetActs(X){
    const col=new THREE.Mesh(new THREE.BoxGeometry(.4,.05,.1),new THREE.MeshStandardMaterial({color:0x111620,roughness:.9}));col.position.set(0,.08,-.42);g.add(col);C.jacket=g;scene.add(g);}
   {const q=HD.body,a=-(HQ.worldRot+.4);C.jacket.position.set(q.x+Math.sin(-a)*.1,q.y+.1,q.z-Math.cos(-a)*.1);C.jacket.rotation.set(0,a,0);C.jacket.visible=!!C.flags.covered;}}
  function sceneJamieDeath(from='now'){go('g8-street');if(C.where!=='street'){streetWorld();for(const n of ['impacts','trench','lean','across','yard'])town.skip(n);town.engage(town.PX.hend);const s0=SP(1022,2.4);o.placePlayer({x:s0.x,z:s0.z,a:heading(1022)+Math.PI/2,mode:'walk',bike:null});four(s0);}
-  X.C.grief.jamie=true;applyGrief();C.flags.jamieDead=true;jamieBody();HM.show(false);C.reyesFire=false;scene.add(beam);beam.position.set(HD.beam.x,HD.beam.y-1.2,HD.beam.z);beam.rotation.set(0,-HQ.worldRot+Math.PI/2,.9);
+  C.h=Math.max(C.h,HOUR.street+.12);C.hMin=HOUR.street+.12;date(C.h);X.C.grief.jamie=true;applyGrief();C.flags.jamieDead=true;jamieBody();HM.show(false);C.reyesFire=false;scene.add(beam);beam.position.set(HD.beam.x,HD.beam.y-1.2,HD.beam.z);beam.rotation.set(0,-HQ.worldRot+Math.PI/2,.9);
   mrsH.show(false);lily.show(false);mrH.show(false);town.ash=.9;C.apocWant=1;checkpoint('c8-jamie-death');
   const A2=X.alex;
   task('jamie-death',(function*(){
@@ -338,7 +339,7 @@ export function streetActs(X){
  // ---- away from it: south, past Sam's house, the fire, to Summerfield; the intersection goes ------------------------------------------------------------------
  function sceneFlee(from='go'){
   if(from!=='go'){go('g8-street');if(C.where!=='street')streetWorld();for(const n of ['impacts','trench','lean','across','yard','ruin'])town.skip(n);town.engage(town.PX.hend);
-   X.C.grief.jamie=true;C.flags.jamieDead=true;C.flags.jamieMourned=true;C.flags.covered=true;C.inv.cap=C.inv.cap||'have';jamieBody();applyGrief();town.ash=.9;C.apocWant=1;
+   C.h=Math.max(C.h,HOUR.street+.2);C.hMin=HOUR.street+.2;date(C.h);X.C.grief.jamie=true;C.flags.jamieDead=true;C.flags.jamieMourned=true;C.flags.covered=true;C.inv.cap=C.inv.cap||'have';jamieBody();applyGrief();town.ash=.9;C.apocWant=1;
    const s0=SP(1038,4.5);o.placePlayer({x:s0.x,z:s0.z,a:heading(1030)+Math.PI,mode:'walk',bike:null});const A2=X.enlistAlex();joinFoot(sam,{x:s0.x+.9,z:s0.z+.5},heading(1030)+Math.PI);joinFoot(A2,{x:s0.x-.8,z:s0.z+.6},heading(1030)+Math.PI);
    reyes.show(true);reyes.place(s0.x+1.4,s0.z-.8,heading(1030)+Math.PI);reyes.gest(null);minds();sam.boost=.85;A2.boost=.8;for(const c of [sam,A2])weep(c,'grief',20);cry(.7,10);
    const sv=SP(1024,11.5,-3);CR.b.M.place(sv.x,sv.z,0,sv.y);CR.c.M.place(sv.x-2,sv.z+1,0,sv.y);CR.b.M.show(true);CR.c.M.show(true);
@@ -358,9 +359,17 @@ export function streetActs(X){
    ruin.heave();yield* lines([{wait:1.2},N('At Summerfield the whole intersection lifts, splits, and goes down, and takes the car that was sitting in it.',{time:4.4}),{wait:2},
     V('MR. BRANDT (BY THE RESCUE TRUCK)','REYES! Over here! Kids— oh, thank God— kids, over here!',{time:3})]);
    C.flags.streetDone=true;mark('to the works');yield* wait(2.4);X.toStaging?.();})());}
+ // ---- after: the street as it is left, for the finale's walk and ride: every piece where it fell, nothing moving in it, the thing gone under
+ function after(on){C.afterStreet=!!on;if(!on){town.show(false);return;}
+  town.show(true);for(const n of ['ruin','impacts','trench','lean','across','yard'])town.skip(n);town.engage(town.PX.hend);ruin.setBlocked((x,z,r)=>town.blocked(x,z,r));
+  for(const kk of ['under','sams']){ruin.pits[kk].g.visible=false;ruin.pits[kk].cut.on=false;}ruin.H.g.visible=false;if(ruin.H.cut)ruin.H.cut.on=false;ruin.sedan.visible=false;ruin.syncCuts();
+  for(const c of Object.values(CR))hideC(c);for(const a of PEOPLE)a.show(false);SKY.reset();SKY.show(false);town.ash=.22;HM.show(false);
+  // (Jamie is gone from the side yard: they came for him, as Reyes swore. The header where it fell)
+  if(C.jacket)C.jacket.visible=false;if(C.cap)C.cap.visible=false;C.jamieLying=false;C.jamieHeld=null;C.jamieThrown=null;
+  scene.add(beam);beam.position.set(HD.sideDoor.x,HD.sideDoor.y+.9,HD.sideDoor.z);beam.rotation.set(0,-HQ.worldRot+Math.PI/2,.95);if(C.awning){C.awning.visible=true;}}
  // ---- every frame ----------------------------------------------------------------------------------------------------------------------------------------------
  const _p=newPose(),_hp=new THREE.Vector3();
- function update(dt){const ph=S.phase;if(ph!=='g8-surface'&&ph!=='g8-street'){return;}
+ function update(dt){const ph=S.phase;if(C.afterStreet&&ph!=='g8-surface'&&ph!=='g8-street'){town.update(dt,{camera});return;}if(ph!=='g8-surface'&&ph!=='g8-street'){return;}
   town.update(dt,{camera});SKY.update(dt);
   if(town.EV.across.t>2.5&&!C.acrossLit){C.acrossLit=true;const f=town.PX.across?.at(0,2.4,3.4)||SP(1026,-14,2);light(2,f,{intensity:46,dist:26,color:0xff7a30,flicker:.55});}
   if(town.EV.trench.t>3.5&&!C.trenchLit&&town.FIELD.mainEnd){C.trenchLit=true;}
@@ -382,13 +391,13 @@ export function streetActs(X){
    ACT.shake(null,{k:1.4})(jamie.pose,{clock:C.t});jamie.pose[PP.lh+1]+=.25;jamie.pose[PP.rh+1]+=.4;applyPose(jamie.person,jamie.pose);jamie.person.face?.set?.('terrified',{hold:2});return;}
   if(C.jamieThrown!=null&&C.jamieThrown<1){const from=HM.sockets.grab.getWorldPosition(new THREE.Vector3()),to=HD.body,k2=C.jamieThrown;g.position.set(lerp(from.x,to.x,k2),lerp(from.y-1,to.y,k2)+Math.sin(k2*Math.PI)*.6,lerp(from.z,to.z,k2));g.rotation.set(k2*1.2,-jamie.pa,k2*.8);return;}
   if(C.jamieLying){const q=HD.body;g.position.set(q.x,q.y+.02,q.z);g.rotation.set(0,-(HQ.worldRot+.4),0);copyPose(_p,jamie.pose);ACT.still({look:.7})(_p,{clock:C.t});applyPose(jamie.person,_p);jamie.person.face?.set?.('neutral',{hold:9});jamie.person.lids?.forEach(L=>{L.visible=true;L.scale.y=.014;});}}
- function sources(out){const ph=S.phase;if(ph!=='g8-surface'&&ph!=='g8-street')return;town.sources(out);out.push({id:'c8-it-sky',kind:'presence',pos:new THREE.Vector3(BODY.x,BODY.y+20,BODY.z),level:1.2});
+ function sources(out){const ph=S.phase;if(C.afterStreet&&ph!=='g8-surface'&&ph!=='g8-street'){town.sources(out);return;}if(ph!=='g8-surface'&&ph!=='g8-street')return;town.sources(out);out.push({id:'c8-it-sky',kind:'presence',pos:new THREE.Vector3(BODY.x,BODY.y+20,BODY.z),level:1.2});
   out.push({id:'c8-sirens',kind:'siren',pos:V3(SP(880,-30,4)),level:.5});}
  function blockers(out){for(const a of PEOPLE)if(a.visible)out.push({x:a.x,z:a.z,r:.3,speed:0});for(const c of Object.values(CR))if(c.M.root.visible&&c.mode!=='off')out.push({x:c.M.x,z:c.M.z,r:.45,speed:0});
   if(C.jamieLying)out.push({x:HD.body.x,z:HD.body.z,r:.5,speed:0});}
- function reset(){town.reset();town.show(false);SKY.reset();SKY.show(false);for(const c of Object.values(CR))hideC(c);for(const a of PEOPLE){a.show(false);a.path=null;a.gest(null);}
+ function reset(){C.afterStreet=false;town.reset();town.show(false);SKY.reset();SKY.show(false);for(const c of Object.values(CR))hideC(c);for(const a of PEOPLE){a.show(false);a.path=null;a.gest(null);}
   beam.removeFromParent();if(C.awning)C.awning.visible=false;if(C.cap)C.cap.visible=false;if(C.jacket)C.jacket.visible=false;C.acrossLit=false;C.trenchLit=false;C.jamieLying=false;C.jamieHeld=null;C.jamieThrown=null;C.reyesFire=false;ruin.setBlocked(null);}
  const SCENE={'c8-surface':()=>sceneSurface('surface'),'c8-trench':()=>sceneSurface('trench'),'c8-street':()=>sceneSurface('pruitt'),'c8-hendersons':()=>sceneHendersons('arrive'),'c8-garage':()=>sceneHendersons('garage'),'c8-yard':()=>sceneHendersons('yard'),
   'c8-jamie-death':()=>sceneJamieDeath('after'),'c8-flee':()=>sceneFlee('jump')};
- return {SCENE,update,afterActors,sources,blockers,reset,town,SKY,CR,sceneSurface,sceneHendersons,sceneJamieDeath,HD,PEOPLE};
+ return {SCENE,update,afterActors,sources,blockers,reset,town,SKY,CR,sceneSurface,sceneHendersons,sceneJamieDeath,HD,PEOPLE,after};
 }

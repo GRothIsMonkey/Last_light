@@ -4,7 +4,7 @@ import * as THREE from './three.module.js';
 import {headingTo,wrap} from './people.js';
 import {P as PI,newPose,standPose,sitPose,applyPose} from './rig.js';
 import {LOOKOUT} from './layout.js';
-import {paper8,PAGES8,createFilm} from './chapter8-props.js';
+import {paper8,PAGES8,createFilm,FILM8} from './chapter8-props.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
 import {fallActs} from './chapter8-fall.js';
 import {rescueActs} from './chapter8-rescue.js';
@@ -234,10 +234,16 @@ export function scenes8(X){
    offer('hide-B1','Hide in the cabinet',()=>CM.at('officeCabinet',1),{r:1.6,once:false,when:()=>!C.hiding,fn:()=>hide('B1',CM.at('officeCabinet'))});
    offer('hide-B2','Hide behind the projector stand',()=>CM.at('reviewProj',.6),{r:1.6,once:false,when:()=>!C.hiding,fn:()=>hide('B2',CM.at('reviewProj'))});
    recordsOffers();
+   task('reyes-lure',(function*(){const t0=C.t;yield* until(()=>(C.flags.filmDone&&C.flags.receipt)||C.t-t0>210);yield* until(()=>!busy(),20);if(!C.hunt)return;
+    const wq=CM.at('deepWindow');for(let i=0;i<6;i++)later(i*.45,()=>sound('c6Clank',CM.at('deepWindow',-1),{gain:1.3}));noise(wq,3.2,'reyes');
+    say([V('REYES (FAR OFF, UP THE SHAFT)','HEY! HEY! Over HERE! Come on— OVER HERE!',{time:3})]);mark('Reyes draws it off');
+    H.script([{to:()=>[wq.x-.6,wq.z],speed:3.6,state:'run',free:false,near:.8},{wait:.8,state:'alert',look:()=>wq},{act:()=>{sound('c7Glass',CM.at('deepWindow',0),{gain:.6});huntStop();C.flags.drawnOff=true;}}]);
+    yield* wait(3.4);say([N('Its footfalls go away up the shaft, fast, after him. Then nothing.',{time:3})]);})());
    yield* until(()=>C.flags.filmDone&&C.flags.receipt);
    // it gives up on the room and goes back the way it came, out through the broken window into the shaft
-   yield* until(()=>H.mode==='patrol'||C.pt>2000,40);const wq=CM.at('deepWindow');H.script([{to:()=>[wq.x-.6,wq.z],speed:1.4,state:'walk'},{wait:.6,state:'crouch'},{act:()=>{sound('c7Glass',CM.at('deepWindow',0),{gain:.5});huntStop();}}]);
-   yield* lines([N('The long footfalls go away up the hall. Glass, at the far end. Then nothing.',{time:3.2})]);
+   yield* until(()=>C.flags.drawnOff||!C.hunt,30);
+   if(!C.flags.drawnOff&&C.hunt){yield* until(()=>H.mode==='patrol'||C.pt>2000,40);const wq=CM.at('deepWindow');H.script([{to:()=>[wq.x-.6,wq.z],speed:1.4,state:'walk'},{wait:.6,state:'crouch'},{act:()=>{sound('c7Glass',CM.at('deepWindow',0),{gain:.5});huntStop();}}]);
+    yield* lines([N('The long footfalls go away up the hall. Glass, at the far end. Then nothing.',{time:3.2})]);}
    objective('Find power for the bulkhead.','The service corridor: the green door on the east side.');
    yield* until(()=>CM.cellIdAt(me().x,me().z)==='C'||C.pt>2400);
    // it leaves the gallery the way it came (back out into the shaft), and the corridor is its own
@@ -255,13 +261,12 @@ export function scenes8(X){
   offer('film','Wind the projector',()=>CM.at('reviewProj',1.4),{r:1.8,hold:2.6,noise:.6,tick:()=>{if(Math.random()<.2)sound('c8Film',CM.at('reviewProj',1.3),{gain:.35});},fn:()=>{C.flags.film=true;lightsBelow('B');filmRun();}});}
  function filmRun(){C.filmT=0;C.view=null;task('film-run',(function*(){CM.screenM.map=film.tex;CM.screenM.color?.setHex?.(film.tex?0xffffff:0x777777);CM.screenM.needsUpdate=true;
   objective('Watch.','The screen. The projector is loud: get down behind its stand (F) if it comes.');
-  let last=-1,lured=false;const beats=[[4,N('Ribbed walls. A cot. Someone small on it, in white.',{time:3})],[8,N('Two men in coveralls lift her and carry her away from the cot.',{time:3.4})],[13,N('The far wall moves. The ribs bulge out of it. Dust comes down.',{time:3.4})],
-   [20,N('They stop. They look at the wall. They look at each other.',{time:3.2})],[28,N('They carry her back. They lay her down on the cot.',{time:3.2})],[35,N('The wall goes still.',{time:2.4})],[40,N('TEST 3 — 9/58 — SUBJECT A.R. — CH. 1.',{time:3})]];
+  let last=-1,lured=false;const beats=FILM8.map(([t2,txt],i)=>[t2,N(txt,{time:i===FILM8.length-1?3.4:3.2})]);
   while((C.filmT||0)<film.LEN-.5){yield;C.filmT=(C.filmT||0)+C.dt;if(Math.random()<C.dt*4)sound('c8Film',CM.at('reviewProj',1.3),{gain:.3});film.draw(C.filmT);for(const [i,[t2,l]] of beats.entries())if(C.filmT>=t2&&last<i){last=i;say([l]);}
    // (the clatter carries: it comes to see, stands in the door, looks; anyone behind the stand, low, is not seen)
    if(!lured&&C.filmT>9){lured=true;noise(CM.at('reviewProj'),2.6,'the projector');say([N('Out in the hall, the long footfalls stop. Then come this way.',{time:3})]);}if(C.pt>3000)break;}
   C.flags.filmDone=true;mark('the film');
-  yield* lines([{wait:.6},N('When she was carried away from it, the wall moved. When they brought her back, it stopped.',{time:4}),...(C.flags.annie?[N('A.R. Annie Rowan. September 1958.',{time:2.6})]:[])]);
+  yield* lines([{wait:.6},N('When they took her out, the needle fell and the wall started to come apart. When they brought her back, it stopped.',{time:4.4}),...(C.flags.annie?[N('A.R. Annie Rowan. September 1958. She was holding it shut.',{time:3.2})]:[])]);
   CM.screenM.map=null;CM.screenM.color?.setHex?.(0x111111);CM.screenM.needsUpdate=true;})());}
  // ---- Act II, scene 5: the service corridor; Danny ----------------------------------------------------------------------------------------------
  const D={st:'off',t:0,x:0,z:0,a:0,v:0,seenHand:false};
@@ -371,5 +376,5 @@ export function scenes8(X){
  RESCUE=rescueActs(FX);
  function jump(section){const f=SCENE[section]||FALL.SCENE?.[section];if(!f){begin();return;}C.where='';f();if(section!=='chapter8-start'){C.fadeIn=-1;o.fade(0);}}
  return {begin,jump,update,afterActors,key,pan,wheel,hint,sources,blockers,reset,updateDanny,MH,OAK:FALL.OAK,JD:FALL.JD,BIKES,bikeAt,officerAim:()=>FALL.officerAim?.()??null,
-  canDismount:()=>!!FALL.canDismount?.(),canRemount:()=>!!FALL.canRemount?.(),SCENE:{...SCENE,...(FALL.SCENE||{})},MAP,D,film,STREET:FX.STREET,RESCUE};
+  canDismount:()=>!!FALL.canDismount?.(),canRemount:()=>!!FALL.canRemount?.(),SCENE:{...SCENE,...(FALL.SCENE||{})},MAP,D,film,STREET:FX.STREET,FIN:FX.FIN,RESCUE};
 }
