@@ -61,7 +61,7 @@ export const CELLS=[
  ['E5',38.5,40.8,31.5,46.8,-3,2.4,{kind:'bore'}],
  ['E6',21.6,38.5,44.6,46.8,-3,2.4,{kind:'bore'}],
  ['Fa',21.6,25.6,49.6,58,-3,2.7,{kind:'made'}],
- ['IL',13.6,16.6,53,79.6,-3,3,{kind:'ledge'}],
+ ['IL',13.6,16.6,52,79.6,-3,3,{kind:'ledge'}],
 ];
 // Openings in the walls between two cells: on a shared edge at x (an east/west wall) or z (a north/south wall), over a
 // range along it, up to a height. door: a door id (closed doors are walls); window: seen through, never walked through.
@@ -115,7 +115,7 @@ export const SPOT={
  eBolts:[16.4,28.4],eHideW:[18.5,23.4],e2Slot:[25.5,25.35],e2Look:[25.5,26.2],e3Vent:[30.25,22.6],e2Vent:[27.0,22.6],e3Mid:[31.5,23.2],denShelf:[40.3,27.3],denBack:[39.6,32.6],e5Mid:[39.6,39],e6Mid:[30,45.7],e6West:[22.6,45.7],
  fSlide:[19.8,53.6],faMid:[23.6,53.8],faNorth:[23.6,50.9],faSouth:[23.6,56.9],f1Fissure:[22.4,68.6],f1Closet:[21.3,73.0],alexCot:[20.3,78.6],f2Breach:[17.1,76.6],f2Tally:[23.85,77],
  ilSouth:[15.1,76.6],ilMid:[15.1,67],ilGap:[15.1,61.2],ilNorth:[15.1,54.4],hWin:[15,51.4],hWinIn:[15,50.2],
- gCouch:[-3.4,42.35],gCot:[-5.3,41.2],gVend:[-.2,36.55],gAid:[-2.6,36.2],gFloor:[-4.3,38.4],gChair:[-1.1,41.2],
+ gCouch:[-3.4,41.72],gCot:[-5.3,41.2],gVend:[-.2,36.55],gAid:[-2.6,36.2],gFloor:[-4.3,38.4],gChair:[-1.1,41.2],
 };
 export const W8=(x,z,y=0)=>({x:CX.x+x,z:CX.z+z,y});
 export const L8=(wx,wz)=>({x:wx-CX.x,z:wz-CX.z});
@@ -232,7 +232,7 @@ export function createComplex({scene,sfx=()=>{}}){
  for(const z of [34,40])lampAt(3.5,-.15,z,true);K.box(dg,-2.2,-2.6,39.6,2.4,.76,1,wood);for(const x of [-3.3,-1.1])for(const z of [38.8,40.4])K.box(dg,x,-2.75,z,.42,.5,.42,steel);
  for(let k=0;k<5;k++)K.box(dg,-5.55,-2,37+k*.62,.5,2,.58,green);K.cyl(dg,1.2,-2.2,42.4,.18,.5,steel);lampAt(-2,-.35,39.6,true);
  // H: the anchor board along the north wall, the gauges, the windows over the main chamber, the 1991 additions in yellow
- K.box(dg,5,-1.2,44.32,14,2.2,.1,green);for(const x of [-6,0,6,12,16])lampAt(x,1.0,48,x===0||x===12);K.box(dg,5,-2.6,51.5,22,.8,.6,steel);
+ K.box(dg,5,-1.2,44.32,14,2.2,.1,green);for(const x of [-6,0,6,12,16])lampAt(x,1.0,48,x===0||x===12);K.box(dg,3.8,-2.6,51.5,19.6,.8,.6,steel);// (the console under the windows, stopping short of the end one)
  // I: the plug (a concrete drum on its hangers), the throat under it, the barrier ribs at the far end, the catwalk, L2's mouth
  const plug=new THREE.Group();plug.name='c8-plug';root.add(plug);keep.add(plug);{const body=new THREE.Mesh(new THREE.CylinderGeometry(5.2,5.6,7.5,28),conc2);plug.add(body);
   for(let k=0;k<6;k++){const band=new THREE.Mesh(new THREE.CylinderGeometry(5.35+k*.0,5.35,.18,28),rust);band.position.y=-3.2+k*1.3;plug.add(band);}
@@ -329,7 +329,7 @@ export function createComplex({scene,sfx=()=>{}}){
   const tm=new THREE.Mesh(new THREE.PlaneGeometry(1.4,1.4),new THREE.MeshStandardMaterial({map:tally,transparent:true,roughness:1}));tm.position.set(23.86,-1.6,77);tm.rotation.y=-Math.PI/2;dg.add(tm);}
  const breachWall=new THREE.Group();breachWall.name='c8-breach-wall';R8.add(breachWall);for(let i=0;i<3;i++)for(let j=0;j<3;j++){const c=K.box(breachWall,16.66,-3+.38+i*.74,75.9+j*.53+.27,.22,.74,.53,wet);c.userData.home=c.position.clone();c.userData.r=((i*3+j)*.37)%1;}
  // IL: the ledge: a concrete shelf along the main chamber's east wall, a broken rail, and twenty metres in a gap with only the steel beam across it
- for(const [z0,z1] of [[53,60],[62.6,79.6]])K.box(dg,15.1,-3.12,(z0+z1)/2,3,.24,z1-z0,floorM);K.box(dg,15.1,-3.08,61.3,.7,.16,2.6,steel);K.box(dg,15.1,-3.4,61.3,.3,.5,2.6,steel);
+ for(const [z0,z1] of [[52.1,60],[62.6,79.6]])K.box(dg,15.1,-3.12,(z0+z1)/2,3,.24,z1-z0,floorM);K.box(dg,15.1,-3.08,61.3,.7,.16,2.6,steel);K.box(dg,15.1,-3.4,61.3,.3,.5,2.6,steel);
  for(let z=54;z<79;z+=1.8){if(z>59&&z<63.4)continue;if((z*7)%5<1.2)continue;K.box(dg,13.75,-2.5,z,.05,1,.05,yellow);}K.box(dg,13.75,-2.0,58,.04,.04,8,yellow);K.box(dg,13.75,-2.0,71,.04,.04,13,yellow);
  K.pipe(dg,[16.4,-1.95,66],[16.4,-1.95,70],.22,rust);K.pipe(dg,[13.7,-1.85,67.6],[16.5,-1.85,67.6],.12,rust);// (a pipe across it at chest height: duck under)
  const ledgeFall=new THREE.Group();ledgeFall.name='c8-ledge-fall';R8.add(ledgeFall);K.box(ledgeFall,15.1,-3.12,74.4,3,.24,3,floorM);// (the piece of shelf that goes, behind them)
@@ -348,7 +348,7 @@ export function createComplex({scene,sfx=()=>{}}){
  // ---- walking: a room the nav asks while you are in here --------------------------------------------------------------
  const walkCells=[...cell.values()].filter(c=>!c.o.visual);
  const SOLIDS=[// [x,z,hw,hd]: furniture and machinery you walk round (local)
-  [-20.6,12.35,.85,.45],[-23.55,12.2,.32,.48],[-15.6,12.8,.58,.33],[-17.5,18.2,.3,.3],[4,30.9,3.55,.45],[-2.2,39.6,1.25,.55],[-5.55,38.25,.3,1.6],[5,51.5,11,.35],
+  [-20.6,12.35,.85,.45],[-23.55,12.2,.32,.48],[-15.6,12.8,.58,.33],[-17.5,18.2,.3,.3],[4,30.9,3.55,.45],[-2.2,39.6,1.25,.55],[-5.55,38.25,.3,1.6],[3.8,51.5,9.8,.35],
   [-11.6,20.4,1.25,.65],[-30.15,29.55,.6,.65],[9.6,22.4,2.6,.25],[-3.4,42.5,1.4,.5],[-5.3,41.2,.4,.95],[-.2,36.45,.45,.35],[40.5,27.3,.3,1.3],[15.6,19.8,.75,.75],[17.8,7.6,.32,.32],[18.6,8.4,.32,.32],[-12.8,7.2,.32,.32],[38,30.5,1.6,.7],[20.3,78.6,.85,.45],[26.6,66.4,.55,1.05],[17.6,70.2,.35,.7],[26.6,72.6,.45,.3],
   ...[-10,-4,2,8,14].flatMap(x=>[10,18].map(z=>[x,z,.32,.32])),
  ];

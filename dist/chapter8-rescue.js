@@ -323,7 +323,8 @@ export function rescueActs(X){
   else if(from==='ledge'){CM.ST.slide=1;Object.assign(C.flags,{slid:true,passage:true,madeSeen:true,alexVoice:true,alexTrust:true,alexDoor:true,alexOut:true});CM.made.visible=false;CM.ST.madeBreak=1;CM.setDoor('breach',1,{instant:true});CM.ST.breach=1;CM.setDoor('alexCell',1,{instant:true});
    playerAt('f2Breach',Math.PI,.6,0);two(at('alexIn'),Math.PI);joinFoot(A2,{x:at('alexIn').x+.4,z:at('alexIn').z-.6},Math.PI);CM.PANEL.want=[0,0,0];CM.ST.bow=[.45,.7,.85];C.alexLimp=true;checkpoint('c8-ledge');}
   // (Alex, inside his cell, sitting on the cot, knees up)
-  if(!C.flags.alexOut){joinFoot(A2,at('alexCot'),0);hold(A2,at('alexCot'),ACT.floor({arms:'knees',lean:-.05,shiver:1}),()=>at('alexDoor',-1.6));}
+  const COTEDGE=()=>{const q=at('alexCot');return {x:q.x,z:q.z-.72};};// (on the edge of his cot, his feet on the floor: not inside it)
+  if(!C.flags.alexOut){joinFoot(A2,COTEDGE(),0);hold(A2,COTEDGE(),ACT.seat(.4,{hands:'knees',lean:.32,lookPitch:-.3}),()=>at('alexDoor',-1.6));}
   task('alex',(function*(){
    if(!C.flags.slid){objective('F-two.','South, past the long hall: the corridor beyond its east door.');
     yield* until(()=>me().z-CX.z>49.4&&cell()==='F0'||C.pt>300);
@@ -334,7 +335,7 @@ export function rescueActs(X){
     yield* lines([N('Beside you, a panel of the east wall lifts away. Behind it a passage, papered, carpeted, lit by a lamp with a fringed shade. It smells like someone’s house.',{time:4.8}),
      SM('It’s making it. It’s making it while we watch.',{time:2.6,face:'afraid'})]);
     objective('Through the passage.','It’s the only way on.');
-    yield* until(()=>cell()==='Fa'||C.pt>360);yield* until(()=>me().z-CX.z>57.4&&cell()==='F0'||C.pt>420,60);
+    yield* until(()=>C.flags.wasFa||C.pt>360);yield* until(()=>(me().z-CX.z>57.4&&cell()!=='Fa')||C.pt>420,60);
     CM.setDoor('fa1',0);CM.setDoor('fa2',0);CM.ST.faOpen=0;sound('c8SteelDoor',at('faSouth',-1.5),{gain:.6});C.flags.passage=true;
     yield* lines([N('Behind you the passage closes. There’s only wall there now.',{time:2.8})]);
     // the stretch papered like the hall upstairs at Alex's: the photos on the wall
@@ -345,9 +346,9 @@ export function rescueActs(X){
      SM('Don’t touch anything.',{time:1.6}),N('The calendar over the desk says AUGUST 21. The clock says 9:41 and doesn’t move. On the desk, a bicycle bell, by itself.',{time:4.6})]);
     sound('c8Knock',at('alexDoor',-1.4),{gain:.8});C.flags.alexVoice=true;
     yield* lines([N('Knocking. From the closet door in the far wall: but it isn’t a closet door. It’s steel, painted to look like one.',{time:4.2}),
-     AL('(behind it, hoarse) Go away. Go away. You’re not real.',{time:2.8}),checkpointLine('c8-alex')]);}
-   if(!C.flags.alexTrust){objective('Alex.','Behind the closet door.');
-    yield* until(()=>near(at('alexDoor'),2.4)||C.pt>600);
+     AL('(behind it, hoarse) Go away. Go away. You’re not real.',{time:2.8}),checkpointLine('c8-alex')]);mark('alex: the voice behind the door');}
+   if(!C.flags.alexTrust){objective('Alex.','Behind the closet door.');mark('alex: go to his door');
+    yield* until(()=>near(at('alexDoor'),2.4)||C.pt>600);mark('alex: at his door');
     yield* lines([Y('Alex. It’s us. It’s really—',{time:1.8}),AL('It’s always you. It brings you every day. You stand there and say my name and say it’s you. Always the three of you.',{time:5,face:'afraid'}),
      AL('Always perfect. Exactly like I remember.',{time:2.6}),{wait:1.2},AL('...You’ve got my camera?',{time:1.8}),Y('I’ve had it all week.',{time:1.6}),
      AL('Then take a picture. Of you. All three of you, right now. And put it under the door.',{time:3.6,face:'determined'})]);
@@ -371,10 +372,10 @@ export function rescueActs(X){
     yield* lines([N('Alex, on a cot against the far wall, his knees up, his arms round them. His Sunday clothes, black with dirt. On the wall by the cot, scratched marks, five to a gate. And a map, scratched into the paint: CAMP. GRATE. ME.',{time:6.2})]);
     yield* lines([AL('I got out once. The old water line. All the way to the camp. I could see the trees through the grate.',{time:4.4,face:'sad'}),AL('...It brought me back.',{time:2})]);
     // Jamie goes in to him
-    stand(jamie,{x:at('alexCot').x+.15,z:at('alexCot').z-.85},{gesture:ACT.kneel({side:1,lookPitch:-.1}),look:()=>({x:X.alex.px,y:-2.3,z:X.alex.pz}),max:.6});
-    yield* until(()=>Math.hypot(jamie.px-at('alexCot').x,jamie.pz-at('alexCot').z)<1.3||C.pt>700,20);
+    stand(jamie,{x:COTEDGE().x+.1,z:COTEDGE().z-.78},{gesture:ACT.kneel({side:1,lookPitch:-.1}),face:Math.PI,look:()=>({x:X.alex.px,y:-2.3,z:X.alex.pz}),max:.5});
+    yield* until(()=>Math.hypot(jamie.px-COTEDGE().x,jamie.pz-COTEDGE().z)<1.2||C.pt>700,20);
     yield* lines([J('Hey. Hey, Alex. It’s us. We came to get you. That’s all.',{time:3,face:'concerned'})]);
-    hold(X.alex,at('alexCot'),ACT.reach(X.alex,()=>{const q=jamie.person.joints?.head;return q?jamie.person.group.localToWorld(q.clone()):null;},{hand:'r',base:ACT.floor({arms:'lap',lean:0})}));
+    hold(X.alex,COTEDGE(),ACT.reach(X.alex,()=>{const q=jamie.person.joints?.head;return q?jamie.person.group.localToWorld(q.clone()):null;},{hand:'r',base:ACT.seat(.4,{hands:'knees',lean:.25})}));
     yield* lines([N('Alex reaches out and touches Jamie’s face, where it’s cut. Like he’s checking. Then he starts to cry, and Jamie just sits there and lets him.',{time:5.2}),{wait:1.6},AL('Can we go home?',{time:1.6}),J('Yeah. Yeah. Come on.',{time:1.6})]);
     // he stands, Jamie under his arm; they come out, and the last one lets go
     stand(X.alex,{x:at('alexDoor').x,z:at('alexDoor').z-.8},{gesture:ACT.slump(),max:.8,look:()=>camera.position});stand(jamie,()=>({x:X.alex.px+.45,z:X.alex.pz+.2}),{gesture:ACT.reach(jamie,()=>({x:X.alex.px,y:-1.8,z:X.alex.pz}),{hand:'l'}),max:.5});
@@ -404,21 +405,21 @@ export function rescueActs(X){
   yield* lines([J('MOVE! It’s coming out!',{time:1.6,face:'terrified'})]);
   // the pipe across it: under it on your knees
   C.duck=[14.1,14.6,15.1,15.6,16.1].map(x=>W(x,67.6));
-  yield* until(()=>me().z-CX.z<64||C.pt>1100,120);
+  yield* until(()=>me().z-CX.z<65.2||C.pt>1100,120);
   // the gap: a beam across it. Alex stops. Behind you, a voice
   stand(jamie,W(15.1,58.6),{look:()=>({x:A2.px,y:-1.6,z:A2.pz}),max:.6,gesture:ACT.reach(jamie,()=>({x:A2.px,y:-1.9,z:A2.pz}),{hand:'r'})});
   stand(A2,W(15.1,63.4),{gesture:ACT.hug(ACT.slump()),max:.6,look:()=>W(17,76,-1.4)});face(A2,'terrified',8);
   yield* lines([N('Jamie goes across the beam without looking down and turns round on the far side with his hand out.',{time:3.6}),{wait:1},
    V('ALEX’S MOTHER — FROM BACK THE WAY YOU CAME','Alex? Alex, honey. Come back to bed. It’s late.',{time:3.6}),AL('Mom?',{time:1.2,face:'sad'}),SM('It’s not her. Alex. It’s not her.',{time:2.2,face:'afraid'})]);
   objective('Alex.','Take his hand.');
-  offer('alexHand','Take Alex’s hand',()=>({x:A2.px,y:-1.9,z:A2.pz}),{r:1.8,fn:()=>{C.flags.alexHand=true;}});
+  mark('alex: his hand offered');offer('alexHand','Take Alex’s hand',()=>({x:A2.px,y:-1.9,z:A2.pz}),{r:1.8,fn:()=>{C.flags.alexHand=true;}});
   yield* until(()=>C.flags.alexHand);face(A2,'afraid',6);
   stand(A2,()=>{const p=me();return {x:p.x+Math.sin(p.a)*-.9,z:p.z-Math.cos(p.a)*-.9};},{gesture:ACT.reach(A2,()=>{const p=me();return {x:p.x+Math.cos(p.a)*.2,y:camera.position.y-.55,z:p.z+Math.sin(p.a)*.2};},{hand:'r',base:ACT.slump()}),max:.5});
   yield* lines([AL('...Okay. Okay. Don’t let go.',{time:2.2}),Y('I won’t.',{time:1.2})]);
   yield* until(()=>me().z-CX.z<58.8||C.pt>1200,120);stand(A2,null);stand(jamie,null);A2.follow='walk';
   // the window: glass between you and the hall
   objective('The window.','The long hall, through the window at the end of the ledge.');
-  offer('hwin','Kick out the glass',()=>at('hWin',-1.8),{r:1.8,hold:.8,fn:()=>{CM.setDoor('hwin',1);CM.ST.hwinWant=1;sound('c8Glass',at('hWin',-1.5),{gain:1.1});}});
+  offer('hwin','Kick out the glass',()=>W(15,52.25,-1.75),{r:2.6,hold:.8,fn:()=>{CM.setDoor('hwin',1);CM.ST.hwinWant=1;sound('c8Glass',at('hWin',-1.5),{gain:1.1});}});
   yield* until(()=>cell()==='H'||C.pt>1300);
   for(const c of [sam,jamie,A2])stand(c,null);
   // the last one gives way: the ribs shear, it comes into the chamber; the windows behind you craze
@@ -448,23 +449,25 @@ export function rescueActs(X){
    yield* lines([N('The crew room. The door shut, the locker across it. A lamp on the table with a cracked shade. For the first time in five days, all four of you in the same room.',{time:5.2}),{wait:1.5},
     N('Nobody says anything for a while. Somewhere under everything, very far off, something enormous is moving. In here, it’s just the lamp, and four people breathing.',{time:5})]);
    objective('All four of you.','Take a minute. (Talk to them, sit with them. When you’re ready: the radio.)');
-   const done=new Set();const beat=(id,label,q,ls,o2={})=>offer(id,label,q,{r:2.2,...o2,fn:()=>task('beat-'+id,(function*(){yield* lines(typeof ls==='function'?ls():ls);done.add(id);mark('reunion: '+id);o2.then?.();})())});
+   const done=new Set();const beat=(id,label,q,ls,o2={})=>offer(id,label,q,{r:2.5,...o2,fn:()=>task('beat-'+id,(function*(){yield* lines(typeof ls==='function'?ls():ls);done.add(id);mark('reunion: '+id);o2.then?.();})())});
    beat('gum','Hand round Sam’s gum',()=>({x:jamie.px,y:-2.4,z:jamie.pz}),[N('You get out the pack of spearmint. Sam’s. Eleven pieces left. You hand it round.',{time:3.6}),SM('That’s my gum.',{time:1.4}),Y('It’s been in my pocket since Thursday.',{time:2}),
     J('(taking two) Medical reasons.',{time:1.6,face:'grin'}),AL('(taking one, slowly) ...It still tastes like gum.',{time:2.4,face:'relieved'}),N('That shouldn’t be funny. Jamie laughs so hard he has to put his head on his knees, and then all of you are.',{time:4.6})],{then:()=>{C.inv.gum='shared';face(jamie,'happy',8);face(A2,'amused',6);face(sam,'amused',6);}});
    beat('ankle','Wrap Sam’s ankle',()=>at('gAid',-1.4),[N('The first-aid box on the wall: 1974, a roll of crepe bandage gone yellow, a tin of aspirin.',{time:3.4}),SM('Figure eight. Round the heel, then over. Tighter. Okay. Okay, that’s good.',{time:3.6,face:'tired'}),
     SM('My dad would’ve done it better.',{time:2,face:'sad'}),Y('Your dad’s up there right now looking for you.',{time:2.4}),SM('...Yeah.',{time:1.2})],{then:()=>{C.flags.ankle=true;}});
-   beat('camera','Give Alex back his camera',()=>({x:A2.px,y:-2.2,z:A2.pz}),[N('He goes through the pictures slowly, backwards. The three of you tonight. Then the week he wasn’t there for. Then Sunday.',{time:4.4}),
+   // Alex: one prompt, his beats in order (the camera and tomorrow, his bike, how he got through it)
+   const alexBeats=[['camera','Give Alex back his camera',[N('He goes through the pictures slowly, backwards. The three of you tonight. Then the week he wasn’t there for. Then Sunday.',{time:4.4}),
     AL('That’s the oak. That’s Sunday. We were going to the reservoir. Tomorrow, I said. Remember?',{time:4,face:'sad'}),J('Tomorrow’s Saturday.',{time:1.4}),AL('...So?',{time:1}),J('So we’re going. All of us. I call the front.',{time:2.4,face:'grin'}),
-    AL('There’s no front on a bike.',{time:1.6,face:'amused'}),J('There is if I’m on it.',{time:1.6}),{wait:1},AL('...Okay. Tomorrow.',{time:1.6,face:'hopeful'})],{then:()=>{C.flags.tomorrow=true;C.inv.camera='alex';}});
-   beat('bike','Tell Alex about his bike',()=>({x:A2.px+.4,y:-2.2,z:A2.pz}),[AL('Did anybody... find my bike?',{time:2}),Y('It’s up at Sam’s. With ours. Under the streetlight. All four.',{time:3}),{wait:1},
-    AL('The bell still work?',{time:1.4}),Y('Yeah.',{time:.8}),N('He smiles. It looks like it hurts his face, like he hasn’t done it in a long time.',{time:3.4})],{then:()=>{face(A2,'hopeful',8);}});
-   beat('sit','Sit down with them',()=>at('gFloor',-2.6),[{act:()=>{pose(V3(at('gFloor',-1.95)),{y:-2.05,yaw:me().a,pitch:-.1,look:null,slow:1.3});},wait:1.4},
+    AL('There’s no front on a bike.',{time:1.6,face:'amused'}),J('There is if I’m on it.',{time:1.6}),{wait:1},AL('...Okay. Tomorrow.',{time:1.6,face:'hopeful'})],()=>{C.flags.tomorrow=true;C.inv.camera='alex';}],
+    ['bike','Tell Alex about his bike',[AL('Did anybody... find my bike?',{time:2}),Y('It’s up at Sam’s. With ours. Under the streetlight. All four.',{time:3}),{wait:1},
+    AL('The bell still work?',{time:1.4}),Y('Yeah.',{time:.8}),N('He smiles. It looks like it hurts his face, like he hasn’t done it in a long time.',{time:3.4})],()=>{face(A2,'hopeful',8);}],
+    ['alexStory','Ask Alex how he got through it',[AL('It kept bringing me my room. My mom. You guys. Every day, the same. I stopped answering.',{time:4.2,face:'sad'}),
+    AL('I counted days on the wall. I got out once. Down the old water line, the one to the camp. I could see the trees through the grate.',{time:4.6}),AL('It was waiting at the grate.',{time:2}),{wait:1.4},
+    AL('There were other kids. Before us. It still has their... it keeps things.',{time:3.4,face:'afraid'})],null]];
+   const nextAlex=()=>{const b2=alexBeats.find(q=>!done.has(q[0]));if(!b2)return;beat(b2[0],b2[1],()=>({x:A2.px,y:-2.2,z:A2.pz}),b2[2],{then:()=>{b2[3]?.();later(.4,nextAlex);}});};nextAlex();
+   beat('sit','Sit down with them',()=>W(-4.5,37.35,-2.6),[{act:()=>{pose(V3(W(-4.5,37.35,-1.95)),{y:-2.05,yaw:me().a,pitch:-.1,look:null,slow:1.3});},wait:1.4},
     N('You sit down on the floor next to Jamie with your back against the lockers. The cold of the floor comes up through your jeans.',{time:4}),{wait:2.4},
     J('...This is the worst sleepover ever.',{time:2,face:'tired'}),{wait:1.2},SM('Top three.',{time:1.4,face:'amused'}),{wait:2.4},
     AL('I kept thinking about the fire. Sunday. You guys arguing about whether marshmallows are a food.',{time:4,face:'sad'}),J('They’re not. They’re a texture.',{time:1.8}),{wait:3},{act:()=>unpose(),wait:1.2}]);
-   beat('alexStory','Ask Alex how he got through it',()=>({x:A2.px-.4,y:-2,z:A2.pz}),[AL('It kept bringing me my room. My mom. You guys. Every day, the same. I stopped answering.',{time:4.2,face:'sad'}),
-    AL('I counted days on the wall. I got out once. Down the old water line, the one to the camp. I could see the trees through the grate.',{time:4.6}),AL('It was waiting at the grate.',{time:2}),{wait:1.4},
-    AL('There were other kids. Before us. It still has their... it keeps things.',{time:3.4,face:'afraid'})]);
    // when you've been with them a while: the radio (Reyes)
    yield* until(()=>done.size>=3||C.pt>420);yield* quiet(30);
    yield* lines([{wait:1.4},V('THE RADIO (IN YOUR POCKET)','...kkkhh... anybody... copy... kids, if you can hear me...',{time:3.4}),J('REYES!',{time:1,face:'grin'})]);
@@ -488,6 +491,7 @@ export function rescueActs(X){
    if(D.open<.42){CM.ST.duck={...(CM.ST.duck||{}),dIso:.2};C.duck=[...[25.6,26.4,27.2,28,28.8].map(z=>W(-6,z))];}
    if(D.open<.12&&/^D/.test(cell()||'')){fail('c8-sam-out','the flood door');}}
   if(C.samLimp&&sam.mode==='foot'){sam.boost=C.flags.samThrough?.8:.62;}
+  if(S.phase==='e8-alex'&&cell()==='Fa')C.flags.wasFa=true;// (remembered: a quick player is through it before the scene has finished talking about it)
   // the levels the scenes ask for, eased (the complex draws them)
   const ST=CM.ST,ease=(k,want,rate)=>{if(ST[want]===undefined)return;ST[k]=ST[k]<ST[want]?Math.min(ST[want],ST[k]+dt*rate):Math.max(ST[want],ST[k]-dt*rate);};
   ease('slide','slideWant',.45);ease('fa','faOpen',.6);ease('madeBreak','madeBreakWant',.18);ease('breach','breachWant',.7);ease('ledge','ledgeWant',.9);ease('hwin','hwinWant',2);ease('shear','shearWant',.2);ease('locker','lockerWant',1.2);
