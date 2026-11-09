@@ -371,5 +371,5 @@ export function scenes8(X){
  RESCUE=rescueActs(FX);
  function jump(section){const f=SCENE[section]||FALL.SCENE?.[section];if(!f){begin();return;}C.where='';f();if(section!=='chapter8-start'){C.fadeIn=-1;o.fade(0);}}
  return {begin,jump,update,afterActors,key,pan,wheel,hint,sources,blockers,reset,updateDanny,MH,OAK:FALL.OAK,JD:FALL.JD,BIKES,bikeAt,officerAim:()=>FALL.officerAim?.()??null,
-  canDismount:()=>!!FALL.canDismount?.(),canRemount:()=>!!FALL.canRemount?.(),SCENE:{...SCENE,...(FALL.SCENE||{})},MAP,D,film};
+  canDismount:()=>!!FALL.canDismount?.(),canRemount:()=>!!FALL.canRemount?.(),SCENE:{...SCENE,...(FALL.SCENE||{})},MAP,D,film,STREET:FX.STREET,RESCUE};
 }

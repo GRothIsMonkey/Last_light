@@ -315,6 +315,24 @@ export function createAudio({context=null,random=Math.random}={}){
   c8Spark(t,o){for(let k=0;k<9;k++)burst(t+k*.018+random()*.02,.018,.3,'highpass',2800+random()*4000,.8,o);tone(118,t,.35,.1,'square',o,117);},
   c8Wave(t,o){const n=shot(ctx.createBufferSource());n.buffer=noise;const lp=filt('lowpass',520,.6),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.35,t+.5);g.gain.linearRampToValueAtTime(0,t+2.4);n.connect(lp).connect(g).connect(o);n.start(t,random()*2);n.stop(t+2.5);},
   c8Breath(t,o){for(const [k,f,v] of [[0,1100,.05],[.42,800,.04],[.78,1150,.05],[1.18,820,.04]])burst(t+k,.3,v,'bandpass',f,1.4,o);},
+  // grief (synthesized stand-ins: no recorded voices exist in this game). A child's sob: two to four voiced catches, falling,
+  // breath in the voice, then the gasp in; a sniff; a gasp; a muffled wail; a shaky breath in and out
+  c8Sob(t,o){const n=2+Math.floor(random()*3),f0=300+random()*70;let k=t;
+   for(let i=0;i<n;i++){const d=.15+random()*.13,f=f0*(1-i*.07);const v=shot(ctx.createOscillator());v.type='sawtooth';v.frequency.setValueAtTime(f*1.06,k);v.frequency.linearRampToValueAtTime(f*.86,k+d);
+    const vib=shot(ctx.createOscillator()),vg=gain(f*.025);vib.frequency.value=7+random()*3;vib.connect(vg).connect(v.frequency);
+    const f1=filt('bandpass',620+random()*140,3.5),f2=filt('bandpass',1120+random()*220,5),lp=filt('lowpass',2600,.7),g=gain();env(g,k,.025,.03,d,'lin');
+    v.connect(f1).connect(g);v.connect(f2).connect(g);g.connect(lp).connect(o);v.start(k);v.stop(k+d+.06);vib.start(k);vib.stop(k+d+.06);
+    burst(k,d,.01,'bandpass',2300,1.2,o);k+=d+.04+random()*.09;}
+   const n2=shot(ctx.createBufferSource());n2.buffer=noise;const b=filt('bandpass',1300,1.6),g2=gain();g2.gain.setValueAtTime(0,k);g2.gain.linearRampToValueAtTime(.045,k+.11);g2.gain.linearRampToValueAtTime(0,k+.34);
+   b.frequency.setValueAtTime(1100,k);b.frequency.linearRampToValueAtTime(2700,k+.32);n2.connect(b).connect(g2).connect(o);n2.start(k,random()*2);n2.stop(k+.36);},
+  c8Sniff(t,o){for(const k of [0,.13])burst(t+k+random()*.03,.07,.035,'bandpass',2900+random()*600,2.2,o);},
+  c8Gasp(t,o){const n=shot(ctx.createBufferSource());n.buffer=noise;const b=filt('bandpass',1000,1.4),g=gain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.07,t+.09);g.gain.linearRampToValueAtTime(0,t+.28);
+   b.frequency.setValueAtTime(900,t);b.frequency.linearRampToValueAtTime(2400,t+.26);n.connect(b).connect(g).connect(o);n.start(t,random()*2);n.stop(t+.3);tone(520,t+.03,.12,.006,'triangle',o,640);},
+  c8Wail(t,o){const v=shot(ctx.createOscillator()),vib=shot(ctx.createOscillator()),vg=gain(14);v.type='sawtooth';const f=380+random()*60;v.frequency.setValueAtTime(f*1.12,t);v.frequency.linearRampToValueAtTime(f,t+.3);v.frequency.linearRampToValueAtTime(f*.78,t+1.4);
+   vib.frequency.value=6;vib.connect(vg).connect(v.frequency);const f1=filt('bandpass',780,3),f2=filt('bandpass',1250,4),lp=filt('lowpass',2200,.6),g=gain();env(g,t,.12,.032,1.35,'lin');v.connect(f1).connect(g);v.connect(f2).connect(g);g.connect(lp).connect(o);
+   v.start(t);v.stop(t+1.6);vib.start(t);vib.stop(t+1.6);burst(t,1.4,.008,'bandpass',2000,1,o);},
+  c8Breath2(t,o){const b=filt('bandpass',700,1.1),g=gain(),n=shot(ctx.createBufferSource());n.buffer=noise;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.03,t+.5);for(let k=0;k<5;k++)g.gain.setValueAtTime(.03*(k%2?.55:1),t+.55+k*.07);
+   g.gain.linearRampToValueAtTime(0,t+1.05);g.gain.linearRampToValueAtTime(.022,t+1.4);g.gain.linearRampToValueAtTime(0,t+2.3);n.connect(b).connect(g).connect(o);n.start(t,random()*2);n.stop(t+2.4);},
   c8Whimper(t,o){for(const [f,d,v,k] of [[520,.5,.04,0],[470,.7,.035,.55],[560,.4,.03,1.3]]){const c=shot(ctx.createOscillator()),b=filt('bandpass',f*2,3),g=gain();c.type='triangle';c.frequency.setValueAtTime(f,t+k);c.frequency.linearRampToValueAtTime(f*.82,t+k+d);env(g,t+k,.06,v,d,'lin');c.connect(b).connect(g).connect(o);c.start(t+k);c.stop(t+k+d+.1);}burst(t,.9,.02,'bandpass',2600,1,o);},
  });
  // A speech-like on/off pattern for voices heard through a radio or a wall.

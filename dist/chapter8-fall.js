@@ -9,6 +9,7 @@ import {LOOKOUT} from './layout.js';
 import {paper8} from './chapter8-props.js';
 import {cutWorld} from './chapter8-ruin.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
+import {streetActs} from './chapter8-street.js';
 
 export function fallActs(X){
  const {o,k,C,S,presence,H,HM,danny,brandt,reyes,police,jamie,sam,comp,brain,ch2,ch6,works,WP,sound,gy,light,lightsOn,checkpoint,later,mark,say,J,SM,AL,R,RR,BR,BRR,Y,N,V,
@@ -105,7 +106,7 @@ export function fallActs(X){
    for(const c of [sam,X.alex,jamie].filter(Boolean))c.person.group.visible=false;reyes.show(false);
    offer('climbup','Climb',()=>CM.at('ladder',1.4),{r:1.8,hold:2.6,tick:()=>{if(Math.random()<.1)sound('c6Clank',CM.at('ladder',1.4),{gain:.3});},fn:()=>{}});
    yield* until(()=>C.flags.climbup||C.pt>1500);
-   C.fadeOut=0;C.after=()=>sceneSurface('surface');})());}
+   C.fadeOut=0;C.after=()=>STREET.sceneSurface('surface');})());}
  // ---- Act V, scene 12: Oak Hollow from the oak ------------------------------------------------------------------------------------------------------------------
  function surfaceWorld(){CM.show(false);if(nav.room===CM.nav)nav.setRoom(null);presence.reset();presence.show(true);huntStop();if(C.boardMesh)C.boardMesh.removeFromParent();
   nightStreet();X.ch3?.creature?.show?.(false);cutWorld(world);ruin.show(true);ruin.stage(1);ruin.truck.g.visible=true;nav.setRoom(ruin.room);lightsOn(true);for(let i=0;i<6;i++)light(i,null);
@@ -379,7 +380,7 @@ export function fallActs(X){
    yield* lines([{wait:1.4},N('The road behind you is empty.',{time:2.6}),{wait:2.6},N('You keep riding.',{time:2.4}),{wait:3}]);
    C.endT=0;})());}
  // ---- every frame ------------------------------------------------------------------------------------------------------------------------------------------------------
- function update(dt){const ph=S.phase;
+ function update(dt){const ph=S.phase;STREET.update(dt);
   // (on the ruined street a friend far behind heads straight for you rather than grid-searching the whole street)
   {const street=!!ruin.root.parent&&ruin.ST.stage>=1&&C.where!=='works'&&C.where!=='below';const want=street?24:0;if((comp.routeMax===Infinity?0:comp.routeMax)!==want)comp.routeMax=want;}
   // (the downed pole's arc, on pool light 1 while the street is up: the ruin adds no lights of its own)
@@ -390,7 +391,7 @@ export function fallActs(X){
   if(ph==='n8-ride'&&C.wantLook){const f=new THREE.Vector3();camera.getWorldDirection(f);const p=me(),back=-(f.x*Math.sin(p.a)-f.z*Math.cos(p.a));/* (over your shoulder: riding, the head turns to about 106 degrees, so past 97 counts; on foot, anything behind) */if(back>.12){C.lookBack+=dt;if(C.lookBack>.9)C.lookedBack=true;}else C.lookBack=Math.max(0,C.lookBack-dt*.5);}
   if(ph==='n8-ride'&&C.endT>=0){C.endT+=dt;o.fade(smooth(C.endT/4));if(C.endT>4.6){go('n8-end');X.end();}}
   if(C.alexSit&&X.alex){const c=X.alex;c.follow=null;}}
- function afterActors(dt){
+ function afterActors(dt){STREET.afterActors(dt);
   // Jamie on the lawn: on his back, still
   if(JD.on&&jamie.person.group.visible){const g=jamie.person.group,y=gy(JD.x,JD.z);g.position.set(JD.x,y+.12,JD.z);g.rotation.set(-Math.PI/2,0,JD.a*.3,'YXZ');jamie.person.face?.set?.('neutral',{hold:999});}
   // Alex against the oak
@@ -404,11 +405,14 @@ export function fallActs(X){
  function key(code){return false;}
  function hint(){if(S.phase==='n8-ride'&&C.wantLook)return [['Mouse / Q','Look back']];return null;}
  function sources(out){const ph=S.phase;if(C.where==='works')out.push({id:'c8-creek',kind:'water',pos:new THREE.Vector3(WP(0,0).x,-3,WP(0,0).z),level:1.2},{id:'c8-gen',kind:'generator',pos:new THREE.Vector3(WP(26,8).x,1,WP(26,8).z),level:.6});
-  if(/^g8-/.test(ph)){const t=ruin.truck.g.position;out.push({id:'c8-siren',kind:'siren',pos:new THREE.Vector3(t.x,2,t.z),mode:'wail',level:.6});}}
- function blockers(out){for(const a of PEOPLE)if(a.visible)out.push({x:a.x,z:a.z,r:.3,speed:0});if(JD.on)out.push({x:JD.x,z:JD.z,r:.5,speed:0});}
- function reset(){comp.routeMax=0;for(const a of PEOPLE){a.show(false);a.path=null;}JD.on=false;C.alexSit=false;C.escort=null;C.jamieHold=false;if(C.boardMesh)C.boardMesh.removeFromParent();if(works?.attach&&C.where==='works')works.attach(false);}
+  if(/^g8-/.test(ph)){const t=ruin.truck.g.position;out.push({id:'c8-siren',kind:'siren',pos:new THREE.Vector3(t.x,2,t.z),mode:'wail',level:.6});}STREET.sources(out);}
+ function blockers(out){for(const a of PEOPLE)if(a.visible)out.push({x:a.x,z:a.z,r:.3,speed:0});if(JD.on)out.push({x:JD.x,z:JD.z,r:.5,speed:0});STREET.blockers(out);}
+ function reset(){STREET.reset();comp.routeMax=0;for(const a of PEOPLE){a.show(false);a.path=null;}JD.on=false;C.alexSit=false;C.escort=null;C.jamieHold=false;if(C.boardMesh)C.boardMesh.removeFromParent();if(works?.attach&&C.where==='works')works.attach(false);}
+ // the street (Act V's first half: Oak Hollow falling, the things in it, the Hendersons', Jamie): chapter8-street.js
+ X.toStaging=()=>{C.fadeOut=0;C.after=()=>sceneStaging('staging');};
+ const STREET=streetActs(X);X.STREET=STREET;
  const SCENE={'c8-truth':()=>sceneTruth('t'),'c8-breach':()=>sceneBreach('breach'),'c8-escape':()=>sceneBreach('escape'),'c8-ladder':()=>sceneBreach('escape'),
-  'c8-surface':()=>sceneSurface('surface'),'c8-street':()=>sceneStreet('s'),'c8-hendersons':()=>sceneStreet('s'),'c8-garage':()=>sceneStreet('garage'),'c8-jamie-death':()=>sceneStreet('death'),
+  ...STREET.SCENE,
   'c8-staging':()=>sceneStaging('staging'),'c8-gates':()=>sceneOp('gates'),'c8-ports':()=>sceneOp('ports'),'c8-line-two':()=>sceneOp('line-two'),'c8-plug':()=>sceneOp('plug'),'c8-hatch':()=>sceneOp('hatch'),
   'c8-oak':()=>sceneOak('oak'),'c8-alex-death':()=>sceneOak('oak'),'c8-ride':()=>sceneRide('jump'),'c8-look-back':()=>sceneRide('jump'),'chapter8-end':()=>{sceneRide('jump');C.endT=0;}};
  return {sceneTruth,update,afterActors,officerAim,key,hint,sources,blockers,reset,SCENE,canDismount:()=>S.phase==='n8-ride',canRemount:()=>S.phase==='n8-ride',PEOPLE,JD,OAK};

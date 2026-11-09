@@ -71,6 +71,30 @@ export const ACT={
  still({look=.6}={}){return (p)=>{set3(p,P.root,0,.1,.0);p[P.lean]=-1.5;p[P.yaw]=0;p[P.twist]=.04;p[P.roll]=.08;p[P.hy]=look;p[P.hp]=.1;
   set3(p,P.lf,-.13,.06,-.8);set3(p,P.rf,.16,.06,-.76);p[P.lfp]=1.2;p[P.rfp]=1.1;set3(p,P.lk,0,1,0);set3(p,P.rk,0,1,0);
   set3(p,P.lh,-.32,.05,.18);set3(p,P.rh,.3,.05,.3);set3(p,P.le,-1,0,0);set3(p,P.re,1,0,0);};},
+ // ---- grief ----------------------------------------------------------------------------------------------------------------------
+ // crying with the whole body: the shoulders lift with each catch of breath (the face's own sob pulse), the head goes down,
+ // the hands to the face (or wrapped round himself, or hanging)
+ sob(c,{base=null,hands='face',k=1}={}){return (p,ctx)=>{base?.(p,ctx);const pu=(c?.person?.face?.pulse||0)*k,t=T(ctx);p[P.root+1]+=pu*.02-.018*k;p[P.lean]+=(.1+pu*.07)*k;p[P.hp]-=(.3-pu*.1)*k;p[P.roll]+=Math.sin(t*1.3)*.02*k;
+   if(hands==='face'){const hy=p[P.root+1]+.55+pu*.015,hz=p[P.root+2]-.12-p[P.lean]*.32;mix3(p,P.lh,-.045,hy,hz,k);mix3(p,P.rh,.045,hy-.008,hz,k);mix3(p,P.le,-1,-.7,.25,k);mix3(p,P.re,1,-.7,.25,k);}
+   else if(hands==='arms'){const y=p[P.root+1]+.3+pu*.02;mix3(p,P.lh,.11,y,-.12,k);mix3(p,P.rh,-.11,y-.03,-.1,k);}
+   else{p[P.lh+1]-=.03*k;p[P.rh+1]-=.03*k;}};},
+ // holding on to someone: both hands round to their back, leaning in, head beside theirs (drawn from this one's side)
+ embrace(c,other,{k=1,base=null}={}){return (p,ctx)=>{base?.(p,ctx);if(!other?.person)return;const s=other.person.group.scale?.x||1,gy=other.person.group.position.y,oa=other.pa??0,bx=-Math.sin(oa),bz=Math.cos(oa),rx=Math.cos(oa),rz=Math.sin(oa),y=gy+1.12*s;
+   for(const [o,e,sd] of [[P.lh,P.le,-1],[P.rh,P.re,1]]){const wx=other.px+bx*.13+rx*sd*.13,wz=other.pz+bz*.13+rz*sd*.13;local(c,wx,y,wz,_l);mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,e,sd,.1,.5,k);}
+   p[P.lean]+=.14*k;p[P.hp]-=.12*k;p[P.hy]+=.25*k;};},
+ // down on his knees beside someone lying on the ground, both hands on him
+ kneelOver(c,get,{k=1,rock=0}={}){return (p,ctx)=>{const t=T(ctx);set3(p,P.root,0,.42+Math.sin(t*1.6)*.006*rock,.04);p[P.lean]=.45+Math.sin(t*1.3)*.06*rock;p[P.yaw]=0;p[P.twist]=0;p[P.roll]=0;p[P.hp]=-.55;p[P.hy]=0;
+   set3(p,P.lf,-.13,.07,.36);set3(p,P.rf,.13,.07,.36);p[P.lfp]=1.2;p[P.rfp]=1.2;set3(p,P.lk,0,-1,-.4);set3(p,P.rk,0,-1,-.4);
+   const q=get?.();if(q){for(const [o,e,sd] of [[P.lh,P.le,-1],[P.rh,P.re,1]]){local(c,q.x+(sd*.12),q.y,q.z,_l);mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,e,sd,-.3,.3,k);}}
+   else{set3(p,P.lh,-.15,.12,-.35);set3(p,P.rh,.15,.12,-.35);}};},
+ // shaking: small, fast, irregular, over whatever else
+ shake(base=null,{k=1}={}){return (p,ctx)=>{base?.(p,ctx);const t=T(ctx),a=Math.sin(t*41)*.5+Math.sin(t*67+1)*.3+Math.sin(t*23+2)*.2;p[P.root]+=a*.004*k;p[P.lh+1]+=a*.006*k;p[P.rh+1]-=a*.006*k;p[P.lh]+=Math.sin(t*53)*.004*k;p[P.rh]+=Math.sin(t*59)*.004*k;p[P.hp]+=a*.01*k;};},
+ // sitting with his head in his hands; rocking a little if asked
+ headInHands({seatH=0,rock=0}={}){return (p,ctx)=>{const t=T(ctx);if(seatH>0)ACT.seat(seatH)(p,ctx);else ACT.floor({arms:'knees'})(p,ctx);const r=Math.sin(t*1.2)*.07*rock;p[P.lean]+=.42+r;p[P.hp]=-.5;
+   const hy=p[P.root+1]+.47,hz=p[P.root+2]-.22;set3(p,P.lh,-.06,hy,hz);set3(p,P.rh,.06,hy-.01,hz);set3(p,P.le,-1,-.8,.3);set3(p,P.re,1,-.8,.3);};},
+ // a hand on someone's shoulder (comfort), over whatever else
+ shoulder(c,other,{hand='r',k=1,base=null}={}){return (p,ctx)=>{base?.(p,ctx);if(!other?.person)return;const s=other.person.group.scale?.x||1,gy=other.person.group.position.y,oa=other.pa??0,rx=Math.cos(oa),rz=Math.sin(oa),sd=hand==='r'?-1:1;
+   local(c,other.px+rx*sd*.16,gy+1.18*s,other.pz+rz*sd*.16,_l);const o=hand==='r'?P.rh:P.lh;mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,hand==='r'?P.re:P.le,hand==='r'?1:-1,-.4,.3,k);};},
  // (a run of these, one after another: [[seconds, gesture], ...], holding the last)
  seq(list){let start=null;return (p,ctx)=>{const t=T(ctx);if(start===null)start=t;let e=t-start;for(const [d,g] of list){if(e<d||list[list.length-1][1]===g){g?.(p,ctx);return;}e-=d;}};},
 };

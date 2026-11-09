@@ -300,6 +300,19 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
  const POLE=pole('1067',{d:1066.7,lat:-9.3,fallTo:[1062,6.5],neighbour:[1010,-9.3]});
  const CAR=car('curb',{d:1078,lat:-3.6,kind:'sedan',color:0x7a8a96,to:(()=>{const q=SP(1076.5,-2.6);return {x:q.x,y:FIELD.trenchY(1076.5,-2.6)+1.3,z:q.z,pitch:.75,roll:-.35};})()});
  const CAR2=car('drive',{d:1116,lat:9.2,kind:'wagon',color:0x8a2a26});CAR2.g.rotation.y=RY(1116)+Math.PI/2;
+ // ---- further down: the Hendersons' front yard (it opens between the street and their house), their house and the one across
+ // the road (a limb comes down on it), windows gone all the way to Summerfield, fires in two more houses, smoke over the roofs
+ const yardHole=(d,lat)=>{const u=(d-1025)/10.6,v=(lat-11.3)/3.95;return clamp(1.12-Math.sqrt(u*u*(1+.12*Math.sin(lat*1.3))+v*v)*1.1,0,1);};
+ const YARD=field({name:'yard',d0:1013.2,d1:1036.8,l0:6.35,l1:15.7,depth:4.6,hole:yardHole,origin:[1024,11.4],seed:23,water:.35});
+ const HHEND=houseAt(1025.9,1),HACROSS=houseAt(1026,-1);
+ PX.hend=proxy('hend',HHEND,{seed:24});PX.across=proxy('across',HACROSS,{seed:25});
+ const FAR=[];for(const [u,sd] of [[995.2,1],[968.5,-1],[967.4,1],[937.4,1],[907.7,1],[882.6,1],[895,-1],[994,-1],[1010,-1],[1040,1]]){const Q=houseAt(u,sd);if(Q&&!BO['b'+u]&&![HHEND,HACROSS,H1056,H1110,H1114,H1052,H1081,H1081e].includes(Q)){BO['b'+u]=blowout(String(u),Q);FAR.push(BO['b'+u]);}}
+ // smoke: columns of it going up over the roofs (the court, the trench, the burning houses, Summerfield): seen from anywhere
+ const smokeCols=[[1250,40,26],[1070,-2,10],[939,-20,14],[968,-24,10],[872,-10,12],[1180,-60,20],[1010,60,16]].map(([d,lat,sz],i)=>{const q=SP(d,lat),sp=[...Array(6)].map((_,k)=>{const m=new THREE.SpriteMaterial({map:puff,color:i===0?0x2a0c08:0x1e1a19,transparent:true,opacity:0,depthWrite:false,fog:i===0?false:true});m.name='c8-town-column';const sp2=new THREE.Sprite(m);root.add(sp2);return {s:sp2,t:k*2.2};});return {q,sz,sp,on:false,i};});
+ // ash: grey flakes drifting down round you, always (a pool that follows the camera)
+ const ASH=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({color:0x9a8f86,size:.06,transparent:true,opacity:.0,depthWrite:false}));ASH.name='c8-ash';ASH.material.name='c8-ash';ASH.frustumCulled=false;
+ {const n=420,pos=new Float32Array(n*3);for(let i=0;i<n;i++){pos[i*3]=(Math.random()-.5)*40;pos[i*3+1]=Math.random()*18;pos[i*3+2]=(Math.random()-.5)*40;}ASH.geometry.setAttribute('position',new THREE.BufferAttribute(pos,3));root.add(ASH);}
+ const FIRE2=[];// (fires lit by the set pieces: a house's upstairs, the garage across from the Hendersons')
  // the crack that runs down the road ahead of the trench (the first blows): a dark jagged line that grows
  const crack=(()=>{// a crack down the road ahead of the trench, with branches: thin, dark, growing from the cul-de-sac end
   const lines=[];const R=rng(5);const run=(d0,d1,lat0,step,wid)=>{const pts=[];let lat=lat0;for(let d=d0;d>=d1;d-=step){lat+=(Math.sin(d*1.3)*.35+(R()-.5)*.9)*.3;lat=clamp(lat,-3.6,3.6);pts.push([d,lat,wid*(.6+R()*.8)]);}return pts;};
@@ -325,7 +338,7 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
    if(!i){sfx('c8Groan',at(1072,-2,-4),{gain:1.6});sfx('c8Rumble',at(1072,-2,-2),{gain:1.4});P.shake=.8;}}],
   [.3,i=>{FIELD.stage='go';FIELD.t=i?99:0;if(i){fieldPose(FIELD,99);}}],
   [2.4,i=>{if(!i){sfx('c8Crack',at(1072,-1),{gain:1.6});for(let k=0;k<5;k++)dust(at(1060+k*5,-2),{n:2,r:2.5,rise:.6,size:[2,6],life:5,a:.35});}}],
-  [3.5,i=>{if(!i){sfx('c8Collapse',at(1072,-2,-2),{gain:1.8});P.shake=1;for(let k=0;k<7;k++)dust(at(1052+k*6,-2.5),{n:3,r:3,rise:1.4,size:[3,10],life:9,a:.5});}}],
+  [3.5,i=>{smokeCols[1].on=true;if(!i){sfx('c8Collapse',at(1072,-2,-2),{gain:1.8});P.shake=1;for(let k=0;k<7;k++)dust(at(1052+k*6,-2.5),{n:3,r:3,rise:1.4,size:[3,10],life:9,a:.5});}}],
   [4.4,i=>{if(!i){chunks(at(1072,-2,.5),{n:30,power:1.4,kinds:['asphalt','earth','concrete']});}}],
   [5.2,i=>{CAR.k=i?1:0;CAR.going=!i;CAR.alarm=i?0:30;if(!i)sfx('c8Metal',CAR.g.position,{gain:1.2});}],
   [5.8,i=>{POLE.going=!i;if(i)POLE.k=1;if(!i)sfx('c8Creak',POLE.base,{gain:1.4});}],
@@ -343,14 +356,29 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
   [4.4,i=>{if(PX.lean){if(i){hurt(PX.lean,'facade',1);hurt(PX.lean,'porch',1);}else{PX.lean.going3='facade';sfx('c8Glass',PX.lean.at(0,3,5),{gain:1.2});}}}],
   [6.5,i=>{if(!i&&PX.lean){dust(PX.lean.at(0,2,6),{n:8,r:4,rise:1,size:[3,10],life:10,a:.55});chunks(PX.lean.at(0,2,6),{n:16,kinds:['siding','wood','concrete'],power:.8});}}],
  ]);
+ ev('across',[// a limb out of the open road comes down on the house across from the Hendersons': its front stove in, its roof down, fire
+  [0,i=>{engage(PX.across);if(!i){sfx('c8Thud',PX.across?.at(0,0,4)||SP(1026,-14),{gain:2});P.shake=1.2;}}],
+  [.15,i=>{if(PX.across){if(i){hurt(PX.across,'facade',1);hurt(PX.across,'roof',1,{which:'all'});hurt(PX.across,'porch',1);}else{PX.across.going='facade';PX.across.going2='roof';PX.across.going3='porch';PX.across.opts={roof:{which:'all'}};}}
+   if(!i){sfx('c8Collapse',PX.across?.at(0,3,3)||SP(1026,-14),{gain:2});sfx('c8Glass',PX.across?.at(0,2,5)||SP(1026,-14),{gain:1.4});dust(PX.across?.at(0,2,5)||SP(1026,-14),{n:12,r:5,rise:1.4,size:[4,14],life:12,a:.6});chunks(PX.across?.at(0,2,5)||SP(1026,-14),{n:40,kinds:['siding','wood','roof','brick'],power:1.4});}}],
+  [2.5,i=>{const F2=fire(PX.across?.at(-1,1.2,2)||SP(1026,-16),{w:4.5,h:5,level:1});FIRE2.push(F2);const F3=fire(PX.across?.at(2.5,4,1)||SP(1026,-17),{w:3.5,h:4,level:.8});FIRE2.push(F3);}],
+ ]);
+ ev('yard',[// the Hendersons' front yard goes, between the street and the house: whoever is on the house side is cut off
+  [0,i=>{engage(PX.hend);YARD.on=true;YARD.g.visible=true;for(const c of YARD.cuts)c.on=true;ruin.syncCuts();YARD.fx=!i;if(!i){sfx('c8Groan',SP(1024,11),{gain:1.6});sfx('c8Rumble',SP(1024,11),{gain:1.5});P.shake=.9;}}],
+  [.2,i=>{YARD.stage='go';YARD.t=i?99:0;if(i)fieldPose(YARD,99);}],
+  [3.6,i=>{if(!i){sfx('c8Collapse',SP(1024,11,-2),{gain:1.8});for(let k=0;k<5;k++)dust(SP(1016+k*4.5,11),{n:3,r:3,rise:1.4,size:[3,10],life:9,a:.55});}}],
+  [4.4,i=>{if(PX.hend)(i?hurt(PX.hend,'porch',1):(PX.hend.going='porch'));}],
+ ]);
+ ev('ruin',[// the rest of the street as it is by the time you are walking down it (windows, fires, the smoke): set straight, no show
+  [0,i=>{for(const B of FAR)burst(B,{inst:true});for(const c of smokeCols)if(c.i!==1)c.on=true;const f=fire(SP(968.5,-22,1.2),{w:5,h:6,level:.9});FIRE2.push(f);power(840,1030,{flick:.4});}],
+ ]);
  function fireEv(name){const E=EV[name];if(!E||E.t>=0)return;E.t=0;E.i=0;P.log.events.push(name);}
  function skipEv(name){const E=EV[name];if(!E)return;if(E.t<0)E.t=0;for(;E.i<E.steps.length;E.i++)E.steps[E.i][1](true);E.t=E.dur;E.done=true;}
  function runEv(E,dt){if(E.t<0||E.done)return;E.t+=dt;while(E.i<E.steps.length&&E.steps[E.i][0]<=E.t){E.steps[E.i][1](false);E.i++;}if(E.t>=E.dur)E.done=true;}
  // ==== walking: what is gone (called for every walker's probes: nothing allocated) =========================================================
  const _blk=[];
  function blocked(x,z,r=.3){
-  if(FIELD.on&&FIELD.k>.15){const c=FIELD.cuts[1];if(c){const dx=x-c.m.elements[12],dz=z-c.m.elements[14];if(dx*dx+dz*dz<40*40){const q=FIELD.localQ(x,z);if(q.d>FIELD.d0-1&&q.d<FIELD.d1+1){const hv=trenchHole(q.d,q.lat+(q.lat>-2.6?-r:r));if(hv>.04)return true;}}}}
-  for(const X of [PX.lean,PX.porch]){if(!X?.on)continue;const o=X.Q.toWorld(0,0),dx=x-o.x,dz=z-o.z;if(dx*dx+dz*dz>30*30)continue;const c=Math.cos(X.Q.worldRot),s=Math.sin(X.Q.worldRot),lx=dx*c-dz*s,lz=dx*s+dz*c;
+  for(const F of [FIELD,YARD]){if(!F.on||F.k<=.15)continue;const c=F.cuts[1];if(c){const dx=x-c.m.elements[12],dz=z-c.m.elements[14];if(dx*dx+dz*dz<40*40){const q=F.localQ(x,z);if(q.d>F.d0-1&&q.d<F.d1+1){const mid=(F.l0+F.l1)/2,hv=F.hole(q.d,q.lat+(q.lat>mid?-r:r));if(hv>.04)return true;}}}}
+  for(const X of [PX.lean,PX.porch,PX.across,PX.hend]){if(!X?.on)continue;const o=X.Q.toWorld(0,0),dx=x-o.x,dz=z-o.z;if(dx*dx+dz*dz>30*30)continue;const c=Math.cos(X.Q.worldRot),s=Math.sin(X.Q.worldRot),lx=dx*c-dz*s,lz=dx*s+dz*c;
    if(lx>X.box.xa+.6-r&&lx<X.box.xb-.6+r&&lz>X.box.za+.6-r&&lz<X.D/2+(X.k.lean>.5?3.4:(X.porch?(X.Q.pdep??1.4):0))+r)return true;}
   if(POLE.k>.95){const L=POLE.blocks();for(let i=0;i<L.length;i++){const b=L[i];if((x-b.x)**2+(z-b.z)**2<(b.r+r)**2)return true;}}
   return false;}
@@ -358,7 +386,7 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
  let T=0;
  function update(dt,{camera=null}={}){T+=dt;
   for(const E of Object.values(EV))runEv(E,dt);
-  if(FIELD.stage==='go'){FIELD.t+=dt;FIELD.k=clamp(FIELD.t/9,0,1);fieldPose(FIELD,FIELD.t);if(FIELD.t>14){FIELD.stage='done';FIELD.k=1;}}
+  for(const F of [FIELD,YARD])if(F.stage==='go'){F.t+=dt;F.k=clamp(F.t/9,0,1);fieldPose(F,F.t);if(F.t>14){F.stage='done';F.k=1;}}
   if(FIELD.burst&&FIELD.water){const W=FIELD.water;W.m.visible=true;FIELD.waterLevel=Math.min(1,FIELD.waterLevel+dt/60);W.m.position.y=lerp(W.y0,W.y1,FIELD.waterLevel);if(FIELD.mainEnd){FIELD.sprayT=(FIELD.sprayT||0)-dt;if(FIELD.sprayT<=0){FIELD.sprayT=.05;spray(FIELD.mainEnd,{n:2,up:FIELD.waterLevel<.08?11:5.5,spread:1.6,size:.7});}}}
   if(CAR.going){CAR.k=Math.min(1,CAR.k+dt/2.6);if(CAR.k>=1){CAR.going=false;sfx('c8Impact',CAR.g.position,{gain:1.1});dust(CAR.g.position,{n:4,r:2,rise:.6,size:[2,6],life:6});}}CAR.pose(CAR.k);CAR.update(dt,T);CAR2.g.visible=FIELD.on||EV.impacts.t>=0;CAR2.update(dt,T);
   if(POLE.going){POLE.k=Math.min(1,POLE.k+dt/(POLE.k<.3?3:1.6));if(POLE.k>=1){POLE.going=false;sfx('c8Impact',POLE.tip||POLE.base,{gain:1.2});dust(POLE.tip||POLE.base,{n:4,r:1.5,rise:.5,size:[2,5],life:5});}}if(POLE.g.visible)POLE.update(dt,T);
@@ -377,6 +405,10 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
   for(const S of SPR){if(!S.s.visible)continue;S.t+=dt;if(S.t>S.life||S.s.position.y<S.floor){S.s.visible=false;continue;}S.v.y-=9.8*dt;S.s.position.addScaledVector(S.v,dt);const k=S.t/S.life;S.s.scale.setScalar(.5+k*1.8);S.s.material.opacity=.55*(1-k);}
   for(const F of FIRES){F.level=damp(F.level,F.want,.5,dt);F.m.material.uniforms.t.value=T+F.i*1.7;F.m.material.uniforms.k.value=F.level;F.m.visible=F.level>.02;if(camera){F.m.quaternion.copy(camera.quaternion);}
    const s=.85+.15*Math.sin(T*7+F.i)+.1*Math.sin(T*13+F.i*2);F.m.scale.set(1,s,1);for(const S of F.smoke){S.t+=dt;if(S.t>S.life)S.t-=S.life;const k=S.t/S.life;S.s.position.set(F.base.x+Math.sin(S.t*.3)*1.2+k*4,F.base.y+2+k*13,F.base.z+Math.cos(S.t*.2));S.s.scale.setScalar(3+k*11);S.s.material.opacity=.5*Math.sin(Math.PI*k)*F.level;}}
+  for(const c of smokeCols){for(const S2 of c.sp){S2.s.visible=c.on;if(!c.on)continue;S2.t+=dt;const life=13,k=(S2.t%life)/life;S2.s.position.set(c.q.x+Math.sin(S2.t*.21+c.i)*3+k*8,c.q.y+4+k*c.sz*2.2,c.q.z+Math.cos(S2.t*.17+c.i)*3);const sc=c.sz*(.6+k*1.6);S2.s.scale.set(sc,sc,1);S2.s.material.opacity=(c.i===0?.55:.48)*Math.sin(Math.PI*k);}}
+  if(camera&&ASH.material.opacity>0){ASH.position.set(camera.position.x,camera.position.y-6,camera.position.z);const pa=ASH.geometry.attributes.position;for(let i=0;i<pa.count;i++){let y=pa.getY(i)-dt*(.35+(i%7)*.05);if(y<0)y+=18;pa.setY(i,y);pa.setX(i,pa.getX(i)+Math.sin(T*.7+i)*dt*.25);}pa.needsUpdate=true;}
+  ASH.material.opacity=damp(ASH.material.opacity,P.ash||0,.5,dt);
+  for(const F of FIRE2){}
   if(P.shake>0)P.shake=Math.max(0,P.shake-dt);}
  // what is making noise (positional loops the chapter mixes): the water main, the wires, the alarm
  function sources(out){if(FIELD.burst&&FIELD.mainEnd)out.push({id:'c8-town-main',kind:'water',pos:new THREE.Vector3(FIELD.mainEnd.x,FIELD.mainEnd.y+1,FIELD.mainEnd.z),level:.6+.6*(1-FIELD.waterLevel)});
@@ -391,10 +423,10 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
   for(const C of Object.values(P.cars)){C.k=0;C.going=false;C.alarm=0;C.g.visible=false;C.g.position.copy(C.p0);C.g.rotation.set(0,C.r0,0);}
   crack.k=0;crack.m.visible=false;lampState.clear();ambient?.lampOverride?.clear();
   for(const D of DUST)D.s.visible=false;for(const D of DEB)D.on=false;for(const D of GL)D.on=false;for(const S of SPK)S.s.visible=false;for(const S of SPR)S.s.visible=false;
-  for(const F of FIRES){F.level=0;F.m.visible=false;for(const S of F.smoke)S.s.material.opacity=0;}
+  for(const F of FIRES){F.level=0;F.m.visible=false;for(const S of F.smoke)S.s.material.opacity=0;}for(const F of FIRE2){F.m.removeFromParent();for(const S of F.smoke)S.s.removeFromParent();FIRES.splice(FIRES.indexOf(F),1);}FIRE2.length=0;for(const c of smokeCols)c.on=false;P.ash=0;ASH.material.opacity=0;
   P.shake=0;P.log.events.length=0;ruin.syncCuts();}
  reset();
- Object.assign(P,{root,show,reset,update,sources,blocked,floorAt,fire:fireEv,skip:skipEv,EV,FIELD,PX,BO,POLE,CAR,CAR2,crack,proxy,engage,hurt,blowout,burst,pole,car,field,fieldPose,dust,chunks,shards,sparks,spray,flame:fire,power,SP,houseAt,
+ Object.assign(P,{root,show,reset,update,sources,blocked,floorAt,fire:fireEv,skip:skipEv,EV,FIELD,YARD,PX,BO,POLE,CAR,CAR2,crack,smokeCols,ASH,houseHend:HHEND,houseAcross:HACROSS,proxy,engage,hurt,blowout,burst,pole,car,field,fieldPose,dust,chunks,shards,sparks,spray,flame:fire,power,SP,houseAt,
 });
  Object.defineProperty(P,'stage',{get:()=>Object.fromEntries(Object.entries(EV).map(([kk,E])=>[kk,E.t<0?'waiting':E.done?'done':'running']))});
  return P;

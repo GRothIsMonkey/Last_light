@@ -40,8 +40,8 @@ scene.fog=new THREE.FogExp2(0xe3ac8d,.008);
 const hemi=new THREE.HemisphereLight(0xe8e3d3,0x68675d,2.0);scene.add(hemi);
 const sunlight=new THREE.DirectionalLight(0xffd09b,2.7);sunlight.castShadow=true;sunlight.shadow.mapSize.set(2048,2048);Object.assign(sunlight.shadow.camera,{left:-60,right:60,top:60,bottom:-60,near:1,far:240});sunlight.shadow.bias=-.0005;sunlight.shadow.normalBias=.023;sunlight.shadow.camera.layers.enable(1);scene.add(sunlight,sunlight.target);// layer 1: the world's merged shadow proxies
 // A real-time sky, shifting from late afternoon into the blue of a remembered evening; stars wait for the very end.
-const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{dusk:{value:0},night:{value:0},day:{value:0},storm:{value:0},flash:{value:0}},vertexShader:'varying vec3 v; void main(){v=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
- fragmentShader:`varying vec3 v;uniform float dusk,night,day,storm,flash;
+const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{dusk:{value:0},night:{value:0},day:{value:0},storm:{value:0},flash:{value:0},apoc:{value:0},apocT:{value:0},apocDir:{value:new THREE.Vector3(0,.05,-1)}},vertexShader:'varying vec3 v; void main(){v=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+ fragmentShader:`varying vec3 v;uniform float dusk,night,day,storm,flash,apoc,apocT;uniform vec3 apocDir;
  float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
  float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+1.),f.x),f.y);}
  float cloud(vec2 p){return noise(p)*.55+noise(p*2.03)*.27+noise(p*4.07)*.12+noise(p*8.1)*.06;}
@@ -60,6 +60,13 @@ const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:
  // (Chapter Six: a thunderstorm's low ceiling, heavier toward the horizon, and the sheet of a lightning flash)
  float deck=.62+.38*cloud(uv*vec2(1.3,3.1)+vec2(storm*2.,1.7)),sk=smoothstep(0.,.55,storm);vec3 cover=mix(mix(vec3(.5,.53,.56),vec3(.3,.33,.33),smoothstep(.45,1.,storm)),vec3(.1,.11,.14),night)*deck;
  col=mix(col,cover,sk*mix(.98,.86,h));col+=vec3(.78,.82,.92)*flash*(.55+.45*deck)*sk;
+ // (Chapter Eight: the sky over Oak Hollow when the thing under it is out. A low deck, churning fast, lit dull red from below by
+ // the fires and from one side by the glow over the open ground at the court; it tears; red-violet light moves inside it)
+ if(apoc>0.){vec2 q=uv*vec2(1.05,2.4)+vec2(apocT*.055,apocT*.021);float c1=cloud(q),c2=cloud(q*1.85+vec2(-apocT*.12,apocT*.05)),c3=cloud(q*.45+vec2(apocT*.018,-apocT*.01));
+  float churn=c1*.55+c2*.3+c3*.15,toward=pow(max(dot(n,normalize(apocDir)),0.),2.6),hz=1.-smoothstep(0.,.5,h),rift=smoothstep(.62,.82,c2)*smoothstep(.15,.6,h);
+  vec3 top=vec3(.045,.008,.012),under=mix(vec3(.2,.025,.02),vec3(.62,.1,.035),clamp(toward*.85+hz*.4,0.,1.));
+  vec3 cc=mix(top,under,smoothstep(.22,.85,churn)*(.4+.6*hz)+toward*.35);cc+=vec3(1.,.28,.07)*toward*hz*.6+vec3(.55,.06,.03)*rift*(.4+toward);
+  col=mix(col,cc,smoothstep(0.,.3,apoc));col+=vec3(.95,.25,.42)*flash*apoc*(.35+.65*churn);}
  gl_FragColor=vec4(col,1.);}`});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);
 
@@ -630,7 +637,10 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  // (Chapter Six: a storm's grey cover and rain haze; a lightning flash; below ground at the works, only the lamps down there and what you carry)
  skyMat.uniforms.storm.value=L4?.storm||0;skyMat.uniforms.flash.value=L4?.flash||0;
  if(L4?.storm>0){const s=Math.min(1,L4.storm*1.3);scene.fog.color.lerp(_c1.set(0x555c61).lerp(_c2.set(0x1c2128),night),.85*s);scene.fog.density+=.011*s*s;hemi.color.lerp(_c1.set(0xb4bcc4),.55*s);hemi.intensity*=1-.32*s;sunlight.intensity*=1-.86*s;sunlight.color.lerp(_c1.set(0xd8dde2),.6*s);renderer.toneMappingExposure-=.04*s;}
- if(L4?.flash>0){const f=L4.flash*(L4.cave?1-L4.cave*.85:1);hemi.intensity+=2.6*f;hemi.color.lerp(_c1.set(0xdfe6ff),.6*f);scene.fog.color.lerp(_c2.set(0xa9b2c8),.5*f);}
+ if(L4?.apoc>0){const a=Math.min(1,L4.apoc),out=1-(L4.cave||0);skyMat.uniforms.apoc.value=a;skyMat.uniforms.apocT.value+=(dt||0)*(.6+a*.9);if(L4.apocDir)skyMat.uniforms.apocDir.value.copy(L4.apocDir);
+  scene.fog.color.lerp(_c1.set(0x2c0907),.8*a*out);scene.fog.density+=.0035*a*out;hemi.color.lerp(_c1.set(0xb83a26),.6*a*out);hemi.groundColor.lerp(_c2.set(0x240806),.7*a*out);hemi.intensity*=1+.25*a*out;
+  sunlight.color.lerp(_c1.set(0xff4a1e),.75*a);sunlight.intensity*=1-.45*a;renderer.toneMappingExposure+=.06*a*out;}else skyMat.uniforms.apoc.value=0;
+ if(L4?.flash>0){const f=L4.flash*(L4.cave?1-L4.cave*.85:1),red=L4.apoc>0;hemi.intensity+=2.6*f;hemi.color.lerp(_c1.set(red?0xff6a8e:0xdfe6ff),.6*f);scene.fog.color.lerp(_c2.set(red?0x8a2a3a:0xa9b2c8),.5*f);}
  if(L4?.cave>0){const cv=L4.cave;hemi.intensity*=1-.86*cv;hemi.groundColor.lerp(_c1.set(0x0b0c10),cv);sunlight.intensity*=1-cv;scene.fog.color.lerp(_c1.set(0x07080b),cv*.92);scene.fog.density=scene.fog.density*(1-cv)+.032*cv;renderer.toneMappingExposure+=.22*cv;}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
  if(state==='dismounting')updateTransition(dt,true);else if(state==='remounting')updateTransition(dt,false);

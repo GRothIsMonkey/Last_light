@@ -137,3 +137,6 @@ body.dev-starting #dev-chapters button{opacity:.5;pointer-events:none}
 #inventory .inv-none{opacity:.6;padding:6px 8px}#inventory .inv-keys{font-size:11px;opacity:.6;margin-top:2px}#inventory kbd{padding:0 4px;border:1px solid rgba(255,241,216,.35);border-radius:2px;margin-right:2px}
 #bag{min-width:64px}
 @media(max-width:700px){#inventory{top:96px;right:16px;left:16px;width:auto;font-size:13px}}
+
+/* Chapter Eight: crying, seen from inside: the edges dark and swimming (opacity set by the chapter) */
+#c8-tears{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:1;background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 38%,rgba(14,8,10,.38) 78%,rgba(8,4,6,.72) 100%);backdrop-filter:blur(1.4px);-webkit-backdrop-filter:blur(1.4px);mask-image:radial-gradient(ellipse at 50% 46%,transparent 30%,#000 72%);-webkit-mask-image:radial-gradient(ellipse at 50% 46%,transparent 30%,#000 72%);transition:opacity .6s}

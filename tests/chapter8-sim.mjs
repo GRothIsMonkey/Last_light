@@ -77,7 +77,7 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   check(`${label}: Chapter Seven's end card offers Chapter Eight`,()=>{assert.equal(element('next-chapter').hidden,false);assert.ok(/Chapter Eight/.test(element('next-chapter').innerHTML));});
   element('next-chapter').onclick?.();until(()=>ph()==='c8-black',6);
   check(`${label}: the card: LAST LIGHT · Chapter Eight · THE NIGHT OAK HOLLOW FELL`,()=>{until(()=>A8.C.cardOn,8);assert.ok(element('chapter-card').classList.contains('on'));});}
- else if(from){go({bikes:'chapter8-start',field:'c8-field',shaft:'c8-shaft',gallery:'c8-gallery',corridor:'c8-corridor',wing:'c8-wing',retrieval:'c8-retrieval',alex:'c8-shift',reunion:'c8-reunion',truth:'c8-truth',breach:'c8-breach',surface:'c8-surface',street:'c8-street',staging:'c8-staging',op:'c8-gates',oak:'c8-oak',ride:'c8-ride'}[from]);}
+ else if(from){go({bikes:'chapter8-start',field:'c8-field',shaft:'c8-shaft',gallery:'c8-gallery',corridor:'c8-corridor',wing:'c8-wing',retrieval:'c8-retrieval',alex:'c8-shift',reunion:'c8-reunion',truth:'c8-truth',breach:'c8-breach',surface:'c8-surface',street:'c8-hendersons',staging:'c8-staging',op:'c8-gates',oak:'c8-oak',ride:'c8-ride'}[from]);}
  // ---- Act I --------------------------------------------------------------------------------------------------------------------
  if(inSeg('bikes')){until(()=>ph()==='d8-bikes',20);
   take('out',{max:30});until(()=>!h.chapter8.CTX.X8.ST.active&&!A8.C.fadeOut>=0&&me().walking,10);wait(2.6);
@@ -204,18 +204,47 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   check(`${label}: it comes through the barrier; the hunter runs from it; the way out comes down behind you; the ladder`,()=>{assert.ok(said('The ribs break outward'));assert.ok(said('It’s RUNNING. From THAT.'));assert.equal(ph(),'g8-surface');});lap('breach');}
  // ---- Act V --------------------------------------------------------------------------------------------------------------------
  const M8d=(d,l)=>{const q=T0.groundPoint(d,l);return {x:q.x,z:q.z};};
- if(inSeg('surface')){until(()=>ph()==='g8-surface',10);approach(M8d(1126,-1),2,{pad:12});approach(M8d(1096,-2),2,{pad:12});until(()=>ph()==='g8-street',90);
-  check(`${label}: the street from the oak: the road gone, the fire, the pole; Summerfield goes down with a car`,()=>{assert.equal(A8.state.ruin.stage,1);assert.notEqual(A8.state.ruin.heave,'flat');assert.ok(said('That’s our street.'));});lap('surface');}
- if(inSeg('street')){until(()=>ph()==='g8-street',10);const Hh=A8.ruin.H;
-  {const L=A8.ruin.locate(me().x,me().z);if(L.street==='main'&&L.d>1062)via([1104,1090,1076,1062].filter(d=>d<L.d+2).map(d=>M8d(d,-1)),{r:1.5,pad:8});}
-  approach(Hh.doorAt,3.5,{pad:14});take('jack',{max:60,r:1.6,pad:14});take('jackset',{max:30,r:1.5,pad:12});take('pump',{hold:14,r:1.5,max:30});
-  // (round the hole: down the east side of it, along the far side of the street, toward Reyes's car)
-  const u=Hh.P.u,car=()=>({x:h.chapter.kit.carA.x,z:h.chapter.kit.carA.z});
-  until(()=>A8.C.escort,60);via([M8d(u+7,-5.8),M8d(1018,-7.4)],{r:1.2,pad:10});until(()=>A8.C.flags.jamieDead,60);
-  via([M8d(u+6,-6.6)],{r:1.2,pad:10});take('jamie-kneel',{max:40,r:2,pad:12});until(()=>offers().includes('car2'),120);
-  via([M8d(u+7,-5.8),M8d(1012,-7.4)],{r:1.2,pad:10});approach(car(),4,{pad:10});
-  check(`${label}: the Hendersons': the jack, the door, Lily; Jamie holds the doorway for Mr. Henderson; it comes out of the hole; Jamie is dead`,()=>{assert.ok(A8.C.flags.doorFree);assert.ok(A8.C.flags.jamieDead);assert.ok(said('I’m so sorry.'));});
-  take('car2',{max:30,r:3});until(()=>ph()==='g8-staging',20);lap('street');}
+ const ST8=()=>A8.SC.STREET,dHere=()=>A8.ruin.locate(me().x,me().z).d;
+ const dbgS=w=>{if(process.env.DEBUG8){const L=A8.ruin.locate(me().x,me().z);console.log('  [street]',w,'d',L.d.toFixed(1),'lat',L.lat.toFixed(1),'pt',A8.C.pt.toFixed(1),'ck',A8.C.lastCheckpoint,'offers',offers().join(','),'marks',A8.C.marks.slice(-3).map(m=>m[1]).join(' | '));}};
+ // along the street by its own d/lat, a few metres at a time (the nav's route between each)
+ const walkD=(pts,o={})=>via(pts.map(([d,l])=>M8d(d,l)),{r:o.r??1.2,pad:o.pad??10,sprint:!!o.sprint,max:o.max});
+ if(inSeg('surface')){until(()=>ph()==='g8-surface',10);
+  // up out of MH-12 into it; down the drive; the first blows; the made thing in the yard across: down behind the car
+  retry(()=>{until(()=>quiet()||offers().includes('hide-car'),60);if(A8.C.lastCheckpoint==='c8-surface'){walkD([[1150,2],[1144,2]]);until(quiet,30);walkD([[1136,3],[1129,4.5]]);dbgS('at impacts');
+    if(!take('hide-car',{max:60,r:2.4,pad:12}))return false;dbgS('hidden '+A8.C.hiding);until(()=>A8.C.lastCheckpoint==='c8-trench'||!!A8.C.failing,90);}
+   return A8.C.lastCheckpoint==='c8-trench'&&!A8.C.failing;});
+  check(`${label}: the surface: the red sky over the whole town, the thing on the skyline; the first blows; a pale smiling made thing calling in a woman's voice, and you down behind a car until it has gone by`,()=>{
+   assert.ok(A8.C.apoc>.5);assert.ok(said('The sky is wrong'));assert.ok(said('That’s not a person'));assert.ok(said('They all smile. The ones it makes.'));assert.ok(ST8().town.EV.impacts.t>=0);});
+  // the road goes into the storm line; the hunter out of it searching the west side: along the east lawns, low and dark
+  retry(()=>{if(A8.C.lastCheckpoint!=='c8-trench')return true;walkD([[1110,5.5],[1104,6.8]]);until(()=>ST8().town.EV.trench.t>=0,20);until(()=>ST8().CR.h2.mode!=='off'||!!A8.C.failing,40);dbgS('trench open');
+   press('KeyC');o.light(false);const ok=walkD([[1098,8.6],[1090,9.2],[1082,9.4],[1074,9.4],[1066,9.2],[1062,8.4]],{r:1.2,pad:12,max:90});release('KeyC');dbgS('past the hole '+ok);return ok&&!A8.C.failing;});
+  // Mrs. Pruitt, under her awning: you and Jamie lift it
+  take('awning',{hold:8,r:1.6,max:90,pad:10});until(()=>A8.C.flags.pruitt,10);until(()=>said('We’re like... firemen.'),20);dbgS('pruitt');
+  check(`${label}: the trench: the road heaves, splits and goes into the storm line with a car and the pole; a hunter climbs out of it and searches the far side while you go along the near; the house at 1052 leans in; Mrs. Pruitt freed (Jamie: "We’re like... firemen.")`,()=>{
+   assert.ok(ST8().town.EV.trench.t>=0&&ST8().town.EV.lean.t>=0);assert.ok(ST8().town.FIELD.k>.5);assert.ok(A8.C.flags.pruitt);assert.ok(said('We’re like... firemen.'));});
+  // a limb over the roofs, down on the Kesslers'
+  {const ok=walkD([[1056,9],[1052,5.2],[1044,4.4]]);if(!ok&&process.env.DEBUG8){const p=me();console.log('  [street] walk to the limb failed; walkable here',h.nav.walkable(p.x,p.z,{r:.3}),'route',X.route(M8d(1052,5.2),1.2,.1,10).length);}}until(()=>ph()==='g8-street',90);dbgS('hendersons');
+  check(`${label}: a limb of it out of the cloud, over the roofs, down on the house across from the Hendersons' (it goes, then fire)`,()=>{assert.ok(ST8().town.EV.across.t>=0);assert.ok(said('That was the Kesslers’.'));});lap('surface');}
+ if(inSeg('street')){until(()=>ph()==='g8-street',10);const HD=ST8().HD;
+  // Lily: Jamie puts his foot through the window and talks her out; you reach in
+  take('lily',{max:60,r:2.6,pad:12});until(()=>said('She crawls out.'),40);dbgS('lily out');
+  walkD([[1030,-3.8],[1016,-4.6],[1008,-4.6]]);until(()=>A8.C.lastCheckpoint==='c8-garage',60);dbgS('lily to the car');
+  // Mr. Henderson: the jack under the garage door; then the lawn goes and you run for the street
+  retry(()=>{until(()=>offers().includes('jack')||A8.C.lastCheckpoint==='c8-yard',40);if(A8.C.lastCheckpoint==='c8-yard')return true;walkD([[1012,4.4],[1017,7]]);take('jack',{hold:10,r:2.2,max:60,pad:10});dbgS('jacked');
+   until(()=>A8.C.yardRun||!!A8.C.failing,40);dbgS('run');walkD([[1016,5.2],[1014,3.6]],{sprint:true,r:1,pad:8});until(()=>A8.C.lastCheckpoint==='c8-yard'||!!A8.C.failing,40);return A8.C.lastCheckpoint==='c8-yard'&&!A8.C.failing;});
+  check(`${label}: the Hendersons': Lily out of the front room (Jamie's dog that isn't real); the jack, Mr. Henderson freed in the garage; the lawn goes between you and the house as you run off it`,()=>{
+   assert.ok(A8.C.flags.lilyReach&&A8.C.flags.jacked);assert.ok(said('Biscuit'));assert.equal(ST8().town.YARD.on,true);assert.ok(ST8().town.YARD.k>.5);});
+  // the side yard: the door, Jamie holding its header; it comes up out of the hole's end; you run at it
+  walkD([[1011,6.5],[1011.5,9]],{r:1});dbgS('side yard');until(()=>A8.C.jamieHeld!=null||A8.C.flags.jamieDead,60);dbgS('it has him');
+  {const t1=h.snapshot.clock;until(()=>{if(A8.HM.root.visible)approach({x:A8.HM.x,z:A8.HM.z},1.8,{pad:6,max:1.5,sprint:true});return A8.C.flags.jamieDead||h.snapshot.clock-t1>14;},16);}dbgS('jamie dead '+A8.C.flags.jamieDead);
+  // with him: kneel; Reyes; his hand; his cap
+  until(()=>A8.C.flags.jamieDead,20);approach(HD.body,2,{pad:8});
+  take('jamie-hand',{max:120,r:2.2,pad:8});take('jamie-cap',{max:90,r:2.2,pad:8});until(()=>A8.C.flags.jamieMourned,120);dbgS('mourned');
+  check(`${label}: Jamie: it takes him to drag him back down; it slams him down at the edge and goes; Sam on his knees; Reyes's CPR, then not; Alex: "It's my fault"; Sam: "Don't you DARE"; his hand; his cap; Reyes's jacket over him`,()=>{
+   assert.ok(A8.C.flags.jamieDead);assert.ok(A8.C.grief.jamie);assert.ok(A8.C.flags.heldJamie);assert.equal(A8.C.inv.cap,'have');assert.ok(said('I’m so sorry, kid.'));assert.ok(said('Don’t you DARE say that.'));assert.ok(A8.C.flags.covered);});
+  // away: south past Sam's, the Kowalskis' burning; Summerfield goes; Brandt's truck
+  walkD([[1010,4.4],[1004,1.5],[994,1],[980,.5],[960,0],[944,0],[930,0],[918,0],[912,0]],{r:1.6,pad:10,max:120});until(()=>ph()==='g8-staging',60);dbgS('to the works');
+  check(`${label}: away from it: "We left him"; "Biscuit isn’t even real"; Summerfield goes down; the works`,()=>{assert.ok(said('We left him on the grass.'));assert.ok(said('Biscuit isn’t even real.'));assert.equal(ph(),'g8-staging');});lap('street');}
  if(inSeg('staging')){until(()=>ph()==='g8-staging',10);take('procedure',{max:40,r:2.2,pad:14});putDown(60);until(()=>ph()==='n8-op',80);
   check(`${label}: the drawdown nobody would use while anyone was in there; "There aren't now."`,()=>{assert.ok(A8.C.flags.procRead);assert.ok(said('There aren’t now.'));});lap('staging');}
  if(inSeg('op')){until(()=>ph()==='n8-op',10);

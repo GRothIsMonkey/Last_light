@@ -36,6 +36,7 @@ import {createRuin,cutWorld} from './chapter8-ruin.js';
 import {createHunterModel} from './chapter7-creature.js';
 import {createHunterAI} from './chapter7-hunter.js';
 import {paper8,PAGES8} from './chapter8-props.js';
+import {ACT} from './chapter8-acting.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
 
 // QA jumps and DEV scenes, in story order (each starts a little before its moment)
@@ -43,7 +44,7 @@ export const SECTIONS8=['chapter8-start','c8-bikes','c8-cover','c8-reyes','c8-fi
  'c8-gallery','c8-stealth','c8-office','c8-film','c8-corridor','c8-danny','c8-bulkhead',
  'c8-wing','c8-ruth','c8-sam','c8-sam-door','c8-sam-out','c8-retrieval','c8-jamie','c8-jamie-door','c8-jamie-run','c8-shift','c8-made','c8-alex','c8-alex-free','c8-ledge',
  'c8-reunion','c8-alarm','c8-truth','c8-breach','c8-escape','c8-ladder',
- 'c8-surface','c8-street','c8-hendersons','c8-garage','c8-jamie-death','c8-staging','c8-gates','c8-ports','c8-line-two','c8-plug','c8-hatch',
+ 'c8-surface','c8-trench','c8-street','c8-hendersons','c8-garage','c8-yard','c8-jamie-death','c8-flee','c8-staging','c8-gates','c8-ports','c8-line-two','c8-plug','c8-hatch',
  'c8-oak','c8-alex-death','c8-ride','c8-look-back','chapter8-end'];
 export const ALIAS8={'c8-start':'chapter8-start','c8-four-bikes':'c8-bikes','c8-missing-junction':'c8-field','c8-mh12':'c8-lift','c8-outer-barrier':'c8-barrier','c8-construction-gallery':'c8-gallery',
  'c8-annie':'c8-office','c8-annie-rowan':'c8-office','c8-0417':'c8-office','c8-observation-film':'c8-film','c8-whitcomb':'c8-danny','c8-smiling-creature':'c8-danny','c8-flooded-wing':'c8-wing',
@@ -53,7 +54,7 @@ export const ALIAS8={'c8-start':'chapter8-start','c8-four-bikes':'c8-bikes','c8-
 // Checkpoints (silent; Continue on the title comes back here). A failure comes back to the checkpoint of where it happened.
 export const LABEL8={'chapter8-start':'Four bikes','c8-field':'The missing junction','c8-shaft':'MH-12','c8-gallery':'The construction gallery','c8-stealth':'Something is searching',
  'c8-corridor':'The service corridor','c8-wing':'The flooded wing','c8-sam':'Sam','c8-sam-door':'Sam’s door','c8-sam-out':'The flood door','c8-retrieval':'The retrieval wing','c8-jamie':'Jamie’s cell','c8-jamie-run':'Its den','c8-shift':'The corridor that moves',
- 'c8-made':'The room it made','c8-alex':'Alex','c8-ledge':'The ledge','c8-reunion':'All four of them','c8-truth':'The anchor board','c8-escape':'The way out','c8-surface':'Oak Hollow','c8-hendersons':'The Hendersons’','c8-staging':'The works',
+ 'c8-made':'The room it made','c8-alex':'Alex','c8-ledge':'The ledge','c8-reunion':'All four of them','c8-truth':'The anchor board','c8-escape':'The way out','c8-surface':'Oak Hollow','c8-trench':'The storm line','c8-street':'Mrs. Pruitt','c8-hendersons':'The Hendersons’','c8-garage':'Mr. Henderson','c8-yard':'The side yard','c8-jamie-death':'Jamie','c8-flee':'Away from it','c8-staging':'The works',
  'c8-gates':'The outer routes','c8-ports':'The drawdown','c8-plug':'The plug','c8-oak':'The oak','c8-ride':'The last ride','chapter8-end':'The night Oak Hollow fell'};
 const PHASES=['c8-black','d8-bikes','d8-field','d8-shaft','e8-gallery','e8-danny','e8-sam','e8-jamie','e8-alex','e8-reunion','f8-truth','f8-breach','g8-surface','g8-street','g8-staging','n8-op','n8-oak','n8-ride','n8-end'];
 // (the clock: Friday 10:42 PM at Sam's; past midnight under the court; before five on the street; dawn at the oak)
@@ -94,7 +95,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // ---- state ----------------------------------------------------------------------------------------------------------------------
  function fresh(){for(const key of Object.keys(C))delete C[key];Object.assign(C,{t:0,pt:0,dt:0,h:HOUR.start,flags:{},timers:[],tasks:[],offers:new Map(),hold:{},cardT:-1,fadeIn:-1,fadeOut:-1,endT:-1,after:null,pose:null,view:null,lookKind:null,minute:-1,
   sounds:{},amb:{traffic:0,insects:.25,wind:.35,life:0,forest:0,tunnel:0,water:0},inv:{notebook:'have',gum:'have',camera:'have',flashlight:'have',sheet:null,radio:null,receipt:null,flyer:null},seen:new Set(),looked:new Set(),choice:null,
-  fails:{},shake:0,marks:[],where:'sams',zone:null,sc:null,hunt:null,haz:[],stage:{}});}
+  fails:{},shake:0,marks:[],where:'sams',zone:null,sc:null,hunt:null,haz:[],stage:{},grief:{jamie:false,alex:false},pGrief:0,pCry:0,pCryT:0,sobNext:{}});}
  fresh();
  const checkpoint=id=>{k.checkpointTo(id,LABEL8[id]);C.lastCheckpoint=id;};
  const later=(sec,fn)=>C.timers.push({at:C.t+sec,fn});
@@ -185,9 +186,14 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  const below=()=>X.ST.active&&X.nav.inside(camera.position.x,camera.position.z);
  function sky(){const ph=S.phase;
   if(below())return {day:0,p:0,night:1,deep:1,fill:0,storm:0,flash:Math.min(1,(C.flash||0)*3),cave:.94};
-  if(/^n8-(oak|ride|end)$/.test(ph)){const k2=smooth((C.h-30.1)/.5);return {day:.18+.42*k2,p:.55-.15*k2,night:.4-.35*k2,deep:0,fill:.1,storm:0,flash:0,cave:0};}
-  if(/^(g8|n8-op)/.test(ph)){const k2=smooth((C.h-28.6)/1.4);return {day:.02+.12*k2,p:.18+.2*k2,night:.92-.3*k2,deep:.2*(1-k2),fill:0,storm:0,flash:0,cave:inWorksBelow()?.8:0};}
+  if(/^n8-(oak|ride|end)$/.test(ph)){const k2=smooth((C.h-30.1)/.5);return {day:.18+.42*k2,p:.55-.15*k2,night:.4-.35*k2,deep:0,fill:.1,storm:0,flash:C.apocFlash||0,cave:0,apoc:C.apoc||0,apocDir:APOC_DIR};}
+  if(/^(g8|n8-op)/.test(ph)){const k2=smooth((C.h-28.6)/1.4);return {day:.02+.12*k2,p:.18+.2*k2,night:.92-.3*k2,deep:.2*(1-k2),fill:0,storm:0,flash:C.apocFlash||0,cave:inWorksBelow()?.8:0,apoc:C.apoc||0,apocDir:APOC_DIR};}
   return {day:0,p:0,night:1,deep:.45,fill:0,storm:0,flash:0,cave:inSams()?.75:0};}
+ // (the glow of the open ground at the court, seen from the neighbourhood: north-east, low)
+ const APOC_DIR=(()=>{const a=main(1250,40),b=main(1000,0);return new THREE.Vector3(a.x-b.x,22,a.z-b.z).normalize();})();
+ // the sky's own life while the thing is out: its level eased toward what the scene wants; flashes inside the deck
+ function updateApoc(dt){const w=C.apocWant??0;C.apoc=damp(C.apoc||0,w,w>(C.apoc||0)?.35:.08,dt);if(C.apoc>.25){C.apocFlashT=(C.apocFlashT??6)-dt;if(C.apocFlashT<=0){C.apocFlashT=5+Math.random()*10;C.apocFlash=1;if(Math.random()<.6)later(.5+Math.random(),()=>sound('c8Thud',{x:camera.position.x+(Math.random()-.5)*200,y:-20,z:camera.position.z+(Math.random()-.5)*200},{gain:.9}));}}
+  if(C.apocFlash>0){C.apocFlash=Math.max(0,C.apocFlash-dt*(2.6+Math.random()*3));}}
  const inSams=(p=camera.position)=>ch7.house?.root?.parent&&ch7.house.inHouse?.(p.x,p.z);
  const inWorksBelow=()=>{if(!works?.zoneAt)return false;const z=works.zoneAt(camera.position.x,camera.position.z);return ['gallery','stair2','L','J','gate'].includes(z);};
  // ---- what you carry (I) ----------------------------------------------------------------------------------------------------------------
@@ -196,18 +202,42 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(I.camera==='have')carry.push({id:'camera',name:'Alex’s camera',state:'The last picture: the three of you at the fire, from the trees.'});if(I.flashlight)carry.push({id:'flashlight',name:'Flashlight',state:'T'});
   if(I.sheet==='have')found.push({id:'sheet',name:'Sam’s torn-out page',note:'Line Four bends round a box nobody drew. MH-12.'});if(I.radio==='have')found.push({id:'radio',name:'Reyes’s radio',note:'Channel three. Jamie had it.'});
   if(I.receipt)found.push({id:'receipt',name:'Mason’s receipt, 1958',note:'One Meadowlark, green. Annie Rowan. Licence 0417.'});if(I.flyer)found.push({id:'flyer',name:'A 1991 flyer',note:'Danny Whitcomb, 12. Missing the last two fingers of his left hand.'});
-  if(C.flags.ruth)found.push({id:'ruth',name:'Cell 4',note:'Ruth Ann Carver. 1966. CONNECTION LOST 3/79.'});if(C.flags.board)found.push({id:'board',name:'The anchor board',note:'They kept them alive to hold it.'});
+  if(C.flags.ruth)found.push({id:'ruth',name:'Cell 4',note:'Ruth Ann Carver. 1966. CONNECTION LOST 3/79.'});if(I.cap==='have')carry.push({id:'cap',name:'Jamie’s cap',state:'Off the grass by the Hendersons’ garage. It still smells like him.'});if(C.flags.board)found.push({id:'board',name:'The anchor board',note:'They kept them alive to hold it.'});
   return {carry,found};}
  const inv=createInventory({items,use:()=>{}});
+ // ---- grief: what the deaths leave on the ones who are left ------------------------------------------------------------------------
+ // The friends' faces (faces.js rich faces: eyes that look, tears, red rims) hold a grief level for the rest of the chapter;
+ // their bodies slump as they walk; they cry out loud (synthesized: no recorded voices exist). You cry too: your breath and
+ // sobs, the view trembling with them, the edges of everything swimming. cry(k, seconds) is a wave of it; the floor stays.
+ const SECTION_ORDER=SECTIONS8;
+ const after=(sec,than)=>SECTION_ORDER.indexOf(sec)>=SECTION_ORDER.indexOf(than);
+ function griefFor(section){const s=ALIAS8[section]||section;if(after(s,'c8-jamie-death')&&s!=='chapter8-start'){C.grief.jamie=true;}if(after(s,'c8-alex-death')){C.grief.alex=true;}applyGrief();}
+ function applyGrief(){const g=C.grief,lvl=(g.jamie?.72:0)+(g.alex?.28:0);for(const c of [sam,alex].filter(Boolean))c.person?.face?.grief?.(lvl);jamie.person?.face?.grief?.(0);
+  C.pGrief=Math.max(C.pGrief,lvl);}
+ function richFaces(on){for(const c of [jamie,sam,alex].filter(Boolean))c.person?.face?.rich?.(on);}
+ function cry(k,sec=6){C.pCry=Math.max(C.pCry,k);C.pCryT=Math.max(C.pCryT,sec);}
+ // a friend crying hard: his face's sobbing, his body's, and the sound of it
+ function weep(c,expr='sobbing',sec=8){if(!c?.person?.face)return;c.person.face.set(expr,{hold:sec});c.weepT=Math.max(c.weepT||0,sec);}
+ let tearsEl=null;
+ function tearsOverlay(v){if(!tearsEl){try{tearsEl=document.getElementById('c8-tears');if(!tearsEl&&document.body){tearsEl=document.createElement('div');tearsEl.id='c8-tears';document.body.appendChild(tearsEl);}}catch{}}if(tearsEl?.style){tearsEl.style.opacity=v.toFixed(3);}}
+ function updateGrief(dt){if(C.pCryT>0)C.pCryT-=dt;else C.pCry=Math.max(C.pGrief*.18,C.pCry-dt*.08);
+  // your own: a sob every few seconds while it is bad, a shaking breath while it is less bad
+  if(C.pCry>.25){C.sobNext.you=(C.sobNext.you??1)-dt;if(C.sobNext.you<=0){C.sobNext.you=C.pCry>.6?2.2+Math.random()*2.2:4+Math.random()*4;sound(C.pCry>.55?'c8Sob':'c8Breath2',camera.position,{gain:.75*C.pCry+.2});if(Math.random()<.4)later(1.4,()=>sound('c8Sniff',camera.position,{gain:.5}));}}
+  tearsOverlay(Math.min(.85,C.pCry*.9));
+  // theirs: from their faces (a held crying expression), with their own spacing, never in step
+  for(const c of [sam,jamie,alex]){if(!c||!c.person?.group?.visible||c.gone)continue;const f=c.person.face;if(!f)continue;if(c.weepT>0)c.weepT-=dt;
+   const sob=f.sobbing||0,cr=f.crying||0;if(sob>.35||cr>.6){const key=c.key||'x';C.sobNext[key]=(C.sobNext[key]??(1+Math.random()*2))-dt;
+    if(C.sobNext[key]<=0){C.sobNext[key]=sob>.35?1.8+Math.random()*2.6:4.5+Math.random()*4;const hp=c.person.joints?.head?c.person.group.localToWorld(c.person.joints.head.clone()):V3({x:c.px,z:c.pz});sound(sob>.35?'c8Sob':'c8Sniff',hp,{gain:sob>.35?1:.6});}}}}
  // ---- the scenes (below and on the street) are added by chapter8-scenes.js, which shares all of this --------------------------------------
  const CTX={o,k,C,A8,S,X,ruin,presence,H,HM,danny,brandt,fire,reyes,officer,police,samDad,samMom,jamie,sam,get alex(){return alex;},set alex(v){alex=v;},comp,brain,works,WS,WP,B7,ch2,ch3,ch4,ch5,ch6,ch7,
   sound,gy,light,LIGHTS,lightsOn,checkpoint,later,mark,card,say,J,SM,AL,R,RR,BR,BRR,Y,N,V,task,stopTask,wait,until,lines,quiet,offer,unoffer,V3,near,lookingAt,pose,unpose,posed,closeLook,endLook,looking,inspect,endInspect,reading,
   pageMesh,choose,choosing,fail,hazard,huntStart,huntStop,noise,me,go,objective,talk,busy,main,nav,camera,scene,world,stand,walkTo,joinFoot,leave,friendsNow,minds,date,fmt,HOUR,inv,SAVE8,
-  enlistAlex:()=>{if(!alex){alex=comp.enlist('alex',{lag:2.2,side:0});}return alex;},dismissAlex:()=>{if(alex){comp.dismiss('alex');alex=null;}}};
+  enlistAlex:()=>{if(!alex){alex=comp.enlist('alex',{lag:2.2,side:0});alex.person?.face?.rich?.(true);}return alex;},dismissAlex:()=>{if(alex){alex.person?.face?.rich?.(false);comp.dismiss('alex');alex=null;}},
+  cry,weep,applyGrief,griefFor};
  let SC=null;// (the scenes module, set by attach())
  // ---- prompts --------------------------------------------------------------------------------------------------------------------------------
- function spots(){const out=[];if(C.view||C.fadeOut>=0||posed()||C.choice||C.failing||C.hiding&&!C.offers.has('unhide'))return C.hiding?[...C.offers.values()].filter(f=>f.id==='unhide').map(f=>({id:f.id,label:f.label,at:V3(atOf(f.at)),face:V3(atOf(f.at)),r:9,wide:true})):out;
-  for(const f of C.offers.values()){if(f.when&&!f.when())continue;const at=V3(atOf(f.at));if(!at)continue;const lb=f.hold?(f.label+(C.hold[f.id]>0?` (${Math.round(C.hold[f.id]*100)}%)`:'')):f.label;
+ function spots(){const out=[];const pz=posed()&&![...C.offers.values()].some(f=>f.inPose);if(C.view||C.fadeOut>=0||pz||C.choice||C.failing||C.hiding&&!C.offers.has('unhide'))return C.hiding?[...C.offers.values()].filter(f=>f.id==='unhide').map(f=>({id:f.id,label:f.label,at:V3(atOf(f.at)),face:V3(atOf(f.at)),r:9,wide:true})):out;
+  for(const f of C.offers.values()){if(f.when&&!f.when())continue;if(posed()&&!f.inPose)continue;const at=V3(atOf(f.at));if(!at)continue;const lb=f.hold?(f.label+(C.hold[f.id]>0?` (${Math.round(C.hold[f.id]*100)}%)`:'')):f.label;
    out.push({id:f.id,label:lb,at,face:at,r:f.r,wide:true,...(f.look?{look:true,size:f.size??.3,cone:f.cone??.14}:{})});}return out;}
  function act(id){const f=C.offers.get(id);if(!f)return;if(f.hold){C.holdOn=id;return;}if(f.once)C.offers.delete(id);C.flags[id]=true;f.fn?.();mark('F: '+id);}
  function updateHolds(dt){const id=C.holdOn;if(!id)return;const f=C.offers.get(id);const heldF=o.held?.('KeyF');if(!f||!heldF){C.holdOn=null;f?.release?.();return;}
@@ -243,16 +273,19 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.choice){C.choice.t+=dt;}
   updatePose(dt);if(C.view==='inspect'&&C.inspect){C.inspect.t+=dt;C.inspect.obj.rotation.set(C.inspect.pitch,C.inspect.yaw,0);}
   if(C.view==='look'&&C.lookDur){C.lookT+=dt;if(C.lookT>C.lookDur&&!busy())endLook();}
-  updateHolds(dt);updateHazards(dt);updateFail(dt);clock(dt);
+  updateHolds(dt);updateHazards(dt);updateFail(dt);clock(dt);updateGrief(dt);updateApoc(dt);
   if(X.ST.active)X.update(dt);presence.update(dt);ruin.update(dt,{camera,t:C.t});
   if(C.hunt||H.mode!=='off'){H.update(dt);}
   if(danny.group.visible&&C.dannyOn)SC?.updateDanny?.(dt);
   SC?.update?.(dt);
   for(const l of LIGHTS){const f=l.userData.flicker;if(f&&l.userData.base)l.intensity=l.userData.base*(1-f*.5+f*.5*Math.sin(C.t*23+l.id)*Math.sin(C.t*7.1+l.id*2));}
   const L8=sky();A.day=L8.day;A.night=L8.night;ch2.day=A.day;A.shade=0;A.barLight=false;}
+ const _gp=newPose();
  function afterActors8(dt){if(!owns(S.phase))return;k.torchO&&(k.torchO.visible=false);
   for(const a of [reyes,officer,brandt,...fire,samDad,samMom].filter(Boolean)){if(!a.visible)continue;applyPose(a.person,a.pose);}
   SC?.afterActors?.(dt);
+  if(C.grief?.jamie){for(const c of [sam,alex]){if(!c||c.gone||!c.person.group.visible||c.mode!=='foot'||c.script)continue;copyPose(_gp,c.pose);ACT.slump()(_gp,{clock:C.t});applyPose(c.person,_gp);}}
+  if(C.pCry>.05){const k2=C.pCry,b=Math.sin(C.t*1.6)*.01*k2+Math.sin(C.t*31)*.0018*k2+Math.sin(C.t*47+1)*.0012*k2;camera.position.y+=b-.02*k2;camera.position.x+=Math.sin(C.t*23)*.0016*k2;}
   if(C.shake>0){C.shake=Math.max(0,C.shake-dt*.9);const s=C.shake*C.shake*.06;camera.position.x+=Math.sin(C.t*61)*s;camera.position.y+=Math.sin(C.t*47+1)*s*.7;camera.position.z+=Math.cos(C.t*53)*s;}
   for(const art of ch6.appearances6?.values?.()||[])art.update?.(dt,{clock:C.t,eye:camera.position,phase:S.phase});}
  {const prev=A.afterActors6;A.afterActors6=(dt,o2)=>{prev?.(dt,o2);afterActors8(dt,o2);};}
@@ -262,14 +295,15 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   X.show(false);X.reset();ruin.show(false);ruin.reset();presence.reset();presence.show(false);huntStop();lightsOn(false);if(danny){danny.show(false);danny.ground=null;}C.dannyOn=false;
   for(const a of [brandt,samDad,samMom,...fire].filter(Boolean)){a.show(false);a.lookAt=null;a.gest?.(null);a.path=null;a.mode='stand';}
   SC?.reset?.();for(const key of Object.keys(SPOTS))SPOTS[key]=null;
+  richFaces(false);for(const c of [jamie,sam,alex].filter(Boolean)){c.person?.face?.grief?.(0);c.weepT=0;}tearsOverlay(0);
   CTX.dismissAlex();for(const c of [jamie,sam]){c.gone=false;c.crouch=0;c.boost=1;}sam.person.group.visible=true;sam.bike.group.visible=true;
   A.rideBoost=1;A.rideFov=0;o.setPace?.(1);o.roam.brake=0;holder.removeFromParent();
   if(A8.started)ch5.presentation?.(false);A8.started=false;A8.finished=false;
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView||C.hiding)o.roam.walkLock=false;const fails=C.keepFails||C.fails;fresh();C.fails=fails;}
- function begin(){A8.started=true;SC.begin();}
+ function begin(){A8.started=true;richFaces(true);SC.begin();}
  function jump(section){jumpTo(section);}
  function jumpTo(section){section=ALIAS8[section]||section;reset();S.queue.length=0;S.line=null;S.lookTarget=null;S.jamieAim=null;S.samAim=null;o.fade(0);comp.reset();minds();A8.started=true;
-  SC.jump(section);}
+  richFaces(true);griefFor(section);SC.jump(section);richFaces(true);applyGrief();}
  // ---- the end card --------------------------------------------------------------------------------------------------------------------------------
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p'),eb=el.querySelector?.('.eyebrow');if(eb)eb.textContent='LAST LIGHT';if(h)h.innerHTML='Chapter Eight';if(pp)pp.innerHTML='THE NIGHT OAK HOLLOW FELL<br>August 27, 2011.';}
   const nb=$('next-chapter');if(nb)nb.hidden=true;A8.finished=true;

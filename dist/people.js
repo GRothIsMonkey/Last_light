@@ -102,7 +102,8 @@ export function createActor(scene,nav,spec,{seed=0}={}){
   get pos(){return person.group.position;},
  };
  const hand=new THREE.Vector3();
- function layer(p,g,w,t){if(!g||w<=0)return;const L=P.lh,R=P.rh;const set=(o,x,y,z)=>{p[o]+=(x-p[o])*w;p[o+1]+=(y-p[o+1])*w;p[o+2]+=(z-p[o+2])*w;};
+ function layer(p,g,w,t){if(!g||w<=0)return;if(typeof g==='function'){g(p,w,t,A);return;}// (a chapter's own pose: kneeling, sitting on a curb)
+  const L=P.lh,R=P.rh;const set=(o,x,y,z)=>{p[o]+=(x-p[o])*w;p[o+1]+=(y-p[o+1])*w;p[o+2]+=(z-p[o+2])*w;};
   if(g==='fold'){set(L,.07,1.06,-.19);set(R,-.06,1.03,-.2);set(P.le,-1,-.5,-.1);set(P.re,1,-.5,-.1);}
   else if(g==='hips'){set(L,-.21,.86,.0);set(R,.21,.86,.0);set(P.le,-1,0,.5);set(P.re,1,0,.5);}
   else if(g==='phone'){set(R,.1,1.39,-.03);set(P.re,1,-.7,.2);set(L,.05,1.02,-.16);set(P.le,-1,-.5,0);p[P.hy]+=.12*w;}

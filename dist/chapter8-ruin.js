@@ -153,9 +153,10 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
  const PITS=['sams','under','heave'].map(k=>pits[k]),_cq=new THREE.Vector3(),_wopt={r:.28};
  function inPit(x,z,r=0){for(let i=0;i<PITS.length;i++){const p=PITS[i];if(!p.g.visible)continue;const dx=x-p.c.x,dz=z-p.c.z,u=dx*Math.sin(p.h0)-dz*Math.cos(p.h0),v=dx*Math.cos(p.h0)+dz*Math.sin(p.h0);if((u/(p.a+r))**2+(v/(p.b+r))**2<1)return p;}return null;}
  const near=(L,x,z,r)=>{if(!L)return false;for(let i=0;i<L.length;i++){const b=L[i];if(Math.hypot(x-b.x,z-b.z)<b.r+r)return true;}return false;};
- function blocked(x,z,r=.3){if(inPit(x,z,r+.25))return true;if(ST.stage>=1&&(near(F.blocks,x,z,r)||near(POLE.blocks,x,z,r)||(H.g.visible&&near(H.carBlocks,x,z,r))))return true;
+ let extraBlocked=null;// (chapter8-town.js: the trench, the yards, the fallen pole, the stand-in houses)
+ function blocked(x,z,r=.3){if(extraBlocked&&extraBlocked(x,z,r))return true;if(inPit(x,z,r+.25))return true;if(ST.stage>=1&&(near(F.blocks,x,z,r)||near(POLE.blocks,x,z,r)||(H.g.visible&&near(H.carBlocks,x,z,r))))return true;
   if(HEND&&H.g.visible&&H.cut){const q=_cq.set(x,H.cut.m.elements[13],z).applyMatrix4(H.cut.inv);if(Math.abs(q.x)<1.25&&Math.abs(q.z)<1.25)return true;}return false;}
- const BB=(()=>{const a=P(850,-40),b=P(1060,40);return {x0:Math.min(a.x,b.x)-30,x1:Math.max(a.x,b.x)+30,z0:Math.min(a.z,b.z)-30,z1:Math.max(a.z,b.z)+30};})();
+ const BB=(()=>{const a=P(840,-40),b=P(1185,40);return {x0:Math.min(a.x,b.x)-30,x1:Math.max(a.x,b.x)+30,z0:Math.min(a.z,b.z)-30,z1:Math.max(a.z,b.z)+30};})();
  let inner=false;const base=(f)=>{const r=nav.room;nav.setRoom(null);inner=true;try{return f();}finally{inner=false;nav.setRoom(r);}};
  const room={inside:(x,z)=>!inner&&ST.stage>=1&&x>BB.x0&&x<BB.x1&&z>BB.z0&&z<BB.z1,
   walkable:(x,z,r=.28)=>{const rr=typeof r==='object'?r.r??.28:r;if(blocked(x,z,rr))return false;const prev=nav.room;nav.setRoom(null);inner=true;try{_wopt.r=rr;return nav.walkable(x,z,_wopt);}finally{inner=false;nav.setRoom(prev);}},
@@ -185,11 +186,11 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
   truck.update(t,truck.g.visible);}
  // what is making noise: the fire, the gas, the main, the wires (positional loops)
  function sources(out){if(ST.stage<1)return;if(F.center)out.push({id:'c8-fire',kind:'fire',pos:new THREE.Vector3(F.center.x,F.center.y+2,F.center.z),level:.6+.6*F.level});if(F.gasAt)out.push({id:'c8-gas',kind:'gas',pos:new THREE.Vector3(F.gasAt.x,F.gasAt.y,F.gasAt.z),level:.9*F.level});
-  const w=pits.sams.W(-pits.sams.a*.55,pits.sams.b*.15);out.push({id:'c8-main',kind:'water',pos:new THREE.Vector3(w.x,pits.sams.c.y-2,w.z),level:.9});}
+  if(pits.sams.g.visible){const w=pits.sams.W(-pits.sams.a*.55,pits.sams.b*.15);out.push({id:'c8-main',kind:'water',pos:new THREE.Vector3(w.x,pits.sams.c.y-2,w.z),level:.9});}}
  function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();if(!on){stage(0);}}
  function reset(){stage(0);F.spread=0;truck.g.visible=false;if(H.jack){H.jack.position.y=H.jackAt.y;}if(H.header){H.header.rotation.z=(H.sideK||1)*.32;}if(H.door)H.door.visible=true;if(H.garage){H.garage.position.y=H.garageAt.y+.2;}}
  reset();
  // (where on the town's streets a point is, the ruin room being over all of it: the street name, d along, lat across)
  const locate=(x,z)=>room.inside(x,z)?base(()=>nav.locate(x,z)):nav.locate(x,z);
- return {root,pits,H,F,POLE,HV,sedan,heaveCar,truck,ST,room,stage,heave,update,sources,show,reset,inPit,blocked,cuts,syncCuts,addCut,P,BB,locate,base};
+ return {root,pits,H,F,POLE,HV,sedan,heaveCar,truck,ST,room,stage,heave,update,sources,show,reset,inPit,blocked,cuts,syncCuts,addCut,P,BB,locate,base,setBlocked:f=>{extraBlocked=f;}};
 }
