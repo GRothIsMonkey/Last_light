@@ -85,7 +85,31 @@ PERF_PLACEHOLDER
 
 ## 7. Regression: the earlier chapters
 
-REGRESSION_PLACEHOLDER
+Each earlier chapter's own suite, run on this build (exit code 0 = every check passed):
+
+| Suite | Result | Wall time |
+|---|---|---|
+| `ONLY=chapter3` | 156 checks passed | 391 s |
+| `ONLY=chapter4` | 35 checks passed | 119 s |
+| `ONLY=chapter5` (incl. the repaired escape) | 81 checks passed | 199 s |
+| `ONLY=chapter6` (incl. Gate 2B) | 80 checks passed | 197 s |
+| `ONLY=chapter7` (incl. the hunter, the notebook and the end-card transition) | 94 checks passed | 287 s |
+| `ONLY=companions` | 8 checks passed | 55 s |
+| `ONLY=dev DEV_KNOWN=2/alex-bike` (DEV starts of every chapter vs natural arrival; switching) | 327 checks passed; one known difference reported | ~6 min |
+| base (`QUICK=1`: Prologue to Chapter Six played through, then the DEV comparison) | BASE_RESULT | ~22 min |
+
+**The known Chapter Two DEV difference (`2/alex-bike`) persists.** It is the scene-switching check: starting
+`2/alex-bike` after other DEV scenes in one session leaves Alex's companion bike at a different place than a clean start
+(`companions.1.b.x` −1.4 vs 115.139, `b.z` −17 vs −511.484, heading 0 vs −0.398). The same suite run on the rejected
+draft's own commit (`c496d53`, in a separate worktree, without any change) fails with exactly the same numbers, so it
+predates this work and is not caused by it. To keep it from hiding anything new, the DEV checks now take
+`DEV_KNOWN=2/alex-bike`: a listed difference is printed and kept in the report instead of stopping the run, so every
+scene compared after it and the switching and Start-over checks still run (they all pass). Without `DEV_KNOWN` the suites
+still fail on it, as before.
+
+Chapter Eight's own suite also enters Chapter Seven and Chapter Six afterwards and checks they start clean (no complex,
+no ruin, no Alex companion; Chapter Six's drawdown gate demonstration), and that the earlier chapters' clues Chapter Eight
+pays off still exist.
 
 ## 8. Captures inspected
 
