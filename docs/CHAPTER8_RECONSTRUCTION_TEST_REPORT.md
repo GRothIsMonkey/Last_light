@@ -1,0 +1,102 @@
+# Chapter Eight reconstruction: test report
+
+Branch `claude/chapter8-major-reconstruction`. What was run, on what, and what it showed. **No human playtest has been
+done.** Every result below is automated: scripted inputs in the project's headless test harness (`tests/verify.mjs`:
+real Three.js scene graph and full game updates with a mocked WebGL renderer and DOM), and headless Chromium on
+SwiftShader (software rendering on this container's CPU) for captures and measurements. Timings called "bot minutes"
+are simulated game time taken by a scripted player that waits for every line of dialogue; they are not human times.
+
+## 1. How to run it
+
+```
+ONLY=chapter8 FROMCARD=1 node tests/verify.mjs                  # Chapter Eight by input, from Chapter Seven's end card
+ONLY=chapter8 FROMCARD=0 FROM=surface TO=street node tests/verify.mjs   # one stretch (segments: bikes field shaft gallery corridor
+                                                                         #  wing retrieval alex reunion truth breach surface street
+                                                                         #  staging op oak ride)
+ONLY=chapter3|chapter4|chapter5|chapter6|chapter7|companions|dev node tests/verify.mjs   # the earlier chapters' own suites
+QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs              # the base suite (Prologue to Chapter Six, DEV selector)
+node tests/chapter8-baseline.mjs   /  node tests/chapter8-after.mjs # the fifteen before/after captures
+DEFS=tests/chapter8-street-defs.mjs node tests/chapter8-dev-shots.mjs   # street captures (also -finale-defs)
+node tests/chapter8-perf.mjs                                     # per-moment cost on SwiftShader
+```
+
+## 2. Chapter Eight, played by input
+
+FULL_RUN_PLACEHOLDER
+
+Stretches run on their own while building (latest runs; all checks passed):
+
+| Stretch | Checks | Bot minutes |
+|---|---|---|
+| surface → street (`FROM=surface TO=street`) | 15 passed, 0 failed (incl. the chapter's general checks) | surface 5.46, street 5.74 |
+| operation → ride (`FROM=op TO=ride`) | 14 passed, 0 failed | op 4.09, oak + walk 4.90, ride 3.28 |
+
+What the scripted player does in the rebuilt stretches (each is a `check` in `tests/chapter8-sim.mjs`):
+
+- **Surface:** waits through the opening, walks down the drive, gets down behind the car in 1116's drive when the made
+  thing comes (it fails you if it sees you first; the run's first attempts were caught until the beat was re-timed),
+  walks the near lawns crouched with the light off past the trench while the second hunter searches the far side,
+  holds F on Mrs. Pruitt's awning, walks on to the limb.
+- **Street:** reaches in for Lily, walks her to the car, holds F on the jack, runs off the lawn when it heaves (staying
+  on it fails you), goes to the side yard, runs at the hunter while it has Jamie, kneels, holds his hand, picks up his
+  cap, walks south past the police car and the Kowalskis' to Summerfield.
+- **Operation → end:** the gates, the drain gate, the ports, Line Two, the three pins (Brandt hurt at the last), the
+  ladder; at the top lifts the lid with Sam (hold F) and pulls Alex out (hold F); at the oak sits, takes his hand, looks
+  at Sam, stays, gets up; walks down past the trench to the bikes; rides to the look back; looks back; the end card.
+
+Failures it can produce and recovers from: `c8-surface` (seen before you hide), `c8-trench` (seen on the near lawns),
+`c8-garage` (on the lawn when it goes), plus the draft's own (`c8-barrier`, `c8-escape`, …); the chapter's checks also
+fail you on purpose at the barrier and the escape and verify you come back to the right checkpoint.
+
+## 3. DEV starts and the grief state
+
+- All **49** DEV Chapter Eight scenes start in a Chapter Eight phase, on their feet, somewhere walkable (check
+  `every DEV Chapter Eight scene starts (49 scenes)`).
+- Entering after Jamie's death sets `C.grief.jamie`; entering the walk or the ride sets both (`griefFor`): measured on
+  DEV entry to **The Last Ride**: grief `{jamie:true, alex:true}`, player grief level 1.0, Sam's crying weight 0.65
+  within the first seconds (`after-finale/ride-sam.jpg`), the line "Two bikes." in the opening.
+- The clock is set on every street entry (an early DEV capture showed 10:44 PM on the 26th; fixed).
+
+## 4. Faces, emotion and sound
+
+- **A bug that made all of it invisible was found and fixed:** Chapter Eight's reset switched off the shared character
+  presentation (faces) and nothing turned it back on. Probed directly: Sam's face `enabled:false`, crying weight 0 while
+  his expression was "crying". After the fix the same probe reads `enabled:true`, crying weight 0.83 → 0.97 over four
+  seconds. The oak captures show tear tracks and red eyes (`after-finale/oak-sit.jpg`, `after/alex-death.jpg`).
+- Crying, sobbing, sniffing, gasping and shaking-breath sounds exist (synthesized in `dist/audio.js`) and are triggered
+  by the faces' state; the test harness counts the calls (`C.sounds`). **No one has listened to them.** The container
+  has no audio output; audio quality, mix and whether they help or hurt the scenes are unverified.
+- No voice acting exists; every line is a caption.
+
+## 5. The sky, the skyline, the creatures, the destruction
+
+Looked at in captures from the cul-de-sac, the Hendersons', Sam's and the south end (`after-street/sky-*.jpg`), and in the
+walk and ride at dawn (`after-finale/walk-*.jpg`, `ride-*.jpg`). Creatures placed: two made things and the second hunter
+together (`made-three.jpg`), a made thing up close (`made-grin.jpg`). The trench, the leaning house, the Kesslers' and
+the Hendersons' yard persist through the walk and the ride (`walk-trench.jpg`, `ride-back.jpg`).
+
+Creature count: at most 7 creature models (2–4 active at once in the street; the far ones only placed), plus the
+chapter's own hunter; none simulated beyond a short route, a sight check and a rush, and the far ones update at a lower
+rate. No path-search cost (they do not route; they walk set lines and rush, sliding along what they cannot cross).
+
+## 6. Performance and memory (SwiftShader; not real hardware)
+
+PERF_PLACEHOLDER
+
+## 7. Regression: the earlier chapters
+
+REGRESSION_PLACEHOLDER
+
+## 8. Captures inspected
+
+All of `docs/qa/chapter8-reconstruction/after/`, `after-street/`, `after-finale/` were looked at one by one; the review
+and the problems found by looking are in `docs/qa/chapter8-reconstruction/VISUAL_REVIEW.md`.
+
+## 9. Not done / not verified
+
+- A human playtest; a run on real hardware (frame rate, GPU memory); listening to the sound.
+- The offline package and the hosted build are checked by opening them in headless Chromium (see §10), not by a person.
+
+## 10. Package and hosted build
+
+PACKAGE_PLACEHOLDER

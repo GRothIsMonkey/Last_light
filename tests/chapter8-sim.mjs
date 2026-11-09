@@ -115,7 +115,7 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
    // the film runs by itself; its clatter brings it to the door: down behind the stand until the reel is done
    take('hide-B2',{max:10,r:1.4});until(()=>A8.C.flags.filmDone||!!A8.C.failing,90);if(A8.C.failing)return false;if(A8.C.hiding)take('unhide',{max:6,r:9});return true;});
   release('KeyC');until(()=>A8.C.flags.filmDone,40);until(()=>said('When she was carried away from it, the wall moved.'),15);
-  check(`${label}: Annie Rowan: Mason's slip, licence 0417, her school picture (A.R.); the 1958 film (the wall moves while she is away)`,()=>{assert.ok(A8.C.flags.receipt&&A8.C.flags.annie);assert.equal(A8.state.inv.receipt,'have');assert.ok(said('Annie Rowan'));assert.ok(said('When she was carried away from it, the wall moved.'));});
+  check(`${label}: Annie Rowan: Mason's slip, licence 0417, her school picture (A.R.); the 1958 film (taken out of her chamber, the needle falls and the wall starts to come apart; brought back, it stops)`,()=>{assert.ok(A8.C.flags.receipt&&A8.C.flags.annie);assert.equal(A8.state.inv.receipt,'have');assert.ok(said('Annie Rowan'));assert.ok(said('When they took her out, the needle fell'));assert.ok(said('DO NOT VACATE OCCUPIED CHAMBERS.'));});
   // to the corridor: the green door, east side
   retry(()=>{sneakTo({x:P('reviewIn').x+2.4,z:P('reviewIn').z-1.6},.7);sneakTo(P('galleryMid'),1.2);sneakTo(P('cIn'),1);return until(()=>ph()==='e8-danny',20);},3);lap('gallery');}
  if(inSeg('corridor')){until(()=>ph()==='e8-danny',10);take('danny-bike',{max:40,r:1.8});until(()=>A8.C.view==='inspect',8);putDown(40);
