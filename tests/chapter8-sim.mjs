@@ -30,7 +30,7 @@ export function chapterEightTools(T0){
  function take(id,{max=90,r=1.2,hold=false,stop=null,pad=8,tries=4}={}){dbg(id,'wait offer; have',offers().join(','),'t',h.snapshot.clock.toFixed(1));if(!until(()=>offers().includes(id)||!!stop?.(),max)){dbg(id,'NO OFFER');return false;}if(stop?.())return false;dbg(id,'offered at',JSON.stringify(offerAt(id)),'me',me().x.toFixed(1),me().z.toFixed(1));
   for(let k=0;k<tries;k++){const at=offerAt(id);if(!at)return !offers().includes(id);approach(at,r,{pad});faceV(at);let got=false;
    until(()=>{const s=spot();const a2=offerAt(id);if(a2)faceV(a2);if(s?.id===id){got=true;return true;}return !offers().includes(id);},4);
-   if(!got){dbg(id,'not targeted; spot',spot()?.id,'dist',Math.hypot(me().x-at.x,me().z-at.z).toFixed(2),'spots8',A8.spots().map(s=>s.id).join(','),'view',A8.C.view,'pose',!!A8.C.pose,'fade',A8.C.fadeOut,'kit',(h.chapter.spots?.()||[]).map(s=>s.id).join(','));if(!offers().includes(id))return true;continue;}
+   if(!got){dbg(id,'not targeted; spot',spot()?.id,'dist',Math.hypot(me().x-at.x,me().z-at.z).toFixed(2),'spots8',A8.spots().map(s=>s.id).join(','),'view',A8.C.view,'pose',!!A8.C.pose,'fade',A8.C.fadeOut,'lock',h.roam?.walkLock,'hiding',A8.C.hiding,'duck',(A8.C.duck||[]).length,'walkable',h.nav.walkable(me().x,me().z,{r:.3}),'route',X.route?.(at,r,.1,pad)?.length,'crouch',(h.foot?.crouch??0).toFixed(2),'kit',(h.chapter.spots?.()||[]).map(s=>s.id).join(','));if(!offers().includes(id))return true;continue;}
    if(!hold){tap('KeyF');wait(.2);return true;}
    press('KeyF');const ok=until(()=>{const a2=offerAt(id);if(a2)faceV(a2);return !offers().includes(id)||!!stop?.();},hold);release('KeyF');wait(.2);if(!offers().includes(id))return true;}
   return !offers().includes(id);}
