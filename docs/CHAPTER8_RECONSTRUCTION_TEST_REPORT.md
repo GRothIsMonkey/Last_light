@@ -150,7 +150,7 @@ Each earlier chapter's own suite, run on this build (exit code 0 = every check p
 | `ONLY=chapter7` (incl. the hunter, the notebook and the end-card transition) | 94 checks passed | 287 s |
 | `ONLY=companions` | 8 checks passed | 55 s |
 | `ONLY=dev DEV_KNOWN=2/alex-bike` (DEV starts of every chapter vs natural arrival; switching) | 327 checks passed; one known difference reported | ~6 min |
-| base (`QUICK=1`: Prologue to Chapter Six played through, then the DEV comparison) | BASE_RESULT | ~22 min |
+| base (`QUICK=1 DEV_KNOWN=2/alex-bike`: Prologue to Chapter Six played through by input, every DEV start compared with natural arrival, scene switching) | **818 checks passed**; the one known difference reported | ~22 min |
 
 **The known Chapter Two DEV difference (`2/alex-bike`) persists.** It is the scene-switching check: starting
 `2/alex-bike` after other DEV scenes in one session leaves Alex's companion bike at a different place than a clean start
