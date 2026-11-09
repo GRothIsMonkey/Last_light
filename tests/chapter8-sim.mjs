@@ -107,17 +107,17 @@ export function playChapterEight(T0,label='Chapter Eight',{fromCard=true,from=nu
   until(()=>A8.C.flags.shaftDone||ph()==='e8-gallery',60);
   check(`${label}: the outer barrier: down before it gets there; it hits the leaf and stops; it goes`,()=>{assert.ok(A8.CTX.X8.ST.barrier<.06);assert.ok(said('It stopped. At the gate.'));});lap('shaft');}
  // ---- Act II -------------------------------------------------------------------------------------------------------------------
- if(inSeg('gallery')){until(()=>ph()==='e8-gallery',10);
+ if(inSeg('gallery')){until(()=>ph()==='e8-gallery',10);const g0=h.snapshot.clock,dbgG=w=>{if(process.env.DEBUG8)console.log('  [gallery]',w,'t',((h.snapshot.clock-g0)/60).toFixed(2),'min; hunter',A8.H.mode,A8.HM.root.visible,'ck',A8.C.lastCheckpoint,'flags',['receipt','film','filmDone','drawnOff'].filter(f=>A8.C.flags[f]).join(','),'marks',A8.C.marks.slice(-2).map(m=>m[1]).join(' | '));};
   retry(()=>{until(()=>A8.C.flags.split||!!A8.C.hunt,80);until(()=>!!A8.C.hunt,30);o.light(false);press('KeyC');
    // into the office (out of its sight), the desk; then the review room and its projector, cranked while it is far
-   sneakTo(P('officeIn'),.7);if(A8.C.failing)return false;until(()=>!exposed(14),40);take('receipt',{max:30,r:1.4});putDown(40);putDown(30);putDown(30);if(A8.C.failing)return false;
-   sneakTo({x:P('officeIn').x+1.6,z:P('officeIn').z},.6);sneakTo({x:P('reviewIn').x+2.2,z:P('reviewIn').z-1.6},.7);sneakTo(P('reviewIn'),.6);if(A8.C.failing)return false;const ok=stealthHold('film',{max:120,near:8,far:12});if(!ok)return false;
+   dbgG('hunt on');sneakTo(P('officeIn'),.7);dbgG('in office');if(A8.C.failing)return false;until(()=>!exposed(14),40);take('receipt',{max:30,r:1.4});putDown(40);putDown(30);putDown(30);dbgG('receipt');if(A8.C.failing)return false;
+   sneakTo({x:P('officeIn').x+1.6,z:P('officeIn').z},.6);sneakTo({x:P('reviewIn').x+2.2,z:P('reviewIn').z-1.6},.7);sneakTo(P('reviewIn'),.6);dbgG('in review');if(A8.C.failing)return false;const ok=stealthHold('film',{max:120,near:8,far:12});dbgG('film held '+ok);if(!ok)return false;
    // the film runs by itself; its clatter brings it to the door: down behind the stand until the reel is done
    take('hide-B2',{max:10,r:1.4});until(()=>A8.C.flags.filmDone||!!A8.C.failing,90);if(A8.C.failing)return false;if(A8.C.hiding)take('unhide',{max:6,r:9});return true;});
-  release('KeyC');until(()=>A8.C.flags.filmDone,40);until(()=>said('When she was carried away from it, the wall moved.'),15);
+  release('KeyC');dbgG('stealth done');until(()=>A8.C.flags.filmDone,40);until(()=>said('When they took her out, the needle fell'),15);dbgG('film done');
   check(`${label}: Annie Rowan: Mason's slip, licence 0417, her school picture (A.R.); the 1958 film (taken out of her chamber, the needle falls and the wall starts to come apart; brought back, it stops)`,()=>{assert.ok(A8.C.flags.receipt&&A8.C.flags.annie);assert.equal(A8.state.inv.receipt,'have');assert.ok(said('Annie Rowan'));assert.ok(said('When they took her out, the needle fell'));assert.ok(said('DO NOT VACATE OCCUPIED CHAMBERS.'));});
   // to the corridor: the green door, east side
-  retry(()=>{sneakTo({x:P('reviewIn').x+2.4,z:P('reviewIn').z-1.6},.7);sneakTo(P('galleryMid'),1.2);sneakTo(P('cIn'),1);return until(()=>ph()==='e8-danny',20);},3);lap('gallery');}
+  retry(()=>{sneakTo({x:P('reviewIn').x+2.4,z:P('reviewIn').z-1.6},.7);dbgG('out of review');sneakTo(P('galleryMid'),1.2);dbgG('gallery mid');sneakTo(P('cIn'),1);dbgG('at the green door');return until(()=>ph()==='e8-danny',20);},3);dbgG('corridor');lap('gallery');}
  if(inSeg('corridor')){until(()=>ph()==='e8-danny',10);take('danny-bike',{max:40,r:1.8});until(()=>A8.C.view==='inspect',8);putDown(40);
   approach(P('cEnd'),1.6,{pad:6});if(process.env.DEBUG8)console.log('  [corridor] at end',(me().x+2600).toFixed(1),'pt',A8.C.pt.toFixed(1),'tasks',A8.state.tasks,'D',A8.SC.D.st,'view',A8.C.view,'line',h.chapter.state.line);until(()=>A8.C.dannyOn,20);if(process.env.DEBUG8)console.log('  [corridor] danny',A8.C.dannyOn,A8.SC.D.st,'tasks',A8.state.tasks,'marks',A8.C.marks.slice(-3));
   // into the second alcove, low; it comes past; say his name
