@@ -30,8 +30,8 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0,sky=false}){
  const U={t:{value:0},wet:{value:1},glow:{value:sky?1:0}};
  // (sky: the instance on the skyline, seen from the street at dawn: a silhouette against the deck, lit from underneath by the fires
  //  and the open ground: dark, a red under-glow, a hot rim. Its own programs: the one under the court is never lit this way)
- const GLOW=sky?`{vec3 wN=inverseTransformDirection(normal,viewMatrix);float under=clamp(-wN.y*.85+.18,0.,1.);float frg=pow(1.-clamp(dot(normalize(vViewPosition),-normal),0.,1.),2.2);
-   totalEmissiveRadiance+=uGlow*(vec3(.36,.05,.018)*under*under+vec3(.5,.11,.035)*frg*.8);}`:'';
+ const GLOW=sky?`{vec3 wN=inverseTransformDirection(normal,viewMatrix);float under=clamp(-wN.y*.9+.05,0.,1.);float frg=pow(1.-clamp(dot(normalize(vViewPosition),normal),0.,1.),3.5);
+   totalEmissiveRadiance+=uGlow*(vec3(.34,.045,.016)*under*under+vec3(.42,.08,.025)*frg*.55);}`:'';
  // the skin: dark, wet, a slow ripple along its length (vertex), a little paler in the folds (fragment): never emissive
  const skin=new THREE.MeshStandardMaterial({color:sky?0x140e0d:0x2a2120,roughness:.32,metalness:.08});skin.name='c8-presence-skin';
  skin.onBeforeCompile=sh=>{sh.uniforms.uT=U.t;sh.vertexShader='uniform float uT;\nvarying float vFold;\n'+sh.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
@@ -82,7 +82,7 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0,sky=false}){
   sh.fragmentShader='uniform float uGlow;\nvarying float vFold;\nvarying float vVein;\n'+sh.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
    float ridge=smoothstep(.38,.78,vFold);diffuseColor.rgb*=mix(.32,1.55,ridge);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.42,.3,.29),smoothstep(.62,.9,vFold)*.35);
    diffuseColor.rgb*=1.-.35*smoothstep(.55,.62,vVein)*(1.-smoothstep(.62,.7,vVein));`).replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
-   {float fr=pow(1.-clamp(dot(normalize(vViewPosition),-normal),0.,1.),3.);totalEmissiveRadiance+=vec3(.05,.06,.07)*fr*(.4+ridge)*(1.-uGlow);}
+   {float fr=pow(1.-clamp(dot(normalize(vViewPosition),normal),0.,1.),3.);totalEmissiveRadiance+=vec3(.05,.06,.07)*fr*(.4+ridge)*(1.-uGlow);}
    ${GLOW}`).replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\n roughnessFactor=mix(.6,.18,smoothstep(.4,.8,vFold));');};
  flesh.customProgramCacheKey=()=>'c8-presence-flesh'+(sky?'-sky':'');U.press={value:0};
  const mass=new THREE.Mesh(massG,flesh);mass.name='c8-presence-mass';mass.visible=false;mass.castShadow=true;mass.receiveShadow=true;group.add(mass);
