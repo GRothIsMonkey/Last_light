@@ -1,5 +1,33 @@
 [
  {
+  "name": "walk",
+  "frame": "trench",
+  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
+  "phase": "n8-ride",
+  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
+ },
+ {
+  "name": "walk",
+  "frame": "lean",
+  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
+  "phase": "n8-ride",
+  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
+ },
+ {
+  "name": "walk",
+  "frame": "kesslers",
+  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
+  "phase": "n8-ride",
+  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
+ },
+ {
+  "name": "walk",
+  "frame": "yard",
+  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
+  "phase": "n8-ride",
+  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
+ },
+ {
   "name": "hatch",
   "frame": "well",
   "note": "the top of the well: Alex on the ladder with the chain; the lid comes down on him; lifting it; out on the grass",
@@ -66,8 +94,8 @@
   "phase": "n8-oak",
   "caption": "ALEX“(very quietly) ...Oh.”",
   "info": {
-   "sob": 0,
-   "cry": 0,
+   "sob": 0.9999999999999986,
+   "cry": 0.9963382793830088,
    "cap": "ALEX“(very quietly) ...Oh.”"
   }
  },
@@ -83,34 +111,6 @@
   }
  },
  {
-  "name": "walk",
-  "frame": "trench",
-  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
-  "phase": "n8-ride",
-  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
- },
- {
-  "name": "walk",
-  "frame": "lean",
-  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
-  "phase": "n8-ride",
-  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
- },
- {
-  "name": "walk",
-  "frame": "kesslers",
-  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
-  "phase": "n8-ride",
-  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
- },
- {
-  "name": "walk",
-  "frame": "yard",
-  "note": "the street at sunrise, on foot: the trench, the house that fell, the Kesslers, the Hendersons",
-  "phase": "n8-ride",
-  "caption": "Sam gets up when you do. He doesn’t look back at the oak. You don’t either. Not yet."
- },
- {
   "name": "ride",
   "frame": "sam",
   "note": "the last ride: Sam on his bike beside you; the street; Summerfield; the look back",
@@ -118,7 +118,7 @@
   "caption": "Saturday. The sun not up yet, but nearly.",
   "info": {
    "sob": 0,
-   "cry": 0,
+   "cry": 0.64665967271899,
    "grief": {
     "jamie": true,
     "alex": true
