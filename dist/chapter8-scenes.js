@@ -60,7 +60,7 @@ export function scenes8(X){
   C.area=area;}
  const areaOf=id=>!id?null:['A','L4','S1'].includes(id)?'A':['B','B1','B2'].includes(id)?'B':/^C/.test(id)?'C':/^(J|D|E)/.test(id)?'J':['K','G','GD','H'].includes(id)?'K':/^F/.test(id)?'F':['IW','IP','L2'].includes(id)?'I':null;
  // ---- under the court: in, and the companions' floor -------------------------------------------------------------------------------------
- function enterComplex(at,a){CM.show(true);nav.setRoom(CM.nav);lightsOn(true);o.nightRendering?.(true);o.flashShadow?.(true);const q=CM.at(at);o.placePlayer({x:q.x,z:q.z,a,mode:'walk',bike:null});C.where='below';
+ function enterComplex(at,a){o.bikeAway?.(true);CM.show(true);nav.setRoom(CM.nav);lightsOn(true);o.nightRendering?.(true);o.flashShadow?.(true);const q=CM.at(at);o.placePlayer({x:q.x,z:q.z,a,mode:'walk',bike:null});C.where='below';
   o.setFlashlight?.(true,true);C.inv.flashlight='have';C.amb={traffic:0,insects:0,wind:0,life:0,forest:0,tunnel:1,water:.4};}
  // ---- Act I, scene 1: the four bikes ------------------------------------------------------------------------------------------------------
  function nightStreet(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);ch3?.presentation?.(false);o.nightRendering?.(true);o.flashShadow?.(true);A8&&(k.api.night=1);ambient.night?.(true);ambient.morning?.(false);

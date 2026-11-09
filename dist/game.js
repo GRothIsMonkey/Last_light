@@ -83,7 +83,7 @@ const bikeRoot=new THREE.Group();scene.add(bikeRoot);const playerBike=createBike
 // The whole body is there (arms, shoulders, legs, shoes); only the head is left out, the camera sits in it.
 const self=createPerson({...CAST.player,firstPerson:true});playerBike.group.add(self.group);const selfPose=newPose();
 const eyeRig=new THREE.Object3D();bikeRoot.add(eyeRig);
-const cockpit=playerBike.group;
+const cockpit=playerBike.group;let bikeAway=false;
 const contact=createRideContact();let bellTime=-1,bellStruck=false;
 
 let mouseYaw=0,mousePitch=0,headPitch=0,steerVelocity=0,lean=0,pedalPhase=0,lastMouse=null,lastPauseAt=-Infinity,yawOffset=0,steerAngle=0,astride=0,prevYaw=null,wheelTurn=0,kick=0,bikeLean=0;
@@ -352,7 +352,9 @@ const chOpts={scene,world,nav,friends,ambient,ending,ui,camera,sfx,audio:()=>aud
  setFlashlight:(owned,on)=>{foot.owned=owned;foot.on=on;},held:c=>down.has(c)||keys.has(c),setDrain:k=>{foot.drain=k;},setPace:k=>{foot.pace=k;},setSpill:k=>{foot.spillLevel=k;},playerLight:foot.light,memory:null,
  foot,self,shoot:(o2)=>shoot(o2),readPixels:(t,w,h)=>readPixels(t,w,h),
  // (Chapter Seven: move the player by a translation and nothing else, the view, the speed and the bike as they are: the lane's crossing)
- shift:(dx,dz,{bike=true}={})=>{if(state==='c1-ride'){roam.x+=dx;roam.z+=dz;}else{wx+=dx;wz+=dz;if(bike){roam.x+=dx;roam.z+=dz;}}}};
+ shift:(dx,dz,{bike=true}={})=>{if(state==='c1-ride'){roam.x+=dx;roam.z+=dz;}else{wx+=dx;wz+=dz;if(bike){roam.x+=dx;roam.z+=dz;}}},
+ // (Chapter Eight: your bike is not here: down a manhole, on foot through the ruined street. Walking leaves no bike beside you)
+ bikeAway:on=>{bikeAway=!!on;cockpit.visible=!bikeAway;}};
 const chapter=createChapter1(chOpts);
 // Chapter Two picks up seconds after the first one stops, with the same people, systems and night,
 // and runs to the next morning (chapter2.js). Chapter One hands it the phases that begin c2- or m-.
@@ -385,7 +387,7 @@ function playerState(){const walk=state==='c1-walk';
 function placePlayer({x,z,a,mode='ride',speed:v=0,bike=null}){contact.reset();bikeY=null;prevYaw=null;mouseYaw=mousePitch=look=headPitch=glance=0;manualLook=false;steerIn=0;kick=0;roam.omega=0;
  if(mode==='walk'){const b=bike||{x:x+Math.cos(a)*.62,z:z+Math.sin(a)*.62,a};roam.x=b.x;roam.z=b.z;roam.a=b.a;speed=0;wx=x;wz=z;wa=a;walkPitch=0;gait=0;moveT=0;state='c1-walk';self.group.visible=false;kick=1;astride=1;placePlayer.walk=true;}
  else{roam.x=x;roam.z=z;roam.a=a;speed=v;state='c1-ride';self.group.visible=true;astride=v>.2?0:1;}
- cockpit.visible=true;placeNightRoot(0);if(mode==='walk'){updateNightWalk(0);}}
+ cockpit.visible=!bikeAway;placeNightRoot(0);if(mode==='walk'){updateNightWalk(0);}}
 // At night the sun is gone: its shadows switch off and the night's own lights (police lights,
 // headlights, a flashlight) join the scene. Done while the screen is dark, so the shader change
 // is never seen.

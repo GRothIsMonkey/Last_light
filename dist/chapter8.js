@@ -257,7 +257,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   for(const art of ch6.appearances6?.values?.()||[])art.update?.(dt,{clock:C.t,eye:camera.position,phase:S.phase});}
  {const prev=A.afterActors6;A.afterActors6=(dt,o2)=>{prev?.(dt,o2);afterActors8(dt,o2);};}
  // ---- lifecycle -------------------------------------------------------------------------------------------------------------------------------
- function reset(){if(!C.offers||!C.fails||!C.flags)fresh();/* (DEV switching empties this state before the chapters reset) */const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='inspect')endInspect();if(C.view==='look')C.view=null;inv.reset();C.choice=null;
+ function reset(){o.bikeAway?.(false);if(!C.offers||!C.fails||!C.flags)fresh();/* (DEV switching empties this state before the chapters reset) */const hadPose=C.pose,hadView=!!C.view;card(false);if(C.view==='inspect')endInspect();if(C.view==='look')C.view=null;inv.reset();C.choice=null;
   if(nav.room===X.nav||nav.room===ruin.room||nav.room===ch7.house?.nav||nav.room===works?.nav)nav.setRoom(null);
   X.show(false);X.reset();ruin.show(false);ruin.reset();presence.reset();presence.show(false);huntStop();lightsOn(false);if(danny){danny.show(false);danny.ground=null;}C.dannyOn=false;
   for(const a of [brandt,samDad,samMom,...fire].filter(Boolean)){a.show(false);a.lookAt=null;a.gest?.(null);a.path=null;a.mode='stand';}
