@@ -120,7 +120,10 @@ says nothing about a GPU. 60 frames per moment after warming up.
 | The side yard (the hunter dragging Jamie) | 4.0 / 28.7 | 23.5 / 139.6 | 293 | 565,006 | 0 |
 | Away from it (made things following, far fires) | 2.1 / 22.2 | 24.6 / 134.6 | 1,159 | 1,181,975 | 2 |
 | The breach under the court | 1.0 / 16.1 | 7.9 / 59.8 | 206 | 202,924 | 0 |
-OAKRIDE_ROWS
+| The oak (Alex) | 1.9 / 10.9 | 8.1 / 44.0 | 194 | 191,814 | 0 |
+| The last ride (the wrecked street) | 1.6 / 5.4 | 14.1 / 50.0 | 966 | 867,391 | 0 |
+
+All eight moments ran without errors or crashes (`docs/qa/chapter8-reconstruction/perf.json`).
 What this does and does not say:
 - The game's own update stays a few milliseconds per frame in the heaviest street moments, with p95 spikes of
   16–38 ms on this (shared, busy) container CPU. Spikes of that size would show as hitches on a slow machine; whether

@@ -1,0 +1,172 @@
+{
+ "note": "Headless Chromium 1280x720 on SwiftShader (software GL on this container's CPU). updateMs is the game's own per-frame JS update; renderSubmitMsSwiftShader is software rasterisation and says nothing about a GPU. Not a frame-rate measurement on real hardware.",
+ "machine": {
+  "cpus": 4,
+  "model": "Intel(R) Xeon(R) Processor @ 2.10GHz"
+ },
+ "pageLoadMs": 40292,
+ "errors": [],
+ "moments": [
+  {
+   "moment": "title (before Chapter Eight is entered)",
+   "section": null,
+   "phase": "off",
+   "updateMs": {
+    "median": 0.6,
+    "p95": 2
+   },
+   "renderSubmitMsSwiftShader": {
+    "median": 8.8,
+    "p95": 32.9
+   },
+   "calls": 373,
+   "triangles": 634146,
+   "geometries": 339,
+   "textures": 10,
+   "programs": 33,
+   "heapMB": 1255.3,
+   "creaturesShown": 0
+  },
+  {
+   "moment": "the trench: the street coming apart, the second hunter, the skyline thing",
+   "section": "c8-trench",
+   "phase": "g8-surface",
+   "updateMs": {
+    "median": 3.4,
+    "p95": 22.7
+   },
+   "renderSubmitMsSwiftShader": {
+    "median": 37.2,
+    "p95": 147.4
+   },
+   "calls": 789,
+   "triangles": 1062513,
+   "geometries": 418,
+   "textures": 15,
+   "programs": 57,
+   "heapMB": 1158.2,
+   "creaturesShown": 3
+  },
+  {
+   "moment": "the limb on the Kesslers’ (all the street’s pieces, fires, smoke)",
+   "section": "c8-street",
+   "phase": "g8-surface",
+   "updateMs": {
+    "median": 5.7,
+    "p95": 38
+   },
+   "renderSubmitMsSwiftShader": {
+    "median": 51.7,
+    "p95": 161.8
+   },
+   "calls": 871,
+   "triangles": 1135269,
+   "geometries": 473,
+   "textures": 15,
+   "programs": 65,
+   "heapMB": 1161.2,
+   "creaturesShown": 3
+  },
+  {
+   "moment": "the side yard: the hunter dragging Jamie",
+   "section": "c8-yard",
+   "phase": "g8-street",
+   "updateMs": {
+    "median": 4,
+    "p95": 28.7
+   },
+   "renderSubmitMsSwiftShader": {
+    "median": 23.5,
+    "p95": 139.6
+   },
+   "calls": 293,
+   "triangles": 565006,
+   "geometries": 187,
+   "textures": 8,
+   "programs": 54,
+   "heapMB": 1155,
+   "creaturesShown": 0
+  },
+  {
+   "moment": "away from it: the made things following, the far fires",
+   "section": "c8-flee",
+   "phase": "g8-street",
+   "updateMs": {
+    "median": 2.1,
+    "p95": 22.2
+   },
+   "renderSubmitMsSwiftShader": {
+    "median": 24.6,
+    "p95": 134.6
+   },
+   "calls": 1159,
+   "triangles": 1181975,
+   "geometries": 669,
+   "textures": 15,
+   "programs": 67,
+   "heapMB": 1156.7,
+   "creaturesShown": 2
+  },
+  {
+   "moment": "the breach under the court",
+   "section": "c8-breach",
+   "phase": "f8-breach",
+   "updateMs": {
+    "median": 1,
+    "p95": 16.1
+   },
+   "renderSubmitMsSwiftShader": {
+    "median": 7.9,
+    "p95": 59.8
+   },
+   "calls": 206,
+   "triangles": 202924,
+   "geometries": 132,
+   "textures": 7,
+   "programs": 35,
+   "heapMB": 1159.1,
+   "creaturesShown": 0
+  },
+  {
+   "moment": "the oak: Alex",
+   "section": "c8-oak",
+   "phase": "n8-oak",
+   "updateMs": {
+    "median": 1.9,
+    "p95": 10.9
+   },
+   "renderSubmitMsSwiftShader": {
+    "median": 8.1,
+    "p95": 44
+   },
+   "calls": 194,
+   "triangles": 191814,
+   "geometries": 154,
+   "textures": 6,
+   "programs": 40,
+   "heapMB": 1158,
+   "creaturesShown": 0
+  },
+  {
+   "moment": "the last ride, the wrecked street",
+   "section": "c8-ride",
+   "phase": "n8-ride",
+   "updateMs": {
+    "median": 1.6,
+    "p95": 5.4
+   },
+   "renderSubmitMsSwiftShader": {
+    "median": 14.1,
+    "p95": 50
+   },
+   "calls": 966,
+   "triangles": 867391,
+   "geometries": 445,
+   "textures": 15,
+   "programs": 63,
+   "heapMB": 1163.3,
+   "creaturesShown": 0
+  }
+ ],
+ "heapNote": "The JS heap is about 1.1 GB at the title in this build and in the rejected draft alike (the game builds every chapter at load); measured on the draft commit c496d53: 1109.8 MB at the title, 1114.4 MB at c8-street; this build: 1140.3 MB and 1146.1 MB."
+}
