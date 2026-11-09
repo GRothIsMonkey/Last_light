@@ -440,7 +440,9 @@ export function rescueActs(X){
  function sceneReunion(from='r'){go('e8-reunion');const A2=X.enlistAlex();if(C.where!=='below')enterComplex('gIn',-Math.PI/2);
   C.h=Math.max(C.h,HOUR.reunion);C.hMin=HOUR.reunion;date(C.h);CM.PANEL.want=[0,0,0];CM.ST.bow=[.45,.7,.85];CM.ST.shear=1;CM.ST.locker=1;CM.setDoor('G',0,{instant:true});
   for(let i=0;i<6;i++)light(i,null);lit(0,-2,39.6,-.5,{intensity:3.4,dist:8,color:0xffd8a8,flicker:.05});lit(1,-4.6,41.8,-1.2,{intensity:1.4,dist:5,color:0xffc890});C.areaLock=true;
-  if(from!=='r'||cell()!=='G'){playerAt('gIn',-Math.PI/2,-.6,.4);}
+  // (the door shuts behind you: if you came in by it and are standing in it, you are in the room, not in the door; the low
+  //  places you crawled under on the way are behind you)
+  C.duck=null;C.duck2=null;{const p0=me();if(from!=='r'||cell()!=='G'||!nav.walkable(p0.x,p0.z,{r:.3}))playerAt('gIn',-Math.PI/2,-.6,.4);}
   joinFoot(sam,at('gChair'),0);joinFoot(jamie,at('gFloor'),0);joinFoot(A2,at('gCouch'),0);checkpoint('c8-reunion');
   // where they settle: Alex on the couch in a crew jacket, Sam on a chair with his foot up, Jamie on the floor against the lockers
   hold(A2,at('gCouch'),ACT.seat(.45,{hands:'knees',lean:.18}),()=>camera.position);hold(sam,at('gChair'),ACT.seat(.45,{hands:'knees'}),()=>camera.position);hold(jamie,{x:at('gFloor').x,z:at('gFloor').z},ACT.floor({arms:'knees',lean:-.15}),()=>camera.position);

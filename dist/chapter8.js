@@ -228,6 +228,11 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   for(const c of [sam,jamie,alex]){if(!c||!c.person?.group?.visible||c.gone)continue;const f=c.person.face;if(!f)continue;if(c.weepT>0)c.weepT-=dt;
    const sob=f.sobbing||0,cr=f.crying||0;if(sob>.35||cr>.6){const key=c.key||'x';C.sobNext[key]=(C.sobNext[key]??(1+Math.random()*2))-dt;
     if(C.sobNext[key]<=0){C.sobNext[key]=sob>.35?1.8+Math.random()*2.6:4.5+Math.random()*4;const hp=c.person.joints?.head?c.person.group.localToWorld(c.person.joints.head.clone()):V3({x:c.px,z:c.pz});sound(sob>.35?'c8Sob':'c8Sniff',hp,{gain:sob>.35?1:.6});}}}}
+ // ---- a safety net: the world changed under you (a door shut on you, a house next to you was swapped for its broken pieces, the
+ // ground went) and where you stand is no longer anywhere you could have walked to: after a moment, the nearest place that is
+ function unstick(dt){const p=me();if(!p?.walking||C.pose||C.view||C.hiding||C.fadeOut>=0||C.failing||S.phase==='c8-black'||o.roam.walkLock){C.stuckT=0;return;}
+  if(nav.walkable(p.x,p.z,{r:.2})){C.stuckT=0;return;}C.stuckT=(C.stuckT||0)+dt;if(C.stuckT<.8)return;C.stuckT=0;
+  for(let r=.35;r<=3.2;r+=.35)for(let i=0;i<16;i++){const a=i/16*Math.PI*2,x=p.x+Math.cos(a)*r,z=p.z+Math.sin(a)*r;if(nav.walkable(x,z,{r:.3})){o.placePlayer({x,z,a:p.a,mode:'walk',bike:null});mark('unstuck');return;}}}
  // ---- the scenes (below and on the street) are added by chapter8-scenes.js, which shares all of this --------------------------------------
  const CTX={o,k,C,A8,S,X,ruin,presence,H,HM,danny,brandt,fire,reyes,officer,police,samDad,samMom,jamie,sam,get alex(){return alex;},set alex(v){alex=v;},comp,brain,works,WS,WP,B7,ch2,ch3,ch4,ch5,ch6,ch7,
   sound,gy,light,LIGHTS,lightsOn,checkpoint,later,mark,card,say,J,SM,AL,R,RR,BR,BRR,Y,N,V,task,stopTask,wait,until,lines,quiet,offer,unoffer,V3,near,lookingAt,pose,unpose,posed,closeLook,endLook,looking,inspect,endInspect,reading,
@@ -273,7 +278,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   if(C.choice){C.choice.t+=dt;}
   updatePose(dt);if(C.view==='inspect'&&C.inspect){C.inspect.t+=dt;C.inspect.obj.rotation.set(C.inspect.pitch,C.inspect.yaw,0);}
   if(C.view==='look'&&C.lookDur){C.lookT+=dt;if(C.lookT>C.lookDur&&!busy())endLook();}
-  updateHolds(dt);updateHazards(dt);updateFail(dt);clock(dt);updateGrief(dt);updateApoc(dt);
+  updateHolds(dt);updateHazards(dt);updateFail(dt);clock(dt);updateGrief(dt);updateApoc(dt);unstick(dt);
   if(X.ST.active)X.update(dt);presence.update(dt);ruin.update(dt,{camera,t:C.t});
   if(C.hunt||H.mode!=='off'){H.update(dt);}
   if(danny.group.visible&&C.dannyOn)SC?.updateDanny?.(dt);
