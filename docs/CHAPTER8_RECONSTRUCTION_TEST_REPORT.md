@@ -22,7 +22,34 @@ node tests/chapter8-perf.mjs                                     # per-moment co
 
 ## 2. Chapter Eight, played by input
 
-FULL_RUN_PLACEHOLDER
+**Chapter Eight from Chapter Seven's end card, by input, in one run: 35 checks passed, 0 failed**, ending on the Chapter
+Eight card (`ONLY=chapter8 FROMCARD=1`, final code). Bot minutes by segment:
+
+| bikes | field | shaft | gallery | corridor | wing (Sam) | retrieval (Jamie) | Alex | reunion | truth | breach | surface | street | staging | op | oak + walk | ride |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2.16 | 1.49 | 0.85 | 32.35 → **4.47** | 1.74 | 4.76 | 7.24 | 4.51 | 6.65 | 1.93 | 2.24 | 4.97 | 5.99 | 0.89 | 4.39 | 4.90 | 3.29 |
+
+Along the way the scripted player was caught once in the gallery and once at the gates (both retried from their
+checkpoints), and the chapter's own checks fail it on purpose at the barrier and the escape.
+
+**The gallery number.** The draft's QA measured 31.6 bot minutes there; the first full run of this build measured
+32.35. The game's stealth in the gallery is now bounded (Reyes draws the hunter off up the shaft once you have the
+receipt and the film, or after 3.5 minutes), so a timeline was taken (`DEBUG8`): the hunter was gone after about four
+minutes, and the rest was the scripted player's own sneak steps each running to their 150-second limit with nothing
+hunting, and its hold on the projector not targeting it. With the bot fixed to walk and use things once nothing is
+hunting (as a player would), the gallery is **4.47 bot minutes** (10 checks passed): the hunt starts at 1.1 min, one
+catch and retry, the receipt at 2.1, the film done at 3.9, Reyes draws it off, the corridor door at 4.5. The other
+segments above are from the run before that bot fix; they did not use the steps that were fixed except where a
+hunter was gone, so they are, if anything, slightly long. The rescues (wing 4.8, retrieval 7.2, Alex 4.5) and the
+reunion (6.7) are now each longer than the gallery, which is the balance the brief asked for. None of this is a
+human time.
+
+How this full run was reached: the first full run (before the fixes below) passed its first sections and then failed
+from the crew room on, because arriving there by walking in from Alex's escape left you standing inside the crew
+room's door when it shut (nowhere walkable: you could not move). Fixed in the scene, plus a chapter-wide safety net
+(if the world changes under you and your spot is no longer walkable, after a moment you are moved to the nearest place
+that is; it did not need to fire in the passing runs). The stretches were then re-run naturally (Alex → reunion: all
+passed; breach → surface → street: 16 passed, 0 failed) before this full run.
 
 Stretches run on their own while building (latest runs; all checks passed):
 
@@ -81,7 +108,31 @@ rate. No path-search cost (they do not route; they walk set lines and rush, slid
 
 ## 6. Performance and memory (SwiftShader; not real hardware)
 
-PERF_PLACEHOLDER
+`tests/chapter8-perf.mjs`, one fresh headless Chromium per moment (1280×720, SwiftShader on this container's 4 CPUs).
+`update` is the game's own per-frame JavaScript update (ms); `render` is SwiftShader's software rasterising (ms) and
+says nothing about a GPU. 60 frames per moment after warming up.
+
+| Moment | update median / p95 | render (software) median / p95 | draw calls | triangles | creatures shown |
+|---|---|---|---|---|---|
+| Title (before Chapter Eight) | 0.6 / 2.0 | 8.8 / 32.9 | 373 | 634,146 | 0 |
+| The trench (street coming apart, second hunter, skyline) | 3.4 / 22.7 | 37.2 / 147.4 | 789 | 1,062,513 | 3 |
+| The limb on the Kesslers' (all the street's pieces, fires, smoke) | 5.7 / 38.0 | 51.7 / 161.8 | 871 | 1,135,269 | 3 |
+| The side yard (the hunter dragging Jamie) | 4.0 / 28.7 | 23.5 / 139.6 | 293 | 565,006 | 0 |
+| Away from it (made things following, far fires) | 2.1 / 22.2 | 24.6 / 134.6 | 1,159 | 1,181,975 | 2 |
+| The breach under the court | 1.0 / 16.1 | 7.9 / 59.8 | 206 | 202,924 | 0 |
+OAKRIDE_ROWS
+What this does and does not say:
+- The game's own update stays a few milliseconds per frame in the heaviest street moments, with p95 spikes of
+  16–38 ms on this (shared, busy) container CPU. Spikes of that size would show as hitches on a slow machine; whether
+  they happen on a real desktop was not measured.
+- The street's heaviest moments draw about 0.8–1.2 thousand calls and over a million triangles. That is heavy for
+  integrated graphics. **No frame rate on real hardware was measured.**
+- **Memory.** The JS heap is about 1.15–1.25 GB in every moment, including the title. That is **not** new: the rejected
+  draft's commit measured the same way gives 1109.8 MB at the title and 1114.4 MB at the street; this build 1140.3 MB
+  and 1146.1 MB (about +30 MB). The game builds every chapter at load. Running several software-rendered browsers and
+  full-game simulations at once exhausted this container's memory during testing (the kernel killed processes);
+  measured one at a time, nothing crashed and the heap stayed flat in the side yard (no leak).
+- Page load in headless SwiftShader: about 35 s (the draft: about the same).
 
 ## 7. Regression: the earlier chapters
 
