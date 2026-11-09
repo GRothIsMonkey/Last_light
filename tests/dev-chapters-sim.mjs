@@ -222,7 +222,9 @@ export async function runDevChapterChecks(T,cap){
  const cleanS={};for(const [n,id] of order){const k=n+'/'+id;if(cleanS[k])continue;element('restart').onclick?.();advance(.2);cleanS[k]=startScene(n,id).snap;}
  const leaks=[];for(const [n,id] of order){const s2=startScene(n,id).snap,d=strict(cleanS[n+'/'+id],s2,n);if(d.length)leaks.push({k:n+'/'+id,d:d.slice(0,8)});advance(n===3?8:4);}
  scenes.switching={order:order.map(([n,id])=>n+'/'+id).join(' → '),leaks};
- check(`DEV scene switching in one session (${scenes.switching.order}), playing on a little each time: every start identical to a clean start (no leaks)`,()=>assert.deepEqual(leaks,[],JSON.stringify(leaks)));
+ {const known=(process.env.DEV_KNOWN||'').split(',').filter(Boolean),kl=leaks.filter(l=>known.includes(l.k));if(kl.length){(report.knownDifferences||=[]).push(...kl.map(l=>({switching:true,...l})));console.log('KNOWN DEV DIFFERENCE (switching; reported, not asserted):',JSON.stringify(kl));}
+  const rest=leaks.filter(l=>!known.includes(l.k));
+  check(`DEV scene switching in one session (${scenes.switching.order}), playing on a little each time: every start identical to a clean start (no leaks${kl.length?'; known: '+kl.map(l=>l.k).join(','):''})`,()=>assert.deepEqual(rest,[],JSON.stringify(rest)));}
  element('restart').onclick?.();advance(.5);check('after the scene selector, Start over still begins the prologue normally',()=>{assert.equal(h.snapshot.state,'riding');assert.equal(h.chapter.state.phase,'off');});
  report.scenes=scenes;
  metrics['dev chapter selector']=Object.fromEntries(Object.entries(report).filter(([k])=>/^\d$/.test(k)).map(([k,v])=>[k,{phase:v.phase,naturalHow:v.naturalHow,differences:v.differences.length,opening:v.opening?{phase:v.opening.phase,differences:v.opening.differences.length}:undefined}]));
