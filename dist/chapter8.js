@@ -284,7 +284,10 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  function afterActors8(dt){if(!owns(S.phase))return;k.torchO&&(k.torchO.visible=false);
   for(const a of [reyes,officer,brandt,...fire,samDad,samMom].filter(Boolean)){if(!a.visible)continue;applyPose(a.person,a.pose);}
   SC?.afterActors?.(dt);
-  if(C.grief?.jamie){for(const c of [sam,alex]){if(!c||c.gone||!c.person.group.visible||c.mode!=='foot'||c.script||c.posedAt===C.t)continue;copyPose(_gp,c.pose);ACT.slump()(_gp,{clock:C.t});applyPose(c.person,_gp);}}
+  if(C.grief?.jamie){for(const c of [sam,alex]){if(!c||c.gone||!c.person.group.visible||c.script||c.posedAt===C.t)continue;
+    // (on foot: the whole body slumps. On the bike: the head down over the bars and the shoulders forward; the hands stay where they are)
+    if(c.mode==='foot'){copyPose(_gp,c.pose);ACT.slump()(_gp,{clock:C.t});applyPose(c.person,_gp);}
+    else if(c.mode==='ride'){copyPose(_gp,c.pose);const k2=C.grief.alex?1:.7,sob=c.person.face?.pulse||0;_gp[PI.hp]-=(.32+.06*Math.sin(C.t*.4))*k2+sob*.06;_gp[PI.lean]+=.07*k2+sob*.03;_gp[PI.hy]+=Math.sin(C.t*.23)*.08*k2;applyPose(c.person,_gp);}}}
   if(C.pCry>.05){const k2=C.pCry,b=Math.sin(C.t*1.6)*.01*k2+Math.sin(C.t*31)*.0018*k2+Math.sin(C.t*47+1)*.0012*k2;camera.position.y+=b-.02*k2;camera.position.x+=Math.sin(C.t*23)*.0016*k2;}
   if(C.shake>0){C.shake=Math.max(0,C.shake-dt*.9);const s=C.shake*C.shake*.06;camera.position.x+=Math.sin(C.t*61)*s;camera.position.y+=Math.sin(C.t*47+1)*s*.7;camera.position.z+=Math.cos(C.t*53)*s;}
   for(const art of ch6.appearances6?.values?.()||[])art.update?.(dt,{clock:C.t,eye:camera.position,phase:S.phase});}

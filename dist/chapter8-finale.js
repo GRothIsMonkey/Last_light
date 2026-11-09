@@ -220,7 +220,7 @@ export function finaleActs(X){
   responders(true);checkpoint('c8-ride');C.fadeIn=from==='walk'?-1:0;C.mood='relaxed';C.mindKey=null;C.amb={traffic:0,insects:.25,wind:.4,life:.4,forest:0,tunnel:0,water:0};
   cry(from==='walk'?.5:.65,from==='walk'?8:14);weep(sam,'grief',30);RIDE8.sob=6;o.setPace?.(1);
   task('ride',(function*(){
-   yield* lines([{wait:3},N('Saturday. The sun not up yet, but nearly.',{time:3}),{wait:2}]);
+   yield* lines([{wait:3},N('Saturday. The sun not up yet, but nearly.',{time:3}),{wait:2.4},N('Two bikes.',{time:2.2}),{wait:3}]);
    objective('Ride.','Down Oak Hollow Drive. The school.');
    yield* until(()=>{const L=ruin.locate(me().x,me().z);return L.d<1028||C.pt>180;});
    yield* lines([N('The Hendersons’. The fire truck, the ambulance in the drive. Somebody has put a blanket over the hole’s edge, by the side yard.',{time:4.4}),{wait:7}]);
