@@ -13,6 +13,7 @@ import {CAST} from './cast.js';
 const hex=c=>'#'+c.toString(16).padStart(6,'0');
 const cache=new Map();
 export function tex9(name,...a){const key=name+'|'+JSON.stringify(a);if(!cache.has(key)){const d=P9[name];cache.set(key,d?paper(d.w,d.h,(g,w,h)=>d.draw(g,w,h,...a)):null);}return cache.get(key);}
+export const PRINTS9=which=>[0,1,2,3].map(i=>which<3?(which*4+i)%12:(which*4+i*5+1)%12);// (which pictures a board of Alex's has, in order)
 export function fresh9(name,...a){const d=P9[name];return d?paper(d.w,d.h,(g,w,h)=>d.draw(g,w,h,...a)):null;}
 const sheet=(g,w,h,c='#f6f3ea')=>{g.fillStyle=c;g.fillRect(0,0,w,h);};
 const hand=(g,px,c='#1f2a44')=>{g.fillStyle=c;g.font=`${px}px "Comic Sans MS","Segoe Print","Bradley Hand",cursive`;};
@@ -112,9 +113,14 @@ export const P9={
    ()=>{sky2('#f0c58a','#f6dfb4');g.fillStyle='#8c8a82';g.fillRect(0,172,328,42);for(let k=0;k<4;k++){g.fillStyle='rgba(40,34,30,.75)';g.fillRect(30+k*76,60,3,116);g.beginPath();g.ellipse(46+k*76,182,34,7,0,0,7);g.fill();}},
    ()=>{sky2('#b8d0e0','#e0e8e8');g.fillStyle='#6b7a44';g.fillRect(0,150,328,64);g.fillStyle='#a8742a';g.fillRect(40,120,248,8);g.fillStyle='#8a8f86';g.beginPath();g.ellipse(170,104,26,16,0,0,7);g.fill();g.beginPath();g.arc(196,94,10,0,7);g.fill();},
    ()=>{sky2('#e4b488','#f1d3a8');g.fillStyle='#7c8a4e';g.fillRect(0,150,328,64);bike(g,90,176,44,'#5f8f93');kid(g,220,110,46,CAST.player,{smile:1});},
-   ()=>{g.fillStyle='#e8d8c4';g.fillRect(0,0,328,214);g.fillStyle='#d8a078';g.beginPath();g.ellipse(250,170,150,90,-.4,0,7);g.fill();g.fillStyle='rgba(255,255,255,.4)';g.fillRect(0,0,328,60);}];
-  const cap=['The oak. Aug.','The creek grate','Jamie, the curb','Sam’s garage','Four shadows','Mrs. Delaney’s cat','“Hold still”','(his thumb)'];
-  for(let i=0;i<4;i++){const n=(which*3+i*2+i*which)%S.length;pic(i,S[n]);hand(g,19,'#22262e');g.fillText(cap[n],34+(i%2)*372,258+Math.floor(i/2)*268);}}},
+   ()=>{g.fillStyle='#e8d8c4';g.fillRect(0,0,328,214);g.fillStyle='#d8a078';g.beginPath();g.ellipse(250,170,150,90,-.4,0,7);g.fill();g.fillStyle='rgba(255,255,255,.4)';g.fillRect(0,0,328,60);},
+   ()=>{sky2('#e6e8e6','#f4f4f0');g.fillStyle='#6f7a54';g.fillRect(0,176,328,38);g.fillStyle='#9aa4aa';g.fillRect(150,40,14,120);g.fillRect(186,40,14,120);g.beginPath();g.ellipse(175,44,52,30,0,0,7);g.fill();g.fillStyle='#7a848a';g.fillRect(118,40,114,8);},
+   ()=>{sky2('#f2d8b8','#f6ead6');g.fillStyle='#8c8a82';g.beginPath();g.moveTo(130,214);g.lineTo(198,214);g.lineTo(172,96);g.lineTo(156,96);g.fill();for(const [x,c] of [[40,'#c9bfa8'],[250,'#b8a890']]){g.fillStyle=c;g.fillRect(x,80,60,70);g.fillStyle='#5a4a3a';g.beginPath();g.moveTo(x-6,82);g.lineTo(x+30,58);g.lineTo(x+66,82);g.fill();}},
+   ()=>{sky2('#c8d8b8','#e0e8d0');g.fillStyle='#6b7a44';g.fillRect(0,120,328,94);g.fillStyle='#8a6a48';g.beginPath();g.ellipse(170,150,46,24,0,0,7);g.fill();g.beginPath();g.arc(214,128,16,0,7);g.fill();for(const x of [140,156,184,200])g.fillRect(x,164,6,26);hand(g,15,'#22262e');g.fillText('NOT OUR DOG',100,206);},
+   ()=>{g.fillStyle='#6a7a88';g.fillRect(0,0,328,214);g.fillStyle='rgba(200,214,224,.5)';for(let k=0;k<40;k++){const x=(k*67)%328,y=(k*41)%214;g.beginPath();g.ellipse(x,y,3,5+(k%3),0,0,7);g.fill();g.fillRect(x-1,y,2,10+(k%5)*3);}g.fillStyle='rgba(60,70,80,.5)';g.fillRect(0,150,328,64);}];
+  const cap=['The oak. Aug.','The creek grate','Jamie, the curb','Sam’s garage','Four shadows','Mrs. Delaney’s cat','“Hold still”','(his thumb)','The water tower','Our street, 7 a.m.','Not our dog','Rain'];
+  // (the left wall's three boards carry all twelve; the right wall's three, all twelve again, in another order)
+  for(let i=0;i<4;i++){const n=which<3?(which*4+i)%S.length:(which*4+i*5+1)%S.length;pic(i,S[n]);hand(g,19,'#22262e');g.fillText(cap[n],34+(i%2)*372,258+Math.floor(i/2)*268);}}},
  // Lily Henderson's drawing, crayon: a dog. She has never seen him. BISCUIT.
  biscuit:{w:384,h:300,draw(g,w,h){sheet(g,w,h,'#fbfaf4');g.strokeStyle='#8a5a2a';g.lineWidth=9;g.lineCap='round';g.beginPath();g.ellipse(190,160,96,50,0,0,7);g.stroke();g.beginPath();g.arc(300,112,36,0,7);g.stroke();
   for(const x of [120,160,224,262]){g.beginPath();g.moveTo(x,204);g.lineTo(x,256);g.stroke();}g.beginPath();g.moveTo(94,150);g.quadraticCurveTo(50,110,64,84);g.stroke();g.beginPath();g.moveTo(280,84);g.lineTo(270,58);g.moveTo(318,82);g.lineTo(330,56);g.stroke();

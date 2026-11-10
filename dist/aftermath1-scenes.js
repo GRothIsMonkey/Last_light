@@ -59,11 +59,11 @@ export function scenes9(X){
    yield* until(()=>Math.hypot(me().x-a.x,me().z-a.z)<ahead,patience);a.lookAt=null;}}
  // Sam, held where a scene wants him (sitting on a cot, astride his bike): drawn after the companions' own pass
  const PIN={};
- function pinSam(q,{a=0,gesture=null,blend=.6,follow=true}={}){if(!q){if(PIN.q){PIN.q=null;
+ function pinSam(q,{a=0,gesture=null,blend=.6,follow=true,world=false}={}){if(!q){if(PIN.q){PIN.q=null;
     // (up off whatever he was on: the nearest place he can walk from)
     if(!nav.walkable(sam.px,sam.pz,{r:.3})){let done=false;for(let r=.3;r<=1.5&&!done;r+=.15)for(let i=0;i<12&&!done;i++){const h=sam.pa+i/12*Math.PI*2,x=sam.px+Math.sin(h)*r,z=sam.pz-Math.cos(h)*r;if(nav.walkable(x,z,{r:.3})){sam.px=x;sam.pz=z;done=true;}}}
     if(sam.mode==='foot'&&!sam.gone&&follow){sam.follow='walk';brain.enable(sam,true);}}return;}
-  if(sam.mode!=='foot'){comp.putFoot(sam,sam.bx??q.x,sam.bz??q.z,a,{bike:null});}stand(sam,null);sam.follow=null;sam.brain=null;sam.script=null;PIN.q=W(q.x,q.z);PIN.a=a;PIN.g=gesture;PIN.t=0;PIN.blend=blend;PIN.from={x:sam.px,z:sam.pz,a:sam.pa};}
+  if(sam.mode!=='foot'){comp.putFoot(sam,sam.bx??q.x,sam.bz??q.z,a,{bike:null});}stand(sam,null);sam.follow=null;sam.brain=null;sam.script=null;PIN.q=world?{x:q.x,z:q.z}:W(q.x,q.z);PIN.a=a;PIN.g=gesture;PIN.t=0;PIN.blend=blend;PIN.from={x:sam.px,z:sam.pz,a:sam.pa};}
  const _sp=newPose();
  function updatePin(dt){if(!PIN.q||sam.gone||!sam.person.group.visible)return;PIN.t+=dt;const u=smooth(PIN.t/PIN.blend),x=lerp(PIN.from.x,PIN.q.x,u),z=lerp(PIN.from.z,PIN.q.z,u),a=PIN.from.a+wrap(PIN.a-PIN.from.a)*u;
   sam.px=x;sam.pz=z;sam.pa=a;const g=sam.person.group;g.position.set(x,gy(x,z),z);g.rotation.set(0,-a,0);copyPose(_sp,sam.pose);if(PIN.g&&u>.5)PIN.g(_sp,{clock:C.t});applyPose(sam.person,_sp);sam.posedAt=C.t;}
@@ -271,10 +271,10 @@ export function scenes9(X){
    yield* lines([{wait:2},N('Mrs. Henderson gets up off her cot and walks the length of the gym and sits down in the chair next to her. She doesn’t say anything. She takes her hand.',{time:6.6}),{wait:2.4}]);
    reyes.gest(null);sceneAlexParents('gym');})());}
  // you have walked up to her with it. what was said is what she can manage.
- function* capWithHer(jm,when){const hp=headOf(jm);feel(jm,'tearful',30);jm.lookAt=camera.position;jm.gest(when==='shelter'?sitG(.44,{hands:'knees',lean:.12}):null);
+ function* capWithHer(jm,when,{base=null}={}){const hp=headOf(jm);feel(jm,'tearful',30);jm.lookAt=camera.position;const seat=base||(when==='shelter'?ACT.seat(.44,{hands:'knees',lean:.12}):null);jm.gest(seat?G(seat):null);
   yield* lines([N('You hold it out. You don’t know what you’re supposed to say, so you don’t say anything.',{time:4}),{wait:1.6},JM('That’s his.',{time:1.4,face:'tearful'}),{wait:1.2}]);void hp;
   const ch=yield* choosing([{id:'give',label:'“It’s yours.”'},{id:'keep',label:'“I can keep it safe. Until you want it.”'}],{timeout:14,fallback:'keep'});
-  if(ch==='give'){capTo('her',jm);jm.gest(G(ACT9.clutch({base:when==='shelter'?ACT.seat(.44,{lean:.2}):null})));keep('cap','mom');keep('capWhen',when);feel(jm,'crying',40);
+  if(ch==='give'){capTo('her',jm);jm.gest(G(ACT9.clutch({base:seat})));keep('cap','mom');keep('capWhen',when);feel(jm,'crying',40);sound('a1Theme',camera.position,{gain:.5});
    yield* lines([Y('It’s yours.',{time:1.4}),{wait:1.6},N('She takes it in both hands. She turns it over. Then she puts her whole face in it.',{time:4.6}),{wait:2},JM('It smells like him.',{time:2,face:'crying'}),{wait:2.4}]);}
   else{yield* lines([Y('I can keep it safe. Until you want it.',{time:2.8}),{wait:1.4},JM('Yes. You— yes. I can’t. Not yet.',{time:3,face:'crying'}),JM('Don’t lose it.',{time:1.4}),Y('I won’t.',{time:1})]);capTo('away');keep('capWhen',null);}}
  // ---- Act I, scene 3: Alex's parents -----------------------------------------------------------------------------------------------------------

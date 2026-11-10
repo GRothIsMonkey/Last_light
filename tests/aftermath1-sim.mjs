@@ -130,6 +130,90 @@ export function playAftermathOne(T0,label='Aftermath I',{fromCard=true,from=null
   check(`${label}: you write his name on the line (hold F); the volunteer copies it; Sam: what it did is still done`,()=>{assert.ok(take('write',{hold:12,max:30,r:9}));assert.equal(C9().keep.wrote,true);assert.ok(until(()=>said('on the back of her hand'),40));
    assert.ok(until(()=>said('un-burn'),40));assert.ok(until(()=>ph()==='a1-return',60),'on to September');noThrow();});
   lap('names');}
+ // ---- Act III, scene 8: behind the fence ----
+ const TOWN=A9.SC.TOWN,ST9=TOWN.ST9,SPd=ST9.SP,dNow=()=>h.chapter8.ruin.locate(me().x,me().z).d,R9=A9.cast.reyes;
+ // walking with Reyes: keep up with him (he waits at each point until you are close) until something says otherwise
+ const followR=(stop,max=300)=>until(()=>{if(stop())return true;const p=me();if(Math.hypot(p.x-R9.x,p.z-R9.z)>2.8)approach({x:R9.x,z:R9.z},2.4,{pad:8,max:3,stop});return stop();},max);
+ const lookAt9=(id,o={})=>live(id)?take(id,{r:400,max:4,...o}):false;
+ if(inSeg('return')){start('return');
+  check(`${label}: September 1: a fence across Oak Hollow below Summerfield; Chapter Eight's street as it fell, settled; Reyes's rules at the gate`,()=>{assert.ok(phase('a1-return',60));assert.match(element('date').innerHTML,/SEPTEMBER 1, 2011/);
+   assert.equal(ST9.ST.state,'september');assert.ok(h.chapter8.ruin.root.visible!==false,'the ruin is shown');assert.equal(C9().sky,'clear');assert.ok(h.skyMat.uniforms.apoc.value<.02,'no red sky in September');
+   assert.ok(!h.chapter8.SC.STREET.town.FIRES.some(f=>f.m.visible),'the fires are out');assert.ok(approach({x:R9.x,z:R9.z},4,{pad:8,max:40}),'to Reyes');
+   assert.ok(until(()=>said('If I say stop, you stop'),40));choose(pickN(1),20);assert.ok(until(()=>ST9.GATES[0].k>.8,14),'he opens the gate');noThrow();neverThere();});
+  check(`${label}: you walk with him; the paint on the doors (all zeros); a gas crew needs a minute: ${quietly?'you keep walking, and he says it again':'you stop when he says stop'}`,()=>{
+   assert.ok(followR(()=>said('Hold them there a minute'),260),'up the street with Reyes to the gas crew');assert.ok(said('They’re all zeros'),'the paint');
+   assert.ok(until(()=>said('Stop. Right there.'),10));if(quietly){press('KeyW');T.advance(2.6);release('KeyW');}else{release('KeyW');}
+   assert.ok(until(()=>said('Okay. Go on.'),40));assert.equal(!!A9.C.flags.didntStop,!!quietly,'stopped: '+JSON.stringify({stopped:A9.C.flags.stopped,didnt:A9.C.flags.didntStop}));noThrow();});
+  check(`${label}: Sam's house (RESTRICTED); he won't go in; on with Reyes to the barricade at the trench`,()=>{assert.ok(followR(()=>said('You want to come in with me'),200),'to Sam’s house');assert.ok(until(()=>said('...No.'),20));
+   assert.ok(followR(()=>said('This is as far as anybody goes'),220),'to the barricade');assert.ok(dNow()>1028&&dNow()<1041,'at the barricade: '+dNow().toFixed(1));noThrow();});
+  check(`${label}: past the barricade: you choose what to look at (the oak; the house at 1052; the Kesslers'; the Hendersons')`,()=>{until(quiet,20);
+   const want=quietly?['look-lean']:['look-oak','look-kesslers','look-lean'];for(const id of want){assert.ok(until(()=>live(id),20),'offered: '+id);assert.ok(lookAt9(id),'looked: '+id);until(quiet,25);}
+   if(!quietly){assert.ok(said('It should look different'),'the oak');assert.ok(said('They were at the lake'),'the Kesslers weren’t home');}assert.ok(said('turned its bedroom lamp off'),'1052');
+   assert.ok(until(()=>said('standing by the bikes'),90));noThrow();});
+  lap('return');}
+ // ---- Act III, scene 9: under the streetlight ----
+ if(inSeg('remained')){start('remained');
+  check(`${label}: the two bikes where the four of you left them; you stand Jamie's back up`,()=>{const b=TOWN.BK.jamie.group.position;assert.ok(approach({x:b.x,z:b.z},2,{pad:8,max:60}),'to the bikes');assert.ok(phase('a1-remain',20));
+   assert.ok(until(()=>said('The whole time everybody was looking'),40));assert.ok(take('jamie-up',{hold:6,max:30,r:1.6}));assert.ok(until(()=>TOWN.BS.jamie?.mode==='park',8),'standing: '+TOWN.BS.jamie?.mode);noThrow();});
+  check(`${label}: Alex's bell (twice, the way he rang it at every corner); ${quietly?'you leave it':'Sam asks you to ring it again'}`,()=>{assert.ok(take('bell',{max:30,r:1.4}),'rang it');assert.equal(C9().keep.bell,true);assert.ok((C9().sounds.a1Bell||0)>=1);
+   assert.ok(until(()=>said('Do it again'),40));const c=choose(pickN(1),30);if(!quietly){assert.equal(c,'again');take('bell2',{max:6,r:1.6});assert.ok(until(()=>said('so we’d know where he was'),30));}noThrow();});
+  check(`${label}: Sam's father comes out with his fan, and the Tour de Oak Hollow`,()=>{assert.ok(until(()=>said('I don’t know why I took the fan'),60),'the fan');if(optional&&maybe('tour',{wait:16,r:1.6})){putDown(40);assert.ok(until(()=>said('His chain came off on the hill'),20),'the Tour: Jamie’s chain');}
+   assert.ok(until(()=>said('Let’s get these out of here'),60),'out of here');noThrow();});
+  check(`${label}: you walk Jamie's out (its tire flat), Sam walks Alex's; into the back of the truck`,()=>{assert.ok(take('take-jamie',{max:30,r:1.6}));assert.equal(TOWN.BS.jamie?.mode,'walk');assert.equal(TOWN.BS.alex?.mode,'samWalk');
+   assert.ok(followR(()=>dNow()<858||live('lift'),400),'down to the gate: '+dNow().toFixed(1));assert.ok(take('lift',{hold:5,max:40,r:2.4}),'lifted it in');assert.ok(until(()=>TOWN.BS.jamie?.mode==='at',6));
+   assert.ok(until(()=>said('If you want to come'),40));assert.ok(phase('a1-porch',40),'Friday');noThrow();neverThere();});
+  lap('remained');}
+ // ---- Act III, scene 10: Jamie's porch; Alex's garage, his room ----
+ if(inSeg('porch')){start('porch');const JP=TOWN.MEM&&A9.SC.TOWN?null:null;void JP;
+  check(`${label}: Jamie's porch, Friday: the light on in the daytime; you walk his bike up to his mother`,()=>{assert.ok(phase('a1-porch',30));assert.match(element('date').innerHTML,/SEPTEMBER 2, 2011/);
+   assert.ok(take('take-bmx',{max:30,r:1.8}));assert.equal(TOWN.BS.jamie?.mode,'walk');const jm=A9.cast.jamieMom;assert.ok(approach({x:jm.x,z:jm.z},2.6,{pad:8,max:40}));assert.ok(until(()=>said('That’s how you know I’m home'),40));noThrow();});
+  check(`${label}: ${quietly?'you lean it by the rail':'you leave it in the middle of the walk, where he always did'}`,()=>{const id=quietly?'rail':'walkway';assert.ok(take(id,{max:30,r:1.6}));assert.equal(C9().keep.told.bmx,quietly?'rail':'walk');noThrow();});
+  check(`${label}: the Hendersons, and Lily's drawing: Biscuit (he eats socks)`,()=>{assert.ok(until(()=>said('It’s Biscuit'),60));assert.ok(until(()=>said('He eats socks.'),40));if(optional&&maybe('drawing',{wait:4,r:9})){putDown(30);}
+   assert.ok(until(()=>said('Thank you for bringing it'),40));noThrow();});
+  check(`${label}: she asks if he was scared; ${quietly?'you cannot say':'you tell her the truth'}; his cap (${cap})`,()=>{assert.ok(until(()=>said('Was he scared'),60));const c=choose(pickN(1),30);assert.ok(c);
+   if(C9().keep.cap==='you'&&c!=='walk'&&!quietly){assert.ok(until(()=>!!A9.C.choice,40),'the cap');choose(cap==='give-porch'?1:2,10);assert.equal(C9().keep.cap,cap==='give-porch'?'mom':'you');if(cap==='give-porch')assert.equal(C9().keep.capWhen,'porch');}
+   assert.ok(until(()=>said('So. Candles.'),90));assert.ok(phase('a1-drive',40));noThrow();});
+  lap('porch');}
+ if(inSeg('driveway')){start('driveway');
+  check(`${label}: Alex's garage: his bike back on its two hooks; his father, and the pictures he printed (Sunday at the oak is yours)`,()=>{assert.ok(phase('a1-drive',30));assert.ok(take('take-alex',{max:30,r:1.8}));const ad=A9.cast.alexDad;
+   assert.ok(approach({x:ad.x,z:ad.z},3,{pad:8,max:40}));assert.ok(until(()=>said('All week'),40));assert.ok(take('give-alex',{max:30,r:2.2}));assert.ok(until(()=>said('Who asks for hooks'),40));
+   assert.ok(take('print',{max:40,r:2.2}));putDown(40);assert.equal(C9().keep.print,true);assert.equal(C9().keep.camera,'parents');assert.ok(said('Always the one holding it'));noThrow();});
+  check(`${label}: his mother: ${quietly?'you can’t go up':'up to his room, as he left it; she asks; you answer'}`,()=>{assert.ok(until(()=>said('To his room'),40));const c=choose(pickN(1),30);
+   if(!quietly){assert.equal(c,'up');assert.ok(until(()=>A9.C.inRoom,10),'in his room');assert.ok(until(()=>live('room-window'),20));lookAt9('room-window');until(quiet,20);lookAt9('room-camera');until(quiet,20);
+    assert.ok(until(()=>said('Was he by himself'),60));choose(1,20);assert.ok(until(()=>said('Okay. Thank you.'),20));}
+   assert.ok(until(()=>A9.C.fadeOut>=0||ph()==='a1-mem1',90),'to Saturday');noThrow();});
+  lap('driveway');}
+ // ---- Act III, scene 11: the two remembrances ----
+ const MEM=TOWN.MEM;
+ if(inSeg('memorial-jamie')){start('memorial-jamie');
+  check(`${label}: Saturday at dusk: candles on Jamie's lawn, people in the grass (not a service); Sam at the curb`,()=>{assert.ok(phase('a1-mem1',90));assert.match(element('date').innerHTML,/SEPTEMBER 3, 2011.*7:\d\d PM/);assert.ok(MEM.lawn.visible);
+   const n=A9.CTX.EVERYONE.filter(a=>a.visible).length;assert.ok(n>=14,'people on the lawn: '+n);assert.equal(C9().sky,'evening');noThrow();neverThere();});
+  check(`${label}: you walk among them and hear what they remember (most of it funny); you stand with Sam at the curb`,()=>{const JH=h.world.homes.jamie,JW=(x,z)=>{const q=JH.toWorld(x,z);return {x:q.x,z:q.z};};
+   if(!quietly){approach(JW(JH.doorX-3.4,10.6),1.2,{pad:8,max:30});assert.ok(until(()=>said('Diagonal stripes'),20),'Mr. Davis');until(quiet,20);approach(JW(JH.doorX-2.0,9.4),1.2,{pad:8,max:20});until(()=>said('I counted them'),20);until(quiet,20);}
+   const s=C9().sam;approach({x:s.x,z:s.z},1.3,{pad:8,max:30});assert.ok(until(()=>said('He does, though'),30),'Sam’s note');until(quiet,20);noThrow();});
+  check(`${label}: ${quietly?'his picture':'a note on the steps; his picture'}; his mother asks for something you know about him`,()=>{if(!quietly){assert.ok(take('cards',{max:20,r:1.6}),'the card table');choose(1,20);until(quiet,20);assert.equal(C9().keep.told.jamieNote,'medical');}
+   if(optional)lookAt9('photo',{r:9});until(quiet,20);const jm=A9.cast.jamieMom;approach({x:jm.x,z:jm.z},2.6,{pad:8,max:30});assert.ok(until(()=>said('Something I don’t know'),60));const c=choose(pickN(1),30);
+   if(!quietly)assert.ok(until(()=>said('Oh, that kid'),30));assert.ok(until(()=>live('go'),40),'you can go home when you are ready');take('go',{max:20,r:2.4,pad:10});assert.ok(phase('a1-mem2',60),'Tuesday');noThrow();neverThere();});
+  lap('memorial-jamie');}
+ if(inSeg('memorial-alex')){start('memorial-alex');const SW=(x,z)=>SCH.W(x,z);
+  check(`${label}: Tuesday, the gym again: chairs in rows, his pictures on the walls; you ${quietly?'stand at the back':'sit down'}; his father says a little`,()=>{assert.ok(phase('a1-mem2',30));assert.match(element('date').innerHTML,/SEPTEMBER 6, 2011/);
+   if(!quietly)assert.ok(take('sit',{max:30,r:1.4,pad:10}),'sat down');assert.ok(until(()=>said('how did I not see that'),120),'his father');assert.ok(until(()=>said('That’s all I can'),40));noThrow();});
+  check(`${label}: the boards: in one of them he is there after all (his shadow); you tell his father${quietly?' (or not)':''}`,()=>{until(()=>Object.keys(A9.C.offers?Object.fromEntries(A9.C.offers):{}).some(k=>/^board-/.test(k)),60);until(()=>!A9.C.pose,8);
+   const B=SCH.SPOT.prints;for(let j=0;j<B.length&&!A9.C.flags.shadow;j++){const b=B[j],w=SW(b.x+(b.x<0?1.6:-1.6),b.z);approach(w,1,{pad:10,max:30});until(quiet,30);lookAt9('board-'+j,{r:9});until(quiet,40);}
+   assert.ok(A9.C.flags.shadow,'found the one with his shadow');assert.ok(until(()=>live('tell'),20));if(!quietly){take('tell',{max:20,r:2.6,pad:10});choose(1,20);assert.ok(until(()=>said('He got himself in one'),60));assert.equal(C9().keep.told.shadow,true);}noThrow();});
+  check(`${label}: a card for his family in the box by the doors; you go outside when you are ready`,()=>{if(!quietly){const c=SCH.SPOT.cards,w=SW(c.x+1,c.z-.8);approach(w,1,{pad:10,max:40});assert.ok(take('cards',{max:20,r:1.6,pad:10}));choose(2,20);assert.equal(C9().keep.note,'bell');until(quiet,20);}
+   assert.ok(until(()=>live('leave'),60));take('leave',{max:40,r:2,pad:10});assert.ok(phase('a1-sam',60),'September 17');noThrow();});
+  lap('memorial-alex');}
+ // ---- Act III, scene 12: the chain ----
+ if(inSeg('sam')){start('sam');
+  check(`${label}: September 17, your driveway: your chain is off; Sam rides down the street`,()=>{assert.ok(phase('a1-sam',30));assert.match(element('date').innerHTML,/SEPTEMBER 17, 2011/);assert.ok(MEM.myBike.group.visible);
+   if(optional)maybe('try',{wait:12,hold:4,r:1.4});assert.ok(until(()=>said('You have to do the back first'),80),'Sam');noThrow();});
+  check(`${label}: he kneels at it; you turn the pedal backwards (hold F) and the chain goes back on`,()=>{assert.ok(until(()=>live('pedal'),40));assert.ok(take('pedal',{hold:8,max:30,r:1.4}));assert.ok(until(()=>said('character'),30),'Jamie’s chain');noThrow();});
+  check(`${label}: the curb; his gum (he takes two: "Medical—"); what he is angry about; ${quietly?'you say nothing':'you say it is yours, and he will not let you have it'}`,()=>{assert.ok(take('curb',{max:30,r:1.4,pad:8}));assert.ok(take('gum2',{max:30,r:9}));assert.ok(until(()=>said('Medical—'),20));
+   assert.ok(until(()=>said('So what was the point'),60));const c=choose(pickN(1),30);if(!quietly)assert.ok(until(()=>said('Mine too.'),40));assert.ok(until(()=>said('Is that bad'),60));choose(pickN(2),20);noThrow();});
+  check(`${label}: the streetlights come on: rule four; same time tomorrow; he rides home`,()=>{assert.ok(until(()=>said('Rule four'),60));assert.ok(A9.C.lampsOn);assert.ok(until(()=>said('Same time tomorrow'),30));choose(pickN(1),20);
+   assert.ok(until(()=>ph()==='a1-weeks'||A9.C.fadeOut>=0,90),'on to October');noThrow();neverThere();});
+  lap('sam');}
  M9.seg=seg;M9.lines=lines.length;
  return {lines:()=>lines,seg};
 }

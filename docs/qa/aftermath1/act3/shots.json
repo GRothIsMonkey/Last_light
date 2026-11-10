@@ -1,0 +1,311 @@
+[
+ {
+  "name": "street",
+  "frame": "fence",
+  "note": "September 1: the fence below Summerfield and its gate; Reyes; the crews; the paint; the barricade and what is past it",
+  "phase": "a1-return",
+  "caption": "There’s a fence all the way across Oak Hollow now, just below Summerfield. Chain-link on concrete feet, a gate, a sign.",
+  "draws": 1847,
+  "tris": 559080
+ },
+ {
+  "name": "street",
+  "frame": "gate",
+  "note": "September 1: the fence below Summerfield and its gate; Reyes; the crews; the paint; the barricade and what is past it",
+  "phase": "a1-return",
+  "caption": "SAM’S DAD“And a couple of— some things.”",
+  "draws": 1790,
+  "tris": 524717,
+  "info": {
+   "gate": 0
+  }
+ },
+ {
+  "name": "street",
+  "frame": "summerfield",
+  "note": "September 1: the fence below Summerfield and its gate; Reyes; the crews; the paint; the barricade and what is past it",
+  "phase": "a1-return",
+  "caption": "SAM’S DAD“And a couple of— some things.”",
+  "draws": 645,
+  "tris": 696349
+ },
+ {
+  "name": "street",
+  "frame": "paint",
+  "note": "September 1: the fence below Summerfield and its gate; Reyes; the crews; the paint; the barricade and what is past it",
+  "phase": "a1-return",
+  "caption": "SAM’S DAD“And a couple of— some things.”",
+  "draws": 215,
+  "tris": 396198,
+  "info": {
+   "u": 939.3867887710221
+  }
+ },
+ {
+  "name": "street",
+  "frame": "kowalski",
+  "note": "September 1: the fence below Summerfield and its gate; Reyes; the crews; the paint; the barricade and what is past it",
+  "phase": "a1-return",
+  "caption": "SAM’S DAD“And a couple of— some things.”",
+  "draws": 1105,
+  "tris": 586426
+ },
+ {
+  "name": "street",
+  "frame": "sams",
+  "note": "September 1: the fence below Summerfield and its gate; Reyes; the crews; the paint; the barricade and what is past it",
+  "phase": "a1-return",
+  "caption": "SAM’S DAD“And a couple of— some things.”",
+  "draws": 858,
+  "tris": 740799
+ },
+ {
+  "name": "street",
+  "frame": "barricade",
+  "note": "September 1: the fence below Summerfield and its gate; Reyes; the crews; the paint; the barricade and what is past it",
+  "phase": "a1-return",
+  "caption": "SAM’S DAD“And a couple of— some things.”",
+  "draws": 819,
+  "tris": 356238
+ },
+ {
+  "name": "street",
+  "frame": "oak",
+  "note": "September 1: the fence below Summerfield and its gate; Reyes; the crews; the paint; the barricade and what is past it",
+  "phase": "a1-return",
+  "caption": "SAM’S DAD“And a couple of— some things.”",
+  "draws": 790,
+  "tris": 361925
+ },
+ {
+  "name": "street",
+  "frame": "hendersons",
+  "note": "September 1: the fence below Summerfield and its gate; Reyes; the crews; the paint; the barricade and what is past it",
+  "phase": "a1-return",
+  "caption": "SAM’S DAD“And a couple of— some things.”",
+  "draws": 295,
+  "tris": 305870
+ },
+ {
+  "name": "bikes",
+  "frame": "found",
+  "note": "under the streetlight: Alex’s on its kickstand, Jamie’s on its side; stood up; the bell; Sam",
+  "phase": "a1-remain",
+  "caption": "Two bikes under the streetlight across from Sam’s. Where the four of you left them on Friday night, in a row.",
+  "draws": 889,
+  "tris": 907567
+ },
+ {
+  "name": "bikes",
+  "frame": "close",
+  "note": "under the streetlight: Alex’s on its kickstand, Jamie’s on its side; stood up; the bell; Sam",
+  "phase": "a1-remain",
+  "caption": "Two bikes under the streetlight across from Sam’s. Where the four of you left them on Friday night, in a row.",
+  "draws": 957,
+  "tris": 949372
+ },
+ {
+  "name": "bikes",
+  "frame": "up",
+  "note": "under the streetlight: Alex’s on its kickstand, Jamie’s on its side; stood up; the bell; Sam",
+  "phase": "a1-remain",
+  "caption": "His bike. The pad on the bars is the same blue as his cap, which is in your pocket.",
+  "draws": 633,
+  "tris": 993278,
+  "info": {
+   "mode": "park"
+  }
+ },
+ {
+  "name": "bikes",
+  "frame": "bell",
+  "note": "under the streetlight: Alex’s on its kickstand, Jamie’s on its side; stood up; the bell; Sam",
+  "phase": "a1-remain",
+  "caption": "The back tire is flat.",
+  "draws": 226,
+  "tris": 342217,
+  "info": {
+   "bell": true
+  }
+ },
+ {
+  "name": "bikes",
+  "frame": "sam",
+  "note": "under the streetlight: Alex’s on its kickstand, Jamie’s on its side; stood up; the bell; Sam",
+  "phase": "a1-remain",
+  "caption": "SAM“...No. Do it again.”",
+  "draws": 1125,
+  "tris": 1010823,
+  "info": {
+   "expr": "crying"
+  }
+ },
+ {
+  "name": "bikes",
+  "frame": "dad",
+  "note": "under the streetlight: Alex’s on its kickstand, Jamie’s on its side; stood up; the bell; Sam",
+  "phase": "a1-remain",
+  "caption": "SAM’S DAD“I don’t know why I took the fan.”",
+  "draws": 1098,
+  "tris": 399448,
+  "info": {}
+ },
+ {
+  "name": "porch",
+  "frame": "arrive",
+  "note": "Jamie’s porch, Friday: his mother on the step (the light on in the daytime); his bike on the walk; Lily and Mrs. Henderson; Biscuit",
+  "phase": "a1-porch",
+  "caption": "Jamie’s house. The porch light is on, in the daytime.",
+  "draws": 1903,
+  "tris": 632590
+ },
+ {
+  "name": "porch",
+  "frame": "step",
+  "note": "Jamie’s porch, Friday: his mother on the step (the light on in the daytime); his bike on the walk; Lily and Mrs. Henderson; Biscuit",
+  "phase": "a1-porch",
+  "caption": "Jamie’s house. The porch light is on, in the daytime.",
+  "draws": 535,
+  "tris": 1084976,
+  "info": {
+   "expr": "numb"
+  }
+ },
+ {
+  "name": "porch",
+  "frame": "face",
+  "note": "Jamie’s porch, Friday: his mother on the step (the light on in the daytime); his bike on the walk; Lily and Mrs. Henderson; Biscuit",
+  "phase": "a1-porch",
+  "caption": "Jamie’s house. The porch light is on, in the daytime.",
+  "draws": 516,
+  "tris": 1046022,
+  "info": {
+   "expr": "numb"
+  }
+ },
+ {
+  "name": "porch",
+  "frame": "walkway",
+  "note": "Jamie’s porch, Friday: his mother on the step (the light on in the daytime); his bike on the walk; Lily and Mrs. Henderson; Biscuit",
+  "phase": "a1-porch",
+  "caption": "JAMIE’S MOM“...Yeah. Right there. Leave it right there.”",
+  "draws": 527,
+  "tris": 1030604,
+  "info": {}
+ },
+ {
+  "name": "porch",
+  "frame": "lily",
+  "note": "Jamie’s porch, Friday: his mother on the step (the light on in the daytime); his bike on the walk; Lily and Mrs. Henderson; Biscuit",
+  "phase": "a1-porch",
+  "caption": "LILY“It’s Biscuit.”",
+  "draws": 399,
+  "tris": 616401,
+  "info": {}
+ },
+ {
+  "name": "porch",
+  "frame": "laugh",
+  "note": "Jamie’s porch, Friday: his mother on the step (the light on in the daytime); his bike on the walk; Lily and Mrs. Henderson; Biscuit",
+  "phase": "a1-porch",
+  "caption": "JAMIE’S MOM“Of course he did. Of course he gave himself a dog.”",
+  "draws": 545,
+  "tris": 1119028,
+  "info": {
+   "expr": "crying"
+  }
+ },
+ {
+  "name": "garage",
+  "frame": "arrive",
+  "note": "Alex’s garage: his father; the bike back on its hooks; the picture; his mother at the door; his room",
+  "phase": "a1-drive",
+  "caption": "Briarwood. The garage is open at Alex’s. His dad is in it, not doing anything, with a rag in his hands.",
+  "draws": 444,
+  "tris": 734603
+ },
+ {
+  "name": "garage",
+  "frame": "dad",
+  "note": "Alex’s garage: his father; the bike back on its hooks; the picture; his mother at the door; his room",
+  "phase": "a1-drive",
+  "caption": "Briarwood. The garage is open at Alex’s. His dad is in it, not doing anything, with a rag in his hands.",
+  "draws": 496,
+  "tris": 962196,
+  "info": {
+   "expr": "numb"
+  }
+ },
+ {
+  "name": "garage",
+  "frame": "hooks",
+  "note": "Alex’s garage: his father; the bike back on its hooks; the picture; his mother at the door; his room",
+  "phase": "a1-drive",
+  "caption": "SAM“...Yeah.”",
+  "draws": 442,
+  "tris": 878539,
+  "info": {
+   "hung": true
+  }
+ },
+ {
+  "name": "garage",
+  "frame": "print",
+  "note": "Alex’s garage: his father; the bike back on its hooks; the picture; his mother at the door; his room",
+  "phase": "a1-drive",
+  "caption": "Sunday at the oak. The twenty-first, at 7:26. Four bikes in the grass, and three of you, because he was the one holding ",
+  "draws": 437,
+  "tris": 878393,
+  "info": {
+   "view": "inspect"
+  }
+ },
+ {
+  "name": "garage",
+  "frame": "mother",
+  "note": "Alex’s garage: his father; the bike back on its hooks; the picture; his mother at the door; his room",
+  "phase": "a1-drive",
+  "caption": "ALEX’S MOM“Do you want to come up? To his room?”",
+  "draws": 453,
+  "tris": 835333,
+  "info": {
+   "expr": "numb"
+  }
+ },
+ {
+  "name": "garage",
+  "frame": "room",
+  "note": "Alex’s garage: his father; the bike back on its hooks; the picture; his mother at the door; his room",
+  "phase": "a1-drive",
+  "caption": "His room. Exactly the way it was on the twenty-first, except for her.",
+  "draws": 2102,
+  "tris": 964911,
+  "info": {
+   "inRoom": true
+  }
+ },
+ {
+  "name": "garage",
+  "frame": "room-mom",
+  "note": "Alex’s garage: his father; the bike back on its hooks; the picture; his mother at the door; his room",
+  "phase": "a1-drive",
+  "caption": "His room. Exactly the way it was on the twenty-first, except for her.",
+  "draws": 754,
+  "tris": 855415,
+  "info": {
+   "expr": "numb"
+  }
+ },
+ {
+  "name": "garage",
+  "frame": "room-desk",
+  "note": "Alex’s garage: his father; the bike back on its hooks; the picture; his mother at the door; his room",
+  "phase": "a1-drive",
+  "caption": "His room. Exactly the way it was on the twenty-first, except for her.",
+  "draws": 1759,
+  "tris": 925109,
+  "info": {
+   "cam": true
+  }
+ }
+]

@@ -426,7 +426,7 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
   for(const F of FIRES){F.level=0;F.m.visible=false;for(const S of F.smoke)S.s.material.opacity=0;}for(const F of FIRE2){F.m.removeFromParent();for(const S of F.smoke)S.s.removeFromParent();FIRES.splice(FIRES.indexOf(F),1);}FIRE2.length=0;for(const c of smokeCols)c.on=false;P.ash=0;ASH.material.opacity=0;
   P.shake=0;P.log.events.length=0;ruin.syncCuts();}
  reset();
- Object.assign(P,{root,show,reset,update,sources,blocked,floorAt,fire:fireEv,skip:skipEv,EV,FIELD,YARD,PX,BO,POLE,CAR,CAR2,crack,smokeCols,ASH,houseHend:HHEND,houseAcross:HACROSS,proxy,engage,hurt,blowout,burst,pole,car,field,fieldPose,dust,chunks,shards,sparks,spray,flame:fire,power,SP,houseAt,
+ Object.assign(P,{root,show,reset,update,sources,blocked,floorAt,fire:fireEv,skip:skipEv,EV,FIELD,YARD,PX,BO,POLE,CAR,CAR2,crack,smokeCols,ASH,FIRES,houseHend:HHEND,houseAcross:HACROSS,proxy,engage,hurt,blowout,burst,pole,car,field,fieldPose,dust,chunks,shards,sparks,spray,flame:fire,power,SP,houseAt,
 });
  Object.defineProperty(P,'stage',{get:()=>Object.fromEntries(Object.entries(EV).map(([kk,E])=>[kk,E.t<0?'waiting':E.done?'done':'running']))});
  return P;

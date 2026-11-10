@@ -102,7 +102,7 @@ export function recordActs(H){
     MED('That ankle’s sprained, not broken.',{time:2}),MED('Somebody wrapped it last night.',{time:1.8}),SM('(to the wall) Figure eight.',{time:1.8}),MED('That’s right. That’s exactly right.',{time:2.2}),{wait:1.2}]);
    rise({x:seatNurse.you.x,z:-4.95});
    objective('Wash up.','The sink, by the door.');
-   offer('wash','Wash your hands',()=>WV(NS.sink,.95),{r:1.6,hold:3.4,tick:(dt,v)=>{if(!C.washing){C.washing=true;const s=W(NS.sink.x,NS.sink.z);water.visible=true;water.position.set(s.x,.884,s.z);sound('c8Splash',WV(NS.sink,.9),{gain:.4});
+   offer('wash','Wash your hands',()=>WV(NS.sink,.95),{r:1.6,hold:3.4,tick:(dt,v)=>{if(!C.washing){C.washing=true;const s=W(NS.sink.x,NS.sink.z);water.visible=true;water.position.set(s.x,.884,s.z);sound('splash',WV(NS.sink,.9),{gain:.4});
       if(phys&&!phys.playerBusy())phys.playerReach({at:()=>WV({x:NS.sink.x+.12,z:NS.sink.z},.9),dur:[.45,2.6,.4],carry:false,low:false});}
      water.material.color.setHex(0x5a5248).lerp(new THREE.Color(0xaecbd6),smooth((v-.25)/.7));},release:()=>{C.washing=false;},
     fn:()=>{C.washed=true;water.material.color.setHex(0xaecbd6);later(3,()=>{water.visible=false;});}});
