@@ -39,8 +39,8 @@ export function adultFace(A){const person=A.person,head=person.parts.head,art=A.
  const rimM=new THREE.MeshBasicMaterial({color:0xb24a4e,transparent:true,opacity:0,depthWrite:false}),tearM=new THREE.MeshStandardMaterial({color:0xe4f2ff,roughness:.05,metalness:.35,transparent:true,opacity:0,depthWrite:false});
  const lipM=new THREE.MeshStandardMaterial({color:new THREE.Color(F.lips??0xa86a58).multiplyScalar(.78),roughness:.7});
  for(const m of [rimM,tearM,lipM])m.name='a1-adult-face';
- const ring=new THREE.RingGeometry(.74,1,20),strip=new THREE.PlaneGeometry(.0036,.036),cornerG=new THREE.BoxGeometry(.0085,.0024,.002);
- const eyes=[-1,1].map(s=>{const rim=new THREE.Mesh(ring,rimM);rim.position.set(s*.033,.0115,-.0896);rim.scale.set(.0172,.0112,1);rim.rotation.y=Math.PI;g.add(rim);
+ const ring=new THREE.RingGeometry(.8,1,20),strip=new THREE.PlaneGeometry(.0034,.036),cornerG=new THREE.BoxGeometry(.0072,.0021,.002);
+ const eyes=[-1,1].map(s=>{const rim=new THREE.Mesh(ring,rimM);rim.position.set(s*.033,.0115,-.0896);rim.scale.set(.0162,.0104,1);rim.rotation.y=Math.PI;g.add(rim);
   const tr=new THREE.Mesh(strip,tearM);tr.position.set(s*.0365,-.0145,-.0868);tr.rotation.set(.1,Math.PI,s*.07);g.add(tr);
   const drop=new THREE.Mesh(new THREE.SphereGeometry(.0026,8,6),tearM);g.add(drop);return {s,rim,tr,drop,ph:Math.random()};});
  const corners=[-1,1].map(s=>{const c=new THREE.Mesh(cornerG,lipM);c.position.set(s*.0212,-.0597,-.0868);g.add(c);return c;});
@@ -66,7 +66,7 @@ export function adultFace(A){const person=A.person,head=person.parts.head,art=A.
   corners.forEach((c,i)=>{const s=i?1:-1;c.visible=m.visible&&Math.abs(ex.down)>.08;c.rotation.z=-s*ex.down*.8;c.position.y=-.0597-ex.down*.0034-ex.open*.002;c.position.x=s*(.0212-.002*Math.max(0,ex.down)+.0016*ex.open);});
   person.lids.forEach((l,i)=>{if(ex.lids>.06){const k2=Math.max(ex.lids,l.visible?l.scale.y/.014:0);l.visible=true;l.position.y=base.lid[i].y+.0046*(1-k2);l.scale.y=.0042+.0058*k2;}else l.position.y=base.lid[i].y;});
   const near=m.visible;g.visible=near;if(!near)return;
-  rimM.opacity=clamp(ex.red,0,1)*.5;tearM.opacity=clamp(ex.cry,0,1)*.6;
+  rimM.opacity=clamp(ex.red,0,1)*.4;tearM.opacity=clamp(ex.cry,0,1)*.6;
   for(const E of eyes){E.drop.visible=ex.cry>.45;if(E.drop.visible){E.ph=(E.ph+dt/(2.8+E.s*.4))%1;const t=E.ph;E.drop.position.set(E.s*(.0355+t*.003),-.002-t*.03,-.0876+t*.002);}}}
  const api={set,mood,grief,update,attach,detach,look(){},rich(){},enable(){},get pulse(){return S.pulse||0;},get sobbing(){return ex.sob;},get crying(){return ex.cry;},get enabled(){return S.on;},S,ex,get expression(){return S.hold>0?S.name:S.mood;}};
  return api;}

@@ -126,7 +126,7 @@ export function createSchool({scene}){
   for(const [i,z] of [[0,-7.3],[1,-4.2]]){const x=19.4;box(g2,x-.95,x+.95,.42,.5,z-.36,z+.36,vinyl);box(g2,x-.95,x+.95,0,.42,z-.36,z+.36,M(0xd9d5c9,{roughness:.7}));box(g2,x+.55,x+.93,.5,.6,z-.3,z+.3,pillow);solid('shell',x,z,1,.4);NSPOT['cot'+i]={x,z};}
   box(g2,nx,nx+.55,0,.86,nz,nz+1.3,white);box(g2,nx+.06,nx+.5,.8,.88,nz+.25,nz+1.05,steel);K.pipe(g2,[nx+.12,.88,nz+.65],[nx+.12,1.12,nz+.65],.014,steel,6);K.pipe(g2,[nx+.12,1.12,nz+.65],[nx+.3,1.1,nz+.65],.012,steel,6);
   box(g2,nx,nx+.04,1.2,1.75,nz+.3,nz+1,M(0xaec0c8,{roughness:.08,metalness:.6}));solid('shell',nx+.3,nz+.65,.32,.7);NSPOT.sink={x:nx+.3,z:nz+.65,y:.9};
-  box(g2,nx,nx+.45,0,1.9,nz+1.5,nz+2.6,white);box(g2,nx+.44,nx+.46,1,1.85,nz+1.55,nz+2.55,glass);solid('shell',nx+.25,nz+2.05,.28,.6);
+  box(g2,16.4,17.5,0,1.9,NURSE.z1-.45,NURSE.z1,white);box(g2,16.45,17.45,1,1.85,NURSE.z1-.47,NURSE.z1-.45,glass);solid('shell',16.95,NURSE.z1-.22,.6,.27);
   box(g2,NURSE.x1-.6,NURSE.x1,.72,.76,-6.4,-5,tableTop);for(const z of [-6.3,-5.1])K.pipe(g2,[NURSE.x1-.5,0,z],[NURSE.x1-.5,.72,z],.02,steel,6);solid('shell',NURSE.x1-.3,-5.7,.32,.75);NSPOT.desk={x:NURSE.x1-.3,z:-5.7,y:.78};
   // (a box fan on the desk: Sam's father brings it; its blades are the scene's own to turn)
   const wn=K.box(g2,18.6,1.75,NURSE.z0+.02,1.5,1.1,.03,skyM,{name:'a1-nurse-window'});wn.castShadow=false;WINS.push(wn);for(let y=1.24;y<2.3;y+=.07)box(g2,17.84,19.36,y,y+.035,NURSE.z0+.04,NURSE.z0+.06,white);
@@ -137,12 +137,12 @@ export function createSchool({scene}){
  const RSPOT={};
  {const g2=shell;box(g2,19,22.6,.68,.72,1.2,3,tableTop);for(const [x,z] of [[19.15,1.35],[22.45,1.35],[19.15,2.85],[22.45,2.85],[20.8,2.1]])K.pipe(g2,[x,0,z],[x,.68,z],.022,steel,6);solid('shell',20.8,2.1,1.85,.95);RSPOT.table={x:20.8,z:2.1,y:.725};
   const chair=(x,z,ry)=>{const c=new THREE.Group();c.position.set(x,0,z);c.rotation.y=ry;g2.add(c);K.box(c,0,.4,0,.38,.03,.36,M(0x3f6a8a,{roughness:.6}));K.box(c,0,.66,.17,.36,.3,.03,M(0x3f6a8a,{roughness:.6}));for(const [dx,dz] of [[-.16,-.15],[.16,-.15],[-.16,.15],[.16,.15]])K.pipe(c,[dx,0,dz],[dx,.4,dz],.012,steel,5);};
-  for(const [x,z,ry] of [[19.6,.75,0],[21,.75,0],[22.2,.75,0],[19.6,3.5,Math.PI],[22.3,3.5,Math.PI],[18.5,2.1,-Math.PI/2]])chair(x,z,ry);
+  for(const [x,z,ry] of [[19.6,.75,Math.PI],[21,.75,Math.PI],[22.2,.75,Math.PI],[19.6,3.5,0],[21,3.5,0],[22.3,3.5,0],[18.5,2.1,-Math.PI/2]])chair(x,z,ry);
   box(g2,22.2,23.9,.72,.76,-1.4,-.6,wood);box(g2,22.3,23.8,0,.72,-1.35,-.65,M(0x7a5a3a,{roughness:.8}));solid('shell',23.05,-1,.9,.45);
   box(g2,17.2,23.4,.95,2.15,CLASS.z0+.02,CLASS.z0+.06,M(0x2f4a3a,{roughness:.9}));box(g2,17.15,23.45,.9,.95,CLASS.z0+.02,CLASS.z0+.12,wood);paperOn(g2,20.3,1.6,CLASS.z0+.07,2.6,1.1,TM('welcome',[],0x2f4a3a,{transparent:true,opacity:.9}),0,'a1-chalk');
   for(let z=-1;z<5.6;z+=2.2){const wn=K.box(g2,CLASS.x1-.02,1.8,z+.8,.03,1.3,1.7,skyM,{name:'a1-room-window'});wn.castShadow=false;WINS.push(wn);}
   box(g2,16.3,16.7,0,1.2,3.4,6,wood);for(let z=3.6;z<6;z+=.5)box(g2,16.69,16.72,.1,1.15,z,z+.02,M(0x5a3a22));solid('shell',16.5,4.7,.25,1.35);
-  RSPOT.you={x:20.4,z:3.75};RSPOT.sam={x:21.5,z:3.8};RSPOT.reyes={x:20.8,z:.55};RSPOT.mom={x:17.6,z:4.9};RSPOT.dad={x:18,z:-.9};RSPOT.door={x:16.9,z:1};RSPOT.in={x:17.4,z:1.2};RSPOT.hall={x:14.7,z:1};
+  RSPOT.you={x:21,z:3.5};RSPOT.sam={x:19.6,z:3.5};RSPOT.reyes={x:20.8,z:.55};RSPOT.mom={x:17.6,z:4.9};RSPOT.dad={x:18,z:-.9};RSPOT.door={x:16.9,z:1};RSPOT.in={x:17.4,z:1.2};RSPOT.hall={x:14.7,z:1};
   RSPOT.slots=[0,1,2,3].map(i=>({x:19.55+i*.83,z:2.1,y:.728}));RSPOT.box={x:22.9,z:-1,y:.77};}
  bake(shell);
  // ---- dressing by state ---------------------------------------------------------------------------------------------------------------
@@ -156,6 +156,22 @@ export function createSchool({scene}){
  // (the board on wheels: cork, a frame, casters)
  function standBoard(g2,x,z,w,h,m,{ry=Math.PI,set='shelter',name='a1-board'}={}){const b=new THREE.Group();b.position.set(x,0,z);b.rotation.y=ry;g2.add(b);K.box(b,0,1.3,-.02,w+.08,h+.08,.03,wood);const p=K.plane(b,0,1.3,0,w,h,m,{name});p.castShadow=false;for(const dx of [-w/2,w/2]){K.pipe(b,[dx,0,-.02],[dx,1.3+h/2,-.02],.02,steel,6);K.box(b,dx,.03,-.02,.06,.06,.6,steel);}
   solid(set,x,z,ry%Math.PI?.22:w/2+.1,ry%Math.PI?w/2+.1:.22);return p;}
+ // somebody asleep on a cot under a blanket: a shape, a head on the pillow (the same for a child, smaller)
+ const SK=[0xd6a57f,0xc4906a,0xe0b595,0x9a6a4c,0xe2b898,0x8a5a3e,0xd9b48e],HR=[0x2a1c14,0x5a3f28,0x8e8a84,0x1c1612,0x7a5230,0xb9b3aa,0x3b2a20],BL=[0x8c8982,0x6f5a52,0x5b6b7a,0x7a6a52,0x8a5a5a,0x596a58];
+ function sleepers(g2,set,list){list.forEach((i,n)=>{const c=COTS[i],small=n%4===3,flip=n%2===1,L=small?.95:1.45,x0=c.x+(flip?-1:1)*(small?.12:0),sx=flip?-1:1;
+   const body=new THREE.Mesh(new THREE.CapsuleGeometry(.16,L-.32,4,10),M(BL[n%BL.length],{roughness:1}));body.rotation.z=Math.PI/2;body.position.set(x0-sx*.12,COT_H+.13,c.z+(n%3-1)*.03);body.scale.set(.82,1,1.35);body.castShadow=true;g2.add(body);
+   const knee=new THREE.Mesh(new THREE.IcosahedronGeometry(.15,1),M(BL[n%BL.length],{roughness:1}));knee.position.set(x0-sx*(.3+(n%2)*.1),COT_H+.19,c.z+(n%2?.06:-.05));knee.scale.set(1.5,.9,1.1);g2.add(knee);
+   const hx=x0+sx*(L/2+.03);const head=new THREE.Mesh(new THREE.IcosahedronGeometry(small?.085:.1,2),M(SK[n%SK.length],{roughness:.8}));head.position.set(hx,COT_H+.17,c.z+.02);head.scale.set(1.05,.92,1);g2.add(head);
+   const hair=new THREE.Mesh(new THREE.SphereGeometry(small?.09:.106,10,6,0,Math.PI*2,0,Math.PI/2),M(HR[n%HR.length],{roughness:1}));hair.position.set(hx+sx*.012,COT_H+.175,c.z+.02);hair.rotation.z=-sx*1.2;g2.add(hair);});}
+ function belongings(g2,set){const duffel=(x,z,c,ry=0)=>{const d=new THREE.Mesh(new THREE.CapsuleGeometry(.15,.42,4,8),M(c,{roughness:1}));d.rotation.set(0,ry,Math.PI/2);d.position.set(x,.15,z);d.castShadow=true;g2.add(d);};
+  const pack=(x,z,c,ry=0)=>{const b=K.box(g2,x,.22,z,.32,.44,.2,M(c,{roughness:1}),{ry});K.box(g2,x+Math.sin(ry)*.11,.18,z+Math.cos(ry)*.11,.24,.2,.06,M(c,{roughness:1}),{ry});return b;};
+  const shoes=(x,z,c)=>{K.box(g2,x,.045,z,.09,.08,.26,M(c));K.box(g2,x+.13,.045,z+.03,.09,.08,.26,M(c),{ry:.2});};const bag=(x,z)=>{const b=new THREE.Mesh(new THREE.IcosahedronGeometry(.16,1),M(0xe9e6de,{roughness:.6}));b.position.set(x,.13,z);b.scale.set(1.1,.8,.9);g2.add(b);};
+  duffel(-10.2,-4.95,0x3a4a5a,.3);pack(-7.2,-5,0xa33a2e,.4);shoes(-4.9,-5.05,0x2a2a2c);bag(-1.9,-4.95);bag(-1.6,-5.1);duffel(1.2,-2.2,0x5a4a3a,-.2);pack(-10.6,-2.15,0x2f4f86,-.3);shoes(-8.2,-2.2,0xd8d4ca);bag(-4.2,-2.15);
+  pack(-11.6,.62,0x6a3a6a,.2);shoes(-7.4,.6,0x6a5a48);duffel(-1.2,3.42,0x4a5a48,.5);bag(-8.3,3.45);pack(4.4,3.42,0x8a6a2a,-.5);shoes(-4.9,3.45,0x8a8f96);bag(5.6,-2.2);pack(-1.9,-2.15,0x4a4e5a,.1);
+  // a walker by the bed of somebody old; a carrier with nothing in it; a bear
+  {const wk=new THREE.Group();wk.position.set(-10.2,0,-3.55);g2.add(wk);for(const [dx,dz] of [[-.22,-.2],[.22,-.2],[-.22,.2],[.22,.2]])K.pipe(wk,[dx,0,dz],[dx,.8,dz*.7],.012,cotFrame,5);K.pipe(wk,[-.22,.8,-.14],[.22,.8,-.14],.012,cotFrame,5);for(const dx of [-.22,.22])K.pipe(wk,[dx,.8,-.14],[dx,.8,.14],.012,cotFrame,5);}
+  K.box(g2,-4.2,.17,2.05,.46,.3,.3,M(0xb8b2a4,{roughness:.7}));K.box(g2,-4.2,.17,1.9,.3,.2,.01,black);
+  for(const [dx,dy,r] of [[0,.07,.07],[0,.17,.05],[-.045,.21,.02],[.045,.21,.02],[-.07,.08,.03],[.07,.08,.03]]){const b=new THREE.Mesh(new THREE.IcosahedronGeometry(r,1),M(0x9a6a3c,{roughness:1}));b.position.set(-10.4+dx,COT_H+dy,.12);g2.add(b);}}
  const SPOT={};
  // -- Saturday: the shelter --
  {const g2=G.shelter;COTS.forEach((c,i)=>cot(g2,c.x,c.z,{blanket:[1,2,0,1,1,2,0,1][i%8]}));
@@ -178,7 +194,10 @@ export function createSchool({scene}){
   {const tv=new THREE.Group();tv.position.set(12.1,0,5.6);tv.rotation.y=-Math.PI/2;g2.add(tv);K.box(tv,0,.55,0,.9,.04,.5,steel);K.box(tv,0,1.0,0,.9,.04,.5,steel);for(const [dx,dz] of [[-.42,-.22],[.42,-.22],[-.42,.22],[.42,.22]])K.pipe(tv,[dx,0,dz],[dx,1,dz],.014,steel,5);
    K.box(tv,0,1.45,0,1.12,.72,.09,black);const scr=new THREE.Mesh(new THREE.PlaneGeometry(1.04,.62),new THREE.MeshBasicMaterial({color:0x4a5a66}));scr.name='a1-tv-screen';scr.material.name='a1-tv-screen';scr.position.set(0,1.45,.05);tv.add(scr);SPOT.tvScreen=scr;
    const cap=new THREE.Mesh(new THREE.PlaneGeometry(1.04,.2),new THREE.MeshBasicMaterial({map:tex9('news'),transparent:true,opacity:tex9('news')?1:0,depthWrite:false}));cap.material.name='a1-tv-caption';cap.position.set(0,1.26,.056);tv.add(cap);solid('shelter',12.1,5.6,.3,.5);}
-  SPOT.tv={x:12.05,z:5.6,y:1.45};SPOT.tvSeats=[];for(const [x,z] of [[9.6,4.6],[9.6,5.5],[9.6,6.4],[8.5,5],[8.5,5.9],[8.5,6.8]]){fchair(g2,x,z,Math.PI/2,{set:'shelter'});SPOT.tvSeats.push({x,z,a:Math.PI/2});}
+  SPOT.tv={x:12.05,z:5.6,y:1.45};SPOT.tvSeats=[];for(const [x,z] of [[9.6,4.6],[9.6,5.5],[9.6,6.4],[8.5,5],[8.5,5.9],[8.5,6.8]]){fchair(g2,x,z,-Math.PI/2,{set:'shelter'});SPOT.tvSeats.push({x,z,a:Math.PI/2});}
+  // two chairs a little way off from the cots, where somebody can be sat down and told something
+  for(const z of [1.3,2.4])fchair(g2,7.5,z,Math.PI/2,{set:'shelter'});
+  sleepers(g2,'shelter',[4,5,7,10,11,15,18,19,21,23]);belongings(g2,'shelter');
   K.cyl(g2,-3.9,.4,7.4,.24,.8,M(0x4a4e52,{roughness:.7}),{sides:12});solid('shelter',-3.9,7.4,.26,.26);}
  // -- Monday: thinner --
  {const g2=G.thin;COTS.forEach((c,i)=>{if(c.row<2&&!(c.row===1&&c.col>3))cot(g2,c.x,c.z,{blanket:[1,2,1,0][i%4],set:'thin'});});cot(g2,1.8,0,{blanket:1,set:'thin'});cot(g2,5,0,{blanket:1,set:'thin'});
@@ -188,8 +207,8 @@ export function createSchool({scene}){
   // the county's list: on the wall east of the doors, at a height a grown-up reads; a pen on a string
   SPOT.countyMesh=paperOn(g2,2.6,1.42,GYM.z1-.02,.78,1,TM('county',[0],0xfbfaf4),Math.PI,'a1-county');SPOT.county={x:2.6,z:GYM.z1-.06,y:1.42};paperOn(g2,3.55,1.42,GYM.z1-.02,.78,1,M(0xf4f1e6),Math.PI);paperOn(g2,4.5,1.42,GYM.z1-.02,.78,1,M(0xf4f1e6),Math.PI);
   K.pipe(g2,[3.02,1.62,GYM.z1-.03],[3.06,1.16,GYM.z1-.05],.003,black,4);SPOT.penMesh=K.cyl(g2,3.06,1.1,GYM.z1-.05,.006,.13,M(0x1b2c5a,{roughness:.4}),{sides:6});
-  table(g2,3.6,6.4,2.6,.7,{set:'thin'});for(let i=0;i<2;i++)K.box(g2,2.9+i*.5,.86,6.4,.36,.2,.26,plastic);K.cyl(g2,4.6,.94,6.4,.13,.36,steel,{sides:14});
-  for(const [x,z] of [[9.6,4.6],[9.6,5.5],[8.5,5]])fchair(g2,x,z,Math.PI/2,{set:'thin'});{const tv=new THREE.Group();tv.position.set(12.1,0,5.6);tv.rotation.y=-Math.PI/2;g2.add(tv);K.box(tv,0,1,0,.9,.04,.5,steel);for(const [dx,dz] of [[-.42,-.22],[.42,-.22],[-.42,.22],[.42,.22]])K.pipe(tv,[dx,0,dz],[dx,1,dz],.014,steel,5);K.box(tv,0,1.45,0,1.12,.72,.09,black);solid('thin',12.1,5.6,.3,.5);}}
+  table(g2,8.2,6.9,2.4,.7,{set:'thin'});for(let i=0;i<2;i++)K.box(g2,7.5+i*.5,.86,6.9,.36,.2,.26,plastic);K.cyl(g2,9.1,.94,6.9,.13,.36,steel,{sides:14});
+  for(const [x,z] of [[9.6,4.6],[9.6,5.5],[8.5,5]])fchair(g2,x,z,-Math.PI/2,{set:'thin'});sleepers(g2,'thin',[4,7]);{const tv=new THREE.Group();tv.position.set(12.1,0,5.6);tv.rotation.y=-Math.PI/2;g2.add(tv);K.box(tv,0,1,0,.9,.04,.5,steel);for(const [dx,dz] of [[-.42,-.22],[.42,-.22],[-.42,.22],[.42,.22]])K.pipe(tv,[dx,0,dz],[dx,1,dz],.014,steel,5);K.box(tv,0,1.45,0,1.12,.72,.09,black);solid('thin',12.1,5.6,.3,.5);}}
  // -- September 5: Alex's pictures --
  {const g2=G.memorial;SPOT.rows=[];for(let r=0;r<6;r++)for(let c=0;c<10;c++){const x=(c<5?-5.6:1.2)+(c%5)*1.1,z=-2.2+r*1.25;fchair(g2,x,z,0);SPOT.rows.push({x,z,r,c});}
   for(let r=0;r<6;r++){solid('memorial',-3.4,-2.2+r*1.25,2.5,.26);solid('memorial',3.4,-2.2+r*1.25,2.5,.26);}

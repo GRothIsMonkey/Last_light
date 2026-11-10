@@ -15,6 +15,7 @@ import {groundPoint} from './route.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
 import {P as PP,newPose,copyPose,applyPose,sitPose} from './rig.js';
 import {townActs} from './aftermath1-town.js';
+import {recordActs} from './aftermath1-record.js';
 
 export function scenes9(X){
  const {o,k,C,S,A9,ch8,STREET,phys,comp,brain,sam,jamie,cast,OWN,EVERYONE,FACES,sound,gy,light,lightsOn,checkpoint,later,mark,card,say,SM,Y,N,V,R,JM,AD,AM,SD,SMO,MO,BR,person,
@@ -158,14 +159,14 @@ export function scenes9(X){
  function gymCast(when='walk'){
   onCot(mrsH,13,{hands:'knees'});blanket(mrsH,0x6f5a52);lieOn(lily,12);put(mrH,SCH.cotSeat(14,1),Math.PI,sitG(SCH.COT_H,{hands:'knees',lean:.32}),{noBlock:true});bandage(mrH);
   lieOn(pruitt,6,true);blanket(pruitt);onCot(vol1,0,{hands:'face',lean:.3});onCot(vol2,1,{side:-1,hands:'knees',lean:.25});blanket(vol2,0x6f5a52);
-  onCot(run1,8,{hands:'face',lean:.34});onCot(run2,9,{hands:'knees'});blanket(run2);onCot(neighbor,22,{side:-1,hands:'knees'});onCot(delaney,20,{hands:'knees',lean:.05});blanket(delaney,0x8a5a7a);
+  onCot(run1,8,{hands:'face',lean:.34});onCot(run2,9,{hands:'knees'});blanket(run2);onCot(neighbor,2,{side:-1,hands:'knees'});onCot(delaney,20,{hands:'knees',lean:.05});blanket(delaney,0x8a5a7a);
   put(vol4,SP.tvSeats[0],Math.PI/2,sitG(.44,{hands:'knees'}),{noBlock:true});put(huang,SP.tvSeats[1],Math.PI/2,sitG(.44,{hands:'knees',lean:.2}),{noBlock:true});
-  put(pruitt3,{x:-1.9,z:6.3},Math.PI,'fold');put(okafor,{x:4.9,z:6.35},Math.PI*.85,G(ACT9.cup()));put(davis,{x:-9,z:-6.6},Math.PI/2,'phone');pace(davis,[{x:1.5,z:-6.55},{x:-9,z:-6.6}],{speed:.8,pause:[5,11],gest:'phone'});
+  put(pruitt3,{x:1.6,z:6.2},Math.PI*.9,G(ACT9.cup()));put(okafor,{x:4.9,z:6.35},Math.PI*.85,G(ACT9.cup()));put(davis,{x:-9,z:-6.6},Math.PI/2,'phone');pace(davis,[{x:1.5,z:-6.55},{x:-9,z:-6.6}],{speed:.8,pause:[5,11],gest:'phone'});
   put(vol,{x:-9.6,z:5.45},Math.PI,G(ACT9.clipboard()));put(jamieMom,{x:-11.4,z:7.1},Math.PI*.96,'phone');
   put(alexMom,SCH.cotSeat(3,1),Math.PI,sitG(SCH.COT_H,{hands:'knees',lean:-.02}),{noBlock:true});put(alexDad,{x:.25,z:-4.3},Math.PI*.8,'fold');
   for(const a of [mrsH,mrH,vol2,run2,neighbor,delaney,vol4,huang,pruitt3,okafor,alexMom,alexDad])notices(a,{after:Math.random()*3});
   for(const a of [jamieMom,alexDad,alexMom,mrsH,mrH,run1,vol1])mood(a,a===alexMom?'numb':a===jamieMom?'worried':'tired');mood(mrH,'pain');mood(run1,'numb');
-  if(when!=='before'){const dq=W(-3.6,6.9);officer.show(true);officer.place(dq.x,dq.z,Math.PI*1.1);officer.gest('radio');}}
+  if(when!=='before'){const dq=W(-7.5,7.2);officer.show(true);officer.place(dq.x,dq.z,Math.PI*.2);officer.gest('radio');}}
  function sceneGym(from='walk'){go('a1-gym');
   if(from!=='walk'){schoolWorld('shelter',{lot:true,sky:'dawn',lights:'dawn'});setDay('AUGUST 27',6.62,'dawn');C.grief=1;applyGrief();lotCast();gymCast('walk');capTo('away');
    const q=W(SP.doorsOut.x,SP.doorsOut.z+.6);o.placePlayer({x:q.x,z:q.z,a:0,mode:'walk',bike:null});joinFoot(sam,W(SP.doorsOut.x+1,SP.doorsOut.z+1.4),0);const rq=W(SP.doorsOut.x-.9,SP.doorsOut.z-.4);reyes.show(true);reyes.place(rq.x,rq.z,0);C.fadeIn=0;weep(sam,'grief',20);}
@@ -226,7 +227,7 @@ export function scenes9(X){
   schoolWorld('shelter',{lot:true,sky:'dawn',lights:'dawn'});setDay('AUGUST 27',section==='a1-families'?7.35:section==='a1-alex-parents'?7.05:6.8,'dawn');C.grief=1;applyGrief();lotCast();gymCast('after');boardFound();tvFootage();capTo('away');
   const s=SCH.cotSeat(16,1),w=W(s.x,s.z+.9);o.placePlayer({x:w.x,z:w.z,a:Math.PI,mode:'walk',bike:null});joinFoot(sam,W(5,1.2),Math.PI);{const s2=SCH.cotSeat(17,1);pinSam({x:s2.x,z:s2.z+.06},{a:Math.PI,gesture:ACT.seat(SCH.COT_H,{hands:'knees',lean:.3,lookPitch:-.3}),blend:.01});}
   const rq=W(SP.aisleN.x+.7,SP.aisleN.z+.2);reyes.show(true);reyes.place(rq.x,rq.z,Math.PI*1.4);C.flags.inGym=true;C.fadeIn=0;weep(sam,'grief',30);for(const a of EVERYONE)if(a.notice)a.notice.state='done';}
- const QUIET={jm:{x:11.9,z:-.55},reyes:{x:10.8,z:-.3},hen:{x:11.9,z:.55}};// two chairs by the east wall
+ const QUIET={jm:{x:7.5,z:1.3},reyes:{x:6.45,z:1.6},hen:{x:7.5,z:2.4}};// two chairs a little way off from the cots
  function sceneJamieMom(from='gym'){go('a1-jamie');if(from!=='gym')afterGymSetup('a1-jamie-mom');checkpoint('a1-jamie-mom');objective('','');
   const jm=jamieMom;C.flags.jm=true;
   task('jamie-mom',(function*(){
@@ -238,7 +239,7 @@ export function scenes9(X){
     {wait:2.4,act:()=>{jm.lookAt=DOORPT;feel(jm,'hopeful',4);}},N('She looks past you. At the doors.',{time:2.4}),{wait:1.2,act:()=>{jm.lookAt=camera.position;feel(jm,'worried',8);}},
     JM('Where’s—',{time:1}),{wait:1.6},JM('There were three of you. I know there’s three. I’ve been saying it all night so I wouldn’t—',{time:4.4,face:'afraid'}),
     JM('Jamie. His name’s Jamie. Where’s Jamie?',{time:2.8,face:'afraid'})]);
-   const ch=yield* choosing([{id:'start',label:'“He’s—”'},{id:'lily',label:'“He got Lily Henderson out. And her dad.”'},{id:'reyes',label:'Look at Officer Reyes'}],{timeout:11,fallback:'silent'});
+   const ch=yield* choosing([{id:'start',label:'“He’s—”'},{id:'lily',label:'“He got Lily Henderson out.”'},{id:'reyes',label:'Look at Officer Reyes'}],{timeout:11,fallback:'silent'});
    C.keep.told.jamieMom=ch;keep('told',C.keep.told);
    if(ch==='start')yield* lines([Y('He’s—',{time:1}),N('It stops in your throat. There isn’t a way to say the rest of it.',{time:3.4})]);
    else if(ch==='lily')yield* lines([Y('He got Lily Henderson out. And her dad.',{time:2.6}),JM('He— what? Where is he? Where is he now?',{time:2.6,face:'afraid'}),{wait:1.4}]);
@@ -249,8 +250,8 @@ export function scenes9(X){
    // Reyes: not here, not from two boys
    {const w=W(2.2,1.5);reyes.walk([[w.x,w.z]],{speed:1.5,then:a=>a.faceTo(jm.x,jm.z)});}
    yield* lines([R('Ma’am. Come and sit with me. Please. Over here.',{time:3,act:()=>{jm.lookAt=reyes.pos;}})]);
-   {const a=W(6.6,1.45),b=W(10.6,.5),c=W(QUIET.jm.x-.25,QUIET.jm.z);jm.walk([[a.x,a.z],[b.x,b.z],[c.x,c.z]],{speed:1,then:q=>{const w=W(QUIET.jm.x,QUIET.jm.z);q.place(w.x,w.z,-Math.PI/2);q.gest(sitG(.44,{hands:'knees',lean:.05}));q.noBlock=true;q.lookAt=reyes.pos;C.flags.jmSat=true;}});
-    const r1=W(6.6,2),r2=W(QUIET.reyes.x,QUIET.reyes.z);reyes.walk([[r1.x,r1.z],[r2.x,r2.z]],{speed:1,then:q=>{q.face(Math.PI/2);q.gest(KNEEL);}});}
+   {const a=W(5.2,1.5),c=W(QUIET.jm.x-.5,QUIET.jm.z);jm.walk([[a.x,a.z],[c.x,c.z]],{speed:1,then:q=>{const w=W(QUIET.jm.x-.06,QUIET.jm.z);q.place(w.x,w.z,-Math.PI/2);q.gest(sitG(.44,{hands:'knees',lean:.05}));q.noBlock=true;q.lookAt=reyes.pos;C.flags.jmSat=true;}});
+    const r1=W(5,2.1),r2=W(QUIET.reyes.x,QUIET.reyes.z);reyes.walk([[r1.x,r1.z],[r2.x,r2.z]],{speed:1,then:q=>{q.faceTo(W(QUIET.jm.x,QUIET.jm.z).x,W(QUIET.jm.x,QUIET.jm.z).z);q.gest(KNEEL);}});}
    yield* until(()=>C.flags.jmSat&&!reyes.walking,30);
    yield* lines([{wait:1.4},N('He gets down on one knee in front of her so she doesn’t have to look up.',{time:3.6}),R('I was there. I was with him.',{time:2.2}),
     R('The Hendersons’ house was coming down. He got their little girl out through the window. Then he went back in for her father and held a doorway up so the man could crawl out under it.',{time:7.2}),
@@ -265,8 +266,8 @@ export function scenes9(X){
     if(C.flags.cap)yield* capWithHer(jm,'shelter');else{capTo('away');yield* lines([N('You keep hold of it. You put it back inside your shirt.',{time:3})]);}}
    else yield* wait(4);
    // Mrs. Henderson, who does not say anything
-   {mrsH.gest(null);mrsH.noBlock=false;const s=SCH.cotSeat(13,1),a=W(s.x,s.z+.8),b=W(-6.2,1.45),c=W(6.4,1.5),d=W(10.6,.9),e=W(QUIET.hen.x-.3,QUIET.hen.z);mrsH.place(a.x,a.z,Math.PI/2);
-    mrsH.walk([[b.x,b.z],[c.x,c.z],[d.x,d.z],[e.x,e.z]],{speed:1.1,then:q=>{const w=W(QUIET.hen.x,QUIET.hen.z);q.place(w.x,w.z,-Math.PI/2);q.noBlock=true;q.gest(G(ACT.shoulder(asC(q),asC(jm),{hand:'l',base:ACT.seat(.44,{lean:.1})})));feel(q,'grief',60);}});}
+   {mrsH.gest(null);mrsH.noBlock=false;const s=SCH.cotSeat(13,1),a=W(s.x,s.z+.8),b=W(-6.2,1.45),c=W(.2,1.5),c2=W(.2,3.6),d=W(6.4,3.5),e=W(QUIET.hen.x-.5,QUIET.hen.z+.1);mrsH.place(a.x,a.z,Math.PI/2);
+    mrsH.walk([[b.x,b.z],[c.x,c.z],[c2.x,c2.z],[d.x,d.z],[e.x,e.z]],{speed:1.15,then:q=>{const w=W(QUIET.hen.x-.06,QUIET.hen.z);q.place(w.x,w.z,-Math.PI/2);q.noBlock=true;q.gest(G(ACT.shoulder(asC(q),asC(jm),{hand:'l',base:ACT.seat(.44,{lean:.1})})));feel(q,'grief',60);}});}
    yield* lines([{wait:2},N('Mrs. Henderson gets up off her cot and walks the length of the gym and sits down in the chair next to her. She doesn’t say anything. She takes her hand.',{time:6.6}),{wait:2.4}]);
    reyes.gest(null);sceneAlexParents('gym');})());}
  // you have walked up to her with it. what was said is what she can manage.
@@ -277,7 +278,7 @@ export function scenes9(X){
    yield* lines([Y('It’s yours.',{time:1.4}),{wait:1.6},N('She takes it in both hands. She turns it over. Then she puts her whole face in it.',{time:4.6}),{wait:2},JM('It smells like him.',{time:2,face:'crying'}),{wait:2.4}]);}
   else{yield* lines([Y('I can keep it safe. Until you want it.',{time:2.8}),{wait:1.4},JM('Yes. You— yes. I can’t. Not yet.',{time:3,face:'crying'}),JM('Don’t lose it.',{time:1.4}),Y('I won’t.',{time:1})]);capTo('away');keep('capWhen',null);}}
  // ---- Act I, scene 3: Alex's parents -----------------------------------------------------------------------------------------------------------
- function sceneAlexParents(from='gym'){go('a1-alex');if(from!=='gym'){afterGymSetup('a1-alex-parents');put(jamieMom,QUIET.jm,-Math.PI/2,G(ACT.headInHands({seatH:.44,rock:.4})),{noBlock:true});feel(jamieMom,'sobbing',99);put(mrsH,QUIET.hen,-Math.PI/2,sitG(.44,{lean:.1}),{noBlock:true});const rq=W(9.6,.6);reyes.place(rq.x,rq.z,Math.PI/2);}
+ function sceneAlexParents(from='gym'){go('a1-alex');if(from!=='gym'){afterGymSetup('a1-alex-parents');put(jamieMom,QUIET.jm,-Math.PI/2,G(ACT.headInHands({seatH:.44,rock:.4})),{noBlock:true});feel(jamieMom,'sobbing',99);put(mrsH,QUIET.hen,-Math.PI/2,sitG(.44,{lean:.1}),{noBlock:true});const rq=W(QUIET.reyes.x,QUIET.reyes.z);reyes.place(rq.x,rq.z,Math.PI/2);}
   checkpoint('a1-alex-parents');const ad=alexDad,am=alexMom;
   task('alex-parents',(function*(){
    yield* wait(2.2);
@@ -316,7 +317,7 @@ export function scenes9(X){
    {const a=W(6.6,-4.3),b=W(6.4,1.5),c=W(3.3,1.75);ad.gest(null);ad.walk([[a.x,a.z],[b.x,b.z],[c.x,c.z]],{speed:.9,then:q=>{const s=SCH.cotSeat(22,-1),w=W(s.x+.9,s.z+.05);q.place(w.x,w.z,0);q.noBlock=true;q.gest(sitG(SCH.COT_H,{hands:'knees',lean:.3}));q.lookAt=camera.position;C.flags.adSat=true;}});}
    yield* until(()=>C.flags.adSat,40);
    yield* lines([{wait:2.2},N('His dad comes back. He sits down on the cot across from you with his elbows on his knees. It’s a while before he can.',{time:5.4}),AD('Officer Reyes says you were with him. At the end.',{time:3,face:'grief'}),{wait:.8},AD('Did he say anything?',{time:1.6})]);
-   const c2=yield* choosing([{id:'stop',label:'“He asked if we stopped it. We said yes. He said, ‘Good.’”'},{id:'mad',label:'“He said his mom was going to be so mad.”'},{id:'bikes',label:'“He talked about our bikes.”'},{id:'silent',label:'Say nothing'}],{timeout:16,fallback:'silent'});C.keep.told.alexDad2=c2;keep('told',C.keep.told);
+   const c2=yield* choosing([{id:'stop',label:'“He asked if we stopped it.”'},{id:'mad',label:'“He said his mom would be so mad.”'},{id:'bikes',label:'“He talked about our bikes.”'},{id:'silent',label:'Say nothing'}],{timeout:16,fallback:'silent'});C.keep.told.alexDad2=c2;keep('told',C.keep.told);
    if(c2==='stop')yield* lines([Y('He asked if we stopped it. We said yes. He said, “Good.”',{time:3.6}),{wait:1.6},AD('...Good. Yeah. That’s— that’s him.',{time:2.8,face:'crying'})]);
    else if(c2==='mad')yield* lines([Y('He said his mom was going to be so mad.',{time:2.6}),{wait:1.2},N('A sound comes out of him that is almost a laugh.',{time:2.6}),AD('She is. She is going to be so mad at him.',{time:2.8,face:'crying'})]);
    else if(c2==='bikes')yield* lines([Y('He talked about our bikes.',{time:1.8}),{wait:1.4},AD('He rang that bell at every corner. Twice. It drove me up the wall.',{time:3.6,face:'crying'})]);
@@ -388,7 +389,7 @@ export function scenes9(X){
    if(SCH.ST.lot){out.push({id:'a1-amb-idle',kind:'idle',pos:V3(WQ({x:SP.truck.x,z:SP.truck.z,y:1})),level:.8});out.push({id:'a1-gen',kind:'generator',pos:V3(WQ({x:SP.tower.x,z:SP.tower.z,y:1})),level:.6});out.push({id:'a1-radio',kind:'radio',pos:V3(WQ({x:-38.6,z:38,y:1.2})),level:.8});
     if(ph==='a1-arrive'||ph==='a1-gym')out.push({id:'a1-siren-far',kind:'siren',pos:V3(WQ({x:260,z:-240,y:8})),level:.2,mode:'wail',pitch:1,muffle:.4});}}
   TOWN.sources?.(out);ACT2.sources?.(out);}
- function blockers(out){TOWN.blockers?.(out);}
+ function blockers(out){ACT2.blockers?.(out);TOWN.blockers?.(out);}
  function key(code,repeat){return !!(TOWN.key?.(code,repeat)||ACT2.key?.(code,repeat));}
  function hint(){return TOWN.hint?.()||ACT2.hint?.()||null;}
  function reset(){SCH.reset();o.hideWorld?.(false);if(nav.room===SCH.nav)nav.setRoom(null);unwear();ROUT.clear();PIN.q=null;TV.on=false;C.area=null;capG.visible=false;cupG.visible=false;if(phys){phys.playerHold('l',null);phys.playerHold('r',null);}
@@ -397,9 +398,9 @@ export function scenes9(X){
  // ---- begin, jumps -------------------------------------------------------------------------------------------------------------------------------------
  function begin(){go('a1-black');C.cardT=0;o.fade(1);objective('');minds('tense');task('open',(function*(){yield* wait(6.4);sceneArrive('start');})());}
  const HX={...X,SCH,SP,W,WQ,D,put,sitG,lieG,KNEEL,onCot,lieOn,blanket,bandage,splint,pace,notices,leadTo,pinSam,PIN,schoolWorld,gymLights,GL,capTo,CAP,CUP,capG,cupG,capWithHer,canon,after,SPd,VOL,MRSH,QUIET,gymCast,boardFound,tvFootage,TV,DOORPT,ROUT};
+ const ACT2=recordActs(HX);HX.ACT2=ACT2;
  const TOWN=townActs(HX);HX.TOWN=TOWN;
- const ACT2=TOWN.ACT2;
- const SCENE={'aftermath1-start':()=>begin(),'a1-arrive':()=>sceneArrive('jump'),'a1-gym':()=>sceneGym('jump'),'a1-jamie-mom':()=>sceneJamieMom('jump'),'a1-alex-parents':()=>sceneAlexParents('jump'),'a1-families':()=>sceneFamilies('jump'),...TOWN.SCENE};
+ const SCENE={'aftermath1-start':()=>begin(),'a1-arrive':()=>sceneArrive('jump'),'a1-gym':()=>sceneGym('jump'),'a1-jamie-mom':()=>sceneJamieMom('jump'),'a1-alex-parents':()=>sceneAlexParents('jump'),'a1-families':()=>sceneFamilies('jump'),...ACT2.SCENE,...TOWN.SCENE};
  function jump(section){const f=SCENE[section];if(!f){begin();return;}canon(section);f();if(section!=='aftermath1-start'){o.fade(C.fadeIn>=0?1:0);}}
  return {begin,jump,update,afterActors,key,hint,sources,blockers,reset,canDismount:()=>S.phase==='a1-arrive'||!!TOWN.canDismount?.(),canRemount:()=>!!TOWN.canRemount?.(),SCH,SCENE,TOWN,TV,capTo,PIN};
 }

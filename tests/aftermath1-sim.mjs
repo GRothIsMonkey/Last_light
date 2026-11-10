@@ -27,7 +27,9 @@ export function aftermathTools(T0){
  const dbg=(...a)=>{if(process.env.DEBUG9)console.log('  [a1]',...a);};
  // wait for an offer, go to it (unless you are sitting: then only look), look at it, take it (tap F, or hold F until it is done)
  function take(id,{max=90,r=1.2,hold=false,stop=null,pad=8,tries=4}={}){if(!until(()=>live(id)||!!stop?.(),max)){dbg(id,'NO OFFER; have',offers().join(','),'phase',ph(),'t',A9.C.t.toFixed(1));return false;}if(stop?.())return false;
-  for(let k=0;k<tries;k++){const at=offerAt(id);if(!at)return !offers().includes(id);const f=A9.C.offers.get(id);if(!A9.C.pose&&!h.roam.walkLock)approach(at,Math.min(r,(f?.r??2.2)-.35),{pad});faceV(at);let got=false;
+  for(let k=0;k<tries;k++){const at=offerAt(id);if(!at)return !offers().includes(id);const f=A9.C.offers.get(id);
+   // (getting up out of a seat: wait for it to finish before walking anywhere)
+   if(A9.C.pose?.release)until(()=>!A9.C.pose,3);if(!A9.C.pose&&!h.roam.walkLock)approach(at,Math.min(r,(f?.r??2.2)-.35),{pad});faceV(at);let got=false;
    until(()=>{const s=spot();const a2=offerAt(id);if(a2)faceV(a2);if(s?.id===id){got=true;return true;}return !offers().includes(id);},4);
    if(!got){dbg(id,'not targeted; spot',spot()?.id,'dist',Math.hypot(me().x-at.x,me().z-at.z).toFixed(2),'spots',A9.spots().map(s=>s.id).join(','),'view',A9.C.view,'pose',!!A9.C.pose,'fade',A9.C.fadeOut,'lock',h.roam?.walkLock,'walkable',h.nav.walkable(me().x,me().z,{r:.3}),'state',h.night.state);if(!offers().includes(id))return true;wait(.5);continue;}
    if(!hold){tap('KeyF');wait(.25);return true;}
@@ -98,6 +100,36 @@ export function playAftermathOne(T0,label='Aftermath I',{fromCard=true,from=null
    assert.ok(until(()=>said('Jamie’s dead'),40),'the relief has it in it');noThrow();});
   check(`${label}: your mother; somebody else is responsible for you now`,()=>{assert.ok(until(()=>said('I’ve got you. I’ve got you. I’ve got you.')&&A9.cast.mom.visible,60));assert.ok(until(()=>!!A9.C.pose,20),'she has you');assert.ok(until(()=>said('before you land'),80));assert.ok(phase('a1-quiet',30));noThrow();neverThere();});
   lap('families');}
+ // ---- Act II, scene 5: the nurse's room ----
+ const NS=SCH.NSPOT,RS=SCH.RSPOT;
+ if(inSeg('quiet')){start('quiet');
+  check(`${label}: the nurse's room, that afternoon: you wash your hands (the water goes grey, then clear); the cut; the paramedic dresses it`,()=>{assert.ok(phase('a1-quiet',60));assert.match(element('date').innerHTML,/AUGUST 27, 2011.*2:\d\d PM/);
+   assert.ok(take('wash',{hold:10,max:90,r:1.1,pad:6}));assert.ok(until(()=>said('Keep it dry'),40));assert.ok(h.self.parts.lhand.children.some(c=>c.name==='a1-dressing'),'the dressing is on your hand');noThrow();});
+  if(optional)check(`${label}: (optional) something to eat; his cap where you can see it`,()=>{if(maybe('eat',{r:1.4,wait:4}))until(quiet,20);if(C9().keep.cap==='you'&&maybe('cap-safe',{r:1.5,wait:2}))until(quiet,20);noThrow();});
+  check(`${label}: Sam's father brings the fan from the office (he can't sleep without one)`,()=>{assert.ok(until(()=>said('Humor me'),120));assert.ok(A9.C.fanOn,'the fan is on');noThrow();});
+  check(`${label}: Sam, the hinge and the chain; ${quietly?'you say nothing':'your hand on his back'}; he wants to sleep there`,()=>{assert.ok(until(()=>live('beside')||live('sit-cot'),60));if(!quietly)take('beside',{max:6,r:2.6,pad:6});
+   assert.ok(until(()=>said('He did what I said'),120));const c=choose(pickN(3),30);assert.ok(c);assert.ok(until(()=>said('Wanting to sleep in the nurse’s room'),80));choose(pickN(2),20);
+   assert.ok(until(()=>live('lie'),40));if(!quietly)assert.ok(take('lie',{max:6,r:9}));assert.ok(until(()=>ph()==='a1-record',90),'Sunday');noThrow();});
+  lap('quiet');}
+ // ---- Act II, scene 6: Reyes needs a record ----
+ if(inSeg('record')){start('record');
+  check(`${label}: Sunday, Room 6: you sit down; Reyes reads what he saw (the two Sams, the board, Jamie, Alex) and does not ask you to prove it`,()=>{assert.ok(phase('a1-record',30));assert.match(element('date').innerHTML,/AUGUST 28, 2011/);
+   assert.ok(approach(W(RS.in.x,RS.in.z),.8,{pad:8,max:30}));assert.ok(take('sit',{max:40,r:1.2,pad:8}));assert.ok(until(()=>said('so it’s written'),150));assert.ok(A9.cast.mom.visible,'your mother is in the room');noThrow();});
+  check(`${label}: you lay out what he kept, one thing at a time, in your own order; he reads it back`,()=>{const order=quietly?['plan','camera','notebook','sketch']:['sketch','plan','camera','notebook'];
+   for(const id of order){assert.ok(until(()=>live('ev-'+id),60),'offered: '+id);assert.ok(take('ev-'+id,{max:8,r:1.5,pad:8})&&A9.C.ev.carrying===id,'took '+id+' (carrying '+A9.C.ev.carrying+')');putDown(40);assert.ok(take('slot',{max:20,r:1.2,pad:8}),'placed '+id);until(()=>!A9.C.ev.carrying,8);until(quiet,20);}
+   assert.deepEqual(A9.C.ev.order,order,'laid out: '+JSON.stringify(A9.C.ev.order));assert.ok(until(()=>said(quietly?'That’s the order I’d have put them in':'In any order it’s true'),90));assert.equal(C9().keep.camera,'reyes');noThrow();});
+  check(`${label}: what you want written down, beside his`,()=>{assert.ok(take('sit2',{max:30,r:1.2,pad:8}));assert.ok(until(()=>said('Anything I didn’t say'),40));
+   if(quietly)choose(null,40);else{choose(1,30);until(()=>!!A9.C.choice||said('That’s it. That’s all I need'),40);if(A9.C.choice)choose(1,10);until(()=>!!A9.C.choice||said('That’s it'),40);if(A9.C.choice)choose(2,10);}
+   assert.ok(until(()=>said('nobody gets to say it didn’t happen'),120));assert.ok(until(()=>ph()==='a1-names',40),'Monday');if(!quietly)assert.ok(C9().keep.told.record.includes('biscuit'));noThrow();});
+  lap('record');}
+ // ---- Act II, scene 7: the names that changed ----
+ if(inSeg('names')){start('names');
+  check(`${label}: Monday: the county's list has a line with no name; you can't reach the word; the names in your own handwriting`,()=>{assert.ok(phase('a1-names',30));assert.match(element('date').innerHTML,/AUGUST 29, 2011/);
+   assert.ok(take('list',{max:60,r:1.8,pad:10}),'read the list');assert.ok(until(()=>said('a step that isn’t there'),60),'the word is not there');assert.ok(until(()=>C9().marks.some(m=>m[1].includes('I thought I remembered everyone')),10),'the memory line');
+   assert.ok(take('notebook',{max:40,r:9}),'the notebook ('+C9().keep.notebook+'; offers '+offers().join(',')+')');putDown(40);noThrow();neverThere();});
+  check(`${label}: you write his name on the line (hold F); the volunteer copies it; Sam: what it did is still done`,()=>{assert.ok(take('write',{hold:12,max:30,r:9}));assert.equal(C9().keep.wrote,true);assert.ok(until(()=>said('on the back of her hand'),40));
+   assert.ok(until(()=>said('un-burn'),40));assert.ok(until(()=>ph()==='a1-return',60),'on to September');noThrow();});
+  lap('names');}
  M9.seg=seg;M9.lines=lines.length;
  return {lines:()=>lines,seg};
 }
