@@ -214,6 +214,70 @@ export function playAftermathOne(T0,label='Aftermath I',{fromCard=true,from=null
   check(`${label}: the streetlights come on: rule four; same time tomorrow; he rides home`,()=>{assert.ok(until(()=>said('Rule four'),60));assert.ok(A9.C.lampsOn);assert.ok(until(()=>said('Same time tomorrow'),30));choose(pickN(1),20);
    assert.ok(until(()=>ph()==='a1-weeks'||A9.C.fadeOut>=0,90),'on to October');noThrow();neverThere();});
   lap('sam');}
+ // ---- Act IV, scene 13: October ----
+ const LV=TOWN.LEAVE;
+ if(inSeg('weeks')){start('weeks');
+  check(`${label}: October 1: on your bikes with Sam, up the street: the leaves turning; the fence shut for good at Summerfield`,()=>{assert.ok(phase('a1-weeks',90));assert.match(element('date').innerHTML,/OCTOBER 1, 2011/);assert.equal(ST9.ST.state,'october');assert.equal(C9().sky,'autumn');
+   assert.equal(h.night.state,'c1-ride');const way=[];for(let d=450;d<=834;d+=24)way.push((()=>{const q=SPd(d,-2.4);return [q.x,q.z];})());assert.ok(rideTo(way,240,3),'rode up to Summerfield: '+dNow().toFixed(1));
+   assert.ok(said('busing us to Lincoln'),'school, somewhere else');assert.ok(said(C9().keep.told?.bmx==='walk'?'still in the middle of his walk':'still by his rail'),'Jamie’s bike, still there');noThrow();});
+  check(`${label}: Reyes at the fence: what the report says, what he wrote down, and that nobody will make it not have happened`,()=>{offBike();const r=R9;approach({x:r.x,z:r.z},3.4,{pad:8,max:40});assert.ok(until(()=>said('It just isn’t all of it'),90));
+   assert.ok(until(()=>said('Then I made copies of the copies'),60));choose(pickN(2),20);assert.ok(phase('a1-home',60),'Monday night');noThrow();neverThere();});
+  lap('weeks');}
+ if(inSeg('home')){start('home');
+  check(`${label}: October 3, the kitchen: you sit down; the township's letter; your mother's reasons; ${quietly?'you say nothing':'you ask about Sam'}`,()=>{assert.ok(phase('a1-home',30));assert.match(element('date').innerHTML,/OCTOBER 3, 2011/);
+   assert.ok(take('sit',{max:30,r:1.2,pad:8}),'sat down');assert.ok(take('letter',{max:30,r:9}),'the letter');putDown(40);assert.ok(until(()=>said('The fifteenth'),90));const c=choose(pickN(1),30);
+   if(!quietly)assert.ok(until(()=>said('It isn’t the moon'),30));assert.ok(phase('a1-pack',60),'your room');noThrow();});
+  lap('home');}
+ if(inSeg('packing')){start('packing');
+  check(`${label}: October 14, your room in boxes: the drawer; the photo-booth strip; the calendar; ${cap==='keep'?'his cap (kept with you)':'what is left of his'}; tape`,()=>{assert.ok(phase('a1-pack',30));assert.match(element('date').innerHTML,/OCTOBER 14, 2011/);
+   assert.ok(take('drawer',{max:30,r:1.4,pad:8}),'the drawer');assert.ok(until(()=>LV.DR9.k>.8,6));assert.ok(take('item-booth',{max:20,r:1.4,pad:8}),'the strip');putDown(40);choose(pickN(1),20);
+   assert.ok(take('item-calendar',{max:20,r:1.6,pad:8}),'the calendar');putDown(40);choose(quietly?null:2,30);
+   if(C9().keep.cap==='you'&&live('item-cap')){assert.ok(take('item-cap',{max:20,r:1.6,pad:8}));putDown(40);choose(2,20);assert.ok((A9.C.kept||[]).includes('cap'),'his cap stays with you');}
+   if(optional)lookAt9('window',{r:9});until(quiet,20);assert.ok(until(()=>live('tape'),40),'tape');assert.ok(take('tape',{hold:6,max:20,r:1.6,pad:8}));assert.ok(C9().keep.boxed.includes('booth'),'boxed: '+JSON.stringify(C9().keep.boxed));
+   assert.ok(phase('a1-bye',60),'the curb');noThrow();});
+  lap('packing');}
+ if(inSeg('goodbye')){start('goodbye');
+  check(`${label}: October 15: the truck; Sam checks your chain ("Probably."); his notebook is yours now`,()=>{assert.ok(phase('a1-bye',30));assert.match(element('date').innerHTML,/OCTOBER 15, 2011/);assert.ok(LV.TRUCK.visible);
+   assert.ok(until(()=>said('when you weren’t looking'),80),'the chain');assert.ok(take('notebook',{max:30,r:2.2,pad:8}));putDown(40);assert.equal(C9().keep.notebook,'you');assert.ok(until(()=>said('RULE 6'),20)||said('RULE 6'));noThrow();});
+  check(`${label}: rule five; ${quietly?'neither of you says it':'you say it'}; a plan to call; ${quietly?'"See you, Sam."':'you hug him'}; he waves from the lamp post, and nobody comes after him`,()=>{assert.ok(until(()=>said('Rule five.'),40));const c=choose(pickN(1),20);
+   if(!quietly)assert.ok(until(()=>said('We always went back for him'),40));assert.ok(until(()=>said('So I know you got there'),40));choose(pickN(3),20);assert.ok(until(()=>said('It’s time'),40));choose(pickN(1),20);
+   assert.ok(until(()=>said('Nobody’s going to'),90),'he waves; nobody comes round the corner');assert.ok(take('car',{max:40,r:2,pad:8}),'the car');assert.ok(phase('a1-road',40));noThrow();neverThere();});
+  lap('goodbye');}
+ if(inSeg('road')){start('road');
+  check(`${label}: the road out at the last of the light: you look back; what you kept; you look ahead; the card`,()=>{assert.ok(phase('a1-road',30));assert.equal(C9().sky,'last');assert.ok(until(()=>LV.ROAD.t>9,14));
+   const back=()=>{const c=h.camera.position,a=-LV.CAR.rotation.y;return {x:c.x-Math.sin(a)*12,y:c.y,z:c.z+Math.cos(a)*12};};if(!quietly){until(()=>{faceV(back());return LV.ROAD.lookedBack>1.4;},8);}
+   assert.ok(until(()=>said(quietly?'You don’t look back':'Oak Hollow gets smaller'),40),'looked back (or not)');const id='kept-notebook';assert.ok(until(()=>live(id),40),'the notebook on your lap');take(id,{max:10,r:9});putDown(60);
+   assert.ok(until(()=>said('You know it was real'),40));const ahead=()=>{const c=h.camera.position,a=-LV.CAR.rotation.y;return {x:c.x+Math.sin(a)*14,y:c.y-.2,z:c.z-Math.cos(a)*14};};until(()=>{faceV(ahead());return A9.C.endT>=0;},60);
+   assert.ok(until(()=>ph()==='a1-end',20),'the end card');assert.equal(element('ending').hidden,false);assert.match(element('ending').querySelector?.('p')?.innerHTML||element('ending').innerHTML||'WHAT WAS LEFT',/WHAT WAS LEFT|/);
+   const v=JSON.parse(globalThis.localStorage.getItem('lastlight.aftermath1')||'{}');assert.equal(v.section,'aftermath1-end');assert.equal(v.presence,'sealed');assert.deepEqual(v.lost,['JAMIE','ALEX']);assert.equal(v.notebook,'you');assert.equal(v.left,true);
+   assert.equal(element('next-chapter').hidden,true,'no Aftermath II offered');noThrow();neverThere();});
+  lap('road');}
  M9.seg=seg;M9.lines=lines.length;
  return {lines:()=>lines,seg};
+}
+
+// The chapter's own checks, apart from playing it: every DEV scene starts where and when it should; Continue; the save.
+const DAY9={'a1-arrive':/AUGUST 27/,'a1-gym':/AUGUST 27/,'a1-jamie-mom':/AUGUST 27/,'a1-alex-parents':/AUGUST 27/,'a1-families':/AUGUST 27/,'a1-quiet-room':/AUGUST 27/,'a1-record':/AUGUST 28/,'a1-names':/AUGUST 29/,
+ 'a1-return':/SEPTEMBER 1,/,'a1-remained':/SEPTEMBER 1,/,'a1-porch':/SEPTEMBER 2/,'a1-driveway':/SEPTEMBER 2/,'a1-memorial-jamie':/SEPTEMBER 3/,'a1-memorial-alex':/SEPTEMBER 6/,'a1-sam':/SEPTEMBER 17/,
+ 'a1-weeks':/OCTOBER 1,/,'a1-home':/OCTOBER 3/,'a1-packing':/OCTOBER 14/,'a1-goodbye':/OCTOBER 15/,'a1-road-out':/OCTOBER 15/};
+const SKY9X={'a1-return':'clear','a1-remained':'clear','a1-porch':'clear','a1-driveway':'clear','a1-memorial-jamie':'evening','a1-sam':'evening','a1-weeks':'autumn','a1-goodbye':'autumn','a1-road-out':'last'};
+export async function runAftermathOneChecks(T0){
+ const X=aftermathTools(T0),{h,until,me,A9,C9,ph}=X,check=T0.check,T=X.T,element=T0.element;
+ const sc=(DEV_SCENES[9]||[]).filter(s=>s.jump);
+ check(`aftermath 1: every DEV Aftermath I scene starts on its own day, in its own light, on its feet (${sc.length} scenes)`,()=>{const bad=[];
+  for(const s of sc){h.devScene(9,s.id);T.advance(2.5);const st=A9.state,p=me();
+   if(s.jump==='aftermath1-end'){T.advance(7);if(!(h.snapshot.state==='ended'||st.phase==='a1-end'))bad.push(s.id+': no end card ('+st.phase+')');continue;}
+   if(!/^a1-/.test(st.phase))bad.push(s.id+': '+st.phase);const want=DAY9[s.jump];if(want&&!want.test(element('date').innerHTML))bad.push(s.id+': date '+element('date').innerHTML);
+   if(SKY9X[s.jump]&&st.sky!==SKY9X[s.jump])bad.push(s.id+': sky '+st.sky);if(st.marks.some(m=>/threw/.test(m[1])))bad.push(s.id+': threw '+JSON.stringify(st.marks.filter(m=>/threw/.test(m[1]))));
+   if(st.jamie.visible)bad.push(s.id+': Jamie is visible');if(h.chapter8.HM.root.visible)bad.push(s.id+': the hunter');
+   const riding=h.snapshot.state==='c1-ride';if(p.walking&&!riding&&!A9.C.pose&&!A9.C.view&&!h.nav.walkable(p.x,p.z,{r:.2}))bad.push(s.id+': stands in a wall');
+   if(s.keep?.cap&&st.keep.cap!==s.keep.cap)bad.push(s.id+': cap '+st.keep.cap);}
+  assert.deepEqual(bad,[]);});
+ check('aftermath 1: Continue offers the last checkpoint, and puts back what was kept (his cap with his mother; the print; the notebook)',()=>{h.devScene(9,'a1-packing-given');T.advance(2);assert.equal(C9().keep.cap,'mom');
+  const s=h.chapter.saved?.();assert.ok(s&&s.section==='a1-packing'&&/room/i.test(s.label),JSON.stringify(s));h.jump(s.section);T.advance(2);assert.equal(C9().keep.cap,'mom','the save, not a fresh start');assert.equal(ph(),'a1-pack');});
+ check('aftermath 1: the street is Chapter Eight\'s own (the same ruin and town objects), settled, then put away when the chapter is left',()=>{h.devScene(9,'a1-return');T.advance(2);const T9=A9.SC.TOWN;assert.equal(T9.ST9.ST.state,'september');
+  assert.ok(h.chapter8.ruin.root.parent,'the ruin is in the scene');assert.ok(!h.chapter8.SC.STREET.town.FIRES.some(f=>f.m.visible),'no fires');h.jump('c7-court');T.advance(.5);assert.equal(T9.ST9.ST.state,null);assert.equal(h.chapter8.ruin.ST.stage,0);});
+ check('aftermath 1: the end card is the chapter\'s own, the save says who went where, and nothing after it is offered',()=>{h.devScene(9,'aftermath1-end');T.advance(9);assert.equal(element('ending').hidden,false);
+  const v=JSON.parse(globalThis.localStorage.getItem('lastlight.aftermath1')||'{}');assert.equal(v.section,'aftermath1-end');assert.deepEqual(v.home,['YOU','SAM']);assert.deepEqual(v.lost,['JAMIE','ALEX']);assert.equal(v.presence,'sealed');assert.equal(v.sam,'Oak Hollow');
+  assert.equal(element('next-chapter').hidden,true);});
 }

@@ -45,14 +45,14 @@ export function memorialActs(H){
  // his picture (the one from her wallet, enlarged) on a small easel at the foot of the steps; flowers; the notes on the steps
  const wood=new THREE.MeshStandardMaterial({color:0x7a5a3c,roughness:.7});
  const EASEL=JW(JH.doorX+1.15,7.35);
- {const e=new THREE.Group();e.position.set(EASEL.x,gy(EASEL.x,EASEL.z),EASEL.z);e.rotation.y=-JA(Math.PI)+.25;lawn.add(e);
+ {const e=new THREE.Group();e.position.set(EASEL.x,gy(EASEL.x,EASEL.z),EASEL.z);e.rotation.y=-JA(0)-.25;lawn.add(e);
   for(const dx of [-.22,.22]){const l=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,1.3,6),wood);l.position.set(dx*.7,.62,.05);l.rotation.set(-.12,0,-dx*.25);e.add(l);}
   const back=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,1.3,6),wood);back.position.set(0,.6,-.22);back.rotation.x=.3;e.add(back);
   const fr=new THREE.Mesh(new THREE.BoxGeometry(.46,.56,.025),new THREE.MeshStandardMaterial({color:0x2a2420,roughness:.5}));fr.position.set(0,.98,.08);fr.rotation.x=-.1;e.add(fr);
   const pic=pageMesh(tex9('portrait','jamie'),{w:.4,h:.5,color:0x6f93b8});pic.position.set(0,.98,.095);pic.rotation.x=-.1;e.add(pic);
   for(let i=0;i<14;i++){const c=[0xf3efe4,0xe8c44a,0xd86a5a,0xf0b8c8][i%4];const f=new THREE.Mesh(new THREE.IcosahedronGeometry(.045,0),new THREE.MeshStandardMaterial({color:c,roughness:1}));f.position.set(-.3+(i%7)*.1,.04+Math.floor(i/7)*.06,.28+(i%3)*.05);e.add(f);}}
  const NOTES=[['You still owe me','two dollars.','— S.'],['Thank you for my','groceries. All of them.','— E. Pruitt'],['Jamie — funniest kid','in Room 12.','— Marcus'],['We will never','forget. — the','Hendersons'],['JAMIE','(a dog, in crayon)','']];
- const noteMeshes=NOTES.map((ls,i)=>{const m=pageMesh(tex9('card',ls),{w:.17,h:.106});const q=JW(JH.doorX-.7+i*.34,6.55+(i%2)*.12,.36+.004*i);m.position.set(q.x,q.y,q.z);m.rotation.order='YXZ';m.rotation.set(-Math.PI/2+.04,(-JA(Math.PI))+(i-2)*.1,0);lawn.add(m);return m;});
+ const noteMeshes=NOTES.map((ls,i)=>{const m=pageMesh(tex9('card',ls),{w:.17,h:.106});const q=JW(JH.doorX-.7+i*.34,6.55+(i%2)*.12,.36+.004*i);m.position.set(q.x,q.y,q.z);m.rotation.order='YXZ';m.rotation.set(-Math.PI/2+.04,(-JA(0))+(i-2)*.1,0);lawn.add(m);return m;});
  // a card table by the sidewalk: blank cards, markers
  const TABLE=JW(JH.doorX-3.4,11.8);
  {const t=new THREE.Group();t.position.set(TABLE.x,gy(TABLE.x,TABLE.z),TABLE.z);t.rotation.y=-JA(Math.PI);lawn.add(t);const top=new THREE.Mesh(new THREE.BoxGeometry(1.2,.03,.6),new THREE.MeshStandardMaterial({color:0x5a5650,roughness:.6}));top.position.y=.72;t.add(top);
@@ -73,7 +73,7 @@ export function memorialActs(H){
   {at:()=>JW(JH.doorX+3.8,12.2),ls:[SD('He used to walk into our kitchen without knocking and say, “What are we eating?”',{time:3.8}),MO('He did that at ours too.',{time:1.8}),{wait:.8},SD('He did that everywhere.',{time:1.8})]},
   {at:()=>JW(JH.doorX+2.1,9.6),ls:[MRH('He came back in for me. I told him to go. He said, “Mr. Henderson, I’m not leaving you in here, it smells weird.”',{time:5.4}),{wait:1.6},MRH('That’s what he said.',{time:1.8})]},
  ];
- function lawnCast(){const S0=(a,x,z,h,g=null)=>{if(!a)return;const q=JW(x,z);putW(a,q,JA(h),g);};
+ function lawnCast(){if(!HELD.length){for(const a of [jamieMom,lily,samMom,delaney,vol3])heldCandle(a);}const S0=(a,x,z,h,g=null)=>{if(!a)return;const q=JW(x,z);putW(a,q,JA(h),g);};
   const jd=JH.doorX;
   S0(jamieMom,jd+.1,7.15,Math.PI,C.keep.cap==='mom'?G(ACT9.clutch({k:.8})):G(ACT9.cup({look:-.1})));feel(jamieMom,'tearful',60);mood(jamieMom,'grief');if(C.keep.cap==='mom')capTo('her',jamieMom);
   S0(mrsH,jd+1.8,9.6,Math.PI+.5,'fold');S0(mrH,jd+2.4,10.0,Math.PI+.3,null);S0(lily,jd+1.3,9.2,Math.PI+.6,G(ACT9.cup()));feel(mrsH,'grief',60);feel(mrH,'tearful',60);
@@ -113,7 +113,7 @@ export function memorialActs(H){
   yield* lines([N('Blank cards, and markers. Most of the notes on the steps are one line.',{time:3.4})]);
   const ch=yield* choosing([{id:'medical',label:'“Medical reasons.”'},{id:'biscuit',label:'“Biscuit says hi.”'},{id:'five',label:'“Nobody gets left behind.”'}],{timeout:20,fallback:'medical'});
   const text={medical:['Medical reasons.','',''],biscuit:['Biscuit says hi.','',''],five:['Nobody gets','left behind.','']}[ch];keep('told',{...C.keep.told,jamieNote:ch});
-  const m=pageMesh(tex9('card',text),{w:.17,h:.106});const q=JW(JH.doorX+.95,6.7,.364);m.position.set(q.x,q.y,q.z);m.rotation.set(-Math.PI/2+.04,(-JA(Math.PI))-.12,0);m.rotation.order='YXZ';lawn.add(m);C.myNote=m;
+  const m=pageMesh(tex9('card',text),{w:.17,h:.106});const q=JW(JH.doorX+.95,6.7,.364);m.rotation.order='YXZ';m.position.set(q.x,q.y,q.z);m.rotation.set(-Math.PI/2+.04,(-JA(0))-.12,0);lawn.add(m);C.myNote=m;
   sound('c7Pencil',camera.position,{gain:.4});
   yield* lines([{wait:.6},N(ch==='medical'?'Nobody else will know what it means. That’s the point.':ch==='biscuit'?'You put it on the step with the others.':'You stand there a while with the marker before you put it down on the step.',{time:3.6})]);}
  function* hisMother(){const jm=jamieMom;
@@ -149,7 +149,7 @@ export function memorialActs(H){
    offer('sit','Sit down',()=>V3(SW(SEAT.you.x,SEAT.you.z,.9)),{r:2,fn:()=>{const w=SW(SEAT.you.x,SEAT.you.z+.04);pose(w,{y:gy(w.x,w.z)+1.06,yaw:0,pitch:-.05,slow:1.2,seat:{h:.44,y:gy(w.x,w.z)}});C.flags.seated=true;}});
    // Sam goes to the seat beside yours whether you sit or not
    {const w=SW(SEAT.sam.x,SEAT.sam.z+.5);stand(sam,w,{max:1.2});}
-   yield* until(()=>C.flags.sit||C.pt>50,70);unoffer('sit');
+   yield* until(()=>C.flags.sit||C.pt>50,70);unoffer('sit');objective('','');
    pinSam({x:SW(SEAT.sam.x,SEAT.sam.z+.06).x,z:SW(SEAT.sam.x,SEAT.sam.z+.06).z},{a:0,gesture:ACT9.sit(.44,{lean:.22}),blend:1.4,world:true});
    if(!C.flags.sit)yield* lines([N('You stay standing at the back. Nobody makes you sit.',{time:3})]);
    // his father, at the front
@@ -297,7 +297,11 @@ export function memorialActs(H){
   if(S.phase==='a1-sam'){// dusk coming on through the scene
    const kk=C.skyK||(C.skyK={});kk.p=Math.min(.8,(kk.p??.5)+dt*.0016);kk.day=Math.max(.14,(kk.day??.42)-dt*.0012);
    if(C.lampsOn){C.lampT+=dt;const t=C.lampT,v=t<.5?(Math.sin(t*70)>.1?.4:.05):Math.min(1,.35+t*.5);lampsTo(v);}}}
- function afterActors(){}
+ const HELD=[];// [actor, jar group]
+ function heldCandle(a){if(!a)return;const g=new THREE.Group();const j=new THREE.Mesh(new THREE.CylinderGeometry(.034,.03,.075,8),jarM);g.add(j);const f=new THREE.Sprite(flameM);f.position.y=.055;f.scale.set(.026,.05,1);g.add(f);FLAMES.push({f,s:1,ph:Math.random()*9});g.visible=false;root.add(g);HELD.push([a,g]);}
+ function afterActors(){if(!lawn.visible){for(const [,g] of HELD)g.visible=false;return;}
+  for(const [a,g] of HELD){const on=a.visible&&!(a===jamieMom&&C.keep.cap==='mom')&&!a.walking;g.visible=on;if(!on)continue;a.person.group.updateMatrixWorld(true);const lh=a.person.parts?.lhand,rh=a.person.parts?.rhand;
+   if(lh&&rh){const p1=lh.getWorldPosition(new THREE.Vector3()),p2=rh.getWorldPosition(new THREE.Vector3());g.position.copy(p1.add(p2).multiplyScalar(.5));g.position.y+=.02;}else{const p=a.person.group.localToWorld(new THREE.Vector3(0,1.02,-.25));g.position.copy(p);}}}
  function sources(out){if(lawn.visible){out.push({id:'a1-lawn-murmur',kind:'murmur',pos:V3(JW(JH.doorX,10,1.4)),level:.32});}}
  function reset(){lawn.visible=false;if(C.myNote){C.myNote.removeFromParent();C.myNote=null;}root.removeFromParent();myBike.group.visible=false;lampsFree();}
  return {SCENE:{'a1-memorial-jamie':()=>sceneMemJamie(),'a1-memorial-alex':()=>sceneMemAlex(),'a1-sam':()=>sceneSam()},update,afterActors,sources,reset,lawn,myBike,chainSet,LAMPS};

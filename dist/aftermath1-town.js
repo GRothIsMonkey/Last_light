@@ -100,7 +100,7 @@ export function townActs(H){
  function bellAt(){const b=BK.alex;if(!b)return null;b.group.updateMatrixWorld(true);return b.bell.lever.getWorldPosition(new THREE.Vector3());}
  function ring(n=2){const b=BK.alex;if(!b)return;const at=bellAt();sound('a1Bell',at,{gain:.8});for(let i=0;i<n;i++){later(i*.16,()=>{b.bell.lever.rotation.x=-.5;});later(i*.16+.08,()=>{b.bell.lever.rotation.x=0;});}mark('the bell: twice');}
  // ---- the street, as a place to be --------------------------------------------------------------------------------------------------
- function streetWorld(state,{sky='clear',evening=false}={}){dayWorld({evening});o.hideWorld?.(false);o.bikeAway?.(true);ST9.show(state);crews(state);C.where='street';C.sky=sky;C.inside=0;C.insideWant=0;C.cave=.46;C.fill=.72;
+ function streetWorld(state,{sky='clear',evening=false,work=false}={}){dayWorld({evening});o.hideWorld?.(false);o.bikeAway?.(true);ST9.show(state);crews(work?state:null);C.where='street';C.sky=sky;C.inside=0;C.insideWant=0;C.cave=.46;C.fill=.72;
   lightsOn(true);for(let i=0;i<6;i++)light(i,null);minds('relaxed');k.carA.show(false);k.carB.show(false);}
  // ---- scene 8: behind the fence ------------------------------------------------------------------------------------------------------
  const GATE=()=>ST9.GATES[0];
@@ -129,7 +129,7 @@ export function townActs(H){
  function paintAt(){const p=me();let best=null,bd=1e9;for(const m of ST9.houses){const Q=m,w=Q.toWorld(Q.doorX??0,Q.depth/2),dd=Math.hypot(w.x-p.x,w.z-p.z);if(dd<bd){bd=dd;best={x:w.x,y:w.ground+1.8,z:w.z};}}return best;}
  function lookOffer(id){const L=LOOKS[id];offer('look-'+id,L.label,L.at,{r:L.r??60,look:true,size:id==='oak'?2:1.2,cone:L.cone??.12,when:()=>L.when()&&!busy()&&!C.flags['seen-'+id],once:true,
   fn:()=>{C.flags['seen-'+id]=true;C.looked=(C.looked||0)+1;say(L.ls());mark('looked: '+id);}});}
- function sceneReturn(from='jump'){go('a1-return');streetWorld('september');setDay('SEPTEMBER 1',10.1,'clear');C.skyK={};C.grief=.62;applyGrief();
+ function sceneReturn(from='jump'){go('a1-return');streetWorld('september',{work:true});setDay('SEPTEMBER 1',10.1,'clear');C.skyK={};C.grief=.62;applyGrief();
   C.amb={traffic:.04,insects:.32,wind:.25,life:.28,forest:0,tunnel:0,water:0};
   const st=SP(845.6,7.2);placeMe(st,heading(846));joinFoot(sam,SP(844.6,9.4),heading(846));weep(sam,'numb',40);
   putW(samDad,SP(846.4,10.8),heading(846)+.2);feel(samDad,'tired',30);returnCast();showBike('alex','park');showBike('jamie','lying');
@@ -203,7 +203,7 @@ export function townActs(H){
  const FAN9=(()=>{const g=new THREE.Group();g.name='a1-sams-fan';const fr=new THREE.MeshStandardMaterial({color:0x2f3a46,roughness:.6}),gr=new THREE.MeshStandardMaterial({color:0x9a9c9e,roughness:.4,metalness:.4});
   const f=new THREE.Mesh(new THREE.BoxGeometry(.5,.5,.12),fr);f.position.y=.25;g.add(f);const gd=new THREE.Mesh(new THREE.CircleGeometry(.21,24),gr);gd.position.set(0,.25,.062);g.add(gd);g.visible=false;scene.add(g);return g;})();
  const tourG=(()=>{let g=null;return ()=>{if(g)return g;g=new THREE.Group();g.name='a1-tour';const f=pageMesh(texOf(tourPoster('front')),{w:.6,h:.4,color:0xf3efe2}),b=pageMesh(texOf(tourPoster('back')),{w:.6,h:.4,color:0xf3efe2});b.rotation.y=Math.PI;g.add(f,b);return g;};})();
- function remainedSetup(){streetWorld('september');setDay('SEPTEMBER 1',10.42,'clear');C.grief=.62;applyGrief();C.amb={traffic:.04,insects:.32,wind:.25,life:.28,forest:0,tunnel:0,water:0};
+ function remainedSetup(){streetWorld('september',{work:true});setDay('SEPTEMBER 1',10.42,'clear');C.grief=.62;applyGrief();C.amb={traffic:.04,insects:.32,wind:.25,life:.28,forest:0,tunnel:0,water:0};
   returnCast();C.gateWant=1;GATE()?.set(1);showBike('alex','park');showBike('jamie','lying');
   const yq=SP(bikeSpot.jamie.d+5.4,1.2);placeMe(yq,headingTo(yq.x,yq.z,SP(bikeSpot.jamie.d,bikeSpot.jamie.lat).x,SP(bikeSpot.jamie.d,bikeSpot.jamie.lat).z));
   joinFoot(sam,SP(bikeSpot.jamie.d-.6,1.8),heading(1000));leaveToBikes();reyes.show(true);{const rq=SP(1006,-4.2);reyes.place(rq.x,rq.z,headingTo(rq.x,rq.z,sam.px,sam.pz));reyes.gest('fold');}

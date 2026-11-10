@@ -169,7 +169,7 @@ export const DEV_SCENES={
   {id:'a1-quiet-room',label:'The Nurse’s Room (that afternoon)',jump:'a1-quiet-room'},{id:'a1-record',label:'Reyes Needs a Record (Sunday)',jump:'a1-record'},{id:'a1-names',label:'The Names That Changed (Monday, the list)',jump:'a1-names'},
   {id:'a1-return',label:'Behind the Fence (Oak Hollow Drive, September 1)',jump:'a1-return'},{id:'a1-remained',label:'Under the Streetlight (the bikes)',jump:'a1-remained'},
   {id:'a1-porch',label:'Jamie’s Porch (you have his cap)',jump:'a1-porch'},{id:'a1-porch-given',label:'Jamie’s Porch (his mother has his cap)',jump:'a1-porch',keep:{cap:'mom',capWhen:'shelter'}},{id:'a1-driveway',label:'Alex’s Driveway',jump:'a1-driveway'},
-  {id:'a1-memorial-jamie',label:'Jamie’s Lawn (September 3)',jump:'a1-memorial-jamie'},{id:'a1-memorial-alex',label:'Alex’s Pictures (September 5)',jump:'a1-memorial-alex'},{id:'a1-sam',label:'The Chain (Sam, September 17)',jump:'a1-sam'},
+  {id:'a1-memorial-jamie',label:'Jamie’s Lawn (September 3)',jump:'a1-memorial-jamie'},{id:'a1-memorial-alex',label:'Alex’s Pictures (September 6)',jump:'a1-memorial-alex'},{id:'a1-sam',label:'The Chain (Sam, September 17)',jump:'a1-sam'},
   {id:'a1-weeks',label:'October (the fence, Reyes)',jump:'a1-weeks'},{id:'a1-home',label:'The Letter (your mother)',jump:'a1-home'},{id:'a1-packing',label:'Packing Your Room (you have his cap)',jump:'a1-packing'},
   {id:'a1-packing-given',label:'Packing Your Room (his mother has his cap)',jump:'a1-packing',keep:{cap:'mom',capWhen:'porch'}},{id:'a1-goodbye',label:'Goodbye, Sam',jump:'a1-goodbye'},{id:'a1-road-out',label:'The Road Out',jump:'a1-road-out'},
   {id:'aftermath1-end',label:'Aftermath I Ending (the end card)',jump:'aftermath1-end'}]};

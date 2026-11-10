@@ -370,7 +370,7 @@ export function scenes9(X){
    mom.gest(null);
    yield* lines([{wait:1.2},MO('You don’t have to do one more thing today. Not one. I’m right here.',{time:3.8}),{wait:2.6},
     N('Sam’s dad has Sam. Your mom has you. There are grown-ups everywhere, and it’s their job now.',{time:4.8}),{wait:2},N('It doesn’t feel like it’s over. It feels like the part of a fall before you land.',{time:4.4}),{wait:2.4}]);
-   C.fadeOut=0;C.fadeOutDur=3;C.after=()=>sceneQuiet('families');})());}
+   C.fadeOut=0;C.fadeOutDur=3;C.after=()=>ACT2.toNext('a1-quiet-room');})());}// (a new afternoon: from its own start, as Continue would put you there)
  // ---- Act II: in aftermath1-town.js's sibling below (kept in this file: the school is one place) ----------------------------------------------------
  function sceneQuiet(from='jump'){ACT2.sceneQuiet(from);}
  // ---- every frame -------------------------------------------------------------------------------------------------------------------------------------
