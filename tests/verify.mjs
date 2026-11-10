@@ -88,6 +88,15 @@ if(process.env.ONLY==='chapter8'){const {playChapterEight,runChapterEightChecks}
  if(process.env.LINES&&r)console.log(r.lines().join('\n'));
  if(!process.env.PLAY_ONLY)try{await runChapterEightChecks(T8);}catch(e){fails.push('checks threw: '+String(e.stack||e).slice(0,1200));}
  console.log(JSON.stringify({passed:checks.length,failed:fails,metrics:{chapter8:metrics.chapter8},phase:h.chapter.kit.S.phase,state:(({phase,flags,inv,hunter,friends,fails,marks,tasks,offers})=>({phase,flags,inv,hunter,friends,fails,marks,tasks,offers}))(h.chapter8.state)},null,1));process.exit(fails.length?1:0);}
+// ONLY=aftermath1: Aftermath I alone (from Chapter Eight's end card, or FROM=<segment> by its jump; TO=<segment> stops after it;
+// CAP=give-shelter|give-porch|keep; QUIETLY=1 lets every choice pass in silence).
+if(process.env.ONLY==='aftermath1'){const {playAftermathOne,runAftermathOneChecks}=await import('./aftermath1-sim.mjs');const fails=[];
+ const soft=(name,fn)=>{try{const r=fn();if(r&&typeof r.then==='function')return r.then(()=>{checks.push(name);console.log('ok  ',name);},e=>{fails.push(name+': '+String(e.message).slice(0,500));console.log('FAIL',name,String(e.message).slice(0,500));});checks.push(name);console.log('ok  ',name);}catch(e){fails.push(name+': '+String(e.message).slice(0,500));console.log('FAIL',name,String(e.message).slice(0,500));}};
+ const T9={h,advance,press,release,tap,check:soft,element,metrics,groundPoint,W};let r=null;
+ if(!process.env.CHECKS_ONLY)try{r=playAftermathOne(T9,'Aftermath I',{fromCard:process.env.FROMCARD!=='0',from:process.env.FROM||null,to:process.env.TO||null,cap:process.env.CAP||'keep',quietly:!!process.env.QUIETLY,optional:process.env.OPTIONAL!=='0'});}catch(e){fails.push('playthrough threw: '+String(e.stack||e).slice(0,1500));}
+ if(process.env.LINES&&r)console.log(r.lines().join('\n'));
+ if(!process.env.PLAY_ONLY&&runAftermathOneChecks)try{await runAftermathOneChecks(T9);}catch(e){fails.push('checks threw: '+String(e.stack||e).slice(0,1200));}
+ console.log(JSON.stringify({passed:checks.length,failed:fails,metrics:{aftermath1:metrics.aftermath1},phase:h.chapter.kit.S.phase,state:(({phase,day,clock,flags,keep,offers,tasks,marks,you,sam})=>({phase,day,clock,flags,keep,offers,tasks,marks,you,sam}))(h.aftermath1.state)},null,1));process.exit(fails.length?1:0);}
 // ONLY=companions: Chapter Five's companion acceptance tests (A–H) alone, for development.
 if(process.env.ONLY==='companions'){const {chapterFiveTools}=await import('./chapter5-sim.mjs');const {runCompanionTests}=await import('./chapter5-companions.mjs');const fails=[];
  const soft=(name,fn)=>{try{fn();checks.push(name);console.log('ok  ',name);}catch(e){fails.push(name+': '+String(e.message).slice(0,500));console.log('FAIL',name,String(e.message).slice(0,500));}};
