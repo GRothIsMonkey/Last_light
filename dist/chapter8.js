@@ -316,8 +316,10 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   ch5.presentation?.(true);richFaces(true);griefFor(section);SC.jump(section);richFaces(true);applyGrief();}
  // ---- the end card --------------------------------------------------------------------------------------------------------------------------------
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p'),eb=el.querySelector?.('.eyebrow');if(eb)eb.textContent='LAST LIGHT';if(h)h.innerHTML='Chapter Eight';if(pp)pp.innerHTML='THE NIGHT OAK HOLLOW FELL<br>August 27, 2011.';}
-  const nb=$('next-chapter');if(nb)nb.hidden=true;A8.finished=true;
-  try{localStorage.setItem(SAVE8,JSON.stringify({home:['YOU','SAM'],lost:['JAMIE','ALEX'],presence:'sealed',at:Date.now()}));}catch{}
+  const nb=$('next-chapter');if(nb){nb.hidden=!A8.next;if(A8.next)nb.innerHTML='Aftermath I <span>→</span>';}A8.finished=true;
+  // (carried: what left that night with whom, for the aftermath: Jamie's cap with you; Sam's notebook with Sam if you pushed it under
+  //  his door, else still with you; Alex's camera with Alex, who had it from his own door on; the gum)
+  try{localStorage.setItem(SAVE8,JSON.stringify({home:['YOU','SAM'],lost:['JAMIE','ALEX'],presence:'sealed',carried:{cap:'you',notebook:C.inv.notebook==='given'?'sam':'you',camera:'alex',gum:'you'},at:Date.now()}));}catch{}
   o.finish();}
  Object.assign(CTX,{end,jumpTo,reset,fresh,SPOTS,holder,items,X8:X});
  // ---- the api ------------------------------------------------------------------------------------------------------------------------------------------
@@ -327,7 +329,7 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
   canDismount:()=>!posed()&&!C.view&&S.phase!=='c8-black'&&!!SC?.canDismount?.(),canRemount:()=>!C.view&&!posed()&&!!SC?.canRemount?.(),
   closeBag:()=>{if(inv.isOpen){inv.close();return true;}return false;},inventoryReady:()=>owns(S.phase)&&S.phase!=='c8-black',
   C,X,ruin,presence,H,HM,LIGHTS,inv,sky,brain,CTX,get alex(){return alex;},get started(){return A8._started;},set started(v){A8._started=v;}});
- Object.defineProperties(A8,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
+ Object.defineProperties(A8,{amb:{get:()=>A8.next?.owns(S.phase)?A8.next.amb:C.amb},viewing:{get:()=>A8.next?.owns(S.phase)?A8.next.viewing:C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,lookKind:C.lookKind,inv:{...C.inv},offers:[...C.offers.keys()],hold:{...C.hold},
    hiding:C.hiding||null,fails:{...C.fails},where:C.where,stage:{...C.stage},tasks:C.tasks.map(t=>t.name),below:below(),cell:X.ST.active?X.cellIdAt(p.x,p.z):null,
    hunter:{mode:H.mode,state:HM.state,visible:HM.root.visible,x:+HM.x.toFixed(2),z:+HM.z.toFixed(2),log:{...H.log},trace:H.trace.slice(-10)},
@@ -335,5 +337,15 @@ export function createChapter8(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
     alex:alex?{gone:!!alex.gone,active:alex.active,visible:alex.person.group.visible,mode:alex.mode,dead:!!C.flags.alexDead}:null},
    presence:{active:presence.active,log:{...presence.log}},ruin:{stage:ruin.ST.stage,heave:ruin.HV.stage},complex:{...X.ST,doors:Object.fromEntries([...X.doorOpen].map(([kk,v])=>[kk,+v.toFixed(2)]))},
    sounds:{...C.sounds},marks:C.marks.slice(-30),endT:+C.endT.toFixed(2)};}}});
+ // (Aftermath I picks up that morning: aftermath1.js has its phases and sections; while one of them is current, everything
+ // here hands over to it, the way Chapter Seven hands over to this chapter)
+ {const nextOwns=()=>!!A8.next?.owns(S.phase),own=A8.owns,hnd=A8.handles;
+  A8.owns=ph=>own(ph)||!!A8.next?.owns(ph);A8.handles=sec=>hnd(sec)||!!A8.next?.handles?.(sec);
+  for(const m of ['update','spots','act','sources','blockers','hint','key','pan','wheel','jamieSweep','officerAim','light','longThrow','canDismount','canRemount','inventoryReady']){const f=A8[m];
+   A8[m]=(...a)=>nextOwns()?(A8.next[m]?A8.next[m](...a):(m==='spots'||m==='blockers'?[]:m==='sources'?undefined:null)):f(...a);}
+  const bag=A8.closeBag;A8.closeBag=()=>bag()||!!A8.next?.closeBag?.();
+  const rs=A8.reset;A8.reset=()=>{A8.next?.reset();rs();};
+  const jp=A8.jump;A8.jump=section=>{if(A8.next?.handles?.(section)&&!SECTIONS8.includes(section)&&!ALIAS8[section]){rs();A8.next.jump(section);return;}jp(section);};
+  /* (amb and viewing ask the next chapter in their own getters, above) */}
  return A8;
 }
