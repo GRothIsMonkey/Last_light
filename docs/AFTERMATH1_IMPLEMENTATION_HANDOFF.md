@@ -14,10 +14,18 @@ been listened to.** Read `AFTERMATH1_TEST_REPORT.md` for what was checked and ho
 | Base | `91a446d98c257ae77cbebb2944e0ce7e2744f4d1`, the head of `claude/chapter8-major-reconstruction` (the verified Chapter Eight reconstruction) |
 | `main` | untouched |
 | Astra | `codex/astra-fullgame-art-rework` does not exist on the remote. Every `codex/astra-*` branch that does exist is already an ancestor of the base. **No Astra full-game art rework is in this build**; §9 lists what an art pass will meet. |
-| Commits | `d770568` skeleton · `15443b1` Act I · `1d98746` Act II · `a4d2f69` Act III · `d9c7dc6` Act IV · the docs commit after it |
+| Commits | `d770568` skeleton · `15443b1` Act I · `1d98746` Act II · `a4d2f69` Act III · `d9c7dc6` Act IV · `2cad970` fixes from captures and branch runs, package tool, docs · `a4d6403` last code change, final captures · then the report and handoff updates (no code) |
 
 ## 2. How to play it
 
+- **Hosted (private artifact)**: __HOSTED__ — only its owner can open it until it is shared from the page's Share menu.
+  Start a new game, or **DEV → Aftermath I → a scene → START SCENE**. It is this branch's `dist/` at `a4d6403`, with the
+  one host-only change every earlier hosted build had (the host does not serve `.glb`, so the creature model comes as
+  base64 text read by a host copy of `creature.js`). Files unchanged since the base were copied from Chapter Eight's
+  hosted build, which carries the same bytes.
+- **Offline**: `PLAYTEST_CHAPTER=9 node tools/package-playtest.mjs <folder>` makes one HTML file that runs from disk in
+  desktop Chrome or Edge (the one delivered with this work: `Last-Light-Aftermath1-Playtest.zip`, built from `a4d6403`).
+- **From the repository**: no build step. Serve the repository root over HTTP and open `dist/index.html`.
 - **From Chapter Eight:** finish Chapter Eight (or DEV → Chapter Eight → its ending). The end card now has
   **Aftermath I →**. Chapter Eight's save (`lastlight.chapter8`) is read for what was carried out of that night.
 - **DEV:** the DEV menu has an **Aftermath I** row: its start (from Chapter Eight's end card), every scene, two
@@ -103,10 +111,10 @@ Places are not rebuilt where the game already has them:
   searchers' paint and UNSAFE/RESTRICTED placards on every door from Summerfield up; plywood where the windows blew; an
   excavator, a bucket truck, a dumpster, what people carried out under tarps) and October (the line moved to Summerfield
   and shut; the crater filled and plated; the Kowalskis' lot cleared; the paint fading). The pole that snapped in front
-  of **your** house (Chapter Eight's ruin puts it at 438.7 m, opposite your drive) has been replaced by September; the new
+  of **your** house (Chapter Eight's ruin puts it at 438.7 m on the Drive, on your side, by your drive) has been replaced by September; the new
   one's wood is still pale.
 - **Your house** is Chapter Six's (`chapter6-home.js`): your room, the hall, the kitchen behind it.
-- **Alex's garage** is the world's own: its two empty bike hooks have been in the build since the Prologue. **Alex's room**
+- **Alex's garage** is the world's own: its two empty bike hooks are part of the shared world (`layout.js`: `garageBike:'empty'`). **Alex's room**
   is Chapter Three's interior.
 - **The four bikes** are Chapter Seven's studio bikes, as Chapter Eight left them under the streetlight across from Sam's.
 

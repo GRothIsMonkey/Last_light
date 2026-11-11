@@ -22,6 +22,7 @@ on a real GPU (`AFTERMATH1_PLAYTEST_CHECKLIST.md`).
 | The chain | `act4/chain-*` | your bike upside down on the driveway with its chain hanging off, then on; Sam kneeling; the streetlight on at dusk |
 | October | `act4/october-*` | the leaves gone brown and orange; the fence shut at Summerfield with a surveyor behind it and Reyes's car; Jamie's bike still at his rail |
 | The kitchen; your room; the curb | `act4/kitchen-*`, `act4/room-*`, `act4/bye-*` | your mother at the nook table with the letter; the room in boxes (dresser, trophies, the planets poster); the moving truck, a mover with a box, Sam at your bike, his notebook in your hands |
+| The road out | `act4/road-*` | from the passenger seat: the dash, the wheel on your mother's side, the pillars, the hood beyond the glass and the street ahead; looking back over the rear seat at the street; looking down, your arms, the notebook, the picture and (if you kept it) his cap on your lap |
 
 ## What the captures caught (and what was changed)
 
@@ -38,6 +39,10 @@ on a real GPU (`AFTERMATH1_PLAYTEST_CHECKLIST.md`).
 - **Sam's wave was only narrated.** At the lamp post he now raises his arm and waves while he sits on his bike with a foot
   down.
 - **Your mother stood on Sam's parked bike** at the curb; she is by the front walk now.
+- **The car was solid inside.** The game's car model is one solid body up to the window line with a solid block of
+  glass above it, so from the passenger seat you looked down at the top of a slab. For the drive its shell is hidden and
+  a cabin is shown (hood, dash, wheel, pillars, doors with open windows, roof, back seat, rear window). The seat also
+  trailed the moving car by a frame (0.3 m), and what you kept sat past your knees; both fixed.
 - **The Saturday board.** The FOUND written across Sam's flyer used the Monday version of the board (with Alex's and
   Jamie's flyers already gone); Saturday now has its own state with all three still up.
 - **The kitchen line mentioned a coat** she wasn't wearing; changed.
@@ -51,7 +56,7 @@ on a real GPU (`AFTERMATH1_PLAYTEST_CHECKLIST.md`).
   looks stiff.
 - **Interior light at night.** The kitchen at 6:20 PM is lit like Chapter Six's morning (its materials carry a little of
   their own light). It reads as a lit kitchen, not as evening.
-- **The car interior** on the road out is a simple shell (dash, pillars, doors, wheel, mirror).
+- **The car interior** on the road out is simple and unlit (dark dash and roof). Looking straight down you see your own shirt's neck from above, as anywhere in first person.
 - **The moving truck** is a van cab on a plain box with a stripe.
 - **Faces at a distance.** The grown-ups' face overlay reads close up; at more than a few metres it is just a face.
 - Software rendering only: shadows, candle glow and the autumn tint have not been seen on a GPU.

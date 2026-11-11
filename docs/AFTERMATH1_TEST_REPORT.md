@@ -108,7 +108,17 @@ Game minutes per section as the test player plays them (it takes the shortest pa
 __SEG__. A person reading the captions and looking around will take longer; the brief's 35–50 minutes is a human
 estimate and has not been measured.
 
-## 8. Not verified
+## 8. Package and hosted build
+
+- **Offline package**: `PLAYTEST_CHAPTER=9 node tools/package-playtest.mjs <folder>`, built from `a4d6403` (clean tree).
+  One file, `Last-Light-Aftermath1-Playtest.html` (10,225,551 bytes, SHA-256
+  `3d2cb2e1b33020ee047178904de9dc22406fb0db4ad53e457f5459b7e33e486a`), plus `START-HERE.txt`, the licences and
+  `manifest.json` (branch, commit, per-file source hashes). Zipped: `Last-Light-Aftermath1-Playtest.zip` (4,368,036
+  bytes, SHA-256 `cc7b6651ec315c56ee3abc1661ebd7cae735122d2c419ba48bd30ab03e1201d8`).
+  `tests/aftermath1-package-browser.mjs` opened it from disk in headless Chromium: __PKG__
+- **Hosted build**: __HOSTCHECK__
+
+## 9. Not verified
 
 - **A human playthrough** (pacing, emotional effect, clarity, whether choices feel like yours).
 - **Sound**: nothing has been listened to. The crowd murmur, machinery, bell, freewheel, tape and theme are synthesized
