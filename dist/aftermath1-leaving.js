@@ -136,7 +136,7 @@ export function leavingActs(H){
    objective('Sit down.','');
    const sitDown=()=>{const w=HW(MYSEAT.x,MYSEAT.z+.04);pose({x:w.x,z:w.z},{y:w.y+FL+1.08,yaw:HA(MYSEAT.a-.55),pitch:-.14,slow:1.2,seat:{h:.47,y:w.y+FL}});};// (turned a little toward her)
    offer('sit','Sit down',()=>V3(HW(MYSEAT.x,MYSEAT.z,FL+.7)),{r:2.6,fn:sitDown});
-   yield* until(()=>C.flags.sit,40);if(!C.flags.sit){unoffer('sit');sitDown();}
+   yield* until(()=>C.flags.sit,40);if(!C.flags.sit){unoffer('sit');sitDown();}objective('','');
    yield* lines([{wait:1},MO('It came today. From the township.',{time:2.2})]);
    offer('letter','Read the letter',()=>letterMesh.getWorldPosition(new THREE.Vector3()),{r:2.6,inPose:true});
    yield* until(()=>C.flags.letter,24);unoffer('letter');
