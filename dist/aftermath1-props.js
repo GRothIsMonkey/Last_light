@@ -45,7 +45,7 @@ export const P9={
  welcome:{w:512,h:256,draw(g,w,h){g.fillStyle='#3f6b4a';g.fillRect(0,0,w,h);g.strokeStyle='#c8a25a';g.lineWidth=14;g.strokeRect(7,7,w-14,h-14);
   const cols=['#e9c44a','#d9623e','#f1ede2','#6fa8d8','#e9c44a','#d9623e','#f1ede2'];g.font='bold 62px "Comic Sans MS",cursive';'WELCOME'.split('').forEach((ch,i)=>{g.fillStyle=cols[i%7];g.fillText(ch,62+i*56,104);});
   g.font='bold 62px "Comic Sans MS",cursive';'BACK!'.split('').forEach((ch,i)=>{g.fillStyle=cols[(i+3)%7];g.fillText(ch,130+i*56,178);});hand(g,22,'#f1ede2');g.fillText('First day: Tuesday, August 30',104,226);}},
- // the board by the doors: who is being looked for. kind 'shelter' (Saturday) | 'monday' (Sam's says FOUND; two are gone from it)
+ // the board by the doors: who is being looked for. kind 'shelter' (Saturday) | 'found' (Saturday, once Sam's says FOUND; the other two still up) | 'monday' (Sam's says FOUND; two are gone from it)
  board:{w:1024,h:640,draw(g,w,h,kind='shelter'){g.fillStyle='#b88a58';g.fillRect(0,0,w,h);for(let k=0;k<900;k++){g.fillStyle=`rgba(${60+(k*31)%60},${40+(k*17)%40},20,.16)`;g.fillRect((k*193)%w,(k*71)%h,3,2);}
   sans(g,34,'#f6f1e2');g.fillRect(0,0,w,58);g.fillStyle='#2a2a2a';g.font='bold 34px Arial';g.fillText('LOOKING FOR SOMEONE?  POST IT HERE.',28,42);
   const flyer=(x,y,name,sub,cast,o={})=>{g.save();g.translate(x,y);g.rotate(o.r||0);g.fillStyle='#fbfaf4';g.fillRect(0,0,230,300);tape(g,115,0);
@@ -57,7 +57,7 @@ export const P9={
    if(o.found){g.rotate(-.22);g.strokeStyle='#1e7a3a';g.lineWidth=6;g.strokeRect(-6,112,236,62);g.fillStyle='#1e7a3a';g.font='bold 52px Arial';g.fillText('FOUND',112,160);}
    g.textAlign='left';g.restore();};
   const note=(x,y,ww,hh,c,ls,r=0)=>{g.save();g.translate(x,y);g.rotate(r);g.fillStyle=c;g.fillRect(0,0,ww,hh);hand(g,19,'#22262e');ls.forEach((t,i)=>g.fillText(t,10,28+i*24));g.restore();};
-  if(kind==='shelter'){flyer(40,84,'ALEX','Age 12. Since Sun., Aug. 21.|Briarwood Lane.',CAST.alex,{r:-.03});flyer(296,96,'SAM','Age 12. Since Thurs., Aug. 25.|Mill Creek works.',CAST.sam,{r:.025});
+  if(kind==='shelter'||kind==='found'){flyer(40,84,'ALEX','Age 12. Since Sun., Aug. 21.|Briarwood Lane.',CAST.alex,{r:-.03});flyer(296,96,'SAM','Age 12. Since Thurs., Aug. 25.|Mill Creek works.',CAST.sam,{r:.025,found:kind==='found'});
    flyer(552,80,'JAMIE','12. Blue cap, orange shirt.|Oak Hollow Dr. PLEASE.',CAST.jamie,{r:-.015,blank:true,hand:true});}
   else{flyer(296,96,'SAM','Age 12. Since Thurs., Aug. 25.|Mill Creek works.',CAST.sam,{r:.025,found:true});g.fillStyle='rgba(120,84,48,.55)';g.fillRect(40,84,230,300);g.fillRect(552,80,230,300);for(const [x,y] of [[60,90],[250,92],[572,86],[762,88]]){g.fillStyle='#8a8a84';g.beginPath();g.arc(x,y,4,0,7);g.fill();}}
   note(812,96,190,104,'#f4e9a8',['DAVIS family','all OK. At my','sister’s. — Ed'],.03);note(820,220,180,128,'#cfe3f2',['E. PRUITT','is HERE.','Cot 14. Ask','the nurse.'],-.04);
@@ -129,6 +129,10 @@ export const P9={
  // June, the photo booth at the mall: four frames, four boys, one helmet
  booth:{w:160,h:560,draw(g,w,h){sheet(g,w,h,'#f4f1ea');for(let i=0;i<4;i++){const y=14+i*134;g.fillStyle='#b8402e';g.fillRect(14,y,132,122);kid(g,48,y+50,30,CAST.jamie,{cap:true,smile:1});kid(g,112,y+50,29,CAST.sam,{smile:i%2});kid(g,48,y+92,30,CAST.player,{smile:1});
    kid(g,112,y+92,30,CAST.alex,{smile:1});g.fillStyle='#d8d4c8';g.beginPath();g.ellipse(112,y+80,15,11,0,Math.PI,0);g.fill();}}},
+ // the Tour shirt, folded: iron-on letters Sam's mom put on, a little crooked, one peeling
+ shirt:{w:320,h:256,draw(g,w,h){g.fillStyle='#3d6a9a';g.fillRect(0,0,w,h);g.fillStyle='rgba(255,255,255,.06)';for(let y=0;y<h;y+=4)g.fillRect(0,y,w,1);
+  g.fillStyle='#f3efe4';g.font='bold 34px "Arial Black",Arial';g.textAlign='center';g.save();g.translate(w/2,90);g.rotate(-.03);g.fillText('TOUR DE',0,0);g.restore();g.save();g.translate(w/2,134);g.rotate(.02);g.fillText('OAK HOLLOW',0,0);g.restore();
+  g.fillStyle='#e9c44a';g.font='bold 30px "Arial Black",Arial';g.fillText('2010',w/2,180);g.fillStyle='rgba(243,239,228,.55)';g.fillRect(212,150,18,8);g.textAlign='left';}},
  // ---- the rest ----------------------------------------------------------------------------------------------------------------
  // the searchers' paint on a door: an X, the date, who, what was found (0)
  xmark:{w:256,h:256,draw(g,w,h,date='8/27',who='OHFD',n='0'){g.clearRect(0,0,w,h);g.strokeStyle='rgba(232,92,28,.92)';g.lineWidth=13;g.lineCap='round';g.beginPath();g.moveTo(26,26);g.lineTo(230,230);g.moveTo(230,26);g.lineTo(26,230);g.stroke();

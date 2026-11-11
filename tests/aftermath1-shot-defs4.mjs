@@ -42,11 +42,11 @@ const DEFS9d={
   frames:[['truck',()=>{const F=__f;F.run(.3);}],
    ['sam-bike',()=>{const F=__f,A=lastLight.aftermath1;F.play(()=>F.line().includes('Probably'),90);const s=lastLight.chapter.kit.sam;F.closeOn(s,1.8,.6);return {expr:s.person.face.expression};}],
    ['notebook',()=>{const F=__f,A=lastLight.aftermath1;F.play(()=>A.C.view==='inspect',60);F.run(2);}],
-   ['wave',()=>{const F=__f,A=lastLight.aftermath1;F.play(()=>F.line().includes('puts a foot down'),180,{answer:1,skip:/^(car|stand-up)$/});const s=lastLight.chapter.kit.sam;F.face({x:s.bx??s.px,y:1.4,z:s.bz??s.pz});F.run(.2);}]]},
+   ['wave',()=>{const F=__f,A=lastLight.aftermath1;F.play(()=>F.line().includes('puts a foot down'),180,{answer:1,skip:/^(car|stand-up)$/});F.run(1.2);const s=lastLight.chapter.kit.sam;const g=s.person.group;const p=g.getWorldPosition(new g.position.constructor());const a=s.ba??s.pa??0;F.put({x:p.x+Math.sin(a)*4.2+Math.cos(a)*1.2,z:p.z-Math.cos(a)*4.2+Math.sin(a)*1.2},0);F.run(.1);F.face({x:p.x,y:p.y+1.3,z:p.z});F.run(.1);return {wave:A.C.samWave!=null,mode:s.mode};}]]},
  road:{note:'The road out at the last of the light: in the car; looking back; the notebook on your lap; ahead',setup:()=>{const L=lastLight,F=__f;L.devScene(9,'a1-road-out');F.run(3);},
   frames:[['in-car',()=>{const F=__f;F.run(4);}],
    ['back',()=>{const F=__f,A=lastLight.aftermath1,LV=A.SC.TOWN.LEAVE;F.run(6);const c=lastLight.camera.position,a=-LV.CAR.rotation.y;F.face({x:c.x-Math.sin(a)*12,y:c.y,z:c.z+Math.cos(a)*12});F.run(.3);}],
-   ['lap',()=>{const F=__f,A=lastLight.aftermath1,LV=A.SC.TOWN.LEAVE;F.run(8);const c=lastLight.camera.position,a=-LV.CAR.rotation.y;F.face({x:c.x+Math.sin(a)*.5,y:c.y-.55,z:c.z-Math.cos(a)*.5});F.run(.3);}],
+   ['lap',()=>{const F=__f,A=lastLight.aftermath1,LV=A.SC.TOWN.LEAVE;F.run(2);for(let i=0;i<50&&!LV.LAP.notebook;i++)F.run(1);const L=LV.LAP.notebook;if(!L)return {lap:Object.keys(LV.LAP)};const p=L.getWorldPosition(new L.position.constructor());F.face({x:p.x,y:p.y,z:p.z});F.run(.3);const c=lastLight.camera.position;return {d:+Math.hypot(p.x-c.x,p.y-c.y,p.z-c.z).toFixed(2),lap:Object.keys(LV.LAP)};}],
    ['ahead',()=>{const F=__f,A=lastLight.aftermath1,LV=A.SC.TOWN.LEAVE;F.run(6);const c=lastLight.camera.position,a=-LV.CAR.rotation.y;F.face({x:c.x+Math.sin(a)*20,y:c.y-.4,z:c.z-Math.cos(a)*20});F.run(.3);}]]},
 };
 export default DEFS9d;

@@ -226,7 +226,7 @@ export function townActs(H){
    objective('Alex’s bike.','');
    offer('bell','Alex’s bell',()=>bellAt()||SP(998.6,3.4,1),{r:2.2,look:true,size:.14,cone:.2,fn:()=>{ring(2);}});
    yield* until(()=>C.flags.bell,40);
-   if(C.flags.bell){keep('bell',true);yield* wait(.6);
+   if(C.flags.bell){keep('bell',true);yield* wait(.6);later(2.6,()=>sound('a1Theme',camera.position,{gain:.4}));
     yield* lines([N('Twice. Like at every corner.',{time:2.4}),{wait:1.6},N('The last time you heard it was the twenty-first. At the corner of Briarwood. He waved, and rang it twice, and went round the corner.',{time:5.6}),
      {wait:1.4,act:()=>{weep(sam,'crying',20);}},SM('Don’t.',{time:1,face:'crying'}),{wait:2.6},SM('...No. Do it again.',{time:2,face:'crying'})]);cry(.45,10);
     const ch=yield* choosing([{id:'again',label:'Ring it again'},{id:'leave',label:'Leave it'}],{timeout:14,fallback:'leave'});C.keep.told.bell=ch;keep('told',C.keep.told);

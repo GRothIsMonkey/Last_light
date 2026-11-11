@@ -1,8 +1,11 @@
-# Aftermath: story handoff (not implemented)
+# Aftermath: story handoff
 
-Chapter Eight ends on its own end card — **Chapter Eight · THE NIGHT OAK HOLLOW FELL · August 27, 2011** — with
-"Start over" and "Back to the title". There is no "next chapter" button. Nothing of Aftermath I, Aftermath II or
-the 2026 coda is implemented, staged or teased in the build. This document is the state the aftermath inherits.
+**Aftermath I (What Was Left) is now implemented** on `claude/aftermath1-what-was-left` (see
+`AFTERMATH1_IMPLEMENTATION_HANDOFF.md`): Chapter Eight's end card has an **Aftermath I →** button, and Aftermath I ends
+on its own card with nothing after it. **Aftermath II and the 2026 coda are not implemented, staged or teased.**
+
+Sections 1–4 below are the state Chapter Eight leaves (unchanged; Aftermath I was built on them). Section 5 is the state
+Aftermath I leaves for Aftermath II.
 
 ## 1. What is true when Chapter Eight ends (Saturday 27 August 2011, about 6:30 AM)
 
@@ -72,3 +75,29 @@ The chapter writes this to local storage as `lastlight.chapter8`:
 - Reyes saw two Sams at once (Chapter Six).
 - Jamie's and Alex's deaths are real and final. Sam lives.
 - The thing was sealed off from the neighbourhood, not destroyed; nobody was put back in a chamber to do it.
+
+## 5. What Aftermath I leaves (October 15, 2011, the last of the light)
+
+| Who / what | State at the Aftermath I end card |
+|---|---|
+| The protagonist | Twelve. Driving out of Oak Hollow with his mother, to his aunt's (a job for her there; the township could not certify the ground under the Drive for 12–18 months). Carries Sam's notebook (ALEX · JAMIE · SAM in his own writing; Sam's aunt's number, his dad's e-mail and "RULE 6. WRITE BACK" inside the back cover); the Sunday print from Alex's father; Jamie's cap unless it is with Jamie's mother (see the save). He wrote JAMIE on the county's list himself. He cannot remember exactly what living there was like before that week; he knows their names and that it was real. |
+| Sam | Alive, staying in Oak Hollow (his family is not moving; their house is RESTRICTED, inside the fenced zone). Keeps the Tour de Oak Hollow poster ("Somebody has to"). Angry at the official story, at Jamie for going back into the yard, at all of it; refused to let the protagonist call it his fault. Practical again by October (fixed the chain twice). They plan to call; nothing beyond that is promised. |
+| Jamie's mother | Has his BMX at her porch (by the rail or in the middle of the walk, where he always left it), Lily's drawing of Biscuit, and — if it was given — his cap. Leaves the porch light on. |
+| Alex's parents | Have his camera back (Reyes copied the card first), his bike on its two garage hooks, every picture printed (two sets, shown at his memorial at the school on September 6). His room is untouched. His father knows about the one picture with Alex's shadow in it if the protagonist told him. |
+| Reyes | Wrote down everything he saw, signed it, and has not been asked to change a word. Copied the notebook pages, the camera card and the 1959 sheet (and copied the copies). Told the boys in October that the state engineers' report (aged storm lines, a gas main, fifty years of washout) is true but not all of it. |
+| Brandt | Leg in a cast (seen at both remembrances in a lawn chair / with his leg out in the aisle). |
+| The Hendersons, Mrs. Pruitt, Mr. Davis | Alive; at Jamie's vigil telling what he did. The Hendersons remember the night differently on different days. |
+| Oak Hollow | Still damaged. In October the fence is at Summerfield itself and shut; the Summerfield hole is filled with gravel and plated; the Kowalskis' frame is gone (a cleared lot); the trench, 1052, 1081, the Kesslers' shell and the Hendersons' yard are behind the line, the searchers' paint fading; plywood on the windows; the pole opposite the protagonist's house replaced. Below Summerfield people live, work and rake leaves. Kids from the Drive are bused to Lincoln. |
+| The Presence, the hunters, the made things | Nothing of them appears in Aftermath I. Still sealed off, fates as Chapter Eight left them. |
+
+Aftermath I's save, `lastlight.aftermath1` (written at every checkpoint and at the end card):
+
+```json
+{"cap":"you|mom","capWhen":"shelter|porch|null","notebook":"you","camera":"parents","print":true,"wrote":true,"bell":true,
+ "note":"chain|bell|look","boxed":[...],"told":{...},"left":true,"section":"aftermath1-end","home":["YOU","SAM"],
+ "lost":["JAMIE","ALEX"],"presence":"sealed","you":"moved away, October 2011","sam":"Oak Hollow","at":<timestamp>}
+```
+
+For Aftermath II (about 2021, still only a preferred direction): the protagonist left with the notebook; Sam stayed with
+the Tour poster; the families stayed or did not as their own stories need. Nothing in Aftermath I fixes what happens
+after the drive out.

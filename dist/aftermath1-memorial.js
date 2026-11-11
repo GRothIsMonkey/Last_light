@@ -83,7 +83,7 @@ export function memorialActs(H){
   S0(reyes,jd+6.1,11.4,Math.PI+.9,'fold');S0(huang,jd+.9,12.4,Math.PI,'fold');S0(delaney,jd-1.2,12.0,Math.PI-.2,G(ACT9.cup()));S0(okafor,jd+5.2,9.2,Math.PI+1.1,'fold');S0(pruitt3,jd-.6,10.4,Math.PI-.1,'fold');
   if(brandt){putW(brandt,CHAIR,JA(Math.PI)-.5,G(ACT9.castLeg(.42,{side:1})),{noBlock:true});splint(brandt);feel(brandt,'grief',60);}
   for(const a of [mrsH,mrH,pruitt,davis,samDad,samMom,reyes])if(a)feel(a,'tearful',30);}
- const SAMCURB=JW(JH.doorX-.9,14.0),GOHOME=JW(JH.doorX-4.6,15.4);
+ const SAMCURB=JW(JH.doorX-.9,14.0),GOHOME=SP(JH.u-13,6.0);// (down the sidewalk, the way home)
  function sceneMemJamie(){go('a1-mem1');streetWorld('september',{sky:'evening',evening:true});setDay('SEPTEMBER 3',19.62,'evening');C.skyK={p:.74,day:.18};C.grief=.55;applyGrief();
   C.amb={traffic:.02,insects:.55,wind:.12,life:.2,forest:0,tunnel:0,water:0};lawn.visible=true;if(!root.parent)scene.add(root);C.porchOn=true;
   lightsOn(true);{const c=JW(JH.doorX,7.6,.5);light(0,c,{intensity:7,dist:9,color:0xffb868,flicker:.35});const e=JW(JH.doorX+1.1,7.9,.7);light(1,e,{intensity:3,dist:5,color:0xffc078,flicker:.5});const pl=JH.porchLight;const pq=JW(pl.x,pl.z+.4,pl.y);light(2,pq,{intensity:4,dist:9,color:0xffe0b0});}
@@ -96,7 +96,7 @@ export function memorialActs(H){
    objective('Jamie’s lawn.','Stay as long as you want.');
    offer('photo','His picture',()=>V3({x:EASEL.x,y:gy(EASEL.x,EASEL.z)+1,z:EASEL.z}),{r:5,look:true,size:.3,cone:.2,when:()=>!busy(),fn:()=>{say([N('The picture from her wallet. School, last fall. He hated it. He said it made him look like a weatherman.',{time:4.6}),{wait:1},
     N('On the steps under it, notes. YOU STILL OWE ME TWO DOLLARS, in Sam’s square printing.',{time:4.2})]);}});
-   offer('cards','Write something',()=>V3({x:TABLE.x,y:gy(TABLE.x,TABLE.z)+.8,z:TABLE.z}),{r:2.4,when:()=>!busy()});
+   offer('cards','Write something',()=>V3({x:TABLE.x,y:gy(TABLE.x,TABLE.z)+.76,z:TABLE.z}),{r:2.2,look:true,size:.45,cone:.25,when:()=>!busy()});
    const told={};let t0=C.pt,samT=0;
    // you can be anywhere on the lawn; what happens happens where you are
    while(true){yield;const p=me();
@@ -104,7 +104,7 @@ export function memorialActs(H){
     if(!C.flags.samNote&&D(p,SAMCURB)<1.9&&!busy()){samT+=C.dt;if(samT>2.2){C.flags.samNote=true;say([{wait:.4},SM('I wrote him a note.',{time:1.4,face:'tired'}),{wait:.8},SM('It’s stupid. It just says he owes me two dollars.',{time:2.6}),{wait:1.6},SM('He does, though.',{time:1.6}),{wait:1.4},N('You stand there with him. That’s all. It’s something.',{time:3})]);keep('told',{...C.keep.told,samCurb:true});}}else samT=0;
     if(C.flags.cards&&!C.noteDone){C.noteDone=true;yield* writeJamie();}
     if(!C.flags.asked&&!busy()&&(D(p,JP.step)<3.4||C.pt-t0>70)){C.flags.asked=true;yield* hisMother();t0=C.pt;}
-    if(C.flags.asked&&!C.flags.goOffered&&!busy()){C.flags.goOffered=true;objective('Jamie’s lawn.','Go home when you’re ready.');offer('go','Go home',()=>V3({x:GOHOME.x,y:GOHOME.y+1,z:GOHOME.z}),{r:3.4,when:()=>!busy()});later(45,()=>{if(S.phase==='a1-mem1'&&!C.flags.go&&!busy())say([MO('Whenever you’re ready, honey. No hurry.',{time:2.4})]);});}
+    if(C.flags.asked&&!C.flags.goOffered&&!busy()){C.flags.goOffered=true;objective('Jamie’s lawn.','Go home when you’re ready: down the sidewalk.');offer('go','Go home',()=>V3({x:GOHOME.x,y:GOHOME.y+1,z:GOHOME.z}),{r:3.4,when:()=>!busy()});later(45,()=>{if(S.phase==='a1-mem1'&&!C.flags.go&&!busy())say([MO('Whenever you’re ready, honey. No hurry.',{time:2.4})]);});}
     if(C.flags.go)break;}
    for(const id of ['photo','cards','go'])unoffer(id);
    yield* lines([N('You go home. Behind you the candles are still going, and somebody is telling another one, and people are laughing, quietly, in the dark.',{time:5.4}),{wait:2}]);
@@ -170,7 +170,7 @@ export function memorialActs(H){
    {const w=SW(1.6,-5.2);alexDad.gest(null);alexDad.noBlock=false;alexDad.walk([[w.x,w.z]],{speed:.7,then:q=>{q.faceTo(SW(1,-6.1).x,SW(1,-6.1).z);q.gest(G(ACT9.lost()));}});}
    objective('His pictures.','Along both walls.');
    SCH.SPOT.prints.forEach((b,j)=>{offer('board-'+j,'His pictures',()=>V3(SW(b.x,b.z,b.y)),{r:4,look:true,size:.8,cone:.25,when:()=>!busy(),fn:()=>{C.boardsSeen=(C.boardsSeen||0)+1;const ns=PRINTS9(b.i);const ls=[];
-    for(const n of ns){if(n===4){C.flags.shadow=true;ls.push(N(SHADOW,{time:5.4}));}else ls.push(N(PIC[n],{time:2.6}));}if(ns.includes(4))ls.push({wait:1.2},N('His dad said he isn’t in any of them.',{time:2.6}));say(ls);mark('board '+b.i);}});});
+    for(const n of ns){if(n===4){if(!C.flags.shadow)later(1,()=>sound('a1Theme',camera.position,{gain:.4}));C.flags.shadow=true;ls.push(N(SHADOW,{time:5.4}));}else ls.push(N(PIC[n],{time:2.6}));}if(ns.includes(4))ls.push({wait:1.2},N('His dad said he isn’t in any of them.',{time:2.6}));say(ls);mark('board '+b.i);}});});
    offer('cards','The card box',()=>V3(SW(SCH.SPOT.cards.x,SCH.SPOT.cards.z,SCH.SPOT.cards.y)),{r:2.4,when:()=>!busy()});
    later(14,()=>{if(S.phase!=='a1-mem2')return;const a=alexMom,b=jamieMom,s=(SCH.SPOT.rows||[]).find(q=>q.r===4&&q.c===7);if(!a||!s)return;const w=SW(s.x,s.z+.06);a.gest(null);a.noBlock=false;a.walk([[w.x+.2,w.z+.7],[w.x,w.z+.06]],{speed:.6,then:q=>{q.face(0);q.gest(G(ACT9.sit(.44,{lean:.12})));q.noBlock=true;C.flags.mothers=true;b.gest(G(ACT9.sit(.44,{hands:'lap',lean:.2})));}});});
    let t0=C.pt;

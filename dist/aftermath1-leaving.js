@@ -19,7 +19,7 @@ import {notebookPage,texOf} from './chapter7-props.js';
 import {makeCar} from './props.js';
 import {createKit} from './kit.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
-import {poseBike} from './rig.js';
+import {poseBike,P as PP,newPose,copyPose,applyPose} from './rig.js';
 
 export function leavingActs(H){
  const {o,k,C,S,ch6,phys,comp,brain,sam,cast,EVERYONE,sound,gy,light,lightsOn,checkpoint,later,mark,say,SM,Y,N,V,R,MO,person,
@@ -86,7 +86,7 @@ export function leavingActs(H){
  const kChairs=[];
  function kitchenChair(x,z,a){const g=new THREE.Group();const w=mat(0x8a6a48,{roughness:.6});const s=new THREE.Mesh(new THREE.BoxGeometry(.42,.04,.4),w);s.position.y=.46;g.add(s);const b=new THREE.Mesh(new THREE.BoxGeometry(.42,.42,.035),w);b.position.set(0,.7,.19);g.add(b);
   for(const [dx,dz] of [[-.18,-.17],[.18,-.17],[-.18,.17],[.18,.17]]){const l=new THREE.Mesh(new THREE.BoxGeometry(.035,.46,.035),w);l.position.set(dx,.23,dz);g.add(l);}const q=HW(x,z,FL);g.position.set(q.x,q.y,q.z);g.rotation.y=-HA(a);inside.add(g);kChairs.push(g);return g;}
- const MOMSEAT={x:TBL.x-.78,z:TBL.z,a:Math.PI/2},MYSEAT={x:TBL.x-.05,z:TBL.z+.74,a:0};
+ const MOMSEAT={x:TBL.x-.8,z:TBL.z+.05,a:Math.PI/2},MYSEAT={x:TBL.x+.24,z:TBL.z+.76,a:0};
  kitchenChair(MOMSEAT.x,MOMSEAT.z,MOMSEAT.a);kitchenChair(MYSEAT.x,MYSEAT.z,MYSEAT.a);
  const letterMesh=(()=>{const m=pageMesh(tex9('letter'),{w:.2,h:.265});const q=HW(TBL.x-.12,TBL.z+.08,FL+.756);m.position.set(q.x,q.y,q.z);m.rotation.order='YXZ';m.rotation.set(-Math.PI/2,-HA(0)+.3,0);m.name='a1-letter';inside.add(m);return m;})();
  // your room in boxes: three boxes (one open), a roll of tape; a drawer pulled out of the dresser
@@ -101,7 +101,7 @@ export function leavingActs(H){
  const tapeRoll=(()=>{const m=new THREE.Mesh(new THREE.TorusGeometry(.045,.022,8,16),tapeM);const q=HW(RB.x0+2.25,RB.z0+2.2,FL+.024);m.position.set(q.x,q.y,q.z);m.rotation.x=Math.PI/2;inside.add(m);return m;})();
  const DRAWER=(()=>{const g=new THREE.Group();const DRx=RB.x0+.75,DRz=RB.z0+.28;const w=mat(0x6a4a30,{roughness:.7});const front=new THREE.Mesh(new THREE.BoxGeometry(.98,.22,.02),w);front.position.set(0,0,.26);g.add(front);
   const bot=new THREE.Mesh(new THREE.BoxGeometry(.92,.01,.46),mat(0x8a6a48));bot.position.set(0,-.1,.03);g.add(bot);for(const s of [-1,1]){const sd=new THREE.Mesh(new THREE.BoxGeometry(.01,.18,.46),mat(0x8a6a48));sd.position.set(s*.46,-.02,.03);g.add(sd);}
-  const q=HW(DRx,DRz,FL+.74);g.position.set(q.x,q.y,q.z);g.rotation.y=-HA(Math.PI);g.userData.base=new THREE.Vector3(q.x,q.y,q.z);inside.add(g);return g;})();
+  const q=HW(DRx,DRz,FL+.74);g.position.set(q.x,q.y,q.z);g.rotation.y=-HA(0);g.userData.base=new THREE.Vector3(q.x,q.y,q.z);inside.add(g);return g;})();
  const DR9={k:0,want:0};
  // what is in the drawer, and the other things you might pack
  const booth=pageMesh(tex9('booth'),{w:.05,h:.175,color:0xf4f1ea});booth.name='a1-booth-strip';
@@ -109,7 +109,7 @@ export function leavingActs(H){
   print:{name:'Sunday at the oak',held:()=>pageMesh(tex9('sunday'),{w:.24,h:.18}),ls:[N('Sunday at the oak. The twenty-first. Four bikes and three of you, because he was the one holding it.',{time:4.6})],when:()=>!!C.keep.print},
   cap:{name:'Jamie’s cap',held:()=>{const g=capG.clone();g.visible=true;g.rotation.set(.3,0,0);return g;},ls:[N('His cap. Blue. It still has the shape of his head in it, sort of. You don’t know what you’d do if it stopped having that.',{time:5.4})],when:()=>C.keep.cap==='you'},
   calendar:{name:'The calendar',held:()=>pageMesh(tex9('calendar'),{w:.21,h:.27}),ls:[N('August. Every day crossed off up to the twenty-fourth. The thirtieth circled: the first day of school.',{time:4.6}),{wait:.6},N('Nobody crossed off the rest.',{time:2.2})]},
-  shirt:{name:'Your Tour shirt',held:()=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.32,.02,.26),mat(0x3d6a9a,{roughness:1}));return m;},ls:[N('The T-shirt Sam’s mom made for the Tour, iron-on letters. TOUR DE OAK HOLLOW 2010. It’s too small. It was too small in June.',{time:5})]}};
+  shirt:{name:'Your Tour shirt',held:()=>{const g=new THREE.Group();const m=new THREE.Mesh(new THREE.BoxGeometry(.32,.02,.26),mat(0x3d6a9a,{roughness:1}));g.add(m);const t=pageMesh(tex9('shirt'),{w:.3,h:.24,color:0x3d6a9a});t.rotation.x=-Math.PI/2;t.position.y=.011;g.add(t);g.rotation.x=Math.PI/2.4;return g;},ls:[N('The T-shirt Sam’s mom made for the Tour, iron-on letters. TOUR DE OAK HOLLOW 2010. It’s too small. It was too small in June.',{time:5})]}};
  const SHOWN={};// what is visible where in the room (packed things vanish into the box)
  const itemMeshes={};
  function placeItems(){for(const m of Object.values(itemMeshes))m.removeFromParent();
@@ -118,7 +118,7 @@ export function leavingActs(H){
   if(C.keep.print)put('print',pageMesh(tex9('sunday'),{w:.15,h:.11}),RB.x1-.45,RB.z1-.5,.76,.2);
   if(C.keep.cap==='you'){const g=capG.clone();g.visible=true;const q=HW(RB.x1-.6,1.4,FL+.6);g.position.set(q.x,q.y,q.z);g.rotation.set(0,-HA(.6),0);inside.add(g);itemMeshes.cap=g;}
   put('calendar',pageMesh(tex9('calendar'),{w:.36,h:.45}),RB.x0+.012,RB.z1-.9,1.45,Math.PI/2,0);
-  {const m=new THREE.Mesh(new THREE.BoxGeometry(.3,.03,.24),mat(0x3d6a9a,{roughness:1}));const q=HW(RB.x1-.7,.9,FL+.6);m.position.set(q.x,q.y,q.z);m.rotation.y=-HA(.4);inside.add(m);itemMeshes.shirt=m;}}
+  {const m=new THREE.Group();m.add(new THREE.Mesh(new THREE.BoxGeometry(.3,.03,.24),mat(0x3d6a9a,{roughness:1})));const t=pageMesh(tex9('shirt'),{w:.28,h:.22,color:0x3d6a9a});t.rotation.x=-Math.PI/2;t.position.y=.016;m.add(t);const q=HW(RB.x1-.7,.9,FL+.6);m.position.set(q.x,q.y,q.z);m.rotation.y=-HA(.4);inside.add(m);itemMeshes.shirt=m;}}
  const itemAt=id=>{const m=itemMeshes[id];return m?m.getWorldPosition(new THREE.Vector3()):null;};
  function houseOn(on,{room='kitchen'}={}){if(!home)return;if(on){home.show(true);home.reset();home.show(true);home.cameraOnDesk?.(false);nav.setRoom(home.nav);if(!inside.parent)scene.add(inside);
    const bf=home.root.getObjectByName('your-breakfast');if(bf)bf.visible=false;const sp=home.root.getObjectByName('breakfast-spoon');if(sp)sp.visible=false;}
@@ -132,9 +132,9 @@ export function leavingActs(H){
   const st=HW(KTB?KTB.x0+.85:1.3,KTB?KTB.z1-.75:-2.2);placeMe({x:st.x,z:st.z},headingTo(st.x,st.z,letterMesh.position.x,letterMesh.position.z));// (in the kitchen doorway's light, two steps in)
   checkpoint('a1-home');C.fadeIn=0;C.fadeInDur=2.4;
   task('home',(function*(){
-   yield* lines([{wait:1.4},N('Monday night. Mom is at the kitchen table with a letter, and her coat still on.',{time:4}),{wait:.8},MO('Sit down a minute, honey.',{time:1.8,face:'tired'})]);
+   yield* lines([{wait:1.4},N('Monday night. Mom is at the kitchen table with a letter in front of her, not reading it.',{time:4}),{wait:.8},MO('Sit down a minute, honey.',{time:1.8,face:'tired'})]);
    objective('Sit down.','');
-   const sitDown=()=>{const w=HW(MYSEAT.x,MYSEAT.z+.04);pose({x:w.x,z:w.z},{y:w.y+FL+1.08,yaw:HA(MYSEAT.a),pitch:-.18,slow:1.2,seat:{h:.47,y:w.y+FL}});};
+   const sitDown=()=>{const w=HW(MYSEAT.x,MYSEAT.z+.04);pose({x:w.x,z:w.z},{y:w.y+FL+1.08,yaw:HA(MYSEAT.a-.55),pitch:-.14,slow:1.2,seat:{h:.47,y:w.y+FL}});};// (turned a little toward her)
    offer('sit','Sit down',()=>V3(HW(MYSEAT.x,MYSEAT.z,FL+.7)),{r:2.6,fn:sitDown});
    yield* until(()=>C.flags.sit,40);if(!C.flags.sit){unoffer('sit');sitDown();}
    yield* lines([{wait:1},MO('It came today. From the township.',{time:2.2})]);
@@ -195,7 +195,7 @@ export function leavingActs(H){
   const ramp=new THREE.Mesh(new THREE.BoxGeometry(.9,.04,2.2),mat(0x9a9c9e,{roughness:.4,metalness:.6}));ramp.position.set(0,.3,4.85);ramp.rotation.x=.22;g.add(ramp);g.userData.ramp=ramp;
   for(const z of [-.2,2.8])for(const s of [-1,1]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.3,14),mat(0x222222));w.rotation.z=Math.PI/2;w.position.set(s*1.0,.42,z);g.add(w);}
   g.visible=false;scene.add(g);return g;})();
- const CAR=(()=>{const g=new THREE.Group();g.name='a1-moms-car';makeCar(KT,g,'wagon',0x6a7f8e,{lights:true});
+ const CAR=(()=>{const g=new THREE.Group();g.name='a1-moms-car';makeCar(KT,g,'wagon',0x6a7f8e,{lights:true});const SHELL=[...g.children];g.userData.shell=SHELL;// (the model is solid to the belt with a solid glass block over it: seen from outside only)
   // the inside, from the passenger's seat: a dash, the pillars, the doors, a wheel, a mirror
   const I=new THREE.Group();I.name='a1-car-inside';g.add(I);const dk=mat(0x2c2e30,{roughness:.8}),gr=mat(0x55585a,{roughness:.7});
   const dash=new THREE.Mesh(new THREE.BoxGeometry(1.66,.24,.5),dk);dash.position.set(0,.84,-1.02);I.add(dash);
@@ -207,14 +207,28 @@ export function leavingActs(H){
   const mir=new THREE.Mesh(new THREE.BoxGeometry(.24,.07,.03),dk);mir.position.set(0,1.32,-.62);I.add(mir);
   const console2=new THREE.Mesh(new THREE.BoxGeometry(.24,.3,.8),dk);console2.position.set(0,.55,-.35);I.add(console2);
   for(const s of [-1,1]){const sb=new THREE.Mesh(new THREE.BoxGeometry(.5,.62,.1),gr);sb.position.set(s*.42,.9,.12);sb.rotation.x=-.12;I.add(sb);}
+  // the rest of the cabin (shown only from inside, on the road out): the hood beyond the glass, the floor, the roof, the back seat, the wagon's back
+  const paintI=mat(0x6a7f8e,{roughness:.38,metalness:.25}),cloth=mat(0x4a4c50,{roughness:1}),head=mat(0x8a8c88,{roughness:.9});
+  const hood=new THREE.Mesh(new THREE.BoxGeometry(1.74,.06,1.3),paintI);hood.position.set(0,.88,-1.85);hood.rotation.x=.05;I.add(hood);
+  const floor=new THREE.Mesh(new THREE.BoxGeometry(1.6,.04,3.2),dk);floor.position.set(0,.34,.4);I.add(floor);
+  const roofI=new THREE.Mesh(new THREE.BoxGeometry(1.56,.03,2.9),head);roofI.position.set(0,1.44,.75);I.add(roofI);
+  for(const s of [-1,1]){const seat=new THREE.Mesh(new THREE.BoxGeometry(.5,.12,.5),cloth);seat.position.set(s*.42,.5,-.08);I.add(seat);
+   const rear=new THREE.Mesh(new THREE.BoxGeometry(.06,.5,1.2),gr);rear.position.set(s*.86,.72,1.6);I.add(rear);const rsill=new THREE.Mesh(new THREE.BoxGeometry(.1,.04,1.2),dk);rsill.position.set(s*.83,.98,1.6);I.add(rsill);
+   const cp=new THREE.Mesh(new THREE.BoxGeometry(.08,.46,.08),dk);cp.position.set(s*.78,1.2,1.2);I.add(cp);const dp=new THREE.Mesh(new THREE.BoxGeometry(.08,.46,.1),dk);dp.position.set(s*.76,1.2,2.25);I.add(dp);}
+  const bench=new THREE.Mesh(new THREE.BoxGeometry(1.5,.12,.5),cloth);bench.position.set(0,.5,.95);I.add(bench);const bback=new THREE.Mesh(new THREE.BoxGeometry(1.5,.55,.1),cloth);bback.position.set(0,.8,1.18);bback.rotation.x=-.1;I.add(bback);
+  const tail=new THREE.Mesh(new THREE.BoxGeometry(1.6,.6,.06),gr);tail.position.set(0,.66,2.3);I.add(tail);const tailTop=new THREE.Mesh(new THREE.BoxGeometry(1.6,.06,.08),dk);tailTop.position.set(0,1.4,2.28);I.add(tailTop);
+  for(const m of [hood,floor,roofI,bench,bback,tail])m.castShadow=false;
+  I.visible=false;g.userData.inside=I;
   g.visible=false;scene.add(g);return g;})();
+ // from inside (the road out) or from outside (the curb): the model's own shell, or the cabin
+ function carFrom(inside){for(const m of CAR.userData.shell)m.visible=!inside;CAR.userData.inside.visible=inside;}
  const MOVERS=[vol4,vol5].filter(Boolean),moverBoxes=MOVERS.map(()=>{const b=new THREE.Mesh(new THREE.BoxGeometry(.5,.4,.4),boxM);b.visible=false;scene.add(b);return b;});
  function goodbyeSetup(){streetWorld('october',{sky:'autumn'});autumn(true);setDay('OCTOBER 15',16.6,'autumn');C.skyK={p:.34,day:.6};C.grief=.3;applyGrief();C.amb={traffic:.1,insects:.04,wind:.42,life:.5,forest:0,tunnel:0,water:0};
   // the truck at the curb, its ramp down; your mother's car in the drive; your bike by the ramp
   {const q=SP(DRIVE_D+6.5,-5.2);TRUCK.position.set(q.x,q.y,q.z);TRUCK.rotation.y=-heading(DRIVE_D)+Math.PI;TRUCK.visible=true;}
-  {const q=HW(HP.drivX??HP.gx,(HP.drivEnd+HP.endLat)/2-.4);CAR.position.set(q.x,gy(q.x,q.z),q.z);CAR.rotation.y=-HA(0);CAR.visible=true;}
+  {const q=HW(HP.drivX??HP.gx,(HP.drivEnd+HP.endLat)/2-.4);CAR.position.set(q.x,gy(q.x,q.z),q.z);CAR.rotation.y=-HA(0);CAR.visible=true;carFrom(false);}
   {const b=MEM.myBike;MEM.chainSet(1);const q=SP(DRIVE_D+1.4,-6.6);b.group.visible=true;b.group.position.set(q.x,q.y,q.z);b.group.rotation.set(0,-heading(DRIVE_D),.12);b.kickstand=1;b.steerAngle=.3;poseBike(b);}
-  {const q=HW((HP.drivX??HP.gx)+2.2,HP.endLat-1.2);putW(mom,q,HA(Math.PI)+.6,G(ACT9.clipboard()));feel(mom,'tired',99);}
+  {const q=HW((HP.doorX??0)+1.5,HP.stepFront+1.8);putW(mom,q,HA(Math.PI)+.4,G(ACT9.clipboard()));feel(mom,'tired',99);}
   MOVERS.forEach((a,i)=>{const q=SP(DRIVE_D+2+i*1.4,-9-i);putW(a,q,heading(DRIVE_D)+1.2,null);a.moverT=i*3.5;a.moverS='to';});
   const st=SP(DRIVE_D-1.6,-6.2);placeMe(st,headingTo(st.x,st.z,SP(DRIVE_D+30,-3).x,SP(DRIVE_D+30,-3).z));leave(sam);}
  function updateMovers(dt){if(!TRUCK.visible||S.phase!=='a1-bye')return;const door=HW(HP.doorX??0,HP.stepFront+.8),ramp=(()=>{TRUCK.updateMatrixWorld(true);return new THREE.Vector3(0,0,6.2).applyMatrix4(TRUCK.matrixWorld);})();
@@ -241,7 +255,7 @@ export function leavingActs(H){
    objective('Sam’s notebook.','');
    offer('notebook','Take the notebook',()=>headOf(sam),{r:2.8});
    yield* until(()=>C.flags.notebook,30);unoffer('notebook');keep('notebook','you');
-   yield* holding(pageMesh(texOf(notebookPage('names',{names:'ALEX · JAMIE · SAM'}))||tex9('card',['ALEX · JAMIE · SAM','','']),{w:.24,h:.32}),[N('His notebook. The names, in your writing, where you wrote them in the gym that Monday.',{time:4.2}),{wait:.6},
+   yield* holding(pageMesh(texOf(notebookPage('names',{names:'ALEX\nJAMIE\nSAM'}))||tex9('card',['ALEX · JAMIE · SAM','','']),{w:.24,h:.32}),[N('His notebook. The names, in your writing, where you wrote them in the gym that Monday.',{time:4.2}),{wait:.6},
     N('On the inside of the back cover, in his square printing: his aunt’s phone number. His dad’s e-mail. And under that: RULE 6. WRITE BACK.',{time:5.6})],{dist:.42,kind:'notebook',min:4});
    yield* lines([{wait:.8},SM('I’m keeping the Tour. Somebody has to.',{time:2.4}),{wait:1.6},SM('Rule five.',{time:1.4,face:'tearful'}),{wait:2.4}]);
    const r5=yield* choosing([{id:'say',label:'“Nobody gets left behind.”'},{id:'none',label:'Say nothing'}],{timeout:12,fallback:'none'});keep('told',{...C.keep.told,rule5:r5});
@@ -262,7 +276,7 @@ export function leavingActs(H){
    {const lamp=SP(485,2.6),b=SP(470,-2.4);stand(sam,null);if(sam.mode==='foot')comp.putRiding(sam,sam.bx??sam.px,sam.bz??sam.pz,heading(DRIVE_D),0);
     comp.run(sam,[comp.steps.rideTo(sam,[[b.x,b.z],[lamp.x,lamp.z]],{vmax:3.4,vend:0}),comp.steps.brake(sam,.6)],{then:()=>{C.flags.samAtLamp=true;}});}
    objective('','');
-   yield* until(()=>C.flags.samAtLamp,40);
+   yield* until(()=>C.flags.samAtLamp,40);C.samWave=C.t;later(5.5,()=>{C.samWave=null;});
    yield* lines([{wait:.6},N('At the lamp post he stops, and puts a foot down, and turns round, and waves.',{time:3.6}),{wait:2.6},
     N('For a second you wait for the other two. The way you always did. One at Briarwood, ringing his bell. One at his porch light.',{time:5.4}),{wait:2.2},
     N('Nobody comes round the corner after him. Nobody’s going to.',{time:3.6}),{wait:2.6}]);
@@ -280,7 +294,7 @@ export function leavingActs(H){
   const a=SP(d,0),b=SP(d,1),h=heading(d)+Math.PI,rx=Math.cos(h),rz=Math.sin(h);return ((b.x-a.x)*rx+(b.z-a.z)*rz)>0?2.1:-2.1;}
  function roadSetup(){streetWorld('october',{sky:'last',evening:true});autumn(true);setDay('OCTOBER 15',18.3,'last');C.skyK={};C.grief=.3;applyGrief();C.amb={traffic:.12,insects:.08,wind:.3,life:.3,forest:0,tunnel:0,water:0};
   TRUCK.visible=false;MEM.myBike.group.visible=false;Object.assign(ROAD,{d:DRIVE_D+3,v:0,on:true,lookedBack:0,kept:false,ahead:0,ended:false,t:0});ROAD.lat=laneLat(DRIVE_D);
-  CAR.visible=true;placeCar(0);
+  CAR.visible=true;carFrom(true);placeCar(0);
   {CAR.updateMatrixWorld(true);const mq=new THREE.Vector3(-.42,0,-.05).applyMatrix4(CAR.matrixWorld);putW(mom,{x:mq.x,z:mq.z},-CAR.rotation.y,G(ACT9.sit(.5,{hands:'knees',lean:.04})),{noBlock:true});}feel(mom,'tired',99);
   // you, in the passenger seat (looking where you like)
   const s=seatWorld();placeMe({x:s.x,z:s.z},s.a);C.roadPose=true;pose({x:s.x,z:s.z},{y:s.y,yaw:s.a,pitch:-.04,slow:.6,seat:{h:.5,y:s.gy}});}
@@ -290,7 +304,10 @@ export function leavingActs(H){
   CAR.updateMatrixWorld(true);const mq=new THREE.Vector3(-.42,0,-.05).applyMatrix4(CAR.matrixWorld);mom.x=mq.x;mom.z=mq.z;mom.a=a;void dt;}
  function updateRoad(dt){if(!ROAD.on||S.phase!=='a1-road')return;ROAD.t=(ROAD.t||0)+dt;
   const target=ROAD.t<4?0:ROAD.d<-150?3:9.5;ROAD.v=damp(ROAD.v,target,ROAD.t<4?2:.6,dt);const prev=seatWorld();ROAD.d-=ROAD.v*dt;placeCar(dt);const s=seatWorld();
-  if(C.pose&&C.roadPose){C.pose.x=s.x;C.pose.y=s.y;C.pose.z=s.z;const da=wrap(s.a-C.pose.yaw);C.pose.yaw=s.a;C.pose.baseYaw=s.a;if(C.pose.seat){C.pose.seat.x=s.x;C.pose.seat.z=s.z;C.pose.seat.a=s.a;C.pose.seat.y=s.gy;}void da;}
+  // (the view and your seated body are placed from this pose on the next frame: lead them by that frame's travel, so you sit in the seat
+  //  rather than a hand's width behind it)
+  if(C.pose&&C.roadPose){const lead=ROAD.v*dt,px=s.x+Math.sin(s.a)*lead,pz=s.z-Math.cos(s.a)*lead;C.pose.x=px;C.pose.y=s.y;C.pose.z=pz;C.pose.yaw=s.a;C.pose.baseYaw=s.a;
+   if(C.pose.seat){C.pose.seat.x=px;C.pose.seat.z=pz;C.pose.seat.a=s.a;C.pose.seat.y=s.gy;}}
   o.shift?.(s.x-prev.x,s.z-prev.z,{bike:false});
   // looking back (the way you came), looking ahead
   camera.getWorldDirection(_cf);_cb.set(Math.sin(s.a),0,-Math.cos(s.a));const dot=_cf.x*_cb.x+_cf.z*_cb.z;
@@ -298,7 +315,7 @@ export function leavingActs(H){
  // what you kept, on your lap in the car (the notebook in the middle; his cap; the picture)
  const LAP={};
  function lapItems(ids){for(const m of Object.values(LAP))m.removeFromParent();for(const kk of Object.keys(LAP))delete LAP[kk];
-  const at={notebook:[.42,.76,-.46,0],cap:[.27,.79,-.42,.4],print:[.56,.765,-.44,-.3]};
+  const at={notebook:[.42,.6,-.2,0],cap:[.29,.63,-.16,.4],print:[.56,.6,-.24,-.3]};// (on your thighs: you sit with the seat's cushion under you, your knees a little past it)
   for(const id of ids){let m;if(id==='notebook'){m=new THREE.Group();const cv=new THREE.Mesh(new THREE.BoxGeometry(.16,.014,.21),mat(0x2c4a7a,{roughness:.8}));m.add(cv);}
    else if(id==='cap'){m=capG.clone();m.visible=true;m.scale.setScalar(.95);}else{m=pageMesh(tex9('sunday'),{w:.15,h:.11});m.rotation.x=-Math.PI/2+.3;}
    const [x,y,z,r]=at[id];const g=new THREE.Group();g.position.set(x,y,z);g.rotation.y=r;g.add(m);g.name='a1-lap-'+id;CAR.add(g);LAP[id]=g;}}
@@ -315,14 +332,14 @@ export function leavingActs(H){
    keep('told',{...C.keep.told,lookedBack:ROAD.lookedBack>1.2});
    // what you kept
    const kept=['notebook',...(C.keep.cap==='you'&&!(C.keep.boxed||[]).includes('cap')?['cap']:[]),...(C.keep.print&&!(C.keep.boxed||[]).includes('print')?['print']:[])];
-   const KEPT={notebook:{label:'Look at the notebook',obj:()=>pageMesh(texOf(notebookPage('names',{names:'ALEX · JAMIE · SAM'}))||tex9('card',['ALEX · JAMIE · SAM','','']),{w:.24,h:.32})},
+   const KEPT={notebook:{label:'Look at the notebook',obj:()=>pageMesh(texOf(notebookPage('names',{names:'ALEX\nJAMIE\nSAM'}))||tex9('card',['ALEX · JAMIE · SAM','','']),{w:.24,h:.32})},
     cap:{label:'Jamie’s cap',obj:()=>{const g=capG.clone();g.visible=true;g.rotation.set(.4,0,0);return g;}},print:{label:'The picture',obj:()=>pageMesh(tex9('sunday'),{w:.24,h:.18})}};
    objective('The road out.','What you kept is on your lap.');
    lapItems(kept);
    for(const id of kept)offer('kept-'+id,KEPT[id].label,()=>LAP[id]?.getWorldPosition(new THREE.Vector3())||null,{r:3,inPose:true,ride:true,look:true,size:.12,cone:.22});
    const t1=C.pt;yield* until(()=>kept.some(id=>C.flags['kept-'+id])||C.pt-t1>22,30);
    const which=kept.find(id=>C.flags['kept-'+id]);for(const id of kept)unoffer('kept-'+id);
-   if(which){keep('told',{...C.keep.told,lookedAt:which});
+   if(which){keep('told',{...C.keep.told,lookedAt:which});later(3,()=>sound('a1Theme',camera.position,{gain:.45}));
     yield* holding(KEPT[which].obj(),[N(which==='notebook'?'ALEX · JAMIE · SAM. In your writing.':which==='cap'?'His cap. Blue. On your knee, where you can keep a hand on it.':'Sunday at the oak. Four bikes in the grass.',{time:3.4}),{wait:1.2},
      N('You can’t remember, exactly, what it was like to live here before that week. You try, and it’s like trying to remember a room you’ve only seen in a picture.',{time:6}),{wait:1},
      N('But you know their names. You know what happened. You know it was real.',{time:4.2})],{dist:.42,kind:'kept',min:6});}
@@ -340,7 +357,11 @@ export function leavingActs(H){
   for(const B of BOXES){if(B.want!==undefined&&Math.abs(B.k-B.want)>.002)B.set(damp(B.k,B.want,6,dt));}
   if(C.spinBike){const b=MEM.myBike;b.crankAngle=(b.crankAngle||0)-dt*2.2;b.wheel=(b.wheel||0)-dt*3;poseBike(b);}
   updateMovers(dt);updateRoad(dt);}
- function afterActors(){}
+ const _wp=newPose();
+ function afterActors(){// Sam's wave (on his bike, a foot down): his right arm up, the hand going side to side
+  if(C.samWave!=null&&!sam.gone&&sam.person.group.visible){const t=C.t-C.samWave,k=Math.min(1,t/.5)*Math.min(1,Math.max(0,(5.2-t)/.6));copyPose(_wp,sam.pose);
+   const x=.24+Math.sin(t*7)*.07,y=1.72,z=-.04;_wp[PP.rh]+=(x-_wp[PP.rh])*k;_wp[PP.rh+1]+=(y-_wp[PP.rh+1])*k;_wp[PP.rh+2]+=(z-_wp[PP.rh+2])*k;_wp[PP.re]+=(1-_wp[PP.re])*k;_wp[PP.re+1]+=(.3-_wp[PP.re+1])*k;_wp[PP.re+2]+=(.1-_wp[PP.re+2])*k;_wp[PP.hy]=(_wp[PP.hy]||0)+.6*k;
+   applyPose(sam.person,_wp);sam.posedAt=C.t;}}
  function sources(out){if(TRUCK.visible&&S.phase==='a1-bye')out.push({id:'a1-truck-idle',kind:'idle',pos:V3({x:TRUCK.position.x,y:1,z:TRUCK.position.z}),level:.35});
   if(ROAD.on&&S.phase==='a1-road'){const s=seatWorld();out.push({id:'a1-car-engine',kind:'idle',pos:new THREE.Vector3(s.x,s.y-.4,s.z),level:.5+ROAD.v*.03});}}
  function reset(){houseOn(false);autumn(false);TRUCK.visible=false;CAR.visible=false;for(const m of Object.values(LAP))m.removeFromParent();for(const kk of Object.keys(LAP))delete LAP[kk];for(const b of moverBoxes)b.visible=false;ROAD.on=false;C.roadPose=false;for(const B of BOXES){B.want=undefined;}DR9.k=0;DR9.want=0;
