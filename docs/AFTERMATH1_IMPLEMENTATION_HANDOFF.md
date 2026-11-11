@@ -18,7 +18,7 @@ been listened to.** Read `AFTERMATH1_TEST_REPORT.md` for what was checked and ho
 
 ## 2. How to play it
 
-- **Hosted (private artifact)**: __HOSTED__ — only its owner can open it until it is shared from the page's Share menu.
+- **Hosted (private artifact)**: https://claude.ai/artifact/WJvexwNCLHKACfMYZWfx66 — only its owner can open it until it is shared from the page's Share menu.
   Start a new game, or **DEV → Aftermath I → a scene → START SCENE**. It is this branch's `dist/` at `a4d6403`, with the
   one host-only change every earlier hosted build had (the host does not serve `.glb`, so the creature model comes as
   base64 text read by a host copy of `creature.js`). Files unchanged since the base were copied from Chapter Eight's

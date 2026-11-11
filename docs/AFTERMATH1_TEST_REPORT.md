@@ -10,8 +10,9 @@ of its sound has been listened to.** `AFTERMATH1_PLAYTEST_CHECKLIST.md` lists wh
 ## 1. Build
 
 - Branch `claude/aftermath1-what-was-left`, base `91a446d` (the verified Chapter Eight reconstruction).
-- The results in §2–§4 are from the final code commit __FINAL__ (or, where noted, from an earlier commit whose shared runtime
-  files are identical: the earlier chapters' suites ran while only `dist/aftermath1*` files changed).
+- §2–§3 (Aftermath I's four runs) are from the final code commit `a4d6403`. The earlier chapters' suites (§4) ran on
+  intermediate commits of this branch (`d9c7dc6` to `a4d6403`) during which no runtime file outside `dist/aftermath1*`
+  changed; the files they exercise are the same bytes as at `a4d6403`.
 
 ## 2. Aftermath I, played by input
 
@@ -20,10 +21,10 @@ to let every choice pass in silence). Each run ends with the chapter's four stan
 
 | Run | What it plays | Result |
 |---|---|---|
-| **Full** (from Chapter Eight's end card) | Chapter Eight's end card → **Aftermath I →** → all 21 sections → the end card; Jamie's cap kept safe for his mother; an answer chosen at every question | __FULL__ |
-| **Silent** (`QUIETLY=1`, from the first scene) | every question left to pass in silence; the hesitant paths (you can't answer; you lean the bike by the rail; you don't go up to Alex's room; you don't tell his father; you don't look back) | __QUIET__ |
-| **Cap given at the shelter** (`CAP=give-shelter`, from Jamie's mother) | the cap is hers from August 27: on the porch step beside her, at the vigil in her hands, not in your room | __SHELTER__ |
-| **Cap given on her porch** (`CAP=give-porch`, from the porch) | you keep it safe in August and give it to her on September 2 | __PORCH__ |
+| **Full** (from Chapter Eight's end card) | Chapter Eight's end card → **Aftermath I →** → all 21 sections → the end card; Jamie's cap kept safe for his mother; an answer chosen at every question | **58 checks passed, 0 failed** (225 s) |
+| **Silent** (`QUIETLY=1`, from the first scene) | every question left to pass in silence; the hesitant paths (you can't answer; you lean the bike by the rail; you don't go up to Alex's room; you don't tell his father; you don't look back) | **56 checks passed, 0 failed** (229 s) |
+| **Cap given at the shelter** (`CAP=give-shelter`, from Jamie's mother) | the cap is hers from August 27: on the porch step beside her, at the vigil in her hands, not in your room | **50 checks passed, 0 failed** (218 s) |
+| **Cap given on her porch** (`CAP=give-porch`, from the porch) | you keep it safe in August and give it to her on September 2 | **27 checks passed, 0 failed** (150 s) |
 
 What the play checks assert, scene by scene (a check fails if the beat cannot be reached by input, if a script throws,
 or if what was kept is wrong):
@@ -75,11 +76,11 @@ reconstruction's report.
 | `ONLY=chapter4` | 35 checks passed | 126 s |
 | `ONLY=chapter5` | 81 checks passed | 157 s |
 | `ONLY=chapter6` | 80 checks passed | 204 s |
-| `ONLY=chapter7` | __CH7__ | __CH7T__ |
+| `ONLY=chapter7` | 94 checks passed | 254 s |
 | `ONLY=chapter8` (from Chapter Seven's end card) | 35 checks passed | 269 s |
-| `ONLY=companions` | __COMP__ | __COMPT__ |
+| `ONLY=companions` | 8 checks passed | 44 s |
 | `ONLY=dev DEV_KNOWN=2/alex-bike` (DEV starts of every chapter vs natural arrival; switching) | 327 checks passed; the one known difference reported | 441 s |
-| base (`QUICK=1 DEV_KNOWN=2/alex-bike`: Prologue to Chapter Six by input, every DEV start vs natural arrival) | __BASE__ | __BASET__ |
+| base (`QUICK=1 DEV_KNOWN=2/alex-bike`: Prologue to Chapter Six by input, every DEV start vs natural arrival) | **818 checks passed**; the one known difference reported | 1110 s |
 
 The known Chapter Two DEV difference (`2/alex-bike`: Alex's companion bike placed differently after switching scenes)
 is the same one the Chapter Eight reconstruction reported, with the same numbers; it predates this work.
@@ -105,7 +106,7 @@ No page errors in any capture run. What they showed and what was changed because
 ## 7. Timing (the test player)
 
 Game minutes per section as the test player plays them (it takes the shortest path and does a few optional things):
-__SEG__. A person reading the captions and looking around will take longer; the brief's 35–50 minutes is a human
+arrive 1.46 · gym 1.86 · Jamie's mother 2.62 · Alex's parents 2.82 · families 2.39 · nurse's room 3.02 · record 6.60 · the list 2.26 · behind the fence 5.75 · the bikes 5.41 · Jamie's porch 3.14 · Alex's driveway 2.34 · Jamie's lawn 2.21 · Alex's pictures 3.05 · the chain 3.60 · October 2.76 · the letter 1.42 · packing 0.80 · goodbye 2.67 · the road out 0.91 — about 56 game minutes in all. A person reading the captions and looking around will take longer; the brief's 35–50 minutes is a human
 estimate and has not been measured.
 
 ## 8. Package and hosted build
@@ -115,8 +116,8 @@ estimate and has not been measured.
   `3d2cb2e1b33020ee047178904de9dc22406fb0db4ad53e457f5459b7e33e486a`), plus `START-HERE.txt`, the licences and
   `manifest.json` (branch, commit, per-file source hashes). Zipped: `Last-Light-Aftermath1-Playtest.zip` (4,368,036
   bytes, SHA-256 `cc7b6651ec315c56ee3abc1661ebd7cae735122d2c419ba48bd30ab03e1201d8`).
-  `tests/aftermath1-package-browser.mjs` opened it from disk in headless Chromium: __PKG__
-- **Hosted build**: __HOSTCHECK__
+  `tests/aftermath1-package-browser.mjs` opened it from disk in headless Chromium: **6 of 6 checks passed** (Aftermath I entered through the real DEV controls; WebGL renders; eleven later scenes start from their jumps; the end card is Aftermath I's and offers nothing after it; no HTTP(S) requests; no JavaScript errors). Report: `docs/qa/aftermath1/package-browser-report.json` (with screenshots).
+- **Hosted build**: a private claude.ai artifact, https://claude.ai/artifact/WJvexwNCLHKACfMYZWfx66 (only its owner can open it until it is shared). The same `dist/` files as `a4d6403`, with the one host-only change the earlier hosted builds also had (the creature model served as base64 text, `assets/creature/creature.glb.txt`, read by a host copy of `creature.js`) and the page title "Last Light Aftermath I". The 16 files Aftermath I added or changed were uploaded; the other 122 were copied server-side from Chapter Eight's hosted build (https://claude.ai/artifact/2iBMpwKT8x3id9KNhkuchc), whose files are byte-identical to this branch's base. Checked before publishing by serving that exact set locally in headless Chromium: **8 of 8 checks passed** (title; DEV enters Aftermath I; WebGL renders; six later scenes start; the creature loads from its base64 copy; no requests outside the host; no missing files; no JavaScript errors). Not played through by a person.
 
 ## 9. Not verified
 
