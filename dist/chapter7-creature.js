@@ -1,26 +1,11 @@
-// Chapter Seven: the hunter (development id: chapter7_hunter). The asset ADAPTER and a TEMPORARY stand-in model.
-//
-// Nothing in the chapter talks to meshes. The story, the AI (chapter7-hunter.js), the stealth house, the chase and
-// Jamie's abduction all talk to this adapter: a position and heading on the ground, a semantic state, a few drive values
-// and a handful of sockets (head, hands, the grab point). Anything that can answer those can be the creature.
-//
-//  * The stand-in (default): a procedural humanoid, about 2.3 m standing, very long arms, a hunched spine that folds
-//    almost flat when it runs on its knuckles, a head that keeps pointing at what it wants while the body does something
-//    else. Joint positions are solved every frame (two-bone IK for arms and legs) and simple tapered segments are laid
-//    between them: no skinning, no textures, nothing worth keeping. It is a placeholder by design (see the guide).
-//  * A replacement (later): set HUNTER_ASSET.url to a .glb with ONE skinned mesh and ONE skin (the same reader the drain
-//    creature uses: creature-asset.js), map its bone names and clip names in HUNTER_ASSET, and it replaces the stand-in.
-//    Missing clips fall back through HUNTER_ASSET.fallback; missing everything falls back to the stand-in. Root motion is
-//    always the game's (clips should play in place).
-//
-// docs/CHAPTER7_CREATURE_ASSET_GUIDE.md is the full contract (format, scale, orientation, skeleton, clips, sockets,
-// materials, licensing, budgets).
-//
+// Shared Chapter Seven / Eight retrieval hunter. Procedural, articulated reference-led model.
+// The existing semantic adapter owns state, sockets and optional GLB replacement. Anatomy, materials,
+// continuous surface detail and quadrupedal locomotion are authored in astra-hunter.js and this pose layer.
 // Frame: the model faces -Z in its own space (the game's forward for people: heading a looks along (sin a, -cos a)),
 // +Y up, +X its right hand side; root.rotation.y = -heading, as for rig.js people.
 import * as THREE from './three.module.js';
 import {parseCreature} from './creature-asset.js';
-import {roundedBoxGeometry} from './kit.js';
+import {buildHunter} from './astra-hunter.js';
 
 export const HUNTER_ID='chapter7_hunter';
 
@@ -58,82 +43,17 @@ function ik(a,t,l1,l2,pole,mid,end){_a.subVectors(t,a);let d=_a.length();const m
  mid.copy(a).addScaledVector(dir,along).addScaledVector(p,up);return mid;}
 
 // ---- the stand-in -------------------------------------------------------------------------------------------------------------
-function standIn(){
- const g=new THREE.Group();g.name='chapter7-hunter-standin';
- // (dark, a little wet: it reads as a shape against light, a sheen where light crosses it, never a pale doll)
- const skin=new THREE.MeshStandardMaterial({color:0x524f45,roughness:.54,metalness:.09});skin.name='hunter-skin';
- // A grazing edge follows forehead, tendons and shoulder blades even when the
- // recesses fall into shadow. Confined to the replaceable procedural skin.
- skin.onBeforeCompile=shader=>{
-  shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 c7SkinPoint;').replace('#include <begin_vertex>','#include <begin_vertex>\nc7SkinPoint=position;');
-  shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 c7SkinPoint;').replace('#include <color_fragment>','#include <color_fragment>\nfloat stain7=sin(c7SkinPoint.x*94.0+sin(c7SkinPoint.y*31.0))*sin(c7SkinPoint.y*73.0+c7SkinPoint.z*65.0);diffuseColor.rgb*=.94+stain7*.055;');
-  shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',
-   'float edge7=pow(1.0-abs(dot(normalize(normal),normalize(vViewPosition))),2.7);'+
-   'outgoingLight+=vec3(.032,.046,.043)*edge7*(.38+.62*smoothstep(-.5,.6,normal.x));\n#include <opaque_fragment>');
- };
- skin.customProgramCacheKey=()=>'c7-hunter-raking-light-v2';
- const dark=new THREE.MeshStandardMaterial({color:0x0c0a09,roughness:.95});dark.name='hunter-socket';
- const wet=new THREE.MeshStandardMaterial({color:0x14100e,roughness:.12,metalness:.1});wet.name='hunter-eye';
- const nail=new THREE.MeshStandardMaterial({color:0x4a4034,roughness:.5});nail.name='hunter-nail';
- const gum=new THREE.MeshStandardMaterial({color:0x5a2c28,roughness:.6});
- // a unit segment spanning y 0..1, tapering from r0 (at 0) to r1 (at 1), a little lumpy
- const seg=(r0,r1,sides=16)=>{const geo=new THREE.CylinderGeometry(r1,r0,1,sides,14,false);geo.translate(0,.5,0);const p=geo.attributes.position;
-  for(let i=0;i<p.count;i++){const y=p.getY(i),a=Math.atan2(p.getZ(i),p.getX(i)),k=.88+.22*Math.sin(Math.PI*y)+.055*Math.sin(a*3+y*7)+.025*Math.sin(y*19+a);p.setX(i,p.getX(i)*k);p.setZ(i,p.getZ(i)*k);}geo.computeVertexNormals();return geo;};
- const mesh=(geo,m,name)=>{const o=new THREE.Mesh(geo,m);o.name=name;o.castShadow=true;o.receiveShadow=true;g.add(o);return o;};
- const S={
-  thighL:mesh(seg(.085,.06),skin,'thigh-l'),thighR:mesh(seg(.085,.06),skin,'thigh-r'),shinL:mesh(seg(.055,.035),skin,'shin-l'),shinR:mesh(seg(.055,.035),skin,'shin-r'),
-  footL:mesh(seg(.04,.02,7),skin,'foot-l'),footR:mesh(seg(.04,.02,7),skin,'foot-r'),
-  upperL:mesh(seg(.06,.042),skin,'upper-l'),upperR:mesh(seg(.06,.042),skin,'upper-r'),foreL:mesh(seg(.042,.028),skin,'fore-l'),foreR:mesh(seg(.042,.028),skin,'fore-r'),
-  spine:mesh(seg(.13,.2,11),skin,'spine'),neck:mesh(seg(.06,.045),skin,'neck'),pelvis:mesh(new THREE.SphereGeometry(.15,10,8),skin,'pelvis'),
-  collarL:mesh(seg(.055,.050),skin,'collar-l'),collarR:mesh(seg(.055,.050),skin,'collar-r'),
-  trapL:mesh(seg(.060,.055),skin,'trapezius-l'),trapR:mesh(seg(.060,.055),skin,'trapezius-r'),
- };
- S.pelvis.scale.set(1.2,.8,.9);
- // ribcage: a hollow-looking barrel with the shoulder blades standing out
- const ribs=mesh(new THREE.SphereGeometry(.2,12,10),skin,'ribs');ribs.scale.set(1.25,1.45,.9);
- const fascia=new THREE.MeshStandardMaterial({color:0x544e40,roughness:.55,metalness:.09});
- for(const side of [-1,1])for(let i=0;i<4;i++){
-  const yy=-.048+i*.032,curve=new THREE.CatmullRomCurve3([new THREE.Vector3(side*.02,yy,-.184),new THREE.Vector3(side*.105,yy+.012,-.154),new THREE.Vector3(side*.184,yy+.045,-.064),new THREE.Vector3(side*.186,yy+.060,.03)]);
-  const rib=new THREE.Mesh(new THREE.TubeGeometry(curve,9,.008-i*.0007,5,false),fascia);ribs.add(rib);
- }
- const blades=[-1,1].map(s=>{const b=mesh(new THREE.SphereGeometry(.09,8,6),skin,'blade');b.scale.set(1,1.5,.45);b.userData.s=s;return b;});
- const joints=['elbowL','elbowR','kneeL','kneeR','shoulderL','shoulderR'].map(n=>{const j=mesh(new THREE.SphereGeometry(n.startsWith('sh')?.07:.045,8,6),skin,n);j.userData.n=n;return j;});
- // hands: a palm and four long fingers (and a thumb), each finger two segments, curled by the drive
- const hand=side=>{const h=new THREE.Group();h.name='hand-'+side;g.add(h);const palm=new THREE.Mesh(roundedBoxGeometry(.075,.11,.038,.016),skin);palm.position.y=.055;palm.castShadow=true;h.add(palm);
-  for(let n=0;n<4;n++){const tendon=new THREE.Mesh(seg(.0045,.006,8),skin);tendon.position.set(-.029+n*.019,.017,-.018);tendon.scale.y=.087;h.add(tendon);}
-  const fingers=[];for(let k=0;k<5;k++){const thumb=k===4,f=new THREE.Group();f.position.set(thumb?side*.045:(-.03+k*.02),thumb?.04:.11,0);f.rotation.z=thumb?side*.6:0;h.add(f);
-   const a=new THREE.Mesh(seg(.011,.009,6),skin);a.scale.set(1,thumb?.07:.13,1);a.castShadow=true;f.add(a);const j=new THREE.Group();j.position.y=thumb?.07:.13;f.add(j);
-   const b=new THREE.Mesh(seg(.009,.004,6),skin);b.scale.set(1,thumb?.05:.11,1);b.castShadow=true;j.add(b);const tip=new THREE.Mesh(new THREE.SphereGeometry(.006,5,4),nail);tip.position.y=thumb?.05:.11;j.add(tip);fingers.push({f,j});}
-  return {g:h,fingers};};
- const hands={l:hand(-1),r:hand(1)};
- // the head: long, narrow, eye sockets too deep, a jaw that hangs open further than a jaw should
- const head=new THREE.Group();head.name='head';g.add(head);
- const skull=new THREE.Mesh(new THREE.SphereGeometry(.13,32,24),skin);skull.scale.set(.78,1.19,1.38);skull.position.set(0,.062,-.050);skull.castShadow=true;head.add(skull);
- // (no brow: the skull runs smooth into two holes set too far forward and too close together; a glint far back in each)
- for(const s of [-1,1]){const so=new THREE.Mesh(new THREE.SphereGeometry(.03,16,12),dark);so.scale.set(.87,1.05,.62);so.position.set(s*.036,.045,-.213);head.add(so);
-  const e=new THREE.Mesh(new THREE.SphereGeometry(.006,12,8),wet);e.position.set(s*.036,.045,-.225);head.add(e);
-  const brow=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),skin);brow.scale.set(.040,.020,.029);brow.position.set(s*.039,.075,-.204);brow.rotation.z=s*.20;head.add(brow);}
- for(const side of [-1,1]){
-  const ridge=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),skin);
-  ridge.position.set(side*.060,.005,-.186);ridge.scale.set(.016,.047,.046);ridge.rotation.z=side*.32;head.add(ridge);
- }
- const jaw=new THREE.Group();jaw.position.set(0,-.03,-.06);head.add(jaw);
- const jm=new THREE.Mesh(new THREE.SphereGeometry(.1,24,16,0,Math.PI*2,Math.PI*.45,Math.PI*.55),skin);jm.scale.set(.73,1.1,1.4);jm.position.set(0,.03,-.07);jm.castShadow=true;jaw.add(jm);
- const mouth=new THREE.Mesh(new THREE.SphereGeometry(.07,10,6),gum);mouth.scale.set(.9,.35,1.3);mouth.position.set(0,-.01,-.1);jaw.add(mouth);
- for(let k=0;k<9;k++){const t=new THREE.Mesh(new THREE.ConeGeometry(.007,.028,4),nail);const a=-.9+k*.225;t.position.set(Math.sin(a)*.07,.012,-.09-Math.cos(a)*.08);t.rotation.x=Math.PI;jaw.add(t);}
- return {g,S,ribs,blades,joints,hands,head,jaw,skin};}
-
 // ---- the adapter ------------------------------------------------------------------------------------------------------------
 export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
  const A=asset,root=new THREE.Group();root.name=HUNTER_ID;root.visible=false;scene?.add(root);
  const body=new THREE.Group();body.name='hunter-body';root.add(body);
- const stand=standIn();body.add(stand.g);
+ const stand=buildHunter();body.add(stand.g);
  // sockets: plain Object3Ds the chapter can read (world positions) and attach things to
  const sockets={};for(const n of ['head','handL','handR','grab','chest','hips','footL','footR']){const o=new THREE.Object3D();o.name='hunter-socket-'+n;root.add(o);sockets[n]=o;}
  const H=A.height||2.3,sc=H/2.3;// (the stand-in is built for 2.3 m; a different height scales it)
  stand.g.scale.setScalar(sc);
  // lengths (stand-in, metres at 2.3 m)
- const L={thigh:.58,shin:.6,upper:.66,fore:.64,hand:.26,spine:.7,neck:.3,shoulder:.29,hip:.13};
+ const L={thigh:.58,shin:.6,upper:.70,fore:.68,hand:.26,spine:.78,neck:.34,shoulder:.31,hip:.13};
  const api={id:HUNTER_ID,root,body,sockets,height:H,source:'stand-in',asset:A,loaded:false,error:null,
   x:0,z:0,y:0,heading:0,state:'idle',stateT:0,prevState:'idle',
   // what it is doing, set by whoever moves it (the AI or a staged beat):
@@ -159,7 +79,7 @@ export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
  function place(m,a,b){_d.subVectors(b,a);const l=_d.length();m.position.copy(a).divideScalar(sc);m.quaternion.setFromUnitVectors(Y,l>1e-6?_d.multiplyScalar(1/l):Y);m.scale.set(1,l/sc,1);}
  function poseStandIn(dt){const D=api.drive,st=api.state,t=api.breath;
   // posture: how folded it is, and the lunge / strike / grab weights, each eased (nothing snaps but the attacks)
-  const lowWant=clamp(D.low+(st==='run'||st==='crawl'?.85:st==='crouch'||st==='peek'?.7:st==='drag'?.55:0),0,1);
+  const lowWant=clamp(Math.max(D.low,st==='grab'||st==='hit'?.18:st==='alert'?.52:.82)+(st==='run'||st==='crawl'?.85:st==='crouch'||st==='peek'?.7:st==='drag'?.55:0),0,1);
   W.low=damp(W.low,lowWant,st==='run'||st==='lunge'?7:3.2,dt);
   W.lunge=damp(W.lunge,st==='lunge'?1:D.lunge,st==='lunge'?16:4,dt);
   W.hit=damp(W.hit,st==='hit'?1:0,st==='hit'?18:5,dt);W.swipe=st==='attack'?Math.min(1,W.swipe+dt*3.2):damp(W.swipe,0,4,dt);
@@ -167,9 +87,9 @@ export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
   const speed=Math.abs(D.speed),quad=W.low>.55;
   // gait phase: one cycle per stride (longer strides when it runs on its knuckles)
   const stride=quad?1.9:1.15;W.stride=damp(W.stride,speed>.05?1:0,6,dt);api.phase+=dt*speed/stride*Math.PI*2*(D.back?-1:1);const ph=api.phase;
-  const lean=.32+W.low*1.05+W.lunge*.35;W.lean=damp(W.lean,lean,6,dt);
+  const lean=.30+W.low*1.55+W.lunge*.35;W.lean=damp(W.lean,lean,6,dt);
   // the pelvis: lower as it folds, a heavy bob in its step
-  const hipH=(1.08-W.low*.42-W.lunge*.12)*sc,bob=(quad?.06:.035)*W.stride*Math.abs(Math.sin(ph))*sc;
+  const hipH=(1.17+W.low*.04-W.lunge*.16)*sc,bob=(quad?.06:.035)*W.stride*Math.abs(Math.sin(ph))*sc;
   J.pelvis.set(0,hipH-bob+Math.sin(t*1.7)*.008*sc,W.lunge*.25*sc);
   const sp=_e.set(0,Math.cos(W.lean),-Math.sin(W.lean));// spine direction (up, tipping forward)
   J.chest.copy(J.pelvis).addScaledVector(sp,L.spine*sc*(1+Math.sin(t*1.1)*.012));
@@ -192,7 +112,7 @@ export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
   // hands: hanging (upright), on the ground (folded), reaching (grab/hit), swiping (attack)
   const hand=(s,sh,out)=>{const p=ph+(s<0?Math.PI:0)+(quad?.25:0),sw=Math.cos(p),lift=Math.max(0,Math.sin(p));
    const hang=_a.set(sh.x+s*.06*sc,Math.max(.12*sc,sh.y-(L.upper+L.fore)*.93*sc),sh.z+sw*.12*W.stride*sc+.05*sc);
-   const ground=_b.set(sh.x+s*.12*sc,.05*sc+lift*.22*W.stride*sc,sh.z-.35*sc-sw*.62*W.stride*sc);
+   const ground=_b.set(sh.x+s*.12*sc,.14*sc+lift*.22*W.stride*sc,sh.z-.35*sc-sw*.62*W.stride*sc);
    out.copy(hang).lerp(ground,smooth((W.low-.25)/.5));
    if(st==='crouch'||st==='peek')out.set(sh.x+s*.18*sc,.05*sc,sh.z-.45*sc);
    // the lunge: both hands forward at chest height, wide
@@ -210,16 +130,16 @@ export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
   place(S.collarL,J.chest,J.shL);place(S.collarR,J.chest,J.shR);
   const slope=_e.copy(J.chest).lerp(J.head,.30);place(S.trapL,slope,J.shL);place(S.trapR,slope,J.shR);
   S.pelvis.position.copy(J.pelvis).divideScalar(sc);S.pelvis.rotation.set(-W.lean*.5,0,0);
-  stand.ribs.position.copy(J.pelvis).lerp(J.chest,.68).divideScalar(sc);stand.ribs.quaternion.setFromUnitVectors(Y,_a.subVectors(J.chest,J.pelvis).normalize());stand.ribs.scale.set(1.25,1.45+Math.sin(t*1.7)*.025,.9);
+  stand.ribs.position.copy(J.pelvis).lerp(J.chest,.68).divideScalar(sc);stand.ribs.quaternion.setFromUnitVectors(Y,_a.subVectors(J.chest,J.pelvis).normalize());stand.ribs.scale.set(1.12,1.34+Math.sin(t*1.7)*.025,1.05);
   for(const b of stand.blades){b.position.copy(J.chest).divideScalar(sc).add(_a.set(b.userData.s*.12,-.05,.11).applyQuaternion(stand.ribs.quaternion));b.quaternion.copy(stand.ribs.quaternion);}
   for(const j of stand.joints){const n=j.userData.n,v=n==='elbowL'?J.elL:n==='elbowR'?J.elR:n==='kneeL'?J.knL:n==='kneeR'?J.knR:n==='shoulderL'?J.shL:J.shR;j.position.copy(v).divideScalar(sc);}
   // hands: the palm along the forearm, fingers long, curled more when it holds something
   W.curl=damp(W.curl,W.grab>.5||W.hit>.5?1.05:quad?.25:.55+Math.sin(t*3.1)*.08*D.twitch,8,dt);
-  for(const [s,wr,el] of [['l',J.wrL,J.elL],['r',J.wrR,J.elR]]){const h=stand.hands[s];h.g.position.copy(wr).divideScalar(sc);_a.subVectors(wr,el).normalize();h.g.quaternion.setFromUnitVectors(Y,_a);
+  for(const [s,wr,el] of [['l',J.wrL,J.elL],['r',J.wrR,J.elR]]){const h=stand.hands[s];h.g.position.copy(wr).divideScalar(sc);_a.subVectors(wr,el).normalize();if(quad&&W.grab<.2&&W.lunge<.2&&W.hit<.2)_a.set(0,-.15,-1).normalize();h.g.quaternion.setFromUnitVectors(Y,_a);
    for(let k=0;k<h.fingers.length;k++){const f=h.fingers[k],c=W.curl*(1+.12*Math.sin(t*2.3+k*1.7)*D.twitch);f.f.rotation.x=-c*.75;f.j.rotation.x=-c*.9;}}
   // head: at the top of the neck, its own yaw and pitch (in the body's frame), a slow roll
   stand.head.position.copy(J.head).divideScalar(sc);stand.head.rotation.set(W.headPitch*.9,W.headYaw,W.tilt,'YXZ');
-  stand.jaw.rotation.x=W.open*.55+Math.sin(t*5.3)*.02*W.open;
+  stand.jaw.rotation.x=-(.12+W.open*.72+Math.sin(t*5.3)*.02*W.open);
   // sockets (in root space): head, hands, the grab point just in front of the right palm, chest, hips, feet
   sockets.head.position.copy(J.head).add(_a.set(0,.05*sc,0));sockets.handL.position.copy(J.wrL);sockets.handR.position.copy(J.wrR);
   sockets.grab.position.copy(J.wrR).addScaledVector(_b.subVectors(J.wrR,J.elR).normalize(),.1*sc);sockets.chest.position.copy(J.chest);sockets.hips.position.copy(J.pelvis);sockets.footL.position.copy(J.anL);sockets.footR.position.copy(J.anR);}

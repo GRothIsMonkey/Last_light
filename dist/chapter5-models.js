@@ -66,7 +66,7 @@ function models(c){const key=JSON.stringify(c);if(cache.has(key))return cache.ge
  const skinMat=new THREE.MeshStandardMaterial({color:skin,roughness:.65}),cloth=pineMaterial(cl.shirt,'fabric'),pants=pineMaterial(lower,'fabric');
  const result={body,skinMat,cloth,pants};cache.set(key,result);return result;
 }
-export function chapter5Appearance(person,cast){const saved=new Map(),m=models(cast);let on=false;
+export function chapter5Appearance(person,cast){if(person.artBoy){let on=false;return {get enabled(){return on;},enable(v){on=!!v;person.art5=on;}};}const saved=new Map(),m=models(cast);let on=false;
  return {get enabled(){return on;},enable(value){if(on===!!value)return;on=!!value;person.art5=on;if(!on){for(const [part,old] of saved){part.geometry=old.geometry;part.material=old.material;}saved.clear();for(const n of ['mouth','brows']){const q=person.face?.[n];if(q?.userData.c5Base){q.position.copy(q.userData.c5Base.p);q.scale.copy(q.userData.c5Base.s);delete q.userData.c5Base;}}return;}
   for(const [name,part] of Object.entries(person.parts)){const key=/^[lr](hand|shoe|upper|fore|thigh|shin|sleeve)$/.test(name)?name.slice(1):name,geo=m.body[key];if(!geo)continue;saved.set(part,{geometry:part.geometry,material:part.material});part.geometry=geo;
    if(['upper','fore','shin'].includes(key))part.material=key==='shin'&&cast.clothes?.pants?m.pants:m.skinMat;

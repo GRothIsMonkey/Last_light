@@ -166,7 +166,7 @@ export function finaleActs(X){
     AL('(to you) Don’t... don’t let him be by himself. Okay? After.',{time:3.4,face:'weak'}),{wait:1.4},Y('(you can barely say it) Okay.',{time:1.6,act:()=>cry(1,20)}),{wait:5},
     AL('...I’m really tired.',{time:2.2,face:'weak'}),{wait:6}]);
    // his breathing slows, and stops
-   F8.breath=.45;yield* wait(7);F8.breath=.18;yield* wait(6);F8.breath=0;F8.alexDead=true;C.flags.alexDead=true;X.C.grief.alex=true;applyGrief();mark('Alex');feel(A2,'neutral',999);
+   F8.breath=.45;yield* wait(7);F8.breath=.18;yield* wait(6);F8.breath=0;F8.alexDead=true;C.flags.alexDead=true;X.C.grief.alex=true;applyGrief();mark('Alex');feel(A2,'lifeless',999);
    yield* lines([{wait:4},N('His breathing stops.',{time:2.6}),{wait:5},SM('Alex?',{time:1.4,face:'shocked'}),{wait:2.2},SM('Alex.',{time:1.6,face:'anguish'}),{wait:2},
     SM('(sobbing) No. No no no. Come on. Come on, Alex, come on—',{time:3.6,face:'sobbing'})]);
    F8.sam='embrace';weep(sam,'sobbing',90);cry(1,40);

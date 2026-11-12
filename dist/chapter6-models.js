@@ -114,7 +114,7 @@ function faceRig(person,spec){const g=new THREE.Group();g.name='c6-face';const F
  return {g,update,eyes,mouth};
 }
 
-export function chapter6Appearance(person,spec,{actor=null,cursed=false}={}){const m=models(spec),head=person.parts.head,face=faceRig(person,spec),hairMesh=new THREE.Mesh(m.hair,m.vc);hairMesh.name='c6-hair';const detail=new THREE.Group();detail.name='c6-character-detail';detail.add(face.g,hairMesh);detail.visible=false;head.add(detail);
+export function chapter6Appearance(person,spec,{actor=null,cursed=false}={}){if(person.artBoy&&!cursed){let on=false;return {enable(v){on=!!v;person.art6=on;},update(){},get enabled(){return on;}};}const m=models(spec),head=person.parts.head,face=faceRig(person,spec),hairMesh=new THREE.Mesh(m.hair,m.vc);hairMesh.name='c6-hair';const detail=new THREE.Group();detail.name='c6-character-detail';detail.add(face.g,hairMesh);detail.visible=false;head.add(detail);
  if(person.firstPerson)detail.traverse(q=>q.layers.set(1));
  const shadow=new THREE.Group();shadow.name='c6-foot-contact';shadow.visible=false;person.group.add(shadow);const shadowM=new THREE.MeshBasicMaterial({map:shadowMap(),color:0x000000,transparent:true,opacity:.34,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2});const feet=['l','r'].map(s=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(.20,.30),shadowM);m.rotation.x=-Math.PI/2;shadow.add(m);return {s,m};});
  let enabled=false;const saved=new Map(),hidden=new Map();

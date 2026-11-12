@@ -14,6 +14,7 @@
 // Debris (chunks of concrete or asphalt, instanced) fly from where it lands and bounce on the floor function the chapter
 // gives; dust hangs in the air afterwards. The chapter shakes the view by the impact's distance (impact()).
 import * as THREE from './three.module.js';
+import {presenceOrganism} from './astra-presence.js';
 import {paper} from './chapter6-kit.js';
 // a soft round puff (white, alpha falling off to the edge) for smoke and dust sprites: without it a sprite is a hard square
 let PUFF;
@@ -57,35 +58,14 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0,sky=false}){
  const barbs=new THREE.InstancedMesh(new THREE.ConeGeometry(.5,1,6),barbM,N*SEG);barbs.name='c8-presence-barbs';barbs.frustumCulled=false;group.add(barbs);
  const FIN=3,FSEG=7,fingers=new THREE.InstancedMesh(segGeo,skin,N*FIN*FSEG);fingers.name='c8-presence-fingers';fingers.frustumCulled=false;fingers.castShadow=true;group.add(fingers);
  for(let i=0;i<N*SEG;i++){_m.makeScale(0,0,0);inst.setMatrixAt(i,_m);barbs.setMatrixAt(i,_m);}for(let i=0;i<N*FIN*FSEG;i++)fingers.setMatrixAt(i,_m.makeScale(0,0,0));
+ const tubes=Array.from({length:N},(_,i)=>{const geo=new THREE.BufferGeometry(),positions=new Float32Array(SEG*11*3),indices=[];for(let r=0;r<SEG-1;r++)for(let s=0;s<10;s++){const a=r*11+s;indices.push(a,a+11,a+1,a+1,a+11,a+12);}geo.setAttribute('position',new THREE.BufferAttribute(positions,3));geo.setIndex(indices);const tm=skin.clone();tm.vertexColors=false;tm.color.setHex(sky?0x4c3930:0x65594b);const m=new THREE.Mesh(geo,tm);m.name='presence-continuous-limb-'+i;m.frustumCulled=false;m.castShadow=true;group.add(m);return m;});inst.visible=false;
  const limbs=[...Array(N)].map((_,i)=>({i,state:'hidden',t:0,ext:0,root:new THREE.Vector3(),dir:new THREE.Vector3(0,1,0),tip:new THREE.Vector3(),tipV:new THREE.Vector3(),want:new THREE.Vector3(),
   r0:1.6,r1:.28,len:14,bend:new THREE.Vector3(),probe:new THREE.Vector3(),probeR:1.2,speed:1,onLand:null,landed:false,hold:0,dragTo:null,phase:Math.random()*6,pts:[],seen:0,splay:.2}));
  // the mass behind the barrier: a huge rounded swell with the ripple, pushed forward by the chapter (lean 0..1)
  // the mass: not a ball. A cluster of lobes of different sizes, pressed together (one merged mesh, about a unit across, scaled
  // by the chapter), their surfaces moved by slow noise so they fold and swell; deep folds dark, the swellings pale and wet
- const massG=(()=>{const parts=[],R=(k)=>{const x=Math.sin(k*127.1+3.7)*43758.5;return x-Math.floor(x);};
-  const lobes=[[0,0,0,1],[-.62,.28,-.12,.66],[.66,.18,-.08,.7],[-.3,-.52,.1,.58],[.42,-.5,.06,.55],[0,.62,-.2,.6],[-.95,-.15,-.3,.5],[.98,-.2,-.25,.48],[-.55,.75,-.35,.42],[.6,.72,-.35,.44],[.15,-.85,-.15,.45],[-.2,.15,.45,.52],[.35,.05,.42,.46],[-1.18,.45,-.45,.36],[1.2,.5,-.45,.34]];
-  for(const [i,[x,y,z,r]] of lobes.entries()){const g=new THREE.IcosahedronGeometry(r,4);const lob=new Float32Array(g.attributes.position.count).fill(i);g.setAttribute('lobe',new THREE.BufferAttribute(lob,1));
-   g.scale(1+R(i)*.25,1-R(i+9)*.15,1+R(i+3)*.2);g.rotateZ((R(i+5)-.5)*.8);g.translate(x,y,z);parts.push(g);}
-  // (merge by hand: position, normal, lobe)
-  let n=0;for(const g of parts)n+=g.attributes.position.count;const pos=new Float32Array(n*3),nor=new Float32Array(n*3),lob=new Float32Array(n);let o=0;
-  for(const g of parts){const c=g.attributes.position.count;pos.set(g.attributes.position.array,o*3);nor.set(g.attributes.normal.array,o*3);lob.set(g.attributes.lobe.array,o);o+=c;}
-  const m=new THREE.BufferGeometry();m.setAttribute('position',new THREE.BufferAttribute(pos,3));m.setAttribute('normal',new THREE.BufferAttribute(nor,3));m.setAttribute('lobe',new THREE.BufferAttribute(lob,1));return m;})();
- const flesh=new THREE.MeshStandardMaterial({color:sky?0x2a1a17:0x5c4743,roughness:.28,metalness:.06});flesh.name='c8-presence-flesh';
- flesh.onBeforeCompile=sh=>{sh.uniforms.uT=U.t;sh.uniforms.uPress=U.press;sh.uniforms.uGlow=U.glow;
-  const NOISE=`float h3(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
-  float n3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(h3(i),h3(i+vec3(1,0,0)),f.x),mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x),f.y),mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x),mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x),f.y),f.z);}
-  float fbm(vec3 p){return n3(p)*.55+n3(p*2.13)*.28+n3(p*4.37)*.17;}`;
-  sh.vertexShader='uniform float uT,uPress;\nattribute float lobe;\nvarying float vFold;\nvarying float vVein;\n'+NOISE+'\n'+sh.vertexShader.replace('#include <beginnormal_vertex>',`#include <beginnormal_vertex>
-   vec3 q0=position*2.3+vec3(lobe*1.7,uT*.07,uT*.05);float f0=fbm(q0);float e=.06;
-   vec3 gN=vec3(fbm(q0+vec3(e,0,0))-f0,fbm(q0+vec3(0,e,0))-f0,fbm(q0+vec3(0,0,e))-f0)/e;objectNormal=normalize(objectNormal-gN*.22);`).replace('#include <begin_vertex>',`#include <begin_vertex>
-   float wave=sin(position.y*3.1+position.x*1.3-uT*(.6+lobe*.03)+lobe)*.035;transformed+=normal*((f0-.5)*.34+wave+uPress*.05*max(0.,position.z));vFold=f0;vVein=n3(position*9.+lobe);`);
-  sh.fragmentShader='uniform float uGlow;\nvarying float vFold;\nvarying float vVein;\n'+sh.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
-   float ridge=smoothstep(.38,.78,vFold);diffuseColor.rgb*=mix(.32,1.55,ridge);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.42,.3,.29),smoothstep(.62,.9,vFold)*.35);
-   diffuseColor.rgb*=1.-.35*smoothstep(.55,.62,vVein)*(1.-smoothstep(.62,.7,vVein));`).replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
-   {float fr=pow(1.-clamp(dot(normalize(vViewPosition),normal),0.,1.),3.);totalEmissiveRadiance+=vec3(.05,.06,.07)*fr*(.4+ridge)*(1.-uGlow);}
-   ${GLOW}`).replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\n roughnessFactor=mix(.6,.18,smoothstep(.4,.8,vFold));');};
- flesh.customProgramCacheKey=()=>'c8-presence-flesh'+(sky?'-sky':'');U.press={value:0};
- const mass=new THREE.Mesh(massG,flesh);mass.name='c8-presence-mass';mass.visible=false;mass.castShadow=true;mass.receiveShadow=true;group.add(mass);
+ U.press={value:0};
+ const mass=presenceOrganism({sky});mass.visible=false;group.add(mass);
  // fog in front of it, in layers, so it has depth and its edges are lost
  const fogM=[];const FOG=[...Array(9)].map((_,k)=>{const m=new THREE.SpriteMaterial({map:null,color:0x23201e,transparent:true,opacity:0,depthWrite:false});m.name='c8-presence-fog';fogM.push(m);const s2=new THREE.Sprite(m);s2.visible=false;group.add(s2);return {s:s2,k,ph:k*1.7};});
  for(const m of fogM)m.map=puffTexture();
@@ -100,6 +80,9 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0,sky=false}){
  function curve(L,u,out){// quadratic bezier through root, bend, tip
   const a=L.root,b=L.bend,c=L.tip,k=1-u;out.set(a.x*k*k+2*b.x*k*u+c.x*u*u,a.y*k*k+2*b.y*k*u+c.y*u*u,a.z*k*k+2*b.z*k*u+c.z*u*u);return out;}
  function place(L){const base=L.i*SEG,ext=L.ext;
+  const tube=tubes[L.i];tube.visible=L.state!=='hidden'&&ext>.015;
+  if(tube.visible){const pos=tube.geometry.attributes.position;for(let r=0;r<SEG;r++){const u=r/(SEG-1)*ext;curve(L,u,_a);curve(L,Math.min(1,u+.003),_b);if(u>.997)curve(L,u-.003,_b).sub(_a).negate();else _b.sub(_a);_b.normalize();_c.set(1,0,0);if(Math.abs(_b.x)>.9)_c.set(0,0,1);_d.crossVectors(_b,_c).normalize();_c.crossVectors(_d,_b).normalize();const rad=(L.r0+(L.r1-L.r0)*Math.pow(u,.8))*(1+.045*Math.sin(u*54));for(let k=0;k<=10;k++){const a=k/10*Math.PI*2;pos.setXYZ(r*11+k,_a.x+(_c.x*Math.cos(a)+_d.x*Math.sin(a))*rad,_a.y+(_c.y*Math.cos(a)+_d.y*Math.sin(a))*rad,_a.z+(_c.z*Math.cos(a)+_d.z*Math.sin(a))*rad);}}pos.needsUpdate=true;tube.geometry.computeVertexNormals();}
+
   for(let s=0;s<SEG;s++){const u=s/(SEG-1);if(L.state==='hidden'||u>ext+.001){_m.makeScale(0,0,0);inst.setMatrixAt(base+s,_m);continue;}
    const uu=Math.min(u,ext);curve(L,uu,_a);curve(L,Math.min(1,uu+.02),_b);_b.sub(_a);if(_b.lengthSq()<1e-8)_b.set(0,1,0);_b.normalize();
    const r=L.r0+(L.r1-L.r0)*Math.pow(u,.8),wob=1+.08*Math.sin(u*19+L.phase+P.U.t.value*2.2);_q.setFromUnitVectors(_up,_b);_s.set(r*wob,r*1.9,r*wob*.92);_m.compose(_a,_q,_s);inst.setMatrixAt(base+s,_m);

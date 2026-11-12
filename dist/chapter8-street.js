@@ -41,10 +41,10 @@ export function streetActs(X){
  const SKY=createPresence({scene,sfx:(n,p,op)=>sound(n,p,op),floorAt:(x,z)=>town.floorAt(x,z),sky:true});
  SKY.group.name='chapter8-presence-skyline';SKY.group.traverse(o2=>{if(o2.material){const ms=Array.isArray(o2.material)?o2.material:[o2.material];for(const m of ms)m.fog=false;}});
  const BODY=SP(1262,46,-6),RISE=[[1222,18,58],[1236,70,64],[1205,-34,52],[1270,-8,66],[1190,92,48]];
- function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+8,z:BODY.z},r:46,squash:[1.7,1.05,1.25],fog:.0});SKY.lean(.2);
+ function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+8,z:BODY.z},r:52,squash:[1.25,1.25,1.35],rot:-.48,fog:.0});SKY.lean(.2);
   // its limbs: up out of the ground round the body, into the deck, and over: the probe points drift over the roofs
   RISE.forEach(([d,lat,len],i)=>{const r=SP(d,lat,-4),toward=SP(1080-i*40,(i%2?1:-1)*20,0);const dir=[toward.x-r.x,len*1.4,toward.z-r.z];
-   SKY.set(i,{root:[r.x,r.y,r.z],dir,len,r0:6+i%3*1.6,r1:1.1,state:'emerge',probe:[lerp(r.x,toward.x,.55),r.y+len*.8,lerp(r.z,toward.z,.55)],speed:.35});SKY.limbs[i].probeR=9+i*2;});}
+   SKY.set(i,{root:[r.x,r.y,r.z],dir,len,r0:3.2+i%3*.7,r1:.65,state:'emerge',probe:[lerp(r.x,toward.x,.55),r.y+len*.8,lerp(r.z,toward.z,.55)],speed:.35});SKY.limbs[i].probeR=9+i*2;});}
  // ---- the things in the street: made copies of Danny's change (pale, smiling), a second hunter, and far ones that only watch ----------
  const GRIN=(()=>{const g=new THREE.Group();const mouth=new THREE.Mesh(new THREE.TorusGeometry(.085,.016,6,16,Math.PI),new THREE.MeshBasicMaterial({color:0x140a08}));mouth.rotation.set(0,0,Math.PI);g.add(mouth);
   const teeth=new THREE.Mesh(new THREE.TorusGeometry(.085,.009,4,16,Math.PI),new THREE.MeshStandardMaterial({color:0xe8e0cc,roughness:.4}));teeth.rotation.set(0,0,Math.PI);teeth.position.z=-.006;teeth.scale.set(.96,.94,1);g.add(teeth);return g;})();

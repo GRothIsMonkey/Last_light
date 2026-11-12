@@ -231,7 +231,7 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
  // ---- how the cast looks (Chapter Six's reconstruction: the same Jamie, the same Reyes; Sam's parents with them) -------------------
  const extraArt=new Map(),portraits=[];
  function dress(person,spec,actor=null) {
-  if(!person)return;
+  if(!person||person.artBoy)return;
   const shared=ch6.appearances6.get(person),base=shared||chapter6Appearance(person,spec,{actor});
   if(!shared)extraArt.set(person,base);
   portraits.push(portrait(person,spec,base));

@@ -3,6 +3,7 @@
 // Looks come from cast.js: each head (face, ears, hair or cap) is one merged mesh,
 // each bicycle a handful of merged rigid assemblies (frame, steering, wheels, crank).
 import * as THREE from './three.module.js';
+import {boyModel,isBoy} from './astra-anatomy.js';
 import {roundedBoxGeometry} from './kit.js';
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -131,7 +132,9 @@ export function createPerson(spec={}){
   parts[s+'sock']=mesh(group,capsule(.047*bulk,.03),c.socks??0xf0ece2,false);
   parts[s+'shoe']=mesh(group,shoe,vcMat);
  }
- const person={group,parts,lids,pose:newPose(),scale:d.scale,firstPerson:d.firstPerson,joints:{},build};
+ const artBoy=isBoy(spec);
+ if(artBoy){const model=boyModel(spec);for(const [name,part] of Object.entries(parts)){const k=/^[lr](hand|upper|fore|thigh|shin|sleeve)$/.test(name)?name.slice(1):name;if(!model.body[k])continue;part.geometry=model.body[k];part.material=['head','torso','hand'].includes(k)?model.vc:['thigh'].includes(k)||k==='shin'&&c.pants?model.lower:k==='sleeve'||k==='fore'&&c.sleeves==='long'?model.cloth:model.skin;}}
+ const person={artBoy,spec,group,parts,lids,pose:newPose(),scale:d.scale,firstPerson:d.firstPerson,joints:{},build};
  applyPose(person,person.pose);return person;
 }
 export function blinkPerson(person,time,seed=0){
