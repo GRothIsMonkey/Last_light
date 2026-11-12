@@ -90,7 +90,7 @@ export function createFace(person,cast={},{enabled=true}={}){const head=person.p
  // (a recorded line: an amplitude envelope 0..1 sampled at rate Hz drives the opening instead)
  function speakAudio(env,rate=60){S.env={env,rate,t:0};S.talking=true;}
  function silence(){S.keys=null;S.talking=false;S.env=null;}
- function enable(on){if(modern&&!on){S.hold=0;S.mood=S.name='neutral';S.grief=0;S.look=null;silence();on=true;}on=!!on;if(on===S.enabled)return;S.enabled=on;/* (a reset switches off faces that are off already: leave their heads alone) */head.geometry=on?geo.on:geo.off;mouth.visible=brows.visible=on;if(!on){person.lids.forEach((L,i)=>{L.position.y=lidY[i];});silence();}S.last='';}
+ function enable(on){if(modern&&!on){S.hold=0;S.mood=S.name='neutral';S.grief=0;S.look=null;silence();head.geometry=geo.on;on=true;}on=!!on;if(on===S.enabled)return;S.enabled=on;/* (a reset switches off faces that are off already: leave their heads alone) */head.geometry=on?geo.on:geo.off;mouth.visible=brows.visible=on;if(!on){person.lids.forEach((L,i)=>{L.position.y=lidY[i];});silence();}S.last='';}
  function update(dt,{clock=0,talk=0,speech=null,visible=true,seed=0}={}){if(!S.enabled){blinkPerson(person,clock,seed);return;}
   if(speech&&speech!==S.lastSpeech){S.lastSpeech=speech;speak(speech.text,speech.dur);}
   if(talk<=0&&!S.env)S.talking=false;

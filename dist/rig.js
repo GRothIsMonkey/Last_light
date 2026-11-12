@@ -134,7 +134,7 @@ export function createPerson(spec={}){
  }
  const artBoy=isBoy(spec);
  if(artBoy){const model=boyModel(spec);for(const [name,part] of Object.entries(parts)){const k=/^[lr](hand|upper|fore|thigh|shin|sleeve)$/.test(name)?name.slice(1):name;if(!model.body[k])continue;part.geometry=model.body[k];part.material=['head','torso','hand'].includes(k)?model.vc:['thigh'].includes(k)||k==='shin'&&c.pants?model.lower:k==='sleeve'||k==='fore'&&c.sleeves==='long'?model.cloth:model.skin;}}
- const person={artBoy,spec,group,parts,lids,pose:newPose(),scale:d.scale,firstPerson:d.firstPerson,joints:{},build};
+ const person={artBoy,artUncappedHead:artBoy?boyModel(spec).uncapped:null,spec,group,parts,lids,pose:newPose(),scale:d.scale,firstPerson:d.firstPerson,joints:{},build};
  applyPose(person,person.pose);return person;
 }
 export function blinkPerson(person,time,seed=0){

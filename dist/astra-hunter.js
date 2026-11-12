@@ -28,12 +28,12 @@ export function buildHunter(){
   for(let k=0;k<5;k++){const thumb=k===4,x=thumb?s*.045:(k-1.5)*.024,l=thumb?.084:.125+(k===1?.025:0),f=new THREE.Group();f.position.set(x,thumb?.042:.105,0);f.rotation.z=thumb?s*.7:(k-1.5)*-.09;h.add(f);add(f,seg(.013,.009),skin,'finger-a',[0,0,0],[1,l,1]);const j=new THREE.Group();j.position.y=l;f.add(j);add(j,seg(.010,.006),skin,'finger-b',[0,0,0],[1,l*.72,1]);tube([[0,l*.67,0],[0,l*.85,.004],[0,l*.99,-.028]],.005,nail,j,'talon');add(f,ball,skin,'knuckle',[0,l,0],[.014,.013,.011]);fingers.push({f,j});}return{g:h,fingers};};
  const hands={l:hand(-1),r:hand(1)},head=new THREE.Group();head.name='head';g.add(head);
  // Broad cranium over a narrowing muzzle; real orbital hollows and a split nasal opening.
- const skull=add(head,artLoft([[-.064,.070,.070,-.106],[-.028,.112,.121,-.058],[.045,.148,.170,-.05],[.12,.145,.155,-.02],[.20,.092,.094,.005],[.23,.001,.001,.01]],40,5,2.25),skin,'skull');
+ const skull=add(head,artLoft([[-.064,.070,.070,-.106],[-.028,.112,.121,-.058],[.045,.148,.170,-.05],[.12,.145,.155,-.02],[.20,.092,.094,.005],[.225,.05,.051,.008],[.234,.001,.001,.01]],40,5,2.25),skin,'skull');
  for(const s of [-1,1]){add(head,ball,dark,'orbital-void',[s*.071,.067,-.203],[.047,.043,.029],[.1,s*.18,-s*.22]);
   tube([[s*.024,.105,-.202],[s*.051,.127,-.212],[s*.095,.115,-.207],[s*.124,.072,-.17]],.012,skin,head,'orbital-arch');
   tube([[s*.125,.046,-.154],[s*.128,-.008,-.182],[s*.091,-.055,-.217]],.017,skin,head,'zygomatic-arch');
   add(head,ball,skin,'nasal-ridge',[s*.018,.002,-.218],[.018,.040,.027],[0,0,s*.12]);add(head,ball,dark,'nasal-slit',[s*.012,-.016,-.242],[.009,.019,.009],[0,0,s*.18]);}
- const palate=add(head,ball,dark,'open-palate',[0,-.044,-.197],[.088,.051,.066]);
+ const palate=add(head,ball,dark,'open-palate',[0,-.044,-.159],[.088,.051,.040]);
  const jaw=new THREE.Group();jaw.position.set(0,-.019,-.065);head.add(jaw);
  tube([[-.11,.012,-.052],[-.103,-.076,-.11],[-.056,-.134,-.176],[0,-.15,-.186],[.056,-.134,-.176],[.103,-.076,-.11],[.11,.012,-.052]],.015,skin,jaw,'mandible');
  add(jaw,ball,gum,'throat',[0,-.09,-.101],[.076,.066,.058]);

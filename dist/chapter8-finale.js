@@ -272,7 +272,7 @@ export function finaleActs(X){
    const t2=main(1150,0),h=headingTo(OAK.x,OAK.z,t2.x,t2.z);A2.px=OAK.x;A2.pz=OAK.z;A2.pa=h;g.position.set(OAK.x,OAK.y-.02,OAK.z);g.rotation.set(0,-h,0);
    copyPose(_p,A2.pose);ACT.propped({lean:F8.alexDead?-.75:-.62,breath:F8.alexDead?0:F8.breath*1.6,head:F8.alexDead?.6:.25})(_p,{clock:F8.t});if(F8.alexDead){_p[PP.hp]=.35;_p[PP.hy]=.5;}
    if(F8.hand&&!F8.alexDead){_p[PP.lh]=-.38;_p[PP.lh+1]=.26;_p[PP.lh+2]=-.32;}
-   applyPose(A2.person,_p);if(F8.alexDead){A2.person.lids?.forEach(L=>{L.visible=true;L.scale.y=.014;});}
+   applyPose(A2.person,_p);if(F8.alexDead){A2.person.face?.set('lifeless',{hold:999});if(!A2.person.artBoy)A2.person.lids?.forEach(L=>{L.visible=true;L.scale.y=.014;});}
    // Sam: sitting close on his right, holding his hand; then holding all of him
    if(F8.sam&&sam.person.group.visible){const fx=Math.sin(h),fz=-Math.cos(h),rx=Math.cos(h),rz=Math.sin(h),emb=F8.sam==='embrace',q={x:OAK.x+rx*(emb?.55:.72)+fx*(emb?.3:.16),z:OAK.z+rz*(emb?.55:.72)+fz*(emb?.3:.16)};
     sam.px=q.x;sam.pz=q.z;sam.pa=h-(emb?1.1:.45);const sg=sam.person.group;sg.position.set(q.x,gy(q.x,q.z)-.02,q.z);sg.rotation.set(0,-sam.pa,0);copyPose(_p,sam.pose);

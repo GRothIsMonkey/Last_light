@@ -22,6 +22,7 @@
 // the doors and the hunter's graphs, so moving a wall moves all of them together.
 import * as THREE from './three.module.js';
 import {artSurface} from './art-surfaces.js';
+import {dressIsolationWorks} from './astra-environment.js';
 import {pineMaterial} from './pine-materials.js';
 import {paper,bake,makeShapes,clamp,damp,smooth,lerp} from './chapter6-kit.js';
 
@@ -343,6 +344,7 @@ export function createComplex({scene,sfx=()=>{}}){
  for(const [x,z] of [[-1.1,41.3],[-3.3,41.6]]){K.box(dg,x,-2.55,z,.42,.05,.42,wood);K.box(dg,x,-2.27,z+.2,.42,.5,.05,wood);for(const [dx,dz] of [[-.18,-.18],[.18,-.18],[-.18,.18],[.18,.18]])K.box(dg,x+dx,-2.8,z+dz,.04,.45,.04,steel);}
  for(const ch of made.children)ch.userData.home={p:ch.position.clone(),r:ch.rotation.clone(),s:ch.scale.clone()};for(const P of madeWalls)P.g.userData.paper=true;
  // ---- bake the static parts ------------------------------------------------------------------------------------------
+ dressIsolationWorks(root,CELLS,OPENINGS);
  const baked=bake(root,keep);
  // ---- lights the complex owns (always the same few, moved to wherever you are) ----------------------------------------
  // ---- walking: a room the nav asks while you are in here --------------------------------------------------------------

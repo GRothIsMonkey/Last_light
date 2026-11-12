@@ -20,6 +20,7 @@
 //  propped    half lying back against a trunk, legs out, one hand on his stomach (Alex at the oak)
 //  still      lying on his back on the ground, not moving (Jamie)
 import {P,BODY} from './rig.js';
+import {Vector3} from './three.module.js';
 const set3=(p,o,x,y,z)=>{p[o]=x;p[o+1]=y;p[o+2]=z;};
 const mix3=(p,o,x,y,z,w)=>{p[o]+=(x-p[o])*w;p[o+1]+=(y-p[o+1])*w;p[o+2]+=(z-p[o+2])*w;};
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -27,7 +28,7 @@ const T=ctx=>ctx?.clock??0;
 // the world point (x,y,z) in the companion c's own frame
 function local(c,x,y,z,out){const a=c.pa,dx=x-c.px,dz=z-c.pz,fx=Math.sin(a),fz=-Math.cos(a),rx=Math.cos(a),rz=Math.sin(a),s=c.person?.group?.scale?.x||1,gy=c.person?.group?.position?.y||0;
  out.x=(dx*rx+dz*rz)/s;out.y=(y-gy)/s;out.z=-(dx*fx+dz*fz)/s;return out;}
-const _l={x:0,y:0,z:0};
+const _l={x:0,y:0,z:0},_contact=new Vector3();
 export const ACT={
  floor({lean=-.12,arms='knees',look=0,lookPitch=-.1,shiver=0}={}){return (p,ctx)=>{const t=T(ctx),br=Math.sin(t*1.7)*.004;
   set3(p,P.root,0,.11+br,.04);p[P.lean]=lean+Math.sin(t*1.7)*.01;p[P.yaw]=0;p[P.twist]=0;p[P.roll]=0;p[P.hy]=look;p[P.hp]=lookPitch;
@@ -74,13 +75,13 @@ export const ACT={
  // ---- grief ----------------------------------------------------------------------------------------------------------------------
  // crying with the whole body: the shoulders lift with each catch of breath (the face's own sob pulse), the head goes down,
  // the hands to the face (or wrapped round himself, or hanging)
- sob(c,{base=null,hands='face',k=1}={}){return (p,ctx)=>{base?.(p,ctx);const pu=(c?.person?.face?.pulse||0)*k,t=T(ctx);p[P.root+1]+=pu*.02-.018*k;p[P.lean]+=(.1+pu*.07)*k;p[P.hp]-=(.3-pu*.1)*k;p[P.roll]+=Math.sin(t*1.3)*.02*k;
+ sob(c,{base=null,hands='face',k=1}={}){return (p,ctx)=>{base?.(p,ctx);const pu=(c?.person?.face?.pulse||0)*k,t=T(ctx);p[P.root+1]+=pu*.02-.018*k;p[P.lean]+=(.1+pu*.07)*k;p[P.hp]-=(.3-pu*.1)*k;p[P.roll]+=(Math.sin(t*1.3)*.014+Math.sin(t*2.7+1)*.006)*k;p[P.hp]+=(Math.sin(t*19)*.003+Math.sin(t*31)*.002)*k;
    if(hands==='face'){const hy=p[P.root+1]+.55+pu*.015,hz=p[P.root+2]-.12-p[P.lean]*.32;mix3(p,P.lh,-.045,hy,hz,k);mix3(p,P.rh,.045,hy-.008,hz,k);mix3(p,P.le,-1,-.7,.25,k);mix3(p,P.re,1,-.7,.25,k);}
    else if(hands==='arms'){const y=p[P.root+1]+.3+pu*.02;mix3(p,P.lh,.11,y,-.12,k);mix3(p,P.rh,-.11,y-.03,-.1,k);}
    else{p[P.lh+1]-=.03*k;p[P.rh+1]-=.03*k;}};},
  // holding on to someone: both hands round to their back, leaning in, head beside theirs (drawn from this one's side)
  embrace(c,other,{k=1,base=null}={}){return (p,ctx)=>{base?.(p,ctx);if(!other?.person)return;const s=other.person.group.scale?.x||1,gy=other.person.group.position.y,oa=other.pa??0,bx=-Math.sin(oa),bz=Math.cos(oa),rx=Math.cos(oa),rz=Math.sin(oa),y=gy+1.12*s;
-   for(const [o,e,sd] of [[P.lh,P.le,-1],[P.rh,P.re,1]]){const wx=other.px+bx*.13+rx*sd*.13,wz=other.pz+bz*.13+rz*sd*.13;local(c,wx,y,wz,_l);mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,e,sd,.1,.5,k);}
+   for(const [o,e,sd] of [[P.lh,P.le,-1],[P.rh,P.re,1]]){other.person.parts.torso.updateWorldMatrix(true,false);_contact.set(sd*.13,.12,.065).applyMatrix4(other.person.parts.torso.matrixWorld);local(c,_contact.x,_contact.y,_contact.z,_l);mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,e,sd,.1,.5,k);}
    p[P.lean]+=.14*k;p[P.hp]-=.12*k;p[P.hy]+=.25*k;};},
  // down on his knees beside someone lying on the ground, both hands on him
  kneelOver(c,get,{k=1,rock=0}={}){return (p,ctx)=>{const t=T(ctx);set3(p,P.root,0,.42+Math.sin(t*1.6)*.006*rock,.04);p[P.lean]=.45+Math.sin(t*1.3)*.06*rock;p[P.yaw]=0;p[P.twist]=0;p[P.roll]=0;p[P.hp]=-.55;p[P.hy]=0;

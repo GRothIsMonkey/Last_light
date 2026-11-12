@@ -66,6 +66,8 @@ const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:
   float churn=c1*.55+c2*.3+c3*.15,toward=pow(max(dot(n,normalize(apocDir)),0.),2.6),hz=1.-smoothstep(0.,.5,h),rift=smoothstep(.62,.82,c2)*smoothstep(.15,.6,h);
   vec3 top=vec3(.045,.008,.012),under=mix(vec3(.2,.025,.02),vec3(.62,.1,.035),clamp(toward*.85+hz*.4,0.,1.));
   vec3 cc=mix(top,under,smoothstep(.22,.85,churn)*(.4+.6*hz)+toward*.35);cc+=vec3(1.,.28,.07)*toward*hz*.6+vec3(.55,.06,.03)*rift*(.4+toward);
+  float rim=pow(toward,2.)*smoothstep(.10,.28,h)*(1.-smoothstep(.31,.55,h));
+  cc+=vec3(.64,.16,.065)*rim*(.65+.35*c2);
   col=mix(col,cc,smoothstep(0.,.3,apoc));col+=vec3(.95,.25,.42)*flash*apoc*(.35+.65*churn);}
  gl_FragColor=vec4(col,1.);}`});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);

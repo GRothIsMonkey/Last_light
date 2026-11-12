@@ -7,6 +7,8 @@ float hsh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float softNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hsh(i),hsh(i+vec2(1,0)),f.x),mix(hsh(i+vec2(0,1)),hsh(i+1.),f.x),f.y);}
 `;
 export function surfaceMaterial(material,kind){
+ if(kind==='asphalt')return artSurface(material,'roadwear');
+ if(kind==='bark')return artSurface(material,'bark3');
  if(kind.startsWith('c4-'))return chapter4Surface(material,kind);
  if(['culvert','mineral','litter','roadwear','timber','bark3','textile','carpet','plaster','oxidized','drainwater'].includes(kind))return artSurface(material,kind);
  if(material.userData.surface)return material;material.userData.surface=kind;

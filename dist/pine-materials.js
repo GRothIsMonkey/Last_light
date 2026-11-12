@@ -32,7 +32,7 @@ vec3 c5surface(vec2 q){float broad=c5n(q*.63),fine=c5n(q*31.0),aa=1.-smoothstep(
 #elif C5_KIND == 7
  float weave=sin(q.x*1500.)*sin(q.y*1500.);v=.94+.045*weave*aa+.06*age;relief=weave*.00015*aa;
 #else
- v=.9+.1*broad+.05*fine;relief=(fine-.5)*.0004*aa;
+ float pitting=smoothstep(.58,.78,age*.7+fine*.3);v=.80+.17*broad+.06*fine-pitting*.12;relief=(fine-.5)*.0008*aa-pitting*.0011;
 #endif
  return vec3(v,relief,age);
 }
@@ -56,6 +56,6 @@ export function pineMaterial(color,kind='wood',extra={}){
   float c5det=dot(c5dp1,c5r1);vec3 c5grad=sign(c5det)*(dFdx(c5s.y)*c5r1+dFdy(c5s.y)*c5r2);
   normal=normalize(abs(c5det)*normal-c5grad);`);
  };
- material.customProgramCacheKey=()=>`c5-surface-v1-${kind}`;
+ material.customProgramCacheKey=()=>`astra-c5-surface-v2-${kind}`;
  return material;
 }
