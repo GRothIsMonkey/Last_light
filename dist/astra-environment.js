@@ -2,6 +2,19 @@
 import * as THREE from './three.module.js';
 import {artSurface} from './art-surfaces.js';
 const V=p=>new THREE.Vector3(...p),UP=new THREE.Vector3(0,1,0);
+export function mourningCoat(){
+ const group=new THREE.Group();group.name='c8-reyes-jacket';
+ const material=new THREE.MeshStandardMaterial({color:0x1b2232,roughness:.96,side:THREE.DoubleSide});material.name='c8-reyes-jacket';
+ const points=[],indices=[],nx=32,nz=42;
+ const at=(u,t)=>{const z=-.62+t*1.34,width=.32+.075*Math.sin(Math.PI*t),x=u*width,y=(.17+.12*Math.exp(-(((z-.38)/.42)**2)))*(1-.80*u*u)+.026+.009*Math.sin(u*18+t*11)*(1-u*u);return [x,y,z];};
+ for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){points.push(...at(i/nx*2-1,j/nz));if(j<nz&&i<nx){const n=j*(nx+1)+i;indices.push(n,n+1,n+nx+1,n+1,n+nx+2,n+nx+1);}}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));geo.setIndex(indices);geo.computeVertexNormals();const cloth=new THREE.Mesh(geo,material);cloth.castShadow=cloth.receiveShadow=true;group.add(cloth);
+ const seam=new THREE.MeshStandardMaterial({color:0x303b4d,roughness:1});
+ for(const u of [-.94,.94]){const p=Array.from({length:25},(_,i)=>{const q=at(u,i/24);q[1]+=.002;return V(q);});group.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(p),32,.002,5),seam));}
+ // Sleeves fall onto the grass at either side rather than projecting as rigid boxes.
+ for(const s of [-1,1]){const p=[],ix=[];for(let j=0;j<=20;j++)for(let i=0;i<=8;i++){const t=j/20,v=i/8*2-1;p.push(s*(.27+t*.34),.04+.07*(1-t)**2+.009*Math.sin(t*19+v*3),.30-t*.34+v*(.095-t*.025));if(j<20&&i<8){const n=j*9+i;ix.push(n,n+1,n+9,n+1,n+10,n+9);}}const sleeve=new THREE.BufferGeometry();sleeve.setAttribute('position',new THREE.Float32BufferAttribute(p,3));sleeve.setIndex(ix);sleeve.computeVertexNormals();group.add(new THREE.Mesh(sleeve,material));}
+ return group;
+}
 export function dressIsolationWorks(root,cells,openings){
  const g=new THREE.Group();g.name='astra-isolation-age';root.add(g);
  const material=(color,kind,props={})=>artSurface(new THREE.MeshStandardMaterial({color,roughness:.93,...props}),kind);

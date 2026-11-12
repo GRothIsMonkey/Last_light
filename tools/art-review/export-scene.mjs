@@ -19,14 +19,14 @@ export function exportScene(scene,camera,file){
     const i=idx?idx.getX(j):j;v.fromBufferAttribute(p,i).applyMatrix4(matrix);if(normal)n.fromBufferAttribute(normal,i).applyMatrix3(nm).normalize();else n.set(0,1,0);
     vertices.push(v.x,v.y,v.z,n.x,n.y,n.z,color.r*(m.vertexColors&&col?col.getX(i):1),color.g*(m.vertexColors&&col?col.getY(i):1),color.b*(m.vertexColors&&col?col.getZ(i):1));offset++;
    }
-   draws.push({start,count:offset-start,em:em.toArray().map(v=>v*(m.emissiveIntensity??1)),opacity,unlit:!!m.isMeshBasicMaterial,roughness:m.roughness??.8});
+   draws.push({start,count:offset-start,em:em.toArray().map(v=>v*(m.emissiveIntensity??1)),opacity,unlit:!!m.isMeshBasicMaterial,roughness:m.roughness??.8,fog:m.fog!==false});
   }
  }
  scene.traverseVisible(o=>{
   if(!o.layers.test(camera.layers))return;
   if(o.isDirectionalLight){const t=o.target.getWorldPosition(new THREE.Vector3()),p=o.getWorldPosition(new THREE.Vector3());lights.push({type:'sun',dir:p.sub(t).normalize().toArray(),color:o.color.toArray(),intensity:o.intensity});}
   if(o.isHemisphereLight)lights.push({type:'hemi',color:o.color.toArray(),ground:o.groundColor.toArray(),intensity:o.intensity});
-  if(o.isPointLight||o.isSpotLight)lights.push({type:'point',pos:o.getWorldPosition(new THREE.Vector3()).toArray(),color:o.color.toArray(),intensity:o.intensity,distance:o.distance||20});
+  if((o.isPointLight||o.isSpotLight)&&o.intensity>0){const p=o.getWorldPosition(new THREE.Vector3());lights.push({type:'point',pos:p.toArray(),color:o.color.toArray(),intensity:o.intensity,distance:o.distance||20,...(o.isSpotLight?{dir:o.target.getWorldPosition(new THREE.Vector3()).sub(p).normalize().toArray(),angle:o.angle,penumbra:o.penumbra}:{})});}
   if(!o.isMesh||o.isSkinnedMesh)return;
   if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,im);if(Math.abs(im.determinant())<1e-12)continue;wm.multiplyMatrices(o.matrixWorld,im);draw(o,wm);}}else draw(o,o.matrixWorld);
  });

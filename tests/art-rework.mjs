@@ -13,7 +13,9 @@ for(const key of ['jamie','sam','alex','player']){
  f.set('sobbing',{hold:50});f.grief(1);for(let i=0;i<180;i++)f.update(1/30,{clock:i/30});
  check(f.crying>.9&&f.sobbing>.9,`${key}: sustained crying`);check(finiteGeometry(p.group),`${key}: expressive vertices finite`);
  f.set('lifeless',{hold:100});for(let i=0;i<90;i++)f.update(1/30,{clock:6+i/30});
- check(p.parts.head.getObjectByName('face-rich').children.filter(o=>o.isGroup).every(o=>!o.visible),`${key}: eyes close at death`);
+ const rich=p.parts.head.getObjectByName('face-rich');
+ check(rich.children.filter(o=>o.isGroup&&o.name!=='face-closed-lid').every(o=>!o.visible),`${key}: eyes close at death`);
+ check(rich.children.filter(o=>o.name==='face-closed-lid').every(o=>o.visible),`${key}: closed eyelids cover the orbital creases`);
  f.enable(false);for(let i=0;i<180;i++)f.update(1/30,{clock:10+i/30});
  check(f.crying<.03&&f.S.grief===0&&f.expression==='neutral',`${key}: title/replay resets grief`);
  check(p.parts.head.geometry===head,`${key}: chapter reset retains rebuilt head`);

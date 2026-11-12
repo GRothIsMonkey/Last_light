@@ -136,7 +136,17 @@ export function createFace(person,cast={},{enabled=true}={}){const head=person.p
    const n=7,pos=[],idx=[];for(let i=0;i<=n;i++){const t=i/n,x=s*(gapE-.003+t*.006),y=eyeY-.011-t*.036,z=zAt(x,y)+.0001-.0012,wd=.0010*(1-t*.35);pos.push((x-wd)*sz,y*sz,z*sz,(x+wd)*sz,y*sz,z*sz);}
    for(let i=0;i<n;i++){const a=i*2;idx.push(a,a+1,a+2,a+1,a+3,a+2);}const tg=new THREE.BufferGeometry();tg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));tg.setIndex(idx);tg.computeVertexNormals();
    const track=new THREE.Mesh(tg,tearM);g.add(track);const drop=new THREE.Mesh(new THREE.SphereGeometry(.0015*sz,10,8),tearM);g.add(drop);
-   return {s,e,iris,rim,wet,track,drop,ph:Math.random()};});
+   let closed=null;
+   if(modern){
+    // A fitted skin lid and a single soft crease replace the open orbital outline when fully shut.
+    closed=new THREE.Group();closed.name='face-closed-lid';g.add(closed);const cg=new THREE.CircleGeometry(1,32),cp=cg.attributes.position,cc=[];
+    for(let i=0;i<cp.count;i++){const u=cp.getX(i),v=cp.getY(i),x=s*gapE+u*.019,y=eyeY+v*.012;cp.setXYZ(i,x*sz,y*sz,(faceDepth(x,y,F)-.0019)*sz);const color=new THREE.Color(F.skin??0xd6a57f).multiplyScalar(.91+.035*Math.abs(u));cc.push(color.r,color.g,color.b);}
+    cg.setAttribute('color',new THREE.Float32BufferAttribute(cc,3));cg.computeVertexNormals();closed.add(new THREE.Mesh(cg,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.86,side:THREE.DoubleSide})));
+    const curve=[];for(let i=0;i<=16;i++){const u=i/16*2-1,x=s*gapE+u*.0165,y=eyeY-.0015-.0018*(1-u*u);curve.push(new THREE.Vector3(x*sz,y*sz,(faceDepth(x,y,F)-.0028)*sz));}
+    closed.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(curve),18,.00065*sz,5),new THREE.MeshStandardMaterial({color:new THREE.Color(F.skin??0xd6a57f).multiplyScalar(.53),roughness:.9})));
+    closed.visible=false;
+   }
+   return {s,e,iris,rim,wet,track,drop,closed,ph:Math.random()};});
   R={g,eyes,rimM,tearM,wetM};return R;}
  function richUpdate(dt,clock,lid){const e=ex;
   // where the eyes go: a target if there is one (in head space), small saccades round it; down and in when crying
@@ -144,7 +154,7 @@ export function createFace(person,cast={},{enabled=true}={}){const head=person.p
   let ox=0,oy=0;if(S.look){const tp=typeof S.look==='function'?S.look():S.look;if(tp){head.updateWorldMatrix(true,false);_v.set(tp.x,tp.y,tp.z);head.worldToLocal(_v);const dz=Math.min(-.05,_v.z);ox=clamp(-_v.x/dz*.012,-.0042,.0042);oy=clamp(-(_v.y-(F.eyeY??.012))/dz*.012,-.0025,.0025);}}
   const dead=S.name==='lifeless'&&S.hold>0;
   const down=clamp(e.cry*.6+e.lids*.4,0,1)*.0018;ox+=S.sac[0];oy+=S.sac[1]-down;
-  for(const E of R.eyes){E.iris.position.x=damp(E.iris.position.x,ox*size,16,dt);E.iris.position.y=damp(E.iris.position.y,oy*size,16,dt);E.e.visible=lid<.94;E.e.scale.y=Math.max(.02,1-lid);E.wet.visible=lid<.6;
+  for(const E of R.eyes){E.iris.position.x=damp(E.iris.position.x,ox*size,16,dt);E.iris.position.y=damp(E.iris.position.y,oy*size,16,dt);E.e.visible=lid<.94;E.e.scale.y=Math.max(.02,1-lid);E.wet.visible=lid<.6;if(E.closed)E.closed.visible=lid>=.94;
    E.drop.visible=!dead&&e.cry>.45;if(E.drop.visible){E.ph=(E.ph+dt/(2.6+E.s*.4))%1;const t=E.ph,gapE=F.eyeGap??.036,x=E.s*(gapE-.003+t*.006),y=(F.eyeY??.012)-.011-t*.036;E.drop.position.set(x*size,y*size,(zAt(x,y)-.0016)*size);}}
   R.tearM.opacity=clamp(e.cry,0,1)*.36;R.rimM.opacity=clamp(e.red,0,1)*.55;R.wetM.opacity=clamp(Math.max(e.cry,e.red*.8),0,1)*.75;}
  function rich(on){on=modern||on;if(on){buildRich();R.g.visible=true;}else if(R)R.g.visible=false;}

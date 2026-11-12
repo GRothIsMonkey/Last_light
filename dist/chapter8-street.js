@@ -24,6 +24,7 @@ import {createTown} from './chapter8-town.js';
 import {cutWorld} from './chapter8-ruin.js';
 import {ACT,feel} from './chapter8-acting.js';
 import {CAST} from './cast.js';
+import {mourningCoat} from './astra-environment.js';
 import {groundPoint,heading} from './route.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
 import {newPose,copyPose,applyPose,P as PP} from './rig.js';
@@ -41,7 +42,7 @@ export function streetActs(X){
  const SKY=createPresence({scene,sfx:(n,p,op)=>sound(n,p,op),floorAt:(x,z)=>town.floorAt(x,z),sky:true});
  SKY.group.name='chapter8-presence-skyline';SKY.group.traverse(o2=>{if(o2.material){const ms=Array.isArray(o2.material)?o2.material:[o2.material];for(const m of ms)m.fog=false;}});
  const BODY=SP(1262,46,-6),RISE=[[1222,18,58],[1236,70,64],[1205,-34,52],[1270,-8,66],[1190,92,48]];
- function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+8,z:BODY.z},r:52,squash:[1.25,1.25,1.35],rot:-.48,fog:.0});SKY.lean(.2);
+ function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+8,z:BODY.z},r:52,squash:[1.25,1.25,1.35],rot:2.3,fog:.0});SKY.lean(.2);
   // its limbs: up out of the ground round the body, into the deck, and over: the probe points drift over the roofs
   RISE.forEach(([d,lat,len],i)=>{const r=SP(d,lat,-4),toward=SP(1080-i*40,(i%2?1:-1)*20,0);const dir=[toward.x-r.x,len*1.4,toward.z-r.z];
    SKY.set(i,{root:[r.x,r.y,r.z],dir,len,r0:3.2+i%3*.7,r1:.65,state:'emerge',probe:[lerp(r.x,toward.x,.55),r.y+len*.8,lerp(r.z,toward.z,.55)],speed:.35});SKY.limbs[i].probeR=9+i*2;});}
@@ -97,6 +98,7 @@ export function streetActs(X){
   return {D2,W2,gx,gw,gs,gf,gd,ow,door:HAt(HQ.doorX??0,D2+1.4),win:HAt(-W2*.45,D2+.7),lilyIn:HAt(-W2*.45,D2-1.3),garageFront:HAt(gx,gf+.9),mrIn:HAt(gx-gs*.5,gf-1.7),jamieIn:HAt(gx-gs*.1,gf-1.2),
    jackAt:HAt(gx-gs*1.4,gf+.35),sideDoor:HAt(ow+gs*.55,gf-gd*.55),side:HAt(ow+gs*.62,gf-.75),beam:HAt(ow+gs*.62,gf-.55,2.05),corner:HAt(ow+gs*.9,gf+.7),
    out:HAt(ow+gs*1.6,gf+3.2),grab:HAt(ow+gs*1.0,gf-1.6),body:HAt(ow+gs*1.75,gf+3.0),cap:HAt(ow+gs*2.6,gf+2.2),up:HAt(ow-gs*1.6,gf+4.4),watch:HAt(ow+gs*3.4,gf+8.6),street:SP(1010,4.4)};})();
+ const besideJamie=()=>{const a=-(HQ.worldRot+.4),q=HD.body;return {x:q.x+Math.cos(a)*.58+Math.sin(a)*.24,z:q.z-Math.sin(a)*.58+Math.cos(a)*.24};};
  // the beam over the side path (the garage roof's corner, come down): Jamie under it, holding it
  const beam=new THREE.Group();beam.name='c8-door-header';{const m=new THREE.MeshStandardMaterial({color:0x6a4c32,roughness:.85});m.name='c8-beam';const b=new THREE.Mesh(new THREE.BoxGeometry(.16,.2,1.5),m);b.castShadow=true;beam.add(b);
   // (the header and what came down with it: the top of the door frame, a broken stud, a sheet of siding hanging)
@@ -282,13 +284,14 @@ export function streetActs(X){
    yield* wait(1.4);sceneJamieDeath('now');})());}
  // ---- after: the three of you, and Jamie on the grass ------------------------------------------------------------------------------------------------------------
  function jamieBody(){// where he lies, and how: on his back on the grass by the garage, his cap a little way off
+  // The house foundation is lower than the lawn; use the visible yard's floor for the body and the dropped cap.
+  HD.body.y=gy(HD.body.x,HD.body.z);HD.cap.y=gy(HD.cap.x,HD.cap.z);
   leave(jamie);jamie.gone=false;jamie.person.group.visible=true;C.jamieBodyAt={x:HD.body.x,z:HD.body.z};C.jamieLying=true;
   if(!C.cap){C.cap=new THREE.Mesh(new THREE.SphereGeometry(.11,10,6,0,Math.PI*2,0,Math.PI/2),new THREE.MeshStandardMaterial({color:0x2e4a7a,roughness:.8}));C.cap.name='c8-jamie-cap';const brim=new THREE.Mesh(new THREE.BoxGeometry(.16,.01,.1),C.cap.material);brim.position.set(0,0,-.1);C.cap.add(brim);scene.add(C.cap);}
   const cq=HD.cap;C.cap.position.set(cq.x,cq.y+.04,cq.z);C.cap.visible=C.inv.cap!=='have';
-  if(!C.jacket){const m=new THREE.MeshStandardMaterial({color:0x1b2232,roughness:.92});m.name='c8-reyes-jacket';const g=new THREE.Group();g.name='c8-reyes-jacket';
-   const b=new THREE.Mesh(new THREE.BoxGeometry(.66,.07,.86),m);b.position.y=.04;b.castShadow=true;g.add(b);for(const s2 of [-1,1]){const sl=new THREE.Mesh(new THREE.BoxGeometry(.16,.05,.62),m);sl.position.set(s2*.42,.02,.18);sl.rotation.y=s2*.35;g.add(sl);}
-   const col=new THREE.Mesh(new THREE.BoxGeometry(.4,.05,.1),new THREE.MeshStandardMaterial({color:0x111620,roughness:.9}));col.position.set(0,.08,-.42);g.add(col);C.jacket=g;scene.add(g);}
-  {const q=HD.body,a=-(HQ.worldRot+.4);C.jacket.position.set(q.x+Math.sin(-a)*.1,q.y+.1,q.z-Math.cos(-a)*.1);C.jacket.rotation.set(0,a,0);C.jacket.visible=!!C.flags.covered;}}
+  if(!C.jacket){C.jacket=mourningCoat();scene.add(C.jacket);}
+  {const q=HD.body,a=-(HQ.worldRot+.4);C.jacket.position.set(q.x,q.y+.02,q.z);C.jacket.rotation.set(0,a,0);C.jacket.visible=!!C.flags.covered;}}
+
  function sceneJamieDeath(from='now'){go('g8-street');if(C.where!=='street'){streetWorld();for(const n of ['impacts','trench','lean','across','yard'])town.skip(n);town.engage(town.PX.hend);const s0=SP(1022,2.4);o.placePlayer({x:s0.x,z:s0.z,a:heading(1022)+Math.PI/2,mode:'walk',bike:null});four(s0);}
   C.h=Math.max(C.h,HOUR.street+.12);C.hMin=HOUR.street+.12;date(C.h);X.C.grief.jamie=true;applyGrief();C.flags.jamieDead=true;jamieBody();HM.show(false);C.reyesFire=false;scene.add(beam);beam.position.set(HD.beam.x,HD.beam.y-1.2,HD.beam.z);beam.rotation.set(0,-HQ.worldRot+Math.PI/2,.9);
   mrsH.show(false);lily.show(false);mrH.show(false);town.ash=.9;C.apocWant=1;checkpoint('c8-jamie-death');
@@ -302,10 +305,10 @@ export function streetActs(X){
     // Sam runs to him; Alex can't move; Reyes runs, his gun still in his hand
     weep(sam,'anguish',8);walkTo(sam,{x:HD.body.x-.85,z:HD.body.z-.45},{speed:3.8,then:()=>hold(sam,{x:HD.body.x-.75,z:HD.body.z+.35},ACT.kneelOver(sam,()=>({x:HD.body.x,y:HD.body.y+.25,z:HD.body.z}),{rock:1}),()=>V3(HD.body))});
     weep(A2,'horror',10);hold(A2,HD.watch,ACT.shake(ACT.hug(null),{k:1.2}),()=>V3(HD.body));
-    reyes.walk([[HD.body.x+.9,HD.body.z+.3]],{speed:3.4,then:()=>{C.reyesThere=true;reyes.gest(REYES_CPR);}});
+    {const q=besideJamie();reyes.walk([[q.x,q.z]],{speed:3.4,then:()=>{C.reyesThere=true;reyes.faceTo(HD.body.x,HD.body.z);reyes.gest(REYES_CPR);}});}
     yield* lines([R('Don’t move him— don’t move him— let me— LET ME—',{time:2.6})]);
     objective('Jamie.','');C.flags.wayRound=true;}
-   else{C.reyesThere=true;const q=HD.body;reyes.show(true);reyes.place(q.x+.9,q.z+.3,headingTo(q.x+.9,q.z+.3,q.x,q.z));reyes.gest(REYES_CPR);C.flags.wayRound=true;cry(.85,10);}
+   else{C.reyesThere=true;const q=besideJamie();reyes.show(true);reyes.place(q.x,q.z,headingTo(q.x,q.z,HD.body.x,HD.body.z));reyes.gest(REYES_CPR);C.flags.wayRound=true;cry(.85,10);}
    yield* until(()=>near(V3(HD.body),2.4)||C.pt>240,200);
    // at him: kneel; his face; Reyes, working on him, and then not
    pose(V3({x:me().x,z:me().z}),{y:gy(me().x,me().z)+.85,look:{x:HD.body.x,z:HD.body.z},pitch:-.55,slow:1.6});cry(1,20);
@@ -338,8 +341,11 @@ export function streetActs(X){
    for(const c of [sam,A2])stand(c,null);stand(sam,null);sam.boost=.85;A2.boost=.8;
    C.flags.jamieMourned=true;mark('Jamie mourned');
    sceneFlee('go');})());}
- const REYES_CPR=(p,w,t,A)=>{const k2=w;ACT.kneel({side:1,lookPitch:-.5,hands:'down'})(p,{clock:t});const pump=Math.max(0,Math.sin(t*10.5));p[PP.root+1]-=pump*.03;p[PP.lean]+=.3+pump*.08;
-  p[PP.lh+1]=.22-pump*.05;p[PP.rh+1]=.22-pump*.05;p[PP.lh+2]=-.48;p[PP.rh+2]=-.48;p[PP.lh]=-.04;p[PP.rh]=.04;void k2;void A;};
+ const chestContact=new THREE.Vector3();
+ const REYES_CPR=(p,w,t,A)=>{ACT.kneel({side:1,lookPitch:-.6,hands:'down'})(p,{clock:t});const pump=Math.max(0,Math.sin(t*10.5));p[PP.root+1]=.38-pump*.02;p[PP.lean]=.66+pump*.06;
+  jamie.person.parts.torso.updateWorldMatrix(true,false);chestContact.set(0,.02,-.075).applyMatrix4(jamie.person.parts.torso.matrixWorld);
+  const dx=chestContact.x-A.x,dz=chestContact.z-A.z,s=A.person.scale,ca=Math.cos(A.a),sa=Math.sin(A.a),x=(dx*ca+dz*sa)/s,y=(chestContact.y-(A.y??gy(A.x,A.z)))/s,z=(-dx*sa+dz*ca)/s;
+  for(const [o,side] of [[PP.lh,-1],[PP.rh,1]]){p[o]=x+side*.012;p[o+1]=y+.018-pump*.018;p[o+2]=z;} };
  const REYES_STOP=(p,w,t)=>{ACT.kneel({side:1,lookPitch:-.2})(p,{clock:t});p[PP.lean]-=.1;p[PP.rh+1]=.78+.47;p[PP.rh+2]=-.12;p[PP.rh]=.03;p[PP.hp]-=.25;};
  // ---- away from it: south, past Sam's house, the fire, to Summerfield; the intersection goes ------------------------------------------------------------------
  function sceneFlee(from='go'){

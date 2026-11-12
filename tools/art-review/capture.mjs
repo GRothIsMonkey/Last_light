@@ -1,7 +1,7 @@
 import {exportScene} from './export-scene.mjs';
 import path from 'node:path';
 export default async function({h,advance,THREE}){
- const out=process.env.ART_OUTPUT||'/workspace/scratch/33779ad70efe/art-before';
+ const out=process.env.ART_OUTPUT||'artifacts/art-review/baseline';
  for(const [key,jump,seconds] of [['reunion','c8-reunion',4],['breach','c8-breach',10],['skyline','c8-surface',3],['oak','c8-oak',6],['ride','c8-ride',3]]){
   if(process.env.ART_SHOTS&&!process.env.ART_SHOTS.split(',').includes(key))continue;
   h.jump(jump);advance(seconds);h.camera.aspect=1440/900;

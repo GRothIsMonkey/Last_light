@@ -50,6 +50,7 @@ export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
  const stand=buildHunter();body.add(stand.g);
  // sockets: plain Object3Ds the chapter can read (world positions) and attach things to
  const sockets={};for(const n of ['head','handL','handR','grab','chest','hips','footL','footR']){const o=new THREE.Object3D();o.name='hunter-socket-'+n;root.add(o);sockets[n]=o;}
+ const perceptionOrigin=new THREE.Object3D();perceptionOrigin.name='hunter-perception-origin';root.add(perceptionOrigin);
  const H=A.height||2.3,sc=H/2.3;// (the stand-in is built for 2.3 m; a different height scales it)
  stand.g.scale.setScalar(sc);
  // lengths (stand-in, metres at 2.3 m)
@@ -67,14 +68,14 @@ export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
   show(on=true){root.visible=on;},
   get visible(){return root.visible;},
   radius:()=>(A.radius||.42)*sc*(1+.35*api.drive.low),
-  eye:(out=new THREE.Vector3())=>sockets.head.getWorldPosition(out),
+  eye:(out=new THREE.Vector3())=>(api.source==='asset'?sockets.head:perceptionOrigin).getWorldPosition(out),
   update,reset,useAsset,
  };
  // ---- the stand-in, posed every frame -----------------------------------------------------------------------------------------
  const J={pelvis:new THREE.Vector3(),chest:new THREE.Vector3(),neck:new THREE.Vector3(),head:new THREE.Vector3(),shL:new THREE.Vector3(),shR:new THREE.Vector3(),
   elL:new THREE.Vector3(),elR:new THREE.Vector3(),wrL:new THREE.Vector3(),wrR:new THREE.Vector3(),hipL:new THREE.Vector3(),hipR:new THREE.Vector3(),
   knL:new THREE.Vector3(),knR:new THREE.Vector3(),anL:new THREE.Vector3(),anR:new THREE.Vector3(),toeL:new THREE.Vector3(),toeR:new THREE.Vector3()};
- const W={headYaw:0,headPitch:0,low:0,lean:0,lunge:0,hit:0,swipe:0,grab:0,open:0,tilt:0,stride:0,curl:.5,headLag:new THREE.Vector3()};
+ const W={headYaw:0,headPitch:0,low:0,lean:0,eyeLow:0,eyeLean:0,eyePhase:0,lunge:0,hit:0,swipe:0,grab:0,open:0,tilt:0,stride:0,curl:.5,headLag:new THREE.Vector3()};
  const toLocal=(w,out)=>{root.updateMatrixWorld(true);return out.copy(w).applyMatrix4(_m.copy(root.matrixWorld).invert()).divideScalar(1);};
  function place(m,a,b){_d.subVectors(b,a);const l=_d.length();m.position.copy(a).divideScalar(sc);m.quaternion.setFromUnitVectors(Y,l>1e-6?_d.multiplyScalar(1/l):Y);m.scale.set(1,l/sc,1);}
  function poseStandIn(dt){const D=api.drive,st=api.state,t=api.breath;
@@ -142,7 +143,16 @@ export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
   stand.jaw.rotation.x=-(.12+W.open*.72+Math.sin(t*5.3)*.02*W.open);
   // sockets (in root space): head, hands, the grab point just in front of the right palm, chest, hips, feet
   sockets.head.position.copy(J.head).add(_a.set(0,.05*sc,0));sockets.handL.position.copy(J.wrL);sockets.handR.position.copy(J.wrR);
-  sockets.grab.position.copy(J.wrR).addScaledVector(_b.subVectors(J.wrR,J.elR).normalize(),.1*sc);sockets.chest.position.copy(J.chest);sockets.hips.position.copy(J.pelvis);sockets.footL.position.copy(J.anL);sockets.footR.position.copy(J.anR);}
+  sockets.grab.position.copy(J.wrR).addScaledVector(_b.subVectors(J.wrR,J.elR).normalize(),.1*sc);sockets.chest.position.copy(J.chest);sockets.hips.position.copy(J.pelvis);sockets.footL.position.copy(J.anL);sockets.footR.position.copy(J.anR);
+  // Preserve the accepted perception origin independently of the longer, lower visual neck.
+  // Otherwise the new skull can put the sight ray inside the stair wall and silently disable an encounter.
+  const eyeWant=clamp(D.low+(st==='run'||st==='crawl'?.85:st==='crouch'||st==='peek'?.7:st==='drag'?.55:0),0,1);
+  W.eyeLow=damp(W.eyeLow,eyeWant,st==='run'||st==='lunge'?7:3.2,dt);W.eyeLean=damp(W.eyeLean,.32+W.eyeLow*1.05+W.lunge*.35,6,dt);
+  W.eyePhase+=dt*speed/(W.eyeLow>.55?1.9:1.15)*Math.PI*2*(D.back?-1:1);
+  perceptionOrigin.position.set(0,(1.08-W.eyeLow*.42-W.lunge*.12-(W.eyeLow>.55?.06:.035)*W.stride*Math.abs(Math.sin(W.eyePhase))+Math.sin(t*1.7)*.008)*sc,W.lunge*.25*sc);
+  _e.set(0,Math.cos(W.eyeLean),-Math.sin(W.eyeLean));perceptionOrigin.position.addScaledVector(_e,(.7*(1+Math.sin(t*1.1)*.012)+.06)*sc);
+  _d.copy(_e).lerp(_a.set(0,.35,-1).normalize(),.35+W.eyeLow*.55).normalize();perceptionOrigin.position.addScaledVector(_d,.3*sc).y+=.05*sc;
+ }
  // ---- a replacement asset (optional) -------------------------------------------------------------------------------------------
  let mixer=null,actions={},current=null,bones={},assetRoot=null;
  function clipFor(s){const seen=new Set();let k=s;while(k&&!seen.has(k)){seen.add(k);if(actions[k])return actions[k];k=A.fallback?.[k];}return actions.idle||null;}
@@ -165,7 +175,7 @@ export function createHunterModel({scene,asset=HUNTER_ASSET,loadBytes=null}={}){
  function sync(){root.position.set(api.x,api.y,api.z);root.rotation.set(0,-api.heading,0);}
  function update(dt){api.stateT+=dt;api.breath+=dt;sync();root.updateMatrixWorld(true);if(api.source==='asset'&&mixer)poseAsset(dt);else poseStandIn(dt);root.updateMatrixWorld(true);}
  function reset(){api.drive.speed=0;api.drive.low=0;api.drive.look=null;api.drive.reach=null;api.drive.reachL=null;api.drive.open=0;api.drive.tilt=0;api.drive.lunge=0;api.drive.back=0;api.state='idle';api.stateT=0;
-  W.low=0;W.lunge=0;W.hit=0;W.swipe=0;W.grab=0;W.open=0;root.visible=false;if(mixer){for(const a of Object.values(actions))a.stop();current=null;playClip('idle');}}
+  W.low=0;W.eyeLow=0;W.lunge=0;W.hit=0;W.swipe=0;W.grab=0;W.open=0;root.visible=false;if(mixer){for(const a of Object.values(actions))a.stop();current=null;playClip('idle');}}
  // the asset, if one is configured: loaded in the background like the drain creature; the stand-in until then (and if it fails)
  api.ready=(async()=>{if(!A.url)return api;try{let buf;
    if(loadBytes)buf=await loadBytes(A.url);else{const url=new URL(A.url,import.meta.url);if(url.protocol==='file:'){const fs=await import('node:fs');const b=fs.readFileSync(url);buf=b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength);}else{const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);buf=await r.arrayBuffer();}}

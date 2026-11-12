@@ -69,9 +69,9 @@ export const ACT={
  propped({lean=-.62,breath=1,head=.25}={}){return (p,ctx)=>{const t=T(ctx),br=breath*(.006*Math.sin(t*1.1)+.003*Math.sin(t*2.9));set3(p,P.root,0,.12,.1);p[P.lean]=lean+br*2;p[P.yaw]=0;p[P.twist]=0;p[P.roll]=.05;p[P.hy]=head*.6;p[P.hp]=.05;
   set3(p,P.lf,-.17,.07,-.78);set3(p,P.rf,.2,.08,-.74);p[P.lfp]=.9;p[P.rfp]=.9;set3(p,P.lk,-.1,1,-.1);set3(p,P.rk,.1,1,-.1);
   set3(p,P.rh,.04,.3+br,-.16);set3(p,P.re,1,-.5,.3);set3(p,P.lh,-.3,.04,-.12);set3(p,P.le,-1,0,.4);};},
- still({look=.6}={}){return (p)=>{set3(p,P.root,0,.1,.0);p[P.lean]=-1.5;p[P.yaw]=0;p[P.twist]=.04;p[P.roll]=.08;p[P.hy]=look;p[P.hp]=.1;
-  set3(p,P.lf,-.13,.06,-.8);set3(p,P.rf,.16,.06,-.76);p[P.lfp]=1.2;p[P.rfp]=1.1;set3(p,P.lk,0,1,0);set3(p,P.rk,0,1,0);
-  set3(p,P.lh,-.32,.05,.18);set3(p,P.rh,.3,.05,.3);set3(p,P.le,-1,0,0);set3(p,P.re,1,0,0);};},
+ still({look=.6}={}){return (p)=>{set3(p,P.root,0,.13,.0);p[P.lean]=-1.5;p[P.yaw]=0;p[P.twist]=.04;p[P.roll]=.04;p[P.hy]=look*.45;p[P.hp]=1.45;
+  set3(p,P.lf,-.13,.09,-.8);set3(p,P.rf,.16,.09,-.76);p[P.lfp]=1.2;p[P.rfp]=1.1;set3(p,P.lk,0,1,0);set3(p,P.rk,0,1,0);
+  set3(p,P.lh,-.32,.07,.18);set3(p,P.rh,.3,.07,.3);set3(p,P.le,-1,0,0);set3(p,P.re,1,0,0);};},
  // ---- grief ----------------------------------------------------------------------------------------------------------------------
  // crying with the whole body: the shoulders lift with each catch of breath (the face's own sob pulse), the head goes down,
  // the hands to the face (or wrapped round himself, or hanging)
@@ -80,7 +80,7 @@ export const ACT={
    else if(hands==='arms'){const y=p[P.root+1]+.3+pu*.02;mix3(p,P.lh,.11,y,-.12,k);mix3(p,P.rh,-.11,y-.03,-.1,k);}
    else{p[P.lh+1]-=.03*k;p[P.rh+1]-=.03*k;}};},
  // holding on to someone: both hands round to their back, leaning in, head beside theirs (drawn from this one's side)
- embrace(c,other,{k=1,base=null}={}){return (p,ctx)=>{base?.(p,ctx);if(!other?.person)return;const s=other.person.group.scale?.x||1,gy=other.person.group.position.y,oa=other.pa??0,bx=-Math.sin(oa),bz=Math.cos(oa),rx=Math.cos(oa),rz=Math.sin(oa),y=gy+1.12*s;
+ embrace(c,other,{k=1,base=null}={}){return (p,ctx)=>{base?.(p,ctx);if(!other?.person)return;
    for(const [o,e,sd] of [[P.lh,P.le,-1],[P.rh,P.re,1]]){other.person.parts.torso.updateWorldMatrix(true,false);_contact.set(sd*.13,.12,.065).applyMatrix4(other.person.parts.torso.matrixWorld);local(c,_contact.x,_contact.y,_contact.z,_l);mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,e,sd,.1,.5,k);}
    p[P.lean]+=.14*k;p[P.hp]-=.12*k;p[P.hy]+=.25*k;};},
  // down on his knees beside someone lying on the ground, both hands on him
@@ -94,8 +94,8 @@ export const ACT={
  headInHands({seatH=0,rock=0}={}){return (p,ctx)=>{const t=T(ctx);if(seatH>0)ACT.seat(seatH)(p,ctx);else ACT.floor({arms:'knees'})(p,ctx);const r=Math.sin(t*1.2)*.07*rock;p[P.lean]+=.42+r;p[P.hp]=-.5;
    const hy=p[P.root+1]+.47,hz=p[P.root+2]-.22;set3(p,P.lh,-.06,hy,hz);set3(p,P.rh,.06,hy-.01,hz);set3(p,P.le,-1,-.8,.3);set3(p,P.re,1,-.8,.3);};},
  // a hand on someone's shoulder (comfort), over whatever else
- shoulder(c,other,{hand='r',k=1,base=null}={}){return (p,ctx)=>{base?.(p,ctx);if(!other?.person)return;const s=other.person.group.scale?.x||1,gy=other.person.group.position.y,oa=other.pa??0,rx=Math.cos(oa),rz=Math.sin(oa),sd=hand==='r'?-1:1;
-   local(c,other.px+rx*sd*.16,gy+1.18*s,other.pz+rz*sd*.16,_l);const o=hand==='r'?P.rh:P.lh;mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,hand==='r'?P.re:P.le,hand==='r'?1:-1,-.4,.3,k);};},
+ shoulder(c,other,{hand='r',k=1,base=null}={}){return (p,ctx)=>{base?.(p,ctx);if(!other?.person)return;const sd=hand==='r'?-1:1;other.person.parts.torso.updateWorldMatrix(true,false);_contact.set(sd*.145,.16,0).applyMatrix4(other.person.parts.torso.matrixWorld);
+   local(c,_contact.x,_contact.y,_contact.z,_l);const o=hand==='r'?P.rh:P.lh;mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,hand==='r'?P.re:P.le,hand==='r'?1:-1,-.4,.3,k);};},
  // (a run of these, one after another: [[seconds, gesture], ...], holding the last)
  seq(list){let start=null;return (p,ctx)=>{const t=T(ctx);if(start===null)start=t;let e=t-start;for(const [d,g] of list){if(e<d||list[list.length-1][1]===g){g?.(p,ctx);return;}e-=d;}};},
 };
