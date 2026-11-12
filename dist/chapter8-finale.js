@@ -274,10 +274,13 @@ export function finaleActs(X){
    if(F8.hand&&!F8.alexDead){_p[PP.lh]=-.38;_p[PP.lh+1]=.26;_p[PP.lh+2]=-.32;}
    applyPose(A2.person,_p);if(F8.alexDead){A2.person.face?.set('lifeless',{hold:999});if(!A2.person.artBoy)A2.person.lids?.forEach(L=>{L.visible=true;L.scale.y=.014;});}
    // Sam: sitting close on his right, holding his hand; then holding all of him
-   if(F8.sam&&sam.person.group.visible){const fx=Math.sin(h),fz=-Math.cos(h),rx=Math.cos(h),rz=Math.sin(h),emb=F8.sam==='embrace',q={x:OAK.x+rx*(emb?.31:.72)+fx*(emb?.10:.16),z:OAK.z+rz*(emb?.31:.72)+fz*(emb?.10:.16)};
-    sam.px=q.x;sam.pz=q.z;sam.pa=h-(emb?.8:.45);const sg=sam.person.group;sg.position.set(q.x,gy(q.x,q.z)-.02,q.z);sg.rotation.set(0,-sam.pa,0);copyPose(_p,sam.pose);
+   if(F8.sam&&sam.person.group.visible){const fx=Math.sin(h),fz=-Math.cos(h),rx=Math.cos(h),rz=Math.sin(h),emb=F8.sam==='embrace',q={x:OAK.x+rx*(emb?.36:.72)+fx*(emb?-.16:.16),z:OAK.z+rz*(emb?.36:.72)+fz*(emb?-.16:.16)};
+    sam.px=q.x;sam.pz=q.z;sam.pa=h-(emb?1.45:.45);const sg=sam.person.group;sg.position.set(q.x,gy(q.x,q.z)-.02,q.z);sg.rotation.set(0,-sam.pa,0);copyPose(_p,sam.pose);
     sitPose(_p,{seat:.06,legs:'bent',t:F8.t,hands:'deck',look:.3});
-    if(emb){ACT.floor({arms:'lap',lean:.16})(_p,{clock:F8.t});ACT.sob(sam,{hands:'none',k:.75})(_p,{clock:F8.t});ACT.embrace(sam,A2,{k:1})(_p,{clock:F8.t});_p[PP.lean]+=.08+Math.sin(F8.t*1.3)*.05;_p[PP.hp]=-.45;_p[PP.hy]=.05;}else{ACT.sob(sam,{hands:'none',k:.6})(_p,{clock:F8.t});_p[PP.lh]=-.47;_p[PP.lh+1]=.12;_p[PP.lh+2]=.02;}
+    if(emb){ACT.floor({arms:'lap',lean:.10})(_p,{clock:F8.t});ACT.sob(sam,{hands:'none',k:.75})(_p,{clock:F8.t});ACT.embrace(sam,A2,{k:1})(_p,{clock:F8.t});_p[PP.lean]+=Math.sin(F8.t*1.3)*.04;_p[PP.hp]=-.45;_p[PP.hy]=.05;
+     // His hips and folded legs stay beside Alex while his shoulders turn into the embrace.
+     _p[PP.yaw]=-.65;_p[PP.twist]=.65;_p[PP.lf]=.38;_p[PP.lf+2]=.08;_p[PP.rf]=.57;_p[PP.rf+2]=.18;_p[PP.lk]=_p[PP.rk]=.7;
+    }else{ACT.sob(sam,{hands:'none',k:.6})(_p,{clock:F8.t});_p[PP.lh]=-.47;_p[PP.lh+1]=.12;_p[PP.lh+2]=.02;}
     applyPose(sam.person,_p);}}}
  function sources(out){if(S.phase==='n8-oak'||S.phase==='n8-ride'){out.push({id:'c8-sirens-far',kind:'siren',pos:V3(SP(880,-40,6)),level:.25});}}
  function blockers(out){if(hatch.parent)out.push({x:HAT.x,z:HAT.z,r:.85,speed:0});if(F8.mode==='oak')out.push({x:OAK.x,z:OAK.z,r:.6,speed:0});}

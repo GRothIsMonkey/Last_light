@@ -27,7 +27,7 @@ import {CAST} from './cast.js';
 import {mourningCoat} from './astra-environment.js';
 import {groundPoint,heading} from './route.js';
 import {clamp,damp,smooth,lerp} from './chapter6-kit.js';
-import {newPose,copyPose,applyPose,P as PP} from './rig.js';
+import {newPose,copyPose,applyPose,headPos,P as PP} from './rig.js';
 
 export function streetActs(X){
  const {o,k,C,S,presence,H,HM,reyes,police,jamie,sam,comp,sound,gy,light,lightsOn,checkpoint,later,mark,say,J,SM,AL,R,RR,Y,N,V,task,wait,until,lines,quiet,offer,unoffer,V3,near,
@@ -98,7 +98,7 @@ export function streetActs(X){
   return {D2,W2,gx,gw,gs,gf,gd,ow,door:HAt(HQ.doorX??0,D2+1.4),win:HAt(-W2*.45,D2+.7),lilyIn:HAt(-W2*.45,D2-1.3),garageFront:HAt(gx,gf+.9),mrIn:HAt(gx-gs*.5,gf-1.7),jamieIn:HAt(gx-gs*.1,gf-1.2),
    jackAt:HAt(gx-gs*1.4,gf+.35),sideDoor:HAt(ow+gs*.55,gf-gd*.55),side:HAt(ow+gs*.62,gf-.75),beam:HAt(ow+gs*.62,gf-.55,2.05),corner:HAt(ow+gs*.9,gf+.7),
    out:HAt(ow+gs*1.6,gf+3.2),grab:HAt(ow+gs*1.0,gf-1.6),body:HAt(ow+gs*1.75,gf+3.0),cap:HAt(ow+gs*2.6,gf+2.2),up:HAt(ow-gs*1.6,gf+4.4),watch:HAt(ow+gs*3.4,gf+8.6),street:SP(1010,4.4)};})();
- const besideJamie=()=>{const a=-(HQ.worldRot+.4),q=HD.body;return {x:q.x+Math.cos(a)*.58+Math.sin(a)*.24,z:q.z-Math.sin(a)*.58+Math.cos(a)*.24};};
+ const besideJamie=(side=1)=>{const a=-(HQ.worldRot+.4),q=HD.body,r=side>0?.58:-.50,b=side>0?.24:.12;return {x:q.x+Math.cos(a)*r+Math.sin(a)*b,z:q.z-Math.sin(a)*r+Math.cos(a)*b,a:-a-side*Math.PI/2};};
  // the beam over the side path (the garage roof's corner, come down): Jamie under it, holding it
  const beam=new THREE.Group();beam.name='c8-door-header';{const m=new THREE.MeshStandardMaterial({color:0x6a4c32,roughness:.85});m.name='c8-beam';const b=new THREE.Mesh(new THREE.BoxGeometry(.16,.2,1.5),m);b.castShadow=true;beam.add(b);
   // (the header and what came down with it: the top of the door frame, a broken stud, a sheet of siding hanging)
@@ -303,12 +303,12 @@ export function streetActs(X){
     yield* lines([N('He hits the grass at the edge of the hole, hard, and doesn’t move.',{time:3}),{wait:1.6},
      Y('JAMIE!',{time:1}),SM('JAMIE— JAMIE— NO— NO NO NO—',{time:2.4,face:'anguish'})]);
     // Sam runs to him; Alex can't move; Reyes runs, his gun still in his hand
-    weep(sam,'anguish',8);walkTo(sam,{x:HD.body.x-.85,z:HD.body.z-.45},{speed:3.8,then:()=>hold(sam,{x:HD.body.x-.75,z:HD.body.z+.35},ACT.kneelOver(sam,()=>({x:HD.body.x,y:HD.body.y+.25,z:HD.body.z}),{rock:1}),()=>V3(HD.body))});
+    weep(sam,'anguish',8);walkTo(sam,besideJamie(-1),{speed:3.8,then:()=>hold(sam,besideJamie(-1),ACT.kneelOver(sam,()=>({x:HD.body.x,y:HD.body.y+.25,z:HD.body.z}),{rock:1}),()=>V3(HD.body))});
     weep(A2,'horror',10);hold(A2,HD.watch,ACT.shake(ACT.hug(null),{k:1.2}),()=>V3(HD.body));
-    {const q=besideJamie();reyes.walk([[q.x,q.z]],{speed:3.4,then:()=>{C.reyesThere=true;reyes.faceTo(HD.body.x,HD.body.z);reyes.gest(REYES_CPR);}});}
+    {const q=besideJamie();reyes.walk([[q.x,q.z]],{speed:3.4,then:()=>{C.reyesThere=true;reyes.face(q.a);reyes.gest(REYES_CPR);}});}
     yield* lines([R('Don’t move him— don’t move him— let me— LET ME—',{time:2.6})]);
     objective('Jamie.','');C.flags.wayRound=true;}
-   else{C.reyesThere=true;const q=besideJamie();reyes.show(true);reyes.place(q.x,q.z,headingTo(q.x,q.z,HD.body.x,HD.body.z));reyes.gest(REYES_CPR);C.flags.wayRound=true;cry(.85,10);}
+   else{C.reyesThere=true;const q=besideJamie();reyes.show(true);reyes.place(q.x,q.z,q.a);reyes.gest(REYES_CPR);C.flags.wayRound=true;cry(.85,10);}
    yield* until(()=>near(V3(HD.body),2.4)||C.pt>240,200);
    // at him: kneel; his face; Reyes, working on him, and then not
    pose(V3({x:me().x,z:me().z}),{y:gy(me().x,me().z)+.85,look:{x:HD.body.x,z:HD.body.z},pitch:-.55,slow:1.6});cry(1,20);
@@ -317,7 +317,7 @@ export function streetActs(X){
    reyes.gest(REYES_STOP);
    yield* lines([N('He stops. He sits back on his heels. He puts his hand over his eyes and stays like that.',{time:4}),{wait:2.2},R('(not loud) I’m sorry. I’m so sorry. I’m so sorry, kid.',{time:3.4})]);
    // Sam: comes round, down on his knees on Jamie's other side, shaking him
-   hold(sam,{x:HD.body.x-.75,z:HD.body.z+.35},ACT.kneelOver(sam,()=>({x:HD.body.x,y:HD.body.y+.25,z:HD.body.z}),{rock:1}),()=>V3(HD.body));weep(sam,'sobbing',40);
+   hold(sam,besideJamie(-1),ACT.kneelOver(sam,()=>({x:HD.body.x,y:HD.body.y+.25,z:HD.body.z}),{rock:1}),()=>V3(HD.body));weep(sam,'sobbing',40);
    yield* lines([{wait:1.4},SM('Jamie. Jamie, wake up.',{time:2.2,face:'sobbing'}),SM('Wake up. You have to wake up. You can’t— you can’t do this, you can’t—',{time:3.6}),{wait:1.6},
     SM('(sobbing) He was being so STUPID, he was holding the stupid roof, why did he— why didn’t he just RUN—',{time:4.2})]);
    // Alex: can't come close; then sits down on the grass, his hands over his head
@@ -342,11 +342,11 @@ export function streetActs(X){
    C.flags.jamieMourned=true;mark('Jamie mourned');
    sceneFlee('go');})());}
  const chestContact=new THREE.Vector3();
- const REYES_CPR=(p,w,t,A)=>{ACT.kneel({side:1,lookPitch:-.6,hands:'down'})(p,{clock:t});const pump=Math.max(0,Math.sin(t*10.5));p[PP.root+1]=.38-pump*.02;p[PP.lean]=.66+pump*.06;
+ const REYES_CPR=(p,w,t,A)=>{ACT.kneel({side:1,lookPitch:-.6,hands:'down'})(p,{clock:t});const pump=Math.max(0,Math.sin(t*10.5));p[PP.root+1]=.27-pump*.012;p[PP.lean]=.85+pump*.04;
   jamie.person.parts.torso.updateWorldMatrix(true,false);chestContact.set(0,.02,-.075).applyMatrix4(jamie.person.parts.torso.matrixWorld);
   const dx=chestContact.x-A.x,dz=chestContact.z-A.z,s=A.person.scale,ca=Math.cos(A.a),sa=Math.sin(A.a),x=(dx*ca+dz*sa)/s,y=(chestContact.y-(A.y??gy(A.x,A.z)))/s,z=(-dx*sa+dz*ca)/s;
   for(const [o,side] of [[PP.lh,-1],[PP.rh,1]]){p[o]=x+side*.012;p[o+1]=y+.018-pump*.018;p[o+2]=z;} };
- const REYES_STOP=(p,w,t)=>{ACT.kneel({side:1,lookPitch:-.2})(p,{clock:t});p[PP.lean]-=.1;p[PP.rh+1]=.78+.47;p[PP.rh+2]=-.12;p[PP.rh]=.03;p[PP.hp]-=.25;};
+ const REYES_STOP=(p,w,t)=>{ACT.kneel({side:1,lookPitch:-.2})(p,{clock:t});p[PP.lean]-=.1;p[PP.hp]-=.25;headPos(p,chestContact);p[PP.rh]=chestContact.x+.025;p[PP.rh+1]=chestContact.y+.01;p[PP.rh+2]=chestContact.z-.095;p[PP.re]=1;p[PP.re+1]=-.6;p[PP.re+2]=.2;};
  // ---- away from it: south, past Sam's house, the fire, to Summerfield; the intersection goes ------------------------------------------------------------------
  function sceneFlee(from='go'){
   if(from!=='go'){go('g8-street');if(C.where!=='street')streetWorld();for(const n of ['impacts','trench','lean','across','yard','ruin'])town.skip(n);town.engage(town.PX.hend);
@@ -408,7 +408,10 @@ export function streetActs(X){
    g.position.set(x,y,z);g.rotation.set(clamp((ground+1.12-hp.y)*.8,0,.85)*k2,-(HM.heading+Math.PI),Math.sin(C.t*13)*.18*k2,'YXZ');
    ACT.shake(null,{k:1.4})(jamie.pose,{clock:C.t});jamie.pose[PP.lh+1]+=.25;jamie.pose[PP.rh+1]+=.4;applyPose(jamie.person,jamie.pose);jamie.person.face?.set?.('terrified',{hold:2});return;}
   if(C.jamieThrown!=null&&C.jamieThrown<1){const from=HM.sockets.grab.getWorldPosition(new THREE.Vector3()),to=HD.body,k2=C.jamieThrown;g.position.set(lerp(from.x,to.x,k2),lerp(from.y-1,to.y,k2)+Math.sin(k2*Math.PI)*.6,lerp(from.z,to.z,k2));g.rotation.set(k2*1.2,-jamie.pa,k2*.8);return;}
-  if(C.jamieLying){const q=HD.body;g.position.set(q.x,q.y+.02,q.z);g.rotation.set(0,-(HQ.worldRot+.4),0);copyPose(_p,jamie.pose);ACT.still({look:.7})(_p,{clock:C.t});applyPose(jamie.person,_p);jamie.person.face?.set?.('lifeless',{hold:9});if(jamie.person.artBoy)jamie.person.parts.head.geometry=jamie.person.artUncappedHead;if(!jamie.person.artBoy)jamie.person.lids?.forEach(L=>{L.visible=true;L.scale.y=.014;});}}
+  if(C.jamieLying){const q=HD.body;g.position.set(q.x,q.y+.02,q.z);g.rotation.set(0,-(HQ.worldRot+.4),0);copyPose(_p,jamie.pose);ACT.still({look:.7})(_p,{clock:C.t});applyPose(jamie.person,_p);jamie.person.face?.set?.('lifeless',{hold:9});if(jamie.person.artBoy)jamie.person.parts.head.geometry=jamie.person.artUncappedHead;if(!jamie.person.artBoy)jamie.person.lids?.forEach(L=>{L.visible=true;L.scale.y=.014;});
+   // The companion update temporarily poses Jamie in its ordinary frame. Contact must be solved
+   // after his final lying pose has been applied, never against that intermediate transform.
+   if(reyes.visible&&reyes.gesture===REYES_CPR){REYES_CPR(reyes.pose,1,reyes.t,reyes);applyPose(reyes.person,reyes.pose);}}}
  function sources(out){const ph=S.phase;if(C.afterStreet&&ph!=='g8-surface'&&ph!=='g8-street'){town.sources(out);return;}if(ph!=='g8-surface'&&ph!=='g8-street')return;town.sources(out);out.push({id:'c8-it-sky',kind:'presence',pos:new THREE.Vector3(BODY.x,BODY.y+20,BODY.z),level:1.2});
   out.push({id:'c8-sirens',kind:'siren',pos:V3(SP(880,-30,4)),level:.5});}
  function blockers(out){for(const a of PEOPLE)if(a.visible)out.push({x:a.x,z:a.z,r:.3,speed:0});for(const c of Object.values(CR))if(c.M.root.visible&&c.mode!=='off')out.push({x:c.M.x,z:c.M.z,r:.45,speed:0});

@@ -84,7 +84,7 @@ export const ACT={
    for(const [o,e,sd] of [[P.lh,P.le,-1],[P.rh,P.re,1]]){other.person.parts.torso.updateWorldMatrix(true,false);_contact.set(sd*.13,.12,.065).applyMatrix4(other.person.parts.torso.matrixWorld);local(c,_contact.x,_contact.y,_contact.z,_l);mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,e,sd,.1,.5,k);}
    p[P.lean]+=.14*k;p[P.hp]-=.12*k;p[P.hy]+=.25*k;};},
  // down on his knees beside someone lying on the ground, both hands on him
- kneelOver(c,get,{k=1,rock=0}={}){return (p,ctx)=>{const t=T(ctx);set3(p,P.root,0,.42+Math.sin(t*1.6)*.006*rock,.04);p[P.lean]=.45+Math.sin(t*1.3)*.06*rock;p[P.yaw]=0;p[P.twist]=0;p[P.roll]=0;p[P.hp]=-.55;p[P.hy]=0;
+ kneelOver(c,get,{k=1,rock=0}={}){return (p,ctx)=>{const t=T(ctx);set3(p,P.root,0,.28+Math.sin(t*1.6)*.006*rock,.04);p[P.lean]=.72+Math.sin(t*1.3)*.06*rock;p[P.yaw]=0;p[P.twist]=0;p[P.roll]=0;p[P.hp]=-.55;p[P.hy]=0;
    set3(p,P.lf,-.13,.07,.36);set3(p,P.rf,.13,.07,.36);p[P.lfp]=1.2;p[P.rfp]=1.2;set3(p,P.lk,0,-1,-.4);set3(p,P.rk,0,-1,-.4);
    const q=get?.();if(q){for(const [o,e,sd] of [[P.lh,P.le,-1],[P.rh,P.re,1]]){local(c,q.x+(sd*.12),q.y,q.z,_l);mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,e,sd,-.3,.3,k);}}
    else{set3(p,P.lh,-.15,.12,-.35);set3(p,P.rh,.15,.12,-.35);}};},

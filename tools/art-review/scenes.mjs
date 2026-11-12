@@ -15,7 +15,7 @@ export default async function(T){const {h,advance,THREE}=T,controls=chapterEight
   if(name==='reunion'){const p=h.chapter8.X.W(-3.9,37.7,-1.75),q=h.chapter8.X.W(-2.9,40.5,-2.1);h.camera.position.set(p.x,p.y,p.z);h.camera.lookAt(q.x,q.y,q.z);review=true;}
   if(name.startsWith('jamie-')&&name!=='jamie-rescue'){const p=h.chapter8.SC.STREET.HD.body;h.camera.position.set(p.x-1,p.y+1.45,p.z+1.1);h.camera.lookAt(p.x+.1,p.y+.17,p.z);review=true;}
   if(name.startsWith('oak')){const p=h.chapter8.SC.FIN.OAK,sa=h.chapter8.CTX.sam.person.group.position;const dx=sa.x-p.x,dz=sa.z-p.z;h.camera.position.set(p.x+dz*3,p.y+1.2,p.z-dx*3);h.camera.lookAt(p.x+dx*.5,p.y+.46,p.z+dz*.5);review=true;}
-  if(name==='ride-sam'){const sam=h.chapter8.CTX.sam,at=sam.person.group.position,a=sam.pa;h.camera.position.set(at.x+Math.sin(a)*1.5+Math.cos(a)*.65,at.y+1.6,at.z-Math.cos(a)*1.5+Math.sin(a)*.65);h.camera.lookAt(at.x,at.y+1.2,at.z);review=true;}
+  if(name==='ride-sam'){const sam=h.chapter8.CTX.sam,at=sam.person.group.getWorldPosition(new THREE.Vector3()),a=sam.ba;h.camera.position.set(at.x+Math.sin(a)*1.5+Math.cos(a)*.65,at.y+1.6,at.z-Math.cos(a)*1.5+Math.sin(a)*.65);h.camera.lookAt(at.x,at.y+1.2,at.z);review=true;}
   exportScene(h.scene,h.camera,out+'/'+name);notes.push({name,jump,sec,reviewCamera:review,phase:h.chapter.kit.S.phase});
  }
  fs.mkdirSync(out,{recursive:true});fs.writeFileSync(out+'/capture-notes.json',JSON.stringify(notes,null,2));
