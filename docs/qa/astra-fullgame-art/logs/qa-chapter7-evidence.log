@@ -1,0 +1,299 @@
+[29.8s n7-bikes 1506.3,-1039.9] to the bikes true
+ok   Chapter Seven: at the bikes it comes over the car at you; Jamie: "GO!"
+ok   Chapter Seven: down the court, round the bend, up the other side, into the other lane, and out at the oak (51.8 s; closest 0.18 m)
+[97.6s n7-lookout 266.8,-1061.2] out of the lane true
+ok   Chapter Seven: the chase took 45-110 s and it cut across (seen between the houses) and came at you from the side
+ok   Chapter Seven: out of the lane it comes over you and takes Jamie off his bike; you are off yours
+[103.4s n7-grab 265.5,-1051.8] to him 2.0
+ok   Chapter Seven: your hands on his wrist (the struggle)
+ok   Chapter Seven: you hold on (13 s, the view within 0.72 m of his hand); his hand goes out of yours; the gum falls
+ok   Chapter Seven: it drags him into the lane, round the bend, and he is gone (never seen dead: gone)
+ok   Chapter Seven: while it held him his feet stayed in its hand (585 frames, 0 off)
+[140.2s n7-gone 275.5,-1076.6] into the lane true true true true
+ok   Chapter Seven: in the lane, nothing (the lane comes out in the field)
+  (wedged at 269.72 -1068.83 - stepping out and finding the way again) jamie ride 215.21,-1100.51 script false follow ride blockers [[269.61,-1068.19,0.34]] walk true true
+  (wedged at 270.01 -1068.73 - stepping out and finding the way again) jamie ride 215.21,-1100.51 script false follow ride blockers [[269.61,-1068.19,0.34]] walk true true
+  (wedged at 270.21 -1068.43 - stepping out and finding the way again) jamie ride 215.21,-1100.51 script false follow ride blockers [[269.61,-1068.19,0.34]] walk true true
+[169.8s n7-gone 265.0,-1055.1] back out to the gum true true true true true
+ok   Chapter Seven: the gum, picked up out of the grass
+[235.8s n7-after 266.3,-1056.6] show bike 0 true true {"view":null,"choice":false,"walking":true,"busyR":true}
+[257.2s n7-after 269.5,-1067.0] show cap 0 true true {"view":null,"choice":false,"walking":true,"busyR":true}
+[276.7s n7-after 274.6,-1075.6] show marks 0 true true {"view":null,"choice":false,"walking":true,"busyR":true}
+[296.3s n7-after 274.6,-1075.6] show gum true
+ok   Chapter Seven: Reyes, shown his bike, his cap, the drag marks and the gum, photographs each and writes it down: "2ND JUV. MISSING. JAMIE, 12."
+ok   Chapter Seven: Jamie's mom asks what he was wearing and what he said; on her phone, the pool: nobody on the towel, a damp shape where somebody sat
+ok   Chapter Seven: Jamie's mom ("You were WITH him."); the dispatcher says one juvenile; the cap in her hands is nobody's; her pictures have no Jamie in them; Reyes has to read Sam's name off his notebook
+ok   Chapter Seven: his page, an hour later: no name in the ink, no SECOND; turned to the light, JAMIE pressed into the paper (you keep it)
+ok   Chapter Seven: the fan: his dad turns it back on and does not know why (this morning he knew)
+ok   Chapter Seven: the same photograph: only you, at the oak, with your bike
+ok   Chapter Seven: "That's a nice one of you."
+ok   Chapter Seven: you write their names (ALEX, JAMIE, SAM), and they are kept for Chapter Eight
+[620.0s n7-window 208.6,-904.3] his window true true true
+ok   Chapter Seven: four bikes under the streetlight; yours; the end card (LAST LIGHT · Chapter Seven · The Street That Wasn't There), then Chapter Eight
+ok   Chapter Seven: nothing non-finite; Sam never seen; Jamie never seen after he is taken
+{
+ "passed": 20,
+ "failed": [],
+ "metrics": {
+  "chapter7": {
+   "chaseSeconds": 51.8,
+   "chaseMinGap": 0.18,
+   "struggleSeconds": 13,
+   "struggleView": 0.72,
+   "minutes": {
+    "chase": 1.63,
+    "abduction": 1.58,
+    "after": 6.05,
+    "night": 1.46
+   },
+   "total": 10.72,
+   "phases": 11,
+   "bad": 0,
+   "jumps": 3,
+   "gapMax": {
+    "n7-bikes": 4.2
+   },
+   "samSeen": 0,
+   "jamieVisibleAfter": 0
+  }
+ },
+ "phase": "n7-end",
+ "state": {
+  "phase": "n7-end",
+  "flags": {
+   "altered": true,
+   "jamieUp": true,
+   "mayRoom": true,
+   "inRoom": true,
+   "notebook": true,
+   "photoSeen": true,
+   "gum": true,
+   "fanOff": true,
+   "noise": true,
+   "marked": true,
+   "notebookBack": true,
+   "curbUp": true,
+   "jamieTalk": "look",
+   "fenceSeen": true,
+   "bikesLeft": true,
+   "windowHit": true,
+   "revealed": true,
+   "stalked": true,
+   "doorShut": true,
+   "giant": true,
+   "trace": true,
+   "out": true,
+   "dropped": true,
+   "hurry": true,
+   "gumDropped": true,
+   "jamieTaken": true,
+   "gumPicked": true,
+   "forgetReyes": true,
+   "forgetPhotoMom": true,
+   "indentSeen": true,
+   "reyesPage": true,
+   "fanOffNight": 579.6999999998983,
+   "forgetFan": true,
+   "photoSeenNight": true,
+   "forgetPhoto": true,
+   "names": true,
+   "lookOutside": true,
+   "window": true
+  },
+  "inv": {
+   "notebook": "have",
+   "gum": "have",
+   "photo": "desk",
+   "radio": true,
+   "flashlight": false
+  },
+  "hunter": {
+   "mode": "off",
+   "state": "drag",
+   "visible": false,
+   "x": 274.9,
+   "z": -1076.77,
+   "level": "g",
+   "log": {
+    "spotted": 0,
+    "alerts": 0,
+    "searches": 0,
+    "caught": 0,
+    "heard": 0,
+    "lost": 0,
+    "blocked": 0,
+    "stuck": 0,
+    "steps": 311
+   },
+   "meter": {},
+   "source": "stand-in",
+   "trace": [
+    [
+     30.57,
+     "script"
+    ],
+    [
+     40.27,
+     "chase"
+    ],
+    [
+     54.33,
+     "script"
+    ],
+    [
+     62.9,
+     "chase"
+    ],
+    [
+     97.63,
+     "script"
+    ],
+    [
+     121.93,
+     "off"
+    ]
+   ]
+  },
+  "jamie": {
+   "gone": true,
+   "visible": false,
+   "mode": "ride",
+   "held": false,
+   "down": false,
+   "grip": false
+  },
+  "court": {
+   "active": false,
+   "portalA": false,
+   "portalB": false,
+   "inRegion": false,
+   "giant": "off"
+  },
+  "fails": {
+   "stalk": 0,
+   "chase": 0
+  },
+  "marks": [
+   [
+    247.1,
+    "photo 1"
+   ],
+   [
+    257.2,
+    "shown: cap"
+   ],
+   [
+    266.4,
+    "photo 2"
+   ],
+   [
+    276.7,
+    "shown: marks"
+   ],
+   [
+    290.8,
+    "photo 3"
+   ],
+   [
+    296.3,
+    "shown: gum"
+   ],
+   [
+    306.7,
+    "photo 4"
+   ],
+   [
+    311,
+    "Reyes’s notes, as he wrote them"
+   ],
+   [
+    315.7,
+    "held: reyes-page"
+   ],
+   [
+    355.7,
+    "Jamie’s mom asks you"
+   ],
+   [
+    365.8,
+    "chose: cap"
+   ],
+   [
+    374.2,
+    "chose: gum"
+   ],
+   [
+    382.1,
+    "her phone"
+   ],
+   [
+    382.1,
+    "held: mom-phone"
+   ],
+   [
+    423.8,
+    "the forgetting"
+   ],
+   [
+    462.3,
+    "the cap, nobody’s"
+   ],
+   [
+    473.5,
+    "Reyes looks at his notebook"
+   ],
+   [
+    487.5,
+    "the page, an hour later"
+   ],
+   [
+    494.2,
+    "held: reyes-page-now"
+   ],
+   [
+    505.3,
+    "the name, pressed into the paper"
+   ],
+   [
+    555.6,
+    "Sam’s, that night"
+   ],
+   [
+    578,
+    "Sam’s room, at night"
+   ],
+   [
+    579.7,
+    "the fan, off (night)"
+   ],
+   [
+    581.9,
+    "his dad turns the fan on again"
+   ],
+   [
+    593.5,
+    "held: photo"
+   ],
+   [
+    593.5,
+    "the photograph, now"
+   ],
+   [
+    609.7,
+    "the notebook, open"
+   ],
+   [
+    613.6,
+    "ALEX JAMIE SAM"
+   ],
+   [
+    615.2,
+    "memory: I thought I remembered everyone."
+   ],
+   [
+    620,
+    "out the window"
+   ]
+  ]
+ }
+}

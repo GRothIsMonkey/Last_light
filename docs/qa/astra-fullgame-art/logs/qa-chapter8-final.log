@@ -1,0 +1,134 @@
+ok   Chapter Eight: Chapter Seven's end card offers Chapter Eight
+ok   Chapter Eight: the card: LAST LIGHT · Chapter Eight · THE NIGHT OAK HOLLOW FELL
+ok   Chapter Eight: the four bikes, the page, the cover; Reyes: "They're underneath us." "Who?" "All of them."
+ok   Chapter Eight: the plans: MH-12 found on the 1959 sheet over the 2009 map
+ok   Chapter Eight: MH-12: probed, dug, vented, lifted on three
+ok   Chapter Eight: the outer barrier: down before it gets there; it hits the leaf and stops; it goes
+ok   Chapter Eight: Annie Rowan: Mason's slip, licence 0417, her school picture (A.R.); the 1958 film (taken out of her chamber, the needle falls and the wall starts to come apart; brought back, it stops)
+ok   Chapter Eight: Danny: the flyer (two fingers, left hand), his hand on the alcove, his name; it flees what is coming
+ok   Chapter Eight: Sam: a voice from the speaker and knocking from a cell; his own notebook through the door; the breaker, the drain (it comes), the catch, the pipe; the flood door; D3 drops
+ok   Chapter Eight: Jamie: it brings him back and bends his door; the grille (Sam); his slot; the duct (he sticks; you pull); it tears the door out; the den and its bore; the locker; E2 drops
+ok   Chapter Eight: Alex: the corridor closes ahead and makes a passage; the room it made; his camera, a picture of the three of you ("They never bleed"); two levers; the room comes apart; the ledge; his hand; the last wall breaks
+ok   Chapter Eight: all four of them, for a while: the gum, the camera (riding tomorrow), the bike, sitting with them; Reyes on the radio
+ok   Chapter Eight: the anchor board: the tags (A.R., R.A.C., E.L./T.L., D.W.), three blank rows, three needles down; "We let it out?" "You got your friends back."
+ok   Chapter Eight: it comes through the barrier; the hunter runs from it; the way out comes down behind you; the ladder
+ok   Chapter Eight: the surface: the red sky over the whole town, the thing on the skyline; the first blows; a pale smiling made thing calling in a woman's voice, and you down behind a car until it has gone by
+ok   Chapter Eight: the trench: the road heaves, splits and goes into the storm line with a car and the pole; a hunter climbs out of it and searches the far side while you go along the near; the house at 1052 leans in; Mrs. Pruitt freed (Jamie: "We’re like... firemen.")
+ok   Chapter Eight: a limb of it out of the cloud, over the roofs, down on the house across from the Hendersons' (it goes, then fire)
+ok   Chapter Eight: the Hendersons': Lily out of the front room (Jamie's dog that isn't real); the jack, Mr. Henderson freed in the garage; the lawn goes between you and the house as you run off it
+ok   Chapter Eight: Jamie: it takes him to drag him back down; it slams him down at the edge and goes; Sam on his knees; Reyes's CPR, then not; Alex: "It's my fault"; Sam: "Don't you DARE"; his hand; his cap; Reyes's jacket over him
+ok   Chapter Eight: away from it: "We left him"; "Biscuit isn’t even real"; Summerfield goes down; the works
+ok   Chapter Eight: the drawdown nobody would use while anyone was in there; "There aren't now."
+ok   Chapter Eight: the chain: Alex holds the hatch's counterweight chain so the rest of you can climb; the lid comes down on him as he comes up; you and Sam lift it and pull him out
+ok   Chapter Eight: the gates, the drain gate (Chapter Six's), the ports, Line Two, three pins, the plug; it goes quiet; Alex holds the hatch
+ok   Chapter Eight: the oak: "Did we stop it?" "Yeah." "Good." … the bikes he kept thinking about; "We were supposed to go riding tomorrow."; his hand; Sam; he dies; Sam holds him; Reyes kneels with Sam; you get up when you are ready
+ok   Chapter Eight: the street at sunrise: on foot with Sam past the trench, the leaning house, the Kesslers' shell, the Hendersons' yard; your bike where Reyes left it
+ok   Chapter Eight: the last ride: Sam, two bikes; "I keep thinking they're right behind us."; the road behind is empty; the end card
+ok   chapter 8: every DEV Chapter Eight scene starts (49 scenes)
+ok   chapter 8: the barrier can be failed: walk into the pipe and it has you; back at the barrier checkpoint
+ok   chapter 8: the escape can be failed: stop under the beam in the junction hall and it comes down on you; back at the way out
+ok   chapter 8: the hunter here is its own instance (not Chapter Seven's) and the smiling creature is Chapter Three's, with the injury
+ok   chapter 8: Continue offers the last checkpoint
+ok   chapter 8: then Chapter Seven starts clean (no complex, no ruin, no Alex companion)
+ok   chapter 8: then Chapter Six starts clean; its drawdown gate stops the voice in the horn (the demonstration)
+ok   chapter 8: earlier-chapter clues exist: Ch1 Line 4 plate, Ch2 sealed access, Ch4 A. Rowan & the hand, Ch5 vault, Ch7 the 1974 line and her note
+ok   chapter 8: the save the aftermath will read: two home, two lost, the presence sealed
+{
+ "passed": 35,
+ "failed": [],
+ "metrics": {
+  "chapter8": {
+   "minutes": 65.53,
+   "segments": {
+    "bikes": 2.16,
+    "field": 1.49,
+    "shaft": 0.85,
+    "gallery": 8.81,
+    "corridor": 1.79,
+    "wing": 4.78,
+    "retrieval": 7.24,
+    "alex": 4.54,
+    "reunion": 6.67,
+    "truth": 1.92,
+    "breach": 1.01,
+    "surface": 4.95,
+    "street": 5.95,
+    "staging": 0.88,
+    "op": 4.35,
+    "oak": 4.86,
+    "ride": 3.28
+   },
+   "fails": {
+    "c8-stealth": 5,
+    "c8-gates": 1
+   }
+  }
+ },
+ "phase": "n8-end",
+ "state": {
+  "phase": "n8-end",
+  "flags": {
+   "jamieDead": true,
+   "alexDead": true,
+   "sealed": true,
+   "samOut": true
+  },
+  "inv": {
+   "notebook": "have",
+   "gum": "have",
+   "camera": "have",
+   "flashlight": "have",
+   "sheet": null,
+   "radio": null,
+   "receipt": null,
+   "flyer": null,
+   "cap": "have"
+  },
+  "hunter": {
+   "mode": "off",
+   "state": "idle",
+   "visible": false,
+   "x": -2624.85,
+   "z": 2596.97,
+   "log": {
+    "spotted": 0,
+    "alerts": 0,
+    "searches": 0,
+    "caught": 0,
+    "heard": 0,
+    "lost": 0,
+    "blocked": 0,
+    "stuck": 0,
+    "steps": 0
+   },
+   "trace": []
+  },
+  "friends": {
+   "jamie": {
+    "gone": true,
+    "active": false,
+    "visible": false,
+    "mode": "ride",
+    "dead": true
+   },
+   "sam": {
+    "gone": false,
+    "active": true,
+    "visible": true,
+    "mode": "ride"
+   },
+   "alex": null
+  },
+  "fails": {
+   "c8-stealth": 5,
+   "c8-gates": 1,
+   "c8-barrier": 1,
+   "c8-escape": 1
+  },
+  "marks": [],
+  "tasks": [
+   "ride"
+  ],
+  "offers": []
+ }
+}

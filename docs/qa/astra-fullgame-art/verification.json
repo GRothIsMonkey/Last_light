@@ -1,0 +1,112 @@
+{
+  "review_date": "2026-11-12",
+  "release_branch": "codex/astra-fullgame-art-rework",
+  "base_commit": "91a446d98c257ae77cbebb2944e0ce7e2744f4d1",
+  "status": "Runtime checks complete; browser visual acceptance remains open.",
+  "tests": [
+    {
+      "name": "Runtime syntax",
+      "passed_modules": 129,
+      "failed": 0,
+      "scope": "All dist/*.js; Chapter Seven checked again after the prompt-radius correction."
+    },
+    {
+      "name": "Shared art model regression",
+      "passed": 55,
+      "failed": 0,
+      "log": "logs/qa-art-release.log",
+      "scope": "Four boys, faces, lifeless/reset state, hunter animation/sockets, Presence bounds and finite geometry."
+    },
+    {
+      "name": "Grief runtime contacts",
+      "passed": 65,
+      "failed": 0,
+      "log": "logs/qa-art-contacts.log",
+      "scope": "CPR hand-to-chest distance over 30 frames, natural oak interaction through embrace, Alex death, direct final ride state."
+    },
+    {
+      "name": "Chapter Eight",
+      "passed": 35,
+      "failed": 0,
+      "log": "logs/qa-chapter8-final.log",
+      "scope": "Input-driven Chapter Seven end card through Chapter Eight ending and chapter regressions. Later contact-only revisions separately checked."
+    },
+    {
+      "name": "Chapter Seven final full run",
+      "passed": 94,
+      "failed": 0,
+      "log": "logs/qa-chapter7-release.log",
+      "scope": "Input-driven Chapter Six end card through Chapter Seven end card, all evidence, forgetting scenes and chapter regressions. Includes the path-edge prompt correction."
+    },
+    {
+      "name": "Chapter Seven before prompt correction",
+      "passed": 85,
+      "failed": 9,
+      "log": "logs/qa-chapter7-traced.log",
+      "scope": "The marks prompt was just outside reach at one path edge; 8 subsequent story checks cascaded from the missed interaction."
+    },
+    {
+      "name": "Chapter Seven chase-to-ending replay before correction",
+      "passed": 20,
+      "failed": 0,
+      "log": "logs/qa-chapter7-evidence.log",
+      "scope": "All four evidence interactions and ending pass from the chase checkpoint; different endpoint than full run."
+    },
+    {
+      "name": "Earlier chapters and shared game regression",
+      "status": "partial_run",
+      "passed_checks_recorded": 328,
+      "failed_checks_recorded": 0,
+      "log": "logs/qa-base-final.log",
+      "scope": "Natural input-driven Prologue through Chapter Six completed. Additional replay/regression sweep was interrupted. No claim of a completed 818-check base suite for this revision. A prior pass recorded 460 checks before interruption; those are overlapping checks, not additive."
+    }
+  ],
+  "visual_review": {
+    "successful_webgl_game_render": false,
+    "browser_blocker": "Managed preview browser could not create WebGL.",
+    "review_method": "Actual posed game mesh export rendered independently with Mesa/ModernGL.",
+    "image_count": 19,
+    "gallery": "index.html",
+    "manifest": "image-manifest.json",
+    "omits": [
+      "textures",
+      "alpha-cut foliage",
+      "custom material shaders",
+      "custom sky shader",
+      "shadows",
+      "post-processing"
+    ],
+    "not_verified": [
+      "real GPU performance",
+      "in-game final lighting and shader appearance",
+      "continuous browser animation playback",
+      "audio-enabled human playthrough",
+      "emotional effectiveness with players"
+    ]
+  },
+  "preserved_outcomes": [
+    "Sam, Jamie and Alex rescued",
+    "All four boys reunite",
+    "Containment destabilizes",
+    "Presence breaches Oak Hollow",
+    "Jamie dies permanently",
+    "Alex dies permanently",
+    "Sam and protagonist survive",
+    "Presence sealed away from Oak Hollow",
+    "Final bicycle ride ends Chapter Eight"
+  ],
+  "portable_package": {
+    "validation_command": "node tests/art-package.mjs <package-directory>",
+    "record": "package-verification.json in the release ZIP",
+    "scope": "Exact source embedding, SHA-256 hashes, all 129 module imports resolve, embedded GLB, committed clean source. This is not a browser render test."
+  },
+  "log_sha256": {
+    "qa-art-contacts.log": "4e41a69b933a71a48235eacf1e5fb5bf55e064c51632c5800fb2dba027f20c76",
+    "qa-art-release.log": "a7f5525620b88adc5cf537bd15ae35d1dc08721fb9242f950f0e6147b26e45d1",
+    "qa-base-final.log": "0b73b89a1d8a1a21f4809bc5dca002696184e49bb1386793eeb78a5d4f022854",
+    "qa-chapter7-evidence.log": "ef9bf9f6745d85c3336a1727b43d087179f099ae152c5b42f48aa48430dcac66",
+    "qa-chapter7-release.log": "1c39989c3670c932b2ed972f3c6c533d1d86bc33fcc2219799f61c9fbae1e6a9",
+    "qa-chapter7-traced.log": "fef24b3a9009dc31436eba0a69d95c7fa1ac4c9b63f69949cd1c0029ce9df5fe",
+    "qa-chapter8-final.log": "b12450a0cb6da534cb803366219c502be32f30d03235a24dd8a9aba1688e8d3f"
+  }
+}

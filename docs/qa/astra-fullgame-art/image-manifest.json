@@ -1,0 +1,135 @@
+[
+  {
+    "id": "sam-before",
+    "title": "Sam \u2014 baseline",
+    "note": "Original procedural face. Independent geometry render.",
+    "kind": "independent_geometry_render",
+    "sha256": "74fb4d6fc0c11910f233bfddd6f406d409063aa210e9f974f9b25a2957e8f5a1"
+  },
+  {
+    "id": "sam-after",
+    "title": "Sam \u2014 rebuilt face",
+    "note": "Continuous facial surface, integrated nose, revised hair, curved brows, eye rims and tears. Camera and lighting differ slightly from the baseline.",
+    "kind": "independent_geometry_render",
+    "sha256": "bc8fa0545b5c6a413597f23a90ccc687ab4474c7b550eddde67067550f2fe0f4"
+  },
+  {
+    "id": "jamie",
+    "title": "Jamie \u2014 cap and tearful face",
+    "note": "Rebuilt face, cap seams, curved brim, freckles and tears. Independent studio geometry render.",
+    "kind": "independent_geometry_render",
+    "sha256": "37ff467b43adbb5ccc49465dbbdb7b6783f3a6b60aa7c247e52855fda81f17de"
+  },
+  {
+    "id": "alex",
+    "title": "Alex \u2014 hair and face",
+    "note": "Rebuilt head and layered hair with the existing green eyes and yellow shirt. Independent studio geometry render.",
+    "kind": "independent_geometry_render",
+    "sha256": "fbb65559e59eb58255e49058740f3dee2b1ccf71a804c7637c4aaad72608c304"
+  },
+  {
+    "id": "player",
+    "title": "Protagonist \u2014 rebuilt face",
+    "note": "Shared rebuilt anatomy in the protagonist\u2019s established colors. His head is normally hidden from the first-person camera. Independent studio geometry render.",
+    "kind": "independent_geometry_render",
+    "sha256": "c85ad68210c6a05257d5cbf3a920e8271103ee5824133f58c49bfb55f40ead78"
+  },
+  {
+    "id": "hunter-before",
+    "title": "Hunter \u2014 baseline",
+    "note": "Original procedural encounter model.",
+    "kind": "independent_geometry_render",
+    "sha256": "bb62e5912bd5d56662a06f825bac45b321519d04b2ba8558fd41f50ead2fef8e"
+  },
+  {
+    "id": "hunter-after",
+    "title": "Hunter \u2014 rebuilt anatomy",
+    "note": "Gaunt body, long forelimbs, claws, skull cavities and moving jaw. Different pose from baseline; shader skin detail is omitted.",
+    "kind": "independent_geometry_render",
+    "sha256": "21fe89048c1d1d9647d4aa0830563239770b9c2fb2d5f950918652b0c6525f3e"
+  },
+  {
+    "id": "presence",
+    "title": "Presence \u2014 organism silhouette",
+    "note": "Neutral studio view with a small house and child as scale references.",
+    "kind": "independent_geometry_render",
+    "sha256": "5cf62f41607d52607cca7dbd993b6baeb8c863b8c4385742a09f2c5046d4fb03"
+  },
+  {
+    "id": "skyline",
+    "title": "Presence over Oak Hollow",
+    "note": "The vertical opening faces the street. The game\u2019s red sky shader is not represented here.",
+    "kind": "independent_geometry_render",
+    "sha256": "c8b9ff257bb5ab0e4588cff2f2146e3cccd97e00fe8aebb09e7a339685d97633"
+  },
+  {
+    "id": "breach",
+    "title": "Containment breach",
+    "note": "Actual breach geometry from a review camera. This approximation is not a final lighting check.",
+    "kind": "independent_geometry_render",
+    "sha256": "a4196c4949b143c469d5727e6a5c749514ba8d9e92961a5a6721aec8a2cd506a"
+  },
+  {
+    "id": "bunker",
+    "title": "Containment works",
+    "note": "Pipes, cables, grates and chamber structures. Texture detail, shadowing and the player flashlight are not accurately represented.",
+    "kind": "independent_geometry_render",
+    "sha256": "efac1713cba9cbc365b56cee4b5d6055eea87e25d14ecc9be6776e4d33676d50"
+  },
+  {
+    "id": "reunion",
+    "title": "Four-friend reunion",
+    "note": "Rebuilt children in the existing reunion sequence, from a review camera.",
+    "kind": "independent_geometry_render",
+    "sha256": "5a4517bb974b916b254da449176c2dfd0b4db1369c958674714a88b3131b5d7e"
+  },
+  {
+    "id": "hunter-house",
+    "title": "Chapter Seven \u2014 stair encounter",
+    "note": "New anatomy in the existing encounter. Review camera looks up toward the hunter from the player\u2019s position. Final in-game lighting remains unverified.",
+    "kind": "independent_geometry_render",
+    "sha256": "2a4bdea33cf5b49140a6df597b98c9c5df6a745dbdc1600d18744e834be3b60e"
+  },
+  {
+    "id": "lange-house",
+    "title": "Chapter Seven \u2014 the Langes",
+    "note": "Existing scene with shared material treatment. Mrs. Lange retains her prior reconstruction.",
+    "kind": "independent_geometry_render",
+    "sha256": "74d3fc3759a917136dda52a7c595946ee9f802686db1baa87a8e27b2ade35e3f"
+  },
+  {
+    "id": "drain",
+    "title": "Storm drain",
+    "note": "Retained architecture and shared surface treatment. Actual darkness and flashlight falloff need WebGL review.",
+    "kind": "independent_geometry_render",
+    "sha256": "f3630021ddf7f61b7a1e59d324f2d0591ba8b14a1a1d18d97d8be2df2b61ebda"
+  },
+  {
+    "id": "jamie-death",
+    "title": "Jamie \u2014 chest contact",
+    "note": "Grounded body, closed eyes and corrected CPR, with hands positioned on the posed chest.",
+    "kind": "independent_geometry_render",
+    "sha256": "25961abd7f4f704a8a386c0c7271a34f7bf0637289748a1e443c9358ac23d4b3"
+  },
+  {
+    "id": "jamie-covered",
+    "title": "Jamie \u2014 covered",
+    "note": "Folded coat, Sam beside Jamie, Reyes covering his eyes and Alex withdrawn nearby.",
+    "kind": "independent_geometry_render",
+    "sha256": "cdc8c22acb9b8c90fe94b2aa85da82aea85a2e88a5fca18dbf26e7c699cafc43"
+  },
+  {
+    "id": "oak-grief",
+    "title": "The oak \u2014 embrace",
+    "note": "Alex\u2019s lowered, still head; Sam close beside him, with his legs placed outside Alex\u2019s.",
+    "kind": "independent_geometry_render",
+    "sha256": "57ea44c08c59cb7f1c88d552e5e802618461d0170299729d38d882d2a3a910f4"
+  },
+  {
+    "id": "ride-sam",
+    "title": "The last ride \u2014 Sam",
+    "note": "Actual final-ride model and pose. Face tears persist; the street uses the existing destruction state.",
+    "kind": "independent_geometry_render",
+    "sha256": "4f4d49c424237b728bc78522151526ea051914ec6d68293e2ebac5fd27169138"
+  }
+]

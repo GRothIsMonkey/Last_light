@@ -1545,7 +1545,9 @@ export function createChapter7(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,chapt
    if(C.gt?.lights&&court.ST.portalB&&Math.abs(q.x)<1.3&&q.z<-3)add('c7-climb','Climb out onto the porch roof',{...HW(0,-4.6,'u'),y:court.G0+HH.UP+1.2},2.4);}
   // (in the dark: each is offered when you stand by it, whichever way you are looking)
   if(ph==='n7-after'&&C.af?.stage==='show'&&C.af.go&&!C.af.busyR){const X=C.af,E=X.E;if(!X.shown.bike)add('c7-ev-bike','Show him Jamie’s bike',{x:E.bike.x,y:gy(E.bike.x,E.bike.z)+.4,z:E.bike.z},1.8);
-   if(!X.shown.cap)add('c7-ev-cap','Show him the cap',{x:E.cap.x,y:gy(E.cap.x,E.cap.z)+.05,z:E.cap.z},1.5);if(!X.shown.marks)add('c7-ev-marks','Show him the marks in the grass',{x:E.marks.x,y:gy(E.marks.x,E.marks.z),z:E.marks.z},1.7);
+   if(!X.shown.cap)add('c7-ev-cap','Show him the cap',{x:E.cap.x,y:gy(E.cap.x,E.cap.z)+.05,z:E.cap.z},1.5);
+   // The drag can end beside the path boundary. Let a child point to the ground from its walkable edge.
+   if(!X.shown.marks)add('c7-ev-marks','Show him the marks in the grass',{x:E.marks.x,y:gy(E.marks.x,E.marks.z),z:E.marks.z},2.2);
    if(!X.shown.gum&&C.inv.gum==='have'&&X.shown.bike&&X.shown.cap&&X.shown.marks)out.push({id:'c7-ev-gum',label:'Show him the gum',at:camera.position.clone().add(new THREE.Vector3(0,-.4,0)),face:camera.position.clone(),r:9,wide:true});}
   if(ph==='n7-grab'&&C.gb?.stage==='grab'&&JL.held){const h=jamieHand();if(dist2(p,h)<1.8)add('c7-grab','Grab his hand',h,2.2);}
   if(/^n7-(taken|gone)$/.test(ph)){if(C.inv.gum==='grass'&&C.gumAt)add('c7-gum','Pick up the gum',C.gumAt,1.8,lk(.15,.2));if(ph==='n7-gone'&&!(C.gn?.callT>0))out.push({id:'c7-call',label:'Call his name',at:camera.position.clone().add(new THREE.Vector3(0,-.2,0)),face:camera.position.clone(),r:9,wide:true});}

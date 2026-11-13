@@ -1,0 +1,328 @@
+PASS every friend is their own person: face, hair, build, clothes, bike and riding manner
+PASS bikes are complete: two spoked wheels on the ground, cranks, pedals, bars, saddle
+PASS hands stay within two centimeters of grips while steering
+PASS rig limbs keep their length through riding, walking and dismount poses
+PASS rider feet stay on the pedals through a full crank turn, on every bike
+PASS walking stance feet stay planted
+PASS first-person body is whole and the head is only a shadow
+PASS title menu: settings and credits open over the title and return to it
+PASS settings apply immediately and are remembered
+PASS start: title hidden, riding interface and the first prompt shown
+PASS pedaling advances the bike and the prompt moves on to steering
+PASS looking down finds your own chest, arms, hands on the grips and knees
+PASS mouse head-look turns smoothly without steering, and wins over the automatic glance
+PASS head look reaches well over the shoulder, never all the way round
+PASS R returns gaze forward
+PASS Q looks left
+PASS E looks right
+PASS sensitivity setting scales mouse look
+PASS A steering stops at the left curb (or runs onto a driveway cut), never onto lawn
+PASS D steering stops at the right curb, turns the bars and leans
+PASS letting go of the bars eases the bike straight without a springy overshoot
+PASS pause freezes travel, releases the mouse and hides prompts
+PASS pause menu: settings open over it, Esc returns to it, Esc again resumes
+PASS spurious mouse jump right after pointer lock is ignored
+PASS browser pointer-lock exit pauses safely
+PASS pause menu: start over resets the ride
+PASS drag fallback works when pointer lock unavailable
+PASS friends answering a surge pedal hard out of step, and not all stand at once
+PASS pushing harder is faster but bounded, and tires you
+PASS the friends answer a push and the group rides together again, without jumps
+PASS first ride: all 17 story triggers in order, eye height steady
+PASS first ride: once learned, controls are not shown again during the ride
+PASS first ride: the group never brakes for a departure
+PASS first ride: friends pedal out of step with each other
+PASS first ride: bike rolls to a stop at the end of the street, prompt offers F
+PASS first ride: Jamie and Sam went home believably; Alex rode on down Briarwood and is gone
+PASS first ride: F gets off the bike and the player can walk
+PASS first ride: walking moves the player and stays inside the lookout
+PASS first ride: the fence stops the walk
+PASS first ride: the player can turn all the way around on foot
+PASS first ride: looking back brings the distant call
+PASS first ride: the tire swing takes a push, swings away and settles
+PASS first ride: sit on the bench, look around, stand back up
+PASS first ride: the other bike is under the oak once you look away, never appearing in view
+PASS first ride: crouch at the chalk; after the call the faint AR is there when you turn to it
+PASS first ride: near the bike after the call, F means ride home
+PASS first ride: F near the bike rides home: no end card, the bike rolls back out of the cul-de-sac
+PASS first ride: the transition keeps the last memory lines, "I thought I remembered everyone." among them
+PASS first ride: after the fade the ride home goes on, later, as night comes
+PASS first ride: 20 to 40 seconds of quiet riding, then a siren far off
+PASS first ride: the police car passes you just past Briarwood, brakes, and turns onto it behind you
+PASS first ride: your head turns to follow it, and the siren goes quiet before the title
+PASS first ride: the title card came and went, and then the objective
+PASS first ride: at Alex's house the officer asks, his father answers, nothing supernatural
+PASS first ride: Alex's bike is nowhere at his house; the garage hook is empty
+PASS first ride: at Jamie's side window, F taps on it
+PASS first ride: Jamie thinks it is a joke, then climbs out and rides with you
+PASS first ride: Jamie throws pebbles at Sam's window; Sam is skeptical
+PASS first ride: Sam comes out of the garage's side door pushing his bike
+PASS first ride: at the old oak they compare what they remember
+PASS first ride: Jamie and Sam kept up the whole way, never hidden
+PASS first ride: the police ahead stop them; they go to the creek instead
+PASS first ride: the broken reflector is there to find
+PASS first ride: "That’s his." / "Why would he come back here?", silence, a bell far off, then black and Chapter Two
+PASS first ride: the chapter ran through every phase in order, into Chapter Two
+PASS first ride: nothing ever went missing or non-finite
+PASS first ride: black, a quiet CHAPTER TWO card, then the same creek moments later
+PASS first ride: they argue (cops, a bike bell, the reflector), and go a little farther
+PASS first ride: through the gap in the back fence and into the drainage easement
+PASS first ride: a tire mark in the mud, flattened weeds, a scrape; the others search with you
+PASS first ride: Alex's green bike lies beside the big culvert
+PASS first ride: F looks closer at the bike
+PASS first ride: "That’s his bike." The reflector is broken off. Then the bell again, twice, from inside the culvert
+PASS first ride: a flashlight behind them: "Hey!" "Kids! Stop right there."; they show him the bike; he radios it in
+PASS first ride: more adults, tape, Alex's dad; nobody takes the bell seriously; sent home
+PASS first ride: "Oak. Tomorrow morning." "Seriously?" "Nine."
+PASS first ride: walking away is enough: the night fades out, AUGUST 22, 2011, and the morning fades in
+PASS first ride: August 22, morning: bright, the same street, people out looking
+PASS first ride: at the oak: the old bike is gone, and maybe was never there; "What if he heard the bell?"
+PASS first ride: at the corner, "Remember" (F)
+PASS first ride: remembering: a warm fade into the evening ride; Alex stops and looks off toward the creek before he waves
+PASS first ride: back in the morning exactly where you were; nothing in the present changed
+PASS first ride: "Sam was right." ... "He heard it before he left." Then the picture goes, and Chapter Three begins (no end menu)
+PASS first ride: Chapter Two ran through its phases in order
+PASS first ride: nothing went missing or non-finite in Chapter Two
+PASS first ride: Chapter Two runs straight into Chapter Three: no end menu, a quiet CHAPTER THREE card over black
+PASS first ride: "Maybe yesterday wasn’t the first time." — "Talk to Alex’s mom."
+PASS first ride: his mom, about half a minute (30.1 s): he kept asking if she heard a bike bell outside at night, Thursday to Saturday; his room
+PASS first ride: upstairs in his room, first person, Jamie and Sam with you
+PASS first ride: in his room they talk while you look around (nothing locks you); the phone is ready 3 s in
+PASS first ride: the phone opens on the last recording (08/20, 11:52 PM), the one that matters
+PASS first ride: one press plays it: a bell outside, twice, "There it is again."; then the phone is put down (27.9 s)
+PASS first ride: an older recording, if you want one (optional): it plays and nothing holds you
+PASS first ride: at his window (no camera lock): the creek; "Mr. Okafor’s up all night." His helmet was mentioned in his room
+PASS first ride: another neighbor, if you ask (optional): one line, and the objective is still Mr. Okafor
+PASS first ride: Mr. Okafor heard it too: the gate at the end of Briarwood, the old city road down to the big storm drain (28.1 s)
+PASS first ride: the end of Briarwood: bollards, a gate, faded signs; "That’s not a road."
+PASS first ride: a narrow tire track in the dust going in, weeds pushed flat: recent, not explained
+PASS first ride: where the road bends into the woods they stop: back tonight (Alex heard it at night; the bell was at night; nobody looking); Sam reluctant
+PASS first ride: that night, home: dark, the flashlight in your pocket, calm
+PASS first ride: at the corner: "You came."; to the end of Briarwood
+PASS first ride: the old road at night: lights on (yours on your handlebars), Jamie's and Sam's; they ride in close
+PASS first ride: the road: out of sight of the houses, a branch swinging back behind them, a reflector, something between the trees ("Deer."), water
+PASS first ride: the ride from the end of Briarwood down to the outfall takes 90 s to 2.5 min
+PASS first ride: at the outfall: "That’s where the creek goes. Behind Alex’s." — "Enter the drain."
+PASS first ride: the bike cannot go into the drain
+PASS first ride: inside, on foot; Jamie ahead, Sam behind
+PASS first ride: the drain closes in: 4.6 × 3.6 m at the mouth, lower past the first bend, the deep box about 3.1 × 2.3 m (7½ ft)
+PASS first ride: for the first stretch nothing at all happens; then the bend, and the way out is out of sight
+PASS first ride: footprints in the silt, small, and a tire line beside them, going in; nobody says whose
+PASS first ride: a knock up the shaft: they both look up; then one bell, far ahead, deeper in
+PASS first ride: deep inside, his helmet, upside down on the silt: the one on his desk this morning. Jamie goes to it; Sam backs off and turns toward the way out
+PASS first ride: the bike from the oak, leaning on the wall down here; Jamie knows it, and Sam sees it this time
+PASS first ride: F looks at the bike
+PASS first ride: "Try the bell": the lever barely moves, a dry click, no ring; after a silence a clear bell, farther in
+PASS first ride: well past it, the bike is not there any more (nobody saw it go; it went while nobody looked); Sam notices
+PASS first ride: they stop dead either side of you, a step ahead, your view to him clear between them ({"jamie":0.92,"sam":0.85} m off your line of sight); both lights down the tunnel; at the end of them, 60–90 ft away, a boy: Alex's size and clothes
+PASS first ride: he stays until you have seen him, for well over four seconds; "…Alex?"; he turns, slowly, and walks round the bend like anyone would
+PASS first ride: him again, farther in, by the black side culvert at the junction, his back to them (42.1 m); "There!" "ALEX! It’s us! It’s Jamie!"
+PASS first ride: he does not stop: to the side culvert, up over its sill and in, gone; from in there, his voice: "Jamie?"
+PASS first ride: something comes up out of the dark of the culvert (where nobody down the tunnel can see) to its lip, head and arms out; seen at 27.7 m; "That’s not Alex."; it drops into the water, turns to them; "RUN!"
+PASS first ride: RUN is a real escape: a story sprint (fast, no stamina to run out), the view a little wider, 45–90 s from "RUN!" to the bikes (54.9 s)
+PASS first ride: it comes after them about 20 m back (25.4 m); "It’s coming!"; round the second bend it is gone; Jamie goes down and gets up
+PASS first ride: then out of a hole low in the wall behind them, much closer (12.1 m); "It came out of the wall—"; water bursts from a side pipe
+PASS first ride: the bike from the oak lying across the way out; they get round it; then it is right behind them (10.4 m), never closer than 8.33 m running
+PASS first ride: the gate at the first bend: one of them through first, holding it; you through; slammed; it hits the bars and claws at them, held 3.2 s; then it is through
+PASS first ride: the way out ahead, pale; at the bike, running: straight on it (no prompt to hunt for); Jamie and Sam on theirs; it stops at the mouth, low, watching (it does not come out)
+PASS first ride: riding away, a look back over your shoulder; facing front again, it is low at the edge of the trees ahead, beside the road (19.4 m); gone after; never on screen with him
+PASS first ride: up the road, fast; at a bend, the Alex-like boy standing in the road ahead (14.4 m); nobody stops; he steps off into the trees
+PASS first ride: "That wasn’t Alex." "…I know." "Then what did we follow?" — Jamie does not answer; then the end card
+PASS first ride: it is never named; him and it never on screen together; it never jumped while in view; the sound hooks for it fired
+PASS first ride: Chapter Three ran through its phases in order
+PASS first ride: tension: calm at home, rising down the road and into the drain, up at the boy, the creature and through the run, slow to come down
+PASS first ride: in the drain Jamie stayed a few steps ahead, Sam a step or two behind
+PASS first ride: Jamie and Sam stayed with you (never lost, never non-finite)
+PASS first ride: nothing went missing or non-finite
+PASS first ride: Chapter Three ends on its card, and the card leads on to Chapter Four
+PASS first ride: a quiet CHAPTER FOUR card over black, then the next afternoon at Sam’s (August 23, 1:52 PM)
+PASS first ride: Sam’s mom: the police called, Alex’s backpack, home before the streetlights
+PASS first ride: F at the backpack
+PASS first ride: his camera, from the front pocket, playback in your hands (A/D, W/S, V)
+PASS first ride: the old bike in the background of four pictures, the last downtown at Mason’s
+PASS first ride: "Ride downtown." — on the bike, Jamie and Sam with you
+PASS first ride: a real ride downtown: Oak Hollow, Summerfield Road, Old Mill Road, Main Street; no teleport
+PASS first ride: an ordinary Tuesday downtown: people about, cars parked and moving, stopping for you
+PASS first ride: Mason Cycle & Sport: F to look in the window
+PASS first ride: the poster, the florist: Roy Mason died in ninety-nine; the Courier on microfilm at the library
+PASS first ride: the library: Mrs. Albright, the local history room, "I close at eight"
+PASS first ride: the microfilm: five things, read one after another while the afternoon goes; the librarian closing at ten to eight
+PASS first ride: ten to eight: Alex across the street, in the gangway by Mason’s; then not; they do not follow
+PASS first ride: the streetlights came on one by one at dusk, the sky darkened steadily
+PASS first ride: at the end of Second Street: it comes for them, stops dead, looks at the empty corner (its light dies), backs off, hides, runs
+PASS first ride: the lights go out one after another, up Main toward them; the dark waits at the TV shop, whose window shows them from above, now (seen up close)
+PASS first ride: the picture of the screen: the camera raised as a viewfinder, F to take it
+PASS first ride: the TV: Alex from the air, from behind a hedge, at the PINE RIDGE sign (photographed), in his room from the ceiling
+PASS first ride: the phone: "…Jamie?"; the TV: the three of them, now ("That’s us."); the lights go from the front
+PASS first ride: the narrow way: it comes at them from the far end, stops, looks past them as a light goes out behind them, shrinks from it, and bolts past them, close
+PASS first ride: the theater’s upper windows: someone standing in one; looked at, the window is empty
+PASS first ride: under the marquee: everything goes still; he says what Alex said on the hill, and Jamie answers as he did then; then Sam’s words from Second Street; then the goodbye; dark; gone; the lights come back
+PASS first ride: the picture of the screen on Alex’s camera: PINE RIDGE RECREATION AREA (the next lead)
+PASS first ride: home the way they came, to the old oak: "That thing in the tunnel…" "It was scared." "Of what?" — Chapter Four, and on to Chapter Five
+PASS first ride: nobody and nothing went missing or non-finite; every line was a caption; the placeholder sound hooks fired
+PASS first ride: the chapter takes 20.3 minutes played straight through (a player who stops to look takes longer)
+PASS first ride: Chapter Four's end card offers Chapter Five
+PASS first ride: the chapter opens on its card (Chapter Five, The Place in the Picture)
+PASS first ride: Sam's garage, the next afternoon (Wednesday, August 24)
+PASS first ride: the garage: the supplies packed by hand (you 2, Sam the rest), Alex's camera from Sam's hand
+PASS first ride: Jamie's backpack and one sock, Sam's granola bars, the map and the plan
+PASS first ride: Jamie and Sam get on their own bikes before you do, and wait
+PASS first ride: out of town, on Mill Street past the sawhorse (the Old Reservoir Road)
+PASS first ride: the race to the top of the ridge has a winner
+PASS first ride: Pine Ridge Park (the new sign is not the one in the picture)
+PASS first ride: the bikes locked to the rack (no riding off from here on)
+PASS first ride: skipping stones: a stone picked up off the shore, wound up and let go, each time; Jamie's and Sam's their own; Sam's six
+PASS first ride: the dock: the three of you sat on its edge, legs over the water; Alex, and the shoe he named Gary
+PASS first ride: the shallows: off the beach into the water (wading pace while the bed is under water), and back out
+PASS first ride: the picture matched, by looking, at the old lot (camera up on the lead, at the vantage)
+PASS first ride: the yellow gate is shut and in the way until a hand opens it: Jamie lifts the latch and walks it round, and then it lets you by
+PASS first ride: the yellow gate: a disagreement, and your call (sam)
+PASS first ride: Camp Whippoorwill: the arch, a flashlight each, out of Sam's bag and handed over
+PASS first ride: what you carry (I): the camera and the flashlight; put away and taken out from the bag; Escape closes it (not the pause)
+PASS first ride: the office: the 1991 register (August 24, twenty years ago) and the search map, photographed
+PASS first ride: the lodge: cans gone from the dust, recently
+PASS first ride: Bluejay, a dead flashlight, and Sam's batteries out of his bag, without being asked
+PASS first ride: the campfire: a short rest (56 s, the clock 4 minutes on), water passed round, no hours lost
+PASS first ride: Owl: Alex's gold shirt, wet, and JSA cut fresh into the wall
+PASS first ride: they call his name; a light in the trees (a ranger? somebody fishing?) turns its beam on them and goes out; the shirt off its nail by Sam's hand, into his bag
+PASS first ride: three lights at the gate (lights, not people, the length of the camp away) walk where you walked: the office, the map board (they stop where you stood), one copies your flashlight, then they sit where you sat at the fire; the creature runs from them; they turn on you and go out
+PASS first ride: at night the camp pulls at whichever friend you leave; together, Sam's compromise
+PASS first ride: Owl from the porch: a second Jamie, while Jamie is next to you; it turns to look at him, then comes out toward you (10.0 m, to 0.1 m); only then every light at once, RUN
+PASS first ride: the escape by route A, and the boundary: the camp gate slams shut in front of you; you pull while Sam holds the latch; every light out at once
+PASS first ride: the lamp in the lot: a shaky laugh, the shirt in Sam's bag, “it knew we’d come”
+PASS first ride: on Alex's camera, a picture none of them took (the three of them at the fire, 6:34PM)
+PASS first ride: the last image (one light across the water), then the end card: LAST LIGHT · Chapter Five · August 24, 2011, and its Chapter Six button
+PASS first ride: Jamie and Sam never left: farthest 13.7 m ({"phase":"n5-final","where":{"e":-130.4,"n":315.9,"street":"pine"}}); nothing non-finite
+PASS first ride: Chapter Five's end card offers Chapter Six
+PASS first ride: black, the card (LAST LIGHT · Chapter Six · Someone Was Here · Thursday, August 25, 2011), then your room
+PASS first ride: you wake in bed and get up yourself
+PASS first ride: Alex's camera on your desk, F picks it up
+PASS first ride: the last picture (the fire, from the trees), looked at
+PASS first ride: the phone rings (the camera lowers itself), Mom from the kitchen
+PASS first ride: Sam's call: his dad knows, Reyes at nine-thirty, and Jamie at two in the morning
+PASS first ride: out the front door, on the stoop, your bike in the drive
+PASS first ride: Sam's garage: Sam's dad, Alex's dad and Officer Reyes at the card table
+PASS first ride: the gold shirt: on the table, Alex's dad, then into Reyes's evidence bag
+PASS first ride: the picture from the trees, zoomed: someone up the bank; Reyes says shadow
+PASS first ride: the camera, handed to Reyes to copy
+PASS first ride: Jamie tells them about Jamie; what Reyes can do today; Briarwood at eleven
+PASS first ride: the old oak: the three of them
+PASS first ride: "It looked exactly like me." / "It looked at me like I was the one who wasn't supposed to be there."
+PASS first ride: Jamie stops at his house to tell his mom
+PASS first ride: on the stairs inside the open door, Jamie — while Jamie is outside with you
+PASS first ride: it is gone when you look away (never while watched; the view never turned for you)
+PASS first ride: "Was it me?" — Jamie locks his door
+PASS first ride: Officer Reyes at the creek, where Alex turned
+PASS first ride: Reyes's questions; the dog that would not go past the culvert; the storm coming
+PASS first ride: a little after two, Sam's garage again: the weather radio, the storm warning
+PASS first ride: Reyes returns Alex's camera (the pictures copied at the station)
+PASS first ride: the 1958 plan, Sam reading it: Line Two (Mill Street, brick, 1908), Line Four (Briarwood), where they meet; the helmet in the bar screen
+PASS first ride: the Mill Creek isolation works, half past three, the storm coming in
+PASS first ride: Mr. Brandt, Public Works, hands you a flashlight
+PASS first ride: Alex's helmet (red, 17, the broken strap) identified, bagged by Reyes
+PASS first ride: Sam gets Brandt's spare radio; the boys to the gallery, "not one step past it"
+PASS first ride: the radio, twice: the second time from behind them, the intercom with its cable cut
+PASS first ride: wet prints on the landing (his Vans), out from under 2B to the stairs and back: "…At us."
+PASS first ride: gate 2B, the hand brake ("Pull and hold to stop leaf"), its broken return spring
+PASS first ride: the bell up Line Two, and Alex, up the pipe
+PASS first ride: it runs at the grille and hits it (the major scare): the lights out, gone
+PASS first ride: the power goes: the alarm, the gate (2B) coming down on its own
+PASS first ride: Sam takes the hand brake and holds the leaf ("GO! I’ve got it! GO!")
+PASS first ride: you get under the gate yourself (walking, through the gap)
+PASS first ride: the locking pin: pulled, but the holes don't line up ("It won't go in!")
+PASS first ride: two Sams at once — Sam at the brake, and the other under the lamp — seen by you through the gap
+PASS first ride: Officer Reyes has both in his line of sight, through the gap, while both are there
+PASS first ride: it runs at the brake; the gate drops; Sam is gone (once; never seen again)
+PASS first ride: the gate won't open; Reyes calls fire and rescue; the manhole on the bank
+PASS first ride: the manhole lifted, black water; sirens; no Sam
+PASS first ride: two hours later: the yard full of lights, Jamie in a blanket
+PASS first ride: Jamie: "He held it for me."; the firefighters: the grille open, nothing in the pipe
+PASS first ride: Reyes: "I saw them both. At the same time." — and on his radio, "…I've got it."
+PASS first ride: the end card: LAST LIGHT · Chapter Six · Someone Was Here · August 25, 2011; it offers Chapter Seven
+PASS first ride: Sam missing, never confirmed dead; never seen again after the gate
+PASS first ride: the head turns toward friends heading home when you are not looking around yourself
+PASS first ride: memory lines appear once each, never over a friend's line
+PASS no friend was hidden before going inside (Alex only once he is out of sight down Briarwood)
+PASS ending freezes the world and clears prompts
+PASS replay resets story, view, bike, friends, doors and controls
+PASS replay resets Chapter Two too: no card, no morning, no flyers, no found bike, no memory
+PASS replay resets the environment, interactions, memory lines and the ending
+PASS second ride: all 17 story triggers in order, eye height steady
+PASS second ride: once learned, controls are not shown again during the ride
+PASS second ride: the group never brakes for a departure
+PASS second ride: friends pedal out of step with each other
+PASS with captions off, friends' lines are not shown; with memories off, no memory lines
+PASS second ride: bike rolls to a stop at the end of the street, prompt offers F
+PASS second ride: Jamie and Sam went home believably; Alex rode on down Briarwood and is gone
+PASS before the call, getting back on the bike keeps you at the end of the street
+PASS before the call there is only JSA in the chalk, and no other bike
+PASS idle fade also reveals the chalk initials
+PASS the other bike never appears while you look toward it
+PASS staying at the end of the street fades, then wakes into the ride home on its own
+PASS back to the title from the pause menu resets everything and waits
+PASS ride up a driveway cut onto the sidewalk and along it
+PASS steering off the sidewalk crosses the roadside strip without trapping the bike
+PASS junction signs stand clear of utility poles
+PASS the full visible sidewalk width is usable on both sides
+PASS curb up on left side: two wheels cross without getting stuck
+PASS curb down on left side: two wheels cross without getting stuck
+PASS curb up on right side: two wheels cross without getting stuck
+PASS curb down on right side: two wheels cross without getting stuck
+PASS wheel impacts scale with speed and settle without ringing
+PASS stopped riders plant support feet with individual sides
+PASS bell moves the actual left hand and lever, then returns them to the grip
+PASS replay clears wheel-impact and additional lore state
+PASS QA jump ride-home: lands in home, everything finite, the night set up
+PASS QA jump police: lands in cruiser, everything finite, the night set up
+PASS QA jump title: lands in title, everything finite, the night set up
+PASS QA jump alex-house: lands in briarwood, everything finite, the night set up
+PASS QA jump jamie: lands in friends, everything finite, the night set up
+PASS QA jump sam: lands in friends, everything finite, the night set up
+PASS QA jump oak: lands in oak, everything finite, the night set up
+PASS QA jump retrace: lands in retrace, everything finite, the night set up
+PASS QA jump investigation: lands in creek, everything finite, the night set up
+PASS QA jump clue: lands in creek, everything finite, the night set up
+PASS QA jump alex-departure: the prologue, riding with all three, just before Alex goes
+PASS QA jump alex-departure: Alex says goodbye and turns onto Briarwood
+PASS checkpoints are saved during the chapter without showing anything
+PASS Continue appears on the title menu and returns to the saved moment
+PASS lingering on Briarwood: the scene waits for you, nothing breaks
+PASS riding away from it: the police car still arrives and the title still comes
+PASS replay from the middle of the chapter resets the night completely
+PASS on foot: torso, connected legs and shoes are present, head excluded
+PASS on foot: normal pace covers a practical eight metres in four seconds
+PASS sprint: drains stamina gradually and lasts beyond three seconds
+PASS sprint: exhaustion returns to walking with no movement freeze
+PASS sprint: walking or stopping restores stamina and releases exhaustion
+PASS crouch: camera lowers smoothly and the torso bends coherently
+PASS jump: restrained arc, gravity, landing and cooldown; no horizontal collision bypass
+PASS jump does not make the house wall walkable
+PASS flashlight: creek checkpoint grants the spare with a connected player body
+PASS flashlight: T toggles without activating F interactions
+PASS replay clears stamina, jump, crouch, flashlight and returns body to bicycle
+PASS night sidewalks use lit non-emissive joint geometry
+PASS friend homes have distinct persistent prologue/night landmarks
+PASS Sam first: gentle redirect preserves Jamie-first order
+PASS Continue restores Briarwood Lane
+PASS Continue restores Jamie’s house
+PASS Continue restores Sam’s house
+PASS Continue restores The old oak
+PASS Continue restores The way he went
+PASS Continue restores The creek
+PASS human playtest (fan): the voices-through-a-wall gate keeps a speech rate however long the game has run
+PASS human playtest (fan): an ordinary steady fan at the window, no gate, no level change while you stand still
+PASS human playtest (fan): walking round and past the window, turning your head, the fan never jumps or flips ear to ear
+PASS human playtest (fan): in and out of range twenty times, pause/resume, checkpoint and replay keep one fan that fades, never cuts
+PASS human playtest (fan): Sam's fan is at his bedroom window all night; his dad's TV is in the front of the house
+PASS human playtest (flag): flies out from its angled pole, away from the house, upright, canton top-hoist
+PASS human playtest (hoop): every hoop faces where it is played; pole or wall mount behind the board
+PASS human playtest (oak): the captured stuck configuration, turning right and riding off, both follow on the first attempt
+PASS human playtest (oak): the captured stuck configuration, turning left and riding off, both follow on the first attempt
+PASS human playtest (oak): first attempt, leaving straight after the conversation (turn round in place)
+PASS human playtest (oak): first attempt, waiting several seconds, then leaving
+PASS human playtest (oak): first attempt, getting back on the bike before the conversation has finished
+PASS human playtest (oak): first attempt, turning round wide through the cul-de-sac before leaving
+PASS human playtest (oak): after Continue from the oak checkpoint, both follow on the first attempt
+PASS human playtest (oak): after Continue from the retrace checkpoint, both follow on the first attempt
+PASS human playtest (oak): Start over clears the companions' trail and stall state
+PASS human playtest (oak): after Start over, the captured configuration still follows on the first attempt

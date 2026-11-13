@@ -1,0 +1,270 @@
+ok   Chapter Seven: Chapter Six's end card offers Chapter Seven
+ok   Chapter Seven: black, the card, then outside Sam's house on Friday morning
+[6.8s d7-step 219.5,-893.7] step
+ok   Chapter Seven: Jamie on the step ("I couldn't knock.")
+ok   Chapter Seven: inside, Sam's mom and dad
+[53.4s d7-house 206.2,-899.2] to his room
+ok   Chapter Seven: Sam's room (the fan running)
+ok   Chapter Seven: the fan off, his dad turns it back on ("He can't sleep without that.")
+ok   Chapter Seven: the photograph in your hand (the four of you at the oak)
+ok   Chapter Seven: Sam's notebook taken (one page torn out)
+ok   Chapter Seven: Jamie takes the gum ("I'm gonna give it back to him.")
+[148.3s d7-house 208.0,-903.3] the tube
+ok   Chapter Seven: the Tour de Oak Hollow: Alex through the Hendersons' clothesline; on the back, the rules and four signatures
+[254.0s d7-house 208.0,-903.3] his dad’s list
+ok   Chapter Seven: his dad's list: this year's school pictures, his shoes (Vans, six and a half), his watch left on the dresser
+[338.7s d7-house 207.0,-904.1] the machine
+ok   Chapter Seven: the answering machine plays Sunday night's ride (Alex: "Did you guys hear that?" Sam: "Save me a spot tomorrow."); it isn't plugged in
+ok   Chapter Seven: a noise in the garage
+ok   Chapter Seven: something low by the side door, a long hand on the floor, gone out the side door (seen 0.57 s)
+ok   Chapter Seven: Reyes at the kitchen table (nothing found; the grille open)
+ok   Chapter Seven: you mark where Old Mill Court began (past the oak)
+[597.6s d7-map 200.5,-902.3] MH-12
+ok   Chapter Seven: from Reyes's photograph of the plate (MH-12, O.M.C. 1959) you find MH-12 on the old plan: under the grass at the end of your street
+[621.6s d7-map 200.5,-902.3] the schedule
+ok   Chapter Seven: the streetlight schedule: four lamps on Old Mill Court, active, billed last month; the meter in the chamber was turning
+ok   Chapter Seven: under the tracing paper, on this morning's print of the map: a circle in red crayon round the spot, and 8/21/91
+ok   Chapter Seven: "Four-thirty. You stay where I can see you."
+ok   Chapter Seven: Jamie on the curb ("I keep thinking I'm gonna tell him about this."), and three things to say
+ok   Chapter Seven: you answer him; Reyes: ride down, he follows; the radio to Jamie
+ok   Chapter Seven: the end of the street (Reyes behind you in the car)
+ok   Chapter Seven: Reyes: "the court started about… there"; the lane behind the oak
+ok   Chapter Seven: round the two bends, and out onto a street (the crossing: A)
+ok   Chapter Seven: "There's nothing back here. There's a field." Reyes, on the radio: the field, nobody
+ok   Chapter Seven: a board fence across the lane they came through ("This was OPEN.")
+[951.7s e7-court 1509.4,-1020.3] back out true
+[960.8s e7-court 1509.7,-1038.0] the street true
+[967.2s e7-court 1498.6,-1040.0] knock true true
+[986.0s e7-court 1498.6,-1040.0] knock false true
+ok   Chapter Seven: you knock: nobody; you knock again: footsteps come to the door and stop, and nobody opens it
+  (wedged at 1502.53 -1039.79 - stepping out and finding the way again) jamie foot 1503.35,-1039.23 script false follow walk blockers [[1503.35,-1039.23,0.3]] walk true false
+[1027.1s e7-court 1505.2,-1056.4] up it true
+[1047.6s e7-court 1505.2,-1056.4] the Langes’ door
+ok   Chapter Seven: after Reyes sees you "by a fence", a door up the street that was shut comes open on its own (the Langes', No. 5)
+[1059.1s e7-court 1525.4,-1066.3] to the door true
+[1076.6s e7-court 1527.9,-1066.5] in true
+ok   Chapter Seven: inside the Langes' (a checkpoint): "It smells like dinner."
+[1079.6s e7-court 1530.4,-1064.0] the television true
+[1091.6s e7-court 1530.4,-1064.0] the Courier true
+[1113.1s e7-court 1530.0,-1069.8] dinner true
+[1125.3s e7-court 1530.1,-1070.1] the cap true
+[1138.5s e7-court 1530.6,-1068.8] the calendar true
+ok   Chapter Seven: an evening a minute old, from the wrong years: a 1959 set on a test card, the Courier of April 1974, dinner still warm, a damp cap, October 1983
+[1149.5s e7-court 1528.8,-1068.5] the phone true
+ok   Chapter Seven: the phone: no dial tone; far off, a television; close, somebody breathing. Beside it, Ruth Ann Carver (1966) and Danny Whitcomb (1991) on one board, and an empty pin
+[1203.2s e7-court 1532.4,-1067.8] the hall true true true
+[1203.5s e7-court 1532.4,-1067.8] listen true
+ok   Chapter Seven: something in the bathroom: the door strains on its latch, a shadow under it, breathing at the height of your face; the door is shoved from inside, a picture comes off the wall
+[1227.4s e7-court 1533.9,-1063.4] his room true true true
+[1227.8s e7-court 1534.0,-1063.3] the drawings true
+[1246.6s e7-court 1534.0,-1063.3] it comes out
+ok   Chapter Seven: you chose to look: three drawings over the bed, the same picture (a streetlight, four bikes): R.A.C. 1966, D.W. 1991, and a faint one, no name yet, 2011
+ok   Chapter Seven: it comes out of the bathroom, fast, along the hall (the table goes), through the chair, and stops too close; Jamie gets in front of you; it goes back the way it came
+[1259.6s e7-court 1523.9,-1066.9] out true true true true true
+ok   Chapter Seven: outside, Jamie: "Was that a PERSON?"; the drawings were Ruth Ann Carver's and Danny Whitcomb's; "I'm going back to the fence"
+[1288.0s e7-court 1523.9,-1066.9] lights
+ok   Chapter Seven: the clock runs fast here (it is getting dark), Reyes says he sees you by a fence
+[1305.3s e7-dining 1503.8,-1065.8] to the window true
+ok   Chapter Seven: the family at the table; heads turn one by one; the father comes at the glass and hits it (it cracks)
+ok   Chapter Seven: after the hit he is still there, at the glass, then goes back to his chair
+ok   Chapter Seven: Sam's voice on the radio ("The one with the green door. Upstairs.")
+ok   Chapter Seven: inside; the footsteps upstairs stop
+[1387.0s e7-house 1535.3,-1090.1] the den true true true true
+[1387.1s e7-house 1535.3,-1090.1] the radio true
+[1407.7s e7-house 1536.4,-1095.5] the kitchen true true true
+[1407.7s e7-house 1536.4,-1095.5] the prints true
+[1422.3s e7-house 1530.9,-1094.7] round to the front true true true
+ok   Chapter Seven: before it comes down: the radio says Reyes's words back ("It's the field. There's nobody here."); wet prints, too long, out of the closet under the stairs
+[1423.0s e7-house 1531.1,-1094.2] the star true true
+ok   Chapter Seven: a star folded out of a spearmint wrapper on the stairs ("Sam makes these." "Anybody can fold a star, though.")
+ok   Chapter Seven: at the top of the stairs a hand round the corner, the head turns, it comes out
+[1449.0s e7-reveal 1536.1,-1097.4] to the pantry true true true
+[1452.9s e7-reveal 1537.8,-1097.6] hide true
+[1453.6s e7-stalk 1537.8,-1097.6] stalk pantry
+ok   Chapter Seven: it reaches the bottom and hunts (you are in the pantry)
+[1464.5s e7-stalk 1537.8,-1097.6] hold your breath
+ok   Chapter Seven: it comes to the pantry; its hand on the edge of the door; its head in the gap; you hold your breath and it does not find you; then it waits at the foot of the stairs
+[1487.5s e7-stalk 1537.0,-1096.2] the timer true true
+[1490.9s e7-stalk 1537.1,-1092.0] the back way 0.03333333333325572 true true true
+[1496.5s e7-stalk 1537.1,-1092.0] it went {"x":1.4189815350063244,"z":-2.118077850491524} timer search
+ok   Chapter Seven: the egg timer, wound: it rings in the kitchen; it hears it (by its hearing range) and leaves the stairs for it; you go round the other way and up
+ok   Chapter Seven: up the stairs without it catching you (failed 0 time(s) first)
+ok   Chapter Seven: the dresser stands on a rug and will not slide; Jamie lifts it and you pull the rug out; then the dresser goes against the door
+ok   Chapter Seven: the door shut, the dresser against it, and it hits the door twice
+ok   Chapter Seven: it goes; from the window, up the street; Jamie against the dresser with the star ("If it's his, he was in this house.")
+[1603.8s e7-upstairs 1535.4,-1090.4] the room true
+[1604.4s e7-upstairs 1535.1,-1090.4] the calendar true
+[1618.9s e7-upstairs 1535.1,-1090.3] the desk true
+ok   Chapter Seven: the 1991 calendar; a page in Sam's writing, yellow, as if years old
+[1648.2s e7-upstairs 1532.3,-1091.7] to the storeroom true true true true
+[1648.9s e7-upstairs 1531.9,-1091.4] the old bike true
+[1660.0s e7-upstairs 1531.9,-1091.4] the bell true
+ok   Chapter Seven: the old green bike, wet, 0417, AR; its bell rings, twice
+[1672.1s e7-upstairs 1531.2,-1093.5] to the hall window true true
+[1672.9s e7-giant 1530.7,-1094.0] the hall window true
+ok   Chapter Seven: from the hall window something very large moves behind the roofs (the far roof gives); then the lights past a hedge
+[1714.1s e7-out 1530.1,-1094.0] out true
+ok   Chapter Seven: out onto the porch roof, and drop
+[1748.8s n7-bikes 1509.4,-1036.1] to the bikes true
+ok   Chapter Seven: at the bikes it comes over the car at you; Jamie: "GO!"
+ok   Chapter Seven: down the court, round the bend, up the other side, into the other lane, and out at the oak (51.4 s; closest 0.13 m)
+[1816.2s n7-lookout 265.1,-1058.4] out of the lane true
+ok   Chapter Seven: the chase took 45-110 s and it cut across (seen between the houses) and came at you from the side
+ok   Chapter Seven: out of the lane it comes over you and takes Jamie off his bike; you are off yours
+[1824.4s n7-grab 257.8,-1049.1] to him 25.6
+ok   Chapter Seven: your hands on his wrist (the struggle)
+ok   Chapter Seven: you hold on (12.5 s, the view within 0.28 m of his hand); his hand goes out of yours; the gum falls
+ok   Chapter Seven: it drags him into the lane, round the bend, and he is gone (never seen dead: gone)
+ok   Chapter Seven: while it held him his feet stayed in its hand (760 frames, 0 off)
+[1860.2s n7-gone 275.5,-1076.4] into the lane true true true true
+ok   Chapter Seven: in the lane, nothing (the lane comes out in the field)
+[1872.1s n7-gone 270.4,-1069.0] back out to the gum true true true true true
+ok   Chapter Seven: the gum, picked up out of the grass
+[1962.9s n7-after 260.9,-1056.1] show bike 0 true true {"view":null,"choice":false,"walking":true,"busyR":true}
+[1984.0s n7-after 269.8,-1067.0] show cap 0 true true {"view":null,"choice":false,"walking":true,"busyR":true}
+[2004.4s n7-after 275.2,-1075.6] show marks 0 true true {"view":null,"choice":false,"walking":true,"busyR":true}
+[2025.0s n7-after 275.2,-1075.6] show gum true
+ok   Chapter Seven: Reyes, shown his bike, his cap, the drag marks and the gum, photographs each and writes it down: "2ND JUV. MISSING. JAMIE, 12."
+ok   Chapter Seven: Jamie's mom asks what he was wearing and what he said; on her phone, the pool: nobody on the towel, a damp shape where somebody sat
+ok   Chapter Seven: Jamie's mom ("You were WITH him."); the dispatcher says one juvenile; the cap in her hands is nobody's; her pictures have no Jamie in them; Reyes has to read Sam's name off his notebook
+ok   Chapter Seven: his page, an hour later: no name in the ink, no SECOND; turned to the light, JAMIE pressed into the paper (you keep it)
+ok   Chapter Seven: the fan: his dad turns it back on and does not know why (this morning he knew)
+ok   Chapter Seven: the same photograph: only you, at the oak, with your bike
+ok   Chapter Seven: "That's a nice one of you."
+ok   Chapter Seven: you write their names (ALEX, JAMIE, SAM), and they are kept for Chapter Eight
+[2347.5s n7-window 208.6,-904.3] his window true true true
+ok   Chapter Seven: four bikes under the streetlight; yours; the end card (LAST LIGHT · Chapter Seven · The Street That Wasn't There), then Chapter Eight
+ok   Chapter Seven: nothing non-finite; Sam never seen; Jamie never seen after he is taken
+ok   chapter 7: every DEV Chapter Seven scene starts (53 scenes: the 40 of the first draft and the expansion's)
+ok   chapter 7: the hunter is its own thing (chapter7_hunter, not the drain creature)
+ok   chapter 7: walking into it in the stealth: it catches you, and you are back at the stealth checkpoint (not the chapter start)
+ok   chapter 7: hidden in the pantry for 25 s, holding your breath while it looks in: not caught (and it goes to wait at the stairs)
+ok   chapter 7: breathing while its head is in the pantry door: it hears you, and you are back in the pantry at the stealth checkpoint
+ok   chapter 7: seen from the stairs it waits at: caught, and back at the checkpoint by the stairs (it is still waiting there)
+ok   chapter 7: the egg timer rings; it hears it from the stairs (in range) and goes to it; a sound 40 m off is not heard
+ok   chapter 7: inside the Langes' the checkpoint is the Langes' (Continue: the open door)
+ok   chapter 7: the Langes', choosing to leave: it comes into the front room after you through the couch, Jamie between; out, the argument, then on
+ok   chapter 7: Reyes's page, turned to the light (JAMIE pressed into it), goes into what you carry
+ok   chapter 7: no line of sight through the stair core (den to kitchen)
+ok   chapter 7: stop riding in the chase and it catches you; you start again at the bikes
+ok   chapter 7: the photograph is the four of you before the abduction and only you after it, on every jump
+ok   chapter 7: the gum (nightstand → Jamie → the grass → you)
+ok   chapter 7: Continue offers the last checkpoint (Old Mill Court)
+ok   chapter 7: then Chapter Six starts clean (no court, no hunter, no Sam's house inside, Sam back)
+ok   chapter 7: then Chapter Five starts clean (no court, no hunter, no Sam's house inside, Sam back)
+ok   chapter 7: then Chapter Four starts clean (no court, no hunter, no Sam's house inside, Sam back)
+ok   chapter 7: the adapter loads a skinned .glb, falls back for missing clips, and keeps its sockets
+{
+ "passed": 94,
+ "failed": [],
+ "metrics": {
+  "chapter7": {
+   "garageSeen": 0.57,
+   "timerLearnedBeforeUp": true,
+   "stealthFails": 0,
+   "chaseSeconds": 51.4,
+   "chaseMinGap": 0.13,
+   "struggleSeconds": 12.5,
+   "struggleView": 0.28,
+   "minutes": {
+    "house": 7.09,
+    "garage": 0.82,
+    "reyes": 3.76,
+    "afternoon": 2.44,
+    "court": 3.34,
+    "lange": 4.01,
+    "dining": 1.15,
+    "green": 4.07,
+    "upstairs": 1.95,
+    "chase": 1.63,
+    "abduction": 1.75,
+    "after": 6.03,
+    "night": 1.47
+   },
+   "total": 39.51,
+   "phases": 31,
+   "bad": 0,
+   "jumps": 8,
+   "gapMax": {
+    "d7-step": 10.9,
+    "e7-ride": 112.1,
+    "e7-lookout": 182.9,
+    "e7-court": 20.1,
+    "e7-dining": 5.7,
+    "n7-bikes": 4.1
+   },
+   "samSeen": 0,
+   "jamieVisibleAfter": 0,
+   "adapter": {
+    "bones": [
+     "hips",
+     "head",
+     "handL",
+     "handR",
+     "grab"
+    ],
+    "clips": 1,
+    "missing": 13,
+    "size": {
+     "x": 1.58,
+     "y": 1.3,
+     "z": 1.75
+    }
+   }
+  }
+ },
+ "phase": "creek",
+ "state": {
+  "phase": "creek",
+  "flags": {},
+  "inv": {
+   "notebook": null,
+   "gum": "nightstand",
+   "photo": "desk",
+   "radio": false,
+   "flashlight": false
+  },
+  "hunter": {
+   "mode": "off",
+   "state": "idle",
+   "visible": false,
+   "x": 1531.6,
+   "z": -1093.78,
+   "level": "g",
+   "log": {
+    "spotted": 0,
+    "alerts": 0,
+    "searches": 0,
+    "caught": 0,
+    "heard": 0,
+    "lost": 0,
+    "blocked": 0,
+    "stuck": 0,
+    "steps": 0
+   },
+   "meter": {},
+   "source": "stand-in",
+   "trace": []
+  },
+  "jamie": {
+   "gone": false,
+   "visible": true,
+   "mode": "foot",
+   "held": false,
+   "down": false,
+   "grip": false
+  },
+  "court": {
+   "active": false,
+   "portalA": false,
+   "portalB": false,
+   "inRegion": false,
+   "giant": "off"
+  },
+  "fails": {
+   "stalk": 0,
+   "chase": 0
+  },
+  "marks": []
+ }
+}

@@ -19,6 +19,8 @@ The full game from the Prologue through Chapter Eight is included. On the title 
 
 Suggested art review: The construction gallery; Sam; Jamie; All four of you; The breach; The surface; The Hendersons; Jamie; The oak; The last ride. Scene names in the menu use the story's existing labels.
 
+Open geometry-review/index.html for 19 labeled model and staging renders. Read ART-REWORK-REPORT.md for changes, test results, and remaining limits.
+
 WASD + mouse: move/look. Shift: run or pedal harder. Space: jump on foot / bicycle bell. C: crouch. T: flashlight. F: interact; hold when prompted. Q/E: look. Esc: pause. M: sound. Number keys 1–3: dialogue choices.
 Click to capture the mouse; click-drag to look if capture is unavailable. Local-file saves are browser-specific; keep this file in one place.
 
