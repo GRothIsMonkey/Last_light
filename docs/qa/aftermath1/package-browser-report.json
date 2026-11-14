@@ -1,0 +1,40 @@
+{
+  "file": "Last-Light-Aftermath1-Playtest.html",
+  "htmlSHA256": "3d2cb2e1b33020ee047178904de9dc22406fb0db4ad53e457f5459b7e33e486a",
+  "htmlBytes": 10225551,
+  "renderer": "Chromium / ANGLE SwiftShader software",
+  "start": {
+    "phase": "a1-arrive",
+    "date": "AUGUST 27, 2011  6:31 AM",
+    "width": 1280
+  },
+  "scenes": {
+    "a1-gym": "a1-gym",
+    "a1-record": "a1-record",
+    "a1-return": "a1-return",
+    "a1-porch": "a1-porch",
+    "a1-memorial-jamie": "a1-mem1",
+    "a1-memorial-alex": "a1-mem2",
+    "a1-sam": "a1-sam",
+    "a1-weeks": "a1-weeks",
+    "a1-packing": "a1-pack",
+    "a1-goodbye": "a1-bye",
+    "a1-road-out": "a1-road"
+  },
+  "end": {
+    "hidden": false,
+    "text": "LAST LIGHT Aftermath I WHAT WAS LEFTOctober, 2011. Chapter Four → Start over ↻ Back to the title",
+    "next": true
+  },
+  "passed": 6,
+  "checks": [
+    "Local file enters Aftermath I through the real DEV controls (from Chapter Eight’s end card)",
+    "WebGL renders",
+    "Later scenes start from their jumps",
+    "The end card is Aftermath I’s, and offers nothing after it",
+    "No HTTP(S) requests",
+    "No JavaScript errors"
+  ],
+  "errors": [],
+  "httpRequests": []
+}

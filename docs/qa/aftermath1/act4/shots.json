@@ -1,0 +1,237 @@
+[
+ {
+  "name": "lawn",
+  "frame": "arrive",
+  "note": "Jamie’s lawn at dusk: candles, people in the grass, his picture, the notes on the steps, Sam at the curb",
+  "phase": "a1-mem1",
+  "caption": "Candles on Jamie’s lawn, in jars, more than you can count. People standing in the grass, not in rows. Nobody is in charg",
+  "draws": 1218,
+  "tris": 1570883
+ },
+ {
+  "name": "lawn",
+  "frame": "lawn",
+  "note": "Jamie’s lawn at dusk: candles, people in the grass, his picture, the notes on the steps, Sam at the curb",
+  "phase": "a1-mem1",
+  "caption": "Candles on Jamie’s lawn, in jars, more than you can count. People standing in the grass, not in rows. Nobody is in charg",
+  "draws": 1018,
+  "tris": 1323846
+ },
+ {
+  "name": "lawn",
+  "frame": "picture",
+  "note": "Jamie’s lawn at dusk: candles, people in the grass, his picture, the notes on the steps, Sam at the curb",
+  "phase": "a1-mem1",
+  "caption": "Candles on Jamie’s lawn, in jars, more than you can count. People standing in the grass, not in rows. Nobody is in charg",
+  "draws": 531,
+  "tris": 973889
+ },
+ {
+  "name": "lawn",
+  "frame": "mother",
+  "note": "Jamie’s lawn at dusk: candles, people in the grass, his picture, the notes on the steps, Sam at the curb",
+  "phase": "a1-mem1",
+  "caption": "Candles on Jamie’s lawn, in jars, more than you can count. People standing in the grass, not in rows. Nobody is in charg",
+  "draws": 535,
+  "tris": 1101249,
+  "info": {
+   "expr": "tearful"
+  }
+ },
+ {
+  "name": "lawn",
+  "frame": "sam",
+  "note": "Jamie’s lawn at dusk: candles, people in the grass, his picture, the notes on the steps, Sam at the curb",
+  "phase": "a1-mem1",
+  "caption": "Candles on Jamie’s lawn, in jars, more than you can count. People standing in the grass, not in rows. Nobody is in charg",
+  "draws": 292,
+  "tris": 567466,
+  "info": {
+   "expr": "grief"
+  }
+ },
+ {
+  "name": "lawn",
+  "frame": "brandt",
+  "note": "Jamie’s lawn at dusk: candles, people in the grass, his picture, the notes on the steps, Sam at the curb",
+  "phase": "a1-mem1",
+  "caption": "Candles on Jamie’s lawn, in jars, more than you can count. People standing in the grass, not in rows. Nobody is in charg",
+  "draws": 710,
+  "tris": 1054749
+ },
+ {
+  "name": "kitchen",
+  "frame": "in",
+  "note": "October 3, the kitchen: your mother at the table with the township’s letter",
+  "phase": "a1-home",
+  "caption": "Monday night. Mom is at the kitchen table with a letter in front of her, not reading it.",
+  "draws": 1128,
+  "tris": 967799
+ },
+ {
+  "name": "kitchen",
+  "frame": "mom",
+  "note": "October 3, the kitchen: your mother at the table with the township’s letter",
+  "phase": "a1-home",
+  "caption": "Monday night. Mom is at the kitchen table with a letter in front of her, not reading it.",
+  "draws": 344,
+  "tris": 820181,
+  "info": {
+   "expr": "tired"
+  }
+ },
+ {
+  "name": "kitchen",
+  "frame": "seated",
+  "note": "October 3, the kitchen: your mother at the table with the township’s letter",
+  "phase": "a1-home",
+  "caption": "MOM“It came today. From the township.”",
+  "draws": 251,
+  "tris": 502751,
+  "info": {}
+ },
+ {
+  "name": "kitchen",
+  "frame": "letter",
+  "note": "October 3, the kitchen: your mother at the table with the township’s letter",
+  "phase": "a1-home",
+  "caption": "OAK HOLLOW TOWNSHIP. Office of the Township Engineer. Survey not complete. Cannot certify the ground under any lot on th",
+  "draws": 251,
+  "tris": 502751
+ },
+ {
+  "name": "room",
+  "frame": "in",
+  "note": "October 14, your room in boxes; the drawer; the window",
+  "phase": "a1-pack",
+  "caption": "Your room, in boxes. Most of it. The bed’s still the bed. The light comes in the window the same as it always did.",
+  "draws": 378,
+  "tris": 556159
+ },
+ {
+  "name": "room",
+  "frame": "boxes",
+  "note": "October 14, your room in boxes; the drawer; the window",
+  "phase": "a1-pack",
+  "caption": "Your room, in boxes. Most of it. The bed’s still the bed. The light comes in the window the same as it always did.",
+  "draws": 163,
+  "tris": 284443
+ },
+ {
+  "name": "room",
+  "frame": "drawer",
+  "note": "October 14, your room in boxes; the drawer; the window",
+  "phase": "a1-pack",
+  "caption": "Your room, in boxes. Most of it. The bed’s still the bed. The light comes in the window the same as it always did.",
+  "draws": 378,
+  "tris": 699891
+ },
+ {
+  "name": "room",
+  "frame": "window",
+  "note": "October 14, your room in boxes; the drawer; the window",
+  "phase": "a1-pack",
+  "caption": "Your room, in boxes. Most of it. The bed’s still the bed. The light comes in the window the same as it always did.",
+  "draws": 276,
+  "tris": 591995,
+  "info": {
+   "w": true
+  }
+ },
+ {
+  "name": "room",
+  "frame": "strip",
+  "note": "October 14, your room in boxes; the drawer; the window",
+  "phase": "a1-pack",
+  "caption": "The photo booth at the mall, in June. Four frames, four of you, crammed in. Alex is wearing his helmet in every one, bec",
+  "draws": 277,
+  "tris": 591997
+ },
+ {
+  "name": "bye",
+  "frame": "truck",
+  "note": "October 15: the truck; Sam at your bike; the notebook; he waves from the lamp post",
+  "phase": "a1-bye",
+  "caption": "The truck came at eight this morning. Two men you don’t know have been carrying your house down the driveway all day, a ",
+  "draws": 772,
+  "tris": 1106461
+ },
+ {
+  "name": "bye",
+  "frame": "sam-bike",
+  "note": "October 15: the truck; Sam at your bike; the notebook; he waves from the lamp post",
+  "phase": "a1-bye",
+  "caption": "SAM“Probably.”",
+  "draws": 304,
+  "tris": 613644,
+  "info": {
+   "expr": "tired"
+  }
+ },
+ {
+  "name": "bye",
+  "frame": "notebook",
+  "note": "October 15: the truck; Sam at your bike; the notebook; he waves from the lamp post",
+  "phase": "a1-bye",
+  "caption": "His notebook. The names, in your writing, where you wrote them in the gym that Monday.",
+  "draws": 305,
+  "tris": 613646
+ },
+ {
+  "name": "bye",
+  "frame": "wave",
+  "note": "October 15: the truck; Sam at your bike; the notebook; he waves from the lamp post",
+  "phase": "a1-bye",
+  "caption": "At the lamp post he stops, and puts a foot down, and turns round, and waves.",
+  "draws": 549,
+  "tris": 772619,
+  "info": {
+   "wave": true,
+   "mode": "ride"
+  }
+ },
+ {
+  "name": "road",
+  "frame": "in-car",
+  "note": "The road out at the last of the light: in the car; looking back; the notebook on your lap; ahead",
+  "phase": "a1-road",
+  "caption": "Mom pulls out from the curb. She doesn’t look at the house. You do.",
+  "draws": 285,
+  "tris": 562713
+ },
+ {
+  "name": "road",
+  "frame": "back",
+  "note": "The road out at the last of the light: in the car; looking back; the notebook on your lap; ahead",
+  "phase": "a1-road",
+  "caption": "Down Oak Hollow, the way you’ve gone ten thousand times on your bike. The new pole. The hoop on the garage at the bottom",
+  "draws": 660,
+  "tris": 1199821
+ },
+ {
+  "name": "road",
+  "frame": "lap",
+  "note": "The road out at the last of the light: in the car; looking back; the notebook on your lap; ahead",
+  "phase": "a1-road",
+  "caption": "Behind you, Oak Hollow gets smaller. The lights on, all the way up the hill, as far as you can see. You can’t see the fe",
+  "draws": 122,
+  "tris": 190992,
+  "info": {
+   "d": 2.84,
+   "lap": [
+    "notebook",
+    "cap",
+    "print"
+   ]
+  }
+ },
+ {
+  "name": "road",
+  "frame": "ahead",
+  "note": "The road out at the last of the light: in the car; looking back; the notebook on your lap; ahead",
+  "phase": "a1-road",
+  "caption": "Behind you, Oak Hollow gets smaller. The lights on, all the way up the hill, as far as you can see. You can’t see the fe",
+  "draws": 335,
+  "tris": 673261
+ }
+]

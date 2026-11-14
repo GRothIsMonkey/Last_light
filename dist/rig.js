@@ -255,7 +255,7 @@ export function createBike(spec,{grips=0x2b2b2d}={}){
  if(extras.includes('rack')){for(const s of [-1,1]){tube(fp,V(s*.07,rear.y+.04,rear.z),V(s*.07,seat.y+.05,seat.z+.22),.008,0x9da09a);tube(fp,V(s*.065,seat.y+.06,seat.z+.15),V(s*.065,seat.y+.06,seat.z+.45),.007,0x9da09a);}for(let j=0;j<5;j++)tube(fp,V(-.065,seat.y+.06,seat.z+.15+j*.075),V(.065,seat.y+.06,seat.z+.15+j*.075),.006,0x9da09a);}
  // A closed chain loop and small dropout bolts survive both the ride and the found-bike view.
  const ca=V(.06,bb.y+.085,bb.z),cb=V(.06,rear.y+.04,rear.z),cc=V(.06,rear.y-.04,rear.z),cd=V(.06,bb.y-.085,bb.z);
- for(const [a,b] of [[ca,cb],[cb,cc],[cc,cd],[cd,ca]])tube(fp,a,b,.0035,0x444440,4);
+ if(!S.noChain)for(const [a,b] of [[ca,cb],[cb,cc],[cc,cd],[cd,ca]])tube(fp,a,b,.0035,0x444440,4);// (noChain: a bike whose chain is its own mesh, to come off and go back on: Aftermath I)
  for(const side of [-1,1])fp.push({geo:new THREE.CylinderGeometry(.013,.013,.012,6),color:0x92958d,matrix:M4(side*.059,rear.y,rear.z,1,1,1,0,0,Math.PI/2)});
  // A round red reflector on the back of the rack, its cracked bracket held on with black tape. Its
  // size and red are the piece found at the creek (chapter1.js), so the two can be matched up.

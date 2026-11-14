@@ -60,6 +60,17 @@ export function createAudio({context=null,random=Math.random}={}){
   splash(t,o){burst(t,.16,.08,'bandpass',900,.7,o);burst(t+.03,.12,.035,'highpass',2600,.6,o);},
   drip(t,o){tone(1400+random()*500,t,.08,.02,'sine',o,900);},
   squelch(t,o){burst(t,.12,.035,'highpass',1600,.7,o);tone(1180,t,.06,.012,'square',o);},
+  // (Aftermath I) cloth: someone holding on to someone; the theme: four soft notes, used seldom (the print, the bell, the names, the end)
+  a1Cloth(t,o){burst(t,.35,.03,'bandpass',1800,.6,o);burst(t+.12,.45,.018,'highpass',3000,.5,o);},
+  // a bicycle bell, an ordinary bright one (thumb lever, twice): not Chapter Three's rusted one
+  a1Bell(t,o){for(const k of [0,.16]){burst(t+k,.006,.05,'bandpass',4200,3,o);for(const [f,g,d] of [[2930,.05,1.1],[4120,.032,.8],[6250,.018,.5],[7900,.008,.3]])tone(f*(1+(random()-.5)*.004),t+k,d,g,'sine',o);}},
+  // a back wheel's freewheel, the pedal turned backwards by hand: quick soft ticks
+  a1Freewheel(t,o){for(let k=0;k<10;k++)burst(t+k*.055+random()*.008,.006,.03,'bandpass',5200+random()*900,6,o);},
+  // packing tape off the roll, and across a box
+  a1Tape(t,o){burst(t,.55,.04,'bandpass',2600,1.2,o);burst(t+.05,.5,.025,'highpass',4200,.7,o);for(let k=0;k<8;k++)burst(t+k*.06,.02,.02,'bandpass',1500+random()*800,4,o);},
+  // a cardboard box: set down, its flaps folded
+  a1Box(t,o){burst(t,.08,.16,'lowpass',420,.8,o);tone(96,t,.12,.06,'sine',o,70);burst(t+.18,.12,.04,'bandpass',900,1.4,o);burst(t+.36,.1,.035,'bandpass',1100,1.4,o);},
+  a1Theme(t,o){[293.66,369.99,440,329.63].forEach((f,i)=>{tone(f,t+i*.95,3.4,.02,'sine',o);tone(f/2,t+i*.95,3.8,.008,'sine',o);});},
   carDoor(t,o){burst(t,.1,.3,'lowpass',650,.8,o);tone(88,t,.16,.14,'sine',o,60);burst(t+.02,.03,.05,'bandpass',2400,2,o);},
  };
  function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={garage:9,doorSlam:9,dog:30,dribble:7,sprinkler:5,rim:8,tap:5,pebble:6,window:5,carDoor:12,squelch:7,c8Thud:32,c8Collapse:26,c8Rumble:30,c8Impact:18,c8Groan:18,c8Burst:15,c8Glass:12,c8Horn:22,c8Rip:12,c8SteelDoor:14,c8Knock:8,c8Scrape:8,c8Crack:14,c8Metal:14};const o=spatial(pos,opts.gain??1,refs[name]||6);SFX[name](now()+.01,o);}
@@ -386,6 +397,9 @@ export function createAudio({context=null,random=Math.random}={}){
   if(kind==='surge'){const a=src(),b=src(),ga=gain(.8),gb=gain(.3);a.connect(filt('lowpass',420,.6)).connect(ga).connect(out);b.connect(filt('bandpass',1100,.6)).connect(gb).connect(out);let ph=random()*9;
    return {out,pan,vol:.11,ref:10,far:120,update(s2,t,dist,dt){ph+=dt;ga.gain.setTargetAtTime(.6+.25*Math.sin(ph*.9)+.15*Math.sin(ph*2.7),t,.2);gb.gain.setTargetAtTime(.25+.2*Math.sin(ph*1.9+1),t,.15);}};}
   if(kind==='alarm'){const g2=gain(1);g2.connect(out);let ph=0;return {out,pan,vol:.09,ref:12,far:200,update(s2,t,dist,dt){ph+=dt;if(ph>1.6){ph=0;SFX.c6Horn(t,g2);}}};}
+  // (Aftermath I: a room full of people talking low: four voice-band layers of noise, each coming and going on its own like a voice)
+  if(kind==='murmur'){const layers=[0,1,2,3].map(i=>{const n=src(),bp=filt('bandpass',[420,610,820,1150][i],2.4),g=gain(0);n.connect(bp).connect(g).connect(out);return {g,f:bp,next:0};});
+   return {out,pan,vol:.05,ref:9,far:70,near:6,update(s2,t){for(const L of layers){if(t>=L.next){L.next=t+.16+random()*.55;const v=random()<.4?0:.25+random()*.75;L.g.gain.setTargetAtTime(v,t,.07);L.f.frequency.setTargetAtTime(360+random()*880,t,.1);}}}};}
   if(kind==='generator'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=29;const lp=filt('lowpass',160);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('bandpass',300,.9)).connect(gain(.25)).connect(out);return {out,pan,vol:.08,ref:8,far:90};}
   if(kind==='mower'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=96;const lp=filt('lowpass',650),am=gain(.6),lfo=ctx.createOscillator(),d=gain(.35);lfo.frequency.value=7;lfo.connect(d).connect(am.gain);o.connect(lp).connect(am).connect(out);o.start();lfo.start();const n=src();n.connect(filt('bandpass',400,.8)).connect(gain(.2)).connect(out);return {out,pan,vol:.09,ref:40};}
   const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=48;const lp=filt('lowpass',320);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('lowpass',500)).connect(gain(.25)).connect(out);return {out,pan,vol:.18,ref:10};}
