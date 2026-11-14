@@ -34,7 +34,7 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0,sky=false}){
  const GLOW=sky?`{vec3 wN=inverseTransformDirection(normal,viewMatrix);float under=clamp(-wN.y*.9+.05,0.,1.);float frg=pow(1.-clamp(dot(normalize(vViewPosition),normal),0.,1.),3.5);
    totalEmissiveRadiance+=uGlow*(vec3(.34,.045,.016)*under*under+vec3(.42,.08,.025)*frg*.55);}`:'';
  // the skin: dark, wet, a slow ripple along its length (vertex), a little paler in the folds (fragment): never emissive
- const skin=new THREE.MeshStandardMaterial({color:sky?0x140e0d:0x2a2120,roughness:.32,metalness:.08});skin.name='c8-presence-skin';
+ const skin=new THREE.MeshStandardMaterial({color:sky?0x140e0d:0x2a2120,roughness:.65,metalness:.025});skin.name='c8-presence-skin';
  skin.onBeforeCompile=sh=>{sh.uniforms.uT=U.t;sh.vertexShader='uniform float uT;\nvarying float vFold;\n'+sh.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
   #ifdef USE_INSTANCING
    vec3 wpI=(instanceMatrix*vec4(position,1.)).xyz;
@@ -55,9 +55,14 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0,sky=false}){
  const N=6,inst=new THREE.InstancedMesh(segGeo,skin,N*SEG);inst.name='c8-presence-limbs';inst.frustumCulled=false;inst.castShadow=true;inst.receiveShadow=true;group.add(inst);
  // barbs down the back of each limb (hooked, pointing back toward the root) and three long fingers at each tip that spread when it reaches
  const barbM=new THREE.MeshStandardMaterial({color:0x140f0e,roughness:.4,metalness:.1});barbM.name='c8-presence-barb';
- const barbs=new THREE.InstancedMesh(new THREE.ConeGeometry(.5,1,6),barbM,N*SEG);barbs.name='c8-presence-barbs';barbs.frustumCulled=false;group.add(barbs);
+ const barbs=new THREE.InstancedMesh(new THREE.ConeGeometry(.5,1,6),barbM,N*SEG);barbs.name='c8-presence-barbs';barbs.frustumCulled=false;group.add(barbs);barbs.visible=!sky;
  const FIN=3,FSEG=7,fingers=new THREE.InstancedMesh(segGeo,skin,N*FIN*FSEG);fingers.name='c8-presence-fingers';fingers.frustumCulled=false;fingers.castShadow=true;group.add(fingers);
  for(let i=0;i<N*SEG;i++){_m.makeScale(0,0,0);inst.setMatrixAt(i,_m);barbs.setMatrixAt(i,_m);}for(let i=0;i<N*FIN*FSEG;i++)fingers.setMatrixAt(i,_m.makeScale(0,0,0));
+ const FR=17,FS=8,fp=new Float32Array(N*FIN*FR*(FS+1)*3),fn=new Float32Array(fp.length),fi=[];
+ for(let f=0;f<N*FIN;f++)for(let r=0;r<FR-1;r++)for(let j=0;j<FS;j++){const n=(f*FR+r)*(FS+1)+j;fi.push(n,n+FS+1,n+1,n+1,n+FS+1,n+FS+2);}
+ const fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.BufferAttribute(fp,3));fg.setAttribute('normal',new THREE.BufferAttribute(fn,3));fg.setIndex(fi);
+ const fm=skin.clone();fm.vertexColors=false;fm.color.setHex(sky?0x4c3930:0x65594b);
+ const feelers=new THREE.Mesh(fg,fm);feelers.name='presence-tapered-feelers';feelers.frustumCulled=false;feelers.castShadow=true;group.add(feelers);fingers.visible=false;
  const tubes=Array.from({length:N},(_,i)=>{const geo=new THREE.BufferGeometry(),positions=new Float32Array(SEG*11*3),indices=[];for(let r=0;r<SEG-1;r++)for(let s=0;s<10;s++){const a=r*11+s;indices.push(a,a+11,a+1,a+1,a+11,a+12);}geo.setAttribute('position',new THREE.BufferAttribute(positions,3));geo.setIndex(indices);const tm=skin.clone();tm.vertexColors=false;tm.color.setHex(sky?0x4c3930:0x65594b);const m=new THREE.Mesh(geo,tm);m.name='presence-continuous-limb-'+i;m.frustumCulled=false;m.castShadow=true;group.add(m);return m;});inst.visible=false;
  const limbs=[...Array(N)].map((_,i)=>({i,state:'hidden',t:0,ext:0,root:new THREE.Vector3(),dir:new THREE.Vector3(0,1,0),tip:new THREE.Vector3(),tipV:new THREE.Vector3(),want:new THREE.Vector3(),
   r0:1.6,r1:.28,len:14,bend:new THREE.Vector3(),probe:new THREE.Vector3(),probeR:1.2,speed:1,onLand:null,landed:false,hold:0,dragTo:null,phase:Math.random()*6,pts:[],seen:0,splay:.2}));
@@ -90,13 +95,16 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0,sky=false}){
    if(s%2===0&&u<.92){_c.set(1,0,0).applyQuaternion(_q);_d.copy(_a).addScaledVector(_c,r*1.05);_q2.setFromUnitVectors(_up,_c.addScaledVector(_b,-1.1).normalize());_s.set(r*.22,r*.85,r*.22);_m.compose(_d,_q2,_s);barbs.setMatrixAt(base+s,_m);}
    else{_m.makeScale(0,0,0);barbs.setMatrixAt(base+s,_m);}}
   // the fingers: from the tip, three ways round its axis, spread by splay, curling in toward each other at their ends
-  const fb=L.i*FIN*FSEG;if(L.state==='hidden'||ext<.98){for(let i=0;i<FIN*FSEG;i++)fingers.setMatrixAt(fb+i,_m.makeScale(0,0,0));}
+  const offset=L.i*FIN*FR*(FS+1)*3;
+  if(L.state==='hidden'||ext<.98){fp.fill(0,offset,offset+FIN*FR*(FS+1)*3);fn.fill(0,offset,offset+FIN*FR*(FS+1)*3);}
   else{curve(L,1,_a);curve(L,.97,_b);_b.subVectors(_a,_b).normalize();_c.set(0,1,0);if(Math.abs(_c.dot(_b))>.9)_c.set(1,0,0);_c.cross(_b).normalize();_d.crossVectors(_b,_c);
-   const fl=Math.max(1.2,L.r1*7),fr=Math.max(.05,L.r1*.42);
-   for(let f=0;f<FIN;f++){const ang=f/FIN*Math.PI*2+L.phase,ox=Math.cos(ang),oy=Math.sin(ang),spread=L.splay+.06*Math.sin(P.U.t.value*1.7+f*2);
-    let px=_a.x,py=_a.y,pz=_a.z;for(let k=0;k<FSEG;k++){const u=k/(FSEG-1),bend=spread*(1-u*1.6);
-     const dx=_b.x+(_c.x*ox+_d.x*oy)*bend,dy=_b.y+(_c.y*ox+_d.y*oy)*bend,dz=_b.z+(_c.z*ox+_d.z*oy)*bend,dl=Math.hypot(dx,dy,dz)||1,st=fl/FSEG;
-     px+=dx/dl*st;py+=dy/dl*st;pz+=dz/dl*st;_e2.set(px,py,pz);_f.set(dx/dl,dy/dl,dz/dl);_q.setFromUnitVectors(_up,_f);const rr=fr*(1-u*.75);_s.set(rr,st*.7,rr*.9);_m.compose(_e2,_q,_s);fingers.setMatrixAt(fb+f*FSEG+k,_m);}}}
+   const fl=Math.max(1.2,L.r1*7),fr=Math.max(.05,L.r1*.50);
+   for(let f=0;f<FIN;f++){const ang=f/FIN*Math.PI*2+L.phase,ox=Math.cos(ang),oy=Math.sin(ang),spread=L.splay+.06*Math.sin(P.U.t.value*1.7+f*2);let px=_a.x,py=_a.y,pz=_a.z;
+    for(let r=0;r<FR;r++){const u=r/(FR-1),bend=spread*(1-u*1.6),dx=_b.x+(_c.x*ox+_d.x*oy)*bend,dy=_b.y+(_c.y*ox+_d.y*oy)*bend,dz=_b.z+(_c.z*ox+_d.z*oy)*bend,dl=Math.hypot(dx,dy,dz)||1;
+     if(r){const step=fl/(FR-1);px+=dx/dl*step;py+=dy/dl*step;pz+=dz/dl*step;}_f.set(dx/dl,dy/dl,dz/dl);_q.setFromUnitVectors(_up,_f);const rad=fr*(.04+.96*Math.pow(1-u,.8));
+     for(let j=0;j<=FS;j++){const a=j/FS*Math.PI*2;_e2.set(Math.cos(a),0,Math.sin(a)).applyQuaternion(_q);const n=offset+((f*FR+r)*(FS+1)+j)*3;fp[n]=px+_e2.x*rad;fp[n+1]=py+_e2.y*rad;fp[n+2]=pz+_e2.z*rad;fn[n]=_e2.x;fn[n+1]=_e2.y;fn[n+2]=_e2.z;}
+    }}}
+  fg.attributes.position.needsUpdate=true;fg.attributes.normal.needsUpdate=true;
   inst.instanceMatrix.needsUpdate=true;barbs.instanceMatrix.needsUpdate=true;fingers.instanceMatrix.needsUpdate=true;}
  // ---- what the chapter asks for ----------------------------------------------------------------------------------------
  // root: where it comes through; dir: the way it comes out; len: how far it reaches; r0/r1: thickness at root and tip

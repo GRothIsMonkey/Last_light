@@ -39,7 +39,7 @@ export function adultFace(A){const person=A.person,head=person.parts.head,art=A.
  const rimM=new THREE.MeshBasicMaterial({color:0xb24a4e,transparent:true,opacity:0,depthWrite:false}),tearM=new THREE.MeshStandardMaterial({color:0xe4f2ff,roughness:.05,metalness:.35,transparent:true,opacity:0,depthWrite:false});
  const lipM=new THREE.MeshStandardMaterial({color:new THREE.Color(F.lips??0xa86a58).multiplyScalar(.78),roughness:.7});
  for(const m of [rimM,tearM,lipM])m.name='a1-adult-face';
- const ring=new THREE.RingGeometry(.8,1,20),strip=new THREE.PlaneGeometry(.0034,.036),cornerG=new THREE.BoxGeometry(.0072,.0021,.002);
+ const ring=new THREE.RingGeometry(.8,1,20),strip=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0,.017,0),new THREE.Vector3(.0007,0,.0005),new THREE.Vector3(.002,-.018,.001)]),12,.0008,5),cornerG=new THREE.BoxGeometry(.0072,.0021,.002);
  const eyes=[-1,1].map(s=>{const rim=new THREE.Mesh(ring,rimM);rim.position.set(s*.033,.0115,-.0896);rim.scale.set(.0162,.0104,1);rim.rotation.y=Math.PI;g.add(rim);
   const tr=new THREE.Mesh(strip,tearM);tr.position.set(s*.0365,-.0145,-.0868);tr.rotation.set(.1,Math.PI,s*.07);g.add(tr);
   const drop=new THREE.Mesh(new THREE.SphereGeometry(.0026,8,6),tearM);g.add(drop);return {s,rim,tr,drop,ph:Math.random()};});
@@ -49,7 +49,7 @@ export function adultFace(A){const person=A.person,head=person.parts.head,art=A.
  function attach(){if(S.on)return;S.on=true;head.add(g);person.face=api;}
  function detach(){if(!S.on)return;S.on=false;g.removeFromParent();if(person.face===api)delete person.face;art.mouth.scale.x=base.mx;art.mouth.scale.y=base.my;art.mouth.position.y=base.mpy;
   art.brows.forEach((b,i)=>{b.rotation.z=base.brz[i];b.position.x=base.brx[i];b.position.y=.033;});person.lids.forEach((l,i)=>{l.position.y=base.lid[i].y;l.scale.y=base.lid[i].sy;l.visible=false;});
-  for(const k2 of AKEYS)ex[k2]=0;S.hold=0;S.mood='neutral';S.grief=0;S.pulse=0;}
+  art.syncMouth?.();for(const k2 of AKEYS)ex[k2]=0;S.hold=0;S.mood='neutral';S.grief=0;S.pulse=0;}
  function set(name,{hold=4}={}){if(!AEXPR[name])return;S.name=name;S.hold=hold;}
  function mood(name){if(AEXPR[name])S.mood=name;}
  function grief(v){S.grief=clamp(v,0,1);}
@@ -63,10 +63,10 @@ export function adultFace(A){const person=A.person,head=person.parts.head,art=A.
   const tq=ex.tremble>.02?ex.tremble*(Math.sin(clock*29)*.6+Math.sin(clock*47+1)*.4):0;
   art.brows.forEach((b,i)=>{const s=i?1:-1;b.rotation.z=base.brz[i]+s*(ex.tilt*.4-ex.knit*.16);b.position.x=base.brx[i]-s*ex.knit*.0032;b.position.y+=ex.browY+ex.tilt*.0018-ex.knit*.0022;});
   const m=art.mouth;m.scale.x=base.mx*(1-.14*Math.max(0,ex.down)+.1*ex.open);m.scale.y=Math.max(m.scale.y,base.my*(1+ex.open*5.5))+Math.abs(tq)*.0006;m.position.y=base.mpy-Math.max(0,ex.down)*.0012-ex.open*.0022+tq*.0004;
-  corners.forEach((c,i)=>{const s=i?1:-1;c.visible=m.visible&&Math.abs(ex.down)>.08;c.rotation.z=-s*ex.down*.8;c.position.y=-.0597-ex.down*.0034-ex.open*.002;c.position.x=s*(.0212-.002*Math.max(0,ex.down)+.0016*ex.open);});
+  corners.forEach((c,i)=>{const s=i?1:-1;c.visible=false;c.rotation.z=-s*ex.down*.8;c.position.y=-.0597-ex.down*.0034-ex.open*.002;c.position.x=s*(.0212-.002*Math.max(0,ex.down)+.0016*ex.open);});
   person.lids.forEach((l,i)=>{if(ex.lids>.06){const k2=Math.max(ex.lids,l.visible?l.scale.y/.014:0);l.visible=true;l.position.y=base.lid[i].y+.0046*(1-k2);l.scale.y=.0042+.0058*k2;}else l.position.y=base.lid[i].y;});
   const near=m.visible;g.visible=near;if(!near)return;
-  rimM.opacity=clamp(ex.red,0,1)*.4;tearM.opacity=clamp(ex.cry,0,1)*.6;
+  art.syncMouth?.();rimM.opacity=clamp(ex.red,0,1)*.29;tearM.opacity=clamp(ex.cry,0,1)*.42;
   for(const E of eyes){E.drop.visible=ex.cry>.45;if(E.drop.visible){E.ph=(E.ph+dt/(2.8+E.s*.4))%1;const t=E.ph;E.drop.position.set(E.s*(.0355+t*.003),-.002-t*.03,-.0876+t*.002);}}}
  const api={set,mood,grief,update,attach,detach,look(){},rich(){},enable(){},get pulse(){return S.pulse||0;},get sobbing(){return ex.sob;},get crying(){return ex.cry;},get enabled(){return S.on;},S,ex,get expression(){return S.hold>0?S.name:S.mood;}};
  return api;}

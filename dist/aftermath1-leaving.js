@@ -10,6 +10,7 @@
 // 16.  The road out, in your mother's car, at the last of the light: look back, look at what you kept, look ahead when you can.
 // Then the card. No Aftermath II here, no 2021, nothing after the card.
 import * as THREE from './three.module.js';
+import {finishMovingTruck,finishCarCabin,finishEveningNook,eveningMaterials} from './aftermath1-detail.js';
 import {headingTo,wrap} from './people.js';
 import {heading} from './route.js';
 import {ACT} from './chapter8-acting.js';
@@ -83,6 +84,7 @@ export function leavingActs(H){
  const inside=new THREE.Group();inside.name='a1-house-october';
  // the kitchen nook's two chairs; the letter on the table
  const TBL=KTB?{x:KTB.x1-.55,z:KTB.z0+.65}:{x:2.6,z:-3.66};
+ const evening=home&&KTB?finishEveningNook(home,KTB,TBL,FL):null,dimHome=home?eveningMaterials(home.root):()=>{};
  const kChairs=[];
  function kitchenChair(x,z,a){const g=new THREE.Group();const w=mat(0x8a6a48,{roughness:.6});const s=new THREE.Mesh(new THREE.BoxGeometry(.42,.04,.4),w);s.position.y=.46;g.add(s);const b=new THREE.Mesh(new THREE.BoxGeometry(.42,.42,.035),w);b.position.set(0,.7,.19);g.add(b);
   for(const [dx,dz] of [[-.18,-.17],[.18,-.17],[-.18,.17],[.18,.17]]){const l=new THREE.Mesh(new THREE.BoxGeometry(.035,.46,.035),w);l.position.set(dx,.23,dz);g.add(l);}const q=HW(x,z,FL);g.position.set(q.x,q.y,q.z);g.rotation.y=-HA(a);inside.add(g);kChairs.push(g);return g;}
@@ -120,14 +122,14 @@ export function leavingActs(H){
   put('calendar',pageMesh(tex9('calendar'),{w:.36,h:.45}),RB.x0+.012,RB.z1-.9,1.45,Math.PI/2,0);
   {const m=new THREE.Group();m.add(new THREE.Mesh(new THREE.BoxGeometry(.3,.03,.24),mat(0x3d6a9a,{roughness:1})));const t=pageMesh(tex9('shirt'),{w:.28,h:.22,color:0x3d6a9a});t.rotation.x=-Math.PI/2;t.position.y=.016;m.add(t);const q=HW(RB.x1-.7,.9,FL+.6);m.position.set(q.x,q.y,q.z);m.rotation.y=-HA(.4);inside.add(m);itemMeshes.shirt=m;}}
  const itemAt=id=>{const m=itemMeshes[id];return m?m.getWorldPosition(new THREE.Vector3()):null;};
- function houseOn(on,{room='kitchen'}={}){if(!home)return;if(on){home.show(true);home.reset();home.show(true);home.cameraOnDesk?.(false);nav.setRoom(home.nav);if(!inside.parent)scene.add(inside);
+ function houseOn(on,{room='kitchen'}={}){if(!home)return;dimHome(on&&room==='kitchen');if(evening)evening.visible=on&&room==='kitchen';if(on){home.show(true);home.reset();home.show(true);home.cameraOnDesk?.(false);nav.setRoom(home.nav);if(!inside.parent)scene.add(inside);
    const bf=home.root.getObjectByName('your-breakfast');if(bf)bf.visible=false;const sp=home.root.getObjectByName('breakfast-spoon');if(sp)sp.visible=false;}
   else{if(nav.room===home.nav)nav.setRoom(null);home.show(false);inside.removeFromParent();const bf=home.root.getObjectByName('your-breakfast');if(bf)bf.visible=true;const sp=home.root.getObjectByName('breakfast-spoon');if(sp)sp.visible=true;}
   for(const g of kChairs)g.visible=on&&room==='kitchen';letterMesh.visible=on&&room==='kitchen';for(const B of BOXES)B.g.visible=on&&room==='room';tapeRoll.visible=on&&room==='room';DRAWER.visible=on&&room==='room';for(const m of Object.values(itemMeshes))m.visible=on&&room==='room';}
- function indoors(sky,h,day){dayWorld({evening:sky==='evening'});o.hideWorld?.(false);o.bikeAway?.(true);ST9.show('october');autumn(true);setDay(day,h,sky);C.where='house';C.inside=1;C.insideWant=1;C.fill=.82;C.cave=.5;lightsOn(true);for(let i=0;i<6;i++)light(i,null);minds('relaxed');leave(sam);}
+ function indoors(sky,h,day){dayWorld({evening:sky==='evening'});o.hideWorld?.(false);o.bikeAway?.(true);ST9.show('october');autumn(true);setDay(day,h,sky);C.where='house';C.inside=1;C.insideWant=1;C.fill=.30;C.cave=.78;lightsOn(true);for(let i=0;i<6;i++)light(i,null);minds('relaxed');leave(sam);}
  // ---- 13b: the letter ---------------------------------------------------------------------------------------------------------------------
  function sceneHome(){go('a1-home');indoors('evening',18.35,'OCTOBER 3');houseOn(true,{room:'kitchen'});C.grief=.32;applyGrief();C.amb={traffic:.04,insects:.05,wind:.2,life:.1,forest:0,tunnel:0,water:0};
-  {const q=HW(TBL.x,TBL.z+.4,FL+2.1);light(0,q,{intensity:6,dist:6,color:0xffe2b8});}
+  {const q=HW(TBL.x,TBL.z+.4,FL+2.1);light(0,q,{intensity:3.6,dist:4.5,color:0xffd3a0});}
   {const w=HW(MOMSEAT.x,MOMSEAT.z);putW(mom,w,HA(MOMSEAT.a),G(ACT9.sit(.47,{hands:'knees',lean:.2})),{noBlock:true});feel(mom,'tired',99);mood(mom,'tired');}
   const st=HW(KTB?KTB.x0+.85:1.3,KTB?KTB.z1-.75:-2.2);placeMe({x:st.x,z:st.z},headingTo(st.x,st.z,letterMesh.position.x,letterMesh.position.z));// (in the kitchen doorway's light, two steps in)
   checkpoint('a1-home');C.fadeIn=0;C.fadeInDur=2.4;
@@ -191,7 +193,7 @@ export function leavingActs(H){
   if(id==='cap')yield* lines([{wait:.4},N(ch==='box'?'You put it in on top, where nothing will squash it.':'You put it in your jacket pocket. It’s going in the car with you.',{time:3.2})]);}
  // ---- 15: Sam, at the curb ------------------------------------------------------------------------------------------------------------------
  const TRUCK=(()=>{const g=new THREE.Group();g.name='a1-moving-truck';const cab=new THREE.Group();makeCar(KT,cab,'van',0xe8e6de,{lights:false});cab.scale.set(1,1.02,.62);cab.position.z=-2.3;g.add(cab);
-  const body=new THREE.Mesh(new THREE.BoxGeometry(2.3,2.5,5),mat(0xefede6,{roughness:.6}));body.position.set(0,1.75,1.4);g.add(body);const stripe=new THREE.Mesh(new THREE.BoxGeometry(2.32,.3,4.6),mat(0x2f5f8f,{roughness:.6}));stripe.position.set(0,1.2,1.4);g.add(stripe);
+  finishMovingTruck(g);
   const ramp=new THREE.Mesh(new THREE.BoxGeometry(.9,.04,2.2),mat(0x9a9c9e,{roughness:.4,metalness:.6}));ramp.position.set(0,.3,4.85);ramp.rotation.x=.22;g.add(ramp);g.userData.ramp=ramp;
   for(const z of [-.2,2.8])for(const s of [-1,1]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.3,14),mat(0x222222));w.rotation.z=Math.PI/2;w.position.set(s*1.0,.42,z);g.add(w);}
   g.visible=false;scene.add(g);return g;})();
@@ -218,7 +220,7 @@ export function leavingActs(H){
   const bench=new THREE.Mesh(new THREE.BoxGeometry(1.5,.12,.5),cloth);bench.position.set(0,.5,.95);I.add(bench);const bback=new THREE.Mesh(new THREE.BoxGeometry(1.5,.55,.1),cloth);bback.position.set(0,.8,1.18);bback.rotation.x=-.1;I.add(bback);
   const tail=new THREE.Mesh(new THREE.BoxGeometry(1.6,.6,.06),gr);tail.position.set(0,.66,2.3);I.add(tail);const tailTop=new THREE.Mesh(new THREE.BoxGeometry(1.6,.06,.08),dk);tailTop.position.set(0,1.4,2.28);I.add(tailTop);
   for(const m of [hood,floor,roofI,bench,bback,tail])m.castShadow=false;
-  I.visible=false;g.userData.inside=I;
+  finishCarCabin(I);I.visible=false;g.userData.inside=I;
   g.visible=false;scene.add(g);return g;})();
  // from inside (the road out) or from outside (the curb): the model's own shell, or the cabin
  function carFrom(inside){for(const m of CAR.userData.shell)m.visible=!inside;CAR.userData.inside.visible=inside;}

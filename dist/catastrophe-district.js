@@ -28,7 +28,7 @@ export function createDistrict({world,root,ruin,proxy,hurt,engage,dust,chunks,sf
  for(const [i,entry]of DAMAGE_MAP.entries()){
   const frame=entry.frame==='alex'?world.homes.alex.frameId:'main',candidates=world.houses.filter(q=>q.frameId===frame&&q.side===entry.side&&!q.far&&!q.key);
   candidates.sort((a,b)=>Math.abs(a.u-entry.d)-Math.abs(b.u-entry.d));const Q=candidates[0];if(!Q||used.has(Q)||Math.abs(Q.u-entry.d)>24)continue;used.add(Q);
-  const X=proxy('district-'+entry.id,Q,{interior:true,seed:71+i}),r={...entry,X,i,done:false,age:-1,batch:null,cleared:null,at:Q.toWorld(0,0)};records.push(r);
+  const X=proxy('district-'+entry.id,Q,{interior:true,seed:71+i}),r={...entry,X,i,done:false,age:-1,batch:null,cleared:null,at:Q.toWorld(0,0)};r.originals=[];X.G.traverse(o=>r.originals.push({o,visible:o.visible,material:o.material}));records.push(r);
  }
  function decorate(r){const X=r.X,G=X.G,Q=X.Q,R=random(603+r.i*131),w=X.w,d=X.D,h=X.h,fl=Q.floor??.34,burn=r.type==='burned',crushed=r.type==='crushed',partial=r.type==='partial',wood=burn?M.char:M.wood;
   // Missing roof, wall and floor pieces expose the structure and furnished rooms.
@@ -67,14 +67,14 @@ export function createDistrict({world,root,ruin,proxy,hurt,engage,dust,chunks,sf
   hurt(X,'facade',1,{only:r.type==='partial'?[0]:null});hurt(X,'roof',1,{which:r.type==='partial'?'left':'all'});hurt(X,'chimney',1);hurt(X,'porch',r.type==='partial'?.35:1);hurt(X,'garage',r.type==='partial'?.25:1);
   if(!r.decorated){decorate(r);r.decorated=true;}
   const batch=X.piv.clone(true);batch.visible=true;batch.name='persistent-wreck-'+r.id;
-  const hidden=[];batch.traverse(o=>{if(o!==batch&&!o.visible)hidden.push(o);});for(const o of hidden)o.removeFromParent();root.add(batch);bake(batch);r.batch=batch;X.piv.visible=false;
+  const hidden=[];batch.traverse(o=>{if(o!==batch&&!o.visible)hidden.push(o);});for(const o of hidden)o.removeFromParent();root.add(batch);bake(batch);r.batch=batch;X.piv.visible=false;const originalSet=new Set(r.originals.map(v=>v.o));X.G.traverse(o=>{if(!originalSet.has(o))o.visible=false;});for(const v of r.originals){v.o.visible=v.visible;if(v.material)v.o.material=v.material;}
  }
  function clearLot(r){if(r.cleared)return;const g=new THREE.Group();g.name='october-foundation-'+r.id;g.position.copy(r.X.piv.position);g.rotation.copy(r.X.piv.rotation);root.add(g);
   const w=r.X.w,d=r.X.D;K.box(g,0,.06,0,w,.16,d,M.plaster);for(const x of [-w/2,w/2])K.box(g,x,.28,0,.24,.55,d,M.brick);K.box(g,0,.28,-d/2,w,.55,.24,M.brick);
   for(let i=0;i<12;i++)K.box(g,-w/2+i*w/11,.65,d/2+1,.06,1.3,.06,M.wood);K.box(g,0,.8,d/2+1,w,.08,.04,M.wood);bake(g);r.cleared=g;
  }
  function activate(r,instant=true){const X=r.X;X.on=true;X.cut.on=true;X.piv.visible=true;r.age=0;if(instant)finish(r);}
- function show(on){if(!on){D.state=null;for(const r of records){r.X.cut.on=false;r.X.piv.visible=false;if(r.batch)r.batch.visible=false;if(r.cleared)r.cleared.visible=false;}ruin.syncCuts();return;}
+ function show(on){if(!on){reset();return;}
   if(D.state)return;D.state='catastrophe';D.time=0;D.wave=false;for(const r of records)if(r.wave===undefined)activate(r);ruin.syncCuts();}
  function settle(state='august'){show(true);D.state=state;for(const r of records){if(!r.X.on)activate(r);else finish(r);const clear=state==='october'&&r.clearOctober;if(clear)clearLot(r);if(r.batch)r.batch.visible=!clear;if(r.cleared)r.cleared.visible=clear;}ruin.syncCuts();}
  function update(dt,{impact=false,camera=null}={}){if(!D.state)return;D.time+=dt;
@@ -84,6 +84,6 @@ export function createDistrict({world,root,ruin,proxy,hurt,engage,dust,chunks,sf
    if(camera&&r.batch){const near=Math.hypot(camera.position.x-r.at.x,camera.position.z-r.at.z)<310;r.batch.visible=near&&!(D.state==='october'&&r.clearOctober);}
   }
  }
- function reset(){D.state=null;D.wave=false;for(const r of records){r.X.on=false;r.X.cut.on=false;r.X.piv.visible=false;r.done=false;r.age=-1;if(r.batch)r.batch.visible=false;if(r.cleared)r.cleared.visible=false;}ruin.syncCuts();}
+ function reset(){D.state=null;D.wave=false;for(const r of records){r.X.on=false;r.X.cut.on=false;r.X.piv.visible=false;r.done=false;r.age=-1;for(const v of r.originals){v.o.visible=v.visible;if(v.material)v.o.material=v.material;}if(r.batch)r.batch.visible=false;if(r.cleared)r.cleared.visible=false;}ruin.syncCuts();}
  return {show,settle,update,reset,records,get state(){return {phase:D.state,damaged:records.filter(r=>r.X.on).map(r=>({id:r.id,u:r.X.Q.u,frame:r.X.Q.frameId,type:r.type,cleared:D.state==='october'&&!!r.clearOctober}))};}};
 }

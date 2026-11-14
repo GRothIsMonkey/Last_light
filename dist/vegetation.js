@@ -17,7 +17,7 @@ export function createVegetation(W){
   const tufts=lod==='full'?2:1;for(let j=0;j<tufts;j++){const b=a+j*2.1+rand(),t=new THREE.Mesh(leafGeometrySmall,leaf(c));t.position.set(x+Math.cos(b)*R*.72,y+Math.sin(b*2)*R*.3,z+Math.sin(b)*R*.72);t.scale.set(R*.45,R*.38,R*.45);t.rotation.y=b;g.add(t);}
  }
  // Build a tree in local coordinates (ground at y = 0) under group g.
- function build(g,rand,{size=1,kind='maple',lod='full',natural=false}){
+ function build(g,rand,{size=1,kind='maple',lod='full',natural=false,landmark=false}){
   const pick=pickFrom(rand),barkC=pick(FOLIAGE.bark),bark=natural?W.surfaceMaterial(K.mat(barkC).clone(),'bark3'):barkC,leafC=pick(FOLIAGE.leaves);
   // Far trees: a trunk and two or three low-poly masses, enough for a skyline in haze.
   if(lod==='far'){const H=(kind==='pine'?6.5:4)*size;K.cyl(g,0,H/2-.3,0,.2*size,H+.6,bark,5);
@@ -35,10 +35,10 @@ export function createVegetation(W){
    for(let k=0;k<3;k++){const a=k*2.1+rand(),x=Math.cos(a)*.35,z=Math.sin(a)*.35,y=H+(k===0?.2:-.2);if(k)K.rod(g,[0,H-.6,0],[x,y,z],.025,bark,.012);crown(g,x,y+.25,z,(.62+rand()*.2)*size,leafC,rand,lod,a);}
    return {trunk:.1,crown:1*size};}
   // Maple and oak: flared trunk, forked limbs, a crown cluster at the end of every limb.
-  const oak=kind==='oak',wide=oak?1.35:1,trunkH=(oak?3.2:4.2)*size,tr=(oak?.36:.28)*size;
+  const oak=kind==='oak',wide=(oak?1.35:1)*(landmark?1.5:1),trunkH=(oak?3.2:4.2)*size*(landmark?1.5:1),tr=(oak?.36:.28)*size;
   const sides=natural?16:oak?14:10;K.lathe(g,[[.001,-.35],[tr*1.9,-.35],[tr*1.45,-.05],[tr*1.12,.25],[tr,.7],[tr*.8,trunkH*.75],[tr*.62,trunkH]],0,0,0,bark,sides);
   if(natural)for(let k=0;k<5;k++){const a=k*1.26+rand();K.rod(g,[Math.cos(a)*tr*.5,.21,Math.sin(a)*tr*.5],[Math.cos(a)*tr*3.7,-.025,Math.sin(a)*tr*3.7],tr*.29,bark,.012,7);}
-  const n=oak?6:3,top=[0,trunkH,0];
+  const n=landmark?8:oak?6:3,top=[0,trunkH,0];
   crown(g,0,trunkH+1.5*size,0,(1.6+rand()*.4)*size*(oak?1.15:1),leafC,rand,lod,0);
   for(let k=0;k<n;k++){const a=k/n*Math.PI*2+rand()*.8,reach=(1.7+rand()*.9)*size*wide,rise=(oak?.8:1.3+rand()*.8)*size,start=[0,trunkH*(.72+rand()*.2),0],end=[Math.cos(a)*reach,trunkH+rise,Math.sin(a)*reach];
    if(lod!=='far'){K.rod(g,start,end,(oak?.16:.11)*size,bark,(oak?.07:.05)*size,5);const mid=[end[0]*.55,end[1]-.2,end[2]*.55];K.rod(g,mid,[end[0]*.8+Math.sin(a)*.6,end[1]+.5*size,end[2]*.8-Math.cos(a)*.6],.05*size,bark,.025*size,4);}

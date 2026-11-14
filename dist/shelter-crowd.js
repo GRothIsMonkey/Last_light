@@ -25,11 +25,12 @@ export function shelterCrowd(parent){
  const headGeo=new THREE.SphereGeometry(1,12,10);for(let i=0;i<headGeo.attributes.position.count;i++){const p=headGeo.attributes.position;p.setX(i,p.getX(i)*(1-.2*Math.max(0,-p.getY(i))));}headGeo.computeVertexNormals();
  make('head',headGeo,N,skinMat);make('hair',new THREE.SphereGeometry(1,12,7,0,Math.PI*2,0,1.48),N);
  make('torso',artLoft([[-.24,.13,.085],[-.17,.17,.105],[.08,.19,.11],[.20,.22,.10],[.25,.09,.08]],12,2,2.6),N);
- make('upper',new THREE.CapsuleGeometry(1,1,2,8),N*4);make('lower',new THREE.CapsuleGeometry(1,1,2,8),N*4,skinMat);make('hand',new THREE.SphereGeometry(1,8,6),N*2,skinMat);make('shoe',roundedBoxGeometry(1,1,1,.18),N*2);
+ make('upper',new THREE.CylinderGeometry(.82,1,1,8),N*4);make('lower',new THREE.CylinderGeometry(.82,1,1,8),N*4,skinMat);make('hand',new THREE.SphereGeometry(1,8,6),N*2,skinMat);make('shoe',roundedBoxGeometry(1,1,1,.18),N*2);
+ make('neck',new THREE.CylinderGeometry(1,1,1,8),N,skinMat);make('nose',new THREE.SphereGeometry(1,8,6),N,skinMat);
  make('eyes',new THREE.SphereGeometry(1,6,4),N*2,new THREE.MeshStandardMaterial({color:0x29221e,roughness:.8}));
  const m=new THREE.Matrix4(),q=new THREE.Quaternion(),up=new THREE.Vector3(0,1,0),pos=new THREE.Vector3(),scale=new THREE.Vector3(),A=new THREE.Vector3(),B=new THREE.Vector3(),C=new THREE.Color(),rot=new THREE.Euler();
  for(const p of people){const i=p.id,sk=skin[i%skin.length],sh=p.pose==='walk'?0x82935e:cloth[i%cloth.length],pants=[0x48515c,0x695f50,0x3e4347][i%3];
-  for(const n of ['head','hand','lower'])for(let k=0;k<(n==='head'?1:n==='hand'?2:4);k++)meshes[n].setColorAt(i*(n==='head'?1:n==='hand'?2:4)+k,C.setHex(n==='lower'&&k>=2?pants:sk));
+  for(const n of ['head','neck','nose','hand','lower'])for(let k=0;k<(['head','neck','nose'].includes(n)?1:n==='hand'?2:4);k++)meshes[n].setColorAt(i*(['head','neck','nose'].includes(n)?1:n==='hand'?2:4)+k,C.setHex(n==='lower'&&k>=2?pants:sk));
   meshes.hair.setColorAt(i,C.setHex(hair[i%hair.length]));meshes.torso.setColorAt(i,C.setHex(sh));
   for(let k=0;k<4;k++)meshes.upper.setColorAt(i*4+k,C.setHex(k<2?sh:pants));for(let k=0;k<2;k++)meshes.shoe.setColorAt(i*2+k,C.setHex(i%2?0x393a37:0x98968d));
  }
@@ -41,10 +42,10 @@ export function shelterCrowd(parent){
    const t=time+i*1.83,breathe=Math.sin(t*.63)*.004,lean=.05+.018*Math.sin(t*.21),hips=seat?s+.08:.89,shoulder=hips+.47,head=hips+.70;
    const w=(v,out)=>out.set(x+(v[0]*ca+v[2]*sa)*factor,v[1]*factor+(seat?s*(1-factor):0),z+(-v[0]*sa+v[2]*ca)*factor);
    const part=(name,index,v,sz,rx=0,ry=a,rz=0)=>{w(v,pos);q.setFromEuler(rot.set(rx,ry,rz));scale.set(sz[0]*factor,sz[1]*factor,sz[2]*factor);m.compose(pos,q,scale);meshes[name].setMatrixAt(index,m);};
-   const limb=(name,index,v1,v2,r1,r2)=>{w(v1,A);w(v2,B);pos.addVectors(A,B).multiplyScalar(.5);B.sub(A);const len=B.length();q.setFromUnitVectors(up,B.normalize());scale.set(r1*factor,len/3,r2*factor);m.compose(pos,q,scale);meshes[name].setMatrixAt(index,m);};
+   const limb=(name,index,v1,v2,r1,r2)=>{w(v1,A);w(v2,B);pos.addVectors(A,B).multiplyScalar(.5);B.sub(A);const len=B.length();q.setFromUnitVectors(up,B.normalize());scale.set(r1*factor,len,r2*factor);m.compose(pos,q,scale);meshes[name].setMatrixAt(index,m);};
    part('torso',i,[0,hips+.25+breathe,-lean],[1,1,1],seat?.12:.04);
    const gaze=.12*Math.sin(t*.19)+(Math.sin(t*.09)>.8?.25:0),hy=a+gaze,hz=-lean-.02;
-   part('head',i,[0,head+breathe,hz],[.105,.139,.106],.06+(seat?.10:0),hy);part('hair',i,[0,head+.008+breathe,hz+.004],[.110,.144,.112],.06,hy);
+   part('neck',i,[0,head-.13+breathe,hz+.01],[.045,.10,.044]);part('nose',i,[Math.sin(gaze)*-.11,head-.012+breathe,hz-Math.cos(gaze)*.11],[.015,.025,.022],.06,hy);part('head',i,[0,head+breathe,hz],[.105,.139,.106],.06+(seat?.10:0),hy);part('hair',i,[0,head+.008+breathe,hz+.004],[.110,.144,.112],.06,hy);
    for(const side of [-1,1]){const j=side===-1?0:1,phase=Math.sin(time*2.2+i+j*Math.PI),footZ=seat?-.43:walk?phase*.23:.02;
     const hip=[side*.105,hips,0],knee=seat?[side*(p.pose==='floor'?.25:.14),Math.max(.23,s-.08),-.32]:[side*.115,.47,walk?-phase*.12:-.035],ankle=seat?[side*(p.pose==='floor'?.27:.14),Math.max(.10,s-.43),footZ]:[side*.12,.10+(walk?Math.max(0,phase)*.04:0),footZ];
     limb('upper',i*4+2+j,hip,knee,.068,.073);limb('lower',i*4+2+j,knee,ankle,.047,.054);part('shoe',i*2+j,[ankle[0],ankle[1]-.045,ankle[2]-.06],[.12,.10,.24]);

@@ -9,4 +9,4 @@ render_xpid=$!
 trap 'kill "$render_xpid" 2>/dev/null || true' EXIT
 sleep 1
 export DISPLAY="127.0.0.1:$render_display" LIBGL_ALWAYS_SOFTWARE=1
-node tools/art-review/webgl-harness.mjs
+node --expose-gc tools/art-review/webgl-harness.mjs

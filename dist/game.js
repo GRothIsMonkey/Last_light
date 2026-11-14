@@ -712,7 +712,7 @@ function cullZones(){if(!zoned.length)return;
  if(worldHidden){if(cullCache.key!=='hidden'){for(const m of world.merged)drawn(m,false);for(const m of world.shadowProxies)drawn(m,false);cullCache.key='hidden';zoneState.hidPlain=true;zoneState.inDrain=false;zoneState.cave=0;if(camera.far!==390){camera.far=390;camera.updateProjectionMatrix();sky.scale.setScalar(1);}sky.visible=true;}return;}const p=camera.position,L=night1()?nav.locate(p.x,p.z):null,inD=L?.street==='drain',deepIn=inD&&L.s>97,woods=L?.street==='woods';
  zoneState.inDrain=inD;zoneState.s=inD?L.s:-1;zoneState.cave=inD?smooth((L.s+1.2)/13):0;
  const room=!!chapter3.C.inRoom,nearPortal=!!PORTAL&&Math.hypot(p.x-PORTAL.x,p.z-PORTAL.z)<95,range=room?85:(ctx.night||0)>.5?230:360;
- const key=[room,inD,deepIn,woods,nearPortal,range,woods&&((L.s??0)>200||!!L.w?.patch)].join(':');
+ const key=[room,inD,deepIn,woods,nearPortal,range,(ctx.apoc||0)>.25,woods&&((L.s??0)>200||!!L.w?.patch)].join(':');
  // Distance masks do not depend on where the camera looks. Frustum culling still runs each render.
  if(key===cullCache.key&&Math.hypot(p.x-cullCache.x,p.y-cullCache.y,p.z-cullCache.z)<.5)return;
  Object.assign(cullCache,{x:p.x,y:p.y,z:p.z,key});

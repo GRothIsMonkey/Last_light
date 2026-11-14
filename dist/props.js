@@ -187,7 +187,7 @@ export function buildYards(W){
   for(let k=0;k<3;k++)K.rbox(g,0,.46,-.18+k*.14,1.7,.045,.11,.012,0x8e7458);for(let k=0;k<2;k++)K.rbox(g,0,.66+k*.16,.22,1.7,.1,.04,.012,0x8e7458);
   for(const s of [-1,1]){const leg=K.group(g,s*.74,0,0);K.rbox(leg,0,.22,-.12,.07,.46,.07,.015,0x3d3b38);K.rbox(leg,0,.5,.2,.07,1,.07,.015,0x3d3b38);K.rbox(leg,0,.63,.02,.07,.05,.52,.015,0x3d3b38);K.box(leg,0,.03,.04,.1,.06,.6,0x3d3b38);}
   W.obstacles.push({d0:b.d-.45,d1:b.d+.45,l0:b.lat-.95,l1:b.lat+.95});hook('bench',g);}
- {const o=LOOKOUT.oak;veg.tree(MAIN,o.d,o.lat,groundPoint(o.d,o.lat).y+knoll(o.d,o.lat)-.02,{size:1.35,kind:'oak',force:true});hook('old-oak',null,{d:o.d,lat:o.lat});}
+ {const o=LOOKOUT.oak;veg.tree(MAIN,o.d,o.lat,groundPoint(o.d,o.lat).y+knoll(o.d,o.lat)-.02,{size:1.35,kind:'oak',force:true,natural:true,landmark:true});hook('old-oak',null,{d:o.d,lat:o.lat});}
  {const fd=LOOKOUT.fenceD,g=W.bent(MAIN);const post=lat=>{const y=knoll(fd,lat)-LAWN;K.lathe(g,[[.001,-.2],[.08,-.2],[.075,1.2],[.06,1.28],[.001,1.3]],lat,y,-fd,0x8a7760,6);};
   for(let lat=-17;lat<=17.1;lat+=2.6)post(lat);
   for(const yy of [.55,1.05])for(let lat=-17;lat<17;lat+=2.6){const r=seeded(hashSeed(9,lat,yy))();K.rod(g,[lat,yy+knoll(fd,lat)-LAWN,-fd+.06],[lat+2.6,yy+knoll(fd,lat+2.6)-LAWN+(r-.5)*.05,-fd+.06],.05,FENCE.rail,.045,5);}

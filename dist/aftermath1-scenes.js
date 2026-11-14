@@ -5,6 +5,7 @@
 // hold out a cap or keep hold of it; say one true thing or look at the grown-up who can say it for you. Nothing you choose changes
 // what happened. Nobody is saved in this chapter.
 import * as THREE from './three.module.js';
+import {drapedBlanket} from './aftermath1-detail.js';
 import {headingTo,wrap} from './people.js';
 import {ACT} from './chapter8-acting.js';
 import {ACT9,G,asC} from './aftermath1-acting.js';
@@ -36,9 +37,7 @@ export function scenes9(X){
  const lieOn=(a,i,flip=false)=>{const s=SCH.cotLie(i,flip);put(a,s,s.a,lieG(),{noBlock:true});};
  // things people wear here: a blanket round the shoulders, a bandage, a splint (taken off again when the chapter resets)
  const WORN=[];
- function blanket(a,color=0x8c8982){if(!a?.person||a.worn?.blanket)return;const g=new THREE.Group();g.name='a1-blanket';const m=new THREE.MeshStandardMaterial({color,roughness:1,side:THREE.DoubleSide});m.name='a1-blanket';
-  const body=new THREE.Mesh(new THREE.CylinderGeometry(.205,.27,.5,12,1,true,.5,Math.PI*2-1),m);body.scale.set(1,1,.78);body.position.set(0,-.04,.02);body.rotation.y=Math.PI;g.add(body);
-  const top=new THREE.Mesh(new THREE.SphereGeometry(.21,12,6,0,Math.PI*2,0,Math.PI/2.4),m);top.scale.set(1,.42,.8);top.position.set(0,.19,.03);g.add(top);a.person.parts.torso.add(g);(a.worn||={}).blanket=g;WORN.push([a,'blanket',g]);}
+ function blanket(a,color=0x8c8982){if(!a?.person||a.worn?.blanket)return;const g=new THREE.Group();g.name='a1-blanket';g.add(drapedBlanket(color));a.person.parts.torso.add(g);(a.worn||={}).blanket=g;WORN.push([a,'blanket',g]);}
  function bandage(a){if(!a?.person||a.worn?.bandage)return;const g=new THREE.Mesh(new THREE.TorusGeometry(.093,.017,6,18),new THREE.MeshStandardMaterial({color:0xf1eee6,roughness:1}));g.material.name='a1-bandage';g.rotation.x=Math.PI/2;g.position.set(0,.052,.004);g.scale.set(1,1.1,1);a.person.parts.head.add(g);(a.worn||={}).bandage=g;WORN.push([a,'bandage',g]);}
  function splint(a){if(!a?.person||a.worn?.splint)return;const g=new THREE.Mesh(new THREE.CylinderGeometry(.062,.058,.36,10),new THREE.MeshStandardMaterial({color:0xe9e6dc,roughness:.9}));g.material.name='a1-splint';a.person.parts.rshin.add(g);(a.worn||={}).splint=g;WORN.push([a,'splint',g]);}
  function unwear(){for(const [a,kk,g] of WORN){g.removeFromParent();if(a.worn)delete a.worn[kk];}WORN.length=0;}

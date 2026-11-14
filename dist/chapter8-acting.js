@@ -19,8 +19,8 @@
 //  crawl      on hands and knees (a duct, under a door), moving
 //  propped    half lying back against a trunk, legs out, one hand on his stomach (Alex at the oak)
 //  still      lying on his back on the ground, not moving (Jamie)
-import {P,BODY} from './rig.js';
-import {Vector3} from './three.module.js';
+import {P,BODY,headPos,headQuat} from './rig.js';
+import {Vector3,Quaternion} from './three.module.js';
 const set3=(p,o,x,y,z)=>{p[o]=x;p[o+1]=y;p[o+2]=z;};
 const mix3=(p,o,x,y,z,w)=>{p[o]+=(x-p[o])*w;p[o+1]+=(y-p[o+1])*w;p[o+2]+=(z-p[o+2])*w;};
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -29,6 +29,8 @@ const T=ctx=>ctx?.clock??0;
 function local(c,x,y,z,out){const a=c.pa,dx=x-c.px,dz=z-c.pz,fx=Math.sin(a),fz=-Math.cos(a),rx=Math.cos(a),rz=Math.sin(a),s=c.person?.group?.scale?.x||1,gy=c.person?.group?.position?.y||0;
  out.x=(dx*rx+dz*rz)/s;out.y=(y-gy)/s;out.z=-(dx*fx+dz*fz)/s;return out;}
 const _l={x:0,y:0,z:0},_contact=new Vector3();
+const _face=new Vector3(),_fp=new Vector3(),_fq=new Quaternion();
+function faceHands(p,k=1){headPos(p,_fp);headQuat(p,_fq);for(const side of [-1,1]){_face.set(side*.052,-.015,-.118).applyQuaternion(_fq).add(_fp);mix3(p,side<0?P.lh:P.rh,_face.x,_face.y,_face.z,k);}}
 export const ACT={
  floor({lean=-.12,arms='knees',look=0,lookPitch=-.1,shiver=0}={}){return (p,ctx)=>{const t=T(ctx),br=Math.sin(t*1.7)*.004;
   set3(p,P.root,0,.11+br,.04);p[P.lean]=lean+Math.sin(t*1.7)*.01;p[P.yaw]=0;p[P.twist]=0;p[P.roll]=0;p[P.hy]=look;p[P.hp]=lookPitch;
@@ -39,8 +41,8 @@ export const ACT={
   else{set3(p,P.lh,-.3,.05,.05);set3(p,P.rh,.3,.05,.06);set3(p,P.le,-1,0,.5);set3(p,P.re,1,0,.5);}};},
  seat(h=.45,{hands='knees',look=0,lookPitch=0,lean=.1}={}){return (p,ctx)=>{const t=T(ctx);set3(p,P.root,0,h+.07+Math.sin(t*1.9)*.003,.06);p[P.lean]=lean;p[P.yaw]=0;p[P.twist]=0;p[P.roll]=0;p[P.hy]=look;p[P.hp]=lookPitch;
   set3(p,P.lf,-.12,BODY.ankle,-.44);set3(p,P.rf,.13,BODY.ankle,-.41);p[P.lfp]=0;p[P.rfp]=0;set3(p,P.lk,-.1,1,-.3);set3(p,P.rk,.1,1,-.3);
-  if(hands==='table'){set3(p,P.lh,-.16,h+.36,-.42);set3(p,P.rh,.16,h+.36,-.4);}else if(hands==='face'){set3(p,P.lh,-.05,h+.58,-.2);set3(p,P.rh,.05,h+.58,-.19);p[P.lean]=.4;p[P.hp]=-.4;}
-  else{set3(p,P.lh,-.14,h+.12,-.3);set3(p,P.rh,.14,h+.12,-.28);}set3(p,P.le,-1,-.2,.2);set3(p,P.re,1,-.2,.2);};},
+  if(hands==='table'){set3(p,P.lh,-.16,h+.36,-.42);set3(p,P.rh,.16,h+.36,-.4);}else if(hands==='face'){p[P.lean]=.4;p[P.hp]=-.4;faceHands(p);}
+  else{set3(p,P.lh,-.14,h+.18,-.30);set3(p,P.rh,.13,h+.17,-.28);p[P.roll]=.012*Math.sin(t*.65);}set3(p,P.le,-1,-.2,.2);set3(p,P.re,1,-.2,.2);};},
  kneel({side=1,lookPitch=-.2,look=0,hands='knee'}={}){return (p,ctx)=>{const t=T(ctx),s=side;set3(p,P.root,0,.47+Math.sin(t*1.8)*.003,.02);p[P.lean]=.12;p[P.yaw]=0;p[P.twist]=0;p[P.roll]=0;p[P.hy]=look;p[P.hp]=lookPitch;
   // (the down knee: foot behind, knee on the ground under the hip; the up knee: foot planted ahead)
   const dn=s>0?P.rf:P.lf,up=s>0?P.lf:P.rf,dk=s>0?P.rk:P.lk,uk=s>0?P.lk:P.rk;set3(p,dn,s*.11,.07,.36);set3(p,dk,0,-1,-.3);set3(p,up,-s*.12,BODY.ankle,-.4);set3(p,uk,0,.4,-1);p[P.lfp]=s>0?0:.5;p[P.rfp]=s>0?.5:0;
@@ -76,7 +78,7 @@ export const ACT={
  // crying with the whole body: the shoulders lift with each catch of breath (the face's own sob pulse), the head goes down,
  // the hands to the face (or wrapped round himself, or hanging)
  sob(c,{base=null,hands='face',k=1}={}){return (p,ctx)=>{base?.(p,ctx);const pu=(c?.person?.face?.pulse||0)*k,t=T(ctx);p[P.root+1]+=pu*.02-.018*k;p[P.lean]+=(.1+pu*.07)*k;p[P.hp]-=(.3-pu*.1)*k;p[P.roll]+=(Math.sin(t*1.3)*.014+Math.sin(t*2.7+1)*.006)*k;p[P.hp]+=(Math.sin(t*19)*.003+Math.sin(t*31)*.002)*k;
-   if(hands==='face'){const hy=p[P.root+1]+.55+pu*.015,hz=p[P.root+2]-.12-p[P.lean]*.32;mix3(p,P.lh,-.045,hy,hz,k);mix3(p,P.rh,.045,hy-.008,hz,k);mix3(p,P.le,-1,-.7,.25,k);mix3(p,P.re,1,-.7,.25,k);}
+   if(hands==='face'){faceHands(p,k);mix3(p,P.le,-1,-.7,.25,k);mix3(p,P.re,1,-.7,.25,k);}
    else if(hands==='arms'){const y=p[P.root+1]+.3+pu*.02;mix3(p,P.lh,.11,y,-.12,k);mix3(p,P.rh,-.11,y-.03,-.1,k);}
    else{p[P.lh+1]-=.03*k;p[P.rh+1]-=.03*k;}};},
  // holding on to someone: both hands round to their back, leaning in, head beside theirs (drawn from this one's side)
@@ -92,7 +94,7 @@ export const ACT={
  shake(base=null,{k=1}={}){return (p,ctx)=>{base?.(p,ctx);const t=T(ctx),a=Math.sin(t*41)*.5+Math.sin(t*67+1)*.3+Math.sin(t*23+2)*.2;p[P.root]+=a*.004*k;p[P.lh+1]+=a*.006*k;p[P.rh+1]-=a*.006*k;p[P.lh]+=Math.sin(t*53)*.004*k;p[P.rh]+=Math.sin(t*59)*.004*k;p[P.hp]+=a*.01*k;};},
  // sitting with his head in his hands; rocking a little if asked
  headInHands({seatH=0,rock=0}={}){return (p,ctx)=>{const t=T(ctx);if(seatH>0)ACT.seat(seatH)(p,ctx);else ACT.floor({arms:'knees'})(p,ctx);const r=Math.sin(t*1.2)*.07*rock;p[P.lean]+=.42+r;p[P.hp]=-.5;
-   const hy=p[P.root+1]+.47,hz=p[P.root+2]-.22;set3(p,P.lh,-.06,hy,hz);set3(p,P.rh,.06,hy-.01,hz);set3(p,P.le,-1,-.8,.3);set3(p,P.re,1,-.8,.3);};},
+   faceHands(p);set3(p,P.le,-1,-.8,.3);set3(p,P.re,1,-.8,.3);};},
  // a hand on someone's shoulder (comfort), over whatever else
  shoulder(c,other,{hand='r',k=1,base=null}={}){return (p,ctx)=>{base?.(p,ctx);if(!other?.person)return;const sd=hand==='r'?-1:1;other.person.parts.torso.updateWorldMatrix(true,false);_contact.set(sd*.145,.16,0).applyMatrix4(other.person.parts.torso.matrixWorld);
    local(c,_contact.x,_contact.y,_contact.z,_l);const o=hand==='r'?P.rh:P.lh;mix3(p,o,_l.x,_l.y,_l.z,k);mix3(p,hand==='r'?P.re:P.le,hand==='r'?1:-1,-.4,.3,k);};},

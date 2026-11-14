@@ -17,7 +17,7 @@ export async function setup(THREE,canvas){
  for(const name of ['texImage2D','texSubImage2D']){const raw=gl[name].bind(gl);gl[name]=(...args)=>{const j=args.length-1,im=args[j];if(im?.getContext){const data=im.getContext('2d').getImageData(0,0,im.width,im.height);args[j]={width:im.width,height:im.height,data:data.data};}return raw(...args);};}
  globalThis.renderContext=gl;
  globalThis.FakeRenderer=class extends THREE.WebGLRenderer{
-  constructor(){super({canvas,context:gl});const draw=this.render.bind(this),ratio=this.setPixelRatio.bind(this);this.render=()=>{};this.setPixelRatio=()=>ratio(1);
+  constructor(){super({canvas,context:gl});const draw=this.render.bind(this),ratio=this.setPixelRatio.bind(this);this.render=(s,c)=>{if(this.getRenderTarget())draw(s,c);};this.setPixelRatio=()=>ratio(1);
    this.debug.onShaderError=(g,p,vs,fs)=>{throw Error('Shader: '+g.getProgramInfoLog(p)+'\n'+g.getShaderInfoLog(vs)+'\n'+g.getShaderInfoLog(fs));};
    this.capture=(s,c)=>{const start=performance.now();draw(s,c);gl.finish();return {ms:performance.now()-start,...this.info.render};};
   }

@@ -41,11 +41,12 @@ export function streetActs(X){
  // ---- the thing, on the skyline: its own body (a second instance of the presence, huge, never fogged out) ----------------------------
  const SKY=createPresence({scene,sfx:(n,p,op)=>sound(n,p,op),floorAt:(x,z)=>town.floorAt(x,z),sky:true});
  SKY.group.name='chapter8-presence-skyline';SKY.group.traverse(o2=>{if(o2.material){const ms=Array.isArray(o2.material)?o2.material:[o2.material];for(const m of ms)m.fog=false;}});
- const BODY=SP(1360,78,-6),RISE=[[1222,18,58],[1236,70,64],[1205,-34,52],[1270,-8,66],[1190,92,48]];
- function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+6,z:BODY.z},r:92,squash:[1.26,1.15,1.42],rot:2.7,fog:0});SKY.lean(.2);
-  // its limbs: up out of the ground round the body, into the deck, and over: the probe points drift over the roofs
-  RISE.forEach(([d,lat,len],i)=>{const r=SP(d,lat,-4),toward=SP(1080-i*40,(i%2?1:-1)*20,0);const dir=[toward.x-r.x,len*1.4,toward.z-r.z];
-   SKY.set(i,{root:[r.x,r.y,r.z],dir,len,r0:3.2+i%3*.7,r1:.65,state:'emerge',probe:[lerp(r.x,toward.x,.55),r.y+len*.8,lerp(r.z,toward.z,.55)],speed:.35});SKY.limbs[i].probeR=9+i*2;});}
+ const BODY=SP(1540,100,-6),REACH=[[1315,18,26],[1360,48,35],[1285,-26,22],[1400,-8,33],[1265,70,18]];
+ function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+6,z:BODY.z},r:92,squash:[1.26,1.15,1.42],rot:2.46,fog:0});SKY.lean(.2);
+  // Each reach grows from the same body. The sixth limb remains the authored street strike.
+  SKY.update(0);SKY.mass.updateMatrixWorld(true);
+  REACH.forEach(([d,lat,dy],i)=>{const r=new THREE.Vector3((i%2?1:-1)*.17,1.16,.80-i*.30).applyMatrix4(SKY.mass.matrixWorld),to=SP(d,lat,dy),dir=new THREE.Vector3(to.x,to.y,to.z).sub(r),len=dir.length();
+   SKY.set(i,{root:r.toArray(),dir:dir.toArray(),len,r0:3.6+i%3*.5,r1:.65,state:'probe',probe:[to.x,to.y,to.z],speed:.16});SKY.limbs[i].probeR=2.5+i*.4;});}
  // ---- the things in the street: made copies of Danny's change (pale, smiling), a second hunter, and far ones that only watch ----------
  const GRIN=(()=>{const g=new THREE.Group();const mouth=new THREE.Mesh(new THREE.TorusGeometry(.085,.016,6,16,Math.PI),new THREE.MeshBasicMaterial({color:0x140a08}));mouth.rotation.set(0,0,Math.PI);g.add(mouth);
   const teeth=new THREE.Mesh(new THREE.TorusGeometry(.085,.009,4,16,Math.PI),new THREE.MeshStandardMaterial({color:0xe8e0cc,roughness:.4}));teeth.rotation.set(0,0,Math.PI);teeth.position.z=-.006;teeth.scale.set(.96,.94,1);g.add(teeth);return g;})();

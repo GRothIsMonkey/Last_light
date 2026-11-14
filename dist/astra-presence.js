@@ -31,7 +31,7 @@ function pleura(a,b,c,d){const p=[],co=[],ix=[],N=16,M=9;
 }
 export function presenceOrganism({sky=false}={}){
  const group=new THREE.Group();group.name='c8-presence-mass';group.userData.art='astra-colossal-organism';group.userData.design='hollow-vault';
- const skin=new THREE.MeshStandardMaterial({color:sky?0x8a8176:0x9b9080,vertexColors:true,roughness:.77,metalness:.04,side:THREE.DoubleSide});skin.name='astra-presence-dermis';
+ const skin=new THREE.MeshStandardMaterial({color:sky?0x8a8176:0x9b9080,vertexColors:true,roughness:.77,metalness:.04,side:THREE.DoubleSide});skin.name='astra-presence-dermis';if(sky){skin.emissive.setRGB(.07,.014,.008);skin.emissiveIntensity=1;}
  const time={value:0};group.userData.animate=t=>{time.value=t;};
  skin.onBeforeCompile=s=>{s.uniforms.presenceTime=time;
   s.vertexShader='uniform float presenceTime;varying vec3 organismP;\n'+s.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
