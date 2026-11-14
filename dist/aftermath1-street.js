@@ -123,7 +123,7 @@ export function createStreet9({scene,world,nav,ch8,STREET}){
  function show(state){ST.state=state||null;
   if(!state){pickup.visible=false;for(const g2 of GATES)g2.set(0);STREET?.after?.(false);town?.reset?.();if(ruin){if(nav.room===ruin.room)nav.setRoom(null);ruin.setBlocked(null);ruin.show(false);ruin.reset();ruin.syncCuts();}root.removeFromParent();return;}
   cutWorld(world);ruin.show(true);ruin.stage(2);STREET?.after?.(true);settle();town?.update?.(.05,{});
-  const oct=state==='october';
+  const oct=state==='october';town?.district?.settle(oct?'october':'september');
   ruin.POLE.g.visible=false;
   if(oct){const p=ruin.pits.heave;p.g.visible=false;p.cut.on=false;ruin.F.g.visible=false;ruin.syncCuts();}
   for(const g2 of GATES)g2.set(0);

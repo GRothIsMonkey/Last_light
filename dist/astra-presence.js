@@ -1,39 +1,79 @@
-// The Presence: a colossal, arched nightmare organism. No eyes, human face or boss silhouette.
-// Local origin is at ground level; the chapter owns placement, reveal, impact and sealing.
+// A continuous vaulted trunk and descending hollow neck, with unequal load-bearing arches.
+// The chapter owns world scale, strikes and sealing; this file owns anatomy only.
 import * as THREE from './three.module.js';
 import {mergeArt} from './astra-anatomy.js';
-const V=p=>new THREE.Vector3(...p),UP=new THREE.Vector3(0,1,0);
-function sweep(points,radii,sides=14,samples=48){const curve=new THREE.CatmullRomCurve3(points.map(V)),frames=curve.computeFrenetFrames(samples,false),p=[],co=[],ix=[];
- for(let i=0;i<=samples;i++){const u=i/samples,at=curve.getPoint(u),k=Math.min(radii.length-2,Math.floor(u*(radii.length-1))),t=u*(radii.length-1)-k,r=radii[k]+(radii[k+1]-radii[k])*t;for(let j=0;j<=sides;j++){const a=j/sides*Math.PI*2,w=1+.045*Math.sin(a*5+u*73)+.027*Math.sin(u*149),q=at.clone().addScaledVector(frames.normals[i],Math.cos(a)*r*w).addScaledVector(frames.binormals[i],Math.sin(a)*r*w);p.push(...q);const shade=.66+.27*Math.max(0,Math.cos(a))+.055*Math.sin(u*37+a*4);co.push(shade,shade*.96,shade*.90);if(i<samples&&j<sides){const n=i*(sides+1)+j;ix.push(n,n+sides+1,n+1,n+1,n+sides+1,n+sides+2);}}}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('color',new THREE.Float32BufferAttribute(co,3));g.setIndex(ix);g.computeVertexNormals();return g;}
-export function presenceOrganism({sky=false}={}){
- const group=new THREE.Group();group.name='c8-presence-mass';group.userData.art='astra-colossal-organism';const pieces=[];
- const skin=new THREE.MeshStandardMaterial({color:sky?0x70675d:0x8b8172,vertexColors:true,roughness:.68,metalness:.035});skin.name='astra-presence-dermis';
- skin.onBeforeCompile=s=>{s.vertexShader='varying vec3 organismP;\n'+s.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\norganismP=position;');s.fragmentShader='varying vec3 organismP;\n'+s.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
- float stria=sin(organismP.z*125.+sin(organismP.x*42.)*3.)*sin(organismP.y*108.);
- diffuseColor.rgb*=.9+.12*stria;`);};skin.customProgramCacheKey=()=>'astra-presence-striae-v1';
- const put=(geo)=>pieces.push({geo,color:0xffffff});
- // Long back, narrow abdomen, neck drawn forward over the roofs.
- put(sweep([[0,.66,1.03],[0,.94,.56],[.02,1.03,.12],[.01,.84,-.34],[0,.65,-.76],[0,.55,-1.18]],[.07,.21,.235,.15,.085,.052],24,84));
- // Eight angular load-bearing limbs: close enough to anatomy to recognize, too long to accept.
- for(const s of [-1,1])for(let k=0;k<4;k++){
-  const z=.68-k*.38,y=.86+Math.sin(k*.82)*.15,spread=.53+k*.07;
-  put(sweep([[s*.13,y,z],[s*.34,y+.24-k*.035,z+.16],[s*spread,.64,z+.05],[s*(spread+.08),.29,z-.12],[s*(spread+.11),-.015,z-.27]],[.055,.048,.028,.019,.004],12,42));
-  // Secondary tendon crossing the knee, making the joint feel loaded.
-  put(sweep([[s*.22,y+.08,z],[s*(spread-.035),.63,z+.025],[s*(spread+.04),.35,z-.10]],[.015,.014,.004],8,24));
+const V=p=>new THREE.Vector3(...p),mix=(a,b,t)=>a+(b-a)*t;
+function tube(points,radii,sides=12,samples=40){
+ const curve=new THREE.CatmullRomCurve3(points.map(V)),f=curve.computeFrenetFrames(samples,false),pos=[],col=[],ix=[];
+ for(let i=0;i<=samples;i++){const t=i/samples,p=curve.getPoint(t),j=Math.min(radii.length-2,Math.floor(t*(radii.length-1))),u=t*(radii.length-1)-j,r=mix(radii[j],radii[j+1],u);
+  for(let k=0;k<=sides;k++){const a=k/sides*Math.PI*2,fold=1+.055*Math.sin(a*5+t*31),q=p.clone().addScaledVector(f.normals[i],Math.cos(a)*r*fold).addScaledVector(f.binormals[i],Math.sin(a)*r*fold);
+   pos.push(...q);const c=.64+.24*Math.max(0,Math.cos(a))+.06*Math.sin(t*41+a*3);col.push(c,c*.91,c*.81);
+   if(i<samples&&k<sides){const n=i*(sides+1)+k;ix.push(n,n+1,n+sides+1,n+1,n+sides+2,n+sides+1);}}
  }
- // Shell folds and vertebral ridges read as geological scale from the street.
- for(let k=0;k<13;k++){const z=.78-k*.115,y=.82+.19*Math.sin((k/12)*Math.PI);for(const s of [-1,1])put(sweep([[0,y+.12,z],[s*.10,y+.05,z-.032],[s*.19,y-.07,z-.045],[s*.17,y-.17,z-.06]],[.022,.018,.011,.003],8,22));
-  put(sweep([[0,y+.03,z],[.012,y+.21,z+.04],[.008,y+.23,z+.085]],[.035,.016,.0015],8,16));}
- // Tapered vertical aperture: a folded, open end to the organism, not a skull.
- const outline=[[0,.71,-1.16],[-.065,.67,-1.24],[-.094,.50,-1.28],[-.073,.29,-1.30],[0,.03,-1.29],[.073,.29,-1.30],[.094,.50,-1.28],[.065,.67,-1.24],[0,.71,-1.16]];
- put(sweep(outline,[.028,.035,.028,.021,.013,.021,.028,.035,.028],14,80));
- for(const s of [-1,1]){put(sweep([[s*.10,.77,-.63],[s*.12,.70,-.88],[s*.074,.68,-1.17],[s*.036,.43,-1.28],[0,.03,-1.29]],[.043,.03,.022,.011,.003],12,52));}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(ix);g.computeVertexNormals();return g;
+}
+// [z, centre-x, centre-y, horizontal radius, vertical radius]. A continuous skin,
+// not overlapping body primitives. The terminal section is deliberately open.
+const RINGS=[[1.32,-.06,.92,.008,.016],[1.18,-.07,1.04,.13,.18],[.91,-.05,1.19,.28,.31],[.59,-.02,1.26,.34,.34],[.28,.025,1.30,.29,.30],[-.06,.06,1.28,.24,.25],[-.39,.105,1.25,.18,.17],[-.73,.13,1.23,.13,.125],[-1.02,.16,1.16,.105,.14],[-1.28,.19,.99,.09,.28],[-1.49,.21,.76,.10,.43],[-1.65,.22,.65,.125,.52]];
+function trunk(){const curve=new THREE.CatmullRomCurve3(RINGS.map(r=>new THREE.Vector3(r[1],r[2],r[0]))),pos=[],col=[],ix=[],N=110,S=56;
+ for(let j=0;j<=N;j++){const t=j/N,u=t*(RINGS.length-1),a=Math.min(RINGS.length-2,Math.floor(u)),f=u-a,c=curve.getPoint(t),rx=mix(RINGS[a][3],RINGS[a+1][3],f),ry=mix(RINGS[a][4],RINGS[a+1][4],f);
+  for(let k=0;k<=S;k++){const q=k/S*Math.PI*2,flute=1+.055*Math.sin(q*7+t*17)+.028*Math.cos(q*13-t*31),ridge=.017*Math.sin(t*87+q*2)*Math.sin(Math.PI*t),x=c.x+Math.cos(q)*rx*flute,y=c.y+Math.sin(q)*ry*flute+ridge;
+   pos.push(x,y,c.z);const c2=.62+.29*Math.max(0,Math.sin(q))-.08*Math.pow(Math.sin(t*84+q*3),6);col.push(c2,c2*.9,c2*.80);
+   if(j<N&&k<S){const n=j*(S+1)+k;ix.push(n,n+S+1,n+1,n+1,n+S+1,n+S+2);}}
+ }
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(ix);g.computeVertexNormals();return g;
+}
+function pleura(a,b,c,d){const p=[],co=[],ix=[],N=16,M=9;
+ for(let j=0;j<=N;j++)for(let k=0;k<=M;k++){const u=j/N,v=k/M,l=V(a).lerp(V(b),u),r=V(c).lerp(V(d),u),q=l.lerp(r,v),edge=Math.sin(u*Math.PI)*Math.sin(v*Math.PI);
+  q.y-=edge*(.09+.024*Math.sin(u*40));q.z+=edge*.016*Math.sin(v*36+u*17);p.push(...q);const t=.43+.16*Math.abs(Math.sin(u*31))+.16*(1-v);co.push(t,t*.72,t*.60);
+  if(j<N&&k<M){const n=j*(M+1)+k;ix.push(n,n+1,n+M+1,n+1,n+M+2,n+M+1);}}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('color',new THREE.Float32BufferAttribute(co,3));g.setIndex(ix);g.computeVertexNormals();return g;
+}
+export function presenceOrganism({sky=false}={}){
+ const group=new THREE.Group();group.name='c8-presence-mass';group.userData.art='astra-colossal-organism';group.userData.design='hollow-vault';
+ const skin=new THREE.MeshStandardMaterial({color:sky?0x8a8176:0x9b9080,vertexColors:true,roughness:.77,metalness:.04,side:THREE.DoubleSide});skin.name='astra-presence-dermis';
+ const time={value:0};group.userData.animate=t=>{time.value=t;};
+ skin.onBeforeCompile=s=>{s.uniforms.presenceTime=time;
+  s.vertexShader='uniform float presenceTime;varying vec3 organismP;\n'+s.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
+   organismP=position;float load=smoothstep(.12,1.3,position.y);
+   transformed.x+=load*.005*sin(presenceTime*.19+position.z*2.);
+   transformed.y+=load*.0035*sin(presenceTime*.23-position.z*3.);`);
+  s.fragmentShader='varying vec3 organismP;\n'+s.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
+   float fold=sin(organismP.z*156.+sin(organismP.x*47.)*2.7+organismP.y*32.);
+   float grain=sin(organismP.x*397.)*sin(organismP.y*311.)*sin(organismP.z*251.);
+   diffuseColor.rgb*=.91+.075*fold+.035*grain;`);
+ };skin.customProgramCacheKey=()=>'lastlight-hollow-vault-v2';
+ const pieces=[{geo:trunk()}],add=geo=>pieces.push({geo});
+ // Six unequal buttresses. Planted ends stay fixed; shoulders share the trunk's motion.
+ const legs=[
+  [[-.20,1.26,.85],[-.53,1.65,1.01],[-.91,.94,1.13],[-1.08,.30,.91],[-1.12,.008,.72]],
+  [[-.25,1.30,.39],[-.68,1.48,.34],[-.96,.71,.19],[-1.14,.02,-.03]],
+  [[-.13,1.24,-.12],[-.47,1.52,-.37],[-.79,.64,-.76],[-.88,.01,-.94]],
+  [[.21,1.29,.74],[.45,1.39,.97],[.75,.58,1.15],[.90,.006,1.18]],
+  [[.25,1.28,.22],[.66,1.60,.02],[1.01,.86,-.20],[1.08,.01,-.55]],
+  [[.20,1.23,-.29],[.46,1.40,-.65],[.67,.65,-1.03],[.79,.01,-1.18]]
+ ];
+ for(const [i,l]of legs.entries()){
+  add(tube(l,l.length===5?[.095,.083,.049,.027,.009]:[.092,.08,.039,.008],16,55));
+  const tendon=l.map((p,j)=>[p[0]+(i<3?.025:-.025),p[1]-.028,p[2]+.021]);add(tube(tendon,l.length===5?[.025,.023,.020,.009,.002]:[.027,.021,.012,.002],9,38));
+  const s=i<3?-1:1,a=l[0],b=l[1],c=[s*.12,1.12,a[2]+.22],d=[s*.19,.86,a[2]-.12];add(pleura(a,b,c,d));
+  const foot=l.at(-1);for(const j of [-1,1])add(tube([l.at(-2),foot,[foot[0]+j*.075,.003,foot[2]-.10]],[.025,.012,.001],9,20));
+ }
+ // Three folded dorsal seams follow the spine; no ornamental spike crown.
+ for(let i=0;i<3;i++){
+  const z=.95-i*.34,s=i%2?-1:1;
+  add(tube([[s*.11,1.25,z+.12],[s*.20,1.51,z],[s*.12,1.65-i*.025,z-.13],[.02,1.43,z-.35]],[.035,.045,.028,.006],12,36));
+  add(pleura([s*.11,1.25,z+.12],[s*.12,1.65-i*.025,z-.13],[0,1.22,z+.10],[.02,1.39,z-.35]));
+ }
+ // The underslung keel leaves an open ribbed space under the torso.
+ for(let i=0;i<7;i++){const z=.93-i*.20;for(const s of [-1,1])add(tube([[s*.22,1.22,z],[s*.29,1.05,z-.06],[s*.15,.81,z-.11],[.05,.74,z-.15]],[.026,.029,.017,.006],10,26));}
  const body=new THREE.Mesh(mergeArt(pieces),skin);body.name='presence-arched-carapace';body.castShadow=body.receiveShadow=true;group.add(body);
- // Inset funnel gives parallax at the opening, and never emits light.
- const cp=[],idx=[],closed=outline.slice(0,-1);for(let ring=0;ring<4;ring++){const u=ring/3;for(const q of closed)cp.push(q[0]*(1-u*.84),.39+(q[1]-.39)*(1-u*.83),q[2]+u*.26);}
- for(let r=0;r<3;r++)for(let i=0;i<8;i++){const a=r*8+i,b=r*8+(i+1)%8;idx.push(a,b,a+8,b,b+8,a+8);}const cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(cp,3));cg.setIndex(idx);cg.computeVertexNormals();
- const cavity=new THREE.Mesh(cg,new THREE.MeshStandardMaterial({color:0x070605,roughness:1,side:THREE.DoubleSide}));cavity.name='presence-aperture-depth';group.add(cavity);
- const throat=new THREE.Mesh(new THREE.CircleGeometry(.07,24),new THREE.MeshBasicMaterial({color:0x030302}));throat.position.set(0,.39,-.995);throat.scale.set(.6,1.7,1);throat.rotation.y=Math.PI;group.add(throat);
+ // A deep folded funnel; parallax and self-occlusion survive a close look.
+ const pos=[],cols=[],idx=[],N=48,R=12;
+ for(let j=0;j<=R;j++)for(let i=0;i<=N;i++){const u=j/R,a=i/N*Math.PI*2,w=1-u*.88,fold=1+.065*Math.sin(a*7+u*8),x=.22+Math.cos(a)*.124*w*fold,y=.65+Math.sin(a)*.518*w*fold,z=-1.651+u*.43;
+  pos.push(x,y,z);const c=.19*(1-u)+.016;cols.push(c,c*.55,c*.48);if(j<R&&i<N){const n=j*(N+1)+i;idx.push(n,n+1,n+N+1,n+1,n+N+2,n+N+1);}}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(cols,3));g.setIndex(idx);g.computeVertexNormals();
+ const cavity=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.5,side:THREE.DoubleSide}));cavity.name='presence-aperture-depth';group.add(cavity);
+ const voidMesh=new THREE.Mesh(new THREE.CircleGeometry(.07,32),new THREE.MeshBasicMaterial({color:0x020102,side:THREE.DoubleSide}));voidMesh.position.set(.22,.65,-1.20);voidMesh.scale.set(.32,1,1);group.add(voidMesh);
  return group;
 }

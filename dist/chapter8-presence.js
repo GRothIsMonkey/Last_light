@@ -133,7 +133,7 @@ export function createPresence({scene,sfx=()=>{},floorAt=()=>0,sky=false}){
    L.splay=damp(L.splay,L.state==='strike'?.9:L.state==='probe'?.45:L.state==='drag'?.05:.2,3,dt);
    place(L);}
   // the mass leans in and out a little even standing still: it is breathing, or pushing
-  if(mass.visible){M.lean=damp(M.lean,M.leanTo,.6,dt);const br=Math.sin(U.t.value*.9)*.03;mass.position.copy(M.at).add(_c.set(0,0,-M.lean*4));mass.scale.set(M.r*M.squash.x*(1+br),M.r*M.squash.y*(1-br*.5),M.r*M.squash.z*(1+M.lean*.3));
+  if(mass.visible){M.lean=damp(M.lean,M.leanTo,.35,dt);mass.position.copy(M.at).add(_c.set(0,0,sky?0:-M.lean*4));mass.scale.set(M.r*M.squash.x,M.r*M.squash.y,M.r*M.squash.z*(1+(sky?0:M.lean*.18)));mass.userData.animate?.(U.t.value);
    U.press.value=M.lean;mass.rotation.y=M.rot||0;
    for(const F of FOG){F.s.visible=M.fog>0;if(!F.s.visible)continue;const a=F.ph+U.t.value*.05,sp=M.r*(1.1+.25*Math.sin(F.ph)),fx=Math.sin(F.ph*2.3)*M.r*M.squash.x*.9,fy=Math.cos(F.ph*1.7)*M.r*M.squash.y*.55;
     F.s.position.set(mass.position.x+fx+Math.sin(a)*1.5,mass.position.y+fy,mass.position.z+(M.fogDir||-1)*(M.r*M.squash.z*.6+F.k*.9));F.s.scale.set(sp,sp*.7,1);F.s.material.opacity=M.fog*(.22+.1*Math.sin(a*1.3));}}

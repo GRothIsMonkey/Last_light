@@ -1,3 +1,4 @@
+import {catastropheSkyGLSL} from './catastrophe-sky.js';
 import {createChapterThreeArt} from './chapter3-art.js';
 import {createChapterFourArt} from './chapter4-art.js';
 import * as THREE from './three.module.js';
@@ -62,15 +63,7 @@ const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:
  // (Chapter Six: a thunderstorm's low ceiling, heavier toward the horizon, and the sheet of a lightning flash)
  float deck=.62+.38*cloud(uv*vec2(1.3,3.1)+vec2(storm*2.,1.7)),sk=smoothstep(0.,.55,storm);vec3 cover=mix(mix(vec3(.5,.53,.56),vec3(.3,.33,.33),smoothstep(.45,1.,storm)),vec3(.1,.11,.14),night)*deck;
  col=mix(col,cover,sk*mix(.98,.86,h));col+=vec3(.78,.82,.92)*flash*(.55+.45*deck)*sk;
- // (Chapter Eight: the sky over Oak Hollow when the thing under it is out. A low deck, churning fast, lit dull red from below by
- // the fires and from one side by the glow over the open ground at the court; it tears; red-violet light moves inside it)
- if(apoc>0.){vec2 q=uv*vec2(1.05,2.4)+vec2(apocT*.055,apocT*.021);float c1=cloud(q),c2=cloud(q*1.85+vec2(-apocT*.12,apocT*.05)),c3=cloud(q*.45+vec2(apocT*.018,-apocT*.01));
-  float churn=c1*.55+c2*.3+c3*.15,toward=pow(max(dot(n,normalize(apocDir)),0.),2.6),hz=1.-smoothstep(0.,.5,h),rift=smoothstep(.62,.82,c2)*smoothstep(.15,.6,h);
-  vec3 top=vec3(.045,.008,.012),under=mix(vec3(.2,.025,.02),vec3(.62,.1,.035),clamp(toward*.85+hz*.4,0.,1.));
-  vec3 cc=mix(top,under,smoothstep(.22,.85,churn)*(.4+.6*hz)+toward*.35);cc+=vec3(1.,.28,.07)*toward*hz*.6+vec3(.55,.06,.03)*rift*(.4+toward);
-  float rim=pow(toward,2.)*smoothstep(.10,.28,h)*(1.-smoothstep(.31,.55,h));
-  cc+=vec3(.64,.16,.065)*rim*(.65+.35*c2);
-  col=mix(col,cc,smoothstep(0.,.3,apoc));col+=vec3(.95,.25,.42)*flash*apoc*(.35+.65*churn);}
+ ${catastropheSkyGLSL}
  gl_FragColor=vec4(col,1.);}`});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);
 
@@ -648,8 +641,8 @@ function update(dt){if(state==='paused'||state==='ended')return;clock+=dt;autoDr
  skyMat.uniforms.storm.value=L4?.storm||0;skyMat.uniforms.flash.value=L4?.flash||0;
  if(L4?.storm>0){const s=Math.min(1,L4.storm*1.3);scene.fog.color.lerp(_c1.set(0x555c61).lerp(_c2.set(0x1c2128),night),.85*s);scene.fog.density+=.011*s*s;hemi.color.lerp(_c1.set(0xb4bcc4),.55*s);hemi.intensity*=1-.32*s;sunlight.intensity*=1-.86*s;sunlight.color.lerp(_c1.set(0xd8dde2),.6*s);renderer.toneMappingExposure-=.04*s;}
  if(L4?.apoc>0){const a=Math.min(1,L4.apoc),out=1-(L4.cave||0);skyMat.uniforms.apoc.value=a;skyMat.uniforms.apocT.value+=(dt||0)*(.6+a*.9);if(L4.apocDir)skyMat.uniforms.apocDir.value.copy(L4.apocDir);
-  scene.fog.color.lerp(_c1.set(0x2c0907),.8*a*out);scene.fog.density+=.0035*a*out;hemi.color.lerp(_c1.set(0xb83a26),.6*a*out);hemi.groundColor.lerp(_c2.set(0x240806),.7*a*out);hemi.intensity*=1+.25*a*out;
-  sunlight.color.lerp(_c1.set(0xff4a1e),.75*a);sunlight.intensity*=1-.45*a;renderer.toneMappingExposure+=.06*a*out;}else skyMat.uniforms.apoc.value=0;
+  scene.fog.color.lerp(_c1.set(0x492329),.86*a*out);scene.fog.density=THREE.MathUtils.lerp(scene.fog.density,.0062,a*out);hemi.color.lerp(_c1.set(0xbd786c),.72*a*out);hemi.groundColor.lerp(_c2.set(0x241d26),.78*a*out);hemi.intensity*=1-.08*a*out;
+  sunlight.color.lerp(_c1.set(0xff6741),.88*a);sunlight.intensity=THREE.MathUtils.lerp(sunlight.intensity,1.25,a*out);if(L4.apocDir&&a>.15){sunlight.position.set(rf.x+L4.apocDir.x*120,rf.y+68,rf.z+L4.apocDir.z*120);}renderer.toneMappingExposure+=.035*a*out;}else skyMat.uniforms.apoc.value=0;
  if(L4?.flash>0){const f=L4.flash*(L4.cave?1-L4.cave*.85:1),red=L4.apoc>0;hemi.intensity+=2.6*f;hemi.color.lerp(_c1.set(red?0xff6a8e:0xdfe6ff),.6*f);scene.fog.color.lerp(_c2.set(red?0x8a2a3a:0xa9b2c8),.5*f);}
  if(L4?.cave>0){const cv=L4.cave;hemi.intensity*=1-.86*cv;hemi.groundColor.lerp(_c1.set(0x0b0c10),cv);sunlight.intensity*=1-cv;scene.fog.color.lerp(_c1.set(0x07080b),cv*.92);scene.fog.density=scene.fog.density*(1-cv)+.032*cv;renderer.toneMappingExposure+=.22*cv;}
  if(onBike()||mem||state==='intro'||state==='ended'||state==='dismounting'||state==='c1-dismount'||state==='c1-remount')placePlayerBike(dt);
@@ -733,7 +726,7 @@ function cullZones(){if(!zoned.length)return;
  // ...and the view itself ends sooner there (the dark and the walls end it anyway), so nothing far is drawn.
  // (deep in the drain the long straights run past the old view distance: the view reaches down them, and the sky is not drawn
  // at all, so the far end of a straight is black, never sky)
- {const want=room?140:deepIn?150:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:390;if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(Math.min(1,want*.9/350));}sky.visible=!deepIn;}
+ {const want=room?140:deepIn?150:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:(skyMat.uniforms.apoc.value>.25?590:390);if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(want>390?want*.92/350:Math.min(1,want*.9/350));}sky.visible=!deepIn;}
  if(far||zoneState.hidPlain){for(const m of plainMerged){if(deepIn){drawn(m,false);continue;}if(far){const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<(room?80:300));}else drawn(m,true);}zoneState.hidPlain=far;}}
 // What the keys would do right now, shown only when it matters: a short riding tutorial,
 // then nothing until the end of the street.

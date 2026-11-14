@@ -23,6 +23,7 @@ import {createKit} from './kit.js';
 import {utilityPole} from './chapter7-build.js';
 import {rescueTruck} from './chapter6-cast.js';
 import {puffTexture} from './chapter8-presence.js';
+import {structuralCuts} from './structural-cuts.js';
 
 const MAXCUT=32;
 const CUT={n:{value:0},inv:{value:[...Array(MAXCUT)].map(()=>new THREE.Matrix4())},kind:{value:new Float32Array(MAXCUT)}};
@@ -50,9 +51,9 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
  const waterM=new THREE.MeshStandardMaterial({color:0x1b2a2e,roughness:.06,metalness:.5,transparent:true,opacity:.9});
  const sootM=mat(0x161412),houseM=mat(0xc9bfa8),roofM=mat(0x4a4744),timber=mat(0x7a5a3a),pink=mat(0xd99aa0),glassM=new THREE.MeshStandardMaterial({color:0x14181a,roughness:.1,metalness:.5});
  // ---- the cut volumes ---------------------------------------------------------------------------------------------------
- const cuts=[];// {kind:0 box|1 cyl, m: matrix (unit frame -> world), on}
- function addCut(kind,{x,y,z,sx,sy,sz,rot=0}){const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),rot),new THREE.Vector3(sx,sy,sz));const c={kind,m,inv:m.clone().invert(),on:false};cuts.push(c);return c;}
- function syncCuts(){let n=0;for(const c of cuts){if(!c.on||n>=MAXCUT)continue;CUT.inv.value[n].copy(c.inv);CUT.kind.value[n]=c.kind;n++;}CUT.n.value=n;}
+ const cuts=[],structure=structuralCuts(world);// reversible triangle removal for buildings
+ function addCut(kind,{x,y,z,sx,sy,sz,rot=0,physical=false}){const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),rot),new THREE.Vector3(sx,sy,sz));const c={kind,m,inv:m.clone().invert(),on:false,physical};cuts.push(c);return c;}
+ function syncCuts(){let n=0;for(const c of cuts){if(c.physical||!c.on)continue;if(n>=MAXCUT)throw Error('Chapter Eight ground cut capacity exceeded');CUT.inv.value[n].copy(c.inv);CUT.kind.value[n]=c.kind;n++;}CUT.n.value=n;structure.sync(cuts);}
  // ---- a crater in the ground: an elliptic hole, its wall of earth going down and in, broken slabs round its rim -----------
  function crater({d,lat,a,b,depth,water=null,rot=0,name}){const c=P(d,lat),g=new THREE.Group();g.name='c8-pit-'+name;root.add(g);const h0=hd(d)+rot,ca=Math.cos(h0),sa=Math.sin(h0);
   // (a along the street, b across it; local u along, v across)
@@ -192,5 +193,5 @@ export function createRuin({scene,world,nav,sfx=()=>{}}){
  reset();
  // (where on the town's streets a point is, the ruin room being over all of it: the street name, d along, lat across)
  const locate=(x,z)=>room.inside(x,z)?base(()=>nav.locate(x,z)):nav.locate(x,z);
- return {root,pits,H,F,POLE,HV,sedan,heaveCar,truck,ST,room,stage,heave,update,sources,show,reset,inPit,blocked,cuts,syncCuts,addCut,P,BB,locate,base,setBlocked:f=>{extraBlocked=f;}};
+ return {root,pits,H,F,POLE,HV,sedan,heaveCar,truck,ST,room,stage,heave,update,sources,show,reset,inPit,blocked,cuts,structure,syncCuts,addCut,P,BB,locate,base,setBlocked:f=>{extraBlocked=f;}};
 }

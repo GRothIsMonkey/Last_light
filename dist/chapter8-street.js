@@ -41,8 +41,8 @@ export function streetActs(X){
  // ---- the thing, on the skyline: its own body (a second instance of the presence, huge, never fogged out) ----------------------------
  const SKY=createPresence({scene,sfx:(n,p,op)=>sound(n,p,op),floorAt:(x,z)=>town.floorAt(x,z),sky:true});
  SKY.group.name='chapter8-presence-skyline';SKY.group.traverse(o2=>{if(o2.material){const ms=Array.isArray(o2.material)?o2.material:[o2.material];for(const m of ms)m.fog=false;}});
- const BODY=SP(1262,46,-6),RISE=[[1222,18,58],[1236,70,64],[1205,-34,52],[1270,-8,66],[1190,92,48]];
- function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+8,z:BODY.z},r:52,squash:[1.25,1.25,1.35],rot:2.3,fog:.0});SKY.lean(.2);
+ const BODY=SP(1360,78,-6),RISE=[[1222,18,58],[1236,70,64],[1205,-34,52],[1270,-8,66],[1190,92,48]];
+ function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+6,z:BODY.z},r:92,squash:[1.26,1.15,1.42],rot:2.7,fog:0});SKY.lean(.2);
   // its limbs: up out of the ground round the body, into the deck, and over: the probe points drift over the roofs
   RISE.forEach(([d,lat,len],i)=>{const r=SP(d,lat,-4),toward=SP(1080-i*40,(i%2?1:-1)*20,0);const dir=[toward.x-r.x,len*1.4,toward.z-r.z];
    SKY.set(i,{root:[r.x,r.y,r.z],dir,len,r0:3.2+i%3*.7,r1:.65,state:'emerge',probe:[lerp(r.x,toward.x,.55),r.y+len*.8,lerp(r.z,toward.z,.55)],speed:.35});SKY.limbs[i].probeR=9+i*2;});}
@@ -378,7 +378,7 @@ export function streetActs(X){
    C.flags.streetDone=true;mark('to the works');yield* wait(2.4);X.toStaging?.();})());}
  // ---- after: the street as it is left, for the finale's walk and ride: every piece where it fell, nothing moving in it, the thing gone under
  function after(on){C.afterStreet=!!on;if(!on){town.show(false);return;}
-  town.show(true);for(const n of ['ruin','impacts','trench','lean','across','yard'])town.skip(n);town.engage(town.PX.hend);ruin.setBlocked((x,z,r)=>town.blocked(x,z,r));
+  town.show(true);for(const n of ['ruin','impacts','trench','lean','across','yard'])town.skip(n);town.engage(town.PX.hend);town.district.settle('august');ruin.setBlocked((x,z,r)=>town.blocked(x,z,r));
   for(const kk of ['under','sams']){ruin.pits[kk].g.visible=false;ruin.pits[kk].cut.on=false;}ruin.H.g.visible=false;if(ruin.H.cut)ruin.H.cut.on=false;ruin.sedan.visible=false;ruin.syncCuts();
   for(const c of Object.values(CR))hideC(c);for(const a of PEOPLE)a.show(false);SKY.reset();SKY.show(false);town.ash=.22;HM.show(false);
   // (Jamie is gone from the side yard: they came for him, as Reyes swore. The header where it fell)

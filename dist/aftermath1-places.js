@@ -19,6 +19,8 @@ import {makeShapes,bake,inBox,clamp,damp,smooth,lerp} from './chapter6-kit.js';
 import {puffTexture} from './chapter8-presence.js';
 import {rescueTruck} from './chapter6-cast.js';
 import {tex9} from './aftermath1-props.js';
+import {shelterCrowd} from './shelter-crowd.js';
+import {surfaceMaterial} from './materials.js';
 
 export const SCHOOL={x:1500,z:300};
 const GYM={x0:-13,x1:13,z0:-8,z1:8,h:7},VEST={x0:-7,x1:-4,z0:8.3,z1:10.4},CORR={x0:13.45,x1:15.95,z0:-8.15,z1:8.15},NURSE={x0:16.25,x1:21,z0:-8.15,z1:-3.1},CLASS={x0:16.25,x1:24.5,z0:-1.9,z1:6.1};
@@ -97,7 +99,9 @@ export function createSchool({scene}){
  const WINS=[];for(let x=-11;x<=11;x+=4.4){const wn=K.box(shell,x,5.5,GYM.z0+.02,2.6,1.15,.04,skyM,{name:'a1-gym-window'});wn.castShadow=false;WINS.push(wn);box(shell,x-1.36,x+1.36,4.86,4.92,GYM.z0,GYM.z0+.08,steel);}
  // hoops, pads, the folded bleachers, the scoreboard, banners, a clock, a ball cart
  for(const s of [-1,1]){const x=s*12.5;K.box(shell,x,3.55,0,.06,1.05,1.8,white);K.box(shell,x-s*.03,3.4,0,.02,.45,.6,M(0xd9623e,{roughness:.6}));const rim=new THREE.Mesh(new THREE.TorusGeometry(.23,.012,6,18),orange);rim.rotation.x=Math.PI/2;rim.position.set(x-s*.3,3.05,0);shell.add(rim);K.pipe(shell,[x,3.3,0],[x-s*.08,3.05,0],.012,steel,5);box(shell,x+(s>0?-.02:.02)-.03,x+(s>0?-.02:.02)+.03,.1,1.9,-3,3,pad);}
- box(shell,-12,5,0,2.5,GYM.z0+.02,GYM.z0+.85,wood);for(let y=.2;y<2.5;y+=.21)box(shell,-12.02,5.02,y,y+.04,GYM.z0+.84,GYM.z0+.88,M(0x5a3a22,{roughness:.8}));solid('shell',-3.5,GYM.z0+.45,8.6,.5);
+ // Open bleacher tiers, occupied by families during the evacuation.
+ for(let row=0;row<2;row++){const y=.88+row*.55,z=-7.24-row*.38;K.box(shell,-3.5,y-.04,z,17.3,.08,.38,wood);for(let x=-12;x<5;x+=1.65){K.pipe(shell,[x,.08,z+.12],[x,y-.05,z-.12],.025,steel,6);K.pipe(shell,[x,y-.05,z-.12],[x+1.5,.08,z+.12],.02,steel,6);}}
+ solid('shell',-3.5,GYM.z0+.45,8.6,.5);
  K.box(shell,12.9,5.1,-4.6,.1,1.1,2.6,black);for(const [z,c] of [[-5.4,0xff3a22],[-3.8,0xff3a22]])K.box(shell,12.84,5.1,z,.02,.42,.7,new THREE.MeshBasicMaterial({color:0x3a0c08}));
  const BANNERS=[['FIELD DAY|CHAMPS','6TH GRADE|2011'],['READ-A-THON','1,204 BOOKS|2010–11','#7a2e2e','#e9c44a'],['OAK HOLLOW|ELEMENTARY','EST. 1961'],['SCIENCE|FAIR','DISTRICT|FINALS 2010','#2f6b45','#f3efe4']];
  BANNERS.forEach((b,i)=>{const x=-1.5+i*3.4;paperOn(shell,x,5.1,GYM.z1-.02,1.5,2.25,TM('banner',b,0x2f4f86),Math.PI,'a1-banner');});
@@ -144,6 +148,15 @@ export function createSchool({scene}){
   box(g2,16.3,16.7,0,1.2,3.4,6,wood);for(let z=3.6;z<6;z+=.5)box(g2,16.69,16.72,.1,1.15,z,z+.02,M(0x5a3a22));solid('shell',16.5,4.7,.25,1.35);
   RSPOT.you={x:21,z:3.5};RSPOT.sam={x:19.6,z:3.5};RSPOT.reyes={x:20.8,z:.55};RSPOT.mom={x:17.6,z:4.9};RSPOT.dad={x:18,z:-.9};RSPOT.door={x:16.9,z:1};RSPOT.in={x:17.4,z:1.2};RSPOT.hall={x:14.7,z:1};
   RSPOT.slots=[0,1,2,3].map(i=>({x:19.55+i*.83,z:2.1,y:.728}));RSPOT.box={x:22.9,z:-1,y:.77};}
+ // Scored masonry, worn timber and triangulated ceiling beams retain the school's age.
+ for(const m of [brick])surfaceMaterial(m,'brick');for(const m of [wood,tableTop])surfaceMaterial(m,'timber');
+ for(const m of [block,blockUp]){m.onBeforeCompile=sh=>{sh.vertexShader='varying vec3 schoolP;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nschoolP=position;');sh.fragmentShader='varying vec3 schoolP;\n'+sh.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
+ float row=schoolP.y*5.;float col=(schoolP.x+schoolP.z)*2.5+floor(row)*.5;
+ float seam=max(1.-smoothstep(.008,.035,fract(row)),1.-smoothstep(.005,.023,fract(col)));
+ float wear=sin(schoolP.x*38.+schoolP.z*19.)*sin(schoolP.y*71.);
+ diffuseColor.rgb*=.97-.14*seam+.012*wear;`);};m.customProgramCacheKey=()=>'school-cinderblock-v1';}
+ for(const x of [-9.6,-4.8,0,4.8,9.6])for(let z=-7;z<7;z+=2){K.pipe(shell,[x,6.45,z],[x,6.94,z+1],.026,steel,6);K.pipe(shell,[x,6.94,z+1],[x,6.45,z+2],.026,steel,6);}
+ for(const x of [-12.7,12.7]){K.pipe(shell,[x,3.2,-7.7],[x,3.2,7.7],.028,steel,6);for(const z of [-6,-2,2,6])K.box(shell,x,3.2,z,.12,.18,.14,doorM);}
  bake(shell);
  // ---- dressing by state ---------------------------------------------------------------------------------------------------------------
  const G={shelter:new THREE.Group(),thin:new THREE.Group(),memorial:new THREE.Group(),lot:new THREE.Group()};for(const [kk,g2] of Object.entries(G)){g2.name='a1-school-'+kk;root.add(g2);g2.visible=false;}
@@ -238,6 +251,8 @@ export function createSchool({scene}){
   for(const [x,z] of [[-30,13.8],[-27,13.8],[-24,13.8],[22,13.8],[25,13.8]]){const c=new THREE.Mesh(new THREE.ConeGeometry(.16,.5,10),orange);c.position.set(x,.25,z);g2.add(c);}
   // a light tower by the lot's far side, a generator under it (it has been dark for four hours; it is not now)
   K.box(g2,-30,.5,30,1.6,1,1,M(0xd9b12e,{roughness:.6}));K.pipe(g2,[-30,1,30],[-30,6.4,30],.05,steel,6);K.box(g2,-30,6.5,30,1.3,.4,.2,white);solid('lot',-30,30,.9,.6);SPOT.tower={x:-30,z:30,y:6.5};}
+ for(const [x,z]of [[-9.45,-5.4],[-6.25,-2.9],[-3.05,-.1],[-9.45,2.6],[-6.25,2.6],[-9.45,-2.7],[-3.05,2.6]]){K.box(G.shelter,x,.022,z,1.22,.035,2.1,wool2);K.box(G.shelter,x+.38,.16,z+.8,.28,.3,.32,card);}
+ for(let i=0;i<8;i++){const x=13.85+(i%2)*1.8,z=-7.4+Math.floor(i/2)*3.15;fchair(G.shelter,x,z,i%2?-Math.PI/2:Math.PI/2);}
  for(const g2 of [G.shelter,G.thin,G.memorial])bake(g2,new Set([SPOT.tvScreen,SPOT.boardMesh,SPOT.countyMesh,SPOT.penMesh,SPOT.cardBox].filter(Boolean)));
  bake(G.lot,new Set([truck.g]));
  // smoke on the horizon to the north-east, where Oak Hollow is: four columns, leaning the way the morning's air goes
@@ -271,12 +286,13 @@ export function createSchool({scene}){
  // ---- the light in it, by the hour: the windows, the lamps, the horizon's smoke -------------------------------------------------------------
  const LIGHT={dawn:{win:0xc98a5c,lamp:0xffefc8,smoke:.7},smoke:{win:0xd8c8a8,lamp:0xfff3d6,smoke:.4},day:{win:0xdfe6ea,lamp:0xfff6e2,smoke:0}};
  function setLight(name){ST.light=name;const L=LIGHT[name]||LIGHT.day;skyM.color.setHex(L.win);lampM.color.setHex(L.lamp);for(const c of SMOKE)for(const S2 of c.sp)S2.s.visible=L.smoke>0;}
- function update(dt,{camera=null}={}){if(!ST.on)return;ST.t+=dt;const L=LIGHT[ST.light]||LIGHT.day;
+ const crowd=shelterCrowd(root);
+ function update(dt,{camera=null}={}){if(!ST.on)return;ST.t+=dt;crowd.update(dt);const L=LIGHT[ST.light]||LIGHT.day;
   if(L.smoke>0)for(const c of SMOKE)for(const S2 of c.sp){S2.t+=dt;const life=14,k2=(S2.t%life)/life;S2.s.position.set(c.x+k2*30,6+k2*c.sz*2.6,c.z-k2*14);const sc=c.sz*(.7+k2*1.7);S2.s.scale.set(sc,sc,1);S2.s.material.opacity=.5*L.smoke*Math.sin(Math.PI*k2);}
   truck.update(ST.t,ST.lot&&ST.truckOn);}
  // show(state, {lot}): 'shelter' | 'thin' | 'memorial' | 'empty' | null (gone)
  function show(state,{lot=false,light='dawn',truckOn=true}={}){const on=!!state;ST.on=on;ST.state=state&&state!=='empty'?state:null;ST.lot=on&&lot;ST.truckOn=truckOn;if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();
-  for(const [kk,g2] of Object.entries(G))g2.visible=kk==='lot'?ST.lot:kk===ST.state;if(on)setLight(light);}
+  for(const [kk,g2] of Object.entries(G))g2.visible=kk==='lot'?ST.lot:kk===ST.state;crowd.show(on?state:null);if(on)setLight(light);}
  function reset(){show(null);ST.t=0;}
- return {root,O,W,toL,nav,SPOT,NSPOT,RSPOT,COTS,COT_H,cotSeat,cotLie,GYM,DOORS,RACK,LAMPS,show,reset,update,setLight,where,insideK,ST,truck,G,TM,M,K};
+ return {root,O,W,toL,nav,SPOT,NSPOT,RSPOT,COTS,COT_H,cotSeat,cotLie,GYM,DOORS,RACK,LAMPS,show,reset,update,setLight,where,insideK,ST,truck,G,TM,M,K,crowd};
 }

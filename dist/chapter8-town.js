@@ -33,6 +33,7 @@ import {createKit} from './kit.js';
 import {utilityPole} from './chapter7-build.js';
 import {surfaceMaterial} from './materials.js';
 import {puffTexture} from './chapter8-presence.js';
+import {createDistrict} from './catastrophe-district.js';
 import {HOUSE} from './palette.js';
 
 const TAU=Math.PI*2;
@@ -220,12 +221,12 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
   for(let i=0;i<5;i++){const x=-W2+.8+i*(w-1.6)/4;if(Math.abs(x-(Q.doorX??0))<1.2)continue;const b=new THREE.Mesh(new THREE.SphereGeometry(.5+R()*.25,8,6),mat(0x3e4f2c,{roughness:1}));b.position.set(x,.35,D2+.55);b.scale.y=.75;G.add(b);}
   // its cut: the whole house, porch, garage and chimney, from just above the lawn (the driveway and the walk stay)
   {const gxs=Q.hasGarage?[Q.gx-Q.gw/2-.3,Q.gx+Q.gw/2+.3]:[0,0],xa=Math.min(-W2-.9,gxs[0]),xb=Math.max(W2+.9,gxs[1]),za=-D2-.7,zb=D2+(Q.pdep??1.4)+.9,cx=(xa+xb)/2,cz=(za+zb)/2,hy=h+rise+2.2;
-   const c=Q.toWorld(cx,cz);X.cut=ruin.addCut(0,{x:c.x,y:o.ground+.06+hy/2,z:c.z,sx:(xb-xa)/2,sy:hy/2,sz:(zb-za)/2,rot:Q.worldRot});X.box={xa,xb,za,zb};}
+   const c=Q.toWorld(cx,cz);X.cut=ruin.addCut(0,{x:c.x,y:o.ground+.06+hy/2,z:c.z,sx:(xb-xa)/2,sy:hy/2,sz:(zb-za)/2,rot:Q.worldRot,physical:true});X.box={xa,xb,za,zb};}
   // where its pieces are in the world, for dust and glass
   X.at=(x,y,z)=>{_v.set(x,y,z);G.localToWorld(_v);return {x:_v.x,y:_v.y,z:_v.z};};
   X.out=()=>{const a=Q.toWorld(0,0),b=Q.toWorld(0,1);return {x:b.x-a.x,z:b.z-a.z};};
   P.proxies[name]=X;return X;}
- function engage(X,on=true){if(!X)return;X.on=on;X.piv.visible=on;if(X.cut){X.cut.on=on;ruin.syncCuts();}}
+ function engage(X,on=true,defer=false){if(!X)return;X.on=on;X.piv.visible=on;if(X.cut){X.cut.on=on;if(!defer)ruin.syncCuts();}}
  // damage, each a function of its own k (0..1) so a checkpoint can set it straight to the end
  const DMG={
   // its foundation going on the street side: the whole house tips toward the street and down
@@ -384,7 +385,7 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
   return false;}
  // ==== every frame ============================================================================================================================
  let T=0;
- function update(dt,{camera=null}={}){T+=dt;
+ function update(dt,{camera=null}={}){T+=dt;district.update(dt,{camera,impact:EV.across.t>=0});
   for(const E of Object.values(EV))runEv(E,dt);
   for(const F of [FIELD,YARD])if(F.stage==='go'){F.t+=dt;F.k=clamp(F.t/9,0,1);fieldPose(F,F.t);if(F.t>14){F.stage='done';F.k=1;}}
   if(FIELD.burst&&FIELD.water){const W=FIELD.water;W.m.visible=true;FIELD.waterLevel=Math.min(1,FIELD.waterLevel+dt/60);W.m.position.y=lerp(W.y0,W.y1,FIELD.waterLevel);if(FIELD.mainEnd){FIELD.sprayT=(FIELD.sprayT||0)-dt;if(FIELD.sprayT<=0){FIELD.sprayT=.05;spray(FIELD.mainEnd,{n:2,up:FIELD.waterLevel<.08?11:5.5,spread:1.6,size:.7});}}}
@@ -414,19 +415,20 @@ export function createTown({scene,world,nav,ruin,ambient=null,sfx=()=>{}}){
  function sources(out){if(FIELD.burst&&FIELD.mainEnd)out.push({id:'c8-town-main',kind:'water',pos:new THREE.Vector3(FIELD.mainEnd.x,FIELD.mainEnd.y+1,FIELD.mainEnd.z),level:.6+.6*(1-FIELD.waterLevel)});
   if(POLE.k>=1&&POLE.wires[2].end)out.push({id:'c8-town-wire',kind:'arc',pos:POLE.wires[2].end.clone(),level:.5});
   for(const F of FIRES)if(F.level>.05)out.push({id:'c8-town-fire-'+F.i,kind:'fire',pos:F.base.clone(),level:.4+.5*F.level});}
- function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();}
+ function show(on){if(on&&!root.parent)scene.add(root);else if(!on&&root.parent)root.removeFromParent();district.show(on);}
  function reset(){for(const E of Object.values(EV)){E.t=-1;E.i=0;E.done=false;}
   for(const F of Object.values(P.fields)){F.on=false;F.g.visible=false;F.stage='rest';F.t=0;F.k=0;F.burst=false;F.waterLevel=0;F.fx=false;F.sprayT=0;for(const c of F.cuts)c.on=false;for(const S of F.slabs){S.p.copy(S.p0);S.q.copy(S.q0);S.landed=false;}F.place();if(F.water)F.water.m.visible=false;}
-  for(const X of Object.values(P.proxies)){X.going=X.going2=X.going3=null;for(const kind of Object.keys(X.k))hurt(X,kind,0);X.k={};engage(X,false);}
+  for(const X of Object.values(P.proxies)){X.going=X.going2=X.going3=null;for(const kind of Object.keys(X.k))hurt(X,kind,0);X.k={};engage(X,false,true);}
   for(const B of Object.values(P.blow)){B.done=false;B.g.visible=false;}
   POLE.k=0;POLE.going=false;POLE.g.visible=false;POLE.cut.on=false;if(POLE.wcut)POLE.wcut.on=false;for(const W of POLE.wires){W.snapped=false;W.end=null;}
   for(const C of Object.values(P.cars)){C.k=0;C.going=false;C.alarm=0;C.g.visible=false;C.g.position.copy(C.p0);C.g.rotation.set(0,C.r0,0);}
   crack.k=0;crack.m.visible=false;lampState.clear();ambient?.lampOverride?.clear();
   for(const D of DUST)D.s.visible=false;for(const D of DEB)D.on=false;for(const D of GL)D.on=false;for(const S of SPK)S.s.visible=false;for(const S of SPR)S.s.visible=false;
   for(const F of FIRES){F.level=0;F.m.visible=false;for(const S of F.smoke)S.s.material.opacity=0;}for(const F of FIRE2){F.m.removeFromParent();for(const S of F.smoke)S.s.removeFromParent();FIRES.splice(FIRES.indexOf(F),1);}FIRE2.length=0;for(const c of smokeCols)c.on=false;P.ash=0;ASH.material.opacity=0;
-  P.shake=0;P.log.events.length=0;ruin.syncCuts();}
+  P.shake=0;P.log.events.length=0;district.reset();ruin.syncCuts();}
+ const district=createDistrict({world,root,ruin,proxy,hurt,engage,dust,chunks,sfx});
  reset();
- Object.assign(P,{root,show,reset,update,sources,blocked,floorAt,fire:fireEv,skip:skipEv,EV,FIELD,YARD,PX,BO,POLE,CAR,CAR2,crack,smokeCols,ASH,FIRES,houseHend:HHEND,houseAcross:HACROSS,proxy,engage,hurt,blowout,burst,pole,car,field,fieldPose,dust,chunks,shards,sparks,spray,flame:fire,power,SP,houseAt,
+ Object.assign(P,{root,show,reset,update,sources,blocked,floorAt,fire:fireEv,skip:skipEv,EV,FIELD,YARD,PX,BO,POLE,CAR,CAR2,crack,smokeCols,ASH,FIRES,district,houseHend:HHEND,houseAcross:HACROSS,proxy,engage,hurt,blowout,burst,pole,car,field,fieldPose,dust,chunks,shards,sparks,spray,flame:fire,power,SP,houseAt,
 });
  Object.defineProperty(P,'stage',{get:()=>Object.fromEntries(Object.entries(EV).map(([kk,E])=>[kk,E.t<0?'waiting':E.done?'done':'running']))});
  return P;
