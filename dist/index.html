@@ -3,43 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#302e42">
+<meta name="theme-color" content="#151824">
 <title>Last Light — Summer, 2011</title>
+<link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="booting">
 <main id="experience">
- <canvas id="world" aria-label="First-person bicycle ride through a suburban neighborhood at sunset"></canvas>
+ <canvas id="world" aria-label="Oak Hollow, at the end of the street, in the last of the evening light"></canvas>
  <div class="grain"></div><div class="vignette"></div>
+
+ <!-- The title screen's layers over the live scene (menu.js): legibility, a breathing glow, out-of-focus fireflies,
+      the dip to black between shots, and the letterbox that opens when you press a key. -->
+ <div id="title-layers" aria-hidden="true">
+  <div class="tl-scrim"></div><div class="tl-glow"></div><canvas id="title-motes"></canvas><div class="tl-cut"></div>
+  <div class="tl-bars"><i></i><i></i></div>
+ </div>
+
  <header>
   <a class="wordmark" href="./" aria-label="Last Light home">LAST LIGHT<span>A SUMMER YOU STILL REMEMBER</span></a>
   <button id="sound" aria-pressed="false" aria-label="Enable sound">SOUND <span>OFF</span></button>
  </header>
  <div id="date">AUGUST 21, 2011 <i></i> 7:42 PM</div>
 
+ <!-- Before the first frame: the world is being built -->
+ <div id="boot" aria-hidden="true"><div class="boot-mark">LAST <em>LIGHT</em></div><div class="boot-line"><i></i></div><div class="boot-note">Oak Hollow, 2011</div></div>
+
  <!-- Title -->
  <section id="intro">
-  <div class="eyebrow">ONE MORE LAP AROUND THE BLOCK</div>
-  <h1>Last <em>Light</em></h1>
-  <p>It’s getting late.<br>But nobody wants to go home yet.</p>
-  <nav class="menu" aria-label="Title menu">
-   <button id="start" class="primary">Take the long way home <span>↗</span></button>
-   <button id="continue" class="quiet" hidden>Continue <small id="continue-where"></small></button>
-   <button id="open-settings" class="quiet">Settings</button>
-   <button id="open-credits" class="quiet">Credits</button>
+  <div class="title-block">
+   <div class="eyebrow" id="title-eyebrow">OAK HOLLOW <i></i> SUMMER, 2011</div>
+   <h1 id="title-word"><span class="tw-last">Last</span> <em class="tw-light">Light</em></h1>
+   <p id="title-tagline">It’s getting late.<br>But nobody wants to go home yet.</p>
+  </div>
+  <div id="press" aria-live="polite"><span>Press any key</span></div>
+  <nav class="menu main-menu" id="main-menu" aria-label="Title menu">
+   <i class="mm-light" aria-hidden="true"></i>
+   <button id="continue" class="mm-item mm-continue" hidden><span class="mm-label">Continue</span><small class="mm-sub" id="continue-where"></small><small class="mm-meta" id="continue-when"></small></button>
+   <button id="start" class="mm-item"><span class="mm-label">New Game</span></button>
+   <button id="open-chapters" class="mm-item"><span class="mm-label">Chapters</span></button>
+   <button id="open-settings" class="mm-item"><span class="mm-label">Settings</span></button>
+   <button id="open-credits" class="mm-item"><span class="mm-label">Credits</span></button>
+   <button id="quit" class="mm-item"><span class="mm-label">Quit</span></button>
   </nav>
-  <dl id="controls" class="controls" aria-label="Controls">
-   <div><dt><kbd>W</kbd></dt><dd>Pedal <small>(hold <kbd>Shift</kbd> to push harder)</small></dd></div>
-   <div><dt><kbd>A</kbd><kbd>D</kbd></dt><dd>Steer</dd></div>
-   <div><dt><kbd>S</kbd></dt><dd>Brake</dd></div>
-   <div><dt>Mouse</dt><dd>Look around</dd></div>
-   <div><dt><kbd>Q</kbd><kbd>E</kbd></dt><dd>Look left / right</dd></div>
-   <div><dt><kbd>Space</kbd></dt><dd>Bell</dd></div>
-   <div><dt><kbd>F</kbd></dt><dd>When it matters</dd></div>
-   <div><dt><kbd>Esc</kbd></dt><dd>Pause</dd></div>
-  </dl>
-  <div class="intro-note">SUMMER, 2011 · BEST WITH HEADPHONES</div>
-  <!-- TEMPORARY: private playtest build only. Not part of the shipped game. -->
+  <div class="title-foot"><span>BEST WITH HEADPHONES</span><i></i><span id="build-note">PROLOGUE — AFTERMATH I</span></div>
+  <div class="menu-hints" aria-hidden="true"><span><kbd>↑</kbd><kbd>↓</kbd> Choose</span><span><kbd>Enter</kbd> Select</span><span><kbd>M</kbd> Sound</span></div>
+  <!-- TEMPORARY: private playtest build only. Not part of the shipped game. Folded away behind the DEV tab. -->
+  <button id="dev-toggle" aria-expanded="false" aria-controls="dev-chapters" title="Developer tools (playtest build)">DEV</button>
   <div id="dev-chapters" role="group" aria-label="Developer: start at a chapter or scene (temporary playtest tool)">
    <div class="dev-title">DEV · PLAYTEST · TEMPORARY</div>
    <div class="dev-step">1 · Chapter</div>
@@ -48,7 +58,133 @@
    <select id="dev-scene" size="7"></select>
    <button id="dev-start" class="dev-go">START SCENE</button>
    <div id="dev-status" class="dev-status" aria-live="polite"></div>
+   <div class="dev-step">Title screen (player menu)</div>
+   <div class="dev-row" role="group" aria-label="Title mood"><span>Mood</span><button data-dev-mood="auto" aria-pressed="true">Auto</button><button data-dev-mood="summer" aria-pressed="false">Summer</button><button data-dev-mood="search" aria-pressed="false">Search</button><button data-dev-mood="after" aria-pressed="false">After</button></div>
+   <div class="dev-row"><button id="dev-unlock" aria-pressed="false">Unlock every chapter in Chapters</button></div>
   </div>
+ </section>
+
+ <!-- Chapters -->
+ <section id="chapters" class="screen" hidden aria-labelledby="chapters-title">
+  <div class="screen-inner">
+   <header class="screen-head"><div class="eyebrow">THE SUMMER, CHAPTER BY CHAPTER</div><h2 id="chapters-title">Chapters</h2></header>
+   <div class="chapters-body">
+    <ol id="chapter-list" class="chapter-list" aria-label="Chapters"></ol>
+    <article id="chapter-detail" class="chapter-detail" aria-live="polite">
+     <div class="cd-art" id="cd-art"><div class="cd-art-img" id="cd-art-img"></div><div class="cd-art-lock" aria-hidden="true"></div><span class="cd-stamp" id="cd-stamp"></span></div>
+     <div class="cd-eyebrow" id="cd-eyebrow"></div>
+     <h3 class="cd-title" id="cd-title"></h3>
+     <div class="cd-place" id="cd-place"></div>
+     <p class="cd-text" id="cd-text"></p>
+     <div class="cd-actions"><button id="chapter-begin" class="mm-item mm-small"><span class="mm-label">Begin chapter</span></button><span class="cd-note" id="cd-note"></span></div>
+    </article>
+   </div>
+   <footer class="screen-foot"><button id="chapters-back" class="back-btn"><kbd>Esc</kbd> Back</button><span class="foot-hints"><kbd>↑</kbd><kbd>↓</kbd> Choose <kbd>Enter</kbd> Begin</span></footer>
+  </div>
+ </section>
+
+ <!-- Settings (from the title or the pause menu) -->
+ <section id="settings" class="screen" hidden aria-labelledby="settings-title">
+  <div class="screen-inner">
+   <header class="screen-head"><div class="eyebrow">REMEMBERED IN THIS BROWSER</div><h2 id="settings-title">Settings</h2></header>
+   <div class="settings-body">
+    <nav class="settings-tabs" role="tablist" aria-label="Settings sections">
+     <button role="tab" id="tab-audio" class="st-tab" aria-selected="true" aria-controls="pane-audio" data-pane="audio">Audio</button>
+     <button role="tab" id="tab-display" class="st-tab" aria-selected="false" aria-controls="pane-display" data-pane="display">Display</button>
+     <button role="tab" id="tab-controls" class="st-tab" aria-selected="false" aria-controls="pane-controls" data-pane="controls">Controls</button>
+     <button role="tab" id="tab-access" class="st-tab" aria-selected="false" aria-controls="pane-access" data-pane="access">Accessibility</button>
+    </nav>
+    <form id="settings-panel" class="settings-panes" onsubmit="return false">
+     <div class="st-pane" id="pane-audio" role="tabpanel" aria-labelledby="tab-audio">
+      <div class="st-row"><label for="set-volume">Master volume<small>Everything you hear.</small></label><div class="st-ctl"><input id="set-volume" type="range" min="0" max="1" step="0.05" value="1"><output data-for="set-volume" data-fmt="pct"></output></div></div>
+      <div class="st-row"><label for="set-music">Music<small>The few notes the evening still remembers.</small></label><div class="st-ctl"><input id="set-music" type="range" min="0" max="1" step="0.05" value="1"><output data-for="set-music" data-fmt="pct"></output></div></div>
+      <div class="st-row"><label for="set-sfx">Effects &amp; ambience<small>Bikes, cicadas, doors, the night.</small></label><div class="st-ctl"><input id="set-sfx" type="range" min="0" max="1" step="0.05" value="1"><output data-for="set-sfx" data-fmt="pct"></output></div></div>
+      <div class="st-row"><label for="set-voice">Voices<small>Calls down the street, names, whispers.</small></label><div class="st-ctl"><input id="set-voice" type="range" min="0" max="1" step="0.05" value="1"><output data-for="set-voice" data-fmt="pct"></output></div></div>
+      <div class="st-row"><label for="set-muted">Mute all sound<small>Also <kbd>M</kbd> at any time.</small></label><div class="st-ctl"><input id="set-muted" class="switch" type="checkbox"></div></div>
+     </div>
+     <div class="st-pane" id="pane-display" role="tabpanel" aria-labelledby="tab-display" hidden>
+      <div class="st-row"><label for="set-fullscreen">Full screen</label><div class="st-ctl"><input id="set-fullscreen" class="switch" type="checkbox"></div></div>
+      <div class="st-row"><label for="set-quality">Graphics quality<small>Shadow detail and sharpness.</small></label><div class="st-ctl"><div class="seg" data-select="set-quality"><button type="button" data-value="low">Low</button><button type="button" data-value="medium">Medium</button><button type="button" data-value="high">High</button></div>
+       <select id="set-quality" class="seg-native"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div></div>
+      <div class="st-row"><label for="set-scale">Resolution scale<small>Lower is faster on older computers.</small></label><div class="st-ctl"><input id="set-scale" type="range" min="0.5" max="1" step="0.05" value="1"><output data-for="set-scale" data-fmt="pct"></output></div></div>
+      <div class="st-row"><label for="set-brightness">Brightness<small>Raise it if the night is too dark to read.</small></label><div class="st-ctl"><input id="set-brightness" type="range" min="0.7" max="1.4" step="0.05" value="1"><output data-for="set-brightness" data-fmt="pct"></output></div></div>
+      <div class="st-row"><label for="set-grain">Film grain</label><div class="st-ctl"><input id="set-grain" class="switch" type="checkbox" checked></div></div>
+     </div>
+     <div class="st-pane" id="pane-controls" role="tabpanel" aria-labelledby="tab-controls" hidden>
+      <div class="st-row"><label for="set-sensitivity">Mouse sensitivity</label><div class="st-ctl"><input id="set-sensitivity" type="range" min="0.4" max="2" step="0.05" value="1"><output data-for="set-sensitivity" data-fmt="x"></output></div></div>
+      <div class="st-row"><label for="set-invert">Invert vertical look</label><div class="st-ctl"><input id="set-invert" class="switch" type="checkbox"></div></div>
+      <div class="keymap" aria-label="Controls">
+       <div class="km-group"><h4>On the bike</h4><dl>
+        <div><dt><kbd>W</kbd></dt><dd>Pedal <small>hold <kbd>Shift</kbd> to push harder</small></dd></div>
+        <div><dt><kbd>S</kbd></dt><dd>Brake</dd></div>
+        <div><dt><kbd>A</kbd><kbd>D</kbd></dt><dd>Steer</dd></div>
+        <div><dt><kbd>Space</kbd></dt><dd>Ring the bell</dd></div>
+        <div><dt><kbd>F</kbd></dt><dd>Get off, get back on</dd></div></dl></div>
+       <div class="km-group"><h4>On foot</h4><dl>
+        <div><dt><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></dt><dd>Walk</dd></div>
+        <div><dt><kbd>Shift</kbd></dt><dd>Run</dd></div>
+        <div><dt><kbd>Space</kbd></dt><dd>Jump</dd></div>
+        <div><dt><kbd>C</kbd></dt><dd>Crouch <small>hold</small></dd></div>
+        <div><dt><kbd>T</kbd></dt><dd>Flashlight</dd></div></dl></div>
+       <div class="km-group"><h4>Everywhere</h4><dl>
+        <div><dt>Mouse</dt><dd>Look around</dd></div>
+        <div><dt><kbd>Q</kbd><kbd>E</kbd></dt><dd>Look left / right</dd></div>
+        <div><dt><kbd>R</kbd></dt><dd>Center the view</dd></div>
+        <div><dt><kbd>F</kbd></dt><dd>When it matters <small>hold where it says Hold</small></dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd>Pause</dd></div>
+        <div><dt><kbd>M</kbd></dt><dd>Sound on / off</dd></div></dl></div>
+       <div class="km-group"><h4>Later in the summer</h4><dl>
+        <div><dt><kbd>V</kbd></dt><dd>Alex’s camera</dd></div>
+        <div><dt><kbd>I</kbd></dt><dd>What you carry</dd></div>
+        <div><dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd>What you say, when asked</dd></div>
+        <div><dt><kbd>G</kbd></dt><dd>Throw, where you can</dd></div></dl></div>
+      </div>
+      <p class="st-note">Keys cannot be changed yet. Touch screens: hold the on-screen buttons and drag to look.</p>
+     </div>
+     <div class="st-pane" id="pane-access" role="tabpanel" aria-labelledby="tab-access" hidden>
+      <div class="st-row"><label for="set-captions">Dialogue captions<small>Every spoken line. Objectives always stay on screen.</small></label><div class="st-ctl"><input id="set-captions" class="switch" type="checkbox" checked></div></div>
+      <div class="st-row"><label for="set-caption-size">Caption size</label><div class="st-ctl"><div class="seg" data-select="set-caption-size"><button type="button" data-value="small">S</button><button type="button" data-value="medium">M</button><button type="button" data-value="large">L</button><button type="button" data-value="xl">XL</button></div>
+       <select id="set-caption-size" class="seg-native"><option value="small">Small</option><option value="medium" selected>Medium</option><option value="large">Large</option><option value="xl">Extra large</option></select></div></div>
+      <div class="st-row"><label for="set-memories">Memory lines<small>The quiet thoughts of the one looking back.</small></label><div class="st-ctl"><input id="set-memories" class="switch" type="checkbox" checked></div></div>
+      <div class="st-row"><label for="set-flashing">Reduce flashing<small>Softens lightning and sudden bright flashes.</small></label><div class="st-ctl"><input id="set-flashing" class="switch" type="checkbox"></div></div>
+      <div class="st-row"><label for="set-motion">Reduce motion<small>A still title screen, no head bob, gentler transitions.</small></label><div class="st-ctl"><input id="set-motion" class="switch" type="checkbox"></div></div>
+      <div class="st-row st-reset"><span>Every setting back to how it started.</span><button type="button" id="settings-reset" class="text-btn">Reset to defaults</button></div>
+     </div>
+    </form>
+   </div>
+   <footer class="screen-foot"><button id="settings-back" class="back-btn"><kbd>Esc</kbd> Done</button><span class="foot-hints"><kbd>↑</kbd><kbd>↓</kbd> Choose <kbd>←</kbd><kbd>→</kbd> Adjust <kbd>Tab</kbd> Section</span></footer>
+  </div>
+ </section>
+
+ <!-- Credits -->
+ <section id="credits" class="screen" hidden aria-labelledby="credits-title">
+  <div class="screen-inner credits-inner">
+   <div class="credits-roll" id="credits-roll" tabindex="-1">
+    <div class="cr-top"></div>
+    <h2 id="credits-title">Last <em>Light</em></h2>
+    <p class="cr-lede">A game about one summer in Oak Hollow, 2011,<br>and the friends who rode until the streetlights came on.</p>
+    <div class="cr-block"><h4>Created by</h4><p class="cr-name">GRothIsMonkey</p><p class="cr-role">story and direction</p></div>
+    <div class="cr-block"><h4>Built across many passes</h4><p>The game was developed over many implementation passes, chapter by chapter: structural, story and systems passes, and the Astra art and visual-polish passes, each one building on the last accepted release.</p></div>
+    <div class="cr-block"><h4>Sound</h4><p>Every sound in the game is synthesized in your browser as you play: the cicadas, the bells, the voices calling down the street, the few notes of music.</p><p class="cr-dim">A full score and recorded voices are still to come.</p></div>
+    <div class="cr-block"><h4>Technology</h4><p>Rendered with Three.js r160 (MIT license). Houses, trees, people and weather are generated by the game itself. Web Audio for sound.</p><p class="cr-dim">Typefaces: Cormorant Garamond and Karla (SIL Open Font License 1.1).</p></div>
+    <div class="cr-block"><h4>Third-party art</h4><p>“Smily horror monster” by Bento (sketchfab.com/gostbento), licensed under Creative Commons Attribution 4.0. Modified and optimized for Last Light; the author does not endorse this use.</p></div>
+    <div class="cr-block cr-end"><p class="cr-quiet">For everyone who rode the long way home,<br>and everyone who meant to keep in touch.</p><p class="cr-mark">LAST <em>LIGHT</em></p></div>
+    <div class="cr-bottom"></div>
+   </div>
+   <footer class="screen-foot"><button id="credits-back" class="back-btn"><kbd>Esc</kbd> Back</button><span class="foot-hints">Scroll to read at your own pace</span></footer>
+  </div>
+ </section>
+
+ <!-- A question before something that cannot be undone -->
+ <section id="confirm" class="modal" hidden role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+  <div class="modal-card"><h3 id="confirm-title"></h3><p id="confirm-text"></p>
+   <div class="modal-actions"><button id="confirm-no" class="mm-item mm-small"><span class="mm-label">Not yet</span></button><button id="confirm-yes" class="mm-item mm-small"><span class="mm-label">Yes</span></button></div></div>
+ </section>
+
+ <!-- Quit: the end of the evening -->
+ <section id="farewell" hidden aria-labelledby="farewell-title">
+  <h2 id="farewell-title">Goodnight.</h2><p>You can close this window now.<br>The street will still be here.</p>
+  <button id="farewell-back" class="back-btn">Back to the title</button>
  </section>
 
  <!-- During the ride -->
@@ -73,39 +209,18 @@
  <div id="stamina" aria-label="Stamina"><div id="stamina-fill"></div></div>
 
  <!-- Pause -->
- <section id="pause" hidden>
-  <h2>Stay here a little.</h2>
-  <nav class="menu" aria-label="Pause menu">
-   <button id="resume" class="primary">Keep going</button>
-   <button id="pause-settings" class="quiet">Settings</button>
-   <button id="restart" class="quiet">Start over</button>
-   <button id="to-title" class="quiet">Back to the title</button>
-  </nav>
-  <p class="hint">Mouse: look · W A S D: move<br>On foot: Shift sprint · Space jump · hold C crouch · T flashlight<br>F interact · On bike: Space bell · V Alex’s camera (Chapters Four and Five)</p>
- </section>
-
- <!-- Settings -->
- <section id="settings" hidden aria-labelledby="settings-title">
-  <h2 id="settings-title">Settings</h2>
-  <form id="settings-form" onsubmit="return false">
-   <label>Volume <input id="set-volume" type="range" min="0" max="1" step="0.05" value="1"></label>
-   <label>Mouse sensitivity <input id="set-sensitivity" type="range" min="0.4" max="2" step="0.05" value="1"></label>
-   <label>Graphics
-    <select id="set-quality"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
-   </label>
-   <label class="toggle"><input id="set-captions" type="checkbox" checked> Show dialogue captions</label>
-   <label class="toggle"><input id="set-memories" type="checkbox" checked> Show memory lines</label>
-   <label class="toggle"><input id="set-fullscreen" type="checkbox"> Full screen</label>
-  </form>
-  <button id="settings-back" class="primary">Done</button>
- </section>
-
- <!-- Credits -->
- <section id="credits" hidden aria-labelledby="credits-title">
-  <h2 id="credits-title">Last Light</h2>
-  <p>A short memory of a summer evening in 2011.</p>
-  <p class="small">Every house, tree, voice and sound is made by the game itself, as you play.<br>Rendered with Three.js r160 (MIT license).</p>
-  <button id="credits-back" class="primary">Back</button>
+ <section id="pause" hidden aria-labelledby="pause-title">
+  <div class="pause-inner">
+   <div class="eyebrow">PAUSED</div>
+   <h2 id="pause-title">Stay here a little.</h2>
+   <nav class="menu pause-menu" aria-label="Pause menu">
+    <button id="resume" class="mm-item"><span class="mm-label">Keep going</span></button>
+    <button id="pause-settings" class="mm-item"><span class="mm-label">Settings</span></button>
+    <button id="restart" class="mm-item"><span class="mm-label">Start over</span></button>
+    <button id="to-title" class="mm-item"><span class="mm-label">Back to the title</span></button>
+   </nav>
+   <p class="hint">Mouse: look · W A S D: move · F: interact<br>On foot: Shift run · Space jump · hold C crouch · T flashlight · On the bike: Space bell</p>
+  </div>
  </section>
 
  <!-- End of the chapter -->
