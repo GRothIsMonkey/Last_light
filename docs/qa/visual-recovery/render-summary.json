@@ -1,0 +1,324 @@
+{
+  "renderer": "Shipped Three.js WebGLRenderer, ANGLE/Mesa software WebGL, 1280x800",
+  "baselineCommit": "567a562239496f94ddfdf70db75d59b8718ab7e2",
+  "finalRuntimeCommit": "ef2e6e3d8c7e7d5da5956d5aed33cadebf7fd060",
+  "pairedScenes": 30,
+  "hardwareFPSVerified": false,
+  "browserGameplayVerified": false,
+  "methodNote": "Unretouched actual game scenes. Selected scenes were rendered during the candidate sequence; final skyline, coat, face and town views were recaptured after corresponding corrections. Review cameras are labeled. Browser HUD is omitted. CPU software timings do not estimate hardware FPS.",
+  "warmFrameMs": {
+    "min": 143.47,
+    "median": 262.66,
+    "max": 493.57
+  },
+  "drawCalls": {
+    "min": 115,
+    "max": 1557
+  },
+  "triangles": {
+    "min": 109444,
+    "max": 1717215
+  },
+  "scenes": [
+    {
+      "scene": "skyline",
+      "devEntry": "c8-surface",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 324.07,
+      "drawCalls": 412,
+      "triangles": 541044,
+      "beforePNG_SHA256": "c348d809f8faca90efa4801611b0f5eb5e687a150973ce7c82fdcd12f79481da",
+      "afterPNG_SHA256": "25496a279f7bb9f7d9057fe135204034120f4026d67cf905ed2d92319a7cf3d6"
+    },
+    {
+      "scene": "skyline-street",
+      "devEntry": "c8-surface",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 246.14,
+      "drawCalls": 447,
+      "triangles": 629080,
+      "beforePNG_SHA256": "4017ff9de17cde5e248445ae03d0e2d8b4f516838bb5216719300150a31f6f3e",
+      "afterPNG_SHA256": "5a55694e402f45accb41e1db7b28a8922e189984525654cd816841989118c5e2"
+    },
+    {
+      "scene": "surface-player",
+      "devEntry": "c8-surface",
+      "reviewCamera": false,
+      "softwareWarmFrameMs": 241.13,
+      "drawCalls": 1387,
+      "triangles": 1325751,
+      "beforePNG_SHA256": "18d1c48dc479052549514b7f51fc6ccaa595ab197d1032f476d4c6dd5a52d1f0",
+      "afterPNG_SHA256": "57b93645d4ed1d90420216deeb9db12952370a358669c63902ad89e6e49376ea"
+    },
+    {
+      "scene": "collapse",
+      "devEntry": "c8-surface",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 221.14,
+      "drawCalls": 461,
+      "triangles": 588046,
+      "beforePNG_SHA256": "627a554c76d39432c0d999c56247c1271546ed815afa16e2c9aec9dac263339a",
+      "afterPNG_SHA256": "36e7e76508814b0189f0c6f5bdb7eabda6cf231619060708cd0126dcb4188d5f"
+    },
+    {
+      "scene": "bunker",
+      "devEntry": "c8-gallery",
+      "reviewCamera": false,
+      "softwareWarmFrameMs": 143.47,
+      "drawCalls": 115,
+      "triangles": 109444,
+      "beforePNG_SHA256": "81f1bfbafe78927aa900beef69addfb625796d83a80baf69c772deef79e8ae08",
+      "afterPNG_SHA256": "cc14197abed71cd0fff7bbc8aca8c22fb00190ea5beb5bfa7dc8639a6d3409fe"
+    },
+    {
+      "scene": "breach",
+      "devEntry": "c8-breach",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 275.62,
+      "drawCalls": 220,
+      "triangles": 211590,
+      "beforePNG_SHA256": "286d167657870149b8ebe1eb39b247d35bb171708d6e71df37a524e636fb0d40",
+      "afterPNG_SHA256": "444bfc34a8bac1f74dee7e8e17f89e39735f4cf4372e5391555e06adcf1e4ada"
+    },
+    {
+      "scene": "hunter-close",
+      "devEntry": "c7-reveal",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 202.46,
+      "drawCalls": 274,
+      "triangles": 186276,
+      "beforePNG_SHA256": "aaad0df8b7950482b66b711748a9c944c7053d8ba4b67c212e0cb218d1de6fc4",
+      "afterPNG_SHA256": "aaad0df8b7950482b66b711748a9c944c7053d8ba4b67c212e0cb218d1de6fc4"
+    },
+    {
+      "scene": "hunter",
+      "devEntry": "c8-retrieval",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 164.42,
+      "drawCalls": 156,
+      "triangles": 239252,
+      "beforePNG_SHA256": "0b619b5ebd36b99c79643cbe4771cb538e1f34b9f9b0d7cfa57960a6c19dd5ea",
+      "afterPNG_SHA256": "3ae0aa473a2566377f1cb30795ba84e4d37f068e86674c2f05f217b9d783a248"
+    },
+    {
+      "scene": "reunion",
+      "devEntry": "c8-reunion",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 211.36,
+      "drawCalls": 186,
+      "triangles": 260570,
+      "beforePNG_SHA256": "7e9464c3826d8848d1b02a40d6a092514c4be450015af3f78b0a5ce71267ff71",
+      "afterPNG_SHA256": "cfdc0bc01e8bb99635a2d634c4425e5ef979d9940c83f45771f219e810f97856"
+    },
+    {
+      "scene": "jamie-death",
+      "devEntry": "c8-jamie-death",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 337.44,
+      "drawCalls": 1461,
+      "triangles": 1650653,
+      "beforePNG_SHA256": "2caf79b840709823b316487ff29c2a214e4b11028843ad59451354998050fa0e",
+      "afterPNG_SHA256": "1445959b71cab797d256f4008e65a05035111a7a67b2f8911a081541bb8cdd77"
+    },
+    {
+      "scene": "jamie-covered",
+      "devEntry": "c8-jamie-death",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 345.14,
+      "drawCalls": 1557,
+      "triangles": 1717215,
+      "beforePNG_SHA256": "a3d1129be40f9d2903f7607f63dba3f0acd9e4a0bcdb4fd57eded891b8cb110f",
+      "afterPNG_SHA256": "92df562999123670ee7dabe87d51f25c1e72ba9e16e4cecb0e234a496e066adb"
+    },
+    {
+      "scene": "oak",
+      "devEntry": "c8-oak",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 249.7,
+      "drawCalls": 223,
+      "triangles": 263437,
+      "beforePNG_SHA256": "c67f73173b3620c9d30a392b0715eabc91e48e59be3eb31e5a5b303b15a18806",
+      "afterPNG_SHA256": "c820e57e2b89aa7aa5b3e43db79d53a4254a8272f101a756a68080c814885d98"
+    },
+    {
+      "scene": "oak-grief",
+      "devEntry": "c8-oak",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 287.5,
+      "drawCalls": 194,
+      "triangles": 248865,
+      "beforePNG_SHA256": "ffbec39d067fe9454837ca87cfced31cb1073ce9d51c3f15f1a05783973981ab",
+      "afterPNG_SHA256": "b12814b7a74102218029abad16cc23be27e97d21ca326d1fa84a4b308d2755f7"
+    },
+    {
+      "scene": "ride",
+      "devEntry": "c8-ride",
+      "reviewCamera": false,
+      "softwareWarmFrameMs": 320.46,
+      "drawCalls": 1135,
+      "triangles": 799454,
+      "beforePNG_SHA256": "c4ecc875061d37597a021a082d7f55fcee3488864a5e86f1d578375acf92b2fa",
+      "afterPNG_SHA256": "f558c7e9f3fc53df6641d70c0d09cc6e1edc06caa94492e01b95bf92319980a3"
+    },
+    {
+      "scene": "ride-sam",
+      "devEntry": "c8-ride",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 374.73,
+      "drawCalls": 233,
+      "triangles": 261030,
+      "beforePNG_SHA256": "f24ede10aa9775f2e6eb1a21f4a3fcf6d419b37c39a30519908b2300a089d138",
+      "afterPNG_SHA256": "6d0f8db5aa08236ef2c51dc08da888b72f141be27efbbbf17fafb3ed60a58443"
+    },
+    {
+      "scene": "shelter-exterior",
+      "devEntry": "a1-arrive",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 292.99,
+      "drawCalls": 227,
+      "triangles": 232062,
+      "beforePNG_SHA256": "30d2035ce830519b45938e855e1a65c293c60ee307528fae3b02f5b7f87bc588",
+      "afterPNG_SHA256": "24c1c6088d9f5d5bf6ad92f7697711307da25eda930a27648bb90671cf989f0c"
+    },
+    {
+      "scene": "shelter-wide",
+      "devEntry": "a1-gym",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 247.29,
+      "drawCalls": 333,
+      "triangles": 398152,
+      "beforePNG_SHA256": "987c6f23b5b8b55e9335bbafb27573bdabeb86755eecfb158743f5e6256cdaad",
+      "afterPNG_SHA256": "f05bca47098dfe92608563b4bed6017de760b478d722b23c7ce11bb1a2c6aff8"
+    },
+    {
+      "scene": "shelter-seated",
+      "devEntry": "a1-gym",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 334.14,
+      "drawCalls": 167,
+      "triangles": 268990,
+      "beforePNG_SHA256": "b7407d3bdc2e6924d8b246fd547fc1f00cd71cb6bcf88be54703c7046e28dfc3",
+      "afterPNG_SHA256": "a542b14818c6f432bc6700de73ffe08c19ae0f3603d01e70a06632fc1c4abb4e"
+    },
+    {
+      "scene": "shelter-grief",
+      "devEntry": "a1-jamie-mom",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 204.48,
+      "drawCalls": 219,
+      "triangles": 295096,
+      "beforePNG_SHA256": "39ab4fb6c85a5f9b181074726876b27425f52d4a14a8ab5ca6a273bb41eda02d",
+      "afterPNG_SHA256": "18be1d14a7b7afbb0fc95b708383ac5e26124e982df615bf4a088096a42f33c3"
+    },
+    {
+      "scene": "adult-face",
+      "devEntry": "a1-porch",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 339.02,
+      "drawCalls": 507,
+      "triangles": 919846,
+      "beforePNG_SHA256": "70adf4b0f6c1c17fd415d4ab1694854cecdc0f04098aafbdb0dbcb9cebd39b89",
+      "afterPNG_SHA256": "d7344b1bcc9d594d9c15cf1913df3a57bb15960b249d0bc8acf1aeb4f00dd38b"
+    },
+    {
+      "scene": "september",
+      "devEntry": "a1-return",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 327.78,
+      "drawCalls": 289,
+      "triangles": 263965,
+      "beforePNG_SHA256": "23bd743eab3fc3f84829cd454bdae8979d2ff467a20ba34829491ba99717de48",
+      "afterPNG_SHA256": "c9f967bc179644e5cc24314c8e12d303db7480c28dc1969b2dce173d4a6ab159"
+    },
+    {
+      "scene": "oak-barricade",
+      "devEntry": "a1-return",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 229.48,
+      "drawCalls": 799,
+      "triangles": 251885,
+      "beforePNG_SHA256": "bfb31b882be7e281623fd4e48742982015ed6d807f0e4d615db02b5b2332a5f3",
+      "afterPNG_SHA256": "07bb755c3da23872d17d8de93f02c8884c73ebacceeaaeb5f0a51d5b8611baa8"
+    },
+    {
+      "scene": "vigil",
+      "devEntry": "a1-memorial-jamie",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 451.6,
+      "drawCalls": 973,
+      "triangles": 1188942,
+      "beforePNG_SHA256": "16d5372dc056a3e2462f6e3db11c695cba5fe228fd3f581fa797c00763b8ae3d",
+      "afterPNG_SHA256": "b62467518d427a98a16844e402630b52b6145a4e778999579d284930b15eb635"
+    },
+    {
+      "scene": "memorial",
+      "devEntry": "a1-memorial-alex",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 163.09,
+      "drawCalls": 412,
+      "triangles": 366196,
+      "beforePNG_SHA256": "06ffa470dccdba05db5e2c9f4a57229a8a7697bd1ce7b5a64901c34f7d6bbaaa",
+      "afterPNG_SHA256": "793ca6b8760ee0937e3adf5423d5ebd262288f3f60a8960dcad0e19e63677d99"
+    },
+    {
+      "scene": "october",
+      "devEntry": "a1-weeks",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 187.2,
+      "drawCalls": 292,
+      "triangles": 264001,
+      "beforePNG_SHA256": "f184b4e742ce88f2d0c765c1a9f3d150fdfc00f4883500b0df6c057b1498b06d",
+      "afterPNG_SHA256": "5ccd874cc53c2efc745ce0dd5bee2d5f72210302fc304902c9eec005b5a9dcfa"
+    },
+    {
+      "scene": "kitchen",
+      "devEntry": "a1-home",
+      "reviewCamera": false,
+      "softwareWarmFrameMs": 493.57,
+      "drawCalls": 882,
+      "triangles": 857264,
+      "beforePNG_SHA256": "20cc4278c9469481272fd19f64b9b48a99ce2556224807b18bf3ec67d613ccac",
+      "afterPNG_SHA256": "231111427b78e18f5337ff6174d99ee690fa8e70d31f5f2a9d0fcd8fd2c4c34a"
+    },
+    {
+      "scene": "packing",
+      "devEntry": "a1-packing",
+      "reviewCamera": false,
+      "softwareWarmFrameMs": 434.32,
+      "drawCalls": 370,
+      "triangles": 550131,
+      "beforePNG_SHA256": "01be29bf36d9247b49df4ce9de1831fb083d8af1befdb3c88ecde7f073ae8bfb",
+      "afterPNG_SHA256": "31d690b327e4e7d35e572b1f1208f4346c32e404217b45998a11f62c9051dfab"
+    },
+    {
+      "scene": "goodbye",
+      "devEntry": "a1-goodbye",
+      "reviewCamera": true,
+      "softwareWarmFrameMs": 215.38,
+      "drawCalls": 552,
+      "triangles": 729289,
+      "beforePNG_SHA256": "62bc813393490b29987f80ca08f7e8c4e57f4daedf132980e5269668cd11f7da",
+      "afterPNG_SHA256": "0d86ef22232cf1dfbde756d3d3513ee0445093cc0781e97d0e69ac8d37ef3f25"
+    },
+    {
+      "scene": "car",
+      "devEntry": "a1-road-out",
+      "reviewCamera": false,
+      "softwareWarmFrameMs": 225.09,
+      "drawCalls": 301,
+      "triangles": 564355,
+      "beforePNG_SHA256": "85782f4601b097b97bcf8774bf35d2d24c3a63a7a3d51676904d6c1ac68a1fde",
+      "afterPNG_SHA256": "628ab52d4fec306bd4e0e8fd766fefb149730272949c6125cbddaa818a524587"
+    },
+    {
+      "scene": "chapter7",
+      "devEntry": "c7-reveal",
+      "reviewCamera": false,
+      "softwareWarmFrameMs": 298.44,
+      "drawCalls": 476,
+      "triangles": 217746,
+      "beforePNG_SHA256": "ca675193a6a0f8d5c82c6f7f6af98250ab6017f1cda65d1956fe245a2e13026e",
+      "afterPNG_SHA256": "ca675193a6a0f8d5c82c6f7f6af98250ab6017f1cda65d1956fe245a2e13026e"
+    }
+  ]
+}

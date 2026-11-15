@@ -10,9 +10,9 @@
     "chapter8": {
       "passed": 35,
       "failed": [],
-      "logSHA256": "571489240d0128cf21cba7959904719f63bf9f9e005e06afe92b36d305e0d9e0",
+      "logSHA256": "3fba6e80fb2c394151fc0823b683f525115a827c672fdaccaad01a1fda074f1f",
       "method": "input-driven runtime simulation; mocked renderer",
-      "stage": "full progression before final scalp and coat fitting"
+      "stage": "final runtime, including enlarged skyline and fitted cloth"
     },
     "aftermath": {
       "passed": 58,
@@ -43,5 +43,6 @@
   "browserGameplayVerified": false,
   "nativeSoftwareWebGL": true,
   "hardwarePerformanceVerified": false,
-  "audioHumanReview": false
+  "audioHumanReview": false,
+  "syntaxCheckedModules": 145
 }

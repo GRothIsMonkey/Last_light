@@ -16,7 +16,7 @@ This release candidate combines the completed Astra full-game art branch with Cl
 
 ### Presence and catastrophe sky
 
-The skyline Presence has a continuous arched body, asymmetrical planted limbs, hanging pleural membranes, a descending hollow throat, dorsal seams and a ribbed underside. Its world scale is increased from 52 to 138, with additional body-axis scaling, and it stands farther beyond the town. The full silhouette is readable above houses and utility poles. The catastrophe view distance is extended to retain the enlarged distant anatomy. Matched captures exposed an intermediate apparent-scale regression; the final scale was increased again before release. Upper-body deformation is restrained and the feet stay planted. The existing attack reaches are anchored to the transformed body; the gameplay strike retains its original role.
+The skyline Presence has a continuous arched body, asymmetrical planted limbs, hanging pleural membranes, a descending hollow throat, dorsal seams and a ribbed underside. Its world scale is increased from 52 to 138, with additional body-axis scaling, and it stands farther beyond the town. Its body and planted limbs dominate views above houses and utility poles. From some street angles the enlarged organism extends beyond the screen; looking up is necessary to inspect its upper anatomy. The catastrophe view distance is extended to retain the enlarged distant anatomy. Matched captures exposed an intermediate apparent-scale regression; the final scale was increased again before release. Upper-body deformation is restrained and the feet stay planted. The existing attack reaches are anchored to the transformed body; the gameplay strike retains its original role.
 
 The underground Presence now uses continuous tapered feelers instead of rows of visible spherical segments. Its existing movement, interaction triggers and story behavior remain intact.
 
@@ -63,13 +63,15 @@ Aftermath I retains the shelter, families, nurse, testimony, county list, escort
 | Recovery state | 16 | Shared damage map, real triangle cuts, October cleanup, crowd, replay and expressions |
 | Character contacts | 65 | CPR contact over time, oak embrace and grief on a direct final-ride start |
 
-All listed suites passed. The progression runs use the actual simulation with a mocked renderer; the scene images use a separate actual WebGL renderer. Full progression passed before the final scalp/coat fitting. Art, state and contact checks were rerun after the scalp fitting; the final cloth adjustment is a geometry-only drape correction inspected in the renderer. Packaged module/hash/import validation is recorded separately in the downloadable release.
+All listed suites passed. The progression runs use the actual simulation with a mocked renderer; the scene images use a separate actual WebGL renderer. Chapter Eight was rerun after the final skyline scale and cloth corrections. Chapter Seven and Aftermath I passed before the final scalp fitting. Art, state and contact checks were rerun after the scalp fitting. The corrected cloth was also inspected in the actual renderer. All runtime modules passed JavaScript syntax checks. Packaged module/hash/import validation is recorded separately in the downloadable release.
 
 ## Visual evidence
 
-`Before-and-After.html` contains captures of the actual game scene rendered by the shipped Three.js WebGL renderer under Mesa/ANGLE software WebGL. They use the real scene graph, shaders, materials, lights, shadows and story states. They are not model turntables, generated concept art or browser screenshots.
+`Before-and-After.html` contains 30 matched before/after scene pairs. The captures show actual game scenes rendered by the shipped Three.js WebGL renderer under Mesa/ANGLE software WebGL. They use the real scene graph, shaders, materials, lights, shadows and story states. They are not model turntables, generated concept art or browser screenshots.
 
 The comparison baseline is integration commit `567a562`: the prior Astra art plus Claude Aftermath I, before this recovery. Matching scene entries and camera definitions are used. A label identifies a review camera versus the normal player view. Some close-up images use review cameras so faces and contact points can be inspected. The gallery does not overlay the browser HUD; recorded captions and scene states accompany the images.
+
+The selected after views measured 115–1557 draw calls and 109,444–1,717,215 triangles. Warm software frames ranged from 143 to 494 ms (median 263 ms). These are CPU renderer observations, not hardware FPS. Per-scene counts and image hashes are recorded in `render-summary.json`.
 
 The available preview browser displayed the title/DEV screen but could not create a WebGL context. Consequently browser gameplay, hardware GPU performance, pointer lock and audio have not been verified here. Actual software WebGL scene rendering was available and inspected separately.
 
@@ -77,7 +79,7 @@ The available preview browser displayed the title/DEV screen but could not creat
 
 This is still a stylized procedural 3D game. Faces, hair, clothes, hands, roofs, vegetation and animation can visibly reveal that construction. The improvement is substantial in sky composition, structural damage, persistent ruins and crowd density; it is not photorealism. Some underground angles remain extremely dark, and facial detail is much less readable at distance.
 
-Background evacuees use economical looped poses, not individual full simulations. Smoke and cloud depth are shader/particle effects rather than true volumetrics. Building collapses are authored animations, not unrestricted physics. Native software rendering is slow and its timings are not hardware frame-rate estimates. Shader compilation and scene initialization can be expensive. A full hardware performance claim would be premature.
+Background evacuees use economical looped poses, not individual full simulations. Smoke and cloud depth are shader/particle effects rather than true volumetrics. Building collapses are authored animations, not unrestricted physics. The WebGL 1 software backend also resizes some non-power-of-two textures, so fine text can differ from a WebGL 2 browser. Native software rendering is slow and its timings are not hardware frame-rate estimates. Shader compilation and scene initialization can be expensive. A full hardware performance claim would be premature.
 
 Human playtesting remains needed for:
 
