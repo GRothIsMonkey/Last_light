@@ -4,7 +4,7 @@ const mat=(c,o={})=>new T.MeshStandardMaterial({color:c,roughness:.8,...o});
 function box(g,x,y,z,w,h,d,c,r=0){const m=new T.Mesh(new T.BoxGeometry(w,h,d),typeof c==='number'?mat(c):c);m.position.set(x,y,z);m.rotation.x=r;g.add(m);return m;}
 function label(g,x,y,z,w,h,draw){const canvas=document.createElement('canvas');canvas.width=512;canvas.height=256;const ctx=canvas.getContext?.('2d');if(ctx)draw(ctx,512,256);const tex=ctx?new T.CanvasTexture(canvas):null;if(tex)tex.colorSpace=T.SRGBColorSpace;const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:tex}));m.position.set(x,y,z);g.add(m);return m;}
 export function drapedBlanket(color){const p=[],ix=[],S=40,R=24;
- for(let j=0;j<=R;j++)for(let i=0;i<=S;i++){const t=j/R,a=.45+i/S*(Math.PI*2-.90),shoulder=Math.sin(Math.min(1,t/.32)*Math.PI/2),rx=.065+shoulder*.17+t*.018,rz=.05+shoulder*.10,fold=(.006+.007*t)*Math.sin(a*13+t*5);p.push(Math.sin(a)*(rx+fold),.255-t*.49-Math.sin(a*2+.3)**2*.009*t,Math.cos(a)*(rz+fold)+.02);if(j<R&&i<S){const n=j*(S+1)+i;ix.push(n,n+S+1,n+1,n+1,n+S+1,n+S+2);}}
+ for(let j=0;j<=R;j++)for(let i=0;i<=S;i++){const t=j/R,a=.45+i/S*(Math.PI*2-.90),shoulder=Math.sin(Math.min(1,t/.32)*Math.PI/2),rx=.065+shoulder*.17+t*.018,rz=.05+shoulder*.10,fold=(.006+.007*t)*Math.sin(a*13+t*5);p.push(Math.sin(a)*(rx+fold),.255-t*.49-Math.sin(a*2+.3)**2*.009*t,-Math.cos(a)*(rz+fold)+.02);if(j<R&&i<S){const n=j*(S+1)+i;ix.push(n,n+S+1,n+1,n+1,n+S+1,n+S+2);}}
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));g.setIndex(ix);g.computeVertexNormals();const m=new T.Mesh(g,mat(color,{side:T.DoubleSide}));m.name='a1-draped-blanket';m.castShadow=true;return m;
 }
 export function finishMovingTruck(g){

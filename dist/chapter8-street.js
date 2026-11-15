@@ -42,7 +42,7 @@ export function streetActs(X){
  const SKY=createPresence({scene,sfx:(n,p,op)=>sound(n,p,op),floorAt:(x,z)=>town.floorAt(x,z),sky:true});
  SKY.group.name='chapter8-presence-skyline';SKY.group.traverse(o2=>{if(o2.material){const ms=Array.isArray(o2.material)?o2.material:[o2.material];for(const m of ms)m.fog=false;}});
  const BODY=SP(1540,100,-6),REACH=[[1315,18,26],[1360,48,35],[1285,-26,22],[1400,-8,33],[1265,70,18]];
- function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+6,z:BODY.z},r:92,squash:[1.26,1.15,1.42],rot:2.46,fog:0});SKY.lean(.2);
+ function skyline(on){SKY.reset();SKY.show(on);if(!on)return;SKY.showMass(true,{at:{x:BODY.x,y:BODY.y+6,z:BODY.z},r:138,squash:[1.26,1.15,1.42],rot:2.46,fog:0});SKY.lean(.2);
   // Each reach grows from the same body. The sixth limb remains the authored street strike.
   SKY.update(0);SKY.mass.updateMatrixWorld(true);
   REACH.forEach(([d,lat,dy],i)=>{const r=new THREE.Vector3((i%2?1:-1)*.17,1.16,.80-i*.30).applyMatrix4(SKY.mass.matrixWorld),to=SP(d,lat,dy),dir=new THREE.Vector3(to.x,to.y,to.z).sub(r),len=dir.length();

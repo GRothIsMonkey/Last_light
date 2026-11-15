@@ -11,7 +11,7 @@ export default async function(T){const {h,advance,THREE}=T;let count=0;const che
  h.jump('a1-return');advance(3);check('September retains every damaged lot',JSON.stringify(D.state.damaged.map(r=>r.id).sort())===JSON.stringify(ids));
  h.jump('a1-weeks');advance(3);check('October clears only two shells',D.state.damaged.filter(r=>r.cleared).length===2);check('October retains structural triangle cuts',structure.state.removedTriangles>100);
  h.jump('a1-gym');advance(4);check('Leaving town restores the original geometry',structure.state.removedTriangles===0);const crowd=h.aftermath1.SC.SCH.crowd;
- check('Ninety-six additional evacuation figures',crowd.state.represented===96);check('Crowd uses eleven instanced batches',crowd.state.drawBatches===10); // head, hair, torso, limbs, hands, shoes, neck, nose, eyes
+ check('Ninety-six additional evacuation figures',crowd.state.represented===96);check('Crowd uses ten instanced batches',crowd.state.drawBatches===10); // head, hair, torso, limbs, hands, shoes, neck, nose, eyes
  const A=h.aftermath1.cast.jamieMom,F=h.aftermath1.FACES.get(A);F.set('sobbing',{hold:30});advance(5);h.scene.updateMatrixWorld(true);
  check('Crying expression reaches tears',F.crying>.6);check('All adult vertices are finite',Array.from(A.person.parts.head.geometry.attributes.position.array).every(Number.isFinite));
  F.detach();check('Expression overlay detaches',!F.enabled);F.attach();

@@ -21,9 +21,10 @@ export function adultHead(spec){
   for(const up of [-1,1]){const curve=[];for(let k=0;k<=14;k++){const a=k/14*Math.PI;curve.push(new T.Vector3(s*.033+Math.cos(a)*.015,.012+up*Math.sin(a)*.008,-.085));}add(new T.TubeGeometry(new T.CatmullRomCurve3(curve),16,.0008,4),tint(skin,up>0?.72:.92));}
  }
  // A fitted cap with an asymmetric hairline; winding faces outward and the pole is shared.
+ const skullAt=y=>{let j=0;while(j<rings.length-2&&rings[j+1][0]<y)j++;const a=rings[Math.max(0,j-1)],b=rings[j],c=rings[j+1],d=rings[Math.min(rings.length-1,j+2)],t=Math.max(0,Math.min(1,(y-b[0])/(c[0]-b[0])));return [1,2,3].map(i=>.5*(2*b[i]+(-a[i]+c[i])*t+(2*a[i]-5*b[i]+4*c[i]-d[i])*t*t+(-a[i]+3*b[i]-3*c[i]+d[i])*t*t*t));};
  const cols=56,rows=22,hp=[],hc=[],ix=[];
  for(let j=0;j<=rows;j++)for(let i=0;i<=cols;i++){const a=i/cols*Math.PI*2,front=Math.max(0,-Math.sin(a)),back=Math.max(0,Math.sin(a)),edge=1.53-front*.42+back*.30+.035*Math.sin(a*3),t=j/rows*edge,ridge=.0008*Math.sin(a*39+t*11)*Math.sin(t),quiff=(H.style==='swept'?.008:0)*front*Math.max(0,Math.cos(a))*Math.sin(t),sx=Math.cos(a),sz=Math.sin(a);
-  hp.push(Math.sign(sx)*Math.abs(sx)**.76*Math.sin(t)*(.096+ridge),.004+Math.cos(t)*.143+quiff,.012+Math.sign(sz)*Math.abs(sz)**.76*Math.sin(t)*(.108+ridge));
+  const y=.004+Math.cos(t)*.143+quiff,[skx,skz,skc]=skullAt(Math.min(.136,y)),onSkull=y<.137,rx=Math.max(Math.sin(t)*(.096+ridge),onSkull?skx+.003:0),rz=Math.max(Math.sin(t)*(.108+ridge),onSkull?skz+.003:0);hp.push(Math.sign(sx)*Math.abs(sx)**(2/2.65)*rx,y,(onSkull?skc:.012)+Math.sign(sz)*Math.abs(sz)**(2/2.65)*rz);
   const c=new T.Color(H.color).multiplyScalar(.92+.09*Math.sin(a*39+t*11)**2+(old?.18*Math.abs(sx)*Math.sin(t)**4:0));hc.push(c.r,c.g,c.b);
   if(j<rows&&i<cols){const n=j*(cols+1)+i;ix.push(n,n+1,n+cols+1,n+1,n+cols+2,n+cols+1);}}
  const hair=new T.BufferGeometry();hair.setAttribute('position',new T.Float32BufferAttribute(hp,3));hair.setAttribute('color',new T.Float32BufferAttribute(hc,3));hair.setIndex(ix);hair.computeVertexNormals();add(hair,0xffffff);

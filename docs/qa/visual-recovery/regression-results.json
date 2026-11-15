@@ -1,0 +1,47 @@
+{
+  "suites": {
+    "chapter7": {
+      "passed": 94,
+      "failed": [],
+      "logSHA256": "7d1c226f539fdfe8bd8a6d1ec5780c8352a4287ec9b0962de9a0b7ee565f8f47",
+      "method": "input-driven runtime simulation; mocked renderer",
+      "stage": "full progression before final scalp and coat fitting"
+    },
+    "chapter8": {
+      "passed": 35,
+      "failed": [],
+      "logSHA256": "571489240d0128cf21cba7959904719f63bf9f9e005e06afe92b36d305e0d9e0",
+      "method": "input-driven runtime simulation; mocked renderer",
+      "stage": "full progression before final scalp and coat fitting"
+    },
+    "aftermath": {
+      "passed": 58,
+      "failed": [],
+      "logSHA256": "606aa73a02730d7374cff5c389073ec2947af735082c6e8e14537b1259dc524f",
+      "method": "input-driven runtime simulation; mocked renderer",
+      "stage": "full progression before final scalp and coat fitting"
+    },
+    "art": {
+      "passed": 55,
+      "failed": [],
+      "method": "procedural model and art regression assertions",
+      "stage": "after scalp fitting"
+    },
+    "recoveryState": {
+      "passed": 16,
+      "failed": [],
+      "method": "shared damage, crowd, replay and adult expression state assertions",
+      "stage": "after scalp fitting"
+    },
+    "contacts": {
+      "passed": 65,
+      "failed": [],
+      "method": "CPR hand distances, oak embrace, permanent deaths and direct final-ride crying",
+      "stage": "after scalp fitting"
+    }
+  },
+  "browserGameplayVerified": false,
+  "nativeSoftwareWebGL": true,
+  "hardwarePerformanceVerified": false,
+  "audioHumanReview": false
+}

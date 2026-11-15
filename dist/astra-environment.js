@@ -6,7 +6,7 @@ export function mourningCoat(){
  const group=new THREE.Group();group.name='c8-reyes-jacket';
  const material=new THREE.MeshStandardMaterial({color:0x1b2232,roughness:.96,side:THREE.DoubleSide});material.name='c8-reyes-jacket';
  const points=[],indices=[],nx=32,nz=42;
- const at=(u,t)=>{const z=-.62+t*1.34,width=.32+.075*Math.sin(Math.PI*t),x=u*width,y=(.17+.12*Math.exp(-(((z-.38)/.42)**2)))*(1-.80*u*u)+.026+.009*Math.sin(u*18+t*11)*(1-u*u);return [x,y,z];};
+ const at=(u,t)=>{const z=-.65+t*1.82,width=.42+.08*Math.sin(Math.PI*t),x=u*width,end=1-.80*Math.max(0,(t-.86)/.14)**2,y=(.23+.17*Math.exp(-(((z-.55)/.60)**2)))*(1-.86*u**6)*end+.032+.009*Math.sin(u*18+t*11)*(1-u*u);return [x,y,z];};
  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){points.push(...at(i/nx*2-1,j/nz));if(j<nz&&i<nx){const n=j*(nx+1)+i;indices.push(n,n+1,n+nx+1,n+1,n+nx+2,n+nx+1);}}
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));geo.setIndex(indices);geo.computeVertexNormals();const cloth=new THREE.Mesh(geo,material);cloth.castShadow=cloth.receiveShadow=true;group.add(cloth);
  const seam=new THREE.MeshStandardMaterial({color:0x303b4d,roughness:1});

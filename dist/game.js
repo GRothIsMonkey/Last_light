@@ -726,7 +726,7 @@ function cullZones(){if(!zoned.length)return;
  // ...and the view itself ends sooner there (the dark and the walls end it anyway), so nothing far is drawn.
  // (deep in the drain the long straights run past the old view distance: the view reaches down them, and the sky is not drawn
  // at all, so the far end of a straight is black, never sky)
- {const want=room?140:deepIn?150:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:(skyMat.uniforms.apoc.value>.25?590:390);if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(want>390?want*.92/350:Math.min(1,want*.9/350));}sky.visible=!deepIn;}
+ {const want=room?140:deepIn?150:inD?170:(woods&&(ctx.night||0)>.5&&((L.s??0)>200||!!L.w?.patch))?260:(skyMat.uniforms.apoc.value>.25?760:390);if(camera.far!==want){camera.far=want;camera.updateProjectionMatrix();sky.scale.setScalar(want>390?want*.92/350:Math.min(1,want*.9/350));}sky.visible=!deepIn;}
  if(far||zoneState.hidPlain){for(const m of plainMerged){if(deepIn){drawn(m,false);continue;}if(far){const b=m.geometry.boundingSphere;drawn(m,p.distanceTo(b.center)-b.radius<(room?80:300));}else drawn(m,true);}zoneState.hidPlain=far;}}
 // What the keys would do right now, shown only when it matters: a short riding tutorial,
 // then nothing until the end of the street.
