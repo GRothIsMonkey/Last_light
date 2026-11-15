@@ -15,7 +15,7 @@ const BED={summer:{cic:1,crick:.5,wind:1,traffic:1,under:95},search:{cic:.55,cri
 export function createMenuAudio(){
  const AC=typeof window!=='undefined'&&(window.AudioContext||window.webkitAudioContext);
  let ctx=null,master=null,music=null,sfx=null,wet=null,noise=null,pink=null,bed=null,running=false,muted=false,mood='summer',vol={master:1,music:1,sfx:1};
- let t=0,nextNote=0,noteI=0,nextCrick=0,nextCar=0,nextGust=0,underOn=false,duck=1,lastTick=0,started=false;
+ let meterNode=null,t=0,nextNote=0,noteI=0,nextCrick=0,nextCar=0,nextGust=0,underOn=false,duck=1,lastTick=0,started=false;
  const now=()=>ctx.currentTime;
  function gain(v=0){const g=ctx.createGain();g.gain.value=v;return g;}
  function filt(type,f,q=1){const b=ctx.createBiquadFilter();b.type=type;b.frequency.value=f;b.Q.value=q;return b;}
@@ -44,7 +44,7 @@ export function createMenuAudio(){
   B.pad=gain(0);B.pad.connect(music);B.padOsc=[];for(let i=0;i<3;i++){const o=ctx.createOscillator();o.type=i===2?'triangle':'sine';o.frequency.value=PAD.summer[i];const g=gain(i===2?.18:.5);o.connect(g).connect(B.pad);o.start();B.padOsc.push(o);}
   B.pad.connect(wet);
   bed=B;}
- function level(){return muted?0:.82*vol.master;}
+ function level(){return muted?0:1.15*vol.master;}
  function setTarget(g,v,tc=.5){if(g)g.gain.setTargetAtTime(v,now(),tc);}
  // ---- notes -----------------------------------------------------------------------------------------------------------
  function pianoNote(f,at,v=.05,len=4.2){// a soft felt-piano-ish note: a few partials, quick attack, long decay; a touch of detune
@@ -113,6 +113,8 @@ export function createMenuAudio(){
   setMix(s){Object.assign(vol,{master:s.volume??1,music:s.music??1,sfx:s.sfx??1});muted=!!s.muted;if(!ctx)return;setTarget(music,vol.music,.15);setTarget(sfx,vol.sfx,.15);if(running)setTarget(master,level(),.15);},
   setMood(m){mood=m in BED?m:'summer';setMoodNow(mood);},
   ui,event,frame,
-  get state(){return {available:!!AC,unlocked:!!ctx,running,muted,mood,context:ctx?.state||null};}};
+  // (QA: how loud the menu's sound is right now, measured after the limiter: RMS and peak, linear)
+  meter(){if(!ctx)return null;if(!meterNode){meterNode=ctx.createAnalyser();meterNode.fftSize=8192;master.connect(meterNode);}const d=new Float32Array(meterNode.fftSize);meterNode.getFloatTimeDomainData(d);let sum=0,peak=0;for(const x of d){sum+=x*x;peak=Math.max(peak,Math.abs(x));}return {rms:+Math.sqrt(sum/d.length).toFixed(5),peak:+peak.toFixed(5)};},
+  get state(){return {available:!!AC,unlocked:!!ctx,running,muted,mood,context:ctx?.state||null,levels:ctx?{master:+master.gain.value.toFixed(3),music:+music.gain.value.toFixed(3),sfx:+sfx.gain.value.toFixed(3)}:null};}};
  function setMoodNow(m){if(!ctx||!bed)return;PAD[m].forEach((f,i)=>bed.padOsc[i].frequency.setTargetAtTime(f,now(),2));}
 }

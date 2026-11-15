@@ -1,5 +1,7 @@
 # Last Light
 
+**The title screen, menus and settings — redesigned, awaiting human review:** `claude/main-menu-complete-redesign`, from `codex/astra-chapter8-aftermath1-visual-recovery` (`df760c2`, Prologue to Aftermath I). The game now opens on a live scene drawn by the game itself: the end of Oak Hollow Drive at the last of the light, the old oak, the swing, the kids' bikes in the grass, slow shots and a few small things that do not quite fit; it remembers a later, darker evening as the summer goes on. Press any key, then Continue (with the chapter, the place and when), New Game, Chapters (every chapter reached, with a still and its date; begins it at its true beginning), Settings (audio buses, display, controls, accessibility), Credits and Quit, with keyboard and mouse navigation and the menu's own synthesized sound. The DEV selector is unchanged behind a small DEV tab. See [docs/MAIN_MENU_REDESIGN.md](docs/MAIN_MENU_REDESIGN.md) and [docs/MAIN_MENU_TEST_REPORT.md](docs/MAIN_MENU_TEST_REPORT.md). Offline package: `PLAYTEST_MENU=1 node tools/package-playtest.mjs <folder>`, then open `Last-Light-Playtest.html` in desktop Chrome or Edge.
+
 **Chapter Eight: The Night Oak Hollow Fell — implemented, awaiting human playtest:** `claude/chapter8-fullgame-story-integration`, from the recovered Astra Chapter Seven commit `27ad0b6fcd361c023a735cf9ec8ff61e144e69e3`. Friday night, August 26, to Saturday dawn, August 27, 2011: four bikes under the streetlight, the missing junction MH-12, the works under the court (Annie Rowan, the 1958 film, Danny Whitcomb), the three rescues (Sam, Jamie, Alex), all four of them, the anchor board and what the chambers were holding, the breach and the way out, Oak Hollow from the oak at dawn, the Hendersons' and Jamie, the emergency drawdown and the plug, Alex at the oak, and the last ride. Chapter Seven's end card offers **Chapter Eight**; the DEV panel has its 39 scenes. The Prologue to Chapter Seven gained small foreshadowing details only. See the [narrative integration](docs/CHAPTER8_FULL_GAME_NARRATIVE_INTEGRATION.md), [implementation handoff](docs/CHAPTER8_IMPLEMENTATION_HANDOFF.md), [test report](docs/CHAPTER8_TEST_REPORT.md) and [aftermath handoff](docs/AFTERMATH_STORY_HANDOFF.md). Offline package: `PLAYTEST_CHAPTER=8 node tools/package-playtest.mjs <folder>`, then open `Last-Light-Chapter8-Playtest.html` in desktop Chrome or Edge. Verified by automated input-driven simulation and software-rendered captures only; no human playtest and no real-GPU performance measurement yet.
 
 **Chapter Seven: The Street That Wasn't There — implemented, awaiting human playtest approval:** `claude/chapter7-the-street-that-wasnt-there`, from `910bca199f25fb92e8fc33156f97d056c202b4c0` (`codex/astra-chapter6-visual-reconstruction`). Friday, August 26, 2011: Sam's house the morning after, Reyes and the 1958 plan, the street past the oak that was vacated in 1974, a new creature that hunts by sight and sound, the green-door house, the chase, and Jamie taken. Chapter Six's end card now offers **Chapter Seven**; the DEV panel has its 40 scenes. A rough draft: the hunter is a temporary procedural stand-in. See the [implementation handoff](docs/CHAPTER7_IMPLEMENTATION_HANDOFF.md), the [test report](docs/CHAPTER7_TEST_REPORT.md) and the [hunter's asset guide](docs/CHAPTER7_CREATURE_ASSET_GUIDE.md). Offline package: `PLAYTEST_CHAPTER=7 node tools/package-playtest.mjs <folder>` (open `Last-Light-Chapter7-Playtest.html`).
@@ -28,7 +30,7 @@ The prologue takes about **5–6 minutes**. Chapter One runs about **12–15 min
 
 ## Play
 
-The title screen shows the controls. During play, only the key that matters right now is shown.
+The title screen opens on the end of the street at dusk: press any key, then choose from the menu with the arrows (or W/S) and Enter, or the mouse; Esc goes back. **Settings → Controls** lists every key. During play, only the key that matters right now is shown.
 
 - **W / Up:** pedal. Hold it a while, or add **Shift**, to push harder; you tire, and it comes back when you ease off.
 - **S / Down:** brake.
@@ -53,15 +55,13 @@ The title screen shows the controls. During play, only the key that matters righ
 - **Chapter Four:** F looks in Alex's camera (then **V** takes it out or puts it away at any time on foot); in playback **A / D** goes through the pictures, **W / S** (or the mouse wheel) zooms and the mouse pans. At the library's microfilm reader **A / D** winds the film. F takes a picture with his camera where the objective asks. Nothing is timed against you; if you wander, the others call you on.
 - **Chapter Five:** the ride is the same bike; from the park on you are on foot. In Sam's garage, F picks a supply up and F on Sam's bag puts it in. At the beach, F picks up a flat stone; **hold F** to wind up and let go to throw (**C** to get low); the shallows can be waded. F sits on the dock or by the fire, reads the trail map, opens the yellow gate at its latch (or Jamie does), pages through the camp register (**A / D**), opens doors, takes what a friend holds out, and looks closer. **V** brings up Alex's camera: hold it up where his picture was taken; while you look closer at something, **V** takes a picture of it with your hands. **T** is the flashlight, day or night, once Sam has handed you one: out of your pocket and on, then on and off. **I** (or Tab) opens what you carry: the camera, the flashlight (take out / put away) and what you have found. At the yellow gate F chooses (**Go with Jamie** or **Hear Sam out**). At night, keep Jamie and Sam with you; the objective says **Run.** only when something is coming.
 - **Escape:** pause. From the pause menu: Keep going, Settings, Start over, Back to the title.
-- **Settings** (from the title or pause), remembered in this browser:
-  - volume
-  - mouse sensitivity
-  - graphics quality
-  - Show dialogue captions (all spoken lines; enabled by default; objectives remain visible when disabled). From Chapter Three on, captions have no box: the words turn light over dark scenes and dark over bright ones, measured from the picture behind them.
-  - memory lines on or off
-  - full screen
+- **Settings** (from the title or pause), remembered in this browser (see [docs/MAIN_MENU_REDESIGN.md](docs/MAIN_MENU_REDESIGN.md) §4):
+  - Audio: master volume, music, effects and ambience, voices, mute all sound
+  - Display: full screen, graphics quality, resolution scale, brightness, film grain
+  - Controls: mouse sensitivity, invert vertical look, the full list of keys (not yet rebindable)
+  - Accessibility: dialogue captions (all spoken lines; enabled by default; objectives remain visible when disabled; from Chapter Three on, captions have no box: the words turn light over dark scenes and dark over bright ones, measured from the picture behind them), caption size, memory lines, reduce flashing, reduce motion, reset to defaults
 - **Touch devices:** hold the on-screen pedal and steering buttons, drag to look; the extra button does whatever F would do; in Chapter Five the BAG button opens what you carry. Sprint, jump, crouch and flashlight currently use keyboard controls.
-- **M or the Sound button:** toggle sound. No sound plays before interaction.
+- **M or the Sound button:** toggle sound (remembered). No sound plays before interaction: the title's sound begins with the first key or click.
 
 There is no failure condition. Pedaling advances the story; stopping lets you stay in a moment, and your friends stop with you.
 
@@ -121,7 +121,8 @@ All runtime assets are local. Three.js r160 is vendored under the MIT license in
   - `dist/friends.js`: group riding and departures.
 - **Life:** `dist/ambient.js`: sprinklers, the hoop kid, the minivan, birds, fireflies, lights, tire swing.
 - **Sound:** `dist/audio.js`: synthesized sound.
-- **Interface:** `dist/index.html`, `dist/style.css`, `dist/ui.js`.
+- **Interface:** `dist/index.html`, `dist/style.css`, `dist/fonts.css`, `dist/ui.js` (settings, panels, prompts).
+- **Title screen and menus:** `dist/menu.js` (presentation, navigation, every menu screen), `dist/title-scene.js` (the live backdrop at the end of the street), `dist/menu-audio.js` (the menu's sound), `dist/progress.js` (furthest chapter, Continue's details, the title's mood), `dist/menu-data.js` and `dist/menu-art.js` (what Chapters shows).
 - **Story and ending:**
   - `dist/story.js`: story beats, chapters, finale and memory lines.
   - `dist/nostalgia.js`: memory-line timing.

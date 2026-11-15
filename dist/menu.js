@@ -113,7 +113,7 @@ export function createMenu(o){
   if(s&&!auto)ask({title:'Begin again?',text:`Your place in ${s.chapterName||'the story'} (${s.label}) will be replaced once you reach the first checkpoint of the new game.`,yes:'Begin again'},y=>{if(y)go();});
   else go();}
  function beginChapter(n){if(S.busy||!progress.unlocked(n))return;const info=CHAPTER_INFO[n],s=progress.saved();
-  const go=()=>{S.busy=true;sound.ui('begin');cls(body,'chapter-loading',true);
+  const go=()=>{S.busy=true;sound.ui('begin');const note=doc?.querySelector?.('#boot .boot-note');if(note)note.textContent=`${info.name} · ${info.date.split(' · ')[0]}`;cls(body,'chapter-loading',true);
    const run=()=>{try{ui.closePanels();leaveTitle();o.startChapter(n);progress.record(n);}catch(e){console.error(e);o.toTitle?.();}finally{S.busy=false;cls(body,'chapter-loading',false);}};
    // (a moment for the screen to go dark before the hand-over runs; still inside the click's user activation)
    if(!auto&&typeof requestAnimationFrame==='function'&&typeof setTimeout==='function')requestAnimationFrame(()=>setTimeout(run,30));else run();};
@@ -129,7 +129,7 @@ export function createMenu(o){
    b.type='button';b.value=String(c.n);b.className=open?'':'locked';attr(b,'role','option');attr(b,'aria-selected','false');
    b.innerHTML=`<span class="cl-num">${c.num}</span><span class="cl-name">${open?c.name:c.name}</span><span class="cl-tag">${c.n===here?'Your place':''}</span>`;
    attr(b,'aria-label',open?`${c.name}${c.title?': '+c.title:''}`:`${c.name}, not yet remembered`);
-   b.addEventListener?.('click',()=>{if(S.chapterSel===c.n&&progress.unlocked(c.n))beginChapter(c.n);else{selectChapter(c.n);setFocus('chapters',b,{silent:true});}});
+   b.addEventListener?.('click',()=>{selectChapter(c.n);setFocus('chapters',b,{silent:true});});
    b.addEventListener?.('dblclick',()=>beginChapter(c.n));
    b.addEventListener?.('pointerenter',()=>{if(currentScreen()==='chapters')setFocus('chapters',b);});
    li.append?.(b);list.append?.(li);}
@@ -196,6 +196,7 @@ export function createMenu(o){
  function showTitle(){S.title=true;S.busy=false;applyMood();refreshContinue();const f=$('farewell');if(f)f.hidden=true;
   if(S.phase==='boot')return;S.phase='menu';cls(body,'splash',false);cls(body,'revealing',false);showMenu();sound.enter(settings);}
  function hideTitle(){leaveTitle();}
+ function onPause(){firstFocus('pause');}
 
  // ---- 2D layers over the scene: out-of-focus fireflies and dust ---------------------------------------------------------------
  function motesFrame(dt){const cv=$('title-motes');if(!cv?.getContext||!S.title)return;const M=S.motes||(S.motes={t:0,acc:0,list:[],w:0,h:0,ctx:null,mood:''});
@@ -249,6 +250,7 @@ export function createMenu(o){
   if(e.code==='Enter'||e.code==='NumpadEnter'||e.code==='Space'){if(!focus)return;
    if(focus.type==='checkbox'){focus.checked=!focus.checked;focus.dispatchEvent?.(new Event('input',{bubbles:true}));focus.dispatchEvent?.(new Event('change',{bubbles:true}));stop();return;}
    if(focus.type==='range'||focus.classList?.contains('st-tab')){move(scr,1);stop();return;}
+   if(scr==='chapters'&&focus.parentElement?.parentElement===$('chapter-list')){stop();if(progress.unlocked(+focus.value))beginChapter(+focus.value);else sound.ui('back');return;}
    if(focus.classList?.contains('seg')){const btns=inside(focus,'button'),sel=$(focus.getAttribute('data-select')),i=btns.findIndex(b=>b.getAttribute('data-value')===sel?.value);setSeg(focus,btns[(i+1)%btns.length].getAttribute('data-value'));stop();return;}
    stop();focus.click?.();return;}
   if(e.code==='Escape'){if(scr==='main'||scr==='pause')return;// (game.js: Esc resumes from the pause menu)
@@ -289,9 +291,9 @@ export function createMenu(o){
  function onSound(on){sound.setMuted(!on,settings);}
 
  // ---- start --------------------------------------------------------------------------------------------------------------------------
- function init(){cls(body,'qa',!!auto);wireButtons();wireSettings();wireInput();applyMood();refreshContinue();onSetting('reduceMotion',settings.reduceMotion);onSetting('grain',settings.grain);fillOutputs();}
+ function init(){cls(body,'qa',!!auto);try{if(matchMedia?.('(pointer:coarse)')?.matches){const p=doc?.querySelector?.('#press span');if(p)p.textContent='Tap to begin';}}catch{}wireButtons();wireSettings();wireInput();applyMood();refreshContinue();onSetting('reduceMotion',settings.reduceMotion);onSetting('grain',settings.grain);fillOutputs();}
  init();
- return {booted,frame,showTitle,hideTitle,refresh(){applyMood();refreshContinue();if(shown($('chapters')))buildChapters();},newGame,beginChapter,open,back,onSetting,onSound,
+ return {booted,frame,showTitle,hideTitle,onPause,refresh(){applyMood();refreshContinue();if(shown($('chapters')))buildChapters();},newGame,beginChapter,open,back,onSetting,onSound,
   get sleeping(){return S.sleeping;},get phase(){return S.phase;},get screen(){return currentScreen();},get mood(){return S.mood;},
   setArt(a){art=a;},sound,
   // QA: what the menu is doing now

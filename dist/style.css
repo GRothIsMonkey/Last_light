@@ -158,6 +158,7 @@ body{background:var(--ll-night)}
 /* ---- boot: before the first frame ---------------------------------------------------------------------------------- */
 #boot{position:absolute;inset:0;z-index:40;background:#07080c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transition:opacity 1.8s ease,visibility 0s linear 1.8s;pointer-events:none}
 body:not(.booting) #boot{opacity:0;visibility:hidden}
+body.chapter-loading #boot{opacity:1;visibility:visible;transition:none}
 .boot-mark{font:300 30px/1 var(--ll-serif);letter-spacing:.46em;padding-left:.46em;color:var(--ll-ink);opacity:.92}.boot-mark em{font-style:italic}
 .boot-line{width:132px;height:1px;background:rgba(243,231,211,.1);overflow:hidden}
 .boot-line i{display:block;height:100%;width:45%;background:linear-gradient(90deg,transparent,var(--ll-amber),transparent);animation:llScan 2.1s ease-in-out infinite}
@@ -345,6 +346,7 @@ body.has-dev .menu-hints{right:92px}
 #experience .modal-actions #confirm-yes.is-focus,#experience .modal-actions #confirm-yes:hover{color:var(--ll-amber)}
 #farewell{position:absolute;inset:0;z-index:30;background:#030305;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;animation:llFade 2.4s ease}
 #farewell[hidden]{display:none!important}
+#experience #error{z-index:50}
 #farewell h2{font:italic 300 clamp(54px,6vw,92px)/1 var(--ll-serif);color:#f3e5cf;margin:0 0 14px}
 #farewell p{font:400 15px/1.8 var(--ll-sans);color:var(--ll-ink-3);margin:0 0 28px}
 
@@ -377,6 +379,8 @@ body:not(.dev-open) #dev-chapters{display:none}
 @media(max-width:700px){#experience #intro h1{font-size:64px;margin-top:14px}#experience #intro .title-block{top:76px}#experience .main-menu{top:auto;bottom:86px}.menu-hints{display:none}.title-foot{font-size:9px;letter-spacing:.2em}#experience .mm-item .mm-label{font-size:24px}#experience #intro #title-tagline{font-size:17px}}
 @media(max-height:760px){#experience #intro .title-block{top:52px}#experience #intro h1{font-size:clamp(70px,8vw,120px);margin:14px 0 16px}#experience .main-menu{top:auto;bottom:66px}#experience .mm-item{padding-top:5px;padding-bottom:5px}#experience .mm-item .mm-label{font-size:25px}}
 @media(max-height:560px){#experience #intro #title-tagline{display:none}#experience .main-menu{bottom:44px}.title-foot{display:none}}
+@media(max-width:900px){.chapters-body{grid-template-rows:minmax(150px,30vh) auto;overflow:auto;padding-right:4px}.chapter-list{max-height:none}}
+@media(max-width:700px){#experience .screen-inner{padding-top:86px}#experience .foot-hints{display:none}#build-note,.title-foot i{display:none}#experience .cd-actions{flex-wrap:wrap;gap:8px}}
 body.reduce-motion .tl-glow,body.reduce-motion .mm-light::before,body.reduce-motion #press span{animation:none}
 body.reduce-motion #experience .mm-item:hover,body.reduce-motion #experience .mm-item.is-focus{transform:none}
 body.qa #experience #intro *,body.qa #title-layers *,body.qa .screen,body.qa .screen *,body.qa .modal,body.qa .modal *,body.qa #pause,body.qa #pause *,body.qa #farewell{transition:none!important;animation:none!important}
