@@ -1,0 +1,44 @@
+# Last Light — Art-Direction Conflicts Register
+
+Part of the [Final Art Bible](../LAST-LIGHT-FINAL-ART-BIBLE.md). Earlier visual guidance and implementation notes that disagree with the bible, or with each other. Source audit base: `c646a862b272c987b0a0b9aea690ddfc859ddda7`.
+
+Document classes (bible brief §82): **A** story canon (preserve) · **B** historical implementation report (keep accurate; never rewrite) · **C** current/living art requirement (align with the bible) · **D** temporary placeholder (may be superseded) · **E** unresolved creative decision (needs approval).
+
+Resolution values: **Resolved (note added)** — a short supersession note was added to the living document, pointing to the bible · **Resolved (bible rule)** — the bible states the controlling rule; the older text stays as history · **Open (CDA)** — needs the creative director (see `ART-APPROVAL-REGISTER.md`).
+
+No historical report was edited. No licensing text was edited.
+
+| ID | File | Section | Old requirement / statement | Class | New controlling rule | Resolution | Historical? | Approval |
+|---|---|---|---|---|---|---|---|---|
+| C-01 | `README.md` | Run locally | "Geometry, textures (signs, flag, glows) and audio are generated at runtime." | B (describes the current build) | Hybrid pipeline: authored local glTF assets with procedural assembly (bible §19, Asset plan §2). Still no CDN/external API at runtime | Resolved (bible rule); README gains only a pointer to the bible near the top | Yes (true of the current build) | — |
+| C-02 | `docs/ASTRA_HANDOFF.md` | §3 "What Astra should focus on next" | Priority list for Astra's art passes; "Keep the bone lengths in `rig.js` → `BODY` and the pose IK intact" | C (living guidance at the time) | Priorities and order now come from the Roadmap. Keep the **pose contract** and socket names; children keep `BODY` unless an approved re-tune; adults get their own skeleton (Character canon §2.1) | Resolved (note added) | Section kept | — |
+| C-03 | `docs/ASTRA_HANDOFF.md` | §3.3, §4 | "Faces, hair, clothes and hands are stylized low-poly"; far content "relies on the fog" | B | Grounded stylized realism; no fog to hide weak art (bible §6, §16) | Resolved (bible rule) | Yes | — |
+| C-04 | `docs/CHAPTER7_CREATURE_ASSET_GUIDE.md` | §4 Materials | "Standard PBR (`MeshStandardMaterial` after import). No custom shaders." | C (contract) | The gameplay contract stays binding. Creature materials use the shared material family `mat.flesh.creature`, which may include the shared library's detail functions; no per-asset ad-hoc shaders | Resolved (note added) | Contract kept | — |
+| C-05 | `docs/CHAPTER7_CREATURE_ASSET_GUIDE.md` | §2 | "A procedural humanoid about 2.3 m standing … It is a placeholder by design" | D | The Astra hunter (gaunt, low, forward-loaded retrieval predator) is the current design direction; an authored replacement must follow the Creature bible §3 | Resolved (note added) | Yes | Final hunter appearance: A-34 |
+| C-06 | `docs/CHAPTER7_CREATURE_ASSET_GUIDE.md` | §4 Budget | ≤ 30k tris, ≤ 60 bones, ≤ 2 × 2048² textures, ≤ 8 MB | C | Same numbers adopted (Creature bible §10; Asset plan §9) | No conflict | — | — |
+| C-07 | `docs/CHAPTER8_RECONSTRUCTION_HANDOFF.md` | File table, `chapter8-presence.js` | The Presence's body: "plated, barbed, fingered limbs; a lobed fleshy mass" | B | Continuous arched organism, unequal load-bearing limbs, long neck, tapered vertical opening, no face (Creature bible §7; Astra rework) | Resolved (bible rule) | Yes | Final Presence model: A-33 |
+| C-08 | `dist/chapter8-presence.js` (code comment) | Header | "Never a whole body, never a face" | C (scoped to underground) | Underground: partial, never a face. Skyline: the whole silhouette. Never a face anywhere (Creature bible §7.3) | Resolved (bible rule); code untouched | — | — |
+| C-09 | `docs/CHAPTER8_RECONSTRUCTION_HANDOFF.md` + `dist/chapter8-street.js` | Review question 4; `creature()` | Made things must read "as 'made' and not as Danny"; implemented as pale hunters with a torus grin | B + D | Made things derive from the smiling creature's design family, distinct from Danny by construction; no primitive grin (Creature bible §5) | Open (CDA) | Yes | A-28 |
+| C-10 | `docs/ASTRA_CHAPTER6_RECONSTRUCTION_HANDOFF.md` | Table "Jamie's double" | "The same reconstructed model and materials as real Jamie" | B | Doubles use the canonical identity mesh + cursed behavior. **Current code contradicts the handoff**: after the full-game rework real boys use `boyModel` but Ch6 doubles still receive the Ch6 model (audit F-09) | Open (CDA) | Yes | A-14 |
+| C-11 | `docs/CHAPTER7_ASTRA_HANDOFF.md` | Table "Real Jamie and the full cast" | "Jamie has a fitted cap, freckles, shirt graphic … The player's hands and wristband are included" (Ch7 overlay) | B (accepted Ch7 pass) | Identity is game-wide. These Ch7-only details are **no longer shown anywhere** (the full-game rework's `dress()` skips the boys): Jamie's freckles, the faded club shirt graphic, the player's wristband. Adopt game-wide or drop | Open (CDA) | Yes | A-06 (freckles), A-08 (shirt graphic), A-04 (wristband) |
+| C-12 | `docs/ASTRA-FULLGAME-ART-REWORK.md` | The Presence; Hunters | "The second supplied reference drives the new silhouette"; "The first reference drives the gaunt retrieval predator" | B | References are direction only; originality rule; reference images must be committed with provenance or replaced by original sheets | Open (CDA) | Yes | A-31 |
+| C-13 | `docs/AFTERMATH1_VISUAL_REVIEW.md` | What reads | "The two mothers are not the same face" | B | True for Jamie's vs Alex's mother at the shading/brow level, but their face *geometry parameters* are shared (both derive from `ADULTS.mom`), and Sam's mother is identical to Alex's (audit F-04). Each mother needs her own identity | Open (CDA) | Yes | A-22, A-11 |
+| C-14 | `docs/AFTERMATH1_VISUAL_REVIEW.md` | Not fixed | "Interior light at night … its materials carry a little of their own light" | B | No emissive cheating on non-sources (bible §4.4); practical-light interiors (Lighting script §5 A1) | Resolved (bible rule) | Yes | — |
+| C-15 | `docs/CHAPTER7_TEST_REPORT.md` | Hunter stand-in | "read as a pale cartoon in daylight … now dark" | B | Recorded as the failure mode to avoid (Creature bible §3.1) | No conflict | Yes | — |
+| C-16 | `docs/THIRD_PARTY_ASSETS.md` | Chapter Three creature | "The monster's design was not changed." | A/B (license record) | Record preserved verbatim; any future modification or replacement adds a dated entry, never edits the original record | No conflict | Yes | A-27 |
+| C-17 | `dist/chapter7.js` (code comment) | `dress()` | "how the cast looks (Chapter Six's reconstruction: the same Jamie, the same Reyes …)" | C (code) | Ch6/Ch7 overlays are retired by the registry in Phase 2; one identity per character in all chapters | Resolved (bible rule); code untouched | — | — |
+| C-18 | `dist/chapter5.js` (code comment) | `faces()` | "the faces that show what they feel … this chapter's; the others keep the faces they had" | C (code) | One facial system for every human in every chapter (bible §7.2) | Resolved (bible rule); code untouched | — | — |
+| C-19 | `dist/chapter7.js` (story text) vs `dist/astra-anatomy.js` (model) | Cap | "His blue cap. The one he turns backwards when he rides." vs a brim-forward cap in every state | A vs D | Story canon wins on *what*; how/when it is shown needs a decision | Open (CDA) | — | A-07 |
+| C-20 | `docs/CHAPTER5_ASTRA_PREP_HANDOFF.md`, `docs/ASTRA_CHAPTER3_HANDOFF.md`, `docs/ASTRA_CHAPTER3_HORROR_ESCALATION_HANDOFF.md`, `docs/ASTRA_CHAPTER4_FINAL_POLISH.md`, `docs/ASTRA_CHAPTER5_ULTRA_VISUAL_RELEASE.md`, `docs/ASTRA_FINAL_RELEASE.md`, `docs/VISUAL_RECOVERY_REPORT.md` | Limitations sections | "low-poly kids", "deliberately plain", "flat colours, box furniture", "stylized procedural", "not photorealistic" | B | These accurately describe past builds. The bible's target supersedes them for future work | Resolved (bible rule) | Yes | — |
+| C-21 | `docs/ASTRA_HANDOFF.md` | §5 | Lookout tall grass as "spiky cones", tire swing "black torus", chalk "1-pixel lines" left for the art pass | D | Replace per Environment guide §5.2, §6, §7 | Resolved (bible rule) | Yes | — |
+| C-22 | `dist/chapter6-models.js` | Foot contact | Blob contact shadows only while the Ch6 overlay is on | D | Contact shadows are global (Lighting script §4) | Resolved (bible rule) | — | — |
+
+## Supersession notes added in this branch
+
+| File | Note location |
+|---|---|
+| `docs/ASTRA_HANDOFF.md` | Top of §3 "What Astra should focus on next" |
+| `docs/CHAPTER7_CREATURE_ASSET_GUIDE.md` | After the title (art direction now from the bible; the technical contract remains binding) |
+| `README.md` | One line near the top pointing to the art bible |
+
+Nothing else in existing documentation was changed.

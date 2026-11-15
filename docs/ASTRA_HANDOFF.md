@@ -248,6 +248,12 @@ Use these to restyle or swap objects without searching the builders.
 
 ## 3. What Astra should focus on next
 
+> **Superseded for future visual work (November 2026):** art direction, priorities and their order now come from
+> [`docs/LAST-LIGHT-FINAL-ART-BIBLE.md`](LAST-LIGHT-FINAL-ART-BIBLE.md) and its
+> [roadmap](art/FULL-GAME-VISUAL-ROADMAP.md). This section is kept as the historical handoff. The technical facts below
+> (where things live, the pose IK, batching) remain accurate for this build; see the bible's character canon for the
+> updated rule on bone lengths (the pose contract stays; adults get their own skeleton).
+
 In rough order of payoff:
 
 1. **Materials and textures.**

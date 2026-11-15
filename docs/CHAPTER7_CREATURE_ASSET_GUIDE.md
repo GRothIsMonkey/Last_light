@@ -1,5 +1,12 @@
 # Last Light — Chapter Seven: the hunter (`chapter7_hunter`) — asset guide
 
+> **Art direction note (November 2026):** the technical contract in this guide (adapter interface, semantic states,
+> drive values, sockets, file format, fallbacks, checks) remains binding. The hunter's *appearance* — anatomy, materials,
+> movement character and its relation to the other creatures — is now governed by
+> [`docs/LAST-LIGHT-FINAL-ART-BIBLE.md`](LAST-LIGHT-FINAL-ART-BIBLE.md) and
+> [`docs/art/CREATURE-DESIGN-BIBLE.md`](art/CREATURE-DESIGN-BIBLE.md) §3 (see conflicts C-04 and C-05 in
+> [`docs/art/ART-DIRECTION-CONFLICTS.md`](art/ART-DIRECTION-CONFLICTS.md)). The rest of this guide is unchanged.
+
 This is the contract between Chapter Seven and the creature model that plays its hunter. The chapter ships with a
 **temporary procedural stand-in**; this document says exactly what a replacement has to provide so that it can be
 dropped in without touching the story, the AI or any set piece.
