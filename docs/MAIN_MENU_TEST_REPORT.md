@@ -30,7 +30,7 @@ Part A plays it as a person would (no `?qa`, real keys and clicks); Part B looks
 | Run | Result |
 |---|---|
 | `dist/` over HTTP | **70 checks passed**, no JavaScript errors |
-| the offline package (`PLAYTEST_MENU=1`), opened from disk | RESULT_PKG, and no HTTP(S) request at all |
+| the offline package (`PLAYTEST_MENU=1`, built from `f4fefd6`, clean tree), opened from disk | **71 checks passed** (the same 70, plus: no HTTP(S) request at all); menu sound RMS 0.034, peak 0.089 |
 
 What the checks cover:
 
