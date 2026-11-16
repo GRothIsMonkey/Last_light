@@ -94,8 +94,15 @@ the old ones.
 - **Your house** is the same plan re-sided blue with a new door, a red SUV in the drive, a scooter and a hopscotch.
 - **The road**: newer asphalt over the storm line (d 1047–1095) with a thin tar seam, new curb and sidewalk panels and
   sod on its west side; a newer square at Summerfield with crosswalk paint; the patch in front of Sam's.
-- **Jamie's** gets a different car and a wreath; the world's 2011 chalk at the end of the street (the four of
-  them's sun, initials and hopscotch) is folded away while 2021 is shown and restored exactly afterwards.
+- **Jamie's** gets a different car and a wreath.
+- **The end of the street in 2021 has no 2011 chalk**: the world's chalk there (the sun, the JSA initials, the
+  hopscotch) is folded away while 2021 is shown and restored exactly afterwards, and the Prologue ending's own objects
+  (`ending.js`: the chalk riders, the faint AR clue, the other bike) are hidden every frame. The ending's per-frame
+  logic keeps running in later chapters and treats the call home as done, so without this the faint AR chalk could
+  show at the cul-de-sac in 2021 if you looked down at it, or during a fade. A standalone check stands on that spot,
+  looks down, and asserts none of it is visible.
+- **The hoop**: the kid shoots at one of the street's own garage hoops (`houses.js`), the nearest one past the
+  Briarwood corner whose driveway has no parked car; none qualifying, no kid.
 - **Traffic**: a car now and then on the right side of the road, slowing for people; one turns into a drive and parks.
 - **Lamps**: the streetlights come on one after another at the end (the world's own lamps, by override).
 - Everything is removed and every cut restored on reset; no earlier chapter sees any of it.
@@ -113,7 +120,39 @@ All derived from the existing models, never new likenesses, and marked provision
 - Neighbours (a man mowing, a woman walking a dog, Sam's mom on the porch), the hoop kid and the two children on bikes
   are built on the shared rig as different people with their own face numbers, hair and clothes.
 
-## 7. Notes for whoever changes it
+## 7. DEV scenes
+
+**DEV → Aftermath II** (`DEV_SCENES[10]`): Aftermath II Start (from Aftermath I's end card) · The Drive In (Oak Hollow,
+August 2021) · The Rebuilt Street (your old house) · Sam (the reunion at the curb) · Sam (you hugged him goodbye in
+2011) · Sam (you said "See you, Sam." in 2011) · The Hill (walking the old neighborhood) · Briarwood (Alex's corner, his
+house) · Jamie's House (you have his cap) · Jamie's House (cap given at the shelter) · Jamie's House (cap given on her
+porch) · Summerfield (where the road went down) · The Streetlight (Sam's memory, the notebook) · The New Houses (the
+patched road) · The Old Oak · The Children on Bikes ("See you tomorrow!") · When the Streetlights Come On · Aftermath II
+Ending (the end card).
+
+**DEV → 2026 · Credits** (`DEV_SCENES[11]`): 2026 Coda Start (from Aftermath II's end card) · The Prologue Image (the
+summer street) · The Camera Pulls Back (the monitor) · The Room in 2026 (you kept his cap) · The Room in 2026 (his
+mother has his cap) · The Final Line ("I still remember.") · LAST LIGHT (the title on the monitor) · The Final Credits.
+
+A DEV start is always the same scene (`devFresh`): it never reads a player's own Aftermath I/II choices unless the entry
+is that variant. Section ids also accept aliases (`ALIAS10`, e.g. `a2-reunion`, `a2-notebook`, `coda-desk`, `credits`).
+
+## 8. Audio
+
+All synthesized (`audio.js`); no recordings, no music under conversations, nothing that suggests a threat.
+
+- **Ambience** (the world's own layers, set for a summer evening in 2021): insects .34, wind .28, neighbourhood life .6,
+  distant traffic .09; no forest, tunnel or water.
+- **Sources with a place in the world**: your car's engine while you drive and the engine off when you park, car doors,
+  a passing car's engine, the mower, a sprinkler at the end of the street, the dog walker's dog, the hoop kid's dribble
+  and the rim, the screen door at Sam's (and one somewhere behind you), the kids' bike bell (a real bell on a real bike:
+  `a2Bell`), the lamps' click, the swing's creak, cloth for the hug and the throw, footsteps.
+- **Music**: none in Aftermath II. The Prologue's own melody comes back only in the coda (the Prologue ride, then under
+  the title on the monitor) and under the credits (`theme()`), see the credits handoff for the cue interface.
+- **The coda's room**: as the monitor recedes, the game's sound narrows to two small desk speakers with a computer's fan
+  and a lamp's hum under it (`screen(k)`).
+
+## 9. Notes for whoever changes it
 
 - Sam's following is `samWalks()`/`besideYou()` with a safety net (`samNet`) that brings him back if he is ever left
   far behind or stuck; scenes take him off it (`samGo`) and put him back.
@@ -126,7 +165,7 @@ All derived from the existing models, never new likenesses, and marked provision
 - Daytime windows: the world's window-light thresholds are shared with the rest of the game, so by about 6:45 PM some
   windows are lit warm, as on any evening.
 
-## 8. Known issues and limits
+## 10. Known issues and limits
 
 - Adult Sam and the adult bodies are provisional derivations; faces are the game's stylized faces at adult proportions.
 - The car's cabin is simple (boxes); its exterior is the world's sedan. There is no glass drawn from inside.

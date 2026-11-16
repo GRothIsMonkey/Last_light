@@ -175,7 +175,8 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
    assert.ok(until(()=>F().phase==='done',30),'done');assert.equal(h.snapshot.state,'ended');assert.match(element('ending').querySelector?.('h2')?.innerHTML??'Last Light',/Last Light/);
    assert.match(element('next-chapter').innerHTML,/credits again/);const done=JSON.parse(globalThis.localStorage.getItem('lastlight.complete')||'{}');assert.equal(done.complete,true);});
   check(`${label}: the end screen's "Watch the credits again" plays them again; Skip goes to the dedication, then past it`,()=>{element('next-chapter').onclick?.();assert.ok(until(()=>F().active&&F().phase==='roll',5));
-   tap('Escape');assert.equal(F().phase,'ded','skip to the dedication');wait(8);tap('Escape');assert.ok(until(()=>F().phase==='done',8));assert.equal(h.snapshot.state,'ended');});
+   tap('Escape');assert.equal(F().phase,'ded','skip to the dedication');wait(2);tap('Escape');assert.equal(F().phase,'ded','a second skip right away does not skip the dedication unseen');assert.ok(F().t>=8.4,'both lines up first: '+F().t);
+   wait(.5);tap('Escape');assert.ok(until(()=>F().phase==='done',8));assert.equal(h.snapshot.state,'ended');});
   lap('credits');}
  return {lines,answered,seg};
 }
@@ -187,6 +188,9 @@ export async function runAftermathTwoChecks(T0){const X=aftermathTwoTools(T0),{h
    if(sc.jump!=='aftermath2-end'){assert.match(element('date').innerHTML,/AUGUST 27, 2021/,sc.id+' date');assert.ok(st.sky.day>=0&&st.sky.p>=.1,sc.id+' light');if(!st.posed)assert.ok(h.nav.walkable(st.you.x,st.you.z,{r:.15}),sc.id+' on its feet');}
    if(sc.keep?.cap==='mom')assert.equal(st.keep.cap,'mom',sc.id+' cap variant');assert.equal(st.jamie.visible,false,sc.id+' no Jamie');assert.equal(h.chapter8.HM.root.visible,false,sc.id+' no hunter');
    assert.equal(st.marks.filter(m=>/threw/.test(m[1])).length,0,sc.id+' threw '+JSON.stringify(st.marks));}
+  // (2021 at the end of the street: stand on the Prologue ending's chalk, look down at it: nothing of 2011's chalk, no AR, no other bike)
+  {h.devScene(10,'a2-oak');wait(1);const SP=A.SC.SP,at=SP(1151.6,1.9),to=SP(1149.7,1.9);h.placePlayer({x:at.x,z:at.z,a:Math.atan2(to.x-at.x,-(to.z-at.z)),mode:'walk',bike:null});h.face(Math.atan2(to.x-at.x,-(to.z-at.z)),-1.1);wait(2.5);
+   const E=h.ending;assert.equal(E.drawing.visible,false,'the 2011 chalk riders are gone');assert.equal(E.clue.visible,false,'no AR chalk in 2021');assert.equal(E.otherBike.visible,false,'no other bike');assert.equal(E.state.fifthRider,false,'no fifth rider');}
   for(const sc of DEV_SCENES[11].filter(x=>x.jump)){h.devScene(11,sc.id);wait(1.5);if(sc.jump==='coda-credits'){assert.ok(h.credits.state().active,sc.id+' credits');continue;}const k=h.coda.state();assert.ok(k.active,sc.id+' coda active');
    if(sc.keep?.cap==='mom')assert.equal(k.cap,false,sc.id+' no cap');else if(sc.jump!=='coda-start'&&sc.jump!=='coda-pullback')assert.equal(k.cap,true,sc.id+' the cap');
    // (the room's date, not Aftermath II's: a jump straight into the room must not leave 2021's clock writing over it)

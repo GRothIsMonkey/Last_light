@@ -66,7 +66,29 @@ server needed), `START-HERE.txt` (how to start, the DEV route to Aftermath II an
 person), `manifest.json` (branch, commit, SHA-256 of every source file and of the entry), `THREE-LICENSE.txt`,
 `THIRD_PARTY_ASSETS.md`, `AFTERMATH2-TEST-REPORT.md` and `RELEASE-NOTES.md` (this document). Zip the folder.
 
-## 5. Before a public release
+## 5. Integration points for the title-screen redesign (a separate branch)
+
+This branch does not change the title screen, settings, chapter selection or the menu's own credits; it only adds to
+them. When the redesigned title screen is merged with this story, these are the joins:
+
+- **DEV**: two buttons in `dist/index.html`, `data-dev-chapter="10"` (Aftermath II) and `"11"` (2026 · Credits), handled
+  by the existing DEV panel (`dev-chapters.js` `DEV_SCENES[10]`, `[11]`). A redesigned chapter select can list the same
+  ids; `lastLight.devScene(n, id)` / the panel's own start path work unchanged.
+- **Continue**: the existing checkpoint save carries Aftermath II's and the coda's sections with their labels
+  (`aftermath2.LABEL`: "Sam", "The old oak", ..., "One more lap", "The credits"); Continue resumes them the same way it
+  resumes every chapter.
+- **Completion**: `localStorage['lastlight.complete']` = `{complete:true, at, plays}`. A title screen can read it to show
+  a completed state, offer the credits, or unlock a chapter list.
+- **Credits from a menu**: `beginCredits(null, {again:true})` in `game.js` plays the final credits from anywhere (it is
+  what **Watch the credits again** calls); the credits build their own `#final-credits` element if the page has none.
+  A menu "Credits" item can call the same function, or show `CREDITS`/`DEDICATION` from `final-credits.js` in its own
+  layout so the two never disagree.
+- **The end screen** reuses the existing `#ending` panel and `#next-chapter` button (THE END / Last Light / Summer,
+  2011.); its **Start over** and **Back to the title** are the existing buttons.
+- **Chapter chain**: Aftermath I's end card → Aftermath II (`aftermath1.next=aftermath2`), Aftermath II's → the coda
+  (`nextChapter()` when `aftermath2.finished`), the coda → the credits. Earlier chapters' end cards are unchanged.
+
+## 6. Before a public release
 
 - Confirm the creator's credited name and the Astra credit (§2).
 - Decide the notebook's colour (Chapter Seven green vs. Aftermath I/II blue) and the adult characters' final look

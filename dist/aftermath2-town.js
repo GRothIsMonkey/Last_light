@@ -200,10 +200,15 @@ export function createTown2021({scene,world,nav,ch8,ambient}){
  function updateLamps(dt){if(!ST.lamps||!ambient?.lamps)return;ST.lampT+=dt;const list=ambient.lamps();for(const l of list){if(l.frame&&l.frame!=='main'&&l.frame!==0)continue;
    const delay=((l.i*37)%11)*.18+Math.max(0,1162-(l.d??1000))*.004,t=ST.lampT-delay;let v=0;if(t>0)v=t<.22?(Math.sin(t*80+l.i)>.1?.45:.04):Math.min(1,.4+t*.8);ambient.lampOverride.set(l.i,v);}}
  // ---- every frame --------------------------------------------------------------------------------------------------------------------
- function update(dt,{people=[]}={}){if(!ST.on)return;updateTraffic(dt,people);updateLamps(dt);}
+ // the end of the street's 2011 chalk and what the Prologue's ending keeps there (ending.js: the four riders, the AR clue, the other
+ // bike): none of it is there in 2021. The ending's own per-frame logic runs before the chapter's, so this hides them after it, every frame.
+ const END={found:false,drawing:null,clue:null,bike:null};
+ function endingAway(on){if(!END.found){END.found=true;END.drawing=scene.getObjectByName('remembered-riders');END.clue=scene.getObjectByName('last-chalk');END.bike=scene.getObjectByName('the-other-bike');}
+  if(on){for(const o of [END.drawing,END.clue,END.bike])if(o)o.visible=false;END.hid=true;}else if(END.hid){END.hid=false;if(END.drawing)END.drawing.visible=true;}}// (the riders are always shown otherwise; the clue and the bike are the ending's own to show)
+ function update(dt,{people=[]}={}){if(!ST.on)return;endingAway(true);updateTraffic(dt,people);updateLamps(dt);}
  function sources(out){if(!ST.on)return;for(const T of TRAFFIC)if(T.on&&!T.engineOff)out.push({id:'a2-car-'+T.i,kind:'idle',pos:new THREE.Vector3(T.x,.6,T.z),level:.35+T.v*.06});}
  function blockers(out){if(!ST.on)return;for(const T of TRAFFIC)if(T.on)out.push({x:T.x,z:T.z,r:2.4,speed:T.v});for(const c of ST.cars||[])out.push({x:c.x,z:c.z,r:1.4,speed:0});}
- function show(on){if(on){build();if(!root.parent)scene.add(root);for(const c of ST.cuts)c.c.on=true;}else{if(root.parent)root.removeFromParent();for(const c of ST.cuts)c.c.on=false;}ST.on=on;oldChalk(!on);try{ruin?.syncCuts?.();}catch(e){ST.errors.push('cuts: '+e.message);}}
+ function show(on){if(on){build();if(!root.parent)scene.add(root);for(const c of ST.cuts)c.c.on=true;}else{if(root.parent)root.removeFromParent();for(const c of ST.cuts)c.c.on=false;}ST.on=on;oldChalk(!on);endingAway(on);try{ruin?.syncCuts?.();}catch(e){ST.errors.push('cuts: '+e.message);}}
  function reset(){for(const T of TRAFFIC){T.on=false;T.parked=false;T.engineOff=false;T.g.visible=false;}lampsOn(false);show(false);}
  return {root,show,update,sources,blockers,reset,drive,lampsOn,SP,houseAt,TRAFFIC,ST,REBUILT,
   state:()=>({on:ST.on,built:ST.built,jamie:ST.jamie||null,home2021:ST.home2021||null,chalkFolded:ST.chalkFolded??null,houses:ST.houses.map(h=>({id:h.id,u:h.u,side:h.side,style:h.style,story:h.story})),cuts:ST.cuts.length,cutsOn:ST.cuts.filter(c=>c.c.on).length,batches:batches.length,errors:ST.errors.slice(),buildMs:ST.buildMs,lamps:ST.lamps,

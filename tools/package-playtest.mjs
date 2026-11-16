@@ -52,7 +52,7 @@ Extract the ZIP, then open ${entry} in desktop Chrome or Edge. No terminal, serv
 Everything is in it: the Prologue through Chapter Eight, Aftermath I, Aftermath II (August 2021), the 2026 coda, and the credits.
 From the beginning: on the title screen, Take the long way home.
 Straight to the end: DEV → Aftermath II → choose a scene → START SCENE (Aftermath II's scenes, and variants for what you kept in Aftermath I:
-Jamie's cap kept, or given back to his mother at the shelter or on the porch). DEV → 2026 · Credits has the coda's stages and the credits.
+Jamie's cap kept, or given to his mother at the shelter or on her porch). DEV → 2026 · Credits has the coda's stages and the credits.
 Aftermath I's end card continues to Aftermath II; Aftermath II's end card ("One more lap") to the coda; the coda to the credits; the credits
 to the end screen (the credits again, start over, the title). Continue on the title screen returns to the last checkpoint with what you kept.
 

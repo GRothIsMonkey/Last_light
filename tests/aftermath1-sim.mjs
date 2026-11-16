@@ -250,7 +250,8 @@ export function playAftermathOne(T0,label='Aftermath I',{fromCard=true,from=null
    assert.ok(until(()=>said('You know it was real'),40));const ahead=()=>{const c=h.camera.position,a=-LV.CAR.rotation.y;return {x:c.x+Math.sin(a)*14,y:c.y-.2,z:c.z-Math.cos(a)*14};};until(()=>{faceV(ahead());return A9.C.endT>=0;},60);
    assert.ok(until(()=>ph()==='a1-end',20),'the end card');assert.equal(element('ending').hidden,false);assert.match(element('ending').querySelector?.('p')?.innerHTML||element('ending').innerHTML||'WHAT WAS LEFT',/WHAT WAS LEFT|/);
    const v=JSON.parse(globalThis.localStorage.getItem('lastlight.aftermath1')||'{}');assert.equal(v.section,'aftermath1-end');assert.equal(v.presence,'sealed');assert.deepEqual(v.lost,['JAMIE','ALEX']);assert.equal(v.notebook,'you');assert.equal(v.left,true);
-   assert.equal(element('next-chapter').hidden,true,'no Aftermath II offered');noThrow();neverThere();});
+   // (Aftermath II now follows: the card offers it, and only it)
+   assert.equal(element('next-chapter').hidden,false,'Aftermath II offered');assert.match(element('next-chapter').innerHTML,/Aftermath II/,'only Aftermath II');noThrow();neverThere();});
   lap('road');}
  M9.seg=seg;M9.lines=lines.length;
  return {lines:()=>lines,seg};
@@ -277,7 +278,7 @@ export async function runAftermathOneChecks(T0){
   const s=h.chapter.saved?.();assert.ok(s&&s.section==='a1-packing'&&/room/i.test(s.label),JSON.stringify(s));h.jump(s.section);T.advance(2);assert.equal(C9().keep.cap,'mom','the save, not a fresh start');assert.equal(ph(),'a1-pack');});
  check('aftermath 1: the street is Chapter Eight\'s own (the same ruin and town objects), settled, then put away when the chapter is left',()=>{h.devScene(9,'a1-return');T.advance(2);const T9=A9.SC.TOWN;assert.equal(T9.ST9.ST.state,'september');
   assert.ok(h.chapter8.ruin.root.parent,'the ruin is in the scene');assert.ok(!h.chapter8.SC.STREET.town.FIRES.some(f=>f.m.visible),'no fires');h.jump('c7-court');T.advance(.5);assert.equal(T9.ST9.ST.state,null);assert.equal(h.chapter8.ruin.ST.stage,0);});
- check('aftermath 1: the end card is the chapter\'s own, the save says who went where, and nothing after it is offered',()=>{h.devScene(9,'aftermath1-end');T.advance(9);assert.equal(element('ending').hidden,false);
+ check('aftermath 1: the end card is the chapter\'s own, the save says who went where, and only Aftermath II is offered after it',()=>{h.devScene(9,'aftermath1-end');T.advance(9);assert.equal(element('ending').hidden,false);
   const v=JSON.parse(globalThis.localStorage.getItem('lastlight.aftermath1')||'{}');assert.equal(v.section,'aftermath1-end');assert.deepEqual(v.home,['YOU','SAM']);assert.deepEqual(v.lost,['JAMIE','ALEX']);assert.equal(v.presence,'sealed');assert.equal(v.sam,'Oak Hollow');
-  assert.equal(element('next-chapter').hidden,true);});
+  assert.equal(element('next-chapter').hidden,false,'Aftermath II is offered');assert.match(element('next-chapter').innerHTML,/Aftermath II/);});
 }

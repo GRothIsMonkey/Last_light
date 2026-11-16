@@ -6,7 +6,8 @@
 //               your writing, ALEX · JAMIE · SAM). Inside the back cover, in Sam's square printing: his aunt's number, his dad's
 //               e-mail (the line rubbed away by ten years of a thumb), and RULE 6. WRITE BACK. Aged: the cover faded and worn pale at
 //               the corners, a crease, the pages yellowed a little. (Chapter Seven's room shows a green cover: a continuity
-//               conflict that predates this work, recorded in docs/FINAL_CODA_HANDOFF.md for the art pass.)
+//               conflict that predates this work, recorded in docs/AFTERMATH2_IMPLEMENTATION_HANDOFF.md for the art pass.) The label
+//               on the cover is blank, as Aftermath I's is.
 //  print        the Sunday print from Alex's father (aftermath1-props.js tex9('sunday')): four bikes in the grass, three of you,
 //               because he was the one holding it. It lives in the back of the notebook now.
 //  booth        the photo-booth strip from the mall in June (tex9('booth')): four frames, four of you; Alex in his helmet in every one.
@@ -49,9 +50,9 @@ export function frontCover(k=1){const cv=canvas(512,680);if(!cv)return null;cons
  for(const [x,y] of [[0,0],[w,0],[0,h],[w,h]]){const c2=g.createRadialGradient(x,y,0,x,y,90);c2.addColorStop(0,`rgba(225,226,220,${.55*k})`);c2.addColorStop(1,'rgba(225,226,220,0)');g.fillStyle=c2;g.fillRect(0,0,w,h);}
  g.strokeStyle=`rgba(200,206,214,${.35*k})`;g.lineWidth=2;g.beginPath();g.moveTo(40,h*.62);g.bezierCurveTo(200,h*.6,300,h*.66,w-30,h*.63);g.stroke();
  for(let i=0;i<60;i++){g.strokeStyle=`rgba(210,214,220,${Math.random()*.18*k})`;g.lineWidth=1;const x=Math.random()*w,y=Math.random()*h;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.random()*30-15,y+Math.random()*6-3);g.stroke();}
- // the label: what he wrote on it in August 2011
+ // the label: blank, as it was in Aftermath I (a1-notebook); ten years have only yellowed it and lifted a corner
  g.fillStyle='#ede6d2';g.fillRect(150,120,240,110);g.strokeStyle='#8a7a5a';g.lineWidth=2;g.strokeRect(150,120,240,110);
- g.fillStyle='#2a2f3a';g.font='22px "Courier New", monospace';g.fillText('SAM',172,165);g.font='16px "Courier New", monospace';g.fillText('PRIVATE (MOSTLY)',172,200);
+ g.fillStyle=`rgba(190,170,120,${.25*k})`;g.fillRect(150,120,240,110);g.fillStyle='rgba(120,100,70,.35)';g.beginPath();g.moveTo(390,120);g.lineTo(366,120);g.lineTo(390,142);g.closePath();g.fill();
  return cv;}
 const TEX=new Map();
 function tex(key,fn){if(!TEX.has(key))TEX.set(key,texOf(fn())||null);return TEX.get(key);}

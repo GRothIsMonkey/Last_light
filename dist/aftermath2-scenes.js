@@ -70,7 +70,12 @@ export function scenes10(X){
   if(n>=6&&STG.mower){STG.mower=false;mower.show(false);mw.visible=false;C.mowing=false;}
   if(n<=3&&!STG.walker){STG.walker=true;const a=SP(L.homeD+70,-7.1);walker.show(true);walker.place(a.x,a.z,heading(L.homeD)+Math.PI);dog.show(true);lead.visible=true;C.walking={from:L.homeD+70,to:L.homeD-120,lat:-7.1,v:1.05,started:false};}
   if(n>=5&&STG.walker){STG.walker=false;walker.show(false);dog.show(false);lead.visible=false;C.walking=null;}
-  if(n>=2&&n<=6&&!STG.hoops){const Q=TOWN.houseAt(L.homeD+215,1);if(Q){STG.hoops=true;const at=Q.toWorld(Q.hasGarage?Q.gx:0,Q.depth/2+4.6),rim=Q.toWorld(Q.hasGarage?Q.gx:0,Q.depth/2+.3);kid.show(true);kid.place(at.x,at.z,toward(at,rim));ball.visible=true;C.hoops={at,rim:{x:rim.x,y:gy(rim.x,rim.z)+3.05,z:rim.z},t:0,phase:'dribble',n:0,out:SP((Q.drivD??Q.u)+.5,(Q.side||1)*5.45)};}}
+  // (a kid shooting baskets at one of the street's own garage hoops (houses.js), the one nearest a little past the Briarwood corner;
+  //  never Jamie's house, never a rebuilt lot. No hoop, no kid.)
+  if(n>=2&&n<=6&&!STG.hoops){const cars=(world.hooks?.['parked-car']||[]).map(c=>c.object?.position).filter(Boolean),clear=x=>{const p=x.plan.toWorld(x.play.x,x.play.z-.4);return !cars.some(c=>Math.hypot(c.x-p.x,c.z-p.z)<4.2);};// (and nobody's car parked where he'd stand)
+   const HP=(world.hoops||[]).filter(x=>x.kind==='garage'&&x.plan?.frameId==='main'&&x.plan.u>L.homeD+150&&x.plan.u<L.jamieD-30&&clear(x)).sort((x,y)=>Math.abs(x.plan.u-(L.homeD+215))-Math.abs(y.plan.u-(L.homeD+215)))[0];
+   if(HP){const Q=HP.plan;STG.hoops=true;const at=Q.toWorld(HP.play.x,HP.play.z-.4),r0=Q.toWorld(HP.rim.x,HP.rim.z);kid.show(true);kid.place(at.x,at.z,toward(at,r0));ball.visible=true;
+    C.hoops={at,rim:{x:r0.x,y:r0.ground+HP.rim.y,z:r0.z},t:0,phase:'dribble',n:0,out:SP((Q.drivD??Q.u)+.5,(Q.side||1)*5.45),outD:(Q.drivD??Q.u)+.5,u:Q.u,side:Q.side};}}
   if((n<2||n>6)&&STG.hoops){STG.hoops=false;kid.show(false);ball.visible=false;C.hoops=null;}
   if(n>=6&&n<=7&&!STG.mom){const SH=world.homes.sam;if(SH){STG.mom=true;const q=SH.toWorld(SH.doorX??0,SH.depth/2+1.2);samMom.show(true);samMom.place(q.x,q.z,toward(q,SP(L.light.d,L.light.lat)));samMom.gest('fold');}}
   if(n>=9&&STG.mom){STG.mom=false;samMom.show(false);}
@@ -313,7 +318,8 @@ export function scenes10(X){
    if(!ride&&!busy()&&((q0?.street==='side'&&(q0.u??999)<96)||(onMain()&&d>592&&d<L.homeD+190))){ride=true;say([{wait:.6},SM('You still ride?',{time:1.2}),Y('Not really. You?',{time:1.4}),SM('Every day. To the store and back.',{time:1.8}),SM('My car’s a piece of junk.',{time:1.6,face:'amused'}),{wait:.6},
     SM('Same bike, too. Well. Same frame. Everything else I’ve replaced, like, twice.',{time:3.2})]);continue;}
    // (a shot off the rim, at the house with the hoop)
-   if(C.hoops&&!C.flags.ballOut&&onMain()&&d>L.homeD+188&&d<L.homeD+214&&C.hoops.phase==='dribble'){C.flags.ballOut=true;C.hoops.miss=true;}
+   // (it comes off the rim as you come up to that drive, so it lands about where you are: about fifteen metres short of it)
+   if(C.hoops&&!C.flags.ballOut&&onMain()&&d>C.hoops.outD-16&&d<C.hoops.outD-3&&C.hoops.phase==='dribble'){C.flags.ballOut=true;C.hoops.miss=true;}
    if(!ballSaid&&C.flags.ballBack&&!busy()){ballSaid=true;say([{wait:.8},SM(C.flags.ballBack==='you'?'Nice.':'He’ll get it.',{time:1}),SM('He’s out here every night. Till his mom yells.',{time:2.4})]);continue;}
    if(!called&&onMain()&&d>L.jamieD-110&&d<L.jamieD-40&&!busy()){called=true;say([{wait:.4},SM('His mom used to yell for him from all the way up there. And he’d pretend he couldn’t hear her until the third time.',{time:4.4}),{wait:.4},Y('Every time.',{time:1}),SM('Every single time.',{time:1.4,face:'happy'})]);}}
   SAMA.stopFollow();{const q=SP(L.jamie.d-1.3,L.jamie.lat+.2);samGo(q,{speed:1.1,face:toward(q,L.jamieChair||front)});}

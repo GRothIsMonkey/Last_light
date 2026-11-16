@@ -27,7 +27,7 @@ export default {
    ['house',()=>{const A=lastLight.aftermath2,L0=A.SC.L;__f.put(A.SC.BW(L0.alexU-9,-6.4),0);__f.run(.3);const h=L0.alexHouse;__f.look({x:h.x,y:h.ground+2.6,z:h.z});__f.run(.3);return {u:L0.alexU};}],
    ['print',async()=>{const A=lastLight.aftermath2,{printHeld}=await import('./aftermath2-props.js');A.CTX.inspect(printHeld(),{dist:.42,kind:'print'});__f.run(1.2);return {view:A.C.view};}]]},
  hoop:{note:'On the walk up to Jamie’s: a shot off the rim at the house with the hoop, down the drive into the gutter (throw it back, or he comes for it)',
-  setup:()=>{lastLight.devScene(10,'a2-alex');__f.run(1);const A=lastLight.aftermath2,L0=A.SC.L,Hh=A.C.hoops;__f.put(A.SC.SP(L0.homeD+203,6.8),__f.heading(L0.homeD+203));__f.run(.3);},
+  setup:()=>{lastLight.devScene(10,'a2-alex');__f.run(1);const A=lastLight.aftermath2,L0=A.SC.L,Hh=A.C.hoops;const dD=Hh?.outD??L0.homeD+215,sd=Hh?.side||1;__f.put(A.SC.SP(dD-6,6.8*sd),__f.heading(dD-6));__f.run(.3);},
   frames:[['shot',()=>{const A=lastLight.aftermath2,Hh=A.C.hoops;if(!Hh)return null;__f.run(.2);__f.look({x:Hh.rim.x,y:Hh.rim.y-.6,z:Hh.rim.z});__f.run(.2);return {phase:Hh.phase};}],
    ['gutter',()=>{const A=lastLight.aftermath2,Hh=A.C.hoops;if(!Hh)return null;Hh.miss=true;__f.play(()=>Hh.phase==='rest',20,{skip:/./});__f.run(.4);__f.look({x:Hh.out.x,y:Hh.out.y,z:Hh.out.z});__f.run(.2);return {phase:Hh.phase,offers:[...A.C.offers.keys()]};}]]},
  jamie:{note:'Scene 5: Jamie’s house, somebody else’s now: the red chair kept on the porch, a kid’s bike on the lawn',
