@@ -2,7 +2,9 @@
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
 export function createAudio({context=null,random=Math.random}={}){
  const AC=typeof window!=='undefined'&&(window.AudioContext||window.webkitAudioContext);
- let ctx=null,master,bus,noise,enabled=false,memLP=null;
+ let ctx=null,master,bus,noise,enabled=false,memLP=null,musicBus=null,voiceBus=null;
+ // Settings' mix (Music, Effects & ambience, Voices), each under the master volume. Defaults leave the game's mix as it was.
+ const mixLevel={music:1,sfx:1,voice:1},mix={};
  const layers={},loops=new Map();let nextNote=0,note=0,crickets=[],lastCrank=0,musicOn=true,nextBird=0;
  const shots=new Set();
  function shot(node){shots.add(node);node.onended=()=>{shots.delete(node);node.disconnect();};return node;}
@@ -11,7 +13,9 @@ export function createAudio({context=null,random=Math.random}={}){
  function filt(type,f,q=1){const b=ctx.createBiquadFilter();b.type=type;b.frequency.value=f;b.Q.value=q;return b;}
  function gain(v=0){const g=ctx.createGain();g.gain.value=v;return g;}
  function ensure(){if(!AC&&!context)return;if(ctx){if(!context)ctx.resume?.();return;}
-  ctx=context||new AC();master=gain(0);const limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-8;limiter.knee.value=10;limiter.ratio.value=4;limiter.attack.value=.006;limiter.release.value=.22;master.connect(limiter).connect(ctx.destination);bus=gain(1);memLP=filt('lowpass',20000,.5);bus.connect(memLP).connect(master);
+  ctx=context||new AC();master=gain(0);const limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-8;limiter.knee.value=10;limiter.ratio.value=4;limiter.attack.value=.006;limiter.release.value=.22;master.connect(limiter).connect(ctx.destination);bus=gain(1);memLP=filt('lowpass',20000,.5);memLP.connect(master);
+  mix.sfx=gain(mixLevel.sfx);mix.music=gain(mixLevel.music);mix.voice=gain(mixLevel.voice);mix.body=gain(mixLevel.sfx);mix.body.connect(master);
+  bus.connect(mix.sfx).connect(memLP);musicBus=gain(1);musicBus.connect(mix.music).connect(memLP);voiceBus=gain(1);voiceBus.connect(mix.voice).connect(memLP);
   const len=ctx.sampleRate*3;noise=ctx.createBuffer(1,len,ctx.sampleRate);const data=noise.getChannelData(0);for(let i=0;i<len;i++)data[i]=random()*2-1;
   // Cicadas: bright noise, pulsed, in two slowly swelling choruses.
   layers.cic=[-.6,.5].map((pan,i)=>{const s=src(),b=filt('bandpass',4700+i*700,5),amp=gain(0),out=gain(0),p=ctx.createStereoPanner();p.pan.value=pan;const lfo=ctx.createOscillator();lfo.frequency.value=38+i*9;const depth=gain(.5);lfo.connect(depth).connect(amp.gain);amp.gain.value=.5;lfo.start();s.connect(b).connect(amp).connect(out).connect(p).connect(bus);return {out,rate:.07+i*.05,phase:i*2};});
@@ -32,7 +36,7 @@ export function createAudio({context=null,random=Math.random}={}){
  function tone(freq,t,dur,vol,type='sine',out=bus,glide=null){const o=shot(ctx.createOscillator()),g=gain();o.type=type;o.frequency.setValueAtTime(freq,t);if(glide)o.frequency.exponentialRampToValueAtTime(glide,t+dur);env(g,t,.012,vol,dur);o.connect(g).connect(out);o.start(t);o.stop(t+dur+.1);return o;}
  function burst(t,dur,vol,type,f,q=1,out=bus){const s=shot(ctx.createBufferSource());s.buffer=noise;const b=filt(type,f,q),g=gain();env(g,t,.003,vol,dur);s.connect(b).connect(g).connect(out);s.start(t,random()*2);s.stop(t+dur+.05);}
  // Place a one-shot in the world relative to the listener.
- function spatial(pos,base=1,ref=6){const out=gain(0),p=ctx.createStereoPanner(),lp=filt('lowpass',18000);out.connect(lp).connect(p).connect(bus);
+ function spatial(pos,base=1,ref=6,dest=null){const out=gain(0),p=ctx.createStereoPanner(),lp=filt('lowpass',18000);out.connect(lp).connect(p).connect(dest||bus);
   if(pos){const dx=pos.x-listener.x,dz=pos.z-listener.z,dist=Math.hypot(dx,dz,(pos.y??listener.y)-listener.y);const rx=-listener.fz,rz=listener.fx;p.pan.value=clamp((dx*rx+dz*rz)/(dist||1),-1,1)*.85;
    out.gain.value=base*Math.min(1,ref/(dist+1));lp.frequency.value=Math.max(500,16000*Math.exp(-dist/55));if(dist>220)out.gain.value=0;}else out.gain.value=base;return out;}
  const SFX={
@@ -75,7 +79,8 @@ export function createAudio({context=null,random=Math.random}={}){
  };
  // (Aftermath II: a child's bike bell in 2021: one small bright ring, not Alex's; and the 2026 coda: the room the game is played in)
 SFX.a2Bell=(t,o)=>{for(const [f,v,d] of [[2380,.05,.9],[3220,.024,.6],[4810,.01,.35]])tone(f,t,d,v,'sine',o);burst(t,.008,.03,'highpass',5200,1,o);};
-function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={garage:9,doorSlam:9,dog:30,dribble:7,sprinkler:5,rim:8,tap:5,pebble:6,window:5,carDoor:12,squelch:7,c8Thud:32,c8Collapse:26,c8Rumble:30,c8Impact:18,c8Groan:18,c8Burst:15,c8Glass:12,c8Horn:22,c8Rip:12,c8SteelDoor:14,c8Knock:8,c8Scrape:8,c8Crack:14,c8Metal:14};const o=spatial(pos,opts.gain??1,refs[name]||6);SFX[name](now()+.01,o);}
+ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={garage:9,doorSlam:9,dog:30,dribble:7,sprinkler:5,rim:8,tap:5,pebble:6,window:5,carDoor:12,squelch:7,c8Thud:32,c8Collapse:26,c8Rumble:30,c8Impact:18,c8Groan:18,c8Burst:15,c8Glass:12,c8Horn:22,c8Rip:12,c8SteelDoor:14,c8Knock:8,c8Scrape:8,c8Crack:14,c8Metal:14};const o=spatial(pos,opts.gain??1,refs[name]||6,MUSIC_SFX.has(name)?musicBus:VOICE_SFX.has(name)?voiceBus:null);SFX[name](now()+.01,o);}
+ const MUSIC_SFX=new Set(['a1Theme']),VOICE_SFX=new Set(['c8Sob','c8Wail','c8Gasp']);
  // An ordinary bicycle bell. tunnel: rung somewhere inside a concrete pipe, so a little duller, with
  // the short hollow return of the pipe after it (still just a bell).
  function bell(pos=null,g=1,{tunnel=false}={}){if(!ctx||!enabled)return;const o=spatial(pos,g,pos?10:6),t=now();let out=o;
@@ -90,7 +95,7 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
  // A distant, ordinary two-syllable call. A soft harmonic source and changing
  // vowel resonances replace the old sawtooth/feedback echo. No second voice.
  function call(){if(!ctx||!enabled)return;const t=now()+.2;
-  const out=spatial({x:listener.x-13,y:listener.y+1,z:listener.z+38},.95,24);
+  const out=spatial({x:listener.x-13,y:listener.y+1,z:listener.z+38},.95,24,voiceBus);
   const soft=filt('lowpass',2100,.55);soft.connect(out);
   SFX.doorSlam(t,spatial({x:listener.x-13,z:listener.z+38},.3,12));
   const real=new Float32Array(32),imag=new Float32Array(32);for(let n=1;n<32;n++)imag[n]=1/Math.pow(n,1.65);
@@ -106,7 +111,7 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
  }
  // Someone calling a name down the street (two syllables, a grown man's voice by default).
  function callName(pos,{f0=148,gain:g=.9,syllables=[[0,.24,1,1,760,1720],[.3,.62,1.04,.84,560,1820]]}={}){if(!ctx||!enabled)return;const t=now()+.05;
-  const out=spatial(pos,g,26),soft=filt('lowpass',1900,.55);soft.connect(out);
+  const out=spatial(pos,g,26,voiceBus),soft=filt('lowpass',1900,.55);soft.connect(out);
   const real=new Float32Array(32),imag=new Float32Array(32);for(let n=1;n<32;n++)imag[n]=1/Math.pow(n,1.55);const voice=ctx.createPeriodicWave(real,imag);
   for(const [st,dur,p0,p1,f1,f2] of syllables){const c=shot(ctx.createOscillator()),q=gain(),a=filt('bandpass',f1,2.2),b=filt('bandpass',f2,3),br=gain(.14);
    c.setPeriodicWave(voice);c.frequency.setValueAtTime(f0*p0,t+st);c.frequency.linearRampToValueAtTime(f0*p0*1.04,t+st+.08);c.frequency.linearRampToValueAtTime(f0*p1,t+st+dur);
@@ -118,8 +123,8 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
   for(const x of Object.values(layers))if(x?.gain)x.gain.setTargetAtTime(0,now(),.8);
   for(const x of layers.cic)x.out.gain.setTargetAtTime(0,now(),.8);for(const l of loops.values())l.out.gain.setTargetAtTime(0,now(),.8);
   // The chapter ends almost in silence: one low open fifth, held and let go.
-  if(kind==='chapter')for(const [f,d] of [[110,0],[164.81,.8]])tone(f,t+d,7,.03);
-  else for(const [f,d] of [[220,0],[277.18,.5],[329.63,1.0],[440,1.6]])tone(f,t+d,6,.045);musicOn=false;}
+  if(kind==='chapter')for(const [f,d] of [[110,0],[164.81,.8]])tone(f,t+d,7,.03,'sine',musicBus);
+  else for(const [f,d] of [[220,0],[277.18,.5],[329.63,1.0],[440,1.6]])tone(f,t+d,6,.045,'sine',musicBus);musicOn=false;}
  function leaving(){if(!ctx||!enabled)return;const t=now();bell(null,.35);burst(t+.3,.05,.03,'bandpass',2000,2);}
  function reset(){if(ctx){screen(0);if(themeOut)themeOut.gain.setTargetAtTime(0,now(),.2);}musicOn=true;nextNote=0;note=0;nextBird=0;lastCrank=0;body.next=0;body.breathNext=0;body.cur=0;stopRecording();if(!ctx)return;
   for(const s of shots){try{s.stop();s.disconnect();}catch{}}shots.clear();
@@ -155,7 +160,7 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
   updateBody(t,s.heart);
   if(ctx.listener){const L=ctx.listener,fx=listener.fx,fz=listener.fz;if(L.positionX){L.positionX.setTargetAtTime(listener.x,t,.02);L.positionY.setTargetAtTime(listener.y,t,.02);L.positionZ.setTargetAtTime(listener.z,t,.02);L.forwardX.setTargetAtTime(fx,t,.02);L.forwardY.setTargetAtTime(0,t,.02);L.forwardZ.setTargetAtTime(fz,t,.02);L.upX.value=0;L.upY.value=1;L.upZ.value=0;}else{L.setPosition?.(listener.x,listener.y,listener.z);L.setOrientation?.(fx,0,fz,0,1,0);}}
   // The old melody thins out through the ride and falls silent at the end of the street.
-  if(musicOn&&s.finale<2&&t>nextNote){const notes=[220,329.63,440,493.88,369.99,329.63,293.66,220];tone(notes[note++%notes.length],t,4.5,.055*(1-p*.35));tone(110,t,5,.018);nextNote=t+3.5+random()*2+p*2.5;}
+  if(musicOn&&s.finale<2&&t>nextNote){const notes=[220,329.63,440,493.88,369.99,329.63,293.66,220];tone(notes[note++%notes.length],t,4.5,.055*(1-p*.35),'sine',musicBus);tone(110,t,5,.018,'sine',musicBus);nextNote=t+3.5+random()*2+p*2.5;}
  }
  const katydids=[...Array(4)].map((_,i)=>({pan:-.9+i*.6,next:0,rate:1.05+random()*.6,pitch:5600+random()*1600,vol:.12+random()*.1,n:2+(i%2)}));
  // ---- Chapter Three -----------------------------------------------------------------------------------
@@ -163,7 +168,7 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
  // beat by beat on the audio clock, so the tempo glides with no loop to seam) and breathing. Not placed
  // in the world: it comes from you. Inaudible until tension rises; it fades in and out with it.
  const body={next:0,breathNext:0,beats:0,breaths:0,lastGain:0,bpm:0,cur:0};let bodyBus=null;
- function bodyOut(){if(!bodyBus){bodyBus=gain(1);bodyBus.connect(master);}return bodyBus;}
+ function bodyOut(){if(!bodyBus){bodyBus=gain(1);bodyBus.connect(mix.body||master);}return bodyBus;}
  function thump(t,g,f0){const o=shot(ctx.createOscillator()),e=gain(),lp=filt('lowpass',150,.7);o.type='sine';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f0*.7,t+.13);
   e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+.014);e.gain.exponentialRampToValueAtTime(.0001,t+.2);o.connect(lp).connect(e).connect(bodyOut());o.start(t);o.stop(t+.25);
   burst(t,.07,g*.35,'lowpass',95,.7,bodyOut());}
@@ -179,10 +184,10 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
     body.breaths++;body.breathNext+=period;}}else body.breathNext=0;}
  // A sound placed in the world with the browser's head-related panning (front, back, above), when
  // the browser has it; otherwise the same stereo placement as everything else.
- function placed(pos,g=1,ref=4){if(!ctx.createPanner)return spatial(pos,g,ref*2);const p=ctx.createPanner(),out=gain(g);
+ function placed(pos,g=1,ref=4,dest=null){if(!ctx.createPanner)return spatial(pos,g,ref*2,dest);const p=ctx.createPanner(),out=gain(g);
   try{p.panningModel='HRTF';p.distanceModel='inverse';p.refDistance=ref;p.rolloffFactor=1;p.maxDistance=200;}catch{}
   if(p.positionX){p.positionX.value=pos.x;p.positionY.value=pos.y??listener.y;p.positionZ.value=pos.z;}else p.setPosition?.(pos.x,pos.y??listener.y,pos.z);
-  out.connect(p).connect(bus);return out;}
+  out.connect(p).connect(dest||bus);return out;}
  // An ordinary bicycle bell somewhere out there. tunnel: inside a concrete pipe. near: right beside you.
  function bell3(pos,g=1,{tunnel=false,ref=5}={}){if(!ctx||!enabled)return null;const o=placed(pos,g,ref),t=now();let out=o;
   if(tunnel){const lp=filt('lowpass',2700,.7),d1=ctx.createDelay(.6),d2=ctx.createDelay(.6),e1=gain(.3),e2=gain(.15);d1.delayTime.value=.08;d2.delayTime.value=.19;lp.connect(o);lp.connect(d1).connect(e1).connect(o);lp.connect(d2).connect(e2).connect(o);out=lp;}
@@ -214,14 +219,14 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
    t+=dur;}
   voice.gain.linearRampToValueAtTime(0,t+.06);hiss.gain.linearRampToValueAtTime(0,t+.04);src.start(t0);src.stop(t+.12);nz.start(t0,random()*2);nz.stop(t+.12);return t+.08-t0;}
  // A boy's voice from somewhere in the world (Chapter Three). tunnel: heard from inside a concrete pipe.
- function voice(word,pos,{gain:g=1,tunnel=false,f0=1,ref=3}={}){if(!ctx||!enabled)return 0;const o=placed(pos,g,ref),t=now()+.03;let out=o;
+ function voice(word,pos,{gain:g=1,tunnel=false,f0=1,ref=3}={}){if(!ctx||!enabled)return 0;const o=placed(pos,g,ref,voiceBus),t=now()+.03;let out=o;
   if(tunnel){const lp=filt('lowpass',2600,.6),d1=ctx.createDelay(.6),d2=ctx.createDelay(.6),e1=gain(.32),e2=gain(.16);d1.delayTime.value=.085;d2.delayTime.value=.2;lp.connect(o);lp.connect(d1).connect(e1).connect(o);lp.connect(d2).connect(e2).connect(o);out=lp;}
   return speak(word,out,t,{f0});}
  // The recordings on Alex's phone, played through its little speaker on the desk: band-limited, a faint
  // hiss under them. Four ordinary ones, then the one from the night before he disappeared (Saturday, 08/20).
  const REC=[{id:'rec1',dur:8.6},{id:'rec2',dur:9},{id:'rec3',dur:8.2},{id:'rec4',dur:9.4},{id:'rec5',dur:23.5}];
  let phone=null;
- function recording(i,pos,{gain:g=1}={}){if(!ctx||!enabled)return REC[i]?.dur||0;stopRecording();const R=REC[i];if(!R)return 0;const t=now()+.05,out=spatial(pos,g*1.4,2.2);
+ function recording(i,pos,{gain:g=1}={}){if(!ctx||!enabled)return REC[i]?.dur||0;stopRecording();const R=REC[i];if(!R)return 0;const t=now()+.05,out=spatial(pos,g*1.4,2.2,voiceBus);
   const hp=filt('highpass',380,.7),lp=filt('lowpass',3300,.7),spk=gain(1);spk.connect(hp).connect(lp).connect(out);
   const nz=shot(ctx.createBufferSource());nz.buffer=noise;nz.loop=true;const hiss=gain(.0035);nz.connect(filt('highpass',2500,.6)).connect(hiss).connect(spk);nz.start(t);nz.stop(t+R.dur);
   const roomFan=(dur,lvl)=>{const n=shot(ctx.createBufferSource());n.buffer=noise;n.loop=true;const a=gain(0);n.connect(filt('lowpass',900,.5)).connect(a).connect(spk);a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(lvl,t+.3);a.gain.setValueAtTime(lvl,t+dur-.3);a.gain.linearRampToValueAtTime(0,t+dur);n.start(t,random()*2);n.stop(t+dur);
@@ -355,7 +360,7 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
  function chatter(g,base,t,state,dt){state.left-=dt;if(state.left<=0){state.on=!state.on;state.left=state.on?.7+random()*2.2:1.8+random()*4.5;if(!state.on&&state.squelch)burst(t,.12,.03,'highpass',1700,.7,state.squelch);}
   state.w=(state.w||0)+dt*1.3;state.ph=(state.ph||0)+dt*(7+3*Math.sin(state.w));
   const syll=state.on?.55+.45*Math.abs(Math.sin(state.ph)):0;state.level=base*syll;g.gain.setTargetAtTime(state.level,t,.03);}
- function makeLoop(kind){const out=gain(0),pan=ctx.createStereoPanner();out.connect(pan).connect(bus);
+ function makeLoop(kind){const out=gain(0),pan=ctx.createStereoPanner();out.connect(pan).connect(kind==='murmur'?voiceBus:bus);
   if(kind==='siren'){// two detuned voices through a horn-like band, swept as a wail or a yelp
    const o1=ctx.createOscillator(),o2=ctx.createOscillator();o1.type='sawtooth';o2.type='square';const mix=gain(.5),o2g=gain(.3),hp=filt('highpass',420,.7),pk=filt('peaking',1300,1.2),lp=filt('lowpass',6000,.5);pk.gain.value=6;
    o1.connect(mix);o2.connect(o2g).connect(mix);mix.connect(hp).connect(pk).connect(lp).connect(out);o1.start();o2.start();let ph=0,down=0;
@@ -405,6 +410,9 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
   if(kind==='generator'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=29;const lp=filt('lowpass',160);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('bandpass',300,.9)).connect(gain(.25)).connect(out);return {out,pan,vol:.08,ref:8,far:90};}
   if(kind==='mower'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=96;const lp=filt('lowpass',650),am=gain(.6),lfo=ctx.createOscillator(),d=gain(.35);lfo.frequency.value=7;lfo.connect(d).connect(am.gain);o.connect(lp).connect(am).connect(out);o.start();lfo.start();const n=src();n.connect(filt('bandpass',400,.8)).connect(gain(.2)).connect(out);return {out,pan,vol:.09,ref:40};}
   const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=48;const lp=filt('lowpass',320);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('lowpass',500)).connect(gain(.25)).connect(out);return {out,pan,vol:.18,ref:10};}
+ // Settings: the three sliders under the master volume (0..1 each).
+ function setMix(m={}){for(const k of ['music','sfx','voice'])if(Number.isFinite(m[k]))mixLevel[k]=Math.max(0,Math.min(1,m[k]));if(!ctx)return;const t=ctx.currentTime;
+  mix.music.gain.setTargetAtTime(mixLevel.music,t,.08);mix.sfx.gain.setTargetAtTime(mixLevel.sfx,t,.08);mix.body.gain.setTargetAtTime(mixLevel.sfx,t,.08);mix.voice.gain.setTargetAtTime(mixLevel.voice,t,.08);}
  // ---- the 2026 coda and the credits -------------------------------------------------------------------------------------------------
  // screen(k): k 0 = the world as you hear it; 1 = the same world coming out of two small speakers on a desk at night: narrowed,
  // quieter, and under it the room (a computer's fan, the hum of a lamp). theme(on): the Prologue's own eight notes (update() above),
@@ -413,10 +421,10 @@ function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={
  function screen(k=0){if(!ctx)return;const t=now();k=clamp(k,0,1);memLP.frequency.setTargetAtTime(k>0?20000*(1-k)+3200*k:20000,t,.5);bus.gain.setTargetAtTime(1-.45*k,t,.5);
   if(!room&&k>0){const n=src(),a=gain(0);n.connect(filt('lowpass',520,.6)).connect(filt('highpass',90,.7)).connect(a).connect(master);const h=ctx.createOscillator();h.frequency.value=120;const hg=gain(.08);h.connect(hg).connect(a);h.start();room={a};}
   if(room)room.a.gain.setTargetAtTime(.018*k,t,.8);}
- function theme(on=true){if(!ctx)return;const t=now();if(!themeOut){themeOut=gain(0);themeOut.connect(master);}
+ function theme(on=true){if(!ctx)return;const t=now();if(!themeOut){themeOut=gain(0);themeOut.connect(musicBus||master);}
   if(!on){themeOut.gain.setTargetAtTime(0,t,1.4);for(const o of themeNotes){try{o.stop(t+4);}catch{}}themeNotes=[];return;}
   themeOut.gain.cancelScheduledValues(t);themeOut.gain.setValueAtTime(themeOut.gain.value,t);themeOut.gain.linearRampToValueAtTime(1,t+2.5);
   const notes=[220,329.63,440,493.88,369.99,329.63,293.66,220],step=3.1;
   for(let i=0;i<44;i++){const at=t+.6+i*step+(i%8===7?1.2:0)+Math.floor(i/8)*1.4,f=notes[i%8];themeNotes.push(tone(f,at,5.2,.05,'sine',themeOut));if(i%2===0)themeNotes.push(tone(110,at,6.4,.016,'sine',themeOut));if(i%8===3||i%8===6)themeNotes.push(tone(f*1.5,at+1.55,3.6,.012,'sine',themeOut));}}
- return {ensure,setEnabled,setVolume,screen,theme,sfx,bell,bell3,voice,recording,stopRecording,memory,indoors,footstep,call,callName,ending,leaving,reset,update,REC,get loops(){return loops;},get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;},get body(){return {...body};},get phone(){return phone;}};
+ return {ensure,setEnabled,setVolume,setMix,screen,theme,get mix(){return {...mixLevel};},get mixGains(){return ctx&&mix.music?{music:+mix.music.gain.value.toFixed(3),sfx:+mix.sfx.gain.value.toFixed(3),voice:+mix.voice.gain.value.toFixed(3),master:+master.gain.value.toFixed(3)}:null;},sfx,bell,bell3,voice,recording,stopRecording,memory,indoors,footstep,call,callName,ending,leaving,reset,update,REC,get loops(){return loops;},get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;},get body(){return {...body};},get phone(){return phone;}};
 }

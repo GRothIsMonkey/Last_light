@@ -1,18 +1,40 @@
 // Embed the unchanged source runtime in a server-free desktop browser playtest.
 import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';import {execFileSync} from 'node:child_process';
 // PLAYTEST_CHAPTER=7 names the package and its instructions for Chapter Seven (default: Chapter Six, as before)
-// PLAYTEST_CHAPTER=final: the complete game, the Prologue through Aftermath II, the 2026 coda and the credits
-const RECOVERY=process.env.PLAYTEST_RECOVERY==='1',ART=RECOVERY||process.env.PLAYTEST_ART==='1',CH=RECOVERY?'9':ART?'8':process.env.PLAYTEST_CHAPTER||'6',CHW={6:'Six',7:'Seven',8:'Eight',9:'Aftermath I',final:'the complete game'}[CH]||CH,FINAL=CH==='final';
+// PLAYTEST_CHAPTER=final: the complete game, the Prologue through Aftermath II, the 2026 coda and the credits (with the title screen of this build)
+// PLAYTEST_MENU=1: the whole game with the redesigned title screen and menus
+const RECOVERY=process.env.PLAYTEST_RECOVERY==='1',FINAL=process.env.PLAYTEST_CHAPTER==='final',MENU=process.env.PLAYTEST_MENU==='1'||FINAL,ART=RECOVERY||process.env.PLAYTEST_ART==='1',CH=RECOVERY?'9':ART?'8':MENU?'9':process.env.PLAYTEST_CHAPTER||'6',CHW={6:'Six',7:'Seven',8:'Eight',9:'Aftermath I'}[CH]||CH;
 const root=path.resolve('dist'),out=path.resolve(process.argv[2]||'../release/playable');fs.mkdirSync(out,{recursive:true});
 const hash=b=>createHash('sha256').update(b).digest('hex'),modules={},sourceHashes={};
 for(const name of fs.readdirSync(root).sort().filter(n=>n.endsWith('.js'))){const b=fs.readFileSync(path.join(root,name));sourceHashes['dist/'+name]=hash(b);let s=String(b).replace(/(['"])\.\/([^'"]+\.js)\1/g,(_,q,f)=>q+'last-light/'+f+q);if(name==='creature.js'){const old="new URL('./assets/creature/creature.glb',import.meta.url)";if(!s.includes(old))throw Error('Creature loader changed');s=s.replace(old,'new URL(globalThis.__LL_CREATURE_URL__)');}modules['last-light/'+name]=Buffer.from(s).toString('base64');}
-const css=fs.readFileSync(path.join(root,'style.css'),'utf8'),original=fs.readFileSync(path.join(root,'index.html'),'utf8'),asset=fs.readFileSync(path.join(root,'assets/creature/creature.glb'));
-for(const [n,b]of [['style.css',css],['index.html',original],['assets/creature/creature.glb',asset]])sourceHashes['dist/'+n]=hash(b);
+const css=fs.readFileSync(path.join(root,'style.css'),'utf8'),fontsPath=path.join(root,'fonts.css'),fonts=fs.existsSync(fontsPath)?fs.readFileSync(fontsPath,'utf8'):'',original=fs.readFileSync(path.join(root,'index.html'),'utf8'),asset=fs.readFileSync(path.join(root,'assets/creature/creature.glb'));
+for(const [n,b]of [['style.css',css],['index.html',original],['assets/creature/creature.glb',asset],...(fonts?[['fonts.css',fonts]]:[])])sourceHashes['dist/'+n]=hash(b);
 const boot=`<script>(()=>{const bytes=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)),modules=${JSON.stringify(modules)},imports={};for(const[n,b]of Object.entries(modules))imports[n]=URL.createObjectURL(new Blob([bytes(b)],{type:'text/javascript'}));globalThis.__LL_CREATURE_URL__=URL.createObjectURL(new Blob([bytes(${JSON.stringify(asset.toString('base64'))})],{type:'model/gltf-binary'}));const m=document.createElement('script');m.type='importmap';m.textContent=JSON.stringify({imports});document.head.appendChild(m);const e=document.createElement('script');e.type='module';e.textContent='import "last-light/game.js";';document.body.appendChild(e);})();</script>`;
-const html=original.replace('<link rel="stylesheet" href="style.css">','<style>'+css+'</style>').replace('href="./"','href="#"').replace('<script type="module" src="game.js"></script>',boot),entry=RECOVERY?'Last-Light-Visual-Recovery-Playtest.html':ART?'Last-Light-Full-Game-Art-Rework.html':FINAL?'Last-Light-Complete-Playtest.html':CH==='9'?'Last-Light-Aftermath1-Playtest.html':`Last-Light-Chapter${CH}-Playtest.html`;fs.writeFileSync(path.join(out,entry),html);
+const html=original.replace('<link rel="stylesheet" href="fonts.css">',()=>fonts?'<style>'+fonts+'</style>':'').replace('<link rel="stylesheet" href="style.css">',()=>'<style>'+css+'</style>').replace('href="./"','href="#"').replace('<script type="module" src="game.js"></script>',boot),entry=RECOVERY?'Last-Light-Visual-Recovery-Playtest.html':FINAL?'Last-Light-Complete-Playtest.html':MENU?'Last-Light-Playtest.html':ART?'Last-Light-Full-Game-Art-Rework.html':CH==='9'?'Last-Light-Aftermath1-Playtest.html':`Last-Light-Chapter${CH}-Playtest.html`;fs.writeFileSync(path.join(out,entry),html);
 const git=(...a)=>execFileSync('git',a,{encoding:'utf8'}).trim(),manifest={branch:git('branch','--show-current'),commit:git('rev-parse','HEAD'),dirty:!!git('status','--porcelain','--untracked-files=no'),untrackedFilesExcluded:true,entry,entrySHA256:hash(html),modules:Object.keys(modules).length,sourceHashes};
 fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');fs.copyFileSync(path.join(root,'THREE-LICENSE.txt'),path.join(out,'THREE-LICENSE.txt'));fs.copyFileSync('docs/THIRD_PARTY_ASSETS.md',path.join(out,'THIRD_PARTY_ASSETS.md'));
-fs.writeFileSync(path.join(out,'START-HERE.txt'),ART?`LAST LIGHT — FULL-GAME ASTRA ART REWORK
+fs.writeFileSync(path.join(out,'START-HERE.txt'),MENU?`LAST LIGHT — PLAYTEST: THE NEW TITLE SCREEN AND MENUS
+
+Extract the ZIP, then open ${entry} in desktop Chrome or Edge. No server, installation or internet connection is needed. WebGL must be available.
+
+The whole game is here, from the Prologue to Aftermath I. The game opens on its title screen: the end of Oak Hollow Drive at the last of the light. Press any key (or click) to begin; sound starts then.
+
+Title menu: Continue (when you have a saved place: it shows the chapter, the place and when), New Game, Chapters (every chapter you have reached; Begin starts it from its true beginning), Settings, Credits, Quit.
+Settings: Audio (master, music, effects and ambience, voices, mute), Display (full screen, graphics quality, resolution scale, brightness, film grain), Controls (mouse sensitivity, invert look, every key), Accessibility (captions and their size, memory lines, reduce flashing, reduce motion, reset). Everything is remembered in this browser.
+The title changes with how far you have come: the evening it remembers is later and darker after the middle of the summer, and different again after Chapter Eight.
+
+Keyboard: arrows or W/S choose, Enter selects, Esc goes back, left/right adjust a setting, Tab changes the settings section, M mutes. The mouse works everywhere.
+
+DEV (for testing): the small DEV tab in the bottom-right corner of the title opens the scene selector, exactly as before (DEV → a chapter → a scene → START SCENE). It also has Title mood (Auto/Summer/Search/After) to preview the three title screens, and Unlock every chapter in Chapters.
+
+In play: WASD and mouse move and look. Shift: run or pedal harder. Space: bell / jump. C: crouch. T: flashlight. F: use (hold F where it says Hold). Q/E: look. Esc: pause. M: sound. 1–4: what you say when asked.
+Click to capture the mouse; if capture is unavailable, click-drag to look.
+
+Not yet verified: a human playthrough, real-GPU performance (only software rendering was checked), and a listening pass on the menu's synthesized sound. Local-file saves are browser-specific; keep this file in one place.
+
+Branch: ${manifest.branch}
+Commit: ${manifest.commit}
+`:ART?`LAST LIGHT — FULL-GAME ASTRA ART REWORK
 
 Extract this ZIP, then open ${entry} in desktop Chrome or Edge. No terminal, server, or installation is needed. WebGL must be available.
 
