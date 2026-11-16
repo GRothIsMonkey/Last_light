@@ -72,8 +72,10 @@ if(FINAL){fs.writeFileSync(path.join(out,'START-HERE.txt'),`LAST LIGHT — THE C
 Extract the ZIP, then open ${entry} in desktop Chrome or Edge. No terminal, server or installation is needed. WebGL must be available.
 
 Everything is in it: the Prologue through Chapter Eight, Aftermath I, Aftermath II (August 2021), the 2026 coda, and the credits.
-From the beginning: on the title screen, Take the long way home.
-Straight to the end: DEV → Aftermath II → choose a scene → START SCENE (Aftermath II's scenes, and variants for what you kept in Aftermath I:
+It opens on the new title screen (the horror revision: the title artwork, the analog memory effects, the redesigned
+LAST LIGHT logo). Press any key for the menu. From the beginning: New Game. Chapters lists every part you have reached
+(Aftermath II and One More Lap, the coda, appear once you get there). Settings and Credits are on the same menu.
+Straight to the end: the DEV tab (bottom right of the title) → Aftermath II → choose a scene → START SCENE (Aftermath II's scenes, and variants for what you kept in Aftermath I:
 Jamie's cap kept, or given to his mother at the shelter or on her porch). DEV → 2026 · Credits has the coda's stages and the credits.
 Aftermath I's end card continues to Aftermath II; Aftermath II's end card ("One more lap") to the coda; the coda to the credits; the credits
 to the end screen (the credits again, start over, the title). Continue on the title screen returns to the last checkpoint with what you kept.
