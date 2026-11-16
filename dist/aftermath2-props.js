@@ -73,7 +73,8 @@ export function notebookHeld({k=1,print=true}={}){const g=new THREE.Group();g.na
  const plane=new THREE.Mesh(new THREE.PlaneGeometry(W,H),sheet);g.add(plane);
  const spine=new THREE.Mesh(new THREE.BoxGeometry(.012,H,.01),mat(0x9a9a9a,{metalness:.6}));spine.position.set(-W/2-.006,0,0);g.add(spine);
  // the Sunday print, tucked in the back cover (shown on that page only)
- const pt=PAGES.sunday(),pm=new THREE.MeshBasicMaterial({map:pt||null,color:pt?0xffffff:0xe8d8b8,side:THREE.DoubleSide});pm.name='a2-print';const pr=new THREE.Mesh(new THREE.PlaneGeometry(.13,.098),pm);pr.position.set(.035,-.095,.002);pr.rotation.z=-.06;g.add(pr);pr.visible=false;
+ const pt=PAGES.sunday(),pm=new THREE.MeshBasicMaterial({map:pt||null,color:pt?0xffffff:0xe8d8b8,side:THREE.DoubleSide});pm.name='a2-print';const pr=new THREE.Mesh(new THREE.PlaneGeometry(.13,.098),pm);pr.position.set(.045,-.152,.002);pr.rotation.z=-.07;// (its top edge below “- S.”: sticking out of the bottom of the cover, RULE 6 clear above it)
+ g.add(pr);pr.visible=false;
  const order=['front','names','back'],S={i:0,turns:0,seen:new Set(['front'])};
  function show(){const key=order[S.i],t=PAGES[key](k);sheet.map=t||null;sheet.color.setHex(t?0xffffff:key==='front'?0x2c4a7a:0xf4efe2);sheet.needsUpdate=true;pr.visible=key==='back'&&print;S.seen.add(key);}
  show();
@@ -113,14 +114,14 @@ export function createCar21(){const KT=createKit(),g=new THREE.Group();g.name='a
  const box=(w,h,d,m,x,y,z,rx=0,ry=0)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,y,z);b.rotation.set(rx,ry,0);I.add(b);return b;};
  box(1.62,.26,.52,dk,0,.82,-1.0);box(1.5,.06,.3,dk,0,.97,-.86,-.25);// the dash and its top
  for(const s of [-1,1]){box(.07,.64,.07,dk,s*.78,1.16,-.8,-.62);box(.05,.5,1.9,gr,s*.86,.72,.05);box(.1,.04,1.9,dk,s*.83,.98,.05);box(.08,.05,2.1,dk,s*.76,1.42,.25);box(.08,.46,.08,dk,s*.78,1.2,.42);}
- box(1.56,.05,.08,dk,0,1.42,-.6);box(1.5,.03,2.1,gr,0,1.46,.28);// the roof's edge and the headliner
- const wheel=new THREE.Mesh(new THREE.TorusGeometry(.19,.022,8,28),dk);wheel.position.set(-.42,1.0,-.7);wheel.rotation.x=-.45;I.add(wheel);g.userData.wheel=wheel;
- const hub=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,.05,12),dk);hub.rotation.x=Math.PI/2-.45;hub.position.set(-.42,1.0,-.7);I.add(hub);
- box(.025,.025,.22,dk,-.42,1.0,-.62,-.45);box(.36,.025,.025,dk,-.42,.99,-.7,-.45);// spokes
+ box(1.56,.05,.08,dk,0,1.42,-.6);{const hl=mat(0x9c9a94,{roughness:1,emissive:0x2c2b28});box(1.5,.03,2.1,hl,0,1.46,.28);}// the roof's edge and the headliner (light cloth: in shade, but a car's ceiling is never black)
+ const wheel=new THREE.Mesh(new THREE.TorusGeometry(.19,.022,8,28),dk);wheel.position.set(-.42,.97,-.56);wheel.rotation.x=-.45;I.add(wheel);g.userData.wheel=wheel;// (about .45 m ahead of the shoulders: elbows bent)
+ const hub=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,.05,12),dk);hub.rotation.x=Math.PI/2-.45;hub.position.set(-.42,.97,-.56);I.add(hub);
+ box(.025,.025,.22,dk,-.42,.97,-.48,-.45);box(.36,.025,.025,dk,-.42,.96,-.56,-.45);box(.07,.07,.32,dk,-.42,.9,-.74,-.45);// spokes, the column
  box(.24,.07,.03,dk,0,1.32,-.62);box(.24,.3,.8,dk,0,.55,-.35);// mirror, console
- for(const s of [-1,1]){const sb=box(.5,.6,.1,cloth,s*.42,.92,.14,-.12);void sb;box(.5,.12,.5,cloth,s*.42,.62,-.08);box(.26,.18,.07,cloth,s*.42,1.32,.18);}// seats, cushions, headrests
+ for(const s of [-1,1]){const sb=box(.5,.62,.1,cloth,s*.42,.8,.15,-.12);void sb;box(.5,.12,.5,cloth,s*.42,.44,-.08);box(.26,.18,.07,cloth,s*.42,1.27,.2);}// seats, cushions, headrests (a car seat: low, the eye at 1.25)
  box(1.5,.3,.55,cloth,0,.72,.92,-.08);// the back seat
- const floor=box(1.6,.04,3.0,dk,0,.34,.3);void floor;
+ const floor=box(1.6,.04,3.0,dk,0,.28,.3);void floor;
  // the instrument cluster and the radio (no brand), the vents
  box(.36,.13,.03,mat(0x0e1012,{roughness:.3}),-.42,.95,-.83,-.3);box(.24,.12,.03,mat(0x0e1012,{roughness:.3}),.02,.9,-.79,-.2);
  for(const x of [-.7,.25,.62]){box(.18,.07,.03,dk,x,.9,-.76);}
@@ -129,14 +130,16 @@ export function createCar21(){const KT=createKit(),g=new THREE.Group();g.name='a
  // the phone, on a vent mount right of the wheel
  const ph=phoneModel();ph.g.position.set(-.06,1.02,-.8);ph.g.rotation.set(-.3,.25,0);I.add(ph.g);
  // on the passenger seat: the notebook (and his cap, if it is yours); a coffee from the last gas station in the cupholder
- const seat=new THREE.Group();seat.position.set(.42,.69,-.1);I.add(seat);const nb=samNotebook({k:1});nb.rotation.y=.35;nb.position.set(0,0,-.1);seat.add(nb);
+ const seat=new THREE.Group();seat.position.set(.42,.51,-.1);I.add(seat);const nb=samNotebook({k:1});nb.rotation.y=.35;nb.position.set(0,0,-.1);seat.add(nb);
  const cap=jamieCap();cap.position.set(-.02,.012,.3);cap.rotation.set(0,-.8,0);cap.scale.setScalar(.95);seat.add(cap);cap.visible=false;
  const cup=new THREE.Mesh(new THREE.CylinderGeometry(.043,.034,.15,12),mat(0xe8e2d4));cup.position.set(.1,.72,-.48);I.add(cup);const lid=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.015,12),mat(0x2a2a2c));lid.position.set(.1,.802,-.48);I.add(lid);
  I.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  I.visible=false;g.visible=false;
  const api={g,I,SHELL,wheel,phone:ph,seat,notebook:nb,cap,
-  inside(on){I.visible=on;for(const m of SHELL){if(m.isMesh&&/glass/i.test(m.material?.name||''))continue;}},
-  seatWorld(side=-1){g.updateMatrixWorld(true);const p=new THREE.Vector3(side*.42,1.18,-.1).applyMatrix4(g.matrixWorld);return {x:p.x,y:p.y,z:p.z,a:-g.rotation.y,gy:g.position.y};},
+  // (inside, the world's sedan body is not drawn: it is a solid extrusion whose top is a lid across the cabin at the belt line. The
+  //  cabin has its own doors, dash, pillars, roof and hood; only what stands outside the doors stays: the mirrors, the trim)
+  inside(on){I.visible=on;for(const m of SHELL)m.visible=!on||Math.abs(m.position.x)>.9;},
+  seatWorld(side=-1){g.updateMatrixWorld(true);const p=new THREE.Vector3(side*.42,1.25,-.1).applyMatrix4(g.matrixWorld);return {x:p.x,y:p.y,z:p.z,a:-g.rotation.y,gy:g.position.y};},
   doorWorld(){g.updateMatrixWorld(true);return new THREE.Vector3(-1.25,0,-.1).applyMatrix4(g.matrixWorld);},
-  wheelWorld(side){g.updateMatrixWorld(true);return new THREE.Vector3(-.42+side*.16,1.02,-.66).applyMatrix4(g.matrixWorld);}};
+  wheelWorld(side){g.updateMatrixWorld(true);return new THREE.Vector3(-.42+side*.16,.99,-.52).applyMatrix4(g.matrixWorld);}};
  return api;}

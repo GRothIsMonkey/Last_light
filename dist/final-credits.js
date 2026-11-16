@@ -11,7 +11,7 @@ export const CREDITS=[
  {role:'Created by',names:['Grayson']},
  {role:'Story and creative direction',names:['Grayson']},
  {role:'Writing, game design and development',names:['Claude (Anthropic)']},
- {role:'Visual development',names:['The Astra art passes','OpenAI Codex, directed by Grayson']},
+ {role:'Visual development',names:['Astra (the art passes)','directed by Grayson']},// (the repository's own name for its visual passes, on its codex/astra-* branches; who or what Astra is, it does not say: to confirm)
  {role:'Music and sound',names:['Synthesized by the game as you play','The Prologue’s melody and every sound in Last Light are written in code']},
  {role:'Third-party asset',names:['“Smily horror monster” by Bento','sketchfab.com/gostbento · skfb.ly/6W6ut','Licensed under Creative Commons Attribution 4.0','creativecommons.org/licenses/by/4.0','Modified and optimized for Last Light.','The author does not endorse Last Light or this use.']},
  {role:'Built with',names:['Three.js r160','© 2010–2023 three.js authors · MIT License']},
@@ -43,11 +43,12 @@ export function createFinalCredits({$,doc=globalThis.document,audio=()=>null,onD
  function place(u){S.y=S.vh-(S.vh+S.h)*u;if(roll?.style)roll.style.transform=`translate(-50%,${S.y.toFixed(1)}px)`;}
  function update(dt){if(!S.active)return;S.t+=dt;
   if(S.phase==='roll'){const u=Math.min(1,S.t/S.dur);place(u);if(u>=1){S.phase='ded';S.t=0;mark('dedication');}}
-  else if(S.phase==='ded'){if(roll?.style)roll.style.opacity=0;const a=Math.min(1,Math.max(0,(S.t-1.4)/2.4)),b=Math.min(1,Math.max(0,(S.t-4.6)/2.4));
+  else if(S.phase==='ded'){if(roll?.style)roll.style.opacity=0;// (the roll fades out over 2.5 s (CSS); the first line only after it has gone)
+   const a=Math.min(1,Math.max(0,(S.t-2.8)/2.4)),b=Math.min(1,Math.max(0,(S.t-6)/2.4));
    if(ded?.style)ded.style.opacity=1;if(lines[0]?.style)lines[0].style.opacity=a.toFixed(3);if(lines[1]?.style)lines[1].style.opacity=b.toFixed(3);
-   if(S.t>16){S.phase='out';S.t=0;mark('out');}}
+   if(S.t>17.4){S.phase='out';S.t=0;mark('out');}}
   else if(S.phase==='out'){const k=Math.max(0,1-S.t/3.2);if(ded?.style)ded.style.opacity=k.toFixed(3);if(S.t>3.6)finish();}}
- function skip(){if(!S.active)return;S.skips++;if(S.phase==='roll'){S.phase='ded';S.t=0;mark('skip to dedication');}else if(S.phase==='ded'){if(S.t<7)S.t=Math.max(S.t,7);else{S.phase='out';S.t=0;}mark('skip');}else if(S.phase==='out')finish();}
+ function skip(){if(!S.active)return;S.skips++;if(S.phase==='roll'){S.phase='ded';S.t=0;mark('skip to dedication');}else if(S.phase==='ded'){if(S.t<8.4)S.t=Math.max(S.t,8.4);else{S.phase='out';S.t=0;}mark('skip');}else if(S.phase==='out')finish();}
  function finish(){if(!S.active)return;S.active=false;S.phase='done';if(el){el.hidden=true;el.classList?.remove('on');el.classList?.add('done');}audio()?.theme?.(false);mark('done');onDone?.();}
  function stop(){if(!S.active&&!el)return;S.active=false;S.phase=null;if(el){el.hidden=true;el.classList?.remove('on');}audio()?.theme?.(false);}
  return {play,update,skip,stop,finish,get active(){return S.active;},state:()=>({active:S.active,phase:S.phase,t:+S.t.toFixed(2),dur:+S.dur.toFixed(1),y:+S.y.toFixed(1),skips:S.skips,plays:S.plays,log:S.log.slice(-12)}),

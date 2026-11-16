@@ -96,13 +96,13 @@ export function createCoda(H){
   const a1=box(lampG,.018,.34,.018,metal,0,.18,0);a1.rotation.z=.18;const a2=box(lampG,.018,.3,.018,metal,-.1,.4,.06);a2.rotation.set(.5,0,1.0);
   const shade=new THREE.Mesh(new THREE.ConeGeometry(.075,.12,20,1,true),new THREE.MeshStandardMaterial({color:0x2a2c2e,roughness:.4,metalness:.4,side:THREE.DoubleSide}));shade.position.set(-.22,.47,.12);shade.rotation.z=-.65;shade.castShadow=true;lampG.add(shade);
   const bulb=new THREE.Mesh(new THREE.SphereGeometry(.022,10,8),new THREE.MeshBasicMaterial({color:0xffe2b0}));bulb.position.set(-.235,.44,.12);lampG.add(bulb);}
- const lamp=new THREE.SpotLight(0xffc690,5.5,4.5,.95,.65,2);lamp.position.set(.36,DESK.y+.44,-.06);lamp.target.position.set(.05,DESK.y,.2);lamp.castShadow=true;lamp.shadow.mapSize.set(1024,1024);lamp.shadow.bias=-.0008;lamp.shadow.normalBias=.02;Object.assign(lamp.shadow.camera,{near:.05,far:4});R.add(lamp,lamp.target);
+ const lamp=new THREE.SpotLight(0xffc690,3.2,4.5,.95,.65,2);lamp.position.set(.36,DESK.y+.47,-.06);// (bright on the desk, not so bright a blue cover reads white under it)lamp.target.position.set(.05,DESK.y,.2);lamp.castShadow=true;lamp.shadow.mapSize.set(1024,1024);lamp.shadow.bias=-.0008;lamp.shadow.normalBias=.02;Object.assign(lamp.shadow.camera,{near:.05,far:4});R.add(lamp,lamp.target);
  const lampFill=new THREE.PointLight(0xffb070,.9,3.2,2);lampFill.position.set(.45,DESK.y+.5,.1);R.add(lampFill);
  const glow=new THREE.PointLight(0xc4d6ff,1.1,2.6,2);glow.position.set(0,MON.cy,.25);R.add(glow);
  const hemi=new THREE.HemisphereLight(0x51617f,0x17130f,.42);R.add(hemi);
  const moon=new THREE.DirectionalLight(0x7186b0,.35);moon.position.set(-3,2.4,1.2);moon.target.position.set(0,.8,0);R.add(moon,moon.target);
  // the things he kept: the notebook (fifteen years on it); the four of them in the photo-booth strip, propped against the lamp; his cap
- const notebook=samNotebook({k:1.5});notebook.position.set(.34,DESK.y+.001,.02);notebook.rotation.y=-.3;R.add(notebook);
+ const notebook=samNotebook({k:1.25});notebook.position.set(.34,DESK.y+.001,.02);notebook.rotation.y=-.3;R.add(notebook);
  const strip=boothStrip({k:1,w:.055,h:.19});strip.position.set(.5,DESK.y+.093,-.08);strip.rotation.set(-.12,-.55,0);R.add(strip);
  const stripStand=box(R,.012,.08,.03,mat(0x6a5038),.505,DESK.y+.04,-.11,-.55);void stripStand;
  const cap=jamieCap({faded:.12});cap.position.set(.66,DESK.y+.001,.16);cap.rotation.set(0,2.4,0);R.add(cap);cap.visible=false;
@@ -156,15 +156,23 @@ export function createCoda(H){
  const ease=x=>{x=clamp(x,0,1);return x<.18?.16*smooth(x/.18)**1.6:.16+.84*smooth((x-.18)/.82);};
  function placeCamera(u){const q=along(ease(u));rc.position.copy(q.p);rc.lookAt(q.l);if(Math.abs(rc.fov-q.f)>.01||rc.aspect!==S.aspect){rc.fov=q.f;rc.aspect=S.aspect;rc.updateProjectionMatrix();}}
  // ---- what is drawn on the screen besides the picture: the page's own date line and captions (where the page drew them), then the title ---------
- const OV={date:'',cap:'',who:'',capA:0,title:0,key:'',dr:null,cr:null};
+ const OV={date:'',cap:'',who:'',capA:0,title:0,key:'',dr:null,cr:null,wm:null};
+ const wordmark=()=>{try{return document.querySelector?.('.wordmark')||null;}catch{return null;}};
  const rectOf=el=>{try{const r=el?.getBoundingClientRect?.();if(!r||!r.width)return null;const cs=getComputedStyle?.(el);return {x:r.left,y:r.top,w:r.width,h:r.height,fs:parseFloat(cs?.fontSize)||null};}catch{return null;}};
- function readPage(){const d=$('date'),s=$('subtitle');const raw=d?.innerHTML||d?.textContent||'';OV.date=raw.replace(/<[^>]+>/g,'|').replace(/\|+/g,'|').trim();if(!OV.dr)OV.dr=rectOf(d);const cr=rectOf(s);if(cr)OV.cr=cr;
+ function readPage(){const d=$('date'),s=$('subtitle');if(!OV.wm)OV.wm=readMark();const raw=d?.innerHTML||d?.textContent||'';OV.date=raw.replace(/<[^>]+>/g,'|').replace(/\|+/g,'|').trim();if(!OV.dr)OV.dr=rectOf(d);const cr=rectOf(s);if(cr)OV.cr=cr;
   const small=s?.querySelector?.('small');OV.who=small?.textContent||'';OV.cap=(s?.textContent||'').replace(OV.who,'').trim();OV.capA=+(s?.style?.opacity||0);}
- function drawOverlay(){if(!ovG)return;const key=[OV.date,OV.cap,OV.who,OV.capA.toFixed(2),OV.title.toFixed(3),S.aspect.toFixed(3)].join('|');if(key===OV.key)return;OV.key=key;
+ // (the page's wordmark, top-left: LAST LIGHT and its line under it, where and how the page drew them; read once, before it is hidden)
+ function readMark(){const el=wordmark();if(!el)return null;let op=1;try{op=parseFloat(getComputedStyle(el).opacity);}catch{}if(!(op>.05))return null;const R=rectOf(el),sp=el.querySelector?.('span'),RS=sp?rectOf(sp):null;if(!R)return null;
+  let ls=5,ls2=2.1,o2=.6;try{ls=parseFloat(getComputedStyle(el).letterSpacing)||5;if(sp){const c2=getComputedStyle(sp);ls2=parseFloat(c2.letterSpacing)||2.1;o2=parseFloat(c2.opacity)||.6;if(c2.display==='none')return {R,RS:null,ls,ls2,o2,op,text:(el.firstChild?.textContent||'LAST LIGHT').trim(),sub:''};}}catch{}
+  return {R,RS,ls,ls2,o2,op,text:(el.firstChild?.textContent||'LAST LIGHT').trim(),sub:(sp?.textContent||'').trim()};}
+ function drawOverlay(){if(!ovG)return;const key=[OV.date,OV.cap,OV.who,OV.capA.toFixed(2),OV.title.toFixed(3),S.aspect.toFixed(3),OV.wm?1:0].join('|');if(key===OV.key)return;OV.key=key;
   const w=ovT.width=1600,h=ovT.height=Math.round(1600/S.aspect),sx=w/Math.max(1,innerWidth),g=ovG;g.clearRect(0,0,w,h);
   // the date line (the page's own place for it: top-left)
   if(OV.date&&OV.title<.98){g.save();g.globalAlpha=1-OV.title;g.fillStyle='rgba(255,241,211,.73)';const R0=OV.dr||{x:45,y:137,fs:11},fs=(R0.fs||11)*sx;g.font=`${Math.round(fs)}px Arial`;try{g.letterSpacing=(2*sx)+'px';}catch{}
    const [a,b='']=OV.date.split('|').map(t=>t.trim()),x0=R0.x*sx,y0=(R0.y*sx)+fs;g.fillText(a.toUpperCase(),x0,y0);const wa=g.measureText(a.toUpperCase()).width;g.beginPath();g.arc(x0+wa+(12+2)*sx,y0-fs*.33,1.5*sx,0,7);g.fill();g.fillText(b.toUpperCase(),x0+wa+(24+3)*sx,y0);g.restore();}
+  // the wordmark
+  if(OV.wm&&OV.title<.98){const M=OV.wm,R0=M.R,fs=(R0.fs||19)*sx;g.save();g.globalAlpha=(1-OV.title)*M.op;g.fillStyle='#fff3d7';g.textBaseline='top';g.font=`bold ${Math.round(fs)}px Arial`;try{g.letterSpacing=(M.ls*sx)+'px';}catch{}g.fillText(M.text,R0.x*sx,R0.y*sx+fs*.08);
+   if(M.RS&&M.sub){const fs2=(M.RS.fs||9)*sx;g.globalAlpha=(1-OV.title)*M.op*M.o2;g.font=`${Math.round(fs2)}px Arial`;try{g.letterSpacing=(M.ls2*sx)+'px';}catch{}g.fillText(M.sub,M.RS.x*sx,M.RS.y*sx+fs2*.08);}g.restore();}
   // a caption, centred low, light italic over the picture
   if(OV.cap&&OV.capA>.01){g.save();g.globalAlpha=OV.capA*(1-OV.title);g.textAlign='center';g.shadowColor='rgba(21,19,35,.9)';g.shadowBlur=10*sx;const C0=OV.cr||{x:innerWidth/2-325,y:innerHeight*.8-60,w:650,h:60,fs:24},fs=(C0.fs||24)*sx,cx=(C0.x+C0.w/2)*sx;
    g.font=`italic ${Math.round(fs)}px Georgia`;const words=OV.cap.split(' '),ls=[];let ln='';for(const wd of words){const t=ln?ln+' '+wd:wd;if(g.measureText(t).width>C0.w*sx&&ln){ls.push(ln);ln=wd;}else ln=t;}if(ln)ls.push(ln);
@@ -174,13 +182,13 @@ export function createCoda(H){
   if(ovTex)ovTex.needsUpdate=true;}
  // ---- the stages ---------------------------------------------------------------------------------------------------------------------------
  const hide=(id,on)=>{const el=$(id);if(el?.style)el.style.visibility=on?'hidden':'';};
- function chrome(on){for(const id of ['date','subtitle','prompt','objective-panel','reflection','ride-ui'])hide(id,on);}
+ function chrome(on){for(const id of ['date','subtitle','prompt','objective-panel','reflection','ride-ui'])hide(id,on);const wm=wordmark();if(wm?.style)wm.style.visibility=on?'hidden':'';}
  function setStage(st){S.stage=st;S.st=0;mark('stage '+st);}
  function begin(section='coda-start',{keep=null}={}){const i=Math.max(0,CODA_STAGES.indexOf(section)),kept=keep||S.keep||{};
   // (the world first: the Prologue's own beginning, the friends, the light; that resets the page, so the coda's own state comes after)
   if(section==='coda-credits'){H.prologue(260,{auto:false,lines:false});S.active=false;S.keep=kept;H.credits(kept);return;}
   H.prologue(i<=0?0:i===1?112:i===2?190:i===3?250:300,{auto:i<3,lines:i<=1});
-  S.active=true;S.keep=kept;S.t=0;S.line=false;S.said=false;S.titled=false;S.swap=false;S.dated=false;S.pullDone=false;OV.title=0;OV.key='';OV.capA=0;OV.cap='';OV.dr=null;OV.cr=null;
+  S.active=true;S.keep=kept;S.t=0;S.line=false;S.said=false;S.titled=false;S.swap=false;S.dated=false;S.pullDone=false;OV.title=0;OV.key='';OV.capA=0;OV.cap='';OV.dr=null;OV.cr=null;OV.wm=null;
   scrMat.uniforms.title.value=0;scrMat.uniforms.vig.value=i>=2?.28:0;scrMat.uniforms.glare.value=i>=2?1:0;
   cap.visible=S.keep.cap==='you';board.userData.print.visible=S.keep.print!==false;
   ME.hands='keys';ME.handsK=1;ME.want={look:0,pitch:-.05};ME.look=0;ME.lookPitch=-.05;ME.lean=.08;

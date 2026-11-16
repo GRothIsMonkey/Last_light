@@ -105,11 +105,50 @@ export function createTown2021({scene,world,nav,ch8,ambient}){
    const q=Q.toWorld(Q.gx,Q.depth/2+3.4),b=Q.toWorld(Q.gx,Q.depth/2+8);cg.position.set(q.x,nav.groundY(q.x,q.z),q.z);cg.rotation.y=-Math.atan2(b.x-q.x,-(b.z-q.z))+Math.PI;root.add(cg);collect(cg);cg.removeFromParent();
    ST.cars.push({x:q.x,z:q.z,r:2.6});}
   const cut=cutFor(Q);if(cut)ST.cuts.push(cut);ST.houses.push({id:spec.id,u:Q.u,side:Q.side,style:P.style,story:spec.story||null,at:{x:o.x,z:o.z},plan:P,old:Q});return P;}
+ // ---- what else is different: Jamie's house (somebody else's now), your old house (somebody's kid) -----------------------------------------
+ function carInDrive(Q,kind,color){const cg=new THREE.Group();makeCar(KT,cg,kind,color);const q=Q.toWorld(Q.hasGarage?Q.gx:Q.drivX??0,Q.depth/2+3.4),b=Q.toWorld(Q.hasGarage?Q.gx:Q.drivX??0,Q.depth/2+8);
+  cg.position.set(q.x,nav.groundY(q.x,q.z),q.z);cg.rotation.y=-Math.atan2(b.x-q.x,-(b.z-q.z))+Math.PI;root.add(cg);collect(cg);cg.removeFromParent();ST.cars.push({x:q.x,z:q.z,r:2.6});}
+ function extras(){
+  // Jamie's: a different car in the drive; a summer wreath on the red door (not hers)
+  const JH=world.homes?.jamie;
+  if(JH){carInDrive(JH,'suv',0x8a8f92);
+   const f=new THREE.Group(),wr=new THREE.Group(),wq=JH.toWorld(JH.doorX??0,JH.depth/2+.15);wr.position.set(wq.x,wq.ground+(JH.floor??.45)+1.47,wq.z);wr.rotation.y=JH.worldRot;f.add(wr);
+   const ring=new THREE.Mesh(new THREE.TorusGeometry(.19,.045,7,22),mat(0x4f6b3a,{roughness:1}));wr.add(ring);
+   for(let i=0;i<9;i++){const a=i/9*Math.PI*2+.3,c=[0xd98aa0,0xf0e2b0,0xe9b04a][i%3],fl=new THREE.Mesh(new THREE.SphereGeometry(.03,7,5),mat(c,{roughness:.9}));fl.position.set(Math.cos(a)*.19,Math.sin(a)*.19,.035);wr.add(fl);}
+   const bow=new THREE.Mesh(new THREE.BoxGeometry(.1,.05,.02),mat(0xe8e2d0,{roughness:.9}));bow.position.set(0,-.2,.045);wr.add(bow);
+   root.add(f);collect(f);f.removeFromParent();ST.jamie={car:true,wreath:true};}
+  // your old house: a scooter dropped on the grass by the front walk, a hopscotch on the sidewalk past the drive (pink, fresh)
+  const H=homeOf(world);
+  if(H){const f=new THREE.Group(),sc=new THREE.Group();const x0=(H.doorX??0)+(H.hasGarage?-H.gs:1)*1.05,z0=H.depth/2+(H.pdep??1.4)+2.6,sq=H.toWorld(x0,z0);sc.position.set(sq.x,nav.groundY(sq.x,sq.z)+.06,sq.z);sc.rotation.set(0,H.worldRot+.7,0);f.add(sc);
+    const tilt=new THREE.Group();tilt.rotation.z=1.42;sc.add(tilt);const deckM=mat(0x2a2c2f,{roughness:.6}),bodyM=mat(0x7ac043,{roughness:.5}),wheelM=mat(0x1a1b1d,{roughness:.8});
+    const deck=new THREE.Mesh(new THREE.BoxGeometry(.12,.035,.52),bodyM);tilt.add(deck);const grip=new THREE.Mesh(new THREE.BoxGeometry(.105,.004,.42),deckM);grip.position.y=.019;tilt.add(grip);
+    for(const z of [-.26,.27]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.055,.055,.03,12),wheelM);w.rotation.z=Math.PI/2;w.position.set(0,-.02,z);tilt.add(w);}
+    const stem=new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,.72,8),mat(0xb8bcc0,{metalness:.6,roughness:.35}));stem.position.set(0,.34,-.3);stem.rotation.x=.12;tilt.add(stem);
+    const bar=new THREE.Mesh(new THREE.CylinderGeometry(.013,.013,.36,8),stem.material);bar.rotation.z=Math.PI/2;bar.position.set(0,.69,-.26);tilt.add(bar);for(const s2 of [-1,1]){const gp=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,.09,8),deckM);gp.rotation.z=Math.PI/2;gp.position.set(s2*.16,.69,-.26);tilt.add(gp);}
+    root.add(f);collect(f);f.removeFromParent();
+    // the hopscotch: cells along the sidewalk just past the drive, on the house's side of the street
+    const side=H.side||-1,d0=(H.drivD??H.u)+(H.drivW??3.4)/2+1.1,lat=side*7.1,pts=[];const cells=[[0,0],[0,1],[-.5,2],[.5,2],[0,3],[-.5,4],[.5,4],[0,5],[0,6]];
+    const P3=(d,l)=>{const p=groundPoint(d,l);return [p.x,world.groundY(d,l)+.174,p.z];};
+    for(const [cx,cz] of cells){const a=d0+cz*.5,b=a+.5,l0=lat+(cx-.25)*side,l1=lat+(cx+.25)*side;const c=[P3(a,l0),P3(b,l0),P3(b,l1),P3(a,l1)];for(let i=0;i<4;i++)pts.push(...c[i],...c[(i+1)%4]);}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));const ln=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:0xf2b5c4}));ln.name='a2-hopscotch';root.add(ln);ST.home2021={scooter:true,hopscotch:true};}}
+ // the chalk at the end of the street in 2011 (the four of you's: the sun, the initials, the hopscotch) washed away a long time ago. The
+ // world draws all its chalk as a few merged line batches; while 2021 is shown, the segments lying on the ground at the end of the street
+ // are folded to nothing (their places kept), and put back exactly when it is not. Nothing else (wires, other chalk) is touched.
+ const CHALK={folded:null};
+ function oldChalk(restore){if(restore){for(const F of CHALK.folded||[]){const A=F.attr;for(let k=0;k<6;k++)A.array[F.i*6+k]=F.o[k];A.needsUpdate=true;}CHALK.folded=null;return;}
+  if(CHALK.folded)return;CHALK.folded=[];const corners=[SP(1124,-13),SP(1124,13),SP(1164,-13),SP(1164,13)],x0=Math.min(...corners.map(c=>c.x))-2,x1=Math.max(...corners.map(c=>c.x))+2,z0=Math.min(...corners.map(c=>c.z))-2,z1=Math.max(...corners.map(c=>c.z))+2;
+  for(const o of scene.children){if(!o.isLineSegments||o.parent!==scene||o.name)continue;// (the world's own merged batches are unnamed; the ending's clue is named, and left alone)
+  const A=o.geometry?.attributes?.position;if(!A)continue;const arr=A.array;let any=false;
+   for(let i=0;i<A.count/2;i++){const j=i*6,mx=(arr[j]+arr[j+3])/2,my=(arr[j+1]+arr[j+4])/2,mz=(arr[j+2]+arr[j+5])/2;if(mx<x0||mx>x1||mz<z0||mz>z1)continue;
+    const L=nav.locate?.(mx,mz);if(!L||L.street!=='main'||L.d<1124||L.d>1164)continue;if(Math.abs(my-world.groundY(L.d,L.lat))>.35)continue;
+    CHALK.folded.push({attr:A,i,o:Array.from(arr.slice(j,j+6))});arr[j+3]=arr[j];arr[j+4]=arr[j+1];arr[j+5]=arr[j+2];any=true;}
+   if(any)A.needsUpdate=true;}
+  ST.chalkFolded=CHALK.folded.length;}
  // ---- the road ---------------------------------------------------------------------------------------------------------------------
  const asphaltNew=surfaceMaterial(mat(0x4a4d50,{roughness:.96,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),'asphalt');asphaltNew.name='a2-asphalt-new';
  const concreteNew=surfaceMaterial(mat(0xcfcac0,{roughness:.9,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),'concrete');concreteNew.name='a2-concrete-new';
  const sod=mat(0x5f7a3c,{roughness:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});sod.name='a2-sod';
- const seamM=new THREE.MeshBasicMaterial({color:0x1c1d1e,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3});seamM.name='a2-seam';
+ const seamM=mat(0x262626,{roughness:.45,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3});seamM.name='a2-seam';// (tar sealant: a thin dark line where new meets old)
  const paintM=mat(0xe9e4d2,{roughness:.7,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});paintM.name='a2-paint';
  // a strip draped on the street's own ground, d0..d1 by lat0..lat1 (in street coordinates), lift metres above it
  function strip(g,d0,d1,l0,l1,m,{lift=.012,step=1.5,stepL=1}={}){const nu=Math.max(1,Math.ceil((d1-d0)/step)),nv=Math.max(1,Math.ceil((l1-l0)/stepL)),pos=[],uv=[],idx=[];
@@ -120,18 +159,16 @@ export function createTown2021({scene,world,nav,ch8,ambient}){
   const m2=new THREE.Mesh(geo,m);m2.receiveShadow=true;m2.name='a2-strip-'+(m.name||'');g.add(m2);return m2;}
  function road(){const g=new THREE.Group();g.name='a2-road';
   // the storm line: the Drive from 1047 to 1095 repaved curb to curb on its west half, a seam where the new meets the old
-  strip(g,1047,1095,-4.7,3.25,asphaltNew);strip(g,1046.8,1047.15,-4.7,4.6,seamM,{lift:.016,step:.4});strip(g,1094.85,1095.2,-4.7,4.6,seamM,{lift:.016,step:.4});strip(g,1047,1095,3.1,3.35,seamM,{lift:.016,stepL:.25});
-  // a lane line (newer paint than anywhere else on the street)
-  for(let d=1049;d<1093;d+=6)strip(g,d,d+3,-.06,.06,paintM,{lift:.018,step:1,stepL:.12});
+  strip(g,1047,1095,-4.7,3.25,asphaltNew);strip(g,1046.95,1047.05,-4.7,3.25,seamM,{lift:.016,step:.1});strip(g,1094.95,1095.05,-4.7,3.25,seamM,{lift:.016,step:.1});strip(g,1047,1095,3.2,3.28,seamM,{lift:.016,stepL:.08});
   // new curb and sidewalk panels on the west side, new sod where the yards were regraded
   strip(g,1047,1095,-5.0,-4.7,concreteNew,{lift:.02,stepL:.3});strip(g,1047,1095,-7.85,-6.35,concreteNew,{lift:.015,stepL:.5});
   for(let d=1048.5;d<1095;d+=1.5)strip(g,d,d+.04,-7.85,-6.35,seamM,{lift:.02,step:.04,stepL:.5});
   strip(g,1048,1094,-15,-8.2,sod,{lift:.02,step:2,stepL:1.4});
   // Summerfield: the intersection, a newer square of pavement and fresh crosswalk paint
-  strip(g,861,883,-4.7,4.7,asphaltNew);for(const d of [861,883])strip(g,d-.18,d+.18,-4.7,4.7,seamM,{lift:.016,step:.36});
+  strip(g,861,883,-4.7,4.7,asphaltNew);for(const d of [861,883])strip(g,d-.05,d+.05,-4.7,4.7,seamM,{lift:.016,step:.1});
   for(let l=-4;l<4.2;l+=1.1)strip(g,858.6,860.4,l,l+.55,paintM,{lift:.018,step:.9,stepL:.55});
   // in front of Sam's: where the road went down at 1019, a patch
-  strip(g,1010,1029,-1.8,4.7,asphaltNew);for(const d of [1010,1029])strip(g,d-.15,d+.15,-1.8,4.7,seamM,{lift:.016,step:.3});
+  strip(g,1010,1029,-1.8,4.7,asphaltNew);for(const d of [1010,1029])strip(g,d-.05,d+.05,-1.8,4.7,seamM,{lift:.016,step:.1});strip(g,1010,1029,-1.85,-1.77,seamM,{lift:.016,stepL:.08});
   // the Hendersons' front yard, regraded and re-seeded (it went into the ground)
   strip(g,1014,1036,7.9,15.5,sod,{lift:.02,step:2,stepL:1.4});
   root.add(g);ST.road=g;}
@@ -140,6 +177,7 @@ export function createTown2021({scene,world,nav,ch8,ambient}){
   for(const spec of REBUILT){const Q=houseAt(spec.u,spec.side);if(!Q||Math.abs(Q.u-spec.u)>14){ST.errors.push('no lot at '+spec.id);continue;}
    try{rebuild(spec,Q,{same:spec.style===null});}catch(e){ST.errors.push('house '+spec.id+': '+e.message);}}
   {const Q=homeOf(world);if(Q)try{ST.home=rebuild(YOUR_HOUSE,Q,{same:true});ST.homeQ=Q;}catch(e){ST.errors.push('home: '+e.message);}}
+  try{extras();}catch(e){ST.errors.push('extras: '+e.message);}
   flush();road();
   ST.buildMs=Math.round((performance?.now?.()??0)-t0);}
  // ---- traffic: a car now and then (driving on the right; it slows for anyone in its way; one may turn into a drive and park) ---------
@@ -165,9 +203,9 @@ export function createTown2021({scene,world,nav,ch8,ambient}){
  function update(dt,{people=[]}={}){if(!ST.on)return;updateTraffic(dt,people);updateLamps(dt);}
  function sources(out){if(!ST.on)return;for(const T of TRAFFIC)if(T.on&&!T.engineOff)out.push({id:'a2-car-'+T.i,kind:'idle',pos:new THREE.Vector3(T.x,.6,T.z),level:.35+T.v*.06});}
  function blockers(out){if(!ST.on)return;for(const T of TRAFFIC)if(T.on)out.push({x:T.x,z:T.z,r:2.4,speed:T.v});for(const c of ST.cars||[])out.push({x:c.x,z:c.z,r:1.4,speed:0});}
- function show(on){if(on){build();if(!root.parent)scene.add(root);for(const c of ST.cuts)c.c.on=true;}else{if(root.parent)root.removeFromParent();for(const c of ST.cuts)c.c.on=false;}ST.on=on;try{ruin?.syncCuts?.();}catch(e){ST.errors.push('cuts: '+e.message);}}
+ function show(on){if(on){build();if(!root.parent)scene.add(root);for(const c of ST.cuts)c.c.on=true;}else{if(root.parent)root.removeFromParent();for(const c of ST.cuts)c.c.on=false;}ST.on=on;oldChalk(!on);try{ruin?.syncCuts?.();}catch(e){ST.errors.push('cuts: '+e.message);}}
  function reset(){for(const T of TRAFFIC){T.on=false;T.parked=false;T.engineOff=false;T.g.visible=false;}lampsOn(false);show(false);}
  return {root,show,update,sources,blockers,reset,drive,lampsOn,SP,houseAt,TRAFFIC,ST,REBUILT,
-  state:()=>({on:ST.on,built:ST.built,houses:ST.houses.map(h=>({id:h.id,u:h.u,side:h.side,style:h.style,story:h.story})),cuts:ST.cuts.length,cutsOn:ST.cuts.filter(c=>c.c.on).length,batches:batches.length,errors:ST.errors.slice(),buildMs:ST.buildMs,lamps:ST.lamps,
+  state:()=>({on:ST.on,built:ST.built,jamie:ST.jamie||null,home2021:ST.home2021||null,chalkFolded:ST.chalkFolded??null,houses:ST.houses.map(h=>({id:h.id,u:h.u,side:h.side,style:h.style,story:h.story})),cuts:ST.cuts.length,cutsOn:ST.cuts.filter(c=>c.c.on).length,batches:batches.length,errors:ST.errors.slice(),buildMs:ST.buildMs,lamps:ST.lamps,
    traffic:TRAFFIC.map(T=>({on:T.on,d:+T.d.toFixed(1),v:+T.v.toFixed(2),parked:T.parked}))})};
 }

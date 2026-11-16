@@ -120,7 +120,8 @@ export function createAftermath2(o,k,{chapter2:ch2,chapter5:ch5,chapter6:ch6,cha
  // a thing held up to look at (the mouse or A/D turns it; W/S... S or F puts it down; Q/E turn a page where there are pages)
  const holder=new THREE.Group();holder.name='a2-held';
  function pageMesh(tex,{w=.2,h=.26,color=0xfbfaf4}={}){const m=new THREE.MeshBasicMaterial({map:tex||null,color:tex?0xffffff:color,side:THREE.DoubleSide});m.toneMapped=true;const g=new THREE.Group();g.add(new THREE.Mesh(new THREE.PlaneGeometry(w,h),m));return g;}
- function inspect(obj,{dist=.4,ls=null,kind='thing',onClose=null,tilt=0,pages=null}={}){if(C.view)return;camera.add(holder);holder.position.set(0,-.01,-dist);holder.rotation.set(0,0,0);holder.add(obj);obj.position.set(0,0,0);obj.rotation.set(tilt,0,0);
+ function inspect(obj,{dist=.4,ls=null,kind='thing',onClose=null,tilt=0,pages=null,y=-.01}={}){if(C.view)return;camera.add(holder);holder.position.set(0,y,-dist);// (y: held a little higher, above the captions, for a page to read)
+ holder.rotation.set(0,0,0);holder.add(obj);obj.position.set(0,0,0);obj.rotation.set(tilt,0,0);
   C.view='inspect';C.inspect={obj,kind,onClose,yaw:0,pitch:tilt,t:0,pages};o.roam.walkLock=true;C.lookKind=kind;if(ls)say(ls);mark('held: '+kind);}
  function endInspect(){const I=C.inspect;if(!I)return;holder.remove(I.obj);holder.removeFromParent();C.view=null;C.inspect=null;C.lookKind=null;if(!posed())o.roam.walkLock=false;I.onClose?.();}
  function* holding(obj,ls,{dist=.4,kind='thing',min=1.2,max=60,tilt=0,pages=null}={}){inspect(obj,{dist,ls,kind,tilt,pages});C.flags.putDown=false;let e=0;yield;while(C.view==='inspect'&&(busy()||e<min||!C.flags.putDown)&&e<max){yield;e+=C.dt;if(!busy()&&e>min+16)break;}if(C.view==='inspect')endInspect();C.flags.putDown=false;}
@@ -131,7 +132,7 @@ export function createAftermath2(o,k,{chapter2:ch2,chapter5:ch5,chapter6:ch6,cha
  // ---- the day and the hour, and the light -----------------------------------------------------------------------------------------------
  const date=()=>o.setDate(`${C.day}, 2021 <i></i> ${fmt(C.h)}`);
  function setDay(h,rate=4){C.h=h;C.minute=-1;C.clockRate=rate;date();}
- function clock(dt){if(S.phase==='a2-black'||S.phase==='a2-end'||S.phase==='a2-coda')return;C.h+=dt*(C.clockRate||4)/3600;const m=Math.floor(C.h*60+1e-6);if(m!==C.minute){C.minute=m;date();}}
+ function clock(dt){if(!owns(S.phase)||S.phase==='a2-black'||S.phase==='a2-end'||S.phase==='a2-coda')return;C.h+=dt*(C.clockRate||4)/3600;const m=Math.floor(C.h*60+1e-6);if(m!==C.minute){C.minute=m;date();}}
  function sky(){const B=C.skyK||skyAt(C.h),i=C.inside||0;return {day:B.day,p:B.p,night:B.night||0,deep:0,fill:lerp(0,C.fill??.7,i),storm:0,flash:0,cave:(C.cave??.4)*i,apoc:0};}
  // ---- the world as an evening in 2021 ---------------------------------------------------------------------------------------------------
  function dayWorld(){document.body?.classList?.add('night1');nav.setTown(true);nav.setPine?.(true);A.day=1;A.night=0;ch2.day=1;S.deep=A.deep=0;o.flashShadow?.(false);o.nightRendering?.(false);o.setFlashlight?.(false,false);
@@ -197,6 +198,7 @@ export function createAftermath2(o,k,{chapter2:ch2,chapter5:ch5,chapter6:ch6,cha
  function update(dt){C.dt=dt;C.t+=dt;C.pt+=dt;
   if(C.nextScene){const s2=C.nextScene;C.nextScene=null;jumpTo(s2,{keep:true});return;}
   for(let i=C.timers.length-1;i>=0;i--)if(C.t>=C.timers[i].at){const f=C.timers[i].fn;C.timers.splice(i,1);f();}
+  if(!owns(S.phase))return;// (a timer handed over (the coda) and the page was reset under it: nothing of this chapter's runs this frame)
   for(const t of C.tasks.slice()){let r;try{r=t.gen.next(dt);}catch(e){mark('task '+t.name+' threw: '+(e&&e.message));console.error?.(e);r={done:true};}if(r.done)C.tasks=C.tasks.filter(x=>x!==t);}
   if(C.cardT>=0){C.cardT+=dt;if(C.cardT>.8&&!C.cardOn)card(true,{sub:'TEN YEARS LATER'});if(C.cardT>5.4){card(false);C.cardT=-1;}}
   if(C.fadeIn>=0){C.fadeIn+=dt;o.fade(1-smooth(C.fadeIn/(C.fadeInDur||2.2)));if(C.fadeIn>(C.fadeInDur||2.2)){C.fadeIn=-1;C.fadeInDur=null;o.fade(0);}}

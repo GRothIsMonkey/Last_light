@@ -1,14 +1,15 @@
 // Embed the unchanged source runtime in a server-free desktop browser playtest.
 import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';import {execFileSync} from 'node:child_process';
 // PLAYTEST_CHAPTER=7 names the package and its instructions for Chapter Seven (default: Chapter Six, as before)
-const RECOVERY=process.env.PLAYTEST_RECOVERY==='1',ART=RECOVERY||process.env.PLAYTEST_ART==='1',CH=RECOVERY?'9':ART?'8':process.env.PLAYTEST_CHAPTER||'6',CHW={6:'Six',7:'Seven',8:'Eight',9:'Aftermath I'}[CH]||CH;
+// PLAYTEST_CHAPTER=final: the complete game, the Prologue through Aftermath II, the 2026 coda and the credits
+const RECOVERY=process.env.PLAYTEST_RECOVERY==='1',ART=RECOVERY||process.env.PLAYTEST_ART==='1',CH=RECOVERY?'9':ART?'8':process.env.PLAYTEST_CHAPTER||'6',CHW={6:'Six',7:'Seven',8:'Eight',9:'Aftermath I',final:'the complete game'}[CH]||CH,FINAL=CH==='final';
 const root=path.resolve('dist'),out=path.resolve(process.argv[2]||'../release/playable');fs.mkdirSync(out,{recursive:true});
 const hash=b=>createHash('sha256').update(b).digest('hex'),modules={},sourceHashes={};
 for(const name of fs.readdirSync(root).sort().filter(n=>n.endsWith('.js'))){const b=fs.readFileSync(path.join(root,name));sourceHashes['dist/'+name]=hash(b);let s=String(b).replace(/(['"])\.\/([^'"]+\.js)\1/g,(_,q,f)=>q+'last-light/'+f+q);if(name==='creature.js'){const old="new URL('./assets/creature/creature.glb',import.meta.url)";if(!s.includes(old))throw Error('Creature loader changed');s=s.replace(old,'new URL(globalThis.__LL_CREATURE_URL__)');}modules['last-light/'+name]=Buffer.from(s).toString('base64');}
 const css=fs.readFileSync(path.join(root,'style.css'),'utf8'),original=fs.readFileSync(path.join(root,'index.html'),'utf8'),asset=fs.readFileSync(path.join(root,'assets/creature/creature.glb'));
 for(const [n,b]of [['style.css',css],['index.html',original],['assets/creature/creature.glb',asset]])sourceHashes['dist/'+n]=hash(b);
 const boot=`<script>(()=>{const bytes=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)),modules=${JSON.stringify(modules)},imports={};for(const[n,b]of Object.entries(modules))imports[n]=URL.createObjectURL(new Blob([bytes(b)],{type:'text/javascript'}));globalThis.__LL_CREATURE_URL__=URL.createObjectURL(new Blob([bytes(${JSON.stringify(asset.toString('base64'))})],{type:'model/gltf-binary'}));const m=document.createElement('script');m.type='importmap';m.textContent=JSON.stringify({imports});document.head.appendChild(m);const e=document.createElement('script');e.type='module';e.textContent='import "last-light/game.js";';document.body.appendChild(e);})();</script>`;
-const html=original.replace('<link rel="stylesheet" href="style.css">','<style>'+css+'</style>').replace('href="./"','href="#"').replace('<script type="module" src="game.js"></script>',boot),entry=RECOVERY?'Last-Light-Visual-Recovery-Playtest.html':ART?'Last-Light-Full-Game-Art-Rework.html':CH==='9'?'Last-Light-Aftermath1-Playtest.html':`Last-Light-Chapter${CH}-Playtest.html`;fs.writeFileSync(path.join(out,entry),html);
+const html=original.replace('<link rel="stylesheet" href="style.css">','<style>'+css+'</style>').replace('href="./"','href="#"').replace('<script type="module" src="game.js"></script>',boot),entry=RECOVERY?'Last-Light-Visual-Recovery-Playtest.html':ART?'Last-Light-Full-Game-Art-Rework.html':FINAL?'Last-Light-Complete-Playtest.html':CH==='9'?'Last-Light-Aftermath1-Playtest.html':`Last-Light-Chapter${CH}-Playtest.html`;fs.writeFileSync(path.join(out,entry),html);
 const git=(...a)=>execFileSync('git',a,{encoding:'utf8'}).trim(),manifest={branch:git('branch','--show-current'),commit:git('rev-parse','HEAD'),dirty:!!git('status','--porcelain','--untracked-files=no'),untrackedFilesExcluded:true,entry,entrySHA256:hash(html),modules:Object.keys(modules).length,sourceHashes};
 fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');fs.copyFileSync(path.join(root,'THREE-LICENSE.txt'),path.join(out,'THREE-LICENSE.txt'));fs.copyFileSync('docs/THIRD_PARTY_ASSETS.md',path.join(out,'THIRD_PARTY_ASSETS.md'));
 fs.writeFileSync(path.join(out,'START-HERE.txt'),ART?`LAST LIGHT — FULL-GAME ASTRA ART REWORK
@@ -44,3 +45,29 @@ Open Before-and-After.html for actual game-renderer scene comparisons. Open VISU
 Branch: ${manifest.branch}
 Commit: ${manifest.commit}
 `);
+if(FINAL){fs.writeFileSync(path.join(out,'START-HERE.txt'),`LAST LIGHT — THE COMPLETE GAME — PLAYTEST
+
+Extract the ZIP, then open ${entry} in desktop Chrome or Edge. No terminal, server or installation is needed. WebGL must be available.
+
+Everything is in it: the Prologue through Chapter Eight, Aftermath I, Aftermath II (August 2021), the 2026 coda, and the credits.
+From the beginning: on the title screen, Take the long way home.
+Straight to the end: DEV → Aftermath II → choose a scene → START SCENE (Aftermath II's scenes, and variants for what you kept in Aftermath I:
+Jamie's cap kept, or given back to his mother at the shelter or on the porch). DEV → 2026 · Credits has the coda's stages and the credits.
+Aftermath I's end card continues to Aftermath II; Aftermath II's end card ("One more lap") to the coda; the coda to the credits; the credits
+to the end screen (the credits again, start over, the title). Continue on the title screen returns to the last checkpoint with what you kept.
+
+WASD + mouse: move and look. Shift: run, or pedal harder. Space: jump on foot / bicycle bell. F: use (hold F where it says Hold).
+S: put a held thing down. Q / E: turn a page (the notebook), or look. A/D or the mouse: turn a held thing. I: what you carry.
+1–4: what you say when you are asked (or say nothing: let it pass). Esc: pause. M: sound.
+In the car (Aftermath II): hold W to drive, S to slow down, F to pull over when it offers.
+The credits: Esc, Space or Enter (or the Skip button) goes to the dedication, then past it.
+Click to capture the mouse; if capture is unavailable, click-drag to look. Saves are kept by this browser for this file: keep it in one place.
+
+Read AFTERMATH2-TEST-REPORT.md for what was tested and how, and RELEASE-NOTES.md for the credits' sources and the known limits.
+The screenshots in the reports are software-rendered WebGL captures of the real game (SwiftShader), not a GPU. GPU performance, audio,
+pointer lock and a full human playthrough still need a person.
+
+Branch: ${manifest.branch}
+Commit: ${manifest.commit}
+`);
+ for(const [from,to] of [['docs/AFTERMATH2_TEST_REPORT.md','AFTERMATH2-TEST-REPORT.md'],['docs/FINAL_CREDITS_AND_RELEASE_HANDOFF.md','RELEASE-NOTES.md']])if(fs.existsSync(from))fs.copyFileSync(from,path.join(out,to));}

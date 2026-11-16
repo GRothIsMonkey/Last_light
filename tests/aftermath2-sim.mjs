@@ -109,7 +109,10 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
    if(onSide())for(const u of [115,80,40,12])if((at().u??0)>u+1)approach(BW(u,6.9),1.6,{pad:10,max:80});ahead([620,680,740,L0.jamieD-12]);
    assert.ok(approach(SP(L0.jamie.d,L0.jamie.lat),1.4,{pad:10,max:40}),'his house');assert.ok(until(()=>said('She moved to her sister’s.'),60));
    if(cap==='keep'){assert.ok(take('cap',{walk:false,max:90}),'his cap');putDown(60);assert.ok(said('You kept it.'));}else assert.ok(until(()=>said('She took his cap too.'),90),'his cap, with her');
-   assert.ok(until(()=>said('Biscuit.'),90));assert.ok(until(()=>ph()==='a2-summer',60),'on');noThrow();});
+   assert.ok(until(()=>said('Biscuit.'),90));
+   if(inSeg('alex')){assert.ok(said('You still ride?')&&said('Same frame.'),'the walk back: does he still ride');assert.ok(!!C().flags.ballOut,'the walk back: a shot off the rim, down the drive');
+    assert.ok(until(()=>!!C().flags.ballBack,40),'the ball goes back ('+C().flags.ballBack+')');}
+   assert.ok(until(()=>ph()==='a2-summer',60),'on');noThrow();});
   lap('jamie');}
  if(inSeg('summer')){start('summer');
   check(`${label}: Summerfield: a newer square of road where it went down; the Kowalskis' lot, a house somebody built`,()=>{ahead([830,858,880,930,970]);
@@ -126,7 +129,8 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
   lap('light');}
  if(inSeg('trench')){start('trench');
   check(`${label}: the newer houses and the patched road where the street went into the ground; the Hendersons' (Lily, driving)`,()=>{const L0=L();ahead([L0.samD+15,1030,1060,1090,1112,1122]);
-   assert.ok(said('Lily’s driving now.'),'Lily');assert.ok(said('The road is newer here.'),'the seam');assert.ok(until(()=>ph()==='a2-oak',30));noThrow();});
+   assert.ok(said('Lily’s driving now.'),'Lily');assert.ok(said('The road is newer here.'),'the seam');assert.ok(until(()=>ph()==='a2-oak',30));
+   assert.ok(said('Mrs. Pruitt’s still in hers.')&&said('It’s a better story.'),'Mrs. Pruitt');noThrow();});
   lap('trench');}
  if(inSeg('oak')){start('oak');
   check(`${label}: the old oak in the golden light: you come to it at your own pace; the trunk, the carving, the foot of it, the swing; the picture again`,()=>{const L0=L(),oak=L0.oakW;
@@ -184,7 +188,9 @@ export async function runAftermathTwoChecks(T0){const X=aftermathTwoTools(T0),{h
    if(sc.keep?.cap==='mom')assert.equal(st.keep.cap,'mom',sc.id+' cap variant');assert.equal(st.jamie.visible,false,sc.id+' no Jamie');assert.equal(h.chapter8.HM.root.visible,false,sc.id+' no hunter');
    assert.equal(st.marks.filter(m=>/threw/.test(m[1])).length,0,sc.id+' threw '+JSON.stringify(st.marks));}
   for(const sc of DEV_SCENES[11].filter(x=>x.jump)){h.devScene(11,sc.id);wait(1.5);if(sc.jump==='coda-credits'){assert.ok(h.credits.state().active,sc.id+' credits');continue;}const k=h.coda.state();assert.ok(k.active,sc.id+' coda active');
-   if(sc.keep?.cap==='mom')assert.equal(k.cap,false,sc.id+' no cap');else if(sc.jump!=='coda-start'&&sc.jump!=='coda-pullback')assert.equal(k.cap,true,sc.id+' the cap');}});
+   if(sc.keep?.cap==='mom')assert.equal(k.cap,false,sc.id+' no cap');else if(sc.jump!=='coda-start'&&sc.jump!=='coda-pullback')assert.equal(k.cap,true,sc.id+' the cap');
+   // (the room's date, not Aftermath II's: a jump straight into the room must not leave 2021's clock writing over it)
+   if(['coda-room','coda-line','coda-title'].includes(sc.jump)){wait(1.5);assert.match(element('date').innerHTML,/AUGUST 21, 2026/,sc.id+' date: '+element('date').innerHTML);}}});
  check('Aftermath II: Continue from an Aftermath II checkpoint keeps what you chose (his cap with his mother) and puts you there',()=>{h.devScene(10,'a2-jamie-shelter');wait(1.5);
   const s=h.chapter.saved();assert.ok(s&&/a2-/.test(s.section),'a checkpoint: '+JSON.stringify(s));const v=JSON.parse(globalThis.localStorage.getItem('lastlight.aftermath2')||'{}');assert.equal(v.cap,'mom');
   // (the title's own Continue: Back to the title, then its button)

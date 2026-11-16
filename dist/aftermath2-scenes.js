@@ -70,7 +70,7 @@ export function scenes10(X){
   if(n>=6&&STG.mower){STG.mower=false;mower.show(false);mw.visible=false;C.mowing=false;}
   if(n<=3&&!STG.walker){STG.walker=true;const a=SP(L.homeD+70,-7.1);walker.show(true);walker.place(a.x,a.z,heading(L.homeD)+Math.PI);dog.show(true);lead.visible=true;C.walking={from:L.homeD+70,to:L.homeD-120,lat:-7.1,v:1.05,started:false};}
   if(n>=5&&STG.walker){STG.walker=false;walker.show(false);dog.show(false);lead.visible=false;C.walking=null;}
-  if(n>=2&&n<=6&&!STG.hoops){const Q=TOWN.houseAt(L.homeD+215,1);if(Q){STG.hoops=true;const at=Q.toWorld(Q.hasGarage?Q.gx:0,Q.depth/2+4.6),rim=Q.toWorld(Q.hasGarage?Q.gx:0,Q.depth/2+.3);kid.show(true);kid.place(at.x,at.z,toward(at,rim));ball.visible=true;C.hoops={at,rim:{x:rim.x,y:gy(rim.x,rim.z)+3.05,z:rim.z},t:0,phase:'dribble',n:0};}}
+  if(n>=2&&n<=6&&!STG.hoops){const Q=TOWN.houseAt(L.homeD+215,1);if(Q){STG.hoops=true;const at=Q.toWorld(Q.hasGarage?Q.gx:0,Q.depth/2+4.6),rim=Q.toWorld(Q.hasGarage?Q.gx:0,Q.depth/2+.3);kid.show(true);kid.place(at.x,at.z,toward(at,rim));ball.visible=true;C.hoops={at,rim:{x:rim.x,y:gy(rim.x,rim.z)+3.05,z:rim.z},t:0,phase:'dribble',n:0,out:SP((Q.drivD??Q.u)+.5,(Q.side||1)*5.45)};}}
   if((n<2||n>6)&&STG.hoops){STG.hoops=false;kid.show(false);ball.visible=false;C.hoops=null;}
   if(n>=6&&n<=7&&!STG.mom){const SH=world.homes.sam;if(SH){STG.mom=true;const q=SH.toWorld(SH.doorX??0,SH.depth/2+1.2);samMom.show(true);samMom.place(q.x,q.z,toward(q,SP(L.light.d,L.light.lat)));samMom.gest('fold');}}
   if(n>=9&&STG.mom){STG.mom=false;samMom.show(false);}
@@ -85,11 +85,32 @@ export function scenes10(X){
    const pos=lead.geometry.attributes.position;pos.setXYZ(0,walker.x+r.x*.22+f.x*.2,gy(walker.x,walker.z)+.95*1.12,walker.z+r.z*.22+f.z*.2);pos.setXYZ(1,dx-f.x*.25,gy(dx,dz)+.45,dz-f.z*.25);pos.needsUpdate=true;
    if(walker.walking&&D(walker,ME())<9&&!C.flags.walkerSeen){C.flags.walkerSeen=true;walker.lookAt=camera.position;later(2.4,()=>{walker.lookAt=null;});if(Math.random()<.9)sound('dog',new THREE.Vector3(dx,.5,dz),{gain:.25});}}
   if(C.hoops&&kid.visible){const Hh=C.hoops;Hh.t+=dt;const at=Hh.at;
-   if(Hh.phase==='dribble'){const k2=Math.abs(Math.sin(Hh.t*5.2));ball.position.set(at.x+Math.sin(kid.a)*.32+Math.cos(kid.a)*.2,gy(at.x,at.z)+.12+k2*.75,at.z-Math.cos(kid.a)*.32+Math.sin(kid.a)*.2);
-    if(Math.floor(Hh.t*10.4/Math.PI)!==Hh.n){Hh.n=Math.floor(Hh.t*10.4/Math.PI);if(D(at,ME())<45)sound('dribble',ball.position,{gain:.35});}kid.gest('talk');if(Hh.t>3.4){Hh.phase='shot';Hh.t=0;}}
+   if(hoopBall(Hh,dt)){}
+   else if(Hh.phase==='dribble'){const k2=Math.abs(Math.sin(Hh.t*5.2));ball.position.set(at.x+Math.sin(kid.a)*.32+Math.cos(kid.a)*.2,gy(at.x,at.z)+.12+k2*.75,at.z-Math.cos(kid.a)*.32+Math.sin(kid.a)*.2);
+    if(Math.floor(Hh.t*10.4/Math.PI)!==Hh.n){Hh.n=Math.floor(Hh.t*10.4/Math.PI);if(D(at,ME())<45)sound('dribble',ball.position,{gain:.35});}kid.gest('talk');if(Hh.t>3.4){Hh.phase=Hh.miss?'miss':'shot';Hh.t=0;}}
    else if(Hh.phase==='shot'){const u=Math.min(1,Hh.t/1.1),h=gy(at.x,at.z)+1.6;ball.position.set(lerp(at.x,Hh.rim.x,u),lerp(h,Hh.rim.y,u)+Math.sin(u*Math.PI)*1.5,lerp(at.z,Hh.rim.z,u));kid.gest('point',Hh.rim);
     if(u>=1){Hh.phase='fall';Hh.t=0;if(D(at,ME())<45)sound('rim',ball.position,{gain:.4});}}
    else{const u=Math.min(1,Hh.t/.9);ball.position.set(lerp(Hh.rim.x,at.x,u),Hh.rim.y-(Hh.rim.y-gy(at.x,at.z)-.12)*u*u,lerp(Hh.rim.z,at.z,u));if(u>=1){Hh.phase='dribble';Hh.t=0;}}}}
+ // the shot that misses (once, on the walk up to Jamie's): off the rim, down the drive, into the gutter. Throw it back, or he comes for it.
+ function hoopBall(Hh,dt){const {kid,ball}=NB,at=Hh.at,out=Hh.out,ry=Hh.rim.y,gb=q=>gy(q.x,q.z)+.12;
+  if(Hh.phase==='miss'){const u=Math.min(1,Hh.t/1.1),h=gy(at.x,at.z)+1.6;ball.position.set(lerp(at.x,Hh.rim.x,u),lerp(h,ry,u)+Math.sin(u*Math.PI)*1.5,lerp(at.z,Hh.rim.z,u));kid.gest('point',Hh.rim);
+   if(u>=1){Hh.phase='loose';Hh.t=0;Hh.b=0;sound('rim',ball.position,{gain:.45});kid.gest(null);}return true;}
+  if(Hh.phase==='loose'){const u=Math.min(1,Hh.t/2.6),x=lerp(Hh.rim.x,out.x,smooth(u)),z=lerp(Hh.rim.z,out.z,smooth(u)),g0=gy(x,z)+.12;
+   let y;if(u<.22)y=lerp(ry,g0,(u/.22)**2);else{const v=(u-.22)/.78;y=g0+Math.abs(Math.sin(v*Math.PI*3))*Math.pow(1-v,1.6)*1.1;}ball.position.set(x,y,z);
+   const b=u<.22?0:1+Math.floor((u-.22)/.78*3);if(b!==Hh.b){Hh.b=b;if(D(out,ME())<45)sound('dribble',ball.position,{gain:.42-.08*b});}kid.lookAt=ball.position;
+   if(u>=1){Hh.phase='rest';Hh.t=0;ball.position.set(out.x,gb(out),out.z);
+    offer('ball','Throw it back',()=>ball.position,{r:1.8,look:true,size:.35,cone:.3,once:true,fn:()=>{if(Hh.phase!=='rest')return;
+     const throwIt=()=>{Hh.phase='throw';Hh.t=0;Hh.from={x:ball.position.x,y:ball.position.y,z:ball.position.z};sound('a1Cloth',camera.position,{gain:.2});};
+     if(phys?.playerReach){Hh.phase='reach';phys.playerReach({at:()=>new THREE.Vector3(out.x,gb(out),out.z),side:'r',dur:[.55,.12,.4],low:true,onContact:()=>{Hh.phase='held';},then:throwIt});}else throwIt();}});}return true;}
+  if(Hh.phase==='rest'){ball.position.set(out.x,gb(out),out.z);kid.lookAt=ball.position;if(Hh.t>11||(Hh.t>4&&D(ME(),out)>16)){unoffer('ball');Hh.phase='fetch';Hh.t=0;kid.lookAt=null;
+    kid.walk([[out.x,out.z]],{speed:2.3,then:a=>{Hh.phase='carry';a.walk([[at.x,at.z]],{speed:1.7,then:a2=>{a2.faceTo(Hh.rim.x,Hh.rim.z);Hh.phase='dribble';Hh.t=0;Hh.miss=false;C.flags.ballBack='kid';}});}});}return true;}
+  if(Hh.phase==='fetch'||Hh.phase==='reach'){ball.position.set(out.x,gb(out),out.z);return true;}
+  if(Hh.phase==='held'){o.self?.parts?.rhand?.getWorldPosition(ball.position);ball.position.y+=.02;return true;}
+  if(Hh.phase==='carry'){const f={x:Math.sin(kid.a),z:-Math.cos(kid.a)};ball.position.set(kid.x+f.x*.3,gy(kid.x,kid.z)+.95,kid.z+f.z*.3);return true;}
+  if(Hh.phase==='throw'){const u=Math.min(1,Hh.t/1.05),to={x:at.x,y:gy(at.x,at.z)+1.15,z:at.z},F=Hh.from;ball.position.set(lerp(F.x,to.x,u),lerp(F.y,to.y,u)+Math.sin(u*Math.PI)*1.6,lerp(F.z,to.z,u));kid.lookAt=ball.position;
+   if(u>=1){Hh.phase='dribble';Hh.t=0;Hh.miss=false;kid.lookAt=camera.position;kid.gest('wave');later(1.6,()=>{kid.gest(null);kid.lookAt=null;});C.flags.ballBack='you';
+    say([KID('Thanks!',{time:1.2,from:kid})]);}return true;}
+  return false;}
  // ---- Sam: beside you as you walk (on the side he is already on), or where a scene puts him ---------------------------------------------------
  const SAMF={vx:0,vz:0,px:null,pz:null,side:1,speed:0};
  function trackYou(dt){const p=ME();if(SAMF.px===null){SAMF.px=p.x;SAMF.pz=p.z;}const vx=(p.x-SAMF.px)/Math.max(dt,1e-3),vz=(p.z-SAMF.pz)/Math.max(dt,1e-3);SAMF.vx=damp(SAMF.vx,vx,6,dt);SAMF.vz=damp(SAMF.vz,vz,6,dt);SAMF.px=p.x;SAMF.pz=p.z;SAMF.speed=Math.hypot(SAMF.vx,SAMF.vz);}
@@ -115,7 +136,7 @@ export function scenes10(X){
  // ---- the drive ---------------------------------------------------------------------------------------------------------------------------------
  const DRV={d:-262,v:0,lat:2.15,park:0,parked:false,on:false,wheel:0};
  function placeCar(){const q=SP(DRV.d,DRV.lat),a=heading(DRV.d);CAR.g.position.set(q.x,q.y,q.z);CAR.g.rotation.y=-a;CAR.wheel.rotation.z=0;}
- function seatPose(){const s=CAR.seatWorld(-1);if(!C.pose){pose({x:s.x,z:s.z},{y:s.y,yaw:s.a,pitch:-.05,slow:.5,seat:{h:.48,y:s.gy+.27,legs:'bent',hands:'knees'}});}
+ function seatPose(){const s=CAR.seatWorld(-1);if(!C.pose){pose({x:s.x,z:s.z},{y:s.y,yaw:s.a,pitch:-.05,slow:.5,seat:{h:.2,y:s.gy+.27,legs:'bent',hands:'knees'}});}// (a car seat: h .2 puts the grown-up body's eyes at the camera, 1.25 over the road, and its feet on the floor)
   else{C.pose.x=s.x;C.pose.y=s.y;C.pose.z=s.z;C.pose.yaw=s.a;C.pose.baseYaw=s.a;if(C.pose.seat){C.pose.seat.x=s.x;C.pose.seat.z=s.z;C.pose.seat.a=s.a;C.pose.seat.y=s.gy+.27;}}}
  function updateDrive(dt){if(!DRV.on)return;const held=c=>o.held?.(c);
   let want=0;if(!DRV.parked&&!DRV.parking){if(held('KeyW')||held('ArrowUp'))want=held('ShiftLeft')||held('ShiftRight')?11:8.5;if(held('KeyS')||held('ArrowDown'))want=-1;}
@@ -286,7 +307,15 @@ export function scenes10(X){
  function* jamieScene(){stageTo(5);go('a2-jamie');checkpoint('a2-jamie');
   const front=SP(L.jamie.d,L.jamie.lat);
   let called=false;
-  while(D(ME(),front)>5.5){yield;const d=dNow();if(!called&&onMain()&&d>L.jamieD-110&&d<L.jamieD-40&&!busy()){called=true;say([{wait:.4},SM('His mom used to yell for him from all the way up there. And he’d pretend he couldn’t hear her until the third time.',{time:4.4}),{wait:.4},Y('Every time.',{time:1}),SM('Every single time.',{time:1.4,face:'happy'})]);}}
+  let ride=false,ballSaid=false;
+  while(D(ME(),front)>5.5){yield;const d=dNow(),q0=nav.locate?.(ME().x,ME().z);
+   // (back up Briarwood, or up the hill: does he still ride)
+   if(!ride&&!busy()&&((q0?.street==='side'&&(q0.u??999)<96)||(onMain()&&d>592&&d<L.homeD+190))){ride=true;say([{wait:.6},SM('You still ride?',{time:1.2}),Y('Not really. You?',{time:1.4}),SM('Every day. To the store and back.',{time:1.8}),SM('My car’s a piece of junk.',{time:1.6,face:'amused'}),{wait:.6},
+    SM('Same bike, too. Well. Same frame. Everything else I’ve replaced, like, twice.',{time:3.2})]);continue;}
+   // (a shot off the rim, at the house with the hoop)
+   if(C.hoops&&!C.flags.ballOut&&onMain()&&d>L.homeD+188&&d<L.homeD+214&&C.hoops.phase==='dribble'){C.flags.ballOut=true;C.hoops.miss=true;}
+   if(!ballSaid&&C.flags.ballBack&&!busy()){ballSaid=true;say([{wait:.8},SM(C.flags.ballBack==='you'?'Nice.':'He’ll get it.',{time:1}),SM('He’s out here every night. Till his mom yells.',{time:2.4})]);continue;}
+   if(!called&&onMain()&&d>L.jamieD-110&&d<L.jamieD-40&&!busy()){called=true;say([{wait:.4},SM('His mom used to yell for him from all the way up there. And he’d pretend he couldn’t hear her until the third time.',{time:4.4}),{wait:.4},Y('Every time.',{time:1}),SM('Every single time.',{time:1.4,face:'happy'})]);}}
   SAMA.stopFollow();{const q=SP(L.jamie.d-1.3,L.jamie.lat+.2);samGo(q,{speed:1.1,face:toward(q,L.jamieChair||front)});}
   yield* until(()=>!busy(),12);objective('','');
   yield* lines([{wait:1},N('Jamie’s house. A different car in the drive. A wreath on the red door that isn’t hers. The porch light is the cold white kind now.',{time:5.4}),{wait:1},
@@ -362,7 +391,7 @@ export function scenes10(X){
    if(NBK.pages.page==='back')yield* lines([{wait:.6},SM('That’s my writing.',{time:1.2}),{wait:.4},SM('Rule six.',{time:1}),{wait:.8},Y('You made that one up.',{time:1.4}),SM('It still counts.',{time:1.4}),{wait:1.2},SM('You’re bad at rule six.',{time:1.6,face:'amused'}),Y('I know.',{time:1}),{wait:.8},SM('I’m worse.',{time:1})]);
    C.flags.nbDone=true;})());
   // (held as long as the two of you are talking about it; put away when you like after that)
-  inspect(NBK.g,{dist:.42,kind:'notebook',pages:NBK.pages,ls:[N('His notebook. The cover’s gone soft at the corners. It’s been in a drawer, a glovebox, a jacket pocket, a box, and a drawer again.',{time:5.2})]});C.flags.putDown=false;
+  inspect(NBK.g,{dist:.46,y:.03,kind:'notebook',pages:NBK.pages,ls:[N('His notebook. The cover’s gone soft at the corners. It’s been in a drawer, a glovebox, a jacket pocket, a box, and a drawer again.',{time:5.2})]});C.flags.putDown=false;
   {let e=0,doneAt=null;while(C.view==='inspect'&&e<160){yield;e+=C.dt;if(C.flags.nbDone&&doneAt===null)doneAt=e;if(doneAt!==null&&!busy()&&(C.flags.putDown||e>doneAt+12))break;}if(C.view==='inspect')endInspect();C.flags.putDown=false;}
   yield* until(()=>C.flags.nbDone,40);stopTask('nb-talk');C.flags.nbDone=true;keep('looked',{...C.keep.looked,notebook:NBK.pages.seen});
   yield* quiet(8);
@@ -381,6 +410,8 @@ export function scenes10(X){
   while(true){yield;const d=dNow();if(busy())continue;
    if(!said3.lily&&d>L.samD+18&&d<1045){said3.lily=true;yield* lines([{wait:.4},SM('The Hendersons are still there.',{time:1.6,act:()=>{SAMA.lookAt=SP(1026,18,2);}}),{wait:.4},SM('Lily’s driving now. She almost hit me in the parking lot at the store.',{time:3,face:'amused'}),{wait:.6,act:()=>{SAMA.lookAt=null;}},Y('Lily’s driving?',{time:1.2}),SM('Badly.',{time:1})]);continue;}
    if(!said3.seam&&d>1050&&d<1090){said3.seam=true;yield* lines([{wait:1.6},N('The road is newer here. You can see where. A line across the asphalt, and then darker asphalt, and new curbs, and houses that are all about the same age.',{time:5.6}),{wait:1.2},SM('You can tell.',{time:1.2}),Y('Yeah.',{time:.8}),{wait:.8},SM('The trees are all little.',{time:1.6})]);continue;}
+   if(!said3.pruitt&&said3.seam&&d>1055&&d<1112){said3.pruitt=true;yield* lines([{wait:1.2},SM('Mrs. Pruitt’s still in hers.',{time:1.6,act:()=>{SAMA.lookAt=SP(1058,14,2);}}),{wait:.6},SM('She tells everybody Jamie lifted that awning off her by himself.',{time:2.8,face:'happy'}),
+    Y('I was there.',{time:1}),SM('She leaves you out of it. It’s a better story.',{time:2.4,face:'amused',act:()=>{SAMA.lookAt=null;}})]);continue;}
    if(d>1118&&onMain())break;}
   yield* oakScene();}
  // ---- the oak -------------------------------------------------------------------------------------------------------------------------------------
@@ -423,9 +454,10 @@ export function scenes10(X){
  function kidsStart(){for(const R of Object.values(KIDS)){R.show(true);R.v=3.8;}
   const g=KIDS.girl,b=KIDS.boy,a0=SP(1084,1.6),b0=SP(1080,-1.2);g.place(a0.x,a0.z,heading(1084));b.place(b0.x,b0.z,heading(1080));
   // up the street, round the end of it, once, and stop at the curb near the bench
-  const loop=(r,lat0)=>[SP(1118,lat0),SP(1132,lat0*.6),[1142,-r],[1150,0],[1142,r],[1134,lat0*.4]].map(q=>Array.isArray(q)?(()=>{const p=groundPoint(q[0],q[1]);return [p.x,p.z];})():[q.x,q.z]);
-  g.ride(loop(7.2,1.6).concat([[SP(1129.5,-2.4).x,SP(1129.5,-2.4).z]]),{v:4,then:R=>{C.flags.girlStop=true;}});
-  b.ride(loop(6.2,-1.2).concat([[SP(1127,-.9).x,SP(1127,-.9).z]]),{v:4.3,then:R=>{C.flags.boyStop=true;}});
+  const loop=(r,lat0,end)=>[SP(1118,lat0),SP(1132,lat0*.6),[1142,-r],[1150,0],[1142,r],end].map(q=>Array.isArray(q)?(()=>{const p=groundPoint(q[0],q[1]);return [p.x,p.z];})():[q.x,q.z]);
+  // (they stop in the middle of the end of the street, about fifteen metres from the oak: near enough to see, not near enough to be with you)
+  g.ride(loop(7.2,1.6,[1140.2,3.4]).concat([[SP(1137.4,.7).x,SP(1137.4,.7).z]]),{v:4,then:R=>{C.flags.girlStop=true;}});
+  b.ride(loop(6.2,-1.2,[1139.6,2.2]).concat([[SP(1135.6,-.9).x,SP(1135.6,-.9).z]]),{v:4.3,then:R=>{C.flags.boyStop=true;}});
   C.kids=true;}
  function* childrenScene(){stageTo(11);go('a2-kids');checkpoint('a2-children');
   // ordinary neighbourhood activity: first you hear them
@@ -455,7 +487,7 @@ export function scenes10(X){
  function* leaveScene(){stageTo(12);go('a2-leave');checkpoint('a2-leave');
   if(C.h<19.3)C.h=19.3;C.clockRate=10;
   yield* wait(2);TOWN.lampsOn(true);sound('click',SP(1130,6,6),{gain:.12});
-  yield* lines([{wait:2.6},N('Down the street, the streetlights come on. One, and then the next one, and then all of them, the cold white kind.',{time:4.4}),{wait:1.6},SM('Rule four.',{time:1.4})]);
+  yield* lines([{wait:2.6},N('Down the street, the streetlights come on. One, and then the next one, and then all of them.',{time:3.8}),{wait:1.6},SM('Rule four.',{time:1.4})]);
   const c=yield* choosing([{id:'home',label:'“When the streetlights come on, you go home.”'},{id:'nod',label:'Nod'}],{timeout:12,fallback:'nod'});said('rule4',c);
   if(c==='home')yield* lines([Y('When the streetlights come on, you go home.',{time:2.4}),{wait:1},SM('Come on. My mom made the thing.',{time:1.8,face:'happy'})]);
   else yield* lines([{wait:1.4},SM('Come on. My mom made the thing.',{time:1.8})]);

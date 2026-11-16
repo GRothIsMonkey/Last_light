@@ -1,8 +1,13 @@
 # Aftermath: story handoff
 
 **Aftermath I (What Was Left) is now implemented** on `claude/aftermath1-what-was-left` (see
-`AFTERMATH1_IMPLEMENTATION_HANDOFF.md`): Chapter Eight's end card has an **Aftermath I →** button, and Aftermath I ends
-on its own card with nothing after it. **Aftermath II and the 2026 coda are not implemented, staged or teased.**
+`AFTERMATH1_IMPLEMENTATION_HANDOFF.md`): Chapter Eight's end card has an **Aftermath I →** button.
+
+**Aftermath II (August 2021), the 2026 coda and the final credits are now implemented** on
+`claude/aftermath2-2026-final-coda` (see `AFTERMATH2_IMPLEMENTATION_HANDOFF.md`, `FINAL_CODA_HANDOFF.md`,
+`FINAL_CREDITS_AND_RELEASE_HANDOFF.md`, `AFTERMATH2_TEST_REPORT.md`): Aftermath I's end card has **Aftermath II →**;
+Aftermath II's has **One more lap →** (the coda); the coda ends in the credits and the end screen. Section 6 below is
+the state the finished story leaves.
 
 Sections 1–4 below are the state Chapter Eight leaves (unchanged; Aftermath I was built on them). Section 5 is the state
 Aftermath I leaves for Aftermath II.
@@ -98,6 +103,21 @@ Aftermath I's save, `lastlight.aftermath1` (written at every checkpoint and at t
  "lost":["JAMIE","ALEX"],"presence":"sealed","you":"moved away, October 2011","sam":"Oak Hollow","at":<timestamp>}
 ```
 
-For Aftermath II (about 2021, still only a preferred direction): the protagonist left with the notebook; Sam stayed with
+For Aftermath II (about 2021, then only a preferred direction): the protagonist left with the notebook; Sam stayed with
 the Tour poster; the families stayed or did not as their own stories need. Nothing in Aftermath I fixes what happens
-after the drive out.
+after the drive out. (Section 6 records what Aftermath II made of it.)
+
+## 6. What Aftermath II and the coda establish (as implemented)
+
+| Who / what | August 27, 2021 | 2026 |
+|---|---|---|
+| The protagonist | Twenty-two, still unnamed. Drives back for the first time in ten years; has kept the notebook (and the Sunday print folded in it, and Jamie's cap if Aftermath I left it with him). Makes "things, on the computer" and hasn't finished one. | Twenty-seven. Has made *Last Light*: the monitor shows its Prologue; a hand-drawn map of Oak Hollow, index cards and the Sunday print are on his wall; the notebook, the photo-booth strip of the four of them and (if kept) Jamie's cap are on his desk. "I still remember." |
+| Sam | Twenty-two, still in Oak Hollow, assistant manager at the hardware store on Main (since March; he has a key). Still rides the same bike (same frame). Fixes kids' chains for free. Keeps the Tour on his wall. Bad at rule six; so is the protagonist. | Not shown. |
+| Jamie's mother | Moved to her sister's four or five years ago; took his bike (and his cap, if it was given to her). Left her red chair on the porch; the new family kept it. A kid lives there now (his bike on the lawn). | — |
+| Alex's parents | Still in the same house; his father buys the same light bulbs every month at Sam's store. Keeps the shadow picture in his wallet if he was told about it. | — |
+| Oak Hollow | Rebuilt, not reset: the lost lots have newer houses on the same footprints; newer asphalt and a tar seam where the street went into the ground; Summerfield redone (closed three years); a fence along the creek; young trees. The Hendersons are still there (Lily drives); Mrs. Pruitt still tells everybody Jamie lifted the awning off her by himself; the Kowalskis did not come back. Kids still ride round the end of the street and say "See you tomorrow!" | His map of it, from memory. |
+| The Presence | Nothing. Not seen, not heard, not mentioned. The official explanation stands. | Nothing. No stinger after the credits. |
+| Jamie and Alex | Dead since August 27, 2011. Remembered: Jamie's laugh, his made-up dog Biscuit, standing on the pedals up the hill; Alex's bell twice at every corner, "Alright, I'm this way." | The dedication: "For Jamie and Alex. / And for every summer we thought would last forever." |
+
+Aftermath II's save, `lastlight.aftermath2`: the carried Aftermath I values plus `said`, `looked`, `capWith`, `section`,
+`home:["YOU","SAM"]`, `lost:["JAMIE","ALEX"]`, `presence:"sealed"`, `year:2021`. Completion: `lastlight.complete`.
