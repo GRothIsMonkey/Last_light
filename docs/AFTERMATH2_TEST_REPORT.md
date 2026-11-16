@@ -85,7 +85,7 @@ Each earlier chapter's own suite on this branch (exit 0 = every check passed).
 | `ONLY=companions` | 8 checks passed | 62 s |
 | `ONLY=aftermath1` (from Chapter Eight's end card) | 58 checks passed | 256 s |
 | `ONLY=dev DEV_KNOWN=2/alex-bike` (DEV starts of every chapter vs natural arrival; switching) | 327 checks passed; the one known difference reported | 376 s |
-| base (`QUICK=1 DEV_KNOWN=2/alex-bike`: Prologue to Chapter Six by input, every DEV start vs natural arrival) | BASE_RESULT | BASE_SECS |
+| base (`QUICK=1 DEV_KNOWN=2/alex-bike`: Prologue to Chapter Six by input, every DEV start vs natural arrival) | **818 checks passed**; the one known difference reported | 1473 s |
 
 The counts match the earlier reports (`AFTERMATH1_TEST_REPORT.md`). The known Chapter Two DEV difference
 (`2/alex-bike`: Alex's companion bike placed differently after switching scenes, with the same numbers) predates this
@@ -146,7 +146,20 @@ The final set: **50 frames in 15 shots, no page errors, no script errors**, all 
 
 ## 6. Package
 
-PACKAGE_SECTION
+- **Offline package**: `PLAYTEST_CHAPTER=final node tools/package-playtest.mjs <folder>` from a clean tree. One file,
+  `Last-Light-Complete-Playtest.html` (10,604,929 bytes, SHA-256
+  `b6af28bee0e48ca95f3f8c0bd306c65910bd36d7dadb563d2ea14151acb8f7cd`): every runtime module (152) and the creature model
+  embedded, the Prologue through Chapter Eight, Aftermath I, Aftermath II, the coda and the credits. Beside it:
+  `START-HERE.txt` (how to start, the DEV route to Aftermath II and the coda, controls, what still needs a person),
+  `manifest.json` (branch, commit, SHA-256 of every source file), the licences, this report and the release handoff.
+  The HTML is built only from `dist/`, so it is byte-identical whichever docs commit it is built from; the ZIP handed
+  over with the completion report was built from this branch's final commit (its manifest says which).
+- **Opened from disk** (`tests/aftermath2-package-browser.mjs`, headless Chromium, SwiftShader, `file://`, no server):
+  **8 of 8 checks passed** — Aftermath II entered through the title screen's real DEV controls (from Aftermath I's end
+  card) on its date; WebGL renders; eleven later sections start from their jumps in Aftermath II phases; Aftermath II's
+  end card offers **One more lap →**; it starts the coda, which reaches LAST LIGHT on the monitor dated August 21, 2026;
+  the credits play, skip to the dedication and past it, end on the end screen and mark the game complete; **no HTTP(S)
+  requests; no JavaScript errors**. Report and frames: `docs/qa/aftermath2/package-browser-report*.json|jpg`.
 
 ## 7. Not verified
 

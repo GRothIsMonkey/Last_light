@@ -1,0 +1,56 @@
+{
+  "file": "Last-Light-Complete-Playtest.html",
+  "htmlSHA256": "b6af28bee0e48ca95f3f8c0bd306c65910bd36d7dadb563d2ea14151acb8f7cd",
+  "htmlBytes": 10604929,
+  "renderer": "Chromium / ANGLE SwiftShader software",
+  "start": {
+    "phase": "a2-drive",
+    "date": "AUGUST 27, 2021  5:44 PM",
+    "width": 1280
+  },
+  "scenes": {
+    "a2-street": "a2-street",
+    "a2-sam": "a2-sam",
+    "a2-walk": "a2-walk",
+    "a2-alex": "a2-alex",
+    "a2-jamie": "a2-jamie",
+    "a2-summerfield": "a2-summer",
+    "a2-streetlight": "a2-light",
+    "a2-trench": "a2-trench",
+    "a2-oak": "a2-oak",
+    "a2-children": "a2-kids",
+    "a2-leave": "a2-leave"
+  },
+  "end": {
+    "hidden": false,
+    "text": "LAST LIGHT Aftermath II TEN YEARS LATERAugust, 2021. One more lap → Start over ↻ Back to the title",
+    "next": "One more lap →"
+  },
+  "coda": {
+    "start": "ride",
+    "active": true,
+    "title": "title",
+    "shown": 1,
+    "date": "AUGUST 21, 2026  11:48 PM"
+  },
+  "credits": {
+    "active": true,
+    "phase": "roll",
+    "end": "ended",
+    "text": "THE END Last Light Summer, 2011. Watch the credits again ↻ Start over ↻ Back to the title",
+    "complete": true
+  },
+  "passed": 8,
+  "checks": [
+    "Local file enters Aftermath II through the real DEV controls (from Aftermath I’s end card)",
+    "WebGL renders",
+    "Later sections start from their jumps",
+    "Aftermath II’s end card offers the coda (One more lap)",
+    "One more lap starts the coda; it reaches LAST LIGHT on the monitor in 2026",
+    "The credits play, skip to the dedication and past it, and end on the end screen; the game is marked complete",
+    "No HTTP(S) requests",
+    "No JavaScript errors"
+  ],
+  "errors": [],
+  "httpRequests": []
+}
