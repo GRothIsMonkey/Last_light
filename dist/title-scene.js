@@ -31,7 +31,7 @@ export const MOODS={
   events:{flicker:.55,oldBike:.18,rider:.5,figure:.04,bell:.35},fireflies:1},
  search:{dusk:.82,night:.3,deep:.14,storm:.06,apoc:0,exposure:.01,fog:1.08,bikes:['player','jamie','sam'],swing:.32,
   events:{flicker:.7,oldBike:.5,rider:.45,figure:.35,bell:.5},fireflies:.8},
- after:{dusk:.9,night:.58,deep:.3,storm:.16,apoc:.3,exposure:.02,fog:1.18,bikes:['player','sam'],swing:0,bent:'sam',
+ after:{dusk:.9,night:.58,deep:.3,storm:.16,apoc:.24,exposure:.02,fog:1.18,bikes:['player','sam'],swing:0,bent:'sam',
   events:{flicker:.75,oldBike:.4,rider:.25,figure:.4,bell:.3},fireflies:.25,fifth:true}};
 
 // ---- the shots, in street coordinates: d along Oak Hollow Drive, lat across it (+ toward the oak), h above ground ----
@@ -178,6 +178,7 @@ export function createTitleScene(o){
  function afterAmbient(){if(!active)return;if(flies===null)flies=scene.children.find(c=>c.isPoints&&c.material?.uniforms?.uAmount&&c.material.uniforms.uTime)||false;
   if(flies)flies.material.uniforms.uAmount.value*=M.fireflies;}
 
+ // (after: apoc stays under .25: above it game.js widens the camera's far plane for Chapter Eight's skyline, which the title must never show)
  // QA / DEV: hold one shot at one moment (for captures), or change the mood.
  function preview({mood=null,shot:name=null,t=null}={}){if(mood&&mood!==moodKey){setMood(mood);}if(name&&SHOTS[name]){const i=order.indexOf(name);if(i>=0)shotIndex=i;else{order=[...order,name];shotIndex=order.length-1;}shot=SHOTS[name];}if(t!==null)shotT=clamp(t,0,shot.dur);fade=0;}
 

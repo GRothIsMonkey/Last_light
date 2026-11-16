@@ -3,7 +3,7 @@
 // The title screen's presentation and navigation live in menu.js; styling in style.css.
 const KEY='lastlight.settings';
 // Older saved settings ({volume, sensitivity, quality, captions, memories}) load unchanged; the rest take these defaults.
-export const DEFAULTS={volume:1,music:1,sfx:1,voice:1,muted:false,sensitivity:1,invertY:false,quality:'medium',renderScale:1,brightness:1,grain:true,
+export const DEFAULTS={volume:1,music:1,sfx:1,voice:1,muted:false,sensitivity:1,invertY:false,quality:'medium',renderScale:1,brightness:1,grain:true,memoryEffect:'standard',
  captions:true,captionSize:'medium',memories:true,reduceFlashing:false,reduceMotion:false,fullscreen:false};
 const PANELS=['settings','credits','chapters'];
 
@@ -16,7 +16,7 @@ export function createUI($,hooks={}){
  const click=(id,fn)=>{const el=$(id);if(el)el.onclick=fn;};
  // Settings form <-> settings object.
  const fields={volume:['set-volume','value',Number],music:['set-music','value',Number],sfx:['set-sfx','value',Number],voice:['set-voice','value',Number],muted:['set-muted','checked',Boolean],
-  sensitivity:['set-sensitivity','value',Number],invertY:['set-invert','checked',Boolean],quality:['set-quality','value',String],renderScale:['set-scale','value',Number],brightness:['set-brightness','value',Number],grain:['set-grain','checked',Boolean],
+  sensitivity:['set-sensitivity','value',Number],invertY:['set-invert','checked',Boolean],quality:['set-quality','value',String],renderScale:['set-scale','value',Number],brightness:['set-brightness','value',Number],grain:['set-grain','checked',Boolean],memoryEffect:['set-memory','value',String],
   captions:['set-captions','checked',Boolean],captionSize:['set-caption-size','value',String],memories:['set-memories','checked',Boolean],reduceFlashing:['set-flashing','checked',Boolean],reduceMotion:['set-motion','checked',Boolean],
   fullscreen:['set-fullscreen','checked',Boolean]};
  function fill(){for(const [k,[id,prop]] of Object.entries(fields)){const el=$(id);if(el)el[prop]=settings[k];}}

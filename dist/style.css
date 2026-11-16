@@ -159,6 +159,9 @@ body{background:var(--ll-night)}
 #boot{position:absolute;inset:0;z-index:40;background:#07080c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transition:opacity 1.8s ease,visibility 0s linear 1.8s;pointer-events:none}
 body:not(.booting) #boot{opacity:0;visibility:hidden}
 body.chapter-loading #boot{opacity:1;visibility:visible;transition:none}
+.boot-art{position:absolute;inset:0;background:#07080c center/cover no-repeat;opacity:.5;filter:blur(1.5px) brightness(.62);transform:scale(1.02)}
+body.chapter-loading .boot-art{display:none}
+#boot>:not(.boot-art){position:relative}
 .boot-mark{font:300 30px/1 var(--ll-serif);letter-spacing:.46em;padding-left:.46em;color:var(--ll-ink);opacity:.92}.boot-mark em{font-style:italic}
 .boot-line{width:132px;height:1px;background:rgba(243,231,211,.1);overflow:hidden}
 .boot-line i{display:block;height:100%;width:45%;background:linear-gradient(90deg,transparent,var(--ll-amber),transparent);animation:llScan 2.1s ease-in-out infinite}
@@ -384,6 +387,35 @@ body:not(.dev-open) #dev-chapters{display:none}
 body.reduce-motion .tl-glow,body.reduce-motion .mm-light::before,body.reduce-motion #press span{animation:none}
 body.reduce-motion #experience .mm-item:hover,body.reduce-motion #experience .mm-item.is-focus{transform:none}
 body.qa #experience #intro *,body.qa #title-layers *,body.qa .screen,body.qa .screen *,body.qa .modal,body.qa .modal *,body.qa #pause,body.qa #pause *,body.qa #farewell{transition:none!important;animation:none!important}
+/* ---- the horror revision: the title over the title art (menu.js sets body.art-on while it is on screen) -------------------- */
+#title-word b{font-weight:inherit;font-style:inherit;transition:opacity 2.8s ease,filter 2.8s ease}
+#title-word>span,#title-word>em{position:relative}
+body.art-on .tl-glow,body.art-on #title-motes,body.art-on .grain,body.art-on .vignette{display:none}
+body.art-on .tl-scrim{background:linear-gradient(90deg,rgba(5,5,9,.6) 0%,rgba(5,5,9,.34) 24%,rgba(5,5,9,0) 46%),linear-gradient(0deg,rgba(4,4,8,.52) 0%,rgba(4,4,8,0) 30%)}
+/* the wordmark: serious, set wide, slightly worn; the light on it uneven; a faint double of each word behind it, as on a
+   tape played too often. Still, it is a title; moving, it only ever loses a letter slowly and gets it back. */
+body.art-on #experience #intro h1{font:500 clamp(54px,6.2vw,116px)/.98 var(--ll-serif);letter-spacing:.2em;text-transform:uppercase;color:#e6dcd8;margin:22px 0 26px -.01em;
+ text-shadow:0 0 2px rgba(5,4,10,.45);padding:.12em .3em .14em 0;
+ -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='180'%3E%3Cfilter id='e'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55 .9' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 -6 0 0 0 4.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23e)'/%3E%3C/svg%3E"),linear-gradient(97deg,#000 0%,#000 20%,rgba(0,0,0,.7) 44%,rgba(0,0,0,.92) 58%,rgba(0,0,0,.58) 100%);
+ mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='180'%3E%3Cfilter id='e'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55 .9' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 -6 0 0 0 4.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23e)'/%3E%3C/svg%3E"),linear-gradient(97deg,#000 0%,#000 20%,rgba(0,0,0,.7) 44%,rgba(0,0,0,.92) 58%,rgba(0,0,0,.58) 100%);
+ -webkit-mask-size:420px 180px,100% 100%;mask-size:420px 180px,100% 100%;-webkit-mask-composite:source-in;mask-composite:intersect;transition:opacity 3s ease}
+body.art-on #experience #intro h1 .tw-last,body.art-on #experience #intro h1 .tw-light{display:block;white-space:nowrap}
+body.art-on #experience #intro h1 .tw-light{font-style:normal;font-weight:500;color:#d8c4c0;padding-left:.62em;text-shadow:0 0 18px rgba(255,186,140,.12)}
+body.mood-search.art-on #experience #intro h1 .tw-light{color:#cfc4ce}
+body.mood-after.art-on #experience #intro h1{color:#d6d0d2}body.mood-after.art-on #experience #intro h1 .tw-light{color:#c4b6b8;text-shadow:0 0 18px rgba(160,40,50,.14)}
+body.art-on #title-word>span::before,body.art-on #title-word>em::before,body.art-on #title-word>span::after,body.art-on #title-word>em::after{content:attr(data-text);position:absolute;top:0;left:0;right:0;pointer-events:none;white-space:nowrap}
+body.art-on #title-word>em::before,body.art-on #title-word>em::after{padding-left:inherit}
+body.art-on #title-word>span::before,body.art-on #title-word>em::before{color:rgba(226,176,196,.2);transform:translate(.032em,.05em);filter:blur(1.6px);animation:llGhost 17s ease-in-out infinite}
+body.art-on #title-word>span::after,body.art-on #title-word>em::after{color:rgba(150,168,232,.11);transform:translate(-.026em,-.022em);filter:blur(.8px)}
+body.mood-after.art-on #title-word>span::before,body.mood-after.art-on #title-word>em::before{color:rgba(170,60,70,.18)}
+body.art-on #title-word b.tw-gone{opacity:.06;filter:blur(3px)}
+body.art-on.tw-hush #experience #intro h1{opacity:.72}
+body.art-on #experience #intro .eyebrow{color:rgba(226,206,222,.74)}
+body.art-on #experience #intro #title-tagline{color:rgba(234,224,226,.8)}
+body.reduce-motion #title-word>span::before,body.reduce-motion #title-word>em::before{animation:none}
+@keyframes llGhost{0%,100%{transform:translate(.032em,.05em)}50%{transform:translate(.05em,.034em)}}
+@media(max-width:700px){body.art-on #experience #intro h1{font-size:50px}}
+@media(max-height:760px){body.art-on #experience #intro h1{font-size:clamp(48px,5.4vw,96px)}}
 @keyframes llScan{0%{transform:translateX(-110%)}100%{transform:translateX(240%)}}
 @keyframes llBreath{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
 @keyframes llPulse{0%,100%{opacity:.35}50%{opacity:1}}

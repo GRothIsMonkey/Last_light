@@ -43,7 +43,8 @@ try{
   check('A1 "Press any key" appears',await vis(page,'#press'));
   check('A1 fonts are the embedded ones (offline)',await page.evaluate(()=>document.fonts.check('300 40px "Cormorant Garamond"')&&document.fonts.check('600 12px Karla')));
   await page.keyboard.press('Enter');await sleep(2500);
-  check('A2 a key opens the menu (and only opens it: nothing else starts)',await vis(page,'#start')&&!/riding/.test(await body(page))&&!(await vis(page,'#press')));
+  {const st=await vis(page,'#start'),bd=await body(page),pr=await vis(page,'#press');
+   check('A2 a key opens the menu (and only opens it: nothing else starts)',st&&!/riding/.test(bd)&&!pr,{start:st,body:bd,press:pr});}
   check('A2 with no saved place, Continue is hidden and New Game has the focus',!(await vis(page,'#continue'))&&await focusId(page)==='start');
   check('A2 the sound came on with the key (header shows ON)',await page.locator('#sound').getAttribute('aria-pressed')==='true');
   await shot(page,'a02-menu');
@@ -182,6 +183,69 @@ try{
   for(const m of ['search','after','summer']){await page.click(`[data-dev-mood="${m}"]`);await ev(()=>{lastLight.step(2);lastLight.render();});
    check(`B8 DEV title mood "${m}" changes the title`,await ev(m=>lastLight.titleScene.mood===m&&document.body.classList.contains('mood-'+m),m));if(m!=='summer'){await sleep(300);await shot(page,'b08-mood-'+m);}}
   await page.click('[data-dev-mood="auto"]');
+  await page.close();}
+
+ // ================================= Part C: the title art (the horror revision) =======================================
+ {const page=await newPage({});
+  await page.goto(base+'?qa',{timeout:300000});await page.waitForFunction(()=>window.lastLight&&lastLight.titleArt.active,null,{timeout:300000});
+  const ev=(fn,arg)=>page.evaluate(fn,arg);
+  check('C1 the title shows the title art (one full-screen draw: the 3D world is not drawn behind it), and the interface knows it',await ev(()=>lastLight.titleArt.active&&document.body.classList.contains('art-on')&&(r=>r&&r.calls===1&&r.triangles===2)(lastLight.render())));
+  check('C1 its picture is the composited title art: the sky is drawn (not black) and the frame is not empty',await ev(()=>{lastLight.titleArt.update(4);lastLight.render();const c=document.getElementById('world'),g=document.createElement('canvas');g.width=64;g.height=36;const x=g.getContext('2d');x.drawImage(c,0,0,64,36);const d=x.getImageData(0,0,64,36).data;let sum=0,sky=0;for(let i=0;i<d.length;i+=4)sum+=d[i]+d[i+1]+d[i+2];for(let y=4;y<10;y++)for(let X=2;X<12;X++){const i=(y*64+X)*4;sky+=d[i]+d[i+1]+d[i+2];}return sum/(64*36*3)>12&&sky/(60*3)>20;}));
+  check('C1 the title word is one heading, read as "Last Light"',await ev(()=>document.getElementById('title-word').getAttribute('aria-label')==='Last Light'));
+  check('C1 no fireflies or dust drawn over the art (no points of light in its sky)',await ev(()=>{const c=document.getElementById('title-motes');const g=c.getContext('2d');const d=g.getImageData(0,0,c.width,c.height).data;for(let i=3;i<d.length;i+=4)if(d[i])return false;return true;}));
+  for(const m of ['search','after','summer']){await page.click(`[data-dev-mood="${m}"]`);await page.waitForFunction(m=>lastLight.titleArt.active&&lastLight.titleArt.mood===m,m,{timeout:120000});
+   await ev(()=>{lastLight.titleArt.update(3);lastLight.render();});check(`C2 mood "${m}": the art changes with it`,await ev(m=>lastLight.titleArt.mood===m&&document.body.classList.contains('mood-'+m),m));await shot(page,'c02-art-'+m);}
+  await page.click('[data-dev-mood="auto"]');await page.waitForFunction(()=>lastLight.titleArt.active,null,{timeout:120000});
+  // Memory effect (Settings → Display)
+  await ev(()=>{lastLight.menu.open?.('settings');});await page.click('#open-settings').catch(()=>{});await sleep(300);await page.click('#tab-display');
+  await page.click('.seg[data-select="set-memory"] button[data-value="off"]');await sleep(150);
+  check('C3 Memory effect: Off removes the analog treatment from the picture',await ev(()=>lastLight.titleArt.memory==='off'&&lastLight.titleArt.uniforms.uMem.value===0&&lastLight.ui.settings.memoryEffect==='off'));
+  await page.click('.seg[data-select="set-memory"] button[data-value="subtle"]');await sleep(150);
+  check('C3 Memory effect: Subtle',await ev(()=>lastLight.titleArt.memory==='subtle'&&Math.abs(lastLight.titleArt.uniforms.uMem.value-.55)<1e-6));
+  await page.click('.seg[data-select="set-memory"] button[data-value="standard"]');await sleep(150);
+  check('C3 Memory effect: Standard, and it is remembered',await ev(()=>lastLight.titleArt.memory==='standard'&&JSON.parse(localStorage.getItem('lastlight.settings')).memoryEffect==='standard'));
+  // Reduce motion stops the drift, the weave and the slips
+  await page.click('#tab-access');await page.click('label[for="set-motion"]');await sleep(150);
+  check('C4 Reduce motion: the art holds still (no drift, no weave, no slip)',await ev(()=>{const A=lastLight.titleArt,U=A.uniforms;A.update(5);A.trigger('slip');A.update(.4);return A.state.reduce&&U.uMotion.value===0&&U.uTime.value===0&&U.uPush.value===0&&U.uSlip.value===0;}));
+  await page.click('label[for="set-motion"]');await sleep(150);
+  check('C4 and back',await ev(()=>!lastLight.titleArt.state.reduce&&lastLight.titleArt.uniforms.uMotion.value===1));
+  await page.keyboard.press('Escape');await sleep(300);
+  // its events reach the title and the sound (and nothing is left behind)
+  await ev(()=>lastLight.menu.sound.unlock(lastLight.ui.settings));await sleep(1500);
+  await ev(()=>{lastLight.titleArt.trigger('absence');for(let i=0;i<6;i++){lastLight.titleArt.update(.1);lastLight.step(.1);}});
+  check('C5 a bike goes: the picture swaps to the frame without it (its shadow stays) and one letter of the title fades',await ev(()=>lastLight.titleArt.state.patch===1&&document.querySelector('#title-word .tw-last b:nth-child(4)').classList.contains('tw-gone')));
+  await shot(page,'c05-absence');
+  await ev(()=>{for(let i=0;i<200&&lastLight.titleArt.state.patch!==0;i++){lastLight.titleArt.update(.1);lastLight.step(.1);}});
+  check('C5 and it comes back, and so does the letter',await ev(()=>lastLight.titleArt.state.patch===0&&!document.querySelector('#title-word .tw-last b:nth-child(4)').classList.contains('tw-gone')));
+  {const before=[];for(let i=0;i<8;i++){const m=await ev(()=>lastLight.menu.sound.meter());before.push(m?.rms||0);await sleep(250);}
+   await ev(()=>{lastLight.titleArt.trigger('bell');});await sleep(800);
+   await ev(()=>{for(let i=0;i<30;i++)lastLight.titleArt.update(.1);});await sleep(2400);
+   const during=[];for(let i=0;i<6;i++){const m=await ev(()=>lastLight.menu.sound.meter());during.push(m?.rms||0);await sleep(200);}
+   const b=Math.max(...before),d=Math.max(...during);report.menuSilence={before:b,during:d};
+   check('C6 after the bell, the title goes silent (the sound drops to a whisper, then returns)',b>.002&&d<b*.35,{before:b,during:d});
+   check('C6 the silence also dims the title word (no flash)',await ev(()=>document.body.classList.contains('tw-hush')));}
+  await ev(()=>{lastLight.titleArt.trigger('erase');for(let i=0;i<40;i++){lastLight.titleArt.update(.1);lastLight.step(.1);}lastLight.render();});
+  check('C7 a house comes apart into the haze (and a letter of LIGHT fades)',await ev(()=>lastLight.titleArt.state.erase>.5&&document.querySelector('#title-word .tw-light b:nth-child(4)').classList.contains('tw-gone')));await shot(page,'c07-erase');
+  await ev(()=>{lastLight.titleArt.trigger('dark');for(let i=0;i<60;i++)lastLight.titleArt.update(.1);lastLight.render();});
+  check('C7 darkness passes through the clouds',await ev(()=>lastLight.titleArt.state.dark>.2));
+  // the sound with the art: present, never clipping, nothing sudden
+  {let rms=0,peak=0;for(let i=0;i<16;i++){const m=await ev(()=>lastLight.menu.sound.meter());rms=Math.max(rms,m?.rms||0);peak=Math.max(peak,m?.peak||0);await sleep(300);}
+   report.menuSoundArt={rms,peak};check('C8 the title sound (drone, air, resonance, notes) is audible and never clips',rms>.002&&peak<.98,{rms,peak});}
+  check('C8 the old lamp flicker of the live title does not touch the title word over the art',await ev(()=>!document.querySelector('#intro .tw-light').classList.contains('out')));
+  // into the game and back: the art steps aside and returns
+  await page.click('#start');await ev(()=>lastLight.step(.5));
+  check('C9 New Game: the title art is gone and the world is drawn again',await ev(()=>!lastLight.titleArt.active&&lastLight.state.state==='riding'&&!document.body.classList.contains('art-on')));
+  await ev(()=>{lastLight.toTitle();lastLight.step(.2);});await page.waitForFunction(()=>lastLight.titleArt.active,null,{timeout:120000});await ev(()=>lastLight.step(.1));
+  check('C9 back to the title: the art is back',await ev(()=>lastLight.titleArt.active&&document.body.classList.contains('art-on')));
+  // DEV: the first redesign's live title remains, for comparison
+  await page.click('#dev-live-title');await ev(()=>{lastLight.step(.2);lastLight.render();});
+  check('C10 DEV "Live 3D title" shows the first redesign\'s live scene instead',await ev(()=>!lastLight.titleArt.active&&lastLight.titleScene.active&&!document.body.classList.contains('art-on')&&JSON.parse(localStorage.getItem('lastlight.dev')).liveTitle===true));
+  await page.click('#dev-live-title');await page.waitForFunction(()=>lastLight.titleArt.active,null,{timeout:120000});
+  check('C10 and off again: the art returns',await ev(()=>lastLight.titleArt.active));
+  await page.close();}
+ // the boot screen shows the art early (a small still, inline in the page)
+ {const page=await newPage({'lastlight.titleMood':'search'});await page.goto(base,{timeout:300000,waitUntil:'domcontentloaded'});
+  check('C11 the boot screen shows a still of the title art at once (the remembered mood)',await page.evaluate(()=>document.body.classList.contains('boot-search')&&/data:image\/webp/.test(getComputedStyle(document.querySelector('#boot .boot-art')).backgroundImage)));
   await page.close();}
 }catch(e){report.errors.push('test: '+(e.stack||e.message));console.error(e);}
 finally{report.passed=report.checks.filter(c=>c.ok).length;report.failed=report.checks.filter(c=>!c.ok).length;

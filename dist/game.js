@@ -35,6 +35,7 @@ import {createOnFoot} from './on-foot.js';
 import {createTitleScene} from './title-scene.js';
 import {createProgress} from './progress.js';
 import {createMenu} from './menu.js';
+import {createTitleArt} from './title-art.js';
 
 const $=id=>document.getElementById(id), canvas=$('world');
 const clamp=THREE.MathUtils.clamp,damp=THREE.MathUtils.damp;
@@ -116,19 +117,19 @@ function bell(){if(!onBike()||bellCooldown>0)return;bellCooldown=2;bellTime=0;be
 function showCaption(who,text,time=7.5){$('subtitle').replaceChildren();if(who){const s=document.createElement('small');s.textContent=who;$('subtitle').append(s);}$('subtitle').append(document.createTextNode(text));$('subtitle').style.opacity='1';captionTimer=time;ctx.speaker=who||null;}
 // Spoken dialogue captions are optional; memory and navigation thoughts remain separate.
 function say(who,text,time){if(who&&!ui.settings.captions){$('subtitle').style.opacity=0;ctx.speaker=who;captionTimer=time??7.5;return;}showCaption(who,text,time);}
-function start(){if(state!=='intro')return;titleScene.exit();ui.closePanels();state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;cockpit.visible=true;self.group.visible=true;if(!audio)setSound(!ui.settings.muted);else if(!muted)setSound(true);menu?.hideTitle();showCaption('','There’s still a little light.',5.5);}
+function start(){if(state!=='intro')return;titleScene.exit();titleArt.hide();titleArtWanted=false;ui.closePanels();state='riding';requestLook();document.body.classList.add('riding');$('intro').hidden=true;$('ride-ui').hidden=false;$('mobile').hidden=!touch;cockpit.visible=true;self.group.visible=true;if(!audio)setSound(!ui.settings.muted);else if(!muted)setSound(true);menu?.hideTitle();showCaption('','There’s still a little light.',5.5);}
 // (what you carry, in Chapter Five: closed by Escape, by the pause and by the end)
 function closeBag(){try{return !!chapter5?.closeBag?.();}catch{}return false;}
 function pause(){if(!active())return;closeBag();resumeState=state;state='paused';lastPauseAt=performance.now();dragging=false;if(document.pointerLockElement===canvas)document.exitPointerLock?.();lastMouse=null;keys.clear();down?.clear();ui.prompt(null);$('pause').hidden=false;audio?.setEnabled(false);menu?.onPause();}
 function resume(){if(state!=='paused')return;ui.closePanels();state=resumeState;requestLook();$('pause').hidden=true;if(!muted)audio?.setEnabled(true);}
 function finish(kind){closeBag();state='ended';speed=0;if(document.pointerLockElement===canvas)document.exitPointerLock?.();keys.clear();down?.clear();ui.clear();setAct('');$('ending').hidden=false;$('subtitle').style.opacity=0;$('ride-ui').hidden=true;$('mobile').hidden=true;$('objective')?.classList.remove('on');audio?.ending(kind);}
 // Everything a replay needs to start clean: the ride, the finale, the interface and the world's small stories.
-function resetState(){titleScene.exit();foot.reset();contact.reset();escFov=0;escWant=0;escDir=null;if(camera.fov!==64){camera.fov=64;camera.updateProjectionMatrix();}bellTime=-1;bellStruck=false;playerBike.bell.lever.rotation.x=0;glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();down?.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
+function resetState(){titleScene.exit();titleArt.hide();titleArtWanted=false;foot.reset();contact.reset();escFov=0;escWant=0;escDir=null;if(camera.fov!==64){camera.fov=64;camera.updateProjectionMatrix();}bellTime=-1;bellStruck=false;playerBike.bell.lever.rotation.x=0;glance=0;tut={};walkHint=0;firstHome=false;lookInputAt=0;manualLook=false;answerBellAt=-1;held=0;stamina=1;push=0;ctx.push=0;steerIn=0;psiVel=0;bikeY=null;bikePitch=0;clock=0;bellCooldown=0;gait=lastStep=0;ctx.speaker=null;mouseYaw=mousePitch=headPitch=steerVelocity=lean=pedalPhase=yawOffset=steerAngle=wheelTurn=kick=bikeLean=0;astride=0;prevYaw=null;currentChapter=-1;keys.clear();down?.clear();distance=0;speed=0;lateral=-.3;look=0;nextMemory=0;idleTime=0;captionTimer=0;
  finaleT=0;ctx.finale=0;callDone=false;callT=-1;lookedBack=0;fade=0;endHint=false;wHint=false;leaveT=0;transT=0;moveT=0;$('fade').style.opacity=0;$('ride-ui').style.opacity=1;cockpit.visible=true;self.group.visible=true;
  memory.reset();tension.reset();captionTone.reset();$('fade').classList.remove('warm');friends.reset();ambient.reset();ending.reset();interact.reset();nostalgia.reset();chapter.reset();auto=null;wx=wz=wa=0;walkPitch=0;ui.clear();setAct('');audio?.reset();$('ending').hidden=true;$('pause').hidden=true;$('subtitle').style.opacity=0;$('date').innerHTML='AUGUST 21, 2011 <i></i> 7:42 PM';}
 function reset(){resetState();state='intro';start();}
 // Back to the title: the evening waits, unstarted, behind the menu.
-function toTitle(){resetState();state='intro';titleScene.enter(progress.mood());ui.closePanels();document.body.classList.remove('riding');$('intro').hidden=false;$('ride-ui').hidden=true;$('mobile').hidden=true;if(document.pointerLockElement===canvas)document.exitPointerLock?.();audio?.setEnabled(false);placePlayerBike(0);showContinue();menu?.showTitle();}
+function toTitle(){resetState();state='intro';titleScene.enter(progress.mood());showTitleArt();ui.closePanels();document.body.classList.remove('riding');$('intro').hidden=false;$('ride-ui').hidden=true;$('mobile').hidden=true;if(document.pointerLockElement===canvas)document.exitPointerLock?.();audio?.setEnabled(false);placePlayerBike(0);showContinue();menu?.showTitle();}
 // Straight to a moment of the night (Continue on the title, and QA): the evening already over,
 // everyone home, the call heard. alex-departure is the one jump into the ride itself.
 function jumpTo(section){ui.closePanels();resetState();state='intro';start();captionTimer=0;$('subtitle').style.opacity=0;
@@ -153,7 +154,8 @@ function applySetting(k,v){menu?.onSetting(k,v);
  else if(k==='renderScale')applyQuality(ui.settings.quality);
  else if(k==='brightness'){if(canvas.style)canvas.style.filter=Math.abs(v-1)<.01?'':`brightness(${v})`;}
  else if(k==='captionSize'){for(const c of ['small','large','xl'])document.body.classList[c===v?'add':'remove']('cap-'+c);}
- else if(k==='reduceMotion')motionK=v?.25:1;
+ else if(k==='reduceMotion'){motionK=v?.25:1;titleArt.reduceMotion=v;}
+ else if(k==='memoryEffect')titleArt.memory=v;
  else if(k==='reduceFlashing')flashK=v?.3:1;
  else if(k==='sensitivity')sens=.0022*v;
  else if(k==='quality')applyQuality(v);
@@ -405,6 +407,10 @@ const chapter4Art=createChapterFourArt({scene,world,chapter,chapter3,chapter4,ca
 // The title screen's backdrop (title-scene.js): the end of the street at the last of the light, while the title is up.
 // How far the player has come (progress.js): the Chapters menu, Continue's details, and which evening the title remembers.
 const titleScene=createTitleScene({scene,world,camera,ambient,ending,skyMat,hemi,sunlight,renderer,lightFor});
+// The title's artwork (title-art.js): drawn instead of the world while the title is up. Where it cannot run (or DEV asks for the
+// first redesign's live scene), the live title scene above is what shows.
+const titleArt=createTitleArt({renderer});let titleArtWanted=false;
+function showTitleArt(){const live=!!progress.dev().liveTitle;titleArtWanted=titleArt.available&&!live;try{localStorage.setItem('lastlight.titleMood',progress.mood());}catch{}if(titleArtWanted)titleArt.show(progress.mood()).then(ok=>{if(!ok)titleArtWanted=false;});else titleArt.hide();}
 const progress=createProgress({labels:chapter.kit.CHECKPOINT});
 function playerState(){const walk=state==='c1-walk';
  return {state,x:walk?wx:roam.x,z:walk?wz:roam.z,a:walk?wa:roam.a,pitch:walk?walkPitch:headPitch,bike:roam,speed:state==='c1-ride'?speed:moveT,riding:state==='c1-ride',walking:walk,pushing:!roam.lock&&(keys.has('KeyW')||keys.has('ArrowUp')),
@@ -762,9 +768,15 @@ function promptItems(){
  return null;
 }
 let firstFrame=true;
-function frame(stamp){const raw=(stamp-lastStamp)/1000,dt=Math.min(raw,.05);lastStamp=stamp;if(!qa&&!menu?.sleeping){if(state!=='paused')update(dt);renderer.render(scene,camera);captionTone.sample();if(firstFrame){firstFrame=false;menu?.booted();}}menu?.frame(Math.max(0,Math.min(raw,.25)));requestAnimationFrame(frame);}
+// The title shows its artwork when it is ready; until it is (a moment while the pictures decode), nothing rather than the old scene.
+// (the world is drawn once behind the boot curtain even when the title art will cover it: its shaders and textures are
+// prepared then, as they were before, rather than all at once on the first frame of play)
+let worldWarm=false;
+function drawFrame(raw=1/30){if(!worldWarm){worldWarm=true;if(state==='intro'&&titleArtWanted){renderer.render(scene,camera);}}
+ if(state==='intro'&&titleArtWanted){if(titleArt.active)return titleArt.render(Math.min(Math.max(raw,0),.25));renderer.setRenderTarget(null);renderer.clear();return false;}renderer.render(scene,camera);return true;}
+function frame(stamp){const raw=(stamp-lastStamp)/1000,dt=Math.min(raw,.05);lastStamp=stamp;if(!qa&&!menu?.sleeping){if(state!=='paused')update(dt);const drawn=drawFrame(raw);captionTone.sample();if(firstFrame&&drawn){firstFrame=false;menu?.booted();}}menu?.frame(Math.max(0,Math.min(raw,.25)));requestAnimationFrame(frame);}
 // Saved settings take effect before the first frame; Continue appears if the night was begun.
-for(const k of ['sensitivity','quality','brightness','captionSize','reduceMotion','reduceFlashing','grain'])applySetting(k,ui.settings[k]);showContinue();titleScene.enter(progress.mood());
+for(const k of ['sensitivity','quality','brightness','captionSize','reduceMotion','reduceFlashing','grain','memoryEffect'])applySetting(k,ui.settings[k]);showContinue();titleScene.enter(progress.mood());showTitleArt();
 // QA: ?jump=<section> starts straight at a moment (see chapter1.js SECTIONS, plus alex-departure).
 // ---- TEMPORARY (private playtest build only; not in the shipped game): DEV — CHAPTER → SCENE ------------------
 // Starts at the true beginning of a chapter through the game's own hand-over code, or at one of its scenes
@@ -800,12 +812,12 @@ devFill(3);
 // (dev-chapters.js start(n)). NOTE: if the temporary DEV tools are ever removed, move start(n) and its history into
 // a permanent module first: the player's Chapters screen depends on it.
 function startChapter(n){const ph=devStart(n);progress.record(n);return ph;}
-menu=createMenu({$,ui,progress,titleScene,qa,start,toTitle,startChapter,setSound,get muted(){return muted;}});showContinue();if(qa)menu.booted();
+menu=createMenu({$,ui,progress,titleScene,titleArt,showTitleArt,qa,start,toTitle,startChapter,setSound,get muted(){return muted;}});showContinue();if(qa)menu.booted();
 const jumpParam=typeof location!=='undefined'&&(location.search||'').match(/[?&]jump=([\w-]+)/);if(jumpParam)$('start').onclick=()=>jumpTo(jumpParam[1]);
 requestAnimationFrame(frame);
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
-if(qa)window.lastLight={titleScene,progress,menu,startChapter,dev,devStart,devScene,DEV_SCENES,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){renderer.render(scene,camera);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,chapter4,chapter5,chapter6,chapter7,chapter8,aftermath1,nextChapter,shoot,readPixels,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
+if(qa)window.lastLight={titleScene,titleArt,showTitleArt,progress,menu,startChapter,dev,devStart,devScene,DEV_SCENES,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){drawFrame(1/30);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,chapter4,chapter5,chapter6,chapter7,chapter8,aftermath1,nextChapter,shoot,readPixels,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),
  get state(){return {state,distance,speed,lateral,look,finaleT,callDone,fade,clue:ending.state.clue,otherBike:ending.state.otherBike,prompt:ui.promptText,reflection:ui.reflection,pose:interact.pose?.id||null,swing:ambient.state.swing,push,stamina,walkD,walkLat,walkYaw,manualLook,night:ctx.night,friends:friends.list.map(f=>({name:f.name,mode:f.mode,step:f.step,d:f.d,inside:f.inside})),
   onFoot:{stamina:foot.stamina,crouch:foot.crouch,height:foot.height,sprint:foot.sprint,owned:foot.owned,on:foot.on},roam:{x:roam.x,z:roam.z,a:roam.a},walk:{x:wx,z:wz,a:wa},caption:$('subtitle').textContent||'',objective:$('objective')?.textContent||'',chapter:chapter.state,chapter2:chapter2.state,chapter3:chapter3.state,chapter4:chapter4.state,tension:tension.state,captionTone:captionTone.state,memory:memory.state,day:ctx.day||0};},
  jump:jumpTo,chapter,chapter2,memory,get memCast(){return memCast;},roam,nav,drive(pts,o={}){auto={pts,i:0,...o};},get driving(){return auto&&!auto.done;},stopDriving(){auto=null;for(const k of ['KeyW','KeyA','KeyD','KeyS'])keys.delete(k);},

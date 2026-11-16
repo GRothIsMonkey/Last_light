@@ -18,7 +18,7 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 export function createMenu(o){
- const {$,ui,progress,titleScene,qa=false}=o;
+ const {$,ui,progress,titleScene,titleArt=null,showTitleArt=null,qa=false}=o;
  const doc=typeof document!=='undefined'?document:null,body=doc?.body;
  const cls=(el,c,on)=>{if(!el?.classList)return;if(on)el.classList.add(c);else el.classList.remove(c);};
  const all=sel=>{try{return [...(doc?.querySelectorAll?.(sel)||[])];}catch{return [];}};
@@ -33,7 +33,7 @@ export function createMenu(o){
 
  // ---- state -------------------------------------------------------------------------------------------------------
  const S={phase:'boot',t:0,reveal:-1,splash:false,title:true,screen:'main',focus:{},busy:false,confirmFn:null,creditsIdle:0,
-  flick:null,motes:null,pollT:0,lastFade:-1,mood:'summer',chapterSel:0,sleeping:false,enterT:0};
+  flick:null,motes:null,pollT:0,lastFade:-1,mood:'summer',chapterSel:0,sleeping:false,enterT:0,art:false};
  const settings=ui.settings;
 
  // ---- the title's text and mood -------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ export function createMenu(o){
    if(!auto&&typeof requestAnimationFrame==='function'&&typeof setTimeout==='function')requestAnimationFrame(()=>setTimeout(run,30));else run();};
   if(s&&!auto&&s.chapter!==n)ask({title:`Begin ${info.name}?`,text:`Your place in ${s.chapterName||'the story'} (${s.label}) will be replaced by this chapter’s start.`,yes:'Begin'},y=>{if(y)go();});
   else go();}
- function leaveTitle(){S.title=false;sound.leave();cls(body,'splash',false);cls(body,'revealing',false);}
+ function leaveTitle(){S.title=false;sound.leave();cls(body,'splash',false);cls(body,'revealing',false);S.art=false;cls(body,'art-on',false);cls(body,'tw-hush',false);}
 
  // ---- Chapters ---------------------------------------------------------------------------------------------------------------
  let art=CHAPTER_ART;// (a still from each chapter, rendered by the game: menu-art.js; the painted stand-ins in menu-data.js otherwise)
@@ -207,7 +207,7 @@ export function createMenu(o){
   if(M.mood!==mood||!M.list.length){M.mood=mood;const flies=mood==='after'?4:mood==='search'?9:14,dust=mood==='after'?26:18;M.list=[];
    for(let i=0;i<flies;i++)M.list.push({k:'fly',x:.35+Math.random()*.65,y:.3+Math.random()*.6,r:6+Math.random()*16,vx:(Math.random()-.5)*.006,vy:(Math.random()-.5)*.004,p:Math.random()*20,s:.35+Math.random()*.6});
    for(let i=0;i<dust;i++)M.list.push({k:'dust',x:Math.random(),y:Math.random(),r:.8+Math.random()*1.6,vx:.002+Math.random()*.004,vy:-.001-Math.random()*.003,p:Math.random()*10,s:1});}
-  g.clearRect(0,0,W,H);if(still)return;
+  g.clearRect(0,0,W,H);if(still||S.art)return;// (over the title art: no motes; its sky must not fill with points of light)
   for(const m of M.list){m.x+=(m.vx+Math.sin(M.t*.3+m.p)*.0015)*step*6;m.y+=(m.vy+Math.cos(M.t*.23+m.p)*.001)*step*6;if(m.x>1.08)m.x=-.05;if(m.x<-.08)m.x=1.05;if(m.y<-.08)m.y=1.05;if(m.y>1.08)m.y=-.05;
    const x=m.x*W,y=m.y*H;
    if(m.k==='fly'){const b=Math.pow(Math.max(0,Math.sin(M.t*(.5+m.s*.6)+m.p)),6)*Math.min(1,Math.max(0,(m.x-.34)/.12));if(b<.02)continue;const r=m.r*(.7+.5*b),grd=g.createRadialGradient(x,y,0,x,y,r);
@@ -217,11 +217,27 @@ export function createMenu(o){
  // ---- the lamp over the oak stutters, and so does the title's "Light" -------------------------------------------------------
  function flickerFrame(dt){const F=S.flick;const el=doc?.querySelector?.('#intro .tw-light');if(!F){return;}F.t+=dt;let lv=1;for(const [at,v] of F.steps)if(F.t>=at)lv=v;cls(el,'out',lv<.5);
   if(F.t>F.steps[F.steps.length-1][0]+.05){cls(el,'out',false);S.flick=null;}}
- titleScene.on('flicker',d=>{if(!S.title||settings.reduceFlashing)return;if(d.lookout)S.flick={t:0,steps:d.steps};sound.event('flicker',d);});
- titleScene.on('bell',d=>{if(S.title)sound.event('bell',d);});
- titleScene.on('figure',()=>{if(S.title)sound.event('figure');});
- titleScene.on('gone',()=>{if(S.title)sound.event('gone');});
- titleScene.on('cut',d=>{if(S.title)sound.event('cut',d);});
+ // (the live 3D title's events: only while it is the title on screen; the title art has its own)
+ const live=()=>S.title&&!S.art;
+ titleScene.on('flicker',d=>{if(!live()||settings.reduceFlashing)return;if(d.lookout)S.flick={t:0,steps:d.steps};sound.event('flicker',d);});
+ titleScene.on('bell',d=>{if(live())sound.event('bell',d);});
+ titleScene.on('figure',()=>{if(live())sound.event('figure');});
+ titleScene.on('gone',()=>{if(live())sound.event('gone');});
+ titleScene.on('cut',d=>{if(live())sound.event('cut',d);});
+
+ // ---- the title art's events: the title loses letters when the picture loses something; the sound answers ----------------
+ // A faded letter keeps its ghost (the afterimage stays, as the bike's shadow does). Slow fades only: nothing flashes.
+ function letter(sel,on){const el=doc?.querySelector?.('#title-word '+sel);cls(el,'tw-gone',!!on);}
+ if(titleArt?.on){
+  titleArt.on('absence',d=>{if(!S.title)return;letter('.tw-last b:nth-child(4)',d?.gone);sound.event('absence',d);});
+  titleArt.on('erase',()=>{if(!S.title)return;letter('.tw-light b:nth-child(4)',true);S.eraseT=8.5;sound.event('erase');});
+  titleArt.on('dark',()=>{if(S.title)sound.event('dark');});
+  titleArt.on('bell',d=>{if(S.title)sound.event('bell',{...d,wrong:true});});
+  titleArt.on('silence',d=>{if(!S.title)return;sound.event('silence',d);cls(body,'tw-hush',true);S.hushT=(d?.dur||4.5)+1;});
+  titleArt.on('ready',()=>{for(const b of all('#title-word b'))cls(b,'tw-gone',false);});}
+ function artFrame(dt){const on=!!(titleArt?.active&&S.title);if(on!==S.art){S.art=on;cls(body,'art-on',on);if(on){S.flick=null;cls(doc?.querySelector?.('#intro .tw-light'),'out',false);}}
+  if(S.eraseT>0){S.eraseT-=dt;if(S.eraseT<=0)letter('.tw-light b:nth-child(4)',false);}
+  if(S.hushT>0){S.hushT-=dt;if(S.hushT<=0)cls(body,'tw-hush',false);}}
 
  // ---- each frame (game.js) -------------------------------------------------------------------------------------------------------
  const frame=safe(function frame(dt){
@@ -229,7 +245,8 @@ export function createMenu(o){
   if(S.enterT>0){S.enterT-=dt;if(S.enterT<=0)cls(body,'menu-enter',false);}
   if(!S.title)return;
   if(S.phase==='reveal')revealFrame(dt);
-  const f=titleScene.fade,cut=doc?.querySelector?.('#title-layers .tl-cut');if(cut?.style&&Math.abs(f-S.lastFade)>.004){cut.style.opacity=String(f*.94);S.lastFade=f;}
+  artFrame(dt);
+  const f=S.art?0:titleScene.fade,cut=doc?.querySelector?.('#title-layers .tl-cut');if(cut?.style&&Math.abs(f-S.lastFade)>.004){cut.style.opacity=String(f*.94);S.lastFade=f;}
   flickerFrame(dt);motesFrame(dt);creditsFrame(dt);sound.frame(dt,settings);});
 
  // ---- input ------------------------------------------------------------------------------------------------------------------------
@@ -257,7 +274,7 @@ export function createMenu(o){
    if(back())stop();return;}});
  function wireInput(){if(!doc?.addEventListener)return;doc.addEventListener('keydown',onKey,true);
   doc.addEventListener('pointerdown',safe(e=>{if(S.phase==='reveal'){dismissSplash();e.preventDefault?.();}else if(shown($('credits'))&&e.target?.closest?.('#credits-roll'))creditsTouch();}),true);
-  doc.addEventListener('pointermove',safe(e=>{if(!S.title||currentScreen()!=='main')return;titleScene.pointer((e.clientX/(innerWidth||1))*2-1,(e.clientY/(innerHeight||1))*2-1);}));
+  doc.addEventListener('pointermove',safe(e=>{if(!S.title||currentScreen()!=='main')return;const px=(e.clientX/(innerWidth||1))*2-1,py=(e.clientY/(innerHeight||1))*2-1;titleScene.pointer(px,py);titleArt?.pointer(px,py);}));
   doc.addEventListener('wheel',safe(()=>{if(shown($('credits')))creditsTouch();}),{passive:true});
   // hover = focus, so the keyboard and the mouse share one highlight (and one sound)
   for(const scr of ['main','pause'])for(const b of focusables(scr))b.addEventListener?.('pointerenter',()=>{if(currentScreen()===scr)setFocus(scr,b);});
@@ -279,10 +296,11 @@ export function createMenu(o){
   // the DEV tab (temporary): folded away unless opened, always open for automated runs
   const tog=$('dev-toggle');if(tog){const setOpen=on=>{cls(body,'dev-open',on);attr(tog,'aria-expanded',on?'true':'false');};setOpen(auto||!!progress.dev().open);cls(body,'has-dev',true);
    tog.onclick=()=>{const on=!body?.classList?.contains('dev-open');setOpen(on);progress.setDev({open:on});};}
-  for(const b of all('[data-dev-mood]'))b.onclick=()=>{const m=b.getAttribute('data-dev-mood');progress.setDev({mood:m==='auto'?null:m});syncDev();applyMood();titleScene.enter?.(progress.mood());};
+  for(const b of all('[data-dev-mood]'))b.onclick=()=>{const m=b.getAttribute('data-dev-mood');progress.setDev({mood:m==='auto'?null:m});syncDev();applyMood();titleScene.enter?.(progress.mood());showTitleArt?.();};
+  const lt=$('dev-live-title');if(lt)lt.onclick=()=>{progress.setDev({liveTitle:!progress.dev().liveTitle});syncDev();showTitleArt?.();};
   const un=$('dev-unlock');if(un)un.onclick=()=>{progress.setDev({unlockAll:!progress.dev().unlockAll});syncDev();if(shown($('chapters')))buildChapters();};
   syncDev();}
- function syncDev(){const d=progress.dev();for(const b of all('[data-dev-mood]'))attr(b,'aria-pressed',(b.getAttribute('data-dev-mood')===(d.mood||'auto'))?'true':'false');attr($('dev-unlock'),'aria-pressed',d.unlockAll?'true':'false');}
+ function syncDev(){const d=progress.dev();for(const b of all('[data-dev-mood]'))attr(b,'aria-pressed',(b.getAttribute('data-dev-mood')===(d.mood||'auto'))?'true':'false');attr($('dev-unlock'),'aria-pressed',d.unlockAll?'true':'false');attr($('dev-live-title'),'aria-pressed',d.liveTitle?'true':'false');}
 
  // ---- settings that the menu itself follows ----------------------------------------------------------------------------------------
  function onSetting(k,v){if(k==='reduceMotion'){titleScene.reduceMotion=!!v;cls(body,'reduce-motion',!!v);}
