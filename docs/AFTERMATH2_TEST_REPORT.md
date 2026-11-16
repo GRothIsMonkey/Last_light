@@ -11,7 +11,12 @@ right: **no person has played Aftermath II or the coda, and none of their sound 
 ## 1. Build
 
 - Branch `claude/aftermath2-2026-final-coda`, from `claude/final-art-bible` at `643c345a0195d34e4c77f2d5de4af4b75f1fc264`.
-- RESULTS_COMMIT_NOTE
+- Every run in §2–§3 and every capture in §5 ran on the final runtime code (commit `ca264a3`; no runtime file changed
+  after it). §4's suites ran on this branch over the same last hour; the only runtime files that changed while they ran
+  are `dist/aftermath2-scenes.js`, `-town.js` and `-props.js` (the hoop, the 2011 chalk, the notebook's label), which the
+  earlier chapters reach only through Aftermath II's reset (which only restores what Aftermath II itself hid).
+- Wall times were measured with other suites and captures running at the same time on one 4-core machine; they are not
+  benchmarks.
 
 ## 2. Aftermath II through the credits, played by input
 
@@ -22,7 +27,12 @@ Aftermath I history: how you said goodbye, how you kept in touch, where you left
 father about the shadow), `QUIETLY=1` (let every question pass in silence), `OPTIONAL=0` (skip every optional look),
 `FROM=`/`TO=` (a part of it), `PLAY_ONLY=1` / `CHECKS_ONLY=1`.
 
-RUNS_TABLE
+| Run | What it plays | Result |
+|---|---|---|
+| **Full** (from Aftermath I's end card) | Aftermath I's end card → **Aftermath II →** → every section → the end card → **One more lap →** → the coda → the credits → the end screen → the credits again; Jamie's cap kept (taken out of your pocket at Jamie's); the first answer at every question; every optional look | **24 checks passed, 0 failed** (20 playthrough + 4 standalone), 127 s |
+| **The cap at the shelter** (`CAP=shelter PICK=2`) | his cap with his mother since the morning at the school; the second answer everywhere; another Aftermath I history (the punch for a goodbye, the call you said you'd make, the BMX by the rail, the shadow not told) | **20 passed, 0 failed**, 125 s |
+| **The cap on her porch** (`CAP=porch PICK=3`) | the cap given on her porch; the third answer everywhere; "See you, Sam." as the 2011 goodbye, the letters, the BMX by the rail | **20 passed, 0 failed**, 133 s |
+| **Silent** (`QUIETLY=1 OPTIONAL=0`) | every question let pass in silence (each scene's fallback), every optional look skipped | **20 passed, 0 failed**, 140 s |
 
 The twenty playthrough checks, in order: Aftermath I's end card offers Aftermath II; the card and the car (August 27,
 2021, late afternoon); the title over the road and driving by holding W (a car passes; Sam's text); pulling over, the
@@ -41,7 +51,10 @@ completion saved); and the end screen's "Watch the credits again" (Skip goes to 
 does not skip it unseen, a third goes past it).
 
 **Time.** The bot walks the shortest way and takes every prompt at once, so a person will take longer. Its times, in
-minutes of play: SEGMENT_TIMES. The coda is about 1 min 50 s, the credits about 1 min 25 s (roll 66 s at 960 × 540, then
+minutes of play: the drive 1.8, the street 0.7, Sam 1.5, the hill 1.8, Briarwood 2.3, Jamie's 4.2, Summerfield 1.8, the streetlight
+2.4, the new houses 1.3, the oak 1.1, the kids 1.2, leaving 1.3 — **about 21 minutes** for Aftermath II (the silent run:
+about 23.5, because the silent fallbacks hold their pauses). A first-time player who looks around will take longer,
+so expect roughly 25–30 minutes; that is an estimate, not a measurement. The coda is about 1 min 50 s, the credits about 1 min 25 s (roll 66 s at 960 × 540, then
 the dedication).
 
 ## 3. Standalone checks
@@ -61,14 +74,30 @@ Both regression assertions were confirmed to fail on the code before their fixes
 
 Each earlier chapter's own suite on this branch (exit 0 = every check passed).
 
-REGRESSION_TABLE
+| Suite | Result | Wall time |
+|---|---|---|
+| `ONLY=chapter3` | 156 checks passed | 460 s |
+| `ONLY=chapter4` | 35 checks passed | 157 s |
+| `ONLY=chapter5` | 81 checks passed | 178 s |
+| `ONLY=chapter6` | 80 checks passed | 198 s |
+| `ONLY=chapter7` | 94 checks passed | 332 s |
+| `ONLY=chapter8` (from Chapter Seven's end card) | 35 checks passed | 307 s |
+| `ONLY=companions` | 8 checks passed | 62 s |
+| `ONLY=aftermath1` (from Chapter Eight's end card) | 58 checks passed | 256 s |
+| `ONLY=dev DEV_KNOWN=2/alex-bike` (DEV starts of every chapter vs natural arrival; switching) | 327 checks passed; the one known difference reported | 376 s |
+| base (`QUICK=1 DEV_KNOWN=2/alex-bike`: Prologue to Chapter Six by input, every DEV start vs natural arrival) | BASE_RESULT | BASE_SECS |
+
+The counts match the earlier reports (`AFTERMATH1_TEST_REPORT.md`). The known Chapter Two DEV difference
+(`2/alex-bike`: Alex's companion bike placed differently after switching scenes, with the same numbers) predates this
+work. **Two Aftermath I checks were changed on purpose**: they asserted that Aftermath I's end card offers nothing after
+it; this directive makes it offer **Aftermath II →**, so they now assert that it offers Aftermath II and only that.
 
 ## 5. Captures (real WebGL renderer, software)
 
 `tests/aftermath2-shots.mjs` with `tests/aftermath2-shot-defs.mjs`: headless Chromium, ANGLE SwiftShader (software
 WebGL, no GPU), 960 × 540, the real game page and renderer (`dist/index.html?qa`), each shot a fresh page. Output in
 `docs/qa/aftermath2/` (JPEG) with `shots.json` (phase, coda stage, caption, draw calls, triangles per frame).
-CAPTURE_SUMMARY
+The final set: **50 frames in 15 shots, no page errors, no script errors**, all on the final runtime code.
 
 | The brief's list | Frames |
 |---|---|

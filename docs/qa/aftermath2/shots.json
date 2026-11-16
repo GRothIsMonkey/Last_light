@@ -1,0 +1,1185 @@
+[
+ {
+  "name": "drive",
+  "frame": "windshield",
+  "note": "Scene 1: the drive in, August 2021: the windshield, the passenger seat, the street going by, pulling over",
+  "phase": "a2-drive",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 283,
+  "tris": 557953,
+  "info": {
+   "on": true,
+   "d": -197.9,
+   "v": 6.13,
+   "parked": false
+  }
+ },
+ {
+  "name": "drive",
+  "frame": "seat",
+  "note": "Scene 1: the drive in, August 2021: the windshield, the passenger seat, the street going by, pulling over",
+  "phase": "a2-drive",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 184,
+  "tris": 238199,
+  "info": {
+   "nb": true,
+   "cap": true
+  }
+ },
+ {
+  "name": "drive",
+  "frame": "mower",
+  "note": "Scene 1: the drive in, August 2021: the windshield, the passenger seat, the street going by, pulling over",
+  "phase": "a2-drive",
+  "coda": null,
+  "caption": "Sam. “at the curb. the old one”",
+  "draws": 619,
+  "tris": 1283387,
+  "info": {
+   "on": true,
+   "d": 385.5,
+   "v": 5.01,
+   "parked": false
+  }
+ },
+ {
+  "name": "drive",
+  "frame": "parked",
+  "note": "Scene 1: the drive in, August 2021: the windshield, the passenger seat, the street going by, pulling over",
+  "phase": "a2-drive",
+  "coda": null,
+  "caption": "Sam. “at the curb. the old one”",
+  "draws": 488,
+  "tris": 1031574,
+  "info": {
+   "on": true,
+   "d": 396.5,
+   "v": 0,
+   "parked": true
+  }
+ },
+ {
+  "name": "street",
+  "frame": "out-of-car",
+  "note": "Scene 2: the rebuilt street: your house (blue now, somebody else’s), Sam on the curb",
+  "phase": "a2-street",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 514,
+  "tris": 1069126,
+  "info": {
+   "x": 110.32,
+   "z": -367.75,
+   "walking": true,
+   "riding": false
+  }
+ },
+ {
+  "name": "street",
+  "frame": "your-house",
+  "note": "Scene 2: the rebuilt street: your house (blue now, somebody else’s), Sam on the curb",
+  "phase": "a2-street",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 336,
+  "tris": 877372,
+  "info": {
+   "house": {
+    "id": "home",
+    "u": 443.68005891749635,
+    "side": -1,
+    "style": "ranch",
+    "story": null
+   }
+  }
+ },
+ {
+  "name": "street",
+  "frame": "sam-on-curb",
+  "note": "Scene 2: the rebuilt street: your house (blue now, somebody else’s), Sam on the curb",
+  "phase": "a2-street",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 552,
+  "tris": 1197905,
+  "info": {
+   "visible": true,
+   "x": 126.28,
+   "z": -415.17,
+   "mode": "stand",
+   "face": "surprised",
+   "dist": 6.76
+  }
+ },
+ {
+  "name": "reunion",
+  "frame": "standing",
+  "note": "Scene 3: Sam at twenty-two (provisional: derived from twelve-year-old Sam’s model): at conversation distance; a closer look at the face",
+  "phase": "a2-sam",
+  "coda": null,
+  "caption": "SAM“You actually came.”",
+  "draws": 470,
+  "tris": 1021636,
+  "info": {
+   "visible": true,
+   "x": 125.44,
+   "z": -415.44,
+   "mode": "stand",
+   "face": "hopeful",
+   "dist": 2.46
+  }
+ },
+ {
+  "name": "reunion",
+  "frame": "face-review",
+  "note": "Scene 3: Sam at twenty-two (provisional: derived from twelve-year-old Sam’s model): at conversation distance; a closer look at the face",
+  "phase": "a2-sam",
+  "coda": null,
+  "caption": "SAM“You actually came.”",
+  "draws": 526,
+  "tris": 1142323,
+  "info": {
+   "visible": true,
+   "x": 125.44,
+   "z": -415.44,
+   "mode": "stand",
+   "face": "hopeful",
+   "dist": 1.22
+  }
+ },
+ {
+  "name": "reunion",
+  "frame": "tall",
+  "note": "Scene 3: Sam at twenty-two (provisional: derived from twelve-year-old Sam’s model): at conversation distance; a closer look at the face",
+  "phase": "a2-sam",
+  "coda": null,
+  "caption": "SAM“You got tall.”",
+  "draws": 537,
+  "tris": 1158345,
+  "info": {
+   "line": "“You got tall.”"
+  }
+ },
+ {
+  "name": "walk",
+  "frame": "hill",
+  "note": "Scene 4: up the hill together (Sam beside you; the neighbours; a car going by)",
+  "phase": "a2-walk",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 447,
+  "tris": 926655,
+  "info": {
+   "visible": true,
+   "x": 129.23,
+   "z": -455.73,
+   "mode": "walk",
+   "face": "neutral",
+   "dist": 1.27
+  }
+ },
+ {
+  "name": "walk",
+  "frame": "beside",
+  "note": "Scene 4: up the hill together (Sam beside you; the neighbours; a car going by)",
+  "phase": "a2-walk",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 508,
+  "tris": 1103216,
+  "info": {
+   "visible": true,
+   "x": 129.24,
+   "z": -455.43,
+   "mode": "walk",
+   "face": "neutral",
+   "dist": 1.07
+  }
+ },
+ {
+  "name": "alex",
+  "frame": "corner",
+  "note": "Scenes 6-7: Briarwood: the corner where Alex turned off; his house past the creek; the Sunday print, held",
+  "phase": "a2-alex",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 465,
+  "tris": 975324,
+  "info": {
+   "x": 109.37,
+   "z": -546.79,
+   "walking": true,
+   "riding": false
+  }
+ },
+ {
+  "name": "alex",
+  "frame": "house",
+  "note": "Scenes 6-7: Briarwood: the corner where Alex turned off; his house past the creek; the Sunday print, held",
+  "phase": "a2-alex",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 511,
+  "tris": 1009385,
+  "info": {
+   "u": 127
+  }
+ },
+ {
+  "name": "alex",
+  "frame": "print",
+  "note": "Scenes 6-7: Briarwood: the corner where Alex turned off; his house past the creek; the Sunday print, held",
+  "phase": "a2-alex",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 512,
+  "tris": 1009387,
+  "info": {
+   "view": "inspect"
+  }
+ },
+ {
+  "name": "hoop",
+  "frame": "shot",
+  "note": "On the walk up to Jamie’s: a shot off the rim at the house with the hoop, down the drive into the gutter (throw it back, or he comes for it)",
+  "phase": "a2-alex",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 238,
+  "tris": 529666,
+  "info": {
+   "phase": "dribble"
+  }
+ },
+ {
+  "name": "hoop",
+  "frame": "gutter",
+  "note": "On the walk up to Jamie’s: a shot off the rim at the house with the hoop, down the drive into the gutter (throw it back, or he comes for it)",
+  "phase": "a2-alex",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 450,
+  "tris": 662343,
+  "info": {
+   "phase": "rest",
+   "offers": [
+    "ball"
+   ]
+  }
+ },
+ {
+  "name": "jamie",
+  "frame": "house",
+  "note": "Scene 5: Jamie’s house, somebody else’s now: the red chair kept on the porch, a kid’s bike on the lawn",
+  "phase": "a2-jamie",
+  "coda": null,
+  "caption": "SAM“His mom used to yell for him from all the way up there. And he’d pretend he couldn’t hear her until the third time.”",
+  "draws": 325,
+  "tris": 709503,
+  "info": {
+   "d": 783.7
+  }
+ },
+ {
+  "name": "jamie",
+  "frame": "porch",
+  "note": "Scene 5: Jamie’s house, somebody else’s now: the red chair kept on the porch, a kid’s bike on the lawn",
+  "phase": "a2-jamie",
+  "coda": null,
+  "caption": "SAM“His mom used to yell for him from all the way up there. And he’d pretend he couldn’t hear her until the third time.”",
+  "draws": 320,
+  "tris": 717259,
+  "info": null
+ },
+ {
+  "name": "rebuilt",
+  "frame": "summerfield",
+  "note": "Scene 8: where the street went down: Summerfield’s newer square of pavement; the patched Drive and the newer houses (d 1047-1095); the Kowalskis’ and Hendersons’ lots",
+  "phase": "a2-trench",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 348,
+  "tris": 547994,
+  "info": null
+ },
+ {
+  "name": "rebuilt",
+  "frame": "kowalskis",
+  "note": "Scene 8: where the street went down: Summerfield’s newer square of pavement; the patched Drive and the newer houses (d 1047-1095); the Kowalskis’ and Hendersons’ lots",
+  "phase": "a2-trench",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 263,
+  "tris": 557999,
+  "info": null
+ },
+ {
+  "name": "rebuilt",
+  "frame": "seam",
+  "note": "Scene 8: where the street went down: Summerfield’s newer square of pavement; the patched Drive and the newer houses (d 1047-1095); the Kowalskis’ and Hendersons’ lots",
+  "phase": "a2-trench",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 208,
+  "tris": 328030,
+  "info": 15
+ },
+ {
+  "name": "rebuilt",
+  "frame": "new-row",
+  "note": "Scene 8: where the street went down: Summerfield’s newer square of pavement; the patched Drive and the newer houses (d 1047-1095); the Kowalskis’ and Hendersons’ lots",
+  "phase": "a2-trench",
+  "coda": null,
+  "caption": "SAM“The Hendersons are still there.”",
+  "draws": 223,
+  "tris": 429436,
+  "info": null
+ },
+ {
+  "name": "rebuilt",
+  "frame": "hendersons",
+  "note": "Scene 8: where the street went down: Summerfield’s newer square of pavement; the patched Drive and the newer houses (d 1047-1095); the Kowalskis’ and Hendersons’ lots",
+  "phase": "a2-trench",
+  "coda": null,
+  "caption": "SAM“The Hendersons are still there.”",
+  "draws": 151,
+  "tris": 345652,
+  "info": null
+ },
+ {
+  "name": "light",
+  "frame": "sitting",
+  "note": "Scenes 9-11: the curb under the streetlight across from Sam’s; the notebook held open (the names; RULE 6)",
+  "phase": "a2-light",
+  "coda": null,
+  "caption": "Across the street, on the porch of Sam’s house, his mom is watching the two of you with her arms folded.",
+  "draws": 251,
+  "tris": 387033,
+  "info": {
+   "visible": true,
+   "x": 227.53,
+   "z": -896.74,
+   "mode": "stand",
+   "face": "neutral",
+   "dist": 2.65
+  }
+ },
+ {
+  "name": "light",
+  "frame": "notebook-names",
+  "note": "Scenes 9-11: the curb under the streetlight across from Sam’s; the notebook held open (the names; RULE 6)",
+  "phase": "a2-light",
+  "coda": null,
+  "caption": "His notebook. The cover’s gone soft at the corners. It’s been in a drawer, a glovebox, a jacket pocket, a box, and a dra",
+  "draws": 253,
+  "tris": 387047,
+  "info": "names"
+ },
+ {
+  "name": "light",
+  "frame": "notebook-back",
+  "note": "Scenes 9-11: the curb under the streetlight across from Sam’s; the notebook held open (the names; RULE 6)",
+  "phase": "a2-light",
+  "coda": null,
+  "caption": "His notebook. The cover’s gone soft at the corners. It’s been in a drawer, a glovebox, a jacket pocket, a box, and a dra",
+  "draws": 254,
+  "tris": 387049,
+  "info": "back"
+ },
+ {
+  "name": "oak",
+  "frame": "approach",
+  "note": "Scenes 12-13: the old oak at the end of the street, golden hour; the carving; the street from under it",
+  "phase": "a2-oak",
+  "coda": null,
+  "caption": "The old oak, at the end of the street. It’s bigger. That shouldn’t be surprising, and it is.",
+  "draws": 105,
+  "tris": 140829,
+  "info": {
+   "day": 0.17669386874885604,
+   "p": 0.5717613923091003,
+   "night": 0.018970174038637537,
+   "deep": 0,
+   "fill": 0,
+   "storm": 0,
+   "flash": 0,
+   "cave": 0,
+   "apoc": 0
+  }
+ },
+ {
+  "name": "oak",
+  "frame": "under",
+  "note": "Scenes 12-13: the old oak at the end of the street, golden hour; the carving; the street from under it",
+  "phase": "a2-oak",
+  "coda": null,
+  "caption": "The old oak, at the end of the street. It’s bigger. That shouldn’t be surprising, and it is.",
+  "draws": 92,
+  "tris": 132444,
+  "info": null
+ },
+ {
+  "name": "oak",
+  "frame": "street-back",
+  "note": "Scenes 12-13: the old oak at the end of the street, golden hour; the carving; the street from under it",
+  "phase": "a2-oak",
+  "coda": null,
+  "caption": "The old oak, at the end of the street. It’s bigger. That shouldn’t be surprising, and it is.",
+  "draws": 420,
+  "tris": 721485,
+  "info": null
+ },
+ {
+  "name": "kids",
+  "frame": "riding",
+  "note": "Scene 14: two kids on bikes in the cul-de-sac (2021: two kids who live here now, not the four of them); \"See you tomorrow!\"; Sam",
+  "phase": "a2-kids",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 492,
+  "tris": 778198,
+  "info": {
+   "girl": {
+    "visible": true,
+    "x": 245,
+    "z": -1010.6,
+    "v": 4
+   },
+   "boy": {
+    "visible": true,
+    "x": 242,
+    "z": -1008.9,
+    "v": 4.3
+   }
+  }
+ },
+ {
+  "name": "kids",
+  "frame": "stopped",
+  "note": "Scene 14: two kids on bikes in the cul-de-sac (2021: two kids who live here now, not the four of them); \"See you tomorrow!\"; Sam",
+  "phase": "a2-kids",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 503,
+  "tris": 804483,
+  "info": {
+   "girl": {
+    "visible": true,
+    "x": 245.9,
+    "z": -1033.4,
+    "v": 0
+   },
+   "boy": {
+    "visible": true,
+    "x": 244.1,
+    "z": -1031.7,
+    "v": 0
+   }
+  }
+ },
+ {
+  "name": "kids",
+  "frame": "we-used-to",
+  "note": "Scene 14: two kids on bikes in the cul-de-sac (2021: two kids who live here now, not the four of them); \"See you tomorrow!\"; Sam",
+  "phase": "a2-kids",
+  "coda": null,
+  "caption": "SAM“We used to do that.”",
+  "draws": 115,
+  "tris": 182248,
+  "info": {
+   "line": "“We used to do that.”"
+  }
+ },
+ {
+  "name": "leave",
+  "frame": "lamps",
+  "note": "Scenes 15-16: the streetlights come on; the last of the 2021 light; the end card",
+  "phase": "a2-leave",
+  "coda": null,
+  "caption": "Down the street, the streetlights come on. One, and then the next one, and then all of them.",
+  "draws": 385,
+  "tris": 672138,
+  "info": true
+ },
+ {
+  "name": "leave",
+  "frame": "oak-back",
+  "note": "Scenes 15-16: the streetlights come on; the last of the 2021 light; the end card",
+  "phase": "a2-leave",
+  "coda": null,
+  "caption": "SAM“You coming?”",
+  "draws": 132,
+  "tris": 276384,
+  "info": null
+ },
+ {
+  "name": "leave",
+  "frame": "end-card",
+  "note": "Scenes 15-16: the streetlights come on; the last of the 2021 light; the end card",
+  "phase": "a2-end",
+  "coda": null,
+  "caption": "SAM“You coming?”",
+  "draws": 104,
+  "tris": 229820,
+  "info": {
+   "phase": "a2-end"
+  }
+ },
+ {
+  "name": "coda",
+  "frame": "prologue",
+  "note": "The 2026 coda: the Prologue’s street; the first frame of the pullback (the screen fills the view); the monitor’s edges; the desk; over his shoulder; the room; the line; the title",
+  "phase": "off",
+  "coda": "ride",
+  "caption": "JAMIE“Race you to the end of the street.”",
+  "draws": 396,
+  "tris": 757558,
+  "info": {
+   "active": true,
+   "stage": "ride",
+   "t": 15.97,
+   "st": 15.97,
+   "swap": false,
+   "said": false,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "keys",
+   "look": 0,
+   "camera": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "fov": 64
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": null,
+   "log": [
+    [
+     0,
+     "stage ride"
+    ],
+    [
+     0,
+     "begin coda-start"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "coda",
+  "frame": "pull-0",
+  "note": "The 2026 coda: the Prologue’s street; the first frame of the pullback (the screen fills the view); the monitor’s edges; the desk; over his shoulder; the room; the line; the title",
+  "phase": "off",
+  "coda": "pull",
+  "caption": "The air smells like cut grass and somebody’s barbecue.",
+  "draws": 43,
+  "tris": 642,
+  "info": {
+   "active": true,
+   "stage": "pull",
+   "t": 25.37,
+   "st": 0,
+   "swap": true,
+   "said": false,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "keys",
+   "look": 0,
+   "camera": {
+    "x": 0,
+    "y": 1.058,
+    "z": 0.148,
+    "fov": 64
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": null,
+   "log": [
+    [
+     0,
+     "stage ride"
+    ],
+    [
+     0,
+     "begin coda-start"
+    ],
+    [
+     25.4,
+     "stage pull"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "coda",
+  "frame": "pull-edges",
+  "note": "The 2026 coda: the Prologue’s street; the first frame of the pullback (the screen fills the view); the monitor’s edges; the desk; over his shoulder; the room; the line; the title",
+  "phase": "off",
+  "coda": "pull",
+  "caption": "The air smells like cut grass and somebody’s barbecue.",
+  "draws": 53,
+  "tris": 964,
+  "info": {
+   "active": true,
+   "stage": "pull",
+   "t": 32.87,
+   "st": 7.5,
+   "swap": true,
+   "said": false,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "keys",
+   "look": 0,
+   "camera": {
+    "x": -0.003,
+    "y": 1.059,
+    "z": 0.254,
+    "fov": 64
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": {
+    "w": 960,
+    "h": 540,
+    "samples": 4
+   },
+   "log": [
+    [
+     0,
+     "stage ride"
+    ],
+    [
+     0,
+     "begin coda-start"
+    ],
+    [
+     25.4,
+     "stage pull"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "coda",
+  "frame": "pull-desk",
+  "note": "The 2026 coda: the Prologue’s street; the first frame of the pullback (the screen fills the view); the monitor’s edges; the desk; over his shoulder; the room; the line; the title",
+  "phase": "off",
+  "coda": "pull",
+  "caption": "SAM“We should do this every night.”",
+  "draws": 52,
+  "tris": 1240,
+  "info": {
+   "active": true,
+   "stage": "pull",
+   "t": 41.87,
+   "st": 16.5,
+   "swap": true,
+   "said": false,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "keys",
+   "look": 0,
+   "camera": {
+    "x": 0.094,
+    "y": 1.142,
+    "z": 0.297,
+    "fov": 62.4
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": {
+    "w": 960,
+    "h": 540,
+    "samples": 4
+   },
+   "log": [
+    [
+     0,
+     "stage ride"
+    ],
+    [
+     0,
+     "begin coda-start"
+    ],
+    [
+     25.4,
+     "stage pull"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "coda",
+  "frame": "pull-shoulder",
+  "note": "The 2026 coda: the Prologue’s street; the first frame of the pullback (the screen fills the view); the monitor’s edges; the desk; over his shoulder; the room; the line; the title",
+  "phase": "off",
+  "coda": "pull",
+  "caption": "SAM“We should do this every night.”",
+  "draws": 103,
+  "tris": 50380,
+  "info": {
+   "active": true,
+   "stage": "pull",
+   "t": 50.87,
+   "st": 25.5,
+   "swap": true,
+   "said": false,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "keys",
+   "look": 0,
+   "camera": {
+    "x": 0.449,
+    "y": 1.358,
+    "z": 0.884,
+    "fov": 56.5
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": {
+    "w": 960,
+    "h": 540,
+    "samples": 4
+   },
+   "log": [
+    [
+     0,
+     "stage ride"
+    ],
+    [
+     0,
+     "begin coda-start"
+    ],
+    [
+     25.4,
+     "stage pull"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "coda",
+  "frame": "room",
+  "note": "The 2026 coda: the Prologue’s street; the first frame of the pullback (the screen fills the view); the monitor’s edges; the desk; over his shoulder; the room; the line; the title",
+  "phase": "off",
+  "coda": "room",
+  "caption": "ALEX“Even when school starts?”",
+  "draws": 137,
+  "tris": 52708,
+  "info": {
+   "active": true,
+   "stage": "room",
+   "t": 75.4,
+   "st": 4,
+   "swap": true,
+   "said": false,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "keys",
+   "look": 0,
+   "camera": {
+    "x": 1.08,
+    "y": 1.368,
+    "z": 1.68,
+    "fov": 50
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": {
+    "w": 960,
+    "h": 540,
+    "samples": 4
+   },
+   "log": [
+    [
+     0,
+     "stage ride"
+    ],
+    [
+     0,
+     "begin coda-start"
+    ],
+    [
+     25.4,
+     "stage pull"
+    ],
+    [
+     71.4,
+     "stage room"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "coda",
+  "frame": "line",
+  "note": "The 2026 coda: the Prologue’s street; the first frame of the pullback (the screen fills the view); the monitor’s edges; the desk; over his shoulder; the room; the line; the title",
+  "phase": "off",
+  "coda": "line",
+  "caption": "YOU“I still remember.”",
+  "draws": 137,
+  "tris": 52708,
+  "info": {
+   "active": true,
+   "stage": "line",
+   "t": 91.87,
+   "st": 7.43,
+   "swap": true,
+   "said": true,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "off",
+   "look": -0.62,
+   "camera": {
+    "x": 1.08,
+    "y": 1.368,
+    "z": 1.68,
+    "fov": 50
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": {
+    "w": 960,
+    "h": 540,
+    "samples": 4
+   },
+   "log": [
+    [
+     0,
+     "stage ride"
+    ],
+    [
+     0,
+     "begin coda-start"
+    ],
+    [
+     25.4,
+     "stage pull"
+    ],
+    [
+     71.4,
+     "stage room"
+    ],
+    [
+     84.4,
+     "stage line"
+    ],
+    [
+     90.7,
+     "the line"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "coda",
+  "frame": "title",
+  "note": "The 2026 coda: the Prologue’s street; the first frame of the pullback (the screen fills the view); the monitor’s edges; the desk; over his shoulder; the room; the line; the title",
+  "phase": "off",
+  "coda": "title",
+  "caption": "YOU“I still remember.”",
+  "draws": 137,
+  "tris": 52708,
+  "info": {
+   "active": true,
+   "stage": "title",
+   "t": 100.53,
+   "st": 4.07,
+   "swap": true,
+   "said": true,
+   "titled": true,
+   "title": 1,
+   "cap": true,
+   "print": true,
+   "hands": "off",
+   "look": -0.62,
+   "camera": {
+    "x": 1.08,
+    "y": 1.368,
+    "z": 1.68,
+    "fov": 50
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": {
+    "w": 960,
+    "h": 540,
+    "samples": 4
+   },
+   "log": [
+    [
+     0,
+     "stage ride"
+    ],
+    [
+     0,
+     "begin coda-start"
+    ],
+    [
+     25.4,
+     "stage pull"
+    ],
+    [
+     71.4,
+     "stage room"
+    ],
+    [
+     84.4,
+     "stage line"
+    ],
+    [
+     90.7,
+     "the line"
+    ],
+    [
+     96.5,
+     "stage title"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "desk",
+  "frame": "desk-review",
+  "note": "The 2026 room, review cameras: the desk (the notebook, the photo-booth strip, the cap if kept); the wall (the map, the cards, the Sunday print); his face",
+  "phase": "off",
+  "coda": "room",
+  "caption": "There’s still a little light.",
+  "draws": 81,
+  "tris": 24280,
+  "info": {
+   "active": true,
+   "stage": "room",
+   "t": 2.47,
+   "st": 2.47,
+   "swap": true,
+   "said": false,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "keys",
+   "look": 0,
+   "camera": {
+    "x": 0.58,
+    "y": 1.2,
+    "z": 0.6,
+    "fov": 46
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": null,
+   "log": [
+    [
+     0,
+     "stage room"
+    ],
+    [
+     0,
+     "begin coda-room"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "desk",
+  "frame": "wall-review",
+  "note": "The 2026 room, review cameras: the desk (the notebook, the photo-booth strip, the cap if kept); the wall (the map, the cards, the Sunday print); his face",
+  "phase": "off",
+  "coda": "room",
+  "caption": "There’s still a little light.",
+  "draws": 47,
+  "tris": 738,
+  "info": {
+   "active": true,
+   "stage": "room",
+   "t": 2.47,
+   "st": 2.47,
+   "swap": true,
+   "said": false,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "keys",
+   "look": 0,
+   "camera": {
+    "x": 0.48,
+    "y": 1.55,
+    "z": 0.48,
+    "fov": 52
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": {
+    "w": 960,
+    "h": 540,
+    "samples": 4
+   },
+   "log": [
+    [
+     0,
+     "stage room"
+    ],
+    [
+     0,
+     "begin coda-room"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "desk",
+  "frame": "face-review",
+  "note": "The 2026 room, review cameras: the desk (the notebook, the photo-booth strip, the cap if kept); the wall (the map, the cards, the Sunday print); his face",
+  "phase": "off",
+  "coda": "room",
+  "caption": "There’s still a little light.",
+  "draws": 59,
+  "tris": 26348,
+  "info": {
+   "active": true,
+   "stage": "room",
+   "t": 5.47,
+   "st": 5.47,
+   "swap": true,
+   "said": false,
+   "titled": false,
+   "title": 0,
+   "cap": true,
+   "print": true,
+   "hands": "off",
+   "look": -0.61,
+   "camera": {
+    "x": 0.62,
+    "y": 1.32,
+    "z": 0.32,
+    "fov": 40
+   },
+   "screen": {
+    "w": 0.596,
+    "h": 0.335
+   },
+   "rt": {
+    "w": 960,
+    "h": 540,
+    "samples": 4
+   },
+   "log": [
+    [
+     0,
+     "stage room"
+    ],
+    [
+     0,
+     "begin coda-room"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "credits",
+  "frame": "roll",
+  "note": "The final credits; the dedication; the completed screen",
+  "phase": "off",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 145,
+  "tris": 150716,
+  "info": {
+   "active": true,
+   "phase": "roll",
+   "t": 22.93,
+   "dur": 64,
+   "y": -106.2,
+   "skips": 0,
+   "plays": 1,
+   "log": [
+    [
+     0,
+     "play"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "credits",
+  "frame": "dedication",
+  "note": "The final credits; the dedication; the completed screen",
+  "phase": "off",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 145,
+  "tris": 150716,
+  "info": {
+   "active": true,
+   "phase": "ded",
+   "t": 9.5,
+   "dur": 64,
+   "y": -106.2,
+   "skips": 1,
+   "plays": 1,
+   "log": [
+    [
+     0,
+     "play"
+    ],
+    [
+     0,
+     "skip to dedication"
+    ]
+   ]
+  }
+ },
+ {
+  "name": "credits",
+  "frame": "end-screen",
+  "note": "The final credits; the dedication; the completed screen",
+  "phase": "off",
+  "coda": null,
+  "caption": "There’s still a little light.",
+  "draws": 145,
+  "tris": 150716,
+  "info": {
+   "state": "ended"
+  }
+ }
+]
