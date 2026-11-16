@@ -298,7 +298,7 @@ export function createAftermath1(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,cha
   const K=devFresh?null:loadKeep();if(K)C.keep=K;else if(devOver)Object.assign(C.keep,devOver);C.fromSave=!!K;devFresh=false;devOver=null;C.flags.gum=true;setup();C.jumped=section;SC.jump(section);richFaces(true);applyGrief();}
  // ---- the end card -------------------------------------------------------------------------------------------------------------------------------
  function end(){const el=$('ending');if(el){const h=el.querySelector?.('h2'),pp=el.querySelector?.('p'),eb=el.querySelector?.('.eyebrow');if(eb)eb.textContent='LAST LIGHT';if(h)h.innerHTML='Aftermath I';if(pp)pp.innerHTML='WHAT WAS LEFT<br>October, 2011.';}
-  const nb=$('next-chapter');if(nb){nb.hidden=!A9.next;}A9.finished=true;C.keep.left=true;
+  const nb=$('next-chapter');if(nb){nb.hidden=!A9.next;if(A9.next)nb.innerHTML='Aftermath II <span>→</span>';}A9.finished=true;C.keep.left=true;
   try{localStorage.setItem(SAVE9,JSON.stringify({...C.keep,section:'aftermath1-end',home:['YOU','SAM'],lost:['JAMIE','ALEX'],presence:'sealed',you:'moved away, October 2011',sam:'Oak Hollow',at:Date.now()}));}catch{}
   o.finish();}
  Object.assign(CTX,{end,jumpTo,reset,fresh,SPOTS,items,sky});
@@ -309,12 +309,22 @@ export function createAftermath1(o,k,{chapter2:ch2,chapter3:ch3,chapter4:ch4,cha
   canDismount:()=>!posed()&&!C.view&&S.phase!=='a1-black'&&!!SC?.canDismount?.(),canRemount:()=>!C.view&&!posed()&&!!SC?.canRemount?.(),
   closeBag:()=>{if(inv.isOpen){inv.close();return true;}return false;},inventoryReady:()=>owns(S.phase)&&S.phase!=='a1-black'&&S.phase!=='a1-end',
   devFresh:(over=null)=>{devFresh=true;devOver=over;},loadKeep,saveKeep,keep,C,LIGHTS,inv,sky,brain,CTX,FACES,cast:CTX.cast,get started(){return A9._started;},set started(v){A9._started=v;}});
- Object.defineProperties(A9,{amb:{get:()=>C.amb},viewing:{get:()=>C.view},
+ Object.defineProperties(A9,{amb:{get:()=>A9.next?.owns(S.phase)?A9.next.amb:C.amb},viewing:{get:()=>A9.next?.owns(S.phase)?A9.next.viewing:C.view},
   state:{get:()=>{const p=me();return {phase:S.phase,day:C.day,h:+C.h.toFixed(4),clock:fmt(C.h),t:+C.t.toFixed(2),flags:{...C.flags},view:C.view,lookKind:C.lookKind,keep:JSON.parse(JSON.stringify(C.keep)),offers:[...C.offers.keys()],hold:{...C.hold},
    choice:C.choice?C.choice.options.map(q=>q.id):null,where:C.where,sky:C.sky,inside:+(C.inside||0).toFixed(2),grief:C.grief,pCry:+C.pCry.toFixed(2),tasks:C.tasks.map(t=>t.name),posed:posed(),
    you:{x:+p.x.toFixed(2),z:+p.z.toFixed(2),walking:!!p.walking,riding:!!p.riding},
    sam:{gone:!!sam.gone,active:sam.active,visible:sam.person.group.visible,mode:sam.mode,face:sam.person.face?.expression||null,x:+(sam.mode==='foot'?sam.px:sam.bx).toFixed(2),z:+(sam.mode==='foot'?sam.pz:sam.bz).toFixed(2)},
    jamie:{visible:jamie.person.group.visible,active:jamie.active},people:Object.fromEntries(Object.entries(CTX.cast).filter(([,a])=>a&&!Array.isArray(a)&&a.visible!==undefined).map(([kk,a])=>[kk,{visible:!!a.visible,x:+a.x.toFixed(1),z:+a.z.toFixed(1),face:FACES.get(a)?.expression||null}])),
    sounds:{...C.sounds},marks:C.marks.slice(-40),endT:+C.endT.toFixed(2)};}}});
+ // (Aftermath II picks up ten years later: aftermath2.js has its phases and sections; while one of them is current, everything here
+ // hands over to it, the way Chapter Eight hands over to this chapter)
+ {const nextOwns=()=>!!A9.next?.owns(S.phase),own=A9.owns,hnd=A9.handles;
+  A9.owns=ph=>own(ph)||!!A9.next?.owns(ph);A9.handles=sec=>hnd(sec)||!!A9.next?.handles?.(sec);
+  for(const m of ['update','spots','act','sources','blockers','hint','key','pan','wheel','jamieSweep','officerAim','light','longThrow','canDismount','canRemount','inventoryReady']){const f=A9[m];
+   A9[m]=(...a)=>nextOwns()?(A9.next[m]?A9.next[m](...a):(m==='spots'||m==='blockers'?[]:m==='sources'?undefined:null)):f(...a);}
+  const bag=A9.closeBag;A9.closeBag=()=>bag()||!!A9.next?.closeBag?.();
+  const rs=A9.reset;A9.reset=()=>{A9.next?.reset();rs();};
+  const jp=A9.jump;A9.jump=section=>{if(A9.next?.handles?.(section)&&!SECTIONS9.includes(section)&&!ALIAS9[section]){rs();A9.next.jump(section);return;}jp(section);};
+  /* (amb and viewing ask the next chapter in their own getters, above) */}
  return A9;
 }

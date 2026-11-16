@@ -86,9 +86,11 @@ export function worldPath(ctrl){const pts=[];
 export const headingTo=(x,z,tx,tz)=>Math.atan2(tx-x,-(tz-z));
 
 // One grown-up. Modes: stand (with an optional gesture), walk (along a path), turn.
-export function createActor(scene,nav,spec,{seed=0}={}){
+export function createActor(scene,nav,spec,{seed=0,refine=true}={}){
  const person=createPerson(spec);scene.add(person.group);person.group.visible=false;
- const art=refineAdult(person,spec,seed);
+ // (refine:false: a person whose head is already the shared character art, the boys' own model grown up in Aftermath II; their
+ // face is faces.js's, given by the caller)
+ const art=refine?refineAdult(person,spec,seed):{mouth:null,brows:null,update(){},syncMouth(){}};
  person.group.traverse(o=>{if(o.isMesh)o.castShadow=false;});
  const A={person,art,spec,name:spec.name,seed,x:0,z:0,a:0,y:null,pose:newPose(),from:newPose(),tmp:newPose(),t:0,e:0,gait:0,mode:'stand',
   path:null,u:0,v:0,speed:1.2,onArrive:null,look:0,lookPitch:0,lookAt:null,gesture:null,gw:0,next:null,gtarget:null,talk:0,turnTo:null,visible:false,

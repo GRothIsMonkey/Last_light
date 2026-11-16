@@ -172,10 +172,26 @@ export const DEV_SCENES={
   {id:'a1-memorial-jamie',label:'Jamie’s Lawn (September 3)',jump:'a1-memorial-jamie'},{id:'a1-memorial-alex',label:'Alex’s Pictures (September 6)',jump:'a1-memorial-alex'},{id:'a1-sam',label:'The Chain (Sam, September 17)',jump:'a1-sam'},
   {id:'a1-weeks',label:'October (the fence, Reyes)',jump:'a1-weeks'},{id:'a1-home',label:'The Letter (your mother)',jump:'a1-home'},{id:'a1-packing',label:'Packing Your Room (you have his cap)',jump:'a1-packing'},
   {id:'a1-packing-given',label:'Packing Your Room (his mother has his cap)',jump:'a1-packing',keep:{cap:'mom',capWhen:'porch'}},{id:'a1-goodbye',label:'Goodbye, Sam',jump:'a1-goodbye'},{id:'a1-road-out',label:'The Road Out',jump:'a1-road-out'},
-  {id:'aftermath1-end',label:'Aftermath I Ending (the end card)',jump:'aftermath1-end'}]};
+  {id:'aftermath1-end',label:'Aftermath I Ending (the end card)',jump:'aftermath1-end'}],
+ // Aftermath II: Ten Years Later (August 27, 2021). A DEV start never reads your save; keep: the Aftermath I outcome a scene is tried with
+ // (Jamie's cap kept, or with his mother from the shelter or from her porch; the goodbye; the call).
+ 10:[{id:'aftermath2',label:'Aftermath II Start (from Aftermath I’s end card)',chapter:10},{id:'a2-drive',label:'The Drive In (Oak Hollow, August 2021)',jump:'a2-drive'},
+  {id:'a2-street',label:'The Rebuilt Street (your old house)',jump:'a2-street'},{id:'a2-sam',label:'Sam (the reunion at the curb)',jump:'a2-sam'},
+  {id:'a2-sam-hug',label:'Sam (you hugged him goodbye in 2011)',jump:'a2-sam',keep:{told:{bye:'hug',call:'week'}}},{id:'a2-sam-see',label:'Sam (you said “See you, Sam.” in 2011)',jump:'a2-sam',keep:{told:{bye:'see',call:'write'}}},
+  {id:'a2-walk',label:'The Hill (walking the old neighborhood)',jump:'a2-walk'},{id:'a2-alex',label:'Briarwood (Alex’s corner, his house)',jump:'a2-alex'},
+  {id:'a2-jamie',label:'Jamie’s House (you have his cap)',jump:'a2-jamie'},{id:'a2-jamie-shelter',label:'Jamie’s House (cap given at the shelter)',jump:'a2-jamie',keep:{cap:'mom',capWhen:'shelter'}},
+  {id:'a2-jamie-porch',label:'Jamie’s House (cap given on her porch)',jump:'a2-jamie',keep:{cap:'mom',capWhen:'porch',told:{bmx:'walk'}}},
+  {id:'a2-summerfield',label:'Summerfield (where the road went down)',jump:'a2-summerfield'},{id:'a2-streetlight',label:'The Streetlight (Sam’s memory, the notebook)',jump:'a2-streetlight'},
+  {id:'a2-trench',label:'The New Houses (the patched road)',jump:'a2-trench'},{id:'a2-oak',label:'The Old Oak',jump:'a2-oak'},{id:'a2-children',label:'The Children on Bikes (“See you tomorrow!”)',jump:'a2-children'},
+  {id:'a2-leave',label:'When the Streetlights Come On',jump:'a2-leave'},{id:'aftermath2-end',label:'Aftermath II Ending (the end card)',jump:'aftermath2-end'}],
+ // The 2026 coda and the final credits (Ending A: the gradual camera pullback). keep: whether Jamie's cap is on his desk.
+ 11:[{id:'coda',label:'2026 Coda Start (from Aftermath II’s end card)',chapter:11},{id:'coda-start',label:'The Prologue Image (the summer street)',jump:'coda-start'},
+  {id:'coda-pullback',label:'The Camera Pulls Back (the monitor)',jump:'coda-pullback'},{id:'coda-room',label:'The Room in 2026 (you kept his cap)',jump:'coda-room'},
+  {id:'coda-room-given',label:'The Room in 2026 (his mother has his cap)',jump:'coda-room',keep:{cap:'mom',capWhen:'shelter'}},{id:'coda-line',label:'The Final Line (“I still remember.”)',jump:'coda-line'},
+  {id:'coda-title',label:'LAST LIGHT (the title on the monitor)',jump:'coda-title'},{id:'coda-credits',label:'The Final Credits',jump:'coda-credits'}]};
 
 export function createDevChapters(g){
- const {chapter,chapter2,chapter3,chapter4,chapter5,chapter6,chapter7,chapter8,aftermath1}=g,comp=chapter.companions,K=chapter.kit;
+ const {chapter,chapter2,chapter3,chapter4,chapter5,chapter6,chapter7,chapter8,aftermath1,aftermath2}=g,comp=chapter.companions,K=chapter.kit;
  // Every per-run state object emptied completely before the chapters' own reset()/fresh() refill them
  // (their fresh() functions refill a fixed list of keys; anything else would otherwise survive).
  function clearObject(o,keep=[]){if(!o)return;for(const k of Object.keys(o))if(!keep.includes(k))delete o[k];}
@@ -194,7 +210,7 @@ export function createDevChapters(g){
  // over's resetState() + start() as its first step): one start(), so the pointer lock is requested once per click.
  function clear({restart=true}={}){
   g.audio()?.stopRecording?.();
-  if(aftermath1)clearObject(aftermath1.C);if(chapter8)clearObject(chapter8.C);if(chapter7)clearObject(chapter7.C);if(chapter6)clearObject(chapter6.C);if(chapter5)clearObject(chapter5.C);if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
+  if(aftermath2)clearObject(aftermath2.C);if(aftermath1)clearObject(aftermath1.C);if(chapter8)clearObject(chapter8.C);if(chapter7)clearObject(chapter7.C);if(chapter6)clearObject(chapter6.C);if(chapter5)clearObject(chapter5.C);if(chapter4)clearObject(chapter4.C);clearObject(chapter3.C);clearObject(chapter2.C);
   // Chapter One's shared state: the dialogue queue array is kept as the same array (other code holds it).
   const q=K.S.queue;clearObject(K.S);K.S.queue=q;q.length=0;
   rebirth();
@@ -229,6 +245,8 @@ export function createDevChapters(g){
   else if(n===7){g.jumpTo('chapter6-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n===8){g.jumpTo('chapter7-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n===9){g.jumpTo('chapter8-end');runUntil(()=>G().state==='ended');g.nextChapter();}
+  else if(n===10){aftermath1?.devFresh?.(null);g.jumpTo('aftermath1-end');runUntil(()=>G().state==='ended');g.nextChapter();}
+  else if(n===11){aftermath2?.devFresh?.(null);g.jumpTo('aftermath2-end');runUntil(()=>G().state==='ended');g.nextChapter();}
   else if(n!==0)throw new Error('dev start: no chapter '+n);
   if(history)applyHistory(n);
   return phase();}
@@ -242,7 +260,7 @@ export function createDevChapters(g){
   if(sc.jump){clear({restart:false});
    // (the save a player has by then: the jump's own checkpoints, if it reaches any, come after it)
    if(sc.save)K.checkpointTo(sc.save,K.CHECKPOINT[sc.save]);
-   if(n===9)aftermath1?.devFresh?.(sc.keep||null);// (a DEV start is always the same scene: not whatever a player last chose)
+   if(n===9)aftermath1?.devFresh?.(sc.keep||null);if(n>=10)aftermath2?.devFresh?.(sc.keep||null);// (a DEV start is always the same scene: not whatever a player last chose)
    g.jumpTo(sc.jump);if(sc.act)chapter.act(sc.act);if(n>=2)applyHistory(n,{save:false,foot:false});if(sceneHistory)applySceneHistory(n+'/'+id);return phase();}
   clear();// (Start over: a new game, on the street)
   if(sc.warp!=null)g.prologueAt(sc.warp);

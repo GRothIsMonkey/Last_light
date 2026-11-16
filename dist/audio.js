@@ -73,7 +73,9 @@ export function createAudio({context=null,random=Math.random}={}){
   a1Theme(t,o){[293.66,369.99,440,329.63].forEach((f,i)=>{tone(f,t+i*.95,3.4,.02,'sine',o);tone(f/2,t+i*.95,3.8,.008,'sine',o);});},
   carDoor(t,o){burst(t,.1,.3,'lowpass',650,.8,o);tone(88,t,.16,.14,'sine',o,60);burst(t+.02,.03,.05,'bandpass',2400,2,o);},
  };
- function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={garage:9,doorSlam:9,dog:30,dribble:7,sprinkler:5,rim:8,tap:5,pebble:6,window:5,carDoor:12,squelch:7,c8Thud:32,c8Collapse:26,c8Rumble:30,c8Impact:18,c8Groan:18,c8Burst:15,c8Glass:12,c8Horn:22,c8Rip:12,c8SteelDoor:14,c8Knock:8,c8Scrape:8,c8Crack:14,c8Metal:14};const o=spatial(pos,opts.gain??1,refs[name]||6);SFX[name](now()+.01,o);}
+ // (Aftermath II: a child's bike bell in 2021: one small bright ring, not Alex's; and the 2026 coda: the room the game is played in)
+SFX.a2Bell=(t,o)=>{for(const [f,v,d] of [[2380,.05,.9],[3220,.024,.6],[4810,.01,.35]])tone(f,t,d,v,'sine',o);burst(t,.008,.03,'highpass',5200,1,o);};
+function sfx(name,pos,opts={}){if(!ctx||!enabled||!SFX[name])return;const refs={garage:9,doorSlam:9,dog:30,dribble:7,sprinkler:5,rim:8,tap:5,pebble:6,window:5,carDoor:12,squelch:7,c8Thud:32,c8Collapse:26,c8Rumble:30,c8Impact:18,c8Groan:18,c8Burst:15,c8Glass:12,c8Horn:22,c8Rip:12,c8SteelDoor:14,c8Knock:8,c8Scrape:8,c8Crack:14,c8Metal:14};const o=spatial(pos,opts.gain??1,refs[name]||6);SFX[name](now()+.01,o);}
  // An ordinary bicycle bell. tunnel: rung somewhere inside a concrete pipe, so a little duller, with
  // the short hollow return of the pipe after it (still just a bell).
  function bell(pos=null,g=1,{tunnel=false}={}){if(!ctx||!enabled)return;const o=spatial(pos,g,pos?10:6),t=now();let out=o;
@@ -119,7 +121,7 @@ export function createAudio({context=null,random=Math.random}={}){
   if(kind==='chapter')for(const [f,d] of [[110,0],[164.81,.8]])tone(f,t+d,7,.03);
   else for(const [f,d] of [[220,0],[277.18,.5],[329.63,1.0],[440,1.6]])tone(f,t+d,6,.045);musicOn=false;}
  function leaving(){if(!ctx||!enabled)return;const t=now();bell(null,.35);burst(t+.3,.05,.03,'bandpass',2000,2);}
- function reset(){musicOn=true;nextNote=0;note=0;nextBird=0;lastCrank=0;body.next=0;body.breathNext=0;body.cur=0;stopRecording();if(!ctx)return;
+ function reset(){if(ctx){screen(0);if(themeOut)themeOut.gain.setTargetAtTime(0,now(),.2);}musicOn=true;nextNote=0;note=0;nextBird=0;lastCrank=0;body.next=0;body.breathNext=0;body.cur=0;stopRecording();if(!ctx)return;
   for(const s of shots){try{s.stop();s.disconnect();}catch{}}shots.clear();
   for(const c of crickets)c.next=0;
   // A very short fade rather than a cut, so a loop that is playing (the fan, water) never clicks.
@@ -403,5 +405,18 @@ export function createAudio({context=null,random=Math.random}={}){
   if(kind==='generator'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=29;const lp=filt('lowpass',160);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('bandpass',300,.9)).connect(gain(.25)).connect(out);return {out,pan,vol:.08,ref:8,far:90};}
   if(kind==='mower'){const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=96;const lp=filt('lowpass',650),am=gain(.6),lfo=ctx.createOscillator(),d=gain(.35);lfo.frequency.value=7;lfo.connect(d).connect(am.gain);o.connect(lp).connect(am).connect(out);o.start();lfo.start();const n=src();n.connect(filt('bandpass',400,.8)).connect(gain(.2)).connect(out);return {out,pan,vol:.09,ref:40};}
   const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=48;const lp=filt('lowpass',320);o.connect(lp).connect(out);o.start();const n=src();n.connect(filt('lowpass',500)).connect(gain(.25)).connect(out);return {out,pan,vol:.18,ref:10};}
- return {ensure,setEnabled,setVolume,sfx,bell,bell3,voice,recording,stopRecording,memory,indoors,footstep,call,callName,ending,leaving,reset,update,REC,get loops(){return loops;},get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;},get body(){return {...body};},get phone(){return phone;}};
+ // ---- the 2026 coda and the credits -------------------------------------------------------------------------------------------------
+ // screen(k): k 0 = the world as you hear it; 1 = the same world coming out of two small speakers on a desk at night: narrowed,
+ // quieter, and under it the room (a computer's fan, the hum of a lamp). theme(on): the Prologue's own eight notes (update() above),
+ // slower and further apart, with a low A under every other one; it plays on its own clock (the credits have no ride to follow).
+ let room=null,themeOut=null,themeNotes=[];
+ function screen(k=0){if(!ctx)return;const t=now();k=clamp(k,0,1);memLP.frequency.setTargetAtTime(k>0?20000*(1-k)+3200*k:20000,t,.5);bus.gain.setTargetAtTime(1-.45*k,t,.5);
+  if(!room&&k>0){const n=src(),a=gain(0);n.connect(filt('lowpass',520,.6)).connect(filt('highpass',90,.7)).connect(a).connect(master);const h=ctx.createOscillator();h.frequency.value=120;const hg=gain(.08);h.connect(hg).connect(a);h.start();room={a};}
+  if(room)room.a.gain.setTargetAtTime(.018*k,t,.8);}
+ function theme(on=true){if(!ctx)return;const t=now();if(!themeOut){themeOut=gain(0);themeOut.connect(master);}
+  if(!on){themeOut.gain.setTargetAtTime(0,t,1.4);for(const o of themeNotes){try{o.stop(t+4);}catch{}}themeNotes=[];return;}
+  themeOut.gain.cancelScheduledValues(t);themeOut.gain.setValueAtTime(themeOut.gain.value,t);themeOut.gain.linearRampToValueAtTime(1,t+2.5);
+  const notes=[220,329.63,440,493.88,369.99,329.63,293.66,220],step=3.1;
+  for(let i=0;i<44;i++){const at=t+.6+i*step+(i%8===7?1.2:0)+Math.floor(i/8)*1.4,f=notes[i%8];themeNotes.push(tone(f,at,5.2,.05,'sine',themeOut));if(i%2===0)themeNotes.push(tone(110,at,6.4,.016,'sine',themeOut));if(i%8===3||i%8===6)themeNotes.push(tone(f*1.5,at+1.55,3.6,.012,'sine',themeOut));}}
+ return {ensure,setEnabled,setVolume,screen,theme,sfx,bell,bell3,voice,recording,stopRecording,memory,indoors,footstep,call,callName,ending,leaving,reset,update,REC,get loops(){return loops;},get ctx(){return ctx;},get activeShots(){return shots.size;},get enabled(){return enabled;},get body(){return {...body};},get phone(){return phone;}};
 }

@@ -140,3 +140,20 @@ body.dev-starting #dev-chapters button{opacity:.5;pointer-events:none}
 
 /* Chapter Eight: crying, seen from inside: the edges dark and swimming (opacity set by the chapter) */
 #c8-tears{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:1;background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 38%,rgba(14,8,10,.38) 78%,rgba(8,4,6,.72) 100%);backdrop-filter:blur(1.4px);-webkit-backdrop-filter:blur(1.4px);mask-image:radial-gradient(ellipse at 50% 46%,transparent 30%,#000 72%);-webkit-mask-image:radial-gradient(ellipse at 50% 46%,transparent 30%,#000 72%);transition:opacity .6s}
+
+/* Aftermath II: the place and the year, small, low over the first of the drive */
+#a2-place{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);font:11px Arial;letter-spacing:6px;color:#fff3dfd9;text-shadow:0 1px 10px #151323;opacity:0;transition:opacity 2.4s ease;pointer-events:none;white-space:nowrap;z-index:1}
+#a2-place.on{opacity:1}
+/* The final credits: off-white on near-black, rising slowly; the dedication on its own */
+#final-credits{position:absolute;inset:0;z-index:5;background:radial-gradient(ellipse at 50% 45%,#12141b,#07080b 70%);color:#efe7d8;overflow:hidden;font-family:Georgia,serif;text-align:center}
+#final-credits[hidden]{display:none}
+#final-credits .fc-roll{position:absolute;left:50%;top:0;width:min(560px,86%);transform:translate(-50%,100vh);will-change:transform;transition:opacity 2.5s ease}
+#final-credits .fc-title{font:normal 34px/1.2 Georgia,serif;letter-spacing:12px;margin:0 0 90px;color:#f6efe2}
+#final-credits .fc-block{margin:0 0 54px}
+#final-credits .fc-role{font:10px Arial;letter-spacing:3.5px;text-transform:uppercase;color:#c9b99a;margin-bottom:12px}
+#final-credits .fc-name{font:italic 19px/1.6 Georgia,serif;color:#efe7d8}
+#final-credits .fc-dedication{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;opacity:0;pointer-events:none}
+#final-credits .fc-dedication p{font:italic 26px/1.8 Georgia,serif;color:#f3eadb;margin:0 22px;opacity:0;transition:opacity .2s linear}
+#final-credits .fc-skip{position:absolute;right:28px;bottom:24px;background:none;border:0;color:#efe7d866;font:10px Arial;letter-spacing:3px;cursor:pointer;padding:8px 10px}
+#final-credits .fc-skip:hover,#final-credits .fc-skip:focus-visible{color:#efe7d8cc}
+@media (max-width:700px){#final-credits .fc-title{font-size:26px;letter-spacing:8px}#final-credits .fc-dedication p{font-size:20px}}
