@@ -79,7 +79,7 @@ try{
   // Chapters, fresh: only the Prologue
   await page.click('#open-chapters');await sleep(500);
   const locked=await page.locator('#chapter-list button.locked').count(),all=await page.locator('#chapter-list button').count();
-  check('A9 Chapters lists the Prologue to Aftermath I, nine not yet reached',all===10&&locked===9,{all,locked});
+  check('A9 Chapters lists the Prologue to One More Lap (the coda), eleven not yet reached',all===12&&locked===11,{all,locked});
   await page.keyboard.press('ArrowDown');await sleep(300);
   check('A9 a chapter not yet reached says nothing about itself',/Not yet remembered/.test(await page.locator('#chapter-detail').textContent())&&!(await vis(page,'#chapter-begin')));
   await page.keyboard.press('Escape');await sleep(300);
