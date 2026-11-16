@@ -9,7 +9,7 @@
 // chapter at its beginning, Continue, the DEV selector, the pause menu by keyboard, settings in play, the title moods.
 import fs from 'node:fs';import path from 'node:path';import http from 'node:http';import {pathToFileURL} from 'node:url';import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);let pw;for(const p of [null,'/opt/node-tools/node_modules','/opt/node22/lib/node_modules'])try{pw=p?require(p+'/playwright'):require('playwright');break;}catch{}
-const pkg=process.argv[2]?path.resolve(process.argv[2]):null,out=path.resolve(process.env.QA_OUTPUT||'docs/qa/main-menu-redesign'+(pkg?'/package':''));fs.mkdirSync(out,{recursive:true});
+const pkg=process.argv[2]?path.resolve(process.argv[2]):null,out=path.resolve(process.env.QA_OUTPUT||'docs/qa/main-menu-horror-revision/'+(pkg?'package':'browser'));fs.mkdirSync(out,{recursive:true});
 let base,server=null;
 if(pkg)base=pathToFileURL(pkg).href;
 else{const root=path.resolve('dist');server=http.createServer((q,r)=>{const u=decodeURIComponent(q.url.split('?')[0]);if(u==='/favicon.ico'){r.writeHead(204);return r.end();}const f=path.join(root,u==='/'?'index.html':u.replace(/^\//,''));

@@ -202,12 +202,17 @@ New in this revision, present from the first moment rather than after 90 s:
 - **Event sounds** (§4). The silence is a 0.18 s fall to 4% under every bus and a slow return. Nothing is a stinger.
   The menu's own interface sounds are unchanged and stay small.
 
-Levels were measured after the limiter in Chromium; the numbers are in §8. Nothing approaches full scale.
+Levels, measured after the limiter in Chromium and in 90-second offline renders: RMS about 0.02–0.03, peaks 0.08–0.16 (−16 dBFS at most). During a silence the RMS falls from about 0.028 to 0.0009. Nothing approaches full scale. The renders are in `docs/qa/main-menu-horror-revision/sound/`, so anyone can listen without waiting at the menu. Much of the drone's energy is below 120 Hz, and on laptop speakers it will mostly not be heard.
 **Nobody has listened to it**, so whether it is disturbing, or merely present, is not known.
 
 ## 8. Tests
 
 See `docs/MAIN_MENU_HORROR_REVISION_TEST_REPORT.md` for the full results, captures and before/after comparison.
+In short:
+- The game is unchanged: the node suite passes 818, Chapter Eight 35 and Aftermath I 58.
+- The menu browser suite passes 95 from `dist/` and 96 against the offline package, including 25 new title-art checks
+  and no network requests.
+- The before/after comparison of ten states is in `docs/qa/main-menu-horror-revision/compare/`.
 
 ## 9. Limitations
 
@@ -220,3 +225,6 @@ See `docs/MAIN_MENU_HORROR_REVISION_TEST_REPORT.md` for the full results, captur
   unverified. The art is one full-screen shader pass with about 20 texture reads, likely cheaper than the 3D scene.
 - The boot still is about 640 px wide and blurred. On a large screen it is a hint of the picture, not the picture.
 - The sound has not been listened to (§7).
+- The full game in play under software rendering needs as much memory as before (5–9 GB in SwiftShader). That is a
+  property of the game in a software renderer, not of the title, but it is why the browser tests must run one at a
+  time.
