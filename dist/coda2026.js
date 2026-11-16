@@ -205,12 +205,13 @@ export function createCoda(H){
    if(S.st>T_TITLE){setStage('out');S.outT=0;}}
   else if(S.stage==='out'){S.outT+=dt;H.fade(smooth(S.outT/3));if(S.outT>3.4){S.active=false;S.stage='done';chrome(false);H.credits(S.keep);}}
   if(S.stage!=='pull'&&S.stage!=='ride'&&OV.capA>0)OV.capA=Math.max(0,OV.capA-dt*1.2);
+  if(S.swap&&S.stage!=='done')placeCamera(S.stage==='pull'?S.st/T_PULL:1);
   poseMan(dt);}
  // every frame, instead of the page's own render: before the swap, the world; after it, the room with the world on its screen
  function render(){const info=renderer.info?.render;
   if(!S.active||!S.swap){renderer.render(scene,camera);return info;}
   const rt=ensureRT();if(!rt){renderer.render(scene,camera);return info;}
-  const u=S.stage==='pull'?S.st/T_PULL:1;placeCamera(u);if(S.stage==='pull')readPage();drawOverlay();
+  if(S.stage==='pull')readPage();drawOverlay();
   const exp=renderer.toneMappingExposure;
   renderer.setRenderTarget(rt);renderer.render(scene,camera);renderer.setRenderTarget(null);
   renderer.toneMappingExposure=1.08;try{renderer.render(room,rc);}finally{renderer.toneMappingExposure=exp;}return info;}

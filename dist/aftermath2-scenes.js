@@ -118,11 +118,11 @@ export function scenes10(X){
  function seatPose(){const s=CAR.seatWorld(-1);if(!C.pose){pose({x:s.x,z:s.z},{y:s.y,yaw:s.a,pitch:-.05,slow:.5,seat:{h:.48,y:s.gy+.27,legs:'bent',hands:'knees'}});}
   else{C.pose.x=s.x;C.pose.y=s.y;C.pose.z=s.z;C.pose.yaw=s.a;C.pose.baseYaw=s.a;if(C.pose.seat){C.pose.seat.x=s.x;C.pose.seat.z=s.z;C.pose.seat.a=s.a;C.pose.seat.y=s.gy+.27;}}}
  function updateDrive(dt){if(!DRV.on)return;const held=c=>o.held?.(c);
-  let want=0;if(!DRV.parked&&!DRV.park){if(held('KeyW')||held('ArrowUp'))want=held('ShiftLeft')||held('ShiftRight')?11:8.5;if(held('KeyS')||held('ArrowDown'))want=-1;}
+  let want=0;if(!DRV.parked&&!DRV.parking){if(held('KeyW')||held('ArrowUp'))want=held('ShiftLeft')||held('ShiftRight')?11:8.5;if(held('KeyS')||held('ArrowDown'))want=-1;}
   // (anyone in the road ahead: the car slows of its own accord, the way you would)
   for(const T of TOWN.TRAFFIC)if(T.on&&T.dir>0&&T.d>DRV.d&&T.d-DRV.d<14)want=Math.min(want,Math.max(0,T.v));
-  if(DRV.park){// (easing in to the curb across from your old house, or just ahead if you are already past it)
-   const rem=Math.max(0,DRV.parkAt-DRV.d);DRV.v=Math.min(Math.max(DRV.v,1.2),Math.sqrt(2*1.1*rem)+.05);if(rem<.04){DRV.v=0;DRV.parked=true;}
+  if(DRV.parking){// (easing in to the curb across from your old house, or just ahead if you are already past it)
+   const rem=Math.max(0,DRV.parkAt-DRV.d);DRV.v=Math.min(Math.max(DRV.v,1.2),Math.sqrt(2*1.1*rem)+.05);if(rem<.04){DRV.v=0;DRV.parked=true;DRV.parking=false;}
    DRV.lat=lerp(DRV.lat0,L.park.lat,smooth(1-rem/Math.max(.1,DRV.parkLen)));DRV.park=1-rem/Math.max(.1,DRV.parkLen);want=0;}
   else if(want<0)DRV.v=Math.max(0,DRV.v-5*dt);else DRV.v=damp(DRV.v,want,want>DRV.v?.55:.8,dt);
   const prev=CAR.seatWorld(-1);DRV.d+=DRV.v*dt;C.carD=DRV.d;placeCar();const s=CAR.seatWorld(-1);
@@ -130,7 +130,7 @@ export function scenes10(X){
   o.shift?.(s.x-prev.x,s.z-prev.z,{bike:false});
   // the wheel turns with the street's curve, a little
   const curve=wrap(heading(DRV.d+4)-heading(DRV.d))*14;CAR.wheel.rotation.z=damp(CAR.wheel.rotation.z,clamp(-curve,-.6,.6),3,dt);
-  if(!DRV.parked&&!DRV.park&&DRV.d>L.park.d+30){DRV.d=L.park.d+30;DRV.v=0;}}
+  if(!DRV.parked&&!DRV.parking&&DRV.d>L.park.d+30){DRV.d=L.park.d+30;DRV.v=0;}}
  function* sceneDriveScript(){stageTo(1);
   // the place and the year, over the road
   yield* wait(1.4);placeTitle(true);later(6.5,()=>placeTitle(false));
@@ -151,7 +151,7 @@ export function scenes10(X){
   offer('phone','Look at your phone',()=>{const p=new THREE.Vector3();CAR.phone.g.getWorldPosition(p);return p;},{r:3,look:true,inPose:true,size:.08,cone:.2,once:true,fn:()=>task('look-phone',(function*(){
    const p=new THREE.Vector3();CAR.phone.g.getWorldPosition(p);yield* lines([N('Sam. “at the curb. the old one”',{time:3})]);})())});
   yield* until(()=>DRV.d>L.homeD-75,240);
-  offer('park','Pull over',()=>SP(DRV.d+8,3.4,1),{r:9,inPose:true,once:true,when:()=>DRV.d>L.homeD-75,fn:()=>{DRV.parkAt=Math.max(DRV.d+10,L.park.d);DRV.parkLen=DRV.parkAt-DRV.d;DRV.lat0=DRV.lat;DRV.park=.0001;unoffer('phone');}});
+  offer('park','Pull over',()=>SP(DRV.d+8,3.4,1),{r:9,inPose:true,once:true,when:()=>DRV.d>L.homeD-75,fn:()=>{DRV.parkAt=Math.max(DRV.d+10,L.park.d);DRV.parkLen=DRV.parkAt-DRV.d;DRV.lat0=DRV.lat;DRV.parking=true;DRV.park=0;unoffer('phone');}});
   objective('Pull over.','Across from your old house.');
   yield* until(()=>DRV.parked,300);unoffer('park');unoffer('phone');sound('engineOff',camera.position,{gain:.4});C.carEngine=false;
   yield* wait(1.2);
@@ -162,7 +162,7 @@ export function scenes10(X){
   yield* lines([N('On the passenger seat: Sam’s notebook'+(C.keep.cap==='you'?', and Jamie’s cap.':'.'),{time:3})]);
   yield* until(()=>C.flags['take-notebook'],60);if(!C.flags['take-notebook']){unoffer('take-notebook');C.flags['take-notebook']=true;}
   CAR.notebook.visible=false;sound('click',camera.position,{gain:.15});
-  if(C.keep.cap==='you'){offer('take-cap','Take his cap',capAt,{r:3,look:true,inPose:true,size:.12,cone:.2,once:true});const tc=C.pt;yield* until(()=>C.flags['take-cap']||C.pt-tc>14,16);if(C.flags['take-cap']){CAR.cap.visible=false;C.flags.capWith=true;yield* lines([N('You fold the brim and put it in your back pocket. You don’t know why. You just want it with you.',{time:4.4})]);}else unoffer('take-cap');}
+  if(C.keep.cap==='you'){offer('take-cap','Take his cap',capAt,{r:3,look:true,inPose:true,size:.12,cone:.2,once:true});const tc=C.pt;yield* until(()=>C.flags['take-cap']||C.pt-tc>14,16);if(C.flags['take-cap']){CAR.cap.visible=false;C.flags.capWith=true;keep('capWith',true);yield* lines([N('You fold the brim and put it in your back pocket. You don’t know why. You just want it with you.',{time:4.4})]);}else{unoffer('take-cap');keep('capWith',false);}}
   offer('door','Get out',()=>CAR.doorWorld().setY(gy(CAR.g.position.x,CAR.g.position.z)+1.2),{r:4,inPose:true,once:true,look:false});
   objective('Get out.','');
   yield* until(()=>C.flags.door,90);if(!C.flags.door){unoffer('door');}
@@ -361,8 +361,10 @@ export function scenes10(X){
    objective('','Q / E: turn the page.');yield* until(()=>NBK.pages.page==='back',12);if(NBK.pages.page!=='back')NBK.pages.go('back');objective('','');
    if(NBK.pages.page==='back')yield* lines([{wait:.6},SM('That’s my writing.',{time:1.2}),{wait:.4},SM('Rule six.',{time:1}),{wait:.8},Y('You made that one up.',{time:1.4}),SM('It still counts.',{time:1.4}),{wait:1.2},SM('You’re bad at rule six.',{time:1.6,face:'amused'}),Y('I know.',{time:1}),{wait:.8},SM('I’m worse.',{time:1})]);
    C.flags.nbDone=true;})());
-  yield* holding(NBK.g,[N('His notebook. The cover’s gone soft at the corners. It’s been in a drawer, a glovebox, a jacket pocket, a box, and a drawer again.',{time:5.2})],{dist:.42,kind:'notebook',min:4,max:120,pages:NBK.pages});
-  stopTask('nb-talk');C.flags.nbDone=true;keep('looked',{...C.keep.looked,notebook:NBK.pages.seen});
+  // (held as long as the two of you are talking about it; put away when you like after that)
+  inspect(NBK.g,{dist:.42,kind:'notebook',pages:NBK.pages,ls:[N('His notebook. The cover’s gone soft at the corners. It’s been in a drawer, a glovebox, a jacket pocket, a box, and a drawer again.',{time:5.2})]});C.flags.putDown=false;
+  {let e=0,doneAt=null;while(C.view==='inspect'&&e<160){yield;e+=C.dt;if(C.flags.nbDone&&doneAt===null)doneAt=e;if(doneAt!==null&&!busy()&&(C.flags.putDown||e>doneAt+12))break;}if(C.view==='inspect')endInspect();C.flags.putDown=false;}
+  yield* until(()=>C.flags.nbDone,40);stopTask('nb-talk');C.flags.nbDone=true;keep('looked',{...C.keep.looked,notebook:NBK.pages.seen});
   yield* quiet(8);
   yield* lines([{wait:1.4},SM('Okay.',{time:.8}),{wait:.4},SM('You want to go up there?',{time:1.4})]);
   const c3=yield* choosing([{id:'yeah',label:'“Yeah.”'},{id:'minute',label:'“In a minute.”'}],{timeout:10,fallback:'yeah'});said('oak',c3);
@@ -475,40 +477,41 @@ export function scenes10(X){
  function sceneEnd(){go('a2-end');o.fade(1);objective('');C.endT=0;later(1.2,()=>X.end());}
  // ---- sections: where each starts, for Continue and DEV, and the beginning from Aftermath I's end card ---------------------------------------------
  function startDrive(){go('a2-drive');world2021();setDay(17.73);
-  Object.assign(DRV,{d:L.start.d,v:0,lat:L.start.lat,park:0,parked:false,on:true});CAR.inside(true);CAR.notebook.visible=true;CAR.cap.visible=C.keep.cap==='you';C.flags.capWith=false;placeCar();
+  Object.assign(DRV,{d:L.start.d,v:0,lat:L.start.lat,park:0,parking:false,parked:false,on:true});CAR.inside(true);CAR.notebook.visible=true;CAR.cap.visible=C.keep.cap==='you';C.flags.capWith=false;placeCar();
   const s=CAR.seatWorld(-1);placeMe({x:s.x,z:s.z},s.a);seatPose();C.driving=true;SAMA.show(false);
   {const q=SP(L.curb.d,L.curb.lat);SAMA.show(true);SAMA.stopFollow();SAMA.place(q.x,q.z,toward(q,SP(L.curb.d,0)));SAMA.pin={x:q.x,z:q.z,a:toward(q,SP(L.curb.d,0))};SAMA.gest(G(ACT.seat(.2,{hands:'knees',lean:.2})));}
   checkpoint('a2-drive');C.fadeIn=0;C.fadeInDur=2.8;C.carEngine=true;
   task('drive',sceneDriveScript());}
- function startStreet(){go('a2-street');world2021();setDay(17.82);parkCar();CAR.notebook.visible=false;CAR.cap.visible=C.keep.cap==='you';C.flags['take-notebook']=true;
+ function startStreet(){capPocket();go('a2-street');world2021();setDay(17.82);parkCar();CAR.notebook.visible=false;CAR.cap.visible=C.keep.cap==='you';C.flags['take-notebook']=true;
   {const s=CAR.seatWorld(-1),a=-CAR.g.rotation.y;placeMe({x:s.x-Math.cos(a)*1.25,z:s.z-Math.sin(a)*1.25},a+.4);}
   {const q=SP(L.curb.d,L.curb.lat);SAMA.show(true);SAMA.place(q.x,q.z,toward(q,SP(L.curb.d,0)));SAMA.pin={x:q.x,z:q.z,a:toward(q,SP(L.curb.d,0))};SAMA.gest(G(ACT.seat(.2,{hands:'knees',lean:.2})));}
   C.flags.texted=true;C.fadeIn=0;task('street',streetScript());}
- function startSam(){go('a2-sam');world2021();setDay(17.86);parkCar();CAR.notebook.visible=false;
+ function startSam(){capPocket();go('a2-sam');world2021();setDay(17.86);parkCar();CAR.notebook.visible=false;
   {const q=SP(L.curb.d-5.5,-5.9);placeMe(q,toward(q,SP(L.curb.d,-5.4)));}
   {const q=SP(L.curb.d,L.curb.lat);SAMA.show(true);SAMA.place(q.x,q.z,toward(q,SP(L.curb.d-5.5,-5.9)));SAMA.lookAt=camera.position;}
   C.flags.texted=true;C.fadeIn=0;task('sam',samScene());}
- function startWalk(){go('a2-walk');world2021();setDay(17.95);parkCar();CAR.notebook.visible=false;
+ function startWalk(){capPocket();go('a2-walk');world2021();setDay(17.95);parkCar();CAR.notebook.visible=false;
   {const q=SP(L.curb.d+2,-6.9);placeMe(q,heading(L.curb.d));const s=SP(L.curb.d+1.4,-5.9);SAMA.show(true);SAMA.place(s.x,s.z,heading(L.curb.d));}
   C.fadeIn=0;task('walk',walkScene());}
- function startAlex(){go('a2-alex');world2021();setDay(18.12);parkCar();CAR.notebook.visible=false;
+ function startAlex(){capPocket();go('a2-alex');world2021();setDay(18.12);parkCar();CAR.notebook.visible=false;
   {const q=SP(572,6.9);placeMe(q,heading(572));const s=SP(571,5.9);SAMA.show(true);SAMA.place(s.x,s.z,heading(571));samWalks();}
   C.fadeIn=0;task('alex',alexScene());}
- function startJamie(){go('a2-jamie');world2021();setDay(18.36);parkCar();CAR.notebook.visible=false;
+ function startJamie(){capPocket();go('a2-jamie');world2021();setDay(18.36);parkCar();CAR.notebook.visible=false;
   {const q=SP(L.jamieD-46,6.9);placeMe(q,heading(L.jamieD-46));const s=SP(L.jamieD-47,5.9);SAMA.show(true);SAMA.place(s.x,s.z,heading(L.jamieD));samWalks();}
-  C.flags.capWith=C.keep.cap==='you';C.fadeIn=0;task('jamie',jamieScene());}
- function startSummer(){go('a2-summer');world2021();setDay(18.6);parkCar();
+  C.fadeIn=0;task('jamie',jamieScene());}
+ function startSummer(){capPocket();go('a2-summer');world2021();setDay(18.6);parkCar();
   {const q=SP(836,6.9);placeMe(q,heading(836));const s=SP(835,5.9);SAMA.show(true);SAMA.place(s.x,s.z,heading(835));samWalks();}C.fadeIn=0;task('summer',summerScene());}
- function startLight(){go('a2-light');world2021();setDay(18.72);parkCar();
+ function startLight(){capPocket();go('a2-light');world2021();setDay(18.72);parkCar();
   {const q=SP(L.light.d-14,6.9);placeMe(q,heading(L.light.d));const s=SP(L.light.d-15,5.9);SAMA.show(true);SAMA.place(s.x,s.z,heading(L.light.d));samWalks();}C.fadeIn=0;task('light',streetlightScene());}
- function startTrench(){go('a2-trench');world2021();setDay(18.95);parkCar();
+ function startTrench(){capPocket();go('a2-trench');world2021();setDay(18.95);parkCar();
   {const q=SP(L.samD+6,6.9);placeMe(q,heading(L.samD+6));const s=SP(L.samD+5,5.9);SAMA.show(true);SAMA.place(s.x,s.z,heading(L.samD));samWalks();}C.fadeIn=0;task('trench',trenchScene());}
- function startOak(){go('a2-oak');world2021();setDay(19.05);parkCar();
+ function startOak(){capPocket();go('a2-oak');world2021();setDay(19.05);parkCar();
   {const q=SP(1121,-1.5);placeMe(q,heading(1121));const s=SP(1120,-.4);SAMA.show(true);SAMA.place(s.x,s.z,heading(1120));samWalks();}C.fadeIn=0;task('oak',oakScene());}
- function startChildren(){go('a2-kids');world2021();setDay(19.22);parkCar();
+ function startChildren(){capPocket();go('a2-kids');world2021();setDay(19.22);parkCar();
   {const q=SP(1153.2,3.4);placeMe(q,toward(q,SP(1130,0)));const s=SP(1154.5,4.6);SAMA.show(true);SAMA.place(s.x,s.z,toward(s,SP(1130,0)));}C.fadeIn=0;task('kids',childrenScene());}
- function startLeave(){go('a2-leave');world2021();setDay(19.32);parkCar();
+ function startLeave(){capPocket();go('a2-leave');world2021();setDay(19.32);parkCar();
   {const q=SP(1153.2,3.4);placeMe(q,toward(q,SP(1130,0)));const s=SP(1154.5,4.6);SAMA.show(true);SAMA.place(s.x,s.z,toward(s,SP(1130,0)));}C.fadeIn=0;task('leave',leaveScene());}
+ function capPocket(){C.flags.capWith=C.keep.cap==='you'&&C.keep.capWith!==false;CAR.cap.visible=C.keep.cap==='you'&&!C.flags.capWith;}
  function begin(){go('a2-black');C.cardT=0;o.fade(1);objective('');task('open',(function*(){yield* wait(6.2);startDrive();})());}
  // the coda and the credits are game.js's (coda2026.js, final-credits.js): this hands over, so Continue and DEV reach them the same way
  function startCoda(section){go('a2-coda');o.fade(1);objective('');C.coda=section;later(.05,()=>{o.coda?.(section,{keep:JSON.parse(JSON.stringify(C.keep))});});}
@@ -530,7 +533,7 @@ export function scenes10(X){
  function blockers(out){TOWN.blockers(out);if(SAMA.visible&&!SAMA.pin)out.push({x:SAMA.x,z:SAMA.z,r:.32,speed:SAMA.v||0});for(const a of NB.all)if(a.visible)out.push({x:a.x,z:a.z,r:.32,speed:0});
   if(CAR.g.visible&&C.carParked){const p=CAR.g.position;out.push({x:p.x,z:p.z,r:1.3,speed:0});const a=-CAR.g.rotation.y;for(const s of [-1.5,1.5])out.push({x:p.x+Math.sin(a)*s,z:p.z-Math.cos(a)*s,r:1.05,speed:0});}}
  function key(code){if(DRV.on&&!DRV.parked&&['KeyW','KeyS','ArrowUp','ArrowDown'].includes(code))return true;return false;}
- function hint(){if(DRV.on&&!DRV.parked&&!DRV.park&&!C.choice)return C.offers.has('park')?[['F','Pull over'],['W','Drive'],['S','Slow down']]:[['W','Drive'],['S','Slow down'],['Mouse','Look around']];return null;}
+ function hint(){if(DRV.on&&!DRV.parked&&!DRV.parking&&!C.choice)return C.offers.has('park')?[['F','Pull over'],['W','Drive'],['S','Slow down']]:[['W','Drive'],['S','Slow down'],['Mouse','Look around']];return null;}
  function setup(){if(phys)phys.ME.extra=phys.ME.extra||[];if(phys&&!phys.ME.extra.includes(wheelHands))phys.ME.extra.push(wheelHands);}
  function reset(){TOWN.reset();BODY.off();o.eyeLift?.(0);SAMA.show(false);SAMA.stopFollow();SAMA.pin=null;SAMA.lookAt=null;SAMA.gest(null);
   for(const a of NB.all){a.show(false);a.gest(null);a.lookAt=null;}NB.dog.show(false);NB.mw.visible=false;NB.ball.visible=false;NB.lead.visible=false;

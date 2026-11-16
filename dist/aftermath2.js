@@ -57,7 +57,7 @@ export function createAftermath2(o,k,{chapter2:ch2,chapter5:ch5,chapter6:ch6,cha
  // cap: 'you' (you kept Jamie's cap) | 'mom' (his mother has it: capWhen 'shelter' | 'porch'). notebook: 'you' (Sam gave it to you at the
  // curb). print: the Sunday picture from Alex's father. told: what you said, scene by scene (the goodbye, the call, his bike, the
  // picture with Alex's shadow in it, looking back). A DEV start does not read your save: it begins every scene the same way.
- const KEEP0=()=>({cap:'you',capWhen:null,notebook:'you',print:true,camera:'parents',told:{},boxed:[],wrote:true,bell:true,from9:false,said:{},looked:{},section:null,a2done:false,coda:false,credits:false});
+ const KEEP0=()=>({cap:'you',capWhen:null,notebook:'you',print:true,camera:'parents',told:{},boxed:[],wrote:true,bell:true,from9:false,said:{},looked:{},capWith:null,section:null,a2done:false,coda:false,credits:false});
  function inherited(){try{const v=JSON.parse(localStorage.getItem(SAVE9)||'null');if(!v||typeof v!=='object')return null;const K=KEEP0();
    for(const key of ['cap','capWhen','notebook','print','camera','told','boxed','wrote','bell'])if(v[key]!==undefined&&v[key]!==null)K[key]=JSON.parse(JSON.stringify(v[key]));
    // (whatever Aftermath I's end says, the notebook left Oak Hollow with you on October 15: it is how that chapter ends)
@@ -146,7 +146,7 @@ export function createAftermath2(o,k,{chapter2:ch2,chapter5:ch5,chapter6:ch6,cha
  function items(){const K=C.keep,carry=[],found=[];
   carry.push({id:'notebook',name:'Sam’s notebook',state:'ALEX · JAMIE · SAM. Ten years in a drawer, a glovebox, a jacket pocket.'});
   if(K.print)carry.push({id:'print',name:'Sunday at the oak',state:'In the back of the notebook. Four bikes, three of you.'});
-  if(K.cap==='you')carry.push({id:'cap',name:'Jamie’s cap',state:C.flags.capWith?'In your jacket pocket.':'On the passenger seat.'});
+  if(K.cap==='you')carry.push({id:'cap',name:'Jamie’s cap',state:C.flags.capWith?'In your back pocket, the brim folded.':'On the passenger seat of your car.'});
   carry.push({id:'phone',name:'Your phone',state:C.flags.texted?'Sam: “at the curb. the old one”':'Sam: “text me when youre close”'});
   if(K.cap==='mom')found.push({id:'cap',name:'Jamie’s cap',note:'His mother has it.'});
   found.push({id:'tour',name:'The Tour de Oak Hollow',note:'Sam still has it. “Somebody has to.”'});
@@ -215,7 +215,9 @@ export function createAftermath2(o,k,{chapter2:ch2,chapter5:ch5,chapter6:ch6,cha
  function reset(){if(!C.offers||!C.flags||!C.keep)fresh();const hadPose=C.pose,hadView=!!C.view;card(false);placeTitle(false);if(C.view==='inspect')endInspect();if(C.view==='look')C.view=null;inv.reset();C.choice=null;
   SC?.reset?.();lightsOn(false);
   if(A10.started){ch5.presentation?.(false);phys?.reset?.();if(o.foot.arms===phys?.arms)o.foot.arms=null;o.hideWorld?.(false);
-   for(const c of [jamie,kidSam]){if(!c)continue;c.gone=false;c.person.group.visible=c===kidSam;c.crouch=0;c.boost=1;}}
+   // (only what this chapter changed: the boys' companions are the Prologue's own riders too, so their bodies are left as the reset before
+   //  this one left them: Start over shows all three)
+   for(const c of [jamie,kidSam]){if(!c)continue;c.gone=false;c.crouch=0;c.boost=1;}if(kidSam)kidSam.person.group.visible=true;}
   tearsOverlay(0);A.rideBoost=1;A.rideFov=0;o.setPace?.(1);o.roam.brake=0;holder.removeFromParent();
   A10.started=false;A10.finished=false;
   if(hadPose&&S.pose===hadPose)k.setPose(null);if(hadPose||hadView)o.roam.walkLock=false;fresh();}

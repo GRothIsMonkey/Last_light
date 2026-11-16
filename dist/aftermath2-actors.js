@@ -51,7 +51,9 @@ export function ageHead(person,{stubble=.12,long=1.06}={}){const head=person.par
 export function createFriend21(scene,nav,spec,{seed=11}={}){
  const A=createActor(scene,nav,spec,{seed,refine:false});
  ageHead(A.person,{stubble:.14,long:1.055});
- const face=createFace(A.person,spec);A.person.face=face;A.face=face;face.rich?.(true);face.enable?.(true);
+ const face=createFace(A.person,spec);A.person.face=face;face.rich?.(true);face.enable?.(true);A.expr=face;
+ // (A.face stays the actor's turn: face(angle); it also carries the expression's own handle, so a line can say face:'happy' for him)
+ {const turn=A.face;A.face=Object.assign(a=>turn(a),{set:(...x)=>face.set?.(...x),mood:(...x)=>face.mood?.(...x),grief:(...x)=>face.grief?.(...x)});Object.defineProperty(A.face,'expression',{get:()=>face.expression});}
  A.person.group.traverse(o=>{if(o.isMesh)o.castShadow=true;});
  A.person.group.name='a2-sam';
  const base=A.update;A.follow=null;A.pin=null;A.mood='neutral';A.hands=null;A.phoneT=0;

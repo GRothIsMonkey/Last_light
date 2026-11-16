@@ -46,11 +46,16 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
  const X=aftermathTwoTools(T0),{h,press,release,tap,until,wait,me,faceTo,approach,via,A,C,ph,quiet,take,maybe,putDown,phase,flag,offers,live,offerAt,faceV,SC}=X,check=T0.check,T=X.T,element=T0.element;
  const lines=[];let answered=[];
  // every frame: the lines said, and any question answered (by pick, or let to pass in silence)
- T.each=()=>{const l=h.chapter.state.line;if(l&&lines[lines.length-1]!==l)lines.push(l);const ch=A.C.choice;if(ch&&!quietly&&ch.t>.9&&!ch._answered){ch._answered=true;const n=Math.min(pick,ch.options.length);answered.push(ch.options[n-1].id);h.chapter.kit&&tap('Digit'+n);}};
+ let lastCap='',frames=0;const secs=()=>frames/30;T.each=()=>{frames++;const l=h.chapter.state.line;if(l&&lines[lines.length-1]!==l)lines.push(l);
+  // (the page's own captions too: the Prologue's lines, and the room's)
+  const sub=element('subtitle'),cap=(sub.children||[]).map(c=>c?.textContent||'').join(' ').trim();if(cap&&cap!==lastCap){lastCap=cap;lines.push(cap);}const ch=A.C.choice;if(ch&&!quietly&&ch.t>.9&&!ch._answered){ch._answered=true;const n=Math.min(pick,ch.options.length);answered.push(ch.options[n-1].id);h.chapter.kit&&tap('Digit'+n);}};
  const said=t=>lines.some(l=>l.includes(t));
  const M=T0.metrics.aftermath2||(T0.metrics.aftermath2={});const seg={};let segAt=h.snapshot.clock;const lap=n=>{seg[n]=+((h.snapshot.clock-segAt)/60).toFixed(2);segAt=h.snapshot.clock;M.segments=seg;};
  const inSeg=n=>{const i=SEGMENTS10.indexOf(n),f=from?SEGMENTS10.indexOf(from):0,t=to?SEGMENTS10.indexOf(to):99;return i>=f&&i<=t;};
  const L=()=>SC.L,SP=(d,l)=>SC.SP(d,l),BW=(u,v)=>SC.BW(u,v),SAM=()=>C().sam;
+ // (where you are: along Oak Hollow, or along Briarwood; walking only to the waypoints still ahead)
+ const at=()=>{const p=me();return h.nav.locate(p.x,p.z);},onSide=()=>at().street==='side',dHere=()=>at().street==='main'?at().d:595;
+ const ahead=(ds,lat=6.9,o={})=>{for(const d of ds){if(dHere()>d+1.5)continue;assert.ok(approach(SP(d,lat),o.r??1.3,{pad:10,max:o.max??90}),'up to '+d);}};
  const noThrow=()=>assert.equal(C().marks.filter(m=>/threw/.test(m[1])).length,0,'a scene script threw: '+JSON.stringify(C().marks.filter(m=>/threw/.test(m[1]))));
  const nothingThere=()=>{assert.equal(C().jamie.visible,false,'no Jamie');assert.equal(C().kidSam.visible,false,'no twelve-year-old Sam');assert.equal(h.chapter8.HM.root.visible,false,'no hunter');assert.ok(!h.chapter8.presence.active,'nothing under the court');
   assert.equal(h.chapter8.ruin.ST?.stage??0,0,'no ruin');assert.ok(h.skyMat.uniforms.apoc.value<.01,'no red in the sky');};
@@ -89,7 +94,7 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
   lap('sam');}
  if(inSeg('walk')){start('walk');
   check(`${label}: up the hill together: Sam walks beside you; the hill; the dog; his mom's text; what you both do now`,()=>{const L0=L();assert.ok(phase('a2-walk',20));let maxd=0;
-   for(const d of [L0.homeD+30,L0.homeD+60,L0.homeD+90,L0.homeD+120,560,580,589]){assert.ok(approach(SP(d,-6.9),1.2,{pad:10,max:90}),'up to '+d);maxd=Math.max(maxd,SAM().dist);until(quiet,25);}
+   for(const d of [L0.homeD+30,L0.homeD+60,L0.homeD+90,L0.homeD+120,560,580,589]){if(dHere()>d+1.5)continue;assert.ok(approach(SP(d,-6.9),1.2,{pad:10,max:90}),'up to '+d);maxd=Math.max(maxd,SAM().dist);until(quiet,25);}
    assert.ok(maxd<9,'Sam kept up: '+maxd);assert.ok(said('Remember when this hill used to feel huge?'),'the hill');assert.ok(said('dinner'),'his mom');assert.ok(said('Hardware store'),'what he does');noThrow();});
   lap('walk');}
  if(inSeg('alex')){start('alex');
@@ -101,13 +106,13 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
   lap('alex');}
  if(inSeg('jamie')){start('jamie');
   check(`${label}: Jamie's house: somebody else's; his mother moved; his bike went with her; the chair; a kid's bike on the lawn; ${cap==='keep'?'his cap, out of your pocket':'his cap, with her'}; Biscuit`,()=>{const L0=L();
-   for(const u of [115,80,40,12])approach(BW(u,6.9),1.6,{pad:10,max:80});for(const d of [620,680,740,L0.jamieD-12])assert.ok(approach(SP(d,6.9),1.3,{pad:10,max:90}),'up to '+d);
+   if(onSide())for(const u of [115,80,40,12])if((at().u??0)>u+1)approach(BW(u,6.9),1.6,{pad:10,max:80});ahead([620,680,740,L0.jamieD-12]);
    assert.ok(approach(SP(L0.jamie.d,L0.jamie.lat),1.4,{pad:10,max:40}),'his house');assert.ok(until(()=>said('She moved to her sister’s.'),60));
    if(cap==='keep'){assert.ok(take('cap',{walk:false,max:90}),'his cap');putDown(60);assert.ok(said('You kept it.'));}else assert.ok(until(()=>said('She took his cap too.'),90),'his cap, with her');
    assert.ok(until(()=>said('Biscuit.'),90));assert.ok(until(()=>ph()==='a2-summer',60),'on');noThrow();});
   lap('jamie');}
  if(inSeg('summer')){start('summer');
-  check(`${label}: Summerfield: a newer square of road where it went down; the Kowalskis' lot, a house somebody built`,()=>{for(const d of [830,858,880,930,970])assert.ok(approach(SP(d,6.9),1.4,{pad:10,max:90}),'up to '+d);
+  check(`${label}: Summerfield: a newer square of road where it went down; the Kowalskis' lot, a house somebody built`,()=>{ahead([830,858,880,930,970]);
    assert.ok(said('They did the whole intersection over.'));assert.ok(until(()=>said('The Kowalskis'),40));noThrow();});
   lap('summer');}
  if(inSeg('light')){start('light');
@@ -116,11 +121,11 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
    if(!quietly)assert.ok(take('sit',{max:40,r:1.2}),'sit');assert.ok(until(()=>said('Kids come in the store with their chain off.'),160),'the chain');
    assert.ok(take('notebook',{walk:false,max:90}),'the notebook');assert.ok(until(()=>A.C.view==='inspect',6));
    until(()=>said('You still have it.'),20);tap('KeyE');wait(.4);assert.equal(A.C.inspect?.pages?.page,'names','turned to the names');until(()=>said('You were missing.'),40);tap('KeyE');wait(.4);assert.equal(A.C.inspect?.pages?.page,'back','the back cover');
-   assert.ok(until(()=>said('It still counts.'),60),'RULE 6');putDown(80);assert.deepEqual([...C().keep.looked.notebook].sort(),['back','front','names']);
+   assert.ok(until(()=>said('It still counts.'),60),'RULE 6');putDown(80);assert.ok(until(()=>!!C().keep.looked?.notebook,20),'what you looked at, kept');assert.deepEqual([...C().keep.looked.notebook].sort(),['back','front','names']);
    assert.ok(until(()=>ph()==='a2-trench',80),'up');noThrow();});
   lap('light');}
  if(inSeg('trench')){start('trench');
-  check(`${label}: the newer houses and the patched road where the street went into the ground; the Hendersons' (Lily, driving)`,()=>{const L0=L();for(const d of [L0.samD+15,1030,1060,1090,1112,1122])assert.ok(approach(SP(d,6.9),1.4,{pad:10,max:90}),'up to '+d);
+  check(`${label}: the newer houses and the patched road where the street went into the ground; the Hendersons' (Lily, driving)`,()=>{const L0=L();ahead([L0.samD+15,1030,1060,1090,1112,1122]);
    assert.ok(said('Lily’s driving now.'),'Lily');assert.ok(said('The road is newer here.'),'the seam');assert.ok(until(()=>ph()==='a2-oak',30));noThrow();});
   lap('trench');}
  if(inSeg('oak')){start('oak');
@@ -133,7 +138,7 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
   check(`${label}: two kids on bikes (real kids, 2021, not the four of them); "See you tomorrow!"; "We used to do that." "Yeah." "Feels like it was yesterday."`,()=>{assert.ok(until(()=>ph()==='a2-kids',60));
    assert.ok(until(()=>C().scene.kids.girl.visible&&C().scene.kids.boy.visible,10),'two kids');assert.ok(until(()=>said('See you tomorrow!'),60),'See you tomorrow!');
    assert.ok(until(()=>said('We used to do that.'),40));assert.ok(until(()=>said('Feels like it was yesterday.'),40));
-   const i=lines.findIndex(l=>l.includes('We used to do that.'));assert.ok(i>=0&&lines.slice(i,i+3).some(l=>/Yeah/.test(l)),'Yeah, between them');
+   const i=lines.findIndex(l=>l.includes('We used to do that.')),j=lines.findIndex(l=>l.includes('Feels like it was yesterday.'));assert.ok(i>=0&&j>i&&lines.slice(i,j).some(l=>/Yeah/.test(l)),'Yeah, between them');
    assert.ok((C().sounds.a2Bell||0)>=1,'a real bell, on a real bike');nothingThere();noThrow();});
   lap('kids');}
  if(inSeg('leave')){start('leave');
@@ -161,7 +166,8 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
  if(inSeg('credits')){if(from==='credits'&&!fromCard){h.jump('coda-credits');wait(1);}
   const F=()=>h.credits.state();
   check(`${label}: the credits: dark and quiet; the dedication on its own; then the end screen (the credits again, start over, the title)`,()=>{assert.ok(until(()=>h.snapshot.state==='credits'&&F().active,30),'the credits');
-   const t0=h.snapshot.clock;assert.ok(until(()=>F().phase==='ded',140),'the dedication');assert.ok(h.snapshot.clock-t0>40,'not rushed: '+(h.snapshot.clock-t0).toFixed(0)+' s');
+   const t0=secs();assert.ok(until(()=>F().phase==='ded',140),'the dedication');assert.ok(secs()-t0>55,'not rushed: '+(secs()-t0).toFixed(0)+' s');M.creditsRoll=+(secs()-t0).toFixed(1);
+   const tx=h.credits.text();assert.deepEqual(tx.dedication,['For Jamie and Alex.','And for every summer we thought would last forever.']);assert.ok(tx.credits.some(c=>/Bento/.test((c.names||[]).join(' '))),'the CC BY attribution');
    assert.ok(until(()=>F().phase==='done',30),'done');assert.equal(h.snapshot.state,'ended');assert.match(element('ending').querySelector?.('h2')?.innerHTML??'Last Light',/Last Light/);
    assert.match(element('next-chapter').innerHTML,/credits again/);const done=JSON.parse(globalThis.localStorage.getItem('lastlight.complete')||'{}');assert.equal(done.complete,true);});
   check(`${label}: the end screen's "Watch the credits again" plays them again; Skip goes to the dedication, then past it`,()=>{element('next-chapter').onclick?.();assert.ok(until(()=>F().active&&F().phase==='roll',5));
@@ -173,18 +179,20 @@ export function playAftermathTwo(T0,label='Aftermath II',{fromCard=true,from=nul
 // The chapter's standalone checks: every DEV start, Continue, the cap variants, the credits by DEV, the earlier chapters still reachable.
 export async function runAftermathTwoChecks(T0){const X=aftermathTwoTools(T0),{h,until,wait,me,A,C,ph}=X,check=T0.check,element=T0.element;
  check('Aftermath II: every DEV scene (Aftermath II and the coda) starts where it says, in its own light, on its own feet, Sam where he should be, nothing supernatural, no script error',()=>{
-  for(const sc of DEV_SCENES[10].filter(x=>x.jump)){h.devScene(10,sc.id);h.step(1.2);const st=C();assert.ok(/^a2-/.test(st.phase),sc.id+' phase '+st.phase);
+  for(const sc of DEV_SCENES[10].filter(x=>x.jump)){h.devScene(10,sc.id);wait(1.2);const st=C();assert.ok(/^a2-/.test(st.phase),sc.id+' phase '+st.phase);
    if(sc.jump!=='aftermath2-end'){assert.match(element('date').innerHTML,/AUGUST 27, 2021/,sc.id+' date');assert.ok(st.sky.day>=0&&st.sky.p>=.1,sc.id+' light');if(!st.posed)assert.ok(h.nav.walkable(st.you.x,st.you.z,{r:.15}),sc.id+' on its feet');}
    if(sc.keep?.cap==='mom')assert.equal(st.keep.cap,'mom',sc.id+' cap variant');assert.equal(st.jamie.visible,false,sc.id+' no Jamie');assert.equal(h.chapter8.HM.root.visible,false,sc.id+' no hunter');
    assert.equal(st.marks.filter(m=>/threw/.test(m[1])).length,0,sc.id+' threw '+JSON.stringify(st.marks));}
-  for(const sc of DEV_SCENES[11].filter(x=>x.jump)){h.devScene(11,sc.id);h.step(1.5);if(sc.jump==='coda-credits'){assert.ok(h.credits.state().active,sc.id+' credits');continue;}const k=h.coda.state();assert.ok(k.active,sc.id+' coda active');
+  for(const sc of DEV_SCENES[11].filter(x=>x.jump)){h.devScene(11,sc.id);wait(1.5);if(sc.jump==='coda-credits'){assert.ok(h.credits.state().active,sc.id+' credits');continue;}const k=h.coda.state();assert.ok(k.active,sc.id+' coda active');
    if(sc.keep?.cap==='mom')assert.equal(k.cap,false,sc.id+' no cap');else if(sc.jump!=='coda-start'&&sc.jump!=='coda-pullback')assert.equal(k.cap,true,sc.id+' the cap');}});
- check('Aftermath II: Continue from an Aftermath II checkpoint keeps what you chose (his cap with his mother) and puts you there',()=>{h.devScene(10,'a2-jamie-shelter');h.step(1.5);
+ check('Aftermath II: Continue from an Aftermath II checkpoint keeps what you chose (his cap with his mother) and puts you there',()=>{h.devScene(10,'a2-jamie-shelter');wait(1.5);
   const s=h.chapter.saved();assert.ok(s&&/a2-/.test(s.section),'a checkpoint: '+JSON.stringify(s));const v=JSON.parse(globalThis.localStorage.getItem('lastlight.aftermath2')||'{}');assert.equal(v.cap,'mom');
-  h.toTitle();h.jump(s.section);h.step(1.5);assert.equal(C().keep.cap,'mom','still hers after Continue');assert.ok(/^a2-/.test(C().phase));});
+  // (the title's own Continue: Back to the title, then its button)
+  element('to-title')?.onclick?.();wait(.5);assert.equal(element('continue').hidden,false,'Continue is offered');assert.match(element('continue-where').textContent||'',/Jamie/);
+  element('continue').onclick?.();wait(1.5);assert.equal(C().keep.cap,'mom','still hers after Continue');assert.ok(/^a2-/.test(C().phase),C().phase);});
  check('Aftermath II: Continue after finishing the chapter offers the coda (“One more lap”), and the credits by DEV mark the game complete',()=>{h.devScene(10,'aftermath2-end');until(()=>h.snapshot.state==='ended',10);
-  const s=h.chapter.saved();assert.equal(s?.section,'coda-start');assert.equal(s?.label,'One more lap');h.devScene(11,'coda-credits');h.step(1);assert.ok(h.credits.state().active);
+  const s=h.chapter.saved();assert.equal(s?.section,'coda-start');assert.equal(s?.label,'One more lap');h.devScene(11,'coda-credits');wait(1);assert.ok(h.credits.state().active);
   assert.equal(JSON.parse(globalThis.localStorage.getItem('lastlight.complete')||'{}').complete,true);});
  check('Aftermath II: after the end, the earlier chapters still start (the Prologue, Chapter Eight, Aftermath I) and Aftermath II\'s town is put away',()=>{
-  h.devScene(9,'a1-goodbye');h.step(1.2);assert.equal(h.aftermath1.state.phase,'a1-bye');assert.equal(h.aftermath2.SC.TOWN.state().on,false,'2021 put away');assert.equal(h.aftermath2.SC.BODY.active,false,'your twelve-year-old body');
-  h.devScene(8,'c8-ride');h.step(1.2);assert.ok(/^n8-|^g8-|^c8-/.test(h.chapter.kit.S.phase),'Chapter Eight');h.devScene(0,'start');h.step(1);assert.equal(h.snapshot.state,'riding','the Prologue');assert.equal(h.coda.state().active,false,'no coda');});}
+  h.devScene(9,'a1-goodbye');wait(1.2);assert.equal(h.aftermath1.state.phase,'a1-bye');assert.equal(h.aftermath2.SC.TOWN.state().on,false,'2021 put away');assert.equal(h.aftermath2.SC.BODY.active,false,'your twelve-year-old body');
+  h.devScene(8,'c8-ride');wait(1.2);assert.ok(/^n8-|^g8-|^c8-/.test(h.chapter.kit.S.phase),'Chapter Eight');h.devScene(0,'start');wait(1);assert.equal(h.snapshot.state,'riding','the Prologue');assert.equal(h.coda.state().active,false,'no coda');});}
