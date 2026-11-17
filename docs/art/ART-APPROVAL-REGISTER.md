@@ -74,6 +74,8 @@ How to record a decision: change Status to `APPROVED 2027-MM-DD — <decision>` 
 | A-44 | Aftermath II time of day | Not specified | Approve | Late afternoon into golden hour, echoing the Prologue | Phase 7 | OPEN |
 | A-45 | Performance profiles and reference hardware | Targets in bible §20.2 are aspirational; no hardware baseline exists | Approve hardware set and targets after Phase 0 | — | Gate 0 | OPEN |
 | A-46 | AI-generated assets | Policy in Asset plan §8.4 | Allow per class / disallow | Allow for reference exploration only unless approved per asset | Phase 0 | OPEN |
+| A-47 | Environment map (image-based reflections) for authored PBR materials | Phase 0A: the game has no `scene.environment`; Blender-authored metal and glossy materials show direct highlights only ([PHASE-0A-GRAPHICS-ARCHITECTURE.md](PHASE-0A-GRAPHICS-ARCHITECTURE.md) L-6) | None / one neutral PMREM per lighting profile / per-scene captured maps | Per-profile PMREM from the sky shader, faded by the lighting script; test on the probe first | Phase 1 (hero bikes, eyes, wet skin) | OPEN |
+| A-48 | Hand grip and foot-on-pedal contact for authored characters | Phase 0A measured with the probe: `socket_grip` 3.8–3.9 cm from the bar, ball of the foot 7–8 cm from the pedal under the current `ridePose` targets ([BLENDER-PIPELINE.md](BLENDER-PIPELINE.md) §4, §9) | Re-tune `ridePose` targets for authored hands and feet / socket-driven IK / keep | Socket-driven IK for hands; re-tuned ankle offset for feet; contact tests updated | Phase 1 (first hero character) | OPEN |
 
 ## Gates
 

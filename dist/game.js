@@ -846,6 +846,9 @@ function startChapter(n){const ph=devStart(n);progress.record(n);return ph;}
 menu=createMenu({$,ui,progress,titleScene,titleArt,showTitleArt,qa,start,toTitle,startChapter,setSound,get muted(){return muted;}});showContinue();if(qa)menu.booted();
 const jumpParam=typeof location!=='undefined'&&(location.search||'').match(/[?&]jump=([\w-]+)/);if(jumpParam)$('start').onclick=()=>jumpTo(jumpParam[1]);
 requestAnimationFrame(frame);
+// Phase 0A asset pipeline (DEV only): ?pipeline puts the Blender test figure (pipeline-lab.js) into the running game.
+// Without ?pipeline nothing is imported or loaded; on failure it says so on screen and substitutes nothing.
+if(typeof location!=='undefined'&&/[?&]pipeline\b/.test(location.search||''))import('./pipeline-lab.js').then(m=>m.mountInGame({scene,camera,renderer,groundY:(x,z)=>nav.groundY(x,z)})).catch(e=>console.error('pipeline probe failed:',e));
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
 if(qa)window.lastLight={titleScene,titleArt,showTitleArt,progress,menu,startChapter,dev,devStart,devScene,DEV_SCENES,step(sec,h=1/30){for(let t=0;t<sec;t+=h)update(Math.min(h,sec-t));},render(){drawFrame(1/30);const info={...renderer.info.render};captionTone.sample();return info;},captionTone,tension,chapter3,chapter4,chapter5,chapter6,chapter7,chapter8,aftermath1,aftermath2,coda,credits,beginCredits,nextChapter,shoot,readPixels,press:c=>keys.add(c),release:c=>keys.delete(c),key:c=>dispatchEvent(Object.assign(new Event('keydown'),{code:c})),

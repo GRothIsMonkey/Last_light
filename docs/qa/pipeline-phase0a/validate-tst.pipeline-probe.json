@@ -1,0 +1,200 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "info": {
+  "file": "tst.pipeline-probe.glb",
+  "bytes": 2355672,
+  "sha256": "04b7a19156a17a74414eed74be511e45e90934df03fb639e2c0f9e708eaf43c1",
+  "generator": "Khronos glTF Blender I/O v5.0.21",
+  "profile": "tst",
+  "assetId": "tst.pipeline-probe",
+  "assetVersion": 1,
+  "triangles": 11724,
+  "vertices": 7682,
+  "skinnedMeshes": 7,
+  "morphTargets": [
+   "jawOpen",
+   "mouthSmileLeft",
+   "mouthSmileRight",
+   "browInnerUp",
+   "eyeBlinkLeft",
+   "eyeBlinkRight"
+  ],
+  "joints": 35,
+  "crownHeight": 1.555,
+  "faceForward": "+Z",
+  "leftHandX": 0.464,
+  "materials": [
+   "mat.skin/tst.pipeline-probe",
+   "mat.fabric.cotton/tst.pipeline-probe.shirt",
+   "mat.fabric.denim/tst.pipeline-probe.shorts",
+   "mat.rubber/tst.pipeline-probe.shoes",
+   "mat.eye/tst.pipeline-probe",
+   "mat.mouth/tst.pipeline-probe",
+   "mat.hair/tst.pipeline-probe",
+   "mat.eye.iris/tst.pipeline-probe",
+   "mat.metal.steel/tst.pipeline-probe.watch"
+  ],
+  "textures": [
+   {
+    "name": "tst.pipeline-probe__skin_normal",
+    "mime": "image/png",
+    "w": 512,
+    "h": 512,
+    "bytes": 448570,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "tst.pipeline-probe__skin_basecolor",
+    "mime": "image/jpeg",
+    "w": 512,
+    "h": 512,
+    "bytes": 9241,
+    "use": [
+     "color"
+    ]
+   },
+   {
+    "name": "tst.pipeline-probe__skin_orm",
+    "mime": "image/png",
+    "w": 512,
+    "h": 512,
+    "bytes": 95049,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "tst.pipeline-probe__shirt_normal",
+    "mime": "image/png",
+    "w": 512,
+    "h": 512,
+    "bytes": 580350,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "tst.pipeline-probe__shirt_basecolor",
+    "mime": "image/jpeg",
+    "w": 512,
+    "h": 512,
+    "bytes": 51679,
+    "use": [
+     "color"
+    ]
+   },
+   {
+    "name": "tst.pipeline-probe__shirt_orm",
+    "mime": "image/png",
+    "w": 512,
+    "h": 512,
+    "bytes": 77332,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "tst.pipeline-probe__shorts_normal",
+    "mime": "image/png",
+    "w": 512,
+    "h": 512,
+    "bytes": 13378,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "tst.pipeline-probe__shorts_basecolor",
+    "mime": "image/jpeg",
+    "w": 512,
+    "h": 512,
+    "bytes": 57439,
+    "use": [
+     "color"
+    ]
+   },
+   {
+    "name": "tst.pipeline-probe__hair_normal",
+    "mime": "image/png",
+    "w": 512,
+    "h": 512,
+    "bytes": 215364,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "tst.pipeline-probe__hair_basecolor",
+    "mime": "image/jpeg",
+    "w": 512,
+    "h": 512,
+    "bytes": 39075,
+    "use": [
+     "color"
+    ]
+   }
+  ],
+  "textureBytes": 1587477,
+  "gpuTextureMBEstimate": 13.3,
+  "clips": [
+   {
+    "name": "idle_breathe",
+    "channels": 105,
+    "paths": [
+     "translation",
+     "rotation",
+     "scale"
+    ]
+   },
+   {
+    "name": "talk",
+    "channels": 106,
+    "paths": [
+     "translation",
+     "rotation",
+     "scale",
+     "weights"
+    ]
+   },
+   {
+    "name": "walk_normal",
+    "channels": 105,
+    "paths": [
+     "translation",
+     "rotation",
+     "scale"
+    ]
+   },
+   {
+    "name": "wave_r",
+    "channels": 105,
+    "paths": [
+     "translation",
+     "rotation",
+     "scale"
+    ]
+   }
+  ]
+ },
+ "khronos": {
+  "ran": true,
+  "version": "2.0.0-dev.3.10",
+  "errors": 0,
+  "warnings": 7,
+  "infos": 13,
+  "hints": 0,
+  "messages": [
+   "W NODE_SKINNED_MESH_NON_ROOT /nodes/35 Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh.",
+   "W NODE_SKINNED_MESH_NON_ROOT /nodes/36 Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh.",
+   "W NODE_SKINNED_MESH_NON_ROOT /nodes/37 Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh.",
+   "W NODE_SKINNED_MESH_NON_ROOT /nodes/38 Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh.",
+   "W NODE_SKINNED_MESH_NON_ROOT /nodes/39 Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh.",
+   "W NODE_SKINNED_MESH_NON_ROOT /nodes/40 Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh.",
+   "W NODE_SKINNED_MESH_NON_ROOT /nodes/41 Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh."
+  ]
+ }
+}

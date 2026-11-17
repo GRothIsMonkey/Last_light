@@ -53,7 +53,7 @@ Rule: **adding more procedural primitives does not make a high-quality asset.** 
 7. **Texture** using the shared material families (§5 of the bible); export base color (sRGB), normal (OpenGL +Y), ORM (R AO, G roughness, B metal).
 8. **Rig / skin** to the shared skeleton (§4.2); weight paint; face shapes.
 9. **Animate** in-place clips per the clip list; authored speeds recorded.
-10. **Export** glTF 2.0 binary (`.glb`), metres, +Y up, −Z forward (game convention), applied transforms, no unused nodes; names per §7.
+10. **Export** glTF 2.0 binary (`.glb`), metres, +Y up, −Z forward (game convention), applied transforms, no unused nodes; names per §7. *(Superseded by Phase 0A, [BLENDER-PIPELINE.md](BLENDER-PIPELINE.md) §3 and §13: models face Blender −Y and export glTF-standard +Z front; the game's loader turns them to −Z. Export only with `tools/blender/ll_export.py`.)*
 11. **Validate** with the Khronos glTF Validator (zero errors), triangle/bone/texture budgets (script), naming, socket presence.
 12. **In-game review** at gameplay cameras (QA doc), both before/after, labeled.
 13. **Approval** recorded in the registry and `ART-APPROVAL-REGISTER.md`.
@@ -111,6 +111,8 @@ Author at 2× the runtime size; downsample with sharpening off; keep sources. Co
 | Post-processing | `EffectComposer`, `RenderPass`, `UnrealBloomPass`, `OutputPass` from r160 examples, or a single custom post pass | MIT | Small |
 
 Until these are vendored and proven in the offline package, continue with uncompressed glTF + JPEG/PNG and the current custom reader (extended carefully).
+
+*Phase 0A status: `GLTFLoader` (with `BufferGeometryUtils`) and `SkeletonUtils` from r160 are vendored (`dist/three-addons-*.js`) and proven in the served game and the offline package with uncompressed glTF + PNG/JPEG ([../PHASE0A_PIPELINE_REPORT.md](../PHASE0A_PIPELINE_REPORT.md)). Meshopt, KTX2/Basis and post-processing are still not vendored. The creature keeps its custom reader.*
 
 ### 5.3 Runtime
 
