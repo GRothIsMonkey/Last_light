@@ -50,8 +50,25 @@ class House:
         self.pal = palette
         self.rnd = random.Random(int(h['seeds'][0] * 1e6) + 17)
         self.mb = MB(f"{h['id']}:lod{lod}")
+        self.sills = []          # (wall origin, along, normal, s0, s1, sill y): where rain streaks start (house_bake)
         self.rooms = room_specs(self.rnd)
         self.stats = {}
+        # family habits (refinement pass; a separate random stream so the approved choices above stay as they were)
+        r2 = self.rnd2 = random.Random(int(h['seeds'][2] * 1e6) + 5)
+        self.family = {
+            'treat': r2.choice(['curtains', 'blinds', 'mixed', 'blinds', 'curtains']),
+            'lantern': r2.choice(['carriage', 'carriage', 'brass', 'jar']),
+            'gdoor': r2.choice(['raised', 'raised', 'long', 'ribbed']),
+            'porch': r2.choice(['chairs', 'chairs', 'bench', 'plants', 'none']),
+        }
+        if self.family['treat'] == 'blinds':
+            for k in ('bedroom', 'kid', 'den', 'dining'):
+                self.rooms[k] = dict(self.rooms[k], curtain=None, blinds=r2.choice([.3, .45, .6, .75]))
+            self.rooms['living'] = dict(self.rooms['living'], blinds=r2.choice([.2, .35]))
+        elif self.family['treat'] == 'curtains':
+            for k in ('bedroom', 'kid', 'den'):
+                self.rooms[k] = dict(self.rooms[k], curtain=r2.choice(['pair', 'pair', 'pair_closed']), blinds=0)
+        self.lantern_col = (.62, .48, .22) if self.family['lantern'] == 'brass' else (.03, .03, .03)
         r = self.rnd
         # how the family keeps the place (restrained: fresh / average / tired)
         self.care = ['fresh', 'average', 'average', 'tired'][int(h['seeds'][1] * 4) % 4]
@@ -307,7 +324,10 @@ class House:
         for (x, y, w, hh, k, room) in self.fo:
             spec = dict(self.rooms[room])
             spec['depth'] = 2.2 if y < 2.6 else 1.8
+            spec['flip'] = self.rnd2.random() < .5
+            spec['shift'] = self.rnd2.uniform(-.4, .4)
             F = front.frame(x + W2, y, t)
+            self.sills.append((front.o, front.ax, front.n, x + W2 - w / 2 - cw, x + W2 + w / 2 + cw, y - hh / 2 - .03))
             sh = shut if (shut is not None and k != 'picture' and h['style'] in ('colonial', 'cape', 'ranch', 'frontgable')) else None
             if k == 'picture':
                 # a fixed centre lite with two operating flankers, mulled
@@ -330,8 +350,11 @@ class House:
                 c = (z + D2) if s < 0 else (D2 - z)
                 spec = dict(self.rooms[room])
                 spec['depth'] = 1.6
+                spec['flip'] = self.rnd2.random() < .5
+                spec['shift'] = self.rnd2.uniform(-.4, .4)
                 spec['side'] = .5
                 F = wall.frame(c, y, 0)
+                self.sills.append((wall.o, wall.ax, wall.n, c - w / 2 - .09, c + w / 2 + .09, y - hh / 2 - .03))
                 HP.window(mb, F, w, hh, lites=self.lites, trim=self.c_trim, casing='flat', casing_w=.09, head='flat', interior=spec, lod=max(lod, 1) if lod < 2 else 2)
         back = self.wall_objs['back']
         for (x, y, w, hh, k, room) in self.bo:
@@ -374,7 +397,7 @@ class House:
         # porch light, house number, mat
         if lod <= 1:
             lx = .9 * (-self.knob)
-            HP.wall_lantern(mb, HP.sub(F, lx, 1.72), lod=lod)
+            HP.wall_lantern(mb, HP.sub(F, lx, 1.72), lod=lod, kind='jar' if self.family['lantern'] == 'jar' else 'carriage', frame_col=self.lantern_col)
             self.porch_light = tuple(HP.P(F, lx, 1.81, .1))
         if lod == 0:
             HP.house_number(mb, HP.sub(F, -lx, 1.55), self.address(), col=(.55, .42, .18), plate=None, lod=lod)
@@ -417,7 +440,7 @@ class House:
                 mb.quad(V(x0, fl, front + pd), V(x1, fl, front + pd), V(x1, fl, front), V(x0, fl, front), 'paint', self.c_floor, n=V(0, 1, 0))
             # steps (painted wood treads on stringers), centred on the door
             stw = 1.6
-            HP.steps(mb, dx - stw / 2, dx + stw / 2, front + pd, fl, n, .3, 'paint', self.c_floor)
+            HP.steps(mb, dx - stw / 2, dx + stw / 2, front + pd, fl, n, .3, 'paint', self.c_floor, lod=lod)
             # posts, railings, roof
             ph = (h['eaveFront'] - .12 - .25 - .24 - fl) if h['lowPorch'] else 2.75
             pz = front + pd - .16
@@ -456,17 +479,28 @@ class House:
                 # flashing where the porch roof meets the wall
                 mb.quad(V(x0 - .2, y2 - .01, front + .01), V(x1 + .2, y2 - .01, front + .01), V(x1 + .2, y2 + .14, front + .01), V(x0 - .2, y2 + .14, front + .01), 'metal', mix(self.c_roof, (.5, .5, .5), .3), n=V(0, 0, 1))
             # porch life: chairs, a planter
-            if lod == 0 and self.rnd.random() < .7:
-                cx = dx + (-self.knob) * min(pw / 2 - .8, 1.6)
-                col = self.rnd.choice([(.85, .84, .8), (.2, .32, .22), (.55, .35, .2)])
+            chairs = self.rnd.random() < .7          # (drawn as before, so the stream stays the same)
+            cx = dx + (-self.knob) * min(pw / 2 - .8, 1.6)
+            col = self.rnd.choice([(.85, .84, .8), (.2, .32, .22), (.55, .35, .2)])
+            habit = self.family['porch']
+            if lod == 0 and chairs and habit in ('chairs', 'plants'):
                 for k in range(2 if pw > 5 else 1):
                     HP.lawn_chair(mb, (cx + k * .8 * (-self.knob), fl, front + .8), math.pi + self.rnd.uniform(-.3, .3), col)
+            if lod == 0 and habit == 'bench':
+                bx = cx + .4 * (-self.knob)
+                wood = self.T('paint', (.42, .28, .16))
+                mb.box((bx, fl + .43, front + .45), (1.3, .05, .42), 'paint', wood)
+                mb.box((bx, fl + .7, front + .25), (1.3, .4, .04), 'paint', wood)
+                for sx in (-.58, .58):
+                    mb.box((bx + sx, fl + .21, front + .45), (.05, .42, .4), 'metal', (.05, .05, .05), skip=('-y',))
             if lod == 0:
                 HP.planter(mb, (dx + self.knob * (stw / 2 + .35), fl, front + pd - .5), lod=lod)
+                if habit == 'plants':
+                    HP.planter(mb, (dx - self.knob * (stw / 2 + .35), fl, front + pd - .5), r=.2, h=.32, col=(.45, .42, .38), lod=lod)
         elif kind == 'portico':
             ph = 2.6
             mb.box((dx, fl / 2, front + pd / 2), (pw, fl, pd), 'concrete', self.c_step, skip=('-y', '-z'))
-            HP.steps(mb, dx - .8, dx + .8, front + pd, fl, n, .3, 'concrete', self.c_step)
+            HP.steps(mb, dx - .8, dx + .8, front + pd, fl, n, .3, 'concrete', self.c_step, lod=lod)
             for s in (-1, 1):
                 HP.post(mb, (dx + s * (pw / 2 - .18), fl, front + pd - .18), fl + ph, .2, T, kind='round', lod=lod)
             mb.box((dx, fl + ph + .1, front + pd / 2), (pw + .2, .2, pd + .1), 'paint', T)
@@ -475,7 +509,7 @@ class House:
         else:
             # stoop: a concrete landing and steps, iron rail; a gabled hood on brackets on two-storey houses
             mb.box((dx, fl / 2, front + pd / 2), (pw, fl, pd), 'concrete', self.c_step, skip=('-y', '-z'))
-            HP.steps(mb, dx - .8, dx + .8, front + pd, fl, n, .3, 'concrete', self.c_step)
+            HP.steps(mb, dx - .8, dx + .8, front + pd, fl, n, .3, 'concrete', self.c_step, lod=lod)
             if lod <= 1 and n >= 3:
                 for s in (-1, 1):
                     x = dx + s * .74
@@ -622,6 +656,19 @@ class House:
             ou[0 if gs > 0 else 1] = 0.0
             HP.gable_roof(mb, gx - gs * .0, (z0 + z1) / 2, gw, gd, gh, rise, ou=tuple(ou), ov=(EAVE, EAVE), along_x=True, roof_col=self.c_roof, trim=T,
                           wall_col=self.c_wall, lod=lod, gutter_col=self.c_gutter, gable_walls=(gs < 0, gs > 0) if True else (True, True))
+            if lod <= 1:
+                # step flashing where the garage roof dies into the house wall, following both slopes
+                zc = (z0 + z1) / 2
+                slope = rise / (gd / 2)
+                xw = xi + gs * .012
+                za, zb = max(z0 - EAVE, -self.D2), min(z1 + EAVE, self.D2)
+                fl_col = mix(self.c_roof, (.55, .55, .52), .35)
+                for (zs, ze) in ((za, zc), (zc, zb)):
+                    if ze - zs < .05:
+                        continue
+                    ya = gh + rise - abs(zs - zc) * slope
+                    yb = gh + rise - abs(ze - zc) * slope
+                    mb.quad(V(xw, ya, zs), V(xw, yb, ze), V(xw, yb + .13, ze), V(xw, ya + .13, zs), 'metal', fl_col, n=V(gs, 0, 0))
         # corner boards on the garage
         if lod <= 1 and not brick:
             for z in (z1,):
@@ -630,7 +677,7 @@ class House:
         # garage door (or, on the car house, an opening whose working door is a separate node) + trim
         Fd = front.frame(gw / 2, slab, t)
         if not h['dynamicGarage']:
-            HP.garage_door(mb, HP.sub(Fd, 0, 0, -.1), dW, dH, col=self.c_gdoor, lod=lod, windows=self.rnd.random() < .45)
+            HP.garage_door(mb, HP.sub(Fd, 0, 0, -.1), dW, dH, col=self.c_gdoor, lod=lod, windows=self.rnd.random() < .45, style=self.family['gdoor'])
             # a dark garage behind the door's windows
             if lod == 0:
                 HP.lquad(mb, Fd, [(-dW / 2, 0, -.16), (dW / 2, 0, -.16), (dW / 2, dH, -.16), (-dW / 2, dH, -.16)], 'interior', (1, 1, 1), uv=HP.rect_uv(HP.STRIP_UV['garage']), n=(0, 0, 1))
@@ -639,7 +686,7 @@ class House:
         HP.lbox(mb, Fd, (0, dH + .08, .015), (dW + .28, .16, .03), 'paint', T, skip=('-z',))
         if lod <= 1:
             for s in (-1, 1):
-                HP.wall_lantern(mb, HP.sub(Fd, s * (dW / 2 + .5), 1.85), lod=lod)
+                HP.wall_lantern(mb, HP.sub(Fd, s * (dW / 2 + .5), 1.85), lod=lod, kind='jar' if self.family['lantern'] == 'jar' else 'carriage', frame_col=self.lantern_col)
         # hoop (the story's: exact board and rim positions from the plan)
         if h.get('hoop') and lod <= 1:
             b, rpos = h['hoop']['board'], h['hoop']['rim']

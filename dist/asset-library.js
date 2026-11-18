@@ -25,7 +25,8 @@ export const ASSETS={
  'bike.alex':{file:'assets/bike/bike.alex.glb',rig:'rig.bike',kind:'bike',note:'youth cruiser'},
  'bike.player':{file:'assets/bike/bike.player.glb',rig:'rig.bike',kind:'bike',note:'the protagonist\'s youth hybrid (rig.js road-kid)'},
  // Prologue house-architecture benchmark (DEV, ?houses): twelve authored houses on their lots, awaiting approval
- 'house.prologue':{file:'assets/house/house.prologue.glb',rig:'none',kind:'house',note:'Blender house kit: 12 Prologue lots, 3 LODs, shared texture library'},
+ 'house.prologue':{file:'assets/house/house.prologue.glb',rig:'none',kind:'house',note:'Blender house kit: 12 Prologue lots, 3 LODs, shared texture library (v2: realism pass)'},
+ 'house.prologue.v1':{file:'assets/house/house.prologue.v1.glb',assetId:'house.prologue',rig:'none',kind:'house',note:'the first house benchmark (53b7641), kept byte for byte for A/B/C comparison'},
 };
 const cache=new Map(),log=[];
 let loader=null;
@@ -53,7 +54,8 @@ export function loadAsset(id,{renderer=null}={}){
    geos.add(o.geometry);tris+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;
    for(const m of [].concat(o.material)){mats.add(m);for(const k of ['map','normalMap','roughnessMap','metalnessMap','aoMap','emissiveMap'])if(m[k]){texs.add(m[k]);m[k].anisotropy=Math.min(4,aniso);}}});
   const extras=(()=>{let e=null;template.traverse(o=>{if(!e&&o.userData?.ll_asset_id)e=o.userData;});return e;})();
-  if(!extras||extras.ll_asset_id!==id)throw new Error(`${def.file}: extras.ll_asset_id is ${extras?.ll_asset_id} (expected ${id})`);
+  const expect=def.assetId||id;// (a frozen earlier version of an asset keeps its own id inside the file)
+  if(!extras||extras.ll_asset_id!==expect)throw new Error(`${def.file}: extras.ll_asset_id is ${extras?.ll_asset_id} (expected ${expect})`);
   const morphs=new Set();template.traverse(o=>{if(o.morphTargetDictionary)for(const k of Object.keys(o.morphTargetDictionary))morphs.add(k);});
   const info={id,file:def.file,from,bytes:buf.byteLength,readMs:+(t1-t0).toFixed(1),parseMs:+(t2-t1).toFixed(1),triangles:tris,skinnedMeshes:skinned,
    geometries:geos.size,materials:mats.size,textures:texs.size,clips:gltf.animations.map(c=>({name:c.name,duration:+c.duration.toFixed(3),tracks:c.tracks.length})),morphTargets:[...morphs],

@@ -97,7 +97,7 @@ def window(mb, F, W, H, *, lites='6/6', trim=(1, 1, 1), sash_col=None, casing='f
                 lbox(mb, F, (s * (iw / 2 - st / 2), (ya + bottom + yb - top) / 2, zc - .002), (st, yb - ya - top - bottom, zd), 'paint', S, skip=('+x' if s > 0 else '-x', '-z', '+y', '-y'))
             gx0, gx1, gy0, gy1 = -iw / 2 + st, iw / 2 - st, ya + bottom, yb - top
             gz = zc
-            lquad(mb, F, [(gx0, gy0, gz), (gx1, gy0, gz), (gx1, gy1, gz), (gx0, gy1, gz)], 'glass', (0.06, 0.07, 0.07), n=(0, 0, 1))
+            pane(mb, F, gx0, gx1, gy0, gy1, gz)
             nx, ny = grid
             mw, mt = .019, .008
             for k in range(1, nx):
@@ -109,7 +109,7 @@ def window(mb, F, W, H, *, lites='6/6', trim=(1, 1, 1), sash_col=None, casing='f
     else:
         # mid (or a fixed picture window): one glass plane, a meeting rail on double-hungs
         gz = -.05
-        lquad(mb, F, [(-iw / 2, y_lo, gz), (iw / 2, y_lo, gz), (iw / 2, y_hi, gz), (-iw / 2, y_hi, gz)], 'glass', (0.06, 0.07, 0.07), n=(0, 0, 1))
+        pane(mb, F, -iw / 2, iw / 2, y_lo, y_hi, gz)
         if not picture:
             lbox(mb, F, (0, (y_lo + y_hi) / 2, -.04), (iw, .05, .03), 'paint', S, skip=('-z',))
     # --- casing, sill, head
@@ -131,6 +131,16 @@ def window(mb, F, W, H, *, lites='6/6', trim=(1, 1, 1), sash_col=None, casing='f
         shutter_pair(mb, F, W, H, hw + cw, shutters, kind=shutter_kind, lod=lod)
     if interior:
         interior_box(mb, F, W - 2 * fw, H - 2 * fw, interior, lod=lod, dy=0)
+
+
+def pane(mb, F, x0, x1, y0, y1, z):
+    """A glass pane, never perfectly flat: its corners sit up to 2 mm off the plane (a fraction of a degree of tilt),
+    so neighbouring panes reflect the sky a little differently, as real glazing does; a hair of tint variation."""
+    o = P(F, (x0 + x1) / 2, (y0 + y1) / 2, z)
+    h = lambda k: ((math.sin(o[0] * 12.9898 + o[1] * 78.233 + o[2] * 37.719 + k * 4.1) * 43758.5453) % 1.0) - .5
+    dz = [h(k) * .004 for k in range(4)]
+    tint = (0.055 + h(7) * .012, 0.066 + h(8) * .012, 0.066 + h(9) * .01)
+    lquad(mb, F, [(x0, y0, z + dz[0]), (x1, y0, z + dz[1]), (x1, y1, z + dz[2]), (x0, y1, z + dz[3])], 'glass', tint, n=(0, 0, 1))
 
 
 def shutter_pair(mb, F, W, H, edge, col, kind='louver', lod=0):
@@ -168,6 +178,8 @@ def interior_box(mb, F, W, H, spec, lod=0, dy=0.0):
     fabric=(r,g,b), sill_h=0.9 (sill height above the room floor), garage=False)."""
     card = spec.get('card', 0)
     depth = spec.get('depth', 2.4)
+    flip = -1.0 if spec.get('flip') else 1.0
+    shift = spec.get('shift', 0.0)
     hw, hh = W / 2, H / 2
     z0 = -REVEAL - .002
     wallR = spec.get('wall', 'wall0')
@@ -185,7 +197,7 @@ def interior_box(mb, F, W, H, spec, lod=0, dy=0.0):
         x0, x1, y0, y1 = -hw - ext, hw + ext, -hh - ext, hh + ext
         cu = CARD_UV[card]
         span = CARD_ASPECT_M
-        uu = lambda x: .5 + x / span
+        uu = lambda x: .5 + flip * (x + shift) / span
         vv = lambda y: .5 + (y + spec.get('card_y', 0)) / span
         lquad(mb, F, [(x0, y0, -d), (x1, y0, -d), (x1, y1, -d), (x0, y1, -d)], 'interior', white,
               uv=[(cu[0] + cu[2] * uu(x0), cu[1] + cu[3] * vv(y0)), (cu[0] + cu[2] * uu(x1), cu[1] + cu[3] * vv(y0)), (cu[0] + cu[2] * uu(x1), cu[1] + cu[3] * vv(y1)), (cu[0] + cu[2] * uu(x0), cu[1] + cu[3] * vv(y1))], n=(0, 0, 1))
@@ -207,7 +219,7 @@ def interior_box(mb, F, W, H, spec, lod=0, dy=0.0):
     cu = CARD_UV[card]
     span = CARD_ASPECT_M
     # the back card is centred on the window, its floor line on the room floor (card's bottom = floor)
-    uu = lambda x: .5 + x / span
+    uu = lambda x: .5 + flip * (x + shift) / span
     vv = lambda y: (y - y0) / span
     lquad(mb, F, [(x0, y0, zb), (x1, y0, zb), (x1, y1, zb), (x0, y1, zb)], 'interior', white,
           uv=[(cu[0] + cu[2] * uu(x0), cu[1] + cu[3] * vv(y0)), (cu[0] + cu[2] * uu(x1), cu[1] + cu[3] * vv(y0)), (cu[0] + cu[2] * uu(x1), cu[1] + cu[3] * vv(y1)), (cu[0] + cu[2] * uu(x0), cu[1] + cu[3] * vv(y1))], n=(0, 0, 1))
@@ -366,8 +378,16 @@ def garage_door(mb, F, W, H, *, col, lod=0, windows=False, style='raised', z=0.0
                     continue
                 if style == 'raised':
                     raised_panel(mb, F, xc, (ya + yb) / 2, pw * .82, sh * .62, z, col)
+                elif style == 'long' and c % 2 == 0:
+                    raised_panel(mb, F, xc + pw / 2, (ya + yb) / 2, pw * 1.82, sh * .58, z, col)
         elif windows and r == rows - 1:
             lquad(mb, F, [(-W / 2 + .05, ya + sh * .22, z + .002), (W / 2 - .05, ya + sh * .22, z + .002), (W / 2 - .05, yb - sh * .22, z + .002), (-W / 2 + .05, yb - sh * .22, z + .002)], 'glass', (.04, .045, .045), n=(0, 0, 1))
+    if style == 'ribbed' and lod == 0:
+        # flat steel sections with two shallow ribs each (a 1990s builder door)
+        for r in range(rows):
+            for f in (.36, .68):
+                yy = y0 + (r + f) * sh
+                lquad(mb, F, [(-W / 2, yy - .006, z + .0), (W / 2, yy - .006, z + .0), (W / 2, yy + .006, z - .006), (-W / 2, yy + .006, z - .006)], 'paint', tuple(c * .82 for c in col), n=(0, -1, 1))
     # bottom seal
     if lod == 0:
         lbox(mb, F, (0, y0 + .01, z + .006), (W, .02, .012), 'metal', (.08, .08, .08), skip=('-z',))
@@ -427,13 +447,23 @@ def railing(mb, a, b, y, col, lod=0, height=.9, spacing=.105):
         mb.box((p[0], y + .1 + (height - .2) / 2 + .02, p[2]), (.038, height - .2, .038), 'paint', col, skip=('-y', '+y'))
 
 
-def steps(mb, x0, x1, z_front, floor, n, run, slot, col, sides=True, frame_dir=1):
-    """n-1 steps descending from a porch/stoop edge at z_front (toward +z) to the ground; floor = top height."""
+def steps(mb, x0, x1, z_front, floor, n, run, slot, col, sides=True, frame_dir=1, lod=0):
+    """n-1 steps descending from a porch/stoop edge at z_front (toward +z) to the ground; floor = top height.
+    Wooden steps get treads with a 25 mm nosing over a shadowed riser and side stringers."""
     for k in range(n - 1):
         top = floor * (n - 1 - k) / n
         za = z_front + run * k
         zb = za + run
-        mb.box(((x0 + x1) / 2, top / 2, (za + zb) / 2 + .0), (x1 - x0, top, run), slot, col, skip=('-y', '-z'))
+        if slot == 'paint' and lod == 0:
+            riser = tuple(c * .8 for c in col)
+            mb.box(((x0 + x1) / 2, (top - .03) / 2, (za + zb) / 2 - .02), (x1 - x0 - .06, top - .03, run - .04), slot, riser, skip=('-y', '-z'))
+            mb.box(((x0 + x1) / 2, top - .015, (za + zb) / 2 + .012), (x1 - x0, .03, run + .025), slot, col, skip=('-z',))
+        else:
+            mb.box(((x0 + x1) / 2, top / 2, (za + zb) / 2 + .0), (x1 - x0, top, run), slot, col, skip=('-y', '-z'))
+    if slot == 'paint' and lod == 0 and n > 1:
+        zf = z_front + run * (n - 1)
+        for x in (x0 + .015, x1 - .015):
+            mb.poly([V(x, floor - .05, z_front), V(x, floor - .05 - .2, z_front), V(x, 0, zf), V(x, .1, zf)], 'paint', col, n=V(1 if x > (x0 + x1) / 2 else -1, 0, 0))
 
 
 # ============================================================================================== roofs
@@ -744,8 +774,20 @@ def ac_unit(mb, c, rot, col=(.72, .73, .7), lod=0):
         mb.cylinder((x, y + .79, z), (x, y + .83, z), .06, 'metal', (.1, .1, .1), seg=8)
 
 
-def wall_lantern(mb, F, frame_col=(.03, .03, .03), lod=0):
-    """A carriage lantern by a door: back plate, arm, glass box with a lamp (the light slot glows at night)."""
+def wall_lantern(mb, F, frame_col=(.03, .03, .03), lod=0, kind='carriage'):
+    """A porch light by a door: a carriage lantern (black or brass), or a plain jelly-jar fixture; the light slot glows."""
+    if kind == 'jar' and lod <= 1:
+        # a jelly-jar fixture: round base on the wall, a short arm, a ribbed glass jar hanging upright under a cap
+        lbox(mb, F, (0, .1, .012), (.13, .13, .024), 'metal', frame_col, skip=('-z',))
+        lbox(mb, F, (0, .1, .07), (.035, .035, .1), 'metal', frame_col)
+        c0, c1 = P(F, 0, .12, .13), P(F, 0, -.04, .13)
+        mb.cylinder(c0, c0 + (P(F, 0, .03, 0) - P(F, 0, 0, 0)), .065, 'metal', frame_col, seg=12)
+        mb.cylinder(c1, c0, .055, 'light', (1.0, .86, .6), seg=12, caps=(True, False))
+        if lod == 0:
+            for k in range(4):
+                a = k * math.pi / 2 + math.pi / 4
+                lbox(mb, F, (math.cos(a) * .057, .04, .13 + math.sin(a) * .057), (.007, .16, .007), 'metal', frame_col)
+        return
     lbox(mb, F, (0, 0, .015), (.12, .26, .03), 'metal', frame_col, skip=('-z',))
     if lod >= 2:
         lbox(mb, F, (0, 0, .1), (.16, .26, .14), 'light', (1.0, .78, .45))

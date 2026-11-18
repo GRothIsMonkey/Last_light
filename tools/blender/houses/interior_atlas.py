@@ -471,13 +471,31 @@ def main():
         img = strip(kind, cs, sh, rnd)
         y0 = N // 2 + cy * sh
         atlas[y0:y0 + sh, cx * cs:(cx + 1) * cs] = np.clip(img[::-1], 0, 1)   # v up within the strip
+        # what glows when the room's lamps are on (refinement pass): the whole room, not only its back wall. Side walls and
+        # ceiling brighten toward the lamp side (the back), blinds and curtains glow through, the floor a little.
+        yy = np.linspace(0, 1, sh)[::-1][:, None] * np.ones((1, cs))
+        xx = np.ones((sh, 1)) * np.linspace(0, 1, cs)[None, :]
+        warm = np.array([1.0, .78, .5])
+        glow = None
+        if kind.startswith('wall') and kind != 'garage_wall':
+            glow = (.1 + .3 * xx ** 1.4) * (.75 + .25 * yy)
+        elif kind == 'ceiling':
+            glow = .12 + .32 * xx ** 1.2
+        elif kind.startswith('floor'):
+            glow = .05 + .14 * xx
+        elif kind == 'blinds':
+            glow = .34 * np.ones_like(xx)
+        elif kind in ('fabric', 'sheer'):
+            glow = (.26 if kind == 'fabric' else .45) * np.ones_like(xx)
+        if glow is not None:
+            emis[y0:y0 + sh, cx * cs:(cx + 1) * cs] = np.clip(img[::-1], 0, 1) * glow[..., None] * warm[None, None, :] * 1.6
         if kind == 'glow':
             emis[y0:y0 + sh, cx * cs:(cx + 1) * cs] = img
     os.makedirs(OUT, exist_ok=True)
     rt = 1024
     files = {'basecolor': 'house.kit__interior_basecolor.jpg', 'emissive': 'house.kit__interior_emissive.jpg'}
     Image.fromarray((np.clip(atlas, 0, 1) * 255 + .5).astype(np.uint8)).resize((rt, rt), Image.LANCZOS).save(os.path.join(OUT, files['basecolor']), quality=90)
-    Image.fromarray((np.clip(emis, 0, 1) * 255 + .5).astype(np.uint8)).resize((rt, rt), Image.LANCZOS).save(os.path.join(OUT, files['emissive']), quality=90)
+    Image.fromarray((np.clip(emis, 0, 1) * 255 + .5).astype(np.uint8)).resize((rt // 2, rt // 2), Image.LANCZOS).save(os.path.join(OUT, files['emissive']), quality=90)   # soft light: 512 is enough
     meta_path = os.path.join(OUT, 'library.json')
     lib = json.load(open(meta_path)) if os.path.exists(meta_path) else {'families': {}}
     lib['families']['interior'] = {'files': files, 'mean': [1, 1, 1], 'emission': 0.0,

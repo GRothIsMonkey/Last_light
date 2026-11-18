@@ -25,8 +25,9 @@ sys.path.insert(0, os.path.join(ROOT, 'tools', 'blender'))
 import bpy
 import house_kit as K
 import house_build as HB
+import house_bake
 
-VERSION = 1
+VERSION = 2
 LICENSE = 'Original work for Last Light (Roth Studios).'
 ASSET_ID = 'house.prologue'
 TEX_DIR = os.path.join(ROOT, 'assets', 'source', 'house', 'kit', 'textures')
@@ -36,7 +37,7 @@ SRC_DIR = os.path.join(ROOT, 'assets', 'source', 'house', 'prologue')
 def args():
     a = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     o = {'houses': 'all', 'lods': '0,1,2', 'stage': 'full', 'render': '', 'out': os.path.join(ROOT, 'dist', 'assets', 'house', 'house.prologue.glb'),
-         'blend': os.path.join(SRC_DIR, 'house.prologue.blend'), 'shots': os.path.join(ROOT, 'docs', 'qa', 'houses-phase1', 'blender'), 'samples': '64', 'export': '1'}
+         'blend': os.path.join(SRC_DIR, 'house.prologue.blend'), 'shots': os.path.join(ROOT, 'docs', 'qa', 'houses-phase1', 'blender'), 'samples': '64', 'export': '1', 'bake': '1'}
     for i, k in enumerate(a):
         if k.startswith('--') and i + 1 < len(a):
             o[k[2:]] = a[i + 1]
@@ -106,6 +107,7 @@ def main():
         for lod in lods:
             house = HB.House(h, lod, tints, P['palette'])
             mb = house.build()
+            bk = house_bake.bake(mb, house, lod) if o['bake'] == '1' else None
             ob = mb.build(coll, mats, name=f"{h['id']}:lod{lod}")
             ob.parent = hn
             ob['ll_lod'] = lod

@@ -262,6 +262,59 @@ class MB:
             self.poly([V(*self.verts[i0 + j]) for j in range(m)], slot, col)
             self.poly([V(*self.verts[i0 + (n - 1) * m + j]) for j in range(m)][::-1], slot, col)
 
+    # ------------------------------------------------------------------ tessellation (for baked vertex shading)
+    def tessellate(self, rules):
+        """Split large planar quads and triangles of the given slots into a grid no coarser than rules[slot] metres,
+        so the baked occlusion and weathering (house_bake.py) have vertices to live on. UVs are interpolated."""
+        out = []
+        for f in self.faces:
+            idx, slot, uv, col, smooth = f
+            mx = rules.get(slot)
+            if not mx or smooth or len(idx) not in (3, 4) or not isinstance(col, tuple):
+                out.append(f)
+                continue
+            P = [np.asarray(self.verts[i], dtype=float) for i in idx]
+            U = [np.asarray(u, dtype=float) for u in uv]
+            if len(idx) == 4:
+                nu = int(math.ceil(max(np.linalg.norm(P[1] - P[0]), np.linalg.norm(P[2] - P[3])) / mx))
+                nv = int(math.ceil(max(np.linalg.norm(P[3] - P[0]), np.linalg.norm(P[2] - P[1])) / mx))
+                if nu * nv <= 1:
+                    out.append(f)
+                    continue
+                g, gu = {}, {}
+                for i in range(nu + 1):
+                    for j in range(nv + 1):
+                        a, b = i / nu, j / nv
+                        w = ((1 - a) * (1 - b), a * (1 - b), a * b, (1 - a) * b)
+                        g[i, j] = len(self.verts)
+                        self.verts.append(tuple(sum(w[k] * P[k] for k in range(4))))
+                        gu[i, j] = tuple(sum(w[k] * U[k] for k in range(4)))
+                for i in range(nu):
+                    for j in range(nv):
+                        q = [(i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1)]
+                        out.append(([g[k] for k in q], slot, [gu[k] for k in q], col, smooth))
+            else:
+                n = int(math.ceil(max(np.linalg.norm(P[1] - P[0]), np.linalg.norm(P[2] - P[1]), np.linalg.norm(P[0] - P[2])) / mx))
+                if n <= 1:
+                    out.append(f)
+                    continue
+                g, gu = {}, {}
+                for i in range(n + 1):
+                    for j in range(n + 1 - i):
+                        a, b = i / n, j / n
+                        w = (1 - a - b, a, b)
+                        g[i, j] = len(self.verts)
+                        self.verts.append(tuple(sum(w[k] * P[k] for k in range(3))))
+                        gu[i, j] = tuple(sum(w[k] * U[k] for k in range(3)))
+                for i in range(n):
+                    for j in range(n - i):
+                        t1 = [(i, j), (i + 1, j), (i, j + 1)]
+                        out.append(([g[k] for k in t1], slot, [gu[k] for k in t1], col, smooth))
+                        if i + j < n - 1:
+                            t2 = [(i + 1, j), (i + 1, j + 1), (i, j + 1)]
+                            out.append(([g[k] for k in t2], slot, [gu[k] for k in t2], col, smooth))
+        self.faces = out
+
     # ------------------------------------------------------------------ stats / output
     def tris(self):
         return sum(len(f[0]) - 2 for f in self.faces)
@@ -291,9 +344,11 @@ class MB:
         uvs, cols = [], []
         for f in self.faces:
             c = f[3]
+            per = isinstance(c, list)          # per-corner colours (after house_bake) or one colour for the face
             for k in range(len(f[0])):
                 uvs.extend(f[2][k])
-                cols.extend((c[0], c[1], c[2], 1.0))
+                ck = c[k] if per else c
+                cols.extend((ck[0], ck[1], ck[2], 1.0))
         uvl.data.foreach_set('uv', uvs)
         col.data.foreach_set('color', cols)
         me.validate(clean_customdata=False)

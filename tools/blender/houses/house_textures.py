@@ -71,7 +71,7 @@ def hexlin(h):
     return srgb_to_lin(np.array([int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)], np.float32))
 
 
-def save(name, base_lin, normal, orm, out, size=RUNTIME, extra=None):
+def save(name, base_lin, normal, orm, out, size=RUNTIME, extra=None, normal_size=None, orm_size=None):
     os.makedirs(out, exist_ok=True)
     files = {}
     b = (lin_to_srgb(base_lin) * 255 + .5).astype(np.uint8)
@@ -80,12 +80,14 @@ def save(name, base_lin, normal, orm, out, size=RUNTIME, extra=None):
     im.save(os.path.join(out, files['basecolor']), quality=90)
     n = ((normal * .5 + .5) * 255 + .5).astype(np.uint8)
     files['normal'] = f'house.kit__{name}_normal.png'
-    Image.fromarray(n, 'RGB').resize((size, size), Image.LANCZOS).save(os.path.join(out, files['normal']), optimize=True)
+    ns = normal_size or size
+    Image.fromarray(n, 'RGB').resize((ns, ns), Image.LANCZOS).save(os.path.join(out, files['normal']), optimize=True)
     o = (np.clip(orm, 0, 1) * 255 + .5).astype(np.uint8)
     files['orm'] = f'house.kit__{name}_orm.png'
-    Image.fromarray(o, 'RGB').resize((size, size), Image.LANCZOS).save(os.path.join(out, files['orm']), optimize=True)
+    os_ = orm_size or size
+    Image.fromarray(o, 'RGB').resize((os_, os_), Image.LANCZOS).save(os.path.join(out, files['orm']), optimize=True)
     mean = [float(x) for x in base_lin.reshape(-1, 3).mean(0)]
-    d = {'files': files, 'mean': mean}
+    d = {'files': files, 'mean': mean, 'sizes': {'basecolor': size, 'normal': ns, 'orm': os_}}
     if extra:
         d.update(extra)
     return d
@@ -93,174 +95,201 @@ def save(name, base_lin, normal, orm, out, size=RUNTIME, extra=None):
 
 # ---------------------------------------------------------------------------------------------------------- siding
 def siding(N=2048, tile=2.0, seed=11):
+    """Double-4" vinyl lap (v2): convex lap faces, deep butt shadow, staggered panel laps with their overlap shadow,
+    woodgrain embossing, slow 'oil-canning' waviness, per-panel and per-run tone, chalky mottling."""
     mpp = tile / N
-    v = (N - 1 - np.arange(N) + .5) / N * tile          # metres up, per row
+    v = (N - 1 - np.arange(N) + .5) / N * tile
     u = (np.arange(N) + .5) / N * tile
     V_, U_ = np.meshgrid(v, u, indexing='ij')
     course = .1
     k = np.floor(V_ / course)
-    t = V_ / course - k                                  # 0 at the butt (bottom), 1 at the top of the course
+    t = V_ / course - k                                   # 0 at the butt (bottom), 1 at the top of the course
     r = rng(seed)
-    # panel rows = 2 courses (double 4"); a lap joint in some rows
-    prow = (k // 2).astype(int) % (int(tile / course) // 2)
-    joints = {}
-    for p in range(int(tile / course) // 2):
-        if r.random() < .55:
-            joints[p] = r.uniform(.1, tile - .1)
-    H = .011 * (1 - t) ** 1.1                             # the lap's wedge: 11 mm at the butt
-    butt = np.clip(t / .035, 0, 1)
-    H = H * (.55 + .45 * butt ** .5)                      # rounded butt edge
-    H += .0035 * np.clip(1 - np.abs(t - .5) / .5, 0, 1) * 0
-    # the double-4: a small V groove in the middle of each panel (between its two laps) is the course boundary itself
-    shift = np.zeros_like(H)
-    for p, x in joints.items():
-        m = (prow == p)
-        side = (U_ > x) & (U_ < x + .9)
-        shift += np.where(m & side, .0012, 0)
-        edge = m & (np.abs(U_ - x) < .0015)
-        shift -= np.where(edge, .002, 0)
-    H += shift
-    grain = fbm(N, seed + 3, scales=(64, 24, 8, 3), weights=(.15, .3, .35, .2), aniso=(6, .35))
-    H += grain * .00025
-    nrm = normal_from_height(H, mpp, 1.0)
-    # colour: near-white vinyl, per-panel tone, chalky mottling, dirt settling under each butt
+    rows = int(tile / course) // 2
+    prow = (k // 2).astype(int) % rows
+    H = .012 * (1 - t) ** 1.05 + .0011 * np.sin(np.pi * np.clip(t, 0, 1)) # wedge + a slight convex lap face
+    butt = np.clip(t / .03, 0, 1)
+    H = H * (.5 + .5 * butt ** .45)
     tone = np.zeros_like(H)
-    for p in range(int(tile / course) // 2):
-        tone += np.where(prow == p, r.normal(0, .012), 0)
-    mott = fbm(N, seed + 7, scales=(512, 160, 40, 10), weights=(.5, .3, .15, .05))
-    under = np.exp(-((1 - t) / .06) ** 2) * .06 + np.exp(-(t / .03) ** 2) * .05
-    base = .82 * (1 + tone + mott * .025 - under)
-    base_rgb = np.stack([base * 1.0, base * .995, base * .985], -1)
-    ao = 1 - np.exp(-((1 - t) / .08) ** 2) * .22 - np.exp(-(t / .02) ** 2) * .3
-    rough = .52 + mott * .05 + grain * .03 + under * .4
+    lapmask = np.zeros_like(H)
+    for p in range(rows):
+        m = (prow == p)
+        cuts = sorted(r.uniform(0, tile, size=r.integers(0, 2)))
+        x0 = 0.0
+        segs = list(cuts) + [tile]
+        for x in segs:
+            seg = m & (U_ >= x0) & (U_ < x)
+            tone += np.where(seg, r.normal(0, .016), 0)
+            x0 = x
+        for x in cuts:
+            side = m & (U_ > x) & (U_ < x + .02)
+            H += np.where(side, .0009 * (1 - (U_ - x) / .02), 0)
+            lapmask = np.maximum(lapmask, np.where(m & (np.abs(U_ - x) < .004), 1.0, 0.0))
+            lapmask = np.maximum(lapmask, np.where(m & (U_ > x) & (U_ < x + .012), .45 * (1 - (U_ - x) / .012), 0.0))
+    grain = fbm(N, seed + 3, scales=(48, 20, 8, 3), weights=(.15, .3, .35, .2), aniso=(7, .3))
+    H += grain * .00034
+    wave = tile_noise(N, 60, seed + 5, aniso=(1.0, .15))
+    H += wave * .0006
+    nrm = normal_from_height(H, mpp, 1.0)
+    mott = fbm(N, seed + 7, scales=(560, 180, 48, 12), weights=(.5, .3, .15, .05))
+    chalk = np.clip(fbm(N, seed + 9, scales=(300, 90, 24, 6)) - .15, 0, 1)
+    under = np.exp(-((1 - t) / .05) ** 2) * .07 + np.exp(-(t / .028) ** 2) * .16
+    base = .82 * (1 + tone + mott * .03 + chalk * .035 - under - lapmask * .06 + grain * .006)
+    base_rgb = np.stack([base * 1.0, base * .995, base * .982], -1)
+    ao = 1 - np.exp(-((1 - t) / .07) ** 2) * .2 - np.exp(-(t / .02) ** 2) * .38 - lapmask * .2
+    rough = .5 + mott * .05 + grain * .04 + chalk * .12 + under * .3
     orm = np.stack([ao, rough, np.zeros_like(ao)], -1)
     return base_rgb, nrm, orm
 
 
 # ---------------------------------------------------------------------------------------------------------- brick
 def brick(N=2048, tile=2.0, seed=23):
+    """Modular brick in running bond (v2): four clay tones and flashed ends, sand-struck faces with pits and iron
+    specks, slightly irregular brick faces and lengths, chipped arrises, a tooled concave mortar joint of varying
+    tone, recessed 8 mm."""
     mpp = tile / N
     v = (N - 1 - np.arange(N) + .5) / N * tile
     u = (np.arange(N) + .5) / N * tile
     V_, U_ = np.meshgrid(v, u, indexing='ij')
-    ch = tile / 30
-    bl = tile / 10
-    row = np.floor(V_ / ch).astype(int)
-    off = (row % 2) * bl / 2
-    col = np.floor((U_ + off) / bl).astype(int) % 10
-    fv = V_ / ch - row
-    fu = ((U_ + off) / bl) - np.floor((U_ + off) / bl)
-    mj = .010
-    dv = np.minimum(fv * ch, (1 - fv) * ch)              # distance to the bed joints (m)
-    du = np.minimum(fu * bl, (1 - fu) * bl)
-    d = np.minimum(dv, du) - mj / 2                       # distance into the brick face
+    nrows, ncols = 30, 10
+    ch = tile / nrows
+    bl = tile / ncols
     r = rng(seed)
-    ids = (row * 10 + col)
-    nb = 30 * 10
-    hue = r.normal(0, 1, nb)
+    row = np.floor(V_ / ch).astype(int)
+    off = (row % 2) * bl / 2 + r.normal(0, .004, nrows)[row % nrows]
+    jit = r.normal(0, .003, (nrows, ncols + 1))
+    uu = U_ + off
+    col = np.floor(uu / bl).astype(int) % ncols
+    fv = V_ / ch - row
+    fu = uu / bl - np.floor(uu / bl)
+    # per-brick joint jitter (a few mm) so the bond is not a perfect grid
+    ja = jit[row % nrows, col]
+    jb = jit[row % nrows, (col + 1) % (ncols + 1)]
+    mj = .010
+    dv = np.minimum(fv * ch, (1 - fv) * ch)
+    du = np.minimum(fu * bl - ja, (1 - fu) * bl + jb)
+    d = np.minimum(dv, du) - mj / 2
+    ids = (row % nrows) * ncols + col
+    nb = nrows * ncols
+    tones = [hexlin('#93604c'), hexlin('#7e5040'), hexlin('#a3593e'), hexlin('#6f4a44')]
+    pick = r.choice(4, nb, p=[.42, .28, .18, .12])
     val = r.normal(0, 1, nb)
-    flash = r.random(nb) < .12
-    base_a = hexlin('#93604c')
-    base_b = hexlin('#7e5040')
-    mixk = np.clip(.5 + .35 * hue, 0, 1)
-    cols = base_a[None, :] * (1 - mixk[:, None]) + base_b[None, :] * mixk[:, None]
-    cols *= (1 + .09 * val)[:, None]
-    cols[flash] *= .78
+    cols = np.stack([tones[i] for i in pick]) * (1 + .085 * val)[:, None]
+    flash = r.random(nb) < .16
     bc = cols[ids]
-    # sand-struck face, speckles, darker ends on flashed bricks
-    sand = fbm(N, seed + 1, scales=(32, 12, 4, 2), weights=(.2, .3, .3, .2))
-    speck = (tile_noise(N, .6, seed + 2) > .82).astype(np.float32)
-    bc *= (1 + .07 * sand[..., None] - .25 * speck[..., None])
-    edge = np.clip(d / .004, 0, 1)                        # rounded arrises over 4 mm
-    chip = (fbm(N, seed + 5, scales=(24, 8, 3, 1)) > .42) & (d < .006)
-    face_h = .008 * edge ** .6 - chip * .003 + sand * .0004
+    # flashed (darker) ends on some bricks
+    endd = np.minimum(fu, 1 - fu)
+    bc = np.where((flash[ids])[..., None], bc * (1 - .28 * np.exp(-endd / .18))[..., None], bc)
+    sand = fbm(N, seed + 1, scales=(28, 10, 4, 1.5), weights=(.2, .3, .3, .2))
+    speck = (tile_noise(N, .55, seed + 2) > .8).astype(np.float32)
+    pits = (tile_noise(N, .8, seed + 3) < -.78).astype(np.float32)
+    bc = bc * (1 + .08 * sand[..., None] - .3 * speck[..., None] - .18 * pits[..., None])
+    edge = np.clip(d / .0045, 0, 1)
+    chip = (fbm(N, seed + 5, scales=(22, 7, 3, 1)) > .4) & (d < .007)
+    tilt = r.normal(0, .0007, (nb, 2))
+    face_h = .008 * edge ** .55 - chip * .0035 + sand * .0005 - pits * .0007 + tilt[ids, 0] * (fu - .5) * 2 + tilt[ids, 1] * (fv - .5) * 2
     mortar = d < 0
-    mort_h = .0 + fbm(N, seed + 9, scales=(8, 3, 1, .5)) * .0006
+    md = np.clip(-d / (mj / 2), 0, 1)
+    mort_h = .0015 * (1 - md) ** 2 + fbm(N, seed + 9, scales=(8, 3, 1, .5)) * .0005
     H = np.where(mortar, mort_h, face_h)
     nrm = normal_from_height(H, mpp, 1.0)
-    mc = hexlin('#a49d90') * (1 + .06 * fbm(N, seed + 11, scales=(64, 16, 4, 1))[..., None])
+    mt = fbm(N, seed + 11, scales=(220, 60, 12, 2))
+    mc = hexlin('#a49d90')[None, None, :] * (1 + .09 * mt[..., None]) * (1 - .25 * (1 - md)[..., None] * 0 - .15 * md[..., None])
     base = np.where(mortar[..., None], mc, bc)
-    ao = np.where(mortar, .62, 1 - .25 * (1 - edge))
-    rough = np.where(mortar, .95, .86 + .05 * sand)
+    ao = np.where(mortar, .5 + .2 * (1 - md), 1 - .28 * (1 - edge))
+    rough = np.where(mortar, .96, .84 + .06 * sand)
     orm = np.stack([ao, rough, np.zeros_like(ao)], -1)
     return base, nrm, orm
 
 
 # ---------------------------------------------------------------------------------------------------------- roof
 def shingle(N=2048, tile=2.0, seed=37):
+    """Three-tab asphalt shingles (v2): 125 mm exposure, 1/3 m tabs, dark keyways and butt shadows, tabs that sag and
+    curl a little, a four-tone granule blend with the factory's blend drops across several tabs, worn and darker
+    tabs, faint algae streaks running down the slope."""
     mpp = tile / N
-    v = (N - 1 - np.arange(N) + .5) / N * tile          # v runs UP the slope (toward the ridge)
+    v = (N - 1 - np.arange(N) + .5) / N * tile
     u = (np.arange(N) + .5) / N * tile
     V_, U_ = np.meshgrid(v, u, indexing='ij')
     ex = tile / 16
     tab = tile / 6
     row = np.floor(V_ / ex).astype(int)
-    t = V_ / ex - row                                    # 0 at the butt (downhill edge), 1 under the next course
+    t = V_ / ex - row
+    r = rng(seed)
     off = (row % 2) * tab / 2 + ((row // 2) % 3) * tab * .17
     fu = (U_ + off) / tab
     tabi = np.floor(fu).astype(int) % 6
     du = (fu - np.floor(fu)) * tab
-    key = (np.minimum(du, tab - du) < .003)              # 6 mm keyway between tabs
-    r = rng(seed)
+    key = (np.minimum(du, tab - du) < .0035)
     nt = 16 * 6
     tone = r.normal(0, 1, nt)
+    worn = r.random(nt) < .07
     ids = row * 6 + tabi
-    H = .006 * (1 - t) + .0
-    H = np.where(key, .0005, H)
-    gran = tile_noise(N, .55, seed + 4)
-    H += gran * .00035
-    nrm = normal_from_height(H, mpp, 1.0)
-    # granule blend: four tones, salt and pepper, per-tab value
-    g2 = tile_noise(N, .45, seed + 8)
+    fx = (du / tab)
+    sag = r.normal(0, .0009, nt)[ids] * np.sin(np.pi * fx) + r.normal(0, .0006, nt)[ids] * (fx - .5)
+    H = .0065 * (1 - t) ** .9 + sag * (1 - t)
+    H = np.where(key, .0004, H)
+    gran = tile_noise(N, .5, seed + 4)
+    g2 = tile_noise(N, .42, seed + 8)
     g3 = tile_noise(N, .7, seed + 12)
-    g4 = tile_noise(N, 1.1, seed + 13)
-    base = .30 + .085 * gran + .06 * g2 + .05 * (g3 > .5) - .06 * (g4 < -.55) + .04 * (g4 > .6)
-    base = base * (1 + .07 * tone[ids])
-    # a little blend drift across each tab (the factory's colour drop)
+    g4 = tile_noise(N, 1.0, seed + 13)
+    H += gran * .0004 + g2 * .0002
+    nrm = normal_from_height(H, mpp, 1.0)
+    mid = tile_noise(N, 2.6, seed + 21)
+    mid2 = tile_noise(N, 7.0, seed + 23)
+    base = .3 + .095 * gran + .065 * g2 + .055 * (g3 > .48) - .065 * (g4 < -.5) + .045 * (g4 > .62) + .07 * mid + .05 * mid2
+    base = base * (1 + .13 * tone[ids])
+    drops = fbm(N, seed + 19, scales=(260, 90, 30, 10), weights=(.5, .3, .15, .05), aniso=(2.2, 1))
+    base *= 1 + .13 * drops
     base *= 1 + .03 * np.sin(fu * 2.1 + row * .7)
-    # algae/rain streaks running down the slope (subtle), lighter granule loss here and there
+    base = np.where(worn[ids], base * 1.08 + .015, base)
     streak = tile_noise(N, 3.0, seed + 15, aniso=(.25, 18))
-    base *= (1 - .06 * np.clip(streak - .2, 0, 1))
-    loss = (fbm(N, seed + 17, scales=(40, 12, 4, 1)) > .55) * .03
-    base += loss
-    under = np.where(key, 1.0, 0.0) + np.exp(-(t / .045) ** 2) * .85 + np.exp(-((1 - t) / .03) ** 2) * .15
-    base *= (1 - .55 * np.clip(under, 0, 1))
-    rgb = np.stack([base * 1.0, base * .985, base * .965], -1)
-    ao = 1 - .5 * np.clip(under, 0, 1)
-    rough = .9 + .05 * gran
+    base *= (1 - .075 * np.clip(streak - .15, 0, 1))
+    under = np.where(key, 1.0, 0.0) + np.exp(-(t / .04) ** 2) * .9 + np.exp(-((1 - t) / .03) ** 2) * .15
+    base *= (1 - .6 * np.clip(under, 0, 1))
+    rgb = np.stack([base * 1.0, base * .985, base * .962], -1)
+    ao = 1 - .55 * np.clip(under, 0, 1)
+    rough = .88 + .06 * gran
     orm = np.stack([ao, rough, np.zeros_like(ao)], -1)
     return rgb, nrm, orm
 
 
 # ---------------------------------------------------------------------------------------------------------- concrete
 def concrete(N=2048, tile=2.0, seed=41):
+    """Broom-finished concrete (v2): broom lines, exposed fines and aggregate, pinholes, soft stains and curing
+    blotches, slightly darker, rougher wear."""
     mpp = tile / N
-    broom = tile_noise(N, 1.2, seed, aniso=(40, .4))
+    broom = tile_noise(N, 1.1, seed, aniso=(40, .4))
     agg = tile_noise(N, .8, seed + 1)
-    pits = (tile_noise(N, .5, seed + 2) < -.7).astype(np.float32)
+    stones = (tile_noise(N, 2.2, seed + 4) > .62).astype(np.float32)
+    pits = (tile_noise(N, .5, seed + 2) < -.72).astype(np.float32)
     blot = fbm(N, seed + 3, scales=(700, 240, 80, 20), weights=(.45, .3, .17, .08))
-    H = broom * .0004 + agg * .0002 - pits * .0007
+    stain = np.clip(fbm(N, seed + 6, scales=(500, 160, 40, 10)) - .25, 0, 1)
+    H = broom * .00045 + agg * .00022 - pits * .0008 + stones * .0002
     nrm = normal_from_height(H, mpp, 1.0)
-    base = .5 * (1 + .07 * blot + .04 * agg - .15 * pits + .02 * broom)
-    rgb = np.stack([base * 1.0, base * .985, base * .955], -1)
-    ao = 1 - .3 * pits
-    rough = .9 + .04 * agg
+    base = .5 * (1 + .08 * blot + .045 * agg - .18 * pits + .025 * broom - .12 * stain + .03 * stones)
+    rgb = np.stack([base * 1.0, base * .983, base * .95], -1)
+    ao = 1 - .35 * pits
+    rough = .9 + .05 * agg - .04 * stain
     return rgb, nrm, np.stack([ao, rough, np.zeros_like(ao)], -1)
 
 
 # ---------------------------------------------------------------------------------------------------------- painted wood
 def painted(N=2048, tile=1.0, seed=53):
+    """Painted wood and vinyl trim (v2): grain telegraphing through the paint, brush strokes along the board, slight
+    orange-peel, a satin sheen that varies; paint built up a little darker in the low spots."""
     mpp = tile / N
     grain = fbm(N, seed, scales=(40, 16, 6, 2), weights=(.3, .35, .25, .1), aniso=(30, .5))
     rings = np.sin(fbm(N, seed + 4, scales=(300, 120, 30, 8), aniso=(12, .6)) * 40)
-    brush = tile_noise(N, .8, seed + 6, aniso=(60, .3))
-    H = grain * .00025 + rings * .00012 + brush * .00008
+    brush = tile_noise(N, .9, seed + 6, aniso=(70, .3))
+    peel = tile_noise(N, .9, seed + 8)
+    H = grain * .0003 + rings * .00014 + brush * .0001 + peel * .00004
     nrm = normal_from_height(H, mpp, 1.0)
     blot = fbm(N, seed + 9, scales=(500, 200, 60, 10))
-    base = .88 * (1 + .012 * grain + .02 * blot)
+    base = .88 * (1 + .014 * grain + .024 * blot - .012 * np.clip(-rings, 0, 1))
     rgb = np.stack([base, base * .997, base * .99], -1)
-    ao = np.ones_like(base)
-    rough = .58 + .06 * brush + .04 * blot
+    ao = 1 - .05 * np.clip(-rings, 0, 1)
+    rough = .55 + .07 * brush + .05 * blot
     return rgb, nrm, np.stack([ao, rough, np.zeros_like(ao)], -1)
 
 
@@ -270,6 +299,12 @@ FAMILIES = {
     'roof': (shingle, {'normal_strength': 1.0}),
     'concrete': (concrete, {'normal_strength': .8}),
     'paint': (painted, {'normal_strength': .6}),
+}
+# runtime size overrides (pixels): fine-grained, low-contrast normal detail that the riding camera cannot resolve at
+# 1024 is written at 512 (GPU memory, refinement pass); colour stays 1024 everywhere
+SIZES = {
+    'concrete': {'normal_size': 512, 'orm_size': 512},
+    'paint': {'normal_size': 512},
 }
 
 
@@ -293,7 +328,7 @@ def main():
         if only and name not in only:
             continue
         b, n, o = fn(size)
-        lib['families'][name] = save(name, b, n, o, out, extra=extra)
+        lib['families'][name] = save(name, b, n, o, out, extra=extra, **SIZES.get(name, {}))
         print(name, 'mean', [round(x, 3) for x in lib['families'][name]['mean']], flush=True)
     lib['note'] = 'Synthesized by tools/blender/houses/house_textures.py (original; no photographs or third-party textures). Runtime 1024 px.'
     json.dump(lib, open(meta_path, 'w'), indent=1)

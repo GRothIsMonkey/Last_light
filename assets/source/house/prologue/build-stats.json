@@ -1,9 +1,9 @@
 {
- "version": 1,
+ "version": 2,
  "houses": {
   "house.lotLm21": {
    "lod0": {
-    "tris": 5116,
+    "tris": 6434,
     "slots": [
      "bare",
      "concrete",
@@ -17,7 +17,7 @@
     ]
    },
    "lod1": {
-    "tris": 2115,
+    "tris": 2395,
     "slots": [
      "concrete",
      "glass",
@@ -30,7 +30,7 @@
     ]
    },
    "lod2": {
-    "tris": 441,
+    "tris": 507,
     "slots": [
      "concrete",
      "interior",
@@ -43,7 +43,7 @@
   },
   "house.lotRm21": {
    "lod0": {
-    "tris": 7977,
+    "tris": 9522,
     "slots": [
      "bare",
      "brick",
@@ -58,7 +58,7 @@
     ]
    },
    "lod1": {
-    "tris": 3411,
+    "tris": 3911,
     "slots": [
      "brick",
      "concrete",
@@ -72,7 +72,7 @@
     ]
    },
    "lod2": {
-    "tris": 597,
+    "tris": 710,
     "slots": [
      "brick",
      "concrete",
@@ -86,7 +86,7 @@
   },
   "house.lotL8": {
    "lod0": {
-    "tris": 6132,
+    "tris": 7922,
     "slots": [
      "bare",
      "brick",
@@ -101,7 +101,7 @@
     ]
    },
    "lod1": {
-    "tris": 3000,
+    "tris": 3549,
     "slots": [
      "brick",
      "concrete",
@@ -115,7 +115,7 @@
     ]
    },
    "lod2": {
-    "tris": 609,
+    "tris": 730,
     "slots": [
      "brick",
      "concrete",
@@ -129,7 +129,7 @@
   },
   "house.lotR8": {
    "lod0": {
-    "tris": 6237,
+    "tris": 8018,
     "slots": [
      "bare",
      "concrete",
@@ -143,7 +143,7 @@
     ]
    },
    "lod1": {
-    "tris": 3368,
+    "tris": 3828,
     "slots": [
      "concrete",
      "glass",
@@ -156,7 +156,7 @@
     ]
    },
    "lod2": {
-    "tris": 580,
+    "tris": 689,
     "slots": [
      "concrete",
      "interior",
@@ -169,7 +169,7 @@
   },
   "house.lotL37": {
    "lod0": {
-    "tris": 6121,
+    "tris": 7424,
     "slots": [
      "bare",
      "brick",
@@ -184,7 +184,7 @@
     ]
    },
    "lod1": {
-    "tris": 3002,
+    "tris": 3362,
     "slots": [
      "brick",
      "concrete",
@@ -198,7 +198,7 @@
     ]
    },
    "lod2": {
-    "tris": 652,
+    "tris": 731,
     "slots": [
      "brick",
      "concrete",
@@ -212,7 +212,7 @@
   },
   "house.lotR37": {
    "lod0": {
-    "tris": 4857,
+    "tris": 6160,
     "slots": [
      "bare",
      "concrete",
@@ -226,7 +226,7 @@
     ]
    },
    "lod1": {
-    "tris": 2656,
+    "tris": 3150,
     "slots": [
      "concrete",
      "glass",
@@ -239,7 +239,7 @@
     ]
    },
    "lod2": {
-    "tris": 604,
+    "tris": 675,
     "slots": [
      "concrete",
      "interior",
@@ -252,7 +252,7 @@
   },
   "house.lotL66": {
    "lod0": {
-    "tris": 9001,
+    "tris": 10740,
     "slots": [
      "bare",
      "brick",
@@ -267,7 +267,7 @@
     ]
    },
    "lod1": {
-    "tris": 3613,
+    "tris": 4203,
     "slots": [
      "brick",
      "concrete",
@@ -281,7 +281,7 @@
     ]
    },
    "lod2": {
-    "tris": 617,
+    "tris": 726,
     "slots": [
      "brick",
      "concrete",
@@ -295,7 +295,7 @@
   },
   "house.lotR66": {
    "lod0": {
-    "tris": 7016,
+    "tris": 8799,
     "slots": [
      "bare",
      "brick",
@@ -310,7 +310,7 @@
     ]
    },
    "lod1": {
-    "tris": 2968,
+    "tris": 3655,
     "slots": [
      "brick",
      "concrete",
@@ -324,7 +324,7 @@
     ]
    },
    "lod2": {
-    "tris": 569,
+    "tris": 692,
     "slots": [
      "brick",
      "concrete",
@@ -338,7 +338,7 @@
   },
   "house.hoop": {
    "lod0": {
-    "tris": 4474,
+    "tris": 6042,
     "slots": [
      "bare",
      "brick",
@@ -353,7 +353,7 @@
     ]
    },
    "lod1": {
-    "tris": 2327,
+    "tris": 2701,
     "slots": [
      "brick",
      "concrete",
@@ -367,7 +367,7 @@
     ]
    },
    "lod2": {
-    "tris": 375,
+    "tris": 487,
     "slots": [
      "brick",
      "concrete",
@@ -381,7 +381,7 @@
   },
   "house.lotR153": {
    "lod0": {
-    "tris": 4480,
+    "tris": 5784,
     "slots": [
      "bare",
      "concrete",
@@ -395,7 +395,7 @@
     ]
    },
    "lod1": {
-    "tris": 2177,
+    "tris": 2515,
     "slots": [
      "concrete",
      "glass",
@@ -408,7 +408,7 @@
     ]
    },
    "lod2": {
-    "tris": 375,
+    "tris": 455,
     "slots": [
      "concrete",
      "interior",
@@ -421,7 +421,7 @@
   },
   "house.car": {
    "lod0": {
-    "tris": 9033,
+    "tris": 10890,
     "slots": [
      "bare",
      "brick",
@@ -437,7 +437,7 @@
     "garage_door_tris": 300
    },
    "lod1": {
-    "tris": 3455,
+    "tris": 4109,
     "slots": [
      "brick",
      "concrete",
@@ -452,7 +452,7 @@
     "garage_door_tris": 36
    },
    "lod2": {
-    "tris": 621,
+    "tris": 752,
     "slots": [
      "brick",
      "concrete",
@@ -467,7 +467,7 @@
   },
   "house.lotR530": {
    "lod0": {
-    "tris": 7393,
+    "tris": 9046,
     "slots": [
      "bare",
      "brick",
@@ -482,7 +482,7 @@
     ]
    },
    "lod1": {
-    "tris": 3247,
+    "tris": 3751,
     "slots": [
      "brick",
      "concrete",
@@ -496,7 +496,7 @@
     ]
    },
    "lod2": {
-    "tris": 575,
+    "tris": 688,
     "slots": [
      "brick",
      "concrete",

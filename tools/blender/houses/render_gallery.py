@@ -21,6 +21,8 @@ import house_kit as K
 import house_build as HB
 import house_render as R
 import build_houses as BH
+import house_bake
+BAKE = os.environ.get('HOUSE_BAKE', '1') == '1'
 
 
 def args():
@@ -85,6 +87,8 @@ def scene_with(houses, P, place, mats, tints, look, street=None, door_open=False
             sc.collection.children.link(coll)
         house = HB.House(h, 0, tints, P['palette'])
         mb = house.build()
+        if BAKE:
+            house_bake.bake(mb, house, 0)
         ob = mb.build(coll, mats, name=h['id'])
         ob.location = (x, y, 0)
         ob.rotation_euler = (0, 0, rz)
