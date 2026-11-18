@@ -76,6 +76,22 @@ class Mesh:
         return sum(len(f) - 2 for f in self.f)
 
 
+def flip_faces(m, start, end=None):
+    """Reverse the winding (and corner UVs) of faces start..end-1."""
+    for k in range(start, len(m.f) if end is None else end):
+        m.f[k] = tuple(reversed(m.f[k]))
+        m.uv[k] = list(reversed(m.uv[k]))
+
+
+def signed_volume(m, start=0, end=None):
+    v = 0.0
+    for f in m.f[start:end]:
+        p = [Vector(m.v[i]) for i in f]
+        for k in range(1, len(p) - 1):
+            v += p[0].dot(p[k].cross(p[k + 1])) / 6
+    return v
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # Frames along paths
 # ----------------------------------------------------------------------------------------------------------------------
@@ -202,6 +218,8 @@ def sweep(m, path, profile, pid, closed=False, caps=(True, True), ref=Vector((1,
     """Sweep a closed 2D profile [(n, b)] along `path` (Vectors). scales: per path point radius factor (or (sx, sy)).
     Pattern UVs: u = arc length along the path (m), v = perimeter position around the profile (m)."""
     path = [Vector(p) for p in path]
+    if _area(profile) < 0:          # faces point outward only for a counter-clockwise profile: normalise it
+        profile = list(reversed(profile))
     F = frames(path, ref, closed)
     L = polyline_len(path)
     k = len(profile)
@@ -258,6 +276,7 @@ def lathe(m, profile, segments, pid, origin=(0, 0, 0), axis=(1, 0, 0), ref=(0, 1
     """profile: [(axial, radius)] in order. sharp: indices of profile points that make hard edges.
     Pattern UVs: u = angle x r_uv (default: the profile's max radius), v = arc length along the profile."""
     O, A = Vector(origin), Vector(axis).normalized()
+    first_face = len(m.f)
     R0 = _perp(A, Vector(ref))
     R1 = A.cross(R0)
     full = abs(arc - TAU) < 1e-9
@@ -294,6 +313,11 @@ def lathe(m, profile, segments, pid, origin=(0, 0, 0), axis=(1, 0, 0), ref=(0, 1
         for c in range(segments):
             c2 = (c + 1) % cols if full else c + 1
             m.sharp.add((grid[c][i], grid[c2][i]))
+    # Faces face outward when the profile, closed back to its start, runs clockwise in (axial, radius). Profiles are
+    # written in whichever order reads best (rims and bell domes run the other way): flip those here, once.
+    area = 0.5 * sum(profile[i][0] * profile[(i + 1) % P][1] - profile[(i + 1) % P][0] * profile[i][1] for i in range(P))
+    if area > 1e-12:
+        flip_faces(m, first_face)
     return grid
 
 
@@ -359,11 +383,12 @@ def slab(m, outline, thickness, pid, origin=(0, 0, 0), u=(0, 0, -1), v=(0, 1, 0)
             A, B = rings[r], rings[r + 1]
             for i in range(n):
                 i2 = (i + 1) % n
-                quad = (A[i], A[i2], B[i2], B[i]) if not is_hole else (A[i2], A[i], B[i], B[i2])
-                uvq = [(per[i] + 9, zs[r] + 9), (per[i + 1] + 9, zs[r] + 9), (per[i + 1] + 9, zs[r + 1] + 9),
-                       (per[i] + 9, zs[r + 1] + 9)]
+                # rings run top -> bottom; for a CCW outline (about W) the outward wall is (A[i], B[i], B[i2], A[i2])
+                quad = (A[i], B[i], B[i2], A[i2]) if not is_hole else (A[i2], B[i2], B[i], A[i])
+                uvq = [(per[i] + 9, zs[r] + 9), (per[i] + 9, zs[r + 1] + 9), (per[i + 1] + 9, zs[r + 1] + 9),
+                       (per[i + 1] + 9, zs[r] + 9)]
                 if is_hole:
-                    uvq = [uvq[1], uvq[0], uvq[3], uvq[2]]
+                    uvq = [uvq[3], uvq[2], uvq[1], uvq[0]]
                 m.add_f(quad, uvq, pid, int(per[i] / 0.4))
         for r in (0, len(rings) - 1):
             for i in range(n):
@@ -600,6 +625,7 @@ def chain_links(m, path, pid, pitch=0.0127, plate_h=0.0096, waist=0.0074, half_w
         return P[j].lerp(P[j + 1], 0 if seg < 1e-12 else (s - L[j]) / seg)
     pts = [at(i * step / samples) for i in range(n)]
     heights = [(plate_h if (i % samples) == 0 else waist) for i in range(n)]
+    first_face = len(m.f)
     for side in (-1, 1):
         x_out = side * (half_width + t)
         x_in = side * half_width
@@ -626,6 +652,7 @@ def chain_links(m, path, pid, pitch=0.0127, plate_h=0.0096, waist=0.0074, half_w
                 m.add_f(q, uvq, pid, isl)
             m.sharp.add((a[1], b[1]))
             m.sharp.add((a[2], b[2]))
+    flip_faces(m, first_face)        # (wound inward as built: turn the plates' faces out, away from the rollers)
     return count
 
 
@@ -672,6 +699,7 @@ def loft(m, sections, pid, closed_sections=True, cap_start=True, cap_end=True):
         c0 = sum((Vector(p) for p in sections[i - 1]), Vector()) / n
         c1 = sum((Vector(p) for p in sections[i]), Vector()) / n
         L.append(L[-1] + (c1 - c0).length)
+    first_face = len(m.f)
     idx = [[m.add_v(p) for p in sec] for sec in sections]
     for s in range(len(sections) - 1):
         for i in range(n if closed_sections else n - 1):
@@ -688,6 +716,15 @@ def loft(m, sections, pid, closed_sections=True, cap_start=True, cap_end=True):
             i2 = (i + 1) % n
             tri = (ci, ring[i2], ring[i]) if flip else (ci, ring[i], ring[i2])
             m.add_f(tri, [(20, 20), (20 + .01 * i, 20.01), (20 + .01 * i2, 20.01)], pid)
+    # orient outward: signed volume about the shell's own centre
+    c = sum((Vector(p) for sec in sections for p in sec), Vector()) / sum(len(sec) for sec in sections)
+    vol = 0.0
+    for f in m.f[first_face:]:
+        p = [Vector(m.v[i]) - c for i in f]
+        for k in range(1, len(p) - 1):
+            vol += p[0].dot(p[k].cross(p[k + 1]))
+    if vol < 0:
+        flip_faces(m, first_face)
     return idx
 
 

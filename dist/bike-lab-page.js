@@ -38,7 +38,8 @@ async function build(){
   const a=createBike(CAST[k].bike);scene.add(a.group);handles[k]=await upgradeBike(a,BIKE_IDS[k],{renderer});rows.authored[k]=a;
   const p=createBike(CAST[k].bike);scene.add(p.group);p.group.traverse(o=>{if(o.isMesh)o.castShadow=true;});rows.procedural[k]=p;
   const r=createBike(CAST[k].bike);scene.add(r.group);await upgradeBike(r,BIKE_IDS[k],{renderer});rows.riders[k]=r;
-  const person=createPerson(k==='player'?{...CAST.player}:CAST[k]);r.group.add(person.group);riders[k]={bike:r,person,pose:newPose(),crank:i*1.3};
+  // the protagonist as game.js builds him: head and neck on layer 1 (shadow only), the camera sits in the head
+  const person=createPerson(k==='player'?{...CAST.player,firstPerson:true}:CAST[k]);r.group.add(person.group);riders[k]={bike:r,person,pose:newPose(),crank:i*1.3};
  }
  arrange('lineup');return +(performance.now()-t0).toFixed(0);
 }
@@ -54,8 +55,9 @@ function arrange(m){mode=m;
 function parkPose(){for(const row of [rows.authored,rows.procedural])for(const b of Object.values(row)){b.wheel=0;b.crankAngle=1.1;b.steerAngle=-.12;b.kickstand=0;poseBike(b);}}
 
 const _a=new THREE.Vector3(),_b=new THREE.Vector3(),_c=new THREE.Vector3(),_m=new THREE.Matrix4();
-// Contacts of the game's procedural rider on the authored bike: hand vertices to the grip surface, shoe soles to the
-// pedal tops, the pelvis to the saddle. Negative = interpenetration, positive = gap (metres).
+// Contacts of the game's procedural rider on the authored bike: hand vertices to the grip surface (negative = the hand
+// closes round the grip), the nearest shoe surface to the pedal's top centre, the pelvis to the saddle top (negative =
+// sitting into it). Metres. The hands and feet come from rig.js ridePose, so the same numbers hold on the rig.js bike.
 function contacts(k){const R=riders[k],b=R.bike,G=b.geom,person=R.person,out={};
  b.group.updateMatrixWorld(true);
  const gripR=.016,toLocal=_m.copy(b.group.matrixWorld).invert();
@@ -66,9 +68,10 @@ function contacts(k){const R=riders[k],b=R.bike,G=b.geom,person=R.person,out={};
   for(let i=0;i<pos.count;i+=3){_a.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld).applyMatrix4(toLocal);_b.subVectors(_a,g);const along=_b.dot(ax);_c.copy(ax).multiplyScalar(along);const d=_b.sub(_c).length()-gripR;if(Math.abs(along)<.07&&d<best)best=d;}
   out[`hand_${side<0?'l':'r'}`]=+best.toFixed(4);}
  for(const [side,part,idx] of [[-1,'lshoe',0],[1,'rshoe',1]]){const pc=pedalPos(b.crankAngle,side,new THREE.Vector3(),G);
-  const mesh=person.parts[part],pos=mesh.geometry.attributes.position;let lowest=Infinity;
-  for(let i=0;i<pos.count;i++){_a.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld).applyMatrix4(toLocal);if(Math.abs(_a.x-pc.x)<.05&&Math.abs(_a.z-pc.z)<.06)lowest=Math.min(lowest,_a.y);}
-  out[`sole_${side<0?'l':'r'}`]=lowest===Infinity?null:+(lowest-(pc.y+.011)).toFixed(4);}// (pedal top ~1.1 cm above its centre)
+  // nearest shoe surface to the pedal's top centre (the pedals are 1.4-2.2 cm thick: top ~0.9 cm above the rig.js point)
+  const mesh=person.parts[part],pos=mesh.geometry.attributes.position,top=new THREE.Vector3(pc.x,pc.y+.009,pc.z);let best=Infinity;
+  for(let i=0;i<pos.count;i++){_a.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld).applyMatrix4(toLocal);best=Math.min(best,_a.distanceTo(top));}
+  out[`sole_${side<0?'l':'r'}`]=+best.toFixed(4);}
  {const mesh=person.parts.pelvis,pos=mesh.geometry.attributes.position;let lowest=Infinity;
   for(let i=0;i<pos.count;i++){_a.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld).applyMatrix4(toLocal);if(Math.abs(_a.z-G.saddle[2])<.07&&Math.abs(_a.x)<.06)lowest=Math.min(lowest,_a.y);}
   const top=saddleTop(b);out.pelvis_to_saddle=top===null||lowest===Infinity?null:+(lowest-top).toFixed(4);}

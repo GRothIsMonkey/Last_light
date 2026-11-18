@@ -380,7 +380,8 @@ def cassette(C, m, axle, teeth_list, x0, step, pid, spacer_pid):
         if not last and C.lod == 0:
             # the cog's outer face, as a ring (the next cog covers its middle)
             nxt = K.sprocket_outline(teeth_list[i + 1], pts_per_tooth=2)[1]
-            K.lathe(m, [(0, nxt), (0, Rp - .004)], C.n(24, 8), pid, origin=Vector((x + .0009, axle.y, axle.z)), axis=X, ref=Y)
+            # (a flat ring: run outward-in so it faces +X, the drive side)
+            K.lathe(m, [(0, Rp - .004), (0, nxt)], C.n(24, 8), pid, origin=Vector((x + .0009, axle.y, axle.z)), axis=X, ref=Y)
     K.tube(m, Vector((x0 - .003, axle.y, axle.z)), Vector((x0 + step * len(teeth_list), axle.y, axle.z)), .016, C.n(14, 6),
            spacer_pid)
 
