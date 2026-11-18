@@ -4,8 +4,8 @@
  "warnings": [],
  "info": {
   "file": "bike.jamie.glb",
-  "bytes": 7150040,
-  "sha256": "fef47149d7ef08c7f31c289b31bc175153b50e976a0bb46780df149b747d132d",
+  "bytes": 7170512,
+  "sha256": "ac69bf68befe2287e1ad6ab8e42f6a805c26ce6cfb5e6b5af88bcfe3e00209f1",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "bike",
   "assetId": "bike.jamie",
@@ -91,7 +91,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 350468,
+    "bytes": 357676,
     "use": [
      "normal"
     ]
@@ -101,7 +101,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 1036781,
+    "bytes": 1044132,
     "use": [
      "data"
     ]
@@ -111,7 +111,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 200259,
+    "bytes": 206165,
     "use": [
      "color"
     ]
@@ -131,7 +131,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 944926,
+    "bytes": 944938,
     "use": [
      "data"
     ]
@@ -141,7 +141,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 106080,
+    "bytes": 106076,
     "use": [
      "color"
     ]
@@ -151,7 +151,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 750343,
+    "bytes": 750416,
     "use": [
      "normal"
     ]
@@ -161,7 +161,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 730840,
+    "bytes": 730775,
     "use": [
      "data"
     ]
@@ -171,13 +171,13 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 50843,
+    "bytes": 50833,
     "use": [
      "color"
     ]
    }
   ],
-  "textureBytes": 5083682,
+  "textureBytes": 5104153,
   "gpuTextureMBEstimate": 48,
   "clips": []
  },
