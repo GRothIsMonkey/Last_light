@@ -1,6 +1,6 @@
 {
  "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
- "started": "2026-11-18T02:37:48.623Z",
+ "started": "2026-11-18T03:38:01.670Z",
  "checks": [
   "Lab: the four authored bikes load through GLTFLoader r160",
   "Lab: loaded over same-origin HTTP from dist/assets/bike, nothing else fetched",
@@ -335,8 +335,8 @@
       0.0174,
       0.0174
      ],
-     "standFootLowest": -0.0161,
-     "standFootLowestLocal": -0.0161
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016
     },
     "sam": {
      "frontWheelCentreDrift": 0.000005787424631443274,
@@ -365,10 +365,10 @@
       0.0085,
       0.0085
      ],
-     "standFootLowest": -0.0061,
-     "standFootLowestLocal": -0.0061,
-     "bellLeverMoves": 0.001,
-     "bellDomeToRigBell": 0.009
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016,
+     "bellLeverMoves": 0.0054,
+     "bellDomeToRigBell": 0.0094
     },
     "player": {
      "frontWheelCentreDrift": 0.00000588662361918427,
@@ -382,9 +382,9 @@
       0.0088,
       0.0088
      ],
-     "standFootLowest": -0.0061,
-     "standFootLowestLocal": -0.0061,
-     "bellLeverMoves": 0.001,
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016,
+     "bellLeverMoves": 0.0054,
      "bellDomeToRigBell": 0.008
     }
    }
@@ -424,6 +424,28 @@
    ]
   },
   {
+   "name": "Lab: the deployed stand reaches the ground (foot within 1.5 cm of y=0 in bike space)",
+   "detail": [
+    -0.0016,
+    0.0039,
+    -0.0016,
+    -0.0016
+   ]
+  },
+  {
+   "name": "Lab: the bell lever moves with the game's bell animation, and the dome sits at rig.js's bell point (< 3 cm)",
+   "detail": [
+    [
+     0.0054,
+     0.0094
+    ],
+    [
+     0.0054,
+     0.008
+    ]
+   ]
+  },
+  {
    "name": "Lab: LOD1 and LOD2 cut the lineup's triangles (LOD0 > LOD1 > LOD2)",
    "detail": {
     "lod0": {
@@ -442,49 +464,255 @@
      "geometries": 217,
      "textures": 38
     },
-    "heapMB": 117.9
+    "heapMB": 113.5
    }
   },
   {
    "name": "Lab: no page errors",
    "detail": []
-  }
- ],
- "failures": [
-  {
-   "name": "Lab: the deployed stand reaches the ground (foot within 1.5 cm of y=0 in bike space)",
-   "detail": [
-    -0.0161,
-    0.0039,
-    -0.0061,
-    -0.0061
-   ]
   },
   {
-   "name": "Lab: the bell lever moves with the game's bell animation, and the dome sits at rig.js's bell point (< 3 cm)",
-   "detail": [
-    [
-     0.001,
-     0.009
+   "name": "Game: without ?bikes the Prologue fetches none of the bike modules or models",
+   "detail": []
+  },
+  {
+   "name": "Game: ?bikes upgrades the protagonist's, Jamie's, Sam's and Alex's bikes in place (no failures)",
+   "detail": {
+    "errors": [],
+    "loadMs": 1578,
+    "keys": [
+     "player",
+     "jamie",
+     "sam",
+     "alex"
     ],
-    [
-     0.001,
-     0.008
+    "info": {
+     "player": {
+      "lod": 0,
+      "tris": [
+       22078,
+       6524,
+       2100
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.05343999999999993
+      }
+     },
+     "jamie": {
+      "lod": 0,
+      "tris": [
+       18920,
+       5238,
+       1244
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.07006999999999997
+      }
+     },
+     "sam": {
+      "lod": 0,
+      "tris": [
+       23178,
+       6418,
+       1942
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.05343999999999993
+      }
+     },
+     "alex": {
+      "lod": 0,
+      "tris": [
+       20484,
+       5942,
+       1916
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.08158999999999994
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "Game: the Prologue plays on with the authored bikes (6 s of pedalling moves the player; the friends ride on them)",
+   "detail": {
+    "state": "riding",
+    "moved": 21.53,
+    "friends": [
+     {
+      "key": "jamie",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 0,
+      "dist": 13.3,
+      "riderOn": true
+     },
+     {
+      "key": "sam",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 1,
+      "dist": 15.5,
+      "riderOn": true
+     },
+     {
+      "key": "alex",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 0,
+      "dist": 6.6,
+      "riderOn": true
+     }
+    ],
+    "calls": 433,
+    "triangles": 798794,
+    "player": {
+     "authored": true,
+     "lod": 0
+    }
+   }
+  },
+  {
+   "name": "Game: Space rings the bell: the authored lever is on the game's lever and swings with it",
+   "detail": {
+    "maxLeverRotation": -0.4,
+    "authoredLeverAttached": true
+   }
+  },
+  {
+   "name": "Game: after B (procedural) and back (authored), the ride continues",
+   "detail": {
+    "state": "riding",
+    "moved": 12.61
+   }
+  },
+  {
+   "name": "Game: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Game: no request leaves the local server",
+   "detail": []
+  },
+  {
+   "name": "Package: PLAYTEST_MODELS=1 embeds the four bikes, hashes them in the manifest and writes the offline Bike Lab page",
+   "detail": {
+    "models": [
+     "assets/bike/bike.alex.glb",
+     "assets/bike/bike.jamie.glb",
+     "assets/bike/bike.player.glb",
+     "assets/bike/bike.sam.glb",
+     "assets/tst/tst.pipeline-probe.glb"
+    ],
+    "bikeLab": {
+     "entry": "Last-Light-Bike-Lab.html",
+     "sha256": "becca49c91374265df1dc00cc4312b0894473ab19979a6db2734936fc913968c"
+    }
+   }
+  },
+  {
+   "name": "Package: the offline Bike Lab loads the four embedded bikes (browser offline)",
+   "detail": {
+    "ok": true,
+    "from": [
+     "package",
+     "package",
+     "package",
+     "package"
     ]
-   ]
+   }
+  },
+  {
+   "name": "Package: offline Bike Lab makes no network request",
+   "detail": []
+  },
+  {
+   "name": "Package: offline Bike Lab without page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: ?bikes in the offline game upgrades the four bikes from the embedded bytes, in the running Prologue",
+   "detail": {
+    "errors": [],
+    "from": [
+     "package",
+     "package",
+     "package",
+     "package"
+    ],
+    "state": "riding",
+    "label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 891 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD0 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+   }
+  },
+  {
+   "name": "Package: offline game makes no network request",
+   "detail": []
+  },
+  {
+   "name": "Package: offline game without page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: the default package (no models) says the bikes FAILED, keeps the procedural bikes and substitutes nothing",
+   "detail": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1 ms\nFAILED (nothing substituted): player: asset assets/bike/bike.player.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | jamie: asset assets/bike/bike.jamie.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | sam: asset assets/bike/bike.sam.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | alex: asset assets/bike/bike.alex.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+  },
+  {
+   "name": "Package: default package makes no network request either",
+   "detail": []
   }
  ],
+ "failures": [],
  "parts": {
   "lab": {
-   "readyWallMs": 1262,
+   "readyWallMs": 1400,
    "assets": {
     "jamie": {
      "id": "bike.jamie",
      "file": "assets/bike/bike.jamie.glb",
      "from": "http",
-     "bytes": 7150040,
-     "readMs": 91.3,
-     "parseMs": 136.1,
+     "bytes": 7170512,
+     "readMs": 79.5,
+     "parseMs": 158,
      "triangles": 25402,
      "skinnedMeshes": 0,
      "geometries": 47,
@@ -526,8 +754,8 @@
      "file": "assets/bike/bike.sam.glb",
      "from": "http",
      "bytes": 7812648,
-     "readMs": 55.2,
-     "parseMs": 112.7,
+     "readMs": 47.8,
+     "parseMs": 128.3,
      "triangles": 31538,
      "skinnedMeshes": 0,
      "geometries": 52,
@@ -568,9 +796,9 @@
      "id": "bike.alex",
      "file": "assets/bike/bike.alex.glb",
      "from": "http",
-     "bytes": 6938720,
-     "readMs": 42.4,
-     "parseMs": 145.3,
+     "bytes": 6940636,
+     "readMs": 62.6,
+     "parseMs": 132.2,
      "triangles": 28342,
      "skinnedMeshes": 0,
      "geometries": 56,
@@ -611,9 +839,9 @@
      "id": "bike.player",
      "file": "assets/bike/bike.player.glb",
      "from": "http",
-     "bytes": 7535876,
-     "readMs": 68,
-     "parseMs": 150.7,
+     "bytes": 7539324,
+     "readMs": 59.1,
+     "parseMs": 131.9,
      "triangles": 30702,
      "skinnedMeshes": 0,
      "geometries": 58,
@@ -894,8 +1122,8 @@
       0.0174,
       0.0174
      ],
-     "standFootLowest": -0.0161,
-     "standFootLowestLocal": -0.0161
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016
     },
     "sam": {
      "frontWheelCentreDrift": 0.000005787424631443274,
@@ -924,10 +1152,10 @@
       0.0085,
       0.0085
      ],
-     "standFootLowest": -0.0061,
-     "standFootLowestLocal": -0.0061,
-     "bellLeverMoves": 0.001,
-     "bellDomeToRigBell": 0.009
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016,
+     "bellLeverMoves": 0.0054,
+     "bellDomeToRigBell": 0.0094
     },
     "player": {
      "frontWheelCentreDrift": 0.00000588662361918427,
@@ -941,9 +1169,9 @@
       0.0088,
       0.0088
      ],
-     "standFootLowest": -0.0061,
-     "standFootLowestLocal": -0.0061,
-     "bellLeverMoves": 0.001,
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016,
+     "bellLeverMoves": 0.0054,
      "bellDomeToRigBell": 0.008
     }
    },
@@ -1046,9 +1274,267 @@
      "geometries": 217,
      "textures": 38
     },
-    "heapMB": 117.9
+    "heapMB": 113.5
    },
-   "firstFrameMs": 3.4
+   "firstFrameMs": 13.2
+  },
+  "gameWithout": {
+   "errors": []
+  },
+  "game": {
+   "loaded": {
+    "errors": [],
+    "loadMs": 1578,
+    "keys": [
+     "player",
+     "jamie",
+     "sam",
+     "alex"
+    ],
+    "info": {
+     "player": {
+      "lod": 0,
+      "tris": [
+       22078,
+       6524,
+       2100
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.05343999999999993
+      }
+     },
+     "jamie": {
+      "lod": 0,
+      "tris": [
+       18920,
+       5238,
+       1244
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.07006999999999997
+      }
+     },
+     "sam": {
+      "lod": 0,
+      "tris": [
+       23178,
+       6418,
+       1942
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.05343999999999993
+      }
+     },
+     "alex": {
+      "lod": 0,
+      "tris": [
+       20484,
+       5942,
+       1916
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.08158999999999994
+      }
+     }
+    }
+   },
+   "ride": {
+    "state": "riding",
+    "moved": 21.53,
+    "friends": [
+     {
+      "key": "jamie",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 0,
+      "dist": 13.3,
+      "riderOn": true
+     },
+     {
+      "key": "sam",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 1,
+      "dist": 15.5,
+      "riderOn": true
+     },
+     {
+      "key": "alex",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 0,
+      "dist": 6.6,
+      "riderOn": true
+     }
+    ],
+    "calls": 433,
+    "triangles": 798794,
+    "player": {
+     "authored": true,
+     "lod": 0
+    }
+   },
+   "bell": {
+    "maxLeverRotation": -0.4,
+    "authoredLeverAttached": true
+   },
+   "review": {
+    "jamie": {
+     "lod": 0,
+     "calls": 293
+    },
+    "sam": {
+     "lod": 0,
+     "calls": 371
+    },
+    "alex": {
+     "lod": 0,
+     "calls": 228
+    }
+   },
+   "group": {
+    "lods": {
+     "player": 0,
+     "jamie": 1,
+     "sam": 1,
+     "alex": 0
+    },
+    "calls": 433,
+    "triangles": 738003
+   },
+   "cost": {
+    "authored": {
+     "calls": 204,
+     "triangles": 472633,
+     "memory": {
+      "geometries": 621,
+      "textures": 47
+     }
+    },
+    "procedural": {
+     "calls": 196,
+     "triangles": 448075,
+     "memory": {
+      "geometries": 621,
+      "textures": 47
+     }
+    }
+   },
+   "after": {
+    "state": "riding",
+    "moved": 12.61
+   }
+  },
+  "package": {
+   "withModels": {
+    "out": "/tmp/ll-bikes-JeST9M/models",
+    "bytes": 55045751,
+    "branch": "claude/prologue-four-bikes-visual-benchmark",
+    "commit": "00fa7b431090ae6d8ea50f8d97807609d130cd40",
+    "dirty": true,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "affca8c6575b8f393a77dd65b95105508efb81e282036e0097f9212435fd5ba4",
+    "modules": 170,
+    "pipelineLab": {
+     "entry": "Last-Light-Pipeline-Lab.html",
+     "sha256": "8a17968c01f05213528d9a4bd37669efd62ee220d5a1e46ea0a69724709107d7",
+     "models": [
+      "assets/bike/bike.alex.glb",
+      "assets/bike/bike.jamie.glb",
+      "assets/bike/bike.player.glb",
+      "assets/bike/bike.sam.glb",
+      "assets/tst/tst.pipeline-probe.glb"
+     ],
+     "bikeLab": {
+      "entry": "Last-Light-Bike-Lab.html",
+      "sha256": "becca49c91374265df1dc00cc4312b0894473ab19979a6db2734936fc913968c"
+     }
+    }
+   },
+   "default": {
+    "out": "/tmp/ll-bikes-JeST9M/default",
+    "bytes": 12620527,
+    "branch": "claude/prologue-four-bikes-visual-benchmark",
+    "commit": "00fa7b431090ae6d8ea50f8d97807609d130cd40",
+    "dirty": true,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "76391975b4642cacf27730f7f062d2ac447e1052334ab365e53c2601915a524c",
+    "modules": 170
+   },
+   "sizes": {
+    "withModels": 55045751,
+    "bikeLab": 54783626,
+    "default": 12620527
+   },
+   "models": [
+    "assets/bike/bike.alex.glb",
+    "assets/bike/bike.jamie.glb",
+    "assets/bike/bike.player.glb",
+    "assets/bike/bike.sam.glb",
+    "assets/tst/tst.pipeline-probe.glb"
+   ],
+   "lab": {
+    "ok": true,
+    "from": [
+     "package",
+     "package",
+     "package",
+     "package"
+    ]
+   },
+   "game": {
+    "errors": [],
+    "from": [
+     "package",
+     "package",
+     "package",
+     "package"
+    ],
+    "state": "riding",
+    "label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 891 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD0 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+   },
+   "defaultPackageLabel": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1 ms\nFAILED (nothing substituted): player: asset assets/bike/bike.player.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | jamie: asset assets/bike/bike.jamie.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | sam: asset assets/bike/bike.sam.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | alex: asset assets/bike/bike.alex.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
   }
  },
  "shots": [
@@ -1064,9 +1550,23 @@
   "docs/qa/bikes-phase1/browser/lab-fp.jpg",
   "docs/qa/bikes-phase1/browser/lab-lineup-forced-lod0.jpg",
   "docs/qa/bikes-phase1/browser/lab-lineup-forced-lod1.jpg",
-  "docs/qa/bikes-phase1/browser/lab-lineup-forced-lod2.jpg"
+  "docs/qa/bikes-phase1/browser/lab-lineup-forced-lod2.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-first-person-authored.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-first-person-procedural-same-frame.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-first-person-looking-down-authored.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-first-person-looking-down-procedural-same-frame.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-review-jamie-authored.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-review-jamie-procedural-same-frame.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-review-sam-authored.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-review-sam-procedural-same-frame.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-review-alex-authored.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-review-alex-procedural-same-frame.jpg",
+  "docs/qa/bikes-phase1/browser/game-prologue-group-review-camera-authored.jpg",
+  "docs/qa/bikes-phase1/browser/package-offline-bike-lab.jpg",
+  "docs/qa/bikes-phase1/browser/package-offline-game-prologue-bikes.jpg",
+  "docs/qa/bikes-phase1/browser/package-default-bikes-fail-loudly.jpg"
  ],
- "finished": "2026-11-18T02:38:02.690Z",
- "passed": 11,
- "failed": 2
+ "finished": "2026-11-18T03:43:14.262Z",
+ "passed": 29,
+ "failed": 0
 }
