@@ -63,9 +63,27 @@ def to_kit_mesh(objs, budget, pid, ref_scene):
     bm = bmesh.new()
     vl = ref_scene.view_layers[0]
     vl.update()
+    flipped = 0
     for o in objs:
         tmp = bmesh.new()
         tmp.from_mesh(o.data)
+        # The source was made for double-sided rendering; the game culls back faces. Make every face's winding agree
+        # with the source's own vertex normals (the glTF NORMAL data), so nothing renders inside out.
+        try:
+            cn = o.data.corner_normals
+            loopn = {}
+            for poly in o.data.polygons:
+                s_ = Vector()
+                for li in poly.loop_indices:
+                    s_ += cn[li].vector
+                loopn[poly.index] = s_
+            tmp.faces.ensure_lookup_table()
+            for f in tmp.faces:
+                if f.normal.dot(loopn.get(f.index, f.normal)) < 0:
+                    f.normal_flip()
+                    flipped += 1
+        except AttributeError:
+            pass
         tmp.transform(o.matrix_world)
         me = bpy.data.meshes.new('tmp')
         tmp.to_mesh(me)
@@ -125,6 +143,8 @@ def to_kit_mesh(objs, budget, pid, ref_scene):
         m.add_f(idx, uvs, pid, isl=ax * 2 + (sgn > 0))
     tris = m.tris()
     bpy.data.objects.remove(ob)
+    if flipped:
+        print(f'  source_bmx: {flipped} source faces turned to agree with their normals')
     return m, n0, tris
 
 
