@@ -2,24 +2,24 @@
  "ok": true,
  "errors": [],
  "warnings": [
-  "LOD0 22858 triangles above the 20000 target",
+  "LOD0 23178 triangles above the 20000 target",
   "LOD1 6418 triangles above the 6000 target",
   "LOD2 1942 triangles above the 1500 target"
  ],
  "info": {
   "file": "bike.sam.glb",
-  "bytes": 7799632,
-  "sha256": "275a71f7f7cf82e8dc8ab13d8289190a3257301006d79b41746150457fa83da4",
+  "bytes": 7812648,
+  "sha256": "443d7e2fbe4c6c149737e47434b37c91bfc02af4fa9025012168118cc91938d7",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "bike",
   "assetId": "bike.sam",
   "assetVersion": 1,
-  "triangles": 31218,
-  "vertices": 43693,
+  "triangles": 31538,
+  "vertices": 44335,
   "skinnedMeshes": 0,
   "morphTargets": [],
   "trianglesPerLOD": [
-   22858,
+   23178,
    6418,
    1942
   ],
@@ -81,7 +81,7 @@
   },
   "frontWheelZ": 0.583,
   "rearWheelZ": -0.49,
-  "frontWheelRadius": 0.319,
+  "frontWheelRadius": 0.3194,
   "lateralCentre": 0,
   "joints": 0,
   "materials": [
@@ -95,7 +95,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 248798,
+    "bytes": 248116,
     "use": [
      "normal"
     ]
@@ -105,7 +105,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 1007893,
+    "bytes": 1005849,
     "use": [
      "data"
     ]
@@ -115,7 +115,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 138836,
+    "bytes": 143019,
     "use": [
      "color"
     ]
@@ -125,7 +125,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 946065,
+    "bytes": 932545,
     "use": [
      "normal"
     ]
@@ -135,7 +135,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 848491,
+    "bytes": 843379,
     "use": [
      "data"
     ]
@@ -145,7 +145,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 78391,
+    "bytes": 76140,
     "use": [
      "color"
     ]
@@ -155,7 +155,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 904662,
+    "bytes": 904586,
     "use": [
      "normal"
     ]
@@ -165,7 +165,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 857186,
+    "bytes": 854131,
     "use": [
      "data"
     ]
@@ -175,13 +175,13 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 73170,
+    "bytes": 70879,
     "use": [
      "color"
     ]
    }
   ],
-  "textureBytes": 5103492,
+  "textureBytes": 5078644,
   "gpuTextureMBEstimate": 48,
   "clips": []
  },
