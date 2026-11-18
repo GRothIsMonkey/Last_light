@@ -65,4 +65,110 @@ So the authored bikes keep every rig.js anchor **except the front axle**, which 
 
 Not changed: the story, the route, the characters and their animation, the riding and camera code, the menu, Chapter Eight, audio, saves.
 
-<!-- §6 onward appended from the measured results -->
+## 6. Measured
+
+### 6.1 The files (`node tools/assets/validate-glb.mjs <glb> --profile bike`; reports in `docs/qa/bikes-phase1/validate-bike.*.json`)
+
+| | LOD0 | LOD1 | LOD2 | Materials | Textures | GLB | Of which textures | GPU textures (est., RGBA8 + mips) |
+|---|---|---|---|---|---|---|---|---|
+| `bike.jamie` | 18,920 | 5,238 | 1,244 | 3 | 9 × 1024² | 7,170,512 B | 5.1 MB | 48 MB |
+| `bike.sam` | 23,178 | 6,418 | 1,942 | 3 | 9 × 1024² | 7,812,648 B | 5.1 MB | 48 MB |
+| `bike.alex` | 20,484 | 5,942 | 1,916 | 3 | 9 × 1024² | 6,940,636 B | 4.7 MB | 48 MB |
+| `bike.player` | 22,078 | 6,524 | 2,100 | 3 | 9 × 1024² | 7,539,324 B | 5.0 MB | 48 MB |
+
+All four: **0 errors**; Khronos glTF Validator 2.0.0-dev.3.10: **0 errors, 0 warnings**. Front toward glTF +Z, tyres on y = 0, wheel radius equal to rig.js's.
+
+**Against the targets** (LOD0 15–20k, LOD1 ~5k, LOD2 ~1k): Jamie is inside them at LOD0. Alex is 2 % over at LOD0. Sam (+16 %) and the protagonist (+10 %) are over on purpose: Sam's knobby tread is modelled blocks (the tread is his bike's silhouette) plus a triple crankset and a suspension fork; the protagonist's cockpit is what the first-person camera looks at most (levers, shifter, bell, cables, reflector). LOD1 is 5.2–6.5k and LOD2 1.2–2.1k: the far levels keep the frame, wheels and bars as real geometry rather than cards, so they sit above the ~1k figure. All three levels can be pushed down further if real-GPU numbers ask for it.
+
+**Texel density** at runtime (1024²): frame paint ≈ 1,300–1,500 px/m, hardware ≈ 850–950 px/m, tyres and soft parts ≈ 1,000–1,100 px/m (bible §5.2: bikes 512–1,024 px/m; first-person bars 1,024–2,048).
+
+**Colour** (frame texels measured against the canonical rig.js colours, sRGB): Jamie 175,85,59 vs `b2553a` 178,85,58; Sam 77,125,140 vs `4d7f8f` 77,127,143; Alex 137,141,62 vs `8a8f3f` 138,143,63 (protagonist built the same way, `5f8f93`).
+
+### 6.2 In the browser (`node tests/bike-browser.mjs` → **29 passed, 0 failed**; software WebGL)
+
+| Check | Result |
+|---|---|
+| Anchors vs rig.js (BB, saddle, grips, pivot, rake, rear axle, wheel radius, crank, pedal offset) | **0 mm** on all four; front axle moved 70 mm (Jamie) / 53 / 82 / 53 mm (A-50) |
+| Wheels turn about their axles | wheel-centre drift < 0.01 mm while turning |
+| Pedals on rig.js's pedal points at every crank angle | < 0.01 mm (Jamie, Sam, Alex); 5 mm (the protagonist's resin pedals, whose reflectors make them slightly asymmetric) |
+| Steering turns the bars about the raked axis | the grip surface stays on rig.js's grip point (0.9–1.7 cm from it = the grips' own radius) at 0, +0.3, −0.35 rad |
+| Kickstands | deployed foot 0.2 cm into / 0.4 cm above the ground (rig.js's 0.30 m leg sank 1.6 cm on Jamie's low BMX pivot: his leg is 1.7 cm shorter) |
+| Bell | the striker swings with game.js's lever animation (5.4 mm); the dome sits 0.8–0.9 cm from rig.js's bell point, where the first-person hand reaches; Space rings it in the game (lever to −0.4 rad) |
+| Materials | `MeshStandardMaterial`, sRGB base colour, linear normal and ORM, one ORM image for occlusion/roughness/metal, single-sided, fog on |
+| LOD | the lineup of four: LOD0 84,664 triangles, LOD1 24,126, LOD2 7,206 (75 / 75 / 69 draw calls) |
+| In the Prologue | `?bikes` upgrades all four (loaded in 1.6 s, software); 6 s of pedalling moves the player 21.5 m with the friends riding the authored bikes (Alex 6.6 m away LOD0, Jamie 13.3 m LOD0, Sam 15.5 m LOD1); after B (procedural) and back the ride continues; no errors; no request leaves the local server; without `?bikes` none of the new files is fetched |
+| Cost, same frame | authored 204 draw calls / 472,633 triangles vs procedural 196 / 448,075 (+8 calls, +24.6k triangles for four bikes, LOD as the camera sees them) |
+| Load | read 48–80 ms and parse (with image decode) 128–158 ms per bike, served; Bike Lab ready in 1.4 s |
+| Offline package | `PLAYTEST_MENU=1 PLAYTEST_MODELS=1` package 55.0 MB (game) / 54.8 MB (Bike Lab page); both load the four bikes from the embedded bytes with the browser offline and make no network request. The default package (12.6 MB; +37 KB of new modules, inert without `?bikes`) says FAILED and keeps the procedural bikes |
+
+### 6.3 Riders on the bikes (the game's current procedural boys, rig.js `ridePose`; Bike Lab, 3 s of riding)
+
+| | Measured | Reading |
+|---|---|---|
+| Hands to grip surface | −1.4 to −1.6 cm | the hands close round the grips (correct for a grip) |
+| Nearest shoe surface to the pedal top | 5.5 to 6.3 cm | from `ridePose` (ankle 6.2 cm above and 5 cm behind the pedal point), **independent of the bike**: the same on rig.js's bikes |
+| Pelvis to saddle top | −2.3 (Sam) to −4.9 cm (Jamie) | the procedural pelvis capsule reaches 9 cm below the saddle anchor, so it sinks into any saddle (more into rig.js's, whose top is ~3 cm higher) |
+
+The bikes put grips, pedals and saddle exactly on rig.js's anchors, so these offsets belong to the rider's pose, not to the bikes. They were left alone (no animation was rewritten to hide anything). They need re-tuning together with Astra's characters (A-48: socket-driven hands, re-tuned ankle offset, sit-bone height).
+
+## 7. Art review
+
+**Do the four look like one team's work?** Yes. In the lineups and the side-by-side views the same tube language, weld beads, wheel construction (36 spokes, nipples, rims with brake tracks), chain, hardware finishes and wear model run through all four, and the textures sit at the same density. Jamie's BMX, which carries the harvested parts, does not stand out from the other three: the harvested pieces were re-textured by the same library.
+
+**Are the silhouettes distinct?** Clearly, at gameplay distance: Jamie's tall BMX bars, pad and pegs; Sam's suspension fork, bottle and knobby tread; Alex's cantilever stays, swept bars, rack and cream walls; the protagonist's riser bar, rigid fork and slim tyres. Sam's and the protagonist's frame colours are close (both canonical blue-greens), so they are told apart by silhouette rather than colour.
+
+**Scale.** The bikes are built on the game's anchors, so they fit the game's 1.53 m riders exactly: grips, saddle and pedals are where the boys already put their hands, seat and feet. Real kids' sizes otherwise: 22- and 24-inch wheels, 22.2 mm bars, kids' saddles and cranks.
+
+**Materials.** Under the Prologue's light the painted frames read as gloss enamel with a little orange peel; chrome and alloy read as metal only with an environment to reflect, so the benchmark gives the bike materials a small golden-hour sky (A-47; **J** compares). Without it the chrome is dark, as the Phase 0A report predicted for any authored metal. Tyres read as matte rubber with tread and lettering; grips and saddles as rubber and vinyl. Wear is restrained: Jamie's bike shows scuffed pegs and bar ends, a dropped-on-the-left side, worn grips and a touch of chain rust; Sam's and Alex's are clean and kept; the protagonist's is in between.
+
+**First person.** The protagonist's cockpit is the most-seen object in the game. From the real eye: black riser bar and stem, the chrome bell under the left thumb, two-finger levers, the thumb shifter, cables routed to the frame, the white reflector on its bracket below. It holds up at that distance; textures are 1024², so very close inspection (the screen filled by the bell) is where a 2048² hardware atlas for this bike alone would help.
+
+**Against the current world.** In the same frames, the bikes are now the most finished objects in the Prologue: the houses are flat-coloured procedural boxes with drawn windows, the trees are low-poly clumps, and the boys are procedural figures. **That gap is the environment's and the characters' to close** (the bible's Prologue benchmark: houses with depth and interiors, species trees, the four boys at final quality). The bikes were not lowered to meet it.
+
+**Known compromises.**
+- Alex's bell stands 2.5 cm above his low swept bar on a short post, because rig.js's bell point (where the first-person hand reaches) is above the bar there.
+- The chain guard on Alex's cruiser is a flat plate; the chain is static (it does not run round the sprockets yet).
+- The cream-wall tyres on Alex's cruiser are period-correct for a 2011 kids' cruiser but are the most "old-fashioned" element; they are one texture band to remove if they read too vintage.
+- Sam's and the protagonist's LOD0 budgets are over the target (§6.1).
+
+## 8. Images
+
+All in `docs/qa/bikes-phase1/`. Blender renders are Cycles with the ACES 1.3 view (the game's tone curve) and are **offline renders, not the game**; game captures are **software WebGL**.
+
+| What | Files |
+|---|---|
+| Each bike, six views (front ¾, rear ¾, side, two close mechanical details, golden hour on its stand) | `blender/bike.<id>--front34.jpg`, `--rear34.jpg`, `--side.jpg`, `--detail-*.jpg`, `--golden-hour.jpg` (24 images) |
+| The four together at one scale | `blender/lineup--four-bikes-side-profile-common-scale.jpg`, `blender/lineup--four-bikes-golden-hour.jpg` |
+| The Sketchfab original (its own textures, untouched), same light and cameras as Jamie's | `blender/source--sketchfab-bmx-original--front34.jpg`, `--side.jpg` (compare with `blender/bike.jamie--front34.jpg`, `--side.jpg`) |
+| Procedural (rig.js) vs authored, **same frame, same camera** in the running Prologue | `browser/game-prologue-review-{jamie,sam,alex}-{authored,procedural-same-frame}.jpg`, `browser/game-prologue-first-person*-{authored,procedural-same-frame}.jpg` |
+| The real first-person camera | `browser/game-prologue-first-person-authored.jpg`, `browser/game-prologue-first-person-looking-down-authored.jpg` |
+| The group in the Prologue (review camera, LODs in play) | `browser/game-prologue-group-review-camera-authored.jpg` |
+| Bike Lab (game renderer settings) | `browser/lab-lineup*.jpg` (incl. forced LOD0/1/2), `browser/lab-compare*.jpg` (procedural beside authored), `browser/lab-riders.jpg`, `browser/lab-fp.jpg` |
+| Offline packages | `browser/package-offline-bike-lab.jpg`, `browser/package-offline-game-prologue-bikes.jpg`, `browser/package-default-bikes-fail-loudly.jpg` |
+
+## 9. How to see it
+
+- **In the game (served):** `python3 -m http.server 8000 --directory dist`, open `http://localhost:8000/?bikes`, start the ride. **B** authored ↔ procedural, **N** LOD, **J** reflections.
+- **Bike Lab (served):** `http://localhost:8000/bike-lab.html` (drag to orbit; buttons for the views; `?only=jamie` for one bike).
+- **Offline:** `PLAYTEST_MENU=1 PLAYTEST_MODELS=1 node tools/package-playtest.mjs <folder>`, then open `Last-Light-Playtest.html?bikes` or `Last-Light-Bike-Lab.html`. The approved Prologue is unchanged without `?bikes`.
+- **Rebuild a bike:** `python tools/blender/bikes/build_bike.py -- --bike bike.sam` (bpy 5.0.1 module, Python 3.11; ~6 min each). Gallery: `python tools/blender/bikes/render_gallery.py`.
+- **Tests:** `node tests/bike-browser.mjs` (29 checks), `GLTF_VALIDATOR_DIR=<dir with gltf-validator> node tools/assets/validate-glb.mjs dist/assets/bike/bike.jamie.glb --profile bike`.
+
+## 10. Regression
+
+| Suite | Result |
+|---|---|
+| `QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs` | **818 passed, exit 0** — identical to the accepted baseline (818), same known `2/alex-bike` DEV difference (`docs/qa/bikes-phase1/regression-verify-quick.json`) |
+| `node tests/pipeline-browser.mjs` (Phase 0A) | see §10.1 |
+| `node tests/bike-browser.mjs` | 29 passed, 0 failed |
+
+<!-- §10.1 pipeline regression -->
+
+## 11. Not verified, and what comes next
+
+- **No real GPU.** Every frame and timing here is software rendering. FPS, GPU memory and frame time with the four bikes need a run on the Phase 0 reference hardware (A-45). Texture memory is estimated (≈ 48 MB per bike uncompressed; KTX2, L-7, would cut it several times).
+- **No human review yet.** The approval (A-49) needs the creative director in the game with `?bikes`.
+- **Astra's characters are not in these images.** The riders are the game's current procedural boys. No visual match to Astra's Jamie is claimed; the final character-and-bicycle review comes when her models are approved.
+- **Not done:** a running chain (static now); the story-state variants (Alex's broken reflector and evidence tag, Jamie's bike on its side, the chain-off bike in Aftermath I); the production swap across chapters (waits for A-49 and A-50); the 1958 Meadowlark.
+- **Blender:** built with Blender 5.0.1 as a headless module; the files open in the Blender application (EXPORT and REF scenes), which was not itself run here.
+
