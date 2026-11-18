@@ -482,7 +482,7 @@ def gable_roof(mb, cx, cz, a, b, y0, rise, *, ou=(.25, .25), ov=(.4, .4), along_
     # gable triangles
     for ei, e in enumerate((-1, 1)):
         if gable_walls[ei] and wall_col is not None:
-            g0, g1, g2 = M(e * a / 2, y0 - .02, -b / 2), M(e * a / 2, top - .06, 0), M(e * a / 2, y0 - .02, b / 2)
+            g0, g1, g2 = M(e * a / 2, y0, -b / 2), M(e * a / 2, top - .06, 0), M(e * a / 2, y0, b / 2)
             mb.poly([g0, g2, g1], wall_slot, wall_col, n=M(e, 0, 0) - M(0, 0, 0))
             if vent and lod <= 1:
                 gable_vent(mb, M, e, a, y0, rise, trim, lod, along_x)

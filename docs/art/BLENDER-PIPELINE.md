@@ -251,3 +251,18 @@ Verified (details in the report): the Blender 5.0.1 exporter → GLB with skin, 
 The four boys' bikes use this pipeline without a skeleton: `tools/blender/bikes/` builds them from `anchors.json` (dumped from `dist/rig.js` by `node tools/assets/bike-anchors.mjs`) with one shared kit and texture library; `ll_export.py` exports them; `validate-glb.mjs --profile bike` checks per-LOD budgets, the moving parts (`extras.ll_node` = frame, steer, wheel_front, wheel_rear, crank, pedal_l, pedal_r, kickstand, bell_lever, chain; `extras.ll_lod` 0–2), the anchor record (`extras.ll_anchors`), orientation and ground contact. Each part is modelled in place in the bike's rest pose (wheel 0, crank 0 = right arm up, steer 0, kickstand stowed), with identity transforms; the game hangs it under the matching rig.js group (`dist/bike-assets.js`). Files: `assets/source/bike/<id>/bike.<id>.blend`, `textures/`, `PROVENANCE.md`; runtime `dist/assets/bike/bike.<id>.glb`. Report: [../BIKES_PHASE1_REPORT.md](../BIKES_PHASE1_REPORT.md).
 
 Lessons that apply to every asset: the game renders single-sided, so **face winding must point outward** (Cycles renders both sides and hides inverted faces; check in the browser, or with a signed-volume test as the kit now does); triangulate n-gons before export (MikkTSpace tangents fail on them); keep imported references out of the shipped scene and out of the saved file (packed images double the repository).
+
+## 15. Houses (Prologue architecture benchmark)
+
+The twelve Prologue houses use this pipeline without a skeleton: `tools/blender/houses/` builds them from the game's own lot plans (`plans.json`, dumped from `dist/houses.js planLots` by `node tools/assets/house-plans.mjs` for the lots listed in `dist/house-lots.js`) with one modular kit and one texture library, `ll_export.py` exports them (`export_vertex_color='ACTIVE'`, no tangents, no animation), and `validate-glb.mjs --profile house` checks per-house, per-LOD budgets, the lot records and the orientation. Conventions: [HOUSE-KIT.md](HOUSE-KIT.md); results: [../HOUSES_PHASE1_REPORT.md](../HOUSES_PHASE1_REPORT.md).
+
+Differences from the character/bike conventions, on purpose:
+
+| | Houses |
+|---|---|
+| Frame | The game's house-local lot frame (`houses.js`: x across the facade, +z toward the street). The house faces Blender −Y as every asset does; the glTF file is then in house-local coordinates, and the game places it with the plan (`P.toWorld`, `P.worldRot`), with **no** half turn. |
+| Colour | Shared tiling textures are near-neutral; each house's palette colours ride on `COLOR_0` (divided by the texture's mean), so one material set serves every house. |
+| Tangents | Not exported: tiling families use world-metre planar UVs, never mirrored; three.js derives the tangent frame per pixel. (The Khronos validator reports `MESH_PRIMITIVE_GENERATED_TANGENT_SPACE` warnings; zero errors.) |
+| Draping | The game re-heights every vertex onto the terrain under the house at load (as world.js drapes a procedural house). Foundations reach 0.7 m below grade. |
+| Lessons | Coplanar overlapping trim pieces render black in Cycles and z-fight in the game: butt them or step them. Re-fetch a mesh's attribute layers after adding another (Blender reallocates them; a stale UV layer handle crashed the build). Glass is alpha-blended (glTF BLEND), not transmission (no transmission pass in the game). |
+

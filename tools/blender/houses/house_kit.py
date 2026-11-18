@@ -454,6 +454,7 @@ def make_materials(tex, kit_name='house.kit'):
         if slot == 'light':
             nt.links.new(vc.outputs['Color'], bsdf.inputs['Emission Color'])
             bsdf.inputs['Emission Strength'].default_value = 0.0
+        m.use_backface_culling = True          # the game draws single-sided (glTF doubleSided false)
         m['ll_tile_m'] = tile or 0.0
         mats[slot] = m
     return mats

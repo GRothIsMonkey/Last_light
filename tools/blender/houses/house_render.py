@@ -69,7 +69,7 @@ def street_set(scene, setback, x0=-40, x1=40, extra_back=25):
     plane(scene, 'set.street', x0, x1, -S - 30, -S + 4.7, 0.0, asph)
 
 
-def lights(scene, look):
+def lights(scene, look, azimuth=None, elevation=None):
     scene.render.engine = 'CYCLES'
     scene.cycles.device = 'CPU'
     scene.cycles.use_denoising = True
@@ -93,9 +93,11 @@ def lights(scene, look):
         except TypeError:
             continue
     dust = 'aerosol_density' if hasattr(sky, 'aerosol_density') else 'dust_density'
+    az = 250.0 if azimuth is None else azimuth
+    el = (8.0 if look == 'golden' else 38.0) if elevation is None else elevation
     if look == 'golden':
-        sky.sun_elevation = math.radians(8.0)
-        sky.sun_rotation = math.radians(250.0)
+        sky.sun_elevation = math.radians(el)
+        sky.sun_rotation = math.radians(az)
         sky.air_density = 1.6
         setattr(sky, dust, 3.2)
         sky.sun_intensity = .6
@@ -117,7 +119,7 @@ def lights(scene, look):
         sun.energy = 3.4
         sun.color = (1.0, .72, .48)
         sun.angle = math.radians(1.2)
-        rot = (math.radians(90 - 8), 0, math.radians(250 - 90))
+        rot = (math.radians(90 - el), 0, math.radians(az - 90))
     else:
         sun.energy = 2.6
         sun.color = (1.0, .96, .9)

@@ -40,6 +40,7 @@ import {createTitleScene} from './title-scene.js';
 import {createProgress} from './progress.js';
 import {createMenu} from './menu.js';
 import {createTitleArt} from './title-art.js';
+import {isBenchmarkLot,lotKey} from './house-lots.js';// (data only: the house benchmark's lot list, used with ?houses)
 
 const $=id=>document.getElementById(id), canvas=$('world');
 const clamp=THREE.MathUtils.clamp,damp=THREE.MathUtils.damp;
@@ -75,7 +76,10 @@ const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:
  gl_FragColor=vec4(col,1.);}`});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);
 
-const world=buildWorld(scene);
+// DEV house benchmark (?houses): the benchmark lots' procedural houses are baked into batches of their own so the authored
+// houses can stand in their place (and the procedural ones come back with H). Without ?houses the world is built as always.
+const HOUSES_FLAG=typeof location!=='undefined'&&/[?&]houses\b/.test(location.search||'');
+const world=HOUSES_FLAG?buildWorld(scene,{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}):buildWorld(scene);
 // Added after the neighborhood is bent and merged, so the sky stays a sky.
 scene.add(sky);const {road,originals,groundY}=world;// road and originals are read by tests/verify.mjs.
 const _v=new THREE.Vector3(),_q=new THREE.Quaternion(),_e=new THREE.Euler();
@@ -851,6 +855,9 @@ requestAnimationFrame(frame);
 // Phase 1 bicycle benchmark (DEV only): ?bikes upgrades the four boys' procedural bikes in place with the authored
 // Blender bikes (bike-benchmark.js). Without ?bikes nothing is imported or loaded.
 if(typeof location!=='undefined'&&/[?&]bikes\b/.test(location.search||''))import('./bike-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,friends,playerBike,hemi})).catch(e=>console.error('bike benchmark failed:',e));
+// Prologue house-architecture benchmark (DEV only): ?houses puts the authored Blender houses on their twelve lots
+// (house-benchmark.js); H swaps them with the procedural houses in the same frame. Without ?houses nothing is loaded.
+if(HOUSES_FLAG)import('./house-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,hemi})).catch(e=>console.error('house benchmark failed:',e));
 if(typeof location!=='undefined'&&/[?&]pipeline\b/.test(location.search||''))import('./pipeline-lab.js').then(m=>m.mountInGame({scene,camera,renderer,groundY:(x,z)=>nav.groundY(x,z)})).catch(e=>console.error('pipeline probe failed:',e));
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.

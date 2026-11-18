@@ -201,8 +201,8 @@ export function buildHouse(W,P){
  if(P.chimney==='exterior'){const cs=P.hasGarage?-P.gs:1,cz=P.sneak?0:-depth*.12,top=roofY+P.rise+.8,x=cs*(W2+.42);K.rbox(g,x,top/2-.2,cz,.78,top+.4,1.05,.03,brick);K.rbox(g,x,top+.06,cz,.9,.12,1.18,.02,HOUSE.stone);K.rbox(g,x,roofY*.55,cz,.95,.1,1.2,.02,HOUSE.stone);K.cyl(g,x,top+.25,cz+.2,.09,.3,0x5d5a55,8);}
  if(P.hasGarage)buildGarage(W,P,g,rand,mid,siding,roofMat,gable);
  // Everyday things around the house.
- if(!mid){foundationBeds(W,P,g,rand);if(P.ac){const s=P.hasGarage?-P.gs:1;const ac=K.group(g,s*(W2+.55),P.sneak?D2*.3:-D2*.45);/* clear of a friend’s bedroom window */K.box(ac,0,.05,0,.9,.1,.9,HOUSE.step);K.rbox(ac,0,.45,0,.75,.72,.75,.04,HOUSE.acUnit);K.cyl(ac,0,.82,0,.28,.03,0x3a3c3c,14);}}
- buildRear(W,P,g,rand,mid);
+ if(!mid){yardOf(g,()=>foundationBeds(W,P,g,rand));if(P.ac){const s=P.hasGarage?-P.gs:1;const ac=K.group(g,s*(W2+.55),P.sneak?D2*.3:-D2*.45);/* clear of a friend’s bedroom window */K.box(ac,0,.05,0,.9,.1,.9,HOUSE.step);K.rbox(ac,0,.45,0,.75,.72,.75,.04,HOUSE.acUnit);K.cyl(ac,0,.82,0,.28,.03,0x3a3c3c,14);}}
+ yardOf(g,()=>buildRear(W,P,g,rand,mid));
  if(P.alexWindow){
   // Close-view construction and household details at Alex's unchanged front elevation.
   const detail=K.group(g,0,0),metal=0x9da3a1;
@@ -250,6 +250,9 @@ function friendLandmarks(W,P,g){const {K}=W,sw=P.sneakWin,side=sw.s,x=side*(P.w/
  const a=P.toWorld(x,P.front+2.6),b=P.toWorld(x,sw.z);W.space.rect((a.x+b.x)/2,(a.z+b.z)/2,.75,Math.hypot(b.x-a.x,b.z-a.z)/2+.8,P.worldRot,'walk');
  P.landmark=P.key==='jamie'?'red porch chair and stepping stones':'blue-trimmed garage and driveway hoop';
 }
+// Yard pieces built into a house's group (beds, the back deck or patio, walks) are tagged, so a DEV benchmark that swaps the
+// house's architecture (world.js splitHouses, ?houses) leaves the yard alone. Tagging changes nothing that is drawn.
+function yardOf(g,fn){const n=g.children.length;fn();for(const o of g.children.slice(n))o.traverse(x=>{x.userData.yard=true;});}
 const seedFrom=x=>{let s=Math.floor(x*4294967296)>>>0||7;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};};
 
 // A board between two points: length along A->B, 'up' fixes its roll. -------------------------
@@ -512,11 +515,11 @@ function buildDrive(W,P){
   if(P.frameId==='main')W.drives.push(drive);else (W.sideDrives||(W.sideDrives=[])).push({...drive,frameId:P.frameId});}
  // Walk from the steps: along the house to the driveway, and on some lots out to the sidewalk.
  const {K:k2}=W,g=P.g,zc=P.stepFront+.55,x0=P.doorX,x1=P.drivX-(P.drivX>P.doorX?1:-1)*P.drivW/2;
- k2.box(g,(x0+x1)/2,.1,zc,Math.abs(x1-x0)+1.1,.12,1.05,HOUSE.walk);
+ yardOf(g,()=>k2.box(g,(x0+x1)/2,.1,zc,Math.abs(x1-x0)+1.1,.12,1.05,HOUSE.walk));
  {const c=P.toWorld((x0+x1)/2,zc);W.space.rect(c.x,c.z,Math.abs(x1-x0)/2+.8,.8,P.worldRot,'walk');}
  if(P.leadWalk&&!P.key){const c=P.toWorld(x0,(P.stepFront+P.setback-walk1)/2);W.space.rect(c.x,c.z,.8,(P.setback-walk1-P.stepFront)/2+.3,P.worldRot,'walk');}
  P.localPads.push({x0:Math.min(x0,x1)-.55,x1:Math.max(x0,x1)+.55,z0:zc-.52,z1:zc+.52,y:.16});
- if(P.leadWalk&&!P.key){const zs=P.stepFront+.1,ze=P.setback-walk1+.1;k2.box(g,x0,.1,(zs+ze)/2,1.05,.12,Math.max(.5,ze-zs),HOUSE.walk);}
+ if(P.leadWalk&&!P.key){const zs=P.stepFront+.1,ze=P.setback-walk1+.1;yardOf(g,()=>k2.box(g,x0,.1,(zs+ze)/2,1.05,.12,Math.max(.5,ze-zs),HOUSE.walk));}
 }
 
 // Doors and garage doors that open --------------------------------------------------------------

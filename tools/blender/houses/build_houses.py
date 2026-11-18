@@ -2,7 +2,8 @@
 editable .blend, export the runtime GLB and (optionally) render.
 
     python tools/blender/houses/build_houses.py -- [--houses house.car,house.hoop|all] [--lods 0,1,2] [--stage full|geometry]
-                                                   [--render review,golden] [--out dist/assets/house/house.prologue.glb]
+                                                   [--out dist/assets/house/house.prologue.glb]
+(the gallery is tools/blender/houses/render_gallery.py)
 
 (bpy 5.0.1 as a Python module, or `blender --background --factory-startup --python tools/blender/houses/build_houses.py -- ...`)
 
@@ -125,9 +126,6 @@ def main():
     os.makedirs(os.path.dirname(o['blend']), exist_ok=True)
     with open(os.path.join(SRC_DIR, 'build-stats.json'), 'w') as fh:
         json.dump({'version': VERSION, 'houses': stats}, fh, indent=1)
-    if o['render']:
-        import render_gallery
-        render_gallery.run(o, houses, P)
     if o['export'] == '1' and o['stage'] == 'full':
         import ll_export
         ll_export.export_glb(o['out'], export_vertex_color='ACTIVE', export_tangents=False, export_animations=False, export_skins=False, export_morph=False)

@@ -15,22 +15,22 @@ import {JUNCTIONS,FRIEND_HOMES} from '../../dist/layout.js';
 import {HOUSE} from '../../dist/palette.js';
 
 const out=process.argv[2]||new URL('../blender/houses/plans.json',import.meta.url).pathname;
-// The benchmark's lots on Oak Hollow Drive (Phase One area, d -50..620): the eight houses that open the ride (both
-// sides, d -20..70: all four styles), the hoop house (d 153) and the house across from it, the car house (d 522, lot 530) and
-// the house across from it. Keys are 'main:<side>:<lot d>' with the lot's nominal 29 m position.
-export const BENCHMARK_LOTS=[
- ['main:-1:-21','ordinary'],['main:1:-21','ordinary'],['main:-1:8','ordinary'],['main:1:8','ordinary'],
- ['main:-1:37','ordinary'],['main:1:37','ordinary'],['main:-1:66','ordinary'],['main:1:66','ordinary'],
- ['main:-1:153','story:hoop'],['main:1:153','ordinary'],['main:-1:530','story:car'],['main:1:530','ordinary'],
-];
+// The benchmark's lots: one list shared with the game (dist/house-lots.js; world.js splits exactly these with ?houses).
+import {BENCHMARK_LOTS,lotKey} from '../../dist/house-lots.js';
 const W={lotRand:(...n)=>seeded(hashSeed(...n)),sideFrames:JUNCTIONS.map(makeSideFrame),MAIN};
 const plans=planLots(W);
+// Driveway hoops are decided while houses.js builds a garage (a random 16 % of garages, and the hoop house's), so they are
+// read from the real world build: every benchmark lot keeps the hoop it has in the game (the kid's and Aftermath II's).
+globalThis.document??={createElement:()=>({getContext:()=>null}),getElementById:()=>null};globalThis.window??={};
+const THREE=await import('../../dist/three.module.js');const {buildWorld}=await import('../../dist/world.js');
+const built=buildWorld(new THREE.Scene());const hoopOf=new Map();
+for(const x of built.hoops||[])if(x.kind==='garage'&&x.plan?.frameId==='main')hoopOf.set(lotKey(x.plan),x);
 const hex=c=>c==null?null:'#'+c.toString(16).padStart(6,'0');
 const r=x=>typeof x==='number'?+x.toFixed(5):x;
 // nominal lot of a plan (the planner jitters d by up to 5 m; friend homes sit on their own dc)
-const lotOf=P=>{const k=Math.round((P.u-(-427))/29);return -427+29*k;};
+const lotOf=P=>+lotKey(P).split(':')[2];
 const pick=new Map();
-for(const P of plans){const nominal=lotOf(P);const key=`main:${P.side}:${nominal}`;pick.set(key,P);}
+for(const P of plans)pick.set(lotKey(P),P);
 const res={generatedFrom:['dist/houses.js planLots','dist/layout.js','dist/palette.js'],frame:'houses.js house-local: metres, x across the facade (+x right seen from the street), +z toward the street, y up from the lot ground',
  palette:{trim:hex(HOUSE.trim),fascia:hex(HOUSE.fascia),soffit:hex(HOUSE.soffit),gutter:hex(HOUSE.gutter),downspout:hex(HOUSE.downspout),foundation:hex(HOUSE.foundation),brick:hex(HOUSE.brick),brickDark:hex(HOUSE.brickDark),stone:hex(HOUSE.stone),porchFloor:hex(HOUSE.porchFloor),step:hex(HOUSE.step),walk:hex(HOUSE.walk),curtain:hex(HOUSE.curtain),acUnit:hex(HOUSE.acUnit),deck:hex(HOUSE.deck),mulch:hex(HOUSE.mulch)},
  houses:[]};
@@ -38,7 +38,7 @@ for(const [key,role] of BENCHMARK_LOTS){const P=pick.get(key);if(!P)throw new Er
  // derived exactly as houses.js buildHouse / buildGarage compute them
  const garageInfo=P.hasGarage?{x:P.gx,front:P.gfront,doorW:P.gw>5?5.1:2.75,doorH:2.15,depth:P.gd,y:.2}:null;
  const brickOut=P.brick==='front'?.065:P.brick==='lower'?.055:0;
- const hoop=P.key==='hoop'?{board:[P.gx,3.28,P.gfront+.06],rim:[P.gx,3.05,P.gfront+.36],rimR:.23}:null;
+ const hx=hoopOf.get(key),hoop=hx?{board:[hx.board.x,hx.board.y,hx.board.z],rim:[hx.rim.x,hx.rim.y,hx.rim.z],rimR:.23}:null;
  const id=`house.${P.key||('lot'+(P.side<0?'L':'R')+String(lotOf(P)).replace('-','m'))}`;
  res.houses.push({id,lot:key,role,key:P.key||null,d:r(P.u),side:P.side,setback:r(P.setback),style:P.style,stories:P.stories,w:r(P.w),depth:r(P.depth),h:r(P.h),roof:P.roof,rise:r(P.rise),
   front:r(P.front),wall:hex(P.wall),roofColor:hex(P.roofColor),door:hex(P.door),garageColor:hex(P.garageColor),shutters:hex(P.shutters),brick:P.brick,brickOut,

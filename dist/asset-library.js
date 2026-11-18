@@ -24,6 +24,8 @@ export const ASSETS={
  'bike.sam':{file:'assets/bike/bike.sam.glb',rig:'rig.bike',kind:'bike',note:'youth mountain bike'},
  'bike.alex':{file:'assets/bike/bike.alex.glb',rig:'rig.bike',kind:'bike',note:'youth cruiser'},
  'bike.player':{file:'assets/bike/bike.player.glb',rig:'rig.bike',kind:'bike',note:'the protagonist\'s youth hybrid (rig.js road-kid)'},
+ // Prologue house-architecture benchmark (DEV, ?houses): twelve authored houses on their lots, awaiting approval
+ 'house.prologue':{file:'assets/house/house.prologue.glb',rig:'none',kind:'house',note:'Blender house kit: 12 Prologue lots, 3 LODs, shared texture library'},
 };
 const cache=new Map(),log=[];
 let loader=null;

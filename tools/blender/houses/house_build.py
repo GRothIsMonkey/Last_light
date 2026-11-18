@@ -269,14 +269,15 @@ class House:
             for (x, z) in ((-1, 1), (1, 1), (-1, -1), (1, -1)):
                 X, Z = x * W2, z * D2
                 if lod <= 1:
-                    mb.box((X + x * .0125 - x * cb / 2 + x * .0125, (sb + top) / 2, Z + z * .0125), (cb, top - sb, .025), 'paint', self.c_trim, skip=('-y', '+y'))
-                    mb.box((X + x * .0125, (sb + top) / 2, Z + z * .0125 - z * cb / 2 + z * .0125), (.025, top - sb, cb), 'paint', self.c_trim, skip=('-y', '+y'))
+                    # the board on the front/back wall wraps the corner; the side board butts against it (no coplanar overlap)
+                    mb.box((X + x * .025 - x * cb / 2, (sb + top) / 2, Z + z * .0125), (cb, top - sb, .025), 'paint', self.c_trim, skip=('-y', '+y'))
+                    mb.box((X + x * .0125, (sb + top) / 2, Z - z * (cb - .025) / 2), (.025, top - sb, cb - .025), 'paint', self.c_trim, skip=('-y', '+y'))
         else:
             for (x, z) in ((-1, -1), (1, -1)):
                 X, Z = x * W2, z * D2
                 if lod <= 1:
-                    mb.box((X + x * .0125, (sb + top) / 2, Z + z * .0125 - z * .05), (.025, top - sb, .1), 'paint', self.c_trim, skip=('-y', '+y'))
-                    mb.box((X - x * .05 + x * .0125, (sb + top) / 2, Z + z * .0125), (.1, top - sb, .025), 'paint', self.c_trim, skip=('-y', '+y'))
+                    mb.box((X + x * .025 - x * .05, (sb + top) / 2, Z + z * .0125), (.1, top - sb, .025), 'paint', self.c_trim, skip=('-y', '+y'))
+                    mb.box((X + x * .0125, (sb + top) / 2, Z - z * .0375), (.025, top - sb, .075), 'paint', self.c_trim, skip=('-y', '+y'))
         # foundation: exposed concrete band (slightly inset), going below grade so a sloping lot never shows a gap
         fz = .015
         fy0, fy1 = -.7, sb + .02
@@ -612,8 +613,8 @@ class House:
         # corner boards on the garage
         if lod <= 1 and not brick:
             for z in (z1,):
-                mb.box((xo + gs * .0125 - gs * .05 + gs * .0125, (sb + top) / 2, z + .0125), (.1, top - sb, .025), 'paint', T, skip=('-y', '+y'))
-                mb.box((xo + gs * .0125, (sb + top) / 2, z + .0125 - .05 + .0125), (.025, top - sb, .1), 'paint', T, skip=('-y', '+y'))
+                mb.box((xo + gs * .025 - gs * .05, (sb + top) / 2, z + .0125), (.1, top - sb, .025), 'paint', T, skip=('-y', '+y'))
+                mb.box((xo + gs * .0125, (sb + top) / 2, z - .0375), (.025, top - sb, .075), 'paint', T, skip=('-y', '+y'))
         # garage door (or, on the car house, an opening whose working door is a separate node) + trim
         Fd = front.frame(gw / 2, slab, t)
         if not h['dynamicGarage']:

@@ -29,7 +29,10 @@ import {buildPine} from './pine-build.js';
 export {JUNCTIONS,BULB,ROAD_END,LOOKOUT} from './layout.js';
 export {LAWN,SIDEWALK,CURB_TOP,knoll,roadCrown} from './terrain.js';
 
-export function buildWorld(scene){
+// opts.splitHouses (DEV, ?houses only): a function plan -> id|null. The named first-row houses keep their procedural
+// architecture in batches and shadow proxies of their own (zone 'hb:<id>'; the yard stays with the street), so the house
+// benchmark can show the authored house in its place and the procedural one again on demand. Without it nothing changes.
+export function buildWorld(scene,opts={}){
  const K=createKit(),rand=seeded(2011);
  const sideFrames=JUNCTIONS.map(makeSideFrame);
  // Build context shared by every builder.
@@ -75,6 +78,7 @@ export function buildWorld(scene){
  W.pine={...W.pine,...buildPine(W)};// Chapter Five: Pine Ridge (pine-build.js, pine-camp.js)
  buildBackground(W);// back yards, second row, side-street houses, far neighborhood and land
 
+ if(opts.splitHouses)for(const P of W.plans){const id=opts.splitHouses(P);if(!id||!P.g)continue;P.benchmarkZone='hb:'+id;P.g.traverse(o=>{if((o.isMesh||o.isLine)&&!o.userData.yard)o.userData.zone=P.benchmarkZone;});}
  const {merged,originals,shadowProxies}=bakeAndMerge(W,scene);
  // A layer that asks for it lets go of its objects once they are baked (Pine Ridge's thousands of trees and planks): only the
  // merged meshes draw, and anything still in use is held by whoever uses it; its root is untransformed, so they keep their places.
@@ -183,7 +187,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
    for(let t=0;t<tris;t++){const i0=idx?idx.getX(t*3):t*3,i1=idx?idx.getX(t*3+1):t*3+1,i2=idx?idx.getX(t*3+2):t*3+2;
     const cx=(pos[i0*3]+pos[i1*3]+pos[i2*3])/3,cz=(pos[i0*3+2]+pos[i1*3+2]+pos[i2*3+2])/3,cell=Math.floor(cx/cellSize)*1000+Math.floor(cz/cellSize);
     let b=local.get(cell);if(!b){b=batchFor(material,cell,far,zone);local.set(cell,b);}add(b,pos,nor,col,uv,i0);add(b,pos,nor,col,uv,i1);add(b,pos,nor,col,uv,i2);
-    if(caster){const sz=zone==='woods'?110:50,sc=(zone==='woods'?'w':'')+((Math.floor(cx/sz)*1000+Math.floor(cz/sz))*2+(leaf?1:0));let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
+    if(caster){const sz=zone==='woods'?110:50,hb=zone&&zone.startsWith('hb:')?zone:null,sc=(hb?hb+':':'')+(zone==='woods'?'w':'')+((Math.floor(cx/sz)*1000+Math.floor(cz/sz))*2+(leaf?1:0));let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,hb,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
      for(const i of [i0,i1,i2]){sp.p.push(pos[i*3],pos[i*3+1],pos[i*3+2]);if(leaf)sp.uv.push(uv?uv.getX(i):0,uv?uv.getY(i):0,0);}}}
   }
  }
@@ -195,7 +199,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
  for(const sp of shadow.values()){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(sp.p.view().slice(),3));
   if(sp.leaf){const u3=sp.uv.view(),uv=new Float32Array(u3.length/3*2);for(let i=0,j=0;i<u3.length;i+=3){uv[j++]=u3[i];uv[j++]=u3[i+1];}g.setAttribute('uv',new THREE.BufferAttribute(uv,2));}
   g.computeBoundingSphere();const mat=sp.leaf?leafShadowMaterial(W):shadowOnly;const mesh=new THREE.Mesh(g,mat);if(sp.leaf)mesh.customDepthMaterial=leafDepth(W);
-  mesh.castShadow=true;mesh.receiveShadow=false;mesh.layers.set(1);mesh.name='shadow-proxy';scene.add(mesh);shadowProxies.push(mesh);}
+  mesh.castShadow=true;mesh.receiveShadow=false;mesh.layers.set(1);mesh.name='shadow-proxy';if(sp.hb)mesh.userData.zone=sp.hb;scene.add(mesh);shadowProxies.push(mesh);}
  for(const [color,arr] of lineBatches){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(arr.view().slice(),3));g.computeBoundingSphere();scene.add(new THREE.LineSegments(g,new THREE.LineBasicMaterial({color})));}
  return {merged,originals,shadowProxies};
 }
