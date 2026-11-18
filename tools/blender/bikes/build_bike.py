@@ -431,6 +431,31 @@ def anchors_record(bike_id, C):
     return rec
 
 
+def strip_reference():
+    """Drop the imported Sketchfab reference from the file (its packed 2048² images would double the repository size):
+    the original is kept byte-for-byte beside the sources; a text block says where."""
+    ref = bpy.data.scenes.get('REF')
+    gone = 0
+    for coll in [c for c in bpy.data.collections if c.name.startswith('REF.sketchfab')]:
+        for ob in list(coll.objects):
+            bpy.data.objects.remove(ob)
+            gone += 1
+        bpy.data.collections.remove(coll)
+    if gone:
+        for im in [i for i in bpy.data.images if i.name.startswith('Image_')]:
+            bpy.data.images.remove(im)
+        for m in [m for m in bpy.data.materials if m.users == 0]:
+            bpy.data.materials.remove(m)
+        for me in [m for m in bpy.data.meshes if m.users == 0]:
+            bpy.data.meshes.remove(me)
+        t = bpy.data.texts.get('sketchfab-source.txt') or bpy.data.texts.new('sketchfab-source.txt')
+        t.from_string('Components of this bike come from "Bmx Bike" by Mitchell (https://skfb.ly/oUoKB), CC BY 4.0.\n'
+                      'Original, byte for byte: assets/source/bike/third-party/sketchfab-bmx-bike-mitchell/bmx_bike.glb\n'
+                      'SHA-256 11f3c4b640a7f7d89bb70b38e9a20c6e9370cbc47b2e8e55246117e2f013c950\n'
+                      'Harvest script: tools/blender/bikes/source_bmx.py; record: docs/THIRD_PARTY_ASSETS.md\n')
+    return gone
+
+
 def save_and_export(bike_id, built, root, mats, build_info, dens):
     import ll_export
     key = bike_id.split('.')[1]
@@ -452,6 +477,7 @@ def save_and_export(bike_id, built, root, mats, build_info, dens):
     for lod, objs in built.items():
         for ob in objs.values():
             ob.hide_render = lod > 0
+    strip_reference()
     # REF scene: the anchors as a text block, for anyone opening the .blend
     ref = bpy.data.scenes.get('REF') or bpy.data.scenes.new('REF')
     txt = bpy.data.texts.get('anchors.json') or bpy.data.texts.new('anchors.json')

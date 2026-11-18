@@ -22,6 +22,9 @@ for ob in bpy.context.scene.objects:
         bmesh.ops.triangulate(bm, faces=ng, quad_method='BEAUTY', ngon_method='BEAUTY')
         bm.to_mesh(ob.data)
     bm.free()
+sys.path.insert(0, HERE)
+from build_bike import strip_reference
+print('export_bike: dropped', strip_reference(), 'reference objects')
 bpy.context.preferences.filepaths.save_version = 0
 bpy.ops.wm.save_mainfile(compress=True, relative_remap=True)
 harvested = 'CC BY' in bpy.data.objects[bike].get('ll_license', '')
