@@ -116,6 +116,14 @@ def new_scene(name, look, samples, res=(1600, 1000)):
     return sc
 
 
+def render_golden(bike_id, out, samples):
+    sg = new_scene('golden.' + bike_id, 'golden', samples)
+    parts, A = append_bike(bike_id, sg)
+    pose(parts, A, crank=2.0, steer=.38, kick=1.0, wheel=1.0)
+    cam = R.camera(sg, 'cam.golden', (1.95, -2.15, 0.62), (0, -0.05, 0.5), 52)
+    return [R.render(sg, cam, os.path.join(out, f'{bike_id}--golden-hour.jpg'))]
+
+
 def render_views(bike_id, out, samples):
     done = []
     sc = new_scene('views.' + bike_id, 'review', samples)
@@ -200,6 +208,10 @@ def main():
             t = time.time()
             done += render_views(b, out, samples)
             print(f'render_gallery: {b} in {time.time() - t:.0f}s')
+    if 'golden' in sets:
+        for b in BIKES:
+            if not o['only'] or b in o['only'].split(','):
+                done += render_golden(b, out, samples)
     if 'lineup' in sets:
         done += render_lineup(out, samples)
     if 'source' in sets:

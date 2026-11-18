@@ -122,8 +122,9 @@ def setup_scene(scene, look='review', res=(1600, 1000), samples=96):
 
     # the ground set (render-only; never exported: it lives in the render scene)
     if look == 'golden':
-        _plane(scene, 'render.asphalt', (24, 400), (3.5, 0, 0), ground_material('asphalt'))
-        _plane(scene, 'render.lawn', (400, 400), (-206.0, 0, 0.004), ground_material('grass'))
+        # a street (asphalt along the bike, 9 m wide) with lawn beyond it to the horizon on both sides
+        _plane(scene, 'render.asphalt', (9, 900), (2.6, 0, 0), ground_material('asphalt'))
+        _plane(scene, 'render.lawn', (900, 900), (0, 0, -0.004), ground_material('grass'))
         sun = bpy.data.lights.new('render.sun', 'SUN')
         sun.energy = 3.4
         sun.color = (1.0, 0.72, 0.46)
