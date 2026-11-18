@@ -543,11 +543,12 @@ def bell(C, m, clamp_point, bar_dir, pid_dome, pid_base, dome_r=.027, dome_h=.02
 
 
 def bell_lever(C, m, pivot, bar_dir, pid, length=.026):
-    """The striker lever (its own node: the game rotates it about its pivot when the bell is rung)."""
+    """The striker lever (its own node). game.js swings it about its pivot's X axis (rotation.x up to -0.4) as the hand
+    reaches for the bell, so it is a thumb lever pointing back toward the rider (+Z), where a thumb on the grip finds it."""
     o = Vector(bar_dir).normalized()
-    fwd = (V(0, 0, -1) - o * V(0, 0, -1).dot(o)).normalized()
+    back = V(0, 0, 1)
     K.tube(m, pivot - Y * .002, pivot + Y * .004, .0042, C.n(10, 5), pid)
-    pts = [pivot, pivot + fwd * .006 - o * .004, pivot + fwd * .004 - o * length]
+    pts = [pivot, pivot + back * (length * .45) + o * .003, pivot + back * length + o * .006 - Y * .003]
     K.sweep(m, K.catmull(pts, 3), [(-.003, -.0012), (.003, -.0012), (.003, .0012), (-.003, .0012)], pid, ref=Y)
     K.lathe(m, [(0, .0001), (0, .0052), (.004, .0052), (.004, .0001)], C.n(10, 5), pid, origin=pts[-1] - Y * .002, axis=Y,
             ref=X, sharp=(1, 2))
@@ -660,9 +661,13 @@ def seat_collar(C, m, top_of_st, st_dir, r, pid, bolt_pid, qr=False):
 # ----------------------------------------------------------------------------------------------------------------------
 # Kickstand
 # ----------------------------------------------------------------------------------------------------------------------
-def kickstand(C, m, pivot, pid_leg, pid_foot, length=.30, rest=-1.2):
+def kickstand(C, m, pivot, pid_leg, pid_foot, length=.30, rest=-1.2, foot_r=.0095):
     """The leg, modelled in its stowed pose: rig.js turns the pivot group about X by -1.2 (stowed) and lays
-    the leg along the pivot's -Y before that rotation. So the leg runs from the pivot along R_x(rest) * (0,-1,0)."""
+    the leg along the pivot's -Y before that rotation. So the leg runs from the pivot along R_x(rest) * (0,-1,0).
+    Its length is rig.js's 0.30 m, shortened where that would push the deployed foot into the ground (rig.js deploys it
+    to x -0.25, z -0.32; Jamie's BMX has the lowest pivot)."""
+    dep = (Quaternion(X, -.25) @ Quaternion(Z, -.32)) @ V(0, -1, 0)     # three.js Euler XYZ = Rx * Ry * Rz
+    length = min(length, (pivot.y - foot_r * .9) / -dep.y)
     q = Quaternion(X, rest)
     down = q @ V(0, -1, 0)
     side_out = V(-1, 0, 0)   # the stand lives on the bike's left (game -X)
