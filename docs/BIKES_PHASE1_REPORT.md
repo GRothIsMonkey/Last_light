@@ -160,9 +160,9 @@ All in `docs/qa/bikes-phase1/`. Blender renders are Cycles with the ACES 1.3 vie
 |---|---|
 | `QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs` | **818 passed, exit 0** — identical to the accepted baseline (818), same known `2/alex-bike` DEV difference (`docs/qa/bikes-phase1/regression-verify-quick.json`) |
 | `node tests/pipeline-browser.mjs` (Phase 0A: lab, game, offline packages) | **36 passed, 0 failed** — identical to Phase 0A (36) (`docs/qa/bikes-phase1/regression-pipeline-browser.json`) |
+| `node tests/main-menu-browser.mjs` on the default complete package (`PLAYTEST_CHAPTER=final`, opened from disk) | **96 passed, 0 failed** — as the accepted build (96); this also settles the run Phase 0A could not finish cleanly (`docs/qa/bikes-phase1/regression-main-menu-package.json`) |
 | `node tests/bike-browser.mjs` | 29 passed, 0 failed |
 
-<!-- §10.1 -->
 
 ## 11. Not verified, and what comes next
 
