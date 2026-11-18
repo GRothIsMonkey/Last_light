@@ -231,15 +231,16 @@ def hub_body(C, m, axle, kind, flange_r, fx, pid):
     K.lathe(m, prof, C.n(14, 6), pid, origin=axle, axis=X, ref=Y, sharp=(3, 4, len(prof) - 5, len(prof) - 4) if C.lod < 2 else ())
 
 
-def knobs(C, m, axle, bead_r, tyre_w, tyre_h, pid, rows=34):
+def knobs(C, m, axle, bead_r, tyre_w, tyre_h, pid, rows=42):
     """Knobby tread (Sam's MTB): per row a centre block, alternating left/right of the centre line, and a shoulder block
     on the opposite side, so the crown reads as a continuous zig-zag of blocks in profile and from above."""
     R = bead_r + tyre_h - .0055
     for k in range(rows):
         a0 = TAU * k / rows
         s = 1 if k % 2 else -1
-        for (dx, da, w, l, h, r_off, tilt) in ((s * .0058, 0, .013, .0115, .0055, 0, 0),
-                                                (-s * .0215, .5, .0105, .0105, .0048, -.0085, -s * .62)):
+        # blocks ~2 cm long round the tyre, ~2.5 cm apart: the crown reads as tread, not studs
+        for (dx, da, w, l, h, r_off, tilt) in ((s * .0055, 0, .015, .02, .0052, 0, 0),
+                                                (-s * .021, .5, .012, .017, .0046, -.0085, -s * .62)):
             a = a0 + da * TAU / rows
             d = V(0, math.sin(a), math.cos(a))
             tang = V(0, math.cos(a), -math.sin(a))
