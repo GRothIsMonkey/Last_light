@@ -82,7 +82,7 @@ All four: **0 errors**; Khronos glTF Validator 2.0.0-dev.3.10: **0 errors, 0 war
 
 **Texel density** at runtime (1024²): frame paint ≈ 1,300–1,500 px/m, hardware ≈ 850–950 px/m, tyres and soft parts ≈ 1,000–1,100 px/m (bible §5.2: bikes 512–1,024 px/m; first-person bars 1,024–2,048).
 
-**Colour** (frame texels measured against the canonical rig.js colours, sRGB): Jamie 175,85,59 vs `b2553a` 178,85,58; Sam 77,125,140 vs `4d7f8f` 77,127,143; Alex 137,141,62 vs `8a8f3f` 138,143,63 (protagonist built the same way, `5f8f93`).
+**Colour** (frame texels measured against the canonical rig.js colours, sRGB): Jamie 175,85,59 vs `b2553a` 178,85,58; Sam 77,125,140 vs `4d7f8f` 77,127,143; Alex 137,141,62 vs `8a8f3f` 138,143,63; the protagonist 95,142,145 vs `5f8f93` 95,143,147.
 
 ### 6.2 In the browser (`node tests/bike-browser.mjs` → **29 passed, 0 failed**; software WebGL)
 
