@@ -4,14 +4,14 @@
  "warnings": [],
  "info": {
   "file": "bike.jamie.glb",
-  "bytes": 7205804,
-  "sha256": "ee4676ed61c392ef91b020b9c7b94f701a1938a8b040feeb17a36ddc13e677ac",
+  "bytes": 7150040,
+  "sha256": "fef47149d7ef08c7f31c289b31bc175153b50e976a0bb46780df149b747d132d",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "bike",
   "assetId": "bike.jamie",
   "assetVersion": 1,
   "triangles": 25402,
-  "vertices": 33166,
+  "vertices": 33160,
   "skinnedMeshes": 0,
   "morphTargets": [],
   "trianglesPerLOD": [
@@ -91,7 +91,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 350158,
+    "bytes": 350468,
     "use": [
      "normal"
     ]
@@ -101,7 +101,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 1056133,
+    "bytes": 1036781,
     "use": [
      "data"
     ]
@@ -111,7 +111,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 205844,
+    "bytes": 200259,
     "use": [
      "color"
     ]
@@ -121,7 +121,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 913649,
+    "bytes": 913142,
     "use": [
      "normal"
     ]
@@ -131,7 +131,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 965473,
+    "bytes": 944926,
     "use": [
      "data"
     ]
@@ -141,7 +141,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 115822,
+    "bytes": 106080,
     "use": [
      "color"
     ]
@@ -177,7 +177,7 @@
     ]
    }
   ],
-  "textureBytes": 5139105,
+  "textureBytes": 5083682,
   "gpuTextureMBEstimate": 48,
   "clips": []
  },
