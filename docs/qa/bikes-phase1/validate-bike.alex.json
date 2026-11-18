@@ -7,14 +7,14 @@
  ],
  "info": {
   "file": "bike.alex.glb",
-  "bytes": 6969272,
-  "sha256": "1a6dfd4de22980a1751d6927339f50d08079bab755cedb4608e8a2ebc2f39b3c",
+  "bytes": 6938720,
+  "sha256": "c102b1d14b5b1d73db51f5f56d13c5a5ea705d892b19526042bb858057a2a338",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "bike",
   "assetId": "bike.alex",
   "assetVersion": 1,
   "triangles": 28342,
-  "vertices": 36563,
+  "vertices": 36550,
   "skinnedMeshes": 0,
   "morphTargets": [],
   "trianglesPerLOD": [
@@ -95,7 +95,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 62320,
+    "bytes": 62299,
     "use": [
      "normal"
     ]
@@ -105,7 +105,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 954232,
+    "bytes": 956254,
     "use": [
      "data"
     ]
@@ -115,7 +115,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 130658,
+    "bytes": 136717,
     "use": [
      "color"
     ]
@@ -125,7 +125,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 878754,
+    "bytes": 879371,
     "use": [
      "normal"
     ]
@@ -135,7 +135,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 851936,
+    "bytes": 858814,
     "use": [
      "data"
     ]
@@ -145,7 +145,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 79655,
+    "bytes": 80503,
     "use": [
      "color"
     ]
@@ -155,7 +155,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 839710,
+    "bytes": 838828,
     "use": [
      "normal"
     ]
@@ -165,7 +165,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 782693,
+    "bytes": 730661,
     "use": [
      "data"
     ]
@@ -175,13 +175,13 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 105948,
+    "bytes": 112636,
     "use": [
      "color"
     ]
    }
   ],
-  "textureBytes": 4685906,
+  "textureBytes": 4656083,
   "gpuTextureMBEstimate": 48,
   "clips": []
  },
