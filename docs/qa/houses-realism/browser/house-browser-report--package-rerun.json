@@ -1,0 +1,125 @@
+{
+ "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
+ "started": "2026-11-18T22:39:42.958Z",
+ "checks": [
+  {
+   "name": "Package: PLAYTEST_MODELS=1 embeds the house models (C and B) and hashes them in the manifest",
+   "detail": {
+    "sizes": {
+     "withModels": 105134853,
+     "default": 12655308
+    }
+   }
+  },
+  {
+   "name": "Package: ?houses in the offline game places the twelve houses from the embedded bytes, in the running Prologue",
+   "detail": {
+    "error": null,
+    "errors": [],
+    "houses": 12,
+    "from": "package",
+    "state": "riding"
+   }
+  },
+  {
+   "name": "Package: H in the offline game reaches B (the first benchmark, embedded too) and A, and comes back to C",
+   "detail": {
+    "mode": "v1",
+    "houses": 12,
+    "errors": [],
+    "from": "package",
+    "version": 1,
+    "procedural": "procedural",
+    "back": "refined"
+   }
+  },
+  {
+   "name": "Package: offline game makes no network request",
+   "detail": []
+  },
+  {
+   "name": "Package: offline game without page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: the default package (no models) says the houses FAILED, keeps the procedural houses and substitutes nothing",
+   "detail": {
+    "label": "HOUSE BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/house/house.prologue.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)",
+    "proceduralBatchesVisible": 78
+   }
+  },
+  {
+   "name": "Package: default package makes no network request either",
+   "detail": []
+  }
+ ],
+ "failures": [],
+ "parts": {
+  "package": {
+   "withModels": {
+    "out": "/tmp/ll-houses-77XI4H/models",
+    "bytes": 105134853,
+    "branch": "claude/prologue-house-architecture-realism-refinement",
+    "commit": "791a57209d8c45823e0842f32a832a7b847a70ac",
+    "dirty": true,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "aa68187cbad349981bce8407e7852fc8a3b8ce901cb181cfc72b9e1ee05ebeef",
+    "modules": 173,
+    "pipelineLab": {
+     "entry": "Last-Light-Pipeline-Lab.html",
+     "sha256": "5f59b486b837882091237ddfa3f2b941228be2de5535f78ab874de685c3cf688",
+     "models": [
+      "assets/bike/bike.alex.glb",
+      "assets/bike/bike.jamie.glb",
+      "assets/bike/bike.player.glb",
+      "assets/bike/bike.sam.glb",
+      "assets/house/house.prologue.glb",
+      "assets/house/house.prologue.v1.glb",
+      "assets/tst/tst.pipeline-probe.glb"
+     ],
+     "bikeLab": {
+      "entry": "Last-Light-Bike-Lab.html",
+      "sha256": "b9d58d785d15d437a145fc6adda7f3c8cfc148b0ccc7fd454b886e2a88452f3b"
+     }
+    }
+   },
+   "default": {
+    "out": "/tmp/ll-houses-77XI4H/default",
+    "bytes": 12655308,
+    "branch": "claude/prologue-house-architecture-realism-refinement",
+    "commit": "791a57209d8c45823e0842f32a832a7b847a70ac",
+    "dirty": true,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "9b4e93ca9e27d6a11ee422a11e72997e4060077ba27465d9f1344aeb8f1b761b",
+    "modules": 173
+   },
+   "sizes": {
+    "withModels": 105134853,
+    "default": 12655308
+   },
+   "game": {
+    "error": null,
+    "errors": [],
+    "houses": 12,
+    "from": "package",
+    "state": "riding"
+   },
+   "v1": {
+    "mode": "v1",
+    "houses": 12,
+    "errors": [],
+    "from": "package",
+    "version": 1,
+    "procedural": "procedural",
+    "back": "refined"
+   },
+   "defaultPackageLabel": "HOUSE BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/house/house.prologue.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)"
+  }
+ },
+ "shots": [],
+ "finished": "2026-11-18T22:41:10.191Z",
+ "passed": 7,
+ "failed": 0
+}

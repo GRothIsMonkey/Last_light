@@ -266,3 +266,8 @@ Differences from the character/bike conventions, on purpose:
 | Draping | The game re-heights every vertex onto the terrain under the house at load (as world.js drapes a procedural house). Foundations reach 0.7 m below grade. |
 | Lessons | Coplanar overlapping trim pieces render black in Cycles and z-fight in the game: butt them or step them. Re-fetch a mesh's attribute layers after adding another (Blender reallocates them; a stale UV layer handle crashed the build). Glass is alpha-blended (glTF BLEND), not transmission (no transmission pass in the game). |
 
+Realism pass (`house.prologue` version 2): before export, `house_bake.py` tessellates each house and bakes occlusion,
+upkeep weathering and macro colour variation into COLOR_0 (HOUSE-KIT.md §8), so the game shows the contact shading
+Cycles computes and the game's renderer cannot. A frozen earlier version of an asset can ship beside the current one
+for comparison: register it under its own id with `assetId` set to the id inside the file (`asset-library.js`).
+

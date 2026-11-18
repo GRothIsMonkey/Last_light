@@ -1,6 +1,6 @@
 # Last Light: the House Kit (assembly conventions)
 
-Part of the [Final Art Bible](../LAST-LIGHT-FINAL-ART-BIBLE.md); it applies the [Environment Style Guide](ENVIRONMENT-STYLE-GUIDE.md) §2 and the [Blender pipeline](BLENDER-PIPELINE.md) to the houses of Oak Hollow. Built in the Prologue architecture benchmark (`claude/prologue-house-architecture-benchmark`); results and limits are in [../HOUSES_PHASE1_REPORT.md](../HOUSES_PHASE1_REPORT.md). **Awaiting creative-director approval (ART-APPROVAL-REGISTER A-51).**
+Part of the [Final Art Bible](../LAST-LIGHT-FINAL-ART-BIBLE.md); it applies the [Environment Style Guide](ENVIRONMENT-STYLE-GUIDE.md) §2 and the [Blender pipeline](BLENDER-PIPELINE.md) to the houses of Oak Hollow. Built in the Prologue architecture benchmark (`claude/prologue-house-architecture-benchmark`) and refined in the realism pass (`claude/prologue-house-architecture-realism-refinement`, `house.prologue` version 2); results and limits are in [../HOUSES_PHASE1_REPORT.md](../HOUSES_PHASE1_REPORT.md) and [../HOUSES_REALISM_REFINEMENT_REPORT.md](../HOUSES_REALISM_REFINEMENT_REPORT.md). **Awaiting creative-director approval (ART-APPROVAL-REGISTER A-51).**
 
 ---
 
@@ -13,7 +13,7 @@ dist/layout.js + dist/houses.js planLots          (the game's own lot plans: the
 tools/blender/houses/plans.json                    (footprint, door, porch, steps, garage, colours, roof type, chimney, dormers, hoop …)
         │  python tools/blender/houses/house_textures.py   (shared tiling library, once)
         │  python tools/blender/houses/interior_atlas.py   (rooms seen through windows, once)
-        │  python tools/blender/houses/build_houses.py     (assemble every house × 3 LODs, save .blend, export)
+        │  python tools/blender/houses/build_houses.py     (assemble every house × 3 LODs, bake its vertex shading (house_bake.py), save .blend, export)
         ▼
 assets/source/house/prologue/house.prologue.blend  +  dist/assets/house/house.prologue.glb
         │  node tools/assets/validate-glb.mjs dist/assets/house/house.prologue.glb --profile house
@@ -97,3 +97,30 @@ Per house: story LOD0 ≤ 35k, background LOD0 ≤ 10k; LOD1 ≤ 8k / 4k; LOD2 �
 4. Validate, look at it in the game (`?houses`, H to compare), add a gallery view in `render_gallery.py`.
 
 Rules that keep the kit honest: no geometry may reach past `stepFront + 0.3` toward the street (the riding obstacle) or onto the sidewalk; coplanar overlapping trim faces are not allowed (butt pieces or step them ≥ 2 mm; Cycles renders overlaps black and the game z-fights them); a roof edge with no overhang has no fascia, rake board or gutter.
+
+## 8. Baked vertex shading (realism pass, `house_bake.py`)
+
+The game has no ambient occlusion, bounce light or weathering layer; Cycles has all three. So every house LOD is baked
+into its own vertex colours (COLOR_0, multiplied with the palette tint) before export:
+
+| Step | What | Rule |
+|---|---|---|
+| Tessellate | Large planar siding, brick, roof, concrete and room faces are split into a grid | LOD0 0.95 m (walls), 1.4 m (roofs), 1.2 m (concrete), 1.5 m (rooms); LOD1 about twice that; LOD2 walls and roofs only |
+| Occlusion | Raycast from every grid point into the hemisphere (28 / 14 / 8 rays per LOD, 2.2 m reach) against the house and the ground | Glass and lamps do not occlude. On outside walls, rays within ~25° of the wall and hits nearer than 18 cm are ignored: those find only casings and shutters, whose real shadow is a hairline |
+| Strength | per slot: rooms .95, siding .78, brick/concrete/paint .7, metal .6, roof .55, hardware .45 | glass and lamps never shaded |
+| Upkeep | rain splash at the foot of walls (≤ 0.7 m), soft streaks under sills, sun fade of one exposure, chalky roofs | scaled by the family's upkeep (fresh .35, average .9, tired 1.3) |
+| Variation | low-frequency value and hue drift (siding ±2.5 %, brick ±5 %, roof ±7.5 %, concrete ±6 %) | per house seed: two houses never share a pattern |
+
+Family habits come from a separate random stream (`rnd2`) so that every choice approved in the benchmark (storm doors,
+garage lites, chairs, colours) stays as it was: window treatments (curtain / blinds / mixed households), porch light
+(black or brass carriage lantern, jelly-jar fixture), garage door (raised short panels, long panels, ribbed steel),
+porch life (chairs, bench, a second planter, nothing). Room cards are mirrored and shifted per window.
+
+## 9. The refined set in the game (house-only, reversible)
+
+`house-assets.js` gives the refined set (and only it) the ORM texture's occlusion channel as `aoMap`, anisotropic
+filtering up to 16×, a 1.35× normal scale on siding and shingles, per-house clones of siding/paint/roof/brick with an
+upkeep roughness factor (fresh 1.0 → tired ~1.3), and a glass reflection of the street (a skyline of roofs and trees
+under a golden sky, PMREM, scoped to these windows). The first benchmark is kept byte for byte as
+`dist/assets/house/house.prologue.v1.glb` (asset id `house.prologue.v1`, file id `house.prologue`); `?houses` shows the
+refined set and **H** cycles C refined → B first benchmark (loaded on first use) → A procedural.

@@ -1,0 +1,861 @@
+{
+ "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
+ "started": "2026-11-18T22:41:10.371Z",
+ "checks": [
+  "Lab: the Blender export loads through GLTFLoader r160",
+  "Lab: loaded over same-origin HTTP from dist/assets/tst",
+  {
+   "name": "Lab: generator is Blender's glTF exporter",
+   "detail": "Khronos glTF Blender I/O v5.0.21"
+  },
+  {
+   "name": "Lab: four clips (idle_breathe, talk, walk_normal, wave_r)",
+   "detail": [
+    {
+     "name": "idle_breathe",
+     "duration": 2,
+     "tracks": 105
+    },
+    {
+     "name": "talk",
+     "duration": 2,
+     "tracks": 108
+    },
+    {
+     "name": "walk_normal",
+     "duration": 1,
+     "tracks": 105
+    },
+    {
+     "name": "wave_r",
+     "duration": 1.5,
+     "tracks": 105
+    }
+   ]
+  },
+  {
+   "name": "Lab: six shape keys as morph targets",
+   "detail": [
+    "jawOpen",
+    "mouthSmileLeft",
+    "mouthSmileRight",
+    "browInnerUp",
+    "eyeBlinkLeft",
+    "eyeBlinkRight"
+   ]
+  },
+  {
+   "name": "Lab: walk_normal moves the skeleton (left foot travels ≥ 10 cm fore/aft)",
+   "detail": [
+    -0.012,
+    0.243,
+    -0.251,
+    -0.474
+   ]
+  },
+  {
+   "name": "Lab: skinned vertices follow the bones (GPU skinning path, checked on the CPU)",
+   "detail": 0.0412
+  },
+  {
+   "name": "Lab: the talk clip animates jawOpen (Blender shape-key Action merged into the clip)",
+   "detail": {
+    "min": 0,
+    "max": 0.779
+   }
+  },
+  {
+   "name": "Lab: faces.js expressions drive the shape keys (happy → smile, shocked → jaw + brows)",
+   "detail": {
+    "happy": {
+     "smile": 0.8,
+     "brow": 0.135
+    },
+    "shocked": {
+     "jaw": 0.65,
+     "brow": 0.96
+    }
+   }
+  },
+  "Lab: a misnamed shape key throws instead of failing silently",
+  {
+   "name": "Lab: nine PBR materials (MeshStandardMaterial)",
+   "detail": [
+    "mat.skin/tst.pipeline-probe",
+    "mat.fabric.cotton/tst.pipeline-probe.shirt",
+    "mat.fabric.denim/tst.pipeline-probe.shorts",
+    "mat.rubber/tst.pipeline-probe.shoes",
+    "mat.eye/tst.pipeline-probe",
+    "mat.mouth/tst.pipeline-probe",
+    "mat.hair/tst.pipeline-probe",
+    "mat.eye.iris/tst.pipeline-probe",
+    "mat.metal.steel/tst.pipeline-probe.watch"
+   ]
+  },
+  "Lab: skin and shirt carry base colour (sRGB), normal map and roughness/metal map (linear), decoded 512×512",
+  {
+   "name": "Lab: the normal-map strength set in Blender arrives (skin 0.35)",
+   "detail": [
+    0.3499999940395355,
+    0.3499999940395355
+   ]
+  },
+  {
+   "name": "Lab: the watch is metallic (metalness 1, roughness 0.28)",
+   "detail": {
+    "type": "MeshStandardMaterial",
+    "color": "#c7c7cc",
+    "roughness": 0.2800000011920929,
+    "metalness": 1,
+    "map": null,
+    "normalMap": null,
+    "normalScale": null,
+    "roughnessMap": null,
+    "metalnessMap": null,
+    "sameORM": false,
+    "fog": true,
+    "skinning": true
+   }
+  },
+  {
+   "name": "Lab: rig.js pose contract drives the skinned skeleton exactly (shoulders, elbows, wrists, knees, ankles within 2 mm of rig.js IK)",
+   "detail": {
+    "wrist_l": 0,
+    "elbow_l": 0,
+    "knee_l": 0.0001,
+    "ankle_l": 0.0004,
+    "shoulder_l": 0,
+    "wrist_r": 0,
+    "elbow_r": 0,
+    "knee_r": 0.0001,
+    "ankle_r": 0.0004,
+    "shoulder_r": 0,
+    "grip_l": 0.039,
+    "grip_r": 0.0394,
+    "ballToPedal_l": 0.0813,
+    "ballToPedal_r": 0.0813
+   }
+  },
+  {
+   "name": "Lab: socket_grip within 5 cm of the procedural bike's grips while riding (measured; see report)",
+   "detail": {
+    "l": 0.039,
+    "r": 0.0394
+   }
+  },
+  {
+   "name": "Lab: nine sockets; attachments ride on them (the cap moves with the turning head, rigidly)",
+   "detail": {
+    "sockets": [
+     "head_top",
+     "cap",
+     "eye_cam",
+     "grip_l",
+     "grip_r",
+     "chest",
+     "back",
+     "hip_l",
+     "hip_r"
+    ],
+    "capParent": "socket_cap",
+    "torchParent": "socket_grip_l",
+    "capMoved": 0.0194,
+    "capToHeadChange": 0
+   }
+  },
+  {
+   "name": "Lab: 12 copies share one set of geometry, materials and textures (8 more copies add 0 geometries)",
+   "detail": {
+    "before": {
+     "geometries": 38,
+     "textures": 18
+    },
+    "after": {
+     "geometries": 38,
+     "textures": 26
+    },
+    "addedGeometries": 0,
+    "addedTextures": 8,
+    "copies": 12,
+    "uniqueGeometries": 14,
+    "uniqueMaterials": 9,
+    "uniqueImageTextures": 10,
+    "skeletons": 12,
+    "jsHeapMBPerCopy": 0.07
+   }
+  },
+  {
+   "name": "Lab: one skeleton (one bone texture) per copy",
+   "detail": {
+    "skeletons": 12,
+    "addedTextures": 8
+   }
+  },
+  {
+   "name": "Lab: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Game: without ?pipeline the Prologue fetches none of the new modules or models",
+   "detail": []
+  },
+  {
+   "name": "Game: the probe lineup sits in the game's own scene beside the procedural street",
+   "detail": {
+    "added": {
+     "calls": 81,
+     "triangles": 63148
+    }
+   }
+  },
+  "Game: the probe takes the scene fog and the game's lights (MeshStandardMaterial, fog on)",
+  {
+   "name": "Game: the Prologue keeps playing with the probe present (riding, 3 s of pedalling moves the player)",
+   "detail": {
+    "state": "riding",
+    "distance": 9.13,
+    "moved": 9.13,
+    "calls": 455
+   }
+  },
+  "Game: the probe removes cleanly",
+  {
+   "name": "Game: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Game: no request leaves the local server",
+   "detail": []
+  },
+  "Package: PLAYTEST_MODELS=1 embeds the probe and writes the offline lab page; manifest hashes it",
+  {
+   "name": "Package: the offline lab page loads the embedded model (from the package, browser offline)",
+   "detail": {
+    "ok": true,
+    "from": "package",
+    "clips": 4,
+    "contacts": {
+     "wrist_l": 0,
+     "elbow_l": 0,
+     "knee_l": 0.0001,
+     "ankle_l": 0.0003,
+     "shoulder_l": 0,
+     "wrist_r": 0,
+     "elbow_r": 0,
+     "knee_r": 0.0001,
+     "ankle_r": 0.0004,
+     "shoulder_r": 0,
+     "grip_l": 0.0386,
+     "grip_r": 0.0375,
+     "ballToPedal_l": 0.0705,
+     "ballToPedal_r": 0.0758
+    }
+   }
+  },
+  {
+   "name": "Package: offline lab makes no network request",
+   "detail": []
+  },
+  {
+   "name": "Package: offline lab without page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: ?pipeline in the offline game loads the embedded probe into the running Prologue",
+   "detail": {
+    "from": "package",
+    "label": "PIPELINE PROBE (DEV) tst.pipeline-probe v1 — Blender Khronos glTF Blender I/O v5.0.21\n11724 tris · 4 clips · 6 shape keys · 9 materials · 10 textures · loaded from package in 83.3 ms\nP: move it in front of you",
+    "state": "riding"
+   }
+  },
+  {
+   "name": "Package: offline game makes no network request",
+   "detail": []
+  },
+  {
+   "name": "Package: offline game without page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: the default package (no models embedded) says the probe FAILED and substitutes nothing",
+   "detail": "PIPELINE PROBE FAILED (nothing was substituted): asset assets/tst/tst.pipeline-probe.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)"
+  },
+  {
+   "name": "Package: default package makes no network request either",
+   "detail": []
+  }
+ ],
+ "failures": [],
+ "parts": {
+  "lab": {
+   "readyWallMs": 124,
+   "asset": {
+    "id": "tst.pipeline-probe",
+    "file": "assets/tst/tst.pipeline-probe.glb",
+    "from": "http",
+    "bytes": 2355672,
+    "readMs": 91.9,
+    "parseMs": 59.3,
+    "triangles": 11724,
+    "skinnedMeshes": 12,
+    "geometries": 12,
+    "materials": 9,
+    "textures": 10,
+    "clips": [
+     {
+      "name": "idle_breathe",
+      "duration": 2,
+      "tracks": 105
+     },
+     {
+      "name": "talk",
+      "duration": 2,
+      "tracks": 108
+     },
+     {
+      "name": "walk_normal",
+      "duration": 1,
+      "tracks": 105
+     },
+     {
+      "name": "wave_r",
+      "duration": 1.5,
+      "tracks": 105
+     }
+    ],
+    "morphTargets": [
+     "jawOpen",
+     "mouthSmileLeft",
+     "mouthSmileRight",
+     "browInnerUp",
+     "eyeBlinkLeft",
+     "eyeBlinkRight"
+    ],
+    "version": 1,
+    "rig": "rig.human.child",
+    "license": "Original work for Last Light (Roth Studios). Technical test asset; not a character.",
+    "generator": "Khronos glTF Blender I/O v5.0.21"
+   },
+   "firstRenderMs": 284.4,
+   "animation": {
+    "samples": [
+     {
+      "foot": [
+       -1.69,
+       0.064,
+       -0.012
+      ],
+      "hand": [
+       -1.112,
+       0.894,
+       0.021
+      ],
+      "thighQ": [
+       1,
+       0.007,
+       0.007,
+       0
+      ]
+     },
+     {
+      "foot": [
+       -1.67,
+       0.115,
+       0.243
+      ],
+      "hand": [
+       -1.012,
+       1.125,
+       0.189
+      ],
+      "thighQ": [
+       -0.975,
+       -0.005,
+       -0.008,
+       0.224
+      ]
+     },
+     {
+      "foot": [
+       -1.681,
+       0.109,
+       -0.251
+      ],
+      "hand": [
+       -0.997,
+       1.071,
+       0.023
+      ],
+      "thighQ": [
+       0.994,
+       0.007,
+       0.006,
+       0.106
+      ]
+     },
+     {
+      "foot": [
+       -1.654,
+       0.269,
+       -0.474
+      ],
+      "hand": [
+       -0.999,
+       1.082,
+       -0.028
+      ],
+      "thighQ": [
+       0.976,
+       0.008,
+       0.005,
+       0.216
+      ]
+     }
+    ],
+    "skinnedVertexMoved": 0.0412,
+    "mixerTime": 1.333
+   },
+   "face": {
+    "talkJawOpen": {
+     "min": 0,
+     "max": 0.779
+    },
+    "neutral": {
+     "jawOpen": 0,
+     "mouthSmileLeft": 0,
+     "mouthSmileRight": 0,
+     "browInnerUp": 0,
+     "eyeBlinkLeft": 0,
+     "eyeBlinkRight": 0
+    },
+    "happy": {
+     "smile": 0.8,
+     "brow": 0.135
+    },
+    "shocked": {
+     "jaw": 0.65,
+     "brow": 0.96
+    },
+    "unknownKeyThrows": true
+   },
+   "materials": {
+    "mat.skin/tst.pipeline-probe": {
+     "type": "MeshStandardMaterial",
+     "color": "#ffffff",
+     "roughness": 1,
+     "metalness": 1,
+     "map": {
+      "w": 512,
+      "h": 512,
+      "cs": "srgb",
+      "flipY": false
+     },
+     "normalMap": {
+      "w": 512,
+      "h": 512,
+      "cs": "",
+      "flipY": false
+     },
+     "normalScale": [
+      0.3499999940395355,
+      0.3499999940395355
+     ],
+     "roughnessMap": {
+      "w": 512,
+      "h": 512,
+      "cs": "",
+      "flipY": false
+     },
+     "metalnessMap": {
+      "w": 512,
+      "h": 512,
+      "cs": "",
+      "flipY": false
+     },
+     "sameORM": true,
+     "fog": true,
+     "skinning": true
+    },
+    "mat.fabric.cotton/tst.pipeline-probe.shirt": {
+     "type": "MeshStandardMaterial",
+     "color": "#ffffff",
+     "roughness": 1,
+     "metalness": 1,
+     "map": {
+      "w": 512,
+      "h": 512,
+      "cs": "srgb",
+      "flipY": false
+     },
+     "normalMap": {
+      "w": 512,
+      "h": 512,
+      "cs": "",
+      "flipY": false
+     },
+     "normalScale": [
+      1,
+      1
+     ],
+     "roughnessMap": {
+      "w": 512,
+      "h": 512,
+      "cs": "",
+      "flipY": false
+     },
+     "metalnessMap": {
+      "w": 512,
+      "h": 512,
+      "cs": "",
+      "flipY": false
+     },
+     "sameORM": true,
+     "fog": true,
+     "skinning": true
+    },
+    "mat.fabric.denim/tst.pipeline-probe.shorts": {
+     "type": "MeshStandardMaterial",
+     "color": "#ffffff",
+     "roughness": 0.8999999761581421,
+     "metalness": 0,
+     "map": {
+      "w": 512,
+      "h": 512,
+      "cs": "srgb",
+      "flipY": false
+     },
+     "normalMap": {
+      "w": 512,
+      "h": 512,
+      "cs": "",
+      "flipY": false
+     },
+     "normalScale": [
+      1,
+      1
+     ],
+     "roughnessMap": null,
+     "metalnessMap": null,
+     "sameORM": false,
+     "fog": true,
+     "skinning": true
+    },
+    "mat.rubber/tst.pipeline-probe.shoes": {
+     "type": "MeshStandardMaterial",
+     "color": "#ebe6db",
+     "roughness": 0.6200000047683716,
+     "metalness": 0,
+     "map": null,
+     "normalMap": null,
+     "normalScale": null,
+     "roughnessMap": null,
+     "metalnessMap": null,
+     "sameORM": false,
+     "fog": true,
+     "skinning": true
+    },
+    "mat.eye/tst.pipeline-probe": {
+     "type": "MeshStandardMaterial",
+     "color": "#edebe0",
+     "roughness": 0.07999999821186066,
+     "metalness": 0,
+     "map": null,
+     "normalMap": null,
+     "normalScale": null,
+     "roughnessMap": null,
+     "metalnessMap": null,
+     "sameORM": false,
+     "fog": true,
+     "skinning": true
+    },
+    "mat.mouth/tst.pipeline-probe": {
+     "type": "MeshStandardMaterial",
+     "color": "#6b2421",
+     "roughness": 0.44999998807907104,
+     "metalness": 0,
+     "map": null,
+     "normalMap": null,
+     "normalScale": null,
+     "roughnessMap": null,
+     "metalnessMap": null,
+     "sameORM": false,
+     "fog": true,
+     "skinning": true
+    },
+    "mat.hair/tst.pipeline-probe": {
+     "type": "MeshStandardMaterial",
+     "color": "#ffffff",
+     "roughness": 0.6000000238418579,
+     "metalness": 0,
+     "map": {
+      "w": 512,
+      "h": 512,
+      "cs": "srgb",
+      "flipY": false
+     },
+     "normalMap": {
+      "w": 512,
+      "h": 512,
+      "cs": "",
+      "flipY": false
+     },
+     "normalScale": [
+      1,
+      1
+     ],
+     "roughnessMap": null,
+     "metalnessMap": null,
+     "sameORM": false,
+     "fog": true,
+     "skinning": true
+    },
+    "mat.eye.iris/tst.pipeline-probe": {
+     "type": "MeshStandardMaterial",
+     "color": "#2e4229",
+     "roughness": 0.10000000149011612,
+     "metalness": 0,
+     "map": null,
+     "normalMap": null,
+     "normalScale": null,
+     "roughnessMap": null,
+     "metalnessMap": null,
+     "sameORM": false,
+     "fog": true,
+     "skinning": true
+    },
+    "mat.metal.steel/tst.pipeline-probe.watch": {
+     "type": "MeshStandardMaterial",
+     "color": "#c7c7cc",
+     "roughness": 0.2800000011920929,
+     "metalness": 1,
+     "map": null,
+     "normalMap": null,
+     "normalScale": null,
+     "roughnessMap": null,
+     "metalnessMap": null,
+     "sameORM": false,
+     "fog": true,
+     "skinning": true
+    }
+   },
+   "contacts": {
+    "wrist_l": 0,
+    "elbow_l": 0,
+    "knee_l": 0.0001,
+    "ankle_l": 0.0004,
+    "shoulder_l": 0,
+    "wrist_r": 0,
+    "elbow_r": 0,
+    "knee_r": 0.0001,
+    "ankle_r": 0.0004,
+    "shoulder_r": 0,
+    "grip_l": 0.039,
+    "grip_r": 0.0394,
+    "ballToPedal_l": 0.0813,
+    "ballToPedal_r": 0.0813
+   },
+   "gripSocketToBar": {
+    "l": 0.039,
+    "r": 0.0394
+   },
+   "ballToPedal": {
+    "l": 0.0813,
+    "r": 0.0813
+   },
+   "sockets": {
+    "sockets": [
+     "head_top",
+     "cap",
+     "eye_cam",
+     "grip_l",
+     "grip_r",
+     "chest",
+     "back",
+     "hip_l",
+     "hip_r"
+    ],
+    "capParent": "socket_cap",
+    "torchParent": "socket_grip_l",
+    "capMoved": 0.0194,
+    "capToHeadChange": 0
+   },
+   "memory": {
+    "before": {
+     "geometries": 38,
+     "textures": 18
+    },
+    "after": {
+     "geometries": 38,
+     "textures": 26
+    },
+    "addedGeometries": 0,
+    "addedTextures": 8,
+    "copies": 12,
+    "uniqueGeometries": 14,
+    "uniqueMaterials": 9,
+    "uniqueImageTextures": 10,
+    "skeletons": 12,
+    "jsHeapMBPerCopy": 0.07
+   },
+   "notes": {
+    "ballToPedal": "ball_l/ball_r joint to pedal centre while riding, measured (not a pass/fail): rig.js puts the ankle 5 cm behind and 6.2 cm above the pedal, so the pedal sits under the mid-foot; an authored foot puts the ball ~11 cm ahead of the ankle"
+   },
+   "hud": "PIPELINE LAB (DEV) — tst.pipeline-probe v1 (technical probe, not a character)\nKhronos glTF Blender I/O v5.0.21 · loaded from http: 2.25 MB, read 91.9 ms, parse 59.3 ms\n11724 tris · 12 skinned meshes · 9 materials · 10 textures · clips idle_breathe, talk, walk_normal, wave_r\nshape keys: jawOpen, mouthSmileLeft, mouthSmileRight, browInnerUp, eyeBlinkLeft, eyeBlinkRight\nface (right figure): sad\n4 copies share: 35 geometries, 19 materials, 10 textures; 4 skeletons\nGPU: 38 geometries, 26 textures · 83 draw calls, 63150 tris\nrider (rig.js pose contract on a procedural bike): grip L 3.8 cm R 3.8 cm · wrist err 0.0 cm · ankle err 0.0 cm"
+  },
+  "game": {
+   "before": {
+    "state": "riding",
+    "distance": 0,
+    "calls": 421,
+    "triangles": 779826,
+    "memory": {
+     "geometries": 361,
+     "textures": 10
+    }
+   },
+   "placed": {
+    "at": [
+     -0.31,
+     0.3,
+     -6.47
+    ],
+    "calls": 502,
+    "triangles": 842974,
+    "memory": {
+     "geometries": 387,
+     "textures": 27
+    },
+    "from": "http",
+    "inScene": true
+   },
+   "fog": {
+    "materialsFog": [
+     true
+    ],
+    "sceneFog": true
+   },
+   "after": {
+    "state": "riding",
+    "distance": 9.13,
+    "moved": 9.13,
+    "calls": 455
+   },
+   "removed": {
+    "inScene": false,
+    "calls": 407
+   }
+  },
+  "package": {
+   "withModels": {
+    "out": "/tmp/ll-pkg-ZDBpoM/models",
+    "bytes": 105134853,
+    "branch": "claude/prologue-house-architecture-realism-refinement",
+    "commit": "791a57209d8c45823e0842f32a832a7b847a70ac",
+    "dirty": true,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "aa68187cbad349981bce8407e7852fc8a3b8ce901cb181cfc72b9e1ee05ebeef",
+    "modules": 173,
+    "pipelineLab": {
+     "entry": "Last-Light-Pipeline-Lab.html",
+     "sha256": "5f59b486b837882091237ddfa3f2b941228be2de5535f78ab874de685c3cf688",
+     "models": [
+      "assets/bike/bike.alex.glb",
+      "assets/bike/bike.jamie.glb",
+      "assets/bike/bike.player.glb",
+      "assets/bike/bike.sam.glb",
+      "assets/house/house.prologue.glb",
+      "assets/house/house.prologue.v1.glb",
+      "assets/tst/tst.pipeline-probe.glb"
+     ],
+     "bikeLab": {
+      "entry": "Last-Light-Bike-Lab.html",
+      "sha256": "b9d58d785d15d437a145fc6adda7f3c8cfc148b0ccc7fd454b886e2a88452f3b"
+     }
+    }
+   },
+   "default": {
+    "out": "/tmp/ll-pkg-ZDBpoM/default",
+    "bytes": 12655308,
+    "branch": "claude/prologue-house-architecture-realism-refinement",
+    "commit": "791a57209d8c45823e0842f32a832a7b847a70ac",
+    "dirty": true,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "9b4e93ca9e27d6a11ee422a11e72997e4060077ba27465d9f1344aeb8f1b761b",
+    "modules": 173
+   },
+   "sizes": {
+    "withModels": 105134853,
+    "lab": 104872716,
+    "default": 12655308
+   },
+   "manifest": {
+    "entry": "Last-Light-Pipeline-Lab.html",
+    "sha256": "5f59b486b837882091237ddfa3f2b941228be2de5535f78ab874de685c3cf688",
+    "models": [
+     "assets/bike/bike.alex.glb",
+     "assets/bike/bike.jamie.glb",
+     "assets/bike/bike.player.glb",
+     "assets/bike/bike.sam.glb",
+     "assets/house/house.prologue.glb",
+     "assets/house/house.prologue.v1.glb",
+     "assets/tst/tst.pipeline-probe.glb"
+    ],
+    "bikeLab": {
+     "entry": "Last-Light-Bike-Lab.html",
+     "sha256": "b9d58d785d15d437a145fc6adda7f3c8cfc148b0ccc7fd454b886e2a88452f3b"
+    }
+   },
+   "lab": {
+    "ok": true,
+    "from": "package",
+    "clips": 4,
+    "contacts": {
+     "wrist_l": 0,
+     "elbow_l": 0,
+     "knee_l": 0.0001,
+     "ankle_l": 0.0003,
+     "shoulder_l": 0,
+     "wrist_r": 0,
+     "elbow_r": 0,
+     "knee_r": 0.0001,
+     "ankle_r": 0.0004,
+     "shoulder_r": 0,
+     "grip_l": 0.0386,
+     "grip_r": 0.0375,
+     "ballToPedal_l": 0.0705,
+     "ballToPedal_r": 0.0758
+    }
+   },
+   "game": {
+    "from": "package",
+    "label": "PIPELINE PROBE (DEV) tst.pipeline-probe v1 — Blender Khronos glTF Blender I/O v5.0.21\n11724 tris · 4 clips · 6 shape keys · 9 materials · 10 textures · loaded from package in 83.3 ms\nP: move it in front of you",
+    "state": "riding"
+   },
+   "defaultPackageLabel": "PIPELINE PROBE FAILED (nothing was substituted): asset assets/tst/tst.pipeline-probe.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)",
+   "defaultErrors": [
+    "pipeline probe failed: Error: asset assets/tst/tst.pipeline-probe.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)\n    at bytesFor (blob:null/0a06285e-9fd7-41ad-baef-adb9c5c58e6e:38:37)\n    at blob:null/0a06285e-9fd7-41ad-baef-adb9c5c58e6e:47:59\n    at loadAsset (blob:null/0a06285e-9fd7-41ad-baef-adb9c5c58e6e:64:82)\n    at buildLineup (blob:null/a252feae-8fdc-4fe2-b792-b7efe99d64a1:19:16)\n    at Module.mountInGame (blob:null/a252feae-8fdc-4fe2-b792-b7efe99d64a1:59:16)\n    at blob:null/4af51910-3215-4078-8bed-c1ee516b5c48:861:125"
+   ]
+  }
+ },
+ "shots": [
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-lineup.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-rider-procedural-bike.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-walk.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-back.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-face-neutral.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-face-surprised.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-face-happy.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-face-shapekeys-jawOpen-browInnerUp-eyeBlinkLeft.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-walk-cycle-strip.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/game-prologue-probe-beside-street.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/game-prologue-probe-closeup.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/package-offline-lab.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/package-offline-game-prologue-probe.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/package-default-pipeline-fails-loudly.jpg"
+ ],
+ "finished": "2026-11-18T22:43:52.715Z",
+ "passed": 36,
+ "failed": 0
+}

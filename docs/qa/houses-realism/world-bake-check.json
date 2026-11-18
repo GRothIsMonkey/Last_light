@@ -1,0 +1,134 @@
+{
+ "checks": [
+  {
+   "n": "default (no ?houses): the baked world is identical to the accepted build (batches, triangles, positions, shadow proxies)",
+   "d": {
+    "baseline": {
+     "merged": 2197,
+     "tris": 3672619,
+     "shadowTris": 2371203
+    },
+    "branch": {
+     "merged": 2197,
+     "tris": 3672619,
+     "shadowTris": 2371203
+    }
+   }
+  },
+  {
+   "n": "?houses: the same triangles, only regrouped (identical triangle set)",
+   "d": {
+    "tris": [
+     3672619,
+     3672619
+    ]
+   }
+  },
+  {
+   "n": "?houses: every benchmark lot has batches of its own (12 lots)",
+   "d": [
+    "hb:main:-1:-21",
+    "hb:main:1:-21",
+    "hb:main:-1:8",
+    "hb:main:1:8",
+    "hb:main:-1:37",
+    "hb:main:1:37",
+    "hb:main:-1:66",
+    "hb:main:1:66",
+    "hb:main:-1:153",
+    "hb:main:1:153",
+    "hb:main:-1:530",
+    "hb:main:1:530"
+   ]
+  },
+  {
+   "n": "?houses: every benchmark lot has shadow proxies of its own",
+   "d": {
+    "hb:main:-1:-21": 3292,
+    "hb:main:1:-21": 6054,
+    "hb:main:-1:8": 4674,
+    "hb:main:1:8": 3654,
+    "hb:main:-1:37": 4346,
+    "hb:main:1:37": 3850,
+    "hb:main:-1:66": 5678,
+    "hb:main:1:66": 4698,
+    "hb:main:-1:153": 3436,
+    "hb:main:1:153": 2928,
+    "hb:main:-1:530": 7686,
+    "hb:main:1:530": 5394
+   }
+  },
+  {
+   "n": "?houses: shadow-casting triangles unchanged in total",
+   "d": [
+    2371203,
+    2371203
+   ]
+  }
+ ],
+ "failures": [],
+ "results": {
+  "branchDefault": {
+   "ms": 27881,
+   "merged": 2197,
+   "tris": 3672619,
+   "shadowProxies": 379,
+   "shadowTris": 2371203,
+   "batchHash": "c41b617b591bb71df373564910c6bfe564c2c2586d3b8e59631712b8193f99ef",
+   "triHash": "7b153d71214bd619d4423b9dc79b95d45237dbd8ea4720ef170ff7b7f55ffbee",
+   "hbZones": {},
+   "hbShadow": {},
+   "plans": 105
+  },
+  "branchHouses": {
+   "ms": 26368,
+   "merged": 2271,
+   "tris": 3672619,
+   "shadowProxies": 394,
+   "shadowTris": 2371203,
+   "batchHash": "78d2efa9cc8975fcdf2c19cdef27363e6233279c9c6fb7c2105db383e2e421d7",
+   "triHash": "7b153d71214bd619d4423b9dc79b95d45237dbd8ea4720ef170ff7b7f55ffbee",
+   "hbZones": {
+    "hb:main:-1:-21": 3400,
+    "hb:main:1:-21": 6318,
+    "hb:main:-1:8": 4902,
+    "hb:main:1:8": 3918,
+    "hb:main:-1:37": 4562,
+    "hb:main:1:37": 4042,
+    "hb:main:-1:66": 5906,
+    "hb:main:1:66": 5022,
+    "hb:main:-1:153": 3592,
+    "hb:main:1:153": 3060,
+    "hb:main:-1:530": 7914,
+    "hb:main:1:530": 5646
+   },
+   "hbShadow": {
+    "hb:main:-1:-21": 3292,
+    "hb:main:1:-21": 6054,
+    "hb:main:-1:8": 4674,
+    "hb:main:1:8": 3654,
+    "hb:main:-1:37": 4346,
+    "hb:main:1:37": 3850,
+    "hb:main:-1:66": 5678,
+    "hb:main:1:66": 4698,
+    "hb:main:-1:153": 3436,
+    "hb:main:1:153": 2928,
+    "hb:main:-1:530": 7686,
+    "hb:main:1:530": 5394
+   },
+   "plans": 105
+  },
+  "baseline": {
+   "ms": 28569,
+   "merged": 2197,
+   "tris": 3672619,
+   "shadowProxies": 379,
+   "shadowTris": 2371203,
+   "batchHash": "c41b617b591bb71df373564910c6bfe564c2c2586d3b8e59631712b8193f99ef",
+   "triHash": "7b153d71214bd619d4423b9dc79b95d45237dbd8ea4720ef170ff7b7f55ffbee",
+   "hbZones": {},
+   "hbShadow": {},
+   "plans": 105
+  }
+ }
+}
