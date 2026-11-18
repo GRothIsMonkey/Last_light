@@ -1,0 +1,502 @@
+{
+ "generatedFrom": [
+  "dist/rig.js",
+  "dist/cast.js"
+ ],
+ "frame": "game bike-local: metres, +Y up, forward -Z, right +X",
+ "bikes": {
+  "bike.jamie": {
+   "cast": "jamie",
+   "spec": {
+    "style": "bmx",
+    "frame": 11687226,
+    "bars": "bmx",
+    "wheelR": 0.29,
+    "saddle": 2500134,
+    "grips": 1842206,
+    "tire": 2829358,
+    "extras": [
+     "pegs",
+     "pad"
+    ]
+   },
+   "style": "bmx",
+   "wheelR": 0.29,
+   "front": -0.5,
+   "rear": 0.46,
+   "bb": [
+    0,
+    0.29,
+    0.03
+   ],
+   "crank": 0.15,
+   "pedalX": 0.12,
+   "saddle": [
+    0,
+    0.85,
+    0.23
+   ],
+   "grip": [
+    0.3,
+    1.06,
+    -0.38
+   ],
+   "pivot": [
+    0,
+    0.66,
+    -0.43
+   ],
+   "rake": 0.286,
+   "axleRear": [
+    0,
+    0.29,
+    0.46
+   ],
+   "axleFront": [
+    0,
+    0.29,
+    -0.5
+   ],
+   "seatCluster": [
+    0,
+    0.7,
+    0.19
+   ],
+   "headTop": [
+    0,
+    0.8200000000000001,
+    -0.385
+   ],
+   "headLow": [
+    0,
+    0.67,
+    -0.425
+   ],
+   "gripL": [
+    -0.3,
+    1.06,
+    -0.38
+   ],
+   "gripR": [
+    0.3,
+    1.06,
+    -0.38
+   ],
+   "pedalL0": [
+    -0.12,
+    0.14,
+    0.03
+   ],
+   "pedalR0": [
+    0.12,
+    0.44,
+    0.03
+   ],
+   "bell": [
+    -0.15,
+    1.085,
+    -0.38
+   ],
+   "bellLeverPivot": [
+    -0.172,
+    1.07394,
+    -0.37074
+   ],
+   "frontReflector": [
+    0,
+    0.78,
+    -0.49
+   ],
+   "rearReflector": {
+    "center": [
+     0,
+     0.715,
+     0.645
+    ],
+    "r": 0.049,
+    "color": 9050644
+   },
+   "kickPivot": [
+    -0.05,
+    0.26999999999999996,
+    0.13
+   ],
+   "kickLen": 0.3,
+   "kickStowedRotX": -1.2,
+   "kickDeployed": {
+    "x": -0.25,
+    "z": -0.32
+   }
+  },
+  "bike.sam": {
+   "cast": "sam",
+   "spec": {
+    "style": "mtb",
+    "frame": 5078927,
+    "bars": "flat",
+    "wheelR": 0.32,
+    "saddle": 1973792,
+    "grips": 3158066,
+    "tire": 2566186,
+    "extras": [
+     "bottle",
+     "knobby"
+    ]
+   },
+   "style": "mtb",
+   "wheelR": 0.32,
+   "front": -0.53,
+   "rear": 0.49,
+   "bb": [
+    0,
+    0.31,
+    0.02
+   ],
+   "crank": 0.15,
+   "pedalX": 0.12,
+   "saddle": [
+    0,
+    0.89,
+    0.22
+   ],
+   "grip": [
+    0.31,
+    1,
+    -0.43
+   ],
+   "pivot": [
+    0,
+    0.7,
+    -0.43
+   ],
+   "rake": 0.286,
+   "axleRear": [
+    0,
+    0.32,
+    0.49
+   ],
+   "axleFront": [
+    0,
+    0.32,
+    -0.53
+   ],
+   "seatCluster": [
+    0,
+    0.74,
+    0.18
+   ],
+   "headTop": [
+    0,
+    0.86,
+    -0.385
+   ],
+   "headLow": [
+    0,
+    0.71,
+    -0.425
+   ],
+   "gripL": [
+    -0.31,
+    1,
+    -0.43
+   ],
+   "gripR": [
+    0.31,
+    1,
+    -0.43
+   ],
+   "pedalL0": [
+    -0.12,
+    0.16,
+    0.02
+   ],
+   "pedalR0": [
+    0.12,
+    0.46,
+    0.02
+   ],
+   "bell": [
+    -0.15,
+    1.025,
+    -0.43
+   ],
+   "bellLeverPivot": [
+    -0.172,
+    1.01394,
+    -0.42074
+   ],
+   "frontReflector": [
+    0,
+    0.82,
+    -0.49
+   ],
+   "rearReflector": {
+    "center": [
+     0,
+     0.755,
+     0.635
+    ],
+    "r": 0.049,
+    "color": 9050644
+   },
+   "kickPivot": [
+    -0.05,
+    0.29,
+    0.12000000000000001
+   ],
+   "kickLen": 0.3,
+   "kickStowedRotX": -1.2,
+   "kickDeployed": {
+    "x": -0.25,
+    "z": -0.32
+   }
+  },
+  "bike.alex": {
+   "cast": "alex",
+   "spec": {
+    "style": "cruiser",
+    "frame": 9080639,
+    "bars": "swept",
+    "wheelR": 0.31,
+    "saddle": 5913128,
+    "grips": 14208952,
+    "tire": 2829358,
+    "extras": [
+     "rack",
+     "bell",
+     "rear-reflector"
+    ]
+   },
+   "style": "cruiser",
+   "wheelR": 0.31,
+   "front": -0.52,
+   "rear": 0.48,
+   "bb": [
+    0,
+    0.3,
+    0.03
+   ],
+   "crank": 0.15,
+   "pedalX": 0.12,
+   "saddle": [
+    0,
+    0.88,
+    0.24
+   ],
+   "grip": [
+    0.3,
+    1.04,
+    -0.36
+   ],
+   "pivot": [
+    0,
+    0.7,
+    -0.44
+   ],
+   "rake": 0.286,
+   "axleRear": [
+    0,
+    0.31,
+    0.48
+   ],
+   "axleFront": [
+    0,
+    0.31,
+    -0.52
+   ],
+   "seatCluster": [
+    0,
+    0.73,
+    0.19999999999999998
+   ],
+   "headTop": [
+    0,
+    0.86,
+    -0.395
+   ],
+   "headLow": [
+    0,
+    0.71,
+    -0.435
+   ],
+   "gripL": [
+    -0.3,
+    1.04,
+    -0.36
+   ],
+   "gripR": [
+    0.3,
+    1.04,
+    -0.36
+   ],
+   "pedalL0": [
+    -0.12,
+    0.15,
+    0.03
+   ],
+   "pedalR0": [
+    0.12,
+    0.45,
+    0.03
+   ],
+   "bell": [
+    -0.15,
+    1.065,
+    -0.36
+   ],
+   "bellLeverPivot": [
+    -0.172,
+    1.05394,
+    -0.35074
+   ],
+   "frontReflector": [
+    0,
+    0.82,
+    -0.5
+   ],
+   "rearReflector": {
+    "center": [
+     0,
+     0.745,
+     0.655
+    ],
+    "r": 0.049,
+    "color": 9050644
+   },
+   "kickPivot": [
+    -0.05,
+    0.27999999999999997,
+    0.13
+   ],
+   "kickLen": 0.3,
+   "kickStowedRotX": -1.2,
+   "kickDeployed": {
+    "x": -0.25,
+    "z": -0.32
+   }
+  },
+  "bike.player": {
+   "cast": "player",
+   "spec": {
+    "style": "road-kid",
+    "frame": 6262675,
+    "bars": "riser",
+    "wheelR": 0.31,
+    "saddle": 2500134,
+    "grips": 3158066,
+    "tire": 2829358,
+    "extras": [
+     "bell",
+     "reflector"
+    ]
+   },
+   "style": "road-kid",
+   "wheelR": 0.31,
+   "front": -0.52,
+   "rear": 0.48,
+   "bb": [
+    0,
+    0.3,
+    0.03
+   ],
+   "crank": 0.15,
+   "pedalX": 0.12,
+   "saddle": [
+    0,
+    0.88,
+    0.21
+   ],
+   "grip": [
+    0.28,
+    1.02,
+    -0.4
+   ],
+   "pivot": [
+    0,
+    0.69,
+    -0.42
+   ],
+   "rake": 0.286,
+   "axleRear": [
+    0,
+    0.31,
+    0.48
+   ],
+   "axleFront": [
+    0,
+    0.31,
+    -0.52
+   ],
+   "seatCluster": [
+    0,
+    0.73,
+    0.16999999999999998
+   ],
+   "headTop": [
+    0,
+    0.85,
+    -0.375
+   ],
+   "headLow": [
+    0,
+    0.7,
+    -0.415
+   ],
+   "gripL": [
+    -0.28,
+    1.02,
+    -0.4
+   ],
+   "gripR": [
+    0.28,
+    1.02,
+    -0.4
+   ],
+   "pedalL0": [
+    -0.12,
+    0.15,
+    0.03
+   ],
+   "pedalR0": [
+    0.12,
+    0.45,
+    0.03
+   ],
+   "bell": [
+    -0.15,
+    1.045,
+    -0.4
+   ],
+   "bellLeverPivot": [
+    -0.172,
+    1.03394,
+    -0.39074
+   ],
+   "frontReflector": [
+    0,
+    0.81,
+    -0.48
+   ],
+   "rearReflector": {
+    "center": [
+     0,
+     0.745,
+     0.625
+    ],
+    "r": 0.049,
+    "color": 9050644
+   },
+   "kickPivot": [
+    -0.05,
+    0.27999999999999997,
+    0.13
+   ],
+   "kickLen": 0.3,
+   "kickStowedRotX": -1.2,
+   "kickDeployed": {
+    "x": -0.25,
+    "z": -0.32
+   }
+  }
+ }
+}

@@ -10,3 +10,4 @@ node_modules/
 # QA keeps compact listening copies; full PCM renders can be regenerated.
 docs/qa/audio/*.wav
 artifacts/art-review/
+tools/blender/bikes/__pycache__/
