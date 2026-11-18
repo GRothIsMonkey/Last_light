@@ -15,7 +15,7 @@ import math
 import bpy
 from mathutils import Vector
 
-VIEW_TRANSFORM = 'AgX'
+VIEW_TRANSFORM = 'ACES 1.3'   # the game tone-maps with three.js ACES Filmic: judge colour through the same curve
 
 
 def _node(nt, kind, loc=(0, 0), **inputs):
@@ -82,11 +82,12 @@ def setup_scene(scene, look='review', res=(1600, 1000), samples=96):
     scene.render.resolution_x, scene.render.resolution_y = res
     scene.render.resolution_percentage = 100
     scene.render.film_transparent = False
-    scene.view_settings.view_transform = VIEW_TRANSFORM
     try:
-        scene.view_settings.look = 'AgX - Medium High Contrast' if look == 'golden' else 'AgX - Base Contrast'
+        scene.view_settings.view_transform = VIEW_TRANSFORM
+        scene.view_settings.look = 'None'
     except TypeError:
-        pass
+        scene.view_settings.view_transform = 'AgX'
+    scene.view_settings.exposure = -0.35 if look == 'golden' else -0.55
     scene.render.image_settings.file_format = 'JPEG'
     scene.render.image_settings.quality = 90
 
@@ -116,7 +117,7 @@ def setup_scene(scene, look='review', res=(1600, 1000), samples=96):
         sky.air_density = 1.0
         setattr(sky, dust, 1.6)
         sky.sun_intensity = 0.25
-        bg.inputs['Strength'].default_value = 0.22
+        bg.inputs['Strength'].default_value = 0.2
     nt.links.new(sky.outputs['Color'], bg.inputs['Color'])
 
     # the ground set (render-only; never exported: it lives in the render scene)
@@ -180,4 +181,9 @@ VIEWS = {
     'front34': dict(loc=(-1.95, -2.35, 1.05), target=(0, -0.05, 0.52), lens=50),
     'rear34': dict(loc=(1.9, 2.45, 1.12), target=(0, 0.05, 0.5), lens=50),
     'side': dict(loc=(-3.6, 0.0, 0.58), target=(0, 0.0, 0.55), lens=55),
+    # close views (Blender frame: the bike's right/drive side is -X, front -Y)
+    'cockpit': dict(loc=(-0.62, -0.95, 1.34), target=(0, -0.38, 0.95), lens=40),
+    'drive': dict(loc=(-0.72, -0.25, 0.48), target=(-0.03, 0.14, 0.3), lens=42),
+    'rearbrake': dict(loc=(-0.5, 0.95, 0.85), target=(0, 0.3, 0.5), lens=42),
+    'firstperson': dict(loc=(0, 0.02, 1.36), target=(0, -0.55, 0.75), lens=24),
 }

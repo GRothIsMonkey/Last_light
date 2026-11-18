@@ -45,16 +45,19 @@ class Mesh:
         self.f = []
         self.uv = []        # per face: list of (u, v) per corner, metres
         self.pid = []
+        self.isl = []       # per face: atlas island index (long strips are cut into several islands for packing)
         self.sharp = set()  # edges (i, j) forced sharp
+        self.cur_isl = 0
 
     def add_v(self, p):
         self.v.append((float(p[0]), float(p[1]), float(p[2])))
         return len(self.v) - 1
 
-    def add_f(self, idx, uvs, pid):
+    def add_f(self, idx, uvs, pid, isl=0):
         self.f.append(tuple(idx))
         self.uv.append([tuple(map(float, t)) for t in uvs])
         self.pid.append(pid)
+        self.isl.append(isl)
 
     def extend(self, other):
         o = len(self.v)
@@ -62,6 +65,7 @@ class Mesh:
         self.f += [tuple(i + o for i in f) for f in other.f]
         self.uv += other.uv
         self.pid += other.pid
+        self.isl += other.isl
         self.sharp |= {(a + o, b + o) for a, b in other.sharp}
 
     def transform(self, mat):
@@ -217,9 +221,10 @@ def sweep(m, path, profile, pid, closed=False, caps=(True, True), ref=Vector((1,
         r0, r1 = rings[i], rings[(i + 1) % n]
         u0 = L[i] + uv_u0
         u1 = (L[i + 1] if i + 1 < n else L[-1] + (path[0] - path[-1]).length) + uv_u0
+        isl = int(L[i] / 0.42)
         for j in range(k):
             j2 = (j + 1) % k
-            m.add_f((r0[j], r0[j2], r1[j2], r1[j]), [(u0, per[j]), (u0, per[j + 1]), (u1, per[j + 1]), (u1, per[j])], pid)
+            m.add_f((r0[j], r0[j2], r1[j2], r1[j]), [(u0, per[j]), (u0, per[j + 1]), (u1, per[j + 1]), (u1, per[j])], pid, isl)
             if sharp_profile:
                 m.sharp.add((r0[j], r1[j]))
     if not closed:
@@ -274,15 +279,17 @@ def lathe(m, profile, segments, pid, origin=(0, 0, 0), axis=(1, 0, 0), ref=(0, 1
         grid.append(col)
     P = len(profile)
     rows = P if closed_profile else P - 1
+    nisl = max(1, int(math.ceil(rmax * arc / 0.4)))
     for c in range(segments):
         c2 = (c + 1) % cols if full else c + 1
         u0, u1 = rmax * arc * c / segments, rmax * arc * (c + 1) / segments
+        isl = min(nisl - 1, c * nisl // segments)
         for i in range(rows):
             i2 = (i + 1) % P
             if profile[i][1] < 1e-7 and profile[i2][1] < 1e-7:
                 continue
             m.add_f((grid[c][i], grid[c2][i], grid[c2][i2], grid[c][i2]),
-                    [(u0, per[i]), (u1, per[i]), (u1, per[i + 1]), (u0, per[i + 1])], pid)
+                    [(u0, per[i]), (u1, per[i]), (u1, per[i + 1]), (u0, per[i + 1])], pid, isl)
     for i in sharp:
         for c in range(segments):
             c2 = (c + 1) % cols if full else c + 1
@@ -357,7 +364,7 @@ def slab(m, outline, thickness, pid, origin=(0, 0, 0), u=(0, 0, -1), v=(0, 1, 0)
                        (per[i] + 9, zs[r + 1] + 9)]
                 if is_hole:
                     uvq = [uvq[1], uvq[0], uvq[3], uvq[2]]
-                m.add_f(quad, uvq, pid)
+                m.add_f(quad, uvq, pid, int(per[i] / 0.4))
         for r in (0, len(rings) - 1):
             for i in range(n):
                 m.sharp.add((rings[r][i], rings[r][(i + 1) % n]))
@@ -604,15 +611,19 @@ def chain_links(m, path, pid, pitch=0.0127, plate_h=0.0096, waist=0.0074, half_w
             h = heights[i] / 2
             ring.append([m.add_v(p + Vector((x_in, 0, 0)) + up * h), m.add_v(p + Vector((x_out, 0, 0)) + up * h),
                          m.add_v(p + Vector((x_out, 0, 0)) - up * h), m.add_v(p + Vector((x_in, 0, 0)) - up * h)])
+        vb = (0.0, t, t + plate_h, 2 * t + plate_h)
         for i in range(n):
             a, b = ring[i], ring[(i + 1) % n]
             u0, u1 = i * step / samples, (i + 1) * step / samples
             faces = ((0, 1), (1, 2), (2, 3))   # top, outer, bottom
+            isl = int(u0 / 0.3) + (0 if side < 0 else 50)
             for k, (j0, j1) in enumerate(faces):
                 q = (a[j0], b[j0], b[j1], a[j1])
+                uvq = [(u0, vb[k] + .005), (u1, vb[k] + .005), (u1, vb[k + 1] + .005), (u0, vb[k + 1] + .005)]
                 if side < 0:
                     q = (a[j1], b[j1], b[j0], a[j0])
-                m.add_f(q, [(u0, k * .01), (u1, k * .01), (u1, k * .01 + .01), (u0, k * .01 + .01)], pid)
+                    uvq = [uvq[3], uvq[2], uvq[1], uvq[0]]
+                m.add_f(q, uvq, pid, isl)
             m.sharp.add((a[1], b[1]))
             m.sharp.add((a[2], b[2]))
     return count
@@ -713,6 +724,26 @@ def to_object(bpy, name, m, parts, materials, collection, smooth_angle=38.0):
     """Create a Blender mesh object from a kit Mesh (game frame -> Blender frame). Writes UV maps 'UVMap' (filled
     later by packing; starts as a copy of the metric pattern) and 'pattern' (metres), face attribute 'pid', material
     slots by part slot, smooth shading with sharp edges by angle plus the kit's forced sharp edges."""
+    # drop degenerate and duplicate faces (decimated harvest geometry can carry a few) with their per-face data
+    keep_f, keep_uv, keep_pid, keep_isl, seen = [], [], [], [], set()
+    for f, uv, p_, isl in zip(m.f, m.uv, m.pid, m.isl):
+        idx, uvs = [], []
+        for i, t in zip(f, uv):
+            if not idx or idx[-1] != i:
+                idx.append(i)
+                uvs.append(t)
+        if len(idx) > 1 and idx[0] == idx[-1]:
+            idx.pop()
+            uvs.pop()
+        key = frozenset(idx)
+        if len(set(idx)) < 3 or len(set(idx)) != len(idx) or key in seen:
+            continue
+        a, b, c = (Vector(m.v[idx[0]]), Vector(m.v[idx[1]]), Vector(m.v[idx[2]]))
+        if len(idx) == 3 and (b - a).cross(c - a).length < 1e-12:
+            continue
+        seen.add(key)
+        keep_f.append(tuple(idx)); keep_uv.append(uvs); keep_pid.append(p_); keep_isl.append(isl)
+    m.f, m.uv, m.pid, m.isl = keep_f, keep_uv, keep_pid, keep_isl
     me = bpy.data.meshes.new(name)
     verts = [tuple(g2b(p)) for p in m.v]
     me.from_pydata(verts, [], m.f)
@@ -724,7 +755,8 @@ def to_object(bpy, name, m, parts, materials, collection, smooth_angle=38.0):
     flat = [c for face in m.uv for c in face]
     arr = np.array(flat, dtype=np.float32).ravel()
     uv_pat.data.foreach_set('uv', arr)
-    uv_main.data.foreach_set('uv', arr)
+    shifted = [(c[0] + 6.0 * isl, c[1]) for face, isl in zip(m.uv, m.isl) for c in face]   # disconnect the islands
+    uv_main.data.foreach_set('uv', np.array(shifted, dtype=np.float32).ravel())
     attr = me.attributes.new('pid', 'INT', 'FACE')
     attr.data.foreach_set('value', np.array(m.pid, dtype=np.int32))
     # material slots

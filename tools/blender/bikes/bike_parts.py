@@ -37,14 +37,18 @@ class Ctx:
         q = self.axis_at(self.R - front_offset * self.F.y)
         self.front = q + self.F * front_offset
         self.front_offset = front_offset
+        self.info = {}          # texture metrics by part name (tube lengths for decals, tyre pattern bands)
 
     def axis_at(self, y):
         return self.piv + self.D * ((y - self.piv.y) / self.D.y)
 
     def n(self, sides, minimum=3):
-        """Polygon count for round sections at this LOD."""
-        f = (1.0, 0.5, 0.3)[self.lod]
-        return max(minimum, int(round(sides * f)))
+        """Polygon count for round sections at this LOD (LOD1 ~45 %, LOD2 ~22 %, never below a triangle)."""
+        if self.lod == 0:
+            return sides
+        if self.lod == 1:
+            return max(min(minimum, 6), 4, int(round(sides * .45)))
+        return max(3, int(round(sides * .22)))
 
     def pid(self, name, slot, finish):
         return self.parts.id(name, slot, finish)
@@ -64,16 +68,21 @@ class FrameBuilder:
         self.C, self.m, self.pid, self.weld_pid, self.weld_r = C, m, pid, weld_pid, weld_r
         self.members = {}
 
-    def straight(self, name, a, b, r, sides=16, r2=None, caps=(True, True)):
+    def straight(self, name, a, b, r, sides=16, r2=None, caps=(True, True), pid=None):
         a, b = Vector(a), Vector(b)
         rings = 1 if r2 is None else 3
-        K.tube(self.m, a, b, r, self.C.n(max(8, sides - 2), 5), self.pid, caps=caps, r2=r2, rings=rings)
+        K.tube(self.m, a, b, r, self.C.n(max(8, sides - 2), 5), pid or self.pid, caps=caps, r2=r2, rings=rings)
         self.members[name] = (a, b, r if r2 is None else (r + r2) / 2)
+        if pid:
+            self.C.info[self.C.parts.list[pid - 1][0]] = dict(length=(b - a).length, radius=r)
 
-    def curved(self, name, path, r, sides=16, scales=None, caps=(True, True)):
+    def curved(self, name, path, r, sides=16, scales=None, caps=(True, True), pid=None):
         path = [Vector(p) for p in path]
-        K.sweep(self.m, path, K.circle_profile(r, self.C.n(max(8, sides - 2), 5)), self.pid, caps=caps, scales=scales)
+        K.sweep(self.m, path, K.circle_profile(r, self.C.n(max(8, sides - 2), 5)), pid or self.pid, caps=caps, scales=scales)
         self.members[name] = (path[0], path[-1], r, path)
+        if pid:
+            self.C.info[self.C.parts.list[pid - 1][0]] = dict(length=sum((path[i + 1] - path[i]).length for i in range(len(path) - 1)),
+                                                              radius=r)
 
     def weld(self, branch, main, end=1, r=None, a=None, b=None):
         """Weld bead where member `branch` (its end `end`) meets member `main` (straight segment approximation)."""
@@ -106,6 +115,8 @@ class FrameBuilder:
 
 
 def bb_shell(C, m, pid, width=0.068, r=0.0205):
+    if C.lod == 2:
+        return
     K.lathe(m, [(-width / 2 - .0006, r * .96), (-width / 2, r), (width / 2, r), (width / 2 + .0006, r * .96),
                 (width / 2 + .0006, r * .62), (-width / 2 - .0006, r * .62)], C.n(22, 8), pid, origin=C.bb, axis=X,
             closed_profile=True, sharp=(1, 2, 4, 5))
@@ -113,6 +124,9 @@ def bb_shell(C, m, pid, width=0.068, r=0.0205):
 
 def head_tube(C, m, pid, y0, y1, r, flare=0.0016):
     a, b = C.axis_at(y0), C.axis_at(y1)
+    if C.lod == 2:
+        K.tube(m, a, b, r, 4, pid)
+        return a, b
     L = (b - a).length
     prof = [(0, r * .72), (0, r + flare), (.009, r + flare), (.014, r), (L - .014, r), (L - .009, r + flare), (L, r + flare),
             (L, r * .72)]
@@ -121,6 +135,8 @@ def head_tube(C, m, pid, y0, y1, r, flare=0.0016):
 
 
 def dropout(C, m, pid, axle, side, toward, up, size=0.024, thick=0.005, slot=True, hanger=False):
+    if C.lod == 2:
+        return
     """A rear dropout plate at `axle` on side (+1 right), its body reaching toward the stays (2D outline)."""
     org = axle + X * (side * (0.0565))
     u = toward.normalized()
@@ -137,6 +153,8 @@ def dropout(C, m, pid, axle, side, toward, up, size=0.024, thick=0.005, slot=Tru
 
 
 def axle_nut(C, m, pid, axle, side, gap=0.0595, size=0.015, depth=0.008):
+    if C.lod == 2:
+        return
     K.hex_nut(m, axle + X * (side * (gap + depth / 2)), X, size, depth, pid)
     # threaded axle end
     K.tube(m, axle + X * (side * gap), axle + X * (side * (gap + depth + .006)), .0047, C.n(8, 5), pid, caps=(False, True))
@@ -153,6 +171,10 @@ def wheel(C, m, *, axle, bead_r, rim_w, rim_depth, tyre_w, tyre_h, rim_pid, tyre
     # tyre: carcass section from bead to bead
     prof = K.tyre_profile(bead_r, tyre_w, tyre_h - (0.0055 if knobby else 0), pts=C.n(13, 5), flat=.35 if tread == 'slick' else .15)
     K.lathe(C_m(m), prof, seg, tyre_pid, origin=axle, axis=X, ref=Y, r_uv=bead_r + tyre_h)
+    if C.lod == 0:
+        per = sum(math.hypot(prof[i + 1][0] - prof[i][0], prof[i + 1][1] - prof[i][1]) for i in range(len(prof) - 1))
+        C.info[C.parts.list[tyre_pid - 1][0]] = dict(vmid=per / 2, vside=per / 2 - .004, vtext=per / 2 - .021,
+                                                     circ=TAU * (bead_r + tyre_h), per=per)
     if knobby and C.lod == 0:
         knobs(C, m, axle, bead_r, tyre_w, tyre_h, tyre_pid)
     # rim: a box section, its sidewalls flat (brake track), the bed under the tyre beads
@@ -167,21 +189,19 @@ def wheel(C, m, *, axle, bead_r, rim_w, rim_depth, tyre_w, tyre_h, rim_pid, tyre
         rp = [(-hw * .72, bead_r + .0012), (-hw, r_out), (-hw, bead_r - .004), (-hw * .55, r_in + .002), (0, r_in),
               (hw * .55, r_in + .002), (hw, bead_r - .004), (hw, r_out), (hw * .72, bead_r + .0012)]
         sharp = (1, 7)
-    if C.lod == 2:
+    if C.lod > 0:
         rp = [rp[1], rp[len(rp) // 2], rp[-2]]
         sharp = ()
     K.lathe(m, rp, seg, rim_pid, origin=axle, axis=X, ref=Y, sharp=sharp)
     # hub
     hub_body(C, m, axle, hub, flange_r, flange_x, hub_pid)
     # spokes
-    if C.lod < 2:
+    if C.lod == 0:
         K.spoke_set(m, spoke_pid, nip_pid, n=spokes, hub_r=flange_r - .0035, hub_x=(flange_x[0], flange_x[1]),
-                    rim_r=r_in + .0005, cross=cross, axle=axle, sides=3, nipples=C.lod == 0)
-    else:
-        for k in range(8):
-            a = TAU * k / 8
-            d = V(0, math.sin(a), math.cos(a))
-            K.tube(m, axle + d * flange_r, axle + d * r_in, .0025, 3, spoke_pid, caps=(False, False))
+                    rim_r=r_in + .0005, cross=cross, axle=axle, sides=3, nipples=True)
+    elif C.lod == 1:   # half the spokes, a little thicker: the same read at 14-36 m
+        K.spoke_set(m, spoke_pid, nip_pid, n=spokes // 2, hub_r=flange_r - .0035, hub_x=(flange_x[0], flange_x[1]),
+                    rim_r=r_in + .0005, cross=cross, axle=axle, sides=3, nipples=False, r=.0016)
     if valve_pid and C.lod < 2:
         a = math.radians(200)
         d = V(0, math.sin(a), math.cos(a))
@@ -206,7 +226,7 @@ def hub_body(C, m, axle, kind, flange_r, fx, pid):
         prof = [(fl - .011, .0072), (fl - .006, .0095), (fl - t, .011), (fl - t, flange_r), (fl + t, flange_r), (fl + t, .012),
                 (fl + .012, body), ((fl + fr) / 2, body * .92), (fr - .012, body), (fr - t, .012), (fr - t, flange_r),
                 (fr + t, flange_r), (fr + t, .011), (fr + .006, .0095), (fr + .011, .0072)]
-    if C.lod == 2:
+    if C.lod > 0:
         prof = [prof[0], prof[3], prof[4], prof[-5], prof[-4], prof[-1]]
     K.lathe(m, prof, C.n(14, 6), pid, origin=axle, axis=X, ref=Y, sharp=(3, 4, len(prof) - 5, len(prof) - 4) if C.lod < 2 else ())
 
@@ -250,10 +270,9 @@ def knob(m, c, n, u, v, w, l, h, pid):
 # ----------------------------------------------------------------------------------------------------------------------
 def sprocket(C, m, center, x, teeth, pid, holes=(), thick=0.0024, ppt=6, spider_holes=None):
     """A toothed ring in the YZ plane at lateral position x (game X), centre on the BB/axle line."""
-    pts_t = ppt if C.lod == 0 else 4
-    outline, Rp = K.sprocket_outline(teeth, pts_per_tooth=pts_t)
-    if C.lod == 2:
-        outline = K.circle2(Rp, 12)
+    outline, Rp = K.sprocket_outline(teeth, pts_per_tooth=ppt)
+    if C.lod > 0:   # teeth are sub-pixel beyond ~14 m: a ring at the tooth line
+        outline = K.circle2(Rp + .0015, 20 if C.lod == 1 else 9)
     org = Vector((x, center.y, center.z))
     # (u, v) = (-Z, Y) so the outline lies in the wheel plane; w = u x v = +X
     K.slab(m, outline, thick, pid, origin=org, u=-Z, v=Y, holes=list(holes) if C.lod == 0 else [], chamfer=0)
@@ -339,11 +358,12 @@ def chain_and_path(C, m, circles, pid, roller_pid=None):
     path = K.chain_path(circles)
     if C.lod == 0:
         return K.chain_links(m, path, pid)
-    # LOD1/2: two thin bands following the chain path
-    P = K.resample(path, 40 if C.lod == 1 else 16)
-    for s in (-1, 1):
-        prof = [(-.0047, .0005), (.0047, .0005), (.0047, -.0005), (-.0047, -.0005)]
-        K.sweep(m, [p + X * (s * .0045) for p in P[:-1]], prof, pid, closed=True, ref=X)
+    if C.lod == 2:
+        return 0
+    # LOD1: one flat band along the chain path
+    P = K.resample(path, 26)
+    prof = [(-.0047, .005), (.0047, .005), (.0047, -.005), (-.0047, -.005)]
+    K.sweep(m, P[:-1], prof, pid, closed=True, ref=X)
     return 0
 
 
@@ -406,6 +426,9 @@ def grip(C, m, end_center, direction, pid, length=.118, r=.0158, flange=False, c
     else:
         prof += [(0, .0115), (0, r * .96), (.004, r)]
     n_rib = 4 if (ribs and C.lod == 0) else 0
+    if C.lod == 2:
+        K.tube(m, end_center - d * length, end_center, r, 3, pid)
+        return end_center - d * length
     if n_rib:
         start, stop = (.012 if flange else .008), length - .008
         for k in range(n_rib * 2 + 1):
@@ -505,7 +528,7 @@ def bell(C, m, clamp_point, bar_dir, pid_dome, pid_base, dome_r=.027, dome_h=.02
     c = center if center is not None else clamp_point + Y * .025
     base = c - Y * (dome_h * .55)
     K.tube(m, clamp_point + Y * .012, base, .0045, C.n(8, 4), pid_base, caps=(False, False))
-    n = C.n(10, 4)
+    n = C.n(10, 4) if C.lod == 0 else 2
     prof = [(0, .0001)]
     for k in range(n + 1):
         a = math.pi / 2 * k / n
@@ -551,7 +574,7 @@ def saddle(C, m, center, pid_cover, pid_base, *, length=.255, w_rear=.155, w_nos
     """A saddle shell lofted nose (-Z) to tail (+Z) round `center` (top surface ~ center.y). Plan view: a round nose, a
     narrow waisted mid-section, a wide rear with round corners. Side view: a wedge, thin at the nose and padded at the
     rear, the top dipping a little in the middle. style: 'sport' (MTB / hybrid), 'bmx' (slim pivotal), 'cruiser'."""
-    nl, na = C.n(n_len, 5), C.n(n_around, 8)
+    nl, na = max(6, C.n(n_len, 5)), max(6, C.n(n_around, 8))
     if na % 2:
         na += 1
 
@@ -617,6 +640,8 @@ def saddle_rails(C, m, center, pid, length=.13, gap=.022, drop=.02):
 
 
 def seat_collar(C, m, top_of_st, st_dir, r, pid, bolt_pid, qr=False):
+    if C.lod == 2:
+        return
     K.lathe(m, [(-.016, r - .001), (-.016, r + .0035), (.004, r + .0035), (.004, r - .001)], C.n(18, 6), pid, origin=top_of_st,
             axis=st_dir, ref=X, sharp=(1, 2))
     if C.lod == 0:
@@ -649,6 +674,8 @@ def kickstand(C, m, pivot, pid_leg, pid_foot, length=.30, rest=-1.2):
 
 
 def kickstand_mount(C, m, pivot, pid, bolt_pid):
+    if C.lod == 2:
+        return
     """The clamp plate and bolt on the left chainstay that the leg pivots on (frame side)."""
     K.slab(m, K.rounded_rect(.05, .03, .006, 2), .006, pid, origin=pivot + V(.009, .006, 0), u=-Z, v=Y,
            chamfer=.0012 if C.lod == 0 else 0)

@@ -1,5 +1,5 @@
 // Last Light asset gate for Blender exports: the Khronos glTF Validator plus the game's own rules.
-// usage: node tools/assets/validate-glb.mjs <file.glb> [--profile chr.child|tst] [--json out.json]
+// usage: node tools/assets/validate-glb.mjs <file.glb> [--profile chr.child|chr.adult|tst|bike] [--json out.json]
 // The Khronos validator (npm `gltf-validator`, Apache-2.0) is a development tool and is never shipped with the game.
 // Point GLTF_VALIDATOR_DIR at a folder whose node_modules has it (`npm i gltf-validator` anywhere); without it, this
 // script still runs the Last Light checks and says plainly that the Khronos validation did not run.
@@ -18,6 +18,9 @@ const PROFILES={
  tst:{tris:20000,bones:80,materials:10,texMax:1024,fingers:false,face:FACE_MIN,clips:['idle_breathe','walk_normal']},
  'chr.child':{tris:45000,bones:80,materials:5,texMax:2048,fingers:true,face:[...FACE_MIN,'browDownLeft','browDownRight','mouthFrownLeft','mouthFrownRight','mouthPucker','mouthFunnel','mouthPressLeft','mouthPressRight','eyeSquintLeft','eyeSquintRight','cheekSquintLeft','cheekSquintRight','noseSneerLeft','noseSneerRight','mouthStretchLeft','mouthStretchRight','mouthClose'],clips:[]},
  'chr.adult':{tris:40000,bones:80,materials:5,texMax:2048,fingers:true,face:FACE_MIN,clips:[]},
+ // hero bicycles (Phase 1 benchmark): no skin; moving parts are separate nodes tagged extras.ll_node / ll_lod.
+ // Budgets (Asset plan 9): LOD0 15-20k (warn above 20k, error above 24k), LOD1 ~5k, LOD2 ~1k; <= 4 materials.
+ bike:{bike:true,tris:[24000,8000,3000],warnTris:[20000,6000,1500],materials:4,texMax:2048,face:[],clips:[]},
 };
 const P=PROFILES[profileName];if(!P){console.error('unknown profile '+profileName);process.exit(2);}
 const ALLOWED_EXT=new Set(['KHR_materials_emissive_strength','KHR_texture_transform','KHR_materials_clearcoat','KHR_materials_sheen','KHR_materials_specular','KHR_materials_ior','KHR_mesh_quantization']);// no Draco/KTX2/meshopt until their decoders are vendored and packaged
@@ -46,12 +49,33 @@ for(const [ni,n] of nodes.entries()){if(n.mesh===undefined)continue;const m=json
   const mat=json.materials?.[p.material];if(mat?.normalTexture&&!p.attributes.TANGENT)warnings.push(`${m.name}: normal map without exported tangents (enable Tangents)`);}
  for(const t of m.extras?.targetNames||[])morphs.add(t);}
 info.triangles=tris;info.vertices=verts;info.skinnedMeshes=skinned;info.morphTargets=[...morphs];
-if(tris>P.tris)errors.push(`triangles ${tris} over the ${profileName} budget ${P.tris}`);
-if(unskinned.length)warnings.push('meshes not skinned (they will not follow the skeleton): '+unskinned.join(', '));
+if(!P.bike&&tris>P.tris)errors.push(`triangles ${tris} over the ${profileName} budget ${P.tris}`);
+if(!P.bike&&unskinned.length)warnings.push('meshes not skinned (they will not follow the skeleton): '+unskinned.join(', '));
+// bicycles: per-LOD budgets, the moving nodes the game drives, the anchor record, orientation and ground contact
+if(P.bike){const per=[0,0,0],nodesBy={0:new Set(),1:new Set(),2:new Set()};
+ for(const n of nodes){if(n.mesh===undefined)continue;const lod=n.extras?.ll_lod??0;const t=json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count)/3,0);per[lod]+=t;if(n.extras?.ll_node)nodesBy[lod].add(n.extras.ll_node);else errors.push(`mesh node ${n.name} has no extras.ll_node`);}
+ info.trianglesPerLOD=per;
+ for(let l=0;l<3;l++){if(per[l]>P.tris[l])errors.push(`LOD${l} ${per[l]} triangles over ${P.tris[l]}`);else if(per[l]>P.warnTris[l])warnings.push(`LOD${l} ${per[l]} triangles above the ${P.warnTris[l]} target`);}
+ const need=['frame','steer','wheel_front','wheel_rear','crank','pedal_l','pedal_r','kickstand'];
+ for(let l=0;l<3;l++){const miss=need.filter(k=>!nodesBy[l].has(k)&&!(l===2&&k==='chain'));if(miss.length)errors.push(`LOD${l} missing moving parts: ${miss.join(', ')}`);}
+ info.nodes=[...nodesBy[0]];
+ if(rootExtras?.ll_kind!=='bike')errors.push('extras.ll_kind must be "bike"');
+ let anchors=null;try{anchors=JSON.parse(rootExtras?.ll_anchors||'null');}catch{}
+ if(!anchors)errors.push('no extras.ll_anchors (the rig.js anchors the bike was built on)');else info.anchors={wheelR:anchors.wheelR,bb:anchors.bb,axleRear:anchors.axleRear,axleFront:anchors.axleFront,pivot:anchors.pivot,saddle:anchors.saddle,grip:anchors.grip};
+ // geometry extents in the file (glTF frame: front +Z, the game turns it): the front wheel must be at +Z, tyres on y=0
+ const box=(lod,name)=>{let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];for(const n of nodes){if(n.mesh===undefined||(n.extras?.ll_lod??0)!==lod||(name&&n.extras?.ll_node!==name))continue;for(const p of json.meshes[n.mesh].primitives){const a=acc(p.attributes.POSITION);for(let k=0;k<3;k++){mn[k]=Math.min(mn[k],a.min[k]);mx[k]=Math.max(mx[k],a.max[k]);}}}return {mn,mx};};
+ const fw=box(0,'wheel_front'),rw=box(0,'wheel_rear'),all=box(0,null);
+ info.extents={min:all.mn.map(v=>+v.toFixed(3)),max:all.mx.map(v=>+v.toFixed(3))};
+ const fz=(fw.mn[2]+fw.mx[2])/2,rz=(rw.mn[2]+rw.mx[2])/2;info.frontWheelZ=+fz.toFixed(3);info.rearWheelZ=+rz.toFixed(3);
+ if(!(fz>rz))errors.push('the front wheel is not toward +Z in the glTF file (model the bike facing Blender -Y)');
+ if(Math.abs(fw.mn[1])>.004||Math.abs(rw.mn[1])>.004)errors.push(`tyres do not touch y=0 (front ${fw.mn[1].toFixed(4)}, rear ${rw.mn[1].toFixed(4)})`);
+ if(anchors){const R=(fw.mx[1]-fw.mn[1])/2;info.frontWheelRadius=+R.toFixed(4);if(Math.abs(R-anchors.wheelR)>.006)errors.push(`front wheel radius ${R.toFixed(3)} differs from rig.js ${anchors.wheelR}`);}
+ const rx=(all.mn[0]+all.mx[0]);info.lateralCentre=+(rx/2).toFixed(3);
+}
 // skeleton
-const skin=json.skins?.[0];if(!skin)errors.push('no skin');if((json.skins||[]).length>1)warnings.push(`${json.skins.length} skins (one per character is expected)`);
+const skin=P.bike?null:json.skins?.[0];if(!skin&&!P.bike)errors.push('no skin');if((json.skins||[]).length>1)warnings.push(`${json.skins.length} skins (one per character is expected)`);
 const joints=skin?skin.joints.map(i=>names[i]):[];info.joints=joints.length;
-const need=[...BODY_BONES,...SOCKETS,...(P.fingers?FINGERS:[])];const missing=need.filter(b=>!names.includes(b));if(missing.length)errors.push('missing bones/sockets: '+missing.join(', '));
+const need=P.bike?[]:[...BODY_BONES,...SOCKETS,...(P.fingers?FINGERS:[])];const missing=need.filter(b=>!names.includes(b));if(missing.length)errors.push('missing bones/sockets: '+missing.join(', '));
 if(joints.length>P.bones)errors.push(`joints ${joints.length} over ${P.bones}`);
 const badName=joints.filter(n=>!/^[a-z][a-z0-9_]*$/.test(n));if(badName.length)errors.push('bone names must be lower_snake_case: '+badName.join(', '));
 // scale and orientation: the head must be about 1.2–2.0 m up (+Y) and the face toward +Z (glTF forward)

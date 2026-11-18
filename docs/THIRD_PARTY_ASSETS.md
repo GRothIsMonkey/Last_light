@@ -162,3 +162,37 @@ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 ```
+
+## Jamie's BMX: components from a Sketchfab BMX (Phase 1 bicycle benchmark)
+
+"Bmx Bike" (https://skfb.ly/oUoKB) by Mitchell is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+- Title: Bmx Bike
+- Author: Mitchell (https://sketchfab.com/MitchellBr)
+- Source: https://sketchfab.com/3d-models/bmx-bike-62efadd576304b38808149e2558d8d8a (short link https://skfb.ly/oUoKB)
+- License: CC BY 4.0, http://creativecommons.org/licenses/by/4.0/ (checked on the model page on 2026-11-18: "CC Attribution", downloadable; the author's description adds no further terms)
+- Supplied by the creative director as a starting point for `bike.jamie`. Modified for Last Light (changes listed below). The author does not endorse Last Light or this use.
+
+### Files
+
+| File | What it is |
+|---|---|
+| `assets/source/bike/third-party/sketchfab-bmx-bike-mitchell/bmx_bike.glb` | The original file as supplied, byte for byte (24,913,704 bytes, SHA-256 `11f3c4b640a7f7d89bb70b38e9a20c6e9370cbc47b2e8e55246117e2f013c950`). Never edited. Its embedded `asset.extras` (title, author, license, source) are intact. Not loaded by the game. |
+| `dist/assets/bike/bike.jamie.glb` | Jamie's bike: original Last Light work that incorporates the modified geometry listed below (size and SHA-256 in `docs/qa/bikes-phase1/validate-bike.jamie.json`). Its `extras.ll_license` carries this attribution. |
+| `tools/blender/bikes/source_bmx.py` | The script that takes the components from the original and fits them to Jamie's bike. |
+
+### What the original contains (inspected before use)
+
+glTF 2.0 binary, generator Sketchfab-16.14.0, extension `KHR_materials_specular`. 28 meshes (one primitive each), 118,300 triangles, 60.3k vertices; 2 materials ("Bmx_Bike", "Bmx_Wheels", double-sided) with six embedded 2048 × 2048 textures (base colour JPEG, ORM/normal PNG, 23.4 MB together). No skins, no animation. Modelled in units of about 1.7 mm (its 20-inch wheels are 299 units across), facing −Y with Z up after import. A modern freestyle BMX: frame, fork, two-piece bars, grips, top-load stem, pivotal seat, 3-piece cranks, a 36-tooth guard sprocket, platform pedals, four pegs, a rear U-brake with its lever and cable, chain, spoked wheels. **Its textures carry real brand marks** (a frame maker's logo and decals, a tyre maker's name), which the art bible forbids reproducing.
+
+### What Last Light uses, and how it was changed
+
+Geometry only, of seven components: the guard sprocket, the two platform pedals, the pivotal seat, the top-load stem (its three pieces), the brake lever assembly (bracket, blade, barrel adjuster) and the two U-brake arms. For each: converted to metres (× 0.0017), merged, planar-dissolved and decimated (sprocket 816 → 640 triangles, pedals 548 → 300 each, seat 3,776 → 900, stem 6,604 → 960, lever 2,820 → 520, U-brake 1,732 → 760; further for LOD1/LOD2), given new UVs in Jamie's texture atlases, re-textured by Last Light's own finish library (`tools/blender/bikes/bike_textures.py`: no source texture is used anywhere), and moved onto Jamie's riding anchors from `dist/rig.js` (the stem re-angled from the source's 20.5° head angle to the game's 16.4°). Measured from the geometry: the sprocket has 36 teeth, so Jamie's chain and rear cog (16 teeth) were built to match it.
+
+Not used: the source frame, fork, bars, grips, cranks, pegs, wheels, tyres, chain, bolts and cable, and none of its six textures. Those were rebuilt with the same kit as the other three bikes (`tools/blender/bikes/`), so all four bikes share one construction and material language; the source frame could not be used at all, because its proportions do not fit Jamie's anchors (wheelbase/wheel-radius 3.88 against the game's 3.31).
+
+The other three bikes (`bike.sam`, `bike.alex`, `bike.player`) contain **no third-party content**.
+
+### Tools and fonts (not distributed as such)
+
+Blender 5.0.1 (the `bpy` module from PyPI) and Pillow build the bikes; the decal and tyre lettering is rendered into the textures with DejaVu fonts (Bitstream Vera / DejaVu licence, which allows this). The brand names on the bikes (REDTAIL, NORTHLINE, Cloverdale, EASTWIND; tyres DURALINE) are invented for Last Light.

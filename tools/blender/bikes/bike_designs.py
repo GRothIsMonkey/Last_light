@@ -120,7 +120,9 @@ def v_brake(C, m, boss, side, up, inward, pid_arm, pid_pad, pid_noodle=None, arm
             ref=X)
     # pad on a post toward the rim
     pad_c = base + up * .028 - X * (s * .012)
-    K.slab(m, K.rounded_rect(.05, .013, .004, 2), .009, pid_pad, origin=pad_c - X * (s * .004), u=inward, v=X.cross(inward).normalized())
+    pad_o = K.rounded_rect(.05, .013, .004, 2) if C.lod == 0 else [(-.025, -.0065), (.025, -.0065), (.025, .0065), (-.025, .0065)]
+    if C.lod < 2:
+        K.slab(m, pad_o, .009, pid_pad, origin=pad_c - X * (s * .004), u=inward, v=X.cross(inward).normalized(), chamfer=.001 if C.lod == 0 else 0)
     K.tube(m, base + up * .028, pad_c + X * (s * .002), .003, 6, pid_arm)
     return top
 
@@ -142,6 +144,7 @@ def design_jamie(C, col, harvest=None):
     pid = C.pid
     PAINT = pid('frame', 'paint', 'paint')
     WELD = pid('weld', 'paint', 'paint_weld')
+    DT, TT, ST = pid('frame_dt', 'paint', 'paint'), pid('frame_tt', 'paint', 'paint'), pid('frame_st', 'paint', 'paint')
     FORK = pid('fork', 'paint', 'paint')
     CHROME = pid('bars', 'hardware', 'chrome')
     BLACK = pid('black_hw', 'hardware', 'steel_black')
@@ -161,7 +164,7 @@ def design_jamie(C, col, harvest=None):
     CABLE = pid('cable', 'soft', 'cable')
     BRAKEPAD = pid('brake_pads', 'soft', 'brake_pad')
     VALVE = pid('valve', 'hardware', 'alloy_black')
-    col.update({'frame': 0xb2553a, 'fork': 0xb2553a, 'weld': 0xb2553a, 'pads': 0x2d4a7a, 'grips': 0x1c1c1e,
+    col.update({'frame_dt': 0xb2553a, 'frame_tt': 0xb2553a, 'frame_st': 0xb2553a, 'frame': 0xb2553a, 'fork': 0xb2553a, 'weld': 0xb2553a, 'pads': 0x2d4a7a, 'grips': 0x1c1c1e,
                 'saddle': 0x262626, 'tyre': 0x2b2c2e, 'pedals': 0x1f1f21})
 
     f = N['frame']
@@ -173,13 +176,13 @@ def design_jamie(C, col, harvest=None):
     clamp = C.saddle - V(0, .052, 0)
     st_dir = (clamp - C.bb).normalized()
     st_top = C.bb + st_dir * .315
-    fb.straight('st', C.bb, st_top, .0143, 16)
+    fb.straight('st', C.bb, st_top, .0143, 16, pid=ST)
     # top tube: head tube (upper) to the seat tube just under its top; down tube: head tube (lower) to the BB
     tt_a = ht_b.lerp(ht_t, .74) + C.F * -.004
     tt_b = st_top - st_dir * .026
-    fb.straight('tt', tt_a, tt_b, .0143, 16)
+    fb.straight('tt', tt_a, tt_b, .0143, 16, pid=TT)
     dt_a = ht_b.lerp(ht_t, .26)
-    fb.straight('dt', dt_a, C.bb + V(0, .004, -.004), .0159, 16)
+    fb.straight('dt', dt_a, C.bb + V(0, .004, -.004), .0159, 16, pid=DT)
     BP.bb_shell(C, f, PAINT, width=.068, r=.0215)
     fb.members['bb'] = (C.bb - X * .034, C.bb + X * .034, .0215)
     # gussets under the top tube and down tube at the head tube (a BMX hallmark)
@@ -208,14 +211,15 @@ def design_jamie(C, col, harvest=None):
             p = tt_a.lerp(tt_b, t) + V(0, .0155, 0)
             K.box(f, p, (.008, .004, .014), ZINC, u=X, v=Y)
     # rear pegs over the axle ends and axle
-    for s in (-1, 1):
+    for s in ((-1, 1) if C.lod < 2 else ()):
         K.lathe(f, [(0, .006), (0, .0185), (.003, .0192), (.094, .0192), (.1, .0172), (.1, .006)], C.n(18, 6), PEG,
                 origin=C.rear + X * (s * .058), axis=X * s, ref=Y, sharp=(1, 4))
     # seatpost and saddle
     sp_top = C.saddle - V(0, .03, 0)
-    BP.seatpost(C, f, st_top - st_dir * .05, sp_top, .0127, CHROME, BLACK, style='micro')
-    BP.saddle(C, f, C.saddle + V(0, -.004, .006), SEAT, SEAT, length=.235, w_rear=.128, w_nose=.052, h=.042, sag=.006,
-              nose_drop=.004, tail_up=.012, style='bmx')
+    BP.seatpost(C, f, st_top - st_dir * .05, sp_top, .0127, CHROME, None if harvest else BLACK, style='micro')
+    if not harvest:
+        BP.saddle(C, f, C.saddle + V(0, -.004, .006), SEAT, SEAT, length=.235, w_rear=.128, w_nose=.052, h=.042, sag=.006,
+                  nose_drop=.004, tail_up=.012, style='bmx')
     # kickstand mount on the left chainstay
     kp = V(*C.A['kickPivot'])
     BP.kickstand_mount(C, f, kp, BLACK, ZINC)
@@ -223,7 +227,7 @@ def design_jamie(C, col, harvest=None):
 
     # ---- rear U-brake on the seatstays (kit version; the harvested Sketchfab U-brake replaces it when available)
     ss = fb.members['ss1']
-    if harvest is None:
+    if not harvest:
         for s in (-1, 1):
             a, b = fb.members[f'ss{s}'][0], fb.members[f'ss{s}'][1]
             boss = b.lerp(a, .48)
@@ -241,7 +245,7 @@ def design_jamie(C, col, harvest=None):
     stack = BP.headset_stack(C, s_, ht_t, ht_b, BLACK, BLACK, .0143, spacer_h=.006, frame_m=f)
     # top-load BMX stem (kit version; the harvested stem replaces it): steerer clamp + bar clamp on top, forward
     clamp_c = stack + C.D * .036 + C.F * .046
-    if harvest is None or 'stem' not in harvest:
+    if not harvest:
         K.lathe(s_, [(0, .0145), (0, .0215), (.042, .0215), (.042, .0145)], C.n(18, 6), BLACK, origin=stack, axis=C.D, ref=X,
                 sharp=(1, 2))
         K.slab(s_, K.rounded_rect(.075, .052, .012, 3), .022, BLACK, origin=stack + C.D * .028 + C.F * .022, u=C.F, v=X,
@@ -275,9 +279,12 @@ def design_jamie(C, col, harvest=None):
         BP.grip(C, s_, end + X * (s * .0005), X * s, GRIP, length=.126, r=.0162, flange=True)
     # rear brake lever on the right (US: right lever = rear brake), cable looping forward and down to the top tube
     lever_pt = V(.205, gr.y, gr.z)
-    exit_ = BP.brake_lever(C, s_, lever_pt, X, 1, BLACK, BLACK, reach=.085, droop=.75)
+    if harvest:
+        exit_ = lever_pt + V(-.03, .004, -.025)
+    else:
+        exit_ = BP.brake_lever(C, s_, lever_pt, X, 1, BLACK, BLACK, reach=.085, droop=.75)
     # front pegs: on the fork's axle ends, they steer with the fork
-    for s in (-1, 1):
+    for s in ((-1, 1) if C.lod < 2 else ()):
         K.lathe(s_, [(0, .006), (0, .0185), (.003, .0192), (.094, .0192), (.1, .0172), (.1, .006)], C.n(18, 6), PEG,
                 origin=C.front + X * (s * .058), axis=X * s, ref=Y, sharp=(1, 4))
     # cable: lever -> loop in front of the bars -> top tube guide (frame side is static: the loop's end is on the frame)
@@ -292,8 +299,9 @@ def design_jamie(C, col, harvest=None):
         BP.wheel(C, N[node], axle=axle, bead_r=.2285, rim_w=.034, rim_depth=.021, tyre_w=.058, tyre_h=C.R - .2285, rim_pid=RIM,
                  tyre_pid=TYRE, hub_pid=HUB, spoke_pid=SPOKE, nip_pid=NIP, spokes=36, cross=3, hub=hub, flange_r=.0285,
                  flange_x=(-.031, .031) if hub == 'front' else (-.03, .024), tread='street', valve_pid=VALVE)
-    # 9-tooth driver on the rear hub
-    BP.sprocket(C, N['wheel_rear'], C.rear, .046, 9, BLACK, thick=.003, ppt=6)
+    # rear driver: 16 teeth behind a 36-tooth sprocket (classic 2011 youth BMX gearing), 9 behind a 25 (micro drive)
+    cog_teeth = 16 if harvest else 9
+    BP.sprocket(C, N['wheel_rear'], C.rear, .046, cog_teeth, BLACK, thick=.003, ppt=6 if cog_teeth < 12 else 4)
     for s in (-1, 1):
         BP.axle_nut(C, f, ZINC, C.rear, s, gap=.0565, size=.017)
     # ---- crank: 3-piece arms, 25-tooth sprocket
@@ -302,16 +310,35 @@ def design_jamie(C, col, harvest=None):
         BP.crank_arm(C, cr, C.bb, s, C.crank_len, BLACK, x=s * .0615, width=(.036, .025), thick=.0135)
     K.tube(cr, C.bb + V(-.058, 0, 0), C.bb + V(.058, 0, 0), .0095, C.n(12, 5), BLACK)
     holes = BP.ring_holes(5, .03, .0085, phase=.3)
-    if harvest is None or 'sprocket' not in harvest:
+    if not harvest:
         Rp = BP.sprocket(C, cr, C.bb, .046, 25, ALLOY, holes=holes, thick=.0045)
     # ---- pedals
     for node, s in (('pedal_l', -1), ('pedal_r', 1)):
-        if harvest is None or 'pedals' not in harvest:
+        if not harvest:
             c = V(*(C.A['pedalL0'] if s < 0 else C.A['pedalR0']))
             BP.pedal_platform(C, N[node], c, s, PEDAL, ZINC, pid_pin=ZINC, w=.088, l=.098, h=.022, style='bmx')
-    # ---- chain: 25 x 9 (static)
-    Rring = K.sprocket_outline(25)[1]
-    Rcog = K.sprocket_outline(9)[1]
+    # ---- the harvested Sketchfab components (CC BY 4.0, geometry only, re-textured), fitted to Jamie's anchors
+    if harvest:
+        hp = {'sprocket': ALLOY, 'pedal': PEDAL, 'seat': SEAT, 'stem': pid('stem', 'hardware', 'alloy_black'), 'lever': BLACK,
+              'ubrake': BLACK}
+        ssl, ssr = fb.members['ss-1'], fb.members['ss1']
+        boss_l, boss_r = ssl[1].lerp(ssl[0], .5), ssr[1].lerp(ssr[0], .5)
+        ss_dir = ((ssr[0] - ssr[1]).normalized())
+        extra = {'stack': stack, 'lever': lever_pt, 'ss_dir': ss_dir, 'ubrake': (boss_l + boss_r) / 2 + ss_dir * .02}
+        H = harvest(C, hp, extra)
+        f.extend(H['seat'])
+        s_.extend(H['stem'])
+        if C.lod < 2:
+            f.extend(H['ubrake'])
+            s_.extend(H['lever'])
+        cr.extend(H['sprocket'])
+        N['pedal_l'].extend(H['pedal_l'])
+        N['pedal_r'].extend(H['pedal_r'])
+        C.harvested = True
+    # ---- chain round the sprocket that is actually there (the harvested one is measured), on a matching rear cog
+    ring_teeth = (H.get('sprocket_teeth') if harvest else None) or 25
+    Rring = K.sprocket_outline(ring_teeth)[1]
+    Rcog = K.sprocket_outline(cog_teeth)[1]
     BP.chain_and_path(C, N['chain'], chain_circles(C, ring_r=Rring, cog_r=Rcog, cog_x=.046), CHAIN, roller_pid=CHAIN)
     return N
 
@@ -324,6 +351,7 @@ def design_sam(C, col, harvest=None):
     pid = C.pid
     PAINT = pid('frame', 'paint', 'paint')
     WELD = pid('weld', 'paint', 'paint_weld')
+    DT, TT, ST = pid('frame_dt', 'paint', 'paint'), pid('frame_tt', 'paint', 'paint'), pid('frame_st', 'paint', 'paint')
     FORKLOW = pid('fork_lowers', 'hardware', 'alloy_black')
     STANCH = pid('stanchions', 'hardware', 'chrome')
     BLACK = pid('black_hw', 'hardware', 'alloy_black')
@@ -346,7 +374,7 @@ def design_sam(C, col, harvest=None):
     CAP = pid('bottle_cap', 'soft', 'plastic')
     GUARD = pid('ring_guard', 'soft', 'plastic')
     VALVE = pid('valve', 'hardware', 'alloy')
-    col.update({'frame': 0x4d7f8f, 'weld': 0x4d7f8f, 'grips': 0x303032, 'saddle': 0x1e1e20, 'tyre': 0x27282a,
+    col.update({'frame_dt': 0x4d7f8f, 'frame_tt': 0x4d7f8f, 'frame_st': 0x4d7f8f, 'frame': 0x4d7f8f, 'weld': 0x4d7f8f, 'grips': 0x303032, 'saddle': 0x1e1e20, 'tyre': 0x27282a,
                 'bottle': 0x3a86c8, 'bottle_cap': 0xe8e6de, 'shifters': 0x2a2b2d, 'ring_guard': 0x232425, 'pedals': 0x242526})
     f = N['frame']
     fb = BP.FrameBuilder(C, f, PAINT, WELD, weld_r=.0021)
@@ -355,12 +383,12 @@ def design_sam(C, col, harvest=None):
     clamp = C.saddle - V(0, .052, 0)
     st_dir = (clamp - C.bb).normalized()
     st_top = C.bb + st_dir * .372
-    fb.straight('st', C.bb, st_top, .0146, 16)
+    fb.straight('st', C.bb, st_top, .0146, 16, pid=ST)
     tt_a = ht_b.lerp(ht_t, .78)
     tt_b = st_top - st_dir * .055
-    fb.straight('tt', tt_a, tt_b, .0162, 16)
+    fb.straight('tt', tt_a, tt_b, .0162, 16, pid=TT)
     dt_a = ht_b.lerp(ht_t, .3)
-    fb.straight('dt', dt_a, C.bb + V(0, .005, -.006), .0186, 18)
+    fb.straight('dt', dt_a, C.bb + V(0, .005, -.006), .0186, 18, pid=DT)
     BP.bb_shell(C, f, PAINT, width=.068, r=.0205)
     fb.members['bb'] = (C.bb - X * .034, C.bb + X * .034, .0205)
     rear_triangle(C, fb, f, st_attach=tt_b - st_dir * .012, ss_r=.0082, cs_r=.0098, dropout_x=.0565, cs_flare=.05,
@@ -391,7 +419,7 @@ def design_sam(C, col, harvest=None):
                 C.n(20, 8), BOTTLE, origin=cage_c - ddir * .1, axis=-ddir, ref=X, sharp=(1,))
         K.lathe(f, [(0, .0001), (0, .0128), (.016, .0128), (.02, .006), (.02, .0001)], C.n(12, 6), CAP,
                 origin=cage_c - ddir * .1 - ddir * .2, axis=-ddir, ref=X)
-        for s in (-1, 1):
+        for s in ((-1, 1) if C.lod == 0 else ()):
             pts = [dt0.lerp(dt1, .48) + up_dt * .019 + X * (s * .006), cage_c + ddir * .05 + X * (s * .033) - up_dt * .012,
                    cage_c - ddir * .08 + X * (s * .034), cage_c - ddir * .095 + X * (s * .01) + up_dt * .03]
             K.sweep(f, K.catmull(pts, 4 if C.lod == 0 else 2), K.circle_profile(.0026, C.n(6, 3)), BLACK)
@@ -407,7 +435,7 @@ def design_sam(C, col, harvest=None):
     BP.kickstand(C, N['kickstand'], kp, ALLOY, PEDAL)
     # front derailleur on the seat tube, cables under the BB to the derailleurs
     fd_c = C.bb + st_dir * .14 + V(.03, 0, .02)
-    if C.lod < 2:
+    if C.lod == 0:
         K.lathe(f, [(-.01, .0146), (-.01, .0182), (.01, .0182), (.01, .0146)], C.n(16, 6), BLACK, origin=C.bb + st_dir * .15,
                 axis=st_dir, ref=X)
         K.slab(f, [(-.045, -.002), (.025, -.02), (.04, .012), (-.03, .016)], .0022, BLACK, origin=fd_c + V(.012, -.03, -.025),
@@ -537,6 +565,7 @@ def design_alex(C, col, harvest=None):
     pid = C.pid
     PAINT = pid('frame', 'paint', 'paint')
     WELD = pid('weld', 'paint', 'paint_weld')
+    DT, TT, ST = pid('frame_dt', 'paint', 'paint'), pid('frame_tt', 'paint', 'paint'), pid('frame_st', 'paint', 'paint')
     CHROME = pid('chrome', 'hardware', 'chrome')
     BLACK = pid('black_hw', 'hardware', 'steel_black')
     ZINC = pid('bolts', 'hardware', 'zinc')
@@ -556,7 +585,7 @@ def design_alex(C, col, harvest=None):
     REFLB = pid('reflector_body', 'soft', 'plastic')
     TAPE = pid('tape', 'soft', 'tape')
     VALVE = pid('valve', 'hardware', 'zinc')
-    col.update({'frame': 0x8a8f3f, 'weld': 0x8a8f3f, 'grips': 0xd8cfb8, 'saddle': 0x5a3a28, 'tyre': 0x2b2c2e,
+    col.update({'frame_dt': 0x8a8f3f, 'frame_tt': 0x8a8f3f, 'frame_st': 0x8a8f3f, 'frame': 0x8a8f3f, 'weld': 0x8a8f3f, 'grips': 0xd8cfb8, 'saddle': 0x5a3a28, 'tyre': 0x2b2c2e,
                 'chainguard': 0x1d1e1c, 'reflector_red': 0x8a1a14, 'reflector_body': 0x2a1513, 'pedals': 0x1b1b1c, 'tape': 0x161617})
     f = N['frame']
     fb = BP.FrameBuilder(C, f, PAINT, WELD, weld_r=.0019)
@@ -565,16 +594,16 @@ def design_alex(C, col, harvest=None):
     clamp = C.saddle - V(0, .055, 0)
     st_dir = (clamp - C.bb).normalized()
     st_top = C.bb + st_dir * .385
-    fb.straight('st', C.bb, st_top, .0143, 16)
+    fb.straight('st', C.bb, st_top, .0143, 16, pid=ST)
     # top tube: a long gentle arc from the head tube down into the seat tube
     tt_a = ht_b.lerp(ht_t, .82)
     tt_b = st_top - st_dir * .03
     tt_path = K.bezier(tt_a, tt_a + V(0, -.0, .16), tt_b + V(0, .07, -.16), tt_b, 9 if C.lod == 0 else 4)
-    fb.curved('tt', tt_path, .0143, 16)
+    fb.curved('tt', tt_path, .0143, 16, pid=TT)
     dt_a = ht_b.lerp(ht_t, .22)
     dt_b = C.bb + V(0, .006, -.006)
     dt_path = K.bezier(dt_a, dt_a + V(0, -.12, .07), dt_b + V(0, .12, -.11), dt_b, 7 if C.lod == 0 else 3)
-    fb.curved('dt', dt_path, .0159, 16)
+    fb.curved('dt', dt_path, .0159, 16, pid=DT)
     BP.bb_shell(C, f, PAINT, width=.068, r=.022)
     fb.members['bb'] = (C.bb - X * .034, C.bb + X * .034, .022)
     # chainstays
@@ -721,6 +750,7 @@ def design_player(C, col, harvest=None):
     pid = C.pid
     PAINT = pid('frame', 'paint', 'paint')
     WELD = pid('weld', 'paint', 'paint_weld')
+    DT, TT, ST = pid('frame_dt', 'paint', 'paint'), pid('frame_tt', 'paint', 'paint'), pid('frame_st', 'paint', 'paint')
     FORK = pid('fork', 'paint', 'paint')
     ALLOY = pid('alloy', 'hardware', 'alloy')
     BLACK = pid('black_hw', 'hardware', 'alloy_black')
@@ -746,7 +776,7 @@ def design_player(C, col, harvest=None):
     RA = pid('reflector_amber', 'soft', 'reflector_amber')
     RB = pid('reflector_body', 'soft', 'plastic')
     VALVE = pid('valve', 'hardware', 'alloy')
-    col.update({'frame': 0x5f8f93, 'fork': 0x5f8f93, 'weld': 0x5f8f93, 'grips': 0x303032, 'saddle': 0x262626, 'tyre': 0x2b2c2e,
+    col.update({'frame_dt': 0x5f8f93, 'frame_tt': 0x5f8f93, 'frame_st': 0x5f8f93, 'frame': 0x5f8f93, 'fork': 0x5f8f93, 'weld': 0x5f8f93, 'grips': 0x303032, 'saddle': 0x262626, 'tyre': 0x2b2c2e,
                 'shifters': 0x26272a, 'ring_guard': 0x1f2022, 'reflector_white': 0xe8e4d8, 'reflector_red': 0x8a1a14,
                 'reflector_amber': 0xd89a3a, 'reflector_body': 0x2a2a2c, 'pedals': 0x232426})
     f = N['frame']
@@ -756,12 +786,12 @@ def design_player(C, col, harvest=None):
     clamp = C.saddle - V(0, .052, 0)
     st_dir = (clamp - C.bb).normalized()
     st_top = C.bb + st_dir * .405
-    fb.straight('st', C.bb, st_top, .0143, 16)
+    fb.straight('st', C.bb, st_top, .0143, 16, pid=ST)
     tt_a = ht_b.lerp(ht_t, .8)
     tt_b = st_top - st_dir * .03
-    fb.straight('tt', tt_a, tt_b, .0143, 16)
+    fb.straight('tt', tt_a, tt_b, .0143, 16, pid=TT)
     dt_a = ht_b.lerp(ht_t, .24)
-    fb.straight('dt', dt_a, C.bb + V(0, .005, -.005), .0159, 16)
+    fb.straight('dt', dt_a, C.bb + V(0, .005, -.005), .0159, 16, pid=DT)
     BP.bb_shell(C, f, PAINT, width=.068, r=.0205)
     fb.members['bb'] = (C.bb - X * .034, C.bb + X * .034, .0205)
     rear_triangle(C, fb, f, st_attach=tt_b - st_dir * .006, ss_r=.008, cs_r=.0095, dropout_x=.0555, cs_flare=.048,

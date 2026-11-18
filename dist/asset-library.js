@@ -19,6 +19,11 @@ import {clone as cloneSkinned} from './three-addons-skeleton-utils.js';
 export const ASSETS={
  // id: runtime file (relative to dist/), rig contract, what it is
  'tst.pipeline-probe':{file:'assets/tst/tst.pipeline-probe.glb',rig:'rig.human.child',kind:'test',note:'Phase 0A technical probe; not a character'},
+ // Phase 1 bicycle benchmark (DEV, ?bikes): authored bikes awaiting approval; no story scene asks for them yet
+ 'bike.jamie':{file:'assets/bike/bike.jamie.glb',rig:'rig.bike',kind:'bike',note:'youth BMX; incorporates CC BY 4.0 geometry (THIRD_PARTY_ASSETS.md)'},
+ 'bike.sam':{file:'assets/bike/bike.sam.glb',rig:'rig.bike',kind:'bike',note:'youth mountain bike'},
+ 'bike.alex':{file:'assets/bike/bike.alex.glb',rig:'rig.bike',kind:'bike',note:'youth cruiser'},
+ 'bike.player':{file:'assets/bike/bike.player.glb',rig:'rig.bike',kind:'bike',note:'the protagonist\'s youth hybrid (rig.js road-kid)'},
 };
 const cache=new Map(),log=[];
 let loader=null;

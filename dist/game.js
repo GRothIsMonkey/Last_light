@@ -848,6 +848,9 @@ const jumpParam=typeof location!=='undefined'&&(location.search||'').match(/[?&]
 requestAnimationFrame(frame);
 // Phase 0A asset pipeline (DEV only): ?pipeline puts the Blender test figure (pipeline-lab.js) into the running game.
 // Without ?pipeline nothing is imported or loaded; on failure it says so on screen and substitutes nothing.
+// Phase 1 bicycle benchmark (DEV only): ?bikes upgrades the four boys' procedural bikes in place with the authored
+// Blender bikes (bike-benchmark.js). Without ?bikes nothing is imported or loaded.
+if(typeof location!=='undefined'&&/[?&]bikes\b/.test(location.search||''))import('./bike-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,friends,playerBike,hemi})).catch(e=>console.error('bike benchmark failed:',e));
 if(typeof location!=='undefined'&&/[?&]pipeline\b/.test(location.search||''))import('./pipeline-lab.js').then(m=>m.mountInGame({scene,camera,renderer,groundY:(x,z)=>nav.groundY(x,z)})).catch(e=>console.error('pipeline probe failed:',e));
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.
