@@ -76,7 +76,7 @@ def preflight():
     problems = []
     if abs(bpy.context.scene.unit_settings.scale_length - 1.0) > 1e-6:
         problems.append('scene unit scale must be 1.0 (metres)')
-    for ob in bpy.data.objects:
+    for ob in bpy.context.scene.objects:   # what ships: the active scene only (REF scenes may hold untouched references)
         if ob.type not in {'MESH', 'ARMATURE', 'EMPTY'}:
             continue
         if ob.parent and ob.parent_type == 'BONE':

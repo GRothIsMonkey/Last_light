@@ -26,7 +26,8 @@ const ONLY=(new URLSearchParams(location.search).get('only')||'').split(',').fil
 const KEYS=ONLY.length?ONLY:['jamie','sam','alex','player'];   // ?only=jamie,sam to look at some of them
 const SPACING=1.42;
 const rows={authored:{},procedural:{},riders:{}};
-function placeBike(b,x,z,face=-Math.PI/2){b.group.position.set(x,0,z);b.group.rotation.set(0,face,0);}
+// face +90°: each bike points to -X with its right (drive) side toward the cameras at -Z
+function placeBike(b,x,z,face=Math.PI/2){b.group.position.set(x,0,z);b.group.rotation.set(0,face,0);}
 
 let t=0,anim=true,mode='lineup',handles={};
 const riders={};
@@ -46,7 +47,7 @@ function arrange(m){mode=m;
   const A=rows.authored[k],Pr=rows.procedural[k],R=rows.riders[k];
   A.group.visible=m==='lineup'||m==='compare';Pr.group.visible=m==='compare';R.group.visible=m==='riders'||m==='fp';
   if(m==='lineup'){placeBike(A,x,0);}
-  if(m==='compare'){placeBike(A,(i-1.5)*2.9-.62,0);placeBike(Pr,(i-1.5)*2.9+.62,0);}
+  if(m==='compare'){placeBike(A,(i-1.5)*3.3-.78,0);placeBike(Pr,(i-1.5)*3.3+.78,0);}
   if(m==='riders'||m==='fp'){placeBike(R,x*1.15,0);}
  }}
 // rest pose for the parked bikes: a little steer and the cranks at a quarter turn, as a bike stands
@@ -84,13 +85,16 @@ function step(dt){t+=dt;
  for(const h of [...Object.values(handles),...Object.values(rows.riders).map(b=>b.authored)])h?.update(camera);}
 
 const VIEWS={
- lineup:{p:[3.9,1.55,-6.2],t:[0,.55,0],fov:34,arr:'lineup'},
+ lineup:{p:[-3.9,1.55,-6.2],t:[0,.55,0],fov:34,arr:'lineup'},
  'lineup-side':{p:[0,.62,-8.6],t:[0,.55,0],fov:30,arr:'lineup'},
- 'lineup-rear':{p:[-3.4,1.5,5.8],t:[0,.55,0],fov:34,arr:'lineup'},
+ 'lineup-rear':{p:[3.4,1.5,5.8],t:[0,.55,0],fov:34,arr:'lineup'},
  compare:{p:[0,1.25,-9.5],t:[0,.55,0],fov:38,arr:'compare'},
- 'compare-jamie':{p:[-4.35,.95,-3.1],t:[-4.35,.55,0],fov:34,arr:'compare'},'compare-sam':{p:[-1.45,.95,-3.1],t:[-1.45,.55,0],fov:34,arr:'compare'},
- 'compare-alex':{p:[1.45,.95,-3.1],t:[1.45,.55,0],fov:34,arr:'compare'},'compare-player':{p:[4.35,.95,-3.1],t:[4.35,.55,0],fov:34,arr:'compare'},
- riders:{p:[3.6,1.6,-6.4],t:[0,.8,0],fov:36,arr:'riders'},
+ 'compare-jamie':{p:[-4.95,.95,-3.6],t:[-4.95,.55,0],fov:34,arr:'compare'},'compare-sam':{p:[-1.65,.95,-3.6],t:[-1.65,.55,0],fov:34,arr:'compare'},
+ 'compare-alex':{p:[1.65,.95,-3.6],t:[1.65,.55,0],fov:34,arr:'compare'},'compare-player':{p:[4.95,.95,-3.6],t:[4.95,.55,0],fov:34,arr:'compare'},
+ // close three-quarter views of each authored bike in the lineup (front-right, the drive side)
+ 'close-jamie':{p:[-3.26,1.05,-1.75],t:[-2.13,.52,-.05],fov:36,arr:'lineup'},'close-sam':{p:[-1.84,1.05,-1.75],t:[-.71,.52,-.05],fov:36,arr:'lineup'},
+ 'close-alex':{p:[-0.42,1.05,-1.75],t:[.71,.52,-.05],fov:36,arr:'lineup'},'close-player':{p:[1.00,1.05,-1.75],t:[2.13,.52,-.05],fov:36,arr:'lineup'},
+ riders:{p:[-3.6,1.6,-6.4],t:[0,.8,0],fov:36,arr:'riders'},
  fp:{fp:true,arr:'fp',fov:64},
 };
 let yaw=0,pitch=0,dist=0,base=VIEWS.lineup,viewName='lineup';

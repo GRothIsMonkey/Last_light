@@ -456,6 +456,15 @@ def save_and_export(bike_id, built, root, mats, build_info, dens):
     ref = bpy.data.scenes.get('REF') or bpy.data.scenes.new('REF')
     txt = bpy.data.texts.get('anchors.json') or bpy.data.texts.new('anchors.json')
     txt.from_string(json.dumps(anchors_record(bike_id, C0), indent=1))
+    for lod, objs in built.items():     # n-gons defeat MikkTSpace tangents at export: triangulate them
+        for ob in objs.values():
+            bm = bmesh.new()
+            bm.from_mesh(ob.data)
+            ng = [f for f in bm.faces if len(f.verts) > 4]
+            if ng:
+                bmesh.ops.triangulate(bm, faces=ng, quad_method='BEAUTY', ngon_method='BEAUTY')
+                bm.to_mesh(ob.data)
+            bm.free()
     os.makedirs(src_dir, exist_ok=True)
     blend = os.path.join(src_dir, bike_id + '.blend')
     bpy.context.preferences.filepaths.save_version = 0

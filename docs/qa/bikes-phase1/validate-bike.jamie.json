@@ -1,0 +1,193 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "info": {
+  "file": "bike.jamie.glb",
+  "bytes": 7205804,
+  "sha256": "ee4676ed61c392ef91b020b9c7b94f701a1938a8b040feeb17a36ddc13e677ac",
+  "generator": "Khronos glTF Blender I/O v5.0.21",
+  "profile": "bike",
+  "assetId": "bike.jamie",
+  "assetVersion": 1,
+  "triangles": 25402,
+  "vertices": 33166,
+  "skinnedMeshes": 0,
+  "morphTargets": [],
+  "trianglesPerLOD": [
+   18920,
+   5238,
+   1244
+  ],
+  "nodes": [
+   "chain",
+   "crank",
+   "frame",
+   "kickstand",
+   "pedal_l",
+   "pedal_r",
+   "steer",
+   "wheel_front",
+   "wheel_rear"
+  ],
+  "anchors": {
+   "wheelR": 0.29,
+   "bb": [
+    0,
+    0.29,
+    0.03
+   ],
+   "axleRear": [
+    0,
+    0.29,
+    0.46
+   ],
+   "axleFront": [
+    0,
+    0.29,
+    -0.57007
+   ],
+   "pivot": [
+    0,
+    0.66,
+    -0.43
+   ],
+   "saddle": [
+    0,
+    0.85,
+    0.23
+   ],
+   "grip": [
+    0.3,
+    1.06,
+    -0.38
+   ]
+  },
+  "extents": {
+   "min": [
+    -0.346,
+    0,
+    -0.75
+   ],
+   "max": [
+    0.346,
+    1.083,
+    0.86
+   ]
+  },
+  "frontWheelZ": 0.57,
+  "rearWheelZ": -0.46,
+  "frontWheelRadius": 0.29,
+  "lateralCentre": 0,
+  "joints": 0,
+  "materials": [
+   "mat.metal.bare/bike.jamie.hardware",
+   "mat.metal.painted/bike.jamie.frame",
+   "mat.rubber/bike.jamie.soft"
+  ],
+  "textures": [
+   {
+    "name": "bike.jamie__hardware_normal",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 350158,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "bike.jamie__hardware_orm",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 1056133,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "bike.jamie__hardware_basecolor",
+    "mime": "image/jpeg",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 205844,
+    "use": [
+     "color"
+    ]
+   },
+   {
+    "name": "bike.jamie__frame_normal",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 913649,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "bike.jamie__frame_orm",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 965473,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "bike.jamie__frame_basecolor",
+    "mime": "image/jpeg",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 115822,
+    "use": [
+     "color"
+    ]
+   },
+   {
+    "name": "bike.jamie__soft_normal",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 750343,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "bike.jamie__soft_orm",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 730840,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "bike.jamie__soft_basecolor",
+    "mime": "image/jpeg",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 50843,
+    "use": [
+     "color"
+    ]
+   }
+  ],
+  "textureBytes": 5139105,
+  "gpuTextureMBEstimate": 48,
+  "clips": []
+ },
+ "khronos": {
+  "ran": true,
+  "version": "2.0.0-dev.3.10",
+  "errors": 0,
+  "warnings": 0,
+  "infos": 47,
+  "hints": 0,
+  "messages": []
+ }
+}
