@@ -1,0 +1,197 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "LOD0 20484 triangles above the 20000 target",
+  "LOD2 1916 triangles above the 1500 target"
+ ],
+ "info": {
+  "file": "bike.alex.glb",
+  "bytes": 6969272,
+  "sha256": "1a6dfd4de22980a1751d6927339f50d08079bab755cedb4608e8a2ebc2f39b3c",
+  "generator": "Khronos glTF Blender I/O v5.0.21",
+  "profile": "bike",
+  "assetId": "bike.alex",
+  "assetVersion": 1,
+  "triangles": 28342,
+  "vertices": 36563,
+  "skinnedMeshes": 0,
+  "morphTargets": [],
+  "trianglesPerLOD": [
+   20484,
+   5942,
+   1916
+  ],
+  "nodes": [
+   "bell_lever",
+   "chain",
+   "crank",
+   "frame",
+   "kickstand",
+   "pedal_l",
+   "pedal_r",
+   "steer",
+   "wheel_front",
+   "wheel_rear"
+  ],
+  "anchors": {
+   "wheelR": 0.31,
+   "bb": [
+    0,
+    0.3,
+    0.03
+   ],
+   "axleRear": [
+    0,
+    0.31,
+    0.48
+   ],
+   "axleFront": [
+    0,
+    0.31,
+    -0.60159
+   ],
+   "pivot": [
+    0,
+    0.7,
+    -0.44
+   ],
+   "saddle": [
+    0,
+    0.88,
+    0.24
+   ],
+   "grip": [
+    0.3,
+    1.04,
+    -0.36
+   ]
+  },
+  "extents": {
+   "min": [
+    -0.344,
+    0,
+    -0.79
+   ],
+   "max": [
+    0.344,
+    1.075,
+    0.912
+   ]
+  },
+  "frontWheelZ": 0.602,
+  "rearWheelZ": -0.48,
+  "frontWheelRadius": 0.31,
+  "lateralCentre": 0,
+  "joints": 0,
+  "materials": [
+   "mat.metal.bare/bike.alex.hardware",
+   "mat.metal.painted/bike.alex.frame",
+   "mat.rubber/bike.alex.soft"
+  ],
+  "textures": [
+   {
+    "name": "bike.alex__hardware_normal",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 62320,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "bike.alex__hardware_orm",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 954232,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "bike.alex__hardware_basecolor",
+    "mime": "image/jpeg",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 130658,
+    "use": [
+     "color"
+    ]
+   },
+   {
+    "name": "bike.alex__frame_normal",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 878754,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "bike.alex__frame_orm",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 851936,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "bike.alex__frame_basecolor",
+    "mime": "image/jpeg",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 79655,
+    "use": [
+     "color"
+    ]
+   },
+   {
+    "name": "bike.alex__soft_normal",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 839710,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "bike.alex__soft_orm",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 782693,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "bike.alex__soft_basecolor",
+    "mime": "image/jpeg",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 105948,
+    "use": [
+     "color"
+    ]
+   }
+  ],
+  "textureBytes": 4685906,
+  "gpuTextureMBEstimate": 48,
+  "clips": []
+ },
+ "khronos": {
+  "ran": true,
+  "version": "2.0.0-dev.3.10",
+  "errors": 0,
+  "warnings": 0,
+  "infos": 56,
+  "hints": 0,
+  "messages": []
+ }
+}
