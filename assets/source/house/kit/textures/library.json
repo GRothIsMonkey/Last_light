@@ -1,0 +1,83 @@
+{
+ "families": {
+  "siding": {
+   "files": {
+    "basecolor": "house.kit__siding_basecolor.jpg",
+    "normal": "house.kit__siding_normal.png",
+    "orm": "house.kit__siding_orm.png"
+   },
+   "mean": [
+    0.8136182001901211,
+    0.8095501091892326,
+    0.8014139271873055
+   ],
+   "normal_strength": 1.0
+  },
+  "brick": {
+   "files": {
+    "basecolor": "house.kit__brick_basecolor.jpg",
+    "normal": "house.kit__brick_normal.png",
+    "orm": "house.kit__brick_orm.png"
+   },
+   "mean": [
+    0.26773558177639606,
+    0.14242964842495032,
+    0.102321501745379
+   ],
+   "normal_strength": 1.0
+  },
+  "roof": {
+   "files": {
+    "basecolor": "house.kit__roof_basecolor.jpg",
+    "normal": "house.kit__roof_normal.png",
+    "orm": "house.kit__roof_orm.png"
+   },
+   "mean": [
+    0.28837436611117073,
+    0.2840487506194893,
+    0.2782812632972455
+   ],
+   "normal_strength": 1.0
+  },
+  "concrete": {
+   "files": {
+    "basecolor": "house.kit__concrete_basecolor.jpg",
+    "normal": "house.kit__concrete_normal.png",
+    "orm": "house.kit__concrete_orm.png"
+   },
+   "mean": [
+    0.5008423924446106,
+    0.4995824992656708,
+    0.4937410354614258
+   ],
+   "normal_strength": 0.8
+  },
+  "paint": {
+   "files": {
+    "basecolor": "house.kit__paint_basecolor.jpg",
+    "normal": "house.kit__paint_normal.png",
+    "orm": "house.kit__paint_orm.png"
+   },
+   "mean": [
+    0.9235356450080872,
+    0.9080270528793335,
+    0.831702470779419
+   ],
+   "normal_strength": 0.6
+  },
+  "interior": {
+   "files": {
+    "basecolor": "house.kit__interior_basecolor.jpg",
+    "emissive": "house.kit__interior_emissive.jpg"
+   },
+   "mean": [
+    1,
+    1,
+    1
+   ],
+   "emission": 0.0,
+   "note": "cards rendered with Cycles (interior_atlas.py), strips painted; emissive = the rooms lamps alone"
+  }
+ },
+ "note": "Synthesized by tools/blender/houses/house_textures.py (original; no photographs or third-party textures). Runtime 1024 px."
+}

@@ -12,3 +12,5 @@ docs/qa/audio/*.wav
 artifacts/art-review/
 tools/blender/bikes/__pycache__/
 tools/blender/__pycache__/
+tools/blender/houses/__pycache__/
+assets/source/house/kit/interior-renders/

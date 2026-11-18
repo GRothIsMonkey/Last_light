@@ -1,5 +1,5 @@
 // Last Light asset gate for Blender exports: the Khronos glTF Validator plus the game's own rules.
-// usage: node tools/assets/validate-glb.mjs <file.glb> [--profile chr.child|chr.adult|tst|bike] [--json out.json]
+// usage: node tools/assets/validate-glb.mjs <file.glb> [--profile chr.child|chr.adult|tst|bike|house] [--json out.json]
 // The Khronos validator (npm `gltf-validator`, Apache-2.0) is a development tool and is never shipped with the game.
 // Point GLTF_VALIDATOR_DIR at a folder whose node_modules has it (`npm i gltf-validator` anywhere); without it, this
 // script still runs the Last Light checks and says plainly that the Khronos validation did not run.
@@ -21,6 +21,10 @@ const PROFILES={
  // hero bicycles (Phase 1 benchmark): no skin; moving parts are separate nodes tagged extras.ll_node / ll_lod.
  // Budgets (Asset plan 9): LOD0 15-20k (warn above 20k, error above 24k), LOD1 ~5k, LOD2 ~1k; <= 4 materials.
  bike:{bike:true,tris:[24000,8000,3000],warnTris:[20000,6000,1500],materials:4,texMax:2048,face:[],clips:[]},
+ // Prologue house benchmark (house kit): one file, many houses; a node per house (extras.ll_house, ll_lot) with its LOD
+ // meshes (extras.ll_lod 0-2, ll_part). Budgets per house (Asset plan 9): story LOD0 20-35k, background 6-10k; LOD1 ~2-8k;
+ // LOD2 ~2k. One shared material library, textures <= 1024 (shared by every house).
+ house:{house:true,tris:{story:[35000,8000,2000],ordinary:[10000,4000,1200]},warnTris:{story:[35000,8000,2000],ordinary:[10000,3500,1000]},materials:12,texMax:1024,face:[],clips:[]},
 };
 const P=PROFILES[profileName];if(!P){console.error('unknown profile '+profileName);process.exit(2);}
 const ALLOWED_EXT=new Set(['KHR_materials_emissive_strength','KHR_texture_transform','KHR_materials_clearcoat','KHR_materials_sheen','KHR_materials_specular','KHR_materials_ior','KHR_mesh_quantization']);// no Draco/KTX2/meshopt until their decoders are vendored and packaged
@@ -46,11 +50,24 @@ for(const [ni,n] of nodes.entries()){if(n.mesh===undefined)continue;const m=json
  for(const p of m.primitives){const c=p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count;if((p.mode??4)!==4)errors.push(`${m.name}: primitive mode ${p.mode} (triangles only)`);tris+=c/3;verts+=acc(p.attributes.POSITION).count;
   if(n.skin!==undefined&&(p.attributes.JOINTS_1||p.attributes.WEIGHTS_1))errors.push(`${m.name}: more than 4 influences per vertex`);
   if(p.material===undefined)errors.push(`${m.name}: primitive without a material`);
-  const mat=json.materials?.[p.material];if(mat?.normalTexture&&!p.attributes.TANGENT)warnings.push(`${m.name}: normal map without exported tangents (enable Tangents)`);}
+  const mat=json.materials?.[p.material];if(mat?.normalTexture&&!p.attributes.TANGENT){if(P.house)info.noTangentPrimitives=(info.noTangentPrimitives||0)+1;else warnings.push(`${m.name}: normal map without exported tangents (enable Tangents)`);}}
  for(const t of m.extras?.targetNames||[])morphs.add(t);}
+if(info.noTangentPrimitives)warnings.push(`${info.noTangentPrimitives} normal-mapped primitives without exported tangents (house kit: deliberate; world-planar UVs, three.js derives the tangent frame per pixel)`);
 info.triangles=tris;info.vertices=verts;info.skinnedMeshes=skinned;info.morphTargets=[...morphs];
-if(!P.bike&&tris>P.tris)errors.push(`triangles ${tris} over the ${profileName} budget ${P.tris}`);
-if(!P.bike&&unskinned.length)warnings.push('meshes not skinned (they will not follow the skeleton): '+unskinned.join(', '));
+if(!P.bike&&!P.house&&tris>P.tris)errors.push(`triangles ${tris} over the ${profileName} budget ${P.tris}`);
+if(P.house){const houses=nodes.map((n,i)=>[n,i]).filter(([n])=>n.extras?.ll_house);info.houses={};
+ const triOf=n=>json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count)/3,0);
+ if(!houses.length)errors.push('no house nodes (extras.ll_house)');
+ for(const [h] of houses){const role=String(h.extras.ll_role||'ordinary').startsWith('story')?'story':'ordinary',per=[0,0,0],parts=new Set();let mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
+  for(const c of h.children||[]){const n=nodes[c];if(n.mesh===undefined)continue;const l=n.extras?.ll_lod;if(l===undefined){errors.push(`${n.name}: mesh without extras.ll_lod`);continue;}per[l]+=triOf(n);parts.add(n.extras?.ll_part+':'+l);
+   if(l===0&&n.extras?.ll_part==='house')for(const p of json.meshes[n.mesh].primitives){const a=acc(p.attributes.POSITION);for(let k=0;k<3;k++){mn[k]=Math.min(mn[k],a.min[k]);mx[k]=Math.max(mx[k],a.max[k]);}}}
+  info.houses[h.extras.ll_house]={lot:h.extras.ll_lot,role,trianglesPerLOD:per,extents:{min:mn.map(v=>+v.toFixed(2)),max:mx.map(v=>+v.toFixed(2))}};
+  for(let l=0;l<3;l++){if(!parts.has('house:'+l))errors.push(`${h.extras.ll_house}: no LOD${l} mesh`);if(per[l]>P.tris[role][l])errors.push(`${h.extras.ll_house} LOD${l} ${per[l]} triangles over ${P.tris[role][l]}`);else if(per[l]>P.warnTris[role][l])warnings.push(`${h.extras.ll_house} LOD${l} ${per[l]} triangles above the ${P.warnTris[role][l]} target`);}
+  if(!h.extras.ll_lot)errors.push(`${h.extras.ll_house}: no extras.ll_lot`);
+  if(mn[1]<-1||mx[1]>14)errors.push(`${h.extras.ll_house}: height range ${mn[1].toFixed(2)}..${mx[1].toFixed(2)} m (metres, +Y up, ground at 0?)`);
+  if(!(mx[2]>-mn[2]))errors.push(`${h.extras.ll_house}: the front (porch, door) is not toward +Z (house-local frame: +z toward the street)`);}
+ info.trianglesAllLOD0=Object.values(info.houses).reduce((a,h)=>a+h.trianglesPerLOD[0],0);}
+if(!P.bike&&!P.house&&unskinned.length)warnings.push('meshes not skinned (they will not follow the skeleton): '+unskinned.join(', '));
 // bicycles: per-LOD budgets, the moving nodes the game drives, the anchor record, orientation and ground contact
 if(P.bike){const per=[0,0,0],nodesBy={0:new Set(),1:new Set(),2:new Set()};
  for(const n of nodes){if(n.mesh===undefined)continue;const lod=n.extras?.ll_lod??0;const t=json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count)/3,0);per[lod]+=t;if(n.extras?.ll_node)nodesBy[lod].add(n.extras.ll_node);else errors.push(`mesh node ${n.name} has no extras.ll_node`);}
@@ -73,9 +90,9 @@ if(P.bike){const per=[0,0,0],nodesBy={0:new Set(),1:new Set(),2:new Set()};
  const rx=(all.mn[0]+all.mx[0]);info.lateralCentre=+(rx/2).toFixed(3);
 }
 // skeleton
-const skin=P.bike?null:json.skins?.[0];if(!skin&&!P.bike)errors.push('no skin');if((json.skins||[]).length>1)warnings.push(`${json.skins.length} skins (one per character is expected)`);
+const skin=(P.bike||P.house)?null:json.skins?.[0];if(!skin&&!P.bike&&!P.house)errors.push('no skin');if((json.skins||[]).length>1)warnings.push(`${json.skins.length} skins (one per character is expected)`);
 const joints=skin?skin.joints.map(i=>names[i]):[];info.joints=joints.length;
-const need=P.bike?[]:[...BODY_BONES,...SOCKETS,...(P.fingers?FINGERS:[])];const missing=need.filter(b=>!names.includes(b));if(missing.length)errors.push('missing bones/sockets: '+missing.join(', '));
+const need=(P.bike||P.house)?[]:[...BODY_BONES,...SOCKETS,...(P.fingers?FINGERS:[])];const missing=need.filter(b=>!names.includes(b));if(missing.length)errors.push('missing bones/sockets: '+missing.join(', '));
 if(joints.length>P.bones)errors.push(`joints ${joints.length} over ${P.bones}`);
 const badName=joints.filter(n=>!/^[a-z][a-z0-9_]*$/.test(n));if(badName.length)errors.push('bone names must be lower_snake_case: '+badName.join(', '));
 // scale and orientation: the head must be about 1.2–2.0 m up (+Y) and the face toward +Z (glTF forward)
