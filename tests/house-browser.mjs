@@ -21,7 +21,7 @@ const root=path.resolve('dist'),types={js:'application/javascript',css:'text/css
 const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.split('?')[0]);const f=path.join(root,u.replace(/^\//,'')||'index.html');if(!f.startsWith(root)){res.writeHead(403);return res.end();}
  try{res.setHeader('Content-Type',types[f.split('.').pop()]||'application/octet-stream');res.end(fs.readFileSync(f));}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
-const shot=async(page,name,meta)=>{if(!SHOTS)return;const f=path.join(out,name+'.jpg');await page.screenshot({path:f,type:'jpeg',quality:90});report.shots.push({file:path.relative(process.cwd(),f),...(meta||{})});};
+const shot=async(page,name,meta)=>{if(!SHOTS)return;const f=path.join(out,name+'.jpg');await page.screenshot({path:f,type:'jpeg',quality:90,timeout:180000});report.shots.push({file:path.relative(process.cwd(),f),...(meta||{})});};
 async function withPage(fn,{viewport={width:1600,height:900},offline=false}={}){
  const browser=await pw.chromium.launch({headless:true,args:ARGS});const ctx=await browser.newContext({viewport,deviceScaleFactor:1,offline});const page=await ctx.newPage();
  const errors=[],requests=[];page.on('pageerror',e=>errors.push(String(e.message||e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('request',q=>requests.push(q.url()));

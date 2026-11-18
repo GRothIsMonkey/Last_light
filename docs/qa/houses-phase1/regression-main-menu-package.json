@@ -1,0 +1,538 @@
+{
+  "source": "Last-Light-Complete-Playtest.html",
+  "renderer": "Chromium / ANGLE SwiftShader (software)",
+  "checks": [
+    {
+      "name": "A1 boot curtain is shown while the world is built",
+      "ok": true
+    },
+    {
+      "name": "A1 the title reveals itself after the first frame (letterbox, no menu yet)",
+      "ok": true
+    },
+    {
+      "name": "A1 \"Press any key\" appears",
+      "ok": true
+    },
+    {
+      "name": "A1 fonts are the embedded ones (offline)",
+      "ok": true
+    },
+    {
+      "name": "A2 a key opens the menu (and only opens it: nothing else starts)",
+      "ok": true,
+      "detail": {
+        "start": true,
+        "body": "boot-summer has-dev mood-summer art-on rv-1 rv-2 rv-3",
+        "press": false
+      }
+    },
+    {
+      "name": "A2 with no saved place, Continue is hidden and New Game has the focus",
+      "ok": true
+    },
+    {
+      "name": "A2 the sound came on with the key (header shows ON)",
+      "ok": true
+    },
+    {
+      "name": "A3 arrows move the choice (New Game → Chapters → Settings)",
+      "ok": true
+    },
+    {
+      "name": "A3 Enter opens Settings over the title",
+      "ok": true
+    },
+    {
+      "name": "A3 Audio is the first section",
+      "ok": true
+    },
+    {
+      "name": "A4 down from the tabs reaches Master volume",
+      "ok": true
+    },
+    {
+      "name": "A4 left lowers the slider in steps and the readout follows",
+      "ok": true,
+      "detail": [
+        "0.8",
+        "80%"
+      ]
+    },
+    {
+      "name": "A4 and it is remembered at once",
+      "ok": true
+    },
+    {
+      "name": "A5 Tab moves to the next section (Display)",
+      "ok": true
+    },
+    {
+      "name": "A5 film grain off hides the grain",
+      "ok": true
+    },
+    {
+      "name": "A5 brightness brightens the picture",
+      "ok": true
+    },
+    {
+      "name": "A5 then Controls, with the keys listed",
+      "ok": true
+    },
+    {
+      "name": "A5 then Accessibility",
+      "ok": true
+    },
+    {
+      "name": "A5 caption size Large applies",
+      "ok": true
+    },
+    {
+      "name": "A5 reduce motion applies",
+      "ok": true
+    },
+    {
+      "name": "A6 Esc closes Settings back to the title, the choice where it was",
+      "ok": true
+    },
+    {
+      "name": "A8 Credits open",
+      "ok": true
+    },
+    {
+      "name": "A8 the credits name the third-party model and its licence",
+      "ok": true
+    },
+    {
+      "name": "A8 Esc closes Credits",
+      "ok": true
+    },
+    {
+      "name": "A9 Chapters lists the Prologue to One More Lap (the coda), eleven not yet reached",
+      "ok": true,
+      "detail": {
+        "all": 12,
+        "locked": 11
+      }
+    },
+    {
+      "name": "A9 a chapter not yet reached says nothing about itself",
+      "ok": true
+    },
+    {
+      "name": "A10 Quit asks first",
+      "ok": true
+    },
+    {
+      "name": "A10 \"Not yet\" (the default) keeps you here",
+      "ok": true
+    },
+    {
+      "name": "A10 Goodnight: the farewell screen",
+      "ok": true
+    },
+    {
+      "name": "A10 and back to the title",
+      "ok": true
+    },
+    {
+      "name": "A11 the DEV tools are folded behind a tab",
+      "ok": true
+    },
+    {
+      "name": "A11 the DEV tab opens the scene selector, as before",
+      "ok": true
+    },
+    {
+      "name": "A11 and remembers that it is open",
+      "ok": true
+    },
+    {
+      "name": "A13 M mutes, the header says so, and it is remembered",
+      "ok": true
+    },
+    {
+      "name": "A13 M again unmutes",
+      "ok": true
+    },
+    {
+      "name": "A7 after a reload every setting is as it was left",
+      "ok": true,
+      "detail": {
+        "s2": {
+          "volume": 0.8,
+          "music": 1,
+          "sfx": 1,
+          "voice": 1,
+          "muted": false,
+          "sensitivity": 1,
+          "invertY": false,
+          "quality": "medium",
+          "renderScale": 1,
+          "brightness": 1.2,
+          "grain": false,
+          "memoryEffect": "standard",
+          "captions": true,
+          "captionSize": "large",
+          "memories": true,
+          "reduceFlashing": false,
+          "reduceMotion": true,
+          "fullscreen": false
+        },
+        "b2": "boot-summer cap-large has-dev mood-summer reduce-motion no-grain art-on rv-1 rv-2 rv-3 menu-enter"
+      }
+    },
+    {
+      "name": "A7 and the Settings screen shows them",
+      "ok": true
+    },
+    {
+      "name": "A7 Reset asks first",
+      "ok": true
+    },
+    {
+      "name": "A7 Reset puts every setting back",
+      "ok": true,
+      "detail": {
+        "volume": 1,
+        "music": 1,
+        "sfx": 1,
+        "voice": 1,
+        "muted": false,
+        "sensitivity": 1,
+        "invertY": false,
+        "quality": "medium",
+        "renderScale": 1,
+        "brightness": 1,
+        "grain": true,
+        "memoryEffect": "standard",
+        "captions": true,
+        "captionSize": "medium",
+        "memories": true,
+        "reduceFlashing": false,
+        "reduceMotion": false,
+        "fullscreen": false
+      }
+    },
+    {
+      "name": "A12 Continue is offered first, with the chapter, the place and when",
+      "ok": true,
+      "detail": {
+        "where": "Chapter Two · The next morning",
+        "when": "Saved today, 4:54 PM"
+      }
+    },
+    {
+      "name": "A12 New Game asks before replacing a saved place",
+      "ok": true
+    },
+    {
+      "name": "A12 Esc answers \"not yet\"",
+      "ok": true
+    },
+    {
+      "name": "A12 \"Begin again\" starts the prologue (the title is gone)",
+      "ok": true
+    },
+    {
+      "name": "B1 automation: no splash, the menu is there at once, DEV open",
+      "ok": true
+    },
+    {
+      "name": "B1 the title scene is up at the end of the street",
+      "ok": true
+    },
+    {
+      "name": "B2 the menu sound starts (its own context, running)",
+      "ok": true,
+      "detail": {
+        "available": true,
+        "unlocked": true,
+        "running": true,
+        "muted": false,
+        "mood": "summer",
+        "context": "running",
+        "levels": {
+          "master": 0.834,
+          "music": 1,
+          "sfx": 1
+        }
+      }
+    },
+    {
+      "name": "B2 the evening is audible and never clips (RMS and peak after the limiter)",
+      "ok": true,
+      "detail": {
+        "rms": 0.03239,
+        "peak": 0.09373
+      }
+    },
+    {
+      "name": "B2 Master, Music and Effects reach the menu sound",
+      "ok": true,
+      "detail": {
+        "master": 0.575,
+        "music": 0.25,
+        "sfx": 0.6
+      }
+    },
+    {
+      "name": "B2 Mute silences it",
+      "ok": true,
+      "detail": {
+        "master": 0,
+        "music": 0.25,
+        "sfx": 0.6
+      }
+    },
+    {
+      "name": "B9 New Game: the title scene has gone, the camera is back on the bike",
+      "ok": true
+    },
+    {
+      "name": "B2 the menu sound fades away in play",
+      "ok": true,
+      "detail": {
+        "available": true,
+        "unlocked": true,
+        "running": false,
+        "muted": false,
+        "mood": "summer",
+        "context": "running",
+        "levels": {
+          "master": 0.007,
+          "music": 0.25,
+          "sfx": 0.6
+        }
+      }
+    },
+    {
+      "name": "B2 in play, Music / Effects / Voices set the game's own buses",
+      "ok": true,
+      "detail": {
+        "mix": {
+          "music": 0.25,
+          "sfx": 0.6,
+          "voice": 0.35
+        },
+        "gains": {
+          "music": 0.25,
+          "sfx": 0.6,
+          "voice": 0.35,
+          "master": 0.387
+        }
+      }
+    },
+    {
+      "name": "B7 resolution scale lowers the render resolution",
+      "ok": true,
+      "detail": 0.5
+    },
+    {
+      "name": "B6 Esc-pause shows the pause menu",
+      "ok": true
+    },
+    {
+      "name": "B6 arrows move in the pause menu",
+      "ok": true
+    },
+    {
+      "name": "B6 Enter opens Settings from the pause menu",
+      "ok": true
+    },
+    {
+      "name": "B6 Esc returns to the pause menu",
+      "ok": true
+    },
+    {
+      "name": "B6 \"Keep going\" resumes",
+      "ok": true
+    },
+    {
+      "name": "B9 back to the title: the menu at once, the scene back at the oak",
+      "ok": true
+    },
+    {
+      "name": "B3 with \"unlock every chapter\", all ten can be begun",
+      "ok": true
+    },
+    {
+      "name": "B3 Begin starts Chapter Three at its beginning (its black card)",
+      "ok": true,
+      "detail": "c3-black"
+    },
+    {
+      "name": "B3 and the chapter is recorded as reached",
+      "ok": true
+    },
+    {
+      "name": "B3 the chapter plays on from there",
+      "ok": true,
+      "detail": "d3-corner"
+    },
+    {
+      "name": "B4 Continue shows the chapter and the place",
+      "ok": true,
+      "detail": "Chapter Three · Alex’s room"
+    },
+    {
+      "name": "B4 Continue returns there",
+      "ok": true
+    },
+    {
+      "name": "B5 DEV → Chapter Two → Morning → START SCENE still starts the scene",
+      "ok": true
+    },
+    {
+      "name": "B8 DEV title mood \"search\" changes the title",
+      "ok": true
+    },
+    {
+      "name": "B8 DEV title mood \"after\" changes the title",
+      "ok": true
+    },
+    {
+      "name": "B8 DEV title mood \"summer\" changes the title",
+      "ok": true
+    },
+    {
+      "name": "C1 the title shows the title art (one full-screen draw: the 3D world is not drawn behind it), and the interface knows it",
+      "ok": true
+    },
+    {
+      "name": "C1 its picture is the composited title art: the sky is drawn (not black) and the frame is not empty",
+      "ok": true
+    },
+    {
+      "name": "C1 the title word is one heading, read as \"Last Light\"",
+      "ok": true
+    },
+    {
+      "name": "C1 no fireflies or dust drawn over the art (no points of light in its sky)",
+      "ok": true
+    },
+    {
+      "name": "C2 mood \"search\": the art changes with it",
+      "ok": true
+    },
+    {
+      "name": "C2 mood \"after\": the art changes with it",
+      "ok": true
+    },
+    {
+      "name": "C2 mood \"summer\": the art changes with it",
+      "ok": true
+    },
+    {
+      "name": "C3 Memory effect: Off removes the analog treatment from the picture",
+      "ok": true
+    },
+    {
+      "name": "C3 Memory effect: Subtle",
+      "ok": true
+    },
+    {
+      "name": "C3 Memory effect: Standard, and it is remembered",
+      "ok": true
+    },
+    {
+      "name": "C4 Reduce motion: the art holds still (no drift, no weave, no slip)",
+      "ok": true
+    },
+    {
+      "name": "C4 and back",
+      "ok": true
+    },
+    {
+      "name": "C5 a bike goes: the picture swaps to the frame without it (its shadow stays) and one letter of the title fades",
+      "ok": true
+    },
+    {
+      "name": "C5 and it comes back, and so does the letter",
+      "ok": true
+    },
+    {
+      "name": "C6 after the bell, the title goes silent (the sound drops to a whisper, then returns)",
+      "ok": true,
+      "detail": {
+        "before": 0.0265,
+        "during": 0.00086
+      }
+    },
+    {
+      "name": "C6 the silence also dims the title word (no flash)",
+      "ok": true
+    },
+    {
+      "name": "C7 a house comes apart into the haze (and a letter of LIGHT fades)",
+      "ok": true
+    },
+    {
+      "name": "C7 darkness passes through the clouds",
+      "ok": true
+    },
+    {
+      "name": "C8 the title sound (drone, air, resonance, notes) is audible and never clips",
+      "ok": true,
+      "detail": {
+        "rms": 0.02577,
+        "peak": 0.07479
+      }
+    },
+    {
+      "name": "C8 the old lamp flicker of the live title does not touch the title word over the art",
+      "ok": true
+    },
+    {
+      "name": "C9 New Game: the title art is gone and the world is drawn again",
+      "ok": true
+    },
+    {
+      "name": "C9 back to the title: the art is back",
+      "ok": true
+    },
+    {
+      "name": "C10 DEV \"Live 3D title\" shows the first redesign's live scene instead",
+      "ok": true
+    },
+    {
+      "name": "C10 and off again: the art returns",
+      "ok": true
+    },
+    {
+      "name": "C11 the boot screen shows a still of the title art at once (the remembered mood)",
+      "ok": true
+    },
+    {
+      "name": "no JavaScript errors",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "the offline package makes no network requests",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "requests": [],
+  "timings": {
+    "bootMs": 34706,
+    "chapterThreeMs": 2699,
+    "devMorningMs": 79
+  },
+  "menuSound": {
+    "rms": 0.03239,
+    "peak": 0.09373
+  },
+  "menuSilence": {
+    "before": 0.0265,
+    "during": 0.00086
+  },
+  "menuSoundArt": {
+    "rms": 0.02577,
+    "peak": 0.07479
+  },
+  "passed": 96,
+  "failed": 0
+}

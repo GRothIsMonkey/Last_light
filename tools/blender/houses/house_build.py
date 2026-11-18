@@ -9,6 +9,7 @@ The kit decides how it is built: proportions, roof pitch (style guide 2.2), wind
 """
 import math
 import random
+import hashlib
 import numpy as np
 from house_kit import MB, V, lin, mix, norm, Wall, wall_surface
 import house_parts as HP
@@ -426,7 +427,9 @@ class House:
             if pw >= 5:
                 posts = [x0 + .16, dx - stw / 2 - .12, dx + stw / 2 + .12, x1 - .16]
             posts = sorted(posts)
-            pk = 'round' if h['style'] in ('colonial',) else 'square'
+            # post type: a family choice, restrained by style (colonials mostly turned, front-gables square or craftsman)
+            pr = h['seeds'][2]
+            pk = ('round' if pr < .75 else 'square') if h['style'] == 'colonial' else ('tapered' if pr < .45 else 'square' if pr < .8 else 'round') if h['style'] == 'frontgable' else ('square' if pr < .7 else 'round')
             for x in posts:
                 HP.post(mb, (x, fl, pz), fl + ph, .16 if pk == 'square' else .2, T, kind=pk, lod=lod)
             # railings between posts except across the steps
@@ -513,6 +516,15 @@ class House:
         elif st == 'frontgable':
             HP.gable_roof(mb, 0, 0, 2 * D2, 2 * W2, y0, self.rise, ou=(RAKE, RAKE), ov=(EAVE, EAVE), along_x=False, roof_col=self.c_roof, trim=T, wall_col=self.c_wall, lod=lod, gutter_col=self.c_gutter)
             self.roof_span = (-W2, W2)
+            # the facade's gable: a band board at the plate, and on some houses the gable in an accent colour (vinyl
+            # shake panels were the 1990s builder's touch); the accent sits 1 cm proud of the wall
+            if lod <= 1:
+                mb.box((0, y0 - .02, D2 + .015), (2 * W2 + .02, .16, .03), 'paint', T, skip=('-z',))
+                acc = int(hashlib.md5(h['id'].encode()).hexdigest(), 16) % 3      # 0 plain, 1 light, 2 dark accent
+                if acc:
+                    tint = mix(self.c_wall, (.92, .9, .84) if acc == 1 else (.36, .4, .44), .45)
+                    mb.poly([V(-W2 + .05, y0 + .07, D2 + .012), V(W2 - .05, y0 + .07, D2 + .012), V(0, y0 + self.rise - .12, D2 + .012)], 'siding', tint, n=V(0, 0, 1),
+                            uvmode=(V(0, 0, 0), V(1.0, 0, 0) * 1.6, V(0, 1.0, 0) * 1.6))
         elif h['roof'] == 'hip':
             HP.hip_roof(mb, 0, 0, 2 * W2, 2 * D2, y0, D2 * self.pitch, EAVE, roof_col=self.c_roof, trim=T, wall_col=self.c_wall, lod=lod, gutter_col=self.c_gutter)
             self.roof_span = (-W2, W2)

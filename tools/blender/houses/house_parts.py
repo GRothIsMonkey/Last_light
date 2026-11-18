@@ -381,6 +381,21 @@ def post(mb, base, top_y, w, col, kind='square', lod=0):
     if lod >= 2:
         mb.box((x, y + h / 2, z), (w, h, w), 'paint', col, skip=('-y', '+y'))
         return
+    if kind == 'tapered':
+        # craftsman: a brick pier and a tapered square column on it
+        pier = .62
+        mb.box((x, y + pier / 2, z), (.4, pier, .4), 'brick', (1, 1, 1), skip=('-y',))
+        mb.box((x, y + pier + .03, z), (.46, .06, .46), 'concrete', (.75, .73, .7))
+        y2 = y + pier + .06
+        a, b = .15, .09
+        pts0 = [V(x - a, y2, z - a), V(x + a, y2, z - a), V(x + a, y2, z + a), V(x - a, y2, z + a)]
+        pts1 = [V(x - b, top_y - .14, z - b), V(x + b, top_y - .14, z - b), V(x + b, top_y - .14, z + b), V(x - b, top_y - .14, z + b)]
+        for k in range(4):
+            k2 = (k + 1) % 4
+            c = (pts0[k] + pts0[k2]) / 2
+            mb.quad(pts0[k], pts0[k2], pts1[k2], pts1[k], 'paint', col, n=V(c[0] - x, 0, c[2] - z))
+        mb.box((x, top_y - .07, z), (.26, .14, .26), 'paint', col, skip=('+y',))
+        return
     if kind == 'round' and lod == 0:
         mb.lathe([(w * .62, 0), (w * .62, .07), (w * .5, .1), (w * .44, .16), (w * .4, h - .2), (w * .46, h - .14), (w * .58, h - .1), (w * .62, h - .03), (w * .62, h)], (x, y, z), 'paint', col, seg=10)
         return

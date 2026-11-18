@@ -1,0 +1,512 @@
+{
+ "version": 1,
+ "houses": {
+  "house.lotLm21": {
+   "lod0": {
+    "tris": 5116,
+    "slots": [
+     "bare",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 2115,
+    "slots": [
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 441,
+    "slots": [
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.lotRm21": {
+   "lod0": {
+    "tris": 7977,
+    "slots": [
+     "bare",
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 3411,
+    "slots": [
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 597,
+    "slots": [
+     "brick",
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.lotL8": {
+   "lod0": {
+    "tris": 6132,
+    "slots": [
+     "bare",
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 3000,
+    "slots": [
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 609,
+    "slots": [
+     "brick",
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.lotR8": {
+   "lod0": {
+    "tris": 6237,
+    "slots": [
+     "bare",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 3368,
+    "slots": [
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 580,
+    "slots": [
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.lotL37": {
+   "lod0": {
+    "tris": 6121,
+    "slots": [
+     "bare",
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 3002,
+    "slots": [
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 652,
+    "slots": [
+     "brick",
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.lotR37": {
+   "lod0": {
+    "tris": 4857,
+    "slots": [
+     "bare",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 2656,
+    "slots": [
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 604,
+    "slots": [
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.lotL66": {
+   "lod0": {
+    "tris": 9001,
+    "slots": [
+     "bare",
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 3613,
+    "slots": [
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 617,
+    "slots": [
+     "brick",
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.lotR66": {
+   "lod0": {
+    "tris": 7016,
+    "slots": [
+     "bare",
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 2968,
+    "slots": [
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 569,
+    "slots": [
+     "brick",
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.hoop": {
+   "lod0": {
+    "tris": 4474,
+    "slots": [
+     "bare",
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 2327,
+    "slots": [
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 375,
+    "slots": [
+     "brick",
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.lotR153": {
+   "lod0": {
+    "tris": 4480,
+    "slots": [
+     "bare",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 2177,
+    "slots": [
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 375,
+    "slots": [
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  },
+  "house.car": {
+   "lod0": {
+    "tris": 9033,
+    "slots": [
+     "bare",
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ],
+    "garage_door_tris": 300
+   },
+   "lod1": {
+    "tris": 3455,
+    "slots": [
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ],
+    "garage_door_tris": 36
+   },
+   "lod2": {
+    "tris": 621,
+    "slots": [
+     "brick",
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ],
+    "garage_door_tris": 4
+   }
+  },
+  "house.lotR530": {
+   "lod0": {
+    "tris": 7393,
+    "slots": [
+     "bare",
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod1": {
+    "tris": 3247,
+    "slots": [
+     "brick",
+     "concrete",
+     "glass",
+     "interior",
+     "light",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   },
+   "lod2": {
+    "tris": 575,
+    "slots": [
+     "brick",
+     "concrete",
+     "interior",
+     "metal",
+     "paint",
+     "roof",
+     "siding"
+    ]
+   }
+  }
+ }
+}
