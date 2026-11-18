@@ -1,0 +1,197 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "LOD0 22858 triangles above the 20000 target",
+  "LOD1 6418 triangles above the 6000 target",
+  "LOD2 1942 triangles above the 1500 target"
+ ],
+ "info": {
+  "file": "bike.sam.glb",
+  "bytes": 7799632,
+  "sha256": "275a71f7f7cf82e8dc8ab13d8289190a3257301006d79b41746150457fa83da4",
+  "generator": "Khronos glTF Blender I/O v5.0.21",
+  "profile": "bike",
+  "assetId": "bike.sam",
+  "assetVersion": 1,
+  "triangles": 31218,
+  "vertices": 43693,
+  "skinnedMeshes": 0,
+  "morphTargets": [],
+  "trianglesPerLOD": [
+   22858,
+   6418,
+   1942
+  ],
+  "nodes": [
+   "chain",
+   "crank",
+   "frame",
+   "kickstand",
+   "pedal_l",
+   "pedal_r",
+   "steer",
+   "wheel_front",
+   "wheel_rear"
+  ],
+  "anchors": {
+   "wheelR": 0.32,
+   "bb": [
+    0,
+    0.31,
+    0.02
+   ],
+   "axleRear": [
+    0,
+    0.32,
+    0.49
+   ],
+   "axleFront": [
+    0,
+    0.32,
+    -0.58344
+   ],
+   "pivot": [
+    0,
+    0.7,
+    -0.43
+   ],
+   "saddle": [
+    0,
+    0.89,
+    0.22
+   ],
+   "grip": [
+    0.31,
+    1,
+    -0.43
+   ]
+  },
+  "extents": {
+   "min": [
+    -0.359,
+    0.001,
+    -0.81
+   ],
+   "max": [
+    0.359,
+    1.021,
+    0.903
+   ]
+  },
+  "frontWheelZ": 0.583,
+  "rearWheelZ": -0.49,
+  "frontWheelRadius": 0.319,
+  "lateralCentre": 0,
+  "joints": 0,
+  "materials": [
+   "mat.metal.bare/bike.sam.hardware",
+   "mat.rubber/bike.sam.soft",
+   "mat.metal.painted/bike.sam.frame"
+  ],
+  "textures": [
+   {
+    "name": "bike.sam__hardware_normal",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 248798,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "bike.sam__hardware_orm",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 1007893,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "bike.sam__hardware_basecolor",
+    "mime": "image/jpeg",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 138836,
+    "use": [
+     "color"
+    ]
+   },
+   {
+    "name": "bike.sam__soft_normal",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 946065,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "bike.sam__soft_orm",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 848491,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "bike.sam__soft_basecolor",
+    "mime": "image/jpeg",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 78391,
+    "use": [
+     "color"
+    ]
+   },
+   {
+    "name": "bike.sam__frame_normal",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 904662,
+    "use": [
+     "normal"
+    ]
+   },
+   {
+    "name": "bike.sam__frame_orm",
+    "mime": "image/png",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 857186,
+    "use": [
+     "data"
+    ]
+   },
+   {
+    "name": "bike.sam__frame_basecolor",
+    "mime": "image/jpeg",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 73170,
+    "use": [
+     "color"
+    ]
+   }
+  ],
+  "textureBytes": 5103492,
+  "gpuTextureMBEstimate": 48,
+  "clips": []
+ },
+ "khronos": {
+  "ran": true,
+  "version": "2.0.0-dev.3.10",
+  "errors": 0,
+  "warnings": 0,
+  "infos": 52,
+  "hints": 0,
+  "messages": []
+ }
+}
