@@ -8,14 +8,14 @@
  ],
  "info": {
   "file": "bike.player.glb",
-  "bytes": 7535876,
-  "sha256": "cd79584272dc4120fe9b84a1f4276448b1f74289ee698157db8b2f5cf184c4e1",
+  "bytes": 7539324,
+  "sha256": "ebdb8d76acd5444779d5cf8807ac976118842b6bc05e4da7bcd7452712566959",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "bike",
   "assetId": "bike.player",
   "assetVersion": 1,
   "triangles": 30702,
-  "vertices": 41425,
+  "vertices": 41447,
   "skinnedMeshes": 0,
   "morphTargets": [],
   "trianglesPerLOD": [
@@ -96,7 +96,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 259346,
+    "bytes": 260360,
     "use": [
      "normal"
     ]
@@ -106,7 +106,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 941119,
+    "bytes": 942247,
     "use": [
      "data"
     ]
@@ -116,7 +116,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 142491,
+    "bytes": 142570,
     "use": [
      "color"
     ]
@@ -126,7 +126,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 977300,
+    "bytes": 977364,
     "use": [
      "normal"
     ]
@@ -136,7 +136,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 766618,
+    "bytes": 766570,
     "use": [
      "data"
     ]
@@ -146,7 +146,7 @@
     "mime": "image/jpeg",
     "w": 1024,
     "h": 1024,
-    "bytes": 80879,
+    "bytes": 80923,
     "use": [
      "color"
     ]
@@ -166,7 +166,7 @@
     "mime": "image/png",
     "w": 1024,
     "h": 1024,
-    "bytes": 847736,
+    "bytes": 847665,
     "use": [
      "data"
     ]
@@ -182,7 +182,7 @@
     ]
    }
   ],
-  "textureBytes": 4964525,
+  "textureBytes": 4966735,
   "gpuTextureMBEstimate": 48,
   "clips": []
  },
