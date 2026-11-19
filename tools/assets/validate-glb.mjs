@@ -1,5 +1,5 @@
 // Last Light asset gate for Blender exports: the Khronos glTF Validator plus the game's own rules.
-// usage: node tools/assets/validate-glb.mjs <file.glb> [--profile chr.child|chr.adult|tst|bike|house|veg] [--json out.json]
+// usage: node tools/assets/validate-glb.mjs <file.glb> [--profile chr.child|chr.adult|tst|bike|house|veg|lawn] [--json out.json]
 // The Khronos validator (npm `gltf-validator`, Apache-2.0) is a development tool and is never shipped with the game.
 // Point GLTF_VALIDATOR_DIR at a folder whose node_modules has it (`npm i gltf-validator` anywhere); without it, this
 // script still runs the Last Light checks and says plainly that the Khronos validation did not run.
@@ -31,6 +31,11 @@ const PROFILES={
  // hero oak's LOD0 exception is documented in docs/VEGETATION_BENCHMARK_REPORT.md). Every primitive carries COLOR_0
  // (baked occlusion) and _WIND (the shared wind standard). Textures <= 2048; WebP allowed (EXT_texture_webp).
  veg:{veg:true,tris:{oak:[95000,18000,4000],tree:[20000,5000,1000],shrub:[4500,2000,1200],ground:[200,20,20]},warnTris:{oak:[60000,15000,4000],tree:[15000,3000,600],shrub:[3000,1500,800],ground:[160,8,8]},materials:4,texMax:2048,face:[],clips:[]},
+ // Lawn repair (veg.lawn): ONE blade tile (node extras.ll_lawn_tile) whose LODs are index-range prefixes
+ // (extras.ll_lod_index_counts lod0/lod1/lod2 within 3000/1000/400 triangles per 1 m tile), every vertex carrying _LAWN
+ // (root, rank, random), _BLADE (t, side, height, width) and _WDIR; the ground texture sets as materials (lawn, meadow,
+ // soil, clover) each with a base colour and a normal texture; textures <= 1024; WebP (EXT_texture_webp).
+ lawn:{lawn:true,tileTris:[3000,1000,400],materials:5,texMax:1024,face:[],clips:[]},
  house:{house:true,tris:{story:[35000,8000,2000],ordinary:[12000,5000,1200]},warnTris:{story:[35000,8000,2000],ordinary:[10000,4000,1000]},materials:12,texMax:1024,face:[],clips:[]},
 };
 const P=PROFILES[profileName];if(!P){console.error('unknown profile '+profileName);process.exit(2);}
@@ -61,6 +66,13 @@ for(const [ni,n] of nodes.entries()){if(n.mesh===undefined)continue;const m=json
  for(const t of m.extras?.targetNames||[])morphs.add(t);}
 if(info.noTangentPrimitives)warnings.push(`${info.noTangentPrimitives} normal-mapped primitives without exported tangents (house kit: deliberate; world-planar UVs, three.js derives the tangent frame per pixel)`);
 info.triangles=tris;info.vertices=verts;info.skinnedMeshes=skinned;info.morphTargets=[...morphs];
+if(P.lawn){const tiles=nodes.filter(n=>n.extras?.ll_lawn_tile);if(tiles.length!==1)errors.push(`${tiles.length} lawn tiles (one expected)`);
+ for(const t of tiles){const pr=json.meshes[t.mesh].primitives;const c=t.extras.ll_lod_index_counts||{};info.lawnTile={blades:t.extras.ll_blades,tris:[c.lod0/3,c.lod1/3,c.lod2/3]};
+  ['lod0','lod1','lod2'].forEach((k,l)=>{const n=c[k];if(!n||n%3)errors.push(`lawn tile: no or bad ${k} index count`);else if(n/3>P.tileTris[l])errors.push(`lawn tile ${k} ${n/3} triangles over ${P.tileTris[l]}`);});
+  if(!(c.lod0>=c.lod1&&c.lod1>=c.lod2))errors.push('lawn tile LODs are not nested prefixes');
+  for(const p of pr){for(const a of ['_LAWN','_BLADE','_WDIR','NORMAL'])if(p.attributes[a]===undefined)errors.push(`lawn tile: no ${a}`);if(p.indices!==undefined&&acc(p.indices).count!==c.lod0)errors.push('lawn tile: lod0 is not the whole index buffer');}}
+ const gm=(json.materials||[]).filter(m=>/^mat\.ground\//.test(m.name||''));info.groundMaterials=gm.map(m=>m.name);
+ for(const k of ['lawn','meadow','soil','clover']){const m=gm.find(x=>x.name==='mat.ground/'+k);if(!m)errors.push('no ground material '+k);else if(m.pbrMetallicRoughness?.baseColorTexture===undefined||m.normalTexture===undefined)errors.push(`ground material ${k}: base colour and normal textures expected`);}}
 if(P.veg){const triOf=n=>json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count)/3,0);const roots=nodes.map((n,i)=>[n,i]).filter(([n])=>n.extras?.ll_variant||(n.extras?.ll_asset_id==='lm.old-oak'));info.variants={};
  const kindOf=id=>/^lm\.old-oak/.test(id)?'oak':/^tree\./.test(id)?'tree':/^shrub\./.test(id)?'shrub':'ground';
  if(!roots.length)errors.push('no variant nodes (extras.ll_variant)');
@@ -69,7 +81,7 @@ if(P.veg){const triOf=n=>json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indic
    for(const p of json.meshes[n.mesh].primitives){if(p.attributes.COLOR_0===undefined)errors.push(`${n.name}: no COLOR_0 (baked occlusion)`);if(p.attributes._WIND===undefined)errors.push(`${n.name}: no _WIND attribute`);}}
   info.variants[id]=per.map(Math.round);const want=k==='ground'?[0,1]:[0,1,2];for(const l of want)if(!have.has(l))errors.push(`${id}: no LOD${l} mesh`);
   for(const l of want){if(per[l]>P.tris[k][l])errors.push(`${id} LOD${l} ${per[l]} triangles over ${P.tris[k][l]}`);else if(per[l]>P.warnTris[k][l])warnings.push(`${id} LOD${l} ${per[l]} triangles above the ${P.warnTris[k][l]} target`);}}}
-if(!P.bike&&!P.house&&!P.veg&&tris>P.tris)errors.push(`triangles ${tris} over the ${profileName} budget ${P.tris}`);
+if(!P.bike&&!P.house&&!P.veg&&!P.lawn&&tris>P.tris)errors.push(`triangles ${tris} over the ${profileName} budget ${P.tris}`);
 if(P.house){const houses=nodes.map((n,i)=>[n,i]).filter(([n])=>n.extras?.ll_house);info.houses={};
  const triOf=n=>json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count)/3,0);
  if(!houses.length)errors.push('no house nodes (extras.ll_house)');
@@ -82,7 +94,7 @@ if(P.house){const houses=nodes.map((n,i)=>[n,i]).filter(([n])=>n.extras?.ll_hous
   if(mn[1]<-1||mx[1]>14)errors.push(`${h.extras.ll_house}: height range ${mn[1].toFixed(2)}..${mx[1].toFixed(2)} m (metres, +Y up, ground at 0?)`);
   if(!(mx[2]>-mn[2]))errors.push(`${h.extras.ll_house}: the front (porch, door) is not toward +Z (house-local frame: +z toward the street)`);}
  info.trianglesAllLOD0=Object.values(info.houses).reduce((a,h)=>a+h.trianglesPerLOD[0],0);}
-if(!P.bike&&!P.house&&!P.veg&&unskinned.length)warnings.push('meshes not skinned (they will not follow the skeleton): '+unskinned.join(', '));
+if(!P.bike&&!P.house&&!P.veg&&!P.lawn&&unskinned.length)warnings.push('meshes not skinned (they will not follow the skeleton): '+unskinned.join(', '));
 // bicycles: per-LOD budgets, the moving nodes the game drives, the anchor record, orientation and ground contact
 if(P.bike){const per=[0,0,0],nodesBy={0:new Set(),1:new Set(),2:new Set()};
  for(const n of nodes){if(n.mesh===undefined)continue;const lod=n.extras?.ll_lod??0;const t=json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count)/3,0);per[lod]+=t;if(n.extras?.ll_node)nodesBy[lod].add(n.extras.ll_node);else errors.push(`mesh node ${n.name} has no extras.ll_node`);}
@@ -105,9 +117,9 @@ if(P.bike){const per=[0,0,0],nodesBy={0:new Set(),1:new Set(),2:new Set()};
  const rx=(all.mn[0]+all.mx[0]);info.lateralCentre=+(rx/2).toFixed(3);
 }
 // skeleton
-const skin=(P.bike||P.house||P.veg)?null:json.skins?.[0];if(!skin&&!P.bike&&!P.house&&!P.veg)errors.push('no skin');if((json.skins||[]).length>1)warnings.push(`${json.skins.length} skins (one per character is expected)`);
+const skin=(P.bike||P.house||P.veg||P.lawn)?null:json.skins?.[0];if(!skin&&!P.bike&&!P.house&&!P.veg&&!P.lawn)errors.push('no skin');if((json.skins||[]).length>1)warnings.push(`${json.skins.length} skins (one per character is expected)`);
 const joints=skin?skin.joints.map(i=>names[i]):[];info.joints=joints.length;
-const need=(P.bike||P.house||P.veg)?[]:[...BODY_BONES,...SOCKETS,...(P.fingers?FINGERS:[])];const missing=need.filter(b=>!names.includes(b));if(missing.length)errors.push('missing bones/sockets: '+missing.join(', '));
+const need=(P.bike||P.house||P.veg||P.lawn)?[]:[...BODY_BONES,...SOCKETS,...(P.fingers?FINGERS:[])];const missing=need.filter(b=>!names.includes(b));if(missing.length)errors.push('missing bones/sockets: '+missing.join(', '));
 if(joints.length>P.bones)errors.push(`joints ${joints.length} over ${P.bones}`);
 const badName=joints.filter(n=>!/^[a-z][a-z0-9_]*$/.test(n));if(badName.length)errors.push('bone names must be lower_snake_case: '+badName.join(', '));
 // scale and orientation: the head must be about 1.2–2.0 m up (+Y) and the face toward +Z (glTF forward)

@@ -1,5 +1,9 @@
 # Prologue vegetation & old oak benchmark — report
 
+> **Continued:** the lawns, grass and ground were repaired on `claude/prologue-grass-lawn-ground-repair` — see
+> [LAWN_REPAIR_REPORT.md](LAWN_REPAIR_REPORT.md). This report describes the first benchmark (the lawn it calls "near
+> grass" is mode B there).
+
 Branch `claude/prologue-vegetation-old-oak-benchmark`, started from `bc2044153aaf64642b1a2ff9e7fa454767edd26f` (the repaired
 houses). Nothing is merged into `main`. The approved game is unchanged without `?vegetation`.
 

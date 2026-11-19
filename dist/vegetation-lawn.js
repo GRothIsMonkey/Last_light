@@ -126,7 +126,8 @@ function patchGround(world,U,T){
      diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(1.28,1.1,.62),dry*.55);
      diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(.9,1.04,.86),smoothstep(.55,.75,vegN(p*.2+3.))*.35);}`;
  const C=`
- if(uVegLawn>1.5){vec2 p=vVegW.xz;LawnPlace L=lawnPlace(p);
+ if(uVegLawn>2.5){diffuseColor.rgb=vec3(1.,0.,1.);}           // QA only: the lawn's own pixels (a mask for the tests)
+ else if(uVegLawn>1.5){vec2 p=vVegW.xz;LawnPlace L=lawnPlace(p);
   // the fine grass: two scales of the mown-lawn texture (0.5 m, and 1.37 m turned 37 degrees), blended by height
   vec4 a1=texture(uLwA,p*2.);vec2 q=mat2(.7986,-.6018,.6018,.7986)*p*.73+vec2(.31,.17);vec4 a2=texture(uLwA,q);
   float sel=lfbm(p*.45)-.5;float w=smoothstep(-.06,.06,(a1.a+sel*.9)-(a2.a-sel*.9));

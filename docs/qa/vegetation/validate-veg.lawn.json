@@ -1,0 +1,128 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "lawn.swatch.lawn: normal map without exported tangents (enable Tangents)",
+  "lawn.swatch.meadow: normal map without exported tangents (enable Tangents)",
+  "lawn.swatch.soil: normal map without exported tangents (enable Tangents)",
+  "lawn.swatch.clover: normal map without exported tangents (enable Tangents)"
+ ],
+ "info": {
+  "file": "veg.lawn.glb",
+  "bytes": 3735216,
+  "sha256": "dccce82d596e48f852928a9d682b2aecd749b7aa20c7586f256c751c42da260d",
+  "generator": "Last Light lawn_kit.py",
+  "profile": "lawn",
+  "assetId": "veg.lawn",
+  "assetVersion": 1,
+  "triangles": 2339,
+  "vertices": 3901,
+  "skinnedMeshes": 0,
+  "morphTargets": [],
+  "lawnTile": {
+   "blades": 777,
+   "tris": [
+    2331,
+    792,
+    318
+   ]
+  },
+  "groundMaterials": [
+   "mat.ground/lawn",
+   "mat.ground/meadow",
+   "mat.ground/soil",
+   "mat.ground/clover"
+  ],
+  "joints": 0,
+  "materials": [
+   "mat.ground/lawn",
+   "mat.ground/meadow",
+   "mat.ground/soil",
+   "mat.ground/clover",
+   "mat.foliage/lawn.blade"
+  ],
+  "textures": [
+   {
+    "name": "veg.lawn__lawn_basecolor",
+    "mime": "image/webp",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 833024,
+    "use": []
+   },
+   {
+    "name": "veg.lawn__lawn_normal",
+    "mime": "image/webp",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 367584,
+    "use": []
+   },
+   {
+    "name": "veg.lawn__meadow_basecolor",
+    "mime": "image/webp",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 1197202,
+    "use": []
+   },
+   {
+    "name": "veg.lawn__meadow_normal",
+    "mime": "image/webp",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 542616,
+    "use": []
+   },
+   {
+    "name": "veg.lawn__soil_basecolor",
+    "mime": "image/webp",
+    "w": 512,
+    "h": 512,
+    "bytes": 236488,
+    "use": []
+   },
+   {
+    "name": "veg.lawn__soil_normal",
+    "mime": "image/webp",
+    "w": 512,
+    "h": 512,
+    "bytes": 96058,
+    "use": []
+   },
+   {
+    "name": "veg.lawn__clover_basecolor",
+    "mime": "image/webp",
+    "w": 512,
+    "h": 512,
+    "bytes": 93224,
+    "use": []
+   },
+   {
+    "name": "veg.lawn__clover_normal",
+    "mime": "image/webp",
+    "w": 512,
+    "h": 512,
+    "bytes": 81988,
+    "use": []
+   }
+  ],
+  "textureBytes": 3448184,
+  "gpuTextureMBEstimate": 26.7,
+  "clips": []
+ },
+ "khronos": {
+  "ran": true,
+  "version": "2.0.0-dev.3.10",
+  "errors": 0,
+  "warnings": 4,
+  "infos": 0,
+  "hints": 0,
+  "messages": [
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/0/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/1/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/2/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/3/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations."
+  ]
+ }
+}

@@ -9,6 +9,13 @@
 //   C. ?bikes&houses&vegetation: the three benchmarks together;
 //   D. the offline package (file://, browser offline): PLAYTEST_MODELS=1 (?vegetation from embedded bytes, no network)
 //      and the default package (?vegetation fails loudly, nothing substituted).
+// The lawn and ground repair (vegetation-lawn.js; Y steps the lawns alone): A/B/C triplets in one frame (C repaired,
+// B the first benchmark, A the original procedural lawn; trees and shrubs authored in all three) from the riding and
+// walking cameras, and focused checks: blades cover every lawn cell near the camera; no blade over a walk, curb, drive,
+// porch or house; tile LODs drop only blades already faded; the same pose twice gives the same tiles; the ground's tile
+// period does not repeat visibly (pixel correlation at the 0.5 m period); no tuft islands (clump-scale blotchiness of the
+// lawn in the riding view, C against B); cost against B in the same frames; the blades on the game's breeze; the oak,
+// trees, shrubs and ground files untouched; the world's obstacles unchanged.
 // usage: node tests/vegetation-browser.mjs [outDir=docs/qa/vegetation/browser]   (PARTS=A,B,C,D; SHOTS=0 to skip images)
 import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import {createRequire} from 'node:module';import {execFileSync} from 'node:child_process';import {pathToFileURL} from 'node:url';import {createHash} from 'node:crypto';
 const require=createRequire(import.meta.url);let pw;for(const p of [null,'/opt/node-tools/node_modules','/opt/node22/lib/node_modules'])try{pw=p?require(p+'/playwright'):require('playwright');break;}catch{}
@@ -16,7 +23,7 @@ const out=path.resolve(process.argv[2]||'docs/qa/vegetation/browser');fs.mkdirSy
 const PARTS=(process.env.PARTS||'A,B,C,D').split(','),SHOTS=process.env.SHOTS!=='0';
 const ARGS=['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist','--enable-precise-memory-info'];
 const commit=(()=>{try{return execFileSync('git',['rev-parse','--short','HEAD']).toString().trim();}catch{return null;}})();
-const report={renderer:'Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU',commit,started:new Date().toISOString(),viewport:'1600x900, deviceScaleFactor 1, Medium profile',checks:[],failures:[],parts:{},shots:[],pairs:[]};
+const report={lawn:[],renderer:'Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU',commit,started:new Date().toISOString(),viewport:'1600x900, deviceScaleFactor 1, Medium profile',checks:[],failures:[],parts:{},shots:[],pairs:[]};
 const check=(name,ok,detail)=>{(ok?report.checks:report.failures).push(detail===undefined?name:{name,detail});console.log((ok?'PASS ':'FAIL ')+name+(detail!==undefined?' '+JSON.stringify(detail).slice(0,500):''));return ok;};
 const root=path.resolve('dist'),types={js:'application/javascript',css:'text/css',html:'text/html',glb:'model/gltf-binary',json:'application/json'};
 const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.split('?')[0]);const f=path.join(root,u.replace(/^\//,'')||'index.html');if(!f.startsWith(root)){res.writeHead(403);return res.end();}
@@ -38,6 +45,30 @@ const ride=(page,s)=>page.evaluate(s=>{const L=lastLight;L.place(s.d,s.lat??-.3,
 // the same frame again, without moving anything: render only
 const again=page=>page.evaluate(()=>{window.__vegetation?.tick();const i=lastLight.render();const c=lastLight.camera;return {calls:i.calls,triangles:i.triangles,cam:{p:c.position.toArray().map(v=>+v.toFixed(3)),q:c.quaternion.toArray().map(v=>+v.toFixed(4))},veg:window.__vegetation?.stats?.()};});
 // an honest before/after: one frame, one camera, the benchmark's K modes
+// the lawns alone, in one frame: C repaired, B the first benchmark's, A the original procedural lawn (trees and shrubs
+// stay authored); optional pixel metrics of a lawn rectangle read from the frame itself
+const canvasPixels=()=>{const cv=[...document.querySelectorAll('canvas')].sort((a,b)=>b.width*b.height-a.width*a.height)[0],gl=cv.getContext('webgl2');const w=cv.width,h=cv.height,px=new Uint8Array(w*h*4);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,px);return {w,h,px};};
+// the lawn's own pixels in this frame: one extra render with the lawn ground flat magenta and no blades (QA mode 3)
+const lawnMask=page=>page.evaluate(src=>{const read=new Function('return '+src)();const V=__vegetation.handle,mode=V.lawnMode;V.lawn2.setGround(3);const bv=V.lawn2.blades.visible;V.lawn2.blades.visible=false;
+ lastLight.render();const {w,h,px}=read();const m=new Uint8Array(w*h);let n=0;for(let k=0;k<w*h;k++){const r=px[k*4],g=px[k*4+1],b=px[k*4+2];if(r>1.5*g+12&&b>1.5*g+12){m[k]=1;n++;}}
+ V.lawn2.blades.visible=bv;V.setLawn(mode);window.__lawnMask={w,h,m};return {w,h,lawnShare:+(n/(w*h)).toFixed(3)};},canvasPixels.toString());
+const measure=(page,metrics)=>page.evaluate(([metrics,src])=>{window.__vegetation?.tick();const i=lastLight.render();const c=lastLight.camera;const out={calls:i.calls,triangles:i.triangles,cam:{p:c.position.toArray().map(v=>+v.toFixed(3)),q:c.quaternion.toArray().map(v=>+v.toFixed(4))},veg:window.__vegetation?.stats?.()};
+ const M=window.__lawnMask;if(metrics&&M){const {w,h,px}=new Function('return '+src)()();
+  // clump-scale blotchiness over 12 px blocks that are all lawn: the spread of block means, the share of blocks far from
+  // the local median (a tuft island is a block much brighter or darker than the lawn around it)
+  const B=12,bm=[];for(let by=0;by+B<=h;by+=B)for(let bx=0;bx+B<=w;bx+=B){let a=0,ok=true;for(let y=by;y<by+B&&ok;y++)for(let x=bx;x<bx+B;x++){const k=y*w+x;if(!M.m[k]){ok=false;break;}a+=.2126*px[k*4]+.7152*px[k*4+1]+.0722*px[k*4+2];}if(ok)bm.push([bx,by,a/(B*B)]);}
+  const near=(q)=>bm.filter(o=>Math.abs(o[0]-q[0])<=60&&Math.abs(o[1]-q[1])<=60).map(o=>o[2]).sort((a,b)=>a-b);
+  let dev=0,outl=0;for(const q of bm){const l=near(q),med=l[l.length>>1];const d=Math.abs(q[2]-med)/Math.max(med,1);dev+=d;if(d>.15)outl++;}
+  out.metrics={blocks:bm.length,meanDev:+(dev/Math.max(1,bm.length)).toFixed(4),islands:+(outl/Math.max(1,bm.length)).toFixed(4)};}
+ return out;},[!!metrics,canvasPixels.toString()]);
+const triple=async(page,name,frameFn,meta={},metrics=false)=>{const r={};await page.evaluate(()=>__vegetation.setLawn('C'));await frameFn();if(metrics)r.mask=await lawnMask(page);r.C=await measure(page,metrics);const fc=await shot(page,`${name}--C-repaired`,{kind:'game',lawn:'C',...meta,cam:r.C.cam});
+ await page.evaluate(()=>__vegetation.setLawn('B'));r.B=await measure(page,metrics);const fb=await shot(page,`${name}--B-first-benchmark`,{kind:'game',lawn:'B',...meta,cam:r.B.cam});
+ await page.evaluate(()=>__vegetation.setLawn('A'));r.A=await measure(page,metrics);const fa=await shot(page,`${name}--A-original`,{kind:'game',lawn:'A',...meta,cam:r.A.cam});
+ await page.evaluate(()=>{__vegetation.setLawn('C');window.__lawnMask=null;});await measure(page,false);
+ const same=['B','A'].every(k=>JSON.stringify(r[k].cam.p)===JSON.stringify(r.C.cam.p)&&JSON.stringify(r[k].cam.q)===JSON.stringify(r.C.cam.q));
+ const sum=k=>({calls:r[k].calls,triangles:r[k].triangles,vegTris:Math.round(r[k].veg?.tris||0),bladeTris:Math.round(r[k].veg?.blades?.tris||0),bladeTiles:r[k].veg?.blades?.tiles,clumps:r[k].veg?.lawn?.clumps||0,metrics:r[k].metrics});
+ report.lawn.push({name,camera:r.C.cam,sameCamera:same,mask:r.mask||null,C:sum('C'),B:sum('B'),A:sum('A'),files:[fc?.file,fb?.file,fa?.file],...meta});
+ return {...r,same};};
 const pair=async(page,name,frameFn,meta={})=>{const r={};await page.evaluate(()=>__vegetation.setMode('authored'));r.authored=await frameFn();const a=await shot(page,`${name}--authored`,{kind:'game',mode:'authored',...meta,...r.authored});
  await page.evaluate(()=>__vegetation.setMode('procedural'));r.procedural=await again(page);const b=await shot(page,`${name}--procedural`,{kind:'game',mode:'procedural',...meta,...r.procedural});
  await page.evaluate(()=>__vegetation.setMode('authored'));await again(page);
@@ -49,16 +80,19 @@ const pair=async(page,name,frameFn,meta={})=>{const r={};await page.evaluate(()=
 if(PARTS.includes('A'))await withPage(async(page,{errors,requests})=>{await open(page,'');await page.evaluate(()=>{const L=lastLight;L.start();for(let i=0;i<30;i++)L.step(1/30);L.render();});
  const req=requests.filter(u=>/vegetation-assets|vegetation-benchmark|assets\/veg\//.test(u));
  check('Game: without ?vegetation the Prologue fetches none of the vegetation benchmark modules or models',req.length===0,req);
- const r=await page.evaluate(()=>({label:!!document.getElementById('vegetation-benchmark-label'),zones:lastLight.world.merged.filter(m=>/^vg:/.test(m.userData.zone||'')).length,proxies:lastLight.world.shadowProxies.length,merged:lastLight.world.merged.length,record:!!lastLight.world.vegRecord,swingLimb:lastLight.scene.getObjectByName('swing-limb')?.visible,carving:lastLight.scene.getObjectByName('oak-carving')?.visible}));
+ const r=await page.evaluate(()=>({label:!!document.getElementById('vegetation-benchmark-label'),zones:lastLight.world.merged.filter(m=>/^vg:/.test(m.userData.zone||'')).length,proxies:lastLight.world.shadowProxies.length,merged:lastLight.world.merged.length,record:!!lastLight.world.vegRecord,swingLimb:lastLight.scene.getObjectByName('swing-limb')?.visible,carving:lastLight.scene.getObjectByName('oak-carving')?.visible,obstacles:lastLight.world.obstacles?.length??null,space:['walk','porch','house','tree','fence','driveway','pole'].map(t=>lastLight.world.space?.items(t).length)}));
  check('Game: without ?vegetation no vegetation batches, proxies or records exist (the world is baked as in the accepted build; node: identical geometry hash)',!r.label&&r.zones===0&&!r.record&&r.proxies===379,r);
  check('Game (no ?vegetation): the swing\'s own cylinder limb is still drawn',r.swingLimb===true,r);
  check('Game (no ?vegetation): no page errors',errors.length===0,errors);report.parts.gameWithout=r;});
 
 // ---------------------------------------------------------------------------------------------------------------- B
+if(PARTS.includes('B')){const UNCHANGED={'lm.old-oak':'4a947c087d3e76dee74af8442c7e8755afda3812525bb916fe8897e579405154','veg.street-trees':'134dde67bc4110fd3038f7893129c1ceab692e3132afab122e0a327e8c4db54d','veg.shrubs':'2e0baf6c09e19dfa1237b6484cfb061ca1feeecc140a6752b75a777c72e5555e','veg.ground':'48ea0331638e9cb3c90a0d18cab93a7071b3c74cfe68025e01232b2ed4102599'};
+ const now=Object.fromEntries(Object.keys(UNCHANGED).map(k=>[k,sha('dist/assets/veg/'+k+'.glb')]));
+ check('Lawn repair: the oak, street trees, shrubs and ground plants are the first benchmark\'s files, byte for byte (f1f085a)',Object.entries(UNCHANGED).every(([k,v])=>now[k]===v),now);}
 if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{
  const R=report.parts.game={};await open(page,'vegetation');const t0=Date.now();await waitVeg(page);R.wallLoadMs=Date.now()-t0;
  R.loaded=await page.evaluate(()=>{const V=__vegetation.handle;return {error:__vegetation.error,loadMs:__vegetation.loadMs,info:V?.info,errors:V?.errors,records:{trees:lastLight.world.vegRecord.trees.length,beds:lastLight.world.vegRecord.beds.length}};});
- check('Game: ?vegetation loads the four vegetation files without error',!R.loaded.error&&!R.loaded.errors?.length,{error:R.loaded.error,errors:R.loaded.errors,loadMs:R.loaded.loadMs});
+ check('Game: ?vegetation loads the five vegetation files without error (oak, street trees, shrubs, ground plants, lawn)',!R.loaded.error&&!R.loaded.errors?.length,{error:R.loaded.error,errors:R.loaded.errors,loadMs:R.loaded.loadMs});
  const I=R.loaded.info;check('Game: every recorded tree stands authored (one landmark oak + the rest as street trees)',I&&I.trees===R.loaded.records.trees-1,{trees:I?.trees,records:R.loaded.records.trees,species:I?.speciesCount,variantsUsed:I?.variantsUsed});
  check('Game: bed shrubs and perennials stand on the recorded beds; the lookout meadow is planted',I&&I.shrubs>=300&&I.meadow>5000,{shrubs:I?.shrubs,meadow:I?.meadow});
  const offsite=requests.filter(u=>!u.startsWith(base)&&!u.startsWith('data:')&&!u.startsWith('blob:'));check('Game: no request leaves the local server',offsite.length===0,offsite);
@@ -126,6 +160,73 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{
  R.pairs.oakFar=await pair(page,'G07b-oak-silhouette-from-124m',()=>ride(page,{d:1038,lat:-.3,yaw:.06,pitch:.07}),{caption:'the oak at 124 m down the street (the Aftermath I barricade distance, art bible §6): readable by silhouette'});
  R.pairs.lookingHome=await pair(page,'G10-dusk-looking-home',()=>ride(page,{d:1150,lat:2,yaw:Math.PI,pitch:.04}),{caption:'evening: looking back down the street from the lookout'});
  for(const [k,v] of Object.entries(R.pairs))check(`Before/after ${k}: the same camera and frame for both`,v.same,{authored:v.authored.cam,procedural:v.procedural.cam});
+ // ---- the lawns: C / B / A in one frame (Y), from the riding camera at golden hour, with pixel metrics of the lawn itself
+ R.lawn={};const T3=(n,s,cap,m=true)=>triple(page,n,()=>ride(page,s),{caption:cap},m);
+ R.lawn.sidewalk=await T3('L01-lawn-beside-sidewalk',{d:410,lat:4.3,yaw:-.18,pitch:-.2},'the lawn beside the sidewalk, from the riding camera');
+ R.lawn.lookDown=await T3('L02-looking-down-near-the-sidewalk',{d:560,lat:4.6,yaw:-.55,pitch:-.62},'looking down at the curb strip and the walk edge while riding');
+ R.lawn.front=await T3('L03-lawn-in-front-of-a-house',{d:330,lat:3.2,yaw:-1.2,pitch:-.04},'a front lawn, its beds and porch');
+ R.lawn.near=await T3('L04-near-grass-while-riding',{d:612,lat:3.6,yaw:-.35,pitch:-.32},'the grass right beside the bike (a rougher lot)');
+ R.lawn.row=await T3('L05-a-row-of-front-yards',{d:200,lat:-2.5,yaw:.9,pitch:-.02},'across the street: several front yards, each kept its own way');
+ R.lawn.jamie=await T3('L06-jamies-house',{d:780,lat:3.0,yaw:-1.2,pitch:-.02},'Jamie\'s house');
+ R.lawn.sam=await T3('L07-sams-house',{d:982,lat:-3.0,yaw:1.2,pitch:-.02},'Sam\'s house');
+ R.lawn.street=await T3('L08-down-the-street',{d:470,lat:-.3,yaw:.04,pitch:.03},'down Oak Hollow Drive: the lawns into the distance (no ring, no line)');
+ R.lawn.lookout=await T3('L09-the-lookout-from-the-stop',{d:1136.5,lat:-.9,yaw:.12,pitch:.06},'the lookout from the stop: the knoll\'s long grass',false);
+ for(const [k,v] of Object.entries(R.lawn))check(`Lawn ${k}: C, B and A in the same camera and frame`,v.same,{C:v.C.cam,B:v.B.cam,A:v.A.cam});
+ const LR=report.lawn.filter(x=>x.C.metrics&&x.B.metrics);
+ check('Lawn: no tuft islands: the share of 12 px lawn blocks far (>15 %) from their neighbourhood median is under 3 % in every riding view, and below the first benchmark\'s',
+  LR.every(x=>x.C.metrics.islands<.03&&x.C.metrics.islands<=x.B.metrics.islands),LR.map(x=>({name:x.name,C:x.C.metrics,B:x.B.metrics,A:x.A.metrics})));
+ check('Lawn cost: in every riding view the repaired lawn draws at most 25 % more triangles and 12 more draw calls than the first benchmark\'s in the same frame',
+  report.lawn.every(x=>x.C.triangles<=1.25*x.B.triangles&&x.C.calls<=x.B.calls+12),report.lawn.map(x=>({name:x.name,C:[x.C.calls,x.C.triangles,x.C.bladeTris],B:[x.B.calls,x.B.triangles],A:[x.A.calls,x.A.triangles]})));
+ // ---- focused checks of the blade field, the ground and the switch
+ const LC=await page.evaluate(async()=>{const V=__vegetation.handle,T=__vegetation.THREE,L=lastLight,W=L.world,F=V.lawn2.blades;const {MAIN}=await import('./terrain.js');
+  V.setLawn('C');const out={};
+  L.place(330,3.2,0);for(let i=0;i<3;i++)L.step(1/30);L.look(-1.2,-.04);L.step(1/30);__vegetation.tick();
+  const cam=L.camera.getWorldPosition(new T.Vector3()),fw=new T.Vector3();L.camera.getWorldDirection(fw);
+  const cells=new Map();F.meshes.forEach((im,l)=>{const e=im.instanceMatrix.array,mk=im.geometry.attributes.aMask.array;for(let i=0;i<im.count;i++){const x=e[i*16+12],z=e[i*16+14];cells.set(Math.floor(x)+','+Math.floor(z),{l,mask:[mk[i*4],mk[i*4+1],mk[i*4+2],mk[i*4+3]],x,z});}});
+  const bit=(c,b)=>Math.floor(c.mask[b>>4]/2**(b&15))%2===1;
+  // coverage: random lawn points in front of the camera, 2.6-11 m: each one's cell has a tile, its 12.5 cm sub-cell is on
+  let tested=0;const missing=[];let seed=7;const r=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+  for(let k=0;k<3000&&tested<400;k++){const a=Math.atan2(fw.z,fw.x)+(r()-.5)*1.4,d=2.6+r()*8.4,x=cam.x+Math.cos(a)*d,z=cam.z+Math.sin(a)*d;const y=F.lawnPoint(x,z,MAIN.project(x,z).u);if(y===null)continue;tested++;
+   const c=cells.get(Math.floor(x)+','+Math.floor(z)),b=Math.min(7,Math.floor((z-Math.floor(z))*8))*8+Math.min(7,Math.floor((x-Math.floor(x))*8));
+   if(!c||!bit(c,b))missing.push({x:+x.toFixed(2),z:+z.toFixed(2),cell:!!c});}
+  out.coverage={tested,missing:missing.length,examples:missing.slice(0,5)};
+  // nothing over a hard surface: every sub-cell that is on, tested independently (walk or curb height, a drive or pad, a
+  // walk, porch, house, shed or driveway footprint, the street inside the curbs)
+  let bits=0;const bad=[];const HARD=new Set(['walk','porch','house','shed','driveway']);
+  for(const c of cells.values()){const x0=Math.floor(c.x),z0=Math.floor(c.z);for(let b=0;b<64;b++){if(!bit(c,b))continue;bits++;
+   const x=x0+((b&7)+.5)/8,z=z0+((b>>3)+.5)/8,q=MAIN.project(x,z),s=W.surfaceY(q.u,q.v),a=W.authoredY(q.u,q.v);
+   const hard=(q.u<1121&&Math.abs(q.v)<5)||(q.u<1140&&(s>.135&&s<.175||Math.abs(a-s)>.004))||!!W.space.blocked(x,z,0,HARD);
+   if(hard)bad.push({x:+x.toFixed(2),z:+z.toFixed(2),u:+q.u.toFixed(2),v:+q.v.toFixed(2),s:+s.toFixed(3)});}}
+  out.hard={cells:cells.size,bits,bad:bad.length,examples:bad.slice(0,5)};
+  // LODs drop only blades already faded: a LOD1/LOD2 tile's nearest point has a standing share under that LOD's ranks
+  const D=F.U.uFade.value;let lodBad=0;F.meshes.forEach((im,l)=>{if(!l)return;const e=im.instanceMatrix.array;for(let i=0;i<im.count;i++){const x=e[i*16+12],y=e[i*16+13],z=e[i*16+14];const dn=Math.max(0,Math.hypot(x-cam.x,z-cam.z)-.71),dn3=Math.hypot(dn,Math.max(0,Math.abs(y-cam.y)-.1));
+   if(Math.min(1,Math.exp(-(dn3-D.x)/D.y))>F.lodRank[l]+1e-6)lodBad++;}});out.lod={bad:lodBad,tiles:F.stats().tiles};
+  // the same pose again gives the same tiles
+  const sig=()=>F.meshes.map(im=>im.count+':'+Array.from(im.instanceMatrix.array.slice(0,Math.min(im.count,40)*16)).map(v=>v.toFixed(3)).join(',')).join('|');
+  const s1=sig();F.last=null;__vegetation.tick();out.stable=s1===sig();
+  // the ground's tiling: ground only (blades hidden), the lawn's own pixels compared with the pixels 0.5 m away (the
+  // first scale's period) and with an unrelated offset: a visible repetition would correlate strongly at the period
+  L.place(560,4.6,0);for(let i=0;i<3;i++)L.step(1/30);L.look(-.55,-.62);L.step(1/30);__vegetation.tick();F.visible=false;L.render();
+  const cv=[...document.querySelectorAll('canvas')].sort((a,b)=>b.width*b.height-a.width*a.height)[0],gl=cv.getContext('webgl2'),w=cv.width,h=cv.height,px=new Uint8Array(w*h*4);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,px);F.visible=true;
+  const cam2=L.camera.getWorldPosition(new T.Vector3()),fw2=new T.Vector3();L.camera.getWorldDirection(fw2);const lum=(x,y,z)=>{const v=new T.Vector3(x,y,z).project(L.camera);if(v.z>1||Math.abs(v.x)>.98||Math.abs(v.y)>.98)return null;const X=Math.round((v.x*.5+.5)*(w-1)),Y=Math.round((v.y*.5+.5)*(h-1)),k=(Y*w+X)*4;return .2126*px[k]+.7152*px[k+1]+.0722*px[k+2];};
+  const corr=(dx,dz)=>{const A=[],B=[];for(let i=0;i<70;i++)for(let j=0;j<70;j++){const x=cam2.x+fw2.x*3.2+(i-35)*.04,z=cam2.z+fw2.z*3.2+(j-35)*.04;const y1=F.lawnPoint(x,z,560),y2=F.lawnPoint(x+dx,z+dz,560);if(y1===null||y2===null)continue;const a=lum(x,y1,z),b=lum(x+dx,y2,z+dz);if(a===null||b===null)continue;A.push(a);B.push(b);}
+   const n=A.length;if(n<200)return {n,r:null};const ma=A.reduce((s,v)=>s+v,0)/n,mb=B.reduce((s,v)=>s+v,0)/n;let sab=0,saa=0,sbb=0;for(let k=0;k<n;k++){sab+=(A[k]-ma)*(B[k]-mb);saa+=(A[k]-ma)**2;sbb+=(B[k]-mb)**2;}return {n,r:+(sab/Math.sqrt(saa*sbb)).toFixed(3)};};
+  out.tiling={periodX:corr(.5,0),periodZ:corr(0,.5),unrelated:corr(.27,.11)};
+  // the blades on the game's breeze (the trees' own uniforms)
+  const BU=V.lawn2.bladeUniforms;out.wind={sameTime:BU.uTime===V.uniforms.uTime,sameGust:BU.uGust===V.uniforms.uGust,sameScale:BU.uWind===V.uniforms.uWind};const t0=BU.uTime.value;L.step(.5);__vegetation.tick();out.wind.advances=BU.uTime.value>t0;
+  out.obstacles=W.obstacles?.length??null;out.space=['walk','porch','house','tree','fence','driveway','pole'].map(t=>W.space?.items(t).length);
+  out.info={lawn:V.info.lawn,gpuTextureMB:V.info.gpuTextureMB,textures:V.info.textures,materials:V.info.materials};
+  return out;});
+ R.lawnChecks=LC;
+ check('Lawn coverage: every lawn point within 11 m in view has its tile and its 12.5 cm sub-cell on (400 random points)',LC.coverage.tested>=300&&LC.coverage.missing===0,LC.coverage);
+ check('Lawn boundaries: no blade sub-cell over a walk, curb, drive, pad, porch, house, shed or the street (every sub-cell of every tile, independent tests)',LC.hard.bits>2000&&LC.hard.bad===0,LC.hard);
+ check('Lawn LOD: a tile drops to a sparser LOD only where the blades it drops have already faded (no popping); the same pose gives the same tiles',LC.lod.bad===0&&LC.stable,{lod:LC.lod,stable:LC.stable});
+ check('Lawn ground: no visible tiling (lawn pixels 0.5 m apart, the texture\'s period, correlate under 0.5, close to an unrelated offset)',[LC.tiling.periodX,LC.tiling.periodZ].every(c=>c.r!==null&&c.r<.5&&c.r-LC.tiling.unrelated.r<.3),LC.tiling);
+ check('Lawn wind: the blades run on the trees\' breeze uniforms (the game\'s own time and gusts) and the time advances',LC.wind.sameTime&&LC.wind.sameGust&&LC.wind.sameScale&&LC.wind.advances,LC.wind);
+ const W0=report.parts.gameWithout;check('Collisions: the world\'s obstacles and navigation shapes are the same as without ?vegetation',W0&&LC.obstacles===W0.obstacles&&JSON.stringify(LC.space)===JSON.stringify(W0.space),{with:[LC.obstacles,LC.space],without:W0&&[W0.obstacles,W0.space]});
+ // Y steps the lawns (C -> B -> A -> C); K still swaps everything
+ const ky=[];for(let i=0;i<3;i++){await page.keyboard.press('y');ky.push(await page.evaluate(()=>__vegetation.lawnMode));}
+ check('Lawn switch: Y steps C (repaired) -> B (first benchmark) -> A (original) -> C',ky.join('')==='BAC',ky);
  check('Game (?vegetation, checks and captures): no page errors',errors.length===0,errors.slice(0,6));
  // cost: authored vs procedural in the same frames
  R.cost=report.pairs.map(p=>({name:p.name,authored:p.authored,procedural:p.procedural}));
@@ -156,6 +257,15 @@ if(PARTS.includes('B'))await withPage(async(page,{errors})=>{const R=report.part
  await walkShot('G08b-oak-close-up-up-the-trunk',L=>{const d=L.oak.d-3.2,lat=L.oak.lat-3.4;lastLight.walkTo(d,lat,Math.atan2(-(L.oak.lat-lat),L.oak.d-d),.55);lastLight.step(.1);},{caption:'under the oak, looking up the trunk into the limbs'});
  await walkShot('G09-the-tire-swing',L=>{const d=L.swing.d-4.2,lat=L.swing.lat-3.2;lastLight.walkTo(d,lat,Math.atan2(-(L.swing.lat+.2-lat),L.swing.d+.4-d),.22);lastLight.step(.1);},{caption:'the tire swing on the oak\'s own limb'});
  await walkShot('G09b-the-other-bike',L=>{lastLight.walkTo(L.swing.d-4,L.swing.lat-5,Math.atan2(-(L.oak.lat+.6-(L.swing.lat-5)),L.oak.d+.9-(L.swing.d-4)),-.15);lastLight.step(.1);},{caption:'the other bike under the oak after the call (release test view)'});
+ // ---- the lawns at the lookout and in the later evening, from where a player stands (C / B / A, one frame each)
+ const walkT=(n,fn,cap)=>triple(page,n,async()=>{await page.evaluate(fn,L0);},{caption:cap,camera:'walking'});
+ R.lawn={};
+ R.lawn.underOak=await walkT('L10-grass-beneath-the-old-oak',L=>{lastLight.walkTo(L.swing.d-4.2,L.swing.lat-3.2,-.636,-.12);lastLight.step(.1);},'the grass beneath the old oak, the swing\'s worn patch, the roots');
+ R.lawn.path=await walkT('L11-the-lookout-path-and-bench',L=>{lastLight.walkTo(1156,3.4,.75,-.28);lastLight.step(.1);},'the trodden way, the bench, the knoll\'s long grass');
+ R.lawn.meadow=await walkT('L12-across-the-meadow',L=>{lastLight.walkTo(1167,2.5,.05,-.06);lastLight.step(.1);},'across the knoll and the field fence into the meadow');
+ R.lawn.bike=await walkT('L13-the-old-bike-in-the-grass',L=>{lastLight.walkTo(L.swing.d-4,L.swing.lat-5,Math.atan2(-(L.oak.lat+.6-(L.swing.lat-5)),L.oak.d+.9-(L.swing.d-4)),-.3);lastLight.step(.1);},'the other bike lying in the grass (scale of the blades beside the wheels)');
+ R.lawn.evening=await walkT('L14-evening-lawns-from-the-stop',L=>{lastLight.walkTo(L.stop.d+1,L.stop.lat,Math.PI,-.08);lastLight.step(.1);},'later evening: looking back at the last lawns of the street');
+ for(const [k,v] of Object.entries(R.lawn))check(`Lawn ${k} (walking): C, B and A in the same camera and frame`,v.same,{C:v.C.cam,B:v.B.cam,A:v.A.cam});
  // go home: Chapter One begins
  const home=await page.evaluate(()=>{const L=lastLight;for(let i=0;i<1400;i++){const s=L.state;if(Math.hypot(s.walkD-s.distance,s.walkLat-s.lateral)<1.5)break;L.look(Math.atan2(-(s.lateral+.75-s.walkLat),s.distance-s.walkD),0);L.press('KeyW');L.step(1/30);}L.release('KeyW');L.step(.3);L.key('KeyF');L.step(1.2);
   L.press('KeyW');for(let i=0;i<12;i++)L.step(.3);return {state:L.state.state,ending:!document.getElementById('ending')?.hidden};});
@@ -173,6 +283,9 @@ if(PARTS.includes('C'))await withPage(async(page,{errors,requests})=>{const R=re
  await page.evaluate(()=>{const L=lastLight;L.start();for(let i=0;i<6;i++)L.step(1/30);});
  R.pairs={};R.pairs.housesTrees=await pair(page,'G03b-street-trees-beside-the-new-houses',()=>ride(page,{d:150,lat:-.3,yaw:-.2,pitch:.03}),{caption:'street trees beside the authored houses (?bikes&houses&vegetation)',flags:'bikes&houses&vegetation'});
  R.pairs.housesYards=await pair(page,'G04c-yards-with-the-new-houses',()=>ride(page,{d:255,lat:3.0,yaw:-1.05,pitch:-.03}),{caption:'yards, beds and lawns at the authored houses',flags:'bikes&houses&vegetation'});
+ R.lawn={};R.lawn.housesStreet=await triple(page,'L15-street-with-the-new-houses-and-trees',()=>ride(page,{d:150,lat:-.3,yaw:-.2,pitch:.03}),{caption:'the street with the authored houses and trees (?bikes&houses&vegetation)',flags:'bikes&houses&vegetation'},true);
+ R.lawn.housesYards=await triple(page,'L16-yards-of-the-new-houses',()=>ride(page,{d:255,lat:3.0,yaw:-1.05,pitch:-.03}),{caption:'front yards of the authored houses (?bikes&houses&vegetation)',flags:'bikes&houses&vegetation'},true);
+ for(const [k,v] of Object.entries(R.lawn))check(`Lawn ${k} (with bikes and houses): C, B and A in the same camera and frame`,v.same,{C:v.C.cam,B:v.B.cam});
  await page.evaluate(()=>{const L=lastLight;L.start();for(let i=0;i<10;i++)L.step(1/30);L.press('KeyW');let f=0;while(L.state.distance<120&&f++<9000)L.step(1/30);L.look(-.1,-.05);L.step(.1);});
  R.pairs.ride=await pair(page,'G02b-group-ride-with-authored-bikes-and-houses',()=>page.evaluate(()=>{__vegetation.tick();__houses?.tick();__bikes?.tick();const i=lastLight.render();const c=lastLight.camera;return {calls:i.calls,triangles:i.triangles,cam:{p:c.position.toArray().map(v=>+v.toFixed(3)),q:c.quaternion.toArray().map(v=>+v.toFixed(4))},veg:__vegetation.stats()};}),{caption:'the group ride with the authored bikes, houses and vegetation',flags:'bikes&houses&vegetation'});
  const moved=await page.evaluate(()=>{const d0=lastLight.state.distance;lastLight.step(4);return lastLight.state.distance-d0;});
@@ -184,7 +297,7 @@ if(PARTS.includes('D')){const tmp=fs.mkdtempSync(path.join(process.env.TMPDIR||'
  for(const [label,env] of [['models',{PLAYTEST_MODELS:'1'}],['default',{}]]){const dir=path.join(tmp,label);fs.mkdirSync(dir,{recursive:true});
   execFileSync('node',['tools/package-playtest.mjs',dir],{env:{...process.env,PLAYTEST_MENU:'1',...env},encoding:'utf8',maxBuffer:1<<26});
   const html='Last-Light-Playtest.html',file=path.join(dir,html);
-  if(label==='models'){const man=JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'),'utf8'));check('Package: PLAYTEST_MODELS=1 embeds the four vegetation models and hashes them in the manifest',['lm.old-oak','veg.street-trees','veg.shrubs','veg.ground'].every(k=>!!man.sourceHashes['dist/assets/veg/'+k+'.glb']),{size:fs.statSync(file).size});}
+  if(label==='models'){const man=JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'),'utf8'));check('Package: PLAYTEST_MODELS=1 embeds the five vegetation files and hashes them in the manifest',['lm.old-oak','veg.street-trees','veg.shrubs','veg.ground','veg.lawn'].every(k=>!!man.sourceHashes['dist/assets/veg/'+k+'.glb']),{size:fs.statSync(file).size});}
   await withPage(async(page,{errors,requests})=>{await page.goto(pathToFileURL(file).href+'?qa&vegetation',{timeout:300000});await page.waitForFunction(()=>window.lastLight,null,{timeout:300000});await waitVeg(page);
    const r=await page.evaluate(()=>({error:__vegetation?.error??null,label:document.getElementById('vegetation-benchmark-label')?.textContent?.split('\n')[0],from:__vegetation?.info?.()?Object.values(__vegetation.info().files).map(f=>f.from):null}));
    const net=requests.filter(u=>/^https?:/.test(u));

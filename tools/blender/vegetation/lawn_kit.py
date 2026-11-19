@@ -469,9 +469,12 @@ def write_glb(path):
     meshes.append({'name': 'lawn.tile', 'primitives': [{'attributes': attrs, 'indices': add_acc(T['I'], 'SCALAR', 34963), 'material': len(materials) - 1}]})
     nodes.append({'name': 'lawn.tile', 'mesh': len(meshes) - 1, 'extras': {'ll_lawn_tile': True, 'll_lod_index_counts': T['counts'], 'll_blades': T['blades'],
                                                                          'll_shoots': TILE['shoots'], 'll_size_m': 1.0, 'll_lod_rank': [1.0, TILE['min_lod1'], TILE['min_lod2']]}})
+    ids = 'll_asset_id', 'll_asset_version', 'll_rig', 'll_license'
+    root_extras = dict(zip(ids, ('veg.lawn', 1, 'none', 'original work (Last Light): no third-party content')))
+    nodes.append({'name': 'veg.lawn', 'children': list(range(len(nodes))), 'extras': root_extras})
     gl = {'asset': {'version': '2.0', 'generator': 'Last Light lawn_kit.py', 'extras': {'ll_asset_id': 'veg.lawn', 'textures': meta,
                     'note': 'Original work for Last Light (no third-party content): ground textures and the lawn blade tile.'}},
-          'scene': 0, 'scenes': [{'name': 'veg.lawn', 'nodes': list(range(len(nodes))), 'extras': {'ll_asset_id': 'veg.lawn', 'll_asset_version': 1, 'll_rig': 'none', 'll_license': 'original work (Last Light)'}}], 'nodes': nodes, 'meshes': meshes, 'materials': materials,
+          'scene': 0, 'scenes': [{'name': 'veg.lawn', 'nodes': [len(nodes) - 1], 'extras': root_extras}], 'nodes': nodes, 'meshes': meshes, 'materials': materials,
           'textures': textures, 'images': images, 'samplers': [{'magFilter': 9729, 'minFilter': 9987, 'wrapS': 10497, 'wrapT': 10497}],
           'accessors': accs, 'bufferViews': views, 'extensionsUsed': ['EXT_texture_webp'], 'extensionsRequired': ['EXT_texture_webp']}
     binb = b''.join(bin_parts)

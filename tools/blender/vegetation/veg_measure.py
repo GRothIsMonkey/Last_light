@@ -45,6 +45,13 @@ def main():
         vtxt = (f"ok; Khronos {kh.get('errors')} errors, {kh.get('warnings')} warnings" if v.get('ok') else 'FAILED: ' + '; '.join(v.get('errors', [])[:2])) if v else 'not run'
         out.append(f'| `{o}` | {ob:,} | `dist/assets/veg/{r}.glb` | {rb:,} | {vtxt} |')
         M['files'].append({'original': o, 'originalBytes': ob, 'runtime': r, 'runtimeBytes': rb, 'gpuTextureMB': v.get('info', {}).get('gpuTextureMBEstimate'), 'validator': {'ok': v.get('ok'), 'khronos': kh}})
+    lp = os.path.join(ROOT, 'dist', 'assets', 'veg', 'veg.lawn.glb')
+    if os.path.exists(lp):
+        v = load(os.path.join(QA, 'validate-veg.lawn.json'), {})
+        kh = v.get('khronos', {})
+        vtxt = f"ok; Khronos {kh.get('errors')} errors, {kh.get('warnings')} warnings" if v.get('ok') else 'not run or failed'
+        out.append(f"| (original work: the lawn repair) | – | `dist/assets/veg/veg.lawn.glb` | {os.path.getsize(lp):,} | {vtxt} |")
+        M['files'].append({'original': None, 'runtime': 'veg.lawn', 'runtimeBytes': os.path.getsize(lp), 'gpuTextureMB': v.get('info', {}).get('gpuTextureMBEstimate'), 'validator': {'ok': v.get('ok'), 'khronos': kh}})
     tot = sum(f['runtimeBytes'] or 0 for f in M['files'])
     out.append(f'\nRuntime total {tot:,} bytes ({mb(tot)}); the offline package embeds them base64 (+33 %).\n')
     # triangles per asset and LOD
@@ -114,6 +121,23 @@ def main():
             a, b = p['authored'], p['procedural']
             out.append(f"| {p['name']} | {a['calls']} / {b['calls']} | {a['triangles']:,} / {b['triangles']:,} | {a.get('vegTris', 0):,} |")
         M['browser'] = {'loadMs': (g.get('loaded') or {}).get('loadMs'), 'info': info, 'pairs': rep.get('pairs', []), 'summary': rep.get('summary')}
+        lawn = rep.get('lawn', [])
+        if lawn:
+            out.append('\n### The lawn repair: C (repaired) / B (first benchmark) / A (original procedural lawn), same frame\n')
+            out.append('| View | Draw calls C / B / A | Triangles C / B / A | Blade triangles (C) | Blade tiles LOD0/1/2 | Clump-scale islands C / B / A | Mean deviation C / B / A |')
+            out.append('|---|---|---|---|---|---|---|')
+            for x in lawn:
+                C, B, A = x['C'], x['B'], x['A']
+                isl = ' / '.join(f"{y['metrics']['islands'] * 100:.1f} %" if y.get('metrics') else '–' for y in (C, B, A))
+                dev = ' / '.join(f"{y['metrics']['meanDev'] * 100:.1f} %" if y.get('metrics') else '–' for y in (C, B, A))
+                out.append(f"| {x['name']} | {C['calls']} / {B['calls']} / {A['calls']} | {C['triangles']:,} / {B['triangles']:,} / {A['triangles']:,} | {C.get('bladeTris', 0):,} | {'/'.join(str(t) for t in (C.get('bladeTiles') or []))} | {isl} | {dev} |")
+            M['lawn'] = lawn
+        lc = g.get('lawnChecks')
+        if lc:
+            out.append(f"\nLawn checks: coverage {lc['coverage']['tested']} lawn points, {lc['coverage']['missing']} without blades; {lc['hard']['bits']:,} blade sub-cells, "
+                       f"{lc['hard']['bad']} over a hard surface; LOD drops of unfaded blades {lc['lod']['bad']}; tiling correlation at the 0.5 m period "
+                       f"{lc['tiling']['periodX']['r']} / {lc['tiling']['periodZ']['r']} (an unrelated offset: {lc['tiling']['unrelated']['r']}).")
+            M['lawnChecks'] = lc
         pk = rep.get('parts', {}).get('packageModels')
         if pk:
             out.append(f"\nOffline package with every model embedded (PLAYTEST_MODELS=1): {pk.get('bytes', 0):,} bytes; the vegetation loads from the embedded bytes with no network.")
