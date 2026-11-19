@@ -1,0 +1,105 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "lm.old-oak:lod0: normal map without exported tangents (enable Tangents)",
+  "lm.old-oak:lod0: normal map without exported tangents (enable Tangents)",
+  "lm.old-oak:lod1: normal map without exported tangents (enable Tangents)",
+  "lm.old-oak:lod2: normal map without exported tangents (enable Tangents)",
+  "lm.old-oak LOD0 81632 triangles above the 60000 target",
+  "lm.old-oak LOD1 15413 triangles above the 15000 target"
+ ],
+ "info": {
+  "file": "lm.old-oak.glb",
+  "bytes": 6534264,
+  "sha256": "848042febef52c1a2f000fdaa9aee8530218736dcdc23f0c7dbaa7b275c6e4a2",
+  "generator": "Khronos glTF Blender I/O v5.0.21",
+  "profile": "veg",
+  "assetId": "lm.old-oak",
+  "assetVersion": 1,
+  "triangles": 99871,
+  "vertices": 103508,
+  "skinnedMeshes": 0,
+  "morphTargets": [],
+  "variants": {
+   "lm.old-oak": [
+    81632,
+    15413,
+    2826
+   ]
+  },
+  "joints": 0,
+  "materials": [
+   "mat.bark/lm.old-oak",
+   "mat.foliage/lm.old-oak",
+   "mat.bark/lm.old-oak.carving"
+  ],
+  "textures": [
+   {
+    "name": "lm.old-oak__bark_normal",
+    "mime": "image/webp",
+    "w": 2048,
+    "h": 2048,
+    "bytes": 1154480,
+    "use": []
+   },
+   {
+    "name": "lm.old-oak__bark_basecolor",
+    "mime": "image/webp",
+    "w": 2048,
+    "h": 2048,
+    "bytes": 731606,
+    "use": []
+   },
+   {
+    "name": "lm.old-oak__bark_orm",
+    "mime": "image/webp",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 37010,
+    "use": []
+   },
+   {
+    "name": "lm.old-oak__leaves_basecolor",
+    "mime": "image/webp",
+    "w": 2048,
+    "h": 2048,
+    "bytes": 634000,
+    "use": []
+   },
+   {
+    "name": "lm.old-oak__carving_normal",
+    "mime": "image/webp",
+    "w": 512,
+    "h": 512,
+    "bytes": 29130,
+    "use": []
+   },
+   {
+    "name": "lm.old-oak__carving_basecolor",
+    "mime": "image/webp",
+    "w": 512,
+    "h": 512,
+    "bytes": 24678,
+    "use": []
+   }
+  ],
+  "textureBytes": 2610904,
+  "gpuTextureMBEstimate": 72,
+  "clips": []
+ },
+ "khronos": {
+  "ran": true,
+  "version": "2.0.0-dev.3.10",
+  "errors": 0,
+  "warnings": 4,
+  "infos": 0,
+  "hints": 0,
+  "messages": [
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/0/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/0/primitives/2/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/1/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/2/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations."
+  ]
+ }
+}

@@ -123,6 +123,7 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{
  R.pairs.street=await pair(page,'G03-street-trees',()=>ride(page,{d:470,lat:-.3,yaw:.04,pitch:.03}),{caption:'street trees down Oak Hollow Drive'});
  R.pairs.lookout=await pair(page,'G06-the-lookout',()=>ride(page,{d:1136.5,lat:-.9,yaw:.12,pitch:.06}),{caption:'the lookout from the stop'});
  R.pairs.oakFromBulb=await pair(page,'G07-oak-from-the-cul-de-sac',()=>ride(page,{d:1126,lat:-2,yaw:.3,pitch:.13}),{caption:'the old oak from the cul-de-sac'});
+ R.pairs.oakFar=await pair(page,'G07b-oak-silhouette-from-124m',()=>ride(page,{d:1038,lat:-.3,yaw:.06,pitch:.07}),{caption:'the oak at 124 m down the street (the Aftermath I barricade distance, art bible §6): readable by silhouette'});
  R.pairs.lookingHome=await pair(page,'G10-dusk-looking-home',()=>ride(page,{d:1150,lat:2,yaw:Math.PI,pitch:.04}),{caption:'evening: looking back down the street from the lookout'});
  for(const [k,v] of Object.entries(R.pairs))check(`Before/after ${k}: the same camera and frame for both`,v.same,{authored:v.authored.cam,procedural:v.procedural.cam});
  check('Game (?vegetation, checks and captures): no page errors',errors.length===0,errors.slice(0,6));

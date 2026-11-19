@@ -1,0 +1,111 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "info": {
+  "file": "veg.ground.glb",
+  "bytes": 748012,
+  "sha256": "64252fb89fde86f24d1858043389748bfc534eeb2b22135855963abd288189bc",
+  "generator": "Khronos glTF Blender I/O v5.0.21",
+  "profile": "veg",
+  "assetId": "veg.ground",
+  "assetVersion": 1,
+  "triangles": 610,
+  "vertices": 836,
+  "skinnedMeshes": 0,
+  "morphTargets": [],
+  "variants": {
+   "flower.lace.1": [
+    4,
+    2,
+    0
+   ],
+   "flower.susan.1": [
+    4,
+    2,
+    0
+   ],
+   "grass.lawn.1": [
+    116,
+    4,
+    0
+   ],
+   "grass.lawn.2": [
+    100,
+    4,
+    0
+   ],
+   "grass.lawn.3": [
+    132,
+    4,
+    0
+   ],
+   "grass.long.1": [
+    100,
+    4,
+    0
+   ],
+   "grass.long.2": [
+    84,
+    4,
+    0
+   ],
+   "meadow.dry.1": [
+    6,
+    4,
+    0
+   ],
+   "meadow.tall.1": [
+    6,
+    4,
+    0
+   ],
+   "meadow.tall.2": [
+    6,
+    4,
+    0
+   ],
+   "weed.clover.1": [
+    2,
+    2,
+    0
+   ],
+   "weed.groundcover.1": [
+    4,
+    2,
+    0
+   ],
+   "weed.seedstalk.1": [
+    4,
+    2,
+    0
+   ]
+  },
+  "joints": 0,
+  "materials": [
+   "mat.foliage/veg.ground"
+  ],
+  "textures": [
+   {
+    "name": "veg.ground__atlas_basecolor",
+    "mime": "image/webp",
+    "w": 2048,
+    "h": 1024,
+    "bytes": 687034,
+    "use": []
+   }
+  ],
+  "textureBytes": 687034,
+  "gpuTextureMBEstimate": 10.7,
+  "clips": []
+ },
+ "khronos": {
+  "ran": true,
+  "version": "2.0.0-dev.3.10",
+  "errors": 0,
+  "warnings": 0,
+  "infos": 0,
+  "hints": 0,
+  "messages": []
+ }
+}

@@ -1,0 +1,545 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "tree.ash.1:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.ash.1:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.ash.1:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.ash.2:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.ash.2:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.ash.2:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.ash.3:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.ash.3:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.ash.3:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.ash.4:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.ash.4:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.ash.4:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.ash.5:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.ash.5:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.ash.5:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.ash.6:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.ash.6:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.ash.6:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.birch.1:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.birch.1:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.birch.2:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.birch.2:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.birch.3:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.birch.3:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.birch.4:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.birch.4:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.birch.5:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.birch.5:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.birch.6:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.birch.6:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.maple.1:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.maple.1:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.maple.1:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.maple.2:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.maple.2:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.maple.2:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.maple.3:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.maple.3:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.maple.3:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.maple.4:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.maple.4:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.maple.4:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.maple.5:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.maple.5:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.maple.5:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.maple.6:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.maple.6:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.maple.6:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.maple.7:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.maple.7:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.maple.7:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.maple.8:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.maple.8:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.maple.8:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.oak.1:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.oak.1:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.oak.1:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.oak.2:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.oak.2:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.oak.2:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.oak.3:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.oak.3:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.oak.3:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.oak.4:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.oak.4:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.oak.4:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.oak.5:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.oak.5:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.oak.5:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.oak.6:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.oak.6:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.oak.6:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.pine.1:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.pine.1:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.pine.1:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.pine.2:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.pine.2:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.pine.2:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.pine.3:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.pine.3:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.pine.3:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.pine.4:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.pine.4:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.pine.4:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.pine.5:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.pine.5:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.pine.5:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.pine.6:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.pine.6:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.pine.6:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.1:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.1:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.1:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.2:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.2:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.2:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.3:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.3:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.3:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.4:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.4:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.4:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.5:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.5:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.5:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.6:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.6:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.spruce.6:lod2: normal map without exported tangents (enable Tangents)",
+  "tree.young.1:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.young.1:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.young.2:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.young.2:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.young.3:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.young.3:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.young.4:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.young.4:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.young.5:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.young.5:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.young.6:lod0: normal map without exported tangents (enable Tangents)",
+  "tree.young.6:lod1: normal map without exported tangents (enable Tangents)",
+  "tree.oak.3 LOD0 17521 triangles above the 15000 target",
+  "tree.oak.3 LOD1 4538 triangles above the 3000 target",
+  "tree.oak.6 LOD1 3326 triangles above the 3000 target"
+ ],
+ "info": {
+  "file": "veg.street-trees.glb",
+  "bytes": 16669464,
+  "sha256": "acc04a8c3e9af39861e0d54aeb855afb51ddf7d3df580423f87cdfd1e4b2eb6c",
+  "generator": "Khronos glTF Blender I/O v5.0.21",
+  "profile": "veg",
+  "assetId": "veg.street-trees",
+  "assetVersion": 1,
+  "triangles": 360916,
+  "vertices": 405694,
+  "skinnedMeshes": 0,
+  "morphTargets": [],
+  "variants": {
+   "tree.ash.1": [
+    11995,
+    2632,
+    315
+   ],
+   "tree.ash.2": [
+    8093,
+    1840,
+    260
+   ],
+   "tree.ash.3": [
+    4088,
+    804,
+    97
+   ],
+   "tree.ash.4": [
+    8501,
+    1898,
+    218
+   ],
+   "tree.ash.5": [
+    6056,
+    1410,
+    198
+   ],
+   "tree.ash.6": [
+    2961,
+    646,
+    83
+   ],
+   "tree.birch.1": [
+    3110,
+    672,
+    50
+   ],
+   "tree.birch.2": [
+    2422,
+    620,
+    44
+   ],
+   "tree.birch.3": [
+    2927,
+    718,
+    60
+   ],
+   "tree.birch.4": [
+    2532,
+    640,
+    46
+   ],
+   "tree.birch.5": [
+    2865,
+    578,
+    62
+   ],
+   "tree.birch.6": [
+    3651,
+    878,
+    80
+   ],
+   "tree.maple.1": [
+    10619,
+    2622,
+    323
+   ],
+   "tree.maple.2": [
+    9826,
+    2224,
+    293
+   ],
+   "tree.maple.3": [
+    10239,
+    2072,
+    278
+   ],
+   "tree.maple.4": [
+    9669,
+    2234,
+    270
+   ],
+   "tree.maple.5": [
+    10640,
+    2114,
+    229
+   ],
+   "tree.maple.6": [
+    7251,
+    1802,
+    211
+   ],
+   "tree.maple.7": [
+    10677,
+    2250,
+    289
+   ],
+   "tree.maple.8": [
+    10147,
+    1948,
+    267
+   ],
+   "tree.oak.1": [
+    8259,
+    1986,
+    267
+   ],
+   "tree.oak.2": [
+    4399,
+    1104,
+    144
+   ],
+   "tree.oak.3": [
+    17521,
+    4538,
+    549
+   ],
+   "tree.oak.4": [
+    5971,
+    1460,
+    188
+   ],
+   "tree.oak.5": [
+    3592,
+    1006,
+    136
+   ],
+   "tree.oak.6": [
+    12664,
+    3326,
+    408
+   ],
+   "tree.pine.1": [
+    8790,
+    2064,
+    219
+   ],
+   "tree.pine.2": [
+    7253,
+    1272,
+    199
+   ],
+   "tree.pine.3": [
+    10146,
+    2218,
+    283
+   ],
+   "tree.pine.4": [
+    9765,
+    1476,
+    295
+   ],
+   "tree.pine.5": [
+    6592,
+    1972,
+    209
+   ],
+   "tree.pine.6": [
+    7095,
+    1894,
+    223
+   ],
+   "tree.spruce.1": [
+    8594,
+    1660,
+    311
+   ],
+   "tree.spruce.2": [
+    8518,
+    1950,
+    375
+   ],
+   "tree.spruce.3": [
+    7680,
+    1592,
+    313
+   ],
+   "tree.spruce.4": [
+    4916,
+    1126,
+    217
+   ],
+   "tree.spruce.5": [
+    6824,
+    1210,
+    249
+   ],
+   "tree.spruce.6": [
+    8053,
+    1634,
+    321
+   ],
+   "tree.young.1": [
+    478,
+    97,
+    14
+   ],
+   "tree.young.2": [
+    456,
+    77,
+    10
+   ],
+   "tree.young.3": [
+    420,
+    81,
+    16
+   ],
+   "tree.young.4": [
+    466,
+    95,
+    20
+   ],
+   "tree.young.5": [
+    508,
+    87,
+    14
+   ],
+   "tree.young.6": [
+    406,
+    87,
+    14
+   ]
+  },
+  "joints": 0,
+  "materials": [
+   "mat.bark/veg.street",
+   "mat.foliage/veg.street",
+   "mat.bark/veg.street.birch"
+  ],
+  "textures": [
+   {
+    "name": "veg.street__bark_normal",
+    "mime": "image/webp",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 317144,
+    "use": []
+   },
+   {
+    "name": "veg.street__bark_basecolor",
+    "mime": "image/webp",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 370492,
+    "use": []
+   },
+   {
+    "name": "veg.street__leaves_basecolor",
+    "mime": "image/webp",
+    "w": 2048,
+    "h": 2048,
+    "bytes": 493132,
+    "use": []
+   },
+   {
+    "name": "veg.street__birch_normal",
+    "mime": "image/webp",
+    "w": 512,
+    "h": 512,
+    "bytes": 14334,
+    "use": []
+   },
+   {
+    "name": "veg.street__birch_basecolor",
+    "mime": "image/webp",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 33160,
+    "use": []
+   }
+  ],
+  "textureBytes": 1228262,
+  "gpuTextureMBEstimate": 38.7,
+  "clips": []
+ },
+ "khronos": {
+  "ran": true,
+  "version": "2.0.0-dev.3.10",
+  "errors": 0,
+  "warnings": 120,
+  "infos": 0,
+  "hints": 0,
+  "messages": [
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/0/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/1/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/2/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/3/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/4/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/5/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/6/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/7/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/8/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/9/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/10/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/11/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/12/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/13/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/14/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/15/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/16/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/17/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/18/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/19/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/21/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/22/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/24/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/25/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/27/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/28/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/30/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/31/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/33/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/34/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/36/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/37/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/38/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/39/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/40/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/41/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/42/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/43/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/44/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/45/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/46/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/47/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/48/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/49/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/50/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/51/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/52/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/53/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/54/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/55/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/56/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/57/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/58/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/59/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/60/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/61/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/62/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/63/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/64/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/65/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/66/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/67/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/68/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/69/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/70/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/71/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/72/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/73/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/74/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/75/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/76/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/77/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/78/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/79/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/80/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/81/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/82/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/83/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/84/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/85/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/86/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/87/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/88/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/89/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/90/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/91/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/92/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/93/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/94/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/95/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/96/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/97/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/98/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/99/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/100/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/101/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/102/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/103/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/104/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/105/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/106/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/107/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/108/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/109/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/110/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/111/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/112/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/113/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/114/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/115/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/117/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/118/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/120/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/121/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/123/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/124/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/126/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/127/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/129/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+   "W MESH_PRIMITIVE_GENERATED_TANGENT_SPACE /meshes/130/primitives/0/material Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations."
+  ]
+ }
+}

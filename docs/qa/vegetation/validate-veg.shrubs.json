@@ -1,0 +1,183 @@
+{
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "shrub.globe.1 LOD0 3648 triangles above the 3000 target",
+  "shrub.globe.1 LOD1 1639 triangles above the 1500 target",
+  "shrub.globe.1 LOD2 993 triangles above the 800 target",
+  "shrub.globe.2 LOD0 3658 triangles above the 3000 target",
+  "shrub.globe.2 LOD1 1619 triangles above the 1500 target",
+  "shrub.globe.2 LOD2 993 triangles above the 800 target",
+  "shrub.hedge.1 LOD0 3292 triangles above the 3000 target",
+  "shrub.hedge.1 LOD1 1506 triangles above the 1500 target",
+  "shrub.hedge.1 LOD2 888 triangles above the 800 target",
+  "shrub.hedge.2 LOD0 3308 triangles above the 3000 target",
+  "shrub.hedge.2 LOD1 1507 triangles above the 1500 target",
+  "shrub.hedge.2 LOD2 906 triangles above the 800 target"
+ ],
+ "info": {
+  "file": "veg.shrubs.glb",
+  "bytes": 3085208,
+  "sha256": "d9b065ecf57a3f98149383ea24f619083dfc6b6097b713293c1774a7c4d7c879",
+  "generator": "Khronos glTF Blender I/O v5.0.21",
+  "profile": "veg",
+  "assetId": "veg.shrubs",
+  "assetVersion": 1,
+  "triangles": 61129,
+  "vertices": 66250,
+  "skinnedMeshes": 0,
+  "morphTargets": [],
+  "variants": {
+   "shrub.flowering.1": [
+    179,
+    95,
+    42
+   ],
+   "shrub.flowering.2": [
+    237,
+    127,
+    60
+   ],
+   "shrub.flowering.3": [
+    264,
+    134,
+    66
+   ],
+   "shrub.globe.1": [
+    3648,
+    1639,
+    993
+   ],
+   "shrub.globe.2": [
+    3658,
+    1619,
+    993
+   ],
+   "shrub.globe.3": [
+    2896,
+    1277,
+    759
+   ],
+   "shrub.hedge.1": [
+    3292,
+    1506,
+    888
+   ],
+   "shrub.hedge.2": [
+    3308,
+    1507,
+    906
+   ],
+   "shrub.natural.big.1": [
+    2632,
+    1236,
+    618
+   ],
+   "shrub.natural.big.2": [
+    2933,
+    1348,
+    702
+   ],
+   "shrub.natural.big.3": [
+    2689,
+    1237,
+    636
+   ],
+   "shrub.natural.big.4": [
+    2939,
+    1322,
+    696
+   ],
+   "shrub.natural.big.5": [
+    2351,
+    1046,
+    528
+   ],
+   "shrub.natural.medium.1": [
+    319,
+    184,
+    126
+   ],
+   "shrub.natural.medium.2": [
+    516,
+    264,
+    162
+   ],
+   "shrub.natural.medium.3": [
+    744,
+    373,
+    228
+   ],
+   "shrub.natural.medium.4": [
+    617,
+    320,
+    192
+   ],
+   "shrub.natural.medium.5": [
+    1197,
+    604,
+    366
+   ],
+   "shrub.natural.small.1": [
+    179,
+    95,
+    42
+   ],
+   "shrub.natural.small.2": [
+    237,
+    132,
+    57
+   ],
+   "shrub.natural.small.3": [
+    237,
+    127,
+    60
+   ],
+   "shrub.natural.small.4": [
+    150,
+    86,
+    45
+   ],
+   "shrub.natural.small.5": [
+    264,
+    134,
+    66
+   ]
+  },
+  "joints": 0,
+  "materials": [
+   "mat.foliage/veg.shrubs",
+   "mat.bark/veg.shrubs"
+  ],
+  "textures": [
+   {
+    "name": "veg.shrubs__leaves_basecolor",
+    "mime": "image/webp",
+    "w": 1024,
+    "h": 1024,
+    "bytes": 400706,
+    "use": []
+   },
+   {
+    "name": "veg.shrubs__bark_basecolor",
+    "mime": "image/webp",
+    "w": 512,
+    "h": 512,
+    "bytes": 102258,
+    "use": []
+   }
+  ],
+  "textureBytes": 502964,
+  "gpuTextureMBEstimate": 6.7,
+  "clips": []
+ },
+ "khronos": {
+  "ran": true,
+  "version": "2.0.0-dev.3.10",
+  "errors": 0,
+  "warnings": 0,
+  "infos": 0,
+  "hints": 0,
+  "messages": []
+ }
+}
