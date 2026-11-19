@@ -21,6 +21,413 @@
   {
    "name": "Default game: no page errors",
    "detail": []
+  },
+  {
+   "name": "?pavement: the six pavement textures load without error",
+   "detail": {
+    "error": null,
+    "loadMs": 41,
+    "files": [
+     {
+      "file": "assets/pavement/pv.asphalt.albedo.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.asphalt.hra.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.asphalt.normal.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.concrete.albedo.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.concrete.normal.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.concrete.hra.jpg",
+      "w": 1024,
+      "h": 1024
+     }
+    ]
+   }
+  },
+  {
+   "name": "?pavement: textures are 1024 x 1024, tiled, trilinear mipmapped, anisotropic, linear data",
+   "detail": [
+    {
+     "k": "asA",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "asN",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "asH",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "coA",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "coN",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "coH",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    }
+   ]
+  },
+  {
+   "name": "?pavement: real-world scale (asphalt 2.5 m per tile = 410 px/m; concrete 2.0 m = 512 px/m; the Art Bible asks 256-512 px/m)",
+   "detail": {
+    "asphalt": {
+     "albedo_p01": 0.6095972860788921,
+     "albedo_p99": 2.065472562465247,
+     "rough_mean": 0.9127393222764226,
+     "meters": 2.5,
+     "px_per_m": 409.6,
+     "size": 1024
+    },
+    "concrete": {
+     "albedo_p01": 0.4675181229164829,
+     "albedo_p99": 1.718081324990562,
+     "rough_mean": 0.9180418287950829,
+     "meters": 2,
+     "px_per_m": 512,
+     "size": 1024
+    }
+   }
+  },
+  {
+   "name": "?pavement: no request leaves the local server",
+   "detail": []
+  },
+  {
+   "name": "?pavement: every pavement batch carries finite street coordinates (uv) and a unit along-direction (pv)",
+   "detail": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   }
+  },
+  {
+   "name": "?pavement: on Oak Hollow Drive the asphalt's coordinates are the street's own (u within 5 cm of d, v within 5 cm of the lateral offset)",
+   "detail": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   }
+  },
+  {
+   "name": "?pavement: no UV stretch at bends: micro-structure in world metres; street-coordinate features within 6 % of true length at the asphalt edge on the tightest bend",
+   "detail": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   }
+  },
+  {
+   "name": "Geometry: every merged surface, shadow proxy and line has exactly the default game's vertices (positions hashed at 1 mm), but for the soil faces added beside driveway aprons and the cul-de-sac bulb, tessellated to follow the ground",
+   "detail": {
+    "with": {
+     "merged": {
+      "tris": 3672521,
+      "verts": 11017563,
+      "h1": 2909938247,
+      "h2": 224281111
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2395,
+     "proxyCount": 379
+    },
+    "without": {
+     "merged": {
+      "tris": 3672521,
+      "verts": 11017563,
+      "h1": 2909938247,
+      "h2": 224281111
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2225,
+     "proxyCount": 379
+    },
+    "soil": {
+     "batches": 30,
+     "tris": 8384,
+     "bulbTris": 1470,
+     "bulbTrisDefault": null
+    }
+   }
+  },
+  {
+   "name": "Gameplay: surface heights, rideability, standing ground and authored pads at 30848 street points are identical; obstacles, navigation shapes and driveway openings unchanged",
+   "detail": {
+    "with": {
+     "n": 30848,
+     "hash": 995588364,
+     "obstacles": 812,
+     "space": [
+      159,
+      247,
+      247,
+      5717,
+      0,
+      618,
+      52
+     ],
+     "drives": 105
+    },
+    "without": {
+     "n": 30848,
+     "hash": 995588364,
+     "obstacles": 812,
+     "space": [
+      159,
+      247,
+      247,
+      5717,
+      0,
+      618,
+      52
+     ],
+     "drives": 105
+    }
+   }
+  },
+  {
+   "name": "Riding: a scripted ride over a driveway cut onto the walk, and one into a plain curb, follow exactly the same path, speed and wheel height",
+   "detail": {
+    "cut": [
+     [
+      754.3317,
+      7.5516,
+      4.4849,
+      0
+     ],
+     [
+      755.2299,
+      7.8134,
+      4.4953,
+      0
+     ]
+    ],
+    "curb": [
+     [
+      764.7885,
+      6.9045,
+      4.5126,
+      0
+     ],
+     [
+      765.693,
+      7.2991,
+      4.5289,
+      0
+     ]
+    ],
+    "without": {
+     "cut": [
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "name": "Junctions and cul-de-sac: rays from above find a surface everywhere, never below the street's ground, and every surface within 3.5 cm of the authored height away from curbs and surface edges (no gaps, no floating or sunken surfaces; the default game's bulb sank up to 4 cm: reported as without)",
+   "detail": {
+    "with": {
+     "samples": 13125,
+     "none": 0,
+     "base": 0,
+     "off": 0,
+     "worst": [],
+     "kinds": {
+      "asphalt": 9108,
+      "gutter": 88,
+      "curb": 352,
+      "other": 1853,
+      "walk": 1706,
+      "drive": 18
+     }
+    },
+    "without": {
+     "none": 0,
+     "base": 191,
+     "off": 167
+    }
+   }
+  },
+  {
+   "name": "?pavement (measures): no page errors",
+   "detail": []
+  },
+  {
+   "name": "Comparison: O swaps RECONSTRUCTED (shader on, old decal patches / joint bars / crack lines hidden) and ORIGINAL (shader off, all shown) in the same frame",
+   "detail": [
+    [
+     "reconstructed",
+     1,
+     false
+    ],
+    [
+     "original",
+     0,
+     true
+    ],
+    [
+     "reconstructed",
+     1,
+     false
+    ]
+   ]
+  },
+  {
+   "name": "Captures: every before/after pair is one camera and one frame",
+   "detail": 17
+  },
+  {
+   "name": "Cost: in every pair the reconstruction draws no more draw calls than the original and at most 1 % more triangles (the soil faces)",
+   "detail": {
+    "drawCallDelta": [
+     -21,
+     -2
+    ],
+    "triangleRatio": [
+     0.983,
+     1
+    ]
+   }
+  },
+  {
+   "name": "?pavement: no page errors (every pavement shader compiles and links)",
+   "detail": []
   }
  ],
  "failures": [],
@@ -370,8 +777,2304 @@
      "other": 13125
     }
    }
+  },
+  "B": {
+   "wallLoadMs": 28364,
+   "loaded": {
+    "error": null,
+    "loadMs": 41,
+    "info": {
+     "files": [
+      {
+       "file": "assets/pavement/pv.asphalt.albedo.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.asphalt.hra.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.asphalt.normal.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.concrete.albedo.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.concrete.normal.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.concrete.hra.jpg",
+       "w": 1024,
+       "h": 1024
+      }
+     ],
+     "bytes": 0,
+     "aniso": 16,
+     "ms": 31,
+     "gpuMB": 32
+    },
+    "layout": {
+     "layoutBytes": 65536,
+     "drives": 133
+    },
+    "stats": {
+     "batches": 200,
+     "triangles": 103128,
+     "kinds": {
+      "asphalt": 31,
+      "curb": 30,
+      "walk": 31,
+      "gutter": 30,
+      "path": 32,
+      "iron": 15,
+      "drive": 31
+     },
+     "originalOnly": 46,
+     "lines": 2,
+     "active": true,
+     "mode": "reconstructed"
+    }
+   },
+   "coords": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   },
+   "fingerprint": {
+    "merged": {
+     "tris": 3672521,
+     "verts": 11017563,
+     "h1": 2909938247,
+     "h2": 224281111
+    },
+    "proxies": {
+     "tris": 2371121,
+     "h1": 3930555726
+    },
+    "lines": {
+     "segs": 4471,
+     "h1": 3072461437
+    },
+    "mergedCount": 2395,
+    "proxyCount": 379
+   },
+   "soil": {
+    "batches": 30,
+    "tris": 8384,
+    "bulbTris": 1470,
+    "bulbTrisDefault": null
+   },
+   "queries": {
+    "n": 30848,
+    "hash": 995588364,
+    "obstacles": 812,
+    "space": [
+     159,
+     247,
+     247,
+     5717,
+     0,
+     618,
+     52
+    ],
+    "drives": 105
+   },
+   "rides": {
+    "drive": {
+     "d": 744.0601318057627,
+     "d0": 742.4601318057627,
+     "d1": 745.6601318057626
+    },
+    "runs": {
+     "cut": [
+      [
+       740.9684,
+       2.6001,
+       3.2492,
+       0
+      ],
+      [
+       741.6493,
+       2.617,
+       3.5068,
+       0
+      ],
+      [
+       742.3752,
+       2.6962,
+       3.7103,
+       0
+      ],
+      [
+       743.1366,
+       2.8582,
+       3.8713,
+       0
+      ],
+      [
+       743.9263,
+       3.0946,
+       3.9989,
+       0
+      ],
+      [
+       744.7383,
+       3.3869,
+       4.1003,
+       0
+      ],
+      [
+       745.568,
+       3.7173,
+       4.181,
+       0
+      ],
+      [
+       746.412,
+       4.0721,
+       4.2456,
+       0
+      ],
+      [
+       747.2673,
+       4.4422,
+       4.2974,
+       0
+      ],
+      [
+       748.1318,
+       4.8215,
+       4.3392,
+       0
+      ],
+      [
+       749.0037,
+       5.2062,
+       4.3732,
+       0
+      ],
+      [
+       749.8817,
+       5.5942,
+       4.401,
+       0
+      ],
+      [
+       750.7646,
+       5.9841,
+       4.4239,
+       0
+      ],
+      [
+       751.6517,
+       6.3751,
+       4.443,
+       0
+      ],
+      [
+       752.5423,
+       6.7669,
+       4.4592,
+       0
+      ],
+      [
+       753.4357,
+       7.1591,
+       4.473,
+       0
+      ],
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       753.9685,
+       3.1001,
+       3.2521,
+       0
+      ],
+      [
+       754.6518,
+       3.1171,
+       3.525,
+       0
+      ],
+      [
+       755.3828,
+       3.1967,
+       3.7406,
+       0
+      ],
+      [
+       756.1515,
+       3.3597,
+       3.911,
+       0
+      ],
+      [
+       756.9499,
+       3.5979,
+       4.046,
+       0
+      ],
+      [
+       757.772,
+       3.8926,
+       4.1532,
+       0
+      ],
+      [
+       758.6129,
+       4.2257,
+       4.2384,
+       0
+      ],
+      [
+       759.4688,
+       4.5835,
+       4.3065,
+       0
+      ],
+      [
+       760.3367,
+       4.9566,
+       4.361,
+       0
+      ],
+      [
+       761.2141,
+       5.3389,
+       4.4048,
+       0
+      ],
+      [
+       762.0994,
+       5.7267,
+       4.4403,
+       0
+      ],
+      [
+       762.9909,
+       6.1177,
+       4.4692,
+       0
+      ],
+      [
+       763.8876,
+       6.5106,
+       4.4929,
+       0
+      ],
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ]
+    }
+   },
+   "gaps": {
+    "samples": 13125,
+    "none": 0,
+    "base": 0,
+    "off": 0,
+    "worst": [],
+    "kinds": {
+     "asphalt": 9108,
+     "gutter": 88,
+     "curb": 352,
+     "other": 1853,
+     "walk": 1706,
+     "drive": 18
+    }
+   },
+   "key": [
+    [
+     "reconstructed",
+     1,
+     false
+    ],
+    [
+     "original",
+     0,
+     true
+    ],
+    [
+     "reconstructed",
+     1,
+     false
+    ]
+   ],
+   "cost": {
+    "drawCallDelta": [
+     -21,
+     -2
+    ],
+    "triangleRatio": [
+     0.983,
+     1
+    ]
+   },
+   "frameMs": {
+    "reconstructed": 8.7,
+    "original": 6.5
+   },
+   "memory": {
+    "textures": 6,
+    "gpuTextureMB": 32,
+    "layoutTextureBytes": 65536,
+    "driveTableBytes": 1024,
+    "renderer": {
+     "geometries": 1098,
+     "textures": 27
+    },
+    "programs": 88
+   }
   }
  },
- "shots": [],
- "pairs": []
+ "shots": [
+  {
+   "file": "docs/qa/pavement/browser/P01-asphalt-beneath-the-bike--reconstructed.jpg",
+   "sha256": "c257acc8dc0c7124228634f1240f743cdc410e38354018e14b6043882c9db782",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P01-asphalt-beneath-the-bike",
+    "what": "asphalt directly beneath the player while riding",
+    "d": 40,
+    "lat": -1.2,
+    "pitch": -0.8
+   },
+   "at": {
+    "d": 40,
+    "lat": -1.2
+   },
+   "calls": 147,
+   "triangles": 300174,
+   "cam": {
+    "p": [
+     -1.235,
+     2.726,
+     -39.989
+    ],
+    "q": [
+     -0.4503,
+     -0.0096,
+     0.0045,
+     0.8928
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P01-asphalt-beneath-the-bike--original.jpg",
+   "sha256": "8abf1368430cbbf4bd9de5bb52d0b184b7843fde2adbaba0a59883af396c00dd",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P01-asphalt-beneath-the-bike",
+    "what": "asphalt directly beneath the player while riding",
+    "d": 40,
+    "lat": -1.2,
+    "pitch": -0.8
+   },
+   "at": {
+    "d": 40,
+    "lat": -1.2
+   },
+   "calls": 154,
+   "triangles": 303704,
+   "cam": {
+    "p": [
+     -1.235,
+     2.726,
+     -39.989
+    ],
+    "q": [
+     -0.4503,
+     -0.0096,
+     0.0045,
+     0.8928
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P02-road-ahead-from-the-bike--reconstructed.jpg",
+   "sha256": "afeeca78ffb7d2160d74fb4c32568ef85b7a3903c3850c7407f786512032a851",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P02-road-ahead-from-the-bike",
+    "what": "the road looking forward from bicycle height",
+    "d": 60,
+    "lat": -1.5,
+    "pitch": -0.12
+   },
+   "at": {
+    "d": 60,
+    "lat": -1.5
+   },
+   "calls": 343,
+   "triangles": 647679,
+   "cam": {
+    "p": [
+     -1.539,
+     3.089,
+     -60.004
+    ],
+    "q": [
+     -0.133,
+     -0.0032,
+     0.0057,
+     0.9911
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P02-road-ahead-from-the-bike--original.jpg",
+   "sha256": "30a467e91f22fe539bb141c38e140c4000cd942671dc80932cddb243c4853d29",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P02-road-ahead-from-the-bike",
+    "what": "the road looking forward from bicycle height",
+    "d": 60,
+    "lat": -1.5,
+    "pitch": -0.12
+   },
+   "at": {
+    "d": 60,
+    "lat": -1.5
+   },
+   "calls": 359,
+   "triangles": 656671,
+   "cam": {
+    "p": [
+     -1.539,
+     3.089,
+     -60.004
+    ],
+    "q": [
+     -0.133,
+     -0.0032,
+     0.0057,
+     0.9911
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P03-long-view-down-oak-hollow--reconstructed.jpg",
+   "sha256": "be452abd54b005bec527c009e00dbddbd7428e6bb7a02b19ff890cc1ca29862c",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P03-long-view-down-oak-hollow",
+    "what": "a long view down Oak Hollow Drive",
+    "d": 300,
+    "lat": -1,
+    "pitch": -0.04
+   },
+   "at": {
+    "d": 300,
+    "lat": -1
+   },
+   "calls": 475,
+   "triangles": 984376,
+   "cam": {
+    "p": [
+     57.365,
+     0.455,
+     -286.96
+    ],
+    "q": [
+     -0.1062,
+     -0.2722,
+     -0.0236,
+     0.9561
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:46 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P03-long-view-down-oak-hollow--original.jpg",
+   "sha256": "4faf177e44d02803385996895a15b96d82c1c32e449707c929434034ca0f17d5",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P03-long-view-down-oak-hollow",
+    "what": "a long view down Oak Hollow Drive",
+    "d": 300,
+    "lat": -1,
+    "pitch": -0.04
+   },
+   "at": {
+    "d": 300,
+    "lat": -1
+   },
+   "calls": 492,
+   "triangles": 997406,
+   "cam": {
+    "p": [
+     57.365,
+     0.455,
+     -286.96
+    ],
+    "q": [
+     -0.1062,
+     -0.2722,
+     -0.0236,
+     0.9561
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:46 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P04-asphalt-close-detail--reconstructed.jpg",
+   "sha256": "b4561438a6570328652c122be55e7e0ea839ace9ec7256911327f4cdb7d112d9",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P04-asphalt-close-detail",
+    "what": "a close asphalt detail: a repaired manhole, a sealed crack",
+    "d": 82.5,
+    "lat": -1.1,
+    "pitch": -0.8
+   },
+   "at": {
+    "d": 82.5,
+    "lat": -1.1
+   },
+   "calls": 167,
+   "triangles": 379370,
+   "cam": {
+    "p": [
+     -1.143,
+     3.189,
+     -82.525
+    ],
+    "q": [
+     -0.4632,
+     -0.0118,
+     0.0057,
+     0.8861
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P04-asphalt-close-detail--original.jpg",
+   "sha256": "cbea6695d54094bb17577df4bb8f3d2eb3d4c0dcf5a61a714ccbdfe4878aefdb",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P04-asphalt-close-detail",
+    "what": "a close asphalt detail: a repaired manhole, a sealed crack",
+    "d": 82.5,
+    "lat": -1.1,
+    "pitch": -0.8
+   },
+   "at": {
+    "d": 82.5,
+    "lat": -1.1
+   },
+   "calls": 174,
+   "triangles": 382900,
+   "cam": {
+    "p": [
+     -1.143,
+     3.189,
+     -82.525
+    ],
+    "q": [
+     -0.4632,
+     -0.0118,
+     0.0057,
+     0.8861
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P05-asphalt-meets-gutter--reconstructed.jpg",
+   "sha256": "1fb26ca7fcbe30b511f1d1102c827b8c41057d7f8427af652216ecccdc5efd57",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P05-asphalt-meets-gutter",
+    "what": "asphalt meeting the concrete gutter pan",
+    "d": 150,
+    "lat": 3.5,
+    "yaw": -0.75,
+    "pitch": -0.6
+   },
+   "at": {
+    "d": 150,
+    "lat": 3.5
+   },
+   "calls": 203,
+   "triangles": 519562,
+   "cam": {
+    "p": [
+     4.127,
+     2.098,
+     -149.808
+    ],
+    "q": [
+     -0.34,
+     -0.3782,
+     -0.1379,
+     0.8499
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:44 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P05-asphalt-meets-gutter--original.jpg",
+   "sha256": "d9b80f1641d00f5d4d9ec1922fc764998ddf40ff2f66006e22e2b08532831669",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P05-asphalt-meets-gutter",
+    "what": "asphalt meeting the concrete gutter pan",
+    "d": 150,
+    "lat": 3.5,
+    "yaw": -0.75,
+    "pitch": -0.6
+   },
+   "at": {
+    "d": 150,
+    "lat": 3.5
+   },
+   "calls": 210,
+   "triangles": 523382,
+   "cam": {
+    "p": [
+     4.127,
+     2.098,
+     -149.808
+    ],
+    "q": [
+     -0.34,
+     -0.3782,
+     -0.1379,
+     0.8499
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:44 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P06-sidewalk-from-standing-height--reconstructed.jpg",
+   "sha256": "dcfb01af74fdefc10316fd3fbaee239b111887bfac1c05719219f55c7cb79f98",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P06-sidewalk-from-standing-height",
+    "what": "sidewalk concrete (riding camera on the walk, eye about 1.5 m)",
+    "d": 44,
+    "lat": 7.1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "calls": 343,
+   "triangles": 656224,
+   "cam": {
+    "p": [
+     7.055,
+     2.93,
+     -43.993
+    ],
+    "q": [
+     -0.2427,
+     -0.0069,
+     0.0065,
+     0.9701
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P06-sidewalk-from-standing-height--original.jpg",
+   "sha256": "8cb118c326e9ac85b773aa9eb173db2a8d51d9efbcdcda6f21d95a579b89d77b",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P06-sidewalk-from-standing-height",
+    "what": "sidewalk concrete (riding camera on the walk, eye about 1.5 m)",
+    "d": 44,
+    "lat": 7.1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "calls": 360,
+   "triangles": 666536,
+   "cam": {
+    "p": [
+     7.055,
+     2.93,
+     -43.993
+    ],
+    "q": [
+     -0.2427,
+     -0.0069,
+     0.0065,
+     0.9701
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P07-sidewalk-joints-close--reconstructed.jpg",
+   "sha256": "3086cc280d4c052c68500028d686954d0ca772fb780234897f87ff41dd44dc98",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P07-sidewalk-joints-close",
+    "what": "sidewalk joints from close range",
+    "d": 44,
+    "lat": 7.1,
+    "pitch": -0.9
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "calls": 140,
+   "triangles": 286621,
+   "cam": {
+    "p": [
+     7.054,
+     2.929,
+     -43.989
+    ],
+    "q": [
+     -0.4957,
+     -0.0139,
+     0.0057,
+     0.8684
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P07-sidewalk-joints-close--original.jpg",
+   "sha256": "c793e7d3b780748f29bb9b4d36c2e51da4aabe0de3b92598bfb2e2a39bf4cd2d",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P07-sidewalk-joints-close",
+    "what": "sidewalk joints from close range",
+    "d": 44,
+    "lat": 7.1,
+    "pitch": -0.9
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "calls": 146,
+   "triangles": 289533,
+   "cam": {
+    "p": [
+     7.054,
+     2.929,
+     -43.989
+    ],
+    "q": [
+     -0.4957,
+     -0.0139,
+     0.0057,
+     0.8684
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P08-curb-face-from-the-bike--reconstructed.jpg",
+   "sha256": "ddfa7116959416e87e9ceb9506a705e701ce6ec44b00cf3c04e76a0aae565e0b",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P08-curb-face-from-the-bike",
+    "what": "the curb face from bicycle height",
+    "d": 40,
+    "lat": 3.4,
+    "yaw": -1.25,
+    "pitch": -0.32
+   },
+   "at": {
+    "d": 40,
+    "lat": 3.4
+   },
+   "calls": 217,
+   "triangles": 536843,
+   "cam": {
+    "p": [
+     3.354,
+     2.688,
+     -39.986
+    ],
+    "q": [
+     -0.1674,
+     -0.5717,
+     -0.1407,
+     0.7908
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P08-curb-face-from-the-bike--original.jpg",
+   "sha256": "1c2dc44538d8dc70643bbcb0ae598502ee5796d3e4dfa3081f02014d55f84fe4",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P08-curb-face-from-the-bike",
+    "what": "the curb face from bicycle height",
+    "d": 40,
+    "lat": 3.4,
+    "yaw": -1.25,
+    "pitch": -0.32
+   },
+   "at": {
+    "d": 40,
+    "lat": 3.4
+   },
+   "calls": 226,
+   "triangles": 543661,
+   "cam": {
+    "p": [
+     3.354,
+     2.688,
+     -39.986
+    ],
+    "q": [
+     -0.1674,
+     -0.5717,
+     -0.1407,
+     0.7908
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P09-driveway-curb-cut--reconstructed.jpg",
+   "sha256": "50bdabb861bf40df23ca9a4a08154f80c74932f345a5a16e50154c41922aeef3",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P09-driveway-curb-cut",
+    "what": "a driveway curb cut from street level",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": -3.5,
+    "lat": 3.6,
+    "yaw": -1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "calls": 454,
+   "triangles": 987837,
+   "cam": {
+    "p": [
+     3.554,
+     3.021,
+     -100.96
+    ],
+    "q": [
+     -0.2127,
+     -0.4704,
+     -0.1127,
+     0.849
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P09-driveway-curb-cut--original.jpg",
+   "sha256": "9251b95979b42884bde0627a3e30c05e5a2bfdddbe8e2c1b198d54ebcd751391",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P09-driveway-curb-cut",
+    "what": "a driveway curb cut from street level",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": -3.5,
+    "lat": 3.6,
+    "yaw": -1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "calls": 475,
+   "triangles": 1005233,
+   "cam": {
+    "p": [
+     3.554,
+     3.021,
+     -100.96
+    ],
+    "q": [
+     -0.2127,
+     -0.4704,
+     -0.1127,
+     0.849
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P10-a-whole-driveway--reconstructed.jpg",
+   "sha256": "17bea8e1be73997e62d49247caf508f4026570fca332586217a29cda216c5795",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P10-a-whole-driveway",
+    "what": "a complete residential driveway",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": 0,
+    "lat": 2.2,
+    "yaw": -1.5,
+    "pitch": -0.14
+   },
+   "at": {
+    "d": 104.43,
+    "lat": 2.2
+   },
+   "calls": 170,
+   "triangles": 435913,
+   "cam": {
+    "p": [
+     2.153,
+     2.986,
+     -104.465
+    ],
+    "q": [
+     -0.0956,
+     -0.6774,
+     -0.0922,
+     0.7235
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P10-a-whole-driveway--original.jpg",
+   "sha256": "2314fa0d5b12b3f4026a101e73bebd1d49a0eec29b55287d4bfd11c3340ff7c4",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P10-a-whole-driveway",
+    "what": "a complete residential driveway",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": 0,
+    "lat": 2.2,
+    "yaw": -1.5,
+    "pitch": -0.14
+   },
+   "at": {
+    "d": 104.43,
+    "lat": 2.2
+   },
+   "calls": 178,
+   "triangles": 442777,
+   "cam": {
+    "p": [
+     2.153,
+     2.986,
+     -104.465
+    ],
+    "q": [
+     -0.0956,
+     -0.6774,
+     -0.0922,
+     0.7235
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P11-sidewalk-passing-a-driveway--reconstructed.jpg",
+   "sha256": "f6b64bd6b0707e020c4ad7c0a674b58054373fa61bd53152bcd6785982a7d15a",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P11-sidewalk-passing-a-driveway",
+    "what": "the sidewalk passing a driveway",
+    "drive": {
+     "side": 1,
+     "after": 100,
+     "edge": "d0"
+    },
+    "dd": -6.5,
+    "lat": 7.1,
+    "pitch": -0.24
+   },
+   "at": {
+    "d": 96.23,
+    "lat": 7.1
+   },
+   "calls": 393,
+   "triangles": 752652,
+   "cam": {
+    "p": [
+     7.053,
+     3.216,
+     -96.261
+    ],
+    "q": [
+     -0.2039,
+     -0.0055,
+     0.0069,
+     0.979
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P11-sidewalk-passing-a-driveway--original.jpg",
+   "sha256": "6a9ddd63072418321b8b56e89e5ba084c1a3d38e4271b965d311b1647d15afd4",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P11-sidewalk-passing-a-driveway",
+    "what": "the sidewalk passing a driveway",
+    "drive": {
+     "side": 1,
+     "after": 100,
+     "edge": "d0"
+    },
+    "dd": -6.5,
+    "lat": 7.1,
+    "pitch": -0.24
+   },
+   "at": {
+    "d": 96.23,
+    "lat": 7.1
+   },
+   "calls": 411,
+   "triangles": 765168,
+   "cam": {
+    "p": [
+     7.053,
+     3.216,
+     -96.261
+    ],
+    "q": [
+     -0.2039,
+     -0.0055,
+     0.0069,
+     0.979
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P13-briarwood-intersection--reconstructed.jpg",
+   "sha256": "5253f614f7c6c022c3769d202bd2aed9174425b71f25e8da478ae6dba430a307",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P13-briarwood-intersection",
+    "what": "the Briarwood Lane junction",
+    "d": 572,
+    "lat": -0.5,
+    "yaw": -0.5,
+    "pitch": -0.18
+   },
+   "at": {
+    "d": 572,
+    "lat": -0.5
+   },
+   "calls": 502,
+   "triangles": 851302,
+   "cam": {
+    "p": [
+     107.446,
+     2.952,
+     -532.978
+    ],
+    "q": [
+     -0.1638,
+     -0.0538,
+     -0.0019,
+     0.985
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:51 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P13-briarwood-intersection--original.jpg",
+   "sha256": "dfdc47288b9c201a85349d3db195c41e4af7f6d4669e1f52911b30ae45b2087e",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P13-briarwood-intersection",
+    "what": "the Briarwood Lane junction",
+    "d": 572,
+    "lat": -0.5,
+    "yaw": -0.5,
+    "pitch": -0.18
+   },
+   "at": {
+    "d": 572,
+    "lat": -0.5
+   },
+   "calls": 520,
+   "triangles": 866442,
+   "cam": {
+    "p": [
+     107.446,
+     2.952,
+     -532.978
+    ],
+    "q": [
+     -0.1638,
+     -0.0538,
+     -0.0019,
+     0.985
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:51 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P14-summerfield-intersection--reconstructed.jpg",
+   "sha256": "ce133af8f7f4a2368c19c2ff66266ee95a808b8e3ce912cb08c8b1d20ea48971",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P14-summerfield-intersection",
+    "what": "the Summerfield Road junction",
+    "d": 848,
+    "lat": 0.5,
+    "yaw": 0.5,
+    "pitch": -0.18
+   },
+   "at": {
+    "d": 848,
+    "lat": 0.5
+   },
+   "calls": 343,
+   "triangles": 482810,
+   "cam": {
+    "p": [
+     129.673,
+     -0.36,
+     -779.075
+    ],
+    "q": [
+     -0.1806,
+     -0.1022,
+     -0.0154,
+     0.9781
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:55 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P14-summerfield-intersection--original.jpg",
+   "sha256": "3e8b893406fe8d73f70bf04bfa67d4c5362764f3ca3bab8b4eae36d195dcde16",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P14-summerfield-intersection",
+    "what": "the Summerfield Road junction",
+    "d": 848,
+    "lat": 0.5,
+    "yaw": 0.5,
+    "pitch": -0.18
+   },
+   "at": {
+    "d": 848,
+    "lat": 0.5
+   },
+   "calls": 353,
+   "triangles": 489532,
+   "cam": {
+    "p": [
+     129.673,
+     -0.36,
+     -779.075
+    ],
+    "q": [
+     -0.1806,
+     -0.1022,
+     -0.0154,
+     0.9781
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:55 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P15-cul-de-sac-curb--reconstructed.jpg",
+   "sha256": "e0282efb279ab45f9c0d6861f8b6aa45589510151fb1e3f641ddec78c93653ca",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P15-cul-de-sac-curb",
+    "what": "the curved cul-de-sac curb",
+    "d": 1127,
+    "lat": 2,
+    "yaw": -0.9,
+    "pitch": -0.3
+   },
+   "at": {
+    "d": 1127,
+    "lat": 2
+   },
+   "calls": 103,
+   "triangles": 159135,
+   "cam": {
+    "p": [
+     246.271,
+     2.56,
+     -1022.908
+    ],
+    "q": [
+     -0.1909,
+     -0.464,
+     -0.1001,
+     0.8592
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P15-cul-de-sac-curb--original.jpg",
+   "sha256": "a6308f8e4c362fd796a7c4943dedfac901f9b7f6fe13e6d20f6eeebf81e5b493",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P15-cul-de-sac-curb",
+    "what": "the curved cul-de-sac curb",
+    "d": 1127,
+    "lat": 2,
+    "yaw": -0.9,
+    "pitch": -0.3
+   },
+   "at": {
+    "d": 1127,
+    "lat": 2
+   },
+   "calls": 105,
+   "triangles": 159135,
+   "cam": {
+    "p": [
+     246.271,
+     2.56,
+     -1022.908
+    ],
+    "q": [
+     -0.1909,
+     -0.464,
+     -0.1001,
+     0.8592
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P16-cul-de-sac-and-lookout--reconstructed.jpg",
+   "sha256": "5e7de1abdc19e7dd9db957cc4f40d910992ec6fbc65db977c0013a64dd868ab2",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P16-cul-de-sac-and-lookout",
+    "what": "the cul-de-sac asphalt and the lookout",
+    "d": 1112,
+    "lat": -0.8,
+    "pitch": -0.14
+   },
+   "at": {
+    "d": 1112,
+    "lat": -0.8
+   },
+   "calls": 170,
+   "triangles": 189566,
+   "cam": {
+    "p": [
+     242.282,
+     2.624,
+     -1008.182
+    ],
+    "q": [
+     -0.1521,
+     -0.0437,
+     0.0008,
+     0.9874
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P16-cul-de-sac-and-lookout--original.jpg",
+   "sha256": "c674398df331e26309687466d1c7412165310a13e0df422c12c11d728d2eaf7a",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P16-cul-de-sac-and-lookout",
+    "what": "the cul-de-sac asphalt and the lookout",
+    "d": 1112,
+    "lat": -0.8,
+    "pitch": -0.14
+   },
+   "at": {
+    "d": 1112,
+    "lat": -0.8
+   },
+   "calls": 172,
+   "triangles": 189566,
+   "cam": {
+    "p": [
+     242.282,
+     2.624,
+     -1008.182
+    ],
+    "q": [
+     -0.1521,
+     -0.0437,
+     0.0008,
+     0.9874
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P18-streetlights-at-dusk--reconstructed.jpg",
+   "sha256": "644bc79705b8ff8042b3eecbb31eaebcee11718343f40200b27b414c6055fe87",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P18-streetlights-at-dusk",
+    "what": "the streetlight at d 1115 on the pavement, end of the evening (after the call at the lookout, night 0.7)",
+    "night": true,
+    "d": 1104,
+    "lat": -1.4,
+    "yaw": -0.25,
+    "pitch": -0.15
+   },
+   "at": {
+    "d": 1104,
+    "lat": -1.4
+   },
+   "calls": 170,
+   "triangles": 235153,
+   "cam": {
+    "p": [
+     241.044,
+     2.671,
+     -1000.258
+    ],
+    "q": [
+     -0.1523,
+     -0.1665,
+     -0.0181,
+     0.974
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P18-streetlights-at-dusk--original.jpg",
+   "sha256": "883db60df9e124cbae6289fcb239217c9cc240118d49d7e70e78a4fb5a6a5132",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P18-streetlights-at-dusk",
+    "what": "the streetlight at d 1115 on the pavement, end of the evening (after the call at the lookout, night 0.7)",
+    "night": true,
+    "d": 1104,
+    "lat": -1.4,
+    "yaw": -0.25,
+    "pitch": -0.15
+   },
+   "at": {
+    "d": 1104,
+    "lat": -1.4
+   },
+   "calls": 173,
+   "triangles": 235241,
+   "cam": {
+    "p": [
+     241.044,
+     2.671,
+     -1000.258
+    ],
+    "q": [
+     -0.1523,
+     -0.1665,
+     -0.0181,
+     0.974
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P21-flashlight-on-the-pavement--reconstructed.jpg",
+   "sha256": "d4253cf5e29278ccede7c51cb4c18d36082fe867210c09404f4c51becf82db96",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P21-flashlight-on-the-pavement",
+    "what": "the game's flashlight on the pavement at the end of the evening (QA lighting test: the flashlight light switched on in the Prologue, after the call)",
+    "night": true,
+    "d": 1118,
+    "lat": -3.2,
+    "yaw": -0.6,
+    "pitch": -0.45,
+    "flash": true
+   },
+   "at": {
+    "d": 1118,
+    "lat": -3.2
+   },
+   "calls": 147,
+   "triangles": 177727,
+   "cam": {
+    "p": [
+     240.369,
+     2.581,
+     -1014.354
+    ],
+    "q": [
+     -0.2774,
+     -0.3262,
+     -0.0929,
+     0.8989
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P21-flashlight-on-the-pavement--original.jpg",
+   "sha256": "bb361b0935569e64051daaa17d5e38857560db036b7dcefa5341f225f575f85f",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P21-flashlight-on-the-pavement",
+    "what": "the game's flashlight on the pavement at the end of the evening (QA lighting test: the flashlight light switched on in the Prologue, after the call)",
+    "night": true,
+    "d": 1118,
+    "lat": -3.2,
+    "yaw": -0.6,
+    "pitch": -0.45,
+    "flash": true
+   },
+   "at": {
+    "d": 1118,
+    "lat": -3.2
+   },
+   "calls": 149,
+   "triangles": 177727,
+   "cam": {
+    "p": [
+     240.369,
+     2.581,
+     -1014.354
+    ],
+    "q": [
+     -0.2774,
+     -0.3262,
+     -0.0929,
+     0.8989
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  }
+ ],
+ "pairs": [
+  {
+   "name": "P01-asphalt-beneath-the-bike",
+   "what": "asphalt directly beneath the player while riding",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     -1.235,
+     2.726,
+     -39.989
+    ],
+    "q": [
+     -0.4503,
+     -0.0096,
+     0.0045,
+     0.8928
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 40,
+    "lat": -1.2
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 147,
+    "triangles": 300174
+   },
+   "original": {
+    "calls": 154,
+    "triangles": 303704
+   },
+   "files": [
+    "docs/qa/pavement/browser/P01-asphalt-beneath-the-bike--reconstructed.jpg",
+    "docs/qa/pavement/browser/P01-asphalt-beneath-the-bike--original.jpg"
+   ]
+  },
+  {
+   "name": "P02-road-ahead-from-the-bike",
+   "what": "the road looking forward from bicycle height",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     -1.539,
+     3.089,
+     -60.004
+    ],
+    "q": [
+     -0.133,
+     -0.0032,
+     0.0057,
+     0.9911
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 60,
+    "lat": -1.5
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 343,
+    "triangles": 647679
+   },
+   "original": {
+    "calls": 359,
+    "triangles": 656671
+   },
+   "files": [
+    "docs/qa/pavement/browser/P02-road-ahead-from-the-bike--reconstructed.jpg",
+    "docs/qa/pavement/browser/P02-road-ahead-from-the-bike--original.jpg"
+   ]
+  },
+  {
+   "name": "P03-long-view-down-oak-hollow",
+   "what": "a long view down Oak Hollow Drive",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     57.365,
+     0.455,
+     -286.96
+    ],
+    "q": [
+     -0.1062,
+     -0.2722,
+     -0.0236,
+     0.9561
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 300,
+    "lat": -1
+   },
+   "clock": "AUGUST 21, 2011  7:46 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 475,
+    "triangles": 984376
+   },
+   "original": {
+    "calls": 492,
+    "triangles": 997406
+   },
+   "files": [
+    "docs/qa/pavement/browser/P03-long-view-down-oak-hollow--reconstructed.jpg",
+    "docs/qa/pavement/browser/P03-long-view-down-oak-hollow--original.jpg"
+   ]
+  },
+  {
+   "name": "P04-asphalt-close-detail",
+   "what": "a close asphalt detail: a repaired manhole, a sealed crack",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     -1.143,
+     3.189,
+     -82.525
+    ],
+    "q": [
+     -0.4632,
+     -0.0118,
+     0.0057,
+     0.8861
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 82.5,
+    "lat": -1.1
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 167,
+    "triangles": 379370
+   },
+   "original": {
+    "calls": 174,
+    "triangles": 382900
+   },
+   "files": [
+    "docs/qa/pavement/browser/P04-asphalt-close-detail--reconstructed.jpg",
+    "docs/qa/pavement/browser/P04-asphalt-close-detail--original.jpg"
+   ]
+  },
+  {
+   "name": "P05-asphalt-meets-gutter",
+   "what": "asphalt meeting the concrete gutter pan",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     4.127,
+     2.098,
+     -149.808
+    ],
+    "q": [
+     -0.34,
+     -0.3782,
+     -0.1379,
+     0.8499
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 150,
+    "lat": 3.5
+   },
+   "clock": "AUGUST 21, 2011  7:44 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 203,
+    "triangles": 519562
+   },
+   "original": {
+    "calls": 210,
+    "triangles": 523382
+   },
+   "files": [
+    "docs/qa/pavement/browser/P05-asphalt-meets-gutter--reconstructed.jpg",
+    "docs/qa/pavement/browser/P05-asphalt-meets-gutter--original.jpg"
+   ]
+  },
+  {
+   "name": "P06-sidewalk-from-standing-height",
+   "what": "sidewalk concrete (riding camera on the walk, eye about 1.5 m)",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     7.055,
+     2.93,
+     -43.993
+    ],
+    "q": [
+     -0.2427,
+     -0.0069,
+     0.0065,
+     0.9701
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 343,
+    "triangles": 656224
+   },
+   "original": {
+    "calls": 360,
+    "triangles": 666536
+   },
+   "files": [
+    "docs/qa/pavement/browser/P06-sidewalk-from-standing-height--reconstructed.jpg",
+    "docs/qa/pavement/browser/P06-sidewalk-from-standing-height--original.jpg"
+   ]
+  },
+  {
+   "name": "P07-sidewalk-joints-close",
+   "what": "sidewalk joints from close range",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     7.054,
+     2.929,
+     -43.989
+    ],
+    "q": [
+     -0.4957,
+     -0.0139,
+     0.0057,
+     0.8684
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 140,
+    "triangles": 286621
+   },
+   "original": {
+    "calls": 146,
+    "triangles": 289533
+   },
+   "files": [
+    "docs/qa/pavement/browser/P07-sidewalk-joints-close--reconstructed.jpg",
+    "docs/qa/pavement/browser/P07-sidewalk-joints-close--original.jpg"
+   ]
+  },
+  {
+   "name": "P08-curb-face-from-the-bike",
+   "what": "the curb face from bicycle height",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     3.354,
+     2.688,
+     -39.986
+    ],
+    "q": [
+     -0.1674,
+     -0.5717,
+     -0.1407,
+     0.7908
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 40,
+    "lat": 3.4
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 217,
+    "triangles": 536843
+   },
+   "original": {
+    "calls": 226,
+    "triangles": 543661
+   },
+   "files": [
+    "docs/qa/pavement/browser/P08-curb-face-from-the-bike--reconstructed.jpg",
+    "docs/qa/pavement/browser/P08-curb-face-from-the-bike--original.jpg"
+   ]
+  },
+  {
+   "name": "P09-driveway-curb-cut",
+   "what": "a driveway curb cut from street level",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     3.554,
+     3.021,
+     -100.96
+    ],
+    "q": [
+     -0.2127,
+     -0.4704,
+     -0.1127,
+     0.849
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 454,
+    "triangles": 987837
+   },
+   "original": {
+    "calls": 475,
+    "triangles": 1005233
+   },
+   "files": [
+    "docs/qa/pavement/browser/P09-driveway-curb-cut--reconstructed.jpg",
+    "docs/qa/pavement/browser/P09-driveway-curb-cut--original.jpg"
+   ]
+  },
+  {
+   "name": "P10-a-whole-driveway",
+   "what": "a complete residential driveway",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     2.153,
+     2.986,
+     -104.465
+    ],
+    "q": [
+     -0.0956,
+     -0.6774,
+     -0.0922,
+     0.7235
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 104.43,
+    "lat": 2.2
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 170,
+    "triangles": 435913
+   },
+   "original": {
+    "calls": 178,
+    "triangles": 442777
+   },
+   "files": [
+    "docs/qa/pavement/browser/P10-a-whole-driveway--reconstructed.jpg",
+    "docs/qa/pavement/browser/P10-a-whole-driveway--original.jpg"
+   ]
+  },
+  {
+   "name": "P11-sidewalk-passing-a-driveway",
+   "what": "the sidewalk passing a driveway",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     7.053,
+     3.216,
+     -96.261
+    ],
+    "q": [
+     -0.2039,
+     -0.0055,
+     0.0069,
+     0.979
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 96.23,
+    "lat": 7.1
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 393,
+    "triangles": 752652
+   },
+   "original": {
+    "calls": 411,
+    "triangles": 765168
+   },
+   "files": [
+    "docs/qa/pavement/browser/P11-sidewalk-passing-a-driveway--reconstructed.jpg",
+    "docs/qa/pavement/browser/P11-sidewalk-passing-a-driveway--original.jpg"
+   ]
+  },
+  {
+   "name": "P13-briarwood-intersection",
+   "what": "the Briarwood Lane junction",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     107.446,
+     2.952,
+     -532.978
+    ],
+    "q": [
+     -0.1638,
+     -0.0538,
+     -0.0019,
+     0.985
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 572,
+    "lat": -0.5
+   },
+   "clock": "AUGUST 21, 2011  7:51 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 502,
+    "triangles": 851302
+   },
+   "original": {
+    "calls": 520,
+    "triangles": 866442
+   },
+   "files": [
+    "docs/qa/pavement/browser/P13-briarwood-intersection--reconstructed.jpg",
+    "docs/qa/pavement/browser/P13-briarwood-intersection--original.jpg"
+   ]
+  },
+  {
+   "name": "P14-summerfield-intersection",
+   "what": "the Summerfield Road junction",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     129.673,
+     -0.36,
+     -779.075
+    ],
+    "q": [
+     -0.1806,
+     -0.1022,
+     -0.0154,
+     0.9781
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 848,
+    "lat": 0.5
+   },
+   "clock": "AUGUST 21, 2011  7:55 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 343,
+    "triangles": 482810
+   },
+   "original": {
+    "calls": 353,
+    "triangles": 489532
+   },
+   "files": [
+    "docs/qa/pavement/browser/P14-summerfield-intersection--reconstructed.jpg",
+    "docs/qa/pavement/browser/P14-summerfield-intersection--original.jpg"
+   ]
+  },
+  {
+   "name": "P15-cul-de-sac-curb",
+   "what": "the curved cul-de-sac curb",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     246.271,
+     2.56,
+     -1022.908
+    ],
+    "q": [
+     -0.1909,
+     -0.464,
+     -0.1001,
+     0.8592
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 1127,
+    "lat": 2
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 103,
+    "triangles": 159135
+   },
+   "original": {
+    "calls": 105,
+    "triangles": 159135
+   },
+   "files": [
+    "docs/qa/pavement/browser/P15-cul-de-sac-curb--reconstructed.jpg",
+    "docs/qa/pavement/browser/P15-cul-de-sac-curb--original.jpg"
+   ]
+  },
+  {
+   "name": "P16-cul-de-sac-and-lookout",
+   "what": "the cul-de-sac asphalt and the lookout",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     242.282,
+     2.624,
+     -1008.182
+    ],
+    "q": [
+     -0.1521,
+     -0.0437,
+     0.0008,
+     0.9874
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 1112,
+    "lat": -0.8
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 170,
+    "triangles": 189566
+   },
+   "original": {
+    "calls": 172,
+    "triangles": 189566
+   },
+   "files": [
+    "docs/qa/pavement/browser/P16-cul-de-sac-and-lookout--reconstructed.jpg",
+    "docs/qa/pavement/browser/P16-cul-de-sac-and-lookout--original.jpg"
+   ]
+  },
+  {
+   "name": "P18-streetlights-at-dusk",
+   "what": "the streetlight at d 1115 on the pavement, end of the evening (after the call at the lookout, night 0.7)",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     241.044,
+     2.671,
+     -1000.258
+    ],
+    "q": [
+     -0.1523,
+     -0.1665,
+     -0.0181,
+     0.974
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 1104,
+    "lat": -1.4
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 170,
+    "triangles": 235153
+   },
+   "original": {
+    "calls": 173,
+    "triangles": 235241
+   },
+   "files": [
+    "docs/qa/pavement/browser/P18-streetlights-at-dusk--reconstructed.jpg",
+    "docs/qa/pavement/browser/P18-streetlights-at-dusk--original.jpg"
+   ]
+  },
+  {
+   "name": "P21-flashlight-on-the-pavement",
+   "what": "the game's flashlight on the pavement at the end of the evening (QA lighting test: the flashlight light switched on in the Prologue, after the call)",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     240.369,
+     2.581,
+     -1014.354
+    ],
+    "q": [
+     -0.2774,
+     -0.3262,
+     -0.0929,
+     0.8989
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 1118,
+    "lat": -3.2
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 147,
+    "triangles": 177727
+   },
+   "original": {
+    "calls": 149,
+    "triangles": 177727
+   },
+   "files": [
+    "docs/qa/pavement/browser/P21-flashlight-on-the-pavement--reconstructed.jpg",
+    "docs/qa/pavement/browser/P21-flashlight-on-the-pavement--original.jpg"
+   ]
+  }
+ ]
 }
