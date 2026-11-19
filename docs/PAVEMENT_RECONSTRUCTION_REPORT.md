@@ -26,7 +26,7 @@ Shown in the Prologue only; Chapter Eight's damage cuts the same materials.
 | Starting branch | `claude/prologue-grass-lawn-ground-repair` |
 | Starting SHA | `ec34db3a59646beb8b4be1d2aeeda77354a1f5d2` (`git rev-parse HEAD` before the branch was made) |
 | Working branch | `claude/prologue-roads-sidewalks-curbs-reconstruction` (new) |
-| Final SHA | __FINAL_SHA__ |
+| Final SHA | the branch head on the remote, verified at delivery (its last commit only updates this report). Code: `ee08a01` — `dist/` unchanged since; evidence: `c30d2c1`; regressions and cost: `4ed89ba`, `6a8dced` |
 
 Kept as they were: the bikes, houses, vegetation, old oak, lawn and grass benchmarks (their files byte for byte), the
 story through Chapter Eight, Aftermath I and II, the 2026 coda and the credits.
@@ -97,13 +97,13 @@ other vertex in the world is the default game's, §11):
 | Resurfacing sections | Overlaid in pieces of ~170 m: ±3.75 % tone and ±15 % aggregate exposure per section | 120–230 m |
 | Broad variation | Two fbm layers, a few percent | 6–22 m |
 | Traffic | Two wheel paths per lane (darker, smoother, less aggregate), the oil-drip line between them; round the bulb, a turning loop | lanes at ±2.2 m (±1.9 on side streets) |
-| Crown seam | The paving pass joint at the crown: a hairline crack for about half its length, rubberized sealant in ragged runs | 3.5 mm crack; 4.5–6.5 cm sealant |
+| Crown seam | The paving pass joint at the crown: a hairline crack along part of its length, rubberized sealant in ragged runs | 3.5 mm crack; 4.5–6.5 cm sealant |
 | Transverse cracks | About one 7 m cell in three; wandering, partial or full width; 60 % sealed | 3–5 mm crack; 5–6.5 cm sealant |
 | Utility patches | A saw-cut service patch from the curb in front of about one lot in four or five; a rounded-square repair round each manhole. Darker, younger, finer; a fine ragged sealed seam | 0.9–1.4 m × 1.3–3.9 m; 1.5 m |
 | Edge | The last 15–55 cm by the gutter: dustier, coarser, raveled (lost stones) | — |
 | Oil | Where cars park (layout map), sparse, irregular | 0.3–0.5 m |
 | Shape | Gentle depressions (normal only) | ~1 m |
-| Roughness | 0.88–0.97 (wheel paths −0.06; patches 0.86; sealant 0.82; oil 0.74) — dry asphalt stays rough; no puddles | — |
+| Roughness | 0.88–0.97 (wheel paths −0.06; patches 0.86; sealant 0.92, matte; oil 0.74) — dry asphalt stays rough; no puddles | — |
 | Distance | Mipmaps + 16× anisotropy; lines are box-filtered to their pixel coverage and cracks fade out by 5 cm footprint | — |
 
 **Cast-iron covers** (the existing manholes): rim, ring, waffle bosses, two pick holes; tops polished by tires
@@ -116,7 +116,9 @@ surfaces and smooth the low places. No rain or catastrophe state is implemented.
 ## 5. Concrete (sidewalks, curbs, gutters, driveways, walks)
 
 All concrete shares one CC0 photogrammetry set (Poly Haven *Gravel Concrete 04*: fine aggregate, small exposed stones,
-pores), 2 m tile, 1024² (512 px/m), sampled in world metres at two scales (or triplanar on the curb face), then:
+pores), 2 m tile, 1024² (512 px/m), sampled in world metres at two scales (or triplanar on the curb face). The scan's
+contrast is kept at about 40 % on walks and driveways (50 % in gutters, 42 % on curbs) with a slight mip bias, and a
+hand-sized cement-paste mottle is added: at full strength the scan read as granite or sandpaper up close. Then:
 
 | Sidewalk | |
 |---|---|
@@ -166,7 +168,7 @@ cells in the same chunks (part C). The soil faces sit below the lawn's edge, ins
 ## 9. Before/after evidence
 
 Every row is **one camera and one frame** in the running game (game-renderer captures; the gameplay riding camera
-placed by the QA hook; **software WebGL**, SwiftShader; 1600 × 900; commit `c30d2c1`). Only the O key's mode changes
+placed by the QA hook; **software WebGL**, SwiftShader; 1600 × 900; code at commit `ee08a01`, whose `dist/` is the final commit's). Only the O key's mode changes
 between the two images. The clock is the game's own HUD. P12, P17, P19, P20 and P22 were taken with
 `?bikes&houses&vegetation&pavement` (the authored bikes, refined houses, authored vegetation and repaired lawn on in
 both halves; only the pavement changes). The camera pose of each is in `qa/pavement/browser/report.json`.
@@ -227,7 +229,7 @@ measured**; do not read these as GPU benchmarks.
 |---|---|
 | Textures | 6 × 1024² JPEG (asphalt and concrete: albedo detail, normal, height/roughness/AO), **5.6 MB** on disk |
 | GPU texture memory (estimate, RGBA8 + mips) | **~32 MB** (6 × 5.3 MB); the layout map 64 KB, the driveway table 1 KB |
-| Shader programs | one per surface kind (asphalt, gutter, curb, walk, driveway, walk path, cast iron); 88 programs in the page in all |
+| Shader programs | one per surface kind (asphalt, gutter, curb, walk, driveway, walk path, cast iron): +7 at the same view (46 → 53) |
 | Merged batches | 2,395 against the default 2,225 (+170): each concrete kind is its own batch per 110 m cell (they shared one before), the soil faces and the bulb have their own, and the old decals keep their own batches for the comparison |
 | Triangles added | 8,384 (soil faces) + 1,470 (the tessellated bulb, replacing the default fan's 98) — the rest of the geometry is the default game's |
 | Loading | textures load in 41 ms from a local server after the world is built (part B); the world build itself is the default game's (the flag adds the attributes and the layout map) |
@@ -374,6 +376,21 @@ RECONSTRUCTED and ORIGINAL in the same frame. The DEV label (top-left) shows wha
 
 Offline: unzip `Last-Light-Prologue-Pavement-Reconstruction.zip`, open `Last-Light-Playtest.html` in desktop Chrome or
 Edge, add `?bikes&houses&vegetation&pavement` to the address (instructions in `PAVEMENT-README.txt`).
+
+**The offline package.** `Last-Light-Prologue-Pavement-Reconstruction.zip` is not committed (`release/` is ignored).
+- **Size and hash:** 90,440,656 bytes, SHA-256 `afaad8798b190ed5edee69c2bcc69a77bfb857fd670f8f3a53bf7a2d035e162a`.
+- **Contents:** `Last-Light-Playtest.html` (153.6 MB), built by `PLAYTEST_MENU=1 PLAYTEST_MODELS=1 node
+  tools/package-playtest.mjs` at `c30d2c1` from a clean tree (`dist/` identical to the final commit): the whole game
+  with the title menu, and the bikes, houses, vegetation, lawn and pavement files embedded; `PAVEMENT-README.txt` (the
+  flags and the O key), `START-HERE.txt`, `review-gallery/` (the 22 same-frame pairs with a compare slider, opens from
+  disk), this report, `THIRD_PARTY_ASSETS.md`, `THREE-LICENSE.txt`, `manifest.json`.
+- **Checked after extracting:** opened from disk with the browser offline, `?qa&bikes&houses&vegetation&pavement`
+  loads all four benchmarks (pavement active, six textures from the embedded bytes, lawn mode C), the ride starts, no
+  network request, no page error. (The suite's part D checks the same for `?pavement` and the default package.)
+- **To rebuild it:** `PLAYTEST_MENU=1 PLAYTEST_MODELS=1 node tools/package-playtest.mjs release/pavement-pkg`, then copy
+  `tools/pavement-playtest-readme.txt` (as `PAVEMENT-README.txt`), this report and the gallery
+  (`python3 tools/materials/roads/build_review_gallery.py docs/qa/pavement/browser/report.json <dir>/review-gallery --standalone`)
+  beside the HTML and zip the folder.
 
 Rebuild the textures: `python3 tools/materials/roads/build_pavement_textures.py` (numpy, Pillow).
 Run the checks: `node tests/pavement-browser.mjs` (about an hour in software rendering).
