@@ -13,8 +13,9 @@ import {placeVegetation} from './vegetation-assets.js';
 
 export async function mountInGame({scene,camera,renderer,world,sun,ambient}){
  const label=document.createElement('div');label.id='vegetation-benchmark-label';
- const above=['bike-benchmark-label','house-benchmark-label'].filter(id=>document.getElementById(id)).length;
- label.style.cssText=`position:fixed;left:8px;top:${8+above*88}px;z-index:50;padding:4px 8px;background:rgba(0,0,0,.55);color:#e8e2d0;font:12px/1.35 monospace;pointer-events:none;white-space:pre`;
+ label.style.cssText='position:fixed;left:8px;top:8px;z-index:50;padding:4px 8px;background:rgba(0,0,0,.55);color:#e8e2d0;font:12px/1.35 monospace;pointer-events:none;white-space:pre';
+ // stacked under the bike and house benchmark labels when those flags are on too (they may mount after this one)
+ const place=()=>{let y=8;for(const id of ['bike-benchmark-label','house-benchmark-label']){const o=document.getElementById(id);if(o)y=Math.max(y,o.getBoundingClientRect().bottom+6);}label.style.top=Math.round(y)+'px';};place();
  label.textContent='VEGETATION BENCHMARK (DEV): loading the authored vegetation…';document.body.appendChild(label);
  let V=null,error=null;const t0=performance.now();
  try{V=await placeVegetation({world,scene,renderer,ambient});}catch(e){error=String(e?.message||e);console.error('vegetation benchmark:',e);}
@@ -24,7 +25,7 @@ export async function mountInGame({scene,camera,renderer,world,sun,ambient}){
   if(e.code==='KeyK'){V.setAuthored(!V.authored);updateLabel();}
   if(e.code==='KeyL'){forced=forced===null?0:forced===2?null:forced+1;V.setLOD(forced);updateLabel();}
   if(e.code==='KeyU'){wind=(wind+1)%WINDS.length;V.setWind(WINDS[wind]);updateLabel();}});
- function updateLabel(){if(!V){label.textContent=`VEGETATION BENCHMARK (DEV) — FAILED, nothing substituted: ${error}`;label.style.color='#ff8a7a';return;}
+ function updateLabel(){place();if(!V){label.textContent=`VEGETATION BENCHMARK (DEV) — FAILED, nothing substituted: ${error}`;label.style.color='#ff8a7a';return;}
   const s=V.stats(),I=V.info;
   const lines=[`VEGETATION BENCHMARK (DEV) — ${V.authored?'AUTHORED':'PROCEDURAL (vegetation.js)'} · loaded in ${loadMs} ms · ${(I.bytes/1048576).toFixed(1)} MB · ${I.materials} materials · ${I.textures} textures (~${I.gpuTextureMB} MB GPU)`];
   if(V.authored)lines.push(`oak LOD${s.oak.level} · trees ${I.trees} (${I.variantsUsed} variants; LOD ${s.trees.levels.join('/')}) · shrubs ${I.shrubs} · meadow ${I.meadow} · lawn clumps ${s.lawn.clumps}`,
