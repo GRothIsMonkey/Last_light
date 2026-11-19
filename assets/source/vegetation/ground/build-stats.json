@@ -2,15 +2,15 @@
  "asset": "veg.ground",
  "variants": {
   "grass.lawn.1": {
-   "lod0": 128,
+   "lod0": 116,
    "lod1": 4
   },
   "grass.lawn.2": {
-   "lod0": 112,
+   "lod0": 100,
    "lod1": 4
   },
   "grass.lawn.3": {
-   "lod0": 144,
+   "lod0": 132,
    "lod1": 4
   },
   "grass.long.1": {

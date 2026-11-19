@@ -163,8 +163,8 @@ def tube(buf, P, R, sides, mat, color, wind, tile=(1.0, 1.0), radial=None, v0=0.
         b = a + 1
         c = a + w
         d = b + w
-        F.append(np.stack([a, c, b], 1))
-        F.append(np.stack([b, c, d], 1))
+        F.append(np.stack([a, b, c], 1))          # outward winding (the game draws bark single-sided)
+        F.append(np.stack([b, d, c], 1))
     F = np.concatenate(F)
     col = np.asarray(color, np.float64)
     col = np.repeat(col, w, axis=0) if col.ndim == 2 else col
@@ -177,7 +177,7 @@ def tube(buf, P, R, sides, mat, color, wind, tile=(1.0, 1.0), radial=None, v0=0.
         V = np.concatenate([V, tip[None]])
         UV = np.concatenate([UV, [[urep * .5, v[-1] + R[-1] / tile[1]]]])
         ti = len(V) - 1
-        F = np.concatenate([F, np.stack([base + np.arange(sides), np.full(sides, ti), base + np.arange(sides) + 1], 1)])
+        F = np.concatenate([F, np.stack([base + np.arange(sides), base + np.arange(sides) + 1, np.full(sides, ti)], 1)])
         col = np.concatenate([col, col[-1:]]) if col.ndim == 2 else col
         wd = np.concatenate([wd, wd[-1:]]) if wd.ndim == 2 else wd
     buf.add(V, UV, col, wd, F, mat)

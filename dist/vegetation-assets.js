@@ -184,6 +184,12 @@ export async function placeVegetation({world,scene,renderer,ambient=null}){
 
  // ---- street trees
  const treeField=new Field(scene,'trees',{dist:[34,82],hide:900,shadowLods:[0,1],U});
+ // far background trees were stood on a coarser terrain function than the far land that is drawn: ground each one on the
+ // visible surface (a ray down onto the world's own batches, the vegetation's excluded)
+ const groundMeshes=world.merged.filter(m=>!(m.userData.zone||'').startsWith('vg:'));const rc=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
+ const groundAt=(x,y,z)=>{const near=groundMeshes.filter(m=>{const b=m.geometry.boundingSphere;return b&&Math.hypot(b.center.x-x,b.center.z-z)<b.radius+1;});
+  rc.set(new THREE.Vector3(x,y+6,z),down);rc.far=14;const h=rc.intersectObjects(near,false).filter(q=>q.face&&q.face.normal.y>.5);if(!h.length)return y;
+  let best=h[0].point.y;for(const q of h)if(Math.abs(q.point.y-y)<Math.abs(best-y))best=q.point.y;return Math.abs(best-y)<1.5?best:y;};
  const placed=[];
  for(const rec of R.trees){if(rec.landmark)continue;const sp=SPECIES_OF(rec),list=bySpecies[sp];if(!list?.length){errors.push('no variants for '+sp);continue;}
   // a variant unlike its nearest placed neighbours (no clones in one view)
@@ -195,7 +201,8 @@ export async function placeVegetation({world,scene,renderer,ambient=null}){
   // keep the crown clear of the nearest house (a little overhang over a lawn-side eave is natural, through a wall is not)
   const clear=houseClearance(world,rec.x,rec.z);if(clear<Infinity&&crownV*s>clear+.4)s=Math.max(.5,(clear+.4)/crownV);
   const rot=hash(rec.x,rec.z,5)*Math.PI*2;
-  treeField.add(v,mat(rec.x,rec.y-.02,rec.z,rot,s),new THREE.Vector3(rec.x,rec.y+4*s,rec.z),{rec,s,lodScale:rec.lod==='far'?.7:1});
+  const y=rec.lod==='far'?groundAt(rec.x,rec.y,rec.z):rec.y;
+  treeField.add(v,mat(rec.x,y-.02,rec.z,rot,s),new THREE.Vector3(rec.x,y+4*s,rec.z),{rec,s,lodScale:rec.lod==='far'?.7:1});
   placed.push({sp,k,x:rec.x,z:rec.z});}
  treeField.build();
 

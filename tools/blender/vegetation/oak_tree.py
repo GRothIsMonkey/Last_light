@@ -377,12 +377,12 @@ class OakGeometry:
         F = []
         for i in range(len(zs) - 1):
             a_ = i * w + np.arange(sides)
-            F += [np.stack([a_, a_ + w, a_ + 1], 1), np.stack([a_ + 1, a_ + w, a_ + w + 1], 1)]
+            F += [np.stack([a_, a_ + 1, a_ + w], 1), np.stack([a_ + 1, a_ + w + 1, a_ + w], 1)]     # outward winding
         top = o.axis(zs[-1] + .25)
         V = np.concatenate([V, top[None]])
         UV = np.concatenate([UV, [[urep * .5, (zs[-1] + .85) / 1.5]]])
         base = (len(zs) - 1) * w
-        F.append(np.stack([base + np.arange(sides), np.full(sides, len(V) - 1), base + np.arange(sides) + 1], 1))
+        F.append(np.stack([base + np.arange(sides), base + np.arange(sides) + 1, np.full(sides, len(V) - 1)], 1))
         F = np.concatenate(F)
         occ = self.ao_bark(V)
         # moss on the trunk's north side (here: toward -Y, the shaded side at the lookout's evening) and low down
