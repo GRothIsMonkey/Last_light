@@ -195,7 +195,7 @@ export function createAmbient(scene,world,hooks={}){
 
  // The tire swing at the lookout, and lights of the next town over -------------------------------------------
  const sw=LOOKOUT.swing,oak=LOOKOUT.oak,swingRoot=world.anchor(sw.d,sw.lat,world.groundY(sw.d,sw.lat)-groundPoint(sw.d,sw.lat).y+4.35);
- {const limb=new THREE.Mesh(new THREE.CylinderGeometry(.09,.13,1,6),world.material(0x5d4f42));const dl=oak.lat-sw.lat,dd=oak.d-sw.d;limb.scale.y=Math.hypot(dl,dd)+.4;limb.position.set(dl/2,-.05,-dd/2);limb.rotation.set(0,Math.atan2(dl,-dd),Math.PI/2);limb.rotation.order='YXZ';limb.castShadow=true;swingRoot.add(limb);}
+ {const limb=new THREE.Mesh(new THREE.CylinderGeometry(.09,.13,1,6),world.material(0x5d4f42));const dl=oak.lat-sw.lat,dd=oak.d-sw.d;limb.scale.y=Math.hypot(dl,dd)+.4;limb.position.set(dl/2,-.05,-dd/2);limb.rotation.set(0,Math.atan2(dl,-dd),Math.PI/2);limb.rotation.order='YXZ';limb.castShadow=true;limb.name='swing-limb';swingRoot.add(limb);}
  const swing=new THREE.Group();swingRoot.add(swing);const tire=new THREE.Mesh(new THREE.TorusGeometry(.3,.11,8,16),world.material(0x2a2a2b));{const rope=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,3.05,5),world.material(0xb8a57e));rope.position.y=-1.52;swing.add(rope);tire.position.y=-3.35;tire.castShadow=true;swing.add(tire);}
  // A real pendulum (3.35 m of rope): the evening air keeps it turning a little, a push sends it
  // away from you and it swings back, slower each time. th: along the street, ph: across it.

@@ -29,6 +29,10 @@ import {buildPine} from './pine-build.js';
 export {JUNCTIONS,BULB,ROAD_END,LOOKOUT} from './layout.js';
 export {LAWN,SIDEWALK,CURB_TOP,knoll,roadCrown} from './terrain.js';
 
+// opts.vegetation (DEV, ?vegetation only): the Prologue's trees, foundation-bed shrubs and lookout grass are recorded
+// (W.vegRecord: where, what kind, how big) and baked into batches and shadow proxies of their own (zones 'vg:*'), so the
+// vegetation benchmark can stand authored vegetation in exactly their places and bring the procedural set back on demand.
+// Scope: Oak Hollow Drive (d -440..1400) and what stands within 95 m of it. Without it nothing changes.
 // opts.splitHouses (DEV, ?houses only): a function plan -> id|null. The named first-row houses keep their procedural
 // architecture in batches and shadow proxies of their own (zone 'hb:<id>'; the yard stays with the street), so the house
 // benchmark can show the authored house in its place and the procedural one again on demand. Without it nothing changes.
@@ -62,6 +66,7 @@ export function buildWorld(scene,opts={}){
  W.reserve=(d0,d1,l0,l1)=>W.obstacles.push({d0:Math.min(d0,d1),d1:Math.max(d0,d1),l0:Math.min(l0,l1),l1:Math.max(l0,l1),soft:true});
  W.pad=(d0,d1,l0,l1,y)=>W.pads.push({d0:Math.min(d0,d1),d1:Math.max(d0,d1),l0:Math.min(l0,l1),l1:Math.max(l0,l1),y});
 
+ if(opts.vegetation){W.vegRecord={trees:[],beds:[],scope:(x,z)=>{if(!W.vegPhase)return false;const q=MAIN.project(x,z);return q.u>-440&&q.u<1400&&Math.abs(q.v)<95;}};}
  W.easement=easementFrame(W);// Chapter Two's drainage easement: its ground leaves holes in the older ground
  W.woods=woodsFrame(W);// Chapter Three: the old access road past Briarwood's end, the woods, the outfall (same idea)
  W.drain=drainFrame(W);// ...and the storm sewer trunk behind the outfall
@@ -69,14 +74,14 @@ export function buildWorld(scene,opts={}){
  W.pine=pineFrame(W);// Chapter Five: the old Reservoir Road, the park and the camp at Pine Ridge (older ground and scatter leave it out)
  W.plans=planLots(W);// every first-row lot decided up front: streets need the driveway cuts
  buildStreets(W);// surfaces, curbs, sidewalks, junctions, cul-de-sac, lookout ground
- buildHouses(W);// first-row houses, friend homes and their interiors, driveways, walks
- buildYards(W);// trees, cars, yard props, fences, street furniture, utility network, signs
+ W.vegPhase='houses';buildHouses(W);// first-row houses, friend homes and their interiors, driveways, walks
+ W.vegPhase='yards';buildYards(W);W.vegPhase=null;// trees, cars, yard props, fences, street furniture, utility network, signs
  buildEasement(W);// behind the creek's back fence: channel, path, culvert, power line, brush
  buildWoods(W);// past Briarwood's end: the access road, the woods, the creek valley and the outfall
  buildDrain(W);// the box culvert behind the outfall
  buildTown(W);// Chapter Four: Old Mill Road, Main Street, the side streets and alleys, the rooms you can walk into (town-build.js)
  W.pine={...W.pine,...buildPine(W)};// Chapter Five: Pine Ridge (pine-build.js, pine-camp.js)
- buildBackground(W);// back yards, second row, side-street houses, far neighborhood and land
+ W.vegPhase='background';buildBackground(W);W.vegPhase=null;// back yards, second row, side-street houses, far neighborhood and land
 
  if(opts.splitHouses)for(const P of W.plans){const id=opts.splitHouses(P);if(!id||!P.g)continue;P.benchmarkZone='hb:'+id;P.g.traverse(o=>{if((o.isMesh||o.isLine)&&!o.userData.yard)o.userData.zone=P.benchmarkZone;});}
  const {merged,originals,shadowProxies}=bakeAndMerge(W,scene);
@@ -105,7 +110,7 @@ export function buildWorld(scene,opts={}){
 
  return {scene,road:W.named.road,originals,merged,windowMats:W.windowMats,porchMats:W.porchMats,streetLamps:W.streetLamps,foliage:W.foliage,grassMat:W.grassMat,grassMats:W.grassMats,
   groundY,authoredY,rideable:W.rideable,obstacles:W.obstacles,homes:W.homes,doors,garages,windows,sideDoors,anchor,houseAnchor,alexWindow:W.alexWindow,car:W.car,drivewayOpenings:W.drives,sideDrives:W.sideDrives||[],houses:W.houses,sidePlansAll:W.sidePlans,surfaceY:W.surfaceY,sideSurface:W.sideSurface,junctions:W.junctions,creek:W.creekInfo||null,interiorMats:W.interiorMats,
-  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,lights:W.lights,hooks:W.hooks||{},hoops:W.hoops||[],easement:W.easement,woods:W.woods,drain:W.drain,town:W.town,pine:W.pine,vegBuild:(g,r,o)=>W.veg.build(g,r,o),terrainY,signs:W.signs||[],
+  material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,vegRecord:W.vegRecord||null,lights:W.lights,hooks:W.hooks||{},hoops:W.hoops||[],easement:W.easement,woods:W.woods,drain:W.drain,town:W.town,pine:W.pine,vegBuild:(g,r,o)=>W.veg.build(g,r,o),terrainY,signs:W.signs||[],
   poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space,fenceSegs:W.fenceSegs||[]};
 }
 
@@ -178,6 +183,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
   if(layer.mode==='drape'){const p=layer.frame.point(layer.u0,0),a=layer.frame.heading(layer.u0);layer.lin={cx:p.x,cz:p.z,fx:Math.sin(a),fz:-Math.cos(a),rx:Math.cos(a),rz:Math.sin(a)};}
   const height=layer.mode==='drape'?heightGrid(layer):null;const objs=[];layer.group.traverse(o=>{if(o.isMesh||o.isLine)objs.push(o);});
   for(const o of objs){const {pos,nor}=transform(o,layer,height);
+   if(o.userData.vgBed&&W.vegRecord){let x=0,y=0,z=0,lo=1e9;const n=pos.length/3;for(let i=0;i<n;i++){x+=pos[i*3];y+=pos[i*3+1];z+=pos[i*3+2];lo=Math.min(lo,pos[i*3+1]);}W.vegRecord.beds.push({...o.userData.vgBed,x:x/n,y:y/n,z:z/n,ground:lo});}
    if(o.name&&o.isMesh&&!/^pine/.test(layer.zone||o.userData.zone||'')){/* (Pine Ridge keeps no reference copies: nothing reads them) */const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));if(o.geometry.index)g.setIndex(o.geometry.index.clone());g.computeBoundingSphere();const m=new THREE.Mesh(g,o.material);m.name=o.name;m.userData={...o.userData};originals.push(m);if(o.userData.ref)W.named[o.userData.ref]=m;}
    if(o.isLine){const key=o.material.color.getHex();if(!lineBatches.has(key))lineBatches.set(key,new Buf());const arr=lineBatches.get(key),segs=o.isLineSegments;for(let i=0;i<pos.length/3-1;i+=segs?2:1)arr.push(pos[i*3],pos[i*3+1],pos[i*3+2]),arr.push(pos[i*3+3],pos[i*3+4],pos[i*3+5]);continue;}
    const material=batchMaterial(o.material),idx=o.geometry.index,uv=o.geometry.attributes.uv,far=!!layer.far||!!o.userData.far,zone=layer.zone||o.userData.zone||null,cellSize=zone==='woods'?(far?120:70):zone==='tunnel'?50:zone==='town'?(far?160:90):zone==='town-int'?30:zone==='pine'?(far?150:80):zone==='pine-int'?24:far?220:110;
@@ -187,7 +193,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
    for(let t=0;t<tris;t++){const i0=idx?idx.getX(t*3):t*3,i1=idx?idx.getX(t*3+1):t*3+1,i2=idx?idx.getX(t*3+2):t*3+2;
     const cx=(pos[i0*3]+pos[i1*3]+pos[i2*3])/3,cz=(pos[i0*3+2]+pos[i1*3+2]+pos[i2*3+2])/3,cell=Math.floor(cx/cellSize)*1000+Math.floor(cz/cellSize);
     let b=local.get(cell);if(!b){b=batchFor(material,cell,far,zone);local.set(cell,b);}add(b,pos,nor,col,uv,i0);add(b,pos,nor,col,uv,i1);add(b,pos,nor,col,uv,i2);
-    if(caster){const sz=zone==='woods'?110:50,hb=zone&&zone.startsWith('hb:')?zone:null,sc=(hb?hb+':':'')+(zone==='woods'?'w':'')+((Math.floor(cx/sz)*1000+Math.floor(cz/sz))*2+(leaf?1:0));let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,hb,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
+    if(caster){const sz=zone==='woods'?110:50,hb=zone&&(zone.startsWith('hb:')||zone.startsWith('vg:'))?zone:null,sc=(hb?hb+':':'')+(zone==='woods'?'w':'')+((Math.floor(cx/sz)*1000+Math.floor(cz/sz))*2+(leaf?1:0));let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,hb,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
      for(const i of [i0,i1,i2]){sp.p.push(pos[i*3],pos[i*3+1],pos[i*3+2]);if(leaf)sp.uv.push(uv?uv.getX(i):0,uv?uv.getY(i):0,0);}}}
   }
  }

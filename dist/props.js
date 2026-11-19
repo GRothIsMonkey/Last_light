@@ -195,7 +195,7 @@ export function buildYards(W){
  {const tall=K.mat(0x8a9263,{side:THREE.DoubleSide,roughness:1});W.foliage.push(tall);const rand=seeded(77);
   for(let k=0;k<160;k++){const lat=(rand()-.5)*32,d=1167.5+rand()*9.5;if(Math.abs(lat)<1&&d<1172)continue;const g=W.place(MAIN,d,lat,{y:groundPoint(d,lat).y+knoll(d,lat)-.05,rot:rand()*3});for(let blade=0;blade<5;blade++){const h=.20+rand()*.36,w=.016+rand()*.018,bend=.06+rand()*.12;
    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([-w,0,0,w,0,0,-w*.6,h*.55,bend*.3,w*.6,h*.55,bend*.3,bend*.35,h,bend],3));geo.setIndex([0,1,2,1,3,2,2,3,4]);geo.computeVertexNormals();
-   const c=new THREE.Mesh(geo,tall);c.rotation.y=rand()*Math.PI*2;c.position.set((rand()-.5)*.19,0,(rand()-.5)*.19);g.add(c);}}}
+   const c=new THREE.Mesh(geo,tall);c.rotation.y=rand()*Math.PI*2;c.position.set((rand()-.5)*.19,0,(rand()-.5)*.19);if(W.vegRecord)c.userData.zone='vg:meadow';g.add(c);}}}
  {const d=1172.2,lat=-12.5,g=W.place(MAIN,d,lat,{y:groundPoint(d,lat).y+knoll(d,lat)});K.ball(g,0,.12,0,.12,0xb8643a,[1,1,1],true);hook('ball-in-grass',g);}
  chalkSun(3.2,1147.5,.034,0xf2cf7a);chalkText('JSA',LOOKOUT.chalk.lat,LOOKOUT.chalk.d,.034,0xe8e2d0,.6);hopscotch(-5.8,1135,-1,.034);hook('initials',null,{d:LOOKOUT.chalk.d,lat:LOOKOUT.chalk.lat});
  // Trees around the lookout and in the field beyond.

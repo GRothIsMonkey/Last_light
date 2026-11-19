@@ -383,8 +383,10 @@ function foundationBeds(W,P,g,rand){const {K}=W,pick=pickFrom(rand),{front,w}=P,
  for(const [x0,x1] of [[-W2+.3,P.doorX-P.porchW/2-.2],[P.doorX+P.porchW/2+.2,W2-.3]]){if(x1-x0<1)continue;
   K.rbox(g,(x0+x1)/2,.03,front+.55,x1-x0,.06,.9,.025,HOUSE.mulch);
   K.rbox(g,(x0+x1)/2,.025,front+1.0,x1-x0,.04,.09,.01,0x9d9480);
-  for(let x=x0+.6;x<x1-.3;x+=1.5+rand()*.6){K.ball(g,x,.42,front+.55,.42+rand()*.2,W.foliageMat(pick([0x5d7048,0x546a43,0x687a4c])),[1.2,.85,1]);
-   if(rand()<.5)for(let k=0;k<4;k++)K.ball(g,x+.4+rand()*.4,.2,front+.82+rand()*.2,.07,pick([0xd4665a,0xe8c160,0xd98fb0,0xf0ede0]));}}
+  // (DEV ?vegetation, world.js opts.vegetation: each shrub and flower is tagged so the benchmark can replace it in place)
+  const tag=(b,kind,extra)=>{if(W.vegRecord&&W.vegPhase&&b){b.userData.zone='vg:bed';b.userData.vgBed={kind,lot:P.key||null,frame:P.frameId||null,side:P.side,...extra};}return b;};
+  for(let x=x0+.6;x<x1-.3;x+=1.5+rand()*.6){const r=.42+rand()*.2,c=pick([0x5d7048,0x546a43,0x687a4c]);tag(K.ball(g,x,.42,front+.55,r,W.foliageMat(c),[1.2,.85,1]),'shrub',{r,color:c,rot:P.worldRot});
+   if(rand()<.5)for(let k=0;k<4;k++){const b=K.ball(g,x+.4+rand()*.4,.2,front+.82+rand()*.2,.07,pick([0xd4665a,0xe8c160,0xd98fb0,0xf0ede0]));tag(b,'flower',{color:b.material.color.getHex()});}}}
 }
 function buildRear(W,P,g,rand,mid){const {K}=W,D2=P.depth/2,x0=(P.seedB-.5)*P.w*.4;
  if(P.rear==='patio'){K.rbox(g,x0,.05,-D2-1.6,3.6,.1,3,.03,HOUSE.walk);if(P.grill&&!mid){const gr=K.group(g,x0+1.2,-D2-2.2,0,0);K.rbox(gr,0,.75,0,.6,.3,.45,.08,0x2b2b2d);for(const s of [-1,1])K.rod(gr,[s*.25,0,0],[s*.25,.62,0],.02,0x2b2b2d);}}

@@ -47,11 +47,14 @@ export function createVegetation(W){
   return {trunk:tr,crown:(1.7+2.2)*size*wide};
  }
  // Place on a street frame (rigid, upright) at an explicit ground height.
+ // DEV ?vegetation (world.js opts.vegetation): remember each tree in scope and give its meshes a zone of their own.
+ const record=(g,t,o,extra)=>{const R=W.vegRecord;if(!R||!R.scope(g.position.x,g.position.z))return;const i=R.trees.length,zone='vg:tree';
+  g.traverse(m=>{if(m.isMesh||m.isLine)m.userData.zone=zone;});R.trees.push({i,x:g.position.x,y:g.position.y,z:g.position.z,rot:g.rotation.y,kind:o.kind||'maple',size:o.size??1,lod:o.lod||'full',natural:!!o.natural,landmark:!!o.landmark,trunk:t.trunk,crown:t.crown,phase:W.vegPhase,...extra});};
  function tree(frame,u,v,y,opts={}){const p=frame.point(u,v),rand=seeded(hashSeed(3,u,v)),r=opts.clearance??1.2*(opts.size??1);
-  if(!opts.force&&!W.space.free(p.x,p.z,r))return null;const g=W.place(frame,u,v,{y,rot:rand()*6,far:opts.lod==='far'});const t=build(g,rand,opts);W.space.circle(p.x,p.z,Math.max(.4,t.trunk+.25),'tree');
+  if(!opts.force&&!W.space.free(p.x,p.z,r))return null;const g=W.place(frame,u,v,{y,rot:rand()*6,far:opts.lod==='far'});const t=build(g,rand,opts);W.space.circle(p.x,p.z,Math.max(.4,t.trunk+.25),'tree');record(g,t,opts,{frame:frame.id||'side',u,v});
   if(frame===W.MAIN)W.obstacles.push({d0:u-t.trunk-.2,d1:u+t.trunk+.2,l0:v-t.trunk-.2,l1:v+t.trunk+.2});return g;}
  function treeWorld(x,z,y,opts={}){const rand=seeded(hashSeed(4,x,z)),r=opts.clearance??1.2*(opts.size??1);if(!opts.force&&!W.space.free(x,z,r))return null;
-  const g=W.placeWorld(x,z,y,rand()*6,true);const t=build(g,rand,{lod:'far',...opts});W.space.circle(x,z,Math.max(.4,t.trunk+.3),'tree');return g;}
+  const g=W.placeWorld(x,z,y,rand()*6,true);const t=build(g,rand,{lod:'far',...opts});W.space.circle(x,z,Math.max(.4,t.trunk+.3),'tree');record(g,t,{lod:'far',...opts},{frame:'world'});return g;}
  function shrub(g,x,z,r,rand){const pick=pickFrom(rand),c=pick(FOLIAGE.shrubs);K.ball(g,x,r*.75,z,r,solid(c),[1.2,.8,1.1]);if(r>.5)K.ball(g,x+r*.5,r*.55,z+r*.2,r*.62,solid(c),[1.1,.8,1]);}
  return {tree,treeWorld,build,shrub};
 }
