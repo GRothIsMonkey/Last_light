@@ -129,4 +129,26 @@ TESTS
 
 ## 8. Known limitations
 
-LIMITS
+- **No real GPU.** Every frame and number here is software rendering (SwiftShader). The repair moves cost to the GPU:
+  - **Vertex work:** up to ~260k blade triangles at the lookout and ~60–220k on the street, each blade vertex reading the
+    lot and lookout maps and the ground's colour.
+  - **Fragment work:** the lawn ground samples up to about ten textures per pixel (two lawn scales and their normals; the
+    meadow, soil and clover only where they show; the two maps).
+
+  Frame time on the reference hardware is the next measurement.
+- **Memory.** The lawn textures add about 27 MB of GPU texture memory (uncompressed RGBA8 + mips estimate) and the
+  maps about 4 MB. KTX2 would cut that several times. The lawn file is 3.7 MB.
+- **Where the blades grow.** Blades grow on Oak Hollow Drive's lawns (curb strip, front, side and back yards within 40 m
+  of the centre line), around the cul-de-sac and on the lookout's knoll. Side streets and the far yards get the new
+  ground material without blades; from the street the blades would be gone by that distance anyway.
+- **Teleports.** The lawn masks are built ahead of the rider within a per-frame budget. After a jump (a chapter start, a
+  DEV scene, a QA `place`) the ground shows at once and the blades fill in over a fraction of a second. The tests build
+  synchronously (`__vegetation.tick()`).
+- **Mowing stripes** are deliberately faint, and their brightness depends on the view direction, so from some angles a
+  striped lawn shows none.
+- **Weeds** are the first benchmark's ground cards (4 triangles), kept sparse. A weed set of their own would be a later
+  pass.
+- **The field beyond the lookout's fence** keeps its tall meadow cards (seen from the knoll at a distance). Inside the
+  fence the long blades and the ground carry the grass.
+- **Under the DEV flag only.** The ground treatment applies to every lawn material of the town while `?vegetation` is on
+  (the per-lot care map covers Oak Hollow Drive; elsewhere lawns are average). The default game is unchanged.
