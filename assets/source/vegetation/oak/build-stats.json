@@ -1,0 +1,79 @@
+{
+ "asset": "lm.old-oak",
+ "version": 1,
+ "lods": {
+  "lod0": {
+   "tris": 81632,
+   "wood_tris": 53684,
+   "leaf_cards": 10566,
+   "carving_tris": 968,
+   "verts": 80108
+  },
+  "lod1": {
+   "tris": 15413,
+   "wood_tris": 8215,
+   "leaf_cards": 3599,
+   "carving_tris": 0,
+   "verts": 19422
+  },
+  "lod2": {
+   "tris": 2826,
+   "wood_tris": 1224,
+   "leaf_cards": 801,
+   "carving_tris": 0,
+   "verts": 3978
+  }
+ },
+ "limbs": [
+  {
+   "node": 11821,
+   "mass": 0.278,
+   "az": 78.678,
+   "z3": 8.882,
+   "z_out": 5.787
+  },
+  {
+   "node": 13461,
+   "mass": 0.193,
+   "az": 106.051,
+   "z3": 8.294,
+   "z_out": 7.36
+  },
+  {
+   "node": 14314,
+   "mass": 0.182,
+   "az": 330.59,
+   "z3": 6.23,
+   "z_out": 0.788
+  },
+  {
+   "node": 12035,
+   "mass": 0.174,
+   "az": 250.538,
+   "z3": 5.752,
+   "z_out": 3.428
+  },
+  {
+   "node": 13451,
+   "mass": 0.167,
+   "az": 206.986,
+   "z3": 5.966,
+   "z_out": 5.202
+  }
+ ],
+ "swing": {
+  "radius_at_pivot": 0.26,
+  "centre_z_at_pivot": 4.604900000000001,
+  "socket_z": 3.55
+ },
+ "rotation_deg": 56.0,
+ "dead_nodes": 262,
+ "textures": {
+  "bark_c": "assets/source/vegetation/oak/textures/lm.old-oak__bark_basecolor.jpg",
+  "bark_n": "assets/source/vegetation/oak/textures/lm.old-oak__bark_normal.png",
+  "bark_o": "assets/source/vegetation/oak/textures/lm.old-oak__bark_orm.png",
+  "leaf_c": "assets/source/vegetation/oak/textures/lm.old-oak__leaves_basecolor.png",
+  "det_c": "assets/source/vegetation/oak/textures/lm.old-oak__carving_basecolor.png",
+  "det_n": "assets/source/vegetation/oak/textures/lm.old-oak__carving_normal.png"
+ }
+}

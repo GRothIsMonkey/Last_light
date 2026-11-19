@@ -93,9 +93,13 @@ class Oak:
         k = np.ones(5) / 5
         xs = np.convolve(np.pad(xy[:, 0], 2, mode='edge'), k, 'valid')
         ys = np.convolve(np.pad(xy[:, 1], 2, mode='edge'), k, 'valid')
+        # the measured slices (scan) put the trunk centre within 0.1 m of the oak's game position from the ground to 3 m;
+        # the level-set centroids lean (one-sided clusters), so the axis is vertical there and joins them at the fork
+        w = np.clip((z - 2.6) / 1.7, 0, 1)
+        w = w * w * (3 - 2 * w)
         self.axis_z = np.concatenate([[-0.6], z, [z[-1] + .5]])
-        self.axis_x = np.concatenate([[0], xs - xs[0] * np.exp(-z / .8), [xs[-1]]])
-        self.axis_y = np.concatenate([[0], ys - ys[0] * np.exp(-z / .8), [ys[-1]]])
+        self.axis_x = np.concatenate([[0], xs * w, [xs[-1]]])
+        self.axis_y = np.concatenate([[0], ys * w, [ys[-1]]])
         self.trunk_top = float(min(4.3, z[-1]))
         self.log(f'stem {len(stem)} nodes, top z {z[-1]:.2f}; trunk axis lean at 4 m: '
                  f'({np.interp(4, self.axis_z, self.axis_x):.2f}, {np.interp(4, self.axis_z, self.axis_y):.2f})')
@@ -359,14 +363,14 @@ class OakGeometry:
         th = np.linspace(0, 2 * np.pi, sides + 1)
         rings, uvs, cols, winds = [], [], [], []
         circ = 2 * np.pi * (DBH_R + .1)
-        urep = max(1, int(round(circ / 1.0)))
+        urep = max(1, int(round(circ / 1.5)))
         for z in zs:
             top_taper = _smoothstep(o.trunk_top - .45, o.trunk_top + .35, z)
             rr = self.trunk_radius(th, z) * (1 - .35 * top_taper)
             a = o.axis(z)
             ring = np.stack([a[0] + rr * np.cos(th), a[1] + rr * np.sin(th), np.full_like(th, z)], 1)
             rings.append(ring)
-            uvs.append(np.stack([th / (2 * np.pi) * urep, np.full_like(th, (z + .6) / 1.0)], 1))
+            uvs.append(np.stack([th / (2 * np.pi) * urep, np.full_like(th, (z + .6) / 1.5)], 1))
         V = np.concatenate(rings)
         UV = np.concatenate(uvs)
         w = sides + 1
@@ -376,7 +380,7 @@ class OakGeometry:
             F += [np.stack([a_, a_ + w, a_ + 1], 1), np.stack([a_ + 1, a_ + w, a_ + w + 1], 1)]
         top = o.axis(zs[-1] + .25)
         V = np.concatenate([V, top[None]])
-        UV = np.concatenate([UV, [[urep * .5, (zs[-1] + .85)]]])
+        UV = np.concatenate([UV, [[urep * .5, (zs[-1] + .85) / 1.5]]])
         base = (len(zs) - 1) * w
         F.append(np.stack([base + np.arange(sides), np.full(sides, len(V) - 1), base + np.arange(sides) + 1], 1))
         F = np.concatenate(F)
@@ -474,7 +478,8 @@ class OakGeometry:
                 R2[-1] = R2[-2] * .85
             col = np.tile(self.ao_bark(P2)[:, None], (1, 3))
             wnd = np.stack([self.flex[ids], self.phase[ids], np.zeros(len(ids)), np.where(o.dead[ids], 1.0, 0.0)], 1)
-            tris += VM.tube(buf, P2, R2, spec['sides'](float(R2[0])), MAT_BARK, col, wnd, tile=(1.0, 1.0))
+            tile = 1.5 if R2[0] > .25 else 1.0 if R2[0] > .08 else .6
+            tris += VM.tube(buf, P2, R2, spec['sides'](float(R2[0])), MAT_BARK, col, wnd, tile=(tile, tile))
         return tris
 
     # ---------------------------------------------------------------------------------------------- leaves
@@ -541,7 +546,7 @@ class OakGeometry:
                 z = z0 + S * j / nv
                 rr = self.trunk_radius(self.carve_az, z) + .004
                 # arc length -> angle: letters read left to right seen from the swing (ending.js)
-                th = self.carve_az - ((i / nu) - .5) * S / rr
+                th = self.carve_az + ((i / nu) - .5) * S / rr
                 Vs.append(self.trunk_point(th, z, .004))
                 UV.append([i / nu, j / nv])
         V = np.array(Vs)

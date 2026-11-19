@@ -171,24 +171,26 @@ def flip_up(rgba):
 # ---------------------------------------------------------------------------------------------------- bark
 def bark_white_oak(n=2048, seed=29):
     """Mature white oak: pale ash-grey, broken into irregular vertical plates and flakes, shallow fissures, lichen."""
-    F1, F2, cid, rng = worley(n, 760, seed, aspect=(1.0, 0.30), warp=70.0)
+    F1, F2, cid, rng = worley(n, 270, seed, aspect=(1.0, 0.30), warp=90.0)
     edge = F2 - F1                                     # small along the cracks between plates
-    crack = np.exp(-edge / 5.0) * (.75 + .5 * tile_noise(n, 30, seed + 4, octaves=3))   # 1 in the cracks, broken
+    g1, g2, _, _ = worley(n, 1500, seed + 40, aspect=(1.0, 0.45), warp=30.0)
+    sub = np.exp(-(g2 - g1) / 3.0)                     # fine cracks that break each plate into flakes
+    crack = np.exp(-edge / 8.5) * (.75 + .5 * tile_noise(n, 30, seed + 4, octaves=3))   # 1 in the cracks, broken
     plate_h = rng.uniform(.55, 1.0, cid.max() + 1)[cid]
-    dome = np.clip(edge / 18.0, 0, 1) ** .45           # plates rise sharply from their edges (flaky)
+    dome = np.clip(edge / 30.0, 0, 1) ** .45           # plates rise sharply from their edges (flaky)
     fiss = tile_noise(n, 3, seed + 1, octaves=4, aspect=(3.5, .35))   # long vertical fissure network
     fiss = np.clip((fiss - .62) * 4.0, 0, 1)
     fine = tile_noise(n, 48, seed + 2, octaves=4)
     flake = tile_noise(n, 22, seed + 3, octaves=3, aspect=(1, .5))
-    H = plate_h * dome * (1 - .85 * fiss) + .12 * fine + .1 * flake - .55 * crack
+    H = plate_h * dome * (1 - .85 * fiss) + .12 * fine + .1 * flake - .55 * crack - .16 * sub
     H = (H - H.min()) / np.ptp(H)
     # colour
-    base = np.array([0.53, 0.51, 0.47])
-    tone = (rng.uniform(-.06, .06, cid.max() + 1)[cid])[..., None]
+    base = np.array([0.47, 0.45, 0.42])
+    tone = (rng.uniform(-.09, .07, cid.max() + 1)[cid])[..., None] + (tile_noise(n, 2, seed + 8, octaves=3)[..., None] - .5) * .12
     col = base[None, None] + tone + (fine[..., None] - .5) * .08
     warm = np.array([0.42, 0.36, 0.30])
-    dark = np.array([0.20, 0.17, 0.14])
-    col = col * (1 - (1 - H[..., None]) * .55) + dark * ((1 - H) ** 3)[..., None] * .55
+    dark = np.array([0.13, 0.11, 0.09])
+    col = col * (1 - (1 - H[..., None]) * .7) + dark * ((1 - H) ** 2.2)[..., None] * .7
     col = col * (1 - .25 * crack[..., None]) + warm * (.25 * crack[..., None])
     # lichen (pale grey-green blotches on the plates) and a little green algae in the fissures
     lich = tile_noise(n, 9, seed + 5, octaves=4)
@@ -205,7 +207,7 @@ def bark_white_oak(n=2048, seed=29):
     hp = photo - ndimage.gaussian_filter(photo, 6, mode='wrap')
     col = col * (1 + hp[..., None] * 1.1)
     H2 = np.clip(H + hp * .35, 0, 1)
-    nrm = normal_from_height(ndimage.gaussian_filter(H2, .7, mode='wrap'), 9.0)
+    nrm = normal_from_height(ndimage.gaussian_filter(H2, .8, mode='wrap'), 13.0)
     ao = np.clip(.45 + .55 * ndimage.gaussian_filter(H2, 3, mode='wrap') ** .7, 0, 1)
     rough = np.clip(.86 + .1 * (1 - H2) + .03 * fine, 0, 1)
     orm = np.stack([ao, rough, np.zeros_like(ao)], -1)
@@ -297,8 +299,9 @@ def carving_decal(n=1024):
     lip = np.exp(-((sd - .004) / .009) ** 2) * (sd > -0.001)
     lip = lip * (.8 + .4 * tile_noise(n, 18, 58, octaves=2))
     H = .5 - .32 * groove + .22 * lip
-    tex = np.asarray(Image.open(os.path.join(TEX, 'bark.white-oak__height.png')).convert('L').resize((n * 2, n * 2)), dtype=np.float64)[:n, :n] / 255
-    col = np.asarray(Image.open(os.path.join(TEX, 'bark.white-oak__basecolor.png')).convert('RGB').resize((n * 2, n * 2)), dtype=np.float64)[:n, :n] / 255
+    crop = int(2048 * S / 1.5)                                    # the patch shows the bark at the trunk's 1.5 m tile
+    tex = np.asarray(Image.open(os.path.join(TEX, 'bark.white-oak__height.png')).convert('L').crop((0, 0, crop, crop)).resize((n, n), Image.LANCZOS), dtype=np.float64) / 255
+    col = np.asarray(Image.open(os.path.join(TEX, 'bark.white-oak__basecolor.png')).convert('RGB').crop((0, 0, crop, crop)).resize((n, n), Image.LANCZOS), dtype=np.float64) / 255
     smooth = np.clip(lip * 1.6 + inside, 0, 1)                   # callus and the old cut are smoother than plated bark
     Hb = tex * (1 - smooth) + .5 * smooth
     Hf = np.clip(H * .7 + (Hb - .5) * .3 * (1 - smooth), 0, 1)
@@ -307,10 +310,8 @@ def carving_decal(n=1024):
     c = col * (1 - smooth[..., None]) + callus * (lip[..., None] * .8)
     c = c * (1 - inside[..., None]) + (wood * (.75 + .25 * tex[..., None])) * inside[..., None]
     c = c * (1 - .45 * groove[..., None])
-    yy, xx = np.mgrid[0:n, 0:n] / n
-    edge = np.clip(1 - np.maximum(np.abs(xx - .5), np.abs(yy - .5)) * 2, 0, 1)
-    alpha = np.clip(edge * 4 + (tile_noise(n, 6, 77) - .5) * .8, 0, 1)
-    alpha = (alpha > .5).astype(np.float64)
+    reach = np.clip(1 - sd / .03, 0, 1)                            # 3 cm around every stroke: the callus and the cut
+    alpha = ((reach + (tile_noise(n, 14, 77) - .5) * .9) > .55).astype(np.float64)
     rgba = np.concatenate([np.clip(c, 0, 1), alpha[..., None]], -1)
     save(pad_color(rgba), 'detail.oak-carving__basecolor.png', 'RGBA')
     save(normal_from_height(ndimage.gaussian_filter(Hf, 1.0), 14.0), 'detail.oak-carving__normal.png')
