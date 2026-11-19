@@ -215,7 +215,55 @@ built ahead of the rider); the QA hook builds synchronously.
 
 ## 7. Tests
 
-TESTS
+Every suite was run **alone**, one browser at a time, on the final code (software WebGL). Reports are in
+`docs/qa/vegetation/lawn-browser/report.json` and `docs/qa/vegetation/lawn-regression/`.
+
+| Suite | Result | Accepted before | What it shows here |
+|---|---|---|---|
+| `node tests/vegetation-browser.mjs` (A–D, extended) | **74 passed, 0 failed** | 46 (first benchmark) | everything the first benchmark checked, plus the lawn repair's checks below and 16 A/B/C triplets |
+| `QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs` | **818 passed** | 818 | gameplay, story and chapter state; the one difference is the already-known `2/alex-bike` DEV switch, reported and not asserted, as before |
+| `node tests/house-browser.mjs` | **30 passed, 0 failed** | 30 | the authored houses unchanged |
+| `SHOTS=0 node tests/bike-browser.mjs` | **29 passed, 0 failed** | 29 | the approved bikes unchanged |
+| `node tests/pipeline-browser.mjs` | **36 passed, 0 failed** | 36 | the asset pipeline and its offline packages unchanged |
+| `node tests/main-menu-browser.mjs` on the complete default package (`PLAYTEST_MENU=1 PLAYTEST_CHAPTER=final`, from disk) | **96 passed, 0 failed** | 96 | the title screen, menus and whole-game package unchanged; no errors; no network |
+
+**The lawn repair's own checks** (in `vegetation-browser.mjs`):
+
+- **Default game unchanged:** without `?vegetation` nothing of the benchmark is fetched, no `vg:` batches exist, the world
+  is baked as accepted (379 shadow proxies) and the obstacle and navigation-shape counts are recorded.
+- **Files untouched:** the oak, street-tree, shrub and ground-plant files are the first benchmark's, byte for byte (SHA-256
+  against `f1f085a`).
+- **Same frame:** 16 A/B/C triplets, each with the same camera and frame in all three modes.
+- **No tuft islands where a lawn is near** (L01–L07): C ≤ 1 % of lawn blocks, below B (2.4–9.0 %), under 3 %.
+- **Cost:** in every riding triplet, C draws at most 25 % more triangles and 12 more draw calls than B (measured: at most
+  +9 % triangles, at most +2 calls).
+- coverage: 400 lawn points (12.5 cm sub-cell centres) within 11 m in view, 0 without blades
+- boundaries: 6,908 blade sub-cells in 153 tiles, 0 over a walk, curb, drive, pad, porch, house, shed or the street
+- LOD: 0 tiles dropping unfaded blades (tiles LOD0/1/2 39/40/74); the same pose twice: identical
+- tiling: lawn pixels 0.5 m apart correlate r = 0.119 / 0.124 (x / z; n = 1296 / 1551); an unrelated offset r = -0.126
+- wind: blades on the trees' uniforms True, time advances True
+- collisions: obstacles 812, navigation shapes [159, 247, 247, 5717, 0, 618, 52] (the same as without the flag)
+- **The Y key:** steps C → B → A → C.
+- **Offline package:** `PLAYTEST_MODELS=1` embeds the five vegetation files (the lawn included); `?vegetation` loads from
+  the embedded bytes with the browser offline and no network. The default package fails loudly and substitutes nothing.
+- **The whole Prologue** is played to Chapter One with the flag on (ride, dismount, the call, the swing, the bench, the
+  chalk, go home), and `?bikes&houses&vegetation` keeps riding. There are no page errors anywhere.
+
+**Thresholds, honestly.** Two checks were adjusted after the first full run, and both are recorded in the history:
+- The tiling check's sample patch had landed on the walk and gave no samples. It is now centred on a front lawn.
+- The island check is judged where a lawn is near (L01–L07). In the long view down the street, shadows and lot colours
+  dominate all three versions (C 2.5 %, B 2.0 %, A 1.6 %). Those values are reported above.
+
+The coverage check now samples at the mask's own resolution. One real gap it found, a thin lawn strip inside a cell whose
+corners and centre all missed, was fixed in the code.
+
+**Boundaries kept.** None of these were changed: story, dialogue, chapter transitions, player movement, collisions,
+house placements, roads and walks, bike models, tree and oak geometry, shrub models, character art, music, main menu,
+global renderer, sky or lighting. Nothing is merged into `main`. Outside the new lawn module, the changes are:
+- in `vegetation-assets.js`: the lawn wiring, the meadow accents and a `visible` getter;
+- in `vegetation-benchmark.js`: the `Y` key and the label;
+- in `asset-library.js`: one asset registration;
+- the tests and the validator.
 
 ## 8. Known limitations
 
