@@ -56,16 +56,21 @@ const RIDES=`()=>{const L=lastLight,W=L.world;const ds=W.drivewayOpenings.filter
  const run=(name,d,lat,keys,sec)=>{L.release('KeyW');L.release('KeyD');L.release('KeyA');L.place(d,lat,3.2);for(const k of keys)L.press(k);const tr=[];for(let i=0;i<sec*30;i++){L.step(1/30);if(i%6===0){const s=L.state;tr.push([+s.distance.toFixed(4),+s.lateral.toFixed(4),+s.speed.toFixed(4),+L.playerBike.group.position.y.toFixed(4)]);}}for(const k of keys)L.release(k);runs[name]=tr;};
  run('cut',o.d-3.2,2.6,['KeyW','KeyD'],3.5);run('curb',(o.d+o.d1)/2+9,3.1,['KeyW','KeyD'],3);return {drive:{d:o.d,d0:o.d0,d1:o.d1},runs};}`;
 // rays from above over the junction corners and the cul-de-sac: what is hit, and how far from the authored surface
-const GAPS=`async()=>{const L=lastLight,W=L.world,T=window.__pavement?.THREE||(await import('./three.module.js'));const R=await import('./route.js');const rc=new T.Raycaster();rc.layers.set(0);rc.far=8;
+const GAPS=`async()=>{const L=lastLight,W=L.world,T=window.__pavement?.THREE||(await import('./three.module.js'));const R=await import('./route.js');const {CURB_TOP}=await import('./terrain.js');const rc=new T.Raycaster();rc.layers.set(0);rc.far=8;
+ // (samples are offset from the meshes' own vertex lines, so a ray never runs exactly down a shared edge; the curb's
+ // rounded face and nose are visual, the game's ground model treats the curb as a 15 cm step: within 0.35 m of a curb
+ // only "something is there, not the base ground" is asked)
  const res={samples:0,none:0,base:0,off:0,worst:[],kinds:{}};
- const probe=(d,lat)=>{const g=R.groundPoint(d,lat);rc.set(new T.Vector3(g.x,g.y+4,g.z),new T.Vector3(0,-1,0));const hit=rc.intersectObjects(W.merged,false)[0];res.samples++;
-  if(!hit){res.none++;res.worst.length<12&&res.worst.push({d:+d.toFixed(2),lat:+lat.toFixed(2),none:true});return;}
-  const m=hit.object.material,k=m.userData.pvKind||(m.userData.pvSoil?'soil':(m.color?.getHexString()==='7f8a55'||W.grassMats?.includes?.(m))?'lawn':'other');res.kinds[k]=(res.kinds[k]||0)+1;
+ const curbNear=(d,lat)=>{for(const e of [-.35,0,.35])for(const f of [-.35,0,.35])if(Math.abs(W.surfaceY(d+e,lat+f)-CURB_TOP)<1e-6)return true;return false;};
+ let near=W.merged;const region=(d,lat,r)=>{const c=R.groundPoint(d,lat),v=new T.Vector3(c.x,c.y,c.z);near=W.merged.filter(m=>{const g=m.geometry;if(!g.boundingSphere)g.computeBoundingSphere();return g.boundingSphere.center.distanceTo(v)<g.boundingSphere.radius+r;});};
+ const probe=(d,lat)=>{const g=R.groundPoint(d,lat);rc.set(new T.Vector3(g.x,g.y+4,g.z),new T.Vector3(0,-1,0));const hits=rc.intersectObjects(near,false).filter(h=>h.object.visible);const hit=hits[0];res.samples++;
+  if(!hit){res.none++;res.worst.length<14&&res.worst.push({d:+d.toFixed(3),lat:+lat.toFixed(3),none:true});return;}
+  const m=hit.object.material,k=m.userData.pvKind||(m.userData.pvSoil?'soil':'other');res.kinds[k]=(res.kinds[k]||0)+1;
   const want=g.y+W.surfaceY(d,lat),y=hit.point.y,dy=y-want;
-  if(y<g.y-.02){res.base++;res.worst.length<12&&res.worst.push({d:+d.toFixed(2),lat:+lat.toFixed(2),base:+(y-g.y).toFixed(3)});}
-  else if(Math.abs(dy)>.035&&k!=='other'&&k!=='iron'){res.off++;res.worst.length<12&&res.worst.push({d:+d.toFixed(2),lat:+lat.toFixed(2),kind:k,dy:+dy.toFixed(3)});}};
- for(const jd of [595,870]){const s=jd===595?1:-1;for(let d=jd-14;d<=jd+14;d+=.31)for(let a=0;a<=7.8;a+=.27)probe(d,s*a);}
- for(let d=1100;d<=1156;d+=.37)for(let lat=-13.5;lat<=13.5;lat+=.37){const r=Math.hypot(d-1142,lat);if(d>1131&&r>11+3.3)continue;if(d<=1131&&Math.abs(lat)>7.9)continue;probe(d,lat);}
+  if(y<g.y-.02){res.base++;res.worst.length<14&&res.worst.push({d:+d.toFixed(3),lat:+lat.toFixed(3),base:+(y-g.y).toFixed(3)});}
+  else if(Math.abs(dy)>.035&&k!=='iron'&&!curbNear(d,lat)){res.off++;res.worst.length<14&&res.worst.push({d:+d.toFixed(3),lat:+lat.toFixed(3),kind:k,dy:+dy.toFixed(3)});}};
+ for(const jd of [595,870]){const s=jd===595?1:-1;region(jd,s*4,22);for(let d=jd-14.013;d<=jd+14;d+=.31)for(let a=.0071;a<=7.8;a+=.27)probe(d,s*a);}
+ region(1130,0,40);for(let d=1100.017;d<=1156;d+=.37)for(let lat=-13.493;lat<=13.5;lat+=.37){const r=Math.hypot(d-1142,lat);if(d>1131&&r>11+3.3)continue;if(d<=1131&&Math.abs(lat)>7.9)continue;probe(d,lat);}
  return res;}`;
 
 const look=(page,v)=>page.evaluate(v=>{const L=lastLight;let s=v;
@@ -151,7 +156,9 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{const R=re
  R.rides=await page.evaluate(`(${RIDES})()`);const RD0=report.parts.A?.rides;
  check('Riding: a scripted ride over a driveway cut onto the walk, and one into a plain curb, follow exactly the same path, speed and wheel height',RD0&&JSON.stringify(R.rides)===JSON.stringify(RD0),{cut:R.rides.runs.cut.slice(-2),curb:R.rides.runs.curb.slice(-2),without:RD0&&{cut:RD0.runs.cut.slice(-2),curb:RD0.runs.curb.slice(-2)}});
  R.gaps=await page.evaluate(`(${GAPS})()`);const G0=report.parts.A?.gaps;
- check('Junctions and cul-de-sac: rays from above find a surface everywhere, never the base ground, and every pavement or lawn surface within 3.5 cm of the authored height (no gaps, no floating or sunken surfaces)',R.gaps.none===0&&R.gaps.base===0&&R.gaps.off===0,{with:R.gaps,without:G0&&{none:G0.none,base:G0.base,off:G0.off}});
+ check('Junctions and cul-de-sac: rays from above find a surface everywhere, never the base ground, and every surface within 3.5 cm of the authored height away from the curbs (no gaps, no floating or sunken surfaces; the same as without ?pavement)',R.gaps.none===0&&R.gaps.base===0&&R.gaps.off===0&&G0&&G0.none===R.gaps.none&&G0.base===R.gaps.base&&G0.off===R.gaps.off,{with:R.gaps,without:G0&&{none:G0.none,base:G0.base,off:G0.off}});
+ check('?pavement (measures): no page errors',errors.length===0,errors);save();});
+if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{const R=report.parts.B;await open(page,'pavement');await waitPave(page);await startRide(page);
  // the comparison key
  R.key=await page.evaluate(()=>{const P=__pavement.kit.PAVE,W=lastLight.world;const jb=()=>W.merged.filter(m=>m.material.userData.pvToggle==='original').every(m=>m.visible);const r=[];
   const k=()=>dispatchEvent(Object.assign(new Event('keydown'),{code:'KeyO'}));r.push([__pavement.mode,P.on.value,jb()]);k();__pavement.tick();r.push([__pavement.mode,P.on.value,jb()]);k();__pavement.tick();r.push([__pavement.mode,P.on.value,jb()]);return r;});

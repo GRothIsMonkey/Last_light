@@ -253,3 +253,22 @@ Last Light or this use. Nothing was scattered raw: every asset was rebuilt on th
 - Original: `grass_and_bush_-_mobile_gameready.glb`, 1,833,488 bytes, SHA-256 `d0ba3260cd912908f9b241e1500bdcc6121b9ca87aceaa881d5595dc07233259`, generator Sketchfab-12.68.0.
 - What it contains: 4 cards (20 tris) on one 1024² atlas that is mostly not vegetation (hay bale, saguaro cactus, crate, barrel, chain, planks) plus four plant sprites: a seeded green grass tuft and a dry grass tuft (both stored upside down), a juniper-like sprig and a dried seed stalk.
 - Incorporated: **those four sprites only** (cropped, turned upright, graded, packed into the ground atlas); they dress the lookout meadow (tall and dry tufts, seed stalks, groundcover). The cards, the other sprites and the original material are not used. Lawn blades, wildflowers and clover are original.
+
+## The pavement reconstruction (Prologue benchmark, `?pavement`)
+
+Two **CC0 1.0** (public domain dedication, https://creativecommons.org/publicdomain/zero/1.0/) photogrammetry texture
+sets from Poly Haven (https://polyhaven.com/license). CC0 asks for no attribution; the authors are credited anyway.
+
+| Source | Author | Size | Used for |
+|---|---|---|---|
+| "Asphalt 07", https://polyhaven.com/a/asphalt_07 | Charlotte Baglioni | 2.5 m × 2.5 m | the asphalt's stone aggregate, binder, pits (albedo detail, normal, height, roughness, AO) |
+| "Gravel Concrete 04", https://polyhaven.com/a/gravel_concrete_04 | Dimitrios Savva | 2.0 m × 2.0 m | the concrete's fine aggregate, small stones and pores (sidewalks, curbs, gutters, driveways, walks) |
+
+- **Originals**, unmodified (2K JPEG: diffuse, OpenGL normal, roughness, displacement, AO) with Poly Haven's `info.json`
+  and SHA-256 sums: `assets/source/road/polyhaven/` (see `assets/source/road/PROVENANCE.md`). Not loaded by the game.
+- **Runtime textures** `dist/assets/pavement/pv.{asphalt,concrete}.{albedo,normal,hra}.jpg` (1024 × 1024): made by
+  `tools/materials/roads/build_pavement_textures.py` (wrap-padded Lanczos downsampling; the albedo divided by its own
+  broad variation and mean colour, most chroma removed; height high-passed; height, roughness and AO packed in one
+  image). Their hashes are in `dist/assets/pavement/pavement-textures.json`.
+- Everything else in the pavement (wear, joints, cracks, patches, sealant, stains, leaves, the cast-iron covers, the
+  street layout map) is original Last Light shader code in `dist/pavement-surfaces.js`.
