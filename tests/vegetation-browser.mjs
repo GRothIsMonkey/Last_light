@@ -147,6 +147,13 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{
  check('LOD: near trees at LOD0, far ones at LOD1/2 along the street; the oak switches with distance',lod.sweep[0].trees[0]>0&&lod.sweep[0].trees[2]>0&&lod.sweep[3].oak===0&&lod.sweep[0].oak===2,lod.sweep);
  check('LOD: no flicker (a second update at the same place changes nothing); forced LOD 0/1/2 and back to auto',lod.stable&&lod.forced[0].levels[0]>0&&lod.forced[2].levels[2]>0,lod.forced);
  check('Wind: the vegetation runs on the game\'s own breeze (ambient.js time and gust) and the wind scale reaches the shader',lod.gameWind&&lod.windTime[1]>lod.windTime[0]&&lod.windScale===2.2,lod);
+ check('Game (?vegetation, geometry, LOD and wind checks): no page errors',errors.length===0,errors.slice(0,6));
+});
+
+// ---------------------------------------------------------------------------------------------------------------- B1
+// the captures and the lawn checks in a fresh page (one page for everything above reached the container's memory limit
+// under software rendering)
+if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{const R=report.parts.game;await open(page,'vegetation');await waitVeg(page);
  // ---- gameplay captures, each an authored/procedural pair in the same frame (riding camera unless named)
  await page.evaluate(()=>{const L=lastLight;L.start();for(let i=0;i<6;i++)L.step(1/30);});
  R.pairs={};
@@ -160,6 +167,14 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{
  R.pairs.oakFar=await pair(page,'G07b-oak-silhouette-from-124m',()=>ride(page,{d:1038,lat:-.3,yaw:.06,pitch:.07}),{caption:'the oak at 124 m down the street (the Aftermath I barricade distance, art bible §6): readable by silhouette'});
  R.pairs.lookingHome=await pair(page,'G10-dusk-looking-home',()=>ride(page,{d:1150,lat:2,yaw:Math.PI,pitch:.04}),{caption:'evening: looking back down the street from the lookout'});
  for(const [k,v] of Object.entries(R.pairs))check(`Before/after ${k}: the same camera and frame for both`,v.same,{authored:v.authored.cam,procedural:v.procedural.cam});
+ check('Game (?vegetation, before/after captures): no page errors',errors.length===0,errors.slice(0,6));
+ R.cost=report.pairs.map(p=>({name:p.name,authored:p.authored,procedural:p.procedural}));
+});
+
+// ---------------------------------------------------------------------------------------------------------------- B1b
+// the lawns alone (Y) and the lawn checks, in a fresh page
+if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{const R=report.parts.game;await open(page,'vegetation');await waitVeg(page);
+ await page.evaluate(()=>{const L=lastLight;L.start();for(let i=0;i<6;i++)L.step(1/30);});
  // ---- the lawns: C / B / A in one frame (Y), from the riding camera at golden hour, with pixel metrics of the lawn itself
  R.lawn={};const T3=(n,s,cap,m=true)=>triple(page,n,()=>ride(page,s),{caption:cap},m);
  R.lawn.sidewalk=await T3('L01-lawn-beside-sidewalk',{d:410,lat:4.3,yaw:-.18,pitch:-.2},'the lawn beside the sidewalk, from the riding camera');
