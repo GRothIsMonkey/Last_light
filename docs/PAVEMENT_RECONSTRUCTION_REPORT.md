@@ -378,7 +378,7 @@ Offline: unzip `Last-Light-Prologue-Pavement-Reconstruction.zip`, open `Last-Lig
 Edge, add `?bikes&houses&vegetation&pavement` to the address (instructions in `PAVEMENT-README.txt`).
 
 **The offline package.** `Last-Light-Prologue-Pavement-Reconstruction.zip` is not committed (`release/` is ignored).
-- **Size and hash:** 90,440,656 bytes, SHA-256 `afaad8798b190ed5edee69c2bcc69a77bfb857fd670f8f3a53bf7a2d035e162a`.
+- **Size and hash:** 90,441,224 bytes, SHA-256 `19a02fc935cec9fc9362e2670579214a18d163e548fbebf8a674d4d55e039d93`.
 - **Contents:** `Last-Light-Playtest.html` (153.6 MB), built by `PLAYTEST_MENU=1 PLAYTEST_MODELS=1 node
   tools/package-playtest.mjs` at `c30d2c1` from a clean tree (`dist/` identical to the final commit): the whole game
   with the title menu, and the bikes, houses, vegetation, lawn and pavement files embedded; `PAVEMENT-README.txt` (the
