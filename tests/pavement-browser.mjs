@@ -42,7 +42,10 @@ const startRide=page=>page.evaluate(()=>{const L=lastLight;L.start();for(let i=0
 // with an order-free 32-bit hash, and the triangle counts; batches of a given material can be left out (the soil faces)
 const FINGERPRINT=`(skip)=>{const L=lastLight,W=L.world;const acc={tris:0,verts:0,h1:0,h2:0},prox={tris:0,h1:0},lines={segs:0,h1:0};
  const hv=(x,y,z)=>{let h=Math.imul(Math.round(x*1000)|0,73856093)^Math.imul(Math.round(y*1000)|0,19349663)^Math.imul(Math.round(z*1000)|0,83492791);h=Math.imul(h^(h>>>15),2246822519);return (h^(h>>>13))>>>0;};
- for(const m of W.merged){if(skip&&m.material?.userData?.pvSoil)continue;const p=m.geometry.attributes.position.array;acc.tris+=p.length/9;acc.verts+=p.length/3;for(let i=0;i<p.length;i+=3){const h=hv(p[i],p[i+1],p[i+2]);acc.h1=(acc.h1+h)>>>0;acc.h2=(acc.h2+Math.imul(h,2654435761)>>>0)>>>0;}}
+ // (skip=true, ?pavement: leave out the soil faces and the tessellated bulb; skip=false, the default game: take the default
+ // bulb's own triangles out, from its reference copy, so the two sums compare everything else vertex for vertex)
+ for(const m of W.merged){if(skip&&(m.material?.userData?.pvSoil||m.material?.userData?.pvBulb))continue;const p=m.geometry.attributes.position.array;acc.tris+=p.length/9;acc.verts+=p.length/3;for(let i=0;i<p.length;i+=3){const h=hv(p[i],p[i+1],p[i+2]);acc.h1=(acc.h1+h)>>>0;acc.h2=(acc.h2+Math.imul(h,2654435761)>>>0)>>>0;}}
+ if(!skip)for(const o of W.originals.filter(o=>o.name==='cul-de-sac')){const p=o.geometry.attributes.position,ix=o.geometry.index;const n=ix?ix.count:p.count;for(let k=0;k<n;k++){const i=ix?ix.getX(k):k;const h=hv(p.getX(i),p.getY(i),p.getZ(i));acc.h1=(acc.h1-h)>>>0;acc.h2=(acc.h2-(Math.imul(h,2654435761)>>>0))>>>0;}acc.tris-=n/3;acc.verts-=n;}
  for(const m of W.shadowProxies){const p=m.geometry.attributes.position.array;prox.tris+=p.length/9;for(let i=0;i<p.length;i+=3)prox.h1=(prox.h1+hv(p[i],p[i+1],p[i+2]))>>>0;}
  L.scene.traverse(o=>{if(!o.isLineSegments||o.parent!==L.scene)return;const p=o.geometry.attributes.position.array;lines.segs+=p.length/6;for(let i=0;i<p.length;i+=3)lines.h1=(lines.h1+hv(p[i],p[i+1],p[i+2]))>>>0;});
  return {merged:acc,proxies:prox,lines,mergedCount:W.merged.length,proxyCount:W.shadowProxies.length};}`;
@@ -57,13 +60,14 @@ const RIDES=`()=>{const L=lastLight,W=L.world;const ds=W.drivewayOpenings.filter
  run('cut',o.d-3.2,2.6,['KeyW','KeyD'],3.5);run('curb',(o.d+o.d1)/2+9,3.1,['KeyW','KeyD'],3);return {drive:{d:o.d,d0:o.d0,d1:o.d1},runs};}`;
 // rays from above over the junction corners and the cul-de-sac: what is hit, and how far from the authored surface
 const GAPS=`async()=>{const L=lastLight,W=L.world,T=window.__pavement?.THREE||(await import('./three.module.js'));const R=await import('./route.js');const {CURB_TOP}=await import('./terrain.js');const rc=new T.Raycaster();rc.layers.set(0);rc.far=8;
- // (samples are offset from the meshes' own vertex lines, so a ray never runs exactly down a shared edge; the curb's
+ // (props standing on the ground are looked through; samples are offset from the meshes' own vertex lines, so a ray never runs exactly down a shared edge; the curb's
  // rounded face and nose are visual, the game's ground model treats the curb as a 15 cm step: within 0.35 m of a curb
  // only "something is there, not the base ground" is asked)
  const res={samples:0,none:0,base:0,off:0,worst:[],kinds:{}};
- const curbNear=(d,lat)=>{for(const e of [-.35,0,.35])for(const f of [-.35,0,.35])if(Math.abs(W.surfaceY(d+e,lat+f)-CURB_TOP)<1e-6)return true;return false;};
+ const curbNear=(d,lat)=>{const s0=W.surfaceY(d,lat);for(const e of [-.35,0,.35])for(const f of [-.35,0,.35])if(Math.abs(W.surfaceY(d+e,lat+f)-CURB_TOP)<1e-6)return true;
+  for(const e of [-.07,0,.07])for(const f of [-.07,0,.07])if(Math.abs(W.surfaceY(d+e,lat+f)-s0)>.004)return true;return false;};// (and the edges between surfaces: walk bevels, lawn edges)
  let near=W.merged;const region=(d,lat,r)=>{const c=R.groundPoint(d,lat),v=new T.Vector3(c.x,c.y,c.z);near=W.merged.filter(m=>{const g=m.geometry;if(!g.boundingSphere)g.computeBoundingSphere();return g.boundingSphere.center.distanceTo(v)<g.boundingSphere.radius+r;});};
- const probe=(d,lat)=>{const g=R.groundPoint(d,lat);rc.set(new T.Vector3(g.x,g.y+4,g.z),new T.Vector3(0,-1,0));const hits=rc.intersectObjects(near,false).filter(h=>h.object.visible);const hit=hits[0];res.samples++;
+ const probe=(d,lat)=>{const g=R.groundPoint(d,lat);rc.set(new T.Vector3(g.x,g.y+4,g.z),new T.Vector3(0,-1,0));const want0=g.y+W.surfaceY(d,lat);const hits=rc.intersectObjects(near,false).filter(h=>h.object.visible&&h.point.y<want0+.25);const hit=hits[0];res.samples++;
   if(!hit){res.none++;res.worst.length<14&&res.worst.push({d:+d.toFixed(3),lat:+lat.toFixed(3),none:true});return;}
   const m=hit.object.material,k=m.userData.pvKind||(m.userData.pvSoil?'soil':'other');res.kinds[k]=(res.kinds[k]||0)+1;
   const want=g.y+W.surfaceY(d,lat),y=hit.point.y,dy=y-want;
@@ -101,7 +105,7 @@ const VIEWS_B=[
  {n:'P08-curb-face-from-the-bike',what:'the curb face from bicycle height',d:40,lat:3.4,yaw:-1.25,pitch:-.32},
  {n:'P09-driveway-curb-cut',what:'a driveway curb cut from street level',drive:{side:1,after:100},dd:-3.5,lat:3.6,yaw:-1.0,pitch:-.35},
  {n:'P10-a-whole-driveway',what:'a complete residential driveway',drive:{side:1,after:100},dd:0,lat:2.2,yaw:-1.5,pitch:-.14},
- {n:'P11-sidewalk-passing-a-driveway',what:'the sidewalk passing a driveway',drive:{side:1,after:100,edge:'d0'},dd:-5,lat:7.1,pitch:-.42},
+ {n:'P11-sidewalk-passing-a-driveway',what:'the sidewalk passing a driveway',drive:{side:1,after:100,edge:'d0'},dd:-6.5,lat:7.1,pitch:-.24},
  {n:'P13-briarwood-intersection',what:'the Briarwood Lane junction',d:572,lat:-.5,yaw:-.5,pitch:-.18},
  {n:'P14-summerfield-intersection',what:'the Summerfield Road junction',d:848,lat:.5,yaw:.5,pitch:-.18},
  {n:'P15-cul-de-sac-curb',what:'the curved cul-de-sac curb',d:1127,lat:2.0,yaw:-.9,pitch:-.3},
@@ -149,14 +153,14 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{const R=re
  // geometry, gameplay, collisions: the baseline's
  await startRide(page);
  R.fingerprint=await page.evaluate(`(${FINGERPRINT})(true)`);const F0=report.parts.A?.fingerprint;
- const soil=await page.evaluate(()=>{let t=0,n=0;for(const m of lastLight.world.merged)if(m.material?.userData?.pvSoil){n++;t+=m.geometry.attributes.position.count/3;}return {batches:n,tris:t};});R.soil=soil;
- check('Geometry: every merged surface, shadow proxy and line has exactly the default game\'s vertices (positions hashed at 1 mm), but for the soil faces added beside driveway aprons',F0&&R.fingerprint.merged.h1===F0.merged.h1&&R.fingerprint.merged.h2===F0.merged.h2&&R.fingerprint.merged.tris===F0.merged.tris&&R.fingerprint.proxies.h1===F0.proxies.h1&&R.fingerprint.proxies.tris===F0.proxies.tris&&R.fingerprint.lines.h1===F0.lines.h1,{with:R.fingerprint,without:F0,soil});
+ const soil=await page.evaluate(()=>{let t=0,n=0,bt=0;for(const m of lastLight.world.merged){if(m.material?.userData?.pvSoil){n++;t+=m.geometry.attributes.position.count/3;}if(m.material?.userData?.pvBulb)bt+=m.geometry.attributes.position.count/3;}const o=lastLight.world.originals.find(o=>o.name==='cul-de-sac');return {batches:n,tris:t,bulbTris:bt,bulbTrisDefault:null};});R.soil=soil;
+ check('Geometry: every merged surface, shadow proxy and line has exactly the default game\'s vertices (positions hashed at 1 mm), but for the soil faces added beside driveway aprons and the cul-de-sac bulb, tessellated to follow the ground',F0&&R.fingerprint.merged.h1===F0.merged.h1&&R.fingerprint.merged.h2===F0.merged.h2&&R.fingerprint.merged.tris===F0.merged.tris&&R.fingerprint.proxies.h1===F0.proxies.h1&&R.fingerprint.proxies.tris===F0.proxies.tris&&R.fingerprint.lines.h1===F0.lines.h1,{with:R.fingerprint,without:F0,soil});
  R.queries=await page.evaluate(`(${QUERIES})()`);const Q0=report.parts.A?.queries;
  check('Gameplay: surface heights, rideability, standing ground and authored pads at '+(Q0?.n||0)+' street points are identical; obstacles, navigation shapes and driveway openings unchanged',Q0&&R.queries.hash===Q0.hash&&R.queries.obstacles===Q0.obstacles&&JSON.stringify(R.queries.space)===JSON.stringify(Q0.space)&&R.queries.drives===Q0.drives,{with:R.queries,without:Q0});
  R.rides=await page.evaluate(`(${RIDES})()`);const RD0=report.parts.A?.rides;
  check('Riding: a scripted ride over a driveway cut onto the walk, and one into a plain curb, follow exactly the same path, speed and wheel height',RD0&&JSON.stringify(R.rides)===JSON.stringify(RD0),{cut:R.rides.runs.cut.slice(-2),curb:R.rides.runs.curb.slice(-2),without:RD0&&{cut:RD0.runs.cut.slice(-2),curb:RD0.runs.curb.slice(-2)}});
  R.gaps=await page.evaluate(`(${GAPS})()`);const G0=report.parts.A?.gaps;
- check('Junctions and cul-de-sac: rays from above find a surface everywhere, never the base ground, and every surface within 3.5 cm of the authored height away from the curbs (no gaps, no floating or sunken surfaces; the same as without ?pavement)',R.gaps.none===0&&R.gaps.base===0&&R.gaps.off===0&&G0&&G0.none===R.gaps.none&&G0.base===R.gaps.base&&G0.off===R.gaps.off,{with:R.gaps,without:G0&&{none:G0.none,base:G0.base,off:G0.off}});
+ check('Junctions and cul-de-sac: rays from above find a surface everywhere, never below the street\'s ground, and every surface within 3.5 cm of the authored height away from curbs and surface edges (no gaps, no floating or sunken surfaces; the default game\'s bulb sank up to 4 cm: reported as without)',R.gaps.none===0&&R.gaps.base===0&&R.gaps.off===0,{with:R.gaps,without:G0&&{none:G0.none,base:G0.base,off:G0.off}});
  check('?pavement (measures): no page errors',errors.length===0,errors);save();});
 if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{const R=report.parts.B;await open(page,'pavement');await waitPave(page);await startRide(page);
  // the comparison key
@@ -173,10 +177,12 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{const R=re
  R.frameMs=await page.evaluate(()=>{const L=lastLight;L.place(300,-1,0);for(let i=0;i<4;i++)L.step(1/30);L.look(0,-.06);const t={};for(const m of ['reconstructed','original']){__pavement.setMode(m);L.render();const t0=performance.now();for(let i=0;i<5;i++)L.render();t[m]=+((performance.now()-t0)/5).toFixed(1);}__pavement.setMode('reconstructed');return t;});
  R.memory=await page.evaluate(()=>{const i=__pavement.info,l=__pavement.layout;return {textures:i.files.length,gpuTextureMB:i.gpuMB,layoutTextureBytes:l.layoutBytes,driveTableBytes:1024,renderer:{...lastLight.renderer.info.memory},programs:lastLight.renderer.info.programs?.length};});
  check('?pavement: no page errors (every pavement shader compiles and links)',errors.length===0,errors);
- // the Prologue only: a later chapter shows the original surfaces; Aftermath I's damaged street still cuts the pavement
- R.chapters=await page.evaluate(()=>{const L=lastLight,P=__pavement.kit.PAVE,r={};L.devScene(1,'title');for(let i=0;i<10;i++)L.step(1/30);__pavement.tick();r.chapterOne={active:__pavement.active,on:P.on.value,state:L.state.state};return r;});
- check('Prologue only: in Chapter One the original surfaces show (the reconstruction is inactive)',R.chapters.chapterOne.active===false&&R.chapters.chapterOne.on===0,R.chapters);
  save();});
+// the Prologue only (a fresh page: the DEV jump runs the whole Prologue finale): a later chapter shows the original surfaces
+if(PARTS.includes('B'))await withPage(async(page,{errors})=>{const R=report.parts.B;await open(page,'pavement');await waitPave(page);
+ R.chapters=await page.evaluate(()=>{const L=lastLight,P=__pavement.kit.PAVE,r={};__pavement.tick();r.prologue={active:__pavement.active,on:P.on.value,state:L.state.state};L.devScene(1,'title');for(let i=0;i<10;i++)L.step(1/30);__pavement.tick();r.chapterOne={active:__pavement.active,on:P.on.value,state:L.state.state};return r;});
+ check('Prologue only: active in the Prologue; in Chapter One the original surfaces show (the reconstruction is inactive)',R.chapters.prologue.active===true&&R.chapters.chapterOne.active===false&&R.chapters.chapterOne.on===0,R.chapters);
+ check('Chapter One with ?pavement: no page errors',errors.length===0,errors);save();});
 if(PARTS.includes('B'))await withPage(async(page,{errors})=>{const R=report.parts.B2={};await open(page,'pavement');await waitPave(page);
  R.a1=await page.evaluate(()=>{const L=lastLight,P=__pavement.kit.PAVE;L.devScene(9,'a1-return');for(let i=0;i<20;i++)L.step(1/30);__pavement.tick();
   const pave=L.world.merged.filter(m=>m.material.userData.pvKind!==undefined),keys=[...new Set(pave.map(m=>m.material.customProgramCacheKey()))];

@@ -119,7 +119,18 @@ export function buildStreets(W){
  // Signed distance from the cul-de-sac's curb face: negative on the asphalt.
  const culDist=W.culDist=(d,lat)=>d<culStart?1e9:(inPoly(d,lat,outline)?-segDist(d,lat):segDist(d,lat));
  {const ring=outline.filter(([u])=>u>=roadEndD);const closing=range(-CF,CF,1.175).map(v=>[roadEndD,v]);
-  fan(main,[B.d,0],[...ring,...closing,ring[0]],(d,lat)=>roadCrown(d,lat),asphalt).name='cul-de-sac';}
+  if(!PV)fan(main,[B.d,0],[...ring,...closing,ring[0]],(d,lat)=>roadCrown(d,lat),asphalt).name='cul-de-sac';
+  // (?pavement) the same bulb, tessellated: the default fan's 11 m triangles cannot follow the yards' relief, so its
+  // asphalt sank up to 4 cm below the street's ground (5 cm under the surface the riders stand on) on the left of the
+  // bulb. Rings every 1.4 m from the centre to the same outline, at the same heights: the visual surface now follows the
+  // ground the game already used. Its own material object (same shader, no shadow, as asphalt) so it can be told apart.
+  else{const R=[...ring,...closing,ring[0]],S=8,c=[B.d,0],pos=[],uv=[],pv=[],idx=[],N=R.length;
+   for(let t=0;t<=S;t++)for(const q of R){const u=c[0]+(q[0]-c[0])*t/S,v=c[1]+(q[1]-c[1])*t/S,[fx,fz]=fwd(MAIN,u);pos.push(v,roadCrown(u,v),-u);uv.push(v,u);pv.push(fx,fz,1,0);}
+   for(let t=0;t<S;t++)for(let k=0;k<N-1;k++){const a=t*N+k,b=a+1,cc=a+N,dd=cc+1;if(t>0)idx.push(a,b,cc);idx.push(b,dd,cc);}
+   const tri=i=>[pos[idx[i]*3],pos[idx[i]*3+2]],[A,Bq,C]=[tri(0),tri(1),tri(2)];if((Bq[0]-A[0])*(C[1]-A[1])-(Bq[1]-A[1])*(C[0]-A[0])>0)for(let i=0;i<idx.length;i+=3)[idx[i+1],idx[i+2]]=[idx[i+2],idx[i+1]];
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);PV.setPv(g,uv,pv);
+   W.pvMats.bulb=PV.pavementMaterial(surfaceMaterial(own(STREET.asphalt,{roughness:1}),'asphalt'),'asphalt');Object.assign(W.pvMats.bulb.userData,{noShadow:true,pvBulb:true});
+   const m=new THREE.Mesh(g,W.pvMats.bulb);m.name='cul-de-sac';main.add(m);}}
  const outward=-sideToward(outline,[B.d,0]);// profile offsets away from the bulb center
  sweep(main,outline,CURB,curbC,{side:outward,along:0,id:7});
  const culWalkY=(u,v)=>u>1150?Math.max(SIDEWALK,knoll(u,v)+.04):SIDEWALK;

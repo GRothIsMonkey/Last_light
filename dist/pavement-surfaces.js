@@ -27,6 +27,7 @@ export const PAVE={
  on:{value:0},             // 0 original, 1 reconstructed (stays 0 until the textures have loaded)
  tune:{value:new THREE.Vector4(1,1,1,0)},// x micro-normal strength, y macro variation, z wear amount, w unused
  debug:{value:0},          // QA: 1 = flat albedo (no lighting detail check), 0 = normal
+ wet:{value:0},            // FOUNDATION for later chapters (rain, the storm): 0 dry (the Prologue: always 0) .. 1 soaked; not used yet
  asA:{value:null},asN:{value:null},asH:{value:null},coA:{value:null},coN:{value:null},coH:{value:null},
  layout:{value:null},drive:{value:null},
  inlets:{value:Array.from({length:24},()=>new THREE.Vector4(-1e4,0,0,0))},
@@ -43,7 +44,7 @@ export const TEXTURES={
 
 // ------------------------------------------------------------------------------------------------------------- GLSL
 const COMMON=`
-uniform float uPvOn,uPvDebug;uniform vec4 uPvTune;
+uniform float uPvOn,uPvDebug,uPvWet;uniform vec4 uPvTune;
 uniform sampler2D uPvAsA,uPvAsN,uPvAsH,uPvCoA,uPvCoN,uPvCoH,uPvLayout,uPvDrive;
 uniform vec4 uPvInlet[24];
 varying vec3 vPvW;varying vec2 vPvUv;varying vec4 vPvD;
@@ -57,19 +58,19 @@ float pvLine(float x,float w,float e){e=max(e,1e-5);return clamp((min(x+e*.5,w*.
 float pvStep(float x,float e){return clamp(x/max(e,1e-5)+.5,0.,1.);}
 struct PvS{vec3 a;vec3 n;vec3 h;};
 // micro-structure in world metres (p = (x,-z): right-handed with +y up), two scales blended by height
-PvS pvSample(sampler2D A,sampler2D N,sampler2D H,vec2 p,float tile,float seed){
+PvS pvSample(sampler2D A,sampler2D N,sampler2D H,vec2 p,float tile,float seed,float bias){
  vec2 u1=p/tile+seed*vec2(.13,.71);
  const float ca=.79864,sa=.60181;
  vec2 q=vec2(ca*p.x-sa*p.y,sa*p.x+ca*p.y)/(tile*1.37)+vec2(.31,.17)+seed;
  vec3 h1=texture(H,u1).rgb,h2=texture(H,q).rgb;
  float sel=pvF(p*.23+seed*3.1)-.5;
  float w=smoothstep(-.07,.07,(h1.r+sel*1.15)-(h2.r-sel*1.15));
- PvS s;s.a=mix(texture(A,q).rgb,texture(A,u1).rgb,w)*2.;
+ PvS s;s.a=mix(texture(A,q,bias).rgb,texture(A,u1,bias).rgb,w)*2.;
  vec3 n1=texture(N,u1).xyz*2.-1.,n2=texture(N,q).xyz*2.-1.;
  n2.xy=vec2(ca*n2.x+sa*n2.y,-sa*n2.x+ca*n2.y);
  s.n=normalize(mix(n2,n1,w));s.h=mix(h2,h1,w);return s;}
 // one scale only (small surfaces), optional triplanar for curbs
-PvS pvSample1(sampler2D A,sampler2D N,sampler2D H,vec2 p,float tile){PvS s;vec2 u=p/tile;s.a=texture(A,u).rgb*2.;s.n=texture(N,u).xyz*2.-1.;s.h=texture(H,u).rgb;return s;}
+PvS pvSample1(sampler2D A,sampler2D N,sampler2D H,vec2 p,float tile){PvS s;vec2 u=p/tile;s.a=texture(A,u,.7).rgb*2.;s.n=texture(N,u).xyz*2.-1.;s.h=texture(H,u).rgb;return s;}
 // the street frame of this fragment, in view space: T across (+uv.x), B along (+uv.y), N up
 vec3 pvView(vec3 w){return normalize((viewMatrix*vec4(w,0.)).xyz);}
 mat3 pvFrame(vec3 N){vec2 f=normalize(vPvD.xy+vec2(1e-6));float hs=vPvD.z<0.?-1.:1.;
@@ -82,10 +83,10 @@ vec3 pvLum(vec3 c,float s){float l=dot(c,vec3(.2126,.7152,.0722));return mix(vec
 // The surfaces. Each returns: col (linear albedo), rough, nm (tangent-space micro normal in the world frame), g (height
 // gradient across/along, applied in the street frame), ao (cavity: scales the indirect light).
 const SURF=`
-struct PvOut{vec3 col;float rough;vec3 nm;vec2 g;float ao;float nmStr;float metal;};
+struct PvOut{vec3 col;float rough;vec3 nm;vec2 g;float ao;float nmStr;float metal;float low;};
 // --------------------------------------------------------------------------------------------------- asphalt
 #if PV_KIND==0
-PvOut pvShade(vec3 base){PvOut o;o.metal=0.;
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;o.low=0.;
  vec2 p=vec2(vPvW.x,-vPvW.z);float lat=vPvUv.x,d=vPvUv.y;float frame=floor(vPvD.w*.5+.01);float side=lat>0.?1.:-1.,a=abs(lat);
  float e=max(1e-4,max(length(vec2(dFdx(d),dFdy(d))),length(vec2(dFdx(lat),dFdy(lat)))));// pixel footprint (m)
  float seed=frame*101.;float D=d+seed*37.;
@@ -104,7 +105,7 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;
  // -- layout (this side of this street, by the metre)
  float row=vPvD.w+(lat>0.?1.:0.);vec4 L=texture(uPvLayout,vec2((d+500.)/2048.,(row+.5)/8.));
  // -- the micro-structure
- PvS s=pvSample(uPvAsA,uPvAsN,uPvAsH,p,2.5,0.);
+ PvS s=pvSample(uPvAsA,uPvAsN,uPvAsH,p,2.5,0.,0.);
  // -- resurfacing sections: the street was overlaid in pieces; each has its own tone and aggregate exposure
  float sc=floor((D+pvH1(floor(D/170.))*60.)/170.);float sh=pvH1(sc*7.3+frame);
  float secTone=1.+(sh-.5)*.075*uPvTune.y,secExp=.85+.3*pvH1(sc*3.1+5.);
@@ -164,18 +165,19 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;
  float expo=mix(1.,secExp,.5)*(1.+edgeK*.25)*(1.-wl*.18);
  alb=mix(vec3(1.),alb,expo);
  vec3 c=base*vec3(1.035,1.,.965)*alb*tone;
- c*=1.-wl*.11*uPvTune.z;c*=1.-drip*.09*uPvTune.z;
+ c*=1.-wl*.15*uPvTune.z;c*=1.-drip*.12*uPvTune.z;
  c=mix(c,c*vec3(1.08,1.06,1.0),edgeK*.55);                 // dust and sand at the edge
  c=mix(c,base*vec3(.9,.91,.92)*mix(vec3(1.),s.a,.8),pch*.9);// patch: younger binder, darker, finer, less oxidized
  c*=1.-pch*.17;
- c=mix(c,vec3(.045,.044,.042),seal*.85);                     // crack sealant (rubberized: near black)
+ c=mix(c,vec3(.03,.029,.028),seal*.9);                     // crack sealant (rubberized: near black)
  c=mix(c,c*.35,crk);
  c=mix(c,c*vec3(.55,.53,.5),oil*.55*uPvTune.z);
  c=mix(c,c*.42,lost);
  c*=1.-pEdge*.22;
  float rough=clamp(mix(.88,.97,s.h.g)+edgeK*.03-wl*.06,.6,1.);
- rough=mix(rough,.86,pch);rough=mix(rough,.82,seal);rough=mix(rough,.74,oil*.6);
- o.col=c;o.rough=rough;o.nm=s.n;o.nmStr=(1.+edgeK*.4)*(1.-seal*.8)*uPvTune.x;
+ rough=mix(rough,.86,pch);rough=mix(rough,.92,seal);rough=mix(rough,.74,oil*.6);
+ o.low=clamp(wl*.35+edgeK*.55+smoothstep(.55,.75,pvF(vec2(lat,D)*.9))*.6-pch*.2,0.,1.);
+ o.col=c;o.rough=rough;o.nm=s.n;o.nmStr=(1.+edgeK*.4)*(1.-seal*.45)*uPvTune.x;
  // sealant bands are slightly proud; the seam of a patch is a fine groove
  o.g=g;o.ao=(1.-crk*.6)*(1.-lost*.5)*(1.-pEdge*.4)*mix(1.,s.h.b,.6);
  return o;}
@@ -189,13 +191,13 @@ void pvJoint(float x,float w,float e,inout float dark,inout float gAlong,inout f
  ao*=1.-core*.75-(1.-smoothstep(0.,lip*1.4,abs(x)-w*.5))*.18;}
 #endif
 #if PV_KIND==1
-PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// gutter pan: uv = (lateral, d); 0.38 m wide, at the curb face
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;o.low=0.;// gutter pan: uv = (lateral, d); 0.38 m wide, at the curb face
  vec2 p=vec2(vPvW.x,-vPvW.z);float lat=vPvUv.x,d=vPvUv.y,frame=floor(vPvD.w*.5+.01),side=lat>0.?1.:-1.;
  float cf=frame<.5?4.7:4.2,ec=cf-abs(lat);// distance from the curb face (0 .. .38)
  float e=max(1e-4,max(length(vec2(dFdx(d),dFdy(d))),length(vec2(dFdx(lat),dFdy(lat)))));
  float D=d+frame*1013.;
  float row=vPvD.w+(lat>0.?1.:0.);vec4 L=texture(uPvLayout,vec2((d+500.)/2048.,(row+.5)/8.));
- PvS s=pvSample(uPvCoA,uPvCoN,uPvCoH,p,1.6,.37);
+ PvS s=pvSample(uPvCoA,uPvCoN,uPvCoH,p,1.6,.37,.7);
  float panel=floor(D/3.04);float ph=pvH1(panel*1.3+frame);
  float dark=0.,gA=0.,ao=1.;
  float jx=D-floor(D/3.04+.5)*3.04;pvJoint(jx,.008,e,dark,gA,ao,.012);
@@ -215,7 +217,7 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// gutter pan: uv = (lateral, d); 0.
    leafC=tint<.55?vec3(.30,.20,.09):tint<.8?vec3(.38,.30,.12):tint<.93?vec3(.17,.20,.07):vec3(.42,.17,.06);}}
  // tire scuffs where cars cross into a driveway
  float scuff=cut*smoothstep(.55,.8,pvF(vec2(D*2.,ec*6.)))*.6;
- vec3 c=base*vec3(.97,.975,1.)*mix(vec3(1.),s.a,.7);
+ vec3 c=base*vec3(.97,.975,1.)*mix(vec3(1.),s.a,.5);
  c*=.95+.09*(ph-.5)+.05*(pvF(p*.25)-.5);
  c=mix(c,c*vec3(.74,.70,.62),sed*.75);
  c=mix(c,c*vec3(.62,.62,.6),(1.-smoothstep(0.,.05,ec))*.5);  // the base of the curb, always a little dirty
@@ -223,11 +225,12 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// gutter pan: uv = (lateral, d); 0.
  c=mix(c,vec3(.10,.095,.09),lip*.8);
  c=mix(c,c*.35,dark);
  c=mix(c,leafC,leaf*.92);
+ o.low=clamp(flow*1.2+inlet*.3,0.,1.);
  o.col=c;o.rough=clamp(mix(.82,.95,s.h.g)-sed*.05+leaf*.05,.6,1.);o.nm=s.n;o.nmStr=.75*uPvTune.x*(1.-leaf);o.g=vec2(0.,gA);o.ao=ao*(1.-lip*.5)*mix(1.,s.h.b,.5)*(1.-leaf*.1);
  return o;}
 #endif
 #if PV_KIND==2
-PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// curb: uv = (profile offset 0 .. .3, along); pv.z = curb-cut factor (1 full height)
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;o.low=0.;// curb: uv = (profile offset 0 .. .3, along); pv.z = curb-cut factor (1 full height)
  float off=vPvUv.x,al=vPvUv.y,k=abs(vPvD.z),id=vPvD.w;float frame=floor(id*.5+.01);
  float e=max(1e-4,max(length(vec2(dFdx(al),dFdy(al))),length(vec2(dFdx(off),dFdy(off)))*4.));
  float A=al+id*517.;
@@ -243,7 +246,7 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// curb: uv = (profile offset 0 .. .
  float cutK=1.-smoothstep(.85,.99,k);
  float chip=smoothstep(.78,.93,pvF(vec2(A*7.,off*40.)+3.))*nose*(.5+cutK);
  float scuff=cutK*smoothstep(.45,.75,pvF(vec2(A*1.7,off*20.)))*(nose+face);
- vec3 c=base*vec3(.985,.985,1.)*mix(vec3(1.),alb,.6+nose*.25);
+ vec3 c=base*vec3(.985,.985,1.)*mix(vec3(1.),alb,.42+nose*.2);
  c*=.96+.08*(sh-.5);
  c=mix(c,c*1.06,nose*(.6+.4*cutK));
  c=mix(c,c*vec3(.70,.68,.62),face*(.35+.4*(1.-smoothstep(0.,.012,off))));// splash and grime up the face from the gutter
@@ -254,12 +257,12 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// curb: uv = (profile offset 0 .. .
  o.g=vec2(0.,gA);o.ao=ao*(1.-chip*.4)*mix(1.,hra.b,.5);return o;}
 #endif
 #if PV_KIND==3
-PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// sidewalk: uv = (offset across 0 .. 1.5, along); pv.z = cut factor (driveway crossing)
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;o.low=0.;// sidewalk: uv = (offset across 0 .. 1.5, along); pv.z = cut factor (driveway crossing)
  vec2 p=vec2(vPvW.x,-vPvW.z);float x=vPvUv.x,al=vPvUv.y,k=abs(vPvD.z),id=vPvD.w;
  float e=max(1e-4,max(length(vec2(dFdx(al),dFdy(al))),length(vec2(dFdx(x),dFdy(x)))));
  float A=al+id*311.;
  float row=id;vec4 L=id<5.5?texture(uPvLayout,vec2((al+500.)/2048.,(row+.5)/8.)):vec4(0.);
- PvS s=pvSample(uPvCoA,uPvCoN,uPvCoH,p,2.,.0);
+ PvS s=pvSample(uPvCoA,uPvCoN,uPvCoH,p,2.,.0,.9);
  float P=1.52,pi=floor(A/P),px=A-pi*P;// panel index, position along the panel
  float h1=pvH1(pi*1.31+id*7.),h2=pvH1(pi*2.17+3.+id),h3=pvH1(pi*.73+9.+id*3.);
  float age=pvH1(floor(A/30.)*4.1+id)*.7+h1*.3;        // stretches poured together, then panel by panel
@@ -293,7 +296,8 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// sidewalk: uv = (offset across 0 .
  float grass=0.;{float gj=pvH1(pi*5.7+id);if(gj<.18&&ex<.25)grass=pvLine(jx,.012,e)*(1.-smoothstep(.06,.25,ex))*smoothstep(.45,.65,pvN(vec2(x*60.,pi)));}
  // where the walk crosses a driveway: tire wear and a darker, more trafficked surface
  float cutK=1.-smoothstep(.85,.99,k);
- vec3 c=base*mix(vec3(1.),s.a,fresh?.5:.62);
+ vec3 c=base*mix(vec3(1.),s.a,fresh?.32:.4);
+ c*=.975+.05*pvF(p*2.3+pi*.37)+.025*(pvN(p*9.)-.5);// cement paste: a hand-sized mottle, never even
  c*=1.+(h1-.5)*.06*uPvTune.y-age*.035*uPvTune.y+(fresh?.06:0.);
  c*=mix(vec3(1.),vec3(1.012,1.,.975),h2*2.-.5);
  c*=1.+broom*.09;c=mix(c,c*1.035,margin*.8);
@@ -302,15 +306,15 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// sidewalk: uv = (offset across 0 .
  c=mix(c,c*vec3(.72,.68,.6),soil);c=mix(c,vec3(.13,.18,.06),grass*.85);
  c=mix(c,c*.4,crk);c=mix(c,c*.38,dark);c=mix(c,c*1.25,riser);
  o.col=c;o.rough=clamp(mix(.82,.96,s.h.g)-margin*.07-cutK*.04+broom*.08,.6,1.);
- o.nm=s.n;o.nmStr=.6*uPvTune.x*(fresh?.85:1.)*(1.-margin*.35);
+ o.nm=s.n;o.nmStr=.45*uPvTune.x*(fresh?.85:1.)*(1.-margin*.35);
  o.g=vec2(0.,gA+broom*.9+tilt*1.);o.ao=ao*(1.-crk*.5)*(1.-soil*.25)*mix(1.,s.h.b,.55);return o;}
 #endif
 #if PV_KIND==4
-PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// driveway: uv = (across from its centre, from the curb face); pv.z = width; pv.w = id
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;o.low=0.;// driveway: uv = (across from its centre, from the curb face); pv.z = width; pv.w = id
  vec2 p=vec2(vPvW.x,-vPvW.z);float x=vPvUv.x,v=vPvUv.y,W=abs(vPvD.z),id=vPvD.w;
  float e=max(1e-4,max(length(vec2(dFdx(v),dFdy(v))),length(vec2(dFdx(x),dFdy(x)))));
  vec4 T=texture(uPvDrive,vec2((id+.5)/256.,.5));float cond=T.r,car=T.g,kids=T.b,sd=pvH1(id*1.7)*97.,vEnd=T.a*60.;
- PvS s=pvSample(uPvCoA,uPvCoN,uPvCoH,p,2.,.53+sd);
+ PvS s=pvSample(uPvCoA,uPvCoN,uPvCoH,p,2.,.53+sd,.9);
  // slabs: the apron (to 1.65 m), under the sidewalk (to 3.15), then control joints every 3.4 m from 6.35; a centre
  // joint on wide drives
  float dark=0.,gA=0.,ao=1.,gX=0.;
@@ -340,7 +344,8 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// driveway: uv = (across from its c
  vec3 chalk=vec3(0.);float ch=0.;
  if(kids>.5&&pvH1(id+4.)<.6){vec2 q=vec2(x,v-4.6);float blob=smoothstep(.62,.8,pvF(q*1.6+id))*(1.-smoothstep(1.,2.2,length(q*vec2(.9,.7))));
   float hue=pvH(floor(q*2.2+id));ch=blob*.22;chalk=hue<.33?vec3(.95,.62,.70):hue<.66?vec3(.62,.80,.95):vec3(.96,.88,.55);}
- vec3 c=pvLum(base,.72)*mix(vec3(1.),s.a,.62);
+ vec3 c=pvLum(base,.72)*mix(vec3(1.),s.a,.4);
+ c*=.975+.05*pvF(p*2.1+id)+.025*(pvN(p*9.)-.5);
  c*=1.+(sh-.5)*.07*uPvTune.y-cond*.05+(1.-cond)*.03;
  c*=1.+broom*.08;c=mix(c,c*1.03,margin);
  c=mix(c,c*vec3(.86,.84,.8),disc);
@@ -349,10 +354,10 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// driveway: uv = (across from its c
  c=mix(c,c*.7,scuff);c=mix(c,chalk,ch);
  c=mix(c,c*.4,crk);c=mix(c,c*(.4-cond*.12),dark);
  o.col=c;o.rough=clamp(mix(.8,.95,s.h.g)-margin*.06-track*.05-oil*.15+broom*.06,.55,1.);
- o.nm=s.n;o.nmStr=.75*uPvTune.x*(1.-margin*.3);o.g=vec2(gX,gA+broom*.5);o.ao=ao*(1.-crk*.5)*mix(1.,s.h.b,.5);return o;}
+ o.nm=s.n;o.nmStr=.5*uPvTune.x*(1.-margin*.3);o.g=vec2(gX,gA+broom*.7);o.ao=ao*(1.-crk*.5)*mix(1.,s.h.b,.5);return o;}
 #endif
 #if PV_KIND==6
-PvOut pvShade(vec3 base){PvOut o;// a cast-iron manhole cover (the cylinder's cap: uv 0..1 across its diameter, 0.72 m)
+PvOut pvShade(vec3 base){PvOut o;o.low=0.;// a cast-iron manhole cover (the cylinder's cap: uv 0..1 across its diameter, 0.72 m)
  vec2 q=(vPvUv-.5)*.72;float r=length(q);float e=max(1e-4,length(vec2(dFdx(r),dFdy(r)))*1.5);vec2 p=vec2(vPvW.x,-vPvW.z);
  // raised parts: the rim, a ring, a waffle of bosses; recesses between
  vec2 gq=q/.042;vec2 gc=fract(gq)-.5;float bx=max(abs(gc.x),abs(gc.y));
@@ -371,11 +376,11 @@ PvOut pvShade(vec3 base){PvOut o;// a cast-iron manhole cover (the cylinder's ca
  o.g=vec2(0.);return o;}
 #endif
 #if PV_KIND==5
-PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// a house's front walk (uv = metres in the house frame: x across, y along)
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;o.low=0.;// a house's front walk (uv = metres in the house frame: x across, y along)
  vec2 p=vec2(vPvW.x,-vPvW.z);float x=vPvUv.x,y=vPvUv.y;float e=max(1e-4,max(length(vec2(dFdx(y),dFdy(y))),length(vec2(dFdx(x),dFdy(x)))));
- PvS s=pvSample(uPvCoA,uPvCoN,uPvCoH,p,2.,.21);
+ PvS s=pvSample(uPvCoA,uPvCoN,uPvCoH,p,2.,.21,.9);
  float dark=0.,gA=0.,ao=1.;float jx=y-floor(y/1.2+.5)*1.2;pvJoint(jx,.007,e,dark,gA,ao,.012);
- vec3 c=base*mix(vec3(1.),s.a,.62);c*=1.+(pvH1(floor(y/1.2))-.5)*.06;c=mix(c,c*.4,dark);
+ vec3 c=base*mix(vec3(1.),s.a,.4);c*=1.+(pvH1(floor(y/1.2))-.5)*.06;c=mix(c,c*.4,dark);
  o.col=c;o.rough=clamp(mix(.82,.96,s.h.g),.6,1.);o.nm=s.n;o.nmStr=.75*uPvTune.x;o.g=vec2(0.,gA);o.ao=ao*mix(1.,s.h.b,.5);return o;}
 #endif
 `;
@@ -389,13 +394,14 @@ export function pavementMaterial(m,kind){
  m.userData.pvKind=kind;m.userData.pvUv=true;m.userData.keep=true;// keep: batched as itself, uv and pv carried by the bake
  const prev=m.onBeforeCompile,prevKey=m.customProgramCacheKey?.bind(m);
  m.onBeforeCompile=(sh,r)=>{prev?.call(m,sh,r);
-  Object.assign(sh.uniforms,{uPvOn:PAVE.on,uPvTune:PAVE.tune,uPvDebug:PAVE.debug,uPvAsA:PAVE.asA,uPvAsN:PAVE.asN,uPvAsH:PAVE.asH,uPvCoA:PAVE.coA,uPvCoN:PAVE.coN,uPvCoH:PAVE.coH,uPvLayout:PAVE.layout,uPvDrive:PAVE.drive,uPvInlet:PAVE.inlets});
+  Object.assign(sh.uniforms,{uPvOn:PAVE.on,uPvTune:PAVE.tune,uPvDebug:PAVE.debug,uPvWet:PAVE.wet,uPvAsA:PAVE.asA,uPvAsN:PAVE.asN,uPvAsH:PAVE.asH,uPvCoA:PAVE.coA,uPvCoN:PAVE.coN,uPvCoH:PAVE.coH,uPvLayout:PAVE.layout,uPvDrive:PAVE.drive,uPvInlet:PAVE.inlets});
   sh.vertexShader='attribute vec4 pv;\nvarying vec3 vPvW;varying vec2 vPvUv;varying vec4 vPvD;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvPvUv=uv;vPvD=pv;vPvW=(modelMatrix*vec4(transformed,1.)).xyz;');
   let f=sh.fragmentShader;
   f='#define PV_KIND '+K+'\n'+COMMON+SURF+f;
   // the reconstructed surface replaces colour, roughness and normal just before the lights read them
   f=f.replace('#include <emissivemap_fragment>',`float pvAO=1.;
   if(uPvOn>.5){PvOut pv=pvShade(diffuse);
+   if(uPvWet>.001){float wt=clamp(uPvWet,0.,1.),pud=smoothstep(.55,.85,pv.low)*smoothstep(.5,1.,wt);pv.col*=mix(1.,.58,wt);pv.rough=mix(pv.rough,mix(.42,.08,pud),wt);pv.nmStr*=1.-pud*.9;pv.g*=1.-pud;}
    mat3 TW=pvWorldFrame(nonPerturbedNormal),TS=pvFrame(nonPerturbedNormal);
    vec3 nm=pv.nm;nm.xy*=pv.nmStr;
    vec3 n=normalize(TW*nm);
