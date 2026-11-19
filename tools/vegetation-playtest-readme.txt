@@ -5,7 +5,7 @@ No installation and no internet connection are needed. Everything (the game, the
 houses and the authored vegetation) is inside Last-Light-Playtest.html.
 
 1. Unzip the folder anywhere.
-2. Open Last-Light-Playtest.html in Chrome, Edge or Firefox (a desktop browser with WebGL 2).
+2. Open Last-Light-Playtest.html in desktop Chrome or Edge (WebGL 2; only Chromium was tested).
 3. To see the vegetation benchmark, add one of these to the end of the address in the address bar and press Enter:
 
      ?vegetation                    the new trees, shrubs, grass and the old oak
@@ -13,7 +13,7 @@ houses and the authored vegetation) is inside Last-Light-Playtest.html.
 
    Without them, the Prologue is exactly the approved game.
 
-4. Start the Prologue from the title screen and ride (W to pedal, mouse to look, Space for the bell, F at the end of
+4. Press any key on the title screen, choose New Game, and ride (W to pedal, mouse to look, Space for the bell, F at the end of
    the street to get off the bike). The lookout and the old oak are at the end of Oak Hollow Drive.
 
 Keys added by the benchmark (they do nothing in the normal game):
@@ -21,7 +21,8 @@ Keys added by the benchmark (they do nothing in the normal game):
    L   level of detail: automatic -> 0 -> 1 -> 2 -> automatic
    U   wind: the game's evening breeze -> breezy -> still
 
-The small label at the top-left says what loaded and how much it costs. If something failed to load it says so in
+The small DEV label at the top-left says what loaded and how much it costs (with all three flags the bike and house
+labels share the top line and overlap a little: a known cosmetic issue of the earlier benchmarks' DEV labels). If something failed to load it says so in
 red, and the old vegetation simply stays.
 
 Credits: the vegetation adapts four Creative Commons Attribution 4.0 models from Sketchfab — "200 year old oak tree"
