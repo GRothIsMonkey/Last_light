@@ -230,7 +230,7 @@ export async function placeVegetation({world,scene,renderer,ambient=null}){
  meadowField.build();
  const worn=wornPatch(world);scene.add(worn);
  // the repair (C): inside the field fence the knoll is grown by the lawn's long blades; only the accents stay there
- // (black-eyed Susans, seed stalks, a few dry tufts, tall grass along the fence and the edges); the field beyond the fence
+ // (black-eyed Susans and seed stalks); the field beyond the fence
  // keeps its tall meadow, a little thinner (the ground under it is grass now, not a flat colour)
  const meadowC=new Field(scene,'meadow-accents',{dist:[34],hide:160,shadowLods:[],U});
  for(const m of meadowAccents(meadow)){const v=ground.get(m.id);if(v)meadowC.add(v,mat(m.x,m.y,m.z,m.rot,m.s),new THREE.Vector3(m.x,m.y,m.z));}
@@ -311,7 +311,7 @@ function meadowAccents(all){const out=[];let i=0;
  for(const m of all){i++;const inside=m.d<1173.4;
   if(!inside){if(/^grass\.long/.test(m.id)&&hash(m.x,m.z,9)<.4)continue;out.push(m);continue;}
   if(/^grass\.long|^weed\.clover/.test(m.id))continue;                        // the blades and the ground are this now
-  if(/^meadow\.tall/.test(m.id)&&!(m.d>1169.5||Math.abs(m.lat-3)>13))continue;   // tall grass only along the fence and the edges
+  if(/^meadow\.tall/.test(m.id))continue;                                       // (inside the fence the long blades are the tall grass)
   if(/^meadow\.dry/.test(m.id))continue;                                        // (the long blades carry the dry tones now)
   if(/^flower/.test(m.id)&&hash(m.x,m.z,11)<.5)continue;
   out.push(m);}

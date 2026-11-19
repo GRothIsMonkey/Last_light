@@ -181,7 +181,7 @@ function bladeMaterial(U){
 uniform float uTime,uGust,uWind,uBladeGain,uBladeOn;uniform vec3 uCam;uniform vec4 uFade;
 varying vec3 vBladeCol;
 ${LAWN_GLSL}
-`+sh.vertexShader.replace('#include <beginnormal_vertex>','vec3 objectNormal=normalize(mix(vec3(0.,1.,0.),normal,.3));\n#ifdef USE_TANGENT\n vec3 objectTangent=vec3(tangent.xyz);\n#endif')
+`+sh.vertexShader.replace('#include <beginnormal_vertex>','vec3 objectNormal=normalize(mix(vec3(0.,1.,0.),normal,.4));\n#ifdef USE_TANGENT\n vec3 objectTangent=vec3(tangent.xyz);\n#endif')
    .replace('#include <begin_vertex>',`vec3 transformed=vec3(position);
  {mat4 IM=instanceMatrix;vec3 rootL=vec3(_lawn.x,0.,_lawn.y);vec3 rootW=(modelMatrix*IM*vec4(rootL,1.)).xyz;
   // the cell's mask: 8 x 8 sub-cells of 12.5 cm in world space (a whole lawn cell has every bit set)
@@ -207,7 +207,7 @@ ${LAWN_GLSL}
   loc+=inverse(mat3(IM))*(wo*vis);
   transformed=loc;
   vec3 c=L.col*mix(vec3(.95,1.02,.92),vec3(1.06,.98,1.05),_lawn.w)*(.9+.2*fract(_lawn.w*7.13));
-  vBladeCol=c*mix(.6,1.16,t)*uBladeGain;}`);
+  vBladeCol=c*mix(.56,1.2,t)*uBladeGain;}`);// (the same mean as before: no lighter ring where the blades end)
   sh.fragmentShader='varying vec3 vBladeCol;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb=vBladeCol;')
    .replace('#include <normal_fragment_begin>','#include <normal_fragment_begin>\n normal=normalize(vNormal);');};
  m.customProgramCacheKey=()=>'ll-lawn-blade';
@@ -247,7 +247,9 @@ class BladeField{
   for(let j=0;j<=CH;j++)for(let i=0;i<=CH;i++){const y=this.lawnAt(x0+i,z0+j,hint);ok[j*(CH+1)+i]=y!==null?1:0;Y[j*(CH+1)+i]=y??NaN;}
   for(let j=0;j<CH;j++)for(let i=0;i<CH;i++){const a=j*(CH+1)+i,c4=[a,a+1,a+CH+1,a+CH+2],n=c4.reduce((s,k)=>s+ok[k],0);
    const xc=x0+i+.5,zc=z0+j+.5;const yc=this.lawnAt(xc,zc,hint);
-   if(n===0&&yc===null)continue;
+   // a cell whose corners and centre all miss may still hold a thin strip of lawn (between a bed and a walk): probe its
+   // quarter points before skipping it
+   if(n===0&&yc===null&&![[.25,.25],[.75,.25],[.25,.75],[.75,.75]].some(([a,b])=>this.lawnAt(x0+i+a,z0+j+b,hint)!==null))continue;
    let mask=[65535,65535,65535,65535],edge=0;
    if(n<4||yc===null){edge=1;mask=[0,0,0,0];let any=0;
     for(let sj=0;sj<8;sj++)for(let si=0;si<8;si++){const y=this.lawnAt(x0+i+(si+.5)/8,z0+j+(sj+.5)/8,hint);if(y!==null){const b=sj*8+si;mask[b>>4]|=1<<(b&15);any++;}}

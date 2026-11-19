@@ -76,7 +76,7 @@ been measured.
   behind the camera are skipped (generous cone), and there are only 3 draw calls.
 
 **The meadow cards** (C): inside the field fence the long blades replace the cards. Only accents stay (black-eyed
-Susans, seed stalks, tall grass along the fence and the edges). The field beyond the fence keeps its tall meadow, a
+Susans and seed stalks). The field beyond the fence keeps its tall meadow, a
 little thinner.
 
 **Weeds.** Sparse rosettes and seed stalks (existing `veg.ground` cards): about 1 per 20 m² on rough lots, 1 per 80 m²

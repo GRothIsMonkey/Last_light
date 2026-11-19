@@ -186,7 +186,8 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{
   const bit=(c,b)=>Math.floor(c.mask[b>>4]/2**(b&15))%2===1;
   // coverage: random lawn points in front of the camera, 2.6-11 m: each one's cell has a tile, its 12.5 cm sub-cell is on
   let tested=0;const missing=[];let seed=7;const r=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
-  for(let k=0;k<3000&&tested<400;k++){const a=Math.atan2(fw.z,fw.x)+(r()-.5)*1.4,d=2.6+r()*8.4,x=cam.x+Math.cos(a)*d,z=cam.z+Math.sin(a)*d;const y=F.lawnPoint(x,z,MAIN.project(x,z).u);if(y===null)continue;tested++;
+  // (points are taken at the centre of their 12.5 cm sub-cell: the mask's own resolution)
+  for(let k=0;k<3000&&tested<400;k++){const a=Math.atan2(fw.z,fw.x)+(r()-.5)*1.4,d=2.6+r()*8.4;let x=cam.x+Math.cos(a)*d,z=cam.z+Math.sin(a)*d;x=(Math.floor(x*8)+.5)/8;z=(Math.floor(z*8)+.5)/8;const y=F.lawnPoint(x,z,MAIN.project(x,z).u);if(y===null)continue;tested++;
    const c=cells.get(Math.floor(x)+','+Math.floor(z)),b=Math.min(7,Math.floor((z-Math.floor(z))*8))*8+Math.min(7,Math.floor((x-Math.floor(x))*8));
    if(!c||!bit(c,b))missing.push({x:+x.toFixed(2),z:+z.toFixed(2),cell:!!c});}
   out.coverage={tested,missing:missing.length,examples:missing.slice(0,5)};
@@ -206,10 +207,12 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{
   const s1=sig();F.last=null;__vegetation.tick();out.stable=s1===sig();
   // the ground's tiling: ground only (blades hidden), the lawn's own pixels compared with the pixels 0.5 m away (the
   // first scale's period) and with an unrelated offset: a visible repetition would correlate strongly at the period
-  L.place(560,4.6,0);for(let i=0;i<3;i++)L.step(1/30);L.look(-.55,-.62);L.step(1/30);__vegetation.tick();F.visible=false;L.render();
+  L.place(330,3.2,0);for(let i=0;i<3;i++)L.step(1/30);L.look(-1.2,-.16);L.step(1/30);__vegetation.tick();F.visible=false;L.render();
   const cv=[...document.querySelectorAll('canvas')].sort((a,b)=>b.width*b.height-a.width*a.height)[0],gl=cv.getContext('webgl2'),w=cv.width,h=cv.height,px=new Uint8Array(w*h*4);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,px);F.visible=true;
   const cam2=L.camera.getWorldPosition(new T.Vector3()),fw2=new T.Vector3();L.camera.getWorldDirection(fw2);const lum=(x,y,z)=>{const v=new T.Vector3(x,y,z).project(L.camera);if(v.z>1||Math.abs(v.x)>.98||Math.abs(v.y)>.98)return null;const X=Math.round((v.x*.5+.5)*(w-1)),Y=Math.round((v.y*.5+.5)*(h-1)),k=(Y*w+X)*4;return .2126*px[k]+.7152*px[k+1]+.0722*px[k+2];};
-  const corr=(dx,dz)=>{const A=[],B=[];for(let i=0;i<70;i++)for(let j=0;j<70;j++){const x=cam2.x+fw2.x*3.2+(i-35)*.04,z=cam2.z+fw2.z*3.2+(j-35)*.04;const y1=F.lawnPoint(x,z,560),y2=F.lawnPoint(x+dx,z+dz,560);if(y1===null||y2===null)continue;const a=lum(x,y1,z),b=lum(x+dx,y2,z+dz);if(a===null||b===null)continue;A.push(a);B.push(b);}
+  // the patch: 2.8 m square of front lawn where the view ray meets the ground
+  const hit=-(cam2.y-(F.lawnPoint(cam2.x+fw2.x*8,cam2.z+fw2.z*8,330)??cam2.y-1.4))/Math.min(-.05,fw2.y),cx=cam2.x+fw2.x*hit,cz=cam2.z+fw2.z*hit;out.tilingPatch={x:+cx.toFixed(2),z:+cz.toFixed(2),dist:+hit.toFixed(2)};
+  const corr=(dx,dz)=>{const A=[],B=[];for(let i=0;i<70;i++)for(let j=0;j<70;j++){const x=cx+(i-35)*.04,z=cz+(j-35)*.04;const y1=F.lawnPoint(x,z,330),y2=F.lawnPoint(x+dx,z+dz,330);if(y1===null||y2===null)continue;const a=lum(x,y1,z),b=lum(x+dx,y2,z+dz);if(a===null||b===null)continue;A.push(a);B.push(b);}
    const n=A.length;if(n<200)return {n,r:null};const ma=A.reduce((s,v)=>s+v,0)/n,mb=B.reduce((s,v)=>s+v,0)/n;let sab=0,saa=0,sbb=0;for(let k=0;k<n;k++){sab+=(A[k]-ma)*(B[k]-mb);saa+=(A[k]-ma)**2;sbb+=(B[k]-mb)**2;}return {n,r:+(sab/Math.sqrt(saa*sbb)).toFixed(3)};};
   out.tiling={periodX:corr(.5,0),periodZ:corr(0,.5),unrelated:corr(.27,.11)};
   // the blades on the game's breeze (the trees' own uniforms)
