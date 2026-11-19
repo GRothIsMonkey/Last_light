@@ -14,13 +14,15 @@ Branch `claude/prologue-house-architecture-realism-refinement`, continuing the h
 
 The game has no ambient occlusion and no bounce light, so in B every eave, porch ceiling, window reveal and ground line was as bright as an open wall: the houses read as clean CG. C **bakes it into the vertices** (`house_bake.py`, HOUSE-KIT §8): large faces are tessellated (≈1 m walls, 1.4 m roofs), then each point casts 28 / 14 / 8 rays (LOD0 / 1 / 2) into the hemisphere against the house and the ground. Result, visible in both renderers: soffits and porch ceilings darken toward the wall, walls darken softly into the ground and under eaves, window reveals and door recesses have depth, rooms behind glass fall off toward their corners, garage door panels sit in their frames. Rays near-parallel to a wall and hits closer than 18 cm are ignored, so trim and shutters don't leave grey halos.
 
+**Fixed after review (2026-11-19): blotchy, boxy shading on facades in the game.** The first version of the bake let small objects (door hoods, lanterns, downspouts, trim) darken the wall grid points next to them. The game interpolates vertex colours linearly across ≈1 m triangles, so each of those dark points became a metre-wide diagonal smear, most visible on facades that face away from the sun (lit only by the flat sky fill). The bake now lets only large occluders (roof planes, porch roofs, walls, chimneys, the ground) shade walls, roofs and concrete, and averages each grid point over its own neighbourhood, so the shading can never hold a feature smaller than its grid; the sill streaks (a sub-grid feature) are gone. Same triangles, same memory. Before and after in the same game frames: `browser-fix/` (§2.3).
+
 ### 1.2 Materials (texture library v2, still one shared library)
 
 - **Siding**: convex laps with a real butt shadow at each course, staggered lap seams, faint wood-grain emboss, slight wave between studs, a little chalk on the high faces. Low-frequency tone drift per house (±2.5 %), so a long wall is never one flat value.
 - **Brick**: four body tones plus flashed (darker) ends, per-brick jitter and tilt, pits and specks, **tooled, recessed mortar** with its own occlusion; drift ±5 % per house.
 - **Shingles**: keyways, a slight sag per course, granules with darker and lighter clusters, a few worn tab edges, faint vertical streaks; drift ±7.5 % per house, and roofs a little greyer and chalkier the older the house.
 - **Concrete**: broom lines, exposed fines and aggregate, pinholes, soft curing stains, a few stones; **paint**: orange-peel, satin sheen that varies, grain under the paint, paint a little darker in the low spots.
-- **Weathering, restrained** (scaled by each family's upkeep: fresh / average / tired): rain splash at the foot of walls, faint streaks under sills, one sun-faded exposure, chalky roofs on older houses. No grime, nothing broken, nothing neglected.
+- **Weathering, restrained** (scaled by each family's upkeep: fresh / average / tired): rain splash at the foot of walls, one sun-faded exposure, chalky roofs on older houses. No grime, nothing broken, nothing neglected.
 - **In the game** (house-only, reversible): the ORM occlusion channel is used as `aoMap` (mortar, laps and keyways stay dark at grazing angles); anisotropic filtering raised to 16× (B used 4×, which blurred siding and roofs into a smear beyond 15 m); a 1.35× normal scale on siding and shingles so courses read under the game's flatter light; each house gets its own roughness factor by upkeep (fresh paint satin, tired paint chalkier).
 
 ### 1.3 Windows
@@ -44,7 +46,7 @@ A second random stream per house (`rnd2`) adds habits **without changing any cho
 | Porch light | black carriage lantern, brass carriage lantern, jelly-jar fixture |
 | Garage door | raised short panels, long panels, ribbed steel |
 | Porch life | chairs, a bench, a second planter, nothing |
-| Upkeep | fresh / average / tired: paint roughness, roof fade, splash, sill streaks |
+| Upkeep | fresh / average / tired: paint roughness, roof fade, splash |
 | Front-gable accent | plain / lighter / darker gable |
 
 The **car house** (story) and the **hoop house** (story) get the same treatment with the most care at the riding camera: the car house's porch (lantern, door, steps, railings, the shadow of the porch roof), its working garage door (still the authored door the van comes home to); the hoop house's brick front, garage, stoop and hip roof.
@@ -89,13 +91,19 @@ gain is in the eaves, porch ceilings and ground lines (now in shadow), window re
 and on the story houses' porches; at 40 m+ B and C converge (LOD1/LOD2, soft occlusion). The Blender pairs show the same
 direction with more contrast, because Cycles adds its own occlusion and bounce to both.
 
+### 2.3 The facade-shading fix, in the same game frames
+
+`browser-fix/fix--<view>.jpg`: each image stacks the same frame three times — B, C as first shipped (blotchy facades), C
+fixed. Views: the colonial across from the start (riding camera and close), the car house (riding camera, porch, side),
+the hoop house, the start looking right.
+
 ## 3. Performance and memory
 
 ### 3.1 The file
 
 | | B (first benchmark) | C (this pass) | Change |
 |---|---:|---:|---:|
-| GLB size | 18,798,284 B | 18,742,396 B | −0.3 % |
+| GLB size | 18,798,284 B | 18,746,136 B | −0.3 % |
 | of which textures | 7,503,383 B | 6,226,674 B | −17 % |
 | Textures | 17 × 1024² | 13 × 1024² + 4 × 512² (concrete normal and ORM, paint normal, room emissive: fine detail that never reaches 1024² on screen) | |
 | **GPU texture estimate** (RGBA8 + mips, all resident) | **90.7 MB** | **74.7 MB** | **−16 MB (−18 %)** |
@@ -141,7 +149,7 @@ Against the budgets: every ordinary house stays inside the 6–10k background bu
 
 **C costs what B cost**: the same draw calls (±1) in every frame, and within ±1 % of B's triangles (the extra tessellation sits mostly in LOD0, which only the nearest houses use). Both stay within a few percent of the procedural houses (A) they replace. The per-house upkeep materials are clones of four shared materials: same shader programs, same textures, no extra draw calls.
 
-**Load** (served, software): 455 ms in the page for C (read 112 ms, parse with image decode 182 ms); B, loaded only when H first asks for it, 506 ms. **The refined treatment in numbers**: 45 materials with an occlusion map, anisotropy 16× (the renderer's maximum here), 44 per-house upkeep clones, one glass environment shared by every window. **GPU texture memory** for the houses drops from ≈ 90.7 MB (B) to ≈ 74.7 MB (C); the street-horizon glass reflection adds one PMREM render target (three.js r160 default: 768 × 1024 half-float, ≈ 6 MB), so the **net** saving is ≈ 10 MB. When B is also loaded (only after H reaches it in this DEV comparison) both sets are resident; the production swap would ship only one.
+**Load** (served, software): 447 ms in the page for C (read 117 ms, parse with image decode 163 ms); B, loaded only when H first asks for it, 539 ms. **The refined treatment in numbers**: 45 materials with an occlusion map, anisotropy 16× (the renderer's maximum here), 44 per-house upkeep clones, one glass environment shared by every window. **GPU texture memory** for the houses drops from ≈ 90.7 MB (B) to ≈ 74.7 MB (C); the street-horizon glass reflection adds one PMREM render target (three.js r160 default: 768 × 1024 half-float, ≈ 6 MB), so the **net** saving is ≈ 10 MB. When B is also loaded (only after H reaches it in this DEV comparison) both sets are resident; the production swap would ship only one.
 
 ## 4. Regression
 
@@ -149,12 +157,14 @@ Against the budgets: every ordinary house stays inside the 6–10k background bu
 |---|---|
 | `QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs` | **818 passed, exit 0**, identical to the accepted baseline (818) with the same known `2/alex-bike` DEV difference (`docs/qa/houses-realism/regression-verify-quick.json`) |
 | `node tests/house-world-check.mjs <5f13784 dist>` | **5 passed, 0 failed**: the default world is baked identically (2,197 batches, 3,672,619 triangles, 2,371,203 shadow-proxy triangles); `?houses` only regroups (`world-bake-check.json`) |
-| `node tests/house-browser.mjs` (final run, alone) | **29 passed, 0 failed** (`browser/house-browser-report.json`): default game fetches nothing of the benchmark; twelve houses at 0.000 mm on their plans; nothing on the street, curb, strip or sidewalk; every house inside the plan's riding obstacle; footprints within the plan; the car house's authored garage door moves with the panel world.js animates (garage opens), procedural slab and footing hidden; the hoop where the kid shoots; three LODs; the refined treatment present on C only; B loads on demand at 0 mm; H shows exactly one of C/B/A; lamps on/off; the Prologue rides on before and after cycling H; `?bikes&houses` both load and the group ride goes on; offline package places the houses from embedded bytes with no network; the default package fails loudly and substitutes nothing |
-| `PARTS=D node tests/house-browser.mjs` (offline packages, rerun with the new offline-H check) | **7 passed, 0 failed** (`browser/house-browser-report--package-rerun.json`): both house sets embedded and hashed; in the offline game H reaches B (from the embedded bytes) and A and comes back to C; no network request |
-| `node tests/pipeline-browser.mjs` (Phase 0A: lab, game, offline packages) | **36 passed, 0 failed**, as accepted (`regression-pipeline-browser.json`) |
+| `node tests/house-browser.mjs` (final run, alone, after the facade-shading fix) | **30 passed, 0 failed** (`browser/house-browser-report.json`): default game fetches nothing of the benchmark; twelve houses at 0.000 mm on their plans; nothing on the street, curb, strip or sidewalk; every house inside the plan's riding obstacle; footprints within the plan; the car house's authored garage door moves with the panel world.js animates (garage opens), procedural slab and footing hidden; the hoop where the kid shoots; three LODs; the refined treatment present on C only; B loads on demand at 0 mm; H shows exactly one of C/B/A; lamps on/off; the Prologue rides on before and after cycling H; `?bikes&houses` both load and the group ride goes on; offline package places the houses from embedded bytes with no network; the default package fails loudly and substitutes nothing |
+| Offline packages (part D of the run above, which now includes the offline-H check) | both house sets embedded and hashed; in the offline game H reaches B (from the embedded bytes) and A and comes back to C; no network request |
+| `node tests/pipeline-browser.mjs` (Phase 0A: lab, game, offline packages; rerun after the fix, since it packages the house file) | **36 passed, 0 failed**, as accepted (`regression-pipeline-browser.json`) |
 | `SHOTS=0 node tests/bike-browser.mjs` (bike benchmark) | **29 passed, 0 failed**, as accepted (`regression-bike-browser.json`) |
 | `node tests/main-menu-browser.mjs` on the default complete package (`PLAYTEST_MENU=1 PLAYTEST_CHAPTER=final`, opened from disk) | **96 passed, 0 failed**, as accepted (`regression-main-menu-package.json`) |
 | `node tools/assets/validate-glb.mjs dist/assets/house/house.prologue.glb --profile house` (with the Khronos validator) | **0 errors**; Khronos 0 errors, 126 warnings (no tangents, on purpose); warnings: `lotL66` LOD0 10,740 and LOD1 4,203 above the ordinary targets (`validate-house.prologue.v2.json`) |
+
+After the facade-shading fix only the house file and the bake script changed, so the house suite, the file validation and the pipeline suite were rerun; `verify.mjs`, the world bake check, the bike suite and the main-menu suite do not load the house file and were not rerun (their results above are from the run before the fix, on the same code otherwise).
 
 What this covers from the brief: the default game unchanged (bake identical, nothing fetched, verify 818, menu 96); the house preview, the bike benchmark and the combined preview work; the twelve houses on their plans (0 mm); no collision changes (pads, obstacles and footprints come from the plans and are checked against them); the rooms' lamps follow the evening and V; the car house's garage opens with the authored door; the Prologue rides on; asset validation passes.
 
@@ -179,7 +189,7 @@ What this covers from the brief: the default game unchanged (bake identical, not
 | `tools/blender/houses/interior_atlas.py` | painted emissive (lamp pools, blinds, fabric, sheers); `--reuse` |
 | `tools/blender/houses/house_kit.py` | `tessellate`, per-corner colours |
 | `tools/blender/houses/house_parts.py` | jittered panes; mirrored/shifted room cards; long-panel and ribbed garage doors; jelly-jar lantern; stair treads, risers, stringers |
-| `tools/blender/houses/house_build.py` | family habits (second random stream), sill records for the bake, flashing |
+| `tools/blender/houses/house_build.py` | family habits (second random stream), sill records (no longer used by the bake since the fix), flashing |
 | `tools/blender/houses/build_houses.py`, `render_gallery.py` | bake step, version 2 |
 | `tools/blender/houses/render_compare.py` (new) | same-camera B/C renders, each version with its own kit |
 | `assets/source/house/**` | textures v2, `.blend`, build stats |

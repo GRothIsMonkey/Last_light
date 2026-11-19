@@ -106,9 +106,10 @@ into its own vertex colours (COLOR_0, multiplied with the palette tint) before e
 | Step | What | Rule |
 |---|---|---|
 | Tessellate | Large planar siding, brick, roof, concrete and room faces are split into a grid | LOD0 0.95 m (walls), 1.4 m (roofs), 1.2 m (concrete), 1.5 m (rooms); LOD1 about twice that; LOD2 walls and roofs only |
-| Occlusion | Raycast from every grid point into the hemisphere (28 / 14 / 8 rays per LOD, 2.2 m reach) against the house and the ground | Glass and lamps do not occlude. On outside walls, rays within ~25° of the wall and hits nearer than 18 cm are ignored: those find only casings and shutters, whose real shadow is a hairline |
+| Occlusion, gridded surfaces (siding, brick, roofs, concrete) | Each grid point averages its neighbourhood: 7 sample points on a disk of a third of the grid spacing, 12 / 8 / 6 rays each (LOD0 / 1 / 2), 2.2 m reach, against **large occluders only** (faces ≥ 2 m² and ≥ 0.7 m wide before tessellation: roof planes, porch roofs and ceilings, walls, chimneys) and the ground | The grid cannot hold anything smaller than itself: the game interpolates vertex colours linearly, so a corner darkened by a 30 cm object becomes a metre-wide diagonal smear on a facade lit only by the sky fill. Door hoods, lanterns, downspouts, posts, railings, shutters, trim, meters and AC units therefore do not shade walls or roofs. On outside walls, rays within ~25° of the wall and hits nearer than 18 cm are also ignored |
+| Occlusion, everything else (rooms, trim, hardware) | Raycast from every vertex (28 / 14 / 8 rays) against the whole house and the ground | Glass and lamps do not occlude |
 | Strength | per slot: rooms .95, siding .78, brick/concrete/paint .7, metal .6, roof .55, hardware .45 | glass and lamps never shaded |
-| Upkeep | rain splash at the foot of walls (≤ 0.7 m), soft streaks under sills, sun fade of one exposure, chalky roofs | scaled by the family's upkeep (fresh .35, average .9, tired 1.3) |
+| Upkeep | rain splash at the foot of walls (≤ 0.7 m), sun fade of one exposure, chalky roofs (no sill streaks: a sub-grid feature) | scaled by the family's upkeep (fresh .35, average .9, tired 1.3) |
 | Variation | low-frequency value and hue drift (siding ±2.5 %, brick ±5 %, roof ±7.5 %, concrete ±6 %) | per house seed: two houses never share a pattern |
 
 Family habits come from a separate random stream (`rnd2`) so that every choice approved in the benchmark (storm doors,

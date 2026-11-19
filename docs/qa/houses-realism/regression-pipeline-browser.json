@@ -1,6 +1,6 @@
 {
  "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
- "started": "2026-11-18T22:41:10.371Z",
+ "started": "2026-11-19T01:39:25.242Z",
  "checks": [
   "Lab: the Blender export loads through GLTFLoader r160",
   "Lab: loaded over same-origin HTTP from dist/assets/tst",
@@ -181,7 +181,7 @@
     "uniqueMaterials": 9,
     "uniqueImageTextures": 10,
     "skeletons": 12,
-    "jsHeapMBPerCopy": 0.07
+    "jsHeapMBPerCopy": 0.18
    }
   },
   {
@@ -264,7 +264,7 @@
    "name": "Package: ?pipeline in the offline game loads the embedded probe into the running Prologue",
    "detail": {
     "from": "package",
-    "label": "PIPELINE PROBE (DEV) tst.pipeline-probe v1 — Blender Khronos glTF Blender I/O v5.0.21\n11724 tris · 4 clips · 6 shape keys · 9 materials · 10 textures · loaded from package in 83.3 ms\nP: move it in front of you",
+    "label": "PIPELINE PROBE (DEV) tst.pipeline-probe v1 — Blender Khronos glTF Blender I/O v5.0.21\n11724 tris · 4 clips · 6 shape keys · 9 materials · 10 textures · loaded from package in 143.6 ms\nP: move it in front of you",
     "state": "riding"
    }
   },
@@ -288,14 +288,14 @@
  "failures": [],
  "parts": {
   "lab": {
-   "readyWallMs": 124,
+   "readyWallMs": 135,
    "asset": {
     "id": "tst.pipeline-probe",
     "file": "assets/tst/tst.pipeline-probe.glb",
     "from": "http",
     "bytes": 2355672,
-    "readMs": 91.9,
-    "parseMs": 59.3,
+    "readMs": 111.8,
+    "parseMs": 73.9,
     "triangles": 11724,
     "skinnedMeshes": 12,
     "geometries": 12,
@@ -336,7 +336,7 @@
     "license": "Original work for Last Light (Roth Studios). Technical test asset; not a character.",
     "generator": "Khronos glTF Blender I/O v5.0.21"
    },
-   "firstRenderMs": 284.4,
+   "firstRenderMs": 341.3,
    "animation": {
     "samples": [
      {
@@ -695,12 +695,12 @@
     "uniqueMaterials": 9,
     "uniqueImageTextures": 10,
     "skeletons": 12,
-    "jsHeapMBPerCopy": 0.07
+    "jsHeapMBPerCopy": 0.18
    },
    "notes": {
     "ballToPedal": "ball_l/ball_r joint to pedal centre while riding, measured (not a pass/fail): rig.js puts the ankle 5 cm behind and 6.2 cm above the pedal, so the pedal sits under the mid-foot; an authored foot puts the ball ~11 cm ahead of the ankle"
    },
-   "hud": "PIPELINE LAB (DEV) — tst.pipeline-probe v1 (technical probe, not a character)\nKhronos glTF Blender I/O v5.0.21 · loaded from http: 2.25 MB, read 91.9 ms, parse 59.3 ms\n11724 tris · 12 skinned meshes · 9 materials · 10 textures · clips idle_breathe, talk, walk_normal, wave_r\nshape keys: jawOpen, mouthSmileLeft, mouthSmileRight, browInnerUp, eyeBlinkLeft, eyeBlinkRight\nface (right figure): sad\n4 copies share: 35 geometries, 19 materials, 10 textures; 4 skeletons\nGPU: 38 geometries, 26 textures · 83 draw calls, 63150 tris\nrider (rig.js pose contract on a procedural bike): grip L 3.8 cm R 3.8 cm · wrist err 0.0 cm · ankle err 0.0 cm"
+   "hud": "PIPELINE LAB (DEV) — tst.pipeline-probe v1 (technical probe, not a character)\nKhronos glTF Blender I/O v5.0.21 · loaded from http: 2.25 MB, read 111.8 ms, parse 73.9 ms\n11724 tris · 12 skinned meshes · 9 materials · 10 textures · clips idle_breathe, talk, walk_normal, wave_r\nshape keys: jawOpen, mouthSmileLeft, mouthSmileRight, browInnerUp, eyeBlinkLeft, eyeBlinkRight\nface (right figure): sad\n4 copies share: 35 geometries, 19 materials, 10 textures; 4 skeletons\nGPU: 38 geometries, 26 textures · 83 draw calls, 63150 tris\nrider (rig.js pose contract on a procedural bike): grip L 3.8 cm R 3.8 cm · wrist err 0.0 cm · ankle err 0.0 cm"
   },
   "game": {
    "before": {
@@ -747,18 +747,18 @@
   },
   "package": {
    "withModels": {
-    "out": "/tmp/ll-pkg-ZDBpoM/models",
-    "bytes": 105134853,
+    "out": "/tmp/ll-pkg-T4iaSc/models",
+    "bytes": 105139837,
     "branch": "claude/prologue-house-architecture-realism-refinement",
-    "commit": "791a57209d8c45823e0842f32a832a7b847a70ac",
+    "commit": "43d3ee1c1dec2e6283b42b87387da0211b74815f",
     "dirty": true,
     "untrackedFilesExcluded": true,
     "entry": "Last-Light-Playtest.html",
-    "entrySHA256": "aa68187cbad349981bce8407e7852fc8a3b8ce901cb181cfc72b9e1ee05ebeef",
+    "entrySHA256": "eba7dd6110f8375f3b26c8330659e7d8aa35bc34a5c44896b31c2f3389f7330f",
     "modules": 173,
     "pipelineLab": {
      "entry": "Last-Light-Pipeline-Lab.html",
-     "sha256": "5f59b486b837882091237ddfa3f2b941228be2de5535f78ab874de685c3cf688",
+     "sha256": "446c22172c9c0a9c71ea78077b062f0209af66be5ed96520d65bc6bb1d5e6b16",
      "models": [
       "assets/bike/bike.alex.glb",
       "assets/bike/bike.jamie.glb",
@@ -770,15 +770,15 @@
      ],
      "bikeLab": {
       "entry": "Last-Light-Bike-Lab.html",
-      "sha256": "b9d58d785d15d437a145fc6adda7f3c8cfc148b0ccc7fd454b886e2a88452f3b"
+      "sha256": "1f6b89c5c2a7dd26e06e13b9faeca26e57638fd100528374836df7833bad6049"
      }
     }
    },
    "default": {
-    "out": "/tmp/ll-pkg-ZDBpoM/default",
+    "out": "/tmp/ll-pkg-T4iaSc/default",
     "bytes": 12655308,
     "branch": "claude/prologue-house-architecture-realism-refinement",
-    "commit": "791a57209d8c45823e0842f32a832a7b847a70ac",
+    "commit": "43d3ee1c1dec2e6283b42b87387da0211b74815f",
     "dirty": true,
     "untrackedFilesExcluded": true,
     "entry": "Last-Light-Playtest.html",
@@ -786,13 +786,13 @@
     "modules": 173
    },
    "sizes": {
-    "withModels": 105134853,
-    "lab": 104872716,
+    "withModels": 105139837,
+    "lab": 104877700,
     "default": 12655308
    },
    "manifest": {
     "entry": "Last-Light-Pipeline-Lab.html",
-    "sha256": "5f59b486b837882091237ddfa3f2b941228be2de5535f78ab874de685c3cf688",
+    "sha256": "446c22172c9c0a9c71ea78077b062f0209af66be5ed96520d65bc6bb1d5e6b16",
     "models": [
      "assets/bike/bike.alex.glb",
      "assets/bike/bike.jamie.glb",
@@ -804,7 +804,7 @@
     ],
     "bikeLab": {
      "entry": "Last-Light-Bike-Lab.html",
-     "sha256": "b9d58d785d15d437a145fc6adda7f3c8cfc148b0ccc7fd454b886e2a88452f3b"
+     "sha256": "1f6b89c5c2a7dd26e06e13b9faeca26e57638fd100528374836df7833bad6049"
     }
    },
    "lab": {
@@ -830,32 +830,32 @@
    },
    "game": {
     "from": "package",
-    "label": "PIPELINE PROBE (DEV) tst.pipeline-probe v1 — Blender Khronos glTF Blender I/O v5.0.21\n11724 tris · 4 clips · 6 shape keys · 9 materials · 10 textures · loaded from package in 83.3 ms\nP: move it in front of you",
+    "label": "PIPELINE PROBE (DEV) tst.pipeline-probe v1 — Blender Khronos glTF Blender I/O v5.0.21\n11724 tris · 4 clips · 6 shape keys · 9 materials · 10 textures · loaded from package in 143.6 ms\nP: move it in front of you",
     "state": "riding"
    },
    "defaultPackageLabel": "PIPELINE PROBE FAILED (nothing was substituted): asset assets/tst/tst.pipeline-probe.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)",
    "defaultErrors": [
-    "pipeline probe failed: Error: asset assets/tst/tst.pipeline-probe.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)\n    at bytesFor (blob:null/0a06285e-9fd7-41ad-baef-adb9c5c58e6e:38:37)\n    at blob:null/0a06285e-9fd7-41ad-baef-adb9c5c58e6e:47:59\n    at loadAsset (blob:null/0a06285e-9fd7-41ad-baef-adb9c5c58e6e:64:82)\n    at buildLineup (blob:null/a252feae-8fdc-4fe2-b792-b7efe99d64a1:19:16)\n    at Module.mountInGame (blob:null/a252feae-8fdc-4fe2-b792-b7efe99d64a1:59:16)\n    at blob:null/4af51910-3215-4078-8bed-c1ee516b5c48:861:125"
+    "pipeline probe failed: Error: asset assets/tst/tst.pipeline-probe.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)\n    at bytesFor (blob:null/0238cbe0-5bea-4426-a1e1-7c3d0031c8e8:38:37)\n    at blob:null/0238cbe0-5bea-4426-a1e1-7c3d0031c8e8:47:59\n    at loadAsset (blob:null/0238cbe0-5bea-4426-a1e1-7c3d0031c8e8:64:82)\n    at buildLineup (blob:null/1ca219e1-31f0-41cb-a28a-ea0810b4d420:19:16)\n    at Module.mountInGame (blob:null/1ca219e1-31f0-41cb-a28a-ea0810b4d420:59:16)\n    at blob:null/3ea8e7e7-e664-4600-a26e-02d3333ed763:861:125"
    ]
   }
  },
  "shots": [
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-lineup.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-rider-procedural-bike.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-walk.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-back.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-face-neutral.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-face-surprised.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-face-happy.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-face-shapekeys-jawOpen-browInnerUp-eyeBlinkLeft.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/lab-walk-cycle-strip.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/game-prologue-probe-beside-street.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/game-prologue-probe-closeup.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/package-offline-lab.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/package-offline-game-prologue-probe.jpg",
-  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline/package-default-pipeline-fails-loudly.jpg"
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/lab-lineup.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/lab-rider-procedural-bike.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/lab-walk.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/lab-back.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/lab-face-neutral.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/lab-face-surprised.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/lab-face-happy.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/lab-face-shapekeys-jawOpen-browInnerUp-eyeBlinkLeft.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/lab-walk-cycle-strip.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/game-prologue-probe-beside-street.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/game-prologue-probe-closeup.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/package-offline-lab.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/package-offline-game-prologue-probe.jpg",
+  "../../../tmp/claude-0/-home-user-Last-light/8a0b28ac-777a-528a-9663-63628b1ed330/scratchpad/regress/pipeline2/package-default-pipeline-fails-loudly.jpg"
  ],
- "finished": "2026-11-18T22:43:52.715Z",
+ "finished": "2026-11-19T01:42:47.635Z",
  "passed": 36,
  "failed": 0
 }

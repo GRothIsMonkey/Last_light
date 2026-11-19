@@ -8,12 +8,25 @@ distance a rider sees it from:
   * ambient occlusion from the house's own geometry and the ground (raycast in house-local metres): the soft dark
     under eaves and porch roofs, inside window and door reveals, at inside corners, the corners of the rooms behind the
     glass, the ground line;
-  * weathering by the family's upkeep (fresh / average / tired): rain-splash darkening at the foot of walls, soft
-    streaks below window sills, sun-fading of one exposure, chalky roofs and trim;
+  * weathering by the family's upkeep (fresh / average / tired): rain-splash darkening at the foot of walls,
+    sun-fading of one exposure, chalky roofs and trim;
   * macro variation: low-frequency, per-house value and hue drift over siding, brick, shingles and concrete, so a
     2 m texture tile never reads as one uniform sheet.
 
 Restrained on purpose: the Prologue is a cared-for neighbourhood in August 2011. No cracks, no grime decals.
+
+The shading lives on a vertex grid (about 1 m on walls), and the game interpolates it linearly across each triangle, so
+it must never hold anything smaller than that grid: a dark corner left by a 30 cm object becomes a metre-wide diagonal
+smear in the game (where a facade in shade is lit only by the flat sky fill and nothing hides it). So, on the gridded
+surfaces (siding, brick, roofs, concrete):
+  * only large occluders shade them: faces of at least OCC_BIG area and width (roof planes, porch roofs and ceilings,
+    walls, chimneys, the ground). Door hoods, lanterns, downspouts, posts, railings, shutters, trim, meters and AC units
+    do not: their real shadow is smaller than the grid can hold;
+  * each grid point's occlusion is the average over its own neighbourhood (a disk of a third of the grid spacing), a
+    low-pass filter matched to the grid, so neighbouring points never differ by a step the interpolation would draw
+    as a diamond;
+  * no sill streaks (a sub-grid feature).
+Rooms, trim and hardware keep the full occlusion of everything (their faces are small or their corners are the point).
 """
 import math
 import numpy as np
@@ -27,6 +40,11 @@ TESS = {0: {'siding': .95, 'brick': .95, 'roof': 1.4, 'concrete': 1.2, 'interior
         2: {'siding': 3.5, 'brick': 3.5, 'roof': 5.0}}
 RAYS = {0: 28, 1: 14, 2: 8}
 REACH = {0: 2.2, 1: 2.2, 2: 2.6}
+# gridded surfaces: rays per neighbourhood sample, and which occluders are large enough to shade them
+GRIDDED = ('siding', 'brick', 'roof', 'concrete')
+RAYS_F = {0: 12, 1: 8, 2: 6}
+OCC_BIG = {'area': 2.0, 'width': .7}         # m², m (in-plane extents of the occluding face, before tessellation)
+RING = [(0.0, 0.0)] + [(math.cos(a), math.sin(a)) for a in [i * math.tau / 6 + .26 for i in range(6)]]
 
 
 def _hash(*a):
@@ -70,28 +88,68 @@ def _basis(nrm):
     return u, v, n
 
 
-def bake(mb, house, lod):
-    """Tessellate, raycast occlusion, weather and vary; leaves per-corner colours on mb.faces."""
-    mb.tessellate(TESS[lod])
-    verts = mb.verts
-    occl = [f for f in mb.faces if f[1] not in ('glass', 'light')]
-    # occluders: the house itself and the ground around it (0.5 cm below grade, as the lot ground)
+def _is_big(P):
+    """A planar face large enough for its occlusion to live on the bake grid (area and narrowest in-plane extent)."""
+    P = [np.asarray(p, dtype=float) for p in P]
+    n = np.zeros(3)
+    for i in range(len(P)):
+        n += np.cross(P[i], P[(i + 1) % len(P)])
+    area = np.linalg.norm(n) / 2
+    if area < OCC_BIG['area']:
+        return False
+    u, v, _ = _basis(n / max(1e-12, np.linalg.norm(n)))
+    eu = max(float(np.dot(p, u)) for p in P) - min(float(np.dot(p, u)) for p in P)
+    ev = max(float(np.dot(p, v)) for p in P) - min(float(np.dot(p, v)) for p in P)
+    return min(eu, ev) >= OCC_BIG['width']
+
+
+def _bvh(verts, faces):
+    """BVH of the given faces plus the lot ground (0.5 cm below grade)."""
     vlist = [Vector(v) for v in verts]
-    polys = [list(f[0]) for f in occl]
+    polys = [list(f[0]) for f in faces]
     g0 = len(vlist)
     G = 40.0
     vlist += [Vector((-G, -.005, -G)), Vector((G, -.005, -G)), Vector((G, -.005, G)), Vector((-G, -.005, G))]
     polys.append([g0, g0 + 3, g0 + 2, g0 + 1])
-    bvh = BVHTree.FromPolygons(vlist, polys, all_triangles=False, epsilon=0.0)
+    return BVHTree.FromPolygons(vlist, polys, all_triangles=False, epsilon=0.0)
+
+
+def _occlusion(bvh, origin, u, v, w, dirs, rot, reach, wall_like):
+    """1 - weighted fraction of the hemisphere (about w) blocked within reach."""
+    cr, sr = math.cos(rot), math.sin(rot)
+    occ, used = 0.0, 0
+    for (dx, dy, dz) in dirs:
+        # on outside walls, rays that skim the wall only find the thin trim around windows (2-3 cm proud): at the bake
+        # grid's spacing that would smear into blotches, so walls look out at least ~25 deg from the wall
+        if wall_like and dz < .42:
+            continue
+        used += 1
+        rx, ry = dx * cr - dy * sr, dx * sr + dy * cr
+        hit = bvh.ray_cast(origin, u * rx + v * ry + w * dz, reach)
+        # (walls: hits nearer than 18 cm are trim and shutters, whose own shadow is a hairline, not a metre)
+        if hit[0] is not None and not (wall_like and hit[3] < .18):
+            occ += (1 - hit[3] / reach) ** .6
+    return 1 - occ / max(1, used)
+
+
+def bake(mb, house, lod):
+    """Tessellate, raycast occlusion, weather and vary; leaves per-corner colours on mb.faces."""
+    # occluders, from the faces as built (before the grid): everything, and only the large ones (for gridded surfaces)
+    occl = [f for f in mb.faces if f[1] not in ('glass', 'light')]
+    bvh = _bvh(mb.verts, occl)
+    bvh_big = _bvh(mb.verts, [f for f in occl if _is_big([mb.verts[i] for i in f[0]])])
+    mb.tessellate(TESS[lod])
+    verts = mb.verts
     dirs = _dirs(RAYS[lod])
+    dirs_f = _dirs(RAYS_F[lod])
     reach = REACH[lod]
+    spacing = TESS[lod]
     h = house.h
     care = house.care
     wear = {'fresh': .35, 'average': .9, 'tired': 1.3}[care]
     seed = int(h['seeds'][0] * 1e6) % 100000
     sun_az = h['seeds'][1] * math.tau                 # which exposure this family's paint has faded on
     sun_dir = (math.cos(sun_az), 0.0, math.sin(sun_az))
-    sills = getattr(house, 'sills', [])
     cache = {}
     out = []
     for f in mb.faces:
@@ -114,6 +172,7 @@ def bake(mb, house, lod):
         u, v, w = _basis(n)
         cols = []
         wall_like = slot in ('siding', 'brick', 'concrete') and abs(n[1]) < .35
+        gridded = slot in GRIDDED and slot in spacing
         for p in P:
             key = (round(p[0], 3), round(p[1], 3), round(p[2], 3), round(n[0], 2), round(n[1], 2), round(n[2], 2))
             ao = cache.get(key)
@@ -121,24 +180,23 @@ def bake(mb, house, lod):
                 inward = cen - np.asarray(p)
                 d = np.linalg.norm(inward)
                 o = np.asarray(p) + n * .006 + (inward / d * min(.02, d * .25) if d > 1e-6 else 0)
-                origin = Vector(o)
-                occ = 0.0
                 rot = _hash(int(p[0] * 997), int(p[1] * 991), int(p[2] * 983)) * math.tau   # per-point rotation of the set
-                cr, sr = math.cos(rot), math.sin(rot)
-                used = 0
-                for (dx, dy, dz) in dirs:
-                    # on outside walls, rays that skim the wall only find the thin trim around windows (2-3 cm proud): at
-                    # the bake grid's spacing that would smear into blotches, so walls look out at least ~25 deg from the wall
-                    if wall_like and dz < .42:
-                        continue
-                    used += 1
-                    rx, ry = dx * cr - dy * sr, dx * sr + dy * cr
-                    dvec = u * rx + v * ry + w * dz
-                    hit = bvh.ray_cast(origin, dvec, reach)
-                    # (walls: hits nearer than 18 cm are trim and shutters, whose own shadow is a hairline, not a metre)
-                    if hit[0] is not None and not (wall_like and hit[3] < .18):
-                        occ += (1 - hit[3] / reach) ** .6
-                ao = 1 - occ / max(1, used)
+                if gridded:
+                    # the neighbourhood average: samples on a disk of a third of the grid spacing around the point
+                    # (skipping any the point cannot reach along its own surface), large occluders only
+                    rad = spacing[slot] / 3
+                    samples = []
+                    for (cx, cy) in RING:
+                        q = np.asarray(o) + (np.asarray(u) * cx + np.asarray(v) * cy) * rad
+                        if cx or cy:
+                            seg = q - o
+                            ls = float(np.linalg.norm(seg))
+                            if bvh_big.ray_cast(Vector(o), Vector(seg / ls), ls)[0] is not None:
+                                continue
+                        samples.append(Vector(q))
+                    ao = sum(_occlusion(bvh_big, q, u, v, w, dirs_f, rot + k * 1.7, reach, wall_like) for k, q in enumerate(samples)) / len(samples)
+                else:
+                    ao = _occlusion(bvh, Vector(o), u, v, w, dirs, rot, reach, wall_like)
                 cache[key] = ao
             k = AO_STRENGTH[slot]
             shade = (1 - k) + k * (ao ** 1.15)
@@ -165,23 +223,6 @@ def bake(mb, house, lod):
                 t = max(0.0, 1 - p[1] / .7) ** 1.6
                 dirt = t * .09 * wear
                 c = [c[0] * (1 - dirt) + .2 * dirt * .5, c[1] * (1 - dirt) + .18 * dirt * .5, c[2] * (1 - dirt * 1.1) + .14 * dirt * .5]
-            # soft streaks below window sills (siding only, on the wall under the sill's ends and middle)
-            if slot == 'siding' and vert and sills:
-                st = 0.0
-                for (sp, ax, wn, x0, x1, ys) in sills:
-                    if float(np.dot(n, wn)) < .9:
-                        continue
-                    rel = np.asarray(p) - sp
-                    if abs(float(np.dot(rel, wn))) > .08:
-                        continue
-                    s_ = float(np.dot(rel, ax))
-                    if s_ < x0 - .12 or s_ > x1 + .12 or p[1] > ys or p[1] < ys - 1.3:
-                        continue
-                    edge = min(1.0, min(s_ - (x0 - .12), (x1 + .12) - s_) / .25)
-                    st = max(st, (1 - (ys - p[1]) / 1.3) * edge)
-                if st > 0:
-                    k2 = st * .035 * wear
-                    c = [c[0] * (1 - k2), c[1] * (1 - k2 * .95), c[2] * (1 - k2 * .85)]
             c = [max(0.0, min(1.0, ci * shade)) for ci in c]
             cols.append(tuple(c))
         out.append((idx, slot, uv, cols, smooth))

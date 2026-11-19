@@ -8,15 +8,15 @@
  ],
  "info": {
   "file": "house.prologue.glb",
-  "bytes": 18742396,
-  "sha256": "d42289c7135c7f7faaa021a1fa3a6f06a05ec9fbb2e1eb4e142946afbff3582b",
+  "bytes": 18746136,
+  "sha256": "f97f5bee570265f7e77b9c6cea34d525e8b8b29a6e4696bb0dae632e6d1ae9de",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "house",
   "assetId": "house.prologue",
   "assetVersion": 2,
   "noTangentPrimitives": 171,
   "triangles": 146092,
-  "vertices": 259079,
+  "vertices": 259164,
   "skinnedMeshes": 0,
   "morphTargets": [],
   "houses": {

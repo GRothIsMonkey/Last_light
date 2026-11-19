@@ -1,6 +1,6 @@
 {
  "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
- "started": "2026-11-18T22:32:38.924Z",
+ "started": "2026-11-19T01:31:40.775Z",
  "checks": [
   {
    "name": "Game: without ?houses the Prologue fetches none of the house benchmark modules or the model",
@@ -330,7 +330,7 @@
      0
     ],
     "withAO": 0,
-    "loadMs": 506
+    "loadMs": 539
    }
   },
   {
@@ -426,10 +426,10 @@
    "detail": []
   },
   {
-   "name": "Package: PLAYTEST_MODELS=1 embeds the house model and hashes it in the manifest",
+   "name": "Package: PLAYTEST_MODELS=1 embeds the house models (C and B) and hashes them in the manifest",
    "detail": {
     "sizes": {
-     "withModels": 105134853,
+     "withModels": 105139837,
      "default": 12655308
     }
    }
@@ -442,6 +442,18 @@
     "houses": 12,
     "from": "package",
     "state": "riding"
+   }
+  },
+  {
+   "name": "Package: H in the offline game reaches B (the first benchmark, embedded too) and A, and comes back to C",
+   "detail": {
+    "mode": "v1",
+    "houses": 12,
+    "errors": [],
+    "from": "package",
+    "version": 1,
+    "procedural": "procedural",
+    "back": "refined"
    }
   },
   {
@@ -472,18 +484,18 @@
    "merged": 2225
   },
   "game": {
-   "wallLoadMs": 488,
+   "wallLoadMs": 481,
    "loaded": {
     "error": null,
     "errors": [],
-    "loadMs": 455,
+    "loadMs": 447,
     "info": {
      "id": "house.prologue",
      "file": "assets/house/house.prologue.glb",
      "from": "http",
-     "bytes": 18742396,
-     "readMs": 112.2,
-     "parseMs": 181.7,
+     "bytes": 18746136,
+     "readMs": 117.2,
+     "parseMs": 162.6,
      "triangles": 146092,
      "skinnedMeshes": 0,
      "geometries": 306,
@@ -587,7 +599,7 @@
       -5.01,
       11.41
      ],
-     "sampled": 6407
+     "sampled": 6411
     },
     "house.hoop": {
      "minAbsLat": 12.39,
@@ -638,7 +650,7 @@
       -5.59,
       9.59
      ],
-     "sampled": 6413
+     "sampled": 6417
     },
     "house.lotL8": {
      "minAbsLat": 11.65,
@@ -655,7 +667,7 @@
       -8.6,
       4.6
      ],
-     "sampled": 4537
+     "sampled": 4542
     },
     "house.lotLm21": {
      "minAbsLat": 11.15,
@@ -672,7 +684,7 @@
       -6.43,
       6.43
      ],
-     "sampled": 3800
+     "sampled": 3803
     },
     "house.lotR153": {
      "minAbsLat": 12.66,
@@ -723,7 +735,7 @@
       -8.87,
       4.87
      ],
-     "sampled": 5279
+     "sampled": 5282
     },
     "house.lotR66": {
      "minAbsLat": 11.35,
@@ -740,7 +752,7 @@
       -11.34,
       4.94
      ],
-     "sampled": 4996
+     "sampled": 5001
     },
     "house.lotR8": {
      "minAbsLat": 12.61,
@@ -774,7 +786,7 @@
       -4.71,
       8.71
      ],
-     "sampled": 5610
+     "sampled": 5615
     }
    },
    "story": {
@@ -838,7 +850,7 @@
      0
     ],
     "withAO": 0,
-    "loadMs": 506
+    "loadMs": 539
    },
    "modes": {
     "v1": {
@@ -1639,7 +1651,7 @@
    "memory": {
     "geometries": 1196,
     "textures": 49,
-    "jsHeapMB": 1386.8
+    "jsHeapMB": 1385.6
    },
    "after": {
     "state": "riding",
@@ -1685,18 +1697,18 @@
   },
   "package": {
    "withModels": {
-    "out": "/tmp/ll-houses-owySCJ/models",
-    "bytes": 105134853,
+    "out": "/tmp/ll-houses-lvbNx4/models",
+    "bytes": 105139837,
     "branch": "claude/prologue-house-architecture-realism-refinement",
-    "commit": "791a57209d8c45823e0842f32a832a7b847a70ac",
+    "commit": "43d3ee1c1dec2e6283b42b87387da0211b74815f",
     "dirty": true,
     "untrackedFilesExcluded": true,
     "entry": "Last-Light-Playtest.html",
-    "entrySHA256": "aa68187cbad349981bce8407e7852fc8a3b8ce901cb181cfc72b9e1ee05ebeef",
+    "entrySHA256": "eba7dd6110f8375f3b26c8330659e7d8aa35bc34a5c44896b31c2f3389f7330f",
     "modules": 173,
     "pipelineLab": {
      "entry": "Last-Light-Pipeline-Lab.html",
-     "sha256": "5f59b486b837882091237ddfa3f2b941228be2de5535f78ab874de685c3cf688",
+     "sha256": "446c22172c9c0a9c71ea78077b062f0209af66be5ed96520d65bc6bb1d5e6b16",
      "models": [
       "assets/bike/bike.alex.glb",
       "assets/bike/bike.jamie.glb",
@@ -1708,15 +1720,15 @@
      ],
      "bikeLab": {
       "entry": "Last-Light-Bike-Lab.html",
-      "sha256": "b9d58d785d15d437a145fc6adda7f3c8cfc148b0ccc7fd454b886e2a88452f3b"
+      "sha256": "1f6b89c5c2a7dd26e06e13b9faeca26e57638fd100528374836df7833bad6049"
      }
     }
    },
    "default": {
-    "out": "/tmp/ll-houses-owySCJ/default",
+    "out": "/tmp/ll-houses-lvbNx4/default",
     "bytes": 12655308,
     "branch": "claude/prologue-house-architecture-realism-refinement",
-    "commit": "791a57209d8c45823e0842f32a832a7b847a70ac",
+    "commit": "43d3ee1c1dec2e6283b42b87387da0211b74815f",
     "dirty": true,
     "untrackedFilesExcluded": true,
     "entry": "Last-Light-Playtest.html",
@@ -1724,7 +1736,7 @@
     "modules": 173
    },
    "sizes": {
-    "withModels": 105134853,
+    "withModels": 105139837,
     "default": 12655308
    },
    "game": {
@@ -1733,6 +1745,15 @@
     "houses": 12,
     "from": "package",
     "state": "riding"
+   },
+   "v1": {
+    "mode": "v1",
+    "houses": 12,
+    "errors": [],
+    "from": "package",
+    "version": 1,
+    "procedural": "procedural",
+    "back": "refined"
    },
    "defaultPackageLabel": "HOUSE BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/house/house.prologue.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)"
   }
@@ -2932,7 +2953,7 @@
    "kind": "game (default package)"
   }
  ],
- "finished": "2026-11-18T22:39:23.247Z",
- "passed": 29,
+ "finished": "2026-11-19T01:39:08.404Z",
+ "passed": 30,
  "failed": 0
 }
