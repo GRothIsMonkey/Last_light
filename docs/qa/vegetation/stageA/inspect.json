@@ -1,0 +1,2116 @@
+{
+ "realistic_trees_collection": [
+  {
+   "object": "Tree EZTree0.Large_branches_0",
+   "tris": 11832,
+   "verts": 8738,
+   "materials": [
+    "branches"
+   ],
+   "min": [
+    -117.553,
+    -39.219,
+    -1.265
+   ],
+   "max": [
+    -51.043,
+    37.633,
+    89.194
+   ]
+  },
+  {
+   "object": "Tree EZTree0.Large_leaves_0",
+   "tris": 3520,
+   "verts": 10512,
+   "materials": [
+    "leaves"
+   ],
+   "min": [
+    -132.989,
+    -48.243,
+    11.532
+   ],
+   "max": [
+    -34.729,
+    53.758,
+    104.927
+   ]
+  },
+  {
+   "object": "Tree EZTree0.Medium010_branches.010_0",
+   "tris": 3166,
+   "verts": 2780,
+   "materials": [
+    "branches.010"
+   ],
+   "min": [
+    34.221,
+    -23.62,
+    -0.884
+   ],
+   "max": [
+    80.452,
+    26.288,
+    61.851
+   ]
+  },
+  {
+   "object": "Tree EZTree0.Medium010_leaves.010_0",
+   "tris": 10640,
+   "verts": 31786,
+   "materials": [
+    "leaves.010"
+   ],
+   "min": [
+    29.471,
+    -28.6,
+    5.515
+   ],
+   "max": [
+    86.404,
+    31.318,
+    67.682
+   ]
+  },
+  {
+   "object": "Tree EZTree0.Medium011_branches.011_0",
+   "tris": 3206,
+   "verts": 2344,
+   "materials": [
+    "branches.011"
+   ],
+   "min": [
+    106.12,
+    -20.312,
+    -0.467
+   ],
+   "max": [
+    139.932,
+    14.329,
+    44.894
+   ]
+  },
+  {
+   "object": "Tree EZTree0.Medium011_leaves.011_0",
+   "tris": 3600,
+   "verts": 10756,
+   "materials": [
+    "leaves.011"
+   ],
+   "min": [
+    101.862,
+    -24.068,
+    5.902
+   ],
+   "max": [
+    144.116,
+    20.141,
+    48.083
+   ]
+  },
+  {
+   "object": "Tree EZTree1.Bush006_branches.006_0",
+   "tris": 13476,
+   "verts": 22040,
+   "materials": [
+    "material_0"
+   ],
+   "min": [
+    198.28,
+    -11.292,
+    1.967
+   ],
+   "max": [
+    223.51,
+    14.019,
+    20.434
+   ]
+  },
+  {
+   "object": "Tree EZTree1.Bush006_leaves.006_0",
+   "tris": 2496,
+   "verts": 7442,
+   "materials": [
+    "leaves.006"
+   ],
+   "min": [
+    194.443,
+    -15.063,
+    -0.6
+   ],
+   "max": [
+    227.616,
+    17.099,
+    21.381
+   ]
+  },
+  {
+   "object": "Tree EZTree1.Large001_branches.001_0",
+   "tris": 9120,
+   "verts": 6639,
+   "materials": [
+    "branches.001"
+   ],
+   "min": [
+    -34.122,
+    -22.864,
+    -1.17
+   ],
+   "max": [
+    23.208,
+    34.619,
+    76.994
+   ]
+  },
+  {
+   "object": "Tree EZTree1.Large001_leaves.001_0",
+   "tris": 21952,
+   "verts": 65534,
+   "materials": [
+    "leaves.001"
+   ],
+   "min": [
+    -39.632,
+    -17.954,
+    5.313
+   ],
+   "max": [
+    29.99,
+    41.75,
+    82.775
+   ]
+  },
+  {
+   "object": "Tree EZTree1.Large001_leaves.001_0.001",
+   "tris": 10816,
+   "verts": 32332,
+   "materials": [
+    "leaves.001"
+   ],
+   "min": [
+    -41.578,
+    -28.389,
+    9.852
+   ],
+   "max": [
+    25.186,
+    25.757,
+    59.009
+   ]
+  },
+  {
+   "object": "Tree EZTree1.Large009_branches.009_0",
+   "tris": 12006,
+   "verts": 8984,
+   "materials": [
+    "branches.009"
+   ],
+   "min": [
+    -234.83,
+    -46.056,
+    -1.495
+   ],
+   "max": [
+    -147.798,
+    44.22,
+    98.353
+   ]
+  },
+  {
+   "object": "Tree EZTree1.Large009_leaves.009_0",
+   "tris": 10560,
+   "verts": 31528,
+   "materials": [
+    "leaves.009"
+   ],
+   "min": [
+    -245.061,
+    -58.607,
+    2.838
+   ],
+   "max": [
+    -137.316,
+    53.836,
+    108.862
+   ]
+  },
+  {
+   "object": "Tree EZTree1.Medium002_branches.002_0",
+   "tris": 5616,
+   "verts": 3706,
+   "materials": [
+    "branches.002"
+   ],
+   "min": [
+    152.895,
+    -23.851,
+    -0.298
+   ],
+   "max": [
+    190.388,
+    9.805,
+    46.764
+   ]
+  },
+  {
+   "object": "Tree EZTree1.Medium002_leaves.002_0",
+   "tris": 5456,
+   "verts": 16314,
+   "materials": [
+    "leaves.002"
+   ],
+   "min": [
+    149.741,
+    -26.911,
+    12.795
+   ],
+   "max": [
+    193.381,
+    12.365,
+    49.852
+   ]
+  }
+ ],
+ "trees_summary": [
+  {
+   "tree": "Tree EZTree0.Large",
+   "tris": 15352,
+   "height": 106.19,
+   "width_x": 98.26,
+   "width_y": 102.0,
+   "center": [
+    -83.86,
+    2.76,
+    -1.26
+   ]
+  },
+  {
+   "tree": "Tree EZTree0.Medium010",
+   "tris": 13806,
+   "height": 68.57,
+   "width_x": 56.93,
+   "width_y": 59.92,
+   "center": [
+    57.94,
+    1.36,
+    -0.88
+   ]
+  },
+  {
+   "tree": "Tree EZTree0.Medium011",
+   "tris": 6806,
+   "height": 48.55,
+   "width_x": 42.25,
+   "width_y": 44.21,
+   "center": [
+    122.99,
+    -1.96,
+    -0.47
+   ]
+  },
+  {
+   "tree": "Tree EZTree1.Bush006",
+   "tris": 15972,
+   "height": 21.98,
+   "width_x": 33.17,
+   "width_y": 32.16,
+   "center": [
+    211.03,
+    1.02,
+    -0.6
+   ]
+  },
+  {
+   "tree": "Tree EZTree1.Large001",
+   "tris": 41888,
+   "height": 83.94,
+   "width_x": 71.57,
+   "width_y": 70.14,
+   "center": [
+    -5.79,
+    6.68,
+    -1.17
+   ]
+  },
+  {
+   "tree": "Tree EZTree1.Large009",
+   "tris": 22566,
+   "height": 110.36,
+   "width_x": 107.74,
+   "width_y": 112.44,
+   "center": [
+    -191.19,
+    -2.39,
+    -1.49
+   ]
+  },
+  {
+   "tree": "Tree EZTree1.Medium002",
+   "tris": 11072,
+   "height": 50.15,
+   "width_x": 43.64,
+   "width_y": 39.28,
+   "center": [
+    171.56,
+    -7.27,
+    -0.3
+   ]
+  }
+ ],
+ "bush_models_pack": [
+  {
+   "object": "Bush_big_001_Billboard_Bush big_001_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_big_001_Billboard_Mat"
+   ],
+   "min": [
+    -0.448,
+    8.231,
+    -0.053
+   ],
+   "max": [
+    0.982,
+    9.732,
+    1.627
+   ]
+  },
+  {
+   "object": "Bush_big_001_LOD0_Bark_material_0",
+   "tris": 780,
+   "verts": 586,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    -0.301,
+    -0.646,
+    -0.051
+   ],
+   "max": [
+    0.864,
+    0.555,
+    1.343
+   ]
+  },
+  {
+   "object": "Bush_big_001_LOD0_Brunch_material_0",
+   "tris": 1192,
+   "verts": 1076,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    -0.448,
+    -0.769,
+    0.001
+   ],
+   "max": [
+    0.996,
+    0.747,
+    1.611
+   ]
+  },
+  {
+   "object": "Bush_big_001_LOD1_Bark_material_0",
+   "tris": 306,
+   "verts": 250,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    -0.301,
+    2.354,
+    -0.053
+   ],
+   "max": [
+    0.864,
+    3.555,
+    1.343
+   ]
+  },
+  {
+   "object": "Bush_big_001_LOD1_Brunch_material_0",
+   "tris": 660,
+   "verts": 681,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    -0.448,
+    2.234,
+    0.001
+   ],
+   "max": [
+    0.993,
+    3.747,
+    1.611
+   ]
+  },
+  {
+   "object": "Bush_big_001_LOD2_Bark_material_0",
+   "tris": 78,
+   "verts": 78,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    -0.301,
+    5.764,
+    -0.053
+   ],
+   "max": [
+    0.864,
+    6.082,
+    0.823
+   ]
+  },
+  {
+   "object": "Bush_big_001_LOD2_Brunch_material_0",
+   "tris": 270,
+   "verts": 450,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    -0.448,
+    5.24,
+    0.001
+   ],
+   "max": [
+    0.994,
+    6.747,
+    1.644
+   ]
+  },
+  {
+   "object": "Bush_big_002_Billboard_Bush big_002_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_big_002_Billboard_Mat"
+   ],
+   "min": [
+    1.321,
+    8.195,
+    -0.051
+   ],
+   "max": [
+    2.627,
+    9.684,
+    1.577
+   ]
+  },
+  {
+   "object": "Bush_big_002_LOD0_Bark_material_0",
+   "tris": 912,
+   "verts": 678,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    1.528,
+    -0.679,
+    -0.048
+   ],
+   "max": [
+    2.501,
+    0.51,
+    1.339
+   ]
+  },
+  {
+   "object": "Bush_big_002_LOD0_Brunch_material_0",
+   "tris": 1306,
+   "verts": 1173,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    1.372,
+    -0.805,
+    0.029
+   ],
+   "max": [
+    2.64,
+    0.699,
+    1.594
+   ]
+  },
+  {
+   "object": "Bush_big_002_LOD1_Bark_material_0",
+   "tris": 342,
+   "verts": 274,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    1.528,
+    2.321,
+    -0.051
+   ],
+   "max": [
+    2.501,
+    3.51,
+    1.339
+   ]
+  },
+  {
+   "object": "Bush_big_002_LOD1_Brunch_material_0",
+   "tris": 715,
+   "verts": 740,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    1.373,
+    2.197,
+    0.03
+   ],
+   "max": [
+    2.638,
+    3.699,
+    1.593
+   ]
+  },
+  {
+   "object": "Bush_big_002_LOD2_Bark_material_0",
+   "tris": 120,
+   "verts": 110,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    1.528,
+    5.527,
+    -0.051
+   ],
+   "max": [
+    2.501,
+    6.505,
+    1.339
+   ]
+  },
+  {
+   "object": "Bush_big_002_LOD2_Brunch_material_0",
+   "tris": 291,
+   "verts": 485,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    1.373,
+    5.196,
+    0.03
+   ],
+   "max": [
+    2.636,
+    6.699,
+    1.593
+   ]
+  },
+  {
+   "object": "Bush_big_003_Billboard_Bush big_003_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_big_003_Billboard_Mat"
+   ],
+   "min": [
+    3.478,
+    8.378,
+    -0.052
+   ],
+   "max": [
+    4.72,
+    9.856,
+    1.355
+   ]
+  },
+  {
+   "object": "Bush_big_003_LOD0_Bark_material_0",
+   "tris": 900,
+   "verts": 666,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    3.674,
+    -0.45,
+    -0.047
+   ],
+   "max": [
+    4.63,
+    0.703,
+    1.131
+   ]
+  },
+  {
+   "object": "Bush_big_003_LOD0_Brunch_material_0",
+   "tris": 1170,
+   "verts": 1071,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    3.544,
+    -0.622,
+    0.028
+   ],
+   "max": [
+    4.732,
+    0.87,
+    1.37
+   ]
+  },
+  {
+   "object": "Bush_big_003_LOD1_Bark_material_0",
+   "tris": 348,
+   "verts": 278,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    3.674,
+    2.55,
+    -0.052
+   ],
+   "max": [
+    4.63,
+    3.703,
+    1.131
+   ]
+  },
+  {
+   "object": "Bush_big_003_LOD1_Brunch_material_0",
+   "tris": 619,
+   "verts": 665,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    3.544,
+    2.378,
+    0.028
+   ],
+   "max": [
+    4.732,
+    3.87,
+    1.37
+   ]
+  },
+  {
+   "object": "Bush_big_003_LOD2_Bark_material_0",
+   "tris": 96,
+   "verts": 90,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    3.689,
+    5.55,
+    -0.052
+   ],
+   "max": [
+    4.63,
+    6.703,
+    0.797
+   ]
+  },
+  {
+   "object": "Bush_big_003_LOD2_Brunch_material_0",
+   "tris": 270,
+   "verts": 450,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    3.526,
+    5.378,
+    0.041
+   ],
+   "max": [
+    4.732,
+    6.871,
+    1.37
+   ]
+  },
+  {
+   "object": "Bush_big_004_Billboard_Bush big_004_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_big_004_Billboard_Mat"
+   ],
+   "min": [
+    5.452,
+    8.328,
+    -0.053
+   ],
+   "max": [
+    7.003,
+    9.533,
+    1.607
+   ]
+  },
+  {
+   "object": "Bush_big_004_LOD0_Bark_material_0",
+   "tris": 912,
+   "verts": 682,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    5.599,
+    -0.592,
+    -0.052
+   ],
+   "max": [
+    6.816,
+    0.453,
+    1.28
+   ]
+  },
+  {
+   "object": "Bush_big_004_LOD0_Brunch_material_0",
+   "tris": 1308,
+   "verts": 1186,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    5.461,
+    -0.684,
+    0.026
+   ],
+   "max": [
+    7.018,
+    0.546,
+    1.624
+   ]
+  },
+  {
+   "object": "Bush_big_004_LOD1_Bark_material_0",
+   "tris": 306,
+   "verts": 254,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    5.603,
+    2.408,
+    -0.053
+   ],
+   "max": [
+    6.816,
+    3.453,
+    1.28
+   ]
+  },
+  {
+   "object": "Bush_big_004_LOD1_Brunch_material_0",
+   "tris": 719,
+   "verts": 746,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    5.461,
+    2.316,
+    0.031
+   ],
+   "max": [
+    7.018,
+    3.546,
+    1.624
+   ]
+  },
+  {
+   "object": "Bush_big_004_LOD2_Bark_material_0",
+   "tris": 102,
+   "verts": 98,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    5.603,
+    5.408,
+    -0.053
+   ],
+   "max": [
+    6.816,
+    6.453,
+    0.621
+   ]
+  },
+  {
+   "object": "Bush_big_004_LOD2_Brunch_material_0",
+   "tris": 297,
+   "verts": 495,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    5.452,
+    5.33,
+    0.031
+   ],
+   "max": [
+    7.018,
+    6.546,
+    1.624
+   ]
+  },
+  {
+   "object": "Bush_big_005_Billboard_Bush big_005_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_big_005_Billboard_Mat"
+   ],
+   "min": [
+    7.245,
+    8.261,
+    -0.054
+   ],
+   "max": [
+    8.654,
+    9.656,
+    1.552
+   ]
+  },
+  {
+   "object": "Bush_big_005_LOD0_Bark_material_0",
+   "tris": 792,
+   "verts": 586,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    7.494,
+    -0.595,
+    -0.049
+   ],
+   "max": [
+    8.409,
+    0.519,
+    1.284
+   ]
+  },
+  {
+   "object": "Bush_big_005_LOD0_Brunch_material_0",
+   "tris": 1014,
+   "verts": 918,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    7.268,
+    -0.739,
+    0.072
+   ],
+   "max": [
+    8.612,
+    0.67,
+    1.568
+   ]
+  },
+  {
+   "object": "Bush_big_005_LOD1_Bark_material_0",
+   "tris": 270,
+   "verts": 218,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    7.558,
+    2.405,
+    -0.054
+   ],
+   "max": [
+    8.409,
+    3.517,
+    1.08
+   ]
+  },
+  {
+   "object": "Bush_big_005_LOD1_Brunch_material_0",
+   "tris": 545,
+   "verts": 571,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    7.268,
+    2.265,
+    0.072
+   ],
+   "max": [
+    8.612,
+    3.67,
+    1.568
+   ]
+  },
+  {
+   "object": "Bush_big_005_LOD2_Bark_material_0",
+   "tris": 66,
+   "verts": 66,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    7.649,
+    5.405,
+    -0.054
+   ],
+   "max": [
+    8.252,
+    6.307,
+    0.778
+   ]
+  },
+  {
+   "object": "Bush_big_005_LOD2_Brunch_material_0",
+   "tris": 231,
+   "verts": 385,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    7.245,
+    5.265,
+    0.072
+   ],
+   "max": [
+    8.612,
+    6.67,
+    1.568
+   ]
+  },
+  {
+   "object": "Bush_medium_001_Billboard_Bush medium_001_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_medium_001_Billboard_Mat"
+   ],
+   "min": [
+    9.586,
+    8.788,
+    -0.024
+   ],
+   "max": [
+    10.286,
+    9.322,
+    0.958
+   ]
+  },
+  {
+   "object": "Bush_medium_001_LOD0_Bark_material_0",
+   "tris": 54,
+   "verts": 44,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    9.949,
+    -0.059,
+    -0.024
+   ],
+   "max": [
+    10.022,
+    0.093,
+    0.658
+   ]
+  },
+  {
+   "object": "Bush_medium_001_LOD0_Brunch_material_0",
+   "tris": 168,
+   "verts": 150,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    9.579,
+    -0.212,
+    0.059
+   ],
+   "max": [
+    10.3,
+    0.319,
+    0.967
+   ]
+  },
+  {
+   "object": "Bush_medium_001_LOD1_Bark_material_0",
+   "tris": 42,
+   "verts": 36,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    9.951,
+    2.937,
+    -0.024
+   ],
+   "max": [
+    10.022,
+    3.093,
+    0.658
+   ]
+  },
+  {
+   "object": "Bush_medium_001_LOD1_Brunch_material_0",
+   "tris": 97,
+   "verts": 102,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    9.579,
+    2.788,
+    0.061
+   ],
+   "max": [
+    10.286,
+    3.319,
+    0.967
+   ]
+  },
+  {
+   "object": "Bush_medium_001_LOD2_Bark_material_0",
+   "tris": 36,
+   "verts": 32,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    9.951,
+    5.936,
+    -0.024
+   ],
+   "max": [
+    10.022,
+    6.095,
+    0.658
+   ]
+  },
+  {
+   "object": "Bush_medium_001_LOD2_Brunch_material_0",
+   "tris": 45,
+   "verts": 75,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    9.579,
+    5.788,
+    0.069
+   ],
+   "max": [
+    10.289,
+    6.328,
+    0.968
+   ]
+  },
+  {
+   "object": "Bush_medium_002_Billboard_Bush medium_002_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_medium_002_Billboard_Mat"
+   ],
+   "min": [
+    11.656,
+    8.665,
+    -0.061
+   ],
+   "max": [
+    12.3,
+    9.297,
+    1.06
+   ]
+  },
+  {
+   "object": "Bush_medium_002_LOD0_Bark_material_0",
+   "tris": 66,
+   "verts": 56,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    11.888,
+    -0.068,
+    -0.024
+   ],
+   "max": [
+    12.114,
+    0.104,
+    0.702
+   ]
+  },
+  {
+   "object": "Bush_medium_002_LOD0_Brunch_material_0",
+   "tris": 288,
+   "verts": 254,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    11.656,
+    -0.335,
+    -0.061
+   ],
+   "max": [
+    12.32,
+    0.317,
+    1.083
+   ]
+  },
+  {
+   "object": "Bush_medium_002_LOD1_Bark_material_0",
+   "tris": 30,
+   "verts": 24,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    11.891,
+    3.004,
+    -0.024
+   ],
+   "max": [
+    11.998,
+    3.102,
+    0.702
+   ]
+  },
+  {
+   "object": "Bush_medium_002_LOD1_Brunch_material_0",
+   "tris": 162,
+   "verts": 168,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    11.656,
+    2.665,
+    -0.059
+   ],
+   "max": [
+    12.32,
+    3.317,
+    1.073
+   ]
+  },
+  {
+   "object": "Bush_medium_002_LOD2_Bark_material_0",
+   "tris": 18,
+   "verts": 16,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    11.921,
+    6.009,
+    -0.025
+   ],
+   "max": [
+    11.996,
+    6.111,
+    0.701
+   ]
+  },
+  {
+   "object": "Bush_medium_002_LOD2_Brunch_material_0",
+   "tris": 72,
+   "verts": 120,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    11.656,
+    5.665,
+    -0.059
+   ],
+   "max": [
+    12.32,
+    6.317,
+    1.083
+   ]
+  },
+  {
+   "object": "Bush_medium_003_Billboard_Bush medium_003_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_medium_003_Billboard_Mat"
+   ],
+   "min": [
+    13.697,
+    8.746,
+    -0.023
+   ],
+   "max": [
+    14.27,
+    9.31,
+    1.011
+   ]
+  },
+  {
+   "object": "Bush_medium_003_LOD0_Bark_material_0",
+   "tris": 90,
+   "verts": 76,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    13.901,
+    -0.045,
+    -0.021
+   ],
+   "max": [
+    14.077,
+    0.058,
+    0.693
+   ]
+  },
+  {
+   "object": "Bush_medium_003_LOD0_Brunch_material_0",
+   "tris": 422,
+   "verts": 374,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    13.697,
+    -0.254,
+    -0.023
+   ],
+   "max": [
+    14.247,
+    0.327,
+    1.007
+   ]
+  },
+  {
+   "object": "Bush_medium_003_LOD1_Bark_material_0",
+   "tris": 30,
+   "verts": 28,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    14.007,
+    2.96,
+    -0.021
+   ],
+   "max": [
+    14.077,
+    3.052,
+    0.633
+   ]
+  },
+  {
+   "object": "Bush_medium_003_LOD1_Brunch_material_0",
+   "tris": 232,
+   "verts": 251,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    13.697,
+    2.746,
+    -0.023
+   ],
+   "max": [
+    14.247,
+    3.327,
+    1.009
+   ]
+  },
+  {
+   "object": "Bush_medium_003_LOD2_Bark_material_0",
+   "tris": 6,
+   "verts": 8,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    14.002,
+    6.012,
+    -0.019
+   ],
+   "max": [
+    14.072,
+    6.061,
+    0.634
+   ]
+  },
+  {
+   "object": "Bush_medium_003_LOD2_Brunch_material_0",
+   "tris": 111,
+   "verts": 185,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    13.697,
+    5.746,
+    -0.023
+   ],
+   "max": [
+    14.247,
+    6.327,
+    1.043
+   ]
+  },
+  {
+   "object": "Bush_medium_004_Billboard_Bush medium_004_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_medium_004_Billboard_Mat"
+   ],
+   "min": [
+    15.769,
+    8.632,
+    -0.023
+   ],
+   "max": [
+    16.368,
+    9.234,
+    0.894
+   ]
+  },
+  {
+   "object": "Bush_medium_004_LOD0_Bark_material_0",
+   "tris": 78,
+   "verts": 68,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    15.956,
+    -0.082,
+    -0.022
+   ],
+   "max": [
+    16.091,
+    0.06,
+    0.55
+   ]
+  },
+  {
+   "object": "Bush_medium_004_LOD0_Brunch_material_0",
+   "tris": 342,
+   "verts": 307,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    15.776,
+    -0.38,
+    -0.022
+   ],
+   "max": [
+    16.38,
+    0.253,
+    0.898
+   ]
+  },
+  {
+   "object": "Bush_medium_004_LOD1_Bark_material_0",
+   "tris": 30,
+   "verts": 28,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    15.975,
+    2.968,
+    -0.023
+   ],
+   "max": [
+    16.064,
+    3.061,
+    0.384
+   ]
+  },
+  {
+   "object": "Bush_medium_004_LOD1_Brunch_material_0",
+   "tris": 197,
+   "verts": 210,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    15.776,
+    2.621,
+    -0.022
+   ],
+   "max": [
+    16.38,
+    3.25,
+    0.898
+   ]
+  },
+  {
+   "object": "Bush_medium_004_LOD2_Bark_material_0",
+   "tris": 6,
+   "verts": 8,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    16.017,
+    6.015,
+    -0.022
+   ],
+   "max": [
+    16.064,
+    6.056,
+    0.169
+   ]
+  },
+  {
+   "object": "Bush_medium_004_LOD2_Brunch_material_0",
+   "tris": 93,
+   "verts": 155,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    15.776,
+    5.621,
+    -0.022
+   ],
+   "max": [
+    16.38,
+    6.246,
+    0.912
+   ]
+  },
+  {
+   "object": "Bush_medium_005_Billboard_Bush medium_005_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_medium_005_Billboard_Mat"
+   ],
+   "min": [
+    17.652,
+    8.682,
+    -0.047
+   ],
+   "max": [
+    18.429,
+    9.312,
+    0.939
+   ]
+  },
+  {
+   "object": "Bush_medium_005_LOD0_Bark_material_0",
+   "tris": 198,
+   "verts": 156,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    17.885,
+    -0.099,
+    -0.024
+   ],
+   "max": [
+    18.177,
+    0.148,
+    0.672
+   ]
+  },
+  {
+   "object": "Bush_medium_005_LOD0_Brunch_material_0",
+   "tris": 638,
+   "verts": 571,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    17.644,
+    -0.325,
+    -0.047
+   ],
+   "max": [
+    18.47,
+    0.332,
+    0.949
+   ]
+  },
+  {
+   "object": "Bush_medium_005_LOD1_Bark_material_0",
+   "tris": 72,
+   "verts": 60,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    17.892,
+    2.901,
+    -0.024
+   ],
+   "max": [
+    18.18,
+    3.135,
+    0.618
+   ]
+  },
+  {
+   "object": "Bush_medium_005_LOD1_Brunch_material_0",
+   "tris": 361,
+   "verts": 386,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    17.648,
+    2.684,
+    -0.045
+   ],
+   "max": [
+    18.47,
+    3.331,
+    0.949
+   ]
+  },
+  {
+   "object": "Bush_medium_005_LOD2_Bark_material_0",
+   "tris": 24,
+   "verts": 24,
+   "materials": [
+    "Bark_material"
+   ],
+   "min": [
+    17.887,
+    5.9,
+    -0.024
+   ],
+   "max": [
+    18.177,
+    6.079,
+    0.618
+   ]
+  },
+  {
+   "object": "Bush_medium_005_LOD2_Brunch_material_0",
+   "tris": 171,
+   "verts": 285,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    17.655,
+    5.683,
+    -0.045
+   ],
+   "max": [
+    18.47,
+    6.331,
+    0.949
+   ]
+  },
+  {
+   "object": "Bush_small_001_Billboard_Bush small_001_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_small_001_Billboard_Mat"
+   ],
+   "min": [
+    19.672,
+    8.625,
+    -0.066
+   ],
+   "max": [
+    20.421,
+    9.344,
+    0.499
+   ]
+  },
+  {
+   "object": "Bush_small_001_LOD0_Brunch_material_0",
+   "tris": 179,
+   "verts": 167,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    19.709,
+    -0.364,
+    -0.066
+   ],
+   "max": [
+    20.419,
+    0.351,
+    0.511
+   ]
+  },
+  {
+   "object": "Bush_small_001_LOD1_Brunch_material_0",
+   "tris": 95,
+   "verts": 102,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    19.711,
+    2.636,
+    -0.066
+   ],
+   "max": [
+    20.419,
+    3.351,
+    0.511
+   ]
+  },
+  {
+   "object": "Bush_small_001_LOD2_Brunch_material_0",
+   "tris": 42,
+   "verts": 70,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    19.717,
+    5.618,
+    -0.066
+   ],
+   "max": [
+    20.419,
+    6.351,
+    0.535
+   ]
+  },
+  {
+   "object": "Bush_small_002_Billboard_Bush small_002_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_small_002_Billboard_Mat"
+   ],
+   "min": [
+    21.64,
+    8.694,
+    -0.062
+   ],
+   "max": [
+    22.376,
+    9.47,
+    0.513
+   ]
+  },
+  {
+   "object": "Bush_small_002_LOD0_Brunch_material_0",
+   "tris": 237,
+   "verts": 223,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    21.633,
+    -0.306,
+    -0.068
+   ],
+   "max": [
+    22.391,
+    0.478,
+    0.513
+   ]
+  },
+  {
+   "object": "Bush_small_002_LOD1_Brunch_material_0",
+   "tris": 132,
+   "verts": 143,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    21.633,
+    2.694,
+    -0.068
+   ],
+   "max": [
+    22.388,
+    3.478,
+    0.513
+   ]
+  },
+  {
+   "object": "Bush_small_002_LOD2_Brunch_material_0",
+   "tris": 57,
+   "verts": 95,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    21.633,
+    5.694,
+    -0.057
+   ],
+   "max": [
+    22.385,
+    6.478,
+    0.556
+   ]
+  },
+  {
+   "object": "Bush_small_003_Billboard_Bush small_003_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_small_003_Billboard_Mat"
+   ],
+   "min": [
+    23.654,
+    8.679,
+    -0.13
+   ],
+   "max": [
+    24.525,
+    9.502,
+    0.497
+   ]
+  },
+  {
+   "object": "Bush_small_003_LOD0_Brunch_material_0",
+   "tris": 237,
+   "verts": 225,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    23.666,
+    -0.33,
+    -0.13
+   ],
+   "max": [
+    24.56,
+    0.51,
+    0.509
+   ]
+  },
+  {
+   "object": "Bush_small_003_LOD1_Brunch_material_0",
+   "tris": 127,
+   "verts": 139,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    23.67,
+    2.675,
+    -0.13
+   ],
+   "max": [
+    24.56,
+    3.51,
+    0.509
+   ]
+  },
+  {
+   "object": "Bush_small_003_LOD2_Brunch_material_0",
+   "tris": 60,
+   "verts": 100,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    23.677,
+    5.681,
+    -0.127
+   ],
+   "max": [
+    24.56,
+    6.51,
+    0.509
+   ]
+  },
+  {
+   "object": "Bush_small_004_Billboard_Bush small_004_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_small_004_Billboard_Mat"
+   ],
+   "min": [
+    25.708,
+    8.69,
+    -0.03
+   ],
+   "max": [
+    26.288,
+    9.326,
+    0.494
+   ]
+  },
+  {
+   "object": "Bush_small_004_LOD0_Brunch_material_0",
+   "tris": 150,
+   "verts": 154,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    25.702,
+    -0.31,
+    -0.036
+   ],
+   "max": [
+    26.279,
+    0.332,
+    0.501
+   ]
+  },
+  {
+   "object": "Bush_small_004_LOD1_Brunch_material_0",
+   "tris": 86,
+   "verts": 101,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    25.702,
+    2.69,
+    -0.036
+   ],
+   "max": [
+    26.276,
+    3.332,
+    0.501
+   ]
+  },
+  {
+   "object": "Bush_small_004_LOD2_Brunch_material_0",
+   "tris": 45,
+   "verts": 75,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    25.702,
+    5.69,
+    -0.035
+   ],
+   "max": [
+    26.273,
+    6.332,
+    0.522
+   ]
+  },
+  {
+   "object": "Bush_small_005_Billboard_Bush small_005_Billboard_Mat_0",
+   "tris": 16,
+   "verts": 24,
+   "materials": [
+    "Bush_small_005_Billboard_Mat"
+   ],
+   "min": [
+    27.55,
+    8.535,
+    -0.074
+   ],
+   "max": [
+    28.308,
+    9.261,
+    0.44
+   ]
+  },
+  {
+   "object": "Bush_small_005_LOD0_Brunch_material_0",
+   "tris": 264,
+   "verts": 251,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    27.55,
+    -0.465,
+    -0.091
+   ],
+   "max": [
+    28.305,
+    0.268,
+    0.456
+   ]
+  },
+  {
+   "object": "Bush_small_005_LOD1_Brunch_material_0",
+   "tris": 134,
+   "verts": 153,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    27.55,
+    2.535,
+    -0.074
+   ],
+   "max": [
+    28.305,
+    3.268,
+    0.451
+   ]
+  },
+  {
+   "object": "Bush_small_005_LOD2_Brunch_material_0",
+   "tris": 66,
+   "verts": 110,
+   "materials": [
+    "Brunch_material"
+   ],
+   "min": [
+    27.55,
+    5.535,
+    -0.066
+   ],
+   "max": [
+    28.305,
+    6.268,
+    0.455
+   ]
+  },
+  {
+   "object": "Ground_Checker_mat_0",
+   "tris": 28,
+   "verts": 44,
+   "materials": [
+    "Checker_mat"
+   ],
+   "min": [
+    -2.0,
+    -2.0,
+    -2.0
+   ],
+   "max": [
+    30.0,
+    12.0,
+    4.0
+   ]
+  },
+  {
+   "object": "Man ref_Man_ref_0",
+   "tris": 6,
+   "verts": 12,
+   "materials": [
+    "Man_ref"
+   ],
+   "min": [
+    -1.52,
+    -0.0,
+    -0.013
+   ],
+   "max": [
+    19.978,
+    0.0,
+    1.785
+   ]
+  }
+ ],
+ "bush_bounds": [
+  [
+   -2.0,
+   -2.0000007152557373,
+   -2.0000035762786865
+  ],
+  [
+   30.0,
+   12.00000286102295,
+   4.000001430511475
+  ]
+ ],
+ "grass_pack": [
+  {
+   "object": "planet1_Material #32_0",
+   "tris": 4,
+   "verts": 8,
+   "materials": [
+    "Material_32"
+   ],
+   "min": [
+    -1947.942,
+    -1175.292,
+    -79.297
+   ],
+   "max": [
+    -1910.049,
+    -1137.4,
+    -41.405
+   ]
+  },
+  {
+   "object": "planet2_Material #32_0",
+   "tris": 4,
+   "verts": 8,
+   "materials": [
+    "Material_32"
+   ],
+   "min": [
+    -1868.056,
+    -1175.292,
+    -79.297
+   ],
+   "max": [
+    -1830.163,
+    -1137.4,
+    -41.405
+   ]
+  },
+  {
+   "object": "planet3_Material #32_0",
+   "tris": 8,
+   "verts": 16,
+   "materials": [
+    "Material_32"
+   ],
+   "min": [
+    -1809.219,
+    -1175.292,
+    -79.297
+   ],
+   "max": [
+    -1751.731,
+    -1116.655,
+    -30.869
+   ]
+  },
+  {
+   "object": "planet4_Material #32_0",
+   "tris": 4,
+   "verts": 8,
+   "materials": [
+    "Material_32"
+   ],
+   "min": [
+    -1730.44,
+    -1172.284,
+    -79.297
+   ],
+   "max": [
+    -1692.547,
+    -1134.391,
+    -41.405
+   ]
+  }
+ ],
+ "grass_bounds": [
+  [
+   -1947.9417724609375,
+   -1175.2923583984375,
+   -79.2974624633789
+  ],
+  [
+   -1692.5472412109375,
+   -1116.6546630859375,
+   -30.86884117126465
+  ]
+ ]
+}
