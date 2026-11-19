@@ -53,7 +53,7 @@ export function vegMaterial(src,kind,U,{shadow=true}={}){
  // kind: 'bark' | 'leaf' | 'ground'
  const m=new THREE.MeshStandardMaterial({map:src.map||null,normalMap:src.normalMap||null,roughnessMap:kind==='bark'?(src.metalnessMap||src.roughnessMap||null):null,
   roughness:kind==='bark'?.92:kind==='leaf'?.74:.85,metalness:0,vertexColors:true,side:kind==='bark'?THREE.FrontSide:THREE.DoubleSide,
-  alphaTest:kind==='bark'?0:(src.alphaTest||.42),transparent:false});
+  alphaTest:kind==='bark'?(src.alphaTest||0):(src.alphaTest||.42),transparent:false});   // bark: only the carving decal (MASK) cuts out
  if(src.normalMap)m.normalScale.copy(src.normalScale||new THREE.Vector2(1,1));
  m.name='veg:'+kind+':'+(src.name||'');m.userData.vegKind=kind;
  const foliage=kind!=='bark';

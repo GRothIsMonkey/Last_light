@@ -11,8 +11,8 @@
  ],
  "info": {
   "file": "lm.old-oak.glb",
-  "bytes": 6534264,
-  "sha256": "848042febef52c1a2f000fdaa9aee8530218736dcdc23f0c7dbaa7b275c6e4a2",
+  "bytes": 6556112,
+  "sha256": "4a947c087d3e76dee74af8442c7e8755afda3812525bb916fe8897e579405154",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "veg",
   "assetId": "lm.old-oak",
@@ -64,7 +64,7 @@
     "mime": "image/webp",
     "w": 2048,
     "h": 2048,
-    "bytes": 634000,
+    "bytes": 660698,
     "use": []
    },
    {
@@ -80,11 +80,11 @@
     "mime": "image/webp",
     "w": 512,
     "h": 512,
-    "bytes": 24678,
+    "bytes": 19826,
     "use": []
    }
   ],
-  "textureBytes": 2610904,
+  "textureBytes": 2632750,
   "gpuTextureMBEstimate": 72,
   "clips": []
  },

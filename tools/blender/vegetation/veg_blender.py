@@ -114,6 +114,14 @@ def material(name, base, normal=None, orm=None, alpha_clip=None, roughness=.9, n
     return m
 
 
+def pad_rgba(im):
+    """Fill the colour under transparent pixels from the nearest opaque ones (glb_pack.pad_rgba)."""
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import glb_pack
+    return glb_pack.pad_rgba(im)
+
+
 def runtime_texture(src, dst, size, mode=None):
     """Downsample an authoring texture to its runtime size (Lanczos), keep alpha where present."""
     from PIL import Image
@@ -122,6 +130,8 @@ def runtime_texture(src, dst, size, mode=None):
         im = im.convert(mode)
     if im.size[0] != size:
         im = im.resize((size, size), Image.LANCZOS)
+    if im.mode == 'RGBA':
+        im = pad_rgba(im)          # Pillow resizes RGBA premultiplied: colour under alpha 0 comes back black
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     if dst.endswith('.jpg'):
         im.convert('RGB').save(dst, quality=93, subsampling=0)

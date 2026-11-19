@@ -17,8 +17,8 @@
  ],
  "info": {
   "file": "veg.shrubs.glb",
-  "bytes": 3085208,
-  "sha256": "d9b065ecf57a3f98149383ea24f619083dfc6b6097b713293c1774a7c4d7c879",
+  "bytes": 2898248,
+  "sha256": "2e0baf6c09e19dfa1237b6484cfb061ca1feeecc140a6752b75a777c72e5555e",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "veg",
   "assetId": "veg.shrubs",
@@ -155,7 +155,7 @@
     "mime": "image/webp",
     "w": 1024,
     "h": 1024,
-    "bytes": 400706,
+    "bytes": 213780,
     "use": []
    },
    {
@@ -167,7 +167,7 @@
     "use": []
    }
   ],
-  "textureBytes": 502964,
+  "textureBytes": 316038,
   "gpuTextureMBEstimate": 6.7,
   "clips": []
  },

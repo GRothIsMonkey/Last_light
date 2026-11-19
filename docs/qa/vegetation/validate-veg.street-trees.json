@@ -128,8 +128,8 @@
  ],
  "info": {
   "file": "veg.street-trees.glb",
-  "bytes": 16669464,
-  "sha256": "acc04a8c3e9af39861e0d54aeb855afb51ddf7d3df580423f87cdfd1e4b2eb6c",
+  "bytes": 16693312,
+  "sha256": "134dde67bc4110fd3038f7893129c1ceab692e3132afab122e0a327e8c4db54d",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "veg",
   "assetId": "veg.street-trees",
@@ -388,7 +388,7 @@
     "mime": "image/webp",
     "w": 2048,
     "h": 2048,
-    "bytes": 493132,
+    "bytes": 516974,
     "use": []
    },
    {
@@ -408,7 +408,7 @@
     "use": []
    }
   ],
-  "textureBytes": 1228262,
+  "textureBytes": 1252104,
   "gpuTextureMBEstimate": 38.7,
   "clips": []
  },

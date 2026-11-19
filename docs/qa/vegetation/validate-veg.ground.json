@@ -4,8 +4,8 @@
  "warnings": [],
  "info": {
   "file": "veg.ground.glb",
-  "bytes": 748012,
-  "sha256": "64252fb89fde86f24d1858043389748bfc534eeb2b22135855963abd288189bc",
+  "bytes": 725212,
+  "sha256": "48ea0331638e9cb3c90a0d18cab93a7071b3c74cfe68025e01232b2ed4102599",
   "generator": "Khronos glTF Blender I/O v5.0.21",
   "profile": "veg",
   "assetId": "veg.ground",
@@ -91,11 +91,11 @@
     "mime": "image/webp",
     "w": 2048,
     "h": 1024,
-    "bytes": 687034,
+    "bytes": 664236,
     "use": []
    }
   ],
-  "textureBytes": 687034,
+  "textureBytes": 664236,
   "gpuTextureMBEstimate": 10.7,
   "clips": []
  },

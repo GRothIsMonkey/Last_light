@@ -217,10 +217,10 @@ Last Light or this use. Nothing was scattered raw: every asset was rebuilt on th
 | File | What it is |
 |---|---|
 | `assets/source/vegetation/third-party/sketchfab-originals/*.glb.part00N` | The four originals as supplied, byte for byte, in the owner's split parts (the oak, 129.8 MB, is over GitHub's per-file limit). Never edited. `python3 reconstruct.py` (beside them) rebuilds the four files and checks every part's and every file's SHA-256 against `manifest.json`. `CREDITS.md` is the owner's credit list. Not loaded by the game. |
-| `dist/assets/veg/lm.old-oak.glb` | The old oak (runtime): 6,534,264 bytes, SHA-256 `848042febef52c1a2f000fdaa9aee8530218736dcdc23f0c7dbaa7b275c6e4a2` (at the benchmark commit; `docs/VEGETATION_BENCHMARK_REPORT.md` has the final hashes). |
-| `dist/assets/veg/veg.street-trees.glb` | 44 street-tree variants: 16,669,464 bytes, SHA-256 `acc04a8c3e9af39861e0d54aeb855afb51ddf7d3df580423f87cdfd1e4b2eb6c`. |
-| `dist/assets/veg/veg.shrubs.glb` | 18 shrubs: 2,984,796 bytes, SHA-256 `9a9b2db48727113f6adb92a7b00d8de50ed4ad40013b94fda2c0564033eaead4`. |
-| `dist/assets/veg/veg.ground.glb` | 13 ground plants: 740,884 bytes, SHA-256 `d953045a8e12d6b1182d771a32a3aa44b98bafca9b0cb1ee5815ea8266b60c68`. |
+| `dist/assets/veg/lm.old-oak.glb` | The old oak (runtime): 6,556,112 bytes, SHA-256 `4a947c087d3e76dee74af8442c7e8755afda3812525bb916fe8897e579405154` (the benchmark's final files; `docs/VEGETATION_BENCHMARK_REPORT.md` lists them too). |
+| `dist/assets/veg/veg.street-trees.glb` | 44 street-tree variants: 16,693,312 bytes, SHA-256 `134dde67bc4110fd3038f7893129c1ceab692e3132afab122e0a327e8c4db54d`. |
+| `dist/assets/veg/veg.shrubs.glb` | 18 shrubs: 2,898,248 bytes, SHA-256 `2e0baf6c09e19dfa1237b6484cfb061ca1feeecc140a6752b75a777c72e5555e`. |
+| `dist/assets/veg/veg.ground.glb` | 13 ground plants: 725,212 bytes, SHA-256 `48ea0331638e9cb3c90a0d18cab93a7071b3c74cfe68025e01232b2ed4102599`. |
 | `assets/source/vegetation/{oak,street,shrubs,ground}/*.blend` | The Blender sources (scene EXPORT), with their runtime textures beside them. |
 
 ### 1. "200 year old oak tree" — kungphil
