@@ -196,3 +196,59 @@ The other three bikes (`bike.sam`, `bike.alex`, `bike.player`) contain **no thir
 ### Tools and fonts (not distributed as such)
 
 Blender 5.0.1 (the `bpy` module from PyPI) and Pillow build the bikes; the decal and tyre lettering is rendered into the textures with DejaVu fonts (Bitstream Vera / DejaVu licence, which allows this). The brand names on the bikes (REDTAIL, NORTHLINE, Cloverdale, EASTWIND; tyres DURALINE) are invented for Last Light.
+
+## The Prologue's vegetation: four Sketchfab sources (vegetation benchmark, `?vegetation`)
+
+Four models supplied by the creative director, each licensed under **Creative Commons Attribution 4.0**
+(https://creativecommons.org/licenses/by/4.0/). Identity verified from each file's own embedded metadata (glTF
+`asset.extras`: title, author, license, source), which matches the supplied `CREDITS.md`. The authors do not endorse
+Last Light or this use. Nothing was scattered raw: every asset was rebuilt on the vegetation kit
+(`tools/blender/vegetation/`), and what each contributes is listed below.
+
+**Required notices (as shown in the final credits, `dist/final-credits.js`):**
+
+- "200 year old oak tree" (https://skfb.ly/6vqWJ) by kungphil is licensed under Creative Commons Attribution 4.0 (http://creativecommons.org/licenses/by/4.0/). Adapted for Last Light.
+- "Realistic Trees Collection" (https://skfb.ly/pDzJR) by Jungle Jim is licensed under Creative Commons Attribution 4.0 (http://creativecommons.org/licenses/by/4.0/). Adapted for Last Light.
+- "Bush models pack (gameready, LODs)" (https://skfb.ly/pLE8N) by LOLIPOP is licensed under Creative Commons Attribution 4.0 (http://creativecommons.org/licenses/by/4.0/). Adapted for Last Light.
+- "Grass And Bush - Mobile GameReady" (https://skfb.ly/6WTVC) by Ali haghshenas is licensed under Creative Commons Attribution 4.0 (http://creativecommons.org/licenses/by/4.0/). Adapted for Last Light.
+
+### Files
+
+| File | What it is |
+|---|---|
+| `assets/source/vegetation/third-party/sketchfab-originals/*.glb.part00N` | The four originals as supplied, byte for byte, in the owner's split parts (the oak, 129.8 MB, is over GitHub's per-file limit). Never edited. `python3 reconstruct.py` (beside them) rebuilds the four files and checks every part's and every file's SHA-256 against `manifest.json`. `CREDITS.md` is the owner's credit list. Not loaded by the game. |
+| `dist/assets/veg/lm.old-oak.glb` | The old oak (runtime): 6,534,264 bytes, SHA-256 `848042febef52c1a2f000fdaa9aee8530218736dcdc23f0c7dbaa7b275c6e4a2` (at the benchmark commit; `docs/VEGETATION_BENCHMARK_REPORT.md` has the final hashes). |
+| `dist/assets/veg/veg.street-trees.glb` | 44 street-tree variants: 16,669,464 bytes, SHA-256 `acc04a8c3e9af39861e0d54aeb855afb51ddf7d3df580423f87cdfd1e4b2eb6c`. |
+| `dist/assets/veg/veg.shrubs.glb` | 18 shrubs: 2,984,796 bytes, SHA-256 `9a9b2db48727113f6adb92a7b00d8de50ed4ad40013b94fda2c0564033eaead4`. |
+| `dist/assets/veg/veg.ground.glb` | 13 ground plants: 740,884 bytes, SHA-256 `d953045a8e12d6b1182d771a32a3aa44b98bafca9b0cb1ee5815ea8266b60c68`. |
+| `assets/source/vegetation/{oak,street,shrubs,ground}/*.blend` | The Blender sources (scene EXPORT), with their runtime textures beside them. |
+
+### 1. "200 year old oak tree" — kungphil
+
+- Source: https://sketchfab.com/3d-models/200-year-old-oak-tree-337641cb274845b39f7944aa880ff686 (short link https://skfb.ly/6vqWJ); author https://sketchfab.com/kungphil.
+- Original: `200_year_old_oak_tree.glb`, 129,820,864 bytes, SHA-256 `d6fc4186d2ae517ecfaacaa58ae3696641b08d3297ede0ad3d3654cb38b8d714`, generator Sketchfab-12.68.0.
+- What it contains (inspected before use): **a coloured terrestrial laser scan, not a mesh** — 4,635,119 points (glTF POINTS; POSITION + COLOR_0; one unlit material; no faces, normals, UVs or textures), node name `oak_RGB_2cm.ply`. A real open-grown oak, 19.8 m tall, crown 25.8 × 28.2 m, trunk 1.26 m at chest height, scanned in leaf.
+- Incorporated: **measurements, not geometry or textures.** The points were voxelized and skeletonized (`oak_skeleton.py`: geodesic level sets, pipe-model radii); the skeleton gives the oak's whole branch architecture and the scan's foliage voxels place its leaf cards. Kept: the trunk size and its fork at 3.3–4.3 m, every scaffold limb's path, the low limb that sweeps nearly to the ground, the crown's extent and gaps.
+- Modified: turned 56° about the vertical to fit the lookout; the swing limb reshaped near the trunk to run over the game's swing pivot (blending back into its scanned path by 7.5 m); the trunk rebuilt as one stem with root flare and buttresses; surface roots, a dead stub, the healed AR carving added; bark, leaves and carving textures are not from this file (see 2 and the original bark). No point, colour or texture of the scan is in the runtime file.
+
+### 2. "Realistic Trees Collection" — Jungle Jim
+
+- Source: https://sketchfab.com/3d-models/realistic-trees-collection-fe67c886eebf4bcb988d7c45e69995ad (https://skfb.ly/pDzJR); author https://sketchfab.com/jungle_jim.
+- Original: `realistic_trees_collection.glb`, 42,333,844 bytes, SHA-256 `773324d3894dbc10468b062c1519e701b8e3415773af2d7f666224eddc128f72`, generator Sketchfab-17.17.0.
+- What it contains: 7 EZ-Tree trees (127,462 tris; modelled at ≈10× real size): 3 oaks and 3 ash-type trees with twig cards, 1 small pine. 14 materials over 5 unique textures: a photographic mossy oak bark (+ normal, 1024², not quite seamless), an oak twig photo, a pinnate (ash) twig photo, a pine sprig (1024² RGBA, alpha-BLEND).
+- Incorporated: **geometry as skeletons** — the six oak and ash branch meshes, recovered ring by ring (`ez_skeleton.py`), are the branch architectures of the oak and ash street trees (re-scaled to 9.5–12.5 m, re-meshed; three further variants pruned on one side, bent and leaning). **Textures** — the oak, ash and pine twig photos (colour under the transparent pixels padded, graded to one late-August palette, cropped and re-packed into the leaf atlases of the hero oak and the street trees); the bark photo, high-passed and made seamless, as micro-detail inside the original barks. The collection's own meshes, UVs and materials are not in the runtime files.
+
+### 3. "Bush models pack (gameready, LODs)" — LOLIPOP
+
+- Source: https://sketchfab.com/3d-models/bush-models-pack-gameready-lods-f2d9ffd3e6a94cf0b9464ccd66a4c2f8 (https://skfb.ly/pLE8N); author https://sketchfab.com/lolipop_1707.
+- Original: `bush_models_pack_gameready_lods.glb`, 8,048,292 bytes, SHA-256 `73aeab6e1b792965fe270e6a9985866c46b5214a522df0c42d2a38c163e8f7b6`, generator Sketchfab-17.17.0.
+- What it contains: 15 bushes (5 big, 5 medium, 5 small) with LOD0/LOD1/LOD2 and a billboard each (23,301 tris); a branch-and-leaf atlas (1024², alpha-BLEND), a bark strip (128×1024), per-bush billboard textures; a checker floor and a human scale figure.
+- Incorporated: **geometry and the LOD chain** of all 15 bushes (positions, normals, UVs, indices as supplied, re-centred), and the **branch atlas** (graded, re-packed with three colour variants). Not used: the billboards and their textures, the bark strip (the shared street bark is used), the floor and the figure.
+- Modified: leaves alpha-tested instead of blended; occlusion and wind baked per vertex; trimmed globes and hedge blocks made by clipping the pack's own leaf layers into an envelope (with the next-coarser layer turned for density); low flowering perennials with an original flower layer on the atlas.
+
+### 4. "Grass And Bush - Mobile GameReady" — Ali haghshenas
+
+- Source: https://sketchfab.com/3d-models/grass-and-bush-mobile-gameready-8a6b8a18cbf74de8961c3a042d4edf9f (https://skfb.ly/6WTVC); author https://sketchfab.com/alihaghshenas821.
+- Original: `grass_and_bush_-_mobile_gameready.glb`, 1,833,488 bytes, SHA-256 `d0ba3260cd912908f9b241e1500bdcc6121b9ca87aceaa881d5595dc07233259`, generator Sketchfab-12.68.0.
+- What it contains: 4 cards (20 tris) on one 1024² atlas that is mostly not vegetation (hay bale, saguaro cactus, crate, barrel, chain, planks) plus four plant sprites: a seeded green grass tuft and a dry grass tuft (both stored upside down), a juniper-like sprig and a dried seed stalk.
+- Incorporated: **those four sprites only** (cropped, turned upright, graded, packed into the ground atlas); they dress the lookout meadow (tall and dry tufts, seed stalks, groundcover). The cards, the other sprites and the original material are not used. Lawn blades, wildflowers and clover are original.

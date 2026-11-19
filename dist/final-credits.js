@@ -4,8 +4,9 @@
 //
 // Every name here is one the repository itself establishes (docs/FINAL_CREDITS_AND_RELEASE_HANDOFF.md says where each comes from).
 // Nothing is invented: the creator's credited name is the repository's commit author name and must be confirmed before a release; there
-// is no special-thanks list because none is recorded (the slot is empty, not filled with guesses). The one third-party asset still in
-// the game is credited as its licence (CC BY 4.0) requires.
+// is no special-thanks list because none is recorded (the slot is empty, not filled with guesses). Third-party assets are credited as
+// their licences (CC BY 4.0) require: the creature, and the four Sketchfab sources of the Prologue vegetation benchmark (?vegetation;
+// docs/THIRD_PARTY_ASSETS.md).
 export const CREDITS=[
  {title:'LAST LIGHT'},
  {role:'Created by',names:['Grayson']},
@@ -14,6 +15,7 @@ export const CREDITS=[
  {role:'Visual development',names:['Astra (the art passes)','directed by Grayson']},// (the repository's own name for its visual passes, on its codex/astra-* branches; who or what Astra is, it does not say: to confirm)
  {role:'Music and sound',names:['Synthesized by the game as you play','The Prologue’s melody and every sound in Last Light are written in code']},
  {role:'Third-party asset',names:['“Smily horror monster” by Bento','sketchfab.com/gostbento · skfb.ly/6W6ut','Licensed under Creative Commons Attribution 4.0','creativecommons.org/licenses/by/4.0','Modified and optimized for Last Light.','The author does not endorse Last Light or this use.']},
+ {role:'Third-party assets (the Prologue’s trees, shrubs and grass)',names:['“200 year old oak tree” by kungphil','sketchfab.com/kungphil · skfb.ly/6vqWJ','“Realistic Trees Collection” by Jungle Jim','sketchfab.com/jungle_jim · skfb.ly/pDzJR','“Bush models pack (gameready, LODs)” by LOLIPOP','sketchfab.com/lolipop_1707 · skfb.ly/pLE8N','“Grass And Bush - Mobile GameReady” by Ali haghshenas','sketchfab.com/alihaghshenas821 · skfb.ly/6WTVC','Each licensed under Creative Commons Attribution 4.0','creativecommons.org/licenses/by/4.0','Adapted, rebuilt and modified for Last Light.','The authors do not endorse Last Light or this use.']},
  {role:'Built with',names:['Three.js r160','© 2010–2023 three.js authors · MIT License']},
  {role:'Tested with',names:['Node.js','Chromium, through Playwright']},
  {role:'Special thanks',names:[],slot:true},// (none recorded: shown only when names are added)
