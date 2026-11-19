@@ -98,6 +98,18 @@ on average lots, none on kept ones.
 
 The DEV label shows the lawn mode, blade tiles per LOD, blade triangles and pending chunks.
 
+**Offline preview.** `Last-Light-Lawn-Repair.zip` is not committed (`release/` is ignored).
+- **Size and hash:** 72,837,462 bytes, SHA-256 `e51c1273b4c055fb6802fbd03b932f32da6d34fb0496879c8d4876e4439c22a8`.
+- **Contents:** `Last-Light-Playtest.html`, built by `PLAYTEST_MENU=1 PLAYTEST_MODELS=1 node tools/package-playtest.mjs`
+  at `26bd166` from a clean tree: the whole game with the title menu, and the bikes, houses, vegetation and lawn files
+  embedded. Also START-HERE.txt, VEGETATION-README.txt (the Y, K, L and U keys), THIRD_PARTY_ASSETS.md, THREE-LICENSE.txt
+  and the package manifest.
+- **Checked after extracting:** opened from disk with the browser offline, `?qa&bikes&houses&vegetation` loads all three
+  benchmarks with the repaired lawn (mode C; about 147k blade triangles in a front-yard view), with no network request
+  and no page error.
+
+Open it in desktop Chrome or Edge and add `?bikes&houses&vegetation` to the address.
+
 ## 4. Captures
 
 Every row is **one camera and one frame**. Only the lawn mode (Y) changes between C, B and A: trees and shrubs stay
