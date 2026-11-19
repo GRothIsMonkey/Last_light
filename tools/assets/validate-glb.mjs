@@ -1,5 +1,5 @@
 // Last Light asset gate for Blender exports: the Khronos glTF Validator plus the game's own rules.
-// usage: node tools/assets/validate-glb.mjs <file.glb> [--profile chr.child|chr.adult|tst|bike|house] [--json out.json]
+// usage: node tools/assets/validate-glb.mjs <file.glb> [--profile chr.child|chr.adult|tst|bike|house|veg] [--json out.json]
 // The Khronos validator (npm `gltf-validator`, Apache-2.0) is a development tool and is never shipped with the game.
 // Point GLTF_VALIDATOR_DIR at a folder whose node_modules has it (`npm i gltf-validator` anywhere); without it, this
 // script still runs the Last Light checks and says plainly that the Khronos validation did not run.
@@ -26,10 +26,15 @@ const PROFILES={
  // LOD2 ~2k. One shared material library, textures <= 1024 (shared by every house).
  // (realism pass, v2: the baked-shading grid adds ~1-2k triangles to a house's LOD0; background houses warn above the
  // plan's 10k and fail above 12k)
+ // Vegetation benchmark (lm.old-oak, veg.street-trees, veg.shrubs, veg.ground): one node per variant (extras.ll_variant;
+ // the oak is its own single variant) with LOD meshes (extras.ll_lod). Budgets per variant and LOD (Asset plan 9; the
+ // hero oak's LOD0 exception is documented in docs/VEGETATION_BENCHMARK_REPORT.md). Every primitive carries COLOR_0
+ // (baked occlusion) and _WIND (the shared wind standard). Textures <= 2048; WebP allowed (EXT_texture_webp).
+ veg:{veg:true,tris:{oak:[95000,18000,4000],tree:[20000,5000,1000],shrub:[4500,2000,1200],ground:[200,20,20]},warnTris:{oak:[60000,15000,4000],tree:[15000,3000,600],shrub:[3000,1500,800],ground:[160,8,8]},materials:4,texMax:2048,face:[],clips:[]},
  house:{house:true,tris:{story:[35000,8000,2000],ordinary:[12000,5000,1200]},warnTris:{story:[35000,8000,2000],ordinary:[10000,4000,1000]},materials:12,texMax:1024,face:[],clips:[]},
 };
 const P=PROFILES[profileName];if(!P){console.error('unknown profile '+profileName);process.exit(2);}
-const ALLOWED_EXT=new Set(['KHR_materials_emissive_strength','KHR_texture_transform','KHR_materials_clearcoat','KHR_materials_sheen','KHR_materials_specular','KHR_materials_ior','KHR_mesh_quantization']);// no Draco/KTX2/meshopt until their decoders are vendored and packaged
+const ALLOWED_EXT=new Set(['KHR_materials_emissive_strength','KHR_texture_transform','KHR_materials_clearcoat','KHR_materials_sheen','KHR_materials_specular','KHR_materials_ior','KHR_mesh_quantization','EXT_texture_webp']);// no Draco/KTX2/meshopt until their decoders are vendored and packaged
 
 const dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),errors=[],warnings=[],info={};
 if(dv.getUint32(0,true)!==0x46546C67){console.error('not a GLB');process.exit(1);}
@@ -56,7 +61,15 @@ for(const [ni,n] of nodes.entries()){if(n.mesh===undefined)continue;const m=json
  for(const t of m.extras?.targetNames||[])morphs.add(t);}
 if(info.noTangentPrimitives)warnings.push(`${info.noTangentPrimitives} normal-mapped primitives without exported tangents (house kit: deliberate; world-planar UVs, three.js derives the tangent frame per pixel)`);
 info.triangles=tris;info.vertices=verts;info.skinnedMeshes=skinned;info.morphTargets=[...morphs];
-if(!P.bike&&!P.house&&tris>P.tris)errors.push(`triangles ${tris} over the ${profileName} budget ${P.tris}`);
+if(P.veg){const triOf=n=>json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count)/3,0);const roots=nodes.map((n,i)=>[n,i]).filter(([n])=>n.extras?.ll_variant||(n.extras?.ll_asset_id==='lm.old-oak'));info.variants={};
+ const kindOf=id=>/^lm\.old-oak/.test(id)?'oak':/^tree\./.test(id)?'tree':/^shrub\./.test(id)?'shrub':'ground';
+ if(!roots.length)errors.push('no variant nodes (extras.ll_variant)');
+ for(const [v] of roots){const id=v.extras.ll_variant||v.extras.ll_asset_id,k=kindOf(id),per=[0,0,0],have=new Set();
+  for(const c of v.children||[]){const n=nodes[c];if(n.mesh===undefined)continue;const l=n.extras?.ll_lod;if(l===undefined){errors.push(`${n.name}: mesh without extras.ll_lod`);continue;}per[l]+=triOf(n);have.add(l);
+   for(const p of json.meshes[n.mesh].primitives){if(p.attributes.COLOR_0===undefined)errors.push(`${n.name}: no COLOR_0 (baked occlusion)`);if(p.attributes._WIND===undefined)errors.push(`${n.name}: no _WIND attribute`);}}
+  info.variants[id]=per.map(Math.round);const want=k==='ground'?[0,1]:[0,1,2];for(const l of want)if(!have.has(l))errors.push(`${id}: no LOD${l} mesh`);
+  for(const l of want){if(per[l]>P.tris[k][l])errors.push(`${id} LOD${l} ${per[l]} triangles over ${P.tris[k][l]}`);else if(per[l]>P.warnTris[k][l])warnings.push(`${id} LOD${l} ${per[l]} triangles above the ${P.warnTris[k][l]} target`);}}}
+if(!P.bike&&!P.house&&!P.veg&&tris>P.tris)errors.push(`triangles ${tris} over the ${profileName} budget ${P.tris}`);
 if(P.house){const houses=nodes.map((n,i)=>[n,i]).filter(([n])=>n.extras?.ll_house);info.houses={};
  const triOf=n=>json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count)/3,0);
  if(!houses.length)errors.push('no house nodes (extras.ll_house)');
@@ -69,7 +82,7 @@ if(P.house){const houses=nodes.map((n,i)=>[n,i]).filter(([n])=>n.extras?.ll_hous
   if(mn[1]<-1||mx[1]>14)errors.push(`${h.extras.ll_house}: height range ${mn[1].toFixed(2)}..${mx[1].toFixed(2)} m (metres, +Y up, ground at 0?)`);
   if(!(mx[2]>-mn[2]))errors.push(`${h.extras.ll_house}: the front (porch, door) is not toward +Z (house-local frame: +z toward the street)`);}
  info.trianglesAllLOD0=Object.values(info.houses).reduce((a,h)=>a+h.trianglesPerLOD[0],0);}
-if(!P.bike&&!P.house&&unskinned.length)warnings.push('meshes not skinned (they will not follow the skeleton): '+unskinned.join(', '));
+if(!P.bike&&!P.house&&!P.veg&&unskinned.length)warnings.push('meshes not skinned (they will not follow the skeleton): '+unskinned.join(', '));
 // bicycles: per-LOD budgets, the moving nodes the game drives, the anchor record, orientation and ground contact
 if(P.bike){const per=[0,0,0],nodesBy={0:new Set(),1:new Set(),2:new Set()};
  for(const n of nodes){if(n.mesh===undefined)continue;const lod=n.extras?.ll_lod??0;const t=json.meshes[n.mesh].primitives.reduce((a,p)=>a+(p.indices!==undefined?acc(p.indices).count:acc(p.attributes.POSITION).count)/3,0);per[lod]+=t;if(n.extras?.ll_node)nodesBy[lod].add(n.extras.ll_node);else errors.push(`mesh node ${n.name} has no extras.ll_node`);}
@@ -92,9 +105,9 @@ if(P.bike){const per=[0,0,0],nodesBy={0:new Set(),1:new Set(),2:new Set()};
  const rx=(all.mn[0]+all.mx[0]);info.lateralCentre=+(rx/2).toFixed(3);
 }
 // skeleton
-const skin=(P.bike||P.house)?null:json.skins?.[0];if(!skin&&!P.bike&&!P.house)errors.push('no skin');if((json.skins||[]).length>1)warnings.push(`${json.skins.length} skins (one per character is expected)`);
+const skin=(P.bike||P.house||P.veg)?null:json.skins?.[0];if(!skin&&!P.bike&&!P.house&&!P.veg)errors.push('no skin');if((json.skins||[]).length>1)warnings.push(`${json.skins.length} skins (one per character is expected)`);
 const joints=skin?skin.joints.map(i=>names[i]):[];info.joints=joints.length;
-const need=(P.bike||P.house)?[]:[...BODY_BONES,...SOCKETS,...(P.fingers?FINGERS:[])];const missing=need.filter(b=>!names.includes(b));if(missing.length)errors.push('missing bones/sockets: '+missing.join(', '));
+const need=(P.bike||P.house||P.veg)?[]:[...BODY_BONES,...SOCKETS,...(P.fingers?FINGERS:[])];const missing=need.filter(b=>!names.includes(b));if(missing.length)errors.push('missing bones/sockets: '+missing.join(', '));
 if(joints.length>P.bones)errors.push(`joints ${joints.length} over ${P.bones}`);
 const badName=joints.filter(n=>!/^[a-z][a-z0-9_]*$/.test(n));if(badName.length)errors.push('bone names must be lower_snake_case: '+badName.join(', '));
 // scale and orientation: the head must be about 1.2–2.0 m up (+Y) and the face toward +Z (glTF forward)
@@ -117,6 +130,8 @@ for(const m of mats){const p=m.pbrMetallicRoughness||{};mark(p.baseColorTexture,
 info.textures=[];
 for(const [i,im] of (json.images||[]).entries()){const bv=json.bufferViews[im.bufferView],b=bytes.subarray(20+jl+8+(bv.byteOffset||0),20+jl+8+(bv.byteOffset||0)+bv.byteLength);let w=0,h=0;
  if(im.mimeType==='image/png'){w=new DataView(b.buffer,b.byteOffset).getUint32(16);h=new DataView(b.buffer,b.byteOffset).getUint32(20);}
+ else if(im.mimeType==='image/webp'){const t=String.fromCharCode(...b.subarray(12,16));const u=new DataView(b.buffer,b.byteOffset);
+  if(t==='VP8 '){w=u.getUint16(26,true)&0x3fff;h=u.getUint16(28,true)&0x3fff;}else if(t==='VP8L'){const v=u.getUint32(21,true);w=(v&0x3fff)+1;h=((v>>14)&0x3fff)+1;}else if(t==='VP8X'){w=1+(b[24]|b[25]<<8|b[26]<<16);h=1+(b[27]|b[28]<<8|b[29]<<16);}}
  else if(im.mimeType==='image/jpeg'){let o=2;while(o<b.length){if(b[o]!==0xFF){o++;continue;}const mk=b[o+1];if(mk>=0xC0&&mk<=0xC3){h=(b[o+5]<<8)|b[o+6];w=(b[o+7]<<8)|b[o+8];break;}o+=2+((b[o+2]<<8)|b[o+3]);}}
  const kinds=[...(usedAs.get(i)||[])];info.textures.push({name:im.name,mime:im.mimeType,w,h,bytes:bv.byteLength,use:kinds});
  if(w>P.texMax||h>P.texMax)errors.push(`${im.name}: ${w}×${h} over ${P.texMax}`);if(w&(w-1)||h&(h-1))errors.push(`${im.name}: ${w}×${h} not a power of two`);

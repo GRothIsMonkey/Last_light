@@ -1,0 +1,57 @@
+{
+ "asset": "veg.ground",
+ "variants": {
+  "grass.lawn.1": {
+   "lod0": 128,
+   "lod1": 4
+  },
+  "grass.lawn.2": {
+   "lod0": 112,
+   "lod1": 4
+  },
+  "grass.lawn.3": {
+   "lod0": 144,
+   "lod1": 4
+  },
+  "grass.long.1": {
+   "lod0": 100,
+   "lod1": 4
+  },
+  "grass.long.2": {
+   "lod0": 84,
+   "lod1": 4
+  },
+  "meadow.tall.1": {
+   "lod0": 6,
+   "lod1": 4
+  },
+  "meadow.tall.2": {
+   "lod0": 6,
+   "lod1": 4
+  },
+  "meadow.dry.1": {
+   "lod0": 6,
+   "lod1": 4
+  },
+  "weed.groundcover.1": {
+   "lod0": 4,
+   "lod1": 2
+  },
+  "weed.seedstalk.1": {
+   "lod0": 4,
+   "lod1": 2
+  },
+  "flower.lace.1": {
+   "lod0": 4,
+   "lod1": 2
+  },
+  "flower.susan.1": {
+   "lod0": 4,
+   "lod1": 2
+  },
+  "weed.clover.1": {
+   "lod0": 2,
+   "lod1": 2
+  }
+ }
+}

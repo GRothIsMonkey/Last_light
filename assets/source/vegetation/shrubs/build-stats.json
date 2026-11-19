@@ -1,0 +1,258 @@
+{
+ "asset": "veg.shrubs",
+ "variants": {
+  "shrub.natural.big.1": {
+   "lod0": 2632,
+   "lod1": 1236,
+   "lod2": 618,
+   "size": [
+    1.444,
+    1.516,
+    1.664
+   ],
+   "source": "Bush_big_001"
+  },
+  "shrub.natural.big.2": {
+   "lod0": 2933,
+   "lod1": 1348,
+   "lod2": 702,
+   "size": [
+    1.268,
+    1.504,
+    1.645
+   ],
+   "source": "Bush_big_002"
+  },
+  "shrub.natural.big.3": {
+   "lod0": 2689,
+   "lod1": 1237,
+   "lod2": 636,
+   "size": [
+    1.188,
+    1.491,
+    1.421
+   ],
+   "source": "Bush_big_003"
+  },
+  "shrub.natural.big.4": {
+   "lod0": 2939,
+   "lod1": 1322,
+   "lod2": 696,
+   "size": [
+    1.558,
+    1.23,
+    1.676
+   ],
+   "source": "Bush_big_004"
+  },
+  "shrub.natural.big.5": {
+   "lod0": 2351,
+   "lod1": 1046,
+   "lod2": 528,
+   "size": [
+    1.344,
+    1.41,
+    1.622
+   ],
+   "source": "Bush_big_005"
+  },
+  "shrub.natural.medium.1": {
+   "lod0": 222,
+   "lod1": 139,
+   "lod2": 81,
+   "size": [
+    0.721,
+    0.531,
+    0.991
+   ],
+   "source": "Bush_medium_001"
+  },
+  "shrub.natural.medium.2": {
+   "lod0": 354,
+   "lod1": 192,
+   "lod2": 90,
+   "size": [
+    0.664,
+    0.652,
+    1.145
+   ],
+   "source": "Bush_medium_002"
+  },
+  "shrub.natural.medium.3": {
+   "lod0": 512,
+   "lod1": 262,
+   "lod2": 117,
+   "size": [
+    0.55,
+    0.582,
+    1.03
+   ],
+   "source": "Bush_medium_003"
+  },
+  "shrub.natural.medium.4": {
+   "lod0": 420,
+   "lod1": 227,
+   "lod2": 99,
+   "size": [
+    0.605,
+    0.633,
+    0.92
+   ],
+   "source": "Bush_medium_004"
+  },
+  "shrub.natural.medium.5": {
+   "lod0": 836,
+   "lod1": 433,
+   "lod2": 195,
+   "size": [
+    0.826,
+    0.656,
+    0.996
+   ],
+   "source": "Bush_medium_005"
+  },
+  "shrub.natural.small.1": {
+   "lod0": 179,
+   "lod1": 95,
+   "lod2": 42,
+   "size": [
+    0.71,
+    0.716,
+    0.577
+   ],
+   "source": "Bush_small_001"
+  },
+  "shrub.natural.small.2": {
+   "lod0": 237,
+   "lod1": 132,
+   "lod2": 57,
+   "size": [
+    0.758,
+    0.784,
+    0.581
+   ],
+   "source": "Bush_small_002"
+  },
+  "shrub.natural.small.3": {
+   "lod0": 237,
+   "lod1": 127,
+   "lod2": 60,
+   "size": [
+    0.895,
+    0.84,
+    0.639
+   ],
+   "source": "Bush_small_003"
+  },
+  "shrub.natural.small.4": {
+   "lod0": 150,
+   "lod1": 86,
+   "lod2": 45,
+   "size": [
+    0.577,
+    0.643,
+    0.537
+   ],
+   "source": "Bush_small_004"
+  },
+  "shrub.natural.small.5": {
+   "lod0": 264,
+   "lod1": 134,
+   "lod2": 66,
+   "size": [
+    0.755,
+    0.733,
+    0.547
+   ],
+   "source": "Bush_small_005"
+  },
+  "shrub.globe.1": {
+   "lod0": 3648,
+   "lod1": 1639,
+   "lod2": 993,
+   "size": [
+    0.866,
+    0.74,
+    0.934
+   ],
+   "source": "Bush_big_002"
+  },
+  "shrub.globe.2": {
+   "lod0": 3658,
+   "lod1": 1619,
+   "lod2": 993,
+   "size": [
+    0.989,
+    0.836,
+    0.909
+   ],
+   "source": "Bush_big_004"
+  },
+  "shrub.globe.3": {
+   "lod0": 2896,
+   "lod1": 1277,
+   "lod2": 759,
+   "size": [
+    0.983,
+    0.749,
+    0.93
+   ],
+   "source": "Bush_big_005"
+  },
+  "shrub.hedge.1": {
+   "lod0": 3292,
+   "lod1": 1506,
+   "lod2": 888,
+   "size": [
+    1.16,
+    0.838,
+    0.871
+   ],
+   "source": "Bush_big_001"
+  },
+  "shrub.hedge.2": {
+   "lod0": 3308,
+   "lod1": 1507,
+   "lod2": 906,
+   "size": [
+    1.101,
+    0.841,
+    0.856
+   ],
+   "source": "Bush_big_003"
+  },
+  "shrub.flowering.1": {
+   "lod0": 179,
+   "lod1": 95,
+   "lod2": 42,
+   "size": [
+    0.533,
+    0.537,
+    0.433
+   ],
+   "source": "Bush_small_001"
+  },
+  "shrub.flowering.2": {
+   "lod0": 237,
+   "lod1": 127,
+   "lod2": 60,
+   "size": [
+    0.671,
+    0.63,
+    0.479
+   ],
+   "source": "Bush_small_003"
+  },
+  "shrub.flowering.3": {
+   "lod0": 264,
+   "lod1": 134,
+   "lod2": 66,
+   "size": [
+    0.566,
+    0.55,
+    0.41
+   ],
+   "source": "Bush_small_005"
+  }
+ }
+}

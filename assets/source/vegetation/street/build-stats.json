@@ -1,0 +1,798 @@
+{
+ "asset": "veg.street-trees",
+ "version": 1,
+ "variants": {
+  "tree.maple.1": {
+   "lod0": {
+    "tris": 10619,
+    "cards": 2123
+   },
+   "lod1": {
+    "tris": 2622,
+    "cards": 792
+   },
+   "lod2": {
+    "tris": 323,
+    "cards": 139
+   },
+   "height": 14.11,
+   "crown": 6.03,
+   "trunk": 0.211,
+   "origin": "grown"
+  },
+  "tree.maple.2": {
+   "lod0": {
+    "tris": 9826,
+    "cards": 1850
+   },
+   "lod1": {
+    "tris": 2224,
+    "cards": 679
+   },
+   "lod2": {
+    "tris": 293,
+    "cards": 119
+   },
+   "height": 13.98,
+   "crown": 4.83,
+   "trunk": 0.221,
+   "origin": "grown"
+  },
+  "tree.maple.3": {
+   "lod0": {
+    "tris": 10239,
+    "cards": 1590
+   },
+   "lod1": {
+    "tris": 2072,
+    "cards": 619
+   },
+   "lod2": {
+    "tris": 278,
+    "cards": 106
+   },
+   "height": 12.62,
+   "crown": 5.32,
+   "trunk": 0.222,
+   "origin": "grown"
+  },
+  "tree.maple.4": {
+   "lod0": {
+    "tris": 9669,
+    "cards": 1650
+   },
+   "lod1": {
+    "tris": 2234,
+    "cards": 622
+   },
+   "lod2": {
+    "tris": 270,
+    "cards": 107
+   },
+   "height": 13.65,
+   "crown": 4.7,
+   "trunk": 0.237,
+   "origin": "grown"
+  },
+  "tree.maple.5": {
+   "lod0": {
+    "tris": 10640,
+    "cards": 1556
+   },
+   "lod1": {
+    "tris": 2114,
+    "cards": 586
+   },
+   "lod2": {
+    "tris": 229,
+    "cards": 97
+   },
+   "height": 11.56,
+   "crown": 5.29,
+   "trunk": 0.256,
+   "origin": "grown"
+  },
+  "tree.maple.6": {
+   "lod0": {
+    "tris": 7251,
+    "cards": 1362
+   },
+   "lod1": {
+    "tris": 1802,
+    "cards": 508
+   },
+   "lod2": {
+    "tris": 211,
+    "cards": 88
+   },
+   "height": 11.72,
+   "crown": 5.46,
+   "trunk": 0.201,
+   "origin": "grown"
+  },
+  "tree.maple.7": {
+   "lod0": {
+    "tris": 10677,
+    "cards": 1680
+   },
+   "lod1": {
+    "tris": 2250,
+    "cards": 626
+   },
+   "lod2": {
+    "tris": 289,
+    "cards": 117
+   },
+   "height": 13.77,
+   "crown": 4.51,
+   "trunk": 0.242,
+   "origin": "grown"
+  },
+  "tree.maple.8": {
+   "lod0": {
+    "tris": 10147,
+    "cards": 1519
+   },
+   "lod1": {
+    "tris": 1948,
+    "cards": 567
+   },
+   "lod2": {
+    "tris": 267,
+    "cards": 106
+   },
+   "height": 12.41,
+   "crown": 4.65,
+   "trunk": 0.228,
+   "origin": "grown"
+  },
+  "tree.oak.1": {
+   "lod0": {
+    "tris": 8259,
+    "cards": 500
+   },
+   "lod1": {
+    "tris": 1986,
+    "cards": 232
+   },
+   "lod2": {
+    "tris": 267,
+    "cards": 57
+   },
+   "height": 11.22,
+   "crown": 4.42,
+   "trunk": 0.296,
+   "origin": "collection:Tree EZTree0.Medium010"
+  },
+  "tree.oak.2": {
+   "lod0": {
+    "tris": 4399,
+    "cards": 301
+   },
+   "lod1": {
+    "tris": 1104,
+    "cards": 140
+   },
+   "lod2": {
+    "tris": 144,
+    "cards": 38
+   },
+   "height": 10.77,
+   "crown": 4.09,
+   "trunk": 0.279,
+   "origin": "collection:Tree EZTree0.Medium011"
+  },
+  "tree.oak.3": {
+   "lod0": {
+    "tris": 17521,
+    "cards": 893
+   },
+   "lod1": {
+    "tris": 4538,
+    "cards": 379
+   },
+   "lod2": {
+    "tris": 549,
+    "cards": 74
+   },
+   "height": 12.16,
+   "crown": 5.39,
+   "trunk": 0.431,
+   "origin": "collection:Tree EZTree1.Large009"
+  },
+  "tree.oak.4": {
+   "lod0": {
+    "tris": 5971,
+    "cards": 322
+   },
+   "lod1": {
+    "tris": 1460,
+    "cards": 143
+   },
+   "lod2": {
+    "tris": 188,
+    "cards": 38
+   },
+   "height": 10.39,
+   "crown": 4.3,
+   "trunk": 0.273,
+   "origin": "collection:Tree EZTree0.Medium010 (pruned, bent, leaning)"
+  },
+  "tree.oak.5": {
+   "lod0": {
+    "tris": 3592,
+    "cards": 204
+   },
+   "lod1": {
+    "tris": 1006,
+    "cards": 99
+   },
+   "lod2": {
+    "tris": 136,
+    "cards": 29
+   },
+   "height": 10.61,
+   "crown": 3.96,
+   "trunk": 0.296,
+   "origin": "collection:Tree EZTree0.Medium011 (pruned, bent, leaning)"
+  },
+  "tree.oak.6": {
+   "lod0": {
+    "tris": 12664,
+    "cards": 621
+   },
+   "lod1": {
+    "tris": 3326,
+    "cards": 256
+   },
+   "lod2": {
+    "tris": 408,
+    "cards": 51
+   },
+   "height": 11.67,
+   "crown": 4.61,
+   "trunk": 0.413,
+   "origin": "collection:Tree EZTree1.Large009 (pruned, bent, leaning)"
+  },
+  "tree.ash.1": {
+   "lod0": {
+    "tris": 11995,
+    "cards": 741
+   },
+   "lod1": {
+    "tris": 2632,
+    "cards": 295
+   },
+   "lod2": {
+    "tris": 315,
+    "cards": 63
+   },
+   "height": 10.81,
+   "crown": 4.38,
+   "trunk": 0.425,
+   "origin": "collection:Tree EZTree0.Large"
+  },
+  "tree.ash.2": {
+   "lod0": {
+    "tris": 8093,
+    "cards": 669
+   },
+   "lod1": {
+    "tris": 1840,
+    "cards": 283
+   },
+   "lod2": {
+    "tris": 260,
+    "cards": 53
+   },
+   "height": 12.26,
+   "crown": 5.12,
+   "trunk": 0.368,
+   "origin": "collection:Tree EZTree1.Large001"
+  },
+  "tree.ash.3": {
+   "lod0": {
+    "tris": 4088,
+    "cards": 397
+   },
+   "lod1": {
+    "tris": 804,
+    "cards": 167
+   },
+   "lod2": {
+    "tris": 97,
+    "cards": 31
+   },
+   "height": 9.95,
+   "crown": 4.03,
+   "trunk": 0.2,
+   "origin": "collection:Tree EZTree1.Medium002"
+  },
+  "tree.ash.4": {
+   "lod0": {
+    "tris": 8501,
+    "cards": 500
+   },
+   "lod1": {
+    "tris": 1898,
+    "cards": 199
+   },
+   "lod2": {
+    "tris": 218,
+    "cards": 38
+   },
+   "height": 9.68,
+   "crown": 4.02,
+   "trunk": 0.381,
+   "origin": "collection:Tree EZTree0.Large (pruned, bent, leaning)"
+  },
+  "tree.ash.5": {
+   "lod0": {
+    "tris": 6056,
+    "cards": 487
+   },
+   "lod1": {
+    "tris": 1410,
+    "cards": 194
+   },
+   "lod2": {
+    "tris": 198,
+    "cards": 35
+   },
+   "height": 11.7,
+   "crown": 4.19,
+   "trunk": 0.362,
+   "origin": "collection:Tree EZTree1.Large001 (pruned, bent, leaning)"
+  },
+  "tree.ash.6": {
+   "lod0": {
+    "tris": 2961,
+    "cards": 263
+   },
+   "lod1": {
+    "tris": 646,
+    "cards": 108
+   },
+   "lod2": {
+    "tris": 83,
+    "cards": 24
+   },
+   "height": 9.78,
+   "crown": 4.15,
+   "trunk": 0.197,
+   "origin": "collection:Tree EZTree1.Medium002 (pruned, bent, leaning)"
+  },
+  "tree.birch.1": {
+   "lod0": {
+    "tris": 3110,
+    "cards": 380
+   },
+   "lod1": {
+    "tris": 672,
+    "cards": 142
+   },
+   "lod2": {
+    "tris": 50,
+    "cards": 25
+   },
+   "height": 10.71,
+   "crown": 1.99,
+   "trunk": 0.114,
+   "origin": "grown"
+  },
+  "tree.birch.2": {
+   "lod0": {
+    "tris": 2422,
+    "cards": 299
+   },
+   "lod1": {
+    "tris": 620,
+    "cards": 116
+   },
+   "lod2": {
+    "tris": 44,
+    "cards": 22
+   },
+   "height": 8.91,
+   "crown": 1.98,
+   "trunk": 0.101,
+   "origin": "grown"
+  },
+  "tree.birch.3": {
+   "lod0": {
+    "tris": 2927,
+    "cards": 433
+   },
+   "lod1": {
+    "tris": 718,
+    "cards": 157
+   },
+   "lod2": {
+    "tris": 60,
+    "cards": 30
+   },
+   "height": 9.96,
+   "crown": 2.57,
+   "trunk": 0.097,
+   "origin": "grown"
+  },
+  "tree.birch.4": {
+   "lod0": {
+    "tris": 2532,
+    "cards": 342
+   },
+   "lod1": {
+    "tris": 640,
+    "cards": 130
+   },
+   "lod2": {
+    "tris": 46,
+    "cards": 23
+   },
+   "height": 9.04,
+   "crown": 2.38,
+   "trunk": 0.102,
+   "origin": "grown"
+  },
+  "tree.birch.5": {
+   "lod0": {
+    "tris": 2865,
+    "cards": 420
+   },
+   "lod1": {
+    "tris": 578,
+    "cards": 157
+   },
+   "lod2": {
+    "tris": 62,
+    "cards": 31
+   },
+   "height": 10.84,
+   "crown": 2.67,
+   "trunk": 0.107,
+   "origin": "grown"
+  },
+  "tree.birch.6": {
+   "lod0": {
+    "tris": 3651,
+    "cards": 575
+   },
+   "lod1": {
+    "tris": 878,
+    "cards": 205
+   },
+   "lod2": {
+    "tris": 80,
+    "cards": 40
+   },
+   "height": 11.2,
+   "crown": 2.93,
+   "trunk": 0.102,
+   "origin": "grown"
+  },
+  "tree.pine.1": {
+   "lod0": {
+    "tris": 8790,
+    "cards": 954
+   },
+   "lod1": {
+    "tris": 2064,
+    "cards": 427
+   },
+   "lod2": {
+    "tris": 219,
+    "cards": 82
+   },
+   "height": 10.5,
+   "crown": 3.14,
+   "trunk": 0.254,
+   "origin": "grown"
+  },
+  "tree.pine.2": {
+   "lod0": {
+    "tris": 7253,
+    "cards": 901
+   },
+   "lod1": {
+    "tris": 1272,
+    "cards": 405
+   },
+   "lod2": {
+    "tris": 199,
+    "cards": 77
+   },
+   "height": 11.1,
+   "crown": 3.42,
+   "trunk": 0.203,
+   "origin": "grown"
+  },
+  "tree.pine.3": {
+   "lod0": {
+    "tris": 10146,
+    "cards": 1249
+   },
+   "lod1": {
+    "tris": 2218,
+    "cards": 554
+   },
+   "lod2": {
+    "tris": 283,
+    "cards": 114
+   },
+   "height": 12.0,
+   "crown": 3.72,
+   "trunk": 0.259,
+   "origin": "grown"
+  },
+  "tree.pine.4": {
+   "lod0": {
+    "tris": 9765,
+    "cards": 1322
+   },
+   "lod1": {
+    "tris": 1476,
+    "cards": 581
+   },
+   "lod2": {
+    "tris": 295,
+    "cards": 120
+   },
+   "height": 11.7,
+   "crown": 3.75,
+   "trunk": 0.218,
+   "origin": "grown"
+  },
+  "tree.pine.5": {
+   "lod0": {
+    "tris": 6592,
+    "cards": 779
+   },
+   "lod1": {
+    "tris": 1972,
+    "cards": 367
+   },
+   "lod2": {
+    "tris": 209,
+    "cards": 77
+   },
+   "height": 10.5,
+   "crown": 3.19,
+   "trunk": 0.262,
+   "origin": "grown"
+  },
+  "tree.pine.6": {
+   "lod0": {
+    "tris": 7095,
+    "cards": 840
+   },
+   "lod1": {
+    "tris": 1894,
+    "cards": 392
+   },
+   "lod2": {
+    "tris": 223,
+    "cards": 84
+   },
+   "height": 11.1,
+   "crown": 3.57,
+   "trunk": 0.257,
+   "origin": "grown"
+  },
+  "tree.spruce.1": {
+   "lod0": {
+    "tris": 8594,
+    "cards": 1931
+   },
+   "lod1": {
+    "tris": 1660,
+    "cards": 749
+   },
+   "lod2": {
+    "tris": 311,
+    "cards": 128
+   },
+   "height": 11.7,
+   "crown": 3.2,
+   "trunk": 0.222,
+   "origin": "grown"
+  },
+  "tree.spruce.2": {
+   "lod0": {
+    "tris": 8518,
+    "cards": 2286
+   },
+   "lod1": {
+    "tris": 1950,
+    "cards": 888
+   },
+   "lod2": {
+    "tris": 375,
+    "cards": 160
+   },
+   "height": 12.6,
+   "crown": 3.45,
+   "trunk": 0.212,
+   "origin": "grown"
+  },
+  "tree.spruce.3": {
+   "lod0": {
+    "tris": 7680,
+    "cards": 1813
+   },
+   "lod1": {
+    "tris": 1592,
+    "cards": 715
+   },
+   "lod2": {
+    "tris": 313,
+    "cards": 129
+   },
+   "height": 11.7,
+   "crown": 3.23,
+   "trunk": 0.207,
+   "origin": "grown"
+  },
+  "tree.spruce.4": {
+   "lod0": {
+    "tris": 4916,
+    "cards": 1219
+   },
+   "lod1": {
+    "tris": 1126,
+    "cards": 488
+   },
+   "lod2": {
+    "tris": 217,
+    "cards": 86
+   },
+   "height": 9.9,
+   "crown": 2.7,
+   "trunk": 0.184,
+   "origin": "grown"
+  },
+  "tree.spruce.5": {
+   "lod0": {
+    "tris": 6824,
+    "cards": 1371
+   },
+   "lod1": {
+    "tris": 1210,
+    "cards": 536
+   },
+   "lod2": {
+    "tris": 249,
+    "cards": 102
+   },
+   "height": 9.9,
+   "crown": 2.91,
+   "trunk": 0.208,
+   "origin": "grown"
+  },
+  "tree.spruce.6": {
+   "lod0": {
+    "tris": 8053,
+    "cards": 1854
+   },
+   "lod1": {
+    "tris": 1634,
+    "cards": 742
+   },
+   "lod2": {
+    "tris": 321,
+    "cards": 133
+   },
+   "height": 12.0,
+   "crown": 3.25,
+   "trunk": 0.21,
+   "origin": "grown"
+  },
+  "tree.young.1": {
+   "lod0": {
+    "tris": 478,
+    "cards": 90
+   },
+   "lod1": {
+    "tris": 97,
+    "cards": 38
+   },
+   "lod2": {
+    "tris": 14,
+    "cards": 7
+   },
+   "height": 4.35,
+   "crown": 1.24,
+   "trunk": 0.04,
+   "origin": "grown"
+  },
+  "tree.young.2": {
+   "lod0": {
+    "tris": 456,
+    "cards": 74
+   },
+   "lod1": {
+    "tris": 77,
+    "cards": 28
+   },
+   "lod2": {
+    "tris": 10,
+    "cards": 5
+   },
+   "height": 4.61,
+   "crown": 1.08,
+   "trunk": 0.043,
+   "origin": "grown"
+  },
+  "tree.young.3": {
+   "lod0": {
+    "tris": 420,
+    "cards": 77
+   },
+   "lod1": {
+    "tris": 81,
+    "cards": 30
+   },
+   "lod2": {
+    "tris": 16,
+    "cards": 8
+   },
+   "height": 4.34,
+   "crown": 1.08,
+   "trunk": 0.045,
+   "origin": "grown"
+  },
+  "tree.young.4": {
+   "lod0": {
+    "tris": 466,
+    "cards": 86
+   },
+   "lod1": {
+    "tris": 95,
+    "cards": 37
+   },
+   "lod2": {
+    "tris": 20,
+    "cards": 10
+   },
+   "height": 4.58,
+   "crown": 1.14,
+   "trunk": 0.043,
+   "origin": "grown"
+  },
+  "tree.young.5": {
+   "lod0": {
+    "tris": 508,
+    "cards": 91
+   },
+   "lod1": {
+    "tris": 87,
+    "cards": 33
+   },
+   "lod2": {
+    "tris": 14,
+    "cards": 7
+   },
+   "height": 4.48,
+   "crown": 1.4,
+   "trunk": 0.04,
+   "origin": "grown"
+  },
+  "tree.young.6": {
+   "lod0": {
+    "tris": 406,
+    "cards": 69
+   },
+   "lod1": {
+    "tris": 87,
+    "cards": 33
+   },
+   "lod2": {
+    "tris": 14,
+    "cards": 7
+   },
+   "height": 4.11,
+   "crown": 1.05,
+   "trunk": 0.042,
+   "origin": "grown"
+  }
+ }
+}
