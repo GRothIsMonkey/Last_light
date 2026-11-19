@@ -126,7 +126,7 @@ export function buildFurniture(W){
   K.box(mainG,side*(CF+.005),.07,-u,.03,.07,.9,0x2a2a2a);const gr=K.box(mainG,side*(CF-.22),.028,-u,.4,.012,.85,0x3a3a38);gr.material=K.mat(0x3a3a38,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
   for(let k=0;k<5;k++)K.box(mainG,side*(CF-.22),.034,-u-.34+k*.17,.36,.012,.03,0x2a2a28);}
  // Manholes, patches and cracks in the asphalt.
- const manhole=K.mat(0x4b4a47,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+ const manhole=W.pavement?W.pavement.pavementMaterial(new THREE.MeshStandardMaterial({color:0x4b4a47,roughness:.9,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}),'iron'):K.mat(0x4b4a47,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
  for(let d=ROAD_START+40;d<1120;d+=95){const m=new THREE.Mesh(new THREE.CylinderGeometry(.36,.36,.02,16),manhole);m.position.set(((Math.abs(d)/95|0)%2?.8:-1.2),roadCrown(d,1)-.004,-d);mainG.add(m);if(W.pv)W.pv.manholes.push({d,lat:m.position.x});}
  // Patches share the asphalt's grain, a shade darker; none right where the ride starts.
  // (?pavement: the old decal patches and crack lines are kept apart, shown only as the ORIGINAL in the comparison; the

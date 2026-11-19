@@ -27,7 +27,9 @@ export function buildStreets(W){
  const grass=W.grassMat=mat(STREET.grass);
  const concrete=W.concrete=PV?PV.pavementMaterial(surfaceMaterial(own(STREET.concrete),'concrete'),'walk'):surfaceMaterial(mat(STREET.concrete),'concrete'),curbC=PV?PV.pavementMaterial(surfaceMaterial(own(STREET.curb),'concrete'),'curb'):surfaceMaterial(mat(STREET.curb),'concrete');
  const gutterC=PV?PV.pavementMaterial(surfaceMaterial(own(STREET.gutter),'concrete'),'gutter'):surfaceMaterial(mat(STREET.gutter),'concrete');
- if(PV)W.pvMats={asphalt,walk:concrete,curb:curbC,gutter:gutterC,joint:Object.assign(own(0x726d61,{roughness:1}),{userData:{keep:true,pvToggle:'original'}})};
+ if(PV){W.pvMats={asphalt,walk:concrete,curb:curbC,gutter:gutterC,joint:Object.assign(own(0x726d61,{roughness:1}),{userData:{keep:true,pvToggle:'original'}})};
+  // (the soil faces that close the open step beside driveway aprons: their own batch, no shadow proxy of their own)
+  W.pvMats.soil=surfaceMaterial(own(0x54462f,{roughness:1,side:THREE.DoubleSide}),'earth');Object.assign(W.pvMats.soil.userData,{keep:true,noShadow:true,pvSoil:true});}
  // street coordinates for a pavement mesh: which frame a bent group follows, its row base (main 0, Briarwood 2, Summerfield 4)
  const frameOf=g=>W.layers.find(l=>l.group===g)?.frame||MAIN,rowOf=f=>f===MAIN?0:2+2*W.sideFrames.indexOf(f);
  const fwd=(f,u)=>{const h=f.heading(u);return [Math.sin(h),-Math.cos(h)];};
@@ -73,6 +75,16 @@ export function buildStreets(W){
   const walk=[[0,(i,u,v,kk)=>kk<.99?SIDEWALK:.10],[.04,SIDEWALK],[1.46,SIDEWALK],[1.5,(i,u,v,kk)=>kk<.99?SIDEWALK:.10]];
   sweep(parent,us.map(u=>[u,side*(cf+XS.strip)]),walk.map(([o,h])=>[o,typeof h==='function'?h:()=>h]),concrete,{side:-side,heightScale:k,id:rid});
   grid(parent,side>0?[cf-.38,cf]:[-cf,-cf+.38],range(u0,u1,1),(d,x)=>roadY(d,x),gutterC);
+  // (?pavement) the lawn edge beside a driveway apron: the apron runs from 3.5 cm at the gutter up to the walk while the lawn
+  // stays at 12 cm, and the curb drops in front of the cut; the open step showed the ground beneath as a dark wedge. A thin
+  // face of soil closes it (visual only: heights, collisions and the lawn are untouched).
+  if(PV)for(const c of cuts){if(c.u1<u0||c.u0>u1)continue;const pos=[],add=(a,b,c2,d)=>pos.push(...a,...b,...c2,...a,...c2,...d);
+   const back=side*(cf+XS.curb),prof=a=>a<cf+1.65?.035+(.152-.035)*smooth((a-cf+.08)/1.73):.152,top=LAWN+.003;
+   for(const [ua,ub] of [[c.u0-.8,c.u0],[c.u1,c.u1+.8]])for(let u=ua;u<ub-1e-6;u+=.1){const u2=Math.min(ub,u+.1),y1=cutProfile(.10,cutK(cuts,u))-.004,y2=cutProfile(.10,cutK(cuts,u2))-.004;
+    if(y1<top||y2<top)add([back,Math.min(y1,top),-u],[back,Math.min(y2,top),-u2],[back,top,-u2],[back,top,-u]);}
+   for(const ue of [c.u0,c.u1])for(let a=cf+XS.curb;a<cf+XS.strip-1e-6;a+=.1){const a2=Math.min(cf+XS.strip,a+.1),y1=prof(a),y2=prof(a2);
+    if(y1<top||y2<top)add([side*a,Math.min(y1,top)-.004,-ue],[side*a2,Math.min(y2,top)-.004,-ue],[side*a2,top,-ue],[side*a,top,-ue]);}
+   if(pos.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();const m=new THREE.Mesh(g,W.pvMats.soil||(W.pvMats.soil=Object.assign(surfaceMaterial(own(0x54462f,{roughness:1,side:THREE.DoubleSide}),'earth'),{})));m.userData.pvName='apron-soil-edge';parent.add(m);}}
   for(let u=Math.ceil(u0/1.52)*1.52;u<u1;u+=1.52){const joint=K.box(parent,side*(cf+(XS.strip+XS.walk)/2),SIDEWALK+.002,-u,XS.walk-XS.strip-.04,.003,.014,PV?W.pvMats.joint:K.mat(0x726d61,{roughness:1}));joint.name='sidewalk-joint';}
  }
 

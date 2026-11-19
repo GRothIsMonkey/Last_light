@@ -35,7 +35,7 @@ const flat=(r,g,b,a=255)=>{const t=new THREE.DataTexture(new Uint8Array([r,g,b,a
 PAVE.asA.value=PAVE.coA.value=flat(128,128,128);PAVE.asN.value=PAVE.coN.value=flat(128,128,255);PAVE.asH.value=PAVE.coH.value=flat(128,230,230);
 PAVE.layout.value=flat(0,0,0,0);PAVE.drive.value=flat(128,0,0,128);
 
-export const KINDS={asphalt:0,gutter:1,curb:2,walk:3,drive:4,path:5};
+export const KINDS={asphalt:0,gutter:1,curb:2,walk:3,drive:4,path:5,iron:6};
 export const TEXTURES={
  asphalt:{albedo:'assets/pavement/pv.asphalt.albedo.jpg',normal:'assets/pavement/pv.asphalt.normal.jpg',hra:'assets/pavement/pv.asphalt.hra.jpg'},
  concrete:{albedo:'assets/pavement/pv.concrete.albedo.jpg',normal:'assets/pavement/pv.concrete.normal.jpg',hra:'assets/pavement/pv.concrete.hra.jpg'},
@@ -82,10 +82,10 @@ vec3 pvLum(vec3 c,float s){float l=dot(c,vec3(.2126,.7152,.0722));return mix(vec
 // The surfaces. Each returns: col (linear albedo), rough, nm (tangent-space micro normal in the world frame), g (height
 // gradient across/along, applied in the street frame), ao (cavity: scales the indirect light).
 const SURF=`
-struct PvOut{vec3 col;float rough;vec3 nm;vec2 g;float ao;float nmStr;};
+struct PvOut{vec3 col;float rough;vec3 nm;vec2 g;float ao;float nmStr;float metal;};
 // --------------------------------------------------------------------------------------------------- asphalt
 #if PV_KIND==0
-PvOut pvShade(vec3 base){PvOut o;
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;
  vec2 p=vec2(vPvW.x,-vPvW.z);float lat=vPvUv.x,d=vPvUv.y;float frame=floor(vPvD.w*.5+.01);float side=lat>0.?1.:-1.,a=abs(lat);
  float e=max(1e-4,max(length(vec2(dFdx(d),dFdy(d))),length(vec2(dFdx(lat),dFdy(lat)))));// pixel footprint (m)
  float seed=frame*101.;float D=d+seed*37.;
@@ -125,10 +125,10 @@ PvOut pvShade(vec3 base){PvOut o;
  // -- the crown's paving seam: a construction joint, cracked along much of its length, sealed in places
  float seamX=lat-.04*sin(D*.05)-.015*sin(D*.31);
  float crk=0.,seal=0.,sealEdge=0.;
- {float on=step(.35,pvF(vec2(D*.031,frame)));float jag=(pvN(vec2(D*3.1,1.))-.5)*.006;
+ {float on=smoothstep(.5,.56,pvF(vec2(D*.031,frame)));float jag=(pvN(vec2(D*3.1,1.))-.5)*.006;
   float lc=pvLine(seamX+jag,.0035,e)*on*(1.-culK)*(1.-mouth);crk=max(crk,lc);
-  float sOn=step(.55,pvH1(floor(D/23.)+frame*11.));float sw=.055+.012*pvN(vec2(D*2.,3.));
-  float sb=pvLine(seamX,sw,e)*sOn*(1.-culK)*(1.-mouth);seal=max(seal,sb*(.75+.25*pvN(vec2(D*6.,9.))));}
+  float sOn=smoothstep(.6,.66,pvF(vec2(D*.045+frame*3.,7.)));float sw=.045+.02*pvN(vec2(D*1.7,3.));
+  float sb=pvLine(seamX+(pvN(vec2(D*4.,5.))-.5)*.012,sw,e)*sOn*(1.-culK)*(1.-mouth);seal=max(seal,sb*(.6+.4*pvN(vec2(D*6.,9.))));}
  // -- transverse cracks: about one in three 7 m cells, wandering, most of them sealed
  {float cc=floor(D/7.);float hc=pvH1(cc*1.7+frame*3.);
   if(hc<.36*uPvTune.z){float dc=cc*7.+1.+pvH1(cc+.3)*5.;float l0=-4.4+pvH1(cc+.7)*3.,l1=l0+2.5+pvH1(cc+.9)*6.;
@@ -137,16 +137,17 @@ PvOut pvShade(vec3 base){PvOut o;
    float isSealed=step(.4,pvH1(cc+.11));
    crk=max(crk,pvLine(dd,.003+.002*pvN(vec2(lat*5.,cc)),e)*span*(1.-isSealed*.7));
    seal=max(seal,pvLine(dd,.05+.015*pvN(vec2(lat*2.,cc)),e)*span*isSealed*(.7+.3*pvN(vec2(lat*8.,cc))));}}
+ crk*=1.-smoothstep(.012,.05,e);
  // -- patches: a service cut from the curb in front of a house (one lot in four or five), the manholes' surrounds
  float pch=0.,pEdge=0.;
  {float pc=floor((D+11.)/29.);float hp=pvH1(pc*2.9+frame*5.);
   if(hp<.24){float dc=pc*29.-11.+4.+pvH1(pc+.4)*20.,ps=pvH1(pc+.8)<.5?-1.:1.;float len=.9+pvH1(pc+.2)*.5,reach=1.3+pvH1(pc+.6)*2.6;
    float hal=frame<.5?4.32:3.82;
    vec2 q=vec2(abs(D-dc)-len*.5,max(hal-reach-lat*ps,lat*ps-hal-1.));float sd=max(q.x,q.y);
-   if(lat*ps>0.){pch=max(pch,1.-pvStep(sd,e));pEdge=max(pEdge,pvLine(sd,.012,e));}}
+   sd+=(pvN(vec2(D*9.,lat*9.))-.5)*.006;if(lat*ps>0.){pch=max(pch,1.-pvStep(sd,e));pEdge=max(pEdge,pvLine(sd,.007,e)*(.6+.4*pvN(vec2(D*13.,lat*13.))));}}
   if(frame<.5&&d<1121.){float k=floor((d+390.+47.5)/95.),md=-390.+95.*k,mx=mod(abs(md)/95.,2.)>=1.?.8:-1.2;
    float rot=pvH1(k)*.5-.25;vec2 r=vec2(d-md,lat-mx);r=vec2(cos(rot)*r.x-sin(rot)*r.y,sin(rot)*r.x+cos(rot)*r.y);
-   vec2 q=abs(r)-vec2(.82);float sd=max(q.x,q.y);pch=max(pch,1.-pvStep(sd,e));pEdge=max(pEdge,pvLine(sd,.012,e));}}
+   vec2 q=abs(r)-vec2(.62);float sd=length(max(q,0.))+min(max(q.x,q.y),0.)-.14+(pvN(r*9.)-.5)*.008;pch=max(pch,1.-pvStep(sd,e));pEdge=max(pEdge,pvLine(sd,.007,e)*(.6+.4*pvN(r*13.)));}}
  // -- oil: where cars park along the curb (layout B), now and then in the lanes
  float oil=0.;
  {vec2 oc=floor(vec2(D/2.3,lat/1.1));float ho=pvH(oc+frame*13.);
@@ -163,17 +164,17 @@ PvOut pvShade(vec3 base){PvOut o;
  float expo=mix(1.,secExp,.5)*(1.+edgeK*.25)*(1.-wl*.18);
  alb=mix(vec3(1.),alb,expo);
  vec3 c=base*vec3(1.035,1.,.965)*alb*tone;
- c*=1.-wl*.075*uPvTune.z;
+ c*=1.-wl*.11*uPvTune.z;c*=1.-drip*.09*uPvTune.z;
  c=mix(c,c*vec3(1.08,1.06,1.0),edgeK*.55);                 // dust and sand at the edge
- c=mix(c,base*vec3(.92,.92,.9)*s.a,pch*.85);             // patch: younger binder, darker, finer
- c*=1.-pch*.12;
- c=mix(c,vec3(.032,.031,.03),seal*.9);                     // crack sealant (rubberized: near black)
+ c=mix(c,base*vec3(.9,.91,.92)*mix(vec3(1.),s.a,.8),pch*.9);// patch: younger binder, darker, finer, less oxidized
+ c*=1.-pch*.17;
+ c=mix(c,vec3(.045,.044,.042),seal*.85);                     // crack sealant (rubberized: near black)
  c=mix(c,c*.35,crk);
  c=mix(c,c*vec3(.55,.53,.5),oil*.55*uPvTune.z);
  c=mix(c,c*.42,lost);
- c*=1.-pEdge*.45;
+ c*=1.-pEdge*.22;
  float rough=clamp(mix(.88,.97,s.h.g)+edgeK*.03-wl*.06,.6,1.);
- rough=mix(rough,.82,pch);rough=mix(rough,.52,seal);rough=mix(rough,.68,oil*.6);
+ rough=mix(rough,.86,pch);rough=mix(rough,.82,seal);rough=mix(rough,.74,oil*.6);
  o.col=c;o.rough=rough;o.nm=s.n;o.nmStr=(1.+edgeK*.4)*(1.-seal*.8)*uPvTune.x;
  // sealant bands are slightly proud; the seam of a patch is a fine groove
  o.g=g;o.ao=(1.-crk*.6)*(1.-lost*.5)*(1.-pEdge*.4)*mix(1.,s.h.b,.6);
@@ -188,7 +189,7 @@ void pvJoint(float x,float w,float e,inout float dark,inout float gAlong,inout f
  ao*=1.-core*.75-(1.-smoothstep(0.,lip*1.4,abs(x)-w*.5))*.18;}
 #endif
 #if PV_KIND==1
-PvOut pvShade(vec3 base){PvOut o;// gutter pan: uv = (lateral, d); 0.38 m wide, at the curb face
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// gutter pan: uv = (lateral, d); 0.38 m wide, at the curb face
  vec2 p=vec2(vPvW.x,-vPvW.z);float lat=vPvUv.x,d=vPvUv.y,frame=floor(vPvD.w*.5+.01),side=lat>0.?1.:-1.;
  float cf=frame<.5?4.7:4.2,ec=cf-abs(lat);// distance from the curb face (0 .. .38)
  float e=max(1e-4,max(length(vec2(dFdx(d),dFdy(d))),length(vec2(dFdx(lat),dFdy(lat)))));
@@ -214,7 +215,7 @@ PvOut pvShade(vec3 base){PvOut o;// gutter pan: uv = (lateral, d); 0.38 m wide, 
    leafC=tint<.55?vec3(.30,.20,.09):tint<.8?vec3(.38,.30,.12):tint<.93?vec3(.17,.20,.07):vec3(.42,.17,.06);}}
  // tire scuffs where cars cross into a driveway
  float scuff=cut*smoothstep(.55,.8,pvF(vec2(D*2.,ec*6.)))*.6;
- vec3 c=base*vec3(.97,.975,1.)*mix(vec3(1.),s.a,.85);
+ vec3 c=base*vec3(.97,.975,1.)*mix(vec3(1.),s.a,.7);
  c*=.95+.09*(ph-.5)+.05*(pvF(p*.25)-.5);
  c=mix(c,c*vec3(.74,.70,.62),sed*.75);
  c=mix(c,c*vec3(.62,.62,.6),(1.-smoothstep(0.,.05,ec))*.5);  // the base of the curb, always a little dirty
@@ -226,7 +227,7 @@ PvOut pvShade(vec3 base){PvOut o;// gutter pan: uv = (lateral, d); 0.38 m wide, 
  return o;}
 #endif
 #if PV_KIND==2
-PvOut pvShade(vec3 base){PvOut o;// curb: uv = (profile offset 0 .. .3, along); pv.z = curb-cut factor (1 full height)
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// curb: uv = (profile offset 0 .. .3, along); pv.z = curb-cut factor (1 full height)
  float off=vPvUv.x,al=vPvUv.y,k=abs(vPvD.z),id=vPvD.w;float frame=floor(id*.5+.01);
  float e=max(1e-4,max(length(vec2(dFdx(al),dFdy(al))),length(vec2(dFdx(off),dFdy(off)))*4.));
  float A=al+id*517.;
@@ -242,7 +243,7 @@ PvOut pvShade(vec3 base){PvOut o;// curb: uv = (profile offset 0 .. .3, along); 
  float cutK=1.-smoothstep(.85,.99,k);
  float chip=smoothstep(.78,.93,pvF(vec2(A*7.,off*40.)+3.))*nose*(.5+cutK);
  float scuff=cutK*smoothstep(.45,.75,pvF(vec2(A*1.7,off*20.)))*(nose+face);
- vec3 c=base*vec3(.985,.985,1.)*mix(vec3(1.),alb,.8+nose*.25);
+ vec3 c=base*vec3(.985,.985,1.)*mix(vec3(1.),alb,.6+nose*.25);
  c*=.96+.08*(sh-.5);
  c=mix(c,c*1.06,nose*(.6+.4*cutK));
  c=mix(c,c*vec3(.70,.68,.62),face*(.35+.4*(1.-smoothstep(0.,.012,off))));// splash and grime up the face from the gutter
@@ -253,7 +254,7 @@ PvOut pvShade(vec3 base){PvOut o;// curb: uv = (profile offset 0 .. .3, along); 
  o.g=vec2(0.,gA);o.ao=ao*(1.-chip*.4)*mix(1.,hra.b,.5);return o;}
 #endif
 #if PV_KIND==3
-PvOut pvShade(vec3 base){PvOut o;// sidewalk: uv = (offset across 0 .. 1.5, along); pv.z = cut factor (driveway crossing)
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// sidewalk: uv = (offset across 0 .. 1.5, along); pv.z = cut factor (driveway crossing)
  vec2 p=vec2(vPvW.x,-vPvW.z);float x=vPvUv.x,al=vPvUv.y,k=abs(vPvD.z),id=vPvD.w;
  float e=max(1e-4,max(length(vec2(dFdx(al),dFdy(al))),length(vec2(dFdx(x),dFdy(x)))));
  float A=al+id*311.;
@@ -270,7 +271,8 @@ PvOut pvShade(vec3 base){PvOut o;// sidewalk: uv = (offset across 0 .. 1.5, alon
  // broom finish: fine striations across the walk (pulled across: they run along x), fading before they would shimmer
  float bf=1.-smoothstep(.0012,.004,e);
  float st=pvN(vec2(A*260.,x*3.+pi*7.))*.6+pvN(vec2(A*520.,x*6.))*.4;
- float broom=(st-.5)*bf*(1.-margin)*(fresh?1.25:1.-age*.45);
+ float sc=pvN(vec2(A*48.,x*1.3+pi*7.))*.7+pvN(vec2(A*95.,x*2.1+pi*3.))*.3;float bc=1.-smoothstep(.006,.02,e);
+ float broom=((st-.5)*bf+(sc-.5)*bc*.8)*(1.-margin)*(fresh?1.25:1.-age*.45);
  // joints: control joints every panel; an expansion joint (wider, dark filler) every ten
  float dark=0.,gA=0.,ao=1.;float jx=px<P*.5?px:px-P;
  bool expan=mod(floor(A/P+.5),10.)<.5;
@@ -291,20 +293,20 @@ PvOut pvShade(vec3 base){PvOut o;// sidewalk: uv = (offset across 0 .. 1.5, alon
  float grass=0.;{float gj=pvH1(pi*5.7+id);if(gj<.18&&ex<.25)grass=pvLine(jx,.012,e)*(1.-smoothstep(.06,.25,ex))*smoothstep(.45,.65,pvN(vec2(x*60.,pi)));}
  // where the walk crosses a driveway: tire wear and a darker, more trafficked surface
  float cutK=1.-smoothstep(.85,.99,k);
- vec3 c=base*mix(vec3(1.),s.a,fresh?.8:.92);
- c*=1.+(h1-.5)*.08*uPvTune.y-age*.035*uPvTune.y+(fresh?.06:0.);
+ vec3 c=base*mix(vec3(1.),s.a,fresh?.5:.62);
+ c*=1.+(h1-.5)*.06*uPvTune.y-age*.035*uPvTune.y+(fresh?.06:0.);
  c*=mix(vec3(1.),vec3(1.012,1.,.975),h2*2.-.5);
- c*=1.+broom*.07;c=mix(c,c*1.035,margin*.8);
+ c*=1.+broom*.09;c=mix(c,c*1.035,margin*.8);
  c=mix(c,c*vec3(.86,.78,.66),tannin*uPvTune.z);c=mix(c,c*.78,spot*uPvTune.z);
  c=mix(c,c*vec3(.8,.78,.72),cutK*(.35+.35*pvF(vec2(x*2.,A*.6))));
  c=mix(c,c*vec3(.72,.68,.6),soil);c=mix(c,vec3(.13,.18,.06),grass*.85);
  c=mix(c,c*.4,crk);c=mix(c,c*.38,dark);c=mix(c,c*1.25,riser);
  o.col=c;o.rough=clamp(mix(.82,.96,s.h.g)-margin*.07-cutK*.04+broom*.08,.6,1.);
- o.nm=s.n;o.nmStr=.8*uPvTune.x*(fresh?.85:1.)*(1.-margin*.35);
- o.g=vec2(0.,gA+broom*.6+tilt*1.);o.ao=ao*(1.-crk*.5)*(1.-soil*.25)*mix(1.,s.h.b,.55);return o;}
+ o.nm=s.n;o.nmStr=.6*uPvTune.x*(fresh?.85:1.)*(1.-margin*.35);
+ o.g=vec2(0.,gA+broom*.9+tilt*1.);o.ao=ao*(1.-crk*.5)*(1.-soil*.25)*mix(1.,s.h.b,.55);return o;}
 #endif
 #if PV_KIND==4
-PvOut pvShade(vec3 base){PvOut o;// driveway: uv = (across from its centre, from the curb face); pv.z = width; pv.w = id
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// driveway: uv = (across from its centre, from the curb face); pv.z = width; pv.w = id
  vec2 p=vec2(vPvW.x,-vPvW.z);float x=vPvUv.x,v=vPvUv.y,W=abs(vPvD.z),id=vPvD.w;
  float e=max(1e-4,max(length(vec2(dFdx(v),dFdy(v))),length(vec2(dFdx(x),dFdy(x)))));
  vec4 T=texture(uPvDrive,vec2((id+.5)/256.,.5));float cond=T.r,car=T.g,kids=T.b,sd=pvH1(id*1.7)*97.,vEnd=T.a*60.;
@@ -320,7 +322,8 @@ PvOut pvShade(vec3 base){PvOut o;// driveway: uv = (across from its centre, from
  float ex=W*.5-abs(x);float margin=1.-smoothstep(.05,.07,ex);
  // broom finish across the drive
  float bf=1.-smoothstep(.0012,.004,e);
- float broom=((pvN(vec2(v*240.,x*2.5+slab*3.))*.6+pvN(vec2(v*470.,x*5.))*.4)-.5)*bf*(1.-margin)*(1.-cond*.5);
+ float bcs=1.-smoothstep(.006,.02,e);
+ float broom=(((pvN(vec2(v*240.,x*2.5+slab*3.))*.6+pvN(vec2(v*470.,x*5.))*.4)-.5)*bf+((pvN(vec2(v*46.,x*1.2+slab*5.))*.7+pvN(vec2(v*90.,x*2.))*.3)-.5)*bcs*.8)*(1.-margin)*(1.-cond*.5);
  // tire tracks: one car centred, or two on a double drive; darker toward the garage where cars stop and turn
  float track=0.;{float tw=.2;for(int i=0;i<2;i++){float cx=W>4.5?(i==0?-1.4:1.4):0.;if(W<=4.5&&i>0)break;
    float t1=abs(x-cx-.78),t2=abs(x-cx+.78);track+=exp(-t1*t1/(tw*tw))+exp(-t2*t2/(tw*tw));}}
@@ -337,7 +340,7 @@ PvOut pvShade(vec3 base){PvOut o;// driveway: uv = (across from its centre, from
  vec3 chalk=vec3(0.);float ch=0.;
  if(kids>.5&&pvH1(id+4.)<.6){vec2 q=vec2(x,v-4.6);float blob=smoothstep(.62,.8,pvF(q*1.6+id))*(1.-smoothstep(1.,2.2,length(q*vec2(.9,.7))));
   float hue=pvH(floor(q*2.2+id));ch=blob*.22;chalk=hue<.33?vec3(.95,.62,.70):hue<.66?vec3(.62,.80,.95):vec3(.96,.88,.55);}
- vec3 c=pvLum(base,.72)*mix(vec3(1.),s.a,.9);
+ vec3 c=pvLum(base,.72)*mix(vec3(1.),s.a,.62);
  c*=1.+(sh-.5)*.07*uPvTune.y-cond*.05+(1.-cond)*.03;
  c*=1.+broom*.08;c=mix(c,c*1.03,margin);
  c=mix(c,c*vec3(.86,.84,.8),disc);
@@ -348,12 +351,31 @@ PvOut pvShade(vec3 base){PvOut o;// driveway: uv = (across from its centre, from
  o.col=c;o.rough=clamp(mix(.8,.95,s.h.g)-margin*.06-track*.05-oil*.15+broom*.06,.55,1.);
  o.nm=s.n;o.nmStr=.75*uPvTune.x*(1.-margin*.3);o.g=vec2(gX,gA+broom*.5);o.ao=ao*(1.-crk*.5)*mix(1.,s.h.b,.5);return o;}
 #endif
+#if PV_KIND==6
+PvOut pvShade(vec3 base){PvOut o;// a cast-iron manhole cover (the cylinder's cap: uv 0..1 across its diameter, 0.72 m)
+ vec2 q=(vPvUv-.5)*.72;float r=length(q);float e=max(1e-4,length(vec2(dFdx(r),dFdy(r)))*1.5);vec2 p=vec2(vPvW.x,-vPvW.z);
+ // raised parts: the rim, a ring, a waffle of bosses; recesses between
+ vec2 gq=q/.042;vec2 gc=fract(gq)-.5;float bx=max(abs(gc.x),abs(gc.y));
+ float inner=1.-smoothstep(.255,.262,r),rim=smoothstep(.296,.302,r),ring=pvLine(r-.278,.012,e);
+ float boss=(1.-smoothstep(.27,.33,bx))*inner;
+ float hole=0.;for(int i=0;i<2;i++){vec2 c=vec2(i==0?.19:-.19,0.);hole=max(hole,1.-smoothstep(.009,.013,length(q-c)));}
+ float raised=max(max(boss,rim),ring)*(1.-hole);
+ // worn: the tops polished by tires (lighter, metallic, smoother); rust and grit in the recesses
+ float rust=smoothstep(.45,.75,pvF(p*14.))*(1.-raised);
+ vec3 iron=vec3(.055,.052,.048),top=vec3(.13,.125,.115),rc=vec3(.16,.085,.04);
+ vec3 c=mix(iron,top,raised*.85);c=mix(c,rc,rust*.6);c=mix(c,vec3(.015),hole);
+ c*=.9+.2*pvF(p*6.);
+ // the height field's slope (the bosses' bevels): screen-space bump of a small height
+ float h=raised*.003-hole*.01;o.g=vec2(dFdx(h),dFdy(h))*0.;
+ o.col=c;o.rough=mix(.82,.42,raised*(1.-rust));o.metal=raised*.55;o.nm=vec3(0.,0.,1.);o.nmStr=0.;o.ao=1.-hole*.8-(1.-raised)*.2;
+ o.g=vec2(0.);return o;}
+#endif
 #if PV_KIND==5
-PvOut pvShade(vec3 base){PvOut o;// a house's front walk (uv = metres in the house frame: x across, y along)
+PvOut pvShade(vec3 base){PvOut o;o.metal=0.;// a house's front walk (uv = metres in the house frame: x across, y along)
  vec2 p=vec2(vPvW.x,-vPvW.z);float x=vPvUv.x,y=vPvUv.y;float e=max(1e-4,max(length(vec2(dFdx(y),dFdy(y))),length(vec2(dFdx(x),dFdy(x)))));
  PvS s=pvSample(uPvCoA,uPvCoN,uPvCoH,p,2.,.21);
  float dark=0.,gA=0.,ao=1.;float jx=y-floor(y/1.2+.5)*1.2;pvJoint(jx,.007,e,dark,gA,ao,.012);
- vec3 c=base*mix(vec3(1.),s.a,.9);c*=1.+(pvH1(floor(y/1.2))-.5)*.06;c=mix(c,c*.4,dark);
+ vec3 c=base*mix(vec3(1.),s.a,.62);c*=1.+(pvH1(floor(y/1.2))-.5)*.06;c=mix(c,c*.4,dark);
  o.col=c;o.rough=clamp(mix(.82,.96,s.h.g),.6,1.);o.nm=s.n;o.nmStr=.75*uPvTune.x;o.g=vec2(0.,gA);o.ao=ao*mix(1.,s.h.b,.5);return o;}
 #endif
 `;
@@ -378,7 +400,7 @@ export function pavementMaterial(m,kind){
    vec3 nm=pv.nm;nm.xy*=pv.nmStr;
    vec3 n=normalize(TW*nm);
    n=normalize(n-TS[0]*pv.g.x-TS[1]*pv.g.y);
-   normal=n;diffuseColor.rgb=uPvDebug>.5?pv.col*0.+vec3(dot(pv.col,vec3(.3333))):pv.col;roughnessFactor=pv.rough;pvAO=pv.ao;}
+   metalnessFactor=max(metalnessFactor,pv.metal);normal=n;diffuseColor.rgb=uPvDebug>.5?pv.col*0.+vec3(dot(pv.col,vec3(.3333))):pv.col;roughnessFactor=pv.rough;pvAO=pv.ao;}
   #include <emissivemap_fragment>`);
   f=f.replace('#include <aomap_fragment>','#include <aomap_fragment>\n reflectedLight.indirectDiffuse*=pvAO;reflectedLight.indirectSpecular*=pvAO;reflectedLight.directDiffuse*=mix(1.,pvAO,.45);');
   sh.fragmentShader=f;shaderHooks.add(kind);};
