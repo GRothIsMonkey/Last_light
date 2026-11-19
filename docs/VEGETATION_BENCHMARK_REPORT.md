@@ -273,7 +273,24 @@ map. (5) The lawn's first blades read as dark weeds: lighter blade palette, cros
 
 ## 9. Regression tests (Stage F)
 
-REGRESSION
+Every suite was run **alone** (one browser at a time) on the final files (the run of `tests/vegetation-browser.mjs` started at
+`7391152` with the carving fix already in the working tree — the files it tested are those committed in `7ff9ea1`; the others ran
+at `c310d4a`/`91ab87d`, whose game files are the same). Software WebGL throughout. Reports in `docs/qa/vegetation/regression/`.
+
+| Suite | Result | Accepted before | What it shows here |
+|---|---|---|---|
+| `node tests/vegetation-browser.mjs` (A–D) | **46 passed, 0 failed** (`browser/report.json`) | new | A: without `?vegetation` nothing of the benchmark is fetched, no `vg:` zones or records exist and the world is baked as accepted (379 shadow proxies; Node: identical geometry hash); B: the checks in §7, 17 same-frame pairs, the whole Prologue played to Chapter One with the flag on, no page errors; C: `?bikes&houses&vegetation` together; D: the `PLAYTEST_MODELS=1` package places the vegetation from embedded bytes with the browser offline (no request), and the default package fails loudly (label in red, procedural vegetation stays, nothing substituted) |
+| `QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs` | **818 passed** (`verify-quick.log`) | 818 | the gameplay, story and chapter state checks; the one difference is the already-known `2/alex-bike` DEV-switching difference, reported and not asserted, exactly as before this work |
+| world bake check (Node, vs `bc20441`) | **5/5** (`world-bake-check.json`) | — | default world: 2,197 batches, 3,672,619 triangles, 2,371,203 shadow triangles — identical to the accepted build; `?houses` regroups the same triangle set |
+| `node tests/house-browser.mjs` | **30 passed, 0 failed** (`regression-house-browser.json`) | 30 | the authored houses unchanged |
+| `SHOTS=0 node tests/bike-browser.mjs` | **29 passed, 0 failed** (`regression-bike-browser.json`) | 29 | the approved bikes unchanged |
+| `node tests/pipeline-browser.mjs` | **36 passed, 0 failed** (`regression-pipeline-browser.json`) | 36 | the Phase 0A pipeline (lab, game, offline packages) unchanged |
+| `node tests/main-menu-browser.mjs` on the complete default package (`PLAYTEST_MENU=1 PLAYTEST_CHAPTER=final`, opened from disk) | **96 passed, 0 failed** (`regression-main-menu-package.json`) | 96 | the title screen, menus and whole-game package unchanged; no JavaScript errors; no network requests |
+
+**Boundaries kept:** no story, dialogue, audio, music, main menu, sky/lighting, roads, bikes, houses, Chapter Eight destruction or
+Astra's character work was changed; nothing merged into `main`. The only edits outside the new files are the inert recording hooks
+(world.js, vegetation.js, houses.js, props.js, ambient.js's limb name), the flag in game.js, four registrations in
+asset-library.js and the four authors in the final credits roll.
 
 ## 10. Budgets: justified exceptions
 
@@ -323,3 +340,12 @@ REGRESSION
   `python tools/blender/vegetation/glb_pack.py dist/assets/veg/*.glb`; validate with `node tools/assets/validate-glb.mjs <glb> --profile veg`.
   Renders: `oak_render.py`, `street_render.py`, `shrub_render.py`, `scene_renders.py street grass`. Measurements:
   `python3 tools/blender/vegetation/veg_measure.py`. Browser checks: `node tests/vegetation-browser.mjs`.
+
+**Final runtime files** (the benchmark's; THIRD_PARTY_ASSETS.md lists them too):
+
+| File | | Bytes | SHA-256 |
+|---|---|---|---|
+| `dist/assets/veg/lm.old-oak.glb` | the old oak | 6,556,112 | `4a947c087d3e76dee74af8442c7e8755afda3812525bb916fe8897e579405154` |
+| `dist/assets/veg/veg.street-trees.glb` | 44 street trees | 16,693,312 | `134dde67bc4110fd3038f7893129c1ceab692e3132afab122e0a327e8c4db54d` |
+| `dist/assets/veg/veg.shrubs.glb` | 18 shrubs | 2,898,248 | `2e0baf6c09e19dfa1237b6484cfb061ca1feeecc140a6752b75a777c72e5555e` |
+| `dist/assets/veg/veg.ground.glb` | 13 ground plants | 725,212 | `48ea0331638e9cb3c90a0d18cab93a7071b3c74cfe68025e01232b2ed4102599` |
