@@ -486,7 +486,9 @@ function buildGarageInterior(W,P,g,rand,doorW,dh){const {K}=W,{gx,gw,gd,gh,gfron
 // Driveways and walks: bent at the curb and sidewalk, draped at the house -----------------------
 function buildDrive(W,P){
  const {K}=W,f=P.frame,cf=P.frameId==='main'?CF:JUNCTIONS[W.sideFrames.indexOf(f)].half,walk1=cf+3.15,s=P.side;
- const mat=W.surfaceMaterial(K.mat(0xb4ab95),'concrete');
+ // (?pavement: the driveway's own reconstructed concrete, and driveway-local coordinates on its vertices)
+ const PV=W.pavement||null,pvDrive=PV?(W.pvMats.drive||(W.pvMats.drive=PV.pavementMaterial(W.surfaceMaterial(new THREE.MeshStandardMaterial({color:0xb4ab95,roughness:.9}),'concrete'),'drive'))):null;
+ const mat=pvDrive||W.surfaceMaterial(K.mat(0xb4ab95),'concrete');
  const lengthLat=P.endLat,xa=P.drivX-P.drivW/2,xb=P.drivX+P.drivW/2;
  // Apron rises from the gutter to the walk; under the sidewalk it stays just below it; then it climbs to the garage slab.
  const profile=a=>a<cf+1.65?.035+(.152-.035)*smooth((a-cf+.08)/(1.65+.08)):a<=walk1?.152:SIDEWALK+.04*smooth((a-walk1)/Math.max(1,lengthLat-walk1));
@@ -500,6 +502,14 @@ function buildDrive(W,P){
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);
  // Face up whatever the side.
  {const p=geo.attributes.position,a=new THREE.Vector3().fromBufferAttribute(p,idx[0]),b=new THREE.Vector3().fromBufferAttribute(p,idx[1]),c=new THREE.Vector3().fromBufferAttribute(p,idx[2]);if(b.sub(a).cross(c.sub(a)).y<0){for(let i=0;i<idx.length;i+=3)[idx[i+1],idx[i+2]]=[idx[i+2],idx[i+1]];geo.setIndex(idx);}}
+ if(PV){// uv: across from the drive's centre line, out from the curb face (m); pv: the way in, the width (signed by handedness), id
+  const id=W.pv.drives.length,uv=[],pv=[];
+  for(const v of ts)for(const a of as){const x=xa+(xb-xa)*a,p0=place(x,v),p1=place(x,v+.1),p2=place(x+.1,v),fx=p1.x-p0.x,fz=p1.z-p0.z,fl=Math.hypot(fx,fz)||1,ax=p2.x-p0.x,az=p2.z-p0.z;
+   const hs=(ax*-(fz/fl)+az*(fx/fl))>=0?1:-1;uv.push(x-P.drivX,v-cf);pv.push(fx/fl,fz/fl,hs*P.drivW,id);}
+  PV.setPv(geo,uv,pv);
+  const hoop=(W.hoops||[]).some(h=>h.plan===P),kids=hoop||['jamie','sam','alex','hoop'].includes(P.key);
+  const r=P.seedC??.5,cond=P.key==='sam'||P.key==='jamie'?.45:r<.32?.08+r*.3:r<.8?.32+(r-.32)*.5:.72+(r-.8)*1.2;
+  W.pv.drives.push({id,plan:P,frameId:P.frameId,cond:Math.min(1,cond),car:false,kids,len:lengthLat-cf});P.pvDrive=id;}
  geo.computeVertexNormals();const mesh=new THREE.Mesh(geo,mat);mesh.name='driveway';W.baked.push(mesh);
  // Keep trees and toys off the driveway: register it in the placement space, a few meters at a time.
  for(let v=cf;v<lengthLat;v+=2.5){const c=place(P.drivX,Math.min(lengthLat,v+1.25));W.space.rect(c.x,c.z,P.drivW/2+.3,1.6,P.worldRot,'driveway');}
@@ -511,17 +521,22 @@ function buildDrive(W,P){
   if(sk.length){const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(sk,3));sg.computeVertexNormals();W.baked.push(new THREE.Mesh(sg,K.mat(0xa39a86)));}}
  // Control joints.
  for(let v=walk1+3.2;v<lengthLat-.6;v+=3.4){const a=place(xa+.05,v),b=place(xb-.05,v),ya=f.point(a.u,a.v).y+profile(Math.abs(a.v))+.004,yb=f.point(b.u,b.v).y+profile(Math.abs(b.v))+.004;
-  W.baked.push(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(a.x,ya,a.z),new THREE.Vector3(b.x,yb,b.z)]),new THREE.LineBasicMaterial({color:0x9d9585})));}
+  const jl=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(a.x,ya,a.z),new THREE.Vector3(b.x,yb,b.z)]),new THREE.LineBasicMaterial({color:0x9d9585}));if(PV)jl.userData.pvLine='drive-joint';W.baked.push(jl);}
  {const cut=W.cuts.find(c=>c.plan===P),drive={d:(cut.u0+cut.u1)/2,side:s,d0:cut.u0,d1:cut.u1,plan:P,contains:(d,lat)=>Math.sign(lat)===s&&Math.abs(lat)>=cf-.05&&Math.abs(lat)<=lengthLat+.2&&(Math.abs(lat)<walk1+.4?d>=cut.u0&&d<=cut.u1:cut.inside(d,lat)),y:(d,lat)=>profile(Math.abs(lat))};
   // Side-street drives are kept apart, in their own street's coordinates (u along, v across).
   if(P.frameId==='main')W.drives.push(drive);else (W.sideDrives||(W.sideDrives=[])).push({...drive,frameId:P.frameId});}
  // Walk from the steps: along the house to the driveway, and on some lots out to the sidewalk.
  const {K:k2}=W,g=P.g,zc=P.stepFront+.55,x0=P.doorX,x1=P.drivX-(P.drivX>P.doorX?1:-1)*P.drivW/2;
- yardOf(g,()=>k2.box(g,(x0+x1)/2,.1,zc,Math.abs(x1-x0)+1.1,.12,1.05,HOUSE.walk));
+ // (?pavement: the walks get the reconstructed concrete with metric coordinates along them)
+ const pvPath=(m,alongX)=>{if(!PV)return m;const sx=m.scale.x,sz=m.scale.z,geo=m.geometry.clone(),q=geo.attributes.position,uv=[],pv=[];
+  const o=P.toWorld(m.position.x,m.position.z),t=alongX?P.toWorld(m.position.x+1,m.position.z):P.toWorld(m.position.x,m.position.z-1),fx=t.x-o.x,fz=t.z-o.z,fl=Math.hypot(fx,fz)||1;
+  for(let i=0;i<q.count;i++){const X=q.getX(i)*sx,Z=q.getZ(i)*sz;uv.push(alongX?Z:X,alongX?X:-Z);pv.push(fx/fl,fz/fl,1,0);}PV.setPv(geo,uv,pv);m.geometry=geo;
+  m.material=W.pvMats.path||(W.pvMats.path=PV.pavementMaterial(W.surfaceMaterial(new THREE.MeshStandardMaterial({color:HOUSE.walk,roughness:.9}),'concrete'),'path'));return m;};
+ yardOf(g,()=>pvPath(k2.box(g,(x0+x1)/2,.1,zc,Math.abs(x1-x0)+1.1,.12,1.05,HOUSE.walk),true));
  {const c=P.toWorld((x0+x1)/2,zc);W.space.rect(c.x,c.z,Math.abs(x1-x0)/2+.8,.8,P.worldRot,'walk');}
  if(P.leadWalk&&!P.key){const c=P.toWorld(x0,(P.stepFront+P.setback-walk1)/2);W.space.rect(c.x,c.z,.8,(P.setback-walk1-P.stepFront)/2+.3,P.worldRot,'walk');}
  P.localPads.push({x0:Math.min(x0,x1)-.55,x1:Math.max(x0,x1)+.55,z0:zc-.52,z1:zc+.52,y:.16});
- if(P.leadWalk&&!P.key){const zs=P.stepFront+.1,ze=P.setback-walk1+.1;yardOf(g,()=>k2.box(g,x0,.1,(zs+ze)/2,1.05,.12,Math.max(.5,ze-zs),HOUSE.walk));}
+ if(P.leadWalk&&!P.key){const zs=P.stepFront+.1,ze=P.setback-walk1+.1;yardOf(g,()=>pvPath(k2.box(g,x0,.1,(zs+ze)/2,1.05,.12,Math.max(.5,ze-zs),HOUSE.walk),false));}
 }
 
 // Doors and garage doors that open --------------------------------------------------------------

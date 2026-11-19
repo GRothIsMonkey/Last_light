@@ -52,6 +52,7 @@ export function createVegetation(W){
   g.traverse(m=>{if(m.isMesh||m.isLine)m.userData.zone=zone;});R.trees.push({i,x:g.position.x,y:g.position.y,z:g.position.z,rot:g.rotation.y,kind:o.kind||'maple',size:o.size??1,lod:o.lod||'full',natural:!!o.natural,landmark:!!o.landmark,trunk:t.trunk,crown:t.crown,phase:W.vegPhase,...extra});};
  function tree(frame,u,v,y,opts={}){const p=frame.point(u,v),rand=seeded(hashSeed(3,u,v)),r=opts.clearance??1.2*(opts.size??1);
   if(!opts.force&&!W.space.free(p.x,p.z,r))return null;const g=W.place(frame,u,v,{y,rot:rand()*6,far:opts.lod==='far'});const t=build(g,rand,opts);W.space.circle(p.x,p.z,Math.max(.4,t.trunk+.25),'tree');record(g,t,opts,{frame:frame.id||'side',u,v});
+  if(W.pv&&(frame.id==='main'||frame.junction)&&Math.abs(v)<17&&opts.lod!=='far'){const f=frame.id==='main'?0:2+2*W.sideFrames.indexOf(frame);W.pv.trees.push({row:f+(v>0?1:0),d:u,r:5+4*(opts.size??1),w:Math.min(1,(opts.size??1)*(1.25-Math.max(0,Math.abs(v)-9)/12))});}
   if(frame===W.MAIN)W.obstacles.push({d0:u-t.trunk-.2,d1:u+t.trunk+.2,l0:v-t.trunk-.2,l1:v+t.trunk+.2});return g;}
  function treeWorld(x,z,y,opts={}){const rand=seeded(hashSeed(4,x,z)),r=opts.clearance??1.2*(opts.size??1);if(!opts.force&&!W.space.free(x,z,r))return null;
   const g=W.placeWorld(x,z,y,rand()*6,true);const t=build(g,rand,{lod:'far',...opts});W.space.circle(x,z,Math.max(.4,t.trunk+.3),'tree');record(g,t,{lod:'far',...opts},{frame:'world'});return g;}

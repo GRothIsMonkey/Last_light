@@ -83,8 +83,13 @@ const HOUSES_FLAG=typeof location!=='undefined'&&/[?&]houses\b/.test(location.se
 // batches of their own (world.js opts.vegetation) so the authored vegetation can stand in their places (K brings the
 // procedural set back). Without ?vegetation the world is built exactly as always.
 const VEGETATION_FLAG=typeof location!=='undefined'&&/[?&]vegetation\b/.test(location.search||'');
-const worldOpts={...(HOUSES_FLAG?{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}:{}),...(VEGETATION_FLAG?{vegetation:true}:{})};
-const world=(HOUSES_FLAG||VEGETATION_FLAG)?buildWorld(scene,worldOpts):buildWorld(scene);
+// DEV pavement benchmark (?pavement): the street surfaces are built with the reconstructed pavement materials of
+// pavement-surfaces.js (loaded only with the flag) and carry their street coordinates; O swaps them with the original
+// surfaces in the same frame. The Prologue only: past it the original surfaces show. Without ?pavement nothing changes.
+const PAVEMENT_FLAG=typeof location!=='undefined'&&/[?&]pavement\b/.test(location.search||'');
+const pavementKit=PAVEMENT_FLAG?await import('./pavement-surfaces.js').catch(e=>{console.error('pavement benchmark failed:',e);return null;}):null;
+const worldOpts={...(HOUSES_FLAG?{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}:{}),...(VEGETATION_FLAG?{vegetation:true}:{}),...(pavementKit?{pavement:pavementKit}:{})};
+const world=(HOUSES_FLAG||VEGETATION_FLAG||pavementKit)?buildWorld(scene,worldOpts):buildWorld(scene);
 // Added after the neighborhood is bent and merged, so the sky stays a sky.
 scene.add(sky);const {road,originals,groundY}=world;// road and originals are read by tests/verify.mjs.
 const _v=new THREE.Vector3(),_q=new THREE.Quaternion(),_e=new THREE.Euler();
@@ -866,6 +871,11 @@ if(HOUSES_FLAG)import('./house-benchmark.js').then(m=>m.mountInGame({scene,camer
 // Prologue vegetation benchmark (DEV only): ?vegetation stands the authored Blender vegetation (the old oak, street trees,
 // shrubs, lawn grass, the lookout meadow) in place of the procedural vegetation (vegetation-benchmark.js); K swaps them in
 // the same frame. Without ?vegetation nothing is loaded.
+// Prologue pavement benchmark (DEV only): ?pavement mounts the reconstructed roads, gutters, curbs, sidewalks and driveways
+// (pavement-benchmark.js); O swaps them with the original surfaces in the same frame. Past the Prologue (the night
+// chapters, the credits, the 2026 coda) the original surfaces show, so nothing of Chapter Eight's damage is touched.
+let pavementPast=false;const pavementPrologue=()=>{const s=state==='paused'?resumeState:state;if(s==='intro')pavementPast=false;if(s.startsWith('c1-')||s==='credits'||coda?.active)pavementPast=true;return !pavementPast;};
+if(pavementKit)import('./pavement-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,kit:pavementKit,prologue:pavementPrologue})).catch(e=>console.error('pavement benchmark failed:',e));
 if(VEGETATION_FLAG)import('./vegetation-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,sun:sunlight,ambient})).catch(e=>console.error('vegetation benchmark failed:',e));
 if(typeof location!=='undefined'&&/[?&]pipeline\b/.test(location.search||''))import('./pipeline-lab.js').then(m=>m.mountInGame({scene,camera,renderer,groundY:(x,z)=>nav.groundY(x,z)})).catch(e=>console.error('pipeline probe failed:',e));
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.

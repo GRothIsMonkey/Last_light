@@ -20,24 +20,45 @@ const uniq=a=>[...new Set(a.map(v=>+v.toFixed(3)))].sort((x,y)=>x-y);
 
 export function buildStreets(W){
  const {K}=W,mat=K.mat,main=W.bent(MAIN);
- const asphalt=W.asphalt=surfaceMaterial(mat(STREET.asphalt,{roughness:1}),'asphalt');
+ // ?pavement (W.pavement: the pavement-surfaces.js module): the same surfaces as their own materials, each with its ORIGINAL
+ // treatment (roadwear / concrete) wrapped by the reconstructed one, and street coordinates on every vertex (uv, pv).
+ const PV=W.pavement||null,own=(c,o={})=>new THREE.MeshStandardMaterial({color:c,roughness:.9,...o});
+ const asphalt=W.asphalt=PV?PV.pavementMaterial(surfaceMaterial(own(STREET.asphalt,{roughness:1}),'asphalt'),'asphalt'):surfaceMaterial(mat(STREET.asphalt,{roughness:1}),'asphalt');
  const grass=W.grassMat=mat(STREET.grass);
- const concrete=W.concrete=surfaceMaterial(mat(STREET.concrete),'concrete'),curbC=surfaceMaterial(mat(STREET.curb),'concrete');
- const gutterC=surfaceMaterial(mat(STREET.gutter),'concrete');
+ const concrete=W.concrete=PV?PV.pavementMaterial(surfaceMaterial(own(STREET.concrete),'concrete'),'walk'):surfaceMaterial(mat(STREET.concrete),'concrete'),curbC=PV?PV.pavementMaterial(surfaceMaterial(own(STREET.curb),'concrete'),'curb'):surfaceMaterial(mat(STREET.curb),'concrete');
+ const gutterC=PV?PV.pavementMaterial(surfaceMaterial(own(STREET.gutter),'concrete'),'gutter'):surfaceMaterial(mat(STREET.gutter),'concrete');
+ if(PV)W.pvMats={asphalt,walk:concrete,curb:curbC,gutter:gutterC,joint:Object.assign(own(0x726d61,{roughness:1}),{userData:{keep:true,pvToggle:'original'}})};
+ // street coordinates for a pavement mesh: which frame a bent group follows, its row base (main 0, Briarwood 2, Summerfield 4)
+ const frameOf=g=>W.layers.find(l=>l.group===g)?.frame||MAIN,rowOf=f=>f===MAIN?0:2+2*W.sideFrames.indexOf(f);
+ const fwd=(f,u)=>{const h=f.heading(u);return [Math.sin(h),-Math.cos(h)];};
  const lawnTop=mat(STREET.grass,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});W.lawnTop=lawnTop;
  W.grassMats=[grass,lawnTop];
 
  function grid(parent,xs,ds,y,material,skip,name=null){const p=[],idx=[],nx=xs.length;
   for(const d of ds)for(const x of xs)p.push(x,typeof y==='function'?y(d,x):y,-d);
   for(let j=0;j<ds.length-1;j++)for(let i=0;i<nx-1;i++){if(skip&&skip((xs[i]+xs[i+1])/2,(ds[j]+ds[j+1])/2,xs[i],xs[i+1],ds[j],ds[j+1]))continue;const a=j*nx+i,b=a+1,c=a+nx;idx.push(a,b,c,b,c+1,c);}
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(idx);const m=new THREE.Mesh(g,material);if(name)m.name=name;parent.add(m);return m;}
- function sweep(parent,pts,profile,material,{side=1,closed=false,heightScale=null,name=null}={}){const m=new THREE.Mesh(sweepGeometry(pts,pathNormals(pts,closed),profile,{closed,heightScale,side}),material);if(name)m.name=name;parent.add(m);return m;}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(idx);
+  if(material.userData.pvUv){const f=frameOf(parent),row=rowOf(f),uv=[],pv=[];for(const d of ds){const [fx,fz]=fwd(f,d);for(const x of xs){uv.push(x,d);pv.push(fx,fz,1,row);}}PV.setPv(g,uv,pv);}
+  const m=new THREE.Mesh(g,material);if(name)m.name=name;parent.add(m);return m;}
+ // (?pavement) a sweep's surface coordinates: across = the profile offset, along = u on straight runs or the arc length
+ // round curves (from alongBase); the along direction in the world, which way the offsets run, the curb-cut factor; id
+ function sweepPv(parent,geo,pts,profile,{closed=false,heightScale=null,side=1,along=null,id=0,uvOff=0}={}){
+  const f=frameOf(parent),nrm=pathNormals(pts,closed),uv=[],pv=[];let acc=along??0;
+  for(let i=0;i<pts.length;i++){if(i>0&&along!==null)acc+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);
+   const [u,v]=pts[i],a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],du=b[0]-a[0],dv=b[1]-a[1],L=Math.hypot(du,dv)||1;
+   const [fx,fz]=fwd(f,u),rx=-fz,rz=fx,tx=fx*du/L+rx*dv/L,tz=fz*du/L+rz*dv/L;// tangent in the world
+   const ox=(fx*nrm[i][0]+rx*nrm[i][1])*side,oz=(fz*nrm[i][0]+rz*nrm[i][1])*side;// +offset direction in the world
+   const hs=(ox*-tz+oz*tx)>=0?1:-1,k=heightScale?heightScale(i,u,v):1;
+   for(const [o] of profile){uv.push(o-uvOff,along===null?u:acc);pv.push(tx,tz,hs*Math.max(.01,k),id);}}
+  PV.setPv(geo,uv,pv);}
+ function sweep(parent,pts,profile,material,{side=1,closed=false,heightScale=null,name=null,along=null,id=0,uvOff=0}={}){const geo=sweepGeometry(pts,pathNormals(pts,closed),profile,{closed,heightScale,side});if(material.userData.pvUv)sweepPv(parent,geo,pts,profile,{closed,heightScale,side,along,id,uvOff});const m=new THREE.Mesh(geo,material);if(name)m.name=name;parent.add(m);return m;}
  // Choose the sweep side so profile offsets run toward (sign=1) or away from (sign=-1) a point.
  function sideToward(pts,[tu,tv],sign=1){const n=pathNormals(pts),i=pts.length>>1;return Math.sign(((tu-pts[i][0])*n[i][0]+(tv-pts[i][1])*n[i][1])*sign)||1;}
  function fan(parent,center,ring,y,material){const p=[center[1],y(...center),-center[0]],idx=[];for(const q of ring)p.push(q[1],y(...q),-q[0]);
   for(let k=0;k<ring.length-1;k++)idx.push(0,k+1,k+2);const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(idx);
   // Face up regardless of the ring's direction.
   const a=ring[0],b=ring[1];if((a[1]-center[1])*(-(b[0]-center[0]))-(-(a[0]-center[0]))*(b[1]-center[1])>0)g.setIndex(idx.map((v,i)=>i%3===1?idx[i+1]:i%3===2?idx[i-1]:v));
+  if(material.userData.pvUv){const uv=[],pv=[];for(const q of [center,...ring]){const [fx,fz]=fwd(MAIN,q[0]);uv.push(q[1],q[0]);pv.push(fx,fz,1,0);}PV.setPv(g,uv,pv);}
   const m=new THREE.Mesh(g,material);parent.add(m);return m;}
 
  // Driveway curb cuts, per frame and side: [{u0,u1}]
@@ -47,11 +68,12 @@ export function buildStreets(W){
  // Curb, gutter pan, sidewalk and joints along one side of a straight street run.
  function edgeRun(parent,side,cf,u0,u1,cuts,roadY){
   const us=edgeSamples(u0,u1,cuts),k=(i,u)=>cutK(cuts,u);
-  sweep(parent,us.map(u=>[u,side*cf]),CURB.map(([o,h])=>[o,(i,uu,vv,kk)=>cutProfile(h,kk)]),curbC,{side:-side,heightScale:k});
+  const rid=rowOf(frameOf(parent))+(side>0?1:0);
+  sweep(parent,us.map(u=>[u,side*cf]),CURB.map(([o,h])=>[o,(i,uu,vv,kk)=>cutProfile(h,kk)]),curbC,{side:-side,heightScale:k,id:rid});
   const walk=[[0,(i,u,v,kk)=>kk<.99?SIDEWALK:.10],[.04,SIDEWALK],[1.46,SIDEWALK],[1.5,(i,u,v,kk)=>kk<.99?SIDEWALK:.10]];
-  sweep(parent,us.map(u=>[u,side*(cf+XS.strip)]),walk.map(([o,h])=>[o,typeof h==='function'?h:()=>h]),concrete,{side:-side,heightScale:k});
+  sweep(parent,us.map(u=>[u,side*(cf+XS.strip)]),walk.map(([o,h])=>[o,typeof h==='function'?h:()=>h]),concrete,{side:-side,heightScale:k,id:rid});
   grid(parent,side>0?[cf-.38,cf]:[-cf,-cf+.38],range(u0,u1,1),(d,x)=>roadY(d,x),gutterC);
-  for(let u=Math.ceil(u0/1.52)*1.52;u<u1;u+=1.52){const joint=K.box(parent,side*(cf+(XS.strip+XS.walk)/2),SIDEWALK+.002,-u,XS.walk-XS.strip-.04,.003,.014,K.mat(0x726d61,{roughness:1}));joint.name='sidewalk-joint';}
+  for(let u=Math.ceil(u0/1.52)*1.52;u<u1;u+=1.52){const joint=K.box(parent,side*(cf+(XS.strip+XS.walk)/2),SIDEWALK+.002,-u,XS.walk-XS.strip-.04,.003,.014,PV?W.pvMats.joint:K.mat(0x726d61,{roughness:1}));joint.name='sidewalk-joint';}
  }
 
  // Main road ------------------------------------------------------------------------
@@ -60,6 +82,8 @@ export function buildStreets(W){
  // Junction mouths interrupt the main edges; corners are arcs.
  const J=JUNCTIONS.map((j,i)=>({...j,frame:W.sideFrames[i],R:j.corner,mouth:j.half+j.corner}));
  W.junctions=J;
+ if(PV){for(const j of J)W.pv.mouths.push({row:j.side>0?1:0,d0:j.d-j.mouth,d1:j.d+j.mouth});
+  for(const c of W.cuts){const f=c.frame==='main'?MAIN:W.sideFrames.find(x=>x.id===c.frame);if(!f)continue;W.pv.cuts.push({row:rowOf(f)+(c.side>0?1:0),u0:c.u0,u1:c.u1});}}
  for(const side of [-1,1]){
   const breaks=J.filter(j=>j.side===side).map(j=>[j.d-j.mouth,j.d+j.mouth]).sort((a,b)=>a[0]-b[0]);
   let u=ROAD_START;const runs=[];for(const [a,b] of breaks){runs.push([u,a]);u=b;}runs.push([u,culStart]);
@@ -85,10 +109,10 @@ export function buildStreets(W){
  {const ring=outline.filter(([u])=>u>=roadEndD);const closing=range(-CF,CF,1.175).map(v=>[roadEndD,v]);
   fan(main,[B.d,0],[...ring,...closing,ring[0]],(d,lat)=>roadCrown(d,lat),asphalt).name='cul-de-sac';}
  const outward=-sideToward(outline,[B.d,0]);// profile offsets away from the bulb center
- sweep(main,outline,CURB,curbC,{side:outward});
+ sweep(main,outline,CURB,curbC,{side:outward,along:0,id:7});
  const culWalkY=(u,v)=>u>1150?Math.max(SIDEWALK,knoll(u,v)+.04):SIDEWALK;
  const lawnY=(u,v)=>u>1150?Math.max(LAWN,knoll(u,v)):LAWN;
- sweep(main,outline,[[XS.strip,(i,u,v)=>culWalkY(u,v)-.05],[XS.strip+.02,(i,u,v)=>culWalkY(u,v)-.008],[XS.strip+.05,(i,u,v)=>culWalkY(u,v)],[XS.walk-.05,(i,u,v)=>culWalkY(u,v)],[XS.walk-.02,(i,u,v)=>culWalkY(u,v)-.008],[XS.walk,(i,u,v)=>culWalkY(u,v)-.05]],concrete,{side:outward,name:'lookout-walk'});
+ sweep(main,outline,[[XS.strip,(i,u,v)=>culWalkY(u,v)-.05],[XS.strip+.02,(i,u,v)=>culWalkY(u,v)-.008],[XS.strip+.05,(i,u,v)=>culWalkY(u,v)],[XS.walk-.05,(i,u,v)=>culWalkY(u,v)],[XS.walk-.02,(i,u,v)=>culWalkY(u,v)-.008],[XS.walk,(i,u,v)=>culWalkY(u,v)-.05]],concrete,{side:outward,name:'lookout-walk',along:0,id:7,uvOff:XS.strip});
  sweep(main,outline,[[XS.curb-.01,(i,u,v)=>lawnY(u,v)+.003],[XS.strip+.01,(i,u,v)=>lawnY(u,v)+.003]],lawnTop,{side:outward});
  // Grid lawns near curved curbs: drop a cell if it reaches the curb or lies wholly under the sidewalk.
  const culSkip=(xa,xb,da,db)=>{if(db<=culStart)return false;const c=[culDist(da,xa),culDist(da,xb),culDist(db,xa),culDist(db,xb)];return Math.min(...c)<XS.curb+.02||Math.max(...c)<XS.walk-.05;};
@@ -116,9 +140,10 @@ export function buildStreets(W){
   for(const sg of [-1,1]){const C=[j.d+sg*(h+R),s*(CF+R)],arc=[];for(let k=0;k<=16;k++){const t=k/16*Math.PI/2;arc.push([C[0]-sg*R*Math.sin(t),C[1]-s*R*Math.cos(t)]);}
    const Q=[j.d+sg*h,s*CF];fan(main,Q,arc,(d,lat)=>.025,asphalt).name='corner';
    const toward=sideToward(arc,C);
-   sweep(main,arc,CURB,curbC,{side:toward});
+   const cid=8+2*J.indexOf(j)+(sg>0?1:0);
+   sweep(main,arc,CURB,curbC,{side:toward,along:0,id:cid});
    sweep(main,arc,[[XS.curb-.01,LAWN],[XS.strip+.01,LAWN]],grass,{side:toward});
-   sweep(main,arc,[[XS.strip,.10],[XS.strip+.02,.15],[XS.strip+.05,SIDEWALK],[XS.walk-.05,SIDEWALK],[XS.walk-.02,.15],[XS.walk,.10]],concrete,{side:toward});
+   sweep(main,arc,[[XS.strip,.10],[XS.strip+.02,.15],[XS.strip+.05,SIDEWALK],[XS.walk-.05,SIDEWALK],[XS.walk-.02,.15],[XS.walk,.10]],concrete,{side:toward,along:0,id:cid,uvOff:XS.strip});
    sweep(main,arc,[[XS.walk-.01,LAWN+.004],[R*.5,LAWN+.004],[R-.02,LAWN+.004]],lawnTop,{side:toward});
   }
   // Side street, in its own frame (u from the main curb line outward).

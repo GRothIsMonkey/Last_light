@@ -136,7 +136,7 @@ export function buildYards(W){
    // A car in the driveway, nose to the garage or backed in.
    const zc=Math.min(3.1,h.endLat-2.45-8.4);// the bumper stays behind the sidewalk
    if(!friend&&h.hasGarage&&rand()<.52&&zc>1.2){const c=h.S(h.drivX,h.drivEnd+zc),q=W.drives.find(v=>v.contains(c.d,c.lat)),y=groundPoint(c.d,c.lat).y+(q?q.y(c.d,c.lat):.17);
-    const cg=atHouse(h,h.drivX,h.drivEnd+zc,y,rand()<.3?Math.PI:0);makeCar(K,cg,pick(carKinds),pick(CAR.colors));hook('parked-car',cg);}
+    const cg=atHouse(h,h.drivX,h.drivEnd+zc,y,rand()<.3?Math.PI:0);makeCar(K,cg,pick(carKinds),pick(CAR.colors));hook('parked-car',cg);if(W.pv&&h.pvDrive!==undefined)W.pv.drives[h.pvDrive].car=true;}
    // Front-yard trees on open lawn.
    for(let k=0;k<2;k++){const tl=s*(9.6+rand()*2.6),td=h.u+(rand()<.5?-1:1)*(3.5+rand()*9);if(!friend&&free(td,tl,2.2))veg.tree(MAIN,td,tl,ground(td,tl),{size:.72+rand()*.42,kind:rand()<.18?'young':rand()<.12?'pine':rand()<.18?'birch':'maple',clearance:2.2});}
    // Back-yard trees and things (seen between houses).
@@ -157,7 +157,7 @@ export function buildYards(W){
   // Parked nose-in near the garage, never over the sidewalk (these lots are shallower).
   const zc=Math.min(3.1,h.setback-h.drivEnd-2.45-(j.half+3.15+.45));
   // Alex's driveway stays empty: his dad is out driving the streets, looking.
-  if(h.hasGarage&&rand()<.5&&zc>1.2&&!h.far&&h.key!=='alex'){const w=h.toWorld(h.drivX,h.drivEnd+zc);makeCar(K,atHouse(h,h.drivX,h.drivEnd+zc,w.ground+.19,0),pickFrom(rand)(carKinds),pickFrom(rand)(CAR.colors));}
+  if(h.hasGarage&&rand()<.5&&zc>1.2&&!h.far&&h.key!=='alex'){if(W.pv&&h.pvDrive!==undefined)W.pv.drives[h.pvDrive].car=true;const w=h.toWorld(h.drivX,h.drivEnd+zc);makeCar(K,atHouse(h,h.drivX,h.drivEnd+zc,w.ground+.19,0),pickFrom(rand)(carKinds),pickFrom(rand)(CAR.colors));}
   const tl=h.far&&h.u>175?'far':h.lod==='full'?'full':'mid';for(let k=0;k<2;k++){const u=h.u+(rand()<.5?-1:1)*(4+rand()*8),v=s*(j.half+5+rand()*3);veg.tree(f,u,v,gy(u,v),{size:.8+rand()*.4,kind:rand()<.2?'pine':'maple',lod:tl,clearance:2.2});}
   const bu=h.u+(rand()-.5)*8,bv=s*(h.setback+h.depth/2+5);veg.tree(f,bu,bv,gy(bu,bv),{size:1+rand()*.4,lod:h.far&&h.u>175?'far':'mid',clearance:2.4});}
   // A parked car at the curb, a lamp, lamps down the street.

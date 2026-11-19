@@ -122,15 +122,18 @@ export function buildFurniture(W){
   for(const s of [-1,1])K.cyl(g,s*.16,.46,0,.05,.12,c,8,[0,0,Math.PI/2]);K.cyl(g,0,.46,.16,.065,.12,c,8,[Math.PI/2,0,0]);K.cyl(g,0,.46,.23,.08,.03,0x8a7a2a,8,[Math.PI/2,0,0]);
   const p=MAIN.point(u,v);W.space.circle(p.x,p.z,.4,'hydrant');}
  for(let d=ROAD_START+60;d<1095;d+=95){const side=(d/95|0)%2?1:-1;let u=d;for(let k=0;k<6&&(onCut('main',side,u,2)||inMouth(u,side,4));k++)u+=4;
+  if(W.pv)W.pv.inlets.push({row:side>0?1:0,d:u});
   K.box(mainG,side*(CF+.005),.07,-u,.03,.07,.9,0x2a2a2a);const gr=K.box(mainG,side*(CF-.22),.028,-u,.4,.012,.85,0x3a3a38);gr.material=K.mat(0x3a3a38,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
   for(let k=0;k<5;k++)K.box(mainG,side*(CF-.22),.034,-u-.34+k*.17,.36,.012,.03,0x2a2a28);}
  // Manholes, patches and cracks in the asphalt.
  const manhole=K.mat(0x4b4a47,{polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
- for(let d=ROAD_START+40;d<1120;d+=95){const m=new THREE.Mesh(new THREE.CylinderGeometry(.36,.36,.02,16),manhole);m.position.set(((Math.abs(d)/95|0)%2?.8:-1.2),roadCrown(d,1)-.004,-d);mainG.add(m);}
+ for(let d=ROAD_START+40;d<1120;d+=95){const m=new THREE.Mesh(new THREE.CylinderGeometry(.36,.36,.02,16),manhole);m.position.set(((Math.abs(d)/95|0)%2?.8:-1.2),roadCrown(d,1)-.004,-d);mainG.add(m);if(W.pv)W.pv.manholes.push({d,lat:m.position.x});}
  // Patches share the asphalt's grain, a shade darker; none right where the ride starts.
- const patch=W.surfaceMaterial(K.mat(STREET.patch,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),'asphalt');
+ // (?pavement: the old decal patches and crack lines are kept apart, shown only as the ORIGINAL in the comparison; the
+ // reconstructed asphalt has its patches and cracks in the surface itself)
+ const patch=W.pavement?Object.assign(W.surfaceMaterial(new THREE.MeshStandardMaterial({color:STREET.patch,roughness:.9,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),'asphalt'),{}):W.surfaceMaterial(K.mat(STREET.patch,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}),'asphalt');if(W.pavement){patch.userData.keep=true;patch.userData.pvToggle='original';}
  for(let k=0;k<30;k++){const d=ROAD_START+W.rand()*(1100-ROAD_START),x=(W.rand()-.5)*6,w=.8+W.rand()*1.6,l=1.2+W.rand()*2.6;if(d>-14&&d<30)continue;
   const p=[],idx=[];for(const dd of [d,d+l/2,d+l])for(const xx of [x-w/2,x+w/2])p.push(xx,roadCrown(dd,xx)+.002,-dd);idx.push(0,1,2,1,3,2,2,3,4,3,5,4);const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setIndex(idx);mainG.add(new THREE.Mesh(g,patch));}
- for(let k=0;k<44;k++){const d=ROAD_START+W.rand()*(1110-ROAD_START),x=(W.rand()-.5)*8,pts=[];let px=x,pd=d;for(let j=0;j<5;j++){pts.push([px,roadCrown(pd,px)+.006,-pd]);px+=(W.rand()-.5)*.5;pd+=.3+W.rand()*.5;}K.line(mainG,pts,0x51504c);}
+ for(let k=0;k<44;k++){const d=ROAD_START+W.rand()*(1110-ROAD_START),x=(W.rand()-.5)*8,pts=[];let px=x,pd=d;for(let j=0;j<5;j++){pts.push([px,roadCrown(pd,px)+.006,-pd]);px+=(W.rand()-.5)*.5;pd+=.3+W.rand()*.5;}const cl=K.line(mainG,pts,0x51504c);if(W.pavement)cl.userData.pvLine='crack';}
  W.poles=poles;
 }

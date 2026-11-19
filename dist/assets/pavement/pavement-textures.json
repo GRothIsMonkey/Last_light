@@ -1,0 +1,72 @@
+{
+ "tool": "tools/materials/roads/build_pavement_textures.py",
+ "size": 1024,
+ "materials": {
+  "asphalt": {
+   "source": "asphalt_07",
+   "license": "CC0 1.0 (Poly Haven)",
+   "params": {
+    "src": "asphalt_07",
+    "meters": 2.5,
+    "chroma": 0.3,
+    "highpass": 0.32,
+    "contrast": 1.0
+   },
+   "stats": {
+    "albedo_p01": 0.6095972860788921,
+    "albedo_p99": 2.065472562465247,
+    "rough_mean": 0.9127393222764226,
+    "meters": 2.5,
+    "px_per_m": 409.6,
+    "size": 1024
+   },
+   "files": {
+    "dist/assets/pavement/pv.asphalt.albedo.jpg": {
+     "sha256": "6869411d0b36d52fe3a97084d963dc7065051369607d4a8139eddde69ba9b43c",
+     "bytes": 805820
+    },
+    "dist/assets/pavement/pv.asphalt.normal.jpg": {
+     "sha256": "3d1c1291b4723e660ae84389c492d2522618d991aa4564106f013cbeb424daba",
+     "bytes": 979509
+    },
+    "dist/assets/pavement/pv.asphalt.hra.jpg": {
+     "sha256": "cd0f52e78a1f4d459ce584bb2229f4e6ac7d40ebd5daa92b650bb7bba43efe87",
+     "bytes": 862973
+    }
+   }
+  },
+  "concrete": {
+   "source": "gravel_concrete_04",
+   "license": "CC0 1.0 (Poly Haven)",
+   "params": {
+    "src": "gravel_concrete_04",
+    "meters": 2.0,
+    "chroma": 0.38,
+    "highpass": 0.28,
+    "contrast": 0.9
+   },
+   "stats": {
+    "albedo_p01": 0.4675181229164829,
+    "albedo_p99": 1.718081324990562,
+    "rough_mean": 0.9180418287950829,
+    "meters": 2.0,
+    "px_per_m": 512.0,
+    "size": 1024
+   },
+   "files": {
+    "dist/assets/pavement/pv.concrete.albedo.jpg": {
+     "sha256": "8f6e68a819d779f87a55f8f5b983d6dc5cfd00f13deb62b6afd75c0bc6845db3",
+     "bytes": 716434
+    },
+    "dist/assets/pavement/pv.concrete.normal.jpg": {
+     "sha256": "598aeba36958d23e84a9fe41c86d7204b71c3a9a989ef97d961677d82cf46782",
+     "bytes": 1216004
+    },
+    "dist/assets/pavement/pv.concrete.hra.jpg": {
+     "sha256": "42a724e14332938d460614215b8e2d5dca4b3b78b648823ca2041897687a2be6",
+     "bytes": 1018903
+    }
+   }
+  }
+ }
+}
