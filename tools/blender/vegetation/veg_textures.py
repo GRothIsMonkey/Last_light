@@ -620,6 +620,11 @@ def ground_atlas(c=512):
     cells = [_draw_blades(c, rng, 220, h=(.45, .95), tip_dry=.15), take(0, 218, 393, 629, True, 'grass'), take(260, 505, 419, 634, True, 'grass'),
              take(519, 707, 470, 717, False, 'grass', rot=-1), take(483, 732, 824, 1006, True, 'grass'),
              _draw_flowers(c, rng, 'lace'), _draw_flowers(c, rng, 'susan'), _draw_flowers(c, rng, 'clover')]
+    # the tall tuft: late-August meadow grass, lighter and warmer than a lawn (seed heads catching the evening light)
+    m1 = cells[1][..., 3] > .5
+    lin1 = srgb_to_lin(cells[1][..., :3])
+    lin1 = lin1 * (srgb_to_lin([.52, .54, .30]) / np.maximum(lin1[m1].mean(0), 1e-4))
+    cells[1][..., :3] = lin_to_srgb(lin1)
     # the dry tuft and the seed stalk keep their straw colour (graded toward it, not toward green)
     for k in (2, 4):
         m = cells[k][..., 3] > .5

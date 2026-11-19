@@ -212,7 +212,7 @@ export async function placeVegetation({world,scene,renderer,ambient=null}){
  const beds=R.beds.filter(b=>b.kind==='shrub'),flowers=R.beds.filter(b=>b.kind==='flower');
  const houseKey=b=>Math.round(b.x/14)+':'+Math.round(b.z/14);
  for(const b of beds){const st=hash(...houseKey(b).split(':').map(Number),9),style=st<.36?'clipped':st<.78?'natural':'mixed';const hh=hash(b.x,b.z,2);
-  let pool=style==='clipped'?(hh<.25?shrubV.hedge:shrubV.globe):style==='natural'?(b.r>.52?shrubV.big:shrubV.medium):(hh<.5?shrubV.globe:shrubV.medium);
+  let pool=style==='clipped'?(hh<.25?shrubV.hedge:shrubV.globe):style==='natural'?(b.r>.46?shrubV.big:shrubV.medium):(hh<.5?shrubV.globe:shrubV.big);
   const v=pool[Math.floor(hash(b.x,b.z,4)*pool.length)];const w=v.info.ll_size?.[0]||1;
   const target=b.r*2*(style==='natural'?1.25:1.12),s=THREE.MathUtils.clamp(target/w,.55,1.35);
   const rot=/hedge/.test(v.id)?(b.rot??0)+Math.PI/2*(hh<.5?0:2):hash(b.x,b.z,6)*Math.PI*2;
@@ -286,7 +286,7 @@ function meadowPoints(world){const out=[],L=LOOKOUT,rng=(()=>{let s=1958;return 
   const gy=world.surfaceY?world.surfaceY(d,lat):0;return gy>.1;};// lawn and knoll, never the bulb's asphalt
  const add=(id,d,lat,s)=>{const p=groundPoint(d,lat);out.push({id,x:p.x,y:world.groundY(d,lat)-.01,z:p.z,rot:rng()*6.283,s});};
  // beyond the field fence: the tall late-summer meadow with wildflowers and seed heads
- for(let d=1173.6;d<1196;d+=.42)for(let lat=-34;lat<34;lat+=.42){const dd=d+(rng()-.5)*.42,ll=lat+(rng()-.5)*.42,r=rng();
+ for(let d=1173.6;d<1200;d+=.42)for(let lat=-38;lat<38;lat+=.42){const dd=d+(rng()-.5)*.42,ll=lat+(rng()-.5)*.42,r=rng();if(rng()<Math.max(0,(Math.abs(ll)-28)/10,(dd-1192)/8))continue;// thinning out at the edges
   const id=r<.38?'meadow.tall.'+(rng()<.5?1:2):r<.46?'meadow.dry.1':r<.51?'weed.seedstalk.1':r<.56?'flower.lace.1':r<.6?'flower.susan.1':r<.97?'grass.long.'+(rng()<.5?1:2):'weed.groundcover.1';
   add(id,dd,ll,.8+rng()*.55);}
  // the knoll inside the fence: uneven longer grass, clover and weeds, taller toward the fence and the field edges
@@ -324,10 +324,10 @@ class LawnRing{
   for(let d=d0;d<d0+10;d+=.36)for(const side of [-1,1])for(let a=5.05;a<34;a+=.36){const dd=d+(r()-.5)*.5,lat=side*(a+(r()-.5)*.5);if(!this.isLawn(dd,lat))continue;
    const p=groundPoint(dd,lat);if(beds.some(b=>(b.x-p.x)**2+(b.z-p.z)**2<1.15))continue;if(this.world.space?.blocked(p.x,p.z,.06,LAWN_BLOCK))continue;// walks, porches, houses, sheds, postsif(trees.some(t=>(t.u-dd)**2+(t.v-lat)**2<(t.trunk+.25)**2))continue;
    // lots: a lot is 29 m of street; its owner mows in stripes or not, edges the walk or not, has clover or not
-   const lot=Math.floor((dd+430)/29)*2+(side>0?1:0),own=hash(lot,3),edge=Math.abs(lat)<8.5;
-   const ragged=own<.35&&edge,clover=own>.72&&r()<.12;const v=clover?5:ragged?(r()<.5?3:4):Math.floor(r()*3);
+   const lot=Math.floor((dd+430)/29)*2+(side>0?1:0),own=hash(lot,3),al=Math.abs(lat),edge=(al>7.85&&al<8.2)||(al>5&&al<5.28);// the unedged rim along the walk and the curb
+   const ragged=own<.35&&edge&&r()<.7,clover=own>.72&&r()<.12;const v=clover?5:ragged?(r()<.5?3:4):Math.floor(r()*3);
    const stripe=own>.45&&own<.8?(Math.floor(Math.abs(lat)/.7)%2?1.07:.93):1;const dry=.94+.12*r();
-   pts.push(p.x,this.world.groundY(dd,lat)-.005,p.z,r()*6.283,(ragged?.75:.85)+.35*r(),v,stripe*dry,d0);}
+   pts.push(p.x,this.world.groundY(dd,lat)-.005,p.z,r()*6.283,(ragged?.5+.25*r():.85+.35*r()),v,stripe*dry,d0);}
   const f=new Float32Array(pts);this.buckets.set(k,f);if(this.buckets.size>40){const far=[...this.buckets.keys()].sort((a,b)=>Math.abs(b-k)-Math.abs(a-k))[0];this.buckets.delete(far);}return f;}
  update(cp){if(!this.root.visible)return;if(this.last&&this.last.distanceToSquared(cp)<1.2&&this.t++%20)return;this.last=(this.last||new THREE.Vector3()).copy(cp);
   const q=MAIN.project(cp.x,cp.z);if(q.u>1145||q.u<-445||Math.abs(q.v)>60){for(const a of this.ims)for(const im of a)im.count=0;this.count=0;return;}

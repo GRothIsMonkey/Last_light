@@ -268,7 +268,7 @@ def cycles(scene, samples=48):
     scene.cycles.device = 'CPU'
     scene.cycles.samples = samples
     scene.cycles.use_denoising = True
-    scene.cycles.transparent_max_bounces = 32
+    scene.cycles.transparent_max_bounces = 16
     scene.cycles.max_bounces = 6
     scene.render.film_transparent = False
 

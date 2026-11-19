@@ -209,7 +209,7 @@ def main():
                 add_piece(buf, P, N, UV, I, MAT_LEAF if part == 'leaf' else MAT_BARK, v['cell'], H, hash(v['id']) % 1000, part == 'leaf')
             # density: trimmed shapes are solid masses of leaves (the pack's next-coarser leaf layer, turned and clipped
             # into the same envelope); the big natural bushes get one extra turned layer
-            extra = {'globe': [(1.57, .96), (3.67, .9)], 'hedge': [(1.57, .97), (3.14, .93)], 'natural': [(2.1, .9)] if 'big' in v['src'] else []}.get(v['kind'], [])
+            extra = {'globe': [(1.57, .96), (3.67, .9)], 'hedge': [(1.57, .97), (3.14, .93)], 'natural': [(2.1, .9)] if 'small' not in v['src'] else []}.get(v['kind'], [])
             src_lod = min(2, lod + 1)
             if extra and 'leaf' in lods.get(src_lod, {}):
                 P0, N0, UV0, I0 = lods[src_lod]['leaf']

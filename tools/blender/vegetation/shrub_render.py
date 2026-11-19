@@ -42,7 +42,7 @@ def main(argv):
     R.camera(sc, (0, -span * .55 - 2, 3.6), (0, -.8, .5), lens=32)
     out = os.path.join(R.QA, 'shrubs')
     os.makedirs(out, exist_ok=True)
-    R.render(sc, os.path.join(out, 'C10_shrub_lineup.jpg'), res=(1000, 520) if quick else (2200, 1100), samples=16 if quick else 64)
+    R.render(sc, os.path.join(out, 'C10_shrub_lineup.jpg'), res=(1000, 520) if quick else (2200, 1100), samples=16 if quick else 32)
 
 
 if __name__ == '__main__':

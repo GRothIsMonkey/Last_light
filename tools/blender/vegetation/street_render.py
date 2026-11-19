@@ -47,7 +47,7 @@ def main(argv):
     R.camera(sc, (0, -span * .62 - 6, 9 + depth * .25), (0, depth * .42, 5.5), lens=35)
     out = os.path.join(R.QA, 'street')
     os.makedirs(out, exist_ok=True)
-    R.render(sc, os.path.join(out, name + '.jpg'), res=(1000, 700) if quick else (2000, 1300), samples=16 if quick else 48)
+    R.render(sc, os.path.join(out, name + '.jpg'), res=(1000, 700) if quick else (2000, 1300), samples=16 if quick else 32)
 
 
 if __name__ == '__main__':

@@ -57,9 +57,9 @@
    "source": "Bush_big_005"
   },
   "shrub.natural.medium.1": {
-   "lod0": 222,
-   "lod1": 139,
-   "lod2": 81,
+   "lod0": 319,
+   "lod1": 184,
+   "lod2": 126,
    "size": [
     0.721,
     0.531,
@@ -68,9 +68,9 @@
    "source": "Bush_medium_001"
   },
   "shrub.natural.medium.2": {
-   "lod0": 354,
-   "lod1": 192,
-   "lod2": 90,
+   "lod0": 516,
+   "lod1": 264,
+   "lod2": 162,
    "size": [
     0.664,
     0.652,
@@ -79,9 +79,9 @@
    "source": "Bush_medium_002"
   },
   "shrub.natural.medium.3": {
-   "lod0": 512,
-   "lod1": 262,
-   "lod2": 117,
+   "lod0": 744,
+   "lod1": 373,
+   "lod2": 228,
    "size": [
     0.55,
     0.582,
@@ -90,9 +90,9 @@
    "source": "Bush_medium_003"
   },
   "shrub.natural.medium.4": {
-   "lod0": 420,
-   "lod1": 227,
-   "lod2": 99,
+   "lod0": 617,
+   "lod1": 320,
+   "lod2": 192,
    "size": [
     0.605,
     0.633,
@@ -101,9 +101,9 @@
    "source": "Bush_medium_004"
   },
   "shrub.natural.medium.5": {
-   "lod0": 836,
-   "lod1": 433,
-   "lod2": 195,
+   "lod0": 1197,
+   "lod1": 604,
+   "lod2": 366,
    "size": [
     0.826,
     0.656,

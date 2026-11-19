@@ -15,3 +15,6 @@ tools/blender/__pycache__/
 tools/blender/houses/__pycache__/
 assets/source/house/kit/interior-renders/
 *.blend1
+
+# offline playtest packages (built by tools/package-playtest.mjs; delivered separately, never committed)
+release/
