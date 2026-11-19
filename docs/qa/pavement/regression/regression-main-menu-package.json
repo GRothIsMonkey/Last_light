@@ -1,0 +1,10 @@
+{
+ "command": "node tests/main-menu-browser.mjs <complete default package>/Last-Light-Complete-Playtest.html (PLAYTEST_MENU=1 PLAYTEST_CHAPTER=final, opened from disk)",
+ "passed": 96,
+ "failed": 0,
+ "timings": {
+  "bootMs": 33401,
+  "chapterThreeMs": 1857,
+  "devMorningMs": 89
+ }
+}

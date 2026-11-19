@@ -273,7 +273,17 @@ Every suite ran **alone** (one browser at a time) on the final code, software We
 **The existing suites** (each against its accepted result; outputs in scratch, summaries in
 `docs/qa/pavement/regression/`):
 
-__REGRESSION_TABLE__
+| Suite | Result | Accepted before | Report |
+|---|---|---|---|
+| `QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs` | **818 passed** | 818 | the one difference is the already-known `2/alex-bike` DEV switching difference, reported and not asserted, as before (`regression-verify.json`) |
+| `node tests/vegetation-browser.mjs` | **74 passed, 0 failed** | 74 | the authored vegetation and the repaired lawn unchanged (`regression-vegetation-browser.json`) |
+| `node tests/house-browser.mjs` | **30 passed, 0 failed** | 30 | the authored houses unchanged (`regression-house-browser.json`) |
+| `SHOTS=0 node tests/bike-browser.mjs` | **29 passed, 0 failed** | 29 | the authored bikes unchanged (`regression-bike-browser.json`) |
+| `node tests/pipeline-browser.mjs` | **36 passed, 0 failed** | 36 | the asset pipeline and its offline packages (now also carrying the pavement textures) (`regression-pipeline-browser.json`) |
+| `node tests/main-menu-browser.mjs` on the complete default package (`PLAYTEST_MENU=1 PLAYTEST_CHAPTER=final`, opened from disk) | **96 passed, 0 failed** | 96 | the title screen, menus and whole-game package unchanged; no JavaScript errors; no network requests (`regression-main-menu-package.json`) |
+
+`verify.mjs` ran on commit `4f3f208`, whose `dist/` is byte-identical to the final commit's; the browser suites ran on
+the same code. No pre-existing difference was hidden or relabelled.
 
 **Boundaries kept.** Untouched: story, dialogue, departures, chapters, Chapter Eight's destruction, Aftermath I and II,
 the 2026 coda and credits, bicycle controls and steering, movement, camera, collisions (proved above), house positions,

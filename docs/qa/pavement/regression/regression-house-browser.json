@@ -1,0 +1,2970 @@
+{
+ "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
+ "started": "2026-11-19T22:57:30.830Z",
+ "checks": [
+  {
+   "name": "Game: without ?houses the Prologue fetches none of the house benchmark modules or the model",
+   "detail": []
+  },
+  {
+   "name": "Game: without ?houses no benchmark batches exist (the world is baked as in the accepted build)",
+   "detail": {
+    "label": false,
+    "zones": 0,
+    "merged": 2225
+   }
+  },
+  {
+   "name": "Game (no ?houses): no page errors",
+   "detail": []
+  },
+  {
+   "name": "Game: ?houses loads the twelve authored houses with no errors",
+   "detail": {
+    "error": null,
+    "errors": [],
+    "n": 12
+   }
+  },
+  {
+   "name": "Game: each house sits on its lot exactly as the plan (P.toWorld) places it: placement error < 2 mm",
+   "detail": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "Game: loaded through GLTFLoader r160 over same-origin HTTP, nothing else fetched",
+  {
+   "name": "Game: no authored geometry on the street, curb, planting strip or sidewalk (every vertex beyond 7.85 m from the centre line)",
+   "detail": {
+    "house.car": 13.04,
+    "house.hoop": 12.39,
+    "house.lotL37": 13.39,
+    "house.lotL66": 11.9,
+    "house.lotL8": 11.65,
+    "house.lotLm21": 11.15,
+    "house.lotR153": 12.66,
+    "house.lotR37": 13.16,
+    "house.lotR530": 10.51,
+    "house.lotR66": 11.35,
+    "house.lotR8": 12.61,
+    "house.lotRm21": 11.31
+   }
+  },
+  {
+   "name": "Game: every house ends inside the plan's riding obstacle (front <= stepFront + 0.3 m: porches and steps never reach the yard path or the walk)",
+   "detail": {
+    "house.car": [
+     7.134,
+     7.709
+    ],
+    "house.hoop": [
+     6.3,
+     6.9
+    ],
+    "house.lotL37": [
+     5.819,
+     6.419
+    ],
+    "house.lotL66": [
+     7.224,
+     7.799
+    ],
+    "house.lotL8": [
+     8.078,
+     8.654
+    ],
+    "house.lotLm21": [
+     7.426,
+     7.89
+    ],
+    "house.lotR153": [
+     6.542,
+     7.142
+    ],
+    "house.lotR37": [
+     6.101,
+     6.701
+    ],
+    "house.lotR530": [
+     8.48,
+     9.056
+    ],
+    "house.lotR66": [
+     8.454,
+     9.029
+    ],
+    "house.lotR8": [
+     6.543,
+     7.143
+    ],
+    "house.lotRm21": [
+     8.431,
+     9.007
+    ]
+   }
+  },
+  {
+   "name": "Game: footprints follow the plans (house and garage width within 0.8 m each side: eaves, chimneys and AC pads only)",
+   "detail": {
+    "house.car": {
+     "x": [
+      -6.18,
+      11.66
+     ],
+     "plan": [
+      -5.01,
+      11.41
+     ]
+    },
+    "house.hoop": {
+     "x": [
+      -14.04,
+      8.23
+     ],
+     "plan": [
+      -13.62,
+      7.22
+     ]
+    },
+    "house.lotL37": {
+     "x": [
+      -6.81,
+      10.05
+     ],
+     "plan": [
+      -5.8,
+      9.8
+     ]
+    },
+    "house.lotL66": {
+     "x": [
+      -6.6,
+      9.84
+     ],
+     "plan": [
+      -5.59,
+      9.59
+     ]
+    },
+    "house.lotL8": {
+     "x": [
+      -8.85,
+      5.77
+     ],
+     "plan": [
+      -8.6,
+      4.6
+     ]
+    },
+    "house.lotLm21": {
+     "x": [
+      -6.68,
+      7.44
+     ],
+     "plan": [
+      -6.43,
+      6.43
+     ]
+    },
+    "house.lotR153": {
+     "x": [
+      -7.73,
+      10.97
+     ],
+     "plan": [
+      -6.72,
+      10.72
+     ]
+    },
+    "house.lotR37": {
+     "x": [
+      -9.56,
+      6.32
+     ],
+     "plan": [
+      -9.31,
+      5.31
+     ]
+    },
+    "house.lotR530": {
+     "x": [
+      -9.12,
+      5.88
+     ],
+     "plan": [
+      -8.87,
+      4.87
+     ]
+    },
+    "house.lotR66": {
+     "x": [
+      -11.59,
+      5.95
+     ],
+     "plan": [
+      -11.34,
+      4.94
+     ]
+    },
+    "house.lotR8": {
+     "x": [
+      -12.51,
+      6.87
+     ],
+     "plan": [
+      -12.26,
+      5.86
+     ]
+    },
+    "house.lotRm21": {
+     "x": [
+      -5.72,
+      8.96
+     ],
+     "plan": [
+      -4.71,
+      8.71
+     ]
+    }
+   }
+  },
+  {
+   "name": "Game: the car house's working garage door is the authored one (3 LODs under the panel world.js animates); it moves with the panel; the procedural slab and footing are hidden",
+   "detail": {
+    "hoopRim": {
+     "x": -10.421018602652476,
+     "y": 3.05,
+     "z": 5.009963770993054
+    },
+    "hoopPlanned": {
+     "x": -10.421018602652476,
+     "y": 3.05,
+     "z": 5.009963770993054
+    },
+    "authoredDoorLods": 3,
+    "procDoorVisible": 0,
+    "doorMovesWithPanel": 1.36,
+    "footingHidden": true
+   }
+  },
+  {
+   "name": "Game: the hoop the kid shoots at is where the plan put it (the authored hoop was built on the same numbers)",
+   "detail": {
+    "hoopRim": {
+     "x": -10.421018602652476,
+     "y": 3.05,
+     "z": 5.009963770993054
+    },
+    "hoopPlanned": {
+     "x": -10.421018602652476,
+     "y": 3.05,
+     "z": 5.009963770993054
+    },
+    "authoredDoorLods": 3,
+    "procDoorVisible": 0,
+    "doorMovesWithPanel": 1.36,
+    "footingHidden": true
+   }
+  },
+  {
+   "name": "Game: three LODs per house (LOD0 > LOD1 > LOD2 triangles)",
+   "detail": {
+    "allLevels": [
+     96781,
+     41129,
+     7842
+    ],
+    "forcedDrawn": [
+     96781,
+     41129,
+     7842
+    ],
+    "materials": 72
+   }
+  },
+  {
+   "name": "Game: the refined set (house.prologue v2) gets the house-only treatment: occlusion maps, full anisotropy, per-house upkeep materials, the street-horizon glass reflection",
+   "detail": {
+    "asset": "house.prologue",
+    "version": 2,
+    "refined": true,
+    "materials": 72,
+    "withAO": 45,
+    "maxAnisotropy": 16,
+    "careClones": 44,
+    "glassEnvs": 1,
+    "max": 16
+   }
+  },
+  {
+   "name": "Game: B, the first benchmark (house.prologue.v1, version 1), loads on demand beside the refined houses, on the same plans (0 mm), with its own approved treatment",
+   "detail": {
+    "errors": [],
+    "houses": 12,
+    "version": 1,
+    "bytes": 18798284,
+    "refined": false,
+    "placeErrMm": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "withAO": 0,
+    "loadMs": 512
+   }
+  },
+  {
+   "name": "Game: H shows exactly one of C, B, A at a time (all twelve lots each)",
+   "detail": {
+    "v1": {
+     "C": 0,
+     "B": 12,
+     "proc": 0,
+     "procTotal": 93
+    },
+    "procedural": {
+     "C": 0,
+     "B": 0,
+     "proc": 93,
+     "procTotal": 93
+    },
+    "refined": {
+     "C": 12,
+     "B": 0,
+     "proc": 0,
+     "procTotal": 93
+    }
+   }
+  },
+  {
+   "name": "Game: the rooms' lamps follow the evening schedule (V on: every house lit; off: none)",
+   "detail": {
+    "lit": 1.65,
+    "off": 0
+   }
+  },
+  {
+   "name": "Game: the Prologue plays on (8 s of pedalling from the start moves the player past the first benchmark lots)",
+   "detail": {
+    "state": "riding",
+    "moved": 30.1,
+    "lateral": -0.3,
+    "calls": 465
+   }
+  },
+  {
+   "name": "Game: after H through B and A and back to C, the ride continues",
+   "detail": {
+    "state": "riding",
+    "moved": 11.52
+   }
+  },
+  {
+   "name": "Game (?houses): no page errors",
+   "detail": []
+  },
+  "Game (?houses): no request leaves the local server",
+  {
+   "name": "Game: ?bikes&houses loads both benchmarks together (12 houses, 4 bikes, no failures)",
+   "detail": {
+    "houses": 12,
+    "houseErrors": [],
+    "bikeErrors": [],
+    "bikes": [
+     "player",
+     "jamie",
+     "sam",
+     "alex"
+    ]
+   }
+  },
+  {
+   "name": "Game: the group ride goes on with authored bikes past the authored houses",
+   "detail": {
+    "state": "riding",
+    "d": 17.4,
+    "calls": 483,
+    "triangles": 777369,
+    "friends": [
+     {
+      "k": "jamie",
+      "authored": true
+     },
+     {
+      "k": "sam",
+      "authored": true
+     },
+     {
+      "k": "alex",
+      "authored": true
+     }
+    ]
+   }
+  },
+  {
+   "name": "Game (?bikes&houses): no page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: PLAYTEST_MODELS=1 embeds the house models (C and B) and hashes them in the manifest",
+   "detail": {
+    "sizes": {
+     "withModels": 153587954,
+     "default": 12826003
+    }
+   }
+  },
+  {
+   "name": "Package: ?houses in the offline game places the twelve houses from the embedded bytes, in the running Prologue",
+   "detail": {
+    "error": null,
+    "errors": [],
+    "houses": 12,
+    "from": "package",
+    "state": "riding"
+   }
+  },
+  {
+   "name": "Package: H in the offline game reaches B (the first benchmark, embedded too) and A, and comes back to C",
+   "detail": {
+    "mode": "v1",
+    "houses": 12,
+    "errors": [],
+    "from": "package",
+    "version": 1,
+    "procedural": "procedural",
+    "back": "refined"
+   }
+  },
+  {
+   "name": "Package: offline game makes no network request",
+   "detail": []
+  },
+  {
+   "name": "Package: offline game without page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: the default package (no models) says the houses FAILED, keeps the procedural houses and substitutes nothing",
+   "detail": {
+    "label": "HOUSE BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/house/house.prologue.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)",
+    "proceduralBatchesVisible": 78
+   }
+  },
+  {
+   "name": "Package: default package makes no network request either",
+   "detail": []
+  }
+ ],
+ "failures": [],
+ "parts": {
+  "gameWithout": {
+   "label": false,
+   "zones": 0,
+   "merged": 2225
+  },
+  "game": {
+   "wallLoadMs": 537,
+   "loaded": {
+    "error": null,
+    "errors": [],
+    "loadMs": 508,
+    "info": {
+     "id": "house.prologue",
+     "file": "assets/house/house.prologue.glb",
+     "from": "http",
+     "bytes": 18746136,
+     "readMs": 150.9,
+     "parseMs": 178.4,
+     "triangles": 146092,
+     "skinnedMeshes": 0,
+     "geometries": 306,
+     "materials": 10,
+     "textures": 17,
+     "clips": [],
+     "morphTargets": [],
+     "version": 2,
+     "rig": "none",
+     "license": "Original work for Last Light (Roth Studios).",
+     "generator": "Khronos glTF Blender I/O v5.0.21"
+    },
+    "houses": [
+     {
+      "id": "house.car",
+      "lot": "main:-1:530",
+      "role": "story:car",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.hoop",
+      "lot": "main:-1:153",
+      "role": "story:hoop",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotL37",
+      "lot": "main:-1:37",
+      "role": "ordinary",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotL66",
+      "lot": "main:-1:66",
+      "role": "ordinary",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotL8",
+      "lot": "main:-1:8",
+      "role": "ordinary",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotLm21",
+      "lot": "main:-1:-21",
+      "role": "ordinary",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotR153",
+      "lot": "main:1:153",
+      "role": "ordinary",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotR37",
+      "lot": "main:1:37",
+      "role": "ordinary",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotR530",
+      "lot": "main:1:530",
+      "role": "ordinary",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotR66",
+      "lot": "main:1:66",
+      "role": "ordinary",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotR8",
+      "lot": "main:1:8",
+      "role": "ordinary",
+      "placeErrMm": 0
+     },
+     {
+      "id": "house.lotRm21",
+      "lot": "main:1:-21",
+      "role": "ordinary",
+      "placeErrMm": 0
+     }
+    ]
+   },
+   "fit": {
+    "house.car": {
+     "minAbsLat": 13.04,
+     "frontZ": 7.134,
+     "stepFront": 7.409,
+     "obstacleFront": 7.709,
+     "backZ": -4.94,
+     "planBack": -4.21,
+     "x": [
+      -6.18,
+      11.66
+     ],
+     "planX": [
+      -5.01,
+      11.41
+     ],
+     "sampled": 6411
+    },
+    "house.hoop": {
+     "minAbsLat": 12.39,
+     "frontZ": 6.3,
+     "stepFront": 6.6,
+     "obstacleFront": 6.9,
+     "backZ": -5.38,
+     "planBack": -4.65,
+     "x": [
+      -14.04,
+      8.23
+     ],
+     "planX": [
+      -13.62,
+      7.22
+     ],
+     "sampled": 3380
+    },
+    "house.lotL37": {
+     "minAbsLat": 13.39,
+     "frontZ": 5.819,
+     "stepFront": 6.119,
+     "obstacleFront": 6.419,
+     "backZ": -4.9,
+     "planBack": -4.17,
+     "x": [
+      -6.81,
+      10.05
+     ],
+     "planX": [
+      -5.8,
+      9.8
+     ],
+     "sampled": 4404
+    },
+    "house.lotL66": {
+     "minAbsLat": 11.9,
+     "frontZ": 7.224,
+     "stepFront": 7.499,
+     "obstacleFront": 7.799,
+     "backZ": -5.03,
+     "planBack": -4.3,
+     "x": [
+      -6.6,
+      9.84
+     ],
+     "planX": [
+      -5.59,
+      9.59
+     ],
+     "sampled": 6417
+    },
+    "house.lotL8": {
+     "minAbsLat": 11.65,
+     "frontZ": 8.078,
+     "stepFront": 8.354,
+     "obstacleFront": 8.654,
+     "backZ": -5.4,
+     "planBack": -5.15,
+     "x": [
+      -8.85,
+      5.77
+     ],
+     "planX": [
+      -8.6,
+      4.6
+     ],
+     "sampled": 4542
+    },
+    "house.lotLm21": {
+     "minAbsLat": 11.15,
+     "frontZ": 7.426,
+     "stepFront": 7.59,
+     "obstacleFront": 7.89,
+     "backZ": -5.42,
+     "planBack": -4.69,
+     "x": [
+      -6.68,
+      7.44
+     ],
+     "planX": [
+      -6.43,
+      6.43
+     ],
+     "sampled": 3803
+    },
+    "house.lotR153": {
+     "minAbsLat": 12.66,
+     "frontZ": 6.542,
+     "stepFront": 6.842,
+     "obstacleFront": 7.142,
+     "backZ": -5.62,
+     "planBack": -4.89,
+     "x": [
+      -7.73,
+      10.97
+     ],
+     "planX": [
+      -6.72,
+      10.72
+     ],
+     "sampled": 3268
+    },
+    "house.lotR37": {
+     "minAbsLat": 13.16,
+     "frontZ": 6.101,
+     "stepFront": 6.401,
+     "obstacleFront": 6.701,
+     "backZ": -5.18,
+     "planBack": -4.45,
+     "x": [
+      -9.56,
+      6.32
+     ],
+     "planX": [
+      -9.31,
+      5.31
+     ],
+     "sampled": 3543
+    },
+    "house.lotR530": {
+     "minAbsLat": 10.51,
+     "frontZ": 8.48,
+     "stepFront": 8.756,
+     "obstacleFront": 9.056,
+     "backZ": -5.81,
+     "planBack": -5.56,
+     "x": [
+      -9.12,
+      5.88
+     ],
+     "planX": [
+      -8.87,
+      4.87
+     ],
+     "sampled": 5282
+    },
+    "house.lotR66": {
+     "minAbsLat": 11.35,
+     "frontZ": 8.454,
+     "stepFront": 8.729,
+     "obstacleFront": 9.029,
+     "backZ": -5.78,
+     "planBack": -5.53,
+     "x": [
+      -11.59,
+      5.95
+     ],
+     "planX": [
+      -11.34,
+      4.94
+     ],
+     "sampled": 5001
+    },
+    "house.lotR8": {
+     "minAbsLat": 12.61,
+     "frontZ": 6.543,
+     "stepFront": 6.843,
+     "obstacleFront": 7.143,
+     "backZ": -5.62,
+     "planBack": -4.89,
+     "x": [
+      -12.51,
+      6.87
+     ],
+     "planX": [
+      -12.26,
+      5.86
+     ],
+     "sampled": 4593
+    },
+    "house.lotRm21": {
+     "minAbsLat": 11.31,
+     "frontZ": 8.431,
+     "stepFront": 8.707,
+     "obstacleFront": 9.007,
+     "backZ": -5.76,
+     "planBack": -5.51,
+     "x": [
+      -5.72,
+      8.96
+     ],
+     "planX": [
+      -4.71,
+      8.71
+     ],
+     "sampled": 5615
+    }
+   },
+   "story": {
+    "hoopRim": {
+     "x": -10.421018602652476,
+     "y": 3.05,
+     "z": 5.009963770993054
+    },
+    "hoopPlanned": {
+     "x": -10.421018602652476,
+     "y": 3.05,
+     "z": 5.009963770993054
+    },
+    "authoredDoorLods": 3,
+    "procDoorVisible": 0,
+    "doorMovesWithPanel": 1.36,
+    "footingHidden": true
+   },
+   "lod": {
+    "allLevels": [
+     96781,
+     41129,
+     7842
+    ],
+    "forcedDrawn": [
+     96781,
+     41129,
+     7842
+    ],
+    "materials": 72
+   },
+   "refined": {
+    "asset": "house.prologue",
+    "version": 2,
+    "refined": true,
+    "materials": 72,
+    "withAO": 45,
+    "maxAnisotropy": 16,
+    "careClones": 44,
+    "glassEnvs": 1,
+    "max": 16
+   },
+   "v1": {
+    "errors": [],
+    "houses": 12,
+    "version": 1,
+    "bytes": 18798284,
+    "refined": false,
+    "placeErrMm": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "withAO": 0,
+    "loadMs": 512
+   },
+   "modes": {
+    "v1": {
+     "C": 0,
+     "B": 12,
+     "proc": 0,
+     "procTotal": 93
+    },
+    "procedural": {
+     "C": 0,
+     "B": 0,
+     "proc": 93,
+     "procTotal": 93
+    },
+    "refined": {
+     "C": 12,
+     "B": 0,
+     "proc": 0,
+     "procTotal": 93
+    }
+   },
+   "lampsCheck": {
+    "lit": 1.65,
+    "off": 0
+   },
+   "ride": {
+    "state": "riding",
+    "moved": 30.1,
+    "lateral": -0.3,
+    "calls": 465
+   },
+   "views": {
+    "prologue-start--riding-camera": {
+     "refined": {
+      "calls": 484,
+      "triangles": 755244,
+      "cam": {
+       "p": [
+        -0.31,
+        1.51,
+        0.01
+       ],
+       "yaw": 0,
+       "pitch": 0,
+       "d": 0,
+       "lat": -0.3
+      },
+      "authored": true
+     },
+     "v1": {
+      "calls": 486,
+      "triangles": 761728,
+      "cam": {
+       "p": [
+        -0.31,
+        1.48,
+        0.01
+       ],
+       "yaw": 0,
+       "pitch": 0,
+       "d": 0,
+       "lat": -0.3
+      },
+      "authored": false
+     },
+     "procedural": {
+      "calls": 463,
+      "triangles": 774134,
+      "cam": {
+       "p": [
+        -0.32,
+        1.45,
+        0.02
+       ],
+       "yaw": 0,
+       "pitch": 0,
+       "d": 0,
+       "lat": -0.3
+      },
+      "authored": false
+     }
+    },
+    "prologue-start-left--riding-camera": {
+     "refined": {
+      "calls": 239,
+      "triangles": 429283,
+      "cam": {
+       "p": [
+        -0.33,
+        2.15,
+        -19.98
+       ],
+       "yaw": 0.9,
+       "pitch": 0,
+       "d": 20,
+       "lat": -0.3
+      },
+      "authored": true
+     },
+     "v1": {
+      "calls": 240,
+      "triangles": 430430,
+      "cam": {
+       "p": [
+        -0.34,
+        2.14,
+        -19.98
+       ],
+       "yaw": 0.9,
+       "pitch": 0,
+       "d": 20,
+       "lat": -0.3
+      },
+      "authored": false
+     },
+     "procedural": {
+      "calls": 231,
+      "triangles": 433893,
+      "cam": {
+       "p": [
+        -0.34,
+        2.13,
+        -19.98
+       ],
+       "yaw": 0.9,
+       "pitch": 0,
+       "d": 20,
+       "lat": -0.3
+      },
+      "authored": false
+     }
+    },
+    "prologue-start-right--riding-camera": {
+     "refined": {
+      "calls": 436,
+      "triangles": 828373,
+      "cam": {
+       "p": [
+        -0.34,
+        2.26,
+        -23.98
+       ],
+       "yaw": -0.85,
+       "pitch": 0,
+       "d": 24,
+       "lat": -0.3
+      },
+      "authored": true
+     },
+     "v1": {
+      "calls": 436,
+      "triangles": 824391,
+      "cam": {
+       "p": [
+        -0.34,
+        2.25,
+        -23.98
+       ],
+       "yaw": -0.85,
+       "pitch": 0,
+       "d": 24,
+       "lat": -0.3
+      },
+      "authored": false
+     },
+     "procedural": {
+      "calls": 428,
+      "triangles": 825611,
+      "cam": {
+       "p": [
+        -0.34,
+        2.25,
+        -23.98
+       ],
+       "yaw": -0.85,
+       "pitch": 0,
+       "d": 24,
+       "lat": -0.3
+      },
+      "authored": false
+     }
+    },
+    "prologue-street-ahead--riding-camera": {
+     "refined": {
+      "calls": 490,
+      "triangles": 768474,
+      "cam": {
+       "p": [
+        -0.35,
+        0.97,
+        12.03
+       ],
+       "yaw": 0.12,
+       "pitch": 0.05,
+       "d": -12,
+       "lat": -0.3
+      },
+      "authored": true
+     },
+     "v1": {
+      "calls": 490,
+      "triangles": 762580,
+      "cam": {
+       "p": [
+        -0.35,
+        0.97,
+        12.03
+       ],
+       "yaw": 0.12,
+       "pitch": 0.05,
+       "d": -12,
+       "lat": -0.3
+      },
+      "authored": false
+     },
+     "procedural": {
+      "calls": 468,
+      "triangles": 772226,
+      "cam": {
+       "p": [
+        -0.35,
+        0.97,
+        12.03
+       ],
+       "yaw": 0.12,
+       "pitch": 0.05,
+       "d": -12,
+       "lat": -0.3
+      },
+      "authored": false
+     }
+    },
+    "hoop-house--riding-camera": {
+     "refined": {
+      "calls": 243,
+      "triangles": 609887,
+      "cam": {
+       "p": [
+        -0.19,
+        2.36,
+        -138.05
+       ],
+       "yaw": 0.75,
+       "pitch": 0,
+       "d": 138,
+       "lat": -0.3
+      },
+      "authored": true
+     },
+     "v1": {
+      "calls": 244,
+      "triangles": 611895,
+      "cam": {
+       "p": [
+        -0.19,
+        2.36,
+        -138.05
+       ],
+       "yaw": 0.75,
+       "pitch": 0,
+       "d": 138,
+       "lat": -0.3
+      },
+      "authored": false
+     },
+     "procedural": {
+      "calls": 240,
+      "triangles": 611013,
+      "cam": {
+       "p": [
+        -0.19,
+        2.36,
+        -138.05
+       ],
+       "yaw": 0.75,
+       "pitch": 0,
+       "d": 138,
+       "lat": -0.3
+      },
+      "authored": false
+     }
+    },
+    "car-house--riding-camera": {
+     "refined": {
+      "calls": 252,
+      "triangles": 648350,
+      "cam": {
+       "p": [
+        132.02,
+        2.17,
+        -470.72
+       ],
+       "yaw": 0.8,
+       "pitch": 0,
+       "d": 505,
+       "lat": -0.3
+      },
+      "authored": true
+     },
+     "v1": {
+      "calls": 253,
+      "triangles": 647775,
+      "cam": {
+       "p": [
+        132.02,
+        2.17,
+        -470.72
+       ],
+       "yaw": 0.8,
+       "pitch": 0,
+       "d": 505,
+       "lat": -0.3
+      },
+      "authored": false
+     },
+     "procedural": {
+      "calls": 268,
+      "triangles": 646596,
+      "cam": {
+       "p": [
+        132.02,
+        2.17,
+        -470.72
+       ],
+       "yaw": 0.8,
+       "pitch": 0,
+       "d": 505,
+       "lat": -0.3
+      },
+      "authored": false
+     }
+    },
+    "car-house-and-across--riding-camera": {
+     "refined": {
+      "calls": 316,
+      "triangles": 563161,
+      "cam": {
+       "p": [
+        120.1,
+        2.9,
+        -503.56
+       ],
+       "yaw": 2.6,
+       "pitch": 0,
+       "d": 540,
+       "lat": -0.3
+      },
+      "authored": true
+     },
+     "v1": {
+      "calls": 316,
+      "triangles": 561112,
+      "cam": {
+       "p": [
+        120.1,
+        2.9,
+        -503.56
+       ],
+       "yaw": 2.6,
+       "pitch": 0,
+       "d": 540,
+       "lat": -0.3
+      },
+      "authored": false
+     },
+     "procedural": {
+      "calls": 322,
+      "triangles": 562231,
+      "cam": {
+       "p": [
+        120.1,
+        2.9,
+        -503.56
+       ],
+       "yaw": 2.6,
+       "pitch": 0,
+       "d": 540,
+       "lat": -0.3
+      },
+      "authored": false
+     }
+    }
+   },
+   "review": {
+    "car-house-porch--review-camera": {
+     "refined": {
+      "calls": 537,
+      "triangles": 855574,
+      "cam": {
+       "p": [
+        119.58,
+        2.94,
+        -486.85
+       ]
+      }
+     },
+     "v1": {
+      "calls": 537,
+      "triangles": 852921,
+      "cam": {
+       "p": [
+        119.58,
+        2.94,
+        -486.85
+       ]
+      }
+     },
+     "procedural": {
+      "calls": 508,
+      "triangles": 854001,
+      "cam": {
+       "p": [
+        119.58,
+        2.94,
+        -486.85
+       ]
+      }
+     }
+    },
+    "car-house-garage-open--review-camera": {
+     "refined": {
+      "calls": 293,
+      "triangles": 617936,
+      "cam": {
+       "p": [
+        119.12,
+        3.04,
+        -490.94
+       ]
+      }
+     },
+     "v1": {
+      "calls": 292,
+      "triangles": 615966,
+      "cam": {
+       "p": [
+        119.12,
+        3.04,
+        -490.94
+       ]
+      }
+     },
+     "procedural": {
+      "calls": 298,
+      "triangles": 617963,
+      "cam": {
+       "p": [
+        119.12,
+        3.04,
+        -490.94
+       ]
+      }
+     }
+    },
+    "colonial-across-start--review-camera": {
+     "refined": {
+      "calls": 138,
+      "triangles": 263866,
+      "cam": {
+       "p": [
+        7.15,
+        2.15,
+        -11.75
+       ]
+      }
+     },
+     "v1": {
+      "calls": 138,
+      "triangles": 260540,
+      "cam": {
+       "p": [
+        7.15,
+        2.15,
+        -11.75
+       ]
+      }
+     },
+     "procedural": {
+      "calls": 130,
+      "triangles": 256562,
+      "cam": {
+       "p": [
+        7.15,
+        2.15,
+        -11.75
+       ]
+      }
+     }
+    },
+    "ranch-start--review-camera": {
+     "refined": {
+      "calls": 129,
+      "triangles": 241819,
+      "cam": {
+       "p": [
+        -5.07,
+        1.13,
+        15.68
+       ]
+      }
+     },
+     "v1": {
+      "calls": 129,
+      "triangles": 240501,
+      "cam": {
+       "p": [
+        -5.07,
+        1.13,
+        15.68
+       ]
+      }
+     },
+     "procedural": {
+      "calls": 125,
+      "triangles": 238785,
+      "cam": {
+       "p": [
+        -5.07,
+        1.13,
+        15.68
+       ]
+      }
+     }
+    },
+    "hoop-house--review-camera": {
+     "refined": {
+      "calls": 172,
+      "triangles": 265877,
+      "cam": {
+       "p": [
+        -4.17,
+        2.45,
+        -148.36
+       ]
+      }
+     },
+     "v1": {
+      "calls": 172,
+      "triangles": 264309,
+      "cam": {
+       "p": [
+        -4.17,
+        2.45,
+        -148.36
+       ]
+      }
+     },
+     "procedural": {
+      "calls": 168,
+      "triangles": 263427,
+      "cam": {
+       "p": [
+        -4.17,
+        2.45,
+        -148.36
+       ]
+      }
+     }
+    },
+    "cape-start--review-camera": {
+     "refined": {
+      "calls": 136,
+      "triangles": 236054,
+      "cam": {
+       "p": [
+        -6.71,
+        3.07,
+        -42.48
+       ]
+      }
+     },
+     "v1": {
+      "calls": 136,
+      "triangles": 232961,
+      "cam": {
+       "p": [
+        -6.71,
+        3.07,
+        -42.48
+       ]
+      }
+     },
+     "procedural": {
+      "calls": 128,
+      "triangles": 230172,
+      "cam": {
+       "p": [
+        -6.71,
+        3.07,
+        -42.48
+       ]
+      }
+     }
+    },
+    "front-gable-start--review-camera": {
+     "refined": {
+      "calls": 127,
+      "triangles": 252711,
+      "cam": {
+       "p": [
+        6.74,
+        1.07,
+        17.71
+       ]
+      }
+     },
+     "v1": {
+      "calls": 127,
+      "triangles": 251166,
+      "cam": {
+       "p": [
+        6.74,
+        1.07,
+        17.71
+       ]
+      }
+     },
+     "procedural": {
+      "calls": 123,
+      "triangles": 249507,
+      "cam": {
+       "p": [
+        6.74,
+        1.07,
+        17.71
+       ]
+      }
+     }
+    },
+    "window-depth--review-camera": {
+     "refined": {
+      "calls": 153,
+      "triangles": 440612,
+      "cam": {
+       "p": [
+        10.65,
+        2.39,
+        -10.35
+       ]
+      }
+     },
+     "v1": {
+      "calls": 153,
+      "triangles": 437594,
+      "cam": {
+       "p": [
+        10.65,
+        2.39,
+        -10.35
+       ]
+      }
+     },
+     "procedural": {
+      "calls": 145,
+      "triangles": 434484,
+      "cam": {
+       "p": [
+        10.65,
+        2.39,
+        -10.35
+       ]
+      }
+     }
+    }
+   },
+   "lamps_refined": {
+    "calls": 190,
+    "triangles": 372482,
+    "cam": {
+     "p": [
+      -0.35,
+      2.43,
+      -29.98
+     ],
+     "yaw": 0.95,
+     "pitch": 0,
+     "d": 30,
+     "lat": -0.3
+    },
+    "authored": true
+   },
+   "lamps_v1": {
+    "calls": 190,
+    "triangles": 369328,
+    "cam": {
+     "p": [
+      -0.35,
+      2.43,
+      -29.98
+     ],
+     "yaw": 0.95,
+     "pitch": 0,
+     "d": 30,
+     "lat": -0.3
+    },
+    "authored": false
+   },
+   "cost": {
+    "prologue-start--riding-camera": {
+     "refined": {
+      "calls": 484,
+      "triangles": 755244
+     },
+     "v1": {
+      "calls": 486,
+      "triangles": 761728
+     },
+     "procedural": {
+      "calls": 463,
+      "triangles": 774134
+     }
+    },
+    "prologue-start-left--riding-camera": {
+     "refined": {
+      "calls": 239,
+      "triangles": 429283
+     },
+     "v1": {
+      "calls": 240,
+      "triangles": 430430
+     },
+     "procedural": {
+      "calls": 231,
+      "triangles": 433893
+     }
+    },
+    "prologue-start-right--riding-camera": {
+     "refined": {
+      "calls": 436,
+      "triangles": 828373
+     },
+     "v1": {
+      "calls": 436,
+      "triangles": 824391
+     },
+     "procedural": {
+      "calls": 428,
+      "triangles": 825611
+     }
+    },
+    "prologue-street-ahead--riding-camera": {
+     "refined": {
+      "calls": 490,
+      "triangles": 768474
+     },
+     "v1": {
+      "calls": 490,
+      "triangles": 762580
+     },
+     "procedural": {
+      "calls": 468,
+      "triangles": 772226
+     }
+    },
+    "hoop-house--riding-camera": {
+     "refined": {
+      "calls": 243,
+      "triangles": 609887
+     },
+     "v1": {
+      "calls": 244,
+      "triangles": 611895
+     },
+     "procedural": {
+      "calls": 240,
+      "triangles": 611013
+     }
+    },
+    "car-house--riding-camera": {
+     "refined": {
+      "calls": 252,
+      "triangles": 648350
+     },
+     "v1": {
+      "calls": 253,
+      "triangles": 647775
+     },
+     "procedural": {
+      "calls": 268,
+      "triangles": 646596
+     }
+    },
+    "car-house-and-across--riding-camera": {
+     "refined": {
+      "calls": 316,
+      "triangles": 563161
+     },
+     "v1": {
+      "calls": 316,
+      "triangles": 561112
+     },
+     "procedural": {
+      "calls": 322,
+      "triangles": 562231
+     }
+    }
+   },
+   "memory": {
+    "geometries": 1196,
+    "textures": 49,
+    "jsHeapMB": 1386.9
+   },
+   "after": {
+    "state": "riding",
+    "moved": 11.52
+   }
+  },
+  "bikesAndHouses": {
+   "loaded": {
+    "houses": 12,
+    "houseErrors": [],
+    "bikeErrors": [],
+    "bikes": [
+     "player",
+     "jamie",
+     "sam",
+     "alex"
+    ]
+   },
+   "ride": {
+    "state": "riding",
+    "d": 17.4,
+    "calls": 483,
+    "triangles": 777369,
+    "friends": [
+     {
+      "k": "jamie",
+      "authored": true
+     },
+     {
+      "k": "sam",
+      "authored": true
+     },
+     {
+      "k": "alex",
+      "authored": true
+     }
+    ]
+   },
+   "review": {
+    "calls": 404,
+    "triangles": 666655
+   }
+  },
+  "package": {
+   "withModels": {
+    "out": "/tmp/ll-houses-pc5feN/models",
+    "bytes": 153587954,
+    "branch": "claude/prologue-roads-sidewalks-curbs-reconstruction",
+    "commit": "dc6d696c95ef1ff966873d1531b56c8ee48e2dab",
+    "dirty": false,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "7d3c039db4a23a80e207294246fff54bda6c1172a83aae68d1ee9cbdbc320747",
+    "modules": 178,
+    "pipelineLab": {
+     "entry": "Last-Light-Pipeline-Lab.html",
+     "sha256": "32c29db38b7947c916db327509fb3854c4c3aacee7c9e9be1a1b3c295170883d",
+     "models": [
+      "assets/bike/bike.alex.glb",
+      "assets/bike/bike.jamie.glb",
+      "assets/bike/bike.player.glb",
+      "assets/bike/bike.sam.glb",
+      "assets/house/house.prologue.glb",
+      "assets/house/house.prologue.v1.glb",
+      "assets/pavement/pv.asphalt.albedo.jpg",
+      "assets/pavement/pv.asphalt.hra.jpg",
+      "assets/pavement/pv.asphalt.normal.jpg",
+      "assets/pavement/pv.concrete.albedo.jpg",
+      "assets/pavement/pv.concrete.hra.jpg",
+      "assets/pavement/pv.concrete.normal.jpg",
+      "assets/tst/tst.pipeline-probe.glb",
+      "assets/veg/lm.old-oak.glb",
+      "assets/veg/veg.ground.glb",
+      "assets/veg/veg.lawn.glb",
+      "assets/veg/veg.shrubs.glb",
+      "assets/veg/veg.street-trees.glb"
+     ],
+     "bikeLab": {
+      "entry": "Last-Light-Bike-Lab.html",
+      "sha256": "13363cc495a4bfa2339bcad157fd00d25c3791813bcf2a7f513a8e98de5f6f41"
+     }
+    }
+   },
+   "default": {
+    "out": "/tmp/ll-houses-pc5feN/default",
+    "bytes": 12826003,
+    "branch": "claude/prologue-roads-sidewalks-curbs-reconstruction",
+    "commit": "dc6d696c95ef1ff966873d1531b56c8ee48e2dab",
+    "dirty": false,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "438cf3b332d4a5eedcf429033ce441cd967d2666e98d58fedf32b1a152e1d915",
+    "modules": 178
+   },
+   "sizes": {
+    "withModels": 153587954,
+    "default": 12826003
+   },
+   "game": {
+    "error": null,
+    "errors": [],
+    "houses": 12,
+    "from": "package",
+    "state": "riding"
+   },
+   "v1": {
+    "mode": "v1",
+    "houses": 12,
+    "errors": [],
+    "from": "package",
+    "version": 1,
+    "procedural": "procedural",
+    "back": "refined"
+   },
+   "defaultPackageLabel": "HOUSE BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/house/house.prologue.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)"
+  }
+ },
+ "shots": [
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start--riding-camera--C-refined.jpg",
+   "camera": {
+    "d": 0,
+    "yaw": 0
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 484,
+   "triangles": 755244,
+   "cam": {
+    "p": [
+     -0.31,
+     1.51,
+     0.01
+    ],
+    "yaw": 0,
+    "pitch": 0,
+    "d": 0,
+    "lat": -0.3
+   },
+   "authored": true
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start--riding-camera--B-benchmark.jpg",
+   "camera": {
+    "d": 0,
+    "yaw": 0
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 486,
+   "triangles": 761728,
+   "cam": {
+    "p": [
+     -0.31,
+     1.48,
+     0.01
+    ],
+    "yaw": 0,
+    "pitch": 0,
+    "d": 0,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start--riding-camera--A-procedural.jpg",
+   "camera": {
+    "d": 0,
+    "yaw": 0
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 463,
+   "triangles": 774134,
+   "cam": {
+    "p": [
+     -0.32,
+     1.45,
+     0.02
+    ],
+    "yaw": 0,
+    "pitch": 0,
+    "d": 0,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start-left--riding-camera--C-refined.jpg",
+   "camera": {
+    "d": 20,
+    "yaw": 0.9
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 239,
+   "triangles": 429283,
+   "cam": {
+    "p": [
+     -0.33,
+     2.15,
+     -19.98
+    ],
+    "yaw": 0.9,
+    "pitch": 0,
+    "d": 20,
+    "lat": -0.3
+   },
+   "authored": true
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start-left--riding-camera--B-benchmark.jpg",
+   "camera": {
+    "d": 20,
+    "yaw": 0.9
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 240,
+   "triangles": 430430,
+   "cam": {
+    "p": [
+     -0.34,
+     2.14,
+     -19.98
+    ],
+    "yaw": 0.9,
+    "pitch": 0,
+    "d": 20,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start-left--riding-camera--A-procedural.jpg",
+   "camera": {
+    "d": 20,
+    "yaw": 0.9
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 231,
+   "triangles": 433893,
+   "cam": {
+    "p": [
+     -0.34,
+     2.13,
+     -19.98
+    ],
+    "yaw": 0.9,
+    "pitch": 0,
+    "d": 20,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start-right--riding-camera--C-refined.jpg",
+   "camera": {
+    "d": 24,
+    "yaw": -0.85
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 436,
+   "triangles": 828373,
+   "cam": {
+    "p": [
+     -0.34,
+     2.26,
+     -23.98
+    ],
+    "yaw": -0.85,
+    "pitch": 0,
+    "d": 24,
+    "lat": -0.3
+   },
+   "authored": true
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start-right--riding-camera--B-benchmark.jpg",
+   "camera": {
+    "d": 24,
+    "yaw": -0.85
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 436,
+   "triangles": 824391,
+   "cam": {
+    "p": [
+     -0.34,
+     2.25,
+     -23.98
+    ],
+    "yaw": -0.85,
+    "pitch": 0,
+    "d": 24,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start-right--riding-camera--A-procedural.jpg",
+   "camera": {
+    "d": 24,
+    "yaw": -0.85
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 428,
+   "triangles": 825611,
+   "cam": {
+    "p": [
+     -0.34,
+     2.25,
+     -23.98
+    ],
+    "yaw": -0.85,
+    "pitch": 0,
+    "d": 24,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-street-ahead--riding-camera--C-refined.jpg",
+   "camera": {
+    "d": -12,
+    "yaw": 0.12,
+    "pitch": 0.05
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 490,
+   "triangles": 768474,
+   "cam": {
+    "p": [
+     -0.35,
+     0.97,
+     12.03
+    ],
+    "yaw": 0.12,
+    "pitch": 0.05,
+    "d": -12,
+    "lat": -0.3
+   },
+   "authored": true
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-street-ahead--riding-camera--B-benchmark.jpg",
+   "camera": {
+    "d": -12,
+    "yaw": 0.12,
+    "pitch": 0.05
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 490,
+   "triangles": 762580,
+   "cam": {
+    "p": [
+     -0.35,
+     0.97,
+     12.03
+    ],
+    "yaw": 0.12,
+    "pitch": 0.05,
+    "d": -12,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-street-ahead--riding-camera--A-procedural.jpg",
+   "camera": {
+    "d": -12,
+    "yaw": 0.12,
+    "pitch": 0.05
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 468,
+   "triangles": 772226,
+   "cam": {
+    "p": [
+     -0.35,
+     0.97,
+     12.03
+    ],
+    "yaw": 0.12,
+    "pitch": 0.05,
+    "d": -12,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/hoop-house--riding-camera--C-refined.jpg",
+   "camera": {
+    "d": 138,
+    "yaw": 0.75
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 243,
+   "triangles": 609887,
+   "cam": {
+    "p": [
+     -0.19,
+     2.36,
+     -138.05
+    ],
+    "yaw": 0.75,
+    "pitch": 0,
+    "d": 138,
+    "lat": -0.3
+   },
+   "authored": true
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/hoop-house--riding-camera--B-benchmark.jpg",
+   "camera": {
+    "d": 138,
+    "yaw": 0.75
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 244,
+   "triangles": 611895,
+   "cam": {
+    "p": [
+     -0.19,
+     2.36,
+     -138.05
+    ],
+    "yaw": 0.75,
+    "pitch": 0,
+    "d": 138,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/hoop-house--riding-camera--A-procedural.jpg",
+   "camera": {
+    "d": 138,
+    "yaw": 0.75
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 240,
+   "triangles": 611013,
+   "cam": {
+    "p": [
+     -0.19,
+     2.36,
+     -138.05
+    ],
+    "yaw": 0.75,
+    "pitch": 0,
+    "d": 138,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house--riding-camera--C-refined.jpg",
+   "camera": {
+    "d": 505,
+    "yaw": 0.8
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 252,
+   "triangles": 648350,
+   "cam": {
+    "p": [
+     132.02,
+     2.17,
+     -470.72
+    ],
+    "yaw": 0.8,
+    "pitch": 0,
+    "d": 505,
+    "lat": -0.3
+   },
+   "authored": true
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house--riding-camera--B-benchmark.jpg",
+   "camera": {
+    "d": 505,
+    "yaw": 0.8
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 253,
+   "triangles": 647775,
+   "cam": {
+    "p": [
+     132.02,
+     2.17,
+     -470.72
+    ],
+    "yaw": 0.8,
+    "pitch": 0,
+    "d": 505,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house--riding-camera--A-procedural.jpg",
+   "camera": {
+    "d": 505,
+    "yaw": 0.8
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 268,
+   "triangles": 646596,
+   "cam": {
+    "p": [
+     132.02,
+     2.17,
+     -470.72
+    ],
+    "yaw": 0.8,
+    "pitch": 0,
+    "d": 505,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house-and-across--riding-camera--C-refined.jpg",
+   "camera": {
+    "d": 540,
+    "yaw": 2.6
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 316,
+   "triangles": 563161,
+   "cam": {
+    "p": [
+     120.1,
+     2.9,
+     -503.56
+    ],
+    "yaw": 2.6,
+    "pitch": 0,
+    "d": 540,
+    "lat": -0.3
+   },
+   "authored": true
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house-and-across--riding-camera--B-benchmark.jpg",
+   "camera": {
+    "d": 540,
+    "yaw": 2.6
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 316,
+   "triangles": 561112,
+   "cam": {
+    "p": [
+     120.1,
+     2.9,
+     -503.56
+    ],
+    "yaw": 2.6,
+    "pitch": 0,
+    "d": 540,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house-and-across--riding-camera--A-procedural.jpg",
+   "camera": {
+    "d": 540,
+    "yaw": 2.6
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 322,
+   "triangles": 562231,
+   "cam": {
+    "p": [
+     120.1,
+     2.9,
+     -503.56
+    ],
+    "yaw": 2.6,
+    "pitch": 0,
+    "d": 540,
+    "lat": -0.3
+   },
+   "authored": false
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house-porch--review-camera--C-refined.jpg",
+   "camera": {
+    "lot": "main:-1:530",
+    "from": [
+     2.5,
+     1.7,
+     13
+    ],
+    "at": [
+     -0.4,
+     2.2,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 537,
+   "triangles": 855574,
+   "cam": {
+    "p": [
+     119.58,
+     2.94,
+     -486.85
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house-porch--review-camera--B-benchmark.jpg",
+   "camera": {
+    "lot": "main:-1:530",
+    "from": [
+     2.5,
+     1.7,
+     13
+    ],
+    "at": [
+     -0.4,
+     2.2,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 537,
+   "triangles": 852921,
+   "cam": {
+    "p": [
+     119.58,
+     2.94,
+     -486.85
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house-porch--review-camera--A-procedural.jpg",
+   "camera": {
+    "lot": "main:-1:530",
+    "from": [
+     2.5,
+     1.7,
+     13
+    ],
+    "at": [
+     -0.4,
+     2.2,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 508,
+   "triangles": 854001,
+   "cam": {
+    "p": [
+     119.58,
+     2.94,
+     -486.85
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house-garage-open--review-camera--C-refined.jpg",
+   "camera": {
+    "lot": "main:-1:530",
+    "from": [
+     6.5,
+     1.7,
+     14
+    ],
+    "at": [
+     6.2,
+     1.3,
+     0
+    ],
+    "open": 0.95
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 293,
+   "triangles": 617936,
+   "cam": {
+    "p": [
+     119.12,
+     3.04,
+     -490.94
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house-garage-open--review-camera--B-benchmark.jpg",
+   "camera": {
+    "lot": "main:-1:530",
+    "from": [
+     6.5,
+     1.7,
+     14
+    ],
+    "at": [
+     6.2,
+     1.3,
+     0
+    ],
+    "open": 0.95
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 292,
+   "triangles": 615966,
+   "cam": {
+    "p": [
+     119.12,
+     3.04,
+     -490.94
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/car-house-garage-open--review-camera--A-procedural.jpg",
+   "camera": {
+    "lot": "main:-1:530",
+    "from": [
+     6.5,
+     1.7,
+     14
+    ],
+    "at": [
+     6.2,
+     1.3,
+     0
+    ],
+    "open": 0.95
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 298,
+   "triangles": 617963,
+   "cam": {
+    "p": [
+     119.12,
+     3.04,
+     -490.94
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/colonial-across-start--review-camera--C-refined.jpg",
+   "camera": {
+    "lot": "main:1:8",
+    "from": [
+     -3,
+     1.7,
+     12
+    ],
+    "at": [
+     -1,
+     3,
+     4.5
+    ]
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 138,
+   "triangles": 263866,
+   "cam": {
+    "p": [
+     7.15,
+     2.15,
+     -11.75
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/colonial-across-start--review-camera--B-benchmark.jpg",
+   "camera": {
+    "lot": "main:1:8",
+    "from": [
+     -3,
+     1.7,
+     12
+    ],
+    "at": [
+     -1,
+     3,
+     4.5
+    ]
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 138,
+   "triangles": 260540,
+   "cam": {
+    "p": [
+     7.15,
+     2.15,
+     -11.75
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/colonial-across-start--review-camera--A-procedural.jpg",
+   "camera": {
+    "lot": "main:1:8",
+    "from": [
+     -3,
+     1.7,
+     12
+    ],
+    "at": [
+     -1,
+     3,
+     4.5
+    ]
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 130,
+   "triangles": 256562,
+   "cam": {
+    "p": [
+     7.15,
+     2.15,
+     -11.75
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/ranch-start--review-camera--C-refined.jpg",
+   "camera": {
+    "lot": "main:-1:-21",
+    "from": [
+     3.5,
+     1.7,
+     13.5
+    ],
+    "at": [
+     -0.5,
+     2.2,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 129,
+   "triangles": 241819,
+   "cam": {
+    "p": [
+     -5.07,
+     1.13,
+     15.68
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/ranch-start--review-camera--B-benchmark.jpg",
+   "camera": {
+    "lot": "main:-1:-21",
+    "from": [
+     3.5,
+     1.7,
+     13.5
+    ],
+    "at": [
+     -0.5,
+     2.2,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 129,
+   "triangles": 240501,
+   "cam": {
+    "p": [
+     -5.07,
+     1.13,
+     15.68
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/ranch-start--review-camera--A-procedural.jpg",
+   "camera": {
+    "lot": "main:-1:-21",
+    "from": [
+     3.5,
+     1.7,
+     13.5
+    ],
+    "at": [
+     -0.5,
+     2.2,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 125,
+   "triangles": 238785,
+   "cam": {
+    "p": [
+     -5.07,
+     1.13,
+     15.68
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/hoop-house--review-camera--C-refined.jpg",
+   "camera": {
+    "lot": "main:-1:153",
+    "from": [
+     -5,
+     1.7,
+     14
+    ],
+    "at": [
+     -8.5,
+     2.5,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 172,
+   "triangles": 265877,
+   "cam": {
+    "p": [
+     -4.17,
+     2.45,
+     -148.36
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/hoop-house--review-camera--B-benchmark.jpg",
+   "camera": {
+    "lot": "main:-1:153",
+    "from": [
+     -5,
+     1.7,
+     14
+    ],
+    "at": [
+     -8.5,
+     2.5,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 172,
+   "triangles": 264309,
+   "cam": {
+    "p": [
+     -4.17,
+     2.45,
+     -148.36
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/hoop-house--review-camera--A-procedural.jpg",
+   "camera": {
+    "lot": "main:-1:153",
+    "from": [
+     -5,
+     1.7,
+     14
+    ],
+    "at": [
+     -8.5,
+     2.5,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 168,
+   "triangles": 263427,
+   "cam": {
+    "p": [
+     -4.17,
+     2.45,
+     -148.36
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/cape-start--review-camera--C-refined.jpg",
+   "camera": {
+    "lot": "main:-1:37",
+    "from": [
+     3,
+     1.7,
+     12.5
+    ],
+    "at": [
+     0,
+     2.6,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 136,
+   "triangles": 236054,
+   "cam": {
+    "p": [
+     -6.71,
+     3.07,
+     -42.48
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/cape-start--review-camera--B-benchmark.jpg",
+   "camera": {
+    "lot": "main:-1:37",
+    "from": [
+     3,
+     1.7,
+     12.5
+    ],
+    "at": [
+     0,
+     2.6,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 136,
+   "triangles": 232961,
+   "cam": {
+    "p": [
+     -6.71,
+     3.07,
+     -42.48
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/cape-start--review-camera--A-procedural.jpg",
+   "camera": {
+    "lot": "main:-1:37",
+    "from": [
+     3,
+     1.7,
+     12.5
+    ],
+    "at": [
+     0,
+     2.6,
+     4
+    ]
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 128,
+   "triangles": 230172,
+   "cam": {
+    "p": [
+     -6.71,
+     3.07,
+     -42.48
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/front-gable-start--review-camera--C-refined.jpg",
+   "camera": {
+    "lot": "main:1:-21",
+    "from": [
+     -2,
+     1.7,
+     13
+    ],
+    "at": [
+     0,
+     3.4,
+     5
+    ]
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 127,
+   "triangles": 252711,
+   "cam": {
+    "p": [
+     6.74,
+     1.07,
+     17.71
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/front-gable-start--review-camera--B-benchmark.jpg",
+   "camera": {
+    "lot": "main:1:-21",
+    "from": [
+     -2,
+     1.7,
+     13
+    ],
+    "at": [
+     0,
+     3.4,
+     5
+    ]
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 127,
+   "triangles": 251166,
+   "cam": {
+    "p": [
+     6.74,
+     1.07,
+     17.71
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/front-gable-start--review-camera--A-procedural.jpg",
+   "camera": {
+    "lot": "main:1:-21",
+    "from": [
+     -2,
+     1.7,
+     13
+    ],
+    "at": [
+     0,
+     3.4,
+     5
+    ]
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 123,
+   "triangles": 249507,
+   "cam": {
+    "p": [
+     6.74,
+     1.07,
+     17.71
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/window-depth--review-camera--C-refined.jpg",
+   "camera": {
+    "lot": "main:1:8",
+    "from": [
+     -1.6,
+     1.9,
+     8.5
+    ],
+    "at": [
+     -2.6,
+     1.75,
+     4.9
+    ]
+   },
+   "kind": "game",
+   "mode": "refined",
+   "calls": 153,
+   "triangles": 440612,
+   "cam": {
+    "p": [
+     10.65,
+     2.39,
+     -10.35
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/window-depth--review-camera--B-benchmark.jpg",
+   "camera": {
+    "lot": "main:1:8",
+    "from": [
+     -1.6,
+     1.9,
+     8.5
+    ],
+    "at": [
+     -2.6,
+     1.75,
+     4.9
+    ]
+   },
+   "kind": "game",
+   "mode": "v1",
+   "calls": 153,
+   "triangles": 437594,
+   "cam": {
+    "p": [
+     10.65,
+     2.39,
+     -10.35
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/window-depth--review-camera--A-procedural.jpg",
+   "camera": {
+    "lot": "main:1:8",
+    "from": [
+     -1.6,
+     1.9,
+     8.5
+    ],
+    "at": [
+     -2.6,
+     1.75,
+     4.9
+    ]
+   },
+   "kind": "game",
+   "mode": "procedural",
+   "calls": 145,
+   "triangles": 434484,
+   "cam": {
+    "p": [
+     10.65,
+     2.39,
+     -10.35
+    ]
+   }
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start-left--riding-camera--room-lamps-on--C-refined.jpg",
+   "kind": "game",
+   "mode": "refined",
+   "note": "V: room lamps forced on (in the ride they come on house by house as the evening goes)"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/prologue-start-left--riding-camera--room-lamps-on--B-benchmark.jpg",
+   "kind": "game",
+   "mode": "v1",
+   "note": "V: room lamps forced on (in the ride they come on house by house as the evening goes)"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/bikes-and-houses--riding-camera.jpg",
+   "kind": "game",
+   "state": "riding",
+   "d": 17.4,
+   "calls": 483,
+   "triangles": 777369,
+   "friends": [
+    {
+     "k": "jamie",
+     "authored": true
+    },
+    {
+     "k": "sam",
+     "authored": true
+    },
+    {
+     "k": "alex",
+     "authored": true
+    }
+   ]
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/bikes-and-houses--review-camera--C-refined.jpg",
+   "kind": "game review camera",
+   "calls": 404,
+   "triangles": 666655
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/bikes-and-houses--review-camera--B-benchmark-same-frame.jpg",
+   "kind": "game review camera"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/bikes-and-houses--review-camera--A-procedural-same-frame.jpg",
+   "kind": "game review camera"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/package-offline-game-prologue-houses.jpg",
+   "kind": "game (offline package)"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/1a94a3b0-6faa-5590-8170-a4bf7ac78174/scratchpad/dev/regress/house/package-default-houses-fail-loudly.jpg",
+   "kind": "game (default package)"
+  }
+ ],
+ "finished": "2026-11-19T23:04:09.337Z",
+ "passed": 30,
+ "failed": 0
+}
