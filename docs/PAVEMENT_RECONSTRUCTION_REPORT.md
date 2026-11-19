@@ -2,7 +2,7 @@
 
 **Branch** `claude/prologue-roads-sidewalks-curbs-reconstruction`, started from
 `claude/prologue-grass-lawn-ground-repair` at **`ec34db3a59646beb8b4be1d2aeeda77354a1f5d2`** (verified before any
-change; that branch is untouched). Final commit: see §15 and the commit log; nothing is merged into `main`.
+change; that branch is untouched). Final commit: in the table below; nothing is merged into `main`.
 Without `?pavement` the game is unchanged (proved below, vertex by vertex).
 
 **Evidence and its limits.** Every in-game image is the shipped renderer under **software WebGL** (Chromium + ANGLE
@@ -11,7 +11,13 @@ playthrough), at 1600 × 900. Each before/after pair is **one camera and one fra
 No Blender render and no concept image is used anywhere in this report. Every performance number is a software-renderer
 or file number; no real-GPU frame time has been measured.
 
-__RESULTS_SUMMARY__
+**Result.** With `?pavement` the roads, gutters, curbs, sidewalks, driveway aprons, driveways, front walks, the two
+junctions, the side streets and the cul-de-sac render as physically based asphalt and concrete (CC0 photogrammetry
+micro-structure + Last Light's own layout-driven wear), in the running game, with **O** comparing against the original
+in the same frame. The geometry, every gameplay query, collisions and the riding are the default game's — proved vertex
+by vertex and query by query — except two documented visual-only fixes (soil faces closing the step beside driveway
+aprons; the cul-de-sac bulb tessellated so it no longer sinks below the ground). Pavement suite: **30 passed, 0 failed**.
+Shown in the Prologue only; Chapter Eight's damage cuts the same materials.
 
 ## 1. Source of truth
 
@@ -70,7 +76,7 @@ front-yard trees within 17 m of the street (106). A 256 × 1 table holds each dr
 there, and whether children live there (a hoop, a friend's house). The shader reads both, so wear follows use.
 
 **Geometry: two localized changes, both visual only** (no gameplay height, collision, navigation or lawn changes; every
-other vertex in the world is the default game's, §12):
+other vertex in the world is the default game's, §11):
 
 1. **Soil faces at the driveway aprons.** Thin faces closing the open step beside every driveway apron and at the
    lowered curb in front of it (30 batches, 8,384 triangles, no shadow proxy of their own). Before, the base ground
@@ -154,16 +160,132 @@ oak and the lookout grass are untouched.
 ## 8. Lawn boundary compatibility
 
 No lawn, grass, tree, oak or plant geometry or material was changed. The repaired lawn's masks read the world's ground
-queries (`surfaceY`, `authoredY`), which are identical with and without `?pavement` (§12), and the lawn builds the same
+queries (`surfaceY`, `authoredY`), which are identical with and without `?pavement` (§11), and the lawn builds the same
 cells in the same chunks (part C). The soil faces sit below the lawn's edge, inside the step the lawn never covered.
 
-__CAPTURES__
+## 9. Before/after evidence
 
-__PERF__
+Every row is **one camera and one frame** in the running game (game-renderer captures; the gameplay riding camera
+placed by the QA hook; **software WebGL**, SwiftShader; 1600 × 900; commit `c30d2c1`). Only the O key's mode changes
+between the two images. The clock is the game's own HUD. P12, P17, P19, P20 and P22 were taken with
+`?bikes&houses&vegetation&pavement` (the authored bikes, refined houses, authored vegetation and repaired lawn on in
+both halves; only the pavement changes). The camera pose of each is in `qa/pavement/browser/report.json`.
 
-__TESTS__
+A browsable version with a compare slider: the review gallery (published link in the delivery message; the same page is
+`review-gallery/index.html` inside the ZIP).
 
-## 13. Asset provenance and licences
+| View | Camera | Scene and light | After | Before |
+|---|---|---|---|---|
+| **P01** asphalt directly beneath the player while riding | riding camera (QA placement) | AUGUST 21, 2011  7:42 PM · golden hour | [reconstructed](qa/pavement/browser/P01-asphalt-beneath-the-bike--reconstructed.jpg) | [original](qa/pavement/browser/P01-asphalt-beneath-the-bike--original.jpg) |
+| **P02** the road looking forward from bicycle height | riding camera (QA placement) | AUGUST 21, 2011  7:42 PM · golden hour | [reconstructed](qa/pavement/browser/P02-road-ahead-from-the-bike--reconstructed.jpg) | [original](qa/pavement/browser/P02-road-ahead-from-the-bike--original.jpg) |
+| **P03** a long view down Oak Hollow Drive | riding camera (QA placement) | AUGUST 21, 2011  7:46 PM · golden hour | [reconstructed](qa/pavement/browser/P03-long-view-down-oak-hollow--reconstructed.jpg) | [original](qa/pavement/browser/P03-long-view-down-oak-hollow--original.jpg) |
+| **P04** a close asphalt detail: a repaired manhole, a sealed crack | riding camera (QA placement) | AUGUST 21, 2011  7:43 PM · golden hour | [reconstructed](qa/pavement/browser/P04-asphalt-close-detail--reconstructed.jpg) | [original](qa/pavement/browser/P04-asphalt-close-detail--original.jpg) |
+| **P05** asphalt meeting the concrete gutter pan | riding camera (QA placement) | AUGUST 21, 2011  7:44 PM · golden hour | [reconstructed](qa/pavement/browser/P05-asphalt-meets-gutter--reconstructed.jpg) | [original](qa/pavement/browser/P05-asphalt-meets-gutter--original.jpg) |
+| **P06** sidewalk concrete (riding camera on the walk, eye about 1.5 m) | riding camera (QA placement) | AUGUST 21, 2011  7:42 PM · golden hour | [reconstructed](qa/pavement/browser/P06-sidewalk-from-standing-height--reconstructed.jpg) | [original](qa/pavement/browser/P06-sidewalk-from-standing-height--original.jpg) |
+| **P07** sidewalk joints from close range | riding camera (QA placement) | AUGUST 21, 2011  7:42 PM · golden hour | [reconstructed](qa/pavement/browser/P07-sidewalk-joints-close--reconstructed.jpg) | [original](qa/pavement/browser/P07-sidewalk-joints-close--original.jpg) |
+| **P08** the curb face from bicycle height | riding camera (QA placement) | AUGUST 21, 2011  7:42 PM · golden hour | [reconstructed](qa/pavement/browser/P08-curb-face-from-the-bike--reconstructed.jpg) | [original](qa/pavement/browser/P08-curb-face-from-the-bike--original.jpg) |
+| **P09** a driveway curb cut from street level | riding camera (QA placement) | AUGUST 21, 2011  7:43 PM · golden hour | [reconstructed](qa/pavement/browser/P09-driveway-curb-cut--reconstructed.jpg) | [original](qa/pavement/browser/P09-driveway-curb-cut--original.jpg) |
+| **P10** a complete residential driveway | riding camera (QA placement) | AUGUST 21, 2011  7:43 PM · golden hour | [reconstructed](qa/pavement/browser/P10-a-whole-driveway--reconstructed.jpg) | [original](qa/pavement/browser/P10-a-whole-driveway--original.jpg) |
+| **P11** the sidewalk passing a driveway | riding camera (QA placement) | AUGUST 21, 2011  7:43 PM · golden hour | [reconstructed](qa/pavement/browser/P11-sidewalk-passing-a-driveway--reconstructed.jpg) | [original](qa/pavement/browser/P11-sidewalk-passing-a-driveway--original.jpg) |
+| **P13** the Briarwood Lane junction | riding camera (QA placement) | AUGUST 21, 2011  7:51 PM · sunset | [reconstructed](qa/pavement/browser/P13-briarwood-intersection--reconstructed.jpg) | [original](qa/pavement/browser/P13-briarwood-intersection--original.jpg) |
+| **P14** the Summerfield Road junction | riding camera (QA placement) | AUGUST 21, 2011  7:55 PM · sunset | [reconstructed](qa/pavement/browser/P14-summerfield-intersection--reconstructed.jpg) | [original](qa/pavement/browser/P14-summerfield-intersection--original.jpg) |
+| **P15** the curved cul-de-sac curb | riding camera (QA placement) | AUGUST, 2011  AS YOU REMEMBER IT · dusk at the cul-de-sac | [reconstructed](qa/pavement/browser/P15-cul-de-sac-curb--reconstructed.jpg) | [original](qa/pavement/browser/P15-cul-de-sac-curb--original.jpg) |
+| **P16** the cul-de-sac asphalt and the lookout | riding camera (QA placement) | AUGUST, 2011  AS YOU REMEMBER IT · dusk at the cul-de-sac | [reconstructed](qa/pavement/browser/P16-cul-de-sac-and-lookout--reconstructed.jpg) | [original](qa/pavement/browser/P16-cul-de-sac-and-lookout--original.jpg) |
+| **P18** the streetlight at d 1115 on the pavement, end of the evening (after the call at the lookout, night 0.7) | riding camera (QA placement) | AUGUST, 2011  AS YOU REMEMBER IT · end of the evening (after the call) | [reconstructed](qa/pavement/browser/P18-streetlights-at-dusk--reconstructed.jpg) | [original](qa/pavement/browser/P18-streetlights-at-dusk--original.jpg) |
+| **P21** the game's flashlight on the pavement at the end of the evening (QA lighting test: the flashlight light switched on in the Prologue, after the call) | riding camera (QA placement) | AUGUST, 2011  AS YOU REMEMBER IT · end of the evening (after the call) | [reconstructed](qa/pavement/browser/P21-flashlight-on-the-pavement--reconstructed.jpg) | [original](qa/pavement/browser/P21-flashlight-on-the-pavement--original.jpg) |
+| **P12** the sidewalk and the repaired lawn | riding camera, with `?bikes&houses&vegetation` | AUGUST 21, 2011  7:43 PM · golden hour | [reconstructed](qa/pavement/browser/P12-sidewalk-and-lawn-boundary--reconstructed.jpg) | [original](qa/pavement/browser/P12-sidewalk-and-lawn-boundary--original.jpg) |
+| **P17** golden-hour shadows across the road | riding camera, with `?bikes&houses&vegetation` | AUGUST 21, 2011  7:45 PM · golden hour | [reconstructed](qa/pavement/browser/P17-golden-hour-shadows--reconstructed.jpg) | [original](qa/pavement/browser/P17-golden-hour-shadows--original.jpg) |
+| **P19** a wider scene with the refined houses and vegetation | riding camera, with `?bikes&houses&vegetation` | AUGUST 21, 2011  7:43 PM · golden hour | [reconstructed](qa/pavement/browser/P19-houses-trees-and-pavement--reconstructed.jpg) | [original](qa/pavement/browser/P19-houses-trees-and-pavement--original.jpg) |
+| **P20** the boys' bicycles with all four upgraded systems | riding camera, with `?bikes&houses&vegetation` | AUGUST 21, 2011  7:42 PM · golden hour | [reconstructed](qa/pavement/browser/P20-the-boys-bikes-and-all-four--reconstructed.jpg) | [original](qa/pavement/browser/P20-the-boys-bikes-and-all-four--original.jpg) |
+| **P22** a driveway apron and the repaired lawn | riding camera, with `?bikes&houses&vegetation` | AUGUST 21, 2011  7:43 PM · golden hour | [reconstructed](qa/pavement/browser/P22-curb-cut-with-the-repaired-lawn--reconstructed.jpg) | [original](qa/pavement/browser/P22-curb-cut-with-the-repaired-lawn--original.jpg) |
+
+Also: `P23-aftermath1-damage-with-the-flag--as-played.jpg` / `--forced-on.jpg` (Aftermath I with `?pavement`: as played
+the label says "outside the Prologue: original surfaces shown"; the second frame forces the reconstruction on for the
+test only — the fenced trench lies beyond this camera, so the material-level check in §11 is the proof that the damage
+cuts the pavement, not this frame).
+
+**What the pairs show (my reading, for review):**
+- *Asphalt (P01–P05, P13, P14, P17).* The original is a smooth grey sheet with long looping one-pixel "cracks"; the
+  reconstruction shows stone aggregate in binder at the right scale, darker wheel paths and the oil line, the crown's
+  sealed seam, sparse sealed transverse cracks, patches with fine saw-cut seams, a cast-iron cover in a repaired
+  surround, and golden-hour glare along the road toward the sun.
+- *Concrete (P05–P11).* The original is flat beige with dark bars laid on top; the reconstruction shows broom-finished
+  panels with tooled margins and real joints, per-panel tone and age, a curb with joints, worn nose and grime at its
+  base, a gutter pan with its flow line and a few leaves, and the driveway's apron, slabs and tire wear.
+- *Cohesion (P12, P17, P19, P20, P22).* Beside the repaired lawn, the refined houses, the authored trees (their dappled
+  shadows) and the authored bikes the street no longer reads as the most primitive surface in the frame.
+- *Night (P18, P21).* Under the streetlight and the flashlight the aggregate reads; the original stays a flat smear.
+
+## 10. Performance and memory
+
+All numbers are **software rendering** (Chromium + ANGLE SwiftShader) or file sizes. **No real-GPU frame time has been
+measured**; do not read these as GPU benchmarks.
+
+**Files and memory**
+
+| | |
+|---|---|
+| Textures | 6 × 1024² JPEG (asphalt and concrete: albedo detail, normal, height/roughness/AO), **5.6 MB** on disk |
+| GPU texture memory (estimate, RGBA8 + mips) | **~32 MB** (6 × 5.3 MB); the layout map 64 KB, the driveway table 1 KB |
+| Shader programs | one per surface kind (asphalt, gutter, curb, walk, driveway, walk path, cast iron); 88 programs in the page in all |
+| Merged batches | 2,395 against the default 2,225 (+170): each concrete kind is its own batch per 110 m cell (they shared one before), the soil faces and the bulb have their own, and the old decals keep their own batches for the comparison |
+| Triangles added | 8,384 (soil faces) + 1,470 (the tessellated bulb, replacing the default fan's 98) — the rest of the geometry is the default game's |
+| Loading | textures load in 41 ms from a local server after the world is built (part B); the world build itself is the default game's (the flag adds the attributes and the layout map) |
+| Offline package | `Last-Light-Playtest.html` 153.6 MB with every benchmark's models (+5.6 MB of pavement textures as base64 ≈ +7.5 MB) |
+
+**In the same frame (the suite's pairs; reconstructed vs. the pavement build's ORIGINAL mode)**: 2–21 *fewer* draw calls
+and up to 1.7 % fewer triangles in reconstructed mode, because the original's decal patches, joint bars and crack lines
+are hidden in it. Against the **default game** at the same cameras:
+
+__COST_TABLE__
+
+**What a GPU will pay (not measured here):** the asphalt reads six textures (two scales of three maps) and evaluates
+about a dozen noise lookups per pixel; concrete the same; the curb nine texture reads (triplanar). Over a street that
+covers a large part of the screen, that is the main new fragment cost. The next measurement is real hardware.
+
+## 11. Regression tests
+
+Every suite ran **alone** (one browser at a time) on the final code, software WebGL.
+
+**The pavement suite** — `node tests/pavement-browser.mjs` → `docs/qa/pavement/browser/report.json`: **30 passed, 0 failed**.
+
+| Area | Check | Result |
+|---|---|---|
+| Default game | without `?pavement` no pavement module or texture is fetched; no pavement material, attribute or layout; 379 shadow proxies as accepted; no page errors | pass |
+| Textures | six load, 1024², tiled, trilinear mipmaps, 16× anisotropy, linear data; real-world scale 410 / 512 px/m | pass |
+| Coordinates | every pavement batch (200) has finite `uv` and a unit along-direction; on Oak Hollow Drive the asphalt's `uv` is the street's own (0 cm error over 770 samples) | pass |
+| UV stretch | micro-structure in world metres (none); street-coordinate features at most 4.75 % off true length at the asphalt edge on the tightest bend | pass |
+| **Geometry** | every vertex of every merged batch, shadow proxy and line batch hashed at 1 mm: **identical** to the default game (3,672,521 triangles), but for the soil faces and the bulb (reported separately) | pass |
+| **Gameplay** | `surfaceY`, `rideable`, `groundY`, `authoredY` at 30,848 street points identical; obstacles (812), navigation shapes and 105 driveway openings unchanged | pass |
+| **Riding** | a scripted ride over a driveway cut onto the walk and one into a plain curb: identical path, speed and wheel height | pass |
+| Junctions and bulb | 13,125 rays from above over both junctions and the cul-de-sac: no gap, nothing below the street's ground, nothing more than 3.5 cm off the authored height away from curbs and surface edges (the default game: 191 rays in the bulb below the ground — fixed, §3) | pass |
+| Comparison | O swaps reconstructed / original (shader, old decals, joint bars, crack lines) in one frame | pass |
+| Captures | 22 pairs, each one camera and one frame | pass |
+| Cost | in every pair, no more draw calls and at most 1 % more triangles than the original mode | pass |
+| Shaders | no page error anywhere (every pavement program compiles and links) | pass |
+| Prologue only | active in the Prologue; inactive in Chapter One (state `c1-ride`) | pass |
+| Chapter Eight | in Aftermath I the reconstruction is inactive and Chapter Eight's ground cuts are installed on all eight pavement material programs (`…|c8cut`) | pass |
+| Four benchmarks | `?bikes&houses&vegetation&pavement` loads (lawn mode C); riding works; no errors | pass |
+| **Lawn** | the repaired lawn builds the same cells in the same chunks with and without `?pavement` (6 chunks: 106/89/96/120/119/112 cells) | pass |
+| Offline package | `PLAYTEST_MODELS=1` embeds the six textures and both modules; from disk with the browser offline, `?pavement` loads from the embedded bytes, no network request, no error | pass |
+| Default package | `?pavement` fails loudly ("not embedded … package with PLAYTEST_MODELS=1") and substitutes nothing | pass |
+
+**The existing suites** (each against its accepted result; outputs in scratch, summaries in
+`docs/qa/pavement/regression/`):
+
+__REGRESSION_TABLE__
+
+**Boundaries kept.** Untouched: story, dialogue, departures, chapters, Chapter Eight's destruction, Aftermath I and II,
+the 2026 coda and credits, bicycle controls and steering, movement, camera, collisions (proved above), house positions,
+street and sidewalk routes, driveway access, curb heights, character and bike models, vegetation and the oak, sky,
+lighting, audio, menus, saves. Outside the new files (`pavement-surfaces.js`, `pavement-benchmark.js`, the textures and
+tools), the changes are all behind the flag: `game.js` (the flag, the import, the Prologue predicate),
+`world.js` (`uv`/`pv` carried for materials that ask; tagged line batches; the layout lists), `streets.js`
+(pavement materials, coordinates, soil faces, the bulb), `houses.js` (driveway and walk coordinates and materials),
+`furniture.js` (inlet and manhole records, cast-iron covers, the old decals' own batches), `vegetation.js` (front-yard
+tree records), `props.js` (which driveways have a car).
+
+## 12. Asset provenance and licences
 
 | Asset | Licence | Where |
 |---|---|---|
@@ -175,9 +297,35 @@ __TESTS__
 Provenance and SHA-256 sums: `assets/source/road/PROVENANCE.md`, `assets/source/road/SHA256SUMS`;
 `docs/THIRD_PARTY_ASSETS.md` credits both authors. No CC BY material, no external runtime dependency, no CDN request.
 
-__LIMITS__
+## 13. Known limitations and unresolved issues
 
-## 15. How to try it
+- **No real GPU.** Every frame and number is software rendering. The fragment cost is real (§10); its frame time on the
+  reference hardware is the next measurement, together with the other three benchmarks.
+- **Prologue only.** The reconstruction is off from the night chapters on (by design, until approval): Chapter One's
+  night, Chapters Two to Eight, Aftermath I/II and the coda show the original surfaces. Carrying it through the story
+  (rain, the storm, the damage, the 2021 repaving) is a later decision (A-59); the wet-state foundation exists but is
+  dormant and untested on screen.
+- **Riding camera only.** "Sidewalk from standing height" (P06) is the riding camera on the walk (eye about 1.5 m); the
+  Prologue's on-foot camera exists only at the lookout.
+- **Streetlights.** Before the call the evening is still bright and the lamps' light on the pavement is faint by the
+  game's own lighting design; P18 is therefore taken after the call. The lamps themselves were not changed.
+- **Fine features at distance.** Hairline cracks fade out by design beyond about 5 cm of pixel footprint (to avoid
+  shimmer); sealant bands and patches stay visible. In motion this was judged only from still frames in software;
+  temporal shimmer on a real GPU at speed has not been reviewed by a person.
+- **Root heave and chips are shading.** Heaved panels, chipped edges and lips are normal/colour effects; no panel is
+  actually displaced (collision heights untouched by design).
+- **Side faces.** The thin vertical faces (the driveway skirts, the side-street end curbs, the walk's edge bevels) use
+  generic coordinates and read as plain concrete.
+- **House walks** carry the concrete and joints but not the sidewalk's per-panel ageing.
+- **The soil faces** are a minimal fix of a pre-existing seam; flared concrete apron wings would be the fuller answer
+  (A-58).
+- **Aftermath I evidence.** The damage frame (P23) shows the fenced street, not the trench itself; the proof that the
+  damage still cuts the pavement is the material-level check (§11).
+- **The comparison's ORIGINAL** is drawn inside the pavement build: identical shaders and geometry to the default game
+  except the tessellated bulb (a few centimetres higher on the left of the bulb, where it now meets the ground) and the
+  soil faces at the aprons.
+
+## 14. How to try it
 
 ```bash
 python3 -m http.server -d dist 8000
@@ -192,4 +340,19 @@ Edge, add `?bikes&houses&vegetation&pavement` to the address (instructions in `P
 Rebuild the textures: `python3 tools/materials/roads/build_pavement_textures.py` (numpy, Pillow).
 Run the checks: `node tests/pavement-browser.mjs` (about an hour in software rendering).
 
-__DECISIONS__
+## 15. Decisions for the creative director (all OPEN in the approval register)
+
+| ID | Decision |
+|---|---|
+| A-54 | Approve / revise / reject the reconstructed pavement, per surface |
+| A-55 | Asphalt age and colour (oxidised mid-grey overlay, sparse sealed cracks and patches) |
+| A-56 | Sidewalk character (tooled panels, broom finish, a few cracks, heaved panels near large trees) |
+| A-57 | Driveway individuality (condition per household, oil under the cars, chalk and ball scuffs where children live) |
+| A-58 | The two visual-only geometry changes (soil faces at aprons; the tessellated bulb) |
+| A-59 | Whether and when the pavement becomes the default and carries the later story states |
+
+**Recommendation.** The pavement is ready for your visual review as a Prologue benchmark: in every pair it reads as
+aggregate asphalt and poured concrete rather than coloured polygons, it holds together with the bikes, houses, lawns
+and trees, and the game underneath is provably unchanged. I do not call it final-release quality: it has been judged
+only in software-rendered stills, its GPU cost is unmeasured, and the night and motion behaviour need a person riding it
+on real hardware. Approve or adjust A-54 to A-58 after that ride; keep A-59 for later.
