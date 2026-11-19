@@ -428,6 +428,149 @@
   {
    "name": "?pavement: no page errors (every pavement shader compiles and links)",
    "detail": []
+  },
+  {
+   "name": "Prologue only: active in the Prologue; in Chapter One the original surfaces show (the reconstruction is inactive)",
+   "detail": {
+    "prologue": {
+     "active": true,
+     "on": 1,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "on": 0,
+     "state": "c1-ride"
+    }
+   }
+  },
+  {
+   "name": "Chapter One with ?pavement: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Aftermath I: the reconstruction is inactive, and Chapter Eight's ground cuts are installed on every pavement material",
+   "detail": {
+    "active": false,
+    "on": 0,
+    "state": "c1-walk",
+    "keys": [
+     "astra-art-roadwear-3-onBeforeCompile( /* shaderobject, renderer */ ) {}|ll-pave-0|c8cut",
+     "concrete|ll-pave-2|c8cut",
+     "concrete|ll-pave-3|c8cut",
+     "concrete|ll-pave-1|c8cut",
+     "concrete|ll-pave-5|c8cut",
+     "(sh,r)=>{prev?.call(m,sh,r);sh.uniforms.uCutN=CUT.n;sh.uniforms.uCutInv=CUT.inv;sh.uniforms.uCutK=CUT.kind;\n   sh.vertexShader='varying vec3 vCutW;\\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\\n{vec4 cw=vec4(transformed,1.);\\n#ifdef USE_INSTANCING\\ncw=instanceMatrix*cw;\\n#endif\\nvCutW=(modelMatrix*cw).xyz;}');\n   sh.fragmentShader='uniform int uCutN;\\nuniform mat4 uCutInv['+MAXCUT+'];\\nuniform float uCutK['+MAXCUT+'];\\nvarying vec3 vCutW;\\n'+sh.fragmentShader.replace('void main() {','void main() {\\n for(int i=0;i<'+MAXCUT+';i++){if(i>=uCutN)break;vec3 q=(uCutInv[i]*vec4(vCutW,1.)).xyz;bool inside=uCutK[i]<.5?(abs(q.x)<1.&&abs(q.y)<1.&&abs(q.z)<1.):(q.x*q.x+q.z*q.z<1.&&abs(q.y)<1.);if(inside)discard;}');}|ll-pave-6|c8cut",
+     "concrete|ll-pave-4|c8cut"
+    ],
+    "allCut": true
+   }
+  },
+  {
+   "name": "Aftermath I with ?pavement: no page errors",
+   "detail": []
+  },
+  {
+   "name": "All four benchmarks together (?bikes&houses&vegetation&pavement) load without error; the lawn is the repair (C)",
+   "detail": {
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "lawn": "C"
+   }
+  },
+  {
+   "name": "Lawn: the repaired lawn's masks build the same lawn cells in the same chunks as without ?pavement (grass boundaries unchanged)",
+   "detail": {
+    "with": [
+     [
+      40,
+      106
+     ],
+     [
+      104,
+      89
+     ],
+     [
+      150,
+      96
+     ],
+     [
+      572,
+      120
+     ],
+     [
+      848,
+      119
+     ],
+     [
+      1110,
+      112
+     ]
+    ],
+    "without": [
+     [
+      40,
+      106
+     ],
+     [
+      104,
+      89
+     ],
+     [
+      150,
+      96
+     ],
+     [
+      572,
+      120
+     ],
+     [
+      848,
+      119
+     ],
+     [
+      1110,
+      112
+     ]
+    ]
+   }
+  },
+  {
+   "name": "Four benchmarks: no page errors; riding works with them all on",
+   "detail": []
+  },
+  {
+   "name": "Offline package (PLAYTEST_MODELS=1): the six pavement textures and the pavement modules are embedded",
+   "detail": [
+    "dist/assets/pavement/pv.asphalt.albedo.jpg",
+    "dist/assets/pavement/pv.asphalt.hra.jpg",
+    "dist/assets/pavement/pv.asphalt.normal.jpg",
+    "dist/assets/pavement/pv.concrete.albedo.jpg",
+    "dist/assets/pavement/pv.concrete.hra.jpg",
+    "dist/assets/pavement/pv.concrete.normal.jpg"
+   ]
+  },
+  {
+   "name": "Offline package from disk, browser offline: ?pavement loads its textures from the embedded bytes, with no network request",
+   "detail": {
+    "error": null,
+    "files": 6,
+    "active": true,
+    "net": []
+   }
+  },
+  {
+   "name": "Offline package: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Default package (no models): ?pavement fails loudly and substitutes nothing (the original surfaces stay)",
+   "detail": {
+    "error": "asset assets/pavement/pv.asphalt.albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)",
+    "on": 0,
+    "label": "PAVEMENT BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/pavement/pv.asphalt.albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)"
+   }
   }
  ],
  "failures": [],
@@ -1167,7 +1310,105 @@
      "textures": 27
     },
     "programs": 88
+   },
+   "chapters": {
+    "prologue": {
+     "active": true,
+     "on": 1,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "on": 0,
+     "state": "c1-ride"
+    }
    }
+  },
+  "B2": {
+   "a1": {
+    "active": false,
+    "on": 0,
+    "state": "c1-walk",
+    "keys": [
+     "astra-art-roadwear-3-onBeforeCompile( /* shaderobject, renderer */ ) {}|ll-pave-0|c8cut",
+     "concrete|ll-pave-2|c8cut",
+     "concrete|ll-pave-3|c8cut",
+     "concrete|ll-pave-1|c8cut",
+     "concrete|ll-pave-5|c8cut",
+     "(sh,r)=>{prev?.call(m,sh,r);sh.uniforms.uCutN=CUT.n;sh.uniforms.uCutInv=CUT.inv;sh.uniforms.uCutK=CUT.kind;\n   sh.vertexShader='varying vec3 vCutW;\\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\\n{vec4 cw=vec4(transformed,1.);\\n#ifdef USE_INSTANCING\\ncw=instanceMatrix*cw;\\n#endif\\nvCutW=(modelMatrix*cw).xyz;}');\n   sh.fragmentShader='uniform int uCutN;\\nuniform mat4 uCutInv['+MAXCUT+'];\\nuniform float uCutK['+MAXCUT+'];\\nvarying vec3 vCutW;\\n'+sh.fragmentShader.replace('void main() {','void main() {\\n for(int i=0;i<'+MAXCUT+';i++){if(i>=uCutN)break;vec3 q=(uCutInv[i]*vec4(vCutW,1.)).xyz;bool inside=uCutK[i]<.5?(abs(q.x)<1.&&abs(q.y)<1.&&abs(q.z)<1.):(q.x*q.x+q.z*q.z<1.&&abs(q.y)<1.);if(inside)discard;}');}|ll-pave-6|c8cut",
+     "concrete|ll-pave-4|c8cut"
+    ],
+    "allCut": true
+   },
+   "trench": {
+    "pixels": 1440000,
+    "changed": 454277,
+    "darkOriginal": 15643,
+    "darkForced": 15911,
+    "state": "c1-walk"
+   }
+  },
+  "Cbase": {
+   "lawn": [
+    [
+     40,
+     106
+    ],
+    [
+     104,
+     89
+    ],
+    [
+     150,
+     96
+    ],
+    [
+     572,
+     120
+    ],
+    [
+     848,
+     119
+    ],
+    [
+     1110,
+     112
+    ]
+   ]
+  },
+  "C": {
+   "loaded": {
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "lawn": "C"
+   },
+   "lawn": [
+    [
+     40,
+     106
+    ],
+    [
+     104,
+     89
+    ],
+    [
+     150,
+     96
+    ],
+    [
+     572,
+     120
+    ],
+    [
+     848,
+     119
+    ],
+    [
+     1110,
+     112
+    ]
+   ]
   }
  },
  "shots": [
@@ -2444,6 +2685,396 @@
     "fov": 64
    },
    "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P23-aftermath1-damage-with-the-flag--forced-on.jpg",
+   "sha256": "eb92ba961b160a111b371e16a75fe16f9a27867bcc888657c4f2a7aa03ddfeb8",
+   "kind": "game-renderer capture",
+   "camera": "Aftermath I scene camera (DEV scene start)",
+   "mode": "reconstruction forced on for this test only (in play it is off outside the Prologue)"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P23-aftermath1-damage-with-the-flag--as-played.jpg",
+   "sha256": "41ba8bcdf800198b9281ce7a4216720ffb93ec505e1889410619d80333730221",
+   "kind": "game-renderer capture",
+   "camera": "Aftermath I scene camera (DEV scene start)",
+   "mode": "as played with ?pavement: original surfaces"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P12-sidewalk-and-lawn-boundary--reconstructed.jpg",
+   "sha256": "7fe960a22c3d4ead7abea827e3fbfa40d7602ba5c8ebf4f48e2212f00c76f32a",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P12-sidewalk-and-lawn-boundary",
+    "what": "the sidewalk and the repaired lawn",
+    "d": 120,
+    "lat": 7,
+    "yaw": -0.35,
+    "pitch": -0.62
+   },
+   "at": {
+    "d": 120,
+    "lat": 7
+   },
+   "calls": 312,
+   "triangles": 784039,
+   "cam": {
+    "p": [
+     6.965,
+     2.866,
+     -120.045
+    ],
+    "q": [
+     -0.3781,
+     -0.1692,
+     -0.0602,
+     0.9082
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P12-sidewalk-and-lawn-boundary--original.jpg",
+   "sha256": "f236a3054332bc5bd623e7f4055197d5b419abf9b0dcbe224cf25401a9a014f8",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P12-sidewalk-and-lawn-boundary",
+    "what": "the sidewalk and the repaired lawn",
+    "d": 120,
+    "lat": 7,
+    "yaw": -0.35,
+    "pitch": -0.62
+   },
+   "at": {
+    "d": 120,
+    "lat": 7
+   },
+   "calls": 319,
+   "triangles": 787859,
+   "cam": {
+    "p": [
+     6.965,
+     2.866,
+     -120.045
+    ],
+    "q": [
+     -0.3781,
+     -0.1692,
+     -0.0602,
+     0.9082
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P17-golden-hour-shadows--reconstructed.jpg",
+   "sha256": "0b3fc425c496bc6a8c1b1ed99624a306486df8e4fdf0d02339b0d6c2529aa188",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P17-golden-hour-shadows",
+    "what": "golden-hour shadows across the road",
+    "d": 196,
+    "lat": -1,
+    "pitch": -0.2
+   },
+   "at": {
+    "d": 196,
+    "lat": -1
+   },
+   "calls": 564,
+   "triangles": 984981,
+   "cam": {
+    "p": [
+     7.929,
+     1.419,
+     -195.474
+    ],
+    "q": [
+     -0.1825,
+     -0.1559,
+     -0.0228,
+     0.9705
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:45 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P17-golden-hour-shadows--original.jpg",
+   "sha256": "51e58e9bab4c4f0040f764545e59051e83aa087b1da3e9ca3d6ca896c0e71bd1",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P17-golden-hour-shadows",
+    "what": "golden-hour shadows across the road",
+    "d": 196,
+    "lat": -1,
+    "pitch": -0.2
+   },
+   "at": {
+    "d": 196,
+    "lat": -1
+   },
+   "calls": 582,
+   "triangles": 997439,
+   "cam": {
+    "p": [
+     7.929,
+     1.419,
+     -195.474
+    ],
+    "q": [
+     -0.1825,
+     -0.1559,
+     -0.0228,
+     0.9705
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:45 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P19-houses-trees-and-pavement--reconstructed.jpg",
+   "sha256": "9dc88ed6ade2f53838ecb53c3339f67203b3d535449bc35f103432648537d8ef",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P19-houses-trees-and-pavement",
+    "what": "a wider scene with the refined houses and vegetation",
+    "d": 96,
+    "lat": -2.2,
+    "yaw": 0.2,
+    "pitch": -0.08
+   },
+   "at": {
+    "d": 96,
+    "lat": -2.2
+   },
+   "calls": 551,
+   "triangles": 943849,
+   "cam": {
+    "p": [
+     -2.241,
+     3.099,
+     -96.035
+    ],
+    "q": [
+     -0.1265,
+     0.0963,
+     0.0175,
+     0.9871
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P19-houses-trees-and-pavement--original.jpg",
+   "sha256": "8b4e0391b470d03768c014a67cc3386b928aad5cdb954263457e9d723775f094",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P19-houses-trees-and-pavement",
+    "what": "a wider scene with the refined houses and vegetation",
+    "d": 96,
+    "lat": -2.2,
+    "yaw": 0.2,
+    "pitch": -0.08
+   },
+   "at": {
+    "d": 96,
+    "lat": -2.2
+   },
+   "calls": 570,
+   "triangles": 956929,
+   "cam": {
+    "p": [
+     -2.241,
+     3.099,
+     -96.035
+    ],
+    "q": [
+     -0.1265,
+     0.0963,
+     0.0175,
+     0.9871
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P20-the-boys-bikes-and-all-four--reconstructed.jpg",
+   "sha256": "8c71aac43951d3495035012923da2adec1102443e7d4fd14b227ed19f2074eff",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P20-the-boys-bikes-and-all-four",
+    "what": "the boys' bicycles with all four upgraded systems",
+    "d": 0,
+    "lat": -0.3,
+    "pitch": -0.1,
+    "friends": true
+   },
+   "at": {
+    "d": 0,
+    "lat": -0.3
+   },
+   "calls": 649,
+   "triangles": 975493,
+   "cam": {
+    "p": [
+     -0.347,
+     1.401,
+     0.031
+    ],
+    "q": [
+     -0.1114,
+     -0.0038,
+     0.0069,
+     0.9938
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P20-the-boys-bikes-and-all-four--original.jpg",
+   "sha256": "4f21b3f9623a7cf9dccabaeaf74ab95c7247ecbadb6524050ef1790f6eb2304a",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P20-the-boys-bikes-and-all-four",
+    "what": "the boys' bicycles with all four upgraded systems",
+    "d": 0,
+    "lat": -0.3,
+    "pitch": -0.1,
+    "friends": true
+   },
+   "at": {
+    "d": 0,
+    "lat": -0.3
+   },
+   "calls": 666,
+   "triangles": 984748,
+   "cam": {
+    "p": [
+     -0.347,
+     1.401,
+     0.031
+    ],
+    "q": [
+     -0.1114,
+     -0.0038,
+     0.0069,
+     0.9938
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P22-curb-cut-with-the-repaired-lawn--reconstructed.jpg",
+   "sha256": "6e7831f3f0c777ff938aef0018dbbedcd97bbe1a9c38ee3180da544e71a2fce4",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P22-curb-cut-with-the-repaired-lawn",
+    "what": "a driveway apron and the repaired lawn",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": -3.5,
+    "lat": 3.6,
+    "yaw": -1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "calls": 567,
+   "triangles": 1128641,
+   "cam": {
+    "p": [
+     3.553,
+     3.02,
+     -100.958
+    ],
+    "q": [
+     -0.2122,
+     -0.4705,
+     -0.1128,
+     0.8491
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "docs/qa/pavement/browser/P22-curb-cut-with-the-repaired-lawn--original.jpg",
+   "sha256": "d2e344bc4ebe3d5f65ecaa5d22685768ccc070e27932be897c9055ec42cd1e96",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P22-curb-cut-with-the-repaired-lawn",
+    "what": "a driveway apron and the repaired lawn",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": -3.5,
+    "lat": 3.6,
+    "yaw": -1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "calls": 588,
+   "triangles": 1146037,
+   "cam": {
+    "p": [
+     3.553,
+     3.02,
+     -100.958
+    ],
+    "q": [
+     -0.2122,
+     -0.4705,
+     -0.1128,
+     0.8491
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
   }
  ],
  "pairs": [
@@ -3075,6 +3706,195 @@
     "docs/qa/pavement/browser/P21-flashlight-on-the-pavement--reconstructed.jpg",
     "docs/qa/pavement/browser/P21-flashlight-on-the-pavement--original.jpg"
    ]
+  },
+  {
+   "name": "P12-sidewalk-and-lawn-boundary",
+   "what": "the sidewalk and the repaired lawn",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     6.965,
+     2.866,
+     -120.045
+    ],
+    "q": [
+     -0.3781,
+     -0.1692,
+     -0.0602,
+     0.9082
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 120,
+    "lat": 7
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 312,
+    "triangles": 784039
+   },
+   "original": {
+    "calls": 319,
+    "triangles": 787859
+   },
+   "files": [
+    "docs/qa/pavement/browser/P12-sidewalk-and-lawn-boundary--reconstructed.jpg",
+    "docs/qa/pavement/browser/P12-sidewalk-and-lawn-boundary--original.jpg"
+   ]
+  },
+  {
+   "name": "P17-golden-hour-shadows",
+   "what": "golden-hour shadows across the road",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     7.929,
+     1.419,
+     -195.474
+    ],
+    "q": [
+     -0.1825,
+     -0.1559,
+     -0.0228,
+     0.9705
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 196,
+    "lat": -1
+   },
+   "clock": "AUGUST 21, 2011  7:45 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 564,
+    "triangles": 984981
+   },
+   "original": {
+    "calls": 582,
+    "triangles": 997439
+   },
+   "files": [
+    "docs/qa/pavement/browser/P17-golden-hour-shadows--reconstructed.jpg",
+    "docs/qa/pavement/browser/P17-golden-hour-shadows--original.jpg"
+   ]
+  },
+  {
+   "name": "P19-houses-trees-and-pavement",
+   "what": "a wider scene with the refined houses and vegetation",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     -2.241,
+     3.099,
+     -96.035
+    ],
+    "q": [
+     -0.1265,
+     0.0963,
+     0.0175,
+     0.9871
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 96,
+    "lat": -2.2
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 551,
+    "triangles": 943849
+   },
+   "original": {
+    "calls": 570,
+    "triangles": 956929
+   },
+   "files": [
+    "docs/qa/pavement/browser/P19-houses-trees-and-pavement--reconstructed.jpg",
+    "docs/qa/pavement/browser/P19-houses-trees-and-pavement--original.jpg"
+   ]
+  },
+  {
+   "name": "P20-the-boys-bikes-and-all-four",
+   "what": "the boys' bicycles with all four upgraded systems",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     -0.347,
+     1.401,
+     0.031
+    ],
+    "q": [
+     -0.1114,
+     -0.0038,
+     0.0069,
+     0.9938
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 0,
+    "lat": -0.3
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 649,
+    "triangles": 975493
+   },
+   "original": {
+    "calls": 666,
+    "triangles": 984748
+   },
+   "files": [
+    "docs/qa/pavement/browser/P20-the-boys-bikes-and-all-four--reconstructed.jpg",
+    "docs/qa/pavement/browser/P20-the-boys-bikes-and-all-four--original.jpg"
+   ]
+  },
+  {
+   "name": "P22-curb-cut-with-the-repaired-lawn",
+   "what": "a driveway apron and the repaired lawn",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     3.553,
+     3.02,
+     -100.958
+    ],
+    "q": [
+     -0.2122,
+     -0.4705,
+     -0.1128,
+     0.8491
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 567,
+    "triangles": 1128641
+   },
+   "original": {
+    "calls": 588,
+    "triangles": 1146037
+   },
+   "files": [
+    "docs/qa/pavement/browser/P22-curb-cut-with-the-repaired-lawn--reconstructed.jpg",
+    "docs/qa/pavement/browser/P22-curb-cut-with-the-repaired-lawn--original.jpg"
+   ]
   }
- ]
+ ],
+ "notes": [
+  "Aftermath I trench frame: reconstruction forced on vs the original shader: {\"pixels\":1440000,\"changed\":454277,\"darkOriginal\":15643,\"darkForced\":15911,\"state\":\"c1-walk\"}"
+ ],
+ "finished": "2026-11-19T22:15:08.725Z"
 }
