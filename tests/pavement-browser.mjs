@@ -78,6 +78,8 @@ const GAPS=`async()=>{const L=lastLight,W=L.world,T=window.__pavement?.THREE||(a
  return res;}`;
 
 const look=(page,v)=>page.evaluate(v=>{const L=lastLight;let s=v;
+ // (the end of the evening: the lookout scene, then the call and the night falling, about a minute; the bike is then moved)
+ if(v.night&&!window.__pvNight){L.devScene(0,'lookout');for(let t=0;t<57;t++)L.step(1);window.__pvNight=true;document.getElementById('subtitle').style.visibility='hidden';}
  if(v.drive){const ds=L.world.drivewayOpenings.filter(o=>o.side===v.drive.side&&o.d>v.drive.after).sort((a,b)=>a.d-b.d);const o=ds[v.drive.k||0];s={...v,d:(v.drive.edge==='d0'?o.d0:o.d)+(v.dd??0),lat:v.lat};}
  if(v.lamp){const ls=L.ambient.lamps().filter(l=>l.frame==='main'||l.frame===undefined).filter(l=>l.d>v.lamp.after).sort((a,b)=>a.d-b.d);const l=ls[0];s={...v,d:l.d+(v.dd??-7),lat:v.lat??Math.sign(l.lat)*-.5};}
  L.place(s.d,s.lat,0);for(let i=0;i<(v.settle||4);i++)L.step(1/30);L.look(s.yaw||0,s.pitch||0);L.step(1/30);return {d:+s.d.toFixed(2),lat:+s.lat.toFixed(2)};},v);
@@ -110,8 +112,8 @@ const VIEWS_B=[
  {n:'P14-summerfield-intersection',what:'the Summerfield Road junction',d:848,lat:.5,yaw:.5,pitch:-.18},
  {n:'P15-cul-de-sac-curb',what:'the curved cul-de-sac curb',d:1127,lat:2.0,yaw:-.9,pitch:-.3},
  {n:'P16-cul-de-sac-and-lookout',what:'the cul-de-sac asphalt and the lookout',d:1112,lat:-.8,pitch:-.14},
- {n:'P18-streetlights-at-dusk',what:'streetlights on the pavement at dusk',lamp:{after:1000},dd:-8,lat:-.6,pitch:-.2,settle:150},
- {n:'P21-flashlight-on-the-pavement',what:'the game\'s flashlight on the pavement at the end of the evening (QA lighting test: the flashlight light switched on in the Prologue)',d:1118,lat:-3.2,yaw:-.6,pitch:-.45,flash:true,settle:150},
+ {n:'P18-streetlights-at-dusk',what:'the streetlight at d 1115 on the pavement, end of the evening (after the call at the lookout, night 0.7)',night:true,d:1104,lat:-1.4,yaw:-.25,pitch:-.15},
+ {n:'P21-flashlight-on-the-pavement',what:'the game\'s flashlight on the pavement at the end of the evening (QA lighting test: the flashlight light switched on in the Prologue, after the call)',night:true,d:1118,lat:-3.2,yaw:-.6,pitch:-.45,flash:true},
 ];
 const VIEWS_C=[
  {n:'P12-sidewalk-and-lawn-boundary',what:'the sidewalk and the repaired lawn',d:120,lat:7.0,yaw:-.35,pitch:-.62},

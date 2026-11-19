@@ -69,9 +69,18 @@ is built from the real plan: driveway cuts (133), storm inlets (16), where cars 
 front-yard trees within 17 m of the street (106). A 256 × 1 table holds each driveway's condition, whether a car parks
 there, and whether children live there (a hoop, a friend's house). The shader reads both, so wear follows use.
 
-**Geometry added — the only one:** thin soil faces closing the open step beside every driveway apron and at the lowered
-curb in front of it (30 batches, 8,384 triangles, no shadow proxy of their own). Visual only: no height, collision or
-lawn changes. Every other vertex in the world is the default game's (§12).
+**Geometry: two localized changes, both visual only** (no gameplay height, collision, navigation or lawn changes; every
+other vertex in the world is the default game's, §12):
+
+1. **Soil faces at the driveway aprons.** Thin faces closing the open step beside every driveway apron and at the
+   lowered curb in front of it (30 batches, 8,384 triangles, no shadow proxy of their own). Before, the base ground
+   showed through as a brown wedge.
+2. **The cul-de-sac bulb, tessellated.** The default bulb is one fan of triangles up to 11 m long, which cannot follow
+   the yards' relief: on the left half of the bulb its asphalt sat up to 4 cm *below* the street's ground, about 5 cm
+   under the surface the riders and the game stand on (191 of 13,125 survey rays). With `?pavement` the same outline is
+   built as rings every 1.4 m from the centre at the same `roadCrown` heights, so the visible asphalt now lies where
+   the game always placed it (0 of 13,125). Same material and shader as the rest of the asphalt; no shadow (as
+   asphalt).
 
 ## 4. Asphalt
 
@@ -137,8 +146,9 @@ The side streets use the same materials in their own frames (their own seam, cra
 street). Round the junction corners and the bulb the curb and walk use arc length, so joints stay radial and panels
 stay 1.52 m along their centre line. The asphalt's micro-structure is in world metres, so there is no seam where the
 main road, the corner fans, the side streets and the bulb meet; the side street's paving joint at the main curb line is
-drawn. In the cul-de-sac the wheel paths become a turning loop, the crown seam and transverse cracks stop, and the edge
-follows the real curb (the straight line, the reverse curve and the bulb). The story's chalk, the bench, the swing, the
+drawn. In the cul-de-sac the wheel paths become a turning loop (no drip line: cars do not park there), the crown seam and
+transverse cracks stop, and the edge follows the real curb (the straight line, the reverse curve and the bulb). The
+bulb's asphalt is tessellated so it no longer sinks below the ground (§3). The story's chalk, the bench, the swing, the
 oak and the lookout grass are untouched.
 
 ## 8. Lawn boundary compatibility

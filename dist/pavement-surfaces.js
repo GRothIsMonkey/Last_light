@@ -118,7 +118,7 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;o.low=0.;
   float t1=abs(a-(lane-.82)-wv),t2=abs(a-(lane+.82)-wv);wl=exp(-t1*t1/.11)+exp(-t2*t2/.11);
   float dd=abs(a-lane-wv*.7);drip=exp(-dd*dd/.035)*(.55+.45*pvF(vec2(D*.9,lat*3.)));
   if(culK>0.){float rr=length(vec2(d-1142.,lat));float c1=abs(rr-6.9),c2=abs(rr-8.5);float wc=exp(-c1*c1/.14)+exp(-c2*c2/.14);
-   wl=mix(wl,wc*.7,culK);drip=mix(drip,exp(-pow(rr-7.7,2.)/.05)*.5,culK);}
+   wl=mix(wl,wc*.7,culK);drip*=1.-culK;}
   wl*=(1.-mouth*.4)*smoothstep(.1,.6,edge);}
  // -- the edge: lighter, dusty, coarse aggregate exposed, raveled (stones lost) in the last 15-25 cm
  float edgeK=1.-smoothstep(.0,.55,edge),rav=(1.-smoothstep(.0,.2,edge))*(1.-mouth);
@@ -171,7 +171,7 @@ PvOut pvShade(vec3 base){PvOut o;o.metal=0.;o.low=0.;
  c*=1.-pch*.17;
  c=mix(c,vec3(.03,.029,.028),seal*.9);                     // crack sealant (rubberized: near black)
  c=mix(c,c*.35,crk);
- c=mix(c,c*vec3(.55,.53,.5),oil*.55*uPvTune.z);
+ c=mix(c,c*vec3(.5,.5,.52),oil*.55*uPvTune.z);
  c=mix(c,c*.42,lost);
  c*=1.-pEdge*.22;
  float rough=clamp(mix(.88,.97,s.h.g)+edgeK*.03-wl*.06,.6,1.);
