@@ -237,7 +237,35 @@ measured**; do not read these as GPU benchmarks.
 and up to 1.7 % fewer triangles in reconstructed mode, because the original's decal patches, joint bars and crack lines
 are hidden in it. Against the **default game** at the same cameras:
 
-__COST_TABLE__
+| Camera | Draw calls default → pavement | Triangles default → pavement | Software frame ms default → pavement |
+|---|---|---|---|
+| P01 | 140 → 147 (+7) | 303,735 → 300,174 (-1.2 %) | 610 → 1356 (×2.22) |
+| P02 | 316 → 343 (+27) | 654,644 → 647,679 (-1.1 %) | 1579 → 2495 (×1.58) |
+| P03 | 432 → 475 (+43) | 994,134 → 984,376 (-1.0 %) | 2086 → 2926 (×1.40) |
+| P04 | 154 → 167 (+13) | 382,120 → 379,370 (-0.7 %) | 618 → 1356 (×2.19) |
+| P05 | 195 → 203 (+8) | 524,457 → 519,562 (-0.9 %) | 720 → 1346 (×1.87) |
+| P06 | 336 → 364 (+28) | 678,288 → 668,904 (-1.4 %) | 1772 → 3139 (×1.77) |
+| P07 | 133 → 140 (+7) | 288,879 → 286,621 (-0.8 %) | 586 → 1503 (×2.57) |
+| P08 | 197 → 217 (+20) | 543,789 → 536,843 (-1.3 %) | 1182 → 1675 (×1.42) |
+| P09 | 403 → 454 (+51) | 1,001,888 → 987,837 (-1.4 %) | 1817 → 2548 (×1.40) |
+| P10 | 156 → 170 (+14) | 412,889 → 435,913 (+5.6 %) | 805 → 1672 (×2.08) |
+| P11 | 360 → 399 (+39) | 776,494 → 765,262 (-1.4 %) | 1823 → 2278 (×1.25) |
+| P13 | 457 → 502 (+45) | 864,404 → 851,302 (-1.5 %) | 1699 → 2692 (×1.58) |
+| P14 | 317 → 343 (+26) | 486,476 → 482,810 (-0.8 %) | 1350 → 2392 (×1.77) |
+| P15 | 103 → 104 (+1) | 157,832 → 159,155 (+0.8 %) | 617 → 1224 (×1.98) |
+| P16 | 169 → 171 (+2) | 188,939 → 190,286 (+0.7 %) | 854 → 1738 (×2.03) |
+| **all 15** | 3,868 → 4,199 (+8.6 %) | 8,258,968 → 8,196,094 (-0.8 %) | 18,117 → 30,340 (×1.67) |
+
+Measured by `node tests/pavement-cost.mjs` (`qa/pavement/cost.json`): the default game (no flag) and `?pavement`, at the
+camera poses of the suite's 15 riding pairs (the two night pairs need the lookout's finale and are left out), 1600 × 900.
+*Frame ms* is one `render()` followed by a 1-pixel `readPixels` (so the software rasterization is included), the
+median of three after a warm-up — **SwiftShader on the CPU, hundreds of milliseconds per frame, not a GPU number**; the
+ratio shows the new fragment work (1.25–2.57× the default's in software, 1.67× over all 15). Draw calls rise because each concrete kind
+is now its own batch per 110 m cell (they shared one); triangles move by −1.5 % to +5.6 % because batches are culled
+whole and the new batching changes which pass the frustum test. Page: 46 → 53 shader
+programs, 15 → 23 textures, 610 → 669 geometries, JS heap
+1314 → 1321 MB; the world builds and loads in about the same time (30 s vs
+28 s wall clock in software).
 
 **What a GPU will pay (not measured here):** the asphalt reads six textures (two scales of three maps) and evaluates
 about a dozen noise lookups per pixel; concrete the same; the curb nine texture reads (triplanar). Over a street that

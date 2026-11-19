@@ -1,0 +1,322 @@
+{
+ "renderer": "Chromium + ANGLE SwiftShader (software rendering, not a GPU)",
+ "viewport": "1600x900",
+ "cameras": 15,
+ "modes": {
+  "default": {
+   "wallLoadMs": 30006,
+   "merged": 2225,
+   "geometries": 610,
+   "textures": 15,
+   "programs": 46,
+   "jsHeapMB": 1314,
+   "rows": [
+    {
+     "name": "P01-asphalt-beneath-the-bike",
+     "calls": 140,
+     "triangles": 303735,
+     "ms": 610.5
+    },
+    {
+     "name": "P02-road-ahead-from-the-bike",
+     "calls": 316,
+     "triangles": 654644,
+     "ms": 1578.7
+    },
+    {
+     "name": "P03-long-view-down-oak-hollow",
+     "calls": 432,
+     "triangles": 994134,
+     "ms": 2085.7
+    },
+    {
+     "name": "P04-asphalt-close-detail",
+     "calls": 154,
+     "triangles": 382120,
+     "ms": 618.2
+    },
+    {
+     "name": "P05-asphalt-meets-gutter",
+     "calls": 195,
+     "triangles": 524457,
+     "ms": 719.8
+    },
+    {
+     "name": "P06-sidewalk-from-standing-height",
+     "calls": 336,
+     "triangles": 678288,
+     "ms": 1771.6
+    },
+    {
+     "name": "P07-sidewalk-joints-close",
+     "calls": 133,
+     "triangles": 288879,
+     "ms": 585.6
+    },
+    {
+     "name": "P08-curb-face-from-the-bike",
+     "calls": 197,
+     "triangles": 543789,
+     "ms": 1181.8
+    },
+    {
+     "name": "P09-driveway-curb-cut",
+     "calls": 403,
+     "triangles": 1001888,
+     "ms": 1817
+    },
+    {
+     "name": "P10-a-whole-driveway",
+     "calls": 156,
+     "triangles": 412889,
+     "ms": 805.3
+    },
+    {
+     "name": "P11-sidewalk-passing-a-driveway",
+     "calls": 360,
+     "triangles": 776494,
+     "ms": 1823.4
+    },
+    {
+     "name": "P13-briarwood-intersection",
+     "calls": 457,
+     "triangles": 864404,
+     "ms": 1699.2
+    },
+    {
+     "name": "P14-summerfield-intersection",
+     "calls": 317,
+     "triangles": 486476,
+     "ms": 1349.6
+    },
+    {
+     "name": "P15-cul-de-sac-curb",
+     "calls": 103,
+     "triangles": 157832,
+     "ms": 617
+    },
+    {
+     "name": "P16-cul-de-sac-and-lookout",
+     "calls": 169,
+     "triangles": 188939,
+     "ms": 853.9
+    }
+   ]
+  },
+  "pavement": {
+   "wallLoadMs": 27713,
+   "merged": 2395,
+   "geometries": 669,
+   "textures": 23,
+   "programs": 53,
+   "jsHeapMB": 1321,
+   "rows": [
+    {
+     "name": "P01-asphalt-beneath-the-bike",
+     "calls": 147,
+     "triangles": 300174,
+     "ms": 1355.8
+    },
+    {
+     "name": "P02-road-ahead-from-the-bike",
+     "calls": 343,
+     "triangles": 647679,
+     "ms": 2495.4
+    },
+    {
+     "name": "P03-long-view-down-oak-hollow",
+     "calls": 475,
+     "triangles": 984376,
+     "ms": 2925.8
+    },
+    {
+     "name": "P04-asphalt-close-detail",
+     "calls": 167,
+     "triangles": 379370,
+     "ms": 1355.8
+    },
+    {
+     "name": "P05-asphalt-meets-gutter",
+     "calls": 203,
+     "triangles": 519562,
+     "ms": 1345.9
+    },
+    {
+     "name": "P06-sidewalk-from-standing-height",
+     "calls": 364,
+     "triangles": 668904,
+     "ms": 3139.2
+    },
+    {
+     "name": "P07-sidewalk-joints-close",
+     "calls": 140,
+     "triangles": 286621,
+     "ms": 1503
+    },
+    {
+     "name": "P08-curb-face-from-the-bike",
+     "calls": 217,
+     "triangles": 536843,
+     "ms": 1675.1
+    },
+    {
+     "name": "P09-driveway-curb-cut",
+     "calls": 454,
+     "triangles": 987837,
+     "ms": 2548.5
+    },
+    {
+     "name": "P10-a-whole-driveway",
+     "calls": 170,
+     "triangles": 435913,
+     "ms": 1672.4
+    },
+    {
+     "name": "P11-sidewalk-passing-a-driveway",
+     "calls": 399,
+     "triangles": 765262,
+     "ms": 2277.6
+    },
+    {
+     "name": "P13-briarwood-intersection",
+     "calls": 502,
+     "triangles": 851302,
+     "ms": 2691.5
+    },
+    {
+     "name": "P14-summerfield-intersection",
+     "calls": 343,
+     "triangles": 482810,
+     "ms": 2392.1
+    },
+    {
+     "name": "P15-cul-de-sac-curb",
+     "calls": 104,
+     "triangles": 159155,
+     "ms": 1224.1
+    },
+    {
+     "name": "P16-cul-de-sac-and-lookout",
+     "calls": 171,
+     "triangles": 190286,
+     "ms": 1737.6
+    }
+   ]
+  }
+ },
+ "delta": [
+  {
+   "name": "P01-asphalt-beneath-the-bike",
+   "calls": 7,
+   "triangles": -3561,
+   "msDefault": 610.5,
+   "msPavement": 1355.8
+  },
+  {
+   "name": "P02-road-ahead-from-the-bike",
+   "calls": 27,
+   "triangles": -6965,
+   "msDefault": 1578.7,
+   "msPavement": 2495.4
+  },
+  {
+   "name": "P03-long-view-down-oak-hollow",
+   "calls": 43,
+   "triangles": -9758,
+   "msDefault": 2085.7,
+   "msPavement": 2925.8
+  },
+  {
+   "name": "P04-asphalt-close-detail",
+   "calls": 13,
+   "triangles": -2750,
+   "msDefault": 618.2,
+   "msPavement": 1355.8
+  },
+  {
+   "name": "P05-asphalt-meets-gutter",
+   "calls": 8,
+   "triangles": -4895,
+   "msDefault": 719.8,
+   "msPavement": 1345.9
+  },
+  {
+   "name": "P06-sidewalk-from-standing-height",
+   "calls": 28,
+   "triangles": -9384,
+   "msDefault": 1771.6,
+   "msPavement": 3139.2
+  },
+  {
+   "name": "P07-sidewalk-joints-close",
+   "calls": 7,
+   "triangles": -2258,
+   "msDefault": 585.6,
+   "msPavement": 1503
+  },
+  {
+   "name": "P08-curb-face-from-the-bike",
+   "calls": 20,
+   "triangles": -6946,
+   "msDefault": 1181.8,
+   "msPavement": 1675.1
+  },
+  {
+   "name": "P09-driveway-curb-cut",
+   "calls": 51,
+   "triangles": -14051,
+   "msDefault": 1817,
+   "msPavement": 2548.5
+  },
+  {
+   "name": "P10-a-whole-driveway",
+   "calls": 14,
+   "triangles": 23024,
+   "msDefault": 805.3,
+   "msPavement": 1672.4
+  },
+  {
+   "name": "P11-sidewalk-passing-a-driveway",
+   "calls": 39,
+   "triangles": -11232,
+   "msDefault": 1823.4,
+   "msPavement": 2277.6
+  },
+  {
+   "name": "P13-briarwood-intersection",
+   "calls": 45,
+   "triangles": -13102,
+   "msDefault": 1699.2,
+   "msPavement": 2691.5
+  },
+  {
+   "name": "P14-summerfield-intersection",
+   "calls": 26,
+   "triangles": -3666,
+   "msDefault": 1349.6,
+   "msPavement": 2392.1
+  },
+  {
+   "name": "P15-cul-de-sac-curb",
+   "calls": 1,
+   "triangles": 1323,
+   "msDefault": 617,
+   "msPavement": 1224.1
+  },
+  {
+   "name": "P16-cul-de-sac-and-lookout",
+   "calls": 2,
+   "triangles": 1347,
+   "msDefault": 853.9,
+   "msPavement": 1737.6
+  }
+ ],
+ "summary": {
+  "callsDefault": 3868,
+  "callsPavement": 4199,
+  "trianglesDefault": 8258968,
+  "trianglesPavement": 8196094,
+  "msDefault": 18117.3,
+  "msPavement": 30339.8
+ }
+}
