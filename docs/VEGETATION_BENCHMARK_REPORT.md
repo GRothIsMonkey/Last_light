@@ -327,6 +327,8 @@ asset-library.js and the four authors in the final credits roll.
   sitting place against the trunk (Chapter Eight) should be re-checked against the thicker trunk (radius 0.65 m at chest height vs
   0.49). None of this changes without the flag; it is the to-do list for shipping the oak beyond the Prologue.
 - **Credits** are in the final credits roll; the title menu's Credits panel was not touched (main-menu boundary).
+- **DEV labels with all three flags.** The vegetation label stacks under the bike and house labels; the house benchmark's own
+  label still overlaps the bike label (pre-existing in `?bikes&houses`, house-benchmark.js was not touched).
 - **Presentation vs game.** The Blender renders add Cycles-only leaf translucency and bark moss on top of the exported materials;
   the game's vegetation shader approximates both. Judge the game captures for the final look.
 
@@ -335,6 +337,13 @@ asset-library.js and the four authors in the final credits roll.
 - **Served:** `npx serve dist` (or any static server), open `index.html?vegetation` or `index.html?bikes&houses&vegetation`.
 - **Offline:** `PLAYTEST_MENU=1 PLAYTEST_MODELS=1 node tools/package-playtest.mjs <folder>`, then open
   `<folder>/Last-Light-Playtest.html?bikes&houses&vegetation` (instructions: `tools/vegetation-playtest-readme.txt`).
+  The delivered ZIP `Last-Light-Vegetation-Benchmark.zip` (69,188,493 bytes, SHA-256
+  `8254c1dfccc05c1a6cdd1b0f853a0fa06ac78efc5d9434e0eb50a743a7703073`; not committed — `release/` is ignored) holds that
+  `Last-Light-Playtest.html` (141,026,728 bytes, built at `ec10d29`, clean tree: the whole game with the title menu, the bikes,
+  houses and vegetation embedded), START-HERE.txt, VEGETATION-README.txt, THIRD_PARTY_ASSETS.md, THREE-LICENSE.txt and the
+  package manifest (every source hash). The two lab pages the packager also writes are left out (not needed here). Checked
+  after extracting: opened from disk with the browser offline, `?qa&bikes&houses&vegetation` loads all three benchmarks with
+  **no network request** and no page error.
 - **Rebuild** (bpy 5.0.1, numpy, scipy, Pillow): `node tools/assets/oak-site.mjs`; `python tools/blender/vegetation/oak_skeleton.py`;
   `python tools/blender/vegetation/veg_textures.py`; `oak_build.py`, `street_build.py`, `shrub_build.py`, `ground_build.py`;
   `python tools/blender/vegetation/glb_pack.py dist/assets/veg/*.glb`; validate with `node tools/assets/validate-glb.mjs <glb> --profile veg`.
