@@ -31,7 +31,7 @@ red, and the original surfaces simply stay.
 The reconstruction is shown in the Prologue only. From the night chapters on (and in the credits and the 2026 coda) the
 original surfaces show, so Chapter Eight's damaged streets and Aftermath I are exactly as before.
 
-What to look at (the review gallery has the same views as before/after pairs):
+What to look at (review-gallery/index.html in this folder has the same views as before/after pairs, with a slider):
    - the asphalt under the bike and ahead of it: aggregate, wheel paths, the crown's paving seam, sealed cracks, patches
    - the gutter pans and curbs: joints, the flow line, leaves near the inlets, chips and scuffs at the driveway cuts
    - the sidewalks: tooled panels with broom finish, control and expansion joints, a heaved panel by a big tree

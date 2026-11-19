@@ -171,8 +171,8 @@ between the two images. The clock is the game's own HUD. P12, P17, P19, P20 and 
 `?bikes&houses&vegetation&pavement` (the authored bikes, refined houses, authored vegetation and repaired lawn on in
 both halves; only the pavement changes). The camera pose of each is in `qa/pavement/browser/report.json`.
 
-A browsable version with a compare slider: the review gallery (published link in the delivery message; the same page is
-`review-gallery/index.html` inside the ZIP).
+A browsable version with a compare slider: the review gallery, https://claude.ai/artifact/V4Dh9xsYnLUd1oAevSbE2r
+(private until shared from its Share menu; the same page is `review-gallery/index.html` inside the ZIP).
 
 | View | Camera | Scene and light | After | Before |
 |---|---|---|---|---|
