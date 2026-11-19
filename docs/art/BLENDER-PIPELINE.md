@@ -271,3 +271,21 @@ upkeep weathering and macro colour variation into COLOR_0 (HOUSE-KIT.md §8), so
 Cycles computes and the game's renderer cannot. A frozen earlier version of an asset can ship beside the current one
 for comparison: register it under its own id with `assetId` set to the id inside the file (`asset-library.js`).
 
+
+## 16. Vegetation (Prologue vegetation benchmark)
+
+The old oak, the street trees, the shrubs and the ground plants use this pipeline without a skeleton: `tools/blender/vegetation/`
+builds them on one kit (`veg_mesh.py`: skeleton → bark tubes + leaf cards) with one texture library (`veg_textures.py`, one
+late-August grade for every leaf) and exports with `veg_blender.export` (the `ll_export.py` path: COLOR_0 and the `_WIND`
+custom attribute, WebP images, no tangents); `glb_pack.py` then packs NORMAL/COLOR_0/_WIND into bytes (KHR_mesh_quantization);
+`validate-glb.mjs --profile veg` checks per-variant LOD budgets and the vertex standard. Results:
+[../VEGETATION_BENCHMARK_REPORT.md](../VEGETATION_BENCHMARK_REPORT.md); sources: [../THIRD_PARTY_ASSETS.md](../THIRD_PARTY_ASSETS.md).
+
+| | Vegetation |
+|---|---|
+| Frame | Tree-local, base of the trunk at the origin, Blender Z up; the game places each instance on a recorded procedural placement (vegetation.js / houses.js records, `world.vegRecord`). The old oak is built in the lookout's own frame (Blender X = +lat, Y = +d; `tools/assets/oak-site.mjs` dumps the ground, swing pivot, carving and story marks from the game) and placed with rotation −heading. |
+| Files | One GLB per family: `lm.old-oak.glb` (one variant), `veg.street-trees.glb` (44), `veg.shrubs.glb` (18), `veg.ground.glb` (13); a node per variant (`extras.ll_variant`, species, height, crown) with `:lod0/:lod1/:lod2` meshes (`extras.ll_lod`). |
+| Vertex data | COLOR_0 = baked occlusion (× species bark tint); `_WIND` = (flex 0..1, phase 0..1, leaf flutter 0..1, bark: −moss / +dead wood; leaves: hue jitter). The runtime shader (`dist/vegetation-assets.js`) reads only these, so wind and shading match in every LOD. |
+| Materials | Bark (shared grey broadleaf bark tinted per species; birch; the oak's own plated white-oak bark), leaves (alpha-tested twig cards from one atlas per family, double-sided, crown-shaped normals), ground (one atlas). No alpha blending. |
+| Rebuild | `node tools/assets/oak-site.mjs`; `python tools/blender/vegetation/oak_skeleton.py`; `python tools/blender/vegetation/veg_textures.py`; `oak_build.py`, `street_build.py`, `shrub_build.py`, `ground_build.py` (bpy 5.0.1); `python tools/blender/vegetation/glb_pack.py dist/assets/veg/*.glb`; renders `oak_render.py`, `street_render.py`, `shrub_render.py`, `scene_renders.py street grass`. |
+| Lessons | **Bark tubes must be wound outward** (the game draws bark single-sided; Cycles shades both sides and hides inward winding — the first build showed every trunk's inside wall in the game; caught by a ray test against the swing limb; now a signed-volume check). glTF UVs are v-down: flip them when building Blender meshes from glTF data. A Blender `copy()` of a hidden source object is hidden too. Normals packed to 4-byte-aligned int8 arrive in three.js as interleaved attributes: de-interleave before `mergeGeometries`. |
