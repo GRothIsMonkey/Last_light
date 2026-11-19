@@ -201,6 +201,19 @@ What this covers from the brief: the default game unchanged (bake identical, not
 - **Vertex baking has a resolution**: occlusion is stored on a ≈1 m grid (2 m at LOD1), so it is soft by design; hairline contact shadows come from the normal and occlusion maps, not the bake.
 - **`lotL66` LOD0 is 10,740 triangles**, 7 % over the ordinary warning target.
 - **Glass** is still alpha-blended with a Fresnel term and a scoped reflection, not refractive or screen-space reflective.
+- **Shadows in the game are much weaker than in the Blender renders, and that is the game's global lighting, deferred to the
+  lighting phase (decision 2026-11-19).** Measured in the running Prologue at the captures' light (sun elevation ≈ 10°):
+  - the sun runs roughly along the street, so the six right-side houses face away from it (front N·L −0.38 to −0.75): their
+    fronts are entirely in shade and can show no cast shadow; the left side gets it at a glancing angle (N·L 0.38–0.45,
+    the car house 0.73);
+  - on a sunlit front the sun is only ≈ 0.9–1.7× the hemisphere fill, so a shadow removes at most about half the light;
+  - one 2048² shadow map covers 120 × 120 m (≈ 5.9 cm per texel, PCF-soft, normal bias 2.3 cm): fine parts cast a smudge
+    or nothing;
+  - house side: each house casts from its LOD1 shell (no balusters or fine trim), and the baked occlusion is soft by design.
+
+  The Blender comparison views were lit with a sun chosen per view to rake across the facades, so they show what the houses
+  can look like, not what the current game light delivers. The fixes (sun/fill balance, a near shadow cascade, SSAO /
+  contact shadows) are global and belong to the lighting pass; at that point the houses can also cast from LOD0 when near.
 - **Interiors** are a card plus a room box per window: convincing from the street, flat from very close.
 - **No direct comparison with the new Jamie and Sam models** (their files are not in this workspace).
 
