@@ -4,7 +4,7 @@
    "original": "200_year_old_oak_tree.glb",
    "originalBytes": 129820864,
    "runtime": "lm.old-oak",
-   "runtimeBytes": 6534264,
+   "runtimeBytes": 6556112,
    "gpuTextureMB": 72,
    "validator": {
     "ok": true,
@@ -28,7 +28,7 @@
    "original": "realistic_trees_collection.glb",
    "originalBytes": 42333844,
    "runtime": "veg.street-trees",
-   "runtimeBytes": 16669464,
+   "runtimeBytes": 16693312,
    "gpuTextureMB": 38.7,
    "validator": {
     "ok": true,
@@ -168,7 +168,7 @@
    "original": "bush_models_pack_gameready_lods.glb",
    "originalBytes": 8048292,
    "runtime": "veg.shrubs",
-   "runtimeBytes": 3085208,
+   "runtimeBytes": 2898248,
    "gpuTextureMB": 6.7,
    "validator": {
     "ok": true,
@@ -187,7 +187,7 @@
    "original": "grass_and_bush_-_mobile_gameready.glb",
    "originalBytes": 1833488,
    "runtime": "veg.ground",
-   "runtimeBytes": 748012,
+   "runtimeBytes": 725212,
    "gpuTextureMB": 10.7,
    "validator": {
     "ok": true,
@@ -456,6 +456,701 @@
   "weed.clover.1": {
    "lod0": 2,
    "lod1": 2
+  }
+ },
+ "browser": {
+  "loadMs": 1476,
+  "info": {
+   "bytes": 26872884,
+   "readMs": 0,
+   "parseMs": 0,
+   "files": {
+    "lm.old-oak": {
+     "id": "lm.old-oak",
+     "file": "assets/veg/lm.old-oak.glb",
+     "from": "http",
+     "bytes": 6556112,
+     "readMs": 64,
+     "parseMs": 301.4,
+     "triangles": 99871,
+     "skinnedMeshes": 0,
+     "geometries": 7,
+     "materials": 3,
+     "textures": 6,
+     "clips": [],
+     "morphTargets": [],
+     "version": 1,
+     "rig": "none",
+     "license": "Last Light (Roth Studios). Reconstructed from \"200 year old oak tree\" by kungphil (https://skfb.ly/6vqWJ), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/): the laser scan was used as the measured source of the branch architecture and crown; the mesh, bark, leaves and carving are new. Leaf card photo adapted from \"Realistic Trees Collection\" by Jungle Jim (https://skfb.ly/pDzJR), CC BY 4.0. The authors do not endorse Last Light.",
+     "generator": "Khronos glTF Blender I/O v5.0.21"
+    },
+    "veg.street-trees": {
+     "id": "veg.street-trees",
+     "file": "assets/veg/veg.street-trees.glb",
+     "from": "http",
+     "bytes": 16693312,
+     "readMs": 147.1,
+     "parseMs": 339.3,
+     "triangles": 360916,
+     "skinnedMeshes": 0,
+     "geometries": 252,
+     "materials": 3,
+     "textures": 5,
+     "clips": [],
+     "morphTargets": [],
+     "version": 1,
+     "rig": "none",
+     "license": "Last Light (Roth Studios). Oak and ash branch architectures recovered from \"Realistic Trees Collection\" by Jungle Jim (https://skfb.ly/pDzJR), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); oak, ash and pine twig photos adapted from the same collection; bark micro-detail from its bark photo. Maple, birch, pine, spruce and young trees, the maple and birch leaves and the barks are original. Rebuilt, re-meshed and re-textured for Last Light; the author does not endorse Last Light.",
+     "generator": "Khronos glTF Blender I/O v5.0.21"
+    },
+    "veg.shrubs": {
+     "id": "veg.shrubs",
+     "file": "assets/veg/veg.shrubs.glb",
+     "from": "http",
+     "bytes": 2898248,
+     "readMs": 24.8,
+     "parseMs": 44.2,
+     "triangles": 61129,
+     "skinnedMeshes": 0,
+     "geometries": 114,
+     "materials": 2,
+     "textures": 2,
+     "clips": [],
+     "morphTargets": [],
+     "version": 1,
+     "rig": "none",
+     "license": "Last Light (Roth Studios). Shrub geometry, LODs and leaf atlas adapted from \"Bush models pack (gameready, LODs)\" by LOLIPOP (https://skfb.ly/pLE8N), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/): leaves re-graded and re-packed, materials rebuilt (alpha-tested), occlusion and wind baked, trimmed and flowering variants derived. The author does not endorse Last Light.",
+     "generator": "Khronos glTF Blender I/O v5.0.21"
+    },
+    "veg.ground": {
+     "id": "veg.ground",
+     "file": "assets/veg/veg.ground.glb",
+     "from": "http",
+     "bytes": 725212,
+     "readMs": 7.2,
+     "parseMs": 72.6,
+     "triangles": 610,
+     "skinnedMeshes": 0,
+     "geometries": 26,
+     "materials": 1,
+     "textures": 1,
+     "clips": [],
+     "morphTargets": [],
+     "version": 1,
+     "rig": "none",
+     "license": "Last Light (Roth Studios). Meadow, dry grass, sprig and seed-stalk sprites adapted from \"Grass And Bush - Mobile GameReady\" by Ali haghshenas (https://skfb.ly/6WTVC), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/): cropped, turned upright, graded, re-packed; lawn blades, wildflowers and clover original. The author does not endorse Last Light.",
+     "generator": "Khronos glTF Blender I/O v5.0.21"
+    }
+   },
+   "loadMs": 1474,
+   "materials": 9,
+   "textures": 14,
+   "gpuTextureMB": 128,
+   "trees": 386,
+   "shrubs": 553,
+   "meadow": 12487,
+   "speciesCount": {
+    "maple": 159,
+    "birch": 11,
+    "spruce": 50,
+    "young": 16,
+    "ash": 39,
+    "pine": 56,
+    "oak": 55
+   },
+   "variantsUsed": 42
+  },
+  "pairs": [
+   {
+    "name": "G01-prologue-start-street",
+    "camera": {
+     "p": [
+      -0.344,
+      1.48,
+      -1.974
+     ],
+     "q": [
+      -0.0531,
+      -0.0019,
+      0.0065,
+      0.9986
+     ],
+     "fov": 64,
+     "d": 2,
+     "lat": -0.3,
+     "yaw": 0,
+     "pitch": 0.02
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 579,
+     "triangles": 948257,
+     "vegTris": 281951
+    },
+    "procedural": {
+     "calls": 484,
+     "triangles": 766286
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G01-prologue-start-street--authored.jpg",
+     "docs/qa/vegetation/browser/G01-prologue-start-street--procedural.jpg"
+    ],
+    "caption": "the Prologue's starting street"
+   },
+   {
+    "name": "G04-shrubs-driveways-porches",
+    "camera": {
+     "p": [
+      76.623,
+      -0.247,
+      -310.343
+     ],
+     "q": [
+      -0.0604,
+      -0.766,
+      -0.0641,
+      0.6368
+     ],
+     "fov": 64,
+     "d": 330,
+     "lat": 3.2,
+     "yaw": -1.2,
+     "pitch": -0.04
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 329,
+     "triangles": 764927,
+     "vegTris": 363477
+    },
+    "procedural": {
+     "calls": 214,
+     "triangles": 513048
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G04-shrubs-driveways-porches--authored.jpg",
+     "docs/qa/vegetation/browser/G04-shrubs-driveways-porches--procedural.jpg"
+    ],
+    "caption": "beds and shrubs at a porch and driveway"
+   },
+   {
+    "name": "G04b-jamies-house",
+    "camera": {
+     "p": [
+      88.173,
+      1.136,
+      -725.365
+     ],
+     "q": [
+      -0.0533,
+      -0.7964,
+      -0.0581,
+      0.5996
+     ],
+     "fov": 64,
+     "d": 780,
+     "lat": 3,
+     "yaw": -1.2,
+     "pitch": -0.02
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 466,
+     "triangles": 914082,
+     "vegTris": 320394
+    },
+    "procedural": {
+     "calls": 351,
+     "triangles": 688621
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G04b-jamies-house--authored.jpg",
+     "docs/qa/vegetation/browser/G04b-jamies-house--procedural.jpg"
+    ],
+    "caption": "Jamie's house: the red chair on the porch, the beds"
+   },
+   {
+    "name": "G05-grass-beside-sidewalk",
+    "camera": {
+     "p": [
+      119.343,
+      -1.02,
+      -378.009
+     ],
+     "q": [
+      -0.1612,
+      -0.3497,
+      -0.0546,
+      0.9213
+     ],
+     "fov": 64,
+     "d": 410,
+     "lat": 4.3,
+     "yaw": -0.18,
+     "pitch": -0.2
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 686,
+     "triangles": 1363339,
+     "vegTris": 344699
+    },
+    "procedural": {
+     "calls": 598,
+     "triangles": 1124802
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G05-grass-beside-sidewalk--authored.jpg",
+     "docs/qa/vegetation/browser/G05-grass-beside-sidewalk--procedural.jpg"
+    ],
+    "caption": "grass beside the sidewalk, from the riding camera"
+   },
+   {
+    "name": "G03-street-trees",
+    "camera": {
+     "p": [
+      135.329,
+      0.877,
+      -436.136
+     ],
+     "q": [
+      -0.0467,
+      -0.0195,
+      0.0068,
+      0.9987
+     ],
+     "fov": 64,
+     "d": 470,
+     "lat": -0.3,
+     "yaw": 0.04,
+     "pitch": 0.03
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 608,
+     "triangles": 1046013,
+     "vegTris": 333648
+    },
+    "procedural": {
+     "calls": 525,
+     "triangles": 841287
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G03-street-trees--authored.jpg",
+     "docs/qa/vegetation/browser/G03-street-trees--procedural.jpg"
+    ],
+    "caption": "street trees down Oak Hollow Drive"
+   },
+   {
+    "name": "G06-the-lookout",
+    "camera": {
+     "p": [
+      244.14,
+      2.521,
+      -1032.606
+     ],
+     "q": [
+      -0.0524,
+      0.0186,
+      0.0078,
+      0.9984
+     ],
+     "fov": 64,
+     "d": 1136.5,
+     "lat": -0.9,
+     "yaw": 0.12,
+     "pitch": 0.06
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 237,
+     "triangles": 565119,
+     "vegTris": 474843
+    },
+    "procedural": {
+     "calls": 156,
+     "triangles": 177869
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G06-the-lookout--authored.jpg",
+     "docs/qa/vegetation/browser/G06-the-lookout--procedural.jpg"
+    ],
+    "caption": "the lookout from the stop"
+   },
+   {
+    "name": "G07-oak-from-the-cul-de-sac",
+    "camera": {
+     "p": [
+      242.204,
+      2.563,
+      -1022.23
+     ],
+     "q": [
+      -0.0206,
+      0.1093,
+      0.0081,
+      0.9938
+     ],
+     "fov": 64,
+     "d": 1126,
+     "lat": -2,
+     "yaw": 0.3,
+     "pitch": 0.13
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 241,
+     "triangles": 557252,
+     "vegTris": 479517
+    },
+    "procedural": {
+     "calls": 163,
+     "triangles": 174174
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G07-oak-from-the-cul-de-sac--authored.jpg",
+     "docs/qa/vegetation/browser/G07-oak-from-the-cul-de-sac--procedural.jpg"
+    ],
+    "caption": "the old oak from the cul-de-sac"
+   },
+   {
+    "name": "G07b-oak-silhouette-from-124m",
+    "camera": {
+     "p": [
+      234.9,
+      3.28,
+      -934.665
+     ],
+     "q": [
+      -0.0489,
+      -0.078,
+      0.003,
+      0.9957
+     ],
+     "fov": 64,
+     "d": 1038,
+     "lat": -0.3,
+     "yaw": 0.06,
+     "pitch": 0.07
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 328,
+     "triangles": 545067,
+     "vegTris": 345404
+    },
+    "procedural": {
+     "calls": 222,
+     "triangles": 295381
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G07b-oak-silhouette-from-124m--authored.jpg",
+     "docs/qa/vegetation/browser/G07b-oak-silhouette-from-124m--procedural.jpg"
+    ],
+    "caption": "the oak at 124 m down the street (the Aftermath I barricade distance, art bible \u00a76): readable by silhouette"
+   },
+   {
+    "name": "G10-dusk-looking-home",
+    "camera": {
+     "p": [
+      247.67,
+      2.507,
+      -1040.35
+     ],
+     "q": [
+      -0.039,
+      0.9794,
+      0.0581,
+      0.1892
+     ],
+     "fov": 64,
+     "d": 1150,
+     "lat": 2,
+     "yaw": 3.141592653589793,
+     "pitch": 0.04
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 474,
+     "triangles": 1030358,
+     "vegTris": 498972
+    },
+    "procedural": {
+     "calls": 384,
+     "triangles": 707775
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G10-dusk-looking-home--authored.jpg",
+     "docs/qa/vegetation/browser/G10-dusk-looking-home--procedural.jpg"
+    ],
+    "caption": "evening: looking back down the street from the lookout"
+   },
+   {
+    "name": "G02-group-bicycle-ride",
+    "camera": {
+     "p": [
+      -0.3,
+      3.326,
+      -85.777
+     ],
+     "q": [
+      -0.1017,
+      0.0746,
+      0.0073,
+      0.992
+     ],
+     "d": 85.71351544175008
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 537,
+     "triangles": 953699,
+     "vegTris": 271998
+    },
+    "procedural": {
+     "calls": 454,
+     "triangles": 782376
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G02-group-bicycle-ride--authored.jpg",
+     "docs/qa/vegetation/browser/G02-group-bicycle-ride--procedural.jpg"
+    ],
+    "caption": "the group ride (the friends riding beside)"
+   },
+   {
+    "name": "G08-oak-close-up-carving",
+    "camera": {
+     "p": [
+      253.409,
+      3.138,
+      -1057.164
+     ],
+     "q": [
+      -0.0449,
+      -0.6615,
+      -0.0397,
+      0.7475
+     ]
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 155,
+     "triangles": 675082,
+     "vegTris": 632855
+    },
+    "procedural": {
+     "calls": 74,
+     "triangles": 120422
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G08-oak-close-up-carving--authored.jpg",
+     "docs/qa/vegetation/browser/G08-oak-close-up-carving--procedural.jpg"
+    ],
+    "caption": "the oak close: bark, flare and the healed AR (the release test's carving view)"
+   },
+   {
+    "name": "G08b-oak-close-up-up-the-trunk",
+    "camera": {
+     "p": [
+      251.05,
+      3.042,
+      -1054.404
+     ],
+     "q": [
+      0.2448,
+      -0.4168,
+      0.1176,
+      0.8675
+     ]
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 145,
+     "triangles": 668855,
+     "vegTris": 632859
+    },
+    "procedural": {
+     "calls": 73,
+     "triangles": 130868
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G08b-oak-close-up-up-the-trunk--authored.jpg",
+     "docs/qa/vegetation/browser/G08b-oak-close-up-up-the-trunk--procedural.jpg"
+    ],
+    "caption": "under the oak, looking up the trunk into the limbs"
+   },
+   {
+    "name": "G09-the-tire-swing",
+    "camera": {
+     "p": [
+      248.738,
+      2.951,
+      -1053.085
+     ],
+     "q": [
+      0.1028,
+      -0.3485,
+      0.0385,
+      0.9309
+     ]
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 167,
+     "triangles": 685389,
+     "vegTris": 634635
+    },
+    "procedural": {
+     "calls": 97,
+     "triangles": 147269
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G09-the-tire-swing--authored.jpg",
+     "docs/qa/vegetation/browser/G09-the-tire-swing--procedural.jpg"
+    ],
+    "caption": "the tire swing on the oak's own limb"
+   },
+   {
+    "name": "G09b-the-other-bike",
+    "camera": {
+     "p": [
+      246.959,
+      2.964,
+      -1053.428
+     ],
+     "q": [
+      -0.0647,
+      -0.5028,
+      -0.0378,
+      0.8611
+     ]
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 160,
+     "triangles": 680313,
+     "vegTris": 636587
+    },
+    "procedural": {
+     "calls": 84,
+     "triangles": 129205
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G09b-the-other-bike--authored.jpg",
+     "docs/qa/vegetation/browser/G09b-the-other-bike--procedural.jpg"
+    ],
+    "caption": "the other bike under the oak after the call (release test view)"
+   },
+   {
+    "name": "G03b-street-trees-beside-the-new-houses",
+    "camera": {
+     "p": [
+      0.364,
+      2.183,
+      -150.066
+     ],
+     "q": [
+      -0.0717,
+      -0.1324,
+      -0.0057,
+      0.9886
+     ],
+     "fov": 64,
+     "d": 150,
+     "lat": -0.3,
+     "yaw": -0.2,
+     "pitch": 0.03
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 427,
+     "triangles": 831485,
+     "vegTris": 312836
+    },
+    "procedural": {
+     "calls": 322,
+     "triangles": 621418
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G03b-street-trees-beside-the-new-houses--authored.jpg",
+     "docs/qa/vegetation/browser/G03b-street-trees-beside-the-new-houses--procedural.jpg"
+    ],
+    "caption": "street trees beside the authored houses (?bikes&houses&vegetation)",
+    "flags": "bikes&houses&vegetation"
+   },
+   {
+    "name": "G04c-yards-with-the-new-houses",
+    "camera": {
+     "p": [
+      37.272,
+      1.087,
+      -246.497
+     ],
+     "q": [
+      -0.064,
+      -0.7146,
+      -0.0621,
+      0.6938
+     ],
+     "fov": 64,
+     "d": 255,
+     "lat": 3,
+     "yaw": -1.05,
+     "pitch": -0.03
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 284,
+     "triangles": 662037,
+     "vegTris": 347099
+    },
+    "procedural": {
+     "calls": 170,
+     "triangles": 384802
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G04c-yards-with-the-new-houses--authored.jpg",
+     "docs/qa/vegetation/browser/G04c-yards-with-the-new-houses--procedural.jpg"
+    ],
+    "caption": "yards, beds and lawns at the authored houses",
+    "flags": "bikes&houses&vegetation"
+   },
+   {
+    "name": "G02b-group-ride-with-authored-bikes-and-houses",
+    "camera": {
+     "p": [
+      37.287,
+      1.123,
+      -246.542
+     ],
+     "q": [
+      -0.1033,
+      -0.3185,
+      -0.0291,
+      0.9418
+     ]
+    },
+    "sameCamera": true,
+    "authored": {
+     "calls": 508,
+     "triangles": 1111022,
+     "vegTris": 347099
+    },
+    "procedural": {
+     "calls": 414,
+     "triangles": 878897
+    },
+    "files": [
+     "docs/qa/vegetation/browser/G02b-group-ride-with-authored-bikes-and-houses--authored.jpg",
+     "docs/qa/vegetation/browser/G02b-group-ride-with-authored-bikes-and-houses--procedural.jpg"
+    ],
+    "caption": "the group ride with the authored bikes, houses and vegetation",
+    "flags": "bikes&houses&vegetation"
+   }
+  ],
+  "summary": {
+   "passed": 46,
+   "failed": 0
   }
  }
 }

@@ -2,12 +2,12 @@
 
 | Original (CC BY 4.0) | Bytes | Runtime file | Bytes | Validator |
 |---|---|---|---|---|
-| `200_year_old_oak_tree.glb` | 129,820,864 | `dist/assets/veg/lm.old-oak.glb` | 6,534,264 | ok; Khronos 0 errors, 4 warnings |
-| `realistic_trees_collection.glb` | 42,333,844 | `dist/assets/veg/veg.street-trees.glb` | 16,669,464 | ok; Khronos 0 errors, 120 warnings |
-| `bush_models_pack_gameready_lods.glb` | 8,048,292 | `dist/assets/veg/veg.shrubs.glb` | 3,085,208 | ok; Khronos 0 errors, 0 warnings |
-| `grass_and_bush_-_mobile_gameready.glb` | 1,833,488 | `dist/assets/veg/veg.ground.glb` | 748,012 | ok; Khronos 0 errors, 0 warnings |
+| `200_year_old_oak_tree.glb` | 129,820,864 | `dist/assets/veg/lm.old-oak.glb` | 6,556,112 | ok; Khronos 0 errors, 4 warnings |
+| `realistic_trees_collection.glb` | 42,333,844 | `dist/assets/veg/veg.street-trees.glb` | 16,693,312 | ok; Khronos 0 errors, 120 warnings |
+| `bush_models_pack_gameready_lods.glb` | 8,048,292 | `dist/assets/veg/veg.shrubs.glb` | 2,898,248 | ok; Khronos 0 errors, 0 warnings |
+| `grass_and_bush_-_mobile_gameready.glb` | 1,833,488 | `dist/assets/veg/veg.ground.glb` | 725,212 | ok; Khronos 0 errors, 0 warnings |
 
-Runtime total 27,036,948 bytes (25.78 MB); the offline package embeds them base64 (+33 %).
+Runtime total 26,872,884 bytes (25.63 MB); the offline package embeds them base64 (+33 %).
 
 ### Triangles by asset and LOD (LOD0 / LOD1 / LOD2)
 
@@ -47,3 +47,29 @@ Runtime total 27,036,948 bytes (25.78 MB); the offline package embeds them base6
 | flower.lace.1 | 4 / 2 |
 | flower.susan.1 | 4 / 2 |
 | weed.clover.1 | 2 / 2 |
+
+### In the game (Chromium + ANGLE SwiftShader: software rendering, not a GPU)
+
+Loaded in **1476 ms** in the page (wall clock incl. the page's own start: 1510 ms); 26,872,884 bytes; **9 materials**, **14 textures** (~128 MB GPU texture memory, uncompressed RGBA8 + mips estimate); 386 street trees (42 variants in use; species {'maple': 159, 'birch': 11, 'spruce': 50, 'young': 16, 'ash': 39, 'pine': 56, 'oak': 55}), 553 shrubs and perennials, 12487 lookout meadow plants.
+
+| Same frame (camera recorded) | Draw calls authored / procedural | Triangles authored / procedural | Vegetation triangles (authored) |
+|---|---|---|---|
+| G01-prologue-start-street | 579 / 484 | 948,257 / 766,286 | 281,951 |
+| G04-shrubs-driveways-porches | 329 / 214 | 764,927 / 513,048 | 363,477 |
+| G04b-jamies-house | 466 / 351 | 914,082 / 688,621 | 320,394 |
+| G05-grass-beside-sidewalk | 686 / 598 | 1,363,339 / 1,124,802 | 344,699 |
+| G03-street-trees | 608 / 525 | 1,046,013 / 841,287 | 333,648 |
+| G06-the-lookout | 237 / 156 | 565,119 / 177,869 | 474,843 |
+| G07-oak-from-the-cul-de-sac | 241 / 163 | 557,252 / 174,174 | 479,517 |
+| G07b-oak-silhouette-from-124m | 328 / 222 | 545,067 / 295,381 | 345,404 |
+| G10-dusk-looking-home | 474 / 384 | 1,030,358 / 707,775 | 498,972 |
+| G02-group-bicycle-ride | 537 / 454 | 953,699 / 782,376 | 271,998 |
+| G08-oak-close-up-carving | 155 / 74 | 675,082 / 120,422 | 632,855 |
+| G08b-oak-close-up-up-the-trunk | 145 / 73 | 668,855 / 130,868 | 632,859 |
+| G09-the-tire-swing | 167 / 97 | 685,389 / 147,269 | 634,635 |
+| G09b-the-other-bike | 160 / 84 | 680,313 / 129,205 | 636,587 |
+| G03b-street-trees-beside-the-new-houses | 427 / 322 | 831,485 / 621,418 | 312,836 |
+| G04c-yards-with-the-new-houses | 284 / 170 | 662,037 / 384,802 | 347,099 |
+| G02b-group-ride-with-authored-bikes-and-houses | 508 / 414 | 1,111,022 / 878,897 | 347,099 |
+
+Offline package with every model embedded (PLAYTEST_MODELS=1): 141,026,424 bytes; the vegetation loads from the embedded bytes with no network.

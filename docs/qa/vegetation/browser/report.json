@@ -1,0 +1,6945 @@
+{
+ "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
+ "commit": "7391152",
+ "started": "2026-11-19T09:30:53.073Z",
+ "viewport": "1600x900, deviceScaleFactor 1, Medium profile",
+ "checks": [
+  {
+   "name": "Game: without ?vegetation the Prologue fetches none of the vegetation benchmark modules or models",
+   "detail": []
+  },
+  {
+   "name": "Game: without ?vegetation no vegetation batches, proxies or records exist (the world is baked as in the accepted build; node: identical geometry hash)",
+   "detail": {
+    "label": false,
+    "zones": 0,
+    "proxies": 379,
+    "merged": 2225,
+    "record": false,
+    "swingLimb": true,
+    "carving": true
+   }
+  },
+  {
+   "name": "Game (no ?vegetation): the swing's own cylinder limb is still drawn",
+   "detail": {
+    "label": false,
+    "zones": 0,
+    "proxies": 379,
+    "merged": 2225,
+    "record": false,
+    "swingLimb": true,
+    "carving": true
+   }
+  },
+  {
+   "name": "Game (no ?vegetation): no page errors",
+   "detail": []
+  },
+  {
+   "name": "Game: ?vegetation loads the four vegetation files without error",
+   "detail": {
+    "error": null,
+    "errors": [],
+    "loadMs": 1476
+   }
+  },
+  {
+   "name": "Game: every recorded tree stands authored (one landmark oak + the rest as street trees)",
+   "detail": {
+    "trees": 386,
+    "records": 387,
+    "species": {
+     "maple": 159,
+     "birch": 11,
+     "spruce": 50,
+     "young": 16,
+     "ash": 39,
+     "pine": 56,
+     "oak": 55
+    },
+    "variantsUsed": 42
+   }
+  },
+  {
+   "name": "Game: bed shrubs and perennials stand on the recorded beds; the lookout meadow is planted",
+   "detail": {
+    "shrubs": 553,
+    "meadow": 12487
+   }
+  },
+  {
+   "name": "Game: no request leaves the local server",
+   "detail": []
+  },
+  {
+   "name": "Oak: stands on LOOKOUT.oak in the lookout's frame (< 1 cm, rotation = -heading)",
+   "detail": {
+    "place": 0,
+    "rot": 0
+   }
+  },
+  {
+   "name": "Oak: the swing's pivot (ambient.js, groundY + 4.35) is on the underside of the oak's own limb (bark within 0.15 m above it)",
+   "detail": {
+    "dist": -0.091,
+    "mat": "bark"
+   }
+  },
+  {
+   "name": "Oak: nothing of the tree in the rope's and tire's path below the pivot",
+   "detail": 0
+  },
+  "Oak: the stand-in cylinder limb is hidden while the authored oak shows",
+  {
+   "name": "Oak: the AR carving is the oak's own, at ending.js's height (+-3 cm) facing the swing (+-0.05 rad); the line carving is hidden",
+   "detail": {
+    "authoredY": 3.134,
+    "gameLettersY": 3.134,
+    "bearingErr": 0,
+    "gameHidden": true,
+    "radius": 0.6552,
+    "gameRadius": 0.462
+   }
+  },
+  {
+   "name": "Oak: the story marks around the trunk are clear (old bike, Alex's place, bench, chalk, the swing's patch, where the friends stand: no wood or leaves from 0.12 to 1.9 m)",
+   "detail": {
+    "oldBike": null,
+    "sitAgainstTrunk": null,
+    "bench": null,
+    "chalk": null,
+    "swingGround": null,
+    "friendsJamie": null,
+    "friendsSam": null,
+    "ch6Stand": null
+   }
+  },
+  {
+   "name": "Trees: none floats or sinks (ray down to the visible ground under every third tree: base within 0.2 m)",
+   "detail": {
+    "worst": 0.005,
+    "sampled": 129,
+    "list": [
+     {
+      "d": 0.005,
+      "gap": -0.005,
+      "id": "tree.maple.5",
+      "kind": "maple",
+      "lod": "mid",
+      "phase": "yards",
+      "u": 883.9,
+      "v": 30.2,
+      "zone": null
+     },
+     {
+      "d": 0.003,
+      "gap": 0.003,
+      "id": "tree.maple.1",
+      "kind": "maple",
+      "lod": "mid",
+      "phase": "yards",
+      "u": -428.9,
+      "v": -29.7,
+      "zone": null
+     },
+     {
+      "d": 0.003,
+      "gap": 0.003,
+      "id": "tree.pine.4",
+      "kind": "pine",
+      "lod": "mid",
+      "phase": "yards",
+      "u": 240.9,
+      "v": -27.5,
+      "zone": null
+     },
+     {
+      "d": 0.003,
+      "gap": 0.003,
+      "id": "tree.maple.8",
+      "kind": "maple",
+      "lod": "mid",
+      "phase": "yards",
+      "u": 971.9,
+      "v": -27.9,
+      "zone": null
+     },
+     {
+      "d": 0.003,
+      "gap": 0.003,
+      "id": "tree.pine.1",
+      "kind": "pine",
+      "lod": "mid",
+      "phase": "background",
+      "u": -334.2,
+      "v": 37.3,
+      "zone": null
+     },
+     {
+      "d": 0.002,
+      "gap": 0.002,
+      "id": "tree.maple.7",
+      "kind": "maple",
+      "lod": "mid",
+      "phase": "yards",
+      "u": -251.4,
+      "v": -27.6,
+      "zone": null
+     }
+    ]
+   }
+  },
+  {
+   "name": "Trees: no crown reaches into an Oak Hollow house (crown radius within 0.45 m of the house wall)",
+   "detail": []
+  },
+  {
+   "name": "LOD: near trees at LOD0, far ones at LOD1/2 along the street; the oak switches with distance",
+   "detail": [
+    {
+     "d": 60,
+     "trees": [
+      3,
+      20,
+      265
+     ],
+     "shrubs": [
+      4,
+      18,
+      108
+     ],
+     "oak": 2,
+     "lawn": 3058
+    },
+    {
+     "d": 300,
+     "trees": [
+      5,
+      19,
+      289
+     ],
+     "shrubs": [
+      14,
+      31,
+      113
+     ],
+     "oak": 2,
+     "lawn": 2945
+    },
+    {
+     "d": 700,
+     "trees": [
+      6,
+      14,
+      306
+     ],
+     "shrubs": [
+      6,
+      28,
+      112
+     ],
+     "oak": 2,
+     "lawn": 2526
+    },
+    {
+     "d": 1130,
+     "trees": [
+      11,
+      4,
+      239
+     ],
+     "shrubs": [
+      2,
+      10,
+      51
+     ],
+     "oak": 0,
+     "lawn": 3343
+    }
+   ]
+  },
+  {
+   "name": "LOD: no flicker (a second update at the same place changes nothing); forced LOD 0/1/2 and back to auto",
+   "detail": [
+    {
+     "n": 0,
+     "levels": [
+      386,
+      0,
+      0
+     ]
+    },
+    {
+     "n": 1,
+     "levels": [
+      0,
+      386,
+      0
+     ]
+    },
+    {
+     "n": 2,
+     "levels": [
+      0,
+      0,
+      386
+     ]
+    },
+    {
+     "n": null,
+     "levels": [
+      11,
+      4,
+      239
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Wind: the vegetation runs on the game's own breeze (ambient.js time and gust) and the wind scale reaches the shader",
+   "detail": {
+    "sweep": [
+     {
+      "d": 60,
+      "trees": [
+       3,
+       20,
+       265
+      ],
+      "shrubs": [
+       4,
+       18,
+       108
+      ],
+      "oak": 2,
+      "lawn": 3058
+     },
+     {
+      "d": 300,
+      "trees": [
+       5,
+       19,
+       289
+      ],
+      "shrubs": [
+       14,
+       31,
+       113
+      ],
+      "oak": 2,
+      "lawn": 2945
+     },
+     {
+      "d": 700,
+      "trees": [
+       6,
+       14,
+       306
+      ],
+      "shrubs": [
+       6,
+       28,
+       112
+      ],
+      "oak": 2,
+      "lawn": 2526
+     },
+     {
+      "d": 1130,
+      "trees": [
+       11,
+       4,
+       239
+      ],
+      "shrubs": [
+       2,
+       10,
+       51
+      ],
+      "oak": 0,
+      "lawn": 3343
+     }
+    ],
+    "stable": true,
+    "forced": [
+     {
+      "n": 0,
+      "levels": [
+       386,
+       0,
+       0
+      ]
+     },
+     {
+      "n": 1,
+      "levels": [
+       0,
+       386,
+       0
+      ]
+     },
+     {
+      "n": 2,
+      "levels": [
+       0,
+       0,
+       386
+      ]
+     },
+     {
+      "n": null,
+      "levels": [
+       11,
+       4,
+       239
+      ]
+     }
+    ],
+    "windTime": [
+     0.5666666666666667,
+     1.0666666666666667
+    ],
+    "windScale": 2.2,
+    "gameWind": true
+   }
+  },
+  {
+   "name": "Before/after start: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      -0.344,
+      1.48,
+      -1.974
+     ],
+     "q": [
+      -0.0531,
+      -0.0019,
+      0.0065,
+      0.9986
+     ],
+     "fov": 64,
+     "d": 2,
+     "lat": -0.3,
+     "yaw": 0,
+     "pitch": 0.02
+    },
+    "procedural": {
+     "p": [
+      -0.344,
+      1.48,
+      -1.974
+     ],
+     "q": [
+      -0.0531,
+      -0.0019,
+      0.0065,
+      0.9986
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after yards: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      76.623,
+      -0.247,
+      -310.343
+     ],
+     "q": [
+      -0.0604,
+      -0.766,
+      -0.0641,
+      0.6368
+     ],
+     "fov": 64,
+     "d": 330,
+     "lat": 3.2,
+     "yaw": -1.2,
+     "pitch": -0.04
+    },
+    "procedural": {
+     "p": [
+      76.623,
+      -0.247,
+      -310.343
+     ],
+     "q": [
+      -0.0604,
+      -0.766,
+      -0.0641,
+      0.6368
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after jamie: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      88.173,
+      1.136,
+      -725.365
+     ],
+     "q": [
+      -0.0533,
+      -0.7964,
+      -0.0581,
+      0.5996
+     ],
+     "fov": 64,
+     "d": 780,
+     "lat": 3,
+     "yaw": -1.2,
+     "pitch": -0.02
+    },
+    "procedural": {
+     "p": [
+      88.173,
+      1.136,
+      -725.365
+     ],
+     "q": [
+      -0.0533,
+      -0.7964,
+      -0.0581,
+      0.5996
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after sidewalk: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      119.343,
+      -1.02,
+      -378.009
+     ],
+     "q": [
+      -0.1612,
+      -0.3497,
+      -0.0546,
+      0.9213
+     ],
+     "fov": 64,
+     "d": 410,
+     "lat": 4.3,
+     "yaw": -0.18,
+     "pitch": -0.2
+    },
+    "procedural": {
+     "p": [
+      119.343,
+      -1.02,
+      -378.009
+     ],
+     "q": [
+      -0.1612,
+      -0.3497,
+      -0.0546,
+      0.9213
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after street: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      135.329,
+      0.877,
+      -436.136
+     ],
+     "q": [
+      -0.0467,
+      -0.0195,
+      0.0068,
+      0.9987
+     ],
+     "fov": 64,
+     "d": 470,
+     "lat": -0.3,
+     "yaw": 0.04,
+     "pitch": 0.03
+    },
+    "procedural": {
+     "p": [
+      135.329,
+      0.877,
+      -436.136
+     ],
+     "q": [
+      -0.0467,
+      -0.0195,
+      0.0068,
+      0.9987
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after lookout: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      244.14,
+      2.521,
+      -1032.606
+     ],
+     "q": [
+      -0.0524,
+      0.0186,
+      0.0078,
+      0.9984
+     ],
+     "fov": 64,
+     "d": 1136.5,
+     "lat": -0.9,
+     "yaw": 0.12,
+     "pitch": 0.06
+    },
+    "procedural": {
+     "p": [
+      244.14,
+      2.521,
+      -1032.606
+     ],
+     "q": [
+      -0.0524,
+      0.0186,
+      0.0078,
+      0.9984
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after oakFromBulb: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      242.204,
+      2.563,
+      -1022.23
+     ],
+     "q": [
+      -0.0206,
+      0.1093,
+      0.0081,
+      0.9938
+     ],
+     "fov": 64,
+     "d": 1126,
+     "lat": -2,
+     "yaw": 0.3,
+     "pitch": 0.13
+    },
+    "procedural": {
+     "p": [
+      242.204,
+      2.563,
+      -1022.23
+     ],
+     "q": [
+      -0.0206,
+      0.1093,
+      0.0081,
+      0.9938
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after oakFar: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      234.9,
+      3.28,
+      -934.665
+     ],
+     "q": [
+      -0.0489,
+      -0.078,
+      0.003,
+      0.9957
+     ],
+     "fov": 64,
+     "d": 1038,
+     "lat": -0.3,
+     "yaw": 0.06,
+     "pitch": 0.07
+    },
+    "procedural": {
+     "p": [
+      234.9,
+      3.28,
+      -934.665
+     ],
+     "q": [
+      -0.0489,
+      -0.078,
+      0.003,
+      0.9957
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after lookingHome: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      247.67,
+      2.507,
+      -1040.35
+     ],
+     "q": [
+      -0.039,
+      0.9794,
+      0.0581,
+      0.1892
+     ],
+     "fov": 64,
+     "d": 1150,
+     "lat": 2,
+     "yaw": 3.141592653589793,
+     "pitch": 0.04
+    },
+    "procedural": {
+     "p": [
+      247.67,
+      2.507,
+      -1040.35
+     ],
+     "q": [
+      -0.039,
+      0.9794,
+      0.0581,
+      0.1892
+     ]
+    }
+   }
+  },
+  {
+   "name": "Game (?vegetation, checks and captures): no page errors",
+   "detail": []
+  },
+  {
+   "name": "Prologue with ?vegetation: the ride reaches the lookout; Jamie and Sam are home, Alex on Briarwood",
+   "detail": {
+    "reached": 1136.5,
+    "homes": [
+     {
+      "name": "JAMIE",
+      "inside": true
+     },
+     {
+      "name": "SAM",
+      "inside": true
+     },
+     {
+      "name": "ALEX",
+      "inside": false
+     }
+    ],
+    "walking": "walking",
+    "callDone": true,
+    "swingPrompt": "F:Push the swing",
+    "swing": 0.31199221643634595,
+    "bench": "bench",
+    "otherBike": true,
+    "chalk": "chalk",
+    "clue": true
+   }
+  },
+  {
+   "name": "Prologue with ?vegetation: dismount, the distant call, the swing pushed from its prompt, the bench, the chalk and the faint AR",
+   "detail": {
+    "reached": 1136.5,
+    "homes": [
+     {
+      "name": "JAMIE",
+      "inside": true
+     },
+     {
+      "name": "SAM",
+      "inside": true
+     },
+     {
+      "name": "ALEX",
+      "inside": false
+     }
+    ],
+    "walking": "walking",
+    "callDone": true,
+    "swingPrompt": "F:Push the swing",
+    "swing": 0.31199221643634595,
+    "bench": "bench",
+    "otherBike": true,
+    "chalk": "chalk",
+    "clue": true
+   }
+  },
+  {
+   "name": "Prologue with ?vegetation plays to its end: Go home starts the ride home (Chapter One)",
+   "detail": {
+    "state": "c1-ride",
+    "ending": false
+   }
+  },
+  {
+   "name": "Game (?vegetation): no page errors through the whole Prologue",
+   "detail": []
+  },
+  {
+   "name": "Before/after groupRide: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      -0.3,
+      3.326,
+      -85.777
+     ],
+     "q": [
+      -0.1017,
+      0.0746,
+      0.0073,
+      0.992
+     ],
+     "d": 85.71351544175008
+    },
+    "procedural": {
+     "p": [
+      -0.3,
+      3.326,
+      -85.777
+     ],
+     "q": [
+      -0.1017,
+      0.0746,
+      0.0073,
+      0.992
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after G08-oak-close-up-carving: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      253.409,
+      3.138,
+      -1057.164
+     ],
+     "q": [
+      -0.0449,
+      -0.6615,
+      -0.0397,
+      0.7475
+     ]
+    },
+    "procedural": {
+     "p": [
+      253.409,
+      3.138,
+      -1057.164
+     ],
+     "q": [
+      -0.0449,
+      -0.6615,
+      -0.0397,
+      0.7475
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after G08b-oak-close-up-up-the-trunk: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      251.05,
+      3.042,
+      -1054.404
+     ],
+     "q": [
+      0.2448,
+      -0.4168,
+      0.1176,
+      0.8675
+     ]
+    },
+    "procedural": {
+     "p": [
+      251.05,
+      3.042,
+      -1054.404
+     ],
+     "q": [
+      0.2448,
+      -0.4168,
+      0.1176,
+      0.8675
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after G09-the-tire-swing: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      248.738,
+      2.951,
+      -1053.085
+     ],
+     "q": [
+      0.1028,
+      -0.3485,
+      0.0385,
+      0.9309
+     ]
+    },
+    "procedural": {
+     "p": [
+      248.738,
+      2.951,
+      -1053.085
+     ],
+     "q": [
+      0.1028,
+      -0.3485,
+      0.0385,
+      0.9309
+     ]
+    }
+   }
+  },
+  {
+   "name": "Before/after G09b-the-other-bike: the same camera and frame for both",
+   "detail": {
+    "authored": {
+     "p": [
+      246.959,
+      2.964,
+      -1053.428
+     ],
+     "q": [
+      -0.0647,
+      -0.5028,
+      -0.0378,
+      0.8611
+     ]
+    },
+    "procedural": {
+     "p": [
+      246.959,
+      2.964,
+      -1053.428
+     ],
+     "q": [
+      -0.0647,
+      -0.5028,
+      -0.0378,
+      0.8611
+     ]
+    }
+   }
+  },
+  {
+   "name": "Combined ?bikes&houses&vegetation: all three benchmarks load",
+   "detail": [
+    "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1830 ms",
+    "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 668 ms · 17.9 MB",
+    "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2450 ms · 25.6 MB · 9 materials · 14 textures (~128 MB GPU)"
+   ]
+  },
+  {
+   "name": "Combined: the ride keeps playing",
+   "detail": 16.05685746308845
+  },
+  {
+   "name": "Combined: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: PLAYTEST_MODELS=1 embeds the four vegetation models and hashes them in the manifest",
+   "detail": {
+    "size": 141026424
+   }
+  },
+  {
+   "name": "Offline package (PLAYTEST_MODELS=1, file://, browser offline): ?vegetation loads from the embedded bytes, no network",
+   "detail": {
+    "error": null,
+    "label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 1294 ms · 25.6 MB · 9 materials · 14 textures (~128 MB GPU)",
+    "from": [
+     "package",
+     "package",
+     "package",
+     "package"
+    ],
+    "net": [],
+    "size": 141026424
+   }
+  },
+  {
+   "name": "Offline package (models): no page errors other than the deliberate asset message",
+   "detail": []
+  },
+  {
+   "name": "Default offline package: ?vegetation fails loudly and substitutes nothing (the procedural vegetation stays)",
+   "detail": {
+    "error": "asset assets/veg/lm.old-oak.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)",
+    "label": "VEGETATION BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/veg/lm.old-oak.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)",
+    "from": null,
+    "net": []
+   }
+  },
+  {
+   "name": "Offline package (default): no page errors other than the deliberate asset message",
+   "detail": [
+    "vegetation benchmark: Error: asset assets/veg/lm.old-oak.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)\n    at bytesFor (blob:null/55db6d85-4741-49d8-8f83-fc2ebbffdff7:43:37)\n    at blob:null/55db6d85-4741-49d8-8f83-fc2ebbffdff7:52:59\n    at loadAsset (blob:null/55db6d85-4741-49d8-8f83-fc2ebbffdff7:69:82)\n    at placeVegetation (blob:null/addbc44a-c5e3-42f1-8b39-eb40084b186d:166:41)\n    at Module.mountInGame (blob:null/c8205631-b831-41ee-90ce-3a2de713d3e4:20:14)\n    at blob:null/eefe8952-bed1-42cc-8d1f-720f52cef44c:869:75"
+   ]
+  }
+ ],
+ "failures": [],
+ "parts": {
+  "gameWithout": {
+   "label": false,
+   "zones": 0,
+   "proxies": 379,
+   "merged": 2225,
+   "record": false,
+   "swingLimb": true,
+   "carving": true
+  },
+  "game": {
+   "wallLoadMs": 1510,
+   "loaded": {
+    "error": null,
+    "loadMs": 1476,
+    "info": {
+     "bytes": 26872884,
+     "readMs": 0,
+     "parseMs": 0,
+     "files": {
+      "lm.old-oak": {
+       "id": "lm.old-oak",
+       "file": "assets/veg/lm.old-oak.glb",
+       "from": "http",
+       "bytes": 6556112,
+       "readMs": 64,
+       "parseMs": 301.4,
+       "triangles": 99871,
+       "skinnedMeshes": 0,
+       "geometries": 7,
+       "materials": 3,
+       "textures": 6,
+       "clips": [],
+       "morphTargets": [],
+       "version": 1,
+       "rig": "none",
+       "license": "Last Light (Roth Studios). Reconstructed from \"200 year old oak tree\" by kungphil (https://skfb.ly/6vqWJ), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/): the laser scan was used as the measured source of the branch architecture and crown; the mesh, bark, leaves and carving are new. Leaf card photo adapted from \"Realistic Trees Collection\" by Jungle Jim (https://skfb.ly/pDzJR), CC BY 4.0. The authors do not endorse Last Light.",
+       "generator": "Khronos glTF Blender I/O v5.0.21"
+      },
+      "veg.street-trees": {
+       "id": "veg.street-trees",
+       "file": "assets/veg/veg.street-trees.glb",
+       "from": "http",
+       "bytes": 16693312,
+       "readMs": 147.1,
+       "parseMs": 339.3,
+       "triangles": 360916,
+       "skinnedMeshes": 0,
+       "geometries": 252,
+       "materials": 3,
+       "textures": 5,
+       "clips": [],
+       "morphTargets": [],
+       "version": 1,
+       "rig": "none",
+       "license": "Last Light (Roth Studios). Oak and ash branch architectures recovered from \"Realistic Trees Collection\" by Jungle Jim (https://skfb.ly/pDzJR), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); oak, ash and pine twig photos adapted from the same collection; bark micro-detail from its bark photo. Maple, birch, pine, spruce and young trees, the maple and birch leaves and the barks are original. Rebuilt, re-meshed and re-textured for Last Light; the author does not endorse Last Light.",
+       "generator": "Khronos glTF Blender I/O v5.0.21"
+      },
+      "veg.shrubs": {
+       "id": "veg.shrubs",
+       "file": "assets/veg/veg.shrubs.glb",
+       "from": "http",
+       "bytes": 2898248,
+       "readMs": 24.8,
+       "parseMs": 44.2,
+       "triangles": 61129,
+       "skinnedMeshes": 0,
+       "geometries": 114,
+       "materials": 2,
+       "textures": 2,
+       "clips": [],
+       "morphTargets": [],
+       "version": 1,
+       "rig": "none",
+       "license": "Last Light (Roth Studios). Shrub geometry, LODs and leaf atlas adapted from \"Bush models pack (gameready, LODs)\" by LOLIPOP (https://skfb.ly/pLE8N), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/): leaves re-graded and re-packed, materials rebuilt (alpha-tested), occlusion and wind baked, trimmed and flowering variants derived. The author does not endorse Last Light.",
+       "generator": "Khronos glTF Blender I/O v5.0.21"
+      },
+      "veg.ground": {
+       "id": "veg.ground",
+       "file": "assets/veg/veg.ground.glb",
+       "from": "http",
+       "bytes": 725212,
+       "readMs": 7.2,
+       "parseMs": 72.6,
+       "triangles": 610,
+       "skinnedMeshes": 0,
+       "geometries": 26,
+       "materials": 1,
+       "textures": 1,
+       "clips": [],
+       "morphTargets": [],
+       "version": 1,
+       "rig": "none",
+       "license": "Last Light (Roth Studios). Meadow, dry grass, sprig and seed-stalk sprites adapted from \"Grass And Bush - Mobile GameReady\" by Ali haghshenas (https://skfb.ly/6WTVC), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/): cropped, turned upright, graded, re-packed; lawn blades, wildflowers and clover original. The author does not endorse Last Light.",
+       "generator": "Khronos glTF Blender I/O v5.0.21"
+      }
+     },
+     "loadMs": 1474,
+     "materials": 9,
+     "textures": 14,
+     "gpuTextureMB": 128,
+     "trees": 386,
+     "shrubs": 553,
+     "meadow": 12487,
+     "speciesCount": {
+      "maple": 159,
+      "birch": 11,
+      "spruce": 50,
+      "young": 16,
+      "ash": 39,
+      "pine": 56,
+      "oak": 55
+     },
+     "variantsUsed": 42
+    },
+    "errors": [],
+    "records": {
+     "trees": 387,
+     "beds": 1102
+    }
+   },
+   "geometry": {
+    "oakPlaceErr": 0,
+    "oakRotErr": 0,
+    "pivot": [
+     252.263,
+     6.08,
+     -1057.016
+    ],
+    "limbAbovePivot": {
+     "dist": -0.091,
+     "mat": "bark"
+    },
+    "ropePathHits": 0,
+    "marks": {
+     "oldBike": null,
+     "sitAgainstTrunk": null,
+     "bench": null,
+     "chalk": null,
+     "swingGround": null,
+     "friendsJamie": null,
+     "friendsSam": null,
+     "ch6Stand": null
+    },
+    "carving": {
+     "authoredY": 3.134,
+     "gameLettersY": 3.134,
+     "bearingErr": 0,
+     "gameHidden": true,
+     "radius": 0.6552,
+     "gameRadius": 0.462
+    },
+    "swingLimbHidden": true,
+    "floatList": [
+     {
+      "d": 0.005,
+      "gap": -0.005,
+      "id": "tree.maple.5",
+      "kind": "maple",
+      "lod": "mid",
+      "phase": "yards",
+      "u": 883.9,
+      "v": 30.2,
+      "zone": null
+     },
+     {
+      "d": 0.003,
+      "gap": 0.003,
+      "id": "tree.maple.1",
+      "kind": "maple",
+      "lod": "mid",
+      "phase": "yards",
+      "u": -428.9,
+      "v": -29.7,
+      "zone": null
+     },
+     {
+      "d": 0.003,
+      "gap": 0.003,
+      "id": "tree.pine.4",
+      "kind": "pine",
+      "lod": "mid",
+      "phase": "yards",
+      "u": 240.9,
+      "v": -27.5,
+      "zone": null
+     },
+     {
+      "d": 0.003,
+      "gap": 0.003,
+      "id": "tree.maple.8",
+      "kind": "maple",
+      "lod": "mid",
+      "phase": "yards",
+      "u": 971.9,
+      "v": -27.9,
+      "zone": null
+     },
+     {
+      "d": 0.003,
+      "gap": 0.003,
+      "id": "tree.pine.1",
+      "kind": "pine",
+      "lod": "mid",
+      "phase": "background",
+      "u": -334.2,
+      "v": 37.3,
+      "zone": null
+     },
+     {
+      "d": 0.002,
+      "gap": 0.002,
+      "id": "tree.maple.7",
+      "kind": "maple",
+      "lod": "mid",
+      "phase": "yards",
+      "u": -251.4,
+      "v": -27.6,
+      "zone": null
+     }
+    ],
+    "treesSampled": 129,
+    "treesWorstFloat": 0.005,
+    "treesIntoHouses": []
+   },
+   "lod": {
+    "sweep": [
+     {
+      "d": 60,
+      "trees": [
+       3,
+       20,
+       265
+      ],
+      "shrubs": [
+       4,
+       18,
+       108
+      ],
+      "oak": 2,
+      "lawn": 3058
+     },
+     {
+      "d": 300,
+      "trees": [
+       5,
+       19,
+       289
+      ],
+      "shrubs": [
+       14,
+       31,
+       113
+      ],
+      "oak": 2,
+      "lawn": 2945
+     },
+     {
+      "d": 700,
+      "trees": [
+       6,
+       14,
+       306
+      ],
+      "shrubs": [
+       6,
+       28,
+       112
+      ],
+      "oak": 2,
+      "lawn": 2526
+     },
+     {
+      "d": 1130,
+      "trees": [
+       11,
+       4,
+       239
+      ],
+      "shrubs": [
+       2,
+       10,
+       51
+      ],
+      "oak": 0,
+      "lawn": 3343
+     }
+    ],
+    "stable": true,
+    "forced": [
+     {
+      "n": 0,
+      "levels": [
+       386,
+       0,
+       0
+      ]
+     },
+     {
+      "n": 1,
+      "levels": [
+       0,
+       386,
+       0
+      ]
+     },
+     {
+      "n": 2,
+      "levels": [
+       0,
+       0,
+       386
+      ]
+     },
+     {
+      "n": null,
+      "levels": [
+       11,
+       4,
+       239
+      ]
+     }
+    ],
+    "windTime": [
+     0.5666666666666667,
+     1.0666666666666667
+    ],
+    "windScale": 2.2,
+    "gameWind": true
+   },
+   "pairs": {
+    "start": {
+     "authored": {
+      "calls": 579,
+      "triangles": 948257,
+      "cam": {
+       "p": [
+        -0.344,
+        1.48,
+        -1.974
+       ],
+       "q": [
+        -0.0531,
+        -0.0019,
+        0.0065,
+        0.9986
+       ],
+       "fov": 64,
+       "d": 2,
+       "lat": -0.3,
+       "yaw": 0,
+       "pitch": 0.02
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 141677,
+        "calls": 122,
+        "levels": [
+         6,
+         20,
+         251
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 71108,
+        "calls": 53,
+        "levels": [
+         7,
+         20,
+         91
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 66340,
+        "calls": 12,
+        "clumps": 3171,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3171
+       },
+       "tris": 281951,
+       "calls": 190
+      }
+     },
+     "procedural": {
+      "calls": 484,
+      "triangles": 766286,
+      "cam": {
+       "p": [
+        -0.344,
+        1.48,
+        -1.974
+       ],
+       "q": [
+        -0.0531,
+        -0.0019,
+        0.0065,
+        0.9986
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 141677,
+        "calls": 122,
+        "levels": [
+         6,
+         20,
+         251
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 71108,
+        "calls": 53,
+        "levels": [
+         7,
+         20,
+         91
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 66340,
+        "calls": 12,
+        "clumps": 3171,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3171
+       },
+       "tris": 281951,
+       "calls": 190
+      }
+     },
+     "same": true
+    },
+    "yards": {
+     "authored": {
+      "calls": 329,
+      "triangles": 764927,
+      "cam": {
+       "p": [
+        76.623,
+        -0.247,
+        -310.343
+       ],
+       "q": [
+        -0.0604,
+        -0.766,
+        -0.0641,
+        0.6368
+       ],
+       "fov": 64,
+       "d": 330,
+       "lat": 3.2,
+       "yaw": -1.2,
+       "pitch": -0.04
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 165270,
+        "calls": 110,
+        "levels": [
+         8,
+         12,
+         294
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 116729,
+        "calls": 69,
+        "levels": [
+         16,
+         28,
+         107
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 78652,
+        "calls": 12,
+        "clumps": 3258,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3258
+       },
+       "tris": 363477,
+       "calls": 194
+      }
+     },
+     "procedural": {
+      "calls": 214,
+      "triangles": 513048,
+      "cam": {
+       "p": [
+        76.623,
+        -0.247,
+        -310.343
+       ],
+       "q": [
+        -0.0604,
+        -0.766,
+        -0.0641,
+        0.6368
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 165270,
+        "calls": 110,
+        "levels": [
+         8,
+         12,
+         294
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 116729,
+        "calls": 69,
+        "levels": [
+         16,
+         28,
+         107
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 78652,
+        "calls": 12,
+        "clumps": 3258,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3258
+       },
+       "tris": 363477,
+       "calls": 194
+      }
+     },
+     "same": true
+    },
+    "jamie": {
+     "authored": {
+      "calls": 466,
+      "triangles": 914082,
+      "cam": {
+       "p": [
+        88.173,
+        1.136,
+        -725.365
+       ],
+       "q": [
+        -0.0533,
+        -0.7964,
+        -0.0581,
+        0.5996
+       ],
+       "fov": 64,
+       "d": 780,
+       "lat": 3,
+       "yaw": -1.2,
+       "pitch": -0.02
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 142147,
+        "calls": 110,
+        "levels": [
+         5,
+         17,
+         290
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 100343,
+        "calls": 61,
+        "levels": [
+         9,
+         22,
+         123
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 75078,
+        "calls": 12,
+        "clumps": 3458,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3458
+       },
+       "tris": 320394,
+       "calls": 186
+      }
+     },
+     "procedural": {
+      "calls": 351,
+      "triangles": 688621,
+      "cam": {
+       "p": [
+        88.173,
+        1.136,
+        -725.365
+       ],
+       "q": [
+        -0.0533,
+        -0.7964,
+        -0.0581,
+        0.5996
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 142147,
+        "calls": 110,
+        "levels": [
+         5,
+         17,
+         290
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 100343,
+        "calls": 61,
+        "levels": [
+         9,
+         22,
+         123
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 75078,
+        "calls": 12,
+        "clumps": 3458,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3458
+       },
+       "tris": 320394,
+       "calls": 186
+      }
+     },
+     "same": true
+    },
+    "sidewalk": {
+     "authored": {
+      "calls": 686,
+      "triangles": 1363339,
+      "cam": {
+       "p": [
+        119.343,
+        -1.02,
+        -378.009
+       ],
+       "q": [
+        -0.1612,
+        -0.3497,
+        -0.0546,
+        0.9213
+       ],
+       "fov": 64,
+       "d": 410,
+       "lat": 4.3,
+       "yaw": -0.18,
+       "pitch": -0.2
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 127650,
+        "calls": 104,
+        "levels": [
+         3,
+         19,
+         289
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 107887,
+        "calls": 66,
+        "levels": [
+         13,
+         22,
+         108
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 106336,
+        "calls": 10,
+        "clumps": 3136,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3136
+       },
+       "tris": 344699,
+       "calls": 183
+      }
+     },
+     "procedural": {
+      "calls": 598,
+      "triangles": 1124802,
+      "cam": {
+       "p": [
+        119.343,
+        -1.02,
+        -378.009
+       ],
+       "q": [
+        -0.1612,
+        -0.3497,
+        -0.0546,
+        0.9213
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 127650,
+        "calls": 104,
+        "levels": [
+         3,
+         19,
+         289
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 107887,
+        "calls": 66,
+        "levels": [
+         13,
+         22,
+         108
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 106336,
+        "calls": 10,
+        "clumps": 3136,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3136
+       },
+       "tris": 344699,
+       "calls": 183
+      }
+     },
+     "same": true
+    },
+    "street": {
+     "authored": {
+      "calls": 608,
+      "triangles": 1046013,
+      "cam": {
+       "p": [
+        135.329,
+        0.877,
+        -436.136
+       ],
+       "q": [
+        -0.0467,
+        -0.0195,
+        0.0068,
+        0.9987
+       ],
+       "fov": 64,
+       "d": 470,
+       "lat": -0.3,
+       "yaw": 0.04,
+       "pitch": 0.03
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 132347,
+        "calls": 106,
+        "levels": [
+         6,
+         16,
+         287
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 133451,
+        "calls": 64,
+        "levels": [
+         15,
+         21,
+         133
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 65024,
+        "calls": 12,
+        "clumps": 3122,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3122
+       },
+       "tris": 333648,
+       "calls": 185
+      }
+     },
+     "procedural": {
+      "calls": 525,
+      "triangles": 841287,
+      "cam": {
+       "p": [
+        135.329,
+        0.877,
+        -436.136
+       ],
+       "q": [
+        -0.0467,
+        -0.0195,
+        0.0068,
+        0.9987
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 132347,
+        "calls": 106,
+        "levels": [
+         6,
+         16,
+         287
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 133451,
+        "calls": 64,
+        "levels": [
+         15,
+         21,
+         133
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 65024,
+        "calls": 12,
+        "clumps": 3122,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3122
+       },
+       "tris": 333648,
+       "calls": 185
+      }
+     },
+     "same": true
+    },
+    "lookout": {
+     "authored": {
+      "calls": 237,
+      "triangles": 565119,
+      "cam": {
+       "p": [
+        244.14,
+        2.521,
+        -1032.606
+       ],
+       "q": [
+        -0.0524,
+        0.0186,
+        0.0078,
+        0.9984
+       ],
+       "fov": 64,
+       "d": 1136.5,
+       "lat": -0.9,
+       "yaw": 0.12,
+       "pitch": 0.06
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 115409,
+        "calls": 104,
+        "levels": [
+         9,
+         6,
+         239
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 33144,
+        "calls": 37,
+        "levels": [
+         0,
+         12,
+         47
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 213862,
+        "calls": 17,
+        "levels": [
+         3023,
+         9464,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 30796,
+        "calls": 10,
+        "clumps": 2639,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 2639
+       },
+       "tris": 474843,
+       "calls": 171
+      }
+     },
+     "procedural": {
+      "calls": 156,
+      "triangles": 177869,
+      "cam": {
+       "p": [
+        244.14,
+        2.521,
+        -1032.606
+       ],
+       "q": [
+        -0.0524,
+        0.0186,
+        0.0078,
+        0.9984
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 115409,
+        "calls": 104,
+        "levels": [
+         9,
+         6,
+         239
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 33144,
+        "calls": 37,
+        "levels": [
+         0,
+         12,
+         47
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 213862,
+        "calls": 17,
+        "levels": [
+         3023,
+         9464,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 30796,
+        "calls": 10,
+        "clumps": 2639,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 2639
+       },
+       "tris": 474843,
+       "calls": 171
+      }
+     },
+     "same": true
+    },
+    "oakFromBulb": {
+     "authored": {
+      "calls": 241,
+      "triangles": 557252,
+      "cam": {
+       "p": [
+        242.204,
+        2.563,
+        -1022.23
+       ],
+       "q": [
+        -0.0206,
+        0.1093,
+        0.0081,
+        0.9938
+       ],
+       "fov": 64,
+       "d": 1126,
+       "lat": -2,
+       "yaw": 0.3,
+       "pitch": 0.13
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 117692,
+        "calls": 104,
+        "levels": [
+         10,
+         5,
+         241
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 38775,
+        "calls": 40,
+        "levels": [
+         2,
+         10,
+         55
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 157234,
+        "calls": 17,
+        "levels": [
+         1972,
+         10515,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 84184,
+        "calls": 10,
+        "clumps": 3474,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3474
+       },
+       "tris": 479517,
+       "calls": 174
+      }
+     },
+     "procedural": {
+      "calls": 163,
+      "triangles": 174174,
+      "cam": {
+       "p": [
+        242.204,
+        2.563,
+        -1022.23
+       ],
+       "q": [
+        -0.0206,
+        0.1093,
+        0.0081,
+        0.9938
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 117692,
+        "calls": 104,
+        "levels": [
+         10,
+         5,
+         241
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 38775,
+        "calls": 40,
+        "levels": [
+         2,
+         10,
+         55
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 157234,
+        "calls": 17,
+        "levels": [
+         1972,
+         10515,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 84184,
+        "calls": 10,
+        "clumps": 3474,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3474
+       },
+       "tris": 479517,
+       "calls": 174
+      }
+     },
+     "same": true
+    },
+    "oakFar": {
+     "authored": {
+      "calls": 328,
+      "triangles": 545067,
+      "cam": {
+       "p": [
+        234.9,
+        3.28,
+        -934.665
+       ],
+       "q": [
+        -0.0489,
+        -0.078,
+        0.003,
+        0.9957
+       ],
+       "fov": 64,
+       "d": 1038,
+       "lat": -0.3,
+       "yaw": 0.06,
+       "pitch": 0.07
+      },
+      "veg": {
+       "oak": {
+        "level": 1,
+        "tris": 15413
+       },
+       "trees": {
+        "tris": 153890,
+        "calls": 117,
+        "levels": [
+         8,
+         16,
+         245
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 65419,
+        "calls": 51,
+        "levels": [
+         6,
+         13,
+         85
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 45238,
+        "calls": 10,
+        "levels": [
+         0,
+         12183,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 65444,
+        "calls": 9,
+        "clumps": 3342,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3342
+       },
+       "tris": 345404,
+       "calls": 190
+      }
+     },
+     "procedural": {
+      "calls": 222,
+      "triangles": 295381,
+      "cam": {
+       "p": [
+        234.9,
+        3.28,
+        -934.665
+       ],
+       "q": [
+        -0.0489,
+        -0.078,
+        0.003,
+        0.9957
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 1,
+        "tris": 15413
+       },
+       "trees": {
+        "tris": 153890,
+        "calls": 117,
+        "levels": [
+         8,
+         16,
+         245
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 65419,
+        "calls": 51,
+        "levels": [
+         6,
+         13,
+         85
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 45238,
+        "calls": 10,
+        "levels": [
+         0,
+         12183,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 65444,
+        "calls": 9,
+        "clumps": 3342,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3342
+       },
+       "tris": 345404,
+       "calls": 190
+      }
+     },
+     "same": true
+    },
+    "lookingHome": {
+     "authored": {
+      "calls": 474,
+      "triangles": 1030358,
+      "cam": {
+       "p": [
+        247.67,
+        2.507,
+        -1040.35
+       ],
+       "q": [
+        -0.039,
+        0.9794,
+        0.0581,
+        0.1892
+       ],
+       "fov": 64,
+       "d": 1150,
+       "lat": 2,
+       "yaw": 3.141592653589793,
+       "pitch": 0.04
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 115395,
+        "calls": 103,
+        "levels": [
+         9,
+         6,
+         238
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 30987,
+        "calls": 37,
+        "levels": [
+         0,
+         12,
+         44
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 265386,
+        "calls": 19,
+        "levels": [
+         3911,
+         8576,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 5572,
+        "calls": 5,
+        "clumps": 1393,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 1393
+       },
+       "tris": 498972,
+       "calls": 167
+      }
+     },
+     "procedural": {
+      "calls": 384,
+      "triangles": 707775,
+      "cam": {
+       "p": [
+        247.67,
+        2.507,
+        -1040.35
+       ],
+       "q": [
+        -0.039,
+        0.9794,
+        0.0581,
+        0.1892
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 115395,
+        "calls": 103,
+        "levels": [
+         9,
+         6,
+         238
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 30987,
+        "calls": 37,
+        "levels": [
+         0,
+         12,
+         44
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 265386,
+        "calls": 19,
+        "levels": [
+         3911,
+         8576,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 5572,
+        "calls": 5,
+        "clumps": 1393,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 1393
+       },
+       "tris": 498972,
+       "calls": 167
+      }
+     },
+     "same": true
+    }
+   },
+   "cost": [
+    {
+     "name": "G01-prologue-start-street",
+     "authored": {
+      "calls": 579,
+      "triangles": 948257,
+      "vegTris": 281951
+     },
+     "procedural": {
+      "calls": 484,
+      "triangles": 766286
+     }
+    },
+    {
+     "name": "G04-shrubs-driveways-porches",
+     "authored": {
+      "calls": 329,
+      "triangles": 764927,
+      "vegTris": 363477
+     },
+     "procedural": {
+      "calls": 214,
+      "triangles": 513048
+     }
+    },
+    {
+     "name": "G04b-jamies-house",
+     "authored": {
+      "calls": 466,
+      "triangles": 914082,
+      "vegTris": 320394
+     },
+     "procedural": {
+      "calls": 351,
+      "triangles": 688621
+     }
+    },
+    {
+     "name": "G05-grass-beside-sidewalk",
+     "authored": {
+      "calls": 686,
+      "triangles": 1363339,
+      "vegTris": 344699
+     },
+     "procedural": {
+      "calls": 598,
+      "triangles": 1124802
+     }
+    },
+    {
+     "name": "G03-street-trees",
+     "authored": {
+      "calls": 608,
+      "triangles": 1046013,
+      "vegTris": 333648
+     },
+     "procedural": {
+      "calls": 525,
+      "triangles": 841287
+     }
+    },
+    {
+     "name": "G06-the-lookout",
+     "authored": {
+      "calls": 237,
+      "triangles": 565119,
+      "vegTris": 474843
+     },
+     "procedural": {
+      "calls": 156,
+      "triangles": 177869
+     }
+    },
+    {
+     "name": "G07-oak-from-the-cul-de-sac",
+     "authored": {
+      "calls": 241,
+      "triangles": 557252,
+      "vegTris": 479517
+     },
+     "procedural": {
+      "calls": 163,
+      "triangles": 174174
+     }
+    },
+    {
+     "name": "G07b-oak-silhouette-from-124m",
+     "authored": {
+      "calls": 328,
+      "triangles": 545067,
+      "vegTris": 345404
+     },
+     "procedural": {
+      "calls": 222,
+      "triangles": 295381
+     }
+    },
+    {
+     "name": "G10-dusk-looking-home",
+     "authored": {
+      "calls": 474,
+      "triangles": 1030358,
+      "vegTris": 498972
+     },
+     "procedural": {
+      "calls": 384,
+      "triangles": 707775
+     }
+    }
+   ]
+  },
+  "play": {
+   "pairs": {
+    "groupRide": {
+     "authored": {
+      "calls": 537,
+      "triangles": 953699,
+      "cam": {
+       "p": [
+        -0.3,
+        3.326,
+        -85.777
+       ],
+       "q": [
+        -0.1017,
+        0.0746,
+        0.0073,
+        0.992
+       ],
+       "d": 85.71351544175008
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 132511,
+        "calls": 108,
+        "levels": [
+         3,
+         18,
+         275
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 73601,
+        "calls": 55,
+        "levels": [
+         6,
+         16,
+         105
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 63060,
+        "calls": 8,
+        "clumps": 2706,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 2706
+       },
+       "tris": 271998,
+       "calls": 174
+      }
+     },
+     "procedural": {
+      "calls": 454,
+      "triangles": 782376,
+      "cam": {
+       "p": [
+        -0.3,
+        3.326,
+        -85.777
+       ],
+       "q": [
+        -0.1017,
+        0.0746,
+        0.0073,
+        0.992
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 132511,
+        "calls": 108,
+        "levels": [
+         3,
+         18,
+         275
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 73601,
+        "calls": 55,
+        "levels": [
+         6,
+         16,
+         105
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 63060,
+        "calls": 8,
+        "clumps": 2706,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 2706
+       },
+       "tris": 271998,
+       "calls": 174
+      }
+     },
+     "same": true
+    },
+    "G08-oak-close-up-carving": {
+     "authored": {
+      "calls": 155,
+      "triangles": 675082,
+      "cam": {
+       "p": [
+        253.409,
+        3.138,
+        -1057.164
+       ],
+       "q": [
+        -0.0449,
+        -0.6615,
+        -0.0397,
+        0.7475
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 107996,
+        "calls": 101,
+        "levels": [
+         8,
+         6,
+         234
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 25955,
+        "calls": 29,
+        "levels": [
+         0,
+         6,
+         41
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 417272,
+        "calls": 19,
+        "levels": [
+         8313,
+         4174,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 0,
+        "calls": 0,
+        "clumps": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 0
+       },
+       "tris": 632855,
+       "calls": 152
+      }
+     },
+     "procedural": {
+      "calls": 74,
+      "triangles": 120422,
+      "cam": {
+       "p": [
+        253.409,
+        3.138,
+        -1057.164
+       ],
+       "q": [
+        -0.0449,
+        -0.6615,
+        -0.0397,
+        0.7475
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 107996,
+        "calls": 101,
+        "levels": [
+         8,
+         6,
+         234
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 25955,
+        "calls": 29,
+        "levels": [
+         0,
+         6,
+         41
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 417272,
+        "calls": 19,
+        "levels": [
+         8313,
+         4174,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 0,
+        "calls": 0,
+        "clumps": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 0
+       },
+       "tris": 632855,
+       "calls": 152
+      }
+     },
+     "same": true
+    },
+    "G08b-oak-close-up-up-the-trunk": {
+     "authored": {
+      "calls": 145,
+      "triangles": 668855,
+      "cam": {
+       "p": [
+        251.05,
+        3.042,
+        -1054.404
+       ],
+       "q": [
+        0.2448,
+        -0.4168,
+        0.1176,
+        0.8675
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 107996,
+        "calls": 101,
+        "levels": [
+         8,
+         6,
+         234
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 25955,
+        "calls": 29,
+        "levels": [
+         0,
+         6,
+         41
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 417276,
+        "calls": 19,
+        "levels": [
+         8315,
+         4172,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 0,
+        "calls": 0,
+        "clumps": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 0
+       },
+       "tris": 632859,
+       "calls": 152
+      }
+     },
+     "procedural": {
+      "calls": 73,
+      "triangles": 130868,
+      "cam": {
+       "p": [
+        251.05,
+        3.042,
+        -1054.404
+       ],
+       "q": [
+        0.2448,
+        -0.4168,
+        0.1176,
+        0.8675
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 107996,
+        "calls": 101,
+        "levels": [
+         8,
+         6,
+         234
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 25955,
+        "calls": 29,
+        "levels": [
+         0,
+         6,
+         41
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 417276,
+        "calls": 19,
+        "levels": [
+         8315,
+         4172,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 0,
+        "calls": 0,
+        "clumps": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 0
+       },
+       "tris": 632859,
+       "calls": 152
+      }
+     },
+     "same": true
+    },
+    "G09-the-tire-swing": {
+     "authored": {
+      "calls": 167,
+      "triangles": 685389,
+      "cam": {
+       "p": [
+        248.738,
+        2.951,
+        -1053.085
+       ],
+       "q": [
+        0.1028,
+        -0.3485,
+        0.0385,
+        0.9309
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 107996,
+        "calls": 101,
+        "levels": [
+         8,
+         6,
+         234
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 26651,
+        "calls": 29,
+        "levels": [
+         0,
+         6,
+         42
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 418356,
+        "calls": 19,
+        "levels": [
+         8339,
+         4148,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 0,
+        "calls": 0,
+        "clumps": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 0
+       },
+       "tris": 634635,
+       "calls": 152
+      }
+     },
+     "procedural": {
+      "calls": 97,
+      "triangles": 147269,
+      "cam": {
+       "p": [
+        248.738,
+        2.951,
+        -1053.085
+       ],
+       "q": [
+        0.1028,
+        -0.3485,
+        0.0385,
+        0.9309
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 107996,
+        "calls": 101,
+        "levels": [
+         8,
+         6,
+         234
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 26651,
+        "calls": 29,
+        "levels": [
+         0,
+         6,
+         42
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 418356,
+        "calls": 19,
+        "levels": [
+         8339,
+         4148,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 0,
+        "calls": 0,
+        "clumps": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 0
+       },
+       "tris": 634635,
+       "calls": 152
+      }
+     },
+     "same": true
+    },
+    "G09b-the-other-bike": {
+     "authored": {
+      "calls": 160,
+      "triangles": 680313,
+      "cam": {
+       "p": [
+        246.959,
+        2.964,
+        -1053.428
+       ],
+       "q": [
+        -0.0647,
+        -0.5028,
+        -0.0378,
+        0.8611
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 107996,
+        "calls": 101,
+        "levels": [
+         8,
+         6,
+         234
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 26651,
+        "calls": 29,
+        "levels": [
+         0,
+         6,
+         42
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 420308,
+        "calls": 19,
+        "levels": [
+         8416,
+         4071,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 0,
+        "calls": 0,
+        "clumps": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 0
+       },
+       "tris": 636587,
+       "calls": 152
+      }
+     },
+     "procedural": {
+      "calls": 84,
+      "triangles": 129205,
+      "cam": {
+       "p": [
+        246.959,
+        2.964,
+        -1053.428
+       ],
+       "q": [
+        -0.0647,
+        -0.5028,
+        -0.0378,
+        0.8611
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 0,
+        "tris": 81632
+       },
+       "trees": {
+        "tris": 107996,
+        "calls": 101,
+        "levels": [
+         8,
+         6,
+         234
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 26651,
+        "calls": 29,
+        "levels": [
+         0,
+         6,
+         42
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 420308,
+        "calls": 19,
+        "levels": [
+         8416,
+         4071,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 0,
+        "calls": 0,
+        "clumps": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 0
+       },
+       "tris": 636587,
+       "calls": 152
+      }
+     },
+     "same": true
+    }
+   },
+   "prologue": {
+    "reached": 1136.5,
+    "homes": [
+     {
+      "name": "JAMIE",
+      "inside": true
+     },
+     {
+      "name": "SAM",
+      "inside": true
+     },
+     {
+      "name": "ALEX",
+      "inside": false
+     }
+    ],
+    "walking": "walking",
+    "callDone": true,
+    "swingPrompt": "F:Push the swing",
+    "swing": 0.31199221643634595,
+    "bench": "bench",
+    "otherBike": true,
+    "chalk": "chalk",
+    "clue": true
+   }
+  },
+  "combined": {
+   "labels": [
+    "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1830 ms",
+    "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 668 ms · 17.9 MB",
+    "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2450 ms · 25.6 MB · 9 materials · 14 textures (~128 MB GPU)"
+   ],
+   "pairs": {
+    "housesTrees": {
+     "authored": {
+      "calls": 427,
+      "triangles": 831485,
+      "cam": {
+       "p": [
+        0.364,
+        2.183,
+        -150.066
+       ],
+       "q": [
+        -0.0717,
+        -0.1324,
+        -0.0057,
+        0.9886
+       ],
+       "fov": 64,
+       "d": 150,
+       "lat": -0.3,
+       "yaw": -0.2,
+       "pitch": 0.03
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 147270,
+        "calls": 110,
+        "levels": [
+         6,
+         15,
+         285
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 96828,
+        "calls": 64,
+        "levels": [
+         16,
+         29,
+         78
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 65912,
+        "calls": 10,
+        "clumps": 2494,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 2494
+       },
+       "tris": 312836,
+       "calls": 187
+      }
+     },
+     "procedural": {
+      "calls": 322,
+      "triangles": 621418,
+      "cam": {
+       "p": [
+        0.364,
+        2.183,
+        -150.066
+       ],
+       "q": [
+        -0.0717,
+        -0.1324,
+        -0.0057,
+        0.9886
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 147270,
+        "calls": 110,
+        "levels": [
+         6,
+         15,
+         285
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 96828,
+        "calls": 64,
+        "levels": [
+         16,
+         29,
+         78
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 65912,
+        "calls": 10,
+        "clumps": 2494,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 2494
+       },
+       "tris": 312836,
+       "calls": 187
+      }
+     },
+     "same": true
+    },
+    "housesYards": {
+     "authored": {
+      "calls": 284,
+      "triangles": 662037,
+      "cam": {
+       "p": [
+        37.272,
+        1.087,
+        -246.497
+       ],
+       "q": [
+        -0.064,
+        -0.7146,
+        -0.0621,
+        0.6938
+       ],
+       "fov": 64,
+       "d": 255,
+       "lat": 3,
+       "yaw": -1.05,
+       "pitch": -0.03
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 164285,
+        "calls": 116,
+        "levels": [
+         8,
+         17,
+         292
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 89512,
+        "calls": 56,
+        "levels": [
+         8,
+         17,
+         122
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 90476,
+        "calls": 11,
+        "clumps": 3278,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3278
+       },
+       "tris": 347099,
+       "calls": 186
+      }
+     },
+     "procedural": {
+      "calls": 170,
+      "triangles": 384802,
+      "cam": {
+       "p": [
+        37.272,
+        1.087,
+        -246.497
+       ],
+       "q": [
+        -0.064,
+        -0.7146,
+        -0.0621,
+        0.6938
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 164285,
+        "calls": 116,
+        "levels": [
+         8,
+         17,
+         292
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 89512,
+        "calls": 56,
+        "levels": [
+         8,
+         17,
+         122
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 90476,
+        "calls": 11,
+        "clumps": 3278,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3278
+       },
+       "tris": 347099,
+       "calls": 186
+      }
+     },
+     "same": true
+    },
+    "ride": {
+     "authored": {
+      "calls": 508,
+      "triangles": 1111022,
+      "cam": {
+       "p": [
+        37.287,
+        1.123,
+        -246.542
+       ],
+       "q": [
+        -0.1033,
+        -0.3185,
+        -0.0291,
+        0.9418
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 164285,
+        "calls": 116,
+        "levels": [
+         8,
+         17,
+         292
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 89512,
+        "calls": 56,
+        "levels": [
+         8,
+         17,
+         122
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 90476,
+        "calls": 11,
+        "clumps": 3278,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3278
+       },
+       "tris": 347099,
+       "calls": 186
+      }
+     },
+     "procedural": {
+      "calls": 414,
+      "triangles": 878897,
+      "cam": {
+       "p": [
+        37.287,
+        1.123,
+        -246.542
+       ],
+       "q": [
+        -0.1033,
+        -0.3185,
+        -0.0291,
+        0.9418
+       ]
+      },
+      "veg": {
+       "oak": {
+        "level": 2,
+        "tris": 2826
+       },
+       "trees": {
+        "tris": 164285,
+        "calls": 116,
+        "levels": [
+         8,
+         17,
+         292
+        ],
+        "items": 386
+       },
+       "shrubs": {
+        "tris": 89512,
+        "calls": 56,
+        "levels": [
+         8,
+         17,
+         122
+        ],
+        "items": 553
+       },
+       "meadow": {
+        "tris": 0,
+        "calls": 0,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 12487
+       },
+       "lawn": {
+        "tris": 90144,
+        "calls": 11,
+        "clumps": 3279,
+        "levels": [
+         0,
+         0,
+         0
+        ],
+        "items": 3279
+       },
+       "tris": 346767,
+       "calls": 186
+      }
+     },
+     "same": true
+    }
+   }
+  },
+  "packageModels": {
+   "error": null,
+   "label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 1294 ms · 25.6 MB · 9 materials · 14 textures (~128 MB GPU)",
+   "from": [
+    "package",
+    "package",
+    "package",
+    "package"
+   ],
+   "bytes": 141026424,
+   "file": "Last-Light-Playtest.html"
+  },
+  "packageDefault": {
+   "error": "asset assets/veg/lm.old-oak.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)",
+   "label": "VEGETATION BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/veg/lm.old-oak.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)",
+   "from": null,
+   "bytes": 12711245
+  }
+ },
+ "shots": [
+  {
+   "file": "docs/qa/vegetation/browser/G01-prologue-start-street--authored.jpg",
+   "sha256": "14fa1672573a7b8bda8b096c71a28abfaa47f068b4517f348c928100b30bee24",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "the Prologue's starting street",
+   "calls": 579,
+   "triangles": 948257,
+   "cam": {
+    "p": [
+     -0.344,
+     1.48,
+     -1.974
+    ],
+    "q": [
+     -0.0531,
+     -0.0019,
+     0.0065,
+     0.9986
+    ],
+    "fov": 64,
+    "d": 2,
+    "lat": -0.3,
+    "yaw": 0,
+    "pitch": 0.02
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 141677,
+     "calls": 122,
+     "levels": [
+      6,
+      20,
+      251
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 71108,
+     "calls": 53,
+     "levels": [
+      7,
+      20,
+      91
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 66340,
+     "calls": 12,
+     "clumps": 3171,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3171
+    },
+    "tris": 281951,
+    "calls": 190
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G01-prologue-start-street--procedural.jpg",
+   "sha256": "8ed2c9f7da4953e0e9741db0a8a679ae0edb61f1a4bf586cf209fc68e6f5b3ed",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "the Prologue's starting street",
+   "calls": 484,
+   "triangles": 766286,
+   "cam": {
+    "p": [
+     -0.344,
+     1.48,
+     -1.974
+    ],
+    "q": [
+     -0.0531,
+     -0.0019,
+     0.0065,
+     0.9986
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 141677,
+     "calls": 122,
+     "levels": [
+      6,
+      20,
+      251
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 71108,
+     "calls": 53,
+     "levels": [
+      7,
+      20,
+      91
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 66340,
+     "calls": 12,
+     "clumps": 3171,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3171
+    },
+    "tris": 281951,
+    "calls": 190
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G04-shrubs-driveways-porches--authored.jpg",
+   "sha256": "0ba523a163ffc28b6e1fa62823a7b3b91d27b4fdacc697be3660aef7f8cb1b10",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "beds and shrubs at a porch and driveway",
+   "calls": 329,
+   "triangles": 764927,
+   "cam": {
+    "p": [
+     76.623,
+     -0.247,
+     -310.343
+    ],
+    "q": [
+     -0.0604,
+     -0.766,
+     -0.0641,
+     0.6368
+    ],
+    "fov": 64,
+    "d": 330,
+    "lat": 3.2,
+    "yaw": -1.2,
+    "pitch": -0.04
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 165270,
+     "calls": 110,
+     "levels": [
+      8,
+      12,
+      294
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 116729,
+     "calls": 69,
+     "levels": [
+      16,
+      28,
+      107
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 78652,
+     "calls": 12,
+     "clumps": 3258,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3258
+    },
+    "tris": 363477,
+    "calls": 194
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G04-shrubs-driveways-porches--procedural.jpg",
+   "sha256": "9864c3bab47f9ea11644d84d13fdc3797df5f11ab3ff4ab938521c9fdffb4c09",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "beds and shrubs at a porch and driveway",
+   "calls": 214,
+   "triangles": 513048,
+   "cam": {
+    "p": [
+     76.623,
+     -0.247,
+     -310.343
+    ],
+    "q": [
+     -0.0604,
+     -0.766,
+     -0.0641,
+     0.6368
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 165270,
+     "calls": 110,
+     "levels": [
+      8,
+      12,
+      294
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 116729,
+     "calls": 69,
+     "levels": [
+      16,
+      28,
+      107
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 78652,
+     "calls": 12,
+     "clumps": 3258,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3258
+    },
+    "tris": 363477,
+    "calls": 194
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G04b-jamies-house--authored.jpg",
+   "sha256": "eb5d6e843ce3d1c0b7c94ad39bfed712bb44a2494fa75d8edb322217b4c72bca",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "Jamie's house: the red chair on the porch, the beds",
+   "calls": 466,
+   "triangles": 914082,
+   "cam": {
+    "p": [
+     88.173,
+     1.136,
+     -725.365
+    ],
+    "q": [
+     -0.0533,
+     -0.7964,
+     -0.0581,
+     0.5996
+    ],
+    "fov": 64,
+    "d": 780,
+    "lat": 3,
+    "yaw": -1.2,
+    "pitch": -0.02
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 142147,
+     "calls": 110,
+     "levels": [
+      5,
+      17,
+      290
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 100343,
+     "calls": 61,
+     "levels": [
+      9,
+      22,
+      123
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 75078,
+     "calls": 12,
+     "clumps": 3458,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3458
+    },
+    "tris": 320394,
+    "calls": 186
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G04b-jamies-house--procedural.jpg",
+   "sha256": "a514baaf62ae34a0f52fd7f024284a650bce6327fea827278abebfac7eacf10c",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "Jamie's house: the red chair on the porch, the beds",
+   "calls": 351,
+   "triangles": 688621,
+   "cam": {
+    "p": [
+     88.173,
+     1.136,
+     -725.365
+    ],
+    "q": [
+     -0.0533,
+     -0.7964,
+     -0.0581,
+     0.5996
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 142147,
+     "calls": 110,
+     "levels": [
+      5,
+      17,
+      290
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 100343,
+     "calls": 61,
+     "levels": [
+      9,
+      22,
+      123
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 75078,
+     "calls": 12,
+     "clumps": 3458,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3458
+    },
+    "tris": 320394,
+    "calls": 186
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G05-grass-beside-sidewalk--authored.jpg",
+   "sha256": "2d1e3151c2c0444cedafbc93deb185faf65cf66eab8ee9426bb379ee15150c5f",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "grass beside the sidewalk, from the riding camera",
+   "calls": 686,
+   "triangles": 1363339,
+   "cam": {
+    "p": [
+     119.343,
+     -1.02,
+     -378.009
+    ],
+    "q": [
+     -0.1612,
+     -0.3497,
+     -0.0546,
+     0.9213
+    ],
+    "fov": 64,
+    "d": 410,
+    "lat": 4.3,
+    "yaw": -0.18,
+    "pitch": -0.2
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 127650,
+     "calls": 104,
+     "levels": [
+      3,
+      19,
+      289
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 107887,
+     "calls": 66,
+     "levels": [
+      13,
+      22,
+      108
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 106336,
+     "calls": 10,
+     "clumps": 3136,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3136
+    },
+    "tris": 344699,
+    "calls": 183
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G05-grass-beside-sidewalk--procedural.jpg",
+   "sha256": "48356bea9cb55436341421ed2368ae9fb0c2fb53d5e6ff48c190dbc3aa25e4f3",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "grass beside the sidewalk, from the riding camera",
+   "calls": 598,
+   "triangles": 1124802,
+   "cam": {
+    "p": [
+     119.343,
+     -1.02,
+     -378.009
+    ],
+    "q": [
+     -0.1612,
+     -0.3497,
+     -0.0546,
+     0.9213
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 127650,
+     "calls": 104,
+     "levels": [
+      3,
+      19,
+      289
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 107887,
+     "calls": 66,
+     "levels": [
+      13,
+      22,
+      108
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 106336,
+     "calls": 10,
+     "clumps": 3136,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3136
+    },
+    "tris": 344699,
+    "calls": 183
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G03-street-trees--authored.jpg",
+   "sha256": "a5c174e9954fb3c22f02cafc31fee5d97771c46dcd31ee02339694af623dd632",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "street trees down Oak Hollow Drive",
+   "calls": 608,
+   "triangles": 1046013,
+   "cam": {
+    "p": [
+     135.329,
+     0.877,
+     -436.136
+    ],
+    "q": [
+     -0.0467,
+     -0.0195,
+     0.0068,
+     0.9987
+    ],
+    "fov": 64,
+    "d": 470,
+    "lat": -0.3,
+    "yaw": 0.04,
+    "pitch": 0.03
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 132347,
+     "calls": 106,
+     "levels": [
+      6,
+      16,
+      287
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 133451,
+     "calls": 64,
+     "levels": [
+      15,
+      21,
+      133
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 65024,
+     "calls": 12,
+     "clumps": 3122,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3122
+    },
+    "tris": 333648,
+    "calls": 185
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G03-street-trees--procedural.jpg",
+   "sha256": "c4fa83e017939e27db585246c24adf07d5bf2fd79a4d4005689a5164876225cb",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "street trees down Oak Hollow Drive",
+   "calls": 525,
+   "triangles": 841287,
+   "cam": {
+    "p": [
+     135.329,
+     0.877,
+     -436.136
+    ],
+    "q": [
+     -0.0467,
+     -0.0195,
+     0.0068,
+     0.9987
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 132347,
+     "calls": 106,
+     "levels": [
+      6,
+      16,
+      287
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 133451,
+     "calls": 64,
+     "levels": [
+      15,
+      21,
+      133
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 65024,
+     "calls": 12,
+     "clumps": 3122,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3122
+    },
+    "tris": 333648,
+    "calls": 185
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G06-the-lookout--authored.jpg",
+   "sha256": "e51a7139540c312a048b0f6bd96b5b65c4a3437c73874be6e5dcfc6f797238ae",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "the lookout from the stop",
+   "calls": 237,
+   "triangles": 565119,
+   "cam": {
+    "p": [
+     244.14,
+     2.521,
+     -1032.606
+    ],
+    "q": [
+     -0.0524,
+     0.0186,
+     0.0078,
+     0.9984
+    ],
+    "fov": 64,
+    "d": 1136.5,
+    "lat": -0.9,
+    "yaw": 0.12,
+    "pitch": 0.06
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 115409,
+     "calls": 104,
+     "levels": [
+      9,
+      6,
+      239
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 33144,
+     "calls": 37,
+     "levels": [
+      0,
+      12,
+      47
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 213862,
+     "calls": 17,
+     "levels": [
+      3023,
+      9464,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 30796,
+     "calls": 10,
+     "clumps": 2639,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 2639
+    },
+    "tris": 474843,
+    "calls": 171
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G06-the-lookout--procedural.jpg",
+   "sha256": "94ced8712c34a0d41ebb0f985fb3ff5b464b1d1d6982daebbf96b52bebe76ac7",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "the lookout from the stop",
+   "calls": 156,
+   "triangles": 177869,
+   "cam": {
+    "p": [
+     244.14,
+     2.521,
+     -1032.606
+    ],
+    "q": [
+     -0.0524,
+     0.0186,
+     0.0078,
+     0.9984
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 115409,
+     "calls": 104,
+     "levels": [
+      9,
+      6,
+      239
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 33144,
+     "calls": 37,
+     "levels": [
+      0,
+      12,
+      47
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 213862,
+     "calls": 17,
+     "levels": [
+      3023,
+      9464,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 30796,
+     "calls": 10,
+     "clumps": 2639,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 2639
+    },
+    "tris": 474843,
+    "calls": 171
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G07-oak-from-the-cul-de-sac--authored.jpg",
+   "sha256": "943a3a84ea635246d5015985993faffea98e3f10e711e37c949799c8ce522843",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "the old oak from the cul-de-sac",
+   "calls": 241,
+   "triangles": 557252,
+   "cam": {
+    "p": [
+     242.204,
+     2.563,
+     -1022.23
+    ],
+    "q": [
+     -0.0206,
+     0.1093,
+     0.0081,
+     0.9938
+    ],
+    "fov": 64,
+    "d": 1126,
+    "lat": -2,
+    "yaw": 0.3,
+    "pitch": 0.13
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 117692,
+     "calls": 104,
+     "levels": [
+      10,
+      5,
+      241
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 38775,
+     "calls": 40,
+     "levels": [
+      2,
+      10,
+      55
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 157234,
+     "calls": 17,
+     "levels": [
+      1972,
+      10515,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 84184,
+     "calls": 10,
+     "clumps": 3474,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3474
+    },
+    "tris": 479517,
+    "calls": 174
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G07-oak-from-the-cul-de-sac--procedural.jpg",
+   "sha256": "3d96b4ca738dac7bbad57006630542c397816031608d120d2bcd431dad6eecd3",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "the old oak from the cul-de-sac",
+   "calls": 163,
+   "triangles": 174174,
+   "cam": {
+    "p": [
+     242.204,
+     2.563,
+     -1022.23
+    ],
+    "q": [
+     -0.0206,
+     0.1093,
+     0.0081,
+     0.9938
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 117692,
+     "calls": 104,
+     "levels": [
+      10,
+      5,
+      241
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 38775,
+     "calls": 40,
+     "levels": [
+      2,
+      10,
+      55
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 157234,
+     "calls": 17,
+     "levels": [
+      1972,
+      10515,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 84184,
+     "calls": 10,
+     "clumps": 3474,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3474
+    },
+    "tris": 479517,
+    "calls": 174
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G07b-oak-silhouette-from-124m--authored.jpg",
+   "sha256": "4b48209d970a8e413a95b3698e9bfb45e92dbbf79bd86011304ac1e1050956b4",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "the oak at 124 m down the street (the Aftermath I barricade distance, art bible §6): readable by silhouette",
+   "calls": 328,
+   "triangles": 545067,
+   "cam": {
+    "p": [
+     234.9,
+     3.28,
+     -934.665
+    ],
+    "q": [
+     -0.0489,
+     -0.078,
+     0.003,
+     0.9957
+    ],
+    "fov": 64,
+    "d": 1038,
+    "lat": -0.3,
+    "yaw": 0.06,
+    "pitch": 0.07
+   },
+   "veg": {
+    "oak": {
+     "level": 1,
+     "tris": 15413
+    },
+    "trees": {
+     "tris": 153890,
+     "calls": 117,
+     "levels": [
+      8,
+      16,
+      245
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 65419,
+     "calls": 51,
+     "levels": [
+      6,
+      13,
+      85
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 45238,
+     "calls": 10,
+     "levels": [
+      0,
+      12183,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 65444,
+     "calls": 9,
+     "clumps": 3342,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3342
+    },
+    "tris": 345404,
+    "calls": 190
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G07b-oak-silhouette-from-124m--procedural.jpg",
+   "sha256": "fb704d13252b088069bdb0e3b54f1581cfdd354fdc14b5c3c66d10ff5c769344",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "the oak at 124 m down the street (the Aftermath I barricade distance, art bible §6): readable by silhouette",
+   "calls": 222,
+   "triangles": 295381,
+   "cam": {
+    "p": [
+     234.9,
+     3.28,
+     -934.665
+    ],
+    "q": [
+     -0.0489,
+     -0.078,
+     0.003,
+     0.9957
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 1,
+     "tris": 15413
+    },
+    "trees": {
+     "tris": 153890,
+     "calls": 117,
+     "levels": [
+      8,
+      16,
+      245
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 65419,
+     "calls": 51,
+     "levels": [
+      6,
+      13,
+      85
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 45238,
+     "calls": 10,
+     "levels": [
+      0,
+      12183,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 65444,
+     "calls": 9,
+     "clumps": 3342,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3342
+    },
+    "tris": 345404,
+    "calls": 190
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G10-dusk-looking-home--authored.jpg",
+   "sha256": "4258b41f6d9190ae5d6bb33b93a38c2c37f8dd180dfa60f2cea8aaf1ff5fb107",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "evening: looking back down the street from the lookout",
+   "calls": 474,
+   "triangles": 1030358,
+   "cam": {
+    "p": [
+     247.67,
+     2.507,
+     -1040.35
+    ],
+    "q": [
+     -0.039,
+     0.9794,
+     0.0581,
+     0.1892
+    ],
+    "fov": 64,
+    "d": 1150,
+    "lat": 2,
+    "yaw": 3.141592653589793,
+    "pitch": 0.04
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 115395,
+     "calls": 103,
+     "levels": [
+      9,
+      6,
+      238
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 30987,
+     "calls": 37,
+     "levels": [
+      0,
+      12,
+      44
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 265386,
+     "calls": 19,
+     "levels": [
+      3911,
+      8576,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 5572,
+     "calls": 5,
+     "clumps": 1393,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 1393
+    },
+    "tris": 498972,
+    "calls": 167
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G10-dusk-looking-home--procedural.jpg",
+   "sha256": "303a13e1619dbeba718b1d90134e4c46b7d920f0ed63492bdee6b3427ea53abc",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "evening: looking back down the street from the lookout",
+   "calls": 384,
+   "triangles": 707775,
+   "cam": {
+    "p": [
+     247.67,
+     2.507,
+     -1040.35
+    ],
+    "q": [
+     -0.039,
+     0.9794,
+     0.0581,
+     0.1892
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 115395,
+     "calls": 103,
+     "levels": [
+      9,
+      6,
+      238
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 30987,
+     "calls": 37,
+     "levels": [
+      0,
+      12,
+      44
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 265386,
+     "calls": 19,
+     "levels": [
+      3911,
+      8576,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 5572,
+     "calls": 5,
+     "clumps": 1393,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 1393
+    },
+    "tris": 498972,
+    "calls": 167
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G02-group-bicycle-ride--authored.jpg",
+   "sha256": "8cd02f0f2223cc6eac205b8e42d2f900f9a59a252e81a687bb268ab2b3a71309",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "the group ride (the friends riding beside)",
+   "calls": 537,
+   "triangles": 953699,
+   "cam": {
+    "p": [
+     -0.3,
+     3.326,
+     -85.777
+    ],
+    "q": [
+     -0.1017,
+     0.0746,
+     0.0073,
+     0.992
+    ],
+    "d": 85.71351544175008
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 132511,
+     "calls": 108,
+     "levels": [
+      3,
+      18,
+      275
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 73601,
+     "calls": 55,
+     "levels": [
+      6,
+      16,
+      105
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 63060,
+     "calls": 8,
+     "clumps": 2706,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 2706
+    },
+    "tris": 271998,
+    "calls": 174
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G02-group-bicycle-ride--procedural.jpg",
+   "sha256": "f9af24ed3fef8aaf21ef821d15e03d6cb5b5d2268b97a8c501d93691cd511d83",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "the group ride (the friends riding beside)",
+   "calls": 454,
+   "triangles": 782376,
+   "cam": {
+    "p": [
+     -0.3,
+     3.326,
+     -85.777
+    ],
+    "q": [
+     -0.1017,
+     0.0746,
+     0.0073,
+     0.992
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 132511,
+     "calls": 108,
+     "levels": [
+      3,
+      18,
+      275
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 73601,
+     "calls": 55,
+     "levels": [
+      6,
+      16,
+      105
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 63060,
+     "calls": 8,
+     "clumps": 2706,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 2706
+    },
+    "tris": 271998,
+    "calls": 174
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G08-oak-close-up-carving--authored.jpg",
+   "sha256": "734d1aea0b9383989d93b1de88467f14ba786f2e5383375d75973e47c4f02c80",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "the oak close: bark, flare and the healed AR (the release test's carving view)",
+   "calls": 155,
+   "triangles": 675082,
+   "cam": {
+    "p": [
+     253.409,
+     3.138,
+     -1057.164
+    ],
+    "q": [
+     -0.0449,
+     -0.6615,
+     -0.0397,
+     0.7475
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 107996,
+     "calls": 101,
+     "levels": [
+      8,
+      6,
+      234
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 25955,
+     "calls": 29,
+     "levels": [
+      0,
+      6,
+      41
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 417272,
+     "calls": 19,
+     "levels": [
+      8313,
+      4174,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 0,
+     "calls": 0,
+     "clumps": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 0
+    },
+    "tris": 632855,
+    "calls": 152
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G08-oak-close-up-carving--procedural.jpg",
+   "sha256": "864bcf1cf606490db1b1eebf6c0b64b800dc7cc51b7118eb8468b00016a54d8f",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "the oak close: bark, flare and the healed AR (the release test's carving view)",
+   "calls": 74,
+   "triangles": 120422,
+   "cam": {
+    "p": [
+     253.409,
+     3.138,
+     -1057.164
+    ],
+    "q": [
+     -0.0449,
+     -0.6615,
+     -0.0397,
+     0.7475
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 107996,
+     "calls": 101,
+     "levels": [
+      8,
+      6,
+      234
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 25955,
+     "calls": 29,
+     "levels": [
+      0,
+      6,
+      41
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 417272,
+     "calls": 19,
+     "levels": [
+      8313,
+      4174,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 0,
+     "calls": 0,
+     "clumps": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 0
+    },
+    "tris": 632855,
+    "calls": 152
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G08b-oak-close-up-up-the-trunk--authored.jpg",
+   "sha256": "ba87e2458716d0a34d1c30e38f57dfc255658c12ef1b7098d8f18c1a0b25ca89",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "under the oak, looking up the trunk into the limbs",
+   "calls": 145,
+   "triangles": 668855,
+   "cam": {
+    "p": [
+     251.05,
+     3.042,
+     -1054.404
+    ],
+    "q": [
+     0.2448,
+     -0.4168,
+     0.1176,
+     0.8675
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 107996,
+     "calls": 101,
+     "levels": [
+      8,
+      6,
+      234
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 25955,
+     "calls": 29,
+     "levels": [
+      0,
+      6,
+      41
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 417276,
+     "calls": 19,
+     "levels": [
+      8315,
+      4172,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 0,
+     "calls": 0,
+     "clumps": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 0
+    },
+    "tris": 632859,
+    "calls": 152
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G08b-oak-close-up-up-the-trunk--procedural.jpg",
+   "sha256": "38fdcf1809cea00ebd955e88d56a93b57e6ebacc3a3ee0a0f9c3b583e7efde8b",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "under the oak, looking up the trunk into the limbs",
+   "calls": 73,
+   "triangles": 130868,
+   "cam": {
+    "p": [
+     251.05,
+     3.042,
+     -1054.404
+    ],
+    "q": [
+     0.2448,
+     -0.4168,
+     0.1176,
+     0.8675
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 107996,
+     "calls": 101,
+     "levels": [
+      8,
+      6,
+      234
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 25955,
+     "calls": 29,
+     "levels": [
+      0,
+      6,
+      41
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 417276,
+     "calls": 19,
+     "levels": [
+      8315,
+      4172,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 0,
+     "calls": 0,
+     "clumps": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 0
+    },
+    "tris": 632859,
+    "calls": 152
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G09-the-tire-swing--authored.jpg",
+   "sha256": "b530760df923437fec2615595554387aa7eba33e8d911c077d0aeb5a3f7eddcb",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "the tire swing on the oak's own limb",
+   "calls": 167,
+   "triangles": 685389,
+   "cam": {
+    "p": [
+     248.738,
+     2.951,
+     -1053.085
+    ],
+    "q": [
+     0.1028,
+     -0.3485,
+     0.0385,
+     0.9309
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 107996,
+     "calls": 101,
+     "levels": [
+      8,
+      6,
+      234
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 26651,
+     "calls": 29,
+     "levels": [
+      0,
+      6,
+      42
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 418356,
+     "calls": 19,
+     "levels": [
+      8339,
+      4148,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 0,
+     "calls": 0,
+     "clumps": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 0
+    },
+    "tris": 634635,
+    "calls": 152
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G09-the-tire-swing--procedural.jpg",
+   "sha256": "1e92da0336cc0858039e13c9300fe83080bc0a5ae5096efcd7c843b4cbb524e9",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "the tire swing on the oak's own limb",
+   "calls": 97,
+   "triangles": 147269,
+   "cam": {
+    "p": [
+     248.738,
+     2.951,
+     -1053.085
+    ],
+    "q": [
+     0.1028,
+     -0.3485,
+     0.0385,
+     0.9309
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 107996,
+     "calls": 101,
+     "levels": [
+      8,
+      6,
+      234
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 26651,
+     "calls": 29,
+     "levels": [
+      0,
+      6,
+      42
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 418356,
+     "calls": 19,
+     "levels": [
+      8339,
+      4148,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 0,
+     "calls": 0,
+     "clumps": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 0
+    },
+    "tris": 634635,
+    "calls": 152
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G09b-the-other-bike--authored.jpg",
+   "sha256": "394e6ae82f2084e367743679c36004369cbe44e7b2c4033e3670c827cf7931bc",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "the other bike under the oak after the call (release test view)",
+   "calls": 160,
+   "triangles": 680313,
+   "cam": {
+    "p": [
+     246.959,
+     2.964,
+     -1053.428
+    ],
+    "q": [
+     -0.0647,
+     -0.5028,
+     -0.0378,
+     0.8611
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 107996,
+     "calls": 101,
+     "levels": [
+      8,
+      6,
+      234
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 26651,
+     "calls": 29,
+     "levels": [
+      0,
+      6,
+      42
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 420308,
+     "calls": 19,
+     "levels": [
+      8416,
+      4071,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 0,
+     "calls": 0,
+     "clumps": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 0
+    },
+    "tris": 636587,
+    "calls": 152
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G09b-the-other-bike--procedural.jpg",
+   "sha256": "c1f6299b43062c3b7606e58f785ee908eba098fa7f36c51f04b42f3f21bf0eaf",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "the other bike under the oak after the call (release test view)",
+   "calls": 84,
+   "triangles": 129205,
+   "cam": {
+    "p": [
+     246.959,
+     2.964,
+     -1053.428
+    ],
+    "q": [
+     -0.0647,
+     -0.5028,
+     -0.0378,
+     0.8611
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 0,
+     "tris": 81632
+    },
+    "trees": {
+     "tris": 107996,
+     "calls": 101,
+     "levels": [
+      8,
+      6,
+      234
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 26651,
+     "calls": 29,
+     "levels": [
+      0,
+      6,
+      42
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 420308,
+     "calls": 19,
+     "levels": [
+      8416,
+      4071,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 0,
+     "calls": 0,
+     "clumps": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 0
+    },
+    "tris": 636587,
+    "calls": 152
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G03b-street-trees-beside-the-new-houses--authored.jpg",
+   "sha256": "fdf276fac77c0cb98dfa3c60d87d06ae620d2737c36e93a61bf99b984719d17b",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "street trees beside the authored houses (?bikes&houses&vegetation)",
+   "flags": "bikes&houses&vegetation",
+   "calls": 427,
+   "triangles": 831485,
+   "cam": {
+    "p": [
+     0.364,
+     2.183,
+     -150.066
+    ],
+    "q": [
+     -0.0717,
+     -0.1324,
+     -0.0057,
+     0.9886
+    ],
+    "fov": 64,
+    "d": 150,
+    "lat": -0.3,
+    "yaw": -0.2,
+    "pitch": 0.03
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 147270,
+     "calls": 110,
+     "levels": [
+      6,
+      15,
+      285
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 96828,
+     "calls": 64,
+     "levels": [
+      16,
+      29,
+      78
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 65912,
+     "calls": 10,
+     "clumps": 2494,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 2494
+    },
+    "tris": 312836,
+    "calls": 187
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G03b-street-trees-beside-the-new-houses--procedural.jpg",
+   "sha256": "eaa82c8d4787b5b52501a14aa09b153c58c7181a574ec44d0dab166a24819877",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "street trees beside the authored houses (?bikes&houses&vegetation)",
+   "flags": "bikes&houses&vegetation",
+   "calls": 322,
+   "triangles": 621418,
+   "cam": {
+    "p": [
+     0.364,
+     2.183,
+     -150.066
+    ],
+    "q": [
+     -0.0717,
+     -0.1324,
+     -0.0057,
+     0.9886
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 147270,
+     "calls": 110,
+     "levels": [
+      6,
+      15,
+      285
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 96828,
+     "calls": 64,
+     "levels": [
+      16,
+      29,
+      78
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 65912,
+     "calls": 10,
+     "clumps": 2494,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 2494
+    },
+    "tris": 312836,
+    "calls": 187
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G04c-yards-with-the-new-houses--authored.jpg",
+   "sha256": "078dfab98af1ddcb9768668ae11bdd6413fe8d5d7b253e1728622de1c25d66f1",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "yards, beds and lawns at the authored houses",
+   "flags": "bikes&houses&vegetation",
+   "calls": 284,
+   "triangles": 662037,
+   "cam": {
+    "p": [
+     37.272,
+     1.087,
+     -246.497
+    ],
+    "q": [
+     -0.064,
+     -0.7146,
+     -0.0621,
+     0.6938
+    ],
+    "fov": 64,
+    "d": 255,
+    "lat": 3,
+    "yaw": -1.05,
+    "pitch": -0.03
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 164285,
+     "calls": 116,
+     "levels": [
+      8,
+      17,
+      292
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 89512,
+     "calls": 56,
+     "levels": [
+      8,
+      17,
+      122
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 90476,
+     "calls": 11,
+     "clumps": 3278,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3278
+    },
+    "tris": 347099,
+    "calls": 186
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G04c-yards-with-the-new-houses--procedural.jpg",
+   "sha256": "b35d985170bab0bb79ba17bef660d3fde33c7344f6c5fe140dd25cb079f30769",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "yards, beds and lawns at the authored houses",
+   "flags": "bikes&houses&vegetation",
+   "calls": 170,
+   "triangles": 384802,
+   "cam": {
+    "p": [
+     37.272,
+     1.087,
+     -246.497
+    ],
+    "q": [
+     -0.064,
+     -0.7146,
+     -0.0621,
+     0.6938
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 164285,
+     "calls": 116,
+     "levels": [
+      8,
+      17,
+      292
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 89512,
+     "calls": 56,
+     "levels": [
+      8,
+      17,
+      122
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 90476,
+     "calls": 11,
+     "clumps": 3278,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3278
+    },
+    "tris": 347099,
+    "calls": 186
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G02b-group-ride-with-authored-bikes-and-houses--authored.jpg",
+   "sha256": "cfcb7edfb423a79f779ac178bfb70dbbb4d1ca4c90e054f74bb6baec83acfdc1",
+   "kind": "game",
+   "mode": "authored",
+   "caption": "the group ride with the authored bikes, houses and vegetation",
+   "flags": "bikes&houses&vegetation",
+   "calls": 508,
+   "triangles": 1111022,
+   "cam": {
+    "p": [
+     37.287,
+     1.123,
+     -246.542
+    ],
+    "q": [
+     -0.1033,
+     -0.3185,
+     -0.0291,
+     0.9418
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 164285,
+     "calls": 116,
+     "levels": [
+      8,
+      17,
+      292
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 89512,
+     "calls": 56,
+     "levels": [
+      8,
+      17,
+      122
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 90476,
+     "calls": 11,
+     "clumps": 3278,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3278
+    },
+    "tris": 347099,
+    "calls": 186
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/G02b-group-ride-with-authored-bikes-and-houses--procedural.jpg",
+   "sha256": "b5e59045b1dc5972c22db5a734b273e6f16e53cd7246f235b3773c1ca2b70dc6",
+   "kind": "game",
+   "mode": "procedural",
+   "caption": "the group ride with the authored bikes, houses and vegetation",
+   "flags": "bikes&houses&vegetation",
+   "calls": 414,
+   "triangles": 878897,
+   "cam": {
+    "p": [
+     37.287,
+     1.123,
+     -246.542
+    ],
+    "q": [
+     -0.1033,
+     -0.3185,
+     -0.0291,
+     0.9418
+    ]
+   },
+   "veg": {
+    "oak": {
+     "level": 2,
+     "tris": 2826
+    },
+    "trees": {
+     "tris": 164285,
+     "calls": 116,
+     "levels": [
+      8,
+      17,
+      292
+     ],
+     "items": 386
+    },
+    "shrubs": {
+     "tris": 89512,
+     "calls": 56,
+     "levels": [
+      8,
+      17,
+      122
+     ],
+     "items": 553
+    },
+    "meadow": {
+     "tris": 0,
+     "calls": 0,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 12487
+    },
+    "lawn": {
+     "tris": 90144,
+     "calls": 11,
+     "clumps": 3279,
+     "levels": [
+      0,
+      0,
+      0
+     ],
+     "items": 3279
+    },
+    "tris": 346767,
+    "calls": 186
+   }
+  },
+  {
+   "file": "docs/qa/vegetation/browser/P01-offline-package-oak-from-the-cul-de-sac.jpg",
+   "sha256": "19c8ca521f3e1ec74ed8c24bac8a39389df8fb15e90687c1be052a21241aa24c",
+   "kind": "game",
+   "mode": "authored",
+   "package": "PLAYTEST_MODELS=1, file://, offline"
+  }
+ ],
+ "pairs": [
+  {
+   "name": "G01-prologue-start-street",
+   "camera": {
+    "p": [
+     -0.344,
+     1.48,
+     -1.974
+    ],
+    "q": [
+     -0.0531,
+     -0.0019,
+     0.0065,
+     0.9986
+    ],
+    "fov": 64,
+    "d": 2,
+    "lat": -0.3,
+    "yaw": 0,
+    "pitch": 0.02
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 579,
+    "triangles": 948257,
+    "vegTris": 281951
+   },
+   "procedural": {
+    "calls": 484,
+    "triangles": 766286
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G01-prologue-start-street--authored.jpg",
+    "docs/qa/vegetation/browser/G01-prologue-start-street--procedural.jpg"
+   ],
+   "caption": "the Prologue's starting street"
+  },
+  {
+   "name": "G04-shrubs-driveways-porches",
+   "camera": {
+    "p": [
+     76.623,
+     -0.247,
+     -310.343
+    ],
+    "q": [
+     -0.0604,
+     -0.766,
+     -0.0641,
+     0.6368
+    ],
+    "fov": 64,
+    "d": 330,
+    "lat": 3.2,
+    "yaw": -1.2,
+    "pitch": -0.04
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 329,
+    "triangles": 764927,
+    "vegTris": 363477
+   },
+   "procedural": {
+    "calls": 214,
+    "triangles": 513048
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G04-shrubs-driveways-porches--authored.jpg",
+    "docs/qa/vegetation/browser/G04-shrubs-driveways-porches--procedural.jpg"
+   ],
+   "caption": "beds and shrubs at a porch and driveway"
+  },
+  {
+   "name": "G04b-jamies-house",
+   "camera": {
+    "p": [
+     88.173,
+     1.136,
+     -725.365
+    ],
+    "q": [
+     -0.0533,
+     -0.7964,
+     -0.0581,
+     0.5996
+    ],
+    "fov": 64,
+    "d": 780,
+    "lat": 3,
+    "yaw": -1.2,
+    "pitch": -0.02
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 466,
+    "triangles": 914082,
+    "vegTris": 320394
+   },
+   "procedural": {
+    "calls": 351,
+    "triangles": 688621
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G04b-jamies-house--authored.jpg",
+    "docs/qa/vegetation/browser/G04b-jamies-house--procedural.jpg"
+   ],
+   "caption": "Jamie's house: the red chair on the porch, the beds"
+  },
+  {
+   "name": "G05-grass-beside-sidewalk",
+   "camera": {
+    "p": [
+     119.343,
+     -1.02,
+     -378.009
+    ],
+    "q": [
+     -0.1612,
+     -0.3497,
+     -0.0546,
+     0.9213
+    ],
+    "fov": 64,
+    "d": 410,
+    "lat": 4.3,
+    "yaw": -0.18,
+    "pitch": -0.2
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 686,
+    "triangles": 1363339,
+    "vegTris": 344699
+   },
+   "procedural": {
+    "calls": 598,
+    "triangles": 1124802
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G05-grass-beside-sidewalk--authored.jpg",
+    "docs/qa/vegetation/browser/G05-grass-beside-sidewalk--procedural.jpg"
+   ],
+   "caption": "grass beside the sidewalk, from the riding camera"
+  },
+  {
+   "name": "G03-street-trees",
+   "camera": {
+    "p": [
+     135.329,
+     0.877,
+     -436.136
+    ],
+    "q": [
+     -0.0467,
+     -0.0195,
+     0.0068,
+     0.9987
+    ],
+    "fov": 64,
+    "d": 470,
+    "lat": -0.3,
+    "yaw": 0.04,
+    "pitch": 0.03
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 608,
+    "triangles": 1046013,
+    "vegTris": 333648
+   },
+   "procedural": {
+    "calls": 525,
+    "triangles": 841287
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G03-street-trees--authored.jpg",
+    "docs/qa/vegetation/browser/G03-street-trees--procedural.jpg"
+   ],
+   "caption": "street trees down Oak Hollow Drive"
+  },
+  {
+   "name": "G06-the-lookout",
+   "camera": {
+    "p": [
+     244.14,
+     2.521,
+     -1032.606
+    ],
+    "q": [
+     -0.0524,
+     0.0186,
+     0.0078,
+     0.9984
+    ],
+    "fov": 64,
+    "d": 1136.5,
+    "lat": -0.9,
+    "yaw": 0.12,
+    "pitch": 0.06
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 237,
+    "triangles": 565119,
+    "vegTris": 474843
+   },
+   "procedural": {
+    "calls": 156,
+    "triangles": 177869
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G06-the-lookout--authored.jpg",
+    "docs/qa/vegetation/browser/G06-the-lookout--procedural.jpg"
+   ],
+   "caption": "the lookout from the stop"
+  },
+  {
+   "name": "G07-oak-from-the-cul-de-sac",
+   "camera": {
+    "p": [
+     242.204,
+     2.563,
+     -1022.23
+    ],
+    "q": [
+     -0.0206,
+     0.1093,
+     0.0081,
+     0.9938
+    ],
+    "fov": 64,
+    "d": 1126,
+    "lat": -2,
+    "yaw": 0.3,
+    "pitch": 0.13
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 241,
+    "triangles": 557252,
+    "vegTris": 479517
+   },
+   "procedural": {
+    "calls": 163,
+    "triangles": 174174
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G07-oak-from-the-cul-de-sac--authored.jpg",
+    "docs/qa/vegetation/browser/G07-oak-from-the-cul-de-sac--procedural.jpg"
+   ],
+   "caption": "the old oak from the cul-de-sac"
+  },
+  {
+   "name": "G07b-oak-silhouette-from-124m",
+   "camera": {
+    "p": [
+     234.9,
+     3.28,
+     -934.665
+    ],
+    "q": [
+     -0.0489,
+     -0.078,
+     0.003,
+     0.9957
+    ],
+    "fov": 64,
+    "d": 1038,
+    "lat": -0.3,
+    "yaw": 0.06,
+    "pitch": 0.07
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 328,
+    "triangles": 545067,
+    "vegTris": 345404
+   },
+   "procedural": {
+    "calls": 222,
+    "triangles": 295381
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G07b-oak-silhouette-from-124m--authored.jpg",
+    "docs/qa/vegetation/browser/G07b-oak-silhouette-from-124m--procedural.jpg"
+   ],
+   "caption": "the oak at 124 m down the street (the Aftermath I barricade distance, art bible §6): readable by silhouette"
+  },
+  {
+   "name": "G10-dusk-looking-home",
+   "camera": {
+    "p": [
+     247.67,
+     2.507,
+     -1040.35
+    ],
+    "q": [
+     -0.039,
+     0.9794,
+     0.0581,
+     0.1892
+    ],
+    "fov": 64,
+    "d": 1150,
+    "lat": 2,
+    "yaw": 3.141592653589793,
+    "pitch": 0.04
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 474,
+    "triangles": 1030358,
+    "vegTris": 498972
+   },
+   "procedural": {
+    "calls": 384,
+    "triangles": 707775
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G10-dusk-looking-home--authored.jpg",
+    "docs/qa/vegetation/browser/G10-dusk-looking-home--procedural.jpg"
+   ],
+   "caption": "evening: looking back down the street from the lookout"
+  },
+  {
+   "name": "G02-group-bicycle-ride",
+   "camera": {
+    "p": [
+     -0.3,
+     3.326,
+     -85.777
+    ],
+    "q": [
+     -0.1017,
+     0.0746,
+     0.0073,
+     0.992
+    ],
+    "d": 85.71351544175008
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 537,
+    "triangles": 953699,
+    "vegTris": 271998
+   },
+   "procedural": {
+    "calls": 454,
+    "triangles": 782376
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G02-group-bicycle-ride--authored.jpg",
+    "docs/qa/vegetation/browser/G02-group-bicycle-ride--procedural.jpg"
+   ],
+   "caption": "the group ride (the friends riding beside)"
+  },
+  {
+   "name": "G08-oak-close-up-carving",
+   "camera": {
+    "p": [
+     253.409,
+     3.138,
+     -1057.164
+    ],
+    "q": [
+     -0.0449,
+     -0.6615,
+     -0.0397,
+     0.7475
+    ]
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 155,
+    "triangles": 675082,
+    "vegTris": 632855
+   },
+   "procedural": {
+    "calls": 74,
+    "triangles": 120422
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G08-oak-close-up-carving--authored.jpg",
+    "docs/qa/vegetation/browser/G08-oak-close-up-carving--procedural.jpg"
+   ],
+   "caption": "the oak close: bark, flare and the healed AR (the release test's carving view)"
+  },
+  {
+   "name": "G08b-oak-close-up-up-the-trunk",
+   "camera": {
+    "p": [
+     251.05,
+     3.042,
+     -1054.404
+    ],
+    "q": [
+     0.2448,
+     -0.4168,
+     0.1176,
+     0.8675
+    ]
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 145,
+    "triangles": 668855,
+    "vegTris": 632859
+   },
+   "procedural": {
+    "calls": 73,
+    "triangles": 130868
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G08b-oak-close-up-up-the-trunk--authored.jpg",
+    "docs/qa/vegetation/browser/G08b-oak-close-up-up-the-trunk--procedural.jpg"
+   ],
+   "caption": "under the oak, looking up the trunk into the limbs"
+  },
+  {
+   "name": "G09-the-tire-swing",
+   "camera": {
+    "p": [
+     248.738,
+     2.951,
+     -1053.085
+    ],
+    "q": [
+     0.1028,
+     -0.3485,
+     0.0385,
+     0.9309
+    ]
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 167,
+    "triangles": 685389,
+    "vegTris": 634635
+   },
+   "procedural": {
+    "calls": 97,
+    "triangles": 147269
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G09-the-tire-swing--authored.jpg",
+    "docs/qa/vegetation/browser/G09-the-tire-swing--procedural.jpg"
+   ],
+   "caption": "the tire swing on the oak's own limb"
+  },
+  {
+   "name": "G09b-the-other-bike",
+   "camera": {
+    "p": [
+     246.959,
+     2.964,
+     -1053.428
+    ],
+    "q": [
+     -0.0647,
+     -0.5028,
+     -0.0378,
+     0.8611
+    ]
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 160,
+    "triangles": 680313,
+    "vegTris": 636587
+   },
+   "procedural": {
+    "calls": 84,
+    "triangles": 129205
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G09b-the-other-bike--authored.jpg",
+    "docs/qa/vegetation/browser/G09b-the-other-bike--procedural.jpg"
+   ],
+   "caption": "the other bike under the oak after the call (release test view)"
+  },
+  {
+   "name": "G03b-street-trees-beside-the-new-houses",
+   "camera": {
+    "p": [
+     0.364,
+     2.183,
+     -150.066
+    ],
+    "q": [
+     -0.0717,
+     -0.1324,
+     -0.0057,
+     0.9886
+    ],
+    "fov": 64,
+    "d": 150,
+    "lat": -0.3,
+    "yaw": -0.2,
+    "pitch": 0.03
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 427,
+    "triangles": 831485,
+    "vegTris": 312836
+   },
+   "procedural": {
+    "calls": 322,
+    "triangles": 621418
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G03b-street-trees-beside-the-new-houses--authored.jpg",
+    "docs/qa/vegetation/browser/G03b-street-trees-beside-the-new-houses--procedural.jpg"
+   ],
+   "caption": "street trees beside the authored houses (?bikes&houses&vegetation)",
+   "flags": "bikes&houses&vegetation"
+  },
+  {
+   "name": "G04c-yards-with-the-new-houses",
+   "camera": {
+    "p": [
+     37.272,
+     1.087,
+     -246.497
+    ],
+    "q": [
+     -0.064,
+     -0.7146,
+     -0.0621,
+     0.6938
+    ],
+    "fov": 64,
+    "d": 255,
+    "lat": 3,
+    "yaw": -1.05,
+    "pitch": -0.03
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 284,
+    "triangles": 662037,
+    "vegTris": 347099
+   },
+   "procedural": {
+    "calls": 170,
+    "triangles": 384802
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G04c-yards-with-the-new-houses--authored.jpg",
+    "docs/qa/vegetation/browser/G04c-yards-with-the-new-houses--procedural.jpg"
+   ],
+   "caption": "yards, beds and lawns at the authored houses",
+   "flags": "bikes&houses&vegetation"
+  },
+  {
+   "name": "G02b-group-ride-with-authored-bikes-and-houses",
+   "camera": {
+    "p": [
+     37.287,
+     1.123,
+     -246.542
+    ],
+    "q": [
+     -0.1033,
+     -0.3185,
+     -0.0291,
+     0.9418
+    ]
+   },
+   "sameCamera": true,
+   "authored": {
+    "calls": 508,
+    "triangles": 1111022,
+    "vegTris": 347099
+   },
+   "procedural": {
+    "calls": 414,
+    "triangles": 878897
+   },
+   "files": [
+    "docs/qa/vegetation/browser/G02b-group-ride-with-authored-bikes-and-houses--authored.jpg",
+    "docs/qa/vegetation/browser/G02b-group-ride-with-authored-bikes-and-houses--procedural.jpg"
+   ],
+   "caption": "the group ride with the authored bikes, houses and vegetation",
+   "flags": "bikes&houses&vegetation"
+  }
+ ],
+ "finished": "2026-11-19T09:41:53.997Z",
+ "summary": {
+  "passed": 46,
+  "failed": 0
+ }
+}
