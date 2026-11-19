@@ -32,6 +32,7 @@ export const ASSETS={
  'veg.street-trees':{file:'assets/veg/veg.street-trees.glb',rig:'none',kind:'vegetation',note:'44 street-tree variants, 3 LODs; incorporates CC BY 4.0 material'},
  'veg.shrubs':{file:'assets/veg/veg.shrubs.glb',rig:'none',kind:'vegetation',note:'18 residential shrubs, 3 LODs; incorporates CC BY 4.0 material'},
  'veg.ground':{file:'assets/veg/veg.ground.glb',rig:'none',kind:'vegetation',note:'lawn, meadow and wildflower clumps; incorporates CC BY 4.0 material'},
+ 'veg.lawn':{file:'assets/veg/veg.lawn.glb',rig:'none',kind:'vegetation',note:'lawn ground textures and the lawn blade tile (original work; grass-and-ground repair)'},
 };
 const cache=new Map(),log=[];
 let loader=null;

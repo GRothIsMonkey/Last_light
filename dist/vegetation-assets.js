@@ -23,8 +23,9 @@ import {loadAsset} from './asset-library.js';
 import {LOOKOUT} from './layout.js';
 import {groundPoint,heading} from './route.js';
 import {MAIN,LAWN} from './terrain.js';
+import {buildLawn} from './vegetation-lawn.js';
 
-export const VEG_IDS=['lm.old-oak','veg.street-trees','veg.shrubs','veg.ground'];
+export const VEG_IDS=['lm.old-oak','veg.street-trees','veg.shrubs','veg.ground','veg.lawn'];
 const hash=(...v)=>{let h=2166136261;for(const x of v){h^=Math.floor(x*1000)|0;h=Math.imul(h,16777619);}return ((h>>>0)%100000)/100000;};
 
 // ------------------------------------------------------------------------------------------------ the vegetation shader
@@ -140,7 +141,7 @@ class Field{
    ims.forEach((im,l)=>{if(!im)return;im.count=n[l];im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;im.computeBoundingSphere();});}}
  stats(){let tris=0,calls=0;const levels=[0,0,0];for(const {ims,list} of this.meshes.values()){ims.forEach((im,l)=>{if(!im||!im.count)return;tris+=im.count*(im.geometry.index?im.geometry.index.count:im.geometry.attributes.position.count)/3;calls+=im.geometry.groups.length;});for(const it of list)if(it.level>=0)levels[it.level]++;}
   return {tris,calls,levels,items:this.items.length};}
- set visible(v){this.root.visible=v;}
+ set visible(v){this.root.visible=v;}get visible(){return this.root.visible;}
 }
 
 // ------------------------------------------------------------------------------------------------ species and placement
@@ -228,49 +229,58 @@ export async function placeVegetation({world,scene,renderer,ambient=null}){
  const meadow=meadowPoints(world);for(const m of meadow){const v=ground.get(m.id);if(!v){errors.push('no ground variant '+m.id);continue;}meadowField.add(v,mat(m.x,m.y,m.z,m.rot,m.s),new THREE.Vector3(m.x,m.y,m.z));}
  meadowField.build();
  const worn=wornPatch(world);scene.add(worn);
+ // the repair (C): inside the field fence the knoll is grown by the lawn's long blades; only the accents stay there
+ // (black-eyed Susans, seed stalks, a few dry tufts, tall grass along the fence and the edges); the field beyond the fence
+ // keeps its tall meadow, a little thinner (the ground under it is grass now, not a flat colour)
+ const meadowC=new Field(scene,'meadow-accents',{dist:[34],hide:160,shadowLods:[],U});
+ for(const m of meadowAccents(meadow)){const v=ground.get(m.id);if(v)meadowC.add(v,mat(m.x,m.y,m.z,m.rot,m.s),new THREE.Vector3(m.x,m.y,m.z));}
+ meadowC.build();
 
- // ---- the near lawn (rebuilt around the camera)
+ // ---- the first benchmark's near lawn (kept for the same-frame comparison, Y)
  const lawn=new LawnRing(scene,world,ground,U,{beds:R.beds,trees:R.trees});
-
- // ---- the lawn material: broad colour variation and dry patches (a uniform switches it back off)
- const lawnU={uVegLawn:{value:1}};
- for(const m of world.grassMats||[]){const prev=m.onBeforeCompile,prevKey=m.customProgramCacheKey?.bind(m);
-  m.onBeforeCompile=(sh,r)=>{prev?.call(m,sh,r);Object.assign(sh.uniforms,lawnU);
-   sh.vertexShader='varying vec3 vVegW;\n'+sh.vertexShader.replace('#include <worldpos_vertex>','#include <worldpos_vertex>\n vVegW=(modelMatrix*vec4(transformed,1.)).xyz;');
-   sh.fragmentShader='uniform float uVegLawn;varying vec3 vVegW;\nfloat vegN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);float a=fract(sin(dot(i,vec2(127.1,311.7)))*43758.5),b=fract(sin(dot(i+vec2(1,0),vec2(127.1,311.7)))*43758.5),c=fract(sin(dot(i+vec2(0,1),vec2(127.1,311.7)))*43758.5),d=fract(sin(dot(i+vec2(1,1),vec2(127.1,311.7)))*43758.5);return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);}\n'+
-    sh.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
-    if(uVegLawn>.5){vec2 p=vVegW.xz;float big=vegN(p*.045)*.6+vegN(p*.13)*.4,fine=vegN(p*.9)*.5+vegN(p*2.3)*.5;
-     float dry=smoothstep(.62,.8,vegN(p*.07+17.)*.7+vegN(p*.31)*.3);
-     diffuseColor.rgb*=.86+.24*big+.08*(fine-.5);
-     diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(1.28,1.1,.62),dry*.55);
-     diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(.9,1.04,.86),smoothstep(.55,.75,vegN(p*.2+3.))*.35);}`);};
-  m.customProgramCacheKey=()=>(prevKey?prevKey():'')+'|ll-veg-lawn';m.needsUpdate=true;}
+ // ---- the lawn and ground repair: the ground itself made grass, continuous blades growing from it (vegetation-lawn.js);
+ //      the first benchmark's lawn material treatment lives there too (mode B), the original lawn is mode A
+ const lawn2=buildLawn({world,scene,U,asset:assets['veg.lawn'],beds:R.beds,trees:R.trees.filter(t=>!t.landmark),renderer});
+ const weedField=new Field(scene,'lawn-weeds',{dist:[18],hide:70,shadowLods:[],U});
+ for(const m of lawn2.weeds){const v=ground.get(m.id);if(v)weedField.add(v,mat(m.x,m.y,m.z,m.rot,m.s),new THREE.Vector3(m.x,m.y,m.z));}
+ weedField.build();
 
  // ---- what the authored set replaces (shown again in procedural mode)
  const procedural=[...world.merged.filter(m=>(m.userData.zone||'').startsWith('vg:')),...world.shadowProxies.filter(m=>(m.userData.zone||'').startsWith('vg:'))];
  const swingLimb=scene.getObjectByName('swing-limb'),carving=scene.getObjectByName('oak-carving');
  const loadMs=+(performance.now()-t0).toFixed(0);
- let authored=true,windScale=1;
- function setAuthored(on){authored=on;for(const m of procedural)m.visible=!on;oak.visible=on;treeField.visible=on;shrubField.visible=on;meadowField.visible=on;worn.visible=on;lawn.visible=on;lawnU.uVegLawn.value=on?1:0;
+ let authored=true,windScale=1,lawnMode='C';
+ // K: the whole authored set or the procedural one; Y (lawnMode): the lawns alone, C the repair, B the first benchmark's,
+ // A the original procedural lawn (the authored trees and shrubs stay)
+ function apply(){const on=authored,m=lawnMode;
+  for(const x of procedural){const z=x.userData.zone||'';x.visible=!on||(m==='A'&&z.startsWith('vg:meadow'));}
+  oak.visible=on;treeField.visible=on;shrubField.visible=on;
+  meadowField.visible=on&&m==='B';worn.visible=on&&m==='B';lawn.visible=on&&m==='B';meadowC.visible=on&&m==='C';weedField.visible=on&&m==='C';lawn2.blades.visible=on&&m==='C';
+  lawn2.setGround(on?(m==='C'?2:m==='B'?1:0):0);}
+ function setAuthored(on){authored=on;apply();
   if(swingLimb)swingLimb.visible=!on;if(carving){if(on){carving.userData.vegWasVisible=carving.visible;carving.visible=false;}else carving.visible=carving.userData.vegWasVisible??true;}}
+ function setLawn(m){lawnMode=m==='A'||m==='B'?m:'C';apply();return lawnMode;}
  setAuthored(true);
  const sunDir=new THREE.Vector3(),tmp=new THREE.Vector3();
- function update(camera,{dt=0,sun=null}={}){const cp=camera.getWorldPosition(tmp.clone());
+ function update(camera,{dt=0,sun=null,sync=false}={}){const cp=camera.getWorldPosition(tmp.clone());
   U.uTime.value=gameWind?gameWind.uTime.value:U.uTime.value+dt;U.uGust.value=gameWind?gameWind.uGust.value:.5;U.uWind.value=windScale;
   if(sun){sunDir.copy(sun.position).sub(sun.target.position).normalize().transformDirection(camera.matrixWorldInverse);U.uSunDirV.value.copy(sunDir);U.uSunCol.value.copy(sun.color).multiplyScalar(Math.min(1.2,sun.intensity/2.7));}
   if(!authored)return;
   // oak LOD
   const od=oak.position.distanceTo(cp);let l=oakLod.forced??(od>oakLod.dist[1]*(oakLod.level===2?.9:1)?2:od>oakLod.dist[0]*(oakLod.level>=1?.9:1)?1:0);
   if(l!==oakLod.level){oakLod.level=l;oak.children.forEach((m,i)=>m.visible=i===l);}
-  treeField.update(cp);shrubField.update(cp);meadowField.update(cp);lawn.update(cp);}
- function setLOD(n){oakLod.forced=n;treeField.forced=n;shrubField.forced=n===null?null:Math.min(n,2);meadowField.forced=n===null?null:Math.min(n,1);for(const f of [treeField,shrubField,meadowField])f.dirty=true;}
- function stats(){const f=[treeField.stats(),shrubField.stats(),meadowField.stats(),lawn.stats()];const oakTris=oakV.lods[oakLod.level]?.tris||0;
-  return {oak:{level:oakLod.level,tris:oakTris},trees:f[0],shrubs:f[1],meadow:f[2],lawn:f[3],tris:oakTris+f.reduce((a,x)=>a+x.tris,0),calls:3+f.reduce((a,x)=>a+x.calls,0)};}
+  treeField.update(cp);shrubField.update(cp);if(meadowField.visible)meadowField.update(cp);if(meadowC.visible)meadowC.update(cp);if(weedField.visible)weedField.update(cp);if(lawn.visible)lawn.update(cp);lawn2.update(camera,{sync});}
+ function setLOD(n){oakLod.forced=n;treeField.forced=n;shrubField.forced=n===null?null:Math.min(n,2);meadowField.forced=n===null?null:Math.min(n,1);meadowC.forced=meadowField.forced;for(const f of [treeField,shrubField,meadowField,meadowC])f.dirty=true;}
+ const none={tris:0,calls:0,clumps:0,levels:[0,0,0],items:0};
+ function stats(){const mead=meadowField.visible?meadowField.stats():meadowC.visible?meadowC.stats():none,ring=lawn.visible?lawn.stats():none,bl=lawn2.blades.visible?lawn2.stats():{...none,tiles:[0,0,0],cells:0};
+  const wd=weedField.visible?weedField.stats():none;const f=[treeField.stats(),shrubField.stats(),mead,ring,bl,wd];const oakTris=oakV.lods[oakLod.level]?.tris||0;
+  return {oak:{level:oakLod.level,tris:oakTris},trees:f[0],shrubs:f[1],meadow:f[2],lawn:{...f[3],clumps:ring.clumps||0},blades:f[4],weeds:{...f[5],items:weedField.items.length},lawnMode,tris:oakTris+f.reduce((a,x)=>a+x.tris,0),calls:3+f.reduce((a,x)=>a+x.calls,0)};}
  const tex=new Set();for(const m of shared.values())for(const k of ['map','normalMap','roughnessMap'])if(m[k])tex.add(m[k]);
+ for(const k of ['uLwA','uLwN','uMdA','uMdN','uSoA','uSoN','uClA','uCareMap','uLookMap'])if(lawn2.uniforms[k]?.value)tex.add(lawn2.uniforms[k].value);
  let gpuBytes=0;for(const t of tex){const im=t.image;if(im?.width)gpuBytes+=im.width*im.height*4*4/3;}
- Object.assign(info,{loadMs,materials:shared.size,textures:tex.size,gpuTextureMB:+(gpuBytes/1048576).toFixed(1),trees:treeField.items.length,shrubs:shrubField.items.length,meadow:meadowField.items.length,
-  speciesCount:Object.fromEntries(Object.entries(treeField.items.reduce((a,it)=>{const s=it.variant.info.ll_species;a[s]=(a[s]||0)+1;return a;},{}))),variantsUsed:new Set(treeField.items.map(i=>i.variant.id)).size});
- return {oak,oakAnchors,treeField,shrubField,meadowField,lawn,update,setAuthored,get authored(){return authored;},setLOD,setWind:w=>{windScale=w;},get wind(){return windScale;},stats,info,errors,uniforms:U,gameWind:!!gameWind,procedural};
+ Object.assign(info,{loadMs,materials:shared.size+lawn2.ground.length+1,textures:tex.size,gpuTextureMB:+(gpuBytes/1048576).toFixed(1),trees:treeField.items.length,shrubs:shrubField.items.length,meadow:meadowField.items.length,
+  lawn:lawn2.info,speciesCount:Object.fromEntries(Object.entries(treeField.items.reduce((a,it)=>{const s=it.variant.info.ll_species;a[s]=(a[s]||0)+1;return a;},{}))),variantsUsed:new Set(treeField.items.map(i=>i.variant.id)).size});
+ return {oak,oakAnchors,treeField,shrubField,meadowField,meadowC,weedField,lawn,lawn2,setLawn,get lawnMode(){return lawnMode;},update,setAuthored,get authored(){return authored;},setLOD,setWind:w=>{windScale=w;},get wind(){return windScale;},stats,info,errors,uniforms:U,gameWind:!!gameWind,procedural};
 }
 
 // ------------------------------------------------------------------------------------------------ the lookout meadow
@@ -284,7 +294,7 @@ function meadowPoints(world){const out=[],L=LOOKOUT,rng=(()=>{let s=1958;return 
   if(d>1145&&d<1153.5&&lat>-3.6&&lat<1.6)return false;                   // the chalk
   if(d<1173.6){const pathLat=-.9+(d-1136.5)*.12;if(Math.abs(lat-pathLat)<1.15&&d<1169)return false;}// the trodden way from the stop
   const gy=world.surfaceY?world.surfaceY(d,lat):0;return gy>.1;};// lawn and knoll, never the bulb's asphalt
- const add=(id,d,lat,s)=>{const p=groundPoint(d,lat);out.push({id,x:p.x,y:world.groundY(d,lat)-.01,z:p.z,rot:rng()*6.283,s});};
+ const add=(id,d,lat,s)=>{const p=groundPoint(d,lat);out.push({id,x:p.x,y:world.groundY(d,lat)-.01,z:p.z,rot:rng()*6.283,s,d,lat});};
  // beyond the field fence: the tall late-summer meadow with wildflowers and seed heads
  for(let d=1173.6;d<1200;d+=.42)for(let lat=-38;lat<38;lat+=.42){const dd=d+(rng()-.5)*.42,ll=lat+(rng()-.5)*.42,r=rng();if(rng()<Math.max(0,(Math.abs(ll)-28)/10,(dd-1192)/8))continue;// thinning out at the edges
   const id=r<.38?'meadow.tall.'+(rng()<.5?1:2):r<.46?'meadow.dry.1':r<.51?'weed.seedstalk.1':r<.56?'flower.lace.1':r<.6?'flower.susan.1':r<.97?'grass.long.'+(rng()<.5?1:2):'weed.groundcover.1';
@@ -295,6 +305,16 @@ function meadowPoints(world){const out=[],L=LOOKOUT,rng=(()=>{let s=1958;return 
   if(r>(.72+edge*.25)*(under?.8:1))continue;
   const id=r<.08+edge*.25?'meadow.tall.'+(rng()<.5?1:2):r<.14?'meadow.dry.1':r<.22?'weed.clover.1':r<.27&&!under?'flower.susan.1':'grass.long.'+(rng()<.5?1:2);
   add(id,dd,ll,(under?.7:.85)+rng()*.45);}
+ return out;}
+
+function meadowAccents(all){const out=[];let i=0;
+ for(const m of all){i++;const inside=m.d<1173.4;
+  if(!inside){if(/^grass\.long/.test(m.id)&&hash(m.x,m.z,9)<.4)continue;out.push(m);continue;}
+  if(/^grass\.long|^weed\.clover/.test(m.id))continue;                        // the blades and the ground are this now
+  if(/^meadow\.tall/.test(m.id)&&!(m.d>1169.5||Math.abs(m.lat-3)>13))continue;   // tall grass only along the fence and the edges
+  if(/^meadow\.dry/.test(m.id))continue;                                        // (the long blades carry the dry tones now)
+  if(/^flower/.test(m.id)&&hash(m.x,m.z,11)<.5)continue;
+  out.push(m);}
  return out;}
 
 function wornPatch(world){const sw=LOOKOUT.swing,p=groundPoint(sw.d,sw.lat),y=world.groundY(sw.d,sw.lat);
