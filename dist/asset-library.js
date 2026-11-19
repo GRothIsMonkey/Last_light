@@ -27,6 +27,11 @@ export const ASSETS={
  // Prologue house-architecture benchmark (DEV, ?houses): twelve authored houses on their lots, awaiting approval
  'house.prologue':{file:'assets/house/house.prologue.glb',rig:'none',kind:'house',note:'Blender house kit: 12 Prologue lots, 3 LODs, shared texture library (v2: realism pass)'},
  'house.prologue.v1':{file:'assets/house/house.prologue.v1.glb',assetId:'house.prologue',rig:'none',kind:'house',note:'the first house benchmark (53b7641), kept byte for byte for A/B/C comparison'},
+ // Prologue vegetation benchmark (DEV, ?vegetation): the old oak, street trees, shrubs and ground plants, awaiting approval
+ 'lm.old-oak':{file:'assets/veg/lm.old-oak.glb',rig:'none',kind:'vegetation',note:'the old oak, reconstructed from a CC BY 4.0 laser scan (THIRD_PARTY_ASSETS.md)'},
+ 'veg.street-trees':{file:'assets/veg/veg.street-trees.glb',rig:'none',kind:'vegetation',note:'44 street-tree variants, 3 LODs; incorporates CC BY 4.0 material'},
+ 'veg.shrubs':{file:'assets/veg/veg.shrubs.glb',rig:'none',kind:'vegetation',note:'18 residential shrubs, 3 LODs; incorporates CC BY 4.0 material'},
+ 'veg.ground':{file:'assets/veg/veg.ground.glb',rig:'none',kind:'vegetation',note:'lawn, meadow and wildflower clumps; incorporates CC BY 4.0 material'},
 };
 const cache=new Map(),log=[];
 let loader=null;

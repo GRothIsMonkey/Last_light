@@ -79,7 +79,12 @@ const sky=new THREE.Mesh(new THREE.SphereGeometry(350,32,20),skyMat);
 // DEV house benchmark (?houses): the benchmark lots' procedural houses are baked into batches of their own so the authored
 // houses can stand in their place (and the procedural ones come back with H). Without ?houses the world is built as always.
 const HOUSES_FLAG=typeof location!=='undefined'&&/[?&]houses\b/.test(location.search||'');
-const world=HOUSES_FLAG?buildWorld(scene,{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}):buildWorld(scene);
+// DEV vegetation benchmark (?vegetation): the Prologue's trees, bed shrubs and lookout grass are recorded and baked into
+// batches of their own (world.js opts.vegetation) so the authored vegetation can stand in their places (K brings the
+// procedural set back). Without ?vegetation the world is built exactly as always.
+const VEGETATION_FLAG=typeof location!=='undefined'&&/[?&]vegetation\b/.test(location.search||'');
+const worldOpts={...(HOUSES_FLAG?{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}:{}),...(VEGETATION_FLAG?{vegetation:true}:{})};
+const world=(HOUSES_FLAG||VEGETATION_FLAG)?buildWorld(scene,worldOpts):buildWorld(scene);
 // Added after the neighborhood is bent and merged, so the sky stays a sky.
 scene.add(sky);const {road,originals,groundY}=world;// road and originals are read by tests/verify.mjs.
 const _v=new THREE.Vector3(),_q=new THREE.Quaternion(),_e=new THREE.Euler();
@@ -858,6 +863,10 @@ if(typeof location!=='undefined'&&/[?&]bikes\b/.test(location.search||''))import
 // Prologue house-architecture benchmark (DEV only): ?houses puts the authored Blender houses on their twelve lots
 // (house-benchmark.js); H swaps them with the procedural houses in the same frame. Without ?houses nothing is loaded.
 if(HOUSES_FLAG)import('./house-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,hemi})).catch(e=>console.error('house benchmark failed:',e));
+// Prologue vegetation benchmark (DEV only): ?vegetation stands the authored Blender vegetation (the old oak, street trees,
+// shrubs, lawn grass, the lookout meadow) in place of the procedural vegetation (vegetation-benchmark.js); K swaps them in
+// the same frame. Without ?vegetation nothing is loaded.
+if(VEGETATION_FLAG)import('./vegetation-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,sun:sunlight,ambient})).catch(e=>console.error('vegetation benchmark failed:',e));
 if(typeof location!=='undefined'&&/[?&]pipeline\b/.test(location.search||''))import('./pipeline-lab.js').then(m=>m.mountInGame({scene,camera,renderer,groundY:(x,z)=>nav.groundY(x,z)})).catch(e=>console.error('pipeline probe failed:',e));
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.

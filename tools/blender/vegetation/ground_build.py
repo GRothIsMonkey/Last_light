@@ -64,7 +64,7 @@ def blades(buf, rng, n, h, spread, cell=0, lean=.25):
         W[:, 1] = rng.random()
         W[:, 2] = W[:, 0]
         W[:, 3] = rng.random()
-        occ = np.clip(.55 + .45 * V[:, 2] / max(h[1], .05), 0, 1)
+        occ = np.clip(.8 + .2 * V[:, 2] / max(h[1], .05), 0, 1)
         nrm = np.tile([0, 0, 1.0], (len(V), 1)) * .7 + np.tile(np.array([math.cos(az), math.sin(az), 0]) * .3, (len(V), 1))
         buf.add(V, np.array(UV), np.stack([occ] * 3, 1), W, np.array(F), 0, nrm)
 
@@ -86,15 +86,15 @@ def crossed(buf, rng, cell, size, count=2, tilt=.12, flat=False):
         W = np.array([[0, rng.random(), 0, rng.random()]] * 2 + [[1, rng.random(), 1, rng.random()]] * 2, float)
         if flat:
             W[:, 0] = W[:, 2] = .15
-        occ = np.array([.6, .6, 1, 1])
+        occ = np.array([.82, .82, 1, 1])
         buf.add(V, UV, np.stack([occ] * 3, 1), W, np.array([[0, 1, 2], [0, 2, 3]]), 0, np.tile([0, 0, 1.0], (4, 1)))
 
 
 VARIANTS = [
     # id, lod0 builder, lod1 builder
-    ('grass.lawn.1', lambda b, r: blades(b, r, 16, (.05, .09), .07), lambda b, r: crossed(b, r, 0, (.22, .09), 2)),
-    ('grass.lawn.2', lambda b, r: blades(b, r, 14, (.06, .11), .08), lambda b, r: crossed(b, r, 0, (.24, .1), 2)),
-    ('grass.lawn.3', lambda b, r: blades(b, r, 18, (.04, .08), .09), lambda b, r: crossed(b, r, 0, (.26, .08), 2)),
+    ('grass.lawn.1', lambda b, r: (blades(b, r, 14, (.06, .11), .08), crossed(b, r, 0, (.3, .09), 2)), lambda b, r: crossed(b, r, 0, (.3, .1), 2)),
+    ('grass.lawn.2', lambda b, r: (blades(b, r, 12, (.07, .13), .09), crossed(b, r, 0, (.32, .11), 2)), lambda b, r: crossed(b, r, 0, (.32, .11), 2)),
+    ('grass.lawn.3', lambda b, r: (blades(b, r, 16, (.05, .1), .1), crossed(b, r, 0, (.34, .08), 2)), lambda b, r: crossed(b, r, 0, (.34, .09), 2)),
     ('grass.long.1', lambda b, r: (blades(b, r, 12, (.16, .32), .06, lean=.4), crossed(b, r, 0, (.3, .3), 2)), lambda b, r: crossed(b, r, 0, (.34, .3), 2)),
     ('grass.long.2', lambda b, r: (blades(b, r, 10, (.2, .38), .05, lean=.45), crossed(b, r, 0, (.28, .34), 2)), lambda b, r: crossed(b, r, 0, (.32, .34), 2)),
     ('meadow.tall.1', lambda b, r: crossed(b, r, 1, (.7, .75), 3), lambda b, r: crossed(b, r, 1, (.7, .75), 2)),

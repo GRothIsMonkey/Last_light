@@ -531,7 +531,7 @@ def _draw_blades(n, rng, count, h=(.6, .95), cols=None, width=(2.5, 5.5), tip_dr
     from PIL import ImageDraw
     img = Image.new('RGBA', (n * 2, n * 2), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    cols = cols or [(.20, .30, .08), (.26, .36, .10), (.33, .40, .14), (.22, .27, .09), (.38, .42, .18)]
+    cols = cols or [(.44, .52, .26), (.50, .57, .30), (.40, .48, .24), (.55, .58, .33), (.47, .50, .27)]
     for _ in range(count):
         x0 = rng.uniform(.06, .94) * n * 2
         H = rng.uniform(*h) * n * 2
@@ -617,7 +617,7 @@ def ground_atlas(c=512):
         im = Image.fromarray((np.clip(sq, 0, 1) * 255).astype(np.uint8), 'RGBA').resize((c, c), Image.LANCZOS)
         return grade(pad_color(np.asarray(im, dtype=np.float64) / 255), fam)
     rng = np.random.default_rng(2011)
-    cells = [_draw_blades(c, rng, 160, h=(.45, .95)), take(0, 218, 393, 629, True, 'grass'), take(260, 505, 419, 634, True, 'grass'),
+    cells = [_draw_blades(c, rng, 220, h=(.45, .95), tip_dry=.15), take(0, 218, 393, 629, True, 'grass'), take(260, 505, 419, 634, True, 'grass'),
              take(519, 707, 470, 717, False, 'grass', rot=-1), take(483, 732, 824, 1006, True, 'grass'),
              _draw_flowers(c, rng, 'lace'), _draw_flowers(c, rng, 'susan'), _draw_flowers(c, rng, 'clover')]
     # the dry tuft and the seed stalk keep their straw colour (graded toward it, not toward green)
