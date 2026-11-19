@@ -53,8 +53,12 @@ def main(argv):
         for x in mrows:
             C, B, A = x['C']['metrics'], x['B']['metrics'], x['A']['metrics']
             out.append(f"| {x['name']} | {C['blocks']:,} | {pct(C['islands'])} / {pct(B['islands'])} / {pct(A['islands'])} | {pct(C['meanDev'])} / {pct(B['meanDev'])} / {pct(A['meanDev'])} |")
-        out.append('\n(A, the original lawn, is a flat colour: almost no deviation at all, which is the "slab". B adds islands. C keeps '
-                   'the islands at zero while giving the lawn the fine variation of real grass.)')
+        out.append('\nWhere a lawn is near (L01-L07): A, the original lawn, is a flat colour (mean deviation under 1.1 %: the "slab"); '
+                   'B adds tuft islands (2.4-9.0 % of the lawn blocks); C keeps islands under 1 % while giving the lawn the fine '
+                   'variation of grass (mean deviation 1.9-2.8 %). In the long and shadowed views (L08, L15, L16) a block covers '
+                   'about a square metre far away and tree shadows and the lots\' own colours dominate all three versions alike '
+                   '(L08: C 2.5 %, B 2.0 %, A 1.6 %; L15: C and B 10.2 %, A 9.2 %; L16: C 4.6 %, B 17.4 %, A 3.9 %): '
+                   'the metric does not judge tufts there.')
     g = rep.get('parts', {}).get('game', {})
     lc = g.get('lawnChecks')
     info = ((g.get('loaded') or {}).get('info') or {})

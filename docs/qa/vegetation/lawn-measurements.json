@@ -1,0 +1,982 @@
+{
+ "summary": {
+  "passed": 74,
+  "failed": 0
+ },
+ "commit": "2fd342f",
+ "cost": [
+  {
+   "name": "L01-lawn-beside-sidewalk",
+   "C": {
+    "calls": 666,
+    "triangles": 1372090,
+    "vegTris": 361917,
+    "bladeTris": 123456,
+    "bladeTiles": [
+     32,
+     36,
+     64
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1850,
+     "meanDev": 0.0198,
+     "islands": 0
+    }
+   },
+   "B": {
+    "calls": 671,
+    "triangles": 1355180,
+    "vegTris": 345007,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 3141,
+    "metrics": {
+     "blocks": 1850,
+     "meanDev": 0.0339,
+     "islands": 0.0297
+    }
+   },
+   "A": {
+    "calls": 661,
+    "triangles": 1248536,
+    "vegTris": 238363,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1850,
+     "meanDev": 0.0026,
+     "islands": 0
+    }
+   }
+  },
+  {
+   "name": "L02-looking-down-near-the-sidewalk",
+   "C": {
+    "calls": 321,
+    "triangles": 927697,
+    "vegTris": 330394,
+    "bladeTris": 91092,
+    "bladeTiles": [
+     22,
+     33,
+     43
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1421,
+     "meanDev": 0.0211,
+     "islands": 0
+    }
+   },
+   "B": {
+    "calls": 329,
+    "triangles": 910455,
+    "vegTris": 313138,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 3226,
+    "metrics": {
+     "blocks": 1421,
+     "meanDev": 0.0156,
+     "islands": 0.0239
+    }
+   },
+   "A": {
+    "calls": 317,
+    "triangles": 836571,
+    "vegTris": 239254,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1421,
+     "meanDev": 0.0018,
+     "islands": 0
+    }
+   }
+  },
+  {
+   "name": "L03-lawn-in-front-of-a-house",
+   "C": {
+    "calls": 336,
+    "triangles": 832552,
+    "vegTris": 431046,
+    "bladeTris": 146121,
+    "bladeTiles": [
+     39,
+     40,
+     74
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 2213,
+     "meanDev": 0.027,
+     "islands": 0.0023
+    }
+   },
+   "B": {
+    "calls": 341,
+    "triangles": 765099,
+    "vegTris": 363593,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 3259,
+    "metrics": {
+     "blocks": 2213,
+     "meanDev": 0.0557,
+     "islands": 0.0899
+    }
+   },
+   "A": {
+    "calls": 329,
+    "triangles": 686331,
+    "vegTris": 284825,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 2213,
+     "meanDev": 0.0088,
+     "islands": 0.0023
+    }
+   }
+  },
+  {
+   "name": "L04-near-grass-while-riding",
+   "C": {
+    "calls": 492,
+    "triangles": 1062374,
+    "vegTris": 415701,
+    "bladeTris": 129498,
+    "bladeTiles": [
+     32,
+     36,
+     83
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1903,
+     "meanDev": 0.0265,
+     "islands": 0.0095
+    }
+   },
+   "B": {
+    "calls": 498,
+    "triangles": 1029668,
+    "vegTris": 382991,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 3090,
+    "metrics": {
+     "blocks": 1903,
+     "meanDev": 0.0414,
+     "islands": 0.0447
+    }
+   },
+   "A": {
+    "calls": 487,
+    "triangles": 932840,
+    "vegTris": 286163,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1903,
+     "meanDev": 0.0103,
+     "islands": 0.0095
+    }
+   }
+  },
+  {
+   "name": "L05-a-row-of-front-yards",
+   "C": {
+    "calls": 427,
+    "triangles": 1041641,
+    "vegTris": 373421,
+    "bladeTris": 129690,
+    "bladeTiles": [
+     28,
+     44,
+     93
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1672,
+     "meanDev": 0.0195,
+     "islands": 0.0036
+    }
+   },
+   "B": {
+    "calls": 433,
+    "triangles": 980263,
+    "vegTris": 312043,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 2575,
+    "metrics": {
+     "blocks": 1672,
+     "meanDev": 0.052,
+     "islands": 0.0449
+    }
+   },
+   "A": {
+    "calls": 422,
+    "triangles": 911883,
+    "vegTris": 243663,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1672,
+     "meanDev": 0.0108,
+     "islands": 0.0042
+    }
+   }
+  },
+  {
+   "name": "L06-jamies-house",
+   "C": {
+    "calls": 461,
+    "triangles": 967627,
+    "vegTris": 373939,
+    "bladeTris": 128529,
+    "bladeTiles": [
+     29,
+     42,
+     87
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1684,
+     "meanDev": 0.0275,
+     "islands": 0.0006
+    }
+   },
+   "B": {
+    "calls": 466,
+    "triangles": 914074,
+    "vegTris": 320386,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 3456,
+    "metrics": {
+     "blocks": 1684,
+     "meanDev": 0.0548,
+     "islands": 0.0582
+    }
+   },
+   "A": {
+    "calls": 454,
+    "triangles": 839004,
+    "vegTris": 245316,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 1684,
+     "meanDev": 0.0094,
+     "islands": 0
+    }
+   }
+  },
+  {
+   "name": "L07-sams-house",
+   "C": {
+    "calls": 361,
+    "triangles": 802398,
+    "vegTris": 370615,
+    "bladeTris": 132732,
+    "bladeTiles": [
+     34,
+     35,
+     81
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 2237,
+     "meanDev": 0.0205,
+     "islands": 0
+    }
+   },
+   "B": {
+    "calls": 371,
+    "triangles": 739492,
+    "vegTris": 307705,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 2343,
+    "metrics": {
+     "blocks": 2237,
+     "meanDev": 0.05,
+     "islands": 0.0617
+    }
+   },
+   "A": {
+    "calls": 356,
+    "triangles": 671947,
+    "vegTris": 237835,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 2237,
+     "meanDev": 0.0063,
+     "islands": 0
+    }
+   }
+  },
+  {
+   "name": "L08-down-the-street",
+   "C": {
+    "calls": 591,
+    "triangles": 1054487,
+    "vegTris": 340705,
+    "bladeTris": 74469,
+    "bladeTiles": [
+     9,
+     31,
+     91
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 245,
+     "meanDev": 0.0291,
+     "islands": 0.0245
+    }
+   },
+   "B": {
+    "calls": 597,
+    "triangles": 1044938,
+    "vegTris": 331152,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 3122,
+    "metrics": {
+     "blocks": 245,
+     "meanDev": 0.0423,
+     "islands": 0.0204
+    }
+   },
+   "A": {
+    "calls": 585,
+    "triangles": 979914,
+    "vegTris": 266128,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 245,
+     "meanDev": 0.0222,
+     "islands": 0.0163
+    }
+   }
+  },
+  {
+   "name": "L09-the-lookout-from-the-stop",
+   "C": {
+    "calls": 221,
+    "triangles": 357471,
+    "vegTris": 267219,
+    "bladeTris": 10968,
+    "bladeTiles": [
+     0,
+     1,
+     32
+    ],
+    "clumps": 0
+   },
+   "B": {
+    "calls": 237,
+    "triangles": 565115,
+    "vegTris": 474839,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 2638
+   },
+   "A": {
+    "calls": 210,
+    "triangles": 322784,
+    "vegTris": 230185,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   }
+  },
+  {
+   "name": "L10-grass-beneath-the-old-oak",
+   "C": {
+    "calls": 167,
+    "triangles": 635935,
+    "vegTris": 585197,
+    "bladeTris": 252708,
+    "bladeTiles": [
+     66,
+     65,
+     149
+    ],
+    "clumps": 0
+   },
+   "B": {
+    "calls": 166,
+    "triangles": 683537,
+    "vegTris": 632783,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   },
+   "A": {
+    "calls": 147,
+    "triangles": 269356,
+    "vegTris": 216279,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   }
+  },
+  {
+   "name": "L11-the-lookout-path-and-bench",
+   "C": {
+    "calls": 159,
+    "triangles": 637582,
+    "vegTris": 590609,
+    "bladeTris": 257319,
+    "bladeTiles": [
+     69,
+     64,
+     144
+    ],
+    "clumps": 0
+   },
+   "B": {
+    "calls": 158,
+    "triangles": 680573,
+    "vegTris": 633584,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   },
+   "A": {
+    "calls": 139,
+    "triangles": 266392,
+    "vegTris": 217080,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   }
+  },
+  {
+   "name": "L12-across-the-meadow",
+   "C": {
+    "calls": 155,
+    "triangles": 641687,
+    "vegTris": 581671,
+    "bladeTris": 229560,
+    "bladeTiles": [
+     68,
+     60,
+     74
+    ],
+    "clumps": 0
+   },
+   "B": {
+    "calls": 153,
+    "triangles": 734989,
+    "vegTris": 674961,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   },
+   "A": {
+    "calls": 135,
+    "triangles": 266992,
+    "vegTris": 204639,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   }
+  },
+  {
+   "name": "L13-the-old-bike-in-the-grass",
+   "C": {
+    "calls": 162,
+    "triangles": 661382,
+    "vegTris": 602601,
+    "bladeTris": 257526,
+    "bladeTiles": [
+     68,
+     66,
+     147
+    ],
+    "clumps": 0
+   },
+   "B": {
+    "calls": 161,
+    "triangles": 721376,
+    "vegTris": 662579,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   },
+   "A": {
+    "calls": 142,
+    "triangles": 268447,
+    "vegTris": 207327,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   }
+  },
+  {
+   "name": "L14-evening-lawns-from-the-stop",
+   "C": {
+    "calls": 450,
+    "triangles": 826129,
+    "vegTris": 303365,
+    "bladeTris": 45258,
+    "bladeTiles": [
+     0,
+     19,
+     95
+    ],
+    "clumps": 0
+   },
+   "B": {
+    "calls": 462,
+    "triangles": 1044987,
+    "vegTris": 520717,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 2517
+   },
+   "A": {
+    "calls": 437,
+    "triangles": 755333,
+    "vegTris": 230185,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0
+   }
+  },
+  {
+   "name": "L15-street-with-the-new-houses-and-trees",
+   "C": {
+    "calls": 435,
+    "triangles": 826829,
+    "vegTris": 310144,
+    "bladeTris": 74775,
+    "bladeTiles": [
+     9,
+     35,
+     82
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 314,
+     "meanDev": 0.0511,
+     "islands": 0.1019
+    }
+   },
+   "B": {
+    "calls": 440,
+    "triangles": 818298,
+    "vegTris": 301613,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 2494,
+    "metrics": {
+     "blocks": 314,
+     "meanDev": 0.0562,
+     "islands": 0.1019
+    }
+   },
+   "A": {
+    "calls": 430,
+    "triangles": 752018,
+    "vegTris": 235333,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 314,
+     "meanDev": 0.0479,
+     "islands": 0.0924
+    }
+   }
+  },
+  {
+   "name": "L16-yards-of-the-new-houses",
+   "C": {
+    "calls": 280,
+    "triangles": 715712,
+    "vegTris": 400774,
+    "bladeTris": 144045,
+    "bladeTiles": [
+     33,
+     45,
+     99
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 2137,
+     "meanDev": 0.0324,
+     "islands": 0.0459
+    }
+   },
+   "B": {
+    "calls": 284,
+    "triangles": 661813,
+    "vegTris": 346875,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 3278,
+    "metrics": {
+     "blocks": 2137,
+     "meanDev": 0.0793,
+     "islands": 0.1736
+    }
+   },
+   "A": {
+    "calls": 273,
+    "triangles": 571561,
+    "vegTris": 256623,
+    "bladeTris": 0,
+    "bladeTiles": [
+     0,
+     0,
+     0
+    ],
+    "clumps": 0,
+    "metrics": {
+     "blocks": 2137,
+     "meanDev": 0.0166,
+     "islands": 0.0393
+    }
+   }
+  }
+ ],
+ "lawnChecks": {
+  "coverage": {
+   "tested": 400,
+   "missing": 0,
+   "examples": []
+  },
+  "hard": {
+   "cells": 153,
+   "bits": 6908,
+   "bad": 0,
+   "examples": []
+  },
+  "lod": {
+   "bad": 0,
+   "tiles": [
+    39,
+    40,
+    74
+   ]
+  },
+  "stable": true,
+  "tilingPatch": {
+   "x": 80.51,
+   "z": -309.6,
+   "dist": 4.14
+  },
+  "tiling": {
+   "periodX": {
+    "n": 1296,
+    "r": 0.119
+   },
+   "periodZ": {
+    "n": 1551,
+    "r": 0.124
+   },
+   "unrelated": {
+    "n": 1508,
+    "r": -0.126
+   }
+  },
+  "wind": {
+   "sameTime": true,
+   "sameGust": true,
+   "sameScale": true,
+   "advances": true
+  },
+  "obstacles": 812,
+  "space": [
+   159,
+   247,
+   247,
+   5717,
+   0,
+   618,
+   52
+  ],
+  "info": {
+   "lawn": {
+    "lots": 105,
+    "careMap": [
+     348,
+     1589
+    ],
+    "lookMap": 288,
+    "textures": 8
+   },
+   "gpuTextureMB": 156.6,
+   "textures": 23,
+   "materials": 13
+  }
+ },
+ "info": {
+  "bytes": 30608100,
+  "readMs": 0,
+  "parseMs": 0,
+  "files": {
+   "lm.old-oak": {
+    "id": "lm.old-oak",
+    "file": "assets/veg/lm.old-oak.glb",
+    "from": "http",
+    "bytes": 6556112,
+    "readMs": 48.1,
+    "parseMs": 150.5,
+    "triangles": 99871,
+    "skinnedMeshes": 0,
+    "geometries": 7,
+    "materials": 3,
+    "textures": 6,
+    "clips": [],
+    "morphTargets": [],
+    "version": 1,
+    "rig": "none",
+    "license": "Last Light (Roth Studios). Reconstructed from \"200 year old oak tree\" by kungphil (https://skfb.ly/6vqWJ), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/): the laser scan was used as the measured source of the branch architecture and crown; the mesh, bark, leaves and carving are new. Leaf card photo adapted from \"Realistic Trees Collection\" by Jungle Jim (https://skfb.ly/pDzJR), CC BY 4.0. The authors do not endorse Last Light.",
+    "generator": "Khronos glTF Blender I/O v5.0.21"
+   },
+   "veg.street-trees": {
+    "id": "veg.street-trees",
+    "file": "assets/veg/veg.street-trees.glb",
+    "from": "http",
+    "bytes": 16693312,
+    "readMs": 84.3,
+    "parseMs": 119.9,
+    "triangles": 360916,
+    "skinnedMeshes": 0,
+    "geometries": 252,
+    "materials": 3,
+    "textures": 5,
+    "clips": [],
+    "morphTargets": [],
+    "version": 1,
+    "rig": "none",
+    "license": "Last Light (Roth Studios). Oak and ash branch architectures recovered from \"Realistic Trees Collection\" by Jungle Jim (https://skfb.ly/pDzJR), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); oak, ash and pine twig photos adapted from the same collection; bark micro-detail from its bark photo. Maple, birch, pine, spruce and young trees, the maple and birch leaves and the barks are original. Rebuilt, re-meshed and re-textured for Last Light; the author does not endorse Last Light.",
+    "generator": "Khronos glTF Blender I/O v5.0.21"
+   },
+   "veg.shrubs": {
+    "id": "veg.shrubs",
+    "file": "assets/veg/veg.shrubs.glb",
+    "from": "http",
+    "bytes": 2898248,
+    "readMs": 14.8,
+    "parseMs": 34.5,
+    "triangles": 61129,
+    "skinnedMeshes": 0,
+    "geometries": 114,
+    "materials": 2,
+    "textures": 2,
+    "clips": [],
+    "morphTargets": [],
+    "version": 1,
+    "rig": "none",
+    "license": "Last Light (Roth Studios). Shrub geometry, LODs and leaf atlas adapted from \"Bush models pack (gameready, LODs)\" by LOLIPOP (https://skfb.ly/pLE8N), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/): leaves re-graded and re-packed, materials rebuilt (alpha-tested), occlusion and wind baked, trimmed and flowering variants derived. The author does not endorse Last Light.",
+    "generator": "Khronos glTF Blender I/O v5.0.21"
+   },
+   "veg.ground": {
+    "id": "veg.ground",
+    "file": "assets/veg/veg.ground.glb",
+    "from": "http",
+    "bytes": 725212,
+    "readMs": 5.2,
+    "parseMs": 45.8,
+    "triangles": 610,
+    "skinnedMeshes": 0,
+    "geometries": 26,
+    "materials": 1,
+    "textures": 1,
+    "clips": [],
+    "morphTargets": [],
+    "version": 1,
+    "rig": "none",
+    "license": "Last Light (Roth Studios). Meadow, dry grass, sprig and seed-stalk sprites adapted from \"Grass And Bush - Mobile GameReady\" by Ali haghshenas (https://skfb.ly/6WTVC), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/): cropped, turned upright, graded, re-packed; lawn blades, wildflowers and clover original. The author does not endorse Last Light.",
+    "generator": "Khronos glTF Blender I/O v5.0.21"
+   },
+   "veg.lawn": {
+    "id": "veg.lawn",
+    "file": "assets/veg/veg.lawn.glb",
+    "from": "http",
+    "bytes": 3735216,
+    "readMs": 18.5,
+    "parseMs": 86.4,
+    "triangles": 2339,
+    "skinnedMeshes": 0,
+    "geometries": 5,
+    "materials": 5,
+    "textures": 8,
+    "clips": [],
+    "morphTargets": [],
+    "version": 1,
+    "rig": "none",
+    "license": "original work (Last Light): no third-party content",
+    "generator": "Last Light lawn_kit.py"
+   }
+  },
+  "loadMs": 1132,
+  "materials": 13,
+  "textures": 23,
+  "gpuTextureMB": 156.6,
+  "trees": 386,
+  "shrubs": 553,
+  "meadow": 12487,
+  "lawn": {
+   "lots": 105,
+   "careMap": [
+    348,
+    1589
+   ],
+   "lookMap": 288,
+   "textures": 8
+  },
+  "speciesCount": {
+   "maple": 159,
+   "birch": 11,
+   "spruce": 50,
+   "young": 16,
+   "ash": 39,
+   "pine": 56,
+   "oak": 55
+  },
+  "variantsUsed": 42
+ }
+}
