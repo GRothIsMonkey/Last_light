@@ -1,0 +1,92 @@
+{
+  "files": [
+    {
+      "name": "200_year_old_oak_tree.glb",
+      "bytes": 129820864,
+      "sha256": "d6fc4186d2ae517ecfaacaa58ae3696641b08d3297ede0ad3d3654cb38b8d714",
+      "parts": [
+        {
+          "name": "200_year_old_oak_tree.glb.part001",
+          "bytes": 20000000,
+          "sha256": "a6a12613543e8316a2c00154ae73730d72459aca60402d7552e02737890ab842"
+        },
+        {
+          "name": "200_year_old_oak_tree.glb.part002",
+          "bytes": 20000000,
+          "sha256": "35d933067754f6e6c140169752116a54d5e63969fadbf64765775a25cde0138c"
+        },
+        {
+          "name": "200_year_old_oak_tree.glb.part003",
+          "bytes": 20000000,
+          "sha256": "644969570d63f47ee8bc66294101b025ce731dc5a8ecce75fef55a5898cfbdcf"
+        },
+        {
+          "name": "200_year_old_oak_tree.glb.part004",
+          "bytes": 20000000,
+          "sha256": "f9719872bf78b634317ee623679d782a4bc7f59cf96977cdb5957d22f18cbb2c"
+        },
+        {
+          "name": "200_year_old_oak_tree.glb.part005",
+          "bytes": 20000000,
+          "sha256": "84a8d4bdc59b8f4d2ba42d112adf80d500b3797004d7a76a02e83bfede204d8f"
+        },
+        {
+          "name": "200_year_old_oak_tree.glb.part006",
+          "bytes": 20000000,
+          "sha256": "9d2ec797306d3f9a974d3e93495647b8a3b2d37f2fa4190e5ae734ddfd85c171"
+        },
+        {
+          "name": "200_year_old_oak_tree.glb.part007",
+          "bytes": 9820864,
+          "sha256": "26c199f7e645c2eedcda3e2c7131e4a162e4fdbc4e055f95ea869c2b2c7f3560"
+        }
+      ]
+    },
+    {
+      "name": "bush_models_pack_gameready_lods.glb",
+      "bytes": 8048292,
+      "sha256": "73aeab6e1b792965fe270e6a9985866c46b5214a522df0c42d2a38c163e8f7b6",
+      "parts": [
+        {
+          "name": "bush_models_pack_gameready_lods.glb.part001",
+          "bytes": 8048292,
+          "sha256": "73aeab6e1b792965fe270e6a9985866c46b5214a522df0c42d2a38c163e8f7b6"
+        }
+      ]
+    },
+    {
+      "name": "grass_and_bush_-_mobile_gameready.glb",
+      "bytes": 1833488,
+      "sha256": "d0ba3260cd912908f9b241e1500bdcc6121b9ca87aceaa881d5595dc07233259",
+      "parts": [
+        {
+          "name": "grass_and_bush_-_mobile_gameready.glb.part001",
+          "bytes": 1833488,
+          "sha256": "d0ba3260cd912908f9b241e1500bdcc6121b9ca87aceaa881d5595dc07233259"
+        }
+      ]
+    },
+    {
+      "name": "realistic_trees_collection.glb",
+      "bytes": 42333844,
+      "sha256": "773324d3894dbc10468b062c1519e701b8e3415773af2d7f666224eddc128f72",
+      "parts": [
+        {
+          "name": "realistic_trees_collection.glb.part001",
+          "bytes": 20000000,
+          "sha256": "797d0439c50d11062cfbc041523e7ebd5027f36500f56934b211e888f8fc8440"
+        },
+        {
+          "name": "realistic_trees_collection.glb.part002",
+          "bytes": 20000000,
+          "sha256": "ba3df2818c7a44363a4d2bba28e289eba7705a5c6652163490ec54ef58e6c793"
+        },
+        {
+          "name": "realistic_trees_collection.glb.part003",
+          "bytes": 2333844,
+          "sha256": "6f392ae7667aa9984b596a73ca0cebe772ed78cc1be5d10b2674df12f1e282d7"
+        }
+      ]
+    }
+  ]
+}
