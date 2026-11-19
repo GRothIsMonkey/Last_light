@@ -139,11 +139,137 @@ alpha-tested depth material (dappled shadows on roads, lawns and porches) and by
 
 ## 7. Measurements
 
-MEASUREMENTS
+All numbers are file data or the shipped renderer under **software WebGL** (Chromium + ANGLE SwiftShader) — **not GPU
+timings**; frame time on real hardware is still to be measured. Source: `docs/qa/vegetation/measurements.md` / `.json` (written
+by `veg_measure.py` from the build stats, the validator reports and `browser/report.json`).
+
+### Files: the supplied originals and the optimized runtime files
+
+| Original (CC BY 4.0) | Bytes | Runtime file | Bytes | Validator |
+|---|---|---|---|---|
+| `200_year_old_oak_tree.glb` | 129,820,864 | `dist/assets/veg/lm.old-oak.glb` | 6,556,112 | ok; Khronos 0 errors, 4 warnings |
+| `realistic_trees_collection.glb` | 42,333,844 | `dist/assets/veg/veg.street-trees.glb` | 16,693,312 | ok; Khronos 0 errors, 120 warnings |
+| `bush_models_pack_gameready_lods.glb` | 8,048,292 | `dist/assets/veg/veg.shrubs.glb` | 2,898,248 | ok; Khronos 0 errors, 0 warnings |
+| `grass_and_bush_-_mobile_gameready.glb` | 1,833,488 | `dist/assets/veg/veg.ground.glb` | 725,212 | ok; Khronos 0 errors, 0 warnings |
+
+Runtime total 26,872,884 bytes (25.63 MB); the offline package embeds them base64 (+33 %).
+
+### Triangles by asset and LOD (LOD0 / LOD1 / LOD2)
+
+**The old oak (lm.old-oak):** 81,632 / 15,413 / 2,826 (LOD0: 53,684 bark, 10,566 leaf cards, 968 carving).
+
+| Species | Variants | LOD0 min–max (mean) | LOD1 mean | LOD2 mean | Height (m) | Crown radius (m) | Branch architecture |
+|---|---|---|---|---|---|---|---|
+| maple | 8 | 7,251–10,677 (9,884) | 2,158 | 270 | 11.6–14.1 | 4.5–6.0 | grown (species model) |
+| oak | 6 | 3,592–17,521 (8,734) | 2,237 | 282 | 10.4–12.2 | 4.0–5.4 | Jungle Jim collection skeletons (3) + reshaped (3) |
+| ash | 6 | 2,961–11,995 (6,949) | 1,538 | 195 | 9.7–12.3 | 4.0–5.1 | Jungle Jim collection skeletons (3) + reshaped (3) |
+| birch | 6 | 2,422–3,651 (2,918) | 684 | 57 | 8.9–11.2 | 2.0–2.9 | grown (species model) |
+| white pine | 6 | 6,592–10,146 (8,274) | 1,816 | 238 | 10.5–12.0 | 3.1–3.8 | grown (species model) |
+| spruce | 6 | 4,916–8,594 (7,431) | 1,529 | 298 | 9.9–12.6 | 2.7–3.5 | grown (species model) |
+| young | 6 | 406–508 (456) | 87 | 15 | 4.1–4.6 | 1.1–1.4 | grown (species model) |
+
+| Shrub family | Variants | LOD0 / LOD1 / LOD2 (mean) | Size w × d × h (m, typical) |
+|---|---|---|---|
+| natural.big | 5 | 2,709 / 1,238 / 636 | 1.44 × 1.52 × 1.66 |
+| natural.medium | 5 | 679 / 349 / 215 | 0.72 × 0.53 × 0.99 |
+| natural.small | 5 | 213 / 115 / 54 | 0.71 × 0.72 × 0.58 |
+| globe | 3 | 3,401 / 1,512 / 915 | 0.87 × 0.74 × 0.93 |
+| hedge | 2 | 3,300 / 1,506 / 897 | 1.16 × 0.84 × 0.87 |
+| flowering | 3 | 227 / 119 / 56 | 0.53 × 0.54 × 0.43 |
+
+| Ground plant | LOD0 / LOD1 |
+|---|---|
+| grass.lawn.1 | 116 / 4 |
+| grass.lawn.2 | 100 / 4 |
+| grass.lawn.3 | 132 / 4 |
+| grass.long.1 | 100 / 4 |
+| grass.long.2 | 84 / 4 |
+| meadow.tall.1 | 6 / 4 |
+| meadow.tall.2 | 6 / 4 |
+| meadow.dry.1 | 6 / 4 |
+| weed.groundcover.1 | 4 / 2 |
+| weed.seedstalk.1 | 4 / 2 |
+| flower.lace.1 | 4 / 2 |
+| flower.susan.1 | 4 / 2 |
+| weed.clover.1 | 2 / 2 |
+
+### In the game (Chromium + ANGLE SwiftShader: software rendering, not a GPU)
+
+Loaded in **1476 ms** in the page (wall clock incl. the page's own start: 1510 ms); 26,872,884 bytes; **9 materials**, **14 textures** (~128 MB GPU texture memory, uncompressed RGBA8 + mips estimate); 386 street trees (42 variants in use; species {'maple': 159, 'birch': 11, 'spruce': 50, 'young': 16, 'ash': 39, 'pine': 56, 'oak': 55}), 553 shrubs and perennials, 12487 lookout meadow plants.
+
+| Same frame (camera recorded) | Draw calls authored / procedural | Triangles authored / procedural | Vegetation triangles (authored) |
+|---|---|---|---|
+| G01-prologue-start-street | 579 / 484 | 948,257 / 766,286 | 281,951 |
+| G04-shrubs-driveways-porches | 329 / 214 | 764,927 / 513,048 | 363,477 |
+| G04b-jamies-house | 466 / 351 | 914,082 / 688,621 | 320,394 |
+| G05-grass-beside-sidewalk | 686 / 598 | 1,363,339 / 1,124,802 | 344,699 |
+| G03-street-trees | 608 / 525 | 1,046,013 / 841,287 | 333,648 |
+| G06-the-lookout | 237 / 156 | 565,119 / 177,869 | 474,843 |
+| G07-oak-from-the-cul-de-sac | 241 / 163 | 557,252 / 174,174 | 479,517 |
+| G07b-oak-silhouette-from-124m | 328 / 222 | 545,067 / 295,381 | 345,404 |
+| G10-dusk-looking-home | 474 / 384 | 1,030,358 / 707,775 | 498,972 |
+| G02-group-bicycle-ride | 537 / 454 | 953,699 / 782,376 | 271,998 |
+| G08-oak-close-up-carving | 155 / 74 | 675,082 / 120,422 | 632,855 |
+| G08b-oak-close-up-up-the-trunk | 145 / 73 | 668,855 / 130,868 | 632,859 |
+| G09-the-tire-swing | 167 / 97 | 685,389 / 147,269 | 634,635 |
+| G09b-the-other-bike | 160 / 84 | 680,313 / 129,205 | 636,587 |
+| G03b-street-trees-beside-the-new-houses | 427 / 322 | 831,485 / 621,418 | 312,836 |
+| G04c-yards-with-the-new-houses | 284 / 170 | 662,037 / 384,802 | 347,099 |
+| G02b-group-ride-with-authored-bikes-and-houses | 508 / 414 | 1,111,022 / 878,897 | 347,099 |
+
+Offline package with every model embedded (PLAYTEST_MODELS=1): 141,026,424 bytes; the vegetation loads from the embedded bytes with no network.
+
+**Reading the same-frame table.** The authored set adds about 80–115 draw calls in street views (instancing is per variant, LOD
+and material, while the procedural set was merged into world batches) and stays far below the Medium budget of 800 calls in every
+view (worst: 686, the sidewalk view). The extra triangles are mostly the near lawn blades (~3,000–3,500 clumps within ~22 m) and,
+at the lookout, the meadow (12,487 plants) and the oak's LOD0; the heaviest measured frame is still the sidewalk view at 1.36 M
+triangles, which the procedural game already draws 1.12 M of. Loading: 26.9 MB in 1.2–1.5 s from a local server (software path;
+decoding the WebP textures is part of that).
+
+**Placement and stability (checked in the game, `browser/report.json`):** the oak on `LOOKOUT.oak` with 0 mm and 0° error; the
+swing limb's underside 9 cm below the rope top, nothing in the rope's path (0 ray hits); the carving at the game's letter height
+(3.134 m world) and bearing (0 error); every story mark clear; 129 sampled trees, the worst 5 mm from the ground; no crown in a
+house; the LOD sweep stable along the street (no flicker in the sweep); forced LODs 0/1/2 switch all 386 trees; wind time advances
+with the game's breeze and scales with `U`.
 
 ## 8. Gameplay captures and before/after (Stage E)
 
-CAPTURES
+Every pair is **one frame, one camera**: the benchmark's `K` mode is switched between two renders without moving anything
+(the camera pose is recorded in `browser/report.json`; `sameCamera` is checked). Cameras are the game's own riding and walking
+cameras placed with the QA hook — they are review cameras, not a human's playthrough. Software WebGL (SwiftShader), 1600 × 900,
+Medium profile. Captures are in `docs/qa/vegetation/browser/` (SHA-256 of each in `report.json`).
+
+| Capture | What to look at | Same camera | Files (authored · procedural) |
+|---|---|---|---|
+| G01-prologue-start-street | the Prologue's starting street | yes | [G01-prologue-start-street--authored.jpg](qa/vegetation/browser/G01-prologue-start-street--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G01-prologue-start-street--procedural.jpg) |
+| G04-shrubs-driveways-porches | beds and shrubs at a porch and driveway | yes | [G04-shrubs-driveways-porches--authored.jpg](qa/vegetation/browser/G04-shrubs-driveways-porches--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G04-shrubs-driveways-porches--procedural.jpg) |
+| G04b-jamies-house | Jamie's house: the red chair on the porch, the beds | yes | [G04b-jamies-house--authored.jpg](qa/vegetation/browser/G04b-jamies-house--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G04b-jamies-house--procedural.jpg) |
+| G05-grass-beside-sidewalk | grass beside the sidewalk, from the riding camera | yes | [G05-grass-beside-sidewalk--authored.jpg](qa/vegetation/browser/G05-grass-beside-sidewalk--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G05-grass-beside-sidewalk--procedural.jpg) |
+| G03-street-trees | street trees down Oak Hollow Drive | yes | [G03-street-trees--authored.jpg](qa/vegetation/browser/G03-street-trees--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G03-street-trees--procedural.jpg) |
+| G06-the-lookout | the lookout from the stop | yes | [G06-the-lookout--authored.jpg](qa/vegetation/browser/G06-the-lookout--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G06-the-lookout--procedural.jpg) |
+| G07-oak-from-the-cul-de-sac | the old oak from the cul-de-sac | yes | [G07-oak-from-the-cul-de-sac--authored.jpg](qa/vegetation/browser/G07-oak-from-the-cul-de-sac--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G07-oak-from-the-cul-de-sac--procedural.jpg) |
+| G07b-oak-silhouette-from-124m | the oak readable by silhouette at 124 m | yes | [G07b-oak-silhouette-from-124m--authored.jpg](qa/vegetation/browser/G07b-oak-silhouette-from-124m--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G07b-oak-silhouette-from-124m--procedural.jpg) |
+| G10-dusk-looking-home | evening: looking back down the street from the lookout | yes | [G10-dusk-looking-home--authored.jpg](qa/vegetation/browser/G10-dusk-looking-home--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G10-dusk-looking-home--procedural.jpg) |
+| G02-group-bicycle-ride | the group ride (the friends riding beside) | yes | [G02-group-bicycle-ride--authored.jpg](qa/vegetation/browser/G02-group-bicycle-ride--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G02-group-bicycle-ride--procedural.jpg) |
+| G08-oak-close-up-carving | the healed AR in the bark (after the colour-under-alpha fix; the evening light leaves this side of the trunk in shade, as for the procedural trunk) | yes | [G08-oak-close-up-carving--authored.jpg](qa/vegetation/browser/G08-oak-close-up-carving--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G08-oak-close-up-carving--procedural.jpg) |
+| G08b-oak-close-up-up-the-trunk | under the oak, looking up the trunk into the limbs | yes | [G08b-oak-close-up-up-the-trunk--authored.jpg](qa/vegetation/browser/G08b-oak-close-up-up-the-trunk--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G08b-oak-close-up-up-the-trunk--procedural.jpg) |
+| G09-the-tire-swing | the rope on the oak's own limb, the worn patch, the old bike | yes | [G09-the-tire-swing--authored.jpg](qa/vegetation/browser/G09-the-tire-swing--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G09-the-tire-swing--procedural.jpg) |
+| G09b-the-other-bike | the other bike under the oak after the call (release test view) | yes | [G09b-the-other-bike--authored.jpg](qa/vegetation/browser/G09b-the-other-bike--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G09b-the-other-bike--procedural.jpg) |
+| G03b-street-trees-beside-the-new-houses (`?bikes&houses&vegetation`) | street trees beside the authored houses (?bikes&houses&vegetation) | yes | [G03b-street-trees-beside-the-new-houses--authored.jpg](qa/vegetation/browser/G03b-street-trees-beside-the-new-houses--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G03b-street-trees-beside-the-new-houses--procedural.jpg) |
+| G04c-yards-with-the-new-houses (`?bikes&houses&vegetation`) | yards, beds and lawns at the authored houses | yes | [G04c-yards-with-the-new-houses--authored.jpg](qa/vegetation/browser/G04c-yards-with-the-new-houses--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G04c-yards-with-the-new-houses--procedural.jpg) |
+| G02b-group-ride-with-authored-bikes-and-houses (`?bikes&houses&vegetation`) | the group ride with the authored bikes, houses and vegetation | yes | [G02b-group-ride-with-authored-bikes-and-houses--authored.jpg](qa/vegetation/browser/G02b-group-ride-with-authored-bikes-and-houses--authored.jpg) · [procedural.jpg](qa/vegetation/browser/G02b-group-ride-with-authored-bikes-and-houses--procedural.jpg) |
+
+Also: `P01-offline-package-oak-from-the-cul-de-sac.jpg` — the offline package (`PLAYTEST_MODELS=1`, opened from `file://` with the
+browser offline) showing the oak from the embedded bytes. Blender renders of the same assets (rank 6, not the game) are listed in
+§3 and §4.
+
+**What the review found and fixed (Stage E).** (1) The first in-game run showed the inside walls of every trunk: the bark tubes
+were wound inward (Cycles hid it); the kit now winds outward, with a signed-volume check. (2) The `AR` carving drew as a black
+square: the bark material ignored the decal's cut-out, and the colour under its transparent pixels was black (Pillow resizes
+RGBA premultiplied) — the same black made dark fringes on shrub leaves; both fixed (`glb_pack.py` re-encodes every cut-out image
+from padded colour). (3) Far background trees floated where the procedural trees stood on hidden terrain: they are now grounded
+on the visible land (worst 5 mm). (4) Lawn blades grew over walks and porches: the lawn now asks the game's own blocked-space
+map. (5) The lawn's first blades read as dark weeds: lighter blade palette, crossed cards in the clumps.
 
 ## 9. Regression tests (Stage F)
 
@@ -167,7 +293,7 @@ REGRESSION
 - **Draw calls.** Instancing is per variant, LOD and material: the street views draw ~100 more calls than the procedural set
   (which was merged into world batches), within the Medium budget (≤ 800) in every measured view. A later three.js `BatchedMesh`
   with instances (r166+) could collapse the trees to a handful of calls.
-- **Package size.** The four runtime files are 25.8 MB (normals, occlusion and wind packed into bytes; WebP textures); base64 in
+- **Package size.** The four runtime files are 26.9 MB (25.6 MiB; normals, occlusion and wind packed into bytes; WebP textures); base64 in
   the offline package adds a third.
 - **Species spread (needs approval).** The procedural generic `maple` is spread over maple (60 %), oak (22 %) and ash (18 %), and
   `pine` over white pine and spruce, by position (art bible §5.1 species language). Positions and sizes are unchanged; if you prefer
