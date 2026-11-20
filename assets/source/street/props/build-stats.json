@@ -64,7 +64,7 @@
   "pole.xfmr.lod2": 535,
   "post.chain.lod0": 120,
   "post.chain.lod1": 60,
-  "post.chain.lod2": 60,
+  "post.chain.lod2": 12,
   "post.white.lod0": 48,
   "post.white.lod1": 16,
   "post.white.lod2": 16,
@@ -119,5 +119,5 @@
   "mailboxY": 1.13,
   "fenceRef": 2.4
  },
- "glb_bytes": 2734824
+ "glb_bytes": 2731004
 }

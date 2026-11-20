@@ -32,7 +32,7 @@ const lin=hex=>new THREE.Color(hex);// (THREE.Color.setHex converts sRGB to the 
 
 // The procedural palette (palette.js CAR.colors) -> the period paint each colour stands for: restrained 1997-2010 US
 // colours, [sRGB hex, metallic flake 0..1]. The hue family of every recorded car is kept.
-const PAINT=new Map([[0x9d7064,[0x6e302b,.55]],[0x7d9294,[0x6c807e,.5]],[0xcbc0a1,[0xb3a689,.6]],[0x4a5560,[0x4b535c,.55]],[0x8c8f8e,[0x9a9d9e,.75]],
+const PAINT=new Map([[0x9d7064,[0x6a3732,.45]],[0x7d9294,[0x6c807e,.5]],[0xcbc0a1,[0xb3a689,.6]],[0x4a5560,[0x4b535c,.55]],[0x8c8f8e,[0x9a9d9e,.75]],
  [0xe0ddd4,[0xdedbd2,0]],[0x5a2f2f,[0x4a2124,.45]],[0x2f3f55,[0x222d42,.45]],[0x6f7f8a,[0x66737d,.55]],[0x3b4a3a,[0x2b3a2e,.4]]]);
 export function paintFor(hex){const p=PAINT.get(hex)||[hex,.3];return {color:lin(p[0]),flake:p[1]};}
 const KIND={sedan:'sedan',van:'minivan',suv:'suv',pickup:'pickup',wagon:'wagon'};
@@ -145,7 +145,7 @@ export class LodSet{
  grow(n){this.capacity=n;for(const {im} of this.meshes){const g=im.geometry,old=im.instanceMatrix;im.instanceMatrix=new THREE.InstancedBufferAttribute(new Float32Array(n*16),16);im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   for(const [k,s] of Object.entries(this.attrs))g.setAttribute(k,new THREE.InstancedBufferAttribute(new Float32Array(n*s),s));im.dispose?.();}this._moved=null;}
  setVisible(v){this.visible=v;for(const {im} of this.meshes)im.visible=v&&im.count>0;}
- update(cam,force=false){const c=cam.position;if(!force&&this._moved&&this._moved.distanceToSquared(c)<.04&&this._forced===this.forced)return;this._moved=(this._moved||new THREE.Vector3()).copy(c);this._forced=this.forced;
+ update(cam,force=false){const c=cam.position;if(!force&&this._moved&&this._moved.distanceToSquared(c)<1&&this._forced===this.forced)return;// (re-bucket after a metre of camera travel)this._moved=(this._moved||new THREE.Vector3()).copy(c);this._forced=this.forced;
   const L=this.levels.length,buckets=Array.from({length:L},()=>[]);
   for(const it of this.items){const d=it.pos.distanceTo(c)-it.r*.25;let l=this.forced??(d<this.dist[0]?0:d<this.dist[1]?1:d<this.dist[2]?2:-1);if(l>=L)l=L-1;if(l>=0)buckets[l].push(it);}
   this.counts=buckets.map(b=>b.length);
@@ -383,7 +383,7 @@ export async function placeProps({world,scene,renderer,shared,tex,errors}){
  const procedural=world.merged.filter(m=>zones.includes(m.userData.zone)),proxies=world.shadowProxies.filter(m=>zones.includes(m.userData.zone));
  const lines=[];scene.traverse(o=>{if(o.isLineSegments&&o.userData.spLine)lines.push(o);});
  const lightC=new THREE.Color(),sunDir=new THREE.Vector3();
- return {sets,mats:{...mats,wires:wiresMat},wireMesh,stats,attach,procedural,lines,
+ return {sets,mats:{...mats,wires:wiresMat},wireMesh,kinds:stats,attach,procedural,lines,
   setAuthored(on){for(const s of Object.values(sets))s.setVisible(on);wireMesh.visible=on;for(const m of procedural)m.visible=!on;for(const m of proxies)m.visible=!on;for(const l of lines)l.visible=!on;},
   update(cam,force,{hemi,sun,renderer}={}){for(const s of Object.values(sets))s.update(cam,force);
    const U=wiresMat.uniforms,hgt=renderer?.domElement?.height||900;U.uPx.value=2*Math.tan((cam.fov||60)*Math.PI/360)/hgt;

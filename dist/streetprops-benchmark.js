@@ -32,7 +32,7 @@ export async function mountInGame({scene,camera,renderer,world,hemi,sun,prologue
    `cars ${v.instances} (LOD ${v.levels.join('/')}) · poles ${k.poles||0} (${k.transformers||0} transformers) · wires ${k.wires||0} · lamps ${k.lamps||0} · mailboxes ${Object.entries(k).filter(([n])=>n.startsWith('mailbox')).reduce((a,[,c])=>a+c,0)} · hydrants ${k.hydrants||0} · bins ${(k.carts||0)+(k.cans||0)} · hoops ${k.hoops||0} · fence bays ${k.bays||0} + gates ${k.gates||0}`,
    `${Math.round(tris).toLocaleString()} street-prop tris in ${calls} instanced draws${forced!==null?' · LOD forced '+forced:''}`];
   if(S.errors.length)lines.push('ERRORS: '+S.errors.slice(0,3).join(' | '));
-  lines.push('X authored/original · Z LOD auto/0/1/2');label.textContent=lines.join('\n');label.style.color=S.errors.length?'#ff8a7a':'#e8e2d0';}
+  lines.push('X authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)');label.textContent=lines.join('\n');label.style.color=S.errors.length?'#ff8a7a':'#e8e2d0';}
  let last=0;const loop=now=>{apply();if(S&&active)S.update(camera);if(now-last>700){last=now;updateLabel();}requestAnimationFrame(loop);};requestAnimationFrame(loop);
  apply();updateLabel();
  const api={get handle(){return S;},error,loadMs,setMode,get mode(){return mode;},get active(){return !!active;},

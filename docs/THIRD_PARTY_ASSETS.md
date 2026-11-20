@@ -272,3 +272,37 @@ sets from Poly Haven (https://polyhaven.com/license). CC0 asks for no attributio
   image). Their hashes are in `dist/assets/pavement/pavement-textures.json`.
 - Everything else in the pavement (wear, joints, cracks, patches, sealant, stains, leaves, the cast-iron covers, the
   street layout map) is original Last Light shader code in `dist/pavement-surfaces.js`.
+
+## The Prologue's vehicles and street props (benchmark, `?streetprops`)
+
+Five Sketchfab models, each licensed under **Creative Commons Attribution 4.0** (https://creativecommons.org/licenses/by/4.0/),
+verified on 2026-11-20 from each model's public record (Sketchfab Data API; responses kept in
+`assets/source/street/third-party/sketchfab-api/`). Originals byte for byte, with SHA-256 sums, in
+`assets/source/street/third-party/sketchfab-originals/` (see `assets/source/street/PROVENANCE.md`); not loaded by the game.
+The authors do not endorse Last Light or this use.
+
+| Work | Author | Source | Used for | Changes |
+|---|---|---|---|---|
+| "Generic passenger car pack" | Comrade1280 (https://sketchfab.com/comrade1280) | https://skfb.ly/6sUFy · https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5 | the parked cars and the parent's minivan: sedan, station wagon, minivan, SUV, crew-cab pickup, hatchback (six of its ten bodies) | re-oriented, re-scaled to period US dimensions (uniform 1.06–1.10), UVs remapped into two atlases; paint made a neutral shading tinted per car, material-ID maps turned into roughness/metalness and a paint mask, chrome lightened; cabin silhouettes (seats, headrests, dash, steering wheel) and generic licence plates added; LOD1/LOD2 decimated |
+| "Utility Pole (PBR)" | SLASH / RENDAR (https://sketchfab.com/SLASH-RENDAR) | https://skfb.ly/o6ZqN · https://sketchfab.com/3d-models/utility-pole-pbr-92f4d3b0ef38472d8c1c62a28fe15135 | the poles' crossarms, pin insulators, braces, bolts, fused cutouts, jumpers and transformer cans, and the weathered-wood texture of the (new) pole shafts | split into a crossarm assembly and a transformer assembly, scaled to the game's 2.1 m crossarm; texture downsampled to 1024², the transformers' rust toned down; LODs decimated |
+| "Fire hydrant" | Spellkaze (https://sketchfab.com/Spellkaze) | https://skfb.ly/6WCEO · https://sketchfab.com/3d-models/fire-hydrant-1d74e6c3d0a1417fa0b45ee8baf032ae | the eight hydrants | scaled to 0.88 m; red paint repainted the game's hydrant yellow (chips, rust and grime kept); texture 512²; LODs decimated |
+| "Trash_cans" | peyman.khaleghi (https://sketchfab.com/peyman.khaleghi) | https://skfb.ly/o8oNK · https://sketchfab.com/3d-models/trash-cans-3fecc117da264b8587417e31c7cf4e93 | the wheeled carts (tinted per household: green, charcoal, recycling blue) and the galvanized cans | the cart and one can extracted, turned and scaled (1.0 m cart, 0.68 m can); the cart's body made a neutral shading with a tint mask, its moulded recycling mark removed; textures 512²; LODs decimated |
+| "Wooden Fence" | DmitriyGDS (https://sketchfab.com/DmitriyGDS) | https://skfb.ly/6rNUp · https://sketchfab.com/3d-models/wooden-fence-43f8b3127fba4800bfc3f36078393e87 | the board texture of the privacy fences, gates, pickets, rails and wood posts (the fence geometry itself is original) | texture only: graded toward the game's fence tan; white-painted (worn) and weathered-grey variants generated from it; boards sample its clean plank strips |
+
+Attribution wording for the game's credits when the street props ship (prepared, not yet in `dist/final-credits.js`: the
+benchmark is DEV-only and the default game is unchanged; decision A-66):
+
+> “Generic passenger car pack” by Comrade1280 · “Utility Pole (PBR)” by SLASH / RENDAR · “Fire hydrant” by Spellkaze ·
+> “Trash_cans” by peyman.khaleghi · “Wooden Fence” by DmitriyGDS — sketchfab.com · each licensed under Creative Commons
+> Attribution 4.0 (creativecommons.org/licenses/by/4.0) · adapted and modified for Last Light · the authors do not endorse
+> Last Light or this use.
+
+While the benchmark runs, the same attribution is shown in its DEV label (`?streetprops`) and in the offline package's
+`STREETPROPS-README.txt`.
+
+**Supplied but not used** (see `assets/source/street/PROVENANCE.md` for the reasons and file hashes): "Basketball Hoop
+Scary Baboon" (uploader "ScaryBaboonRipper": a suspected game rip — excluded), "AZLK Moskvich 2141" and "Peugeot 406"
+(Mona x Supercars: not plausible on a 2011 US street; authorship not established — excluded), "Home US Mailbox"
+(Glowbox 3D: its page asks that it not be used as an input to generative AI; respected — not imported), "Street Light"
+(KMB3D: a modern davit luminaire, not a 2011 cobra head — not used). The hoops, mailboxes, cobra-head lamps, pole shafts,
+secondary racks, fences, gate, posts, cabins and plates are original Last Light work.

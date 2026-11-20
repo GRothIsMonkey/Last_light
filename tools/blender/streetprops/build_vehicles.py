@@ -389,19 +389,22 @@ def main():
         rows = c['rows'] if t != 'pickup' else 1
         span = (y1 - y0)
         frontY = y0 + span * (.36 if t not in ('minivan', 'suv') else .30)
-        seatH = belt - .32
+        # heights from the glass: the cushion well below the belt line, every headrest inside the roof
+        seatH = min(belt - .38, roof - 1.0)
+        headZ = min(seatH + .72, roof - .2)
+        backH = min(.6, headZ - seatH - .08)
         for side in (1, -1):
             sx = side * Wc * .22
             cab.append(rbox(f'{t}.seat{side}', (.48, .52, .14), (sx, frontY + .05, seatH), .04, coll))
-            cab.append(rbox(f'{t}.back{side}', (.48, .12, .62), (sx, frontY + .33, seatH + .34), .05, coll, rot=('X', -.22)))
-            cab.append(rbox(f'{t}.head{side}', (.26, .1, .2), (sx, frontY + .42, seatH + .78), .04, coll, rot=('X', -.12)))
+            cab.append(rbox(f'{t}.back{side}', (.48, .12, backH), (sx, frontY + .33, seatH + .05 + backH / 2), .05, coll, rot=('X', -.22)))
+            cab.append(rbox(f'{t}.head{side}', (.26, .1, .18), (sx, frontY + .42, headZ), .04, coll, rot=('X', -.12)))
         if t != 'pickup':
             ys = [frontY + .95] if rows == 2 else [frontY + .9, frontY + 1.75]
             for ry in ys:
                 cab.append(rbox(f'{t}.bench{ry:.2f}', (Wc * .82, .55, .15), (0, ry, seatH - .02), .05, coll))
-                cab.append(rbox(f'{t}.benchback{ry:.2f}', (Wc * .82, .12, .58), (0, ry + .3, seatH + .32), .05, coll, rot=('X', -.2)))
+                cab.append(rbox(f'{t}.benchback{ry:.2f}', (Wc * .82, .12, backH), (0, ry + .3, seatH + .03 + backH / 2), .05, coll, rot=('X', -.2)))
                 for sx in (-.36, .36):
-                    cab.append(rbox(f'{t}.rhead{ry:.2f}{sx}', (.24, .09, .17), (sx * Wc * .9, ry + .36, seatH + .72), .04, coll, rot=('X', -.15)))
+                    cab.append(rbox(f'{t}.rhead{ry:.2f}{sx}', (.24, .09, .16), (sx * Wc * .9, ry + .36, min(headZ - .02, roof - .22)), .04, coll, rot=('X', -.15)))
         dash = rbox(f'{t}.dash', (Wc * .92, .42, .2), (0, y0 + .02, belt - .08), .06, coll)
         wheel_s = torus(f'{t}.steer', (Wc * .22, y0 + .32, belt + .02), .19, .018, coll, tilt=math.radians(62))
         for o in cab:

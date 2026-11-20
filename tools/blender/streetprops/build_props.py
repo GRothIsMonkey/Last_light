@@ -268,6 +268,9 @@ def import_parts(fname):
             c.objects.unlink(o)
         COLL.objects.link(o)
         o.data.materials.clear()
+        o.data.materials.append(MATS['A'])      # (every source part goes onto the props atlas)
+        for p in o.data.polygons:
+            p.material_index = 0
     return meshes
 
 
@@ -901,7 +904,10 @@ def build_fences():
         cap = obj_from('post.cap', [(-.05, 1.0, -.05), (.05, 1.0, -.05), (.05, 1.0, .05), (-.05, 1.0, .05), (0, 1.05, 0)], [(0, 1, 4), (1, 2, 4), (2, 3, 4), (3, 0, 4)])
         swatch(cap, 'white_paint')
         out[f'post.white.lod{q}'] = join([p, cap], f'post.white.lod{q}')
-        p = lathe('post.chain', [(0, 0), (.03, 0), (.03, 1.0), (.034, 1.01), (.034, 1.03), (0, 1.05)], segs)
+        if q < 2:
+            p = lathe('post.chain', [(0, 0), (.03, 0), (.03, 1.0), (.034, 1.01), (.034, 1.03), (0, 1.05)], segs)
+        else:
+            p = box('post.chain', (0, .52, 0), (.055, 1.05, .055))
         swatch(p, 'galvanized')
         out[f'post.chain.lod{q}'] = p
     return out
