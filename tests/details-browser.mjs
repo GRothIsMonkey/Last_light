@@ -281,7 +281,7 @@ const look=(page,v)=>page.evaluate(async v=>{const L=lastLight,{MAIN}=await impo
   const set=y=>{s.yaw=y;L.look(y,s.pitch||0);L.step(1/30);};let sg=-1;for(let k=0;k<5;k++){const e0=err(),y0=s.yaw||0;set(y0+sg*e0);if(Math.abs(err())>Math.abs(e0)){sg=-sg;set(y0+sg*e0);}}window.__aimErr=+err().toFixed(4);}else window.__aimErr=null;
  window.__freeCam=null;
  if(v.free){let M;const f=v.free;
-  if(f.kind==='rec'){const r=pick(f.list,f.where,f.i||0);const RM=__details.handle.worldOf(r);M={from:new T.Vector3(...f.from).applyMatrix4(RM),at:new T.Vector3(...f.at).applyMatrix4(RM)};}
+  if(f.kind==='rec'){const H=__details.handle,r=f.placed?R[f.list].filter(x=>Object.entries(f.where||{}).every(([k,val])=>x[k]===val)&&!x.plan?.benchmarkZone&&H.inHollow(x))[f.i||0]:pick(f.list,f.where,f.i||0);const RM=__details.handle.worldOf(r);M={from:new T.Vector3(...f.from).applyMatrix4(RM),at:new T.Vector3(...f.at).applyMatrix4(RM)};}
   else if(f.kind==='hose'){const H=__details.handle,h=H.hoseInfo[f.i||0],y=W.groundY(MAIN.project(h.coil[0],h.coil[1]).u,MAIN.project(h.coil[0],h.coil[1]).v);const c=new T.Vector3(h.coil[0],y,h.coil[1]),b=new T.Vector3(h.bib[0],y,h.bib[1]);const out=new T.Vector3().subVectors(c,b).normalize(),side=new T.Vector3(-out.z,0,out.x);
    M={from:c.clone().addScaledVector(out,1.9).addScaledVector(side,1.1).add(new T.Vector3(0,1.25,0)),at:new T.Vector3().lerpVectors(c,b,.4).add(new T.Vector3(0,.25,0))};}
   else if(f.kind==='frame'){const fr=R.fences[0].frame,a=fr.point(f.u,f.v),b=fr.point(f.tu,f.tv);M={from:new T.Vector3(a.x,a.y+f.h,a.z),at:new T.Vector3(b.x,b.y+(f.th||0),b.z)};}
@@ -314,7 +314,7 @@ const VIEWS=[
  {n:'D04b-no-outlet-sign',what:'NO OUTLET past Summerfield Road, as the ride comes up to it',aimRec:{list:'signs',where:{type:'outlet'}},dd:-6,latAbs:2.4,pitch:.07},
  {n:'D05-lawn-chairs',what:'a pair of lawn chairs left in a front yard (QA camera)',free:{kind:'rec',list:'chairs',where:{kind:'lawn'},i:0,from:[1.9,1.25,-2.2],at:[.4,.45,.1]}},
  {n:'D05b-folding-lawn-chairs',what:'a pair of green folding lawn chairs (aluminium tube, woven webbing) in a front yard (QA camera)',free:{kind:'rec',list:'chairs',where:{kind:'lawn',color:0x3f6a4a},i:0,from:[1.7,1.2,-2.0],at:[.3,.42,.1]}},
- {n:'D05c-porch-chairs',what:'a pair of white resin chairs on a front porch (QA camera on the front walk)',free:{kind:'rec',list:'chairs',where:{kind:'porch'},i:6,from:[-1.2,1.3,-3.4],at:[.3,.45,0]}},
+ {n:'D05c-porch-chairs',what:'a pair of white resin chairs on a front porch of an Oak Hollow house the details benchmark dresses (QA camera on the front walk)',free:{kind:'rec',list:'chairs',where:{kind:'porch'},placed:true,i:6,from:[-1.2,1.3,-3.4],at:[.3,.45,0]}},
  {n:'D06-garden-hose',what:'a garden hose coiled on the lawn by a house, run to its hose bib on the wall (QA camera)',free:{kind:'hose',i:0}},
  {n:'D07-sprinkler',what:'an impact sprinkler on its spike, running, its hose across the lawn to the house (QA camera)',free:{kind:'rec',list:'sprinklers',i:1,from:[1.0,.8,1.25],at:[0,.24,-.15]}},
  {n:'D08-wagon',what:'a red steel wagon left in a front yard (QA camera)',free:{kind:'rec',list:'toys',where:{kind:'wagon'},i:0,from:[1.3,.95,1.2],at:[0,.25,-.3]}},

@@ -473,6 +473,8 @@ deterministic: the same inputs give the same files. The model-to-game mapping, a
 | The police and works vehicles, later chapters' vehicles | Vehicles are not part of this brief |
 | Every later chapter's details (night, damage, Aftermath, 2026) | Prologue only (A-77) |
 | Wind on cloth, hose physics | Static meshes in this pass |
+| Old Mill Road's porch chairs and grills (8 and 5) | A Chapter Four place in the town layer, which the same house builder makes; left as the game has them |
+| The street props' own chain-link fences on Oak Hollow (A-65) | They use the plain alpha test, so their chain link thins away at a distance as this kit's did before its fix (§3). The same coverage rule could be applied there, but that benchmark is not to be changed without your direction |
 
 ## 17. Decisions for the creative director (all OPEN in the approval register)
 
