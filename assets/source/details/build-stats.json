@@ -77,18 +77,18 @@
   "swing.lod2": 217,
   "toy.basketball.lod0": 528,
   "toy.basketball.lod1": 144,
-  "toy.bigwheel.lod0": 1228,
-  "toy.bigwheel.lod1": 992,
-  "toy.bigwheel.lod2": 285,
-  "toy.kidbike.lod0": 1176,
-  "toy.kidbike.lod1": 880,
-  "toy.kidbike.lod2": 280,
+  "toy.bigwheel.lod0": 1410,
+  "toy.bigwheel.lod1": 1012,
+  "toy.bigwheel.lod2": 291,
+  "toy.kidbike.lod0": 1436,
+  "toy.kidbike.lod1": 920,
+  "toy.kidbike.lod2": 285,
   "toy.playball.lod0": 528,
   "toy.playball.lod1": 144,
   "toy.scooter.lod0": 536,
   "toy.scooter.lod1": 460,
   "toy.scooter.lod2": 200,
-  "toy.wagon.lod0": 1198,
+  "toy.wagon.lod0": 1510,
   "toy.wagon.lod1": 790,
   "toy.wagon.lod2": 229,
   "trampoline.lod0": 3420,
@@ -648,9 +648,9 @@
     0.3521
    ],
    [
-    -0.05,
-    0.006,
-    -0.35
+    -0.025,
+    0.0052,
+    -0.4027
    ],
    [
     -0.2862,
@@ -658,51 +658,46 @@
     0.3542
    ],
    [
+    -0.05,
+    0.0111,
+    -0.4015
+   ],
+   [
     0.05,
-    0.006,
-    -0.35
+    0.0111,
+    -0.4015
    ]
   ],
   "toy.wagon": [
    [
     -0.2725,
-    0.0117,
-    -0.2679
+    0.0092,
+    -0.2757
    ],
    [
     0.2725,
-    0.0117,
-    -0.2679
+    0.0092,
+    -0.2757
    ],
    [
     -0.2612,
-    0.006,
-    -0.3342
+    0.0134,
+    -0.35
    ],
    [
     -0.2612,
-    0.006,
-    0.3342
+    0.0134,
+    0.35
    ],
    [
-    -0.2725,
-    0.0117,
-    -0.3321
+    0.2612,
+    0.0134,
+    -0.35
    ],
    [
-    -0.2725,
-    0.0117,
-    0.3321
-   ],
-   [
-    0.2725,
-    0.0117,
-    -0.3321
-   ],
-   [
-    0.2725,
-    0.0117,
-    0.3321
+    0.2612,
+    0.0134,
+    0.35
    ]
   ],
   "toy.scooter": [
@@ -1257,5 +1252,5 @@
    ]
   ]
  },
- "glb_bytes": 1911900
+ "glb_bytes": 1941592
 }

@@ -36,7 +36,7 @@ if(prev){for(const k of Object.keys(prev.parts||{}))if(!PARTS.includes(k[0]))rep
  const keep=x=>{const pt=partOf(x);return pt&&!PARTS.includes(pt);};report.checks.push(...(prev.checks||[]).filter(keep));report.failures.push(...(prev.failures||[]).filter(keep));
  if(!PARTS.includes('E')){report.pairs=prev.pairs||[];report.shots=prev.shots||[];}
  else if(process.env.VIEWS){const re=process.env.VIEWS.split(','),again=n=>re.some(o=>n.startsWith(o));report.pairs=(prev.pairs||[]).filter(p=>!again(p.name));report.shots=(prev.shots||[]).filter(x=>!again(path.basename(x.file||'')));
-  report.checks.push(...(prev.checks||[]).filter(x=>partOf(x)==='E'&&!/^Captures|^Cost \(measured|^Five benchmarks, captures/.test(x.name)));}report.kept=[...new Set([...(prev.checks||[]),...(prev.failures||[])].filter(keep).map(partOf))];}
+  report.checks.push(...(prev.checks||[]).filter(x=>partOf(x)==='E'&&!/^Captures|^Cost \(measured|^(Five|Six) benchmarks, captures/.test(x.name)));}report.kept=[...new Set([...(prev.checks||[]),...(prev.failures||[])].filter(keep).map(partOf))];}
 const check=(name,ok,detail)=>{(ok?report.checks:report.failures).push({name,part:PART,...(detail===undefined?{}:{detail})});console.log((ok?'PASS ':'FAIL ')+name+(detail!==undefined?' '+JSON.stringify(detail).slice(0,700):''));return ok;};
 const save=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,1)+'\n');
 const root=path.resolve('dist'),types={js:'application/javascript',css:'text/css',html:'text/html',glb:'model/gltf-binary',json:'application/json',jpg:'image/jpeg',png:'image/png'};
@@ -72,7 +72,7 @@ const RIDES=`()=>{const L=lastLight,W=L.world;const ds=W.drivewayOpenings.filter
 // the authored details against their records: placement, scale, grounding, the signs, the hoses, duplicates
 const DTMEAS=`async()=>{const H=__details.handle,T=__details.THREE,W=lastLight.world,R=W.details,{MAIN}=await import('./terrain.js');const res={};
  const v=new T.Vector3(),q=new T.Quaternion(),s=new T.Vector3();const GY=(x,z)=>{const p=MAIN.project(x,z);return W.groundY(p.u,p.v);};
- const sets=H.sets,setOf=k=>sets[k],pos=g=>{g.updateWorldMatrix(true,false);return new T.Vector3().setFromMatrixPosition(g.matrixWorld);};
+ const sets=H.sets,setOf=k=>sets[k],pos=g=>{g.updateWorldMatrix(true,false);return new T.Vector3().setFromMatrixPosition(g.matrixWorld);},rpos=r=>new T.Vector3().setFromMatrixPosition(H.worldOf(r));
  // every instance finite; the rigid ones upright at true scale (balls take their radius; fence bays, rails and chain-link
  // posts are sheared or stretched by design; the fallen scooter lies on its side as the procedural one does)
  let bad=[],n=0;for(const set of Object.values(sets))for(const it of set.items){n++;if(!it.matrix.elements.every(Number.isFinite)){bad.push([set.name,'nan']);continue;}it.matrix.decompose(v,q,s);const up=new T.Vector3(0,1,0).applyQuaternion(q).y;
@@ -81,13 +81,26 @@ const DTMEAS=`async()=>{const H=__details.handle,T=__details.THREE,W=lastLight.w
  res.transforms={instances:n,bad:bad.slice(0,10),badCount:bad.length};
  // placement: every record's authored piece at the record's x/z (nothing moved; 1 cm)
  const near=(keys,p)=>{let best=1e9;for(const k of keys){const st=sets[k];if(!st)continue;for(const it of st.items){const b=new T.Vector3().setFromMatrixPosition(it.matrix);best=Math.min(best,Math.hypot(p.x-b.x,p.z-b.z));}}return best;};
- const worst=(list,keys,f=r=>pos(r.g))=>{let w=0;for(const r of list)w=Math.max(w,near(typeof keys==='function'?keys(r):keys,f(r)));return +w.toFixed(4);};
+const worst=(list,keys,f=r=>rpos(r))=>{let w=0;for(const r of list)w=Math.max(w,near(typeof keys==='function'?keys(r):keys,f(r)));return +w.toFixed(4);};
  const chairKeys=c=>c.kind==='porch'||c.color===0xf2f0ea?['chair.resin']:['chair.lawn'];
  const toyKey=t=>t.kind==='ball'?[t.ball==='basketball'?'toy.basketball':'toy.playball']:['toy.'+t.kind];
  const benchChairs=R.chairs.filter(c=>c.plan?.benchmarkZone);
- res.place={signs:worst(R.signs,['sign.post']),chairs:worst(R.chairs.filter(c=>!c.plan?.benchmarkZone),chairKeys),grills:worst(R.grills,['grill']),toys:worst(R.toys,toyKey,t=>t.kind==='ball'?new T.Vector3(...t.center).applyMatrix4((t.g.updateWorldMatrix(true,false),t.g.matrixWorld)):pos(t.g)),
+ res.place={signs:worst(R.signs,['sign.post']),chairs:worst(R.chairs.filter(c=>!c.plan?.benchmarkZone&&H.inHollow(c)),chairKeys),grills:worst(R.grills.filter(g=>!g.plan?.benchmarkZone&&H.inHollow(g)),['grill']),toys:worst(R.toys,toyKey,t=>t.kind==='ball'?new T.Vector3(...t.center).applyMatrix4(H.worldOf(t)):rpos(t)),
   pools:worst(R.pools,['pool.kiddie']),trampolines:worst(R.trampolines,['trampoline']),swings:worst(R.swings,['swing']),sheds:worst(R.sheds,['shed','shed.small']),clotheslines:worst(R.clotheslines,['clothesline']),
   hoses:worst(R.hoses.filter(h=>!(Math.abs(h.x)<h.plan.w/2-.05&&Math.abs(h.z)<h.plan.depth/2-.05)),['hose.coil'])};
+ // on its procedural original: every authored piece stands where the bake drew the object it replaces (the nearest vertex
+ // of the baked procedural geometry of the same dt: zone within the piece's footprint). This compares against what the
+ // original actually drew, not against the record's own matrix, so a record kept in another frame (a house's draped layer)
+ // cannot pass by agreeing with itself.
+ {const ZK=[[/^chair\./,'chair'],[/^grill$/,'grill'],[/^toy\./,'toy'],[/^pool\.kiddie$/,'pool'],[/^hose\.coil$/,'hose'],[/^trampoline$/,'trampoline'],[/^swing$/,'swing'],[/^shed(\.small)?$/,'shed'],[/^clothesline$/,'clothesline'],[/^sign\.post$/,'sign'],[/^post\.chain$/,'fence'],[/^ff\.post$/,'fieldfence']];
+  const grid=new Map(),key=(z,x,y)=>z+':'+Math.floor(x)+':'+Math.floor(y);
+  for(const m of W.merged){const z=(m.userData.zone||'');if(!z.startsWith('dt:'))continue;const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i+=3){const k=key(z,a[i],a[i+2]);let c=grid.get(k);if(!c)grid.set(k,c=[]);c.push(a[i],a[i+2]);}}
+  const nearest=(z,x,y,r)=>{let b=1e9;for(let i=Math.floor(x-r);i<=Math.floor(x+r);i++)for(let j=Math.floor(y-r);j<=Math.floor(y+r);j++){const c=grid.get(z+':'+i+':'+j);if(c)for(let k=0;k<c.length;k+=2)b=Math.min(b,Math.hypot(c[k]-x,c[k+1]-y));}return b;};
+  const off=[],per={};let n=0;
+  for(const [name,st] of Object.entries(sets)){const zk=ZK.find(([re])=>re.test(name));if(!zk)continue;const zone='dt:'+zk[1];
+   for(const it of st.items){n++;const p=new T.Vector3().setFromMatrixPosition(it.matrix),tol=Math.max(.6,it.r||1)+.3,d=nearest(zone,p.x,p.z,tol);per[name]=Math.max(per[name]||0,Math.min(d,99));
+    if(d>tol)off.push([name,+p.x.toFixed(1),+p.z.toFixed(1),d>1e8?'none within '+tol.toFixed(1)+' m':+d.toFixed(2)]);}}
+  res.origin={checked:n,off:off.length,examples:off.slice(0,8),worstPerPiece:Object.fromEntries(Object.entries(per).map(([k,v])=>[k,+v.toFixed(2)]))};}
  res.counts={kinds:H.kinds,records:{signs:R.signs.length,plates:R.signs.reduce((a,s)=>a+s.plates.length,0),chairs:R.chairs.length,benchChairs:benchChairs.length,grills:R.grills.length,toys:R.toys.length,pools:R.pools.length,hoses:R.hoses.length,sprinklers:R.sprinklers.length,
   trampolines:R.trampolines.length,swings:R.swings.length,sheds:R.sheds.length,clotheslines:R.clotheslines.length,fenceBays:R.fences.reduce((a,f)=>a+f.bays.length,0),fencePosts:R.fences.reduce((a,f)=>a+f.posts.length,0),ffPosts:R.fieldFence?.posts.length,ffRails:R.fieldFence?.rails.length}};
  // grounding: each piece's lowest vertices against the ground under them (Oak Hollow's frame: the ground the riders use).
@@ -158,10 +171,11 @@ if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{const R=re
  await startRide(page);
  R.m=await page.evaluate(`(${DTMEAS})()`);const M=R.m;
  check('Transforms: every authored detail is finite; every rigid one upright at true scale',M.transforms.badCount===0&&M.transforms.instances>400,M.transforms);
+ check('On the original: every authored piece stands where the bake drew the procedural object it replaces (the nearest baked vertex of that object\'s own zone within its footprint; '+M.origin.checked+' pieces)',M.origin.checked>=300&&M.origin.off===0,M.origin);
  const P=M.place;check('Placement: every recorded sign, chair, grill, toy, kiddie pool, hose coil, trampoline, swing set, shed and clothesline has its authored piece at the record\'s x/z (within 1 cm: nothing moved)',Object.values(P).every(w=>w<.01),P);
  const C=M.counts,k=C.kinds,r0=C.records;
- check('Counts: every record is placed (the porch chairs on house-benchmark lots and the hose coils the procedural formula hid inside houses excepted, and counted)',
-  k.signs===r0.signs&&(k.plates+k.blades)===r0.plates&&(k['porch chairs']||0)+(k['lawn chairs']||0)+(k['chairs-left-to-the-house-benchmark']||0)===r0.chairs&&k.grills===r0.grills&&
+ check('Counts: every record is placed (excepted, and counted: the porch chairs on house-benchmark lots, the hose coils the procedural formula hid inside houses, and the porch chairs and grills of Old Mill Road\'s houses, a Chapter Four place the same house builder makes)',
+  k.signs===r0.signs&&(k.plates+k.blades)===r0.plates&&(k['porch chairs']||0)+(k['lawn chairs']||0)+(k['chairs-left-to-the-house-benchmark']||0)+(k['porch chairs on Old Mill Road (a Chapter Four place): left as they are']||0)===r0.chairs&&(k.grills||0)+(k['grills-left-to-the-house-benchmark']||0)+(k['grills on Old Mill Road (a Chapter Four place): left as they are']||0)===r0.grills&&
   (k.bigwheel||0)+(k.wagon||0)+(k.kidbike||0)+(k.scooter||0)+(k.balls||0)===r0.toys&&k['kiddie pools']===r0.pools&&(k['hose coils']||0)+(k['hose coils inside a house (never seen): left out']||0)===r0.hoses&&k.sprinklers===r0.sprinklers&&
   k.trampolines===r0.trampolines&&k['swing sets']===r0.swings&&(k.sheds||0)+(k['sheds behind the rear fences']||0)===r0.sheds&&k.clotheslines===r0.clotheslines&&k['creek fence bays']===r0.fenceBays&&k['creek fence posts']===r0.fencePosts&&k['field fence posts']===r0.ffPosts&&k['field fence rails']===r0.ffRails,C);
  const G=M.ground;check('Grounding: no detail floats above or sinks into the lawn (resting things touch it within 3 cm; level structures have no foot above it, none sunk past 0.3 m)',Object.values(G).every(g=>g.floating===0&&g.sunk===0),G);
@@ -213,9 +227,15 @@ if(PARTS.includes('C'))await withPage(async(page,{errors})=>{const R=report.part
  check('Street props intact: the same cars and the same poles, wires, lamps, mailboxes, hydrants, bins and fences as with ?streetprops alone',JSON.stringify(R.sp)===JSON.stringify(report.parts.Cbase?.sp),{with:R.sp,without:report.parts.Cbase?.sp});
  await startRide(page);await page.evaluate(()=>{const L=lastLight;L.press('KeyW');for(let i=0;i<4*30;i++)L.step(1/30);L.release('KeyW');__details.tick();});
  R.state=await page.evaluate(()=>{const H=__details.handle,W=lastLight.world;const lots=(W.plans||[]).filter(p=>p.benchmarkZone);const T=__details.THREE;
-  const onLot=H.sets['chair.resin']?.items.filter(it=>{const p=new T.Vector3().setFromMatrixPosition(it.matrix);return lots.some(P=>{const c=P.toWorld(0,0);return Math.hypot(c.x-p.x,c.z-p.z)<P.w/2+2;});}).length||0;
-  return {details:__details.active,streetprops:__streetprops.active,pavement:__pavement.active,houses:__houses.mode,bikes:!!window.__bikes,benchLots:lots.length,porchChairsOnBenchLots:onLot,leftToHouses:H.kinds['chairs-left-to-the-house-benchmark']||0,friends:lastLight.state.friends.map(f=>f.mode),distance:+lastLight.state.distance.toFixed(2)};});
- check('With all six: the details, street props and pavement active, the houses refined, the bikes upgraded; the ride runs; no authored porch chair on a house-benchmark lot (those porches are the house benchmark\'s)',R.state.details&&R.state.streetprops&&R.state.pavement&&R.state.houses==='refined'&&R.state.bikes&&R.state.distance>0&&R.state.porchChairsOnBenchLots===0,R.state);
+  // every porch chair recorded on a house-benchmark lot: no authored chair where it stands (the house benchmark has that porch)
+  const items=(H.sets['chair.resin']?.items||[]).map(it=>new T.Vector3().setFromMatrixPosition(it.matrix));
+  const onLot=W.details.chairs.filter(c=>c.plan?.benchmarkZone).filter(c=>{const p=new T.Vector3().setFromMatrixPosition(H.worldOf(c));return items.some(q=>Math.hypot(q.x-p.x,q.z-p.z)<.3);}).length;
+  // likewise the grills of those lots: none placed (their house is the house benchmark's), and every authored grill stands
+  // within 0.3 m of a recorded grill of a procedural house (none anywhere else)
+  const gr=(H.sets['grill']?.items||[]).map(it=>new T.Vector3().setFromMatrixPosition(it.matrix)),own=W.details.grills.filter(g=>!g.plan?.benchmarkZone&&H.inHollow(g)).map(g=>new T.Vector3().setFromMatrixPosition(H.worldOf(g)));
+  const strayGrills=gr.filter(q=>!own.some(p=>Math.hypot(q.x-p.x,q.z-p.z)<.3)).length,grillsOnBenchLots=W.details.grills.filter(g=>g.plan?.benchmarkZone).length;
+  return {details:__details.active,streetprops:__streetprops.active,pavement:__pavement.active,houses:__houses.mode,bikes:!!window.__bikes,benchLots:lots.length,porchChairsOnBenchLots:onLot,leftToHouses:H.kinds['chairs-left-to-the-house-benchmark']||0,grills:gr.length,recordedGrills:W.details.grills.filter(g=>H.inHollow(g)).length,strayGrills,grillsOnBenchLots,grillsLeftToHouses:H.kinds['grills-left-to-the-house-benchmark']||0,friends:lastLight.state.friends.map(f=>f.mode),distance:+lastLight.state.distance.toFixed(2)};});
+ check('With all six: the details, street props and pavement active, the houses refined, the bikes upgraded; the ride runs; no authored porch chair or grill on a house-benchmark lot (those houses are the house benchmark\'s), no grill anywhere but at a recorded grill',R.state.details&&R.state.streetprops&&R.state.pavement&&R.state.houses==='refined'&&R.state.bikes&&R.state.distance>0&&R.state.porchChairsOnBenchLots===0&&R.state.strayGrills===0&&R.state.grillsLeftToHouses===R.state.grillsOnBenchLots&&R.state.grills+R.state.grillsOnBenchLots===R.state.recordedGrills,R.state);
  check('Six benchmarks: no page errors',errors.length===0,errors);save();});
 
 // ---------------------------------------------------------------------------------------------------------------- D
@@ -247,24 +267,29 @@ PART='E';
 const labels=page=>page.evaluate(()=>{const out={};for(const el of document.querySelectorAll('[id$="-benchmark-label"]')){out[el.id]=el.textContent;el.style.visibility='hidden';}return out;});
 const look=(page,v)=>page.evaluate(async v=>{const L=lastLight,{MAIN}=await import('./terrain.js'),T=__details.THREE,W=L.world,R=W.details;let s={...v};
  const pick=(list,where={},i=0)=>R[list].filter(r=>Object.entries(where).every(([k,val])=>r[k]===val))[i];
- const wpos=g=>{g.updateWorldMatrix(true,false);return new T.Vector3().setFromMatrixPosition(g.matrixWorld);};
+ const wpos=r=>new T.Vector3().setFromMatrixPosition(__details.handle.worldOf(r));
  let aim=null;
  if(v.friends){L.reset?.();L.start();for(let i=0;i<150;i++)L.step(1/30);document.getElementById('subtitle').style.visibility='hidden';s={...s,d:L.state.distance,lat:L.state.lateral};}
- if(v.aimRec){const r=pick(v.aimRec.list,v.aimRec.where,v.aimRec.i||0);const p=wpos(r.g||r.root);const q=MAIN.project(p.x,p.z);aim=p;s={...s,d:q.u+(v.dd??-9),lat:Math.sign(q.v)*(v.latAbs??3.2)};}
+ if(v.aimRec){const r=pick(v.aimRec.list,v.aimRec.where,v.aimRec.i||0);const p=wpos(r);const q=MAIN.project(p.x,p.z);aim=p;s={...s,d:q.u+(v.dd??-9),lat:Math.sign(q.v)*(v.latAbs??3.2)};}
  if(v.aimAt){const q=MAIN.point(v.aimAt.d,v.aimAt.lat);aim=new T.Vector3(q.x,q.y,q.z);}
  if(v.busiest){// the stretch of yard with the most toys, lawn chairs and kiddie pools on one side, seen from the street
-  const items=[...R.toys,...R.chairs.filter(c=>c.kind==='lawn'),...R.pools].map(r=>{const p=wpos(r.g),q=MAIN.project(p.x,p.z);return {d:q.u,lat:q.v,p};}).filter(o=>Math.abs(o.lat)<20&&o.d>-400&&o.d<1100);
+  const items=[...R.toys,...R.chairs.filter(c=>c.kind==='lawn'),...R.pools].map(r=>{const p=wpos(r),q=MAIN.project(p.x,p.z);return {d:q.u,lat:q.v,p};}).filter(o=>Math.abs(o.lat)<20&&o.d>-400&&o.d<1100);
   let best=null;for(const o of items){const g=items.filter(x=>Math.sign(x.lat)===Math.sign(o.lat)&&x.d>=o.d&&x.d<o.d+26);if(!best||g.length>best.n)best={n:g.length,d:o.d,lat:o.lat,g};}
   const c=best.g.reduce((a,o)=>a.add(o.p),new T.Vector3()).divideScalar(best.g.length);aim=c;s={...s,d:best.d-(v.back??8),lat:Math.sign(best.lat)*3.2};window.__busy={n:best.n,d:+best.d.toFixed(1)};}
- L.place(s.d,s.lat,0);for(let i=0;i<4;i++)L.step(1/30);L.look(s.yaw||0,s.pitch||0);L.step(1/30);
+ if(!v.free){L.place(s.d,s.lat,0);for(let i=0;i<4;i++)L.step(1/30);L.look(s.yaw||0,s.pitch||0);L.step(1/30);}
  if(aim){window.__aim={x:aim.x,z:aim.z};const err=()=>{const c=L.camera,f=new T.Vector3();c.getWorldDirection(f);const t=new T.Vector3(aim.x-c.position.x,0,aim.z-c.position.z).normalize();f.y=0;f.normalize();return Math.atan2(f.x*t.z-f.z*t.x,f.x*t.x+f.z*t.z);};
   const set=y=>{s.yaw=y;L.look(y,s.pitch||0);L.step(1/30);};let sg=-1;for(let k=0;k<5;k++){const e0=err(),y0=s.yaw||0;set(y0+sg*e0);if(Math.abs(err())>Math.abs(e0)){sg=-sg;set(y0+sg*e0);}}window.__aimErr=+err().toFixed(4);}else window.__aimErr=null;
  window.__freeCam=null;
  if(v.free){let M;const f=v.free;
-  if(f.kind==='rec'){const r=pick(f.list,f.where,f.i||0);const g=r.g||r.root;g.updateWorldMatrix(true,false);M={from:new T.Vector3(...f.from).applyMatrix4(g.matrixWorld),at:new T.Vector3(...f.at).applyMatrix4(g.matrixWorld)};}
+  if(f.kind==='rec'){const r=pick(f.list,f.where,f.i||0);const RM=__details.handle.worldOf(r);M={from:new T.Vector3(...f.from).applyMatrix4(RM),at:new T.Vector3(...f.at).applyMatrix4(RM)};}
   else if(f.kind==='hose'){const H=__details.handle,h=H.hoseInfo[f.i||0],y=W.groundY(MAIN.project(h.coil[0],h.coil[1]).u,MAIN.project(h.coil[0],h.coil[1]).v);const c=new T.Vector3(h.coil[0],y,h.coil[1]),b=new T.Vector3(h.bib[0],y,h.bib[1]);const out=new T.Vector3().subVectors(c,b).normalize(),side=new T.Vector3(-out.z,0,out.x);
    M={from:c.clone().addScaledVector(out,1.9).addScaledVector(side,1.1).add(new T.Vector3(0,1.25,0)),at:new T.Vector3().lerpVectors(c,b,.4).add(new T.Vector3(0,.25,0))};}
   else if(f.kind==='frame'){const fr=R.fences[0].frame,a=fr.point(f.u,f.v),b=fr.point(f.tu,f.tv);M={from:new T.Vector3(a.x,a.y+f.h,a.z),at:new T.Vector3(b.x,b.y+(f.th||0),b.z)};}
+  else if(f.kind==='busy'){// the front yards with the most toys, lawn chairs and kiddie pools within a short stretch, seen from the sidewalk
+   const items=[...R.toys,...R.chairs.filter(c=>c.kind==='lawn'),...R.pools].map(r=>{const p=wpos(r),q=MAIN.project(p.x,p.z);return {d:q.u,lat:q.v,p};}).filter(o=>Math.abs(o.lat)>5&&Math.abs(o.lat)<20&&o.d>-140&&o.d<1100);
+   let best=null;for(const o of items){const g=items.filter(x=>Math.sign(x.lat)===Math.sign(o.lat)&&x.d>=o.d&&x.d<o.d+(f.span||16));if(!best||g.length>best.n)best={n:g.length,g};}
+   const c=best.g.reduce((a,o)=>a.add(o.p),new T.Vector3()).divideScalar(best.g.length),q=MAIN.project(c.x,c.z),side=Math.sign(q.v),a=MAIN.point(q.u-(f.back||7),side*(f.lat||3.6));
+   M={from:new T.Vector3(a.x,a.y+(f.h||1.7),a.z),at:new T.Vector3(c.x,c.y+.15,c.z)};window.__busy={n:best.n,d:+q.u.toFixed(1),lat:+q.v.toFixed(1),kinds:best.g.length};}
   else if(f.kind==='point'){const a=MAIN.point(f.d,f.lat),b=MAIN.point(f.td,f.tlat);M={from:new T.Vector3(a.x,a.y+f.h,a.z),at:new T.Vector3(b.x,b.y+(f.th||0),b.z)};}
   // the bike (and with it the sky dome, the shadow camera and the world's own distance culling) next to the subject; for a
   // raised or distant view, under the camera
@@ -284,27 +309,28 @@ async function pair(page,v,flags){const at=await look(page,v);const lab=await la
 const VIEWS=[
  {n:'D01-street-name-sign-close',what:'the street-name blades at Briarwood Lane: OAK HOLLOW DR and BRIARWOOD LN in their cast cross bracket on the galvanized post (QA camera)',free:{kind:'rec',list:'signs',where:{type:'junction'},i:0,from:[2.6,2.35,1.4],at:[0,2.82,0]}},
  {n:'D02-stop-sign-and-intersection',what:'the STOP sign at Briarwood Lane seen from the cross street, the intersection with Oak Hollow beyond (QA camera on Briarwood)',free:{kind:'rec',list:'signs',where:{type:'junction'},i:0,from:[6.5,1.55,-1.2],at:[0,2.0,0]}},
- {n:'D03-speed-limit-sign',what:'SPEED LIMIT 25 at d 150, as the ride passes it',aimRec:{list:'signs',where:{type:'speed'}},dd:-11,latAbs:2.4,pitch:.02},
- {n:'D04-children-at-play-sign',what:'SLOW CHILDREN AT PLAY near the start of the ride',aimRec:{list:'signs',where:{type:'children'}},dd:-11,latAbs:2.4,pitch:.02},
- {n:'D04b-no-outlet-sign',what:'NO OUTLET past Summerfield Road',aimRec:{list:'signs',where:{type:'outlet'}},dd:-11,latAbs:2.4,pitch:.02},
+ {n:'D03-speed-limit-sign',what:'SPEED LIMIT 25 at d 150, as the ride comes up to it',aimRec:{list:'signs',where:{type:'speed'}},dd:-6,latAbs:2.4,pitch:.07},
+ {n:'D04-children-at-play-sign',what:'SLOW CHILDREN AT PLAY near the start of the ride, as the ride comes up to it',aimRec:{list:'signs',where:{type:'children'}},dd:-6,latAbs:2.4,pitch:.08},
+ {n:'D04b-no-outlet-sign',what:'NO OUTLET past Summerfield Road, as the ride comes up to it',aimRec:{list:'signs',where:{type:'outlet'}},dd:-6,latAbs:2.4,pitch:.07},
  {n:'D05-lawn-chairs',what:'a pair of lawn chairs left in a front yard (QA camera)',free:{kind:'rec',list:'chairs',where:{kind:'lawn'},i:0,from:[1.9,1.25,-2.2],at:[.4,.45,.1]}},
- {n:'D05b-porch-chairs',what:'white resin chairs on a front porch, from the street',aimRec:{list:'chairs',where:{kind:'porch'},i:6},dd:-6,latAbs:3.2,pitch:.02},
+ {n:'D05b-folding-lawn-chairs',what:'a pair of green folding lawn chairs (aluminium tube, woven webbing) in a front yard (QA camera)',free:{kind:'rec',list:'chairs',where:{kind:'lawn',color:0x3f6a4a},i:0,from:[1.7,1.2,-2.0],at:[.3,.42,.1]}},
+ {n:'D05c-porch-chairs',what:'a pair of white resin chairs on a front porch (QA camera on the front walk)',free:{kind:'rec',list:'chairs',where:{kind:'porch'},i:6,from:[-1.2,1.3,-3.4],at:[.3,.45,0]}},
  {n:'D06-garden-hose',what:'a garden hose coiled on the lawn by a house, run to its hose bib on the wall (QA camera)',free:{kind:'hose',i:0}},
- {n:'D07-sprinkler',what:'an impact sprinkler on its spike, running, its hose across the lawn to the house (QA camera)',free:{kind:'rec',list:'sprinklers',i:1,from:[1.6,1.0,2.0],at:[0,.3,-.3]}},
+ {n:'D07-sprinkler',what:'an impact sprinkler on its spike, running, its hose across the lawn to the house (QA camera)',free:{kind:'rec',list:'sprinklers',i:1,from:[1.0,.8,1.25],at:[0,.24,-.15]}},
  {n:'D08-wagon',what:'a red steel wagon left in a front yard (QA camera)',free:{kind:'rec',list:'toys',where:{kind:'wagon'},i:0,from:[1.3,.95,1.2],at:[0,.25,-.3]}},
  {n:'D09-big-wheel',what:'a big-wheel trike in the grass (QA camera)',free:{kind:'rec',list:'toys',where:{kind:'bigwheel'},i:0,from:[1.2,.85,-1.0],at:[0,.28,0]}},
- {n:'D10-yard-with-toys',what:'the stretch of front yards with the most toys, chairs and kiddie pools, from the street',busiest:true,back:9,pitch:-.04},
+ {n:'D10-yard-with-toys',what:'the fullest front yard in the game (d 273): a kid\'s bike in the grass, the sprinkler running, the hose run to the house; the game leaves at most one toy in a yard (QA camera on the sidewalk)',free:{kind:'point',d:281.5,lat:-5,h:1.6,td:272.5,tlat:-11,th:.2}},
  {n:'D11-swing-set',what:'a back-yard swing set with its slide (QA camera between the houses)',free:{kind:'rec',list:'swings',i:0,from:[4.8,2.0,4.6],at:[.4,1.1,0]}},
  {n:'D12-trampoline',what:'a 12 ft trampoline with its enclosure (QA camera)',free:{kind:'rec',list:'trampolines',i:0,from:[4.4,2.6,4.4],at:[0,1.0,0]}},
  {n:'D13-kiddie-pool',what:'a hard plastic kiddie pool on a front lawn (QA camera)',free:{kind:'rec',list:'pools',i:0,from:[2.3,1.5,2.4],at:[0,.15,0]}},
  {n:'D14-shed',what:'a back-yard shed: T1-11 siding, trim, the braced door, shingles (QA camera)',free:{kind:'rec',list:'sheds',where:{door:true},i:0,from:[3.6,1.9,4.6],at:[0,1.2,0]}},
  {n:'D15-clothesline',what:'a clothesline with its sheet, towel and shirt (QA camera)',free:{kind:'rec',list:'clotheslines',i:0,from:[.6,1.55,-3.0],at:[-.2,1.45,0]}},
- {n:'D16-creek-chain-link',what:'Briarwood\'s creek-side chain-link fence following the dip (QA camera on the bank)',free:{kind:'frame',u:84,v:7.5,h:1.6,tu:89,tv:13,th:.7}},
+ {n:'D16-creek-chain-link',what:'Briarwood\'s creek chain link across the back of the strip, dropping into the channel to the gap (QA camera on the bank)',free:{kind:'frame',u:91.5,v:25.5,h:1.5,tu:103,tv:31.2,th:-.1}},
  {n:'D17-lookout-field-fence',what:'the lookout\'s field fence beyond the bench (QA camera at the knoll)',free:{kind:'point',d:1165,lat:-9,h:1.55,td:1173,tlat:-14,th:.7}},
- {n:'D18-side-street-fences',what:'the side-street fences: Briarwood\'s creek runs either side of the channel, from the street (QA camera on Briarwood)',free:{kind:'frame',u:78,v:0,h:1.6,tu:100,tv:11,th:.6,under:true}},
- {n:'D19-residential-street',what:'a residential street with its signs, chairs, hoses, toys and back-yard structures',d:240,lat:-1.2,yaw:.05,pitch:-.03},
+ {n:'D18-side-street-fences',what:'the side-street fences: Briarwood\'s creek strip from the street, its chain link along both sides and across the back (QA camera on Briarwood)',free:{kind:'frame',u:100,v:-1.5,h:1.6,tu:100,tv:22,th:.4,under:true}},
+ {n:'D19-residential-street',what:'a residential street: SPEED LIMIT 25 by the curb, white lawn chairs in a front yard, the carts, mailboxes and yards beyond',d:128,lat:-.6,aimAt:{d:150,lat:3.2},pitch:-.02},
  {n:'D20-oak-hollow-wide-all-six',what:'a wide, raised view of Oak Hollow with all six benchmarks (QA raised camera, 13 m up)',free:{kind:'point',d:28,lat:-1,h:13,td:150,tlat:0,th:0,under:true}},
- {n:'D21-riding-past-household-things',what:'riding past a run of front yards: chairs, toys, a sprinkler and hoses on the right',aimAt:{d:452,lat:12},d:432,lat:2.6,pitch:-.03},
+ {n:'D21-riding-past-household-things',what:'riding past the front yards (first-person): a big wheel left on a lawn on the right, the street ahead',aimAt:{d:452,lat:12},d:432,lat:2.6,pitch:-.03},
  {n:'D22-lookout-and-old-oak',what:'the lookout as the ride ends: the old oak, its tire swing, the bench and the chalk unchanged; only the field fence behind them is the details benchmark\'s',d:1132,lat:-.9,aimAt:{d:1160,lat:3},pitch:.03},
  {n:'D23-kettle-grill',what:'a kettle grill on a back patio (QA camera)',free:{kind:'rec',list:'grills',where:{on:'patio'},i:0,from:[1.5,1.35,1.6],at:[0,.7,0]}},
  {n:'D24-kids-bike-and-scooter',what:'a small kid\'s bike with training wheels lying in a yard (QA camera)',free:{kind:'rec',list:'toys',where:{kind:'kidbike'},i:0,from:[1.3,.95,1.1],at:[0,.12,0]}},

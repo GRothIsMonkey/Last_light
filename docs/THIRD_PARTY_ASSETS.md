@@ -306,3 +306,18 @@ Scary Baboon" (uploader "ScaryBaboonRipper": a suspected game rip — excluded),
 (Glowbox 3D: its page asks that it not be used as an input to generative AI; respected — not imported), "Street Light"
 (KMB3D: a modern davit luminaire, not a 2011 cobra head — not used). The hoops, mailboxes, cobra-head lamps, pole shafts,
 secondary racks, fences, gate, posts, cabins and plates are original Last Light work.
+
+## The Prologue's neighborhood details (benchmark, `?details`)
+
+**No new third-party models.** The street signs, chairs, grills, hoses, hose bibs, sprinklers, toys, kiddie pools,
+trampolines, swing sets, sheds, clotheslines, the creek chain link and the field fence are original Last Light work (built
+in Blender from scripts, `tools/blender/details/`). Two inputs are credited here.
+
+| Work | Author | Licence | Used for | Changes |
+|---|---|---|---|---|
+| "Wooden Fence" (already credited above) | DmitriyGDS (https://sketchfab.com/DmitriyGDS) · https://skfb.ly/6rNUp | Creative Commons Attribution 4.0 | the lookout field fence's posts and rails: the street props' weathered-grey board tile, copied into the details atlas | none beyond the street props' grade |
+| Overpass (SemiBold, Bold) | The Overpass Project Authors (https://github.com/RedHatOfficial/Overpass) | SIL Open Font License 1.1 (`assets/source/details/fonts/OFL-LICENSE.txt`) | the lettering of the street signs, rasterized into the sign texture | none; the font file is not shipped, only images of the lettering |
+
+The game's credits need no new line for the details beyond the DmitriyGDS credit prepared for the street props (A-66).
+Overpass needs none: the OFL does not require one for rendered images. It is acknowledged in the benchmark's DEV label
+and in `DETAILS-README.txt` all the same. Provenance and hashes: `assets/source/details/PROVENANCE.md`, `SHA256SUMS`.

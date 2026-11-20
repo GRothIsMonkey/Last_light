@@ -364,5 +364,27 @@
  },
  "sources": {
   "wood_grey": "street-props atlas tile wood_grey (DmitriyGDS \"Wooden Fence\", CC BY 4.0, graded)"
+ },
+ "maskLevel": {
+  "siding": [
+   0.214,
+   0.46
+  ],
+  "shingles": [
+   0.182,
+   0.46
+  ],
+  "webbing": [
+   0.185,
+   0.46
+  ],
+  "paint_tint": [
+   0.214,
+   0.46
+  ],
+  "plastic_tint": [
+   0.214,
+   0.46
+  ]
  }
 }

@@ -82,8 +82,15 @@ function cutoutMaterial({map}){
     else if(dtUv.x>=200.)dtUv=vec2(.5+fract(dtUv.x)*.5,fract(dtUv.y)*.5);
     else if(dtUv.x>=100.)dtUv=vec2(fract(dtUv.x)*.5,fract(dtUv.y)*.5);
     vec4 sampledDiffuseColor=textureGrad(map,dtUv,dFdx(vMapUv)*.5,dFdy(vMapUv)*.5);
-    diffuseColor*=sampledDiffuseColor;`);};
- m.customProgramCacheKey=()=>'ll-dt-cut';return m;
+    diffuseColor*=sampledDiffuseColor;
+    // coverage-preserving cut-out: up close the usual 0.5 test; once the tile is minified (wire, net and chain thinner
+    // than a texel) the threshold becomes a fixed screen-space dither, so a distant fence keeps its true average coverage
+    // (a faint haze, as real chain link reads) instead of vanishing when its mip-averaged alpha drops below 0.5
+    float dtLod=log2(max(max(length(dFdx(vMapUv)),length(dFdy(vMapUv)))*256.,1e-4));
+    float dtIgn=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(.06711056,.00583715))));
+    float dtThr=mix(.5,.04+.92*dtIgn,smoothstep(.3,1.6,dtLod));
+    diffuseColor.a=diffuseColor.a>=dtThr?1.:0.;`);};
+ m.customProgramCacheKey=()=>'ll-dt-cut-2';return m;
 }
 // Sign faces: the sign atlas (crisp lettering, anisotropic), a semi-gloss sheeting
 function signMaterial({map}){const m=new THREE.MeshStandardMaterial({map,roughness:.4,metalness:0,envMapIntensity:.5});m.name='dt:sign';return m;}
@@ -124,6 +131,20 @@ export async function placeDetails({world,scene,renderer,camera,hemi,sun}){
  const stats={},count=(k,n=1)=>stats[k]=(stats[k]||0)+n;
  const v=new THREE.Vector3(),RY=a=>new THREE.Matrix4().makeRotationY(a),TR=(x,y,z)=>new THREE.Matrix4().makeTranslation(x,y,z);
  const at=g=>{g.updateWorldMatrix(true,false);return g.matrixWorld.clone();};
+ // A record built into a house's own group (a patio or deck grill, a porch chair) lives in the house's draped layer: its
+ // matrixWorld is in that layer's straight frame, which the world bake maps onto the curved street vertex by vertex (world.js,
+ // mode 'drape'). Map it as the bake maps the house: x/z through the house frame (P.toWorld), y over the same ground.
+ // Oak Hollow's own lots. houses.js also builds Old Mill Road's houses (Chapter Four's approach into town, town-houses.js) in
+ // a rigid 'town' layer whose zone the bake gives to everything in it: their porch chairs and grills are not the Prologue's,
+ // the benchmark never hides them, so it leaves them alone (an authored copy there would double them).
+ const hollow=new Set([...(world.plans||[]),...(world.sidePlans||[])]),inHollow=r=>!r.plan||hollow.has(r.plan);
+ const inHouse=r=>{const P=r.plan,g=r.g;if(!P?.g||!g||!hollow.has(P))return false;for(let o=g;o;o=o.parent)if(o===P.g)return true;return false;};
+ const worldOf=r=>{const g=r.g||r.root;if(!inHouse(r))return at(g);const P=r.plan;
+  P.g.updateWorldMatrix(true,false);g.updateWorldMatrix(true,false);
+  const L=new THREE.Matrix4().copy(P.g.matrixWorld).invert().multiply(g.matrixWorld),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3();L.decompose(p,q,s);
+  const ax=new THREE.Vector3(1,0,0).applyQuaternion(q),a=P.toWorld(p.x,p.z),b=P.toWorld(p.x+ax.x,p.z+ax.z);
+  const gy=P.groundFn?P.groundFn(a.d,a.lat,a.x,a.z):a.ground,yaw=Math.atan2(-(b.z-a.z),b.x-a.x);
+  return new THREE.Matrix4().compose(new THREE.Vector3(a.x,gy+P.g.position.y+p.y,a.z),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),yaw),s);};
  const GY=(x,z)=>{const q=MAIN.project(x,z);return world.groundY(q.u,q.v);};
  // ground contact: the lowest vertices of each piece's LOD0 (in its own frame), cached
  const lowCache={};
@@ -150,12 +171,13 @@ export async function placeDetails({world,scene,renderer,camera,hemi,sun}){
   count('signs');}
 
  // ---------------------------------------------------------------------------------------------- chairs, grills
- for(const c of R.chairs){if(c.plan?.benchmarkZone){count('chairs-left-to-the-house-benchmark');continue;}
-  const M=at(c.g),k=hash(M.elements[12],M.elements[14]);
+ for(const c of R.chairs){if(!inHollow(c)){count('porch chairs on Old Mill Road (a Chapter Four place): left as they are');continue;}if(c.plan?.benchmarkZone){count('chairs-left-to-the-house-benchmark');continue;}
+  const M=worldOf(c),k=hash(M.elements[12],M.elements[14]);
   if(c.kind==='porch'){set('chair.resin',LODS.furn).add(M.clone().multiply(RY(Math.PI)),{iTint:WHITE,iVar:[k*10,age(k,1)*.6,0,0],radius:.6});count('porch chairs');}
   else{const resin=c.color===0xf2f0ea,key=resin?'chair.resin':'chair.lawn';
    set(key,LODS.furn).add(settle(M,key,'rest','chair'),{iTint:resin?WHITE:tintOf(c.color),iVar:[k*10,age(k,2),0,1],radius:.6});count('lawn chairs');}}
- for(const g of R.grills){const M=at(g.g);if(g.on==='patio')M.premultiply(TR(0,.1,0));
+ for(const g of R.grills){if(!inHollow(g)){count('grills on Old Mill Road (a Chapter Four place): left as they are');continue;}if(g.plan?.benchmarkZone){count('grills-left-to-the-house-benchmark');continue;}// that lot's house (and its yard furniture) is the house benchmark's
+  const M=worldOf(g);if(g.on==='patio')M.premultiply(TR(0,.1,0));
   set('grill',LODS.furn).add(M,{iTint:WHITE,iVar:[seed(M.elements[12]),age(M.elements[14]),0,0],radius:.6});count('grills');}
 
  // ---------------------------------------------------------------------------------------------- toys, kiddie pools
@@ -249,7 +271,7 @@ export async function placeDetails({world,scene,renderer,camera,hemi,sun}){
  function setEnv(){for(const m of allMats){const first=!m.envMap;m.envMap=env.texture;m.envMapIntensity=(m.userData.envK??=m.envMapIntensity)*env.intensity;if(first)m.needsUpdate=true;}}
  env.update(performance.now(),{hemi,fog:scene.fog?.color,sun,force:true});setEnv();
  let authored=true;
- const api={sets,errors,texInfo,env,attach,settled,hoseInfo,runs,procedural,proxies,sprinklers,hoseMesh,kinds:stats,mats,loadMs:+(performance.now()-t0).toFixed(0),
+ const api={sets,errors,texInfo,env,attach,settled,hoseInfo,runs,procedural,proxies,sprinklers,hoseMesh,kinds:stats,mats,worldOf,inHollow,loadMs:+(performance.now()-t0).toFixed(0),
   get authored(){return authored;},
   setAuthored(on){authored=!!on;for(const s of Object.values(sets))s.setVisible(authored);for(const m of procedural)m.visible=!authored;for(const m of proxies)m.visible=!authored;
    hoseMesh.visible=authored;for(const s of sprinklers){s.base.visible=s.head.visible=authored;s.rec.stand.visible=s.rec.arm.visible=!authored;}if(authored)api.update(camera,true);},

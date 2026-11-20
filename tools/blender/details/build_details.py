@@ -515,7 +515,7 @@ def build_toys():
         ts = 8 if q == 0 else 5
         # ---- big wheel: the 16 in front wheel (pedals on its axle, front at -z) in a moulded fork, a long low body sweeping
         # back to the rear axle, the yellow bucket seat, yellow bars with grips; small rear wheels
-        ps = wheel('bw.front', 0, .27, -.35, .27, .1, rim_sw='plastic_red', tire_sw='plastic_black', segs=segs)
+        ps = wheel('bw.front', 0, .27, -.35, .27, .1, rim_sw='plastic_red', tire_sw='plastic_black', segs=32 if q == 0 else 12)
         hub = lathe('bw.hub', [(0, -.07), (.09, -.07), (.1, -.05), (.1, .05), (.09, .07), (0, .07)], max(8, segs // 2), 0, .27, -.35, axis='x')
         swatch(hub, 'plastic_yellow')
         ps.append(hub)
@@ -581,7 +581,7 @@ def build_toys():
             swatch(br, 'iron_black')
             ps += [ax, br]
             for s in (-1, 1):
-                ps += wheel('wg.wheel', s * .25, .1, z, .1, .045, rim_sw='wheel_white', tire_sw='tire', segs=segs)
+                ps += wheel('wg.wheel', s * .25, .1, z, .1, .045, rim_sw='wheel_white', tire_sw='tire', segs=24 if q == 0 else 10)
         bol = box('wg.bolster', (0, .2, -.3), (.32, .03, .05))
         swatch(bol, 'iron_black')
         hd = tube('wg.handle', [(0, .2, -.43), (0, .12, -.6), (0, .03, -.95), (0, .025, -1.0)], .009, 6)
@@ -620,8 +620,8 @@ def build_toys():
         # wheels near flat, front at -z); built upright, then laid down. Frame in the recorded colour (mask)
         ps = []
         WR = .2
-        ps += wheel('kb.front', 0, WR, -.36, WR, .045, rim_sw='chrome', tire_sw='tire', segs=segs)
-        ps += wheel('kb.rear', 0, WR, .36, WR, .045, rim_sw='chrome', tire_sw='tire', segs=segs)
+        ps += wheel('kb.front', 0, WR, -.36, WR, .045, rim_sw='chrome', tire_sw='tire', segs=28 if q == 0 else 12)
+        ps += wheel('kb.rear', 0, WR, .36, WR, .045, rim_sw='chrome', tire_sw='tire', segs=28 if q == 0 else 12)
         for o in ps:
             pass
         fr = [tube('kb.down', [(0, .42, -.22), (0, .2, .04)], .016, ts), tube('kb.top', [(0, .42, -.22), (0, .44, .1)], .015, ts),

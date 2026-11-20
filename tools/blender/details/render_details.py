@@ -23,6 +23,36 @@ def mats():
     C.use_nodes = True
     tc = C.node_tree.nodes.new('ShaderNodeTexImage')
     tc.image = bpy.data.images.load(os.path.join(TEX, 'details_cutout.png'))
+    tc.interpolation = 'Closest'
+    # the game's region rule (details-assets.js cutoutMaterial): u >= 300 swing chain, >= 200 netting, >= 100 chain link, each
+    # tile repeating on its own. glTF v runs down the image and Blender's up, so the game's (u', v') is sampled at (u', 1 - v').
+    nt = C.node_tree
+    uvn = nt.nodes.new('ShaderNodeUVMap')
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ')
+    nt.links.new(uvn.outputs['UV'], sep.inputs['Vector'])
+    def op(kind, a, b=None, c=None):
+        n = nt.nodes.new('ShaderNodeMath')
+        n.operation = kind
+        for k, x in enumerate((a, b, c)):
+            if x is None:
+                continue
+            if isinstance(x, (int, float)):
+                n.inputs[k].default_value = x
+            else:
+                nt.links.new(x, n.inputs[k])
+        return n.outputs[0]
+    u, vb = sep.outputs['X'], sep.outputs['Y']
+    fu = op('FRACT', u)
+    fv = op('FRACT', op('SUBTRACT', 1.0, vb))            # the game's fract(v)
+    net = op('GREATER_THAN', u, 199.5)
+    chain = op('GREATER_THAN', u, 299.5)
+    net_only = op('SUBTRACT', net, chain)
+    tu = op('ADD', op('MULTIPLY', fu, .5), op('MULTIPLY', net_only, .5))       # netting in the right half
+    tv = op('ADD', op('MULTIPLY', fv, .5), op('MULTIPLY', chain, .5))          # swing chain in the lower half
+    comb = nt.nodes.new('ShaderNodeCombineXYZ')
+    nt.links.new(tu, comb.inputs['X'])
+    nt.links.new(op('SUBTRACT', 1.0, tv), comb.inputs['Y'])
+    nt.links.new(comb.outputs['Vector'], tc.inputs['Vector'])
     C.node_tree.links.new(tc.outputs['Color'], C.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
     C.node_tree.links.new(tc.outputs['Alpha'], C.node_tree.nodes['Principled BSDF'].inputs['Alpha'])
     Sg = bpy.data.materials.new('sign')
@@ -37,7 +67,9 @@ def mats():
     b.inputs['Base Color'].default_value = (.2, .45, .55, 1)
     b.inputs['Roughness'].default_value = .05
     b.inputs['Alpha'].default_value = .55
-    return {'dt_A': A, 'dt_cut': C, 'dt_sign': Sg, 'dt_water': Wt}
+    # roofs take their own recorded colour in the game (a second tint); here one shingle brown
+    Ar = R.atlas_material('Aroof', os.path.join(TEX, 'details_albedo.jpg'), os.path.join(TEX, 'details_orm.png'), R.srgb(0x5d5249))
+    return {'dt_A': A, 'dt_A_roof': Ar, 'dt_cut': C, 'dt_sign': Sg, 'dt_water': Wt}
 
 
 def scene(show, cam_from, cam_at, name, res=(1600, 900)):
@@ -60,7 +92,7 @@ def scene(show, cam_from, cam_at, name, res=(1600, 900)):
         o.scale = (o.scale[0] * sc_, o.scale[1] * sc_, o.scale[2] * sc_)
         for k, slot in enumerate(o.material_slots):
             n = slot.material.name if slot.material else ''
-            o.material_slots[k].material = M.get(n.split('.')[0], M['dt_A'])
+            o.material_slots[k].material = M['dt_A_roof'] if ('roof' in o.name and n.split('.')[0] == 'dt_A') else M.get(n.split('.')[0], M['dt_A'])
     R.look(co, cam_from, cam_at)
     sc.render.filepath = os.path.join(OUT, name)
     bpy.ops.render.render(write_still=True)
@@ -78,10 +110,10 @@ if __name__ == '__main__':
            'toy.basketball.lod0': (1.0, -1.3, 0, .12, .12), 'toy.playball.lod0': (1.4, -1.4, 0, .11, .11), 'pool.kiddie.lod0': (4.6, -.3), 'pool.water.lod0': (4.6, -.3),
            'sprinkler.base.lod0': (3.0, -1.4), 'sprinkler.head.lod0': (3.0, -1.4)},
           (1.2, -5.2, 2.0), (1.2, 0, .3), 'blender-details-yard.png')
-    scene({'toy.bigwheel.lod0': (-.9, 0, .5), 'toy.wagon.lod0': (.4, .2, .3), 'toy.scooter.lod0': (1.5, .1, .4), 'toy.kidbike.lod0': (2.5, -.3),
+    scene({'toy.bigwheel.lod0': (-.9, 0, .5), 'toy.wagon.lod0': (.4, .2, .3), 'toy.scooter.lod0': (1.5, .1, .4), 'toy.kidbike.lod0': (2.3, -.6),
            'chair.lawn.lod0': (-2.2, .8, .4), 'chair.resin.lod0': (-1.5, 1.1, -.3)},
-          (0.2, -2.9, 1.25), (0.2, .3, .3), 'blender-details-toys.png')
-    scene({'swing.lod0': (-4.5, 0), 'trampoline.lod0': (1.2, 0), 'trampoline.net.lod0': (1.2, 0), 'shed.lod0': (6.0, 0), 'shed.small.lod0': (9.4, 0),
+          (0.7, -4.9, 1.6), (0.7, .2, .25), 'blender-details-toys.png')
+    scene({'swing.lod0': (-4.5, 0), 'trampoline.lod0': (1.2, 0), 'trampoline.net.lod0': (1.2, 0), 'shed.lod0': (6.0, 0), 'shed.roof.lod0': (6.0, 0), 'shed.small.lod0': (9.4, 0), 'shed.small.roof.lod0': (9.4, 0),
            'clothesline.lod0': (1.2, 4.5), 'fence.chain.lod0': (-8.5, -2), 'post.chain.lod0': (-9.0, -2), 'ff.post.lod0': (-6.5, -3), 'ff.rail.lod0': (-6.5, -3)},
           (0.5, -17.5, 6.0), (0.5, 2, 1.0), 'blender-details-backyard.png')
     print('renders in', OUT)

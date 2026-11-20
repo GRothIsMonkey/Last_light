@@ -259,7 +259,7 @@ def build():
 
     # ---------------------------------------------------------------------------------------------- swatches
     SW = [  # name, sRGB, roughness, metalness, mask, noise
-        ('galv', (152, 154, 151), .42, .9, 0, .14), ('alu', (192, 194, 190), .36, .85, 0, .08), ('alu_cast', (170, 170, 165), .5, .7, 0, .12),
+        ('galv', (168, 171, 168), .45, .45, 0, .14), ('alu', (196, 198, 194), .38, .55, 0, .08), ('alu_cast', (172, 172, 167), .5, .45, 0, .12),
         ('iron_black', (32, 32, 31), .55, .4, 0, .1), ('enamel_black', (24, 24, 25), .28, .15, 0, .06), ('chrome', (206, 206, 204), .14, 1, 0, .04),
         ('rubber', (30, 30, 30), .9, 0, 0, .08), ('tire', (34, 34, 33), .85, 0, 0, .1),
         ('paint_tint', (128, 128, 128), .48, .1, 1, .06), ('plastic_tint', (128, 128, 128), .52, 0, 1, .05), ('resin_white', (232, 230, 222), .5, 0, 0, .05),
@@ -271,7 +271,7 @@ def build():
         ('paint_white', (232, 230, 222), .62, 0, 0, .06), ('trim_white', (226, 224, 214), .55, 0, 0, .05), ('pool_blue', (60, 132, 192), .3, 0, 0, .04),
         ('rope', (222, 218, 206), .9, 0, 0, .1), ('pin_wood', (198, 170, 122), .8, 0, 0, .12), ('concrete', (168, 163, 154), .92, 0, 0, .18),
         ('urethane', (204, 208, 176), .38, 0, 0, .05), ('grip_tape', (42, 42, 42), .95, 0, 0, .25),
-        ('spring_steel', (142, 144, 142), .38, .85, 0, .1), ('seat_vinyl', (32, 32, 32), .6, 0, 0, .05), ('wood_post', (126, 104, 80), .85, 0, 0, .2),
+        ('spring_steel', (150, 152, 150), .4, .5, 0, .1), ('seat_vinyl', (32, 32, 32), .6, 0, 0, .05), ('wood_post', (126, 104, 80), .85, 0, 0, .2),
         ('copper_green', (108, 140, 112), .6, .3, 0, .15), ('ash', (88, 86, 82), .95, 0, 0, .3), ('wheel_white', (226, 224, 216), .45, 0, 0, .05),
     ]
     for i, (name, c, ro, me, mk, nz) in enumerate(SW):
@@ -283,6 +283,21 @@ def build():
         O[y // 2:(y + 128) // 2, x // 2:(x + 128) // 2] = (mk, ro, me)
         lay['swatch'][name] = [x, y, 128, 128]
 
+    # ---------------------------------------------------------------------------------------------- paint-mask level
+    # The game paints masked texels as tint x albedo x 2 (in linear), the street props' rule; so that a recorded colour comes
+    # out as itself, every masked region's albedo averages 0.46 linear, the street-props atlas's level (0.42-0.47): its
+    # pattern (grooves, granules, weave) is kept, only its level is set.
+    MASK = np.asarray(Image.fromarray((O[..., 0] * 255).clip(0, 255).astype(np.uint8)).resize((S, S), Image.NEAREST)) > 127
+    lay['maskLevel'] = {}
+    for name, (x, y, w, h) in list(lay['tiles'].items()) + list(lay['swatch'].items()):
+        m = MASK[y:y + h, x:x + w]
+        if m.mean() < .02:
+            continue
+        reg = srgb2lin(A[y:y + h, x:x + w])
+        mean = float(reg[m].mean())
+        reg[m] *= .46 / max(mean, 1e-3)
+        A[y:y + h, x:x + w] = np.where(m[..., None], lin2srgb(reg), A[y:y + h, x:x + w])
+        lay['maskLevel'][name] = [round(mean, 3), .46]
     Image.fromarray(A).save(os.path.join(OUT, 'details_albedo.jpg'), quality=90, subsampling=0, optimize=True)
     Image.fromarray(N).save(os.path.join(OUT, 'details_normal.png'), optimize=True)
     Image.fromarray((O * 255).clip(0, 255).astype(np.uint8)).save(os.path.join(OUT, 'details_orm.png'), optimize=True)
