@@ -91,6 +91,8 @@ export function buildFurniture(W){
  function paint(w,h,draw){try{const c=document.createElement('canvas');const g=c.getContext?.('2d');if(!g)return null;c.width=w;c.height=h;draw(g,w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;}catch{return null;}}
  const text=(g,str,x,y,size,color='#1b1b1b')=>{g.fillStyle=color;g.font=`bold ${size}px Arial, Helvetica, sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(str,x,y);};
  const signs=W.signs=[];
+ // (?details: each sign assembly is recorded, its post group and its plates with what they say, zone 'dt:sign')
+ const DT=W.dt||null,dtSign=(type,g,plates,extra={})=>{if(DT)DT.signs.push({type,g:W.dtZone(g,'sign'),plates,...extra});};
  // A sign face: front (and optionally a printed back), set in a thin rim so no edge is ever see-through.
  function plate(g,w,h,y,tex,fallback,{back=null,alpha=false,rot=0,shape='rect',name=''}={}){
   const pg=new THREE.Group();pg.position.y=y;pg.position.x=back===true?0:Math.sin(rot)*.065;pg.position.z=back===true?0:Math.cos(rot)*.065;pg.rotation.y=rot;g.add(pg);
@@ -100,9 +102,9 @@ export function buildFurniture(W){
   return pg;}
  function post(anchorFrame,u,v,height,ground){const g=W.place(anchorFrame,u,v,{y:ground});K.rbox(g,0,height/2,0,.06,height,.06,.01,0x8d908b);K.box(g,0,height+.02,0,.08,.04,.08,0x7d807b);const p=anchorFrame.point(u,v);W.space.circle(p.x,p.z,.3,'sign');if(anchorFrame===MAIN)W.obstacles.push({d0:u-.15,d1:u+.15,l0:v-.15,l1:v+.15});return g;}
  const diamond=(g,w,h,draw)=>{g.translate(w/2,h/2);g.rotate(Math.PI/4);g.fillStyle='#e8c33a';g.strokeStyle='#1b1b1b';g.lineWidth=10;const s=w*.66;g.beginPath();g.rect(-s/2,-s/2,s,s);g.fill();g.stroke();g.rotate(-Math.PI/4);g.translate(-w/2,-h/2);draw(g,w,h);};
- {const g=post(MAIN,36,5.75,2.6,groundMain(36,5.75));plate(g,.9,.9,2.2,paint(256,256,(c,w,h)=>diamond(c,w,h,()=>{text(c,'SLOW',w/2,h*.36,38);text(c,'CHILDREN',w/2,h*.52,27);text(c,'AT PLAY',w/2,h*.64,27);})),0xe8c33a,{alpha:true,shape:'none',name:'SLOW CHILDREN AT PLAY'});}
- {const g=post(MAIN,150,5.75,2.5,groundMain(150,5.75));plate(g,.6,.76,2.1,paint(192,244,(c,w,h)=>{c.fillStyle='#f4f2ea';c.fillRect(0,0,w,h);c.strokeStyle='#1b1b1b';c.lineWidth=6;c.strokeRect(8,8,w-16,h-16);text(c,'SPEED',w/2,h*.2,34);text(c,'LIMIT',w/2,h*.37,34);text(c,'25',w/2,h*.68,96);}),0xf4f2ea,{name:'SPEED LIMIT 25'});}
- {const u=J2.d+J2.half+J2.corner+24,g=post(MAIN,u,5.75,2.5,groundMain(u,5.75));plate(g,.75,.75,2.1,paint(256,256,(c,w,h)=>{c.fillStyle='#e8c33a';c.fillRect(8,8,w-16,h-16);c.strokeStyle='#1b1b1b';c.lineWidth=8;c.strokeRect(14,14,w-28,h-28);text(c,'NO',w/2,h*.38,56);text(c,'OUTLET',w/2,h*.62,50);}),0xe8c33a,{name:'NO OUTLET'});}
+ {const g=post(MAIN,36,5.75,2.6,groundMain(36,5.75));const pg=plate(g,.9,.9,2.2,paint(256,256,(c,w,h)=>diamond(c,w,h,()=>{text(c,'SLOW',w/2,h*.36,38);text(c,'CHILDREN',w/2,h*.52,27);text(c,'AT PLAY',w/2,h*.64,27);})),0xe8c33a,{alpha:true,shape:'none',name:'SLOW CHILDREN AT PLAY'});dtSign('children',g,[{g:pg,name:'SLOW CHILDREN AT PLAY',w:.9,h:.9,y:2.2}],{u:36,v:5.75,height:2.6});}
+ {const g=post(MAIN,150,5.75,2.5,groundMain(150,5.75));const pg=plate(g,.6,.76,2.1,paint(192,244,(c,w,h)=>{c.fillStyle='#f4f2ea';c.fillRect(0,0,w,h);c.strokeStyle='#1b1b1b';c.lineWidth=6;c.strokeRect(8,8,w-16,h-16);text(c,'SPEED',w/2,h*.2,34);text(c,'LIMIT',w/2,h*.37,34);text(c,'25',w/2,h*.68,96);}),0xf4f2ea,{name:'SPEED LIMIT 25'});dtSign('speed',g,[{g:pg,name:'SPEED LIMIT 25',w:.6,h:.76,y:2.1}],{u:150,v:5.75,height:2.5});}
+ {const u=J2.d+J2.half+J2.corner+24,g=post(MAIN,u,5.75,2.5,groundMain(u,5.75));const pg=plate(g,.75,.75,2.1,paint(256,256,(c,w,h)=>{c.fillStyle='#e8c33a';c.fillRect(8,8,w-16,h-16);c.strokeStyle='#1b1b1b';c.lineWidth=8;c.strokeRect(14,14,w-28,h-28);text(c,'NO',w/2,h*.38,56);text(c,'OUTLET',w/2,h*.62,50);}),0xe8c33a,{name:'NO OUTLET'});dtSign('outlet',g,[{g:pg,name:'NO OUTLET',w:.75,h:.75,y:2.1}],{u,v:5.75,height:2.5});}
  const blade=name=>paint(512,80,(c,w,h)=>{c.fillStyle='#2f6b45';c.fillRect(0,0,w,h);c.strokeStyle='#e8efe6';c.lineWidth=4;c.strokeRect(5,5,w-10,h-10);text(c,name,w/2,h/2+2,name.length>12?40:46,STREET.signText);});
  const octagon=paint(128,128,(c,w,h)=>{c.fillStyle='#b8322c';c.beginPath();for(let k=0;k<8;k++){const a=Math.PI/8+k*Math.PI/4;c.lineTo(w/2+Math.cos(a)*w*.48,h/2+Math.sin(a)*h*.48);}c.closePath();c.fill();c.strokeStyle='#f2efe8';c.lineWidth=5;c.stroke();text(c,'STOP',w/2,h/2+2,34,'#f7f4ee');});
  // At each junction: stop sign for the cross street, both names on double-sided blades above it.
@@ -113,9 +115,10 @@ export function buildFurniture(W){
   // Double-sided blades sit above the post, joined only through the gaps.
   K.cyl(g,0,2.61,0,.025,.03,0x8d908b,6);K.cyl(g,0,2.85,0,.025,.07,0x8d908b,6);
   // Main-street blade runs along Oak Hollow; the cross-street blade runs along the cross street.
-  plate(g,1.2,.19,2.72,blade(STREETS.main),STREET.sign,{back:true,rot:Math.PI/2,name:STREETS.main});
-  plate(g,1.2,.19,2.98,blade(j.name),STREET.sign,{back:true,rot:0,name:j.name});
-  plate(g,.62,.62,2.1,octagon,0xb8322c,{alpha:true,shape:'none',rot:j.side>0?Math.PI/2:-Math.PI/2,name:'STOP'});
+  const b1=plate(g,1.2,.19,2.72,blade(STREETS.main),STREET.sign,{back:true,rot:Math.PI/2,name:STREETS.main});
+  const b2=plate(g,1.2,.19,2.98,blade(j.name),STREET.sign,{back:true,rot:0,name:j.name});
+  const st=plate(g,.62,.62,2.1,octagon,0xb8322c,{alpha:true,shape:'none',rot:j.side>0?Math.PI/2:-Math.PI/2,name:'STOP'});
+  dtSign('junction',g,[{g:b1,name:STREETS.main,blade:true,w:1.2,h:.19,y:2.72},{g:b2,name:j.name,blade:true,w:1.2,h:.19,y:2.98},{g:st,name:'STOP',w:.62,h:.62,y:2.1}],{u,v,height:2.59,junction:j.name});
   signs.push({junction:j.name,main:STREETS.main,d:u,lat:v});}
 
  // Hydrants in the parking strip, and curb inlets along the gutters ----------------------------

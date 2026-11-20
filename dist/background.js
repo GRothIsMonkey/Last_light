@@ -35,7 +35,9 @@ export function buildBackground(W){
   const by=side*(REAR+2.5+rand()*3),bd=u+(rand()-.5)*10,p=groundPoint(bd,by);
   if(rand()<.75)veg.tree(MAIN,bd,by,T(p.x,p.z),{size:.9+rand()*.6,kind:rand()<.3?'pine':'maple',lod:'mid',clearance:2.2});
   if(rand()<.3){const sd=u+(rand()<.5?-1:1)*(P.w/2+1.5),sl=side*(REAR+3.2),q=groundPoint(sd,sl),g=W.place(MAIN,sd,sl,{y:T(q.x,q.z),rot:side>0?Math.PI/2:-Math.PI/2,far:true});
-   K.rbox(g,0,1.05,0,2.4,2.1,2,.03,pickFrom(rand)([0xa89a80,0x9b6a55,0x8d9985]));gableRoof(W,g,2.4,2,2.1,.7,.12,.18,W.surfaceMaterial(K.mat(pickFrom(rand)(HOUSE.roofs)),'roof'),W.surfaceMaterial(K.mat(0xa89a80),'siding'),true,{mid:true,gutters:false,vent:false});}
+   const wc=pickFrom(rand)([0xa89a80,0x9b6a55,0x8d9985]),rc=pickFrom(rand)(HOUSE.roofs);
+   K.rbox(g,0,1.05,0,2.4,2.1,2,.03,wc);gableRoof(W,g,2.4,2,2.1,.7,.12,.18,W.surfaceMaterial(K.mat(rc),'roof'),W.surfaceMaterial(K.mat(0xa89a80),'siding'),true,{mid:true,gutters:false,vent:false});
+   if(W.dt)W.dt.sheds.push({g:W.dtZone(g,'shed'),wall:wc,roof:rc,w:2.4,d:2,h:2.1,rise:.7,door:false,far:true,d0:sd,lat:sl});}
  }
  // Their lot lines, back to the shared rear fence.
  for(const side of [-1,1]){const lots=row2.filter(p=>p.side===side).sort((a,b)=>a.u-b.u);

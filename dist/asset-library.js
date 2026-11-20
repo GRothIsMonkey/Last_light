@@ -37,6 +37,9 @@ export const ASSETS={
  // mailboxes, hydrants, bins, hoops and fences, awaiting approval (geometry only: their atlases ship beside them)
  'street.vehicles':{file:'assets/street/street.vehicles.glb',rig:'none',kind:'street',note:'six US-market family vehicles, 3 LODs; incorporates CC BY 4.0 material (THIRD_PARTY_ASSETS.md)'},
  'street.props':{file:'assets/street/street.props.glb',rig:'none',kind:'street',note:'utility poles, cobra-head lamps, mailboxes, hydrant, bins, hoops, fences, 3 LODs; incorporates CC BY 4.0 material'},
+ // Prologue neighborhood-details benchmark (DEV, ?details): street signs, yard and porch furniture, grills, hoses and
+ // sprinklers, toys, kiddie pools, trampolines, swing sets, sheds, clotheslines and the remaining fences, awaiting approval
+ 'details.kit':{file:'assets/details/details.kit.glb',rig:'none',kind:'details',note:'neighborhood details, 3 LODs; original work (the lookout rails reuse the street props\' CC BY 4.0 fence wood; sign lettering in Overpass, SIL OFL 1.1)'},
 };
 const cache=new Map(),log=[];
 let loader=null;

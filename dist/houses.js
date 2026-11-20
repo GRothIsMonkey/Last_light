@@ -334,7 +334,7 @@ function buildEntry(W,P,g,rand,mid){const {K}=W,{front}=P,dx=P.doorX,fl=P.floor,
    K.box(g,(x0+x1)/2,fl+.86,front+pd-.16,Math.abs(x1-x0),.06,.08,col);K.box(g,(x0+x1)/2,fl+.1,front+pd-.16,Math.abs(x1-x0),.05,.06,col);
    for(let x=Math.min(x0,x1)+.14;x<Math.max(x0,x1)-.05;x+=.2)K.box(g,x,fl+.48,front+pd-.16,.045,.74,.045,col);}
   // A pair of chairs on some porches.
-  if(!mid&&rand()<.55){const cx=dx-P.gs*(pw/2-.9);for(const k of [0,1])chair(K,g,cx+k*.75*-P.gs,fl,front+1.1,0xf1efe9);}
+  if(!mid&&rand()<.55){const cx=dx-P.gs*(pw/2-.9);for(const k of [0,1]){const cg=chair(K,g,cx+k*.75*-P.gs,fl,front+1.1,0xf1efe9);if(W.dt&&!P.key)W.dt.chairs.push({kind:'porch',g:W.dtZone(cg,'chair'),color:0xf1efe9,plan:P});}}
  }else if(P.porch==='portico'){const ph=2.6;for(const s of [-1,1])column(K,g,dx+s*(pw/2-.18),fl,front+pd-.18,ph,mid);
   K.box(g,dx,fl+ph+.1,front+pd/2,pw+.2,.2,pd+.1,col);gableRoof(W,K.group(g,dx,front+pd/2,0,0),pw+.2,pd+.1,fl+ph+.2,.7,.1,.12,W.surfaceMaterial(K.mat(P.roofColor),'roof'),W.surfaceMaterial(K.mat(HOUSE.trim),'siding'),false,{mid,gutters:false,vent:false});}
  else if(P.stories>1||P.eaveFront===null){// Stoop: a small gabled hood on brackets over the door.
@@ -345,7 +345,7 @@ function buildEntry(W,P,g,rand,mid){const {K}=W,{front}=P,dx=P.doorX,fl=P.floor,
 }
 function column(K,g,x,y,z,hgt,mid){if(mid){K.box(g,x,y+hgt/2,z,.18,hgt,.18,HOUSE.trim);return;}
  K.lathe(g,[[.001,0],[.13,0],[.13,.12],[.1,.16],[.09,.24],[.085,hgt-.3],[.1,hgt-.2],[.12,hgt-.12],[.14,hgt-.08],[.14,hgt],[.001,hgt]],x,y,z,HOUSE.trim,8);}
-function chair(K,g,x,y,z,c){const cg=K.group(g,x,z,Math.PI,y);K.box(cg,0,.38,0,.52,.05,.5,c);const b=K.box(cg,0,.72,-.26,.52,.62,.05,c);b.rotation.x=.22;for(const s of [-1,1]){K.box(cg,s*.27,.55,0,.05,.05,.52,c);K.box(cg,s*.24,.18,-.2,.04,.36,.04,c);K.box(cg,s*.24,.18,.2,.04,.36,.04,c);}}
+function chair(K,g,x,y,z,c){const cg=K.group(g,x,z,Math.PI,y);cg.userData.dtColor=c;K.box(cg,0,.38,0,.52,.05,.5,c);const b=K.box(cg,0,.72,-.26,.52,.62,.05,c);b.rotation.x=.22;for(const s of [-1,1]){K.box(cg,s*.27,.55,0,.05,.05,.52,c);K.box(cg,s*.24,.18,-.2,.04,.36,.04,c);K.box(cg,s*.24,.18,.2,.04,.36,.04,c);}return cg;}
 
 // Attached garage: walls, roof, door (or a real opening with an interior shell for friends).
 function buildGarage(W,P,g,rand,mid,siding,roofMat,gable){const {K}=W,{gx,gw,gd,gh,gfront}=P,gz=gfront-gd/2,doorW=gw>5?5.1:2.75,dh=2.15,T=HOUSE.trim;P.garageInfo={x:gx,front:gfront,doorW,doorH:dh,depth:gd,y:.2};
@@ -392,12 +392,12 @@ function foundationBeds(W,P,g,rand){const {K}=W,pick=pickFrom(rand),{front,w}=P,
    if(rand()<.5)for(let k=0;k<4;k++){const b=K.ball(g,x+.4+rand()*.4,.2,front+.82+rand()*.2,.07,pick([0xd4665a,0xe8c160,0xd98fb0,0xf0ede0]));tag(b,'flower',{color:b.material.color.getHex()});}}}
 }
 function buildRear(W,P,g,rand,mid){const {K}=W,D2=P.depth/2,x0=(P.seedB-.5)*P.w*.4;
- if(P.rear==='patio'){K.rbox(g,x0,.05,-D2-1.6,3.6,.1,3,.03,HOUSE.walk);if(P.grill&&!mid){const gr=K.group(g,x0+1.2,-D2-2.2,0,0);K.rbox(gr,0,.75,0,.6,.3,.45,.08,0x2b2b2d);for(const s of [-1,1])K.rod(gr,[s*.25,0,0],[s*.25,.62,0],.02,0x2b2b2d);}}
+ if(P.rear==='patio'){K.rbox(g,x0,.05,-D2-1.6,3.6,.1,3,.03,HOUSE.walk);if(P.grill&&!mid){const gr=K.group(g,x0+1.2,-D2-2.2,0,0);K.rbox(gr,0,.75,0,.6,.3,.45,.08,0x2b2b2d);for(const s of [-1,1])K.rod(gr,[s*.25,0,0],[s*.25,.62,0],.02,0x2b2b2d);if(W.dt&&!P.key)W.dt.grills.push({g:W.dtZone(gr,'grill'),on:'patio',plan:P});}}
  if(P.rear==='deck'){const dy=.55,dw=4.4,dd=3.2;K.box(g,x0,dy,-D2-dd/2,dw,.1,dd,HOUSE.deck);for(const [sx,sz] of [[-1,-1],[1,-1]])K.box(g,x0+sx*(dw/2-.1),dy/2,-D2-dd+.1,.12,dy,.12,HOUSE.deck);
   if(!mid){for(const s of [-1,1])K.box(g,x0+s*(dw/2-.04),dy+.5,-D2-dd/2,.05,.05,dd,HOUSE.deck);K.box(g,x0,dy+.5,-D2-dd+.03,dw,.05,.05,HOUSE.deck);
    for(let x=-dw/2+.2;x<dw/2;x+=.18)K.box(g,x0+x,dy+.25,-D2-dd+.03,.035,.5,.035,HOUSE.deck);
    for(let k=0;k<3;k++)K.box(g,x0+dw/2-.6,dy*(k+.5)/3,-D2-dd-.15-.28*(2-k),.9,.05,.28,HOUSE.deck);
-   if(P.grill){const gr=K.group(g,x0-dw/2+.7,-D2-1,0,dy+.05);K.rbox(gr,0,.75,0,.6,.3,.45,.08,0x2b2b2d);for(const s of [-1,1])K.rod(gr,[s*.25,0,0],[s*.25,.62,0],.02,0x2b2b2d);}}}
+   if(P.grill){const gr=K.group(g,x0-dw/2+.7,-D2-1,0,dy+.05);K.rbox(gr,0,.75,0,.6,.3,.45,.08,0x2b2b2d);for(const s of [-1,1])K.rod(gr,[s*.25,0,0],[s*.25,.62,0],.02,0x2b2b2d);if(W.dt&&!P.key)W.dt.grills.push({g:W.dtZone(gr,'grill'),on:'deck',plan:P});}}}
 }
 
 // A lit garage's materials, made once per house (Sam's bedroom reuses them: no extra batches).

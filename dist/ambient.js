@@ -40,7 +40,10 @@ export function createAmbient(scene,world,hooks={}){
   const N=46,pos=new Float32Array(N*3),geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
   const jet=new THREE.Points(geo,new THREE.PointsMaterial({color:0xe8f2ff,size:.07,transparent:true,opacity:.55,depthWrite:false}));head.add(jet);jet.frustumCulled=false;
   const spread=[...Array(N)].map((_,i)=>[hash(i+dc)*.3-.15,hash(i*3+dc)*.3-.15,hash(i*7+dc)]);
-  sprinklers.push({root,head,jet,pos,spread,d:s.d,lat:s.lat,angle:0,dir:1,tick:0,base:side>0?Math.PI/2:-Math.PI/2,phase:hash(dc)*2,on:1});}
+  sprinklers.push({root,head,jet,pos,spread,d:s.d,lat:s.lat,angle:0,dir:1,tick:0,base:side>0?Math.PI/2:-Math.PI/2,phase:hash(dc)*2,on:1});
+  // (?details: the visible head is recorded so the details benchmark can show an authored impact sprinkler on the same root and
+  // head; the jet, its timing and its sound are untouched)
+  if(world.details)world.details.sprinklers.push({root,head,stand:base,arm,jet,d:s.d,lat:s.lat,side,plan:h});}
  function updateSprinklers(dt,ctx){for(const s of sprinklers){const near=Math.abs(s.d-ctx.distance)<90;s.on=damp(s.on,ctx.p<.47?1:0,.8,dt);if(!near&&s.on<.02){s.jet.visible=false;continue;}s.jet.visible=s.on>.02;
   if(s.dir>0){s.tick-=dt;if(s.tick<=0){s.tick=.19;s.angle+=.13;if(s.on>.3&&Math.abs(s.d-ctx.distance)<45)sfx('sprinkler',s.root.position,{gain:s.on});if(s.angle>1.1)s.dir=-1;}}else{s.angle-=dt*.9;if(s.angle<-1.1){s.angle=-1.1;s.dir=1;}}
   s.head.rotation.y=s.base+s.angle;const range=5.2*s.on,t=time.value;

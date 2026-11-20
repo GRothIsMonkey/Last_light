@@ -92,8 +92,12 @@ const pavementKit=PAVEMENT_FLAG?await import('./pavement-surfaces.js').catch(e=>
 // hydrants, bins, hoops and fences are recorded and baked into batches of their own (world.js opts.streetprops) so the authored
 // versions can stand in their places; X swaps them with the originals in the same frame. Without ?streetprops nothing changes.
 const STREETPROPS_FLAG=typeof location!=='undefined'&&/[?&]streetprops\b/.test(location.search||'');
-const worldOpts={...(HOUSES_FLAG?{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}:{}),...(VEGETATION_FLAG?{vegetation:true}:{}),...(pavementKit?{pavement:pavementKit}:{}),...(STREETPROPS_FLAG?{streetprops:true}:{})};
-const world=(HOUSES_FLAG||VEGETATION_FLAG||pavementKit||STREETPROPS_FLAG)?buildWorld(scene,worldOpts):buildWorld(scene);
+// DEV neighborhood-details benchmark (?details): the Prologue's street signs, yard and porch furniture, grills, hoses, sprinklers,
+// toys, kiddie pools, trampolines, swing sets, sheds, clotheslines and the creek's and the lookout's fences, authored, in place of
+// the procedural ones. Without the flag nothing of it loads or changes.
+const DETAILS_FLAG=typeof location!=='undefined'&&/[?&]details\b/.test(location.search||'');
+const worldOpts={...(HOUSES_FLAG?{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}:{}),...(VEGETATION_FLAG?{vegetation:true}:{}),...(pavementKit?{pavement:pavementKit}:{}),...(STREETPROPS_FLAG?{streetprops:true}:{}),...(DETAILS_FLAG?{details:true}:{})};
+const world=(HOUSES_FLAG||VEGETATION_FLAG||pavementKit||STREETPROPS_FLAG||DETAILS_FLAG)?buildWorld(scene,worldOpts):buildWorld(scene);
 // Added after the neighborhood is bent and merged, so the sky stays a sky.
 scene.add(sky);const {road,originals,groundY}=world;// road and originals are read by tests/verify.mjs.
 const _v=new THREE.Vector3(),_q=new THREE.Quaternion(),_e=new THREE.Euler();
@@ -886,6 +890,11 @@ if(VEGETATION_FLAG)import('./vegetation-benchmark.js').then(m=>m.mountInGame({sc
 // X swaps them in the same frame, Z steps the LOD. The Prologue only, as the pavement: past it the originals show (the night chapters
 // move, damage and reuse these things). Without ?streetprops nothing is loaded.
 let streetPropsPast=false;const streetPropsPrologue=()=>{const s=state==='paused'?resumeState:state;if(s==='intro')streetPropsPast=false;if(s.startsWith('c1-')||s==='credits'||coda?.active)streetPropsPast=true;return !streetPropsPast;};
+// Prologue neighborhood-details benchmark (DEV only): ?details stands the authored signs, furniture, hoses, sprinklers, toys,
+// play equipment, sheds, clotheslines and the remaining fences in place of the procedural ones (details-benchmark.js); the same
+// Prologue-only rule as the pavement and the street props.
+let detailsPast=false;const detailsPrologue=()=>{const s=state==='paused'?resumeState:state;if(s==='intro')detailsPast=false;if(s.startsWith('c1-')||s==='credits'||coda?.active)detailsPast=true;return !detailsPast;};
+if(DETAILS_FLAG)import('./details-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,hemi,sun:sunlight,prologue:detailsPrologue})).catch(e=>console.error('details benchmark failed:',e));
 if(STREETPROPS_FLAG)import('./streetprops-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,hemi,sun:sunlight,prologue:streetPropsPrologue})).catch(e=>console.error('street-props benchmark failed:',e));
 if(typeof location!=='undefined'&&/[?&]pipeline\b/.test(location.search||''))import('./pipeline-lab.js').then(m=>m.mountInGame({scene,camera,renderer,groundY:(x,z)=>nav.groundY(x,z)})).catch(e=>console.error('pipeline probe failed:',e));
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.

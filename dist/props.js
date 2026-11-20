@@ -59,6 +59,8 @@ export function buildYards(W){
  // (?streetprops: every car, mailbox, bin, hoop and Oak Hollow fence is recorded and baked into batches of its own, zones
  // 'sp:*'; recording reads the values already chosen and never draws from a random stream, so the street is the same)
  const SP=W.sp||null;if(SP){W.car=(g,kind,color,o)=>{const parts=makeCar(K,g,kind,color,o);SP.dynCars.push({group:g,kind,color,parts,lights:!!o?.lights});return parts;};SP.phase='yards';}
+ // (?details: the remaining yard details are recorded likewise, zones 'dt:*'; the builders below only remember values they chose)
+ const DT=W.dt||null;
  buildFurniture(W);
  const mainG=W.bent(MAIN),ground=(d,lat)=>groundPoint(d,lat).y+W.surfaceY(d,lat);
  const hooks=W.hooks={};const hook=(name,obj,extra={})=>{(hooks[name]||(hooks[name]=[])).push({object:obj,...extra});};
@@ -79,11 +81,11 @@ export function buildYards(W){
   const p=frame.point(u,v);W.space.circle(p.x,p.z,.35,'mailbox');if(frame===MAIN)W.obstacles.push({d0:u-.3,d1:u+.3,l0:v-.3,l1:v+.3});return g;}
  function bins(d,lat,rand){const g=put(d,lat,rand()*.3-.15),pair=rand()<.6,cols=[];for(let k=0;k<(pair?2:1);k++){const x=k*.75,c=k?0x33537a:pickFrom(rand)([0x3d4a3c,0x3f4246,0x4b4f4a]);cols.push(c);
   K.rbox(g,x,.5,0,.58,.96,.68,.04,c);K.rbox(g,x,1.0,-.02,.64,.06,.74,.02,k?0x2d6db0:c);K.box(g,x,.95,.36,.5,.05,.05,0x2b2b2b);for(const s of [-1,1])K.cyl(g,x+s*.26,.1,.3,.1,.06,0x222222,10,[0,0,Math.PI/2]);}occupy(d,lat,.6,'bins');hook('bins',g);if(SP)SP.bins.push({g:W.spZone(g,'bins'),pair,colors:cols,d,lat});}
- function scooter(g,x,z,rot,c){const sg=K.group(g,x,z,rot);K.rbox(sg,0,.07,0,.12,.03,.52,.01,c);K.rod(sg,[0,.1,-.22],[0,.78,-.26],.014,0xb5b8b5);K.rod(sg,[-.16,.78,-.26],[.16,.78,-.26],.015,0x31393c);for(const zz of [-.22,.22]){const w=new THREE.Mesh(new THREE.TorusGeometry(.045,.016,5,10),K.mat(0x30383a));w.rotation.y=Math.PI/2;w.position.set(0,.06,zz);sg.add(w);}return sg;}
+ function scooter(g,x,z,rot,c){const sg=K.group(g,x,z,rot);sg.userData.dtColor=c;K.rbox(sg,0,.07,0,.12,.03,.52,.01,c);K.rod(sg,[0,.1,-.22],[0,.78,-.26],.014,0xb5b8b5);K.rod(sg,[-.16,.78,-.26],[.16,.78,-.26],.015,0x31393c);for(const zz of [-.22,.22]){const w=new THREE.Mesh(new THREE.TorusGeometry(.045,.016,5,10),K.mat(0x30383a));w.rotation.y=Math.PI/2;w.position.set(0,.06,zz);sg.add(w);}return sg;}
  function bigWheel(g,x,z,rot){const t=K.group(g,x,z,rot);K.cyl(t,0,.28,-.35,.28,.12,0xd8483a,14,[0,0,Math.PI/2]);for(const s of [-1,1])K.cyl(t,s*.28,.12,.3,.12,.08,0x2b2b2b,10,[0,0,Math.PI/2]);K.rbox(t,0,.16,.1,.36,.1,.7,.04,0xe7c23c);K.rbox(t,0,.3,.22,.3,.3,.08,.03,0xd8483a);K.rod(t,[-.2,.5,-.35],[.2,.5,-.35],.02,0xe7c23c);return t;}
- function lawnChair(g,x,z,rot,c){const cg=K.group(g,x,z,rot);K.box(cg,0,.36,0,.52,.05,.5,c);const b=K.box(cg,0,.72,.26,.52,.65,.05,c);b.rotation.x=-.25;for(const s of [-1,1]){K.box(cg,s*.27,.52,0,.05,.05,.52,c);K.box(cg,s*.25,.18,-.2,.04,.36,.04,c);K.box(cg,s*.25,.18,.2,.04,.36,.04,c);}return cg;}
+ function lawnChair(g,x,z,rot,c){const cg=K.group(g,x,z,rot);cg.userData.dtColor=c;K.box(cg,0,.36,0,.52,.05,.5,c);const b=K.box(cg,0,.72,.26,.52,.65,.05,c);b.rotation.x=-.25;for(const s of [-1,1]){K.box(cg,s*.27,.52,0,.05,.05,.52,c);K.box(cg,s*.25,.18,-.2,.04,.36,.04,c);K.box(cg,s*.25,.18,.2,.04,.36,.04,c);}return cg;}
  function wagon(g,x,z,rot){const t=K.group(g,x,z,rot);K.rbox(t,0,.3,0,.45,.18,.85,.02,0xb33a2e);for(const s of [-1,1])for(const zz of [-.3,.3])K.cyl(t,s*.25,.12,zz,.11,.05,0x2b2b2b,10,[0,0,Math.PI/2]);K.rod(t,[0,.3,-.43],[0,.15,-1.05],.012,0x2b2b2b);return t;}
- function kidBike(g,x,z,rot,c){const t=K.group(g,x,z,rot,.02);const wt=new THREE.TorusGeometry(.24,.025,5,16);for(const zz of [-.38,.38]){const w=new THREE.Mesh(wt,K.mat(0x2b2b2b));w.position.set(0,.03,zz);w.rotation.x=Math.PI/2;t.add(w);}K.rod(t,[0,.05,-.38],[0,.08,.38],.02,c);K.rod(t,[0,.08,-.3],[.12,.1,-.1],.02,c);K.rod(t,[-.25,.06,-.38],[.25,.06,-.38],.012,0x9da09a);return t;}
+ function kidBike(g,x,z,rot,c){const t=K.group(g,x,z,rot,.02);t.userData.dtColor=c;const wt=new THREE.TorusGeometry(.24,.025,5,16);for(const zz of [-.38,.38]){const w=new THREE.Mesh(wt,K.mat(0x2b2b2b));w.position.set(0,.03,zz);w.rotation.x=Math.PI/2;t.add(w);}K.rod(t,[0,.05,-.38],[0,.08,.38],.02,c);K.rod(t,[0,.08,-.3],[.12,.1,-.1],.02,c);K.rod(t,[-.25,.06,-.38],[.25,.06,-.38],.012,0x9da09a);return t;}
  function pool(g,x,z){const p=K.group(g,x,z);K.cyl(p,0,.13,0,1,.26,0x3d7fb8,18);K.cyl(p,0,.24,0,.93,.02,0x8fc2d6,18);return p;}
  function trampoline(frame,u,v,y){const g=W.place(frame,u,v,{y});const ring=new THREE.Mesh(new THREE.TorusGeometry(1.8,.06,5,28),K.mat(0x2e4c7a));ring.rotation.x=Math.PI/2;ring.position.y=.85;g.add(ring);
   const m=new THREE.Mesh(new THREE.CircleGeometry(1.7,24),K.mat(0x1f2124,{side:THREE.DoubleSide}));m.rotation.x=-Math.PI/2;m.position.y=.84;g.add(m);
@@ -94,8 +96,8 @@ export function buildYards(W){
   for(const x of [-.7,.5]){K.rod(g,[x-.2,2.3,0],[x-.2,.55,0],.008,0x777777);K.rod(g,[x+.2,2.3,0],[x+.2,.55,0],.008,0x777777);K.rbox(g,x,.52,0,.5,.04,.2,.01,0x2a4a8a);}
   const sl=K.rbox(g,2.6,.8,0,.5,.05,2.6,.02,0xd9c340);sl.rotation.z=.55;K.rod(g,[1.8,0,0],[1.8,1.6,0],.03,0x4a6a3a);return g;}
  function shed(frame,u,v,y,rot,rand){const g=W.place(frame,u,v,{y,rot}),c=pickFrom(rand)([0xa89a80,0x9b6a55,0x8d9985]);
-  K.rbox(g,0,1.05,0,2.6,2.1,2.2,.03,c);K.rbox(g,0,.05,0,2.7,.12,2.3,.02,0x9a9282);
-  gableRoof(W,g,2.6,2.2,2.1,.8,.15,.2,W.surfaceMaterial(K.mat(pickFrom(rand)(HOUSE.roofs)),'roof'),W.surfaceMaterial(K.mat(c),'siding'),true,{mid:true,gutters:false,vent:false});
+  K.rbox(g,0,1.05,0,2.6,2.1,2.2,.03,c);K.rbox(g,0,.05,0,2.7,.12,2.3,.02,0x9a9282);const rc=pickFrom(rand)(HOUSE.roofs);g.userData.dtShed={wall:c,roof:rc,w:2.6,d:2.2,h:2.1,rise:.8,door:true};
+  gableRoof(W,g,2.6,2.2,2.1,.8,.15,.2,W.surfaceMaterial(K.mat(rc),'roof'),W.surfaceMaterial(K.mat(c),'siding'),true,{mid:true,gutters:false,vent:false});
   K.box(g,0,1,1.11,1,1.9,.04,0xe8e2d6);K.box(g,0,1,1.13,.06,1.9,.02,0xc8c2b6);return g;}
  function clothesline(frame,u,v,y,rot){const g=W.place(frame,u,v,{y,rot});for(const s of [-1,1]){K.rod(g,[s*2.2,0,0],[s*2.2,1.9,0],.035,0x8a8c88);K.rod(g,[s*2.2,1.85,-.45],[s*2.2,1.85,.45],.025,0x8a8c88);}for(const z of [-.4,0,.4])K.rod(g,[-2.2,1.84,z],[2.2,1.8,z],.004,0xd8d6ce,.004,3);
   const cols=[0xd8d2c4,0x8aa0b8,0xc27a6a];for(let k=0;k<3;k++)K.box(g,-1+k*.8,1.5,0,.5,.6,.01,cols[k]);return g;}
@@ -105,7 +107,7 @@ export function buildYards(W){
  mats.net=new THREE.MeshStandardMaterial({color:0x222428,map:chainTex,alphaTest:.4,side:THREE.DoubleSide,roughness:.7,metalness:.3});
  function fenceRun(frame,pts,style,{lod='full',endPosts=true,gate=false}={}){const g=W.bent(frame);
   {const segs=W.fenceSegs||(W.fenceSegs=[]);for(let i=0;i<pts.length-1;i++){const a=frame.point(...pts[i]),b=frame.point(...pts[i+1]);segs.push([a.x,a.z,b.x,b.z]);}}
-  const rec=SP&&frame===MAIN?{style,lod,endPosts,gate,pts:pts.map(p=>[...p]),bays:[],posts:[],g}:null;
+  const rec=SP&&frame===MAIN?{style,lod,endPosts,gate,pts:pts.map(p=>[...p]),bays:[],posts:[],g}:DT&&frame!==MAIN?{frame,style,lod,endPosts,gate,pts:pts.map(p=>[...p]),bays:[],posts:[],g,details:true}:null;
   const H=style==='privacy'?1.8:style==='chain'?1.2:style==='rail'?1.05:1.05,postC=style==='chain'?0x8e928f:style==='picket'?FENCE.picket:0x8a7456;
   for(let i=0;i<pts.length-1;i++){const [u0,v0]=pts[i],[u1,v1]=pts[i+1],L=Math.hypot(u1-u0,v1-v0),n=Math.max(1,Math.round(L/2.4));
    for(let k=0;k<n;k++){const a=k/n,b=(k+1)/n,ua=u0+(u1-u0)*a,va=v0+(v1-v0)*a,ub=u0+(u1-u0)*b,vb=v0+(v1-v0)*b,um=(ua+ub)/2,vm=(va+vb)/2,len=L/n,ang=Math.atan2(vb-va,-(ub-ua));
@@ -117,7 +119,7 @@ export function buildYards(W){
     else{K.box(bay,0,.45,0,len,.1,.07,FENCE.rail);K.box(bay,0,.9,0,len,.1,.07,FENCE.rail);}
     if(k>0||i>0||endPosts){if(rec)rec.posts.push({u:ua,v:va,H});const pb=K.group(g,va,-ua,0);K.box(pb,0,(H+.12)/2,0,style==='chain'?.06:.1,H+.12,style==='chain'?.06:.1,postC);if(lod==='full'&&style==='privacy')K.lathe(pb,[[.001,0],[.09,0],[.09,.025],[.07,.045],[.001,.045]],0,H+.1175,0,postC,4);}}
    if(i===pts.length-2&&endPosts){if(rec)rec.posts.push({u:u1,v:v1,H,end:true});const pb=K.group(g,v1,-u1,0);K.box(pb,0,(H+.12)/2,0,.1,H+.12,.1,postC);}}
-  if(rec){W.spZone(g,'fence');SP.fences.push(rec);}
+  if(rec&&rec.details){W.dtZone(g,'fence');DT.fences.push(rec);}else if(rec){W.spZone(g,'fence');SP.fences.push(rec);}
   return g;}
  W.fenceRun=fenceRun;
 
@@ -150,13 +152,24 @@ export function buildYards(W){
    // Back-yard trees and things (seen between houses).
    const by=s*(h.setback+h.depth/2+3+rand()*4),bd=h.u+(rand()-.5)*h.w;if(Math.abs(by)<REAR-2&&free(bd,by,2.5))veg.tree(MAIN,bd,by,ground(bd,by),{size:.9+rand()*.5,kind:rand()<.25?'pine':'maple',lod:'mid',clearance:2.4});
    const br=rand(),bl=s*(h.setback+h.depth/2+4.5),bdd=h.u+(rand()<.5?-1:1)*(h.w/2+2.5);
-   if(Math.abs(bl)<REAR-2.2&&free(bdd,bl,2.2)){const y=ground(bdd,bl);if(br<.2){trampoline(MAIN,bdd,bl,y);occupy(bdd,bl,2,'trampoline');hook('trampoline',null,{d:bdd,lat:bl});}else if(br<.34){swingSet(MAIN,bdd,bl,y,rand()*3);occupy(bdd,bl,2.4,'swing');}else if(br<.46){shed(MAIN,bdd,bl,y,s>0?-Math.PI/2:Math.PI/2,rand);occupy(bdd,bl,1.8,'shed');}else if(br<.54){clothesline(MAIN,bdd,bl,y,rand()*3);}}
+   if(Math.abs(bl)<REAR-2.2&&free(bdd,bl,2.2)){const y=ground(bdd,bl);if(br<.2){const t=trampoline(MAIN,bdd,bl,y);occupy(bdd,bl,2,'trampoline');hook('trampoline',null,{d:bdd,lat:bl});if(DT)DT.trampolines.push({g:W.dtZone(t,'trampoline'),d:bdd,lat:bl,plan:h});}
+    else if(br<.34){const t=swingSet(MAIN,bdd,bl,y,rand()*3);occupy(bdd,bl,2.4,'swing');if(DT)DT.swings.push({g:W.dtZone(t,'swing'),d:bdd,lat:bl,plan:h});}
+    else if(br<.46){const t=shed(MAIN,bdd,bl,y,s>0?-Math.PI/2:Math.PI/2,rand);occupy(bdd,bl,1.8,'shed');if(DT)DT.sheds.push({g:W.dtZone(t,'shed'),...t.userData.dtShed,d:bdd,lat:bl,plan:h});}
+    else if(br<.54){const t=clothesline(MAIN,bdd,bl,y,rand()*3);if(DT)DT.clotheslines.push({g:W.dtZone(t,'clothesline'),d:bdd,lat:bl,plan:h});}}
    // A few ordinary things left out before dinner.
    if(!friend){const r=rand(),yd=h.u+(rand()-.5)*14,yl=s*(8.8+rand()*3.8);if(free(yd,yl,.9)){const g=put(yd,yl);let o=null;
     if(r<.14)o=bigWheel(g,0,0,rand()*6);else if(r<.26){lawnChair(g,0,0,rand()*6,pick([0xf2f0ea,0x3f6a4a]));lawnChair(g,.9,.2,rand()*6,pick([0xf2f0ea,0x3f6a4a]));o=g;}
     else if(r<.34){K.ball(g,0,.11,0,.11,0xf2f0ea,[1,1,1],true);o=g;}else if(r<.42)o=pool(g,0,0);else if(r<.5)o=wagon(g,0,0,rand()*6);else if(r<.6)o=kidBike(g,0,0,rand()*6,pick([0xb2553a,0x3a6aa0,0x6a8a3a]));else if(r<.68)o=scooter(g,0,0,rand()*6,pick([0xd04a8a,0x3a8ad0,0x9aa0a0]));
-    if(o){occupy(yd,yl,.9,'toy');hook(r<.14?'big-wheel':r<.26?'lawn-chairs':r<.34?'ball':r<.42?'kiddie-pool':r<.5?'wagon':r<.6?'bike-in-yard':'scooter',g);}}
-    if(rand()<.4){const c=h.S(h.w/2*(-h.gs)-.5,h.front-1.5);const hg=put(c.d,c.lat);const coil=new THREE.Mesh(new THREE.TorusGeometry(.26,.03,5,18),K.mat(0x3f7a3a));coil.rotation.x=Math.PI/2;coil.position.y=.22;hg.add(coil);const c2=coil.clone();c2.position.y=.28;c2.scale.setScalar(.9);hg.add(c2);K.box(hg,0,.5,-.25,.05,.1,.05,0x9a9a90);hook('hose',hg);}}
+    if(o){occupy(yd,yl,.9,'toy');hook(r<.14?'big-wheel':r<.26?'lawn-chairs':r<.34?'ball':r<.42?'kiddie-pool':r<.5?'wagon':r<.6?'bike-in-yard':'scooter',g);
+     if(DT){const where={d:yd,lat:yl,plan:h};
+      if(r<.14)DT.toys.push({kind:'bigwheel',g:W.dtZone(o,'toy'),...where});
+      else if(r<.26){for(const cg of g.children)DT.chairs.push({kind:'lawn',g:W.dtZone(cg,'chair'),color:cg.userData.dtColor,...where});}
+      else if(r<.34)DT.toys.push({kind:'ball',ball:'playground',g:W.dtZone(g,'toy'),center:[0,.11,0],r:.11,color:0xf2f0ea,...where});
+      else if(r<.42)DT.pools.push({kind:'kiddie',g:W.dtZone(o,'pool'),r:1,h:.26,...where});
+      else if(r<.5)DT.toys.push({kind:'wagon',g:W.dtZone(o,'toy'),...where});
+      else if(r<.6)DT.toys.push({kind:'kidbike',g:W.dtZone(o,'toy'),color:o.userData.dtColor,...where});
+      else DT.toys.push({kind:'scooter',g:W.dtZone(o,'toy'),color:o.userData.dtColor,...where});}}}
+    if(rand()<.4){const c=h.S(h.w/2*(-h.gs)-.5,h.front-1.5);const hg=put(c.d,c.lat);const coil=new THREE.Mesh(new THREE.TorusGeometry(.26,.03,5,18),K.mat(0x3f7a3a));coil.rotation.x=Math.PI/2;coil.position.y=.22;hg.add(coil);const c2=coil.clone();c2.position.y=.28;c2.scale.setScalar(.9);hg.add(c2);K.box(hg,0,.5,-.25,.05,.1,.05,0x9a9a90);hook('hose',hg);if(DT)DT.hoses.push({kind:'coil',g:W.dtZone(hg,'hose'),plan:h,x:h.w/2*(-h.gs)-.5,z:h.front-1.5,d:c.d,lat:c.lat});}}
   }
  }
  // Side-street lots: mailboxes, trees, a few cars.
@@ -186,9 +199,9 @@ export function buildYards(W){
  // A curbside portable hoop faces the street, where it is played: base and pole behind the board.
  {const d=253,lat=5.3,g=put(d,lat,-Math.PI/2);K.rbox(g,0,.16,-.45,.8,.3,1.1,.06,0x2c2d2f);K.rod(g,[0,.3,-.3],[0,3.3,-.3],.055,0x6e6f6c);K.rbox(g,0,3.25,0,1.8,1.05,.06,.02,0xefeee8);K.box(g,0,3.1,.04,.6,.45,.02,0xba5a44);
   const ring=new THREE.Mesh(new THREE.TorusGeometry(.23,.02,5,16),K.mat(0xc05a33));ring.rotation.x=Math.PI/2;ring.position.set(0,3.05,.3);g.add(ring);occupy(d,lat,.8,'hoop');g.userData.hoop={board:[0,3.25,0],rim:[0,3.05,.3],pole:[0,1.8,-.3],base:[0,.16,-.45]};(W.hoops||(W.hoops=[])).push({kind:'portable',group:g,d,lat});hook('portable-hoop',g);if(SP)SP.hoops.push({kind:'portable',g:W.spZone(g,'hoop'),d,lat});}
- {const d=372,lat=-5.3,g=put(d,lat,1.1);K.ball(g,0,.12,0,.12,0xc2652f,[1,1,1],true);hook('toy-at-curb',g);}
+ {const d=372,lat=-5.3,g=put(d,lat,1.1);K.ball(g,0,.12,0,.12,0xc2652f,[1,1,1],true);hook('toy-at-curb',g);if(DT)DT.toys.push({kind:'ball',ball:'basketball',g:W.dtZone(g,'toy'),center:[0,.12,0],r:.12,color:0xc2652f,d,lat});}
  // Dropped on its side in the grass beside the walk, where a kid lets go of it.
- {const d=458,lat=8.9,g=put(d,lat,2.2,ground(d,lat));const sc=scooter(g,0,0,0,0x3a8ad0);sc.rotation.z=1.4;sc.position.y=.055;hook('scooter-in-grass',g);}
+ {const d=458,lat=8.9,g=put(d,lat,2.2,ground(d,lat));const sc=scooter(g,0,0,0,0x3a8ad0);sc.rotation.z=1.4;sc.position.y=.055;hook('scooter-in-grass',g);if(DT)DT.toys.push({kind:'scooter',fallen:true,g:W.dtZone(sc,'toy'),color:0x3a8ad0,d,lat});}
 
  // The end of the street: bench, the old oak, the field fence and tall grass ---------------------
  {const b=LOOKOUT.bench,y=groundPoint(b.d,b.lat).y+knoll(b.d,b.lat),g=W.place(MAIN,b.d,b.lat,{y});
@@ -196,15 +209,16 @@ export function buildYards(W){
   for(const s of [-1,1]){const leg=K.group(g,s*.74,0,0);K.rbox(leg,0,.22,-.12,.07,.46,.07,.015,0x3d3b38);K.rbox(leg,0,.5,.2,.07,1,.07,.015,0x3d3b38);K.rbox(leg,0,.63,.02,.07,.05,.52,.015,0x3d3b38);K.box(leg,0,.03,.04,.1,.06,.6,0x3d3b38);}
   W.obstacles.push({d0:b.d-.45,d1:b.d+.45,l0:b.lat-.95,l1:b.lat+.95});hook('bench',g);}
  {const o=LOOKOUT.oak;veg.tree(MAIN,o.d,o.lat,groundPoint(o.d,o.lat).y+knoll(o.d,o.lat)-.02,{size:1.35,kind:'oak',force:true,natural:true,landmark:true});hook('old-oak',null,{d:o.d,lat:o.lat});}
- {const fd=LOOKOUT.fenceD,g=W.bent(MAIN);const post=lat=>{const y=knoll(fd,lat)-LAWN;K.lathe(g,[[.001,-.2],[.08,-.2],[.075,1.2],[.06,1.28],[.001,1.3]],lat,y,-fd,0x8a7760,6);};
+ {const fd=LOOKOUT.fenceD,g=W.bent(MAIN),FF=DT?(DT.fieldFence={d:fd,g,posts:[],rails:[]}):null;const post=lat=>{const y=knoll(fd,lat)-LAWN;if(FF)FF.posts.push({lat,y});K.lathe(g,[[.001,-.2],[.08,-.2],[.075,1.2],[.06,1.28],[.001,1.3]],lat,y,-fd,0x8a7760,6);};
   for(let lat=-17;lat<=17.1;lat+=2.6)post(lat);
-  for(const yy of [.55,1.05])for(let lat=-17;lat<17;lat+=2.6){const r=seeded(hashSeed(9,lat,yy))();K.rod(g,[lat,yy+knoll(fd,lat)-LAWN,-fd+.06],[lat+2.6,yy+knoll(fd,lat+2.6)-LAWN+(r-.5)*.05,-fd+.06],.05,FENCE.rail,.045,5);}
+  for(const yy of [.55,1.05])for(let lat=-17;lat<17;lat+=2.6){const r=seeded(hashSeed(9,lat,yy))();const a=[lat,yy+knoll(fd,lat)-LAWN,-fd+.06],b=[lat+2.6,yy+knoll(fd,lat+2.6)-LAWN+(r-.5)*.05,-fd+.06];if(FF)FF.rails.push({a,b,r:.05});K.rod(g,a,b,.05,FENCE.rail,.045,5);}
+  if(FF)W.dtZone(g,'fieldfence');
   W.obstacles.push({d0:fd-.3,d1:fd+.3,l0:-18,l1:18});}
  {const tall=K.mat(0x8a9263,{side:THREE.DoubleSide,roughness:1});W.foliage.push(tall);const rand=seeded(77);
   for(let k=0;k<160;k++){const lat=(rand()-.5)*32,d=1167.5+rand()*9.5;if(Math.abs(lat)<1&&d<1172)continue;const g=W.place(MAIN,d,lat,{y:groundPoint(d,lat).y+knoll(d,lat)-.05,rot:rand()*3});for(let blade=0;blade<5;blade++){const h=.20+rand()*.36,w=.016+rand()*.018,bend=.06+rand()*.12;
    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([-w,0,0,w,0,0,-w*.6,h*.55,bend*.3,w*.6,h*.55,bend*.3,bend*.35,h,bend],3));geo.setIndex([0,1,2,1,3,2,2,3,4]);geo.computeVertexNormals();
    const c=new THREE.Mesh(geo,tall);c.rotation.y=rand()*Math.PI*2;c.position.set((rand()-.5)*.19,0,(rand()-.5)*.19);if(W.vegRecord)c.userData.zone='vg:meadow';g.add(c);}}}
- {const d=1172.2,lat=-12.5,g=W.place(MAIN,d,lat,{y:groundPoint(d,lat).y+knoll(d,lat)});K.ball(g,0,.12,0,.12,0xb8643a,[1,1,1],true);hook('ball-in-grass',g);}
+ {const d=1172.2,lat=-12.5,g=W.place(MAIN,d,lat,{y:groundPoint(d,lat).y+knoll(d,lat)});K.ball(g,0,.12,0,.12,0xb8643a,[1,1,1],true);hook('ball-in-grass',g);if(DT)DT.toys.push({kind:'ball',ball:'basketball',g:W.dtZone(g,'toy'),center:[0,.12,0],r:.12,color:0xb8643a,d,lat,lookout:true});}
  chalkSun(3.2,1147.5,.034,0xf2cf7a);chalkText('JSA',LOOKOUT.chalk.lat,LOOKOUT.chalk.d,.034,0xe8e2d0,.6);hopscotch(-5.8,1135,-1,.034);hook('initials',null,{d:LOOKOUT.chalk.d,lat:LOOKOUT.chalk.lat});
  // Trees around the lookout and in the field beyond.
  const rl=seeded(1161);for(let k=0;k<10;k++){const lat=(rl()<.5?-1:1)*(15+rl()*12),d=1120+rl()*34;veg.tree(MAIN,d,lat,groundPoint(d,lat).y+(d>1150?knoll(d,lat):LAWN),{size:.8+rl()*.5,kind:rl()<.3?'young':'maple',clearance:2});}
