@@ -40,14 +40,14 @@
   "lamp.lod0": 1281,
   "lamp.lod1": 517,
   "lamp.lod2": 168,
-  "mailbox.brick.lod0": 156,
-  "mailbox.brick.lod1": 156,
-  "mailbox.deco.lod0": 494,
-  "mailbox.deco.lod1": 416,
-  "mailbox.white.lod0": 258,
-  "mailbox.white.lod1": 180,
-  "mailbox.wood.lod0": 258,
-  "mailbox.wood.lod1": 180,
+  "mailbox.brick.lod0": 330,
+  "mailbox.brick.lod1": 202,
+  "mailbox.deco.lod0": 1264,
+  "mailbox.deco.lod1": 500,
+  "mailbox.white.lod0": 1132,
+  "mailbox.white.lod1": 304,
+  "mailbox.wood.lod0": 1024,
+  "mailbox.wood.lod1": 292,
   "pole.arm.lod0": 1904,
   "pole.arm.lod1": 855,
   "pole.arm.lod2": 228,
@@ -119,5 +119,5 @@
   "mailboxY": 1.13,
   "fenceRef": 2.4
  },
- "glb_bytes": 1865464
+ "glb_bytes": 2044752
 }

@@ -316,9 +316,10 @@ export async function placeProps({world,scene,renderer,shared,tex,errors}){
  for(const p of R.poles){const h=hash(p.x,p.z),age=.3+.6*hash(p.z,p.x),pm=at(p.g);poleM[p.index]=pm;
   set('pole.shaft',PROP_LODS.pole).add(pm,{iTint:white,iVar:[h*10,age,1,0],radius:5});
   set('pole.arm',PROP_LODS.arm).add(pm,{iTint:white,iVar:[h*10,age,0,0],radius:1.2});
-  set('pole.rack',PROP_LODS.small,{shadow:[true,false,false]}).add(pm,{iTint:white,iVar:[h*10,age,0,0],radius:.3});
+  // (the pole lines along the next streets over carry two primaries only: no secondary rack)
+  if(!p.background)set('pole.rack',PROP_LODS.small,{shadow:[true,false,false]}).add(pm,{iTint:white,iVar:[h*10,age,0,0],radius:.3});
   if(p.transformer){set('pole.xfmr',PROP_LODS.arm).add(pm,{iTint:white,iVar:[h*10,age,0,0],radius:1});count('transformers');}
-  count('poles');}
+  count('poles');if(p.background)count('backgroundPoles');}
  // where each wire meets its pole on the authored hardware (the original's attachment, moved onto an insulator):
  // primaries onto the crossarm's insulators; the neutral and the service drops onto the secondary rack under the
  // transformers; where the conductors run along a turned crossarm (the junction pole), onto side pins above and below it

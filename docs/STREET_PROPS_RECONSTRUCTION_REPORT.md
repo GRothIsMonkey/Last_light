@@ -15,7 +15,8 @@ software-renderer or file number; no real-GPU frame time has been measured.
 
 <!-- RESULT:start -->
 **Result.** All 54 parked cars and the parent's moving minivan are now six refined US-market family vehicles. Also
-rebuilt in place: the 39 utility poles (hardware and 157 continuous wires), 27 cobra-head streetlights, 133 mailboxes,
+rebuilt in place: 39 utility poles (39 on Oak Hollow and its side streets, 0 on the pole lines
+behind the houses) with their hardware and 157 continuous wires, 27 cobra-head streetlights, 133 mailboxes,
 8 hydrants, 89 bins, 13 hoops and Oak Hollow's 500 fence runs
 (2,457 bays, 189 gates, 2,944 posts). Every object stands exactly where the
 recorded procedural one stands; the default game's geometry, collisions, navigation and riding are identical (hashed
@@ -68,6 +69,7 @@ geometry is not changed by a vertex (the flag only splits batches: proved in §1
 | 54 parked cars | `props.js` (Oak Hollow's driveways, the side streets' driveways and kerbs) | the car's group (its world matrix), kind, colour, where it stands |
 | the parent's minivan | `props.js` wraps `world.car` | the moving car's group and parts (`ambient.js` drives it) |
 | 39 utility poles, 157 wires | `furniture.js` | each pole's group, crossarm turn, transformer, guy; each wire's two poles, attachment, role, sag |
+| 71 poles, 134 wires on the pole lines behind the houses | `background.js` (the lines along the next streets over, seen across the back yards) | each pole's group and heading; each span's two poles, side, sag |
 | 27 streetlights | `furniture.js` | the lamp's group and its lamp-level slot |
 | 8 hydrants, 133 mailboxes, 54 bin sets | `furniture.js`, `props.js` | the group; the mailbox's style and colours; the bins' pair and colours |
 | 13 hoops | `props.js`, `houses.js` | the curb hoop's group; each garage hoop's board, rim and pieces |
@@ -129,7 +131,11 @@ What was done to the pack's cars, and why:
 ## 5. Utility poles and overhead wires
 
 The game's network is kept: the same 39 poles (main line behind the left sidewalk, the junction pole, the two branch
-lines), the same 114 spans, 42 service drops and the guy. On each pole:
+lines), the same 114 spans, 42 service drops and the guy. **The pole lines behind the houses** (71 poles and 134 spans
+along the next streets over, 68 m either side, seen across the back yards and between houses) were missed in the first
+pass and still showed the old thin poles and hairline wires; they now carry the same authored shaft, double crossarm and
+insulators, and their two conductors are drawn as the same ribbon wires on the insulators (no secondary rack: they carry
+no neutral or service drops). On each pole:
 
 | Piece | Source | Notes |
 |---|---|---|
@@ -159,10 +165,15 @@ schedule, the glow sprites, the light pools and the two local lights are exactly
 
 ## 7. Mailboxes, hydrants, bins
 
-- **Mailboxes (original)**: a T1 rural box (rounded top, door with latch toward the street, red flag on its pivot) on the
-  mount the procedural style already chose: white 4×4 post with a support arm and brace (31), stained 4×4 post with house
-  numbers (45), black scroll post with a number plate (28), the brick column with a concrete cap, an inset door and brass
-  numbers (29). The box keeps its recorded colour (black, blue-grey, red-brown or cream) through a paint mask.
+- **Mailboxes (original; reworked after the first review, which found them too close to the old ones)**: a T1 rural box
+  with a rolled back seam, three stiffening ribs over the arch, a door proud of the body with a rolled lip, its catch and
+  pull tab, a flanged floor on a galvanized saddle, and the red flag on its pivot, on the mount the procedural style
+  already chose: a white vinyl post sleeve with a skirt, trim collar, arm and brace (31); a stained cedar 4×4 with its arm,
+  brace and house numbers (45); a black scroll post with a base collar and number plate (28). The **brick column** (29) is
+  now a builder's column: concrete footing, a projecting brick plinth, the shaft in running bond at true brick size
+  (the first version stretched one texture tile over the whole column, so its bricks were three times too tall), a rowlock
+  course, a hipped precast cap, an arched steel mailbox insert with its handle, a newspaper slot under a brick lintel, and
+  brass house numbers. The box keeps its recorded colour (black, blue-grey, red-brown or cream) through a paint mask.
 - **Hydrants (Spellkaze)**: 0.88 m, the steamer nozzle where the procedural hydrant's was (along the street), the red repainted
   the game's chrome yellow with its chips, rust, grime and bolts kept (8).
 - **Bins (peyman.khaleghi)**: the wheeled cart (1.0 m, handle and wheels on the side the procedural bins had them: along the street), tinted
@@ -198,7 +209,7 @@ reading as copies. No global renderer setting was changed (tone mapping, exposur
 ## 10. Evidence
 
 **21 before/after pairs** in `docs/qa/streetprops/browser/`: the 17 required views, with a second angle for
-four of them. Each pair is one camera and one frame, with all five benchmarks on; the two images differ only by the X
+4 of them. Each pair is one camera and one frame, with all five benchmarks on; the two images differ only by the X
 key. `report.json` beside them holds each image's camera, game clock, draw calls, triangles and SHA-256.
 **Review gallery** (the pairs side by side with a slider): https://claude.ai/artifact/CDWeAKYTnw6AAbSgTFUV6D. The same gallery is also in the offline package (`review-gallery/index.html`).
 
@@ -209,11 +220,11 @@ key. `report.json` beside them holds each image's camera, game clock, draw calls
 | 3 | A pickup or station wagon | S03 (pickup), S03b (wagon) |
 | 4 | Three vehicle types together | S04 |
 | 5 | Wheel and body close | S05 |
-| 6 | Utility pole and wires | S06 |
+| 6 | Utility pole and wires | S06 (also S06b: the pole line behind the houses) |
 | 7 | Transformer and insulators | S07 |
 | 8 | A streetlight at golden hour | S08, S08b |
 | 9 | A streetlight at dusk | S09 |
-| 10 | A mailbox | S10 (also S11) |
+| 10 | A mailbox | S10, S10b (brick column close; also S11) |
 | 11 | A hydrant | S11 |
 | 12 | Bins | S12 |
 | 13 | A basketball hoop | S13 (garage), S13b (portable) |
@@ -291,7 +302,7 @@ summary).
 
 ### 11.3 Cost
 
-**Files.** `street.vehicles.glb` 4.46 MB, `street.props.glb` 1.87 MB, eight textures
+**Files.** `street.vehicles.glb` 4.46 MB, `street.props.glb` 2.04 MB, eight textures
 3.47 MB on disk (2048² albedos, 1024² ORM and normal maps, a 512² cut-out). Offline package with every
 benchmark's models: 166.7 MB; default package (no models): 12.9 MB.
 

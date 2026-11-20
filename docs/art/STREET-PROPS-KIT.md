@@ -35,8 +35,8 @@ rolled to the ground under their four tyres (`world.groundY`).
 
 | Recorded (W.sp) | Pieces | Placement | LOD distances (m) |
 |---|---|---|---|
-| `poles` (39) | `pole.shaft`, `pole.arm`, `pole.rack`; `pole.xfmr` on transformer poles; `pole.sidepin` where conductors run along a turned crossarm; `pole.guard` at the guy's anchor (turned along the guy) | the pole's group (rotation = −heading + arm) | 40 / 110 / 420 (shaft), 35 / 95 / 300 (arm, transformer) |
-| `spans`, `drops`, `guys` (157 wires) | one ribbon mesh (`sp:wires`) | recomputed between the hardware attachments below, same sag | — |
+| `poles` (110: 39 on the street, 71 on the pole lines behind the houses, `background: true`, no rack) | `pole.shaft`, `pole.arm`, `pole.rack`; `pole.xfmr` on transformer poles; `pole.sidepin` where conductors run along a turned crossarm; `pole.guard` at the guy's anchor (turned along the guy) | the pole's group (rotation = −heading + arm) | 40 / 110 / 420 (shaft), 35 / 95 / 300 (arm, transformer) |
+| `spans`, `drops`, `guys` (291 wires: 157 on the street, 134 on the pole lines behind the houses) | one ribbon mesh (`sp:wires`) | recomputed between the hardware attachments below, same sag | — |
 | `lamps` (27) | `lamp`, `lamp.lens` (attribute `iLamp` = the lamp's level slot) | the lamp's group (arm toward −x) | 40 / 110 / 420 |
 | `mailboxes` (133) | `mailbox.brick` (style brick), `mailbox.white` (seed < 0.40), `mailbox.deco` (0.40–0.60), `mailbox.wood` (≥ 0.60) | the mailbox group (door +z) | 22 / 55 / 170 |
 | `hydrants` (8) | `hydrant` | the hydrant group (pumper +z) | 22 / 55 / 170 |

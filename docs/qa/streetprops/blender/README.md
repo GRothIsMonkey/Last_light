@@ -8,3 +8,5 @@ in-game evidence is `../browser/` (game-renderer captures, software WebGL).
   each in one of its period paints, with the game's paint rule (atlas × paint through the paint mask).
 - `blender-props-kit--BLENDER-RENDER.jpg`: a wood pole with crossarms and transformer, the cobra-head lamp, the four
   mailboxes, the hydrant, the cart and galvanized can, the portable hoop, privacy / gate / picket bays.
+- `blender-mailboxes--BLENDER-RENDER.jpg`: the four mailboxes close (white vinyl post, stained cedar post, black scroll
+  post, brick column), the box in one paint (after the mailbox rework that followed the first review).

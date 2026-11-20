@@ -61,21 +61,22 @@ reg_ok = all(r[1] is not None and r[2] == 0 for r in regs)
 missing = [r[0] for r in regs if r[1] is None]
 
 result = f"""**Result.** All 54 parked cars and the parent's moving minivan are now six refined US-market family vehicles. Also
-rebuilt in place: the 39 utility poles (hardware and 157 continuous wires), 27 cobra-head streetlights, 133 mailboxes,
+rebuilt in place: {k.get('poles', 0)} utility poles ({k.get('poles', 0) - k.get('backgroundPoles', 0)} on Oak Hollow and its side streets, {k.get('backgroundPoles', 0)} on the pole lines
+behind the houses) with their hardware and {k.get('wires', 0)} continuous wires, 27 cobra-head streetlights, 133 mailboxes,
 8 hydrants, {k.get('carts', 0) + k.get('cans', 0)} bins, {k.get('hoops', 0)} hoops and Oak Hollow's 500 fence runs
 ({n(k.get('bays', 0))} bays, {k.get('gates', 0)} gates, {n(k.get('posts', 0))} posts). Every object stands exactly where the
 recorded procedural one stands; the default game's geometry, collisions, navigation and riding are identical (hashed
 vertex by vertex and ride by ride). The street-props suite passes **{checks} of {checks + fails}** checks
 (`tests/streetprops-browser.mjs`, commit `{R.get('commit')}`). The regression suites
 {'all pass' if reg_ok else 'are listed in §11 (not all were run: ' + ', '.join(missing) + ')' if missing else 'are listed in §11'}.
-There are 21 before/after pairs (§10){', browsable in the [review gallery](' + GALLERY + ')' if GALLERY else ''}."""
+There are {len(R['pairs'])} before/after pairs (§10){', browsable in the [review gallery](' + GALLERY + ')' if GALLERY else ''}."""
 
 # ------------------------------------------------------------------------------------------------ §10 evidence
 REQ = [('1', 'A sedan', 'S01, S05'), ('2', 'A minivan or SUV', 'S02 (minivan); the SUV in S04'),
        ('3', 'A pickup or station wagon', 'S03 (pickup), S03b (wagon)'), ('4', 'Three vehicle types together', 'S04'),
-       ('5', 'Wheel and body close', 'S05'), ('6', 'Utility pole and wires', 'S06'),
+       ('5', 'Wheel and body close', 'S05'), ('6', 'Utility pole and wires', 'S06 (also S06b: the pole line behind the houses)'),
        ('7', 'Transformer and insulators', 'S07'), ('8', 'A streetlight at golden hour', 'S08, S08b'),
-       ('9', 'A streetlight at dusk', 'S09'), ('10', 'A mailbox', 'S10 (also S11)'), ('11', 'A hydrant', 'S11'),
+       ('9', 'A streetlight at dusk', 'S09'), ('10', 'A mailbox', 'S10, S10b (brick column close; also S11)'), ('11', 'A hydrant', 'S11'),
        ('12', 'Bins', 'S12'), ('13', 'A basketball hoop', 'S13 (garage), S13b (portable)'),
        ('14', 'A fence and gate', 'S14, S14b'), ('15', 'A residential street', 'S15'),
        ('16', 'A wide view with all five benchmarks', 'S16'),
@@ -93,7 +94,7 @@ for p in R['pairs']:
 ev = f"""## 10. Evidence
 
 **{len(R['pairs'])} before/after pairs** in `docs/qa/streetprops/browser/`: the 17 required views, with a second angle for
-four of them. Each pair is one camera and one frame, with all five benchmarks on; the two images differ only by the X
+{len(R['pairs']) - 17} of them. Each pair is one camera and one frame, with all five benchmarks on; the two images differ only by the X
 key. `report.json` beside them holds each image's camera, game clock, draw calls, triangles and SHA-256.
 {'**Review gallery** (the pairs side by side with a slider): ' + GALLERY + '. The same gallery is also in the offline package (`review-gallery/index.html`).' if GALLERY else 'The review gallery is built from `report.json` by `tools/blender/streetprops/build_review_gallery.py`.'}
 
@@ -103,11 +104,11 @@ key. `report.json` beside them holds each image's camera, game clock, draw calls
 
 | Pair | What it shows | Camera | Game clock | Images | Draw calls (authored / original) | Triangles (authored / original) |
 |---|---|---|---|---|---|---|
-""" + '\n'.join(rows) + """
+""" + '\n'.join(rows) + f"""
 
 The clock reads the game's own date line: every daytime pair is in the Prologue's evening (7:35–7:48 PM, August 21,
 2011); S09 is later in the same ride, after the lamps come on. **Riding camera**: the gameplay camera, placed by the QA
-hook. **QA camera**: placed by hand beside the object (S05, S07, S08b, S13, S14, S16), with the same renderer, light and
+hook. **QA camera**: placed by hand beside the object ({', '.join(pair_id(p) for p in R['pairs'] if p.get('at', {}).get('free'))}), with the same renderer, light and
 shadows. In S16 the bike stands under the raised camera.
 
 **Blender inspection renders** (offline Cycles, **not** the game): `docs/qa/streetprops/blender/`
@@ -144,7 +145,7 @@ parts_txt = {
     'C': "all five benchmarks load together without error; vegetation identical with and without `?streetprops`; the ride runs",
     'D': "the offline package with models runs `?streetprops` and all five from the embedded bytes, browser offline, with no "
          "network request; the default package fails loudly and substitutes nothing",
-    'E': f"21 pairs, each one camera and one frame; cost per frame (below); no page errors",
+    'E': f"{len(R['pairs'])} pairs, each one camera and one frame; cost per frame (below); no page errors",
     'F': "cost against the default game at eight riding cameras (below); no page errors",
 }
 suite = '\n'.join(f"| {p} | {len(byPart.get(p, []))} | {parts_txt[p]} |" for p in 'ABCDEF')
@@ -215,7 +216,7 @@ instanced draws for {veh.get('instances')} cars; props {n(pr.get('tris', 0))} tr
 {pr.get('calls')} draws for {n(pr.get('instances', 0))} instances. LOD0 per car: 7,915–9,380 triangles (§4).
 
 **Per captured frame** (E, all five benchmarks; authored against original in the same frame): draw calls
-{rng(cost.get('drawCallDelta'), True)} per frame, triangles ×{rng(cost.get('triangleRatio'))}. Over the 21 frames: {n((cost.get('sum') or {}).get('authored', {}).get('calls', 0))} against
+{rng(cost.get('drawCallDelta'), True)} per frame, triangles ×{rng(cost.get('triangleRatio'))}. Over the {len(R['pairs'])} frames: {n((cost.get('sum') or {}).get('authored', {}).get('calls', 0))} against
 {n((cost.get('sum') or {}).get('original', {}).get('calls', 0))} calls, {n((cost.get('sum') or {}).get('authored', {}).get('tris', 0))} against
 {n((cost.get('sum') or {}).get('original', {}).get('tris', 0))} triangles.
 

@@ -3,8 +3,9 @@ themselves (the game-renderer captures are made by tests/streetprops-browser.mjs
 
     python3 tools/blender/streetprops/render_inspection.py <outDir>
 
-Writes blender-vehicles-lineup.png (the six cars, LOD0, each in one of its period paints) and blender-props-kit.png
-(pole with transformer, cobra-head lamp, the four mailboxes, hydrant, cart, can, hoops, fence bays and a gate).
+Writes blender-vehicles-lineup.png (the six cars, LOD0, each in one of its period paints), blender-props-kit.png
+(pole with transformer, cobra-head lamp, the four mailboxes, hydrant, cart, can, hoops, fence bays and a gate) and
+blender-mailboxes.png (the four mailboxes close).
 """
 import bpy, math, os, sys
 from mathutils import Vector
@@ -157,7 +158,28 @@ def props():
     bpy.ops.render.render(write_still=True)
 
 
+def mailboxes():
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    sc, co = setup((1400, 800))
+    bpy.ops.import_scene.gltf(filepath=os.path.join(ROOT, 'dist', 'assets', 'street', 'street.props.glb'))
+    P = atlas_material('P', os.path.join(TEX, 'props_albedo.jpg'), os.path.join(TEX, 'props_orm.png'), srgb(0x5a2622))
+    show = {'mailbox.white.lod0': -1.5, 'mailbox.wood.lod0': -.5, 'mailbox.deco.lod0': .5, 'mailbox.brick.lod0': 1.6}
+    for o in list(bpy.context.scene.objects):
+        if o.type != 'MESH' or o.name == 'Plane':
+            continue
+        if o.name not in show:
+            o.hide_render = True
+            continue
+        o.location.x += show[o.name]
+        for k, slot in enumerate(o.material_slots):
+            o.material_slots[k].material = P
+    look(co, (0.6, -5.2, 1.5), (0.2, 0, .8))
+    sc.render.filepath = os.path.join(OUT, 'blender-mailboxes.png')
+    bpy.ops.render.render(write_still=True)
+
+
 if __name__ == '__main__':
     vehicles()
     props()
+    mailboxes()
     print('renders in', OUT)

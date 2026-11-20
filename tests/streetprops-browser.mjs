@@ -233,12 +233,17 @@ const look=(page,v)=>page.evaluate(async v=>{const L=lastLight,{MAIN}=await impo
   if(f.kind==='gate'){const gates=R.fences.filter(x=>x.gate&&x.bays[0]&&x.bays[0].run===0&&x.bays[0].k===0&&x.bays[0].len<3.2);const g=gates[f.i],b=g.bays[0],a=MAIN.point((b.ua+b.ub)/2,b.va),side=Math.sign(b.va)*(f.flip?-1:1);const cpos=MAIN.point((b.ua+b.ub)/2+(f.du||0),b.va-side*(f.back||4.2));
    const from=new T.Vector3(cpos.x,cpos.y+(f.h||1.55),cpos.z),at=new T.Vector3(a.x,a.y+(f.ah||.95),a.z);M={from,at};}
   else if(f.kind==='hoop'){const hp=R.hoops.filter(h=>h.kind==='garage'&&!h.old)[f.i],P=hp.plan,a=P.toWorld(hp.board.x,hp.board.z),b2=P.toWorld(hp.board.x,hp.board.z+f.back);M={from:new T.Vector3(b2.x,a.ground+f.h,b2.z),at:new T.Vector3(a.x,a.ground+hp.board.y-.4,a.z)};}
+  else if(f.kind==='mailbox'){const list=R.mailboxes.filter(m=>(m.frame||'main')==='main'&&m.style===f.style);const g=list[f.i].g;g.updateWorldMatrix(true,false);
+   M={from:new T.Vector3(...f.from).applyMatrix4(g.matrixWorld),at:new T.Vector3(...f.at).applyMatrix4(g.matrixWorld)};}
+  else if(f.kind==='bgpole'){const p=R.poles.filter(x=>x.background)[f.i],P=MAIN.point(p.u+(f.du??-14),Math.sign(p.v)*(f.lat??40));
+   M={from:new T.Vector3(P.x,P.y+(f.h??4),P.z),at:new T.Vector3(p.x,p.y+(f.ah??7.5),p.z)};}
   else if(f.kind==='street'){const a=MAIN.point(f.d,f.lat),b=MAIN.point(f.td,f.tlat);M={from:new T.Vector3(a.x,a.y+f.h,a.z),at:new T.Vector3(b.x,b.y+(f.th||0),b.z)};}
   else{let list=R[f.kind];if(f.kind==='cars')list=__streetprops.handle.parts.vehicles.placed.filter(p=>p.type===f.type&&p.rec.frame==='main').map(p=>p.rec);else list=list.filter(x=>(x.frame||'main')==='main');const g=list[f.i].g;g.updateWorldMatrix(true,false);
    M={from:new T.Vector3(...f.from).applyMatrix4(g.matrixWorld),at:new T.Vector3(...f.at).applyMatrix4(g.matrixWorld)};}
   // the bike (and with it the sky dome, the shadow camera and the world's own distance culling) next to the subject;
-  // for the raised street view, under the camera (the sky dome must hold the camera, which stands far from its target)
-  {const A=f.kind==='street'?M.from:M.at,q=MAIN.project(A.x,A.z);L.place(q.u-3,Math.max(-3.3,Math.min(3.3,q.v)),0);for(let i=0;i<4;i++)L.step(1/30);L.look(0,0);L.step(1/30);s={...s,d:q.u-3,lat:Math.max(-3.3,Math.min(3.3,q.v))};}
+  // for the raised street view and the view across the back yards, under the camera (the sky dome must hold the camera,
+  // which stands far from its target)
+  {const A=f.kind==='street'||f.kind==='bgpole'?M.from:M.at,q=MAIN.project(A.x,A.z);L.place(q.u-3,Math.max(-3.3,Math.min(3.3,q.v)),0);for(let i=0;i<4;i++)L.step(1/30);L.look(0,0);L.step(1/30);s={...s,d:q.u-3,lat:Math.max(-3.3,Math.min(3.3,q.v))};}
   const c=L.camera;c.position.copy(M.from);c.up.set(0,1,0);c.lookAt(M.at);c.updateMatrixWorld(true);window.__freeCam={p:c.position.toArray(),q:c.quaternion.toArray()};}
  return {d:+(+s.d).toFixed(2),lat:+(+s.lat).toFixed(2),yaw:+(s.yaw||0).toFixed(3),target:window.__target||null,aimError:window.__aim?window.__aimErr:null,free:!!v.free};},v);
 const frame=(page,mode,timing=false)=>page.evaluate(([m,timing])=>{__streetprops.setMode(m);__streetprops.tick(true);window.__vegetation?.tick?.();window.__houses?.tick?.();window.__bikes?.tick?.();window.__pavement?.tick?.();
@@ -264,11 +269,13 @@ const VIEWS=[
  {n:'S04-three-vehicle-types-together',what:'a wagon, a pickup and an SUV (and a sedan) parked down the street, at matched scale',d:-232,lat:-.4,yaw:.0,pitch:-.05},
  {n:'S05-wheel-and-body-close',what:'a close view of a car\'s front wheel, tyre, body paint and glass (QA close-up camera, 1.4 m from the wheel)',d:200,lat:-2,free:{kind:'cars',type:'sedan',i:2,from:[2.25,.85,-2.55],at:[.8,.42,-1.35]}},
  {n:'S06-utility-pole-and-wires',what:'a utility pole with its crossarm, transformer and the connected overhead wires',d:128,lat:1.5,yaw:.55,pitch:.32},
+ {n:'S06b-pole-line-behind-the-houses',what:'the pole line along the next street over, seen across the back yards: the same authored pole, crossarm, insulators and wires as on Oak Hollow (QA camera between the houses, 4 m up)',d:0,lat:0,free:{kind:'bgpole',i:6}},
  {n:'S07-transformer-and-insulators',what:'the transformer, fused cutouts, pin insulators, crossarm braces and the secondary rack (QA close-up camera at 7.6 m)',d:138,lat:-3,free:{kind:'poles',i:10,from:[2.4,7.6,3.2],at:[.2,8.1,0]}},
  {n:'S08-streetlight-golden-hour',what:'a cobra-head streetlight at golden hour (off, as the game\'s evening has it)',d:123,lat:-1.5,yaw:-.42,pitch:.12},
  {n:'S08b-cobra-head-close',what:'the cobra head: die-cast housing, photocell, drop refractor, mast arm (QA close-up camera)',d:131,lat:3,free:{kind:'lamps',i:8,from:[-.6,6.5,2.6],at:[-2,7.2,0]}},
  {n:'S09-streetlight-at-dusk',what:'streetlights lit at dusk (the ride near the end of the street: the lamps have come on)',d:1032,lat:-1.2,yaw:-.3,pitch:.06,step:4},
  {n:'S10-mailbox-beside-a-driveway',what:'mailboxes beside a driveway (a white post, a brick column beyond)',d:135.6,lat:-3.2,yaw:.95,pitch:-.3},
+ {n:'S10b-brick-mailbox-close',what:'a brick mailbox column: plinth, running bond at true brick size, rowlock course, precast cap, arched steel insert, newspaper slot, house numbers (QA close-up camera)',d:0,lat:0,free:{kind:'mailbox',style:'brick',i:3,from:[1.4,1.35,2.6],at:[0,.85,0]}},
  {n:'S11-hydrant-near-the-curb',what:'a fire hydrant in the parking strip near the curb (and a black scroll-post mailbox)',d:76.5,lat:-3.4,yaw:.85,pitch:-.35},
  {n:'S12-bins-beside-a-driveway',what:'the recorded wheeled carts at the curb beside a driveway, the garage behind (their existing place)',d:-4.5,lat:-3.3,yaw:.75,pitch:-.22},
  {n:'S13-basketball-hoop-garage',what:'a garage-mounted basketball hoop: backboard, rim, net, bracket (QA camera at the driveway\'s free-throw distance)',d:322,lat:3,free:{kind:'hoop',i:3,back:5.2,h:1.6}},

@@ -43,15 +43,21 @@ export function buildBackground(W){
    W.fenceRun(MAIN,[[u,side*(REAR+.1)],[u,side*(Math.min(a.setback,b.setback)-a.depth/2+1)]],seeded(hashSeed(11,side,u))()<.7?'privacy':'chain',{lod:'mid'});}}
 
  // Pole lines along the next streets over, spaced by real distance along the offset curve ----------
- for(const side of [-1,1]){let last=null,acc=0,prev=null;const lat=side*68;
+ // (?streetprops: each pole and span is recorded, the poles baked into the street props' pole zone and the wires into
+ // its line batch, so the benchmark can stand its authored pole hardware and wires there; nothing else changes)
+ const SP=W.sp||null;
+ for(const side of [-1,1]){let last=null,lastIdx=null,acc=0,prev=null;const lat=side*68;
   for(let d=ROAD_START;d<1130;d+=2){const p=groundPoint(d,lat);if(prev)acc+=Math.hypot(p.x-prev.x,p.z-prev.z);prev=p;
-   if(acc<42&&last)continue;if(inSide(p.x,p.z,6)||W.town?.inside(p.x,p.z,6)){last=null;acc=0;continue;}acc=0;
+   if(acc<42&&last)continue;if(inSide(p.x,p.z,6)||W.town?.inside(p.x,p.z,6)){last=null;lastIdx=null;acc=0;continue;}acc=0;
    const y=T(p.x,p.z),g=W.placeWorld(p.x,p.z,y,-heading(d),true);K.cyl(g,0,4.4,0,.13,9.2,STREET.pole,6);K.box(g,0,8.7,0,1.8,.12,.12,STREET.pole);
    const top=new THREE.Vector3(p.x,y+8.8,p.z);
+   let idx=null;if(SP){idx=SP.poles.length;SP.poles.push({g:W.spZone(g,'pole'),guyGroup:null,index:idx,frame:'background',u:d,v:lat,x:p.x,z:p.z,y,rot:-heading(d),arm:0,transformer:false,guy:null,background:true});}
    if(last){for(const dx of [-.8,.8]){const a=last.clone(),b=top.clone(),r=heading(d);a.x+=dx*Math.cos(r);a.z+=dx*Math.sin(r);b.x+=dx*Math.cos(r);b.z+=dx*Math.sin(r);
     const pts=[];for(let k=0;k<=10;k++){const t=k/10;pts.push(new THREE.Vector3(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t-3.2*t*(1-t),a.z+(b.z-a.z)*t));}
-    W.baked.push(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:STREET.wire})));}}
-   last=top;}}
+    const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:STREET.wire}));
+    if(SP){l.userData.spLine=true;if(lastIdx!==null)SP.spans.push({a:{pole:lastIdx,dx,h:8.8},b:{pole:idx,dx,h:8.8},sag:.8,along:false,role:'primary',kind:'span',background:true,color:STREET.wire,pts:pts.map(q=>[q.x,q.y,q.z])});}
+    W.baked.push(l);}}
+   last=top;lastIdx=idx;}}
 
  // Far field: houses and tree clumps across the land, facing the local street grain --------------
  let minX=1e9,maxX=-1e9,minZ=1e9,maxZ=-1e9;for(let d=ROAD_START;d<=1700;d+=20){const p=roadFrame(d);minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minZ=Math.min(minZ,p.z);maxZ=Math.max(maxZ,p.z);}

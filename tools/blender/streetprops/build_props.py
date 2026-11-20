@@ -500,38 +500,109 @@ def build_lamp():
     return out
 
 
+def _arch(w, h0, segs):
+    """A mailbox arch profile in x/y: flat floor, straight sides to h0, a half-round top of radius w."""
+    return [(-w, 0), (w, 0)] + [(w * math.cos(t), h0 + w * math.sin(t)) for t in [i / segs * math.pi for i in range(segs + 1)]]
+
+
+def _prism(name, prof, z0, z1, scale=1.0, dy=0.0):
+    """Extrude an x/y profile between z0 and z1 (caps on both ends)."""
+    pr = [(x * scale, y * scale + dy) for x, y in prof]
+    n = len(pr)
+    verts = [(x, y, z0) for x, y in pr] + [(x, y, z1) for x, y in pr]
+    faces = [(k, (k + 1) % n, n + (k + 1) % n, n + k) for k in range(n)]
+    faces += [tuple(range(n))[::-1], tuple(range(n, 2 * n))]
+    return obj_from(name, verts, faces)
+
+
 def mailbox_box(q):
-    """T1 rural box: 0.17 wide, 0.21 tall, 0.48 deep; door at +z; flag on +x. Base at y 0 (the mount adds its height)."""
-    segs = 10 if q == 0 else 5
-    verts, faces = [], []
-    prof = [(-.085, 0), (.085, 0)] + [(.085 * math.cos(a), .125 + .085 * math.sin(a)) for a in [i / segs * math.pi for i in range(segs + 1)]]
-    for z in (-.23, .25):
-        for x, y in prof:
-            verts.append((x, y, z))
-    n = len(prof)
-    for k in range(n):
-        j = (k + 1) % n
-        faces.append((k, j, n + j, n + k))
-    faces.append(tuple(range(n))[::-1])
-    body = obj_from('mb.body', verts, faces)
+    """T1 rural box (0.17 wide, 0.21 tall, 0.48 deep): a rolled back seam, three stiffening ribs over the arch, a door a
+    little larger than the body with a rolled lip, its catch and pull tab, the red flag on its pivot (+x), a flanged floor
+    and a galvanized mounting saddle. Door at +z; base at y 0 (the mount adds its height)."""
+    segs = 16 if q == 0 else 7
+    prof = _arch(.085, .125, segs)
+    parts = []
+    body = _prism('mb.body', prof, -.228, .238)
     swatch(body, 'mailbox_paint')
-    door = obj_from('mb.door', [(x * 1.02, y * 1.0 + (.0 if y > 0 else -.003), .253) for x, y in prof] + [(x * 1.02, y, .262) for x, y in prof],
-                    [tuple(range(len(prof), 2 * len(prof)))] + [(k, (k + 1) % len(prof), len(prof) + (k + 1) % len(prof), len(prof) + k) for k in range(len(prof))])
+    parts.append(smooth(body, 40))
+    back = _prism('mb.back', prof, -.24, -.222, scale=1.035, dy=-.002)       # the rolled seam at the back
+    swatch(back, 'mailbox_paint')
+    parts.append(smooth(back, 40))
+    door = _prism('mb.door', prof, .238, .252, scale=1.045, dy=-.003)        # the door, proud of the body
     swatch(door, 'mailbox_paint')
-    parts = [smooth(body, 40), door]
-    latch = box('mb.latch', (0, .2, .27), (.03, .025, .02))
-    swatch(latch, 'galvanized')
-    parts.append(latch)
-    flag_arm = box('mb.flagarm', (.093, .15, -.06), (.008, .025, .17))
-    swatch(flag_arm, 'flag_red')
-    flag = box('mb.flag', (.093, .19, -.15), (.008, .085, .07))
-    swatch(flag, 'flag_red')
-    parts += [flag_arm, flag]
+    parts.append(smooth(door, 40))
     if q == 0:
-        piv = lathe('mb.pivot', [(0, -.006), (.012, -.006), (.012, .006), (0, .006)], 8, .09, .15, .03, axis='x')
+        lip = _prism('mb.lip', prof, .232, .24, scale=1.065, dy=-.004)       # its rolled lip
+        swatch(lip, 'mailbox_paint')
+        parts.append(smooth(lip, 40))
+        arch_pts = [(x * 1.012, y * 1.0 + .001) for x, y in prof[2:]]
+        for z in (-.13, -.02, .09):                                           # stiffening ribs over the arch
+            rib = tube('mb.rib', [(x, y, z) for x, y in arch_pts], .0035, 4)
+            swatch(rib, 'mailbox_paint')
+            parts.append(rib)
+    catch = box('mb.catch', (0, .205, .258), (.034, .018, .012), bevel=.003 if q == 0 else 0)
+    swatch(catch, 'galvanized')
+    tab = box('mb.tab', (0, .19, .266), (.022, .03, .006))
+    swatch(tab, 'mailbox_paint')
+    parts += [catch, tab]
+    floor = box('mb.floor', (0, .004, .005), (.19, .008, .49))
+    swatch(floor, 'galvanized_dull')
+    saddle = box('mb.saddle', (0, -.012, 0), (.13, .024, .34), bevel=.002 if q == 0 else 0)
+    swatch(saddle, 'galvanized')
+    parts += [floor, saddle]
+    # the flag (down): a flat arm from the pivot toward the back, the flag plate at its end
+    arm = box('mb.flagarm', (.094, .13, -.07), (.006, .022, .2))
+    swatch(arm, 'flag_red')
+    flag = box('mb.flag', (.094, .135, -.17), (.006, .09, .085), bevel=.004 if q == 0 else 0)
+    swatch(flag, 'flag_red')
+    parts += [arm, flag]
+    if q == 0:
+        piv = lathe('mb.pivot', [(0, -.008), (.014, -.008), (.014, .008), (0, .008)], 10, .09, .13, .03, axis='x')
         swatch(piv, 'galvanized')
         parts.append(piv)
     return parts
+
+
+def brick_block(name, x0, x1, y0, y1, z0, z1, base=0.0, uoff=0.0, rowlock=False):
+    """A box in the brick texture at true scale (8 x 2 1/4 in units: the tile is 0.81 x 0.405 m): every side face is cut at
+    each tile boundary, so the bricks keep their size however tall the block is (a rowlock band: bricks on edge)."""
+    tx, ty, tw, th = LAY['tiles']['brick']
+    TU, TV = (.27, .1) if rowlock else (.81, .405)
+    def uvp(fu, fv):
+        return ((tx + 2 + min(max(fu, 0), 1) * (tw - 4)) / S, 1 - (ty + 2 + (1 - min(max(fv, 0), 1)) * (th - 4)) / S)
+    cuts = [y0]
+    k = math.floor((y0 - base) / TV) + 1
+    while base + k * TV < y1 - 1e-4:
+        cuts.append(base + k * TV)
+        k += 1
+    cuts.append(y1)
+    verts, faces, uvs = [], [], []
+    sides = [((x0, z1), (x1, z1)), ((x1, z1), (x1, z0)), ((x1, z0), (x0, z0)), ((x0, z0), (x0, z1))]
+    for si, ((ax, az), (bx, bz)) in enumerate(sides):
+        w = math.hypot(bx - ax, bz - az)
+        off = (uoff + si * .37) % 1
+        for j in range(len(cuts) - 1):
+            ya, yb = cuts[j], cuts[j + 1]
+            va = ((ya - base) / TV) % 1
+            vb = va + (yb - ya) / TV
+            if vb > 1.0001:
+                va, vb = 0, (yb - ya) / TV
+            n = len(verts)
+            verts += [(ax, ya, az), (bx, ya, bz), (bx, yb, bz), (ax, yb, az)]
+            u0 = off * (1 - w / TU) if w < TU else 0
+            u1 = u0 + min(1, w / TU)
+            uvs += [uvp(u0, va), uvp(u1, va), uvp(u1, vb), uvp(u0, vb)]
+            faces.append((n, n + 1, n + 2, n + 3))
+    n = len(verts)
+    verts += [(x0, y1, z1), (x1, y1, z1), (x1, y1, z0), (x0, y1, z0)]
+    uvs += [uvp(.1, .1), uvp(.6, .1), uvp(.6, .6), uvp(.1, .6)]
+    faces.append((n, n + 1, n + 2, n + 3))
+    o = obj_from(name, verts, faces)
+    uv = _uvl(o.data)
+    for p in o.data.polygons:
+        for li, vi in zip(p.loop_indices, p.vertices):
+            uv.data[li].uv = uvs[vi]
+    return o
 
 
 def build_mailboxes():
@@ -543,24 +614,30 @@ def build_mailboxes():
             for o in bx:
                 xform(o, Matrix.Translation(G(0, BOX_Y, .02)))
             return parts + bx
-        # white 4x4 post with a support board
-        p = box('mb.post', (0, .56, 0), (.09, 1.12 + .3, .09), bevel=.006)
+        # white vinyl 4x4 sleeve over the post, a skirt at the ground, the box on a support arm with a brace
+        p = box('mb.post', (0, .56, 0), (.1, 1.12 + .3, .1), bevel=.006)
         xform(p, Matrix.Translation(G(0, -.15, 0)))
-        swatch(p, 'white_paint')
-        a = box('mb.arm', (0, 1.105, .0), (.14, .05, .44), bevel=.005)
-        swatch(a, 'white_paint')
-        br = box('mb.brace', (0, .96, -.12), (.05, .05, .28), rot=[('X', math.radians(45))])
-        swatch(br, 'white_paint')
-        out[f'mailbox.white.lod{q}'] = join(boxed([p, a, br]), f'mailbox.white.lod{q}')
-        # stained 4x4 post
+        swatch(p, 'vinyl_white')
+        skirt = box('mb.skirt', (0, .05, 0), (.14, .1, .14), bevel=.008 if q == 0 else 0)
+        swatch(skirt, 'vinyl_white')
+        a = box('mb.arm', (0, 1.098, .0), (.15, .06, .46), bevel=.006)
+        swatch(a, 'vinyl_white')
+        br = box('mb.brace', (0, .955, -.12), (.05, .05, .3), rot=[('X', math.radians(45))], bevel=.004 if q == 0 else 0)
+        swatch(br, 'vinyl_white')
+        trim = box('mb.trim', (0, 1.06, 0), (.13, .03, .13), bevel=.006 if q == 0 else 0)
+        swatch(trim, 'vinyl_white')
+        out[f'mailbox.white.lod{q}'] = join(boxed([p, skirt, a, br, trim]), f'mailbox.white.lod{q}')
+        # stained cedar 4x4 with a chamfered arm, its brace and the house numbers
         p = box('mb.post', (0, .41, 0), (.09, 1.42, .09), bevel=.006)
         planar(p, plank('wood', 0, 30), 'x', 'y', -.05, .05, -.3, 1.2)
-        a = box('mb.arm', (0, 1.105, .0), (.14, .05, .44), bevel=.005)
+        a = box('mb.arm', (0, 1.098, .0), (.14, .06, .48), bevel=.006)
         planar(a, plank('wood', 4, 40), 'x', 'z', -.1, .1, -.25, .25)
+        br = box('mb.brace', (0, .955, -.12), (.045, .045, .3), rot=[('X', math.radians(45))])
+        planar(br, plank('wood', 6, 30), 'x', 'z', -.05, .05, -.3, .1)
         num = box('mb.num', (.047, .82, 0), (.004, .07, .2))
-        planar(num, LAY['tiles']['numbers'], 'z', 'y', -.1, .1 + .3, .78, .86)
-        out[f'mailbox.wood.lod{q}'] = join(boxed([p, a, num]), f'mailbox.wood.lod{q}')
-        # black decorative post with a scroll bracket and a finial
+        planar(num, LAY['tiles']['numbers'], 'z', 'y', .1, -.1 - .3, .78, .86)       # (reads left to right from +x)
+        out[f'mailbox.wood.lod{q}'] = join(boxed([p, a, br, num]), f'mailbox.wood.lod{q}')
+        # black decorative post: scroll bracket, a base collar and the number plate
         p = box('mb.post', (0, .41, 0), (.075, 1.42, .075), bevel=.004)
         swatch(p, 'iron_black')
         a = box('mb.arm', (0, 1.1, .0), (.06, .04, .46), bevel=.004)
@@ -571,33 +648,46 @@ def build_mailboxes():
             sc = tube('mb.scroll', pts, .009, 5)
             swatch(sc, 'iron_black')
             scroll.append(sc)
-        collar = lathe('mb.collar', [(0, 0), (.06, 0), (.06, .03), (.045, .05), (0, .05)], 8, 0, .02, 0)
+        collar = lathe('mb.collar', [(0, 0), (.07, 0), (.07, .04), (.05, .07), (0, .07)], 10 if q == 0 else 6, 0, .0, 0)
         swatch(collar, 'iron_black')
         plate = box('mb.plate', (0, .7, .04), (.18, .07, .006))
         planar(plate, LAY['tiles']['numbers'], 'x', 'y', -.09, .41, .665, .735)
         out[f'mailbox.deco.lod{q}'] = join(boxed([p, a, collar, plate] + scroll), f'mailbox.deco.lod{q}')
-        # brick column (the procedural one's size), concrete cap, an inset mailbox door and the house number
-        bx = box('mb.col', (0, .66, 0), (.56, 1.32, .56), bevel=.004)
-        me = bx.data
-        uv = _uvl(me)
-        tx, ty, tw, th = LAY['tiles']['brick']
-        for pgn in me.polygons:
-            ax = max(range(3), key=lambda k: abs(pgn.normal[k]))
-            for li in pgn.loop_indices:
-                co = me.vertices[me.loops[li].vertex_index].co
-                gco = (co.x, co.z, -co.y)
-                a_, b_ = (gco[2], gco[1]) if ax == 0 else (gco[0], gco[1]) if ax == 1 else (gco[0], gco[1])
-                fu, fv = (a_ + .3) / .81, (b_ % .405) / .405 if b_ < 1.3 else .99
-                uv.data[li].uv = ((tx + 2 + min(max(fu, 0), 1) * (tw - 4)) / S, 1 - (ty + 2 + (1 - min(max(fv, 0), 1)) * (th - 4)) / S)
-        cap = box('mb.cap', (0, 1.36, 0), (.64, .08, .64), bevel=.01)
+        # brick column (the procedural one's footprint): a concrete footing, a projecting brick plinth, the shaft in
+        # running bond at true brick size, a rowlock course, a hipped precast cap; in front, an arched steel mailbox
+        # insert (door, frame, handle), the newspaper slot below it and the house numbers
+        parts = []
+        foot = box('mb.foot', (0, .02, 0), (.68, .04, .68))
+        swatch(foot, 'concrete_dark')
+        parts.append(foot)
+        parts.append(brick_block('mb.plinth', -.31, .31, .04, .25, -.31, .31, base=.04, uoff=.2))
+        parts.append(brick_block('mb.shaft', -.28, .28, .25, 1.2, -.28, .28, base=.04, uoff=.55))
+        parts.append(brick_block('mb.rowlock', -.305, .305, 1.2, 1.29, -.305, .305, base=1.2, rowlock=True))
+        cap = box('mb.cap', (0, 1.315, 0), (.7, .05, .7), bevel=.008 if q == 0 else 0)
         swatch(cap, 'concrete')
-        dr = box('mb.door', (0, 1.02, .283), (.3, .22, .012), bevel=.004)
+        hip = obj_from('mb.hip', [(-.35, 1.34, -.35), (.35, 1.34, -.35), (.35, 1.34, .35), (-.35, 1.34, .35),
+                                  (-.1, 1.42, -.1), (.1, 1.42, -.1), (.1, 1.42, .1), (-.1, 1.42, .1)],
+                       [(0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7), (4, 5, 6, 7)])
+        swatch(hip, 'concrete')
+        parts += [cap, hip]
+        ins = _arch(.17, .2, 14 if q == 0 else 6)
+        frame = _prism('mb.insframe', ins, .275, .296, dy=.72)
+        swatch(frame, 'powder_black')
+        dr = _prism('mb.insdoor', _arch(.14, .18, 14 if q == 0 else 6), .296, .303, dy=.74)
         swatch(dr, 'powder_black')
-        hd = box('mb.handle', (0, 1.08, .292), (.06, .015, .01))
+        hd = box('mb.handle', (0, 1.04, .31), (.06, .016, .014), bevel=.003 if q == 0 else 0)
         swatch(hd, 'brass')
-        num = box('mb.num', (0, .72, .283), (.22, .07, .006))
-        planar(num, LAY['tiles']['numbers'], 'x', 'y', -.11, .39, .685, .755)
-        out[f'mailbox.brick.lod{q}'] = join([bx, cap, dr, hd, num], f'mailbox.brick.lod{q}')
+        parts += [smooth(frame, 50), smooth(dr, 50), hd]
+        slot = box('mb.slot', (0, .52, .284), (.36, .15, .006))
+        swatch(slot, 'rubber')
+        slotf = box('mb.slotframe', (0, .52, .279), (.39, .18, .006))
+        swatch(slotf, 'galvanized_dull')
+        lintel = brick_block('mb.lintel', -.21, .21, .61, .67, .28, .3, base=.61, rowlock=True)
+        parts += [slotf, slot, lintel]
+        num = box('mb.num', (0, .33, .285), (.22, .07, .008))
+        planar(num, LAY['tiles']['numbers'], 'x', 'y', -.11, .39, .295, .365)
+        parts.append(num)
+        out[f'mailbox.brick.lod{q}'] = join(parts, f'mailbox.brick.lod{q}')
     return out
 
 
