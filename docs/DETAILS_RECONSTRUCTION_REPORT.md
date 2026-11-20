@@ -405,8 +405,8 @@ The clock reads the game's own date line: every pair is in the Prologue's evenin
 reported, not asserted, and appears with the same values in the earlier branches' runs.
 
 **Which commit.** The details suite and every regression ran on `6a85f70`. The later commits on this branch change only
-documentation, the QA records and the text of one capture's description in the details suite (D19). `dist/` is
-byte-identical. The street-props suite ran its correctness parts A–D (the default game unchanged, every street prop
+documentation, the QA records and the text of one capture's description in the details suite (D19). They also
+remove two Python bytecode caches the first commit had picked up by mistake. `dist/` is byte-identical. The street-props suite ran its correctness parts A–D (the default game unchanged, every street prop
 placed, the offline package). Its capture and cost parts (E, F) are that benchmark's own evidence, and nothing they
 measure was touched.
 
