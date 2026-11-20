@@ -372,7 +372,11 @@ export async function placeProps({world,scene,renderer,shared,tex,errors}){
  const FENCE={privacy:{post:'post.wood'},chain:{post:'post.chain'},picket:{post:'post.white'},rail:{post:'post.wood'}};
  for(const f of R.fences){const sty=f.style,F=FENCE[sty]||FENCE.rail,grey=sty==='privacy'&&hash(f.pts[0][0],f.pts[0][1])<.45;
   const bayName=sty==='privacy'?(grey?'fence.privacy_grey':'fence.privacy'):'fence.'+sty;
-  for(const b of f.bays){const A2=MAIN.point(b.ua,b.va),B2=MAIN.point(b.ub,b.vb),dx=B2.x-A2.x,dz=B2.z-A2.z,L=Math.hypot(dx,dz)||1,nx=-dz/L,nz=dx/L;
+  for(const b of f.bays){let A2=MAIN.point(b.ua,b.va),B2=MAIN.point(b.ub,b.vb);
+   // side-yard runs: the finished face (+z: the boards, the gate's hinges and latch) toward the street, the rails and the
+   // gate's brace toward the back yard (the bay turned half a turn by swapping its ends: a rotation, not a mirror)
+   if(f.gate){const mu=(b.ua+b.ub)/2,mv=(b.va+b.vb)/2,M2=MAIN.point(mu,mv),C=MAIN.point(mu,mv*.9);if((A2.z-B2.z)*(C.x-M2.x)+(B2.x-A2.x)*(C.z-M2.z)<0){const t=A2;A2=B2;B2=t;}}
+   const dx=B2.x-A2.x,dz=B2.z-A2.z,L=Math.hypot(dx,dz)||1,nx=-dz/L,nz=dx/L;
    const isGate=f.gate&&b.run===0&&b.k===0&&b.len<3.2,name=isGate?'fence.gate':bayName,sy=sty==='picket'?1.05:1;
    const m=new THREE.Matrix4().set(dx,0,nx,(A2.x+B2.x)/2, B2.y-A2.y,sy,0,(A2.y+B2.y)/2, dz,0,nz,(A2.z+B2.z)/2, 0,0,0,1);
    set(name,PROP_LODS.fence,{capacity:128,shadow:[true,false,false]}).add(m,{iTint:white,iVar:[hash(b.ua,b.va)*10,.5,2,0],radius:1.4});count(isGate?'gates':'bays');}

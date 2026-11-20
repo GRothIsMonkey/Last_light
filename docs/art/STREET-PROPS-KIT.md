@@ -42,7 +42,7 @@ rolled to the ground under their four tyres (`world.groundY`).
 | `hydrants` (8) | `hydrant` | the hydrant group (pumper +z) | 22 / 55 / 170 |
 | `bins` (54 sets) | `cart` at x 0 and 0.75 (pairs), or `can` (a hash: about 1 in 4 single bins) | the bins group | 22 / 55 / 170 |
 | `hoops` (13) | `hoop.portable` (the curb hoop), `hoop.garage`, `hoop.old` (the friend's older board) | the curb hoop's group; garage hoops from the plan's board position (`P.toWorld`), facing out; skipped on house-benchmark lots | 22 / 55 / 170 |
-| `fences` (500 runs) | `fence.privacy` / `fence.privacy_grey` (45 % of runs), `fence.picket`, `fence.rail`, `fence.chain`, `fence.gate` (side-yard runs' first bay); `post.wood`, `post.white`, `post.chain` | each bay: a matrix whose x column is the bay (post to post on the ground, slope included), y up; posts scaled to the run's post height | 18 / 52 / 190 |
+| `fences` (500 runs) | `fence.privacy` / `fence.privacy_grey` (45 % of runs), `fence.picket`, `fence.rail`, `fence.chain`, `fence.gate` (side-yard runs' first bay); `post.wood`, `post.white`, `post.chain` | each bay: a matrix whose x column is the bay (post to post on the ground, slope included), y up, +z the finished face (rails and the gate's brace on −z); side-yard runs turned so +z faces the street; posts scaled to the run's post height | 18 / 52 / 190 |
 
 Per-instance attributes for props: `iTint` (linear RGB for the masked paint: mailbox boxes, carts), `iVar` (seed, age,
 kind: 1 = wood pole, 2 = fence wood).

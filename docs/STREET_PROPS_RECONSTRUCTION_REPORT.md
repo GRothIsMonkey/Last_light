@@ -171,7 +171,9 @@ schedule, the glow sprites, the light pools and the two local lights are exactly
   sheared between its own two posts on the ground (so the fence follows the slope with no gap and no step): privacy
   (dog-eared boards, two backer rails; stained, or weathered grey on about 45 % of runs), picket (pointed pickets, worn
   white paint), rail, chain link (cut-out mesh, galvanized top rail and posts); posts of the run's style with caps. On
-  each side-yard run, the bay against the house is a **gate** (Z brace, strap hinges, latch) — 189 gates. The lookout's
+  each side-yard run, the bay against the house is a **gate** (Z brace, strap hinges, latch) — 189 gates. Side-yard runs
+  show their finished face (and the gate's hinges and latch) to the street, rails and brace toward the back yard; the
+  other runs (between back yards) keep the face the run's direction gives them. The lookout's
   field fence and Briarwood's creek fences are left as they are (A-67).
 
 ## 9. Material integration with the other four benchmarks

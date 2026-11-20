@@ -229,14 +229,16 @@ const look=(page,v)=>page.evaluate(async v=>{const L=lastLight,{MAIN}=await impo
   if(v.yawOff)set(s.yaw+v.yawOff);window.__aimErr=+err().toFixed(4);}
  window.__freeCam=null;
  if(v.free){let M;const f=v.free;
-  if(f.kind==='gate'){const gates=R.fences.filter(x=>x.gate);const g=gates[f.i],b=g.bays[0],a=MAIN.point((b.ua+b.ub)/2,b.va),side=Math.sign(b.va);const cpos=MAIN.point((b.ua+b.ub)/2+(f.du||0),b.va-side*(f.back||4.2));
+  // (only the runs whose first bay the game draws as a gate: a side-yard run's first bay shorter than 3.2 m)
+  if(f.kind==='gate'){const gates=R.fences.filter(x=>x.gate&&x.bays[0]&&x.bays[0].run===0&&x.bays[0].k===0&&x.bays[0].len<3.2);const g=gates[f.i],b=g.bays[0],a=MAIN.point((b.ua+b.ub)/2,b.va),side=Math.sign(b.va)*(f.flip?-1:1);const cpos=MAIN.point((b.ua+b.ub)/2+(f.du||0),b.va-side*(f.back||4.2));
    const from=new T.Vector3(cpos.x,cpos.y+(f.h||1.55),cpos.z),at=new T.Vector3(a.x,a.y+(f.ah||.95),a.z);M={from,at};}
   else if(f.kind==='hoop'){const hp=R.hoops.filter(h=>h.kind==='garage'&&!h.old)[f.i],P=hp.plan,a=P.toWorld(hp.board.x,hp.board.z),b2=P.toWorld(hp.board.x,hp.board.z+f.back);M={from:new T.Vector3(b2.x,a.ground+f.h,b2.z),at:new T.Vector3(a.x,a.ground+hp.board.y-.4,a.z)};}
   else if(f.kind==='street'){const a=MAIN.point(f.d,f.lat),b=MAIN.point(f.td,f.tlat);M={from:new T.Vector3(a.x,a.y+f.h,a.z),at:new T.Vector3(b.x,b.y+(f.th||0),b.z)};}
   else{let list=R[f.kind];if(f.kind==='cars')list=__streetprops.handle.parts.vehicles.placed.filter(p=>p.type===f.type&&p.rec.frame==='main').map(p=>p.rec);else list=list.filter(x=>(x.frame||'main')==='main');const g=list[f.i].g;g.updateWorldMatrix(true,false);
    M={from:new T.Vector3(...f.from).applyMatrix4(g.matrixWorld),at:new T.Vector3(...f.at).applyMatrix4(g.matrixWorld)};}
-  // the bike (and with it the sky dome, the shadow camera and the world's own distance culling) next to the subject
-  {const q=MAIN.project(M.at.x,M.at.z);L.place(q.u-3,Math.max(-3.3,Math.min(3.3,q.v)),0);for(let i=0;i<4;i++)L.step(1/30);L.look(0,0);L.step(1/30);s={...s,d:q.u-3,lat:Math.max(-3.3,Math.min(3.3,q.v))};}
+  // the bike (and with it the sky dome, the shadow camera and the world's own distance culling) next to the subject;
+  // for the raised street view, under the camera (the sky dome must hold the camera, which stands far from its target)
+  {const A=f.kind==='street'?M.from:M.at,q=MAIN.project(A.x,A.z);L.place(q.u-3,Math.max(-3.3,Math.min(3.3,q.v)),0);for(let i=0;i<4;i++)L.step(1/30);L.look(0,0);L.step(1/30);s={...s,d:q.u-3,lat:Math.max(-3.3,Math.min(3.3,q.v))};}
   const c=L.camera;c.position.copy(M.from);c.up.set(0,1,0);c.lookAt(M.at);c.updateMatrixWorld(true);window.__freeCam={p:c.position.toArray(),q:c.quaternion.toArray()};}
  return {d:+(+s.d).toFixed(2),lat:+(+s.lat).toFixed(2),yaw:+(s.yaw||0).toFixed(3),target:window.__target||null,aimError:window.__aim?window.__aimErr:null,free:!!v.free};},v);
 const frame=(page,mode,timing=false)=>page.evaluate(([m,timing])=>{__streetprops.setMode(m);__streetprops.tick(true);window.__vegetation?.tick?.();window.__houses?.tick?.();window.__bikes?.tick?.();window.__pavement?.tick?.();
@@ -252,7 +254,8 @@ async function pair(page,v,flags){const at=await look(page,v);const lab=await la
  const b=await frame(page,'original');const B=await shot(page,`${v.n}--original`,{kind:'game-renderer capture',camera:cam,mode:'original',flags,view:v,at,...b});
  await page.evaluate(()=>__streetprops.setMode('authored'));
  const same=JSON.stringify(a.cam)===JSON.stringify(b.cam);
- report.pairs.push({name:v.n,what:v.what,flags,camera:a.cam,cameraKind:cam,at,clock:a.clock,sameCamera:same,labels:lab,authored:{calls:a.calls,triangles:a.triangles,ms:a.ms},original:{calls:b.calls,triangles:b.triangles,ms:b.ms},files:[A?.file,B?.file]});save();return {a,b,same};}
+ report.pairs.push({name:v.n,what:v.what,flags,camera:a.cam,cameraKind:cam,at,clock:a.clock,sameCamera:same,labels:lab,authored:{calls:a.calls,triangles:a.triangles,ms:a.ms},original:{calls:b.calls,triangles:b.triangles,ms:b.ms},files:[A?.file,B?.file]});
+ const vi=n=>{const k=VIEWS.findIndex(x=>x.n===n);return k<0?1e9:k;};report.pairs.sort((x,y)=>vi(x.name)-vi(y.name));save();return {a,b,same};}
 const VIEWS=[
  {n:'S01-sedan-in-a-driveway',what:'a sedan parked in a driveway',carType:'sedan',after:100,dd:-5.5,latAbs:3.3,pitch:-.06},
  {n:'S02-minivan-beside-a-house',what:'a minivan in a driveway beside a house',carType:'minivan',after:60,dd:-6.5,latAbs:3.3,pitch:-.05},
@@ -270,7 +273,7 @@ const VIEWS=[
  {n:'S12-bins-beside-a-driveway',what:'the recorded wheeled carts at the curb beside a driveway, the garage behind (their existing place)',d:-4.5,lat:-3.3,yaw:.75,pitch:-.22},
  {n:'S13-basketball-hoop-garage',what:'a garage-mounted basketball hoop: backboard, rim, net, bracket (QA camera at the driveway\'s free-throw distance)',d:322,lat:3,free:{kind:'hoop',i:3,back:5.2,h:1.6}},
  {n:'S13b-portable-hoop-at-the-curb',what:'the portable hoop at the curb (d 253), as placed',d:241,lat:1.6,yaw:-.36,pitch:.05},
- {n:'S14-wooden-fence-and-gate',what:'a side-yard privacy fence and its gate beside a house (QA camera standing in the side yard)',d:-410,lat:-3,free:{kind:'gate',i:6,back:3.6,h:1.55,du:-1.2}},
+ {n:'S14-wooden-fence-and-gate',what:'a side-yard gate (grey boards, strap hinges, latch) between the house and the stained privacy fence, its finished face toward the street (QA camera standing in the side yard)',d:-256,lat:-3,free:{kind:'gate',i:9,back:3.6,h:1.55,du:-1.2}},
  {n:'S14b-fences-from-the-street',what:'back-yard and lot-line fences seen between houses from the sidewalk',d:-418,lat:-6.9,yaw:1.35,pitch:0},
  {n:'S15-residential-street',what:'a residential street with its cars, poles, wires, lamps, mailboxes and bins',d:380,lat:-1.1,yaw:.05,pitch:-.04},
  {n:'S16-oak-hollow-wide-all-five',what:'a wide, raised view of Oak Hollow with all five benchmarks (QA raised camera, 13 m up)',d:30,lat:0,free:{kind:'street',d:28,lat:-1,h:13,td:150,tlat:0,th:0}},
@@ -303,10 +306,13 @@ const COST=`async v=>{const L=lastLight;L.place(v.d,v.lat,0);for(let i=0;i<4;i++
  for(const m of modes){if(window.__streetprops){__streetprops.setMode(m);__streetprops.tick(true);}const i=L.render();const ms=[];for(let k=0;k<3;k++){const t0=performance.now();L.render();gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);ms.push(performance.now()-t0);}ms.sort((a,b)=>a-b);out[m]={calls:i.calls,tris:i.triangles,ms:+ms[1].toFixed(0)};}
  if(window.__streetprops)__streetprops.setMode('authored');return out;}`;
 if(PARTS.includes('F')){const R=report.parts.F={views:COST_VIEWS,default:{},streetprops:{}};
- for(const [key,flags] of [['default',''],['streetprops','streetprops']])await withPage(async(page,{errors})=>{const t0=Date.now();await open(page,flags);if(flags)await waitSP(page);await startRide(page);R[key+'LoadMs']=Date.now()-t0;
-  for(const v of COST_VIEWS)R[key][v.n]=await page.evaluate(`(${COST})(${JSON.stringify(v)})`);
-  R[key+'Memory']=await page.evaluate(()=>({heapMB:+(performance.memory.usedJSHeapSize/1048576).toFixed(0),renderer:{...lastLight.renderer.info.memory},programs:lastLight.renderer.info.programs?.length}));
-  check('Cost run ('+key+'): no page errors',errors.length===0,errors);});
+ // (three cameras per fresh browser, as for the captures: software rendering holds every rendered frame's memory late)
+ for(const [key,flags] of [['default',''],['streetprops','streetprops']]){const errs=[];
+  for(let i=0;i<COST_VIEWS.length;i+=3)await withPage(async(page,{errors})=>{const t0=Date.now();await open(page,flags);if(flags)await waitSP(page);await startRide(page);if(i===0)R[key+'LoadMs']=Date.now()-t0;
+   for(const v of COST_VIEWS.slice(i,i+3))R[key][v.n]=await page.evaluate(`(${COST})(${JSON.stringify(v)})`);
+   if(i===0)R[key+'Memory']=await page.evaluate(()=>({heapMB:+(performance.memory.usedJSHeapSize/1048576).toFixed(0),renderer:{...lastLight.renderer.info.memory},programs:lastLight.renderer.info.programs?.length}));
+   errs.push(...errors);});
+  check('Cost run ('+key+'): no page errors',errs.length===0,errs);}
  const sum=(k,m,f)=>COST_VIEWS.reduce((a,v)=>a+(R[k][v.n]?.[m]?.[f]||0),0);
  R.summary={default:{calls:sum('default','default','calls'),tris:sum('default','default','tris'),ms:sum('default','default','ms')},authored:{calls:sum('streetprops','authored','calls'),tris:sum('streetprops','authored','tris'),ms:sum('streetprops','authored','ms')},original:{calls:sum('streetprops','original','calls'),tris:sum('streetprops','original','tris'),ms:sum('streetprops','original','ms')}};
  R.summary.ratio={calls:+(R.summary.authored.calls/R.summary.default.calls).toFixed(3),tris:+(R.summary.authored.tris/R.summary.default.tris).toFixed(3),ms:+(R.summary.authored.ms/R.summary.default.ms).toFixed(3)};
