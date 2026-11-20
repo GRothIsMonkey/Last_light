@@ -269,7 +269,7 @@ const VIEWS=[
  {n:'S04-three-vehicle-types-together',what:'a wagon, a pickup and an SUV (and a sedan) parked down the street, at matched scale',d:-232,lat:-.4,yaw:.0,pitch:-.05},
  {n:'S05-wheel-and-body-close',what:'a close view of a car\'s front wheel, tyre, body paint and glass (QA close-up camera, 1.4 m from the wheel)',d:200,lat:-2,free:{kind:'cars',type:'sedan',i:2,from:[2.25,.85,-2.55],at:[.8,.42,-1.35]}},
  {n:'S06-utility-pole-and-wires',what:'a utility pole with its crossarm, transformer and the connected overhead wires',d:128,lat:1.5,yaw:.55,pitch:.32},
- {n:'S06b-pole-line-behind-the-houses',what:'the pole line along the next street over, seen across the back yards: the same authored pole, crossarm, insulators and wires as on Oak Hollow (QA camera between the houses, 4 m up)',d:0,lat:0,free:{kind:'bgpole',i:6}},
+ {n:'S06b-pole-line-behind-the-houses',what:'the pole line along the next street over, seen across the back yards: the same authored pole, crossarm, insulators and wires as on Oak Hollow (QA camera raised to crossarm height over the back yards, about 30 m from the pole)',d:0,lat:0,free:{kind:'bgpole',i:6,du:-12,lat:40,h:8.6,ah:8.4}},
  {n:'S07-transformer-and-insulators',what:'the transformer, fused cutouts, pin insulators, crossarm braces and the secondary rack (QA close-up camera at 7.6 m)',d:138,lat:-3,free:{kind:'poles',i:10,from:[2.4,7.6,3.2],at:[.2,8.1,0]}},
  {n:'S08-streetlight-golden-hour',what:'a cobra-head streetlight at golden hour (off, as the game\'s evening has it)',d:123,lat:-1.5,yaw:-.42,pitch:.12},
  {n:'S08b-cobra-head-close',what:'the cobra head: die-cast housing, photocell, drop refractor, mast arm (QA close-up camera)',d:131,lat:3,free:{kind:'lamps',i:8,from:[-.6,6.5,2.6],at:[-2,7.2,0]}},

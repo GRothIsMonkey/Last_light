@@ -276,8 +276,10 @@ function wireMaterial(){
    }`,
   fragmentShader:`uniform vec3 uLight;uniform vec3 uSun;uniform vec3 uSunCol;varying float vCov;varying float vS;varying vec3 vCol;varying vec3 vT;
    #include <fog_pars_fragment>
-   void main(){float sh=.72+.28*(1.-vS*vS);float gl=pow(max(0.,1.-abs(dot(vT,uSun))),24.)*.6;
-    vec3 c=vCol*(uLight*sh+uSunCol*gl*(1.-vS*vS));gl_FragColor=vec4(c,min(1.,vCov*1.6)*(1.-pow(abs(vS),6.)*.5));
+   // (a conductor is seen from below, mostly its shaded underside against a brighter sky: it reads as a thin dark line;
+   // a wire thinner than a pixel keeps at least ~60 % coverage so distant spans stay visible instead of fading out)
+   void main(){float sh=.42+.26*(1.-vS*vS);float gl=pow(max(0.,1.-abs(dot(vT,uSun))),24.)*.6;
+    vec3 c=vCol*(uLight*sh+uSunCol*gl*(1.-vS*vS));gl_FragColor=vec4(c,clamp(vCov*2.2,.6,1.)*(1.-pow(abs(vS),6.)*.45));
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
     #include <fog_fragment>

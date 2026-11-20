@@ -1,6 +1,6 @@
 {
  "command": "QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs",
- "commit": "c6c23b5 (the default-path code is identical in the final commit: since then only streetprops-*.js, assets, tests and docs changed)",
+ "commit": "ff761b0 (re-run after the review fixes: background.js records its pole lines when ?streetprops is on, inert without it)",
  "passed": 818,
  "failures": [],
  "knownDifference": "KNOWN DEV DIFFERENCE (switching; reported, not asserted): [{\"k\":\"2/alex-bike\",\"d\":[[\"companions.1.b.x\",-1.4,115.139],[\"companions.1.b.z\",-17,-511.484],[\"companions.1.ba\",0,-0.398]]}]",
@@ -8,6 +8,7 @@
   "dist/aftermath1-props.js": "f9e14d51543f770d05ba41346c130527d10f555cf70e498a242ea6b54c0289bc",
   "dist/aftermath2-props.js": "b1a98c0e1999cb44a679d88523acb422b8ec29ebb19e40fe9d9959b332e7b83e",
   "dist/asset-library.js": "6b760d012fc1d2aa8881f135d7f54e2f88c317ff41a4ff54d8e0ef975f58e496",
+  "dist/background.js": "02a539ad13cc95295f7934e6d422547af6528dc54c599cde83857a8254aa8a29",
   "dist/chapter3-props.js": "4ba5446b792d82adf49f7a0f055035e7310378f28c94f28d668bbdad55bb2b6f",
   "dist/chapter5-props.js": "26f45c566b01d5bb86035768e871fb0a505bf4a901a12ab2cf8fc48d3009db2d",
   "dist/chapter6-props.js": "8f0a9a4dae9ed9e242079ca3eae5588ebfd1183ebfbadd5ecd72b10ff2e078a8",
