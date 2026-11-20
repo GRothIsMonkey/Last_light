@@ -306,10 +306,11 @@ const COST=`async v=>{const L=lastLight;L.place(v.d,v.lat,0);for(let i=0;i<4;i++
  for(const m of modes){if(window.__streetprops){__streetprops.setMode(m);__streetprops.tick(true);}const i=L.render();const ms=[];for(let k=0;k<3;k++){const t0=performance.now();L.render();gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);ms.push(performance.now()-t0);}ms.sort((a,b)=>a-b);out[m]={calls:i.calls,tris:i.triangles,ms:+ms[1].toFixed(0)};}
  if(window.__streetprops)__streetprops.setMode('authored');return out;}`;
 if(PARTS.includes('F')){const R=report.parts.F={views:COST_VIEWS,default:{},streetprops:{}};
- // (three cameras per fresh browser, as for the captures: software rendering holds every rendered frame's memory late)
- for(const [key,flags] of [['default',''],['streetprops','streetprops']]){const errs=[];
-  for(let i=0;i<COST_VIEWS.length;i+=3)await withPage(async(page,{errors})=>{const t0=Date.now();await open(page,flags);if(flags)await waitSP(page);await startRide(page);if(i===0)R[key+'LoadMs']=Date.now()-t0;
-   for(const v of COST_VIEWS.slice(i,i+3))R[key][v.n]=await page.evaluate(`(${COST})(${JSON.stringify(v)})`);
+ // (fresh browsers: software rendering holds every rendered frame's memory late, so the default game measures three
+ // cameras per browser and ?streetprops, which renders each camera in both X modes, one camera per browser)
+ for(const [key,flags,per] of [['default','',3],['streetprops','streetprops',1]]){const errs=[];
+  for(let i=0;i<COST_VIEWS.length;i+=per)await withPage(async(page,{errors})=>{const t0=Date.now();await open(page,flags);if(flags)await waitSP(page);await startRide(page);if(i===0)R[key+'LoadMs']=Date.now()-t0;
+   for(const v of COST_VIEWS.slice(i,i+per))R[key][v.n]=await page.evaluate(`(${COST})(${JSON.stringify(v)})`);
    if(i===0)R[key+'Memory']=await page.evaluate(()=>({heapMB:+(performance.memory.usedJSHeapSize/1048576).toFixed(0),renderer:{...lastLight.renderer.info.memory},programs:lastLight.renderer.info.programs?.length}));
    errs.push(...errors);});
   check('Cost run ('+key+'): no page errors',errs.length===0,errs);}

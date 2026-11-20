@@ -1,9 +1,752 @@
 {
  "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
- "commit": "8947424",
- "started": "2026-11-20T04:06:23.944Z",
+ "commit": "495d571",
+ "started": "2026-11-20T08:35:14.432Z",
  "viewport": "1600x900, deviceScaleFactor 1",
  "checks": [
+  {
+   "name": "Default game: without ?streetprops none of the street-props modules or assets is fetched",
+   "part": "A",
+   "detail": []
+  },
+  {
+   "name": "Default game: no street-props record, zone, line tag or label exists (the world is baked as before; 379 shadow proxies as accepted)",
+   "part": "A",
+   "detail": {
+    "label": false,
+    "rec": null,
+    "zones": 0,
+    "spLines": 0,
+    "proxies": 379
+   }
+  },
+  {
+   "name": "Default game: no page errors",
+   "part": "A",
+   "detail": []
+  },
+  {
+   "name": "?streetprops: the two GLBs and eight textures load without error",
+   "part": "B",
+   "detail": {
+    "error": null,
+    "errors": [],
+    "files": [
+     {
+      "file": "assets/street/veh_a_albedo.jpg",
+      "w": 2048,
+      "h": 2048
+     },
+     {
+      "file": "assets/street/veh_a_orm.png",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/street/veh_b_albedo.jpg",
+      "w": 2048,
+      "h": 2048
+     },
+     {
+      "file": "assets/street/veh_b_orm.png",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/street/props_albedo.jpg",
+      "w": 2048,
+      "h": 2048
+     },
+     {
+      "file": "assets/street/props_orm.png",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/street/props_normal.png",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/street/props_cutout.png",
+      "w": 512,
+      "h": 512
+     }
+    ]
+   }
+  },
+  {
+   "name": "?streetprops: assets come from dist/assets/street (2 GLBs, 8 textures), none from outside the local server",
+   "part": "B",
+   "detail": [
+    "/assets/street/veh_a_albedo.jpg",
+    "/assets/street/veh_a_orm.png",
+    "/assets/street/veh_b_albedo.jpg",
+    "/assets/street/veh_b_orm.png",
+    "/assets/street/props_albedo.jpg",
+    "/assets/street/props_orm.png",
+    "/assets/street/props_normal.png",
+    "/assets/street/props_cutout.png",
+    "/assets/street/street.vehicles.glb",
+    "/assets/street/street.props.glb"
+   ]
+  },
+  {
+   "name": "Textures: colour maps sRGB, data maps linear, mipmapped, anisotropic",
+   "part": "B",
+   "detail": [
+    {
+     "m": "sp:vehicle",
+     "k": "map",
+     "w": 2048,
+     "h": 2048,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    },
+    {
+     "m": "sp:vehicle",
+     "k": "roughnessMap",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "cs": "",
+     "aniso": 8
+    },
+    {
+     "m": "sp:vehicle",
+     "k": "map",
+     "w": 2048,
+     "h": 2048,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    },
+    {
+     "m": "sp:vehicle",
+     "k": "roughnessMap",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "cs": "",
+     "aniso": 8
+    },
+    {
+     "m": "sp:props",
+     "k": "map",
+     "w": 2048,
+     "h": 2048,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    },
+    {
+     "m": "sp:props",
+     "k": "normalMap",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "cs": "",
+     "aniso": 8
+    },
+    {
+     "m": "sp:props",
+     "k": "roughnessMap",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "cs": "",
+     "aniso": 8
+    },
+    {
+     "m": "sp:cutout",
+     "k": "map",
+     "w": 512,
+     "h": 512,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    },
+    {
+     "m": "sp:lens",
+     "k": "map",
+     "w": 2048,
+     "h": 2048,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    }
+   ]
+  },
+  {
+   "name": "Transforms: every authored instance is finite; every rigid one upright (within 10°) at unit scale",
+   "part": "B",
+   "detail": {
+    "instances": 6084,
+    "bad": [],
+    "badCount": 0
+   }
+  },
+  {
+   "name": "Cars: each of the 54 recorded cars has its authored car, at the same x/z (within 2 cm), standing on its own drive (within 25 cm of the procedural car's height)",
+   "part": "B",
+   "detail": {
+    "records": 54,
+    "placed": 54,
+    "worstXZ": 0,
+    "worstY": 0.0105,
+    "kinds": {
+     "suv->suv": 5,
+     "wagon->wagon": 14,
+     "sedan->hatchback": 4,
+     "van->minivan": 12,
+     "pickup->pickup": 7,
+     "sedan->sedan": 12
+    },
+    "tilted": 42,
+    "dynamic": true
+   }
+  },
+  {
+   "name": "Cars: no floating or sunken tyres on Oak Hollow's drives (every tyre within 3 cm of the ground the riders use; the procedural cars, level, were off by up to 0.0934 m)",
+   "part": "B",
+   "detail": {
+    "cars": 42,
+    "worstGap": 0.0051,
+    "over3cm": [],
+    "over3cmCount": 0,
+    "proceduralWorstGap": 0.0934
+   }
+  },
+  {
+   "name": "Cars: no authored car reaches further over the sidewalk than the procedural car it replaces (by more than 12 cm), and none reaches further into a house or garage margin than it",
+   "part": "B",
+   "detail": {
+    "walkWorse": 0,
+    "walkOver": [],
+    "houseCornerHitsBeyondProcedural": 0,
+    "proceduralCornersInHouseMargins": 84
+   }
+  },
+  {
+   "name": "Props: every recorded pole, lamp, mailbox, hydrant and bin has its authored counterpart at its exact place (within 1 mm)",
+   "part": "B",
+   "detail": {
+    "counts": {
+     "poles": 39,
+     "transformers": 15,
+     "guys": 1,
+     "sidepins": 10,
+     "wires": 157,
+     "lamps": 27,
+     "mailbox.white": 31,
+     "mailbox.wood": 45,
+     "mailbox.brick": 29,
+     "mailbox.deco": 28,
+     "hydrants": 8,
+     "carts": 82,
+     "cans": 7,
+     "hoops": 13,
+     "bays": 2457,
+     "posts": 2944,
+     "gates": 189
+    },
+    "records": {
+     "poles": 39,
+     "lamps": 27,
+     "mailboxes": 133,
+     "hydrants": 8,
+     "bins": 54,
+     "binsTotal": 89,
+     "hoops": 13,
+     "fences": 500,
+     "bays": 2646,
+     "posts": 2944
+    },
+    "worst": {
+     "poles": 0,
+     "lamps": 0,
+     "mailboxes": 0,
+     "hydrants": 0,
+     "bins": 0
+    }
+   }
+  },
+  {
+   "name": "Fences: every recorded bay and post of Oak Hollow's fences has its authored counterpart (bays sheared between their posts on the ground; gates where side yards meet houses)",
+   "part": "B",
+   "detail": {
+    "bays": 2457,
+    "gates": 189,
+    "posts": 2944,
+    "records": {
+     "poles": 39,
+     "lamps": 27,
+     "mailboxes": 133,
+     "hydrants": 8,
+     "bins": 54,
+     "binsTotal": 89,
+     "hoops": 13,
+     "fences": 500,
+     "bays": 2646,
+     "posts": 2944
+    }
+   }
+  },
+  {
+   "name": "Wires: every recorded wire is drawn (157), finite and continuous; every span ends on its own two poles' hardware (6.5-9.3 m up, within 1.05 m of the pole), every service drop on its pole's rack and on the house it served; every primary on an insulator",
+   "part": "B",
+   "detail": {
+    "count": 157,
+    "records": 157,
+    "vertices": 7310,
+    "finite": true,
+    "detached": 0,
+    "detachedList": [],
+    "dropsOffTarget": 0,
+    "jumps": 0,
+    "primaries": 70,
+    "primariesOffInsulator": 0
+   }
+  },
+  {
+   "name": "Streetlights: every lamp has its cobra head and a lens lit by its own lamp level",
+   "part": "B",
+   "detail": {
+    "lenses": 27,
+    "slots": 27,
+    "records": 27
+   }
+  },
+  {
+   "name": "Geometry: every merged surface, shadow proxy and line holds exactly the default game's vertices (hashed at 1 mm) — the flag only splits the street props into batches of their own",
+   "part": "B",
+   "detail": {
+    "with": {
+     "merged": {
+      "tris": 3672619,
+      "verts": 11017857,
+      "h1": 3449740665,
+      "h2": 2223264169
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2420,
+     "proxyCount": 727,
+     "zones": [
+      "sp:lamp",
+      "sp:pole",
+      "sp:hydrant",
+      "sp:mailbox",
+      "sp:bins",
+      "sp:car",
+      "sp:hoop",
+      "sp:fence"
+     ]
+    },
+    "without": {
+     "merged": {
+      "tris": 3672619,
+      "verts": 11017857,
+      "h1": 3449740665,
+      "h2": 2223264169
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2225,
+     "proxyCount": 379,
+     "zones": []
+    }
+   }
+  },
+  {
+   "name": "Gameplay: surface heights, rideability, standing ground and authored pads at 40488 street points identical; obstacles, navigation and placement shapes (walk, porch, house, tree, fence, driveway, pole, lamp, mailbox, hydrant, bins, hoop, toy, sign) and driveway openings unchanged",
+   "part": "B",
+   "detail": {
+    "with": {
+     "n": 40488,
+     "hash": 3254642635,
+     "obstacles": 812,
+     "obstacleHash": 271482339,
+     "space": [
+      [
+       "walk",
+       159
+      ],
+      [
+       "porch",
+       247
+      ],
+      [
+       "house",
+       247
+      ],
+      [
+       "tree",
+       5717
+      ],
+      [
+       "fence",
+       0
+      ],
+      [
+       "driveway",
+       618
+      ],
+      [
+       "pole",
+       52
+      ],
+      [
+       "lamp",
+       27
+      ],
+      [
+       "mailbox",
+       133
+      ],
+      [
+       "hydrant",
+       8
+      ],
+      [
+       "bins",
+       54
+      ],
+      [
+       "hoop",
+       1
+      ],
+      [
+       "toy",
+       30
+      ],
+      [
+       "sign",
+       23
+      ]
+     ],
+     "drives": 105
+    },
+    "without": {
+     "n": 40488,
+     "hash": 3254642635,
+     "obstacles": 812,
+     "obstacleHash": 271482339,
+     "space": [
+      [
+       "walk",
+       159
+      ],
+      [
+       "porch",
+       247
+      ],
+      [
+       "house",
+       247
+      ],
+      [
+       "tree",
+       5717
+      ],
+      [
+       "fence",
+       0
+      ],
+      [
+       "driveway",
+       618
+      ],
+      [
+       "pole",
+       52
+      ],
+      [
+       "lamp",
+       27
+      ],
+      [
+       "mailbox",
+       133
+      ],
+      [
+       "hydrant",
+       8
+      ],
+      [
+       "bins",
+       54
+      ],
+      [
+       "hoop",
+       1
+      ],
+      [
+       "toy",
+       30
+      ],
+      [
+       "sign",
+       23
+      ]
+     ],
+     "drives": 105
+    }
+   }
+  },
+  {
+   "name": "Riding: scripted rides over a driveway cut, into a plain curb and past a mailbox follow exactly the same path, speed and wheel height",
+   "part": "B",
+   "detail": {
+    "with": {
+     "cut": [
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ],
+     "mailbox": [
+      [
+       162.9022,
+       7.8241,
+       5.0013,
+       0
+      ]
+     ]
+    },
+    "without": {
+     "cut": [
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ],
+     "mailbox": [
+      [
+       162.9022,
+       7.8241,
+       5.0013,
+       0
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "name": "Comparison: X swaps AUTHORED (procedural props, their shadows and the old wire lines hidden; authored props and wires shown) and ORIGINAL in the same frame",
+   "part": "B",
+   "detail": [
+    {
+     "proc": false,
+     "procHidden": true,
+     "wires": true,
+     "lines": false,
+     "mode": "authored"
+    },
+    {
+     "proc": true,
+     "procHidden": false,
+     "wires": false,
+     "lines": true,
+     "mode": "original"
+    },
+    {
+     "proc": false,
+     "procHidden": true,
+     "wires": true,
+     "lines": false,
+     "mode": "authored"
+    }
+   ]
+  },
+  {
+   "name": "LOD: Z steps the forced level 0, 1, 2 and back to automatic",
+   "part": "B",
+   "detail": [
+    0,
+    1,
+    2,
+    null
+   ]
+  },
+  {
+   "name": "The parent's minivan (ambient.js) is the authored minivan on the same group and path: it drives in (moved), its wheels turn with the game's, its headlamps are the game's lamp material",
+   "part": "B",
+   "detail": {
+    "upgraded": true,
+    "moved": 21.57,
+    "visible": true,
+    "wheelSync": true,
+    "lamps": 2
+   }
+  },
+  {
+   "name": "?streetprops (measures): no page errors (every street-props shader compiles and links)",
+   "part": "B",
+   "detail": []
+  },
+  {
+   "name": "Prologue only: active in the Prologue; in Chapter One the procedural cars and props show again (the authored set hidden)",
+   "part": "B",
+   "detail": {
+    "prologue": {
+     "active": true,
+     "procVisible": false,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "procVisible": true,
+     "state": "c1-ride"
+    }
+   }
+  },
+  {
+   "name": "Chapter One with ?streetprops: no page errors",
+   "part": "B",
+   "detail": []
+  },
+  {
+   "name": "All five benchmarks together (?bikes&houses&vegetation&pavement&streetprops) load without error",
+   "part": "C",
+   "detail": {
+    "streetprops": null,
+    "spErrors": [],
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "bikes": null
+   }
+  },
+  {
+   "name": "Trees and lawns intact: the authored vegetation places the same trees, shrubs and meadow, with the repaired lawn (C), as without ?streetprops",
+   "part": "C",
+   "detail": {
+    "with": {
+     "trees": 386,
+     "shrubs": 553,
+     "meadow": 12487,
+     "variants": 42,
+     "lawn": "C"
+    },
+    "without": {
+     "trees": 386,
+     "shrubs": 553,
+     "meadow": 12487,
+     "variants": 42,
+     "lawn": "C"
+    }
+   }
+  },
+  {
+   "name": "With all five: the pavement and the street props are active, the houses refined, the bikes upgraded; the ride runs (the boys ride on); the garage hoops on the house benchmark's lots are left to it",
+   "part": "C",
+   "detail": {
+    "pavement": true,
+    "streetprops": true,
+    "hoopsLeftToHouses": 3,
+    "houses": "refined",
+    "bikes": true,
+    "friends": [
+     "ride",
+     "ride",
+     "ride"
+    ],
+    "distance": 13.22,
+    "speed": 4.12
+   }
+  },
+  {
+   "name": "Five benchmarks: no page errors",
+   "part": "C",
+   "detail": []
+  },
+  {
+   "name": "Offline package (PLAYTEST_MODELS=1): the two street GLBs, the eight street textures and both street-props modules are embedded",
+   "part": "D",
+   "detail": [
+    "dist/assets/street/props_albedo.jpg",
+    "dist/assets/street/props_cutout.png",
+    "dist/assets/street/props_normal.png",
+    "dist/assets/street/props_orm.png",
+    "dist/assets/street/street.props.glb",
+    "dist/assets/street/street.vehicles.glb",
+    "dist/assets/street/veh_a_albedo.jpg",
+    "dist/assets/street/veh_a_orm.png",
+    "dist/assets/street/veh_b_albedo.jpg",
+    "dist/assets/street/veh_b_orm.png"
+   ]
+  },
+  {
+   "name": "Offline package from disk, browser offline: ?streetprops loads its models and textures from the embedded bytes, with no network request",
+   "part": "D",
+   "detail": {
+    "error": null,
+    "errors": [],
+    "files": 8,
+    "active": true,
+    "net": []
+   }
+  },
+  {
+   "name": "Offline package: no page errors",
+   "part": "D",
+   "detail": []
+  },
+  {
+   "name": "Offline package from disk, browser offline: all five benchmarks load together from the embedded bytes, no network request, no error",
+   "part": "D",
+   "detail": {
+    "sp": null,
+    "pv": null,
+    "veg": null,
+    "houses": null,
+    "net": [],
+    "errors": []
+   }
+  },
+  {
+   "name": "Default package (no models): ?streetprops fails loudly and substitutes nothing (the procedural props stay)",
+   "part": "D",
+   "detail": {
+    "error": "asset assets/street/veh_a_albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)",
+    "label": "STREET PROPS BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/street/veh_a_albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)",
+    "proc": true
+   }
+  },
   {
    "name": "Captures: every before/after pair is one camera and one frame (21 pairs)",
    "part": "E",
@@ -49,6 +792,10 @@
      true
     ],
     [
+     "S09-streetlight-at-dusk",
+     true
+    ],
+    [
      "S10-mailbox-beside-a-driveway",
      true
     ],
@@ -85,10 +832,6 @@
      true
     ],
     [
-     "S09-streetlight-at-dusk",
-     true
-    ],
-    [
      "S17-the-boys-on-their-current-bikes",
      true
     ]
@@ -99,21 +842,21 @@
    "part": "E",
    "detail": {
     "drawCallDelta": [
-     -22,
-     67
+     -12,
+     69
     ],
     "triangleRatio": [
-     0.974,
+     1.009,
      1.238
     ],
     "sum": {
      "authored": {
-      "calls": 10202,
-      "tris": 17036334
+      "calls": 10193,
+      "tris": 17157980
      },
      "original": {
-      "calls": 9705,
-      "tris": 15915575
+      "calls": 9668,
+      "tris": 15995717
      }
     }
    }
@@ -122,6 +865,42 @@
    "name": "Five benchmarks, captures: no page errors",
    "part": "E",
    "detail": []
+  },
+  {
+   "name": "Cost run (default): no page errors",
+   "part": "F",
+   "detail": []
+  },
+  {
+   "name": "Cost run (streetprops): no page errors",
+   "part": "F",
+   "detail": []
+  },
+  {
+   "name": "Cost against the default game measured at 8 riding cameras (software frame time, draw calls, triangles: reported)",
+   "part": "F",
+   "detail": {
+    "default": {
+     "calls": 2662,
+     "tris": 5367365,
+     "ms": 10767
+    },
+    "authored": {
+     "calls": 3062,
+     "tris": 5553550,
+     "ms": 12865
+    },
+    "original": {
+     "calls": 2951,
+     "tris": 5164328,
+     "ms": 11285
+    },
+    "ratio": {
+     "calls": 1.15,
+     "tris": 1.035,
+     "ms": 1.195
+    }
+   }
   }
  ],
  "failures": [],
@@ -518,25 +1297,1041 @@
     }
    }
   },
+  "B": {
+   "wallLoadMs": 26679,
+   "loaded": {
+    "error": null,
+    "loadMs": 242,
+    "errors": [],
+    "tex": {
+     "files": [
+      {
+       "file": "assets/street/veh_a_albedo.jpg",
+       "w": 2048,
+       "h": 2048
+      },
+      {
+       "file": "assets/street/veh_a_orm.png",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/street/veh_b_albedo.jpg",
+       "w": 2048,
+       "h": 2048
+      },
+      {
+       "file": "assets/street/veh_b_orm.png",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/street/props_albedo.jpg",
+       "w": 2048,
+       "h": 2048
+      },
+      {
+       "file": "assets/street/props_orm.png",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/street/props_normal.png",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/street/props_cutout.png",
+       "w": 512,
+       "h": 512
+      }
+     ],
+     "gpuMB": 86.7,
+     "aniso": 16
+    },
+    "stats": {
+     "vehicles": {
+      "tris": 38935,
+      "calls": 26,
+      "instances": 54,
+      "levels": [
+       1,
+       3,
+       23
+      ]
+     },
+     "props": {
+      "tris": 96505,
+      "calls": 45,
+      "instances": 6030,
+      "levels": [
+       15,
+       381,
+       1156
+      ],
+      "kinds": {
+       "poles": 39,
+       "transformers": 15,
+       "guys": 1,
+       "sidepins": 10,
+       "wires": 157,
+       "lamps": 27,
+       "mailbox.white": 31,
+       "mailbox.wood": 45,
+       "mailbox.brick": 29,
+       "mailbox.deco": 28,
+       "hydrants": 8,
+       "carts": 82,
+       "cans": 7,
+       "hoops": 13,
+       "bays": 2457,
+       "posts": 2944,
+       "gates": 189
+      }
+     }
+    },
+    "label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 242 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 13 · fence bays 2457 + gates 189\n135,440 street-prop tris in 71 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+   },
+   "texture": [
+    {
+     "m": "sp:vehicle",
+     "k": "map",
+     "w": 2048,
+     "h": 2048,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    },
+    {
+     "m": "sp:vehicle",
+     "k": "roughnessMap",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "cs": "",
+     "aniso": 8
+    },
+    {
+     "m": "sp:vehicle",
+     "k": "map",
+     "w": 2048,
+     "h": 2048,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    },
+    {
+     "m": "sp:vehicle",
+     "k": "roughnessMap",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "cs": "",
+     "aniso": 8
+    },
+    {
+     "m": "sp:props",
+     "k": "map",
+     "w": 2048,
+     "h": 2048,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    },
+    {
+     "m": "sp:props",
+     "k": "normalMap",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "cs": "",
+     "aniso": 8
+    },
+    {
+     "m": "sp:props",
+     "k": "roughnessMap",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "cs": "",
+     "aniso": 8
+    },
+    {
+     "m": "sp:cutout",
+     "k": "map",
+     "w": 512,
+     "h": 512,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    },
+    {
+     "m": "sp:lens",
+     "k": "map",
+     "w": 2048,
+     "h": 2048,
+     "mips": true,
+     "cs": "srgb",
+     "aniso": 8
+    }
+   ],
+   "authored": {
+    "transforms": {
+     "instances": 6084,
+     "bad": [],
+     "badCount": 0
+    },
+    "cars": {
+     "records": 54,
+     "placed": 54,
+     "worstXZ": 0,
+     "worstY": 0.0105,
+     "kinds": {
+      "suv->suv": 5,
+      "wagon->wagon": 14,
+      "sedan->hatchback": 4,
+      "van->minivan": 12,
+      "pickup->pickup": 7,
+      "sedan->sedan": 12
+     },
+     "tilted": 42,
+     "dynamic": true
+    },
+    "grounding": {
+     "cars": 42,
+     "worstGap": 0.0051,
+     "over3cm": [],
+     "over3cmCount": 0,
+     "proceduralWorstGap": 0.0934
+    },
+    "footprint": {
+     "walkWorse": 0,
+     "walkOver": [],
+     "houseCornerHitsBeyondProcedural": 0,
+     "proceduralCornersInHouseMargins": 84
+    },
+    "props": {
+     "counts": {
+      "poles": 39,
+      "transformers": 15,
+      "guys": 1,
+      "sidepins": 10,
+      "wires": 157,
+      "lamps": 27,
+      "mailbox.white": 31,
+      "mailbox.wood": 45,
+      "mailbox.brick": 29,
+      "mailbox.deco": 28,
+      "hydrants": 8,
+      "carts": 82,
+      "cans": 7,
+      "hoops": 13,
+      "bays": 2457,
+      "posts": 2944,
+      "gates": 189
+     },
+     "records": {
+      "poles": 39,
+      "lamps": 27,
+      "mailboxes": 133,
+      "hydrants": 8,
+      "bins": 54,
+      "binsTotal": 89,
+      "hoops": 13,
+      "fences": 500,
+      "bays": 2646,
+      "posts": 2944
+     },
+     "worst": {
+      "poles": 0,
+      "lamps": 0,
+      "mailboxes": 0,
+      "hydrants": 0,
+      "bins": 0
+     }
+    },
+    "wires": {
+     "count": 157,
+     "records": 157,
+     "vertices": 7310,
+     "finite": true,
+     "detached": 0,
+     "detachedList": [],
+     "dropsOffTarget": 0,
+     "jumps": 0,
+     "primaries": 70,
+     "primariesOffInsulator": 0
+    },
+    "lamps": {
+     "lenses": 27,
+     "slots": 27,
+     "records": 27
+    }
+   },
+   "fingerprint": {
+    "merged": {
+     "tris": 3672619,
+     "verts": 11017857,
+     "h1": 3449740665,
+     "h2": 2223264169
+    },
+    "proxies": {
+     "tris": 2371121,
+     "h1": 3930555726
+    },
+    "lines": {
+     "segs": 4471,
+     "h1": 3072461437
+    },
+    "mergedCount": 2420,
+    "proxyCount": 727,
+    "zones": [
+     "sp:lamp",
+     "sp:pole",
+     "sp:hydrant",
+     "sp:mailbox",
+     "sp:bins",
+     "sp:car",
+     "sp:hoop",
+     "sp:fence"
+    ]
+   },
+   "queries": {
+    "n": 40488,
+    "hash": 3254642635,
+    "obstacles": 812,
+    "obstacleHash": 271482339,
+    "space": [
+     [
+      "walk",
+      159
+     ],
+     [
+      "porch",
+      247
+     ],
+     [
+      "house",
+      247
+     ],
+     [
+      "tree",
+      5717
+     ],
+     [
+      "fence",
+      0
+     ],
+     [
+      "driveway",
+      618
+     ],
+     [
+      "pole",
+      52
+     ],
+     [
+      "lamp",
+      27
+     ],
+     [
+      "mailbox",
+      133
+     ],
+     [
+      "hydrant",
+      8
+     ],
+     [
+      "bins",
+      54
+     ],
+     [
+      "hoop",
+      1
+     ],
+     [
+      "toy",
+      30
+     ],
+     [
+      "sign",
+      23
+     ]
+    ],
+    "drives": 105
+   },
+   "rides": {
+    "drive": {
+     "d": 744.0601318057627
+    },
+    "runs": {
+     "cut": [
+      [
+       740.9684,
+       2.6001,
+       3.2492,
+       0
+      ],
+      [
+       741.6493,
+       2.617,
+       3.5068,
+       0
+      ],
+      [
+       742.3752,
+       2.6962,
+       3.7103,
+       0
+      ],
+      [
+       743.1366,
+       2.8582,
+       3.8713,
+       0
+      ],
+      [
+       743.9263,
+       3.0946,
+       3.9989,
+       0
+      ],
+      [
+       744.7383,
+       3.3869,
+       4.1003,
+       0
+      ],
+      [
+       745.568,
+       3.7173,
+       4.181,
+       0
+      ],
+      [
+       746.412,
+       4.0721,
+       4.2456,
+       0
+      ],
+      [
+       747.2673,
+       4.4422,
+       4.2974,
+       0
+      ],
+      [
+       748.1318,
+       4.8215,
+       4.3392,
+       0
+      ],
+      [
+       749.0037,
+       5.2062,
+       4.3732,
+       0
+      ],
+      [
+       749.8817,
+       5.5942,
+       4.401,
+       0
+      ],
+      [
+       750.7646,
+       5.9841,
+       4.4239,
+       0
+      ],
+      [
+       751.6517,
+       6.3751,
+       4.443,
+       0
+      ],
+      [
+       752.5423,
+       6.7669,
+       4.4592,
+       0
+      ],
+      [
+       753.4357,
+       7.1591,
+       4.473,
+       0
+      ],
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       753.9685,
+       3.1001,
+       3.2521,
+       0
+      ],
+      [
+       754.6518,
+       3.1171,
+       3.525,
+       0
+      ],
+      [
+       755.3828,
+       3.1967,
+       3.7406,
+       0
+      ],
+      [
+       756.1515,
+       3.3597,
+       3.911,
+       0
+      ],
+      [
+       756.9499,
+       3.5979,
+       4.046,
+       0
+      ],
+      [
+       757.772,
+       3.8926,
+       4.1532,
+       0
+      ],
+      [
+       758.6129,
+       4.2257,
+       4.2384,
+       0
+      ],
+      [
+       759.4688,
+       4.5835,
+       4.3065,
+       0
+      ],
+      [
+       760.3367,
+       4.9566,
+       4.361,
+       0
+      ],
+      [
+       761.2141,
+       5.3389,
+       4.4048,
+       0
+      ],
+      [
+       762.0994,
+       5.7267,
+       4.4403,
+       0
+      ],
+      [
+       762.9909,
+       6.1177,
+       4.4692,
+       0
+      ],
+      [
+       763.8876,
+       6.5106,
+       4.4929,
+       0
+      ],
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ],
+     "mailbox": [
+      [
+       150.1091,
+       4.2001,
+       3.2741,
+       0
+      ],
+      [
+       150.8106,
+       4.2175,
+       3.6611,
+       0
+      ],
+      [
+       151.5795,
+       4.3001,
+       3.9652,
+       0
+      ],
+      [
+       152.4013,
+       4.4708,
+       4.2041,
+       0
+      ],
+      [
+       153.2648,
+       4.7214,
+       4.3915,
+       0
+      ],
+      [
+       154.1608,
+       5.0321,
+       4.5385,
+       0
+      ],
+      [
+       155.0824,
+       5.3834,
+       4.6536,
+       0
+      ],
+      [
+       156.024,
+       5.7604,
+       4.7436,
+       0
+      ],
+      [
+       156.9812,
+       6.153,
+       4.8138,
+       0
+      ],
+      [
+       157.9505,
+       6.5544,
+       4.8685,
+       0
+      ],
+      [
+       158.9293,
+       6.9608,
+       4.9108,
+       0
+      ],
+      [
+       159.9154,
+       7.3696,
+       4.9434,
+       0
+      ],
+      [
+       160.9071,
+       7.7797,
+       4.9683,
+       0
+      ],
+      [
+       161.9031,
+       7.8241,
+       4.9872,
+       0
+      ],
+      [
+       162.9022,
+       7.8241,
+       5.0013,
+       0
+      ]
+     ]
+    }
+   },
+   "keys": {
+    "r": [
+     {
+      "proc": false,
+      "procHidden": true,
+      "wires": true,
+      "lines": false,
+      "mode": "authored"
+     },
+     {
+      "proc": true,
+      "procHidden": false,
+      "wires": false,
+      "lines": true,
+      "mode": "original"
+     },
+     {
+      "proc": false,
+      "procHidden": true,
+      "wires": true,
+      "lines": false,
+      "mode": "authored"
+     }
+    ],
+    "lod": [
+     0,
+     1,
+     2,
+     null
+    ]
+   },
+   "dynamic": {
+    "upgraded": true,
+    "moved": 21.57,
+    "visible": true,
+    "wheelSync": true,
+    "lamps": 2
+   },
+   "chapters": {
+    "prologue": {
+     "active": true,
+     "procVisible": false,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "procVisible": true,
+     "state": "c1-ride"
+    }
+   }
+  },
+  "Cbase": {
+   "veg": {
+    "trees": 386,
+    "shrubs": 553,
+    "meadow": 12487,
+    "variants": 42,
+    "lawn": "C"
+   }
+  },
+  "C": {
+   "wallLoadMs": 27512,
+   "loaded": {
+    "streetprops": null,
+    "spErrors": [],
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "bikes": null
+   },
+   "veg": {
+    "trees": 386,
+    "shrubs": 553,
+    "meadow": 12487,
+    "variants": 42,
+    "lawn": "C"
+   },
+   "state": {
+    "pavement": true,
+    "streetprops": true,
+    "hoopsLeftToHouses": 3,
+    "houses": "refined",
+    "bikes": true,
+    "friends": [
+     "ride",
+     "ride",
+     "ride"
+    ],
+    "distance": 13.22,
+    "speed": 4.12
+   }
+  },
+  "D": {
+   "package": {
+    "models": 166727623,
+    "default": 12896738
+   }
+  },
   "E": {
    "cost": {
     "drawCallDelta": [
-     -22,
-     67
+     -12,
+     69
     ],
     "triangleRatio": [
-     0.974,
+     1.009,
      1.238
     ],
     "sum": {
      "authored": {
-      "calls": 10202,
-      "tris": 17036334
+      "calls": 10193,
+      "tris": 17157980
      },
      "original": {
-      "calls": 9705,
-      "tris": 15915575
+      "calls": 9668,
+      "tris": 15995717
      }
+    }
+   }
+  },
+  "F": {
+   "views": [
+    {
+     "n": "C1",
+     "d": 40,
+     "lat": -1.2,
+     "pitch": -0.1
+    },
+    {
+     "n": "C2",
+     "d": -232,
+     "lat": -0.4,
+     "pitch": -0.05
+    },
+    {
+     "n": "C3",
+     "d": 128,
+     "lat": 1.5,
+     "yaw": 0.55,
+     "pitch": 0.32
+    },
+    {
+     "n": "C4",
+     "d": 380,
+     "lat": -1.1,
+     "yaw": 0.05,
+     "pitch": -0.04
+    },
+    {
+     "n": "C5",
+     "d": 76.5,
+     "lat": -3.4,
+     "yaw": 0.85,
+     "pitch": -0.35
+    },
+    {
+     "n": "C6",
+     "d": -4.5,
+     "lat": -3.3,
+     "yaw": 0.75,
+     "pitch": -0.22
+    },
+    {
+     "n": "C7",
+     "d": 700,
+     "lat": 1,
+     "pitch": -0.03
+    },
+    {
+     "n": "C8",
+     "d": 1032,
+     "lat": -1.2,
+     "yaw": -0.3,
+     "pitch": 0.06
+    }
+   ],
+   "default": {
+    "C1": {
+     "default": {
+      "calls": 308,
+      "tris": 645869,
+      "ms": 1369
+     }
+    },
+    "C2": {
+     "default": {
+      "calls": 433,
+      "tris": 732825,
+      "ms": 1673
+     }
+    },
+    "C3": {
+     "default": {
+      "calls": 302,
+      "tris": 742317,
+      "ms": 1109
+     }
+    },
+    "C4": {
+     "default": {
+      "calls": 474,
+      "tris": 1025149,
+      "ms": 2102
+     }
+    },
+    "C5": {
+     "default": {
+      "calls": 184,
+      "tris": 432150,
+      "ms": 807
+     }
+    },
+    "C6": {
+     "default": {
+      "calls": 308,
+      "tris": 763643,
+      "ms": 1231
+     }
+    },
+    "C7": {
+     "default": {
+      "calls": 459,
+      "tris": 770818,
+      "ms": 1809
+     }
+    },
+    "C8": {
+     "default": {
+      "calls": 194,
+      "tris": 254594,
+      "ms": 667
+     }
+    }
+   },
+   "streetprops": {
+    "C1": {
+     "authored": {
+      "calls": 350,
+      "tris": 647603,
+      "ms": 1695
+     },
+     "original": {
+      "calls": 353,
+      "tris": 625271,
+      "ms": 1474
+     }
+    },
+    "C2": {
+     "authored": {
+      "calls": 472,
+      "tris": 739366,
+      "ms": 1705
+     },
+     "original": {
+      "calls": 474,
+      "tris": 716819,
+      "ms": 1483
+     }
+    },
+    "C3": {
+     "authored": {
+      "calls": 355,
+      "tris": 758070,
+      "ms": 1418
+     },
+     "original": {
+      "calls": 325,
+      "tris": 694646,
+      "ms": 1059
+     }
+    },
+    "C4": {
+     "authored": {
+      "calls": 515,
+      "tris": 1014369,
+      "ms": 2252
+     },
+     "original": {
+      "calls": 527,
+      "tris": 987842,
+      "ms": 1930
+     }
+    },
+    "C5": {
+     "authored": {
+      "calls": 267,
+      "tris": 492779,
+      "ms": 1162
+     },
+     "original": {
+      "calls": 228,
+      "tris": 435032,
+      "ms": 1227
+     }
+    },
+    "C6": {
+     "authored": {
+      "calls": 336,
+      "tris": 745340,
+      "ms": 1522
+     },
+     "original": {
+      "calls": 320,
+      "tris": 691875,
+      "ms": 1279
+     }
+    },
+    "C7": {
+     "authored": {
+      "calls": 500,
+      "tris": 789866,
+      "ms": 1972
+     },
+     "original": {
+      "calls": 513,
+      "tris": 761278,
+      "ms": 1698
+     }
+    },
+    "C8": {
+     "authored": {
+      "calls": 267,
+      "tris": 366157,
+      "ms": 1139
+     },
+     "original": {
+      "calls": 211,
+      "tris": 251565,
+      "ms": 1135
+     }
+    }
+   },
+   "defaultLoadMs": 26170,
+   "defaultMemory": {
+    "heapMB": 1286,
+    "renderer": {
+     "geometries": 605,
+     "textures": 13
+    },
+    "programs": 39
+   },
+   "streetpropsLoadMs": 25418,
+   "streetpropsMemory": {
+    "heapMB": 1925,
+    "renderer": {
+     "geometries": 480,
+     "textures": 20
+    },
+    "programs": 45
+   },
+   "summary": {
+    "default": {
+     "calls": 2662,
+     "tris": 5367365,
+     "ms": 10767
+    },
+    "authored": {
+     "calls": 3062,
+     "tris": 5553550,
+     "ms": 12865
+    },
+    "original": {
+     "calls": 2951,
+     "tris": 5164328,
+     "ms": 11285
+    },
+    "ratio": {
+     "calls": 1.15,
+     "tris": 1.035,
+     "ms": 1.195
     }
    }
   }
@@ -544,7 +2339,7 @@
  "shots": [
   {
    "file": "docs/qa/streetprops/browser/S01-sedan-in-a-driveway--authored.jpg",
-   "sha256": "15614a865cd7784300c1dc56ee7e21b07d255071c15bbb8c9003be6003b2575e",
+   "sha256": "0ea7e1b0187d7384cb2e4e83e18540f9db82b676f2965dce42ca692195f443b9",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -636,7 +2431,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S02-minivan-beside-a-house--authored.jpg",
-   "sha256": "992b8e675bc8d14cea83ae01502824377ebd31bd3dd4d104874e795101102777",
+   "sha256": "e7867bd2f7f988dc65c0be41ec9d4b1f88475ee0325da8405f91f3f760ee43b8",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -728,7 +2523,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S03-pickup-in-a-driveway--authored.jpg",
-   "sha256": "ee0b5c18201c1fce64d61ef58a395055a7aa5b03e00a7d425fc1e7b588476b32",
+   "sha256": "4e7c07967c13b0a9edbabf0b67bdfd8265363789b8e76a1191de99fa4ea54a2e",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -820,7 +2615,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S03b-wagon-in-a-driveway--authored.jpg",
-   "sha256": "a781f8e792963ffa9638ae0c991462a137b79123864286475413448b9c2764a0",
+   "sha256": "bca489d3210fadd1f2cfb1560469f162f6fe13d560e9b1d8a70982844c58b983",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -912,7 +2707,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S04-three-vehicle-types-together--authored.jpg",
-   "sha256": "b6321bc2e7faeffc38d42f64923c94486e64c94f9f0363647b24cf2881293bdf",
+   "sha256": "0004a7976dfb375089ef2427fbff46dc6c8220673de9637620aea94707c3ba09",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -1002,7 +2797,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S05-wheel-and-body-close--authored.jpg",
-   "sha256": "47807a637fe02d0a79aad2b31bebf319df4d9c9be139e87dad2fe54cfc40e77d",
+   "sha256": "874bdaf5df50786de5af6db63accc539b320b92a33eb2554a604828ec63566e4",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "authored",
@@ -1029,8 +2824,8 @@
     }
    },
    "at": {
-    "d": 200,
-    "lat": -2,
+    "d": -293.35,
+    "lat": 3.3,
     "yaw": 0,
     "target": {
      "u": 135.2,
@@ -1039,8 +2834,8 @@
     "aimError": null,
     "free": true
    },
-   "calls": 773,
-   "triangles": 961793,
+   "calls": 740,
+   "triangles": 931555,
    "ms": null,
    "cam": {
     "p": [
@@ -1056,11 +2851,11 @@
     ],
     "fov": 64
    },
-   "clock": "AUGUST 21, 2011  7:45 PM"
+   "clock": "AUGUST 21, 2011  7:37 PM"
   },
   {
    "file": "docs/qa/streetprops/browser/S05-wheel-and-body-close--original.jpg",
-   "sha256": "6b7966c905b570c95b1997cf832f402eae63373618f8da02907494d779050638",
+   "sha256": "2bdcc8f04e387b76851bb0d5a24c4f1ff5728eec5f876a9b8e40cdc18d9b1695",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "original",
@@ -1087,8 +2882,8 @@
     }
    },
    "at": {
-    "d": 200,
-    "lat": -2,
+    "d": -293.35,
+    "lat": 3.3,
     "yaw": 0,
     "target": {
      "u": 135.2,
@@ -1097,8 +2892,8 @@
     "aimError": null,
     "free": true
    },
-   "calls": 795,
-   "triangles": 987133,
+   "calls": 737,
+   "triangles": 923672,
    "ms": null,
    "cam": {
     "p": [
@@ -1114,11 +2909,11 @@
     ],
     "fov": 64
    },
-   "clock": "AUGUST 21, 2011  7:45 PM"
+   "clock": "AUGUST 21, 2011  7:37 PM"
   },
   {
    "file": "docs/qa/streetprops/browser/S06-utility-pole-and-wires--authored.jpg",
-   "sha256": "4ac341ff6d5c4653995a8204795102b150938e0e31039ddd88d58ab2ef69706e",
+   "sha256": "0e22ab19f1151e14c6d4275608963c325c3453bb7842c67e90f8dc8ee442aeff",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -1202,7 +2997,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S07-transformer-and-insulators--authored.jpg",
-   "sha256": "537b5cbcea5476751552b5e036c853ae4ce5d02e561ff75005803f1fbe780129",
+   "sha256": "39247ac8a478093492ce36084462097dd1f7f5a3468586a365a37712fdbc904f",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "authored",
@@ -1228,8 +3023,8 @@
     }
    },
    "at": {
-    "d": 138,
-    "lat": -3,
+    "d": 139.16,
+    "lat": -3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
@@ -1256,7 +3051,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S07-transformer-and-insulators--original.jpg",
-   "sha256": "fe8cdf4614582ef1676c7ee7373f99a3a8f74cdcd7ed31654bb66a7cab89b6c5",
+   "sha256": "e816c81ebbfbfb35527e8be0ed26cd8ab3bb3b249110851ea279e569efe563c2",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "original",
@@ -1282,8 +3077,8 @@
     }
    },
    "at": {
-    "d": 138,
-    "lat": -3,
+    "d": 139.16,
+    "lat": -3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
@@ -1310,7 +3105,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S08-streetlight-golden-hour--authored.jpg",
-   "sha256": "7326ddaf6fda78512973efeaef7db57314e9c22f67de7c0499da475cf10be7df",
+   "sha256": "52533cfffe8c94d866806f5a34fabe5540605f6676360734d9f035dd790ac431",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -1336,14 +3131,14 @@
    "ms": null,
    "cam": {
     "p": [
-     -1.541,
-     2.68,
-     -123.049
+     -1.542,
+     2.676,
+     -123.048
     ],
     "q": [
-     -0.0241,
+     -0.0239,
      -0.2092,
-     0.0039,
+     0.0042,
      0.9776
     ],
     "fov": 64
@@ -1352,7 +3147,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S08-streetlight-golden-hour--original.jpg",
-   "sha256": "a249166e326e63d936e8cb4c7f58e318003fc8d83f9b11ca435fa8184354c587",
+   "sha256": "a33ff850d7518b89308a6a2d93fcdfa48e7186f79a747dec08a3fc7dce805061",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "original",
@@ -1378,14 +3173,14 @@
    "ms": null,
    "cam": {
     "p": [
-     -1.541,
-     2.68,
-     -123.049
+     -1.542,
+     2.676,
+     -123.048
     ],
     "q": [
-     -0.0241,
+     -0.0239,
      -0.2092,
-     0.0039,
+     0.0042,
      0.9776
     ],
     "fov": 64
@@ -1394,7 +3189,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S08b-cobra-head-close--authored.jpg",
-   "sha256": "5229a256965f94c95b24fbb2c54eef3fb1e9166517242a998a99f49b94249caa",
+   "sha256": "63b6dcfba51fc5a0750d7a06b9a7528b62ffaab69b5fc472667fae6b008f01d2",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "authored",
@@ -1420,8 +3215,8 @@
     }
    },
    "at": {
-    "d": 131,
-    "lat": 3,
+    "d": 132,
+    "lat": 3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
@@ -1448,7 +3243,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S08b-cobra-head-close--original.jpg",
-   "sha256": "19ef592294cfb09884bfb11f9c019230662d5bddef7f8f3619f4463aef7c90fe",
+   "sha256": "00d86479c8abc64891db4525b179f395091f00e3138685dd95e5d0b393150bc0",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "original",
@@ -1474,8 +3269,8 @@
     }
    },
    "at": {
-    "d": 131,
-    "lat": 3,
+    "d": 132,
+    "lat": 3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
@@ -1502,7 +3297,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S10-mailbox-beside-a-driveway--authored.jpg",
-   "sha256": "aeea81977ba259cd53488a4c631a2455598a756097205a8bfd8f23e0d54a9196",
+   "sha256": "2e818dbe11140da4a2039f89352d7e272c634e061b8a101a2ff426afdf5de109",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -1528,15 +3323,15 @@
    "ms": null,
    "cam": {
     "p": [
-     -3.137,
-     2.413,
-     -135.711
+     -3.139,
+     2.408,
+     -135.71
     ],
     "q": [
-     -0.2229,
-     0.4334,
-     0.1025,
-     0.8672
+     -0.2237,
+     0.4331,
+     0.1028,
+     0.8671
     ],
     "fov": 64
    },
@@ -1544,7 +3339,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S10-mailbox-beside-a-driveway--original.jpg",
-   "sha256": "e6206a1bc6363fc297579fe76d8fad6cf7dfe11c84094023b83d8c46b3deed4f",
+   "sha256": "1f83a88f481ab091d770c973530b09113fda27b9e6ccaf859b6840dd3bcdc1d9",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "original",
@@ -1570,15 +3365,15 @@
    "ms": null,
    "cam": {
     "p": [
-     -3.137,
-     2.413,
-     -135.711
+     -3.139,
+     2.408,
+     -135.71
     ],
     "q": [
-     -0.2229,
-     0.4334,
-     0.1025,
-     0.8672
+     -0.2237,
+     0.4331,
+     0.1028,
+     0.8671
     ],
     "fov": 64
    },
@@ -1586,7 +3381,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S11-hydrant-near-the-curb--authored.jpg",
-   "sha256": "943fba9b1e331fc3f356572d8205cdbef15dc6219c947b6535c03497b526f24a",
+   "sha256": "08e44f765153f4b644a5d5965b9c4e2c160f69b08991281c99c4d3d45301fb18",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -1612,14 +3407,14 @@
    "ms": null,
    "cam": {
     "p": [
-     -3.441,
-     3.18,
-     -76.521
+     -3.443,
+     3.176,
+     -76.52
     ],
     "q": [
-     -0.2396,
-     0.3932,
-     0.1094,
+     -0.2401,
+     0.393,
+     0.1096,
      0.8809
     ],
     "fov": 64
@@ -1628,7 +3423,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S11-hydrant-near-the-curb--original.jpg",
-   "sha256": "a0bd0aabd5bf3533e22c2b2aba3a3f39eecc8f02ea08444b4cbc09bcb739818d",
+   "sha256": "b1a56f2670c250f2c01ac85de19d68da46cd29f8ff7fe695e7e44349c4b72877",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "original",
@@ -1654,14 +3449,14 @@
    "ms": null,
    "cam": {
     "p": [
-     -3.441,
-     3.18,
-     -76.521
+     -3.443,
+     3.176,
+     -76.52
     ],
     "q": [
-     -0.2396,
-     0.3932,
-     0.1094,
+     -0.2401,
+     0.393,
+     0.1096,
      0.8809
     ],
     "fov": 64
@@ -1670,7 +3465,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S12-bins-beside-a-driveway--authored.jpg",
-   "sha256": "45d775e8250dee973132d56b875a1914763330078cea72ed57dfcf0840264b73",
+   "sha256": "6266ab9e9c378abaf2bf12a83d538c1d1fdc997b3d61c470c19b22775653537c",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -1754,7 +3549,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S13-basketball-hoop-garage--authored.jpg",
-   "sha256": "d1b8157f5af208194cd3187374896d3e2e17fe0ad849ceb3757d1f0e68d751ab",
+   "sha256": "6e98afe5eec43123e49b0d9384cb6470124fa72e98f973871ea050e418d43419",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "authored",
@@ -1772,15 +3567,15 @@
     }
    },
    "at": {
-    "d": 322,
-    "lat": 3,
+    "d": 333.46,
+    "lat": 3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
     "free": true
    },
-   "calls": 331,
-   "triangles": 776524,
+   "calls": 333,
+   "triangles": 785978,
    "ms": null,
    "cam": {
     "p": [
@@ -1800,7 +3595,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S13-basketball-hoop-garage--original.jpg",
-   "sha256": "05c989eeedc6d36483c58a8cb8e4ff2a587057533fd76535b967d1bc256c6e5f",
+   "sha256": "4d3565f82aa966bd84ad62e0f2c57e24860d4a134515f52abca755436c060c63",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "original",
@@ -1818,15 +3613,15 @@
     }
    },
    "at": {
-    "d": 322,
-    "lat": 3,
+    "d": 333.46,
+    "lat": 3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
     "free": true
    },
-   "calls": 266,
-   "triangles": 681724,
+   "calls": 268,
+   "triangles": 691178,
    "ms": null,
    "cam": {
     "p": [
@@ -1846,7 +3641,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S13b-portable-hoop-at-the-curb--authored.jpg",
-   "sha256": "cf7312f92707d9e54c2fddcd0636815a2a4a2ad0a2f49e4cf9a91056b1ccdc7b",
+   "sha256": "2ca77366f0ce8cc98856cd454041a22b94a16cae617d13d92d89a384b462436d",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -1872,14 +3667,14 @@
    "ms": null,
    "cam": {
     "p": [
-     28.91,
-     1.145,
+     28.908,
+     1.141,
      -235.234
     ],
     "q": [
      -0.0501,
      -0.4276,
-     -0.0168,
+     -0.0165,
      0.9024
     ],
     "fov": 64
@@ -1888,7 +3683,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S13b-portable-hoop-at-the-curb--original.jpg",
-   "sha256": "9cb39b4fb61e04f51158b6295f1e8e9eeaec42d4cf470c0f51d8538a83f9a563",
+   "sha256": "59c332cf3763e919f8d10425f1667441e838071975e309bb0d6d902d3858a05e",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "original",
@@ -1914,14 +3709,14 @@
    "ms": null,
    "cam": {
     "p": [
-     28.91,
-     1.145,
+     28.908,
+     1.141,
      -235.234
     ],
     "q": [
      -0.0501,
      -0.4276,
-     -0.0168,
+     -0.0165,
      0.9024
     ],
     "fov": 64
@@ -1930,101 +3725,101 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S14-wooden-fence-and-gate--authored.jpg",
-   "sha256": "5cafac3673ef3dde25021c164b4e2647629cf61c11462b2d02916db9db22d8d6",
+   "sha256": "f406c1fa12959cb0e3482266e87d1fdb3a16eca31323b5ba9e25899616884cd4",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "authored",
    "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
    "view": {
     "n": "S14-wooden-fence-and-gate",
-    "what": "a side-yard privacy fence and its gate beside a house (QA camera standing in the side yard)",
-    "d": -410,
+    "what": "a side-yard gate (grey boards, strap hinges, latch) between the house and the stained privacy fence, its finished face toward the street (QA camera standing in the side yard)",
+    "d": -256,
     "lat": -3,
     "free": {
      "kind": "gate",
-     "i": 6,
+     "i": 9,
      "back": 3.6,
      "h": 1.55,
      "du": -1.2
     }
    },
    "at": {
-    "d": -410,
-    "lat": -3,
+    "d": -260.69,
+    "lat": -3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
     "free": true
    },
-   "calls": 243,
-   "triangles": 446836,
+   "calls": 265,
+   "triangles": 588204,
    "ms": null,
    "cam": {
     "p": [
-     -21.049,
-     2.937,
-     326.511
+     -18.476,
+     1.893,
+     258.894
     ],
     "q": [
-     -0.062,
-     0.583,
-     0.0447,
-     0.8089
+     -0.0632,
+     0.5829,
+     0.0456,
+     0.8088
     ],
     "fov": 64
    },
-   "clock": "AUGUST 21, 2011  7:35 PM"
+   "clock": "AUGUST 21, 2011  7:37 PM"
   },
   {
    "file": "docs/qa/streetprops/browser/S14-wooden-fence-and-gate--original.jpg",
-   "sha256": "780ece20a7de8b35a2815d44a2b2c97d287a29a4a3ff6f9825a0c750c6716495",
+   "sha256": "4fe10fd60f420d31bc1952dad39b04df76ef375705261e03ae568c867467c634",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "original",
    "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
    "view": {
     "n": "S14-wooden-fence-and-gate",
-    "what": "a side-yard privacy fence and its gate beside a house (QA camera standing in the side yard)",
-    "d": -410,
+    "what": "a side-yard gate (grey boards, strap hinges, latch) between the house and the stained privacy fence, its finished face toward the street (QA camera standing in the side yard)",
+    "d": -256,
     "lat": -3,
     "free": {
      "kind": "gate",
-     "i": 6,
+     "i": 9,
      "back": 3.6,
      "h": 1.55,
      "du": -1.2
     }
    },
    "at": {
-    "d": -410,
-    "lat": -3,
+    "d": -260.69,
+    "lat": -3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
     "free": true
    },
-   "calls": 176,
-   "triangles": 365117,
+   "calls": 196,
+   "triangles": 498592,
    "ms": null,
    "cam": {
     "p": [
-     -21.049,
-     2.937,
-     326.511
+     -18.476,
+     1.893,
+     258.894
     ],
     "q": [
-     -0.062,
-     0.583,
-     0.0447,
-     0.8089
+     -0.0632,
+     0.5829,
+     0.0456,
+     0.8088
     ],
     "fov": 64
    },
-   "clock": "AUGUST 21, 2011  7:35 PM"
+   "clock": "AUGUST 21, 2011  7:37 PM"
   },
   {
    "file": "docs/qa/streetprops/browser/S14b-fences-from-the-street--authored.jpg",
-   "sha256": "df2b27ad46d499a111cf750df6365c56375f17a140c6bd0f776ae2864ca63582",
+   "sha256": "c114eb5ac11e1c0b2ea8afb3ecc67e89f7ee9c106bd7334dfc305d2383d2f816",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -2046,19 +3841,19 @@
     "free": false
    },
    "calls": 221,
-   "triangles": 417060,
+   "triangles": 418122,
    "ms": null,
    "cam": {
     "p": [
-     -6.939,
-     3.753,
-     417.994
+     -6.941,
+     3.748,
+     417.993
     ],
     "q": [
-     -0.0719,
-     0.621,
-     0.0582,
-     0.7784
+     -0.0736,
+     0.6209,
+     0.058,
+     0.7783
     ],
     "fov": 64
    },
@@ -2066,7 +3861,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S14b-fences-from-the-street--original.jpg",
-   "sha256": "5331af327678436817f523ae2d0c883d97de32be6b886f95c9cfb37318fb4f88",
+   "sha256": "a26a878821c7a0839757559c195df28d61519f463162127a055356596e7a2a71",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "original",
@@ -2088,19 +3883,19 @@
     "free": false
    },
    "calls": 171,
-   "triangles": 357604,
+   "triangles": 358666,
    "ms": null,
    "cam": {
     "p": [
-     -6.939,
-     3.753,
-     417.994
+     -6.941,
+     3.748,
+     417.993
     ],
     "q": [
-     -0.0719,
-     0.621,
-     0.0582,
-     0.7784
+     -0.0736,
+     0.6209,
+     0.058,
+     0.7783
     ],
     "fov": 64
    },
@@ -2108,7 +3903,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S15-residential-street--authored.jpg",
-   "sha256": "5422275dab3a01eed7a1eac550bd8907ecb490576efda3badf5038abffd82e98",
+   "sha256": "a6c09911767068872d5230a7040b8465084b6fac7b7911504bfb23549b92d977",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -2134,14 +3929,14 @@
    "ms": null,
    "cam": {
     "p": [
-     99.085,
-     -1.107,
-     -355.199
+     99.083,
+     -1.11,
+     -355.2
     ],
     "q": [
-     -0.1013,
-     -0.2484,
-     -0.0197,
+     -0.1014,
+     -0.2485,
+     -0.0195,
      0.9631
     ],
     "fov": 64
@@ -2150,7 +3945,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S15-residential-street--original.jpg",
-   "sha256": "e5cbc88594d2db1e101462b8725f068612624ac5e5ada6a99fd5c42a769b9852",
+   "sha256": "c0fc434af33e7261aa426f948f743cf9123bcca09cd8cce02e4c76046519bd3e",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "original",
@@ -2176,14 +3971,14 @@
    "ms": null,
    "cam": {
     "p": [
-     99.085,
-     -1.107,
-     -355.199
+     99.083,
+     -1.11,
+     -355.2
     ],
     "q": [
-     -0.1013,
-     -0.2484,
-     -0.0197,
+     -0.1014,
+     -0.2485,
+     -0.0195,
      0.9631
     ],
     "fov": 64
@@ -2192,7 +3987,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S16-oak-hollow-wide-all-five--authored.jpg",
-   "sha256": "8f2b7de220948cba1161e38210c75f8e2fa0e3c27da897b8a848afd3692f8133",
+   "sha256": "0932f5c00383c97b18e92b76eee4485dd365191f163dcd683cd10efe12835cf3",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "authored",
@@ -2213,8 +4008,8 @@
     }
    },
    "at": {
-    "d": 30,
-    "lat": 0,
+    "d": 25,
+    "lat": -1,
     "yaw": 0,
     "target": null,
     "aimError": null,
@@ -2241,7 +4036,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S16-oak-hollow-wide-all-five--original.jpg",
-   "sha256": "28e1e4f348ef4687c5ad7305614f0df8a195565eddec2abb82a36ea9e2ebda18",
+   "sha256": "2536789c05d4adc6d16c7fb1da605782c8443b3d1c3a0e339c8619cc0744023c",
    "kind": "game-renderer capture",
    "camera": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "mode": "original",
@@ -2262,15 +4057,15 @@
     }
    },
    "at": {
-    "d": 30,
-    "lat": 0,
+    "d": 25,
+    "lat": -1,
     "yaw": 0,
     "target": null,
     "aimError": null,
     "free": true
    },
-   "calls": 496,
-   "triangles": 680697,
+   "calls": 495,
+   "triangles": 680309,
    "ms": null,
    "cam": {
     "p": [
@@ -2290,7 +4085,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S09-streetlight-at-dusk--authored.jpg",
-   "sha256": "ce530c33d8fb8b0c36ca73cc2a122031197b21c527744bfed8c5b1b28047e015",
+   "sha256": "997531de9f7ca80af95c327827e00f4f7e6f05b287f99285b34527de19a7d367",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -2376,7 +4171,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S17-the-boys-on-their-current-bikes--authored.jpg",
-   "sha256": "f8fcfb38683117ae0ddcbdd60c0cf6e6f07088076cdee639bae8d38523385388",
+   "sha256": "3d11bcf9addba70a73d960a0399c23b39497b359f7eea9655e6fe928e798c4ce",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "authored",
@@ -2418,7 +4213,7 @@
   },
   {
    "file": "docs/qa/streetprops/browser/S17-the-boys-on-their-current-bikes--original.jpg",
-   "sha256": "c7fb0ee73fdbd92b60a3a47d28d19ddb8f3415cdb601c86a96b19675a9035883",
+   "sha256": "c1ccf3d82208e901054d2d580cf3ef59cb4c3f275ea508f476916dd7da816e3c",
    "kind": "game-renderer capture",
    "camera": "gameplay riding camera (QA placement)",
    "mode": "original",
@@ -2493,11 +4288,11 @@
    "clock": "AUGUST 21, 2011  7:43 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 44 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2723 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 641 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1162 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1838 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 77 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2502 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 628 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1617 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1054 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
    },
    "authored": {
     "calls": 563,
@@ -2547,11 +4342,11 @@
    "clock": "AUGUST 21, 2011  7:43 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 44 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2723 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 3/17/280) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 34/25/50 · 114,954 tris · 0 chunks pending\n317,058 veg tris drawn · 170 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 641 ms · 17.9 MB\nLOD now 2×0 6×1 4×2 · 41301 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1162 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 3/3/20) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n138,476 street-prop tris in 79 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1838 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 77 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2502 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 3/17/280) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 34/25/50 · 114,954 tris · 0 chunks pending\n317,058 veg tris drawn · 170 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 628 ms · 17.9 MB\nLOD now 2×0 6×1 4×2 · 41301 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1617 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1054 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 3/3/20) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n138,476 street-prop tris in 79 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
    },
    "authored": {
     "calls": 364,
@@ -2601,11 +4396,11 @@
    "clock": "AUGUST 21, 2011  7:47 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 44 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2723 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 2/21/267) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 36/31/58 · 126,912 tris · 0 chunks pending\n328,048 veg tris drawn · 171 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 641 ms · 17.9 MB\nLOD now 4×0 6×1 2×2 · 53462 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1162 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 2/5/20) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n125,562 street-prop tris in 78 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1838 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 77 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2502 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 2/21/267) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 36/31/58 · 126,912 tris · 0 chunks pending\n328,048 veg tris drawn · 171 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 628 ms · 17.9 MB\nLOD now 4×0 6×1 2×2 · 53462 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1617 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1054 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 2/5/20) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n125,562 street-prop tris in 78 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
    },
    "authored": {
     "calls": 538,
@@ -2655,11 +4450,11 @@
    "clock": "AUGUST 21, 2011  7:44 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 73 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2782 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1829 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 662 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1226 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 64 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3168 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1063 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1834 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 705 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
    },
    "authored": {
     "calls": 376,
@@ -2709,11 +4504,11 @@
    "clock": "AUGUST 21, 2011  7:38 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 73 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2782 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 3/19/282) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 28/13/26 · 83,832 tris · 0 chunks pending\n300,676 veg tris drawn · 169 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1829 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 662 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1226 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 2/5/19) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n138,516 street-prop tris in 77 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 64 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3168 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 3/19/282) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 28/13/26 · 83,832 tris · 0 chunks pending\n300,676 veg tris drawn · 169 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1063 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 2/5/19) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n138,516 street-prop tris in 77 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1834 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 705 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
    },
    "authored": {
     "calls": 683,
@@ -2750,8 +4545,8 @@
    },
    "cameraKind": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "at": {
-    "d": 200,
-    "lat": -2,
+    "d": -293.35,
+    "lat": 3.3,
     "yaw": 0,
     "target": {
      "u": 135.2,
@@ -2760,23 +4555,23 @@
     "aimError": null,
     "free": true
    },
-   "clock": "AUGUST 21, 2011  7:45 PM",
+   "clock": "AUGUST 21, 2011  7:37 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 73 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2782 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 7/21/199) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 5/34/100 · 70,383 tris · 0 chunks pending\n230,367 veg tris drawn · 149 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1829 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 662 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1226 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 3/3/13) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n128,261 street-prop tris in 73 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 64 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3168 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 7/21/199) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 5/34/100 · 70,383 tris · 0 chunks pending\n230,367 veg tris drawn · 149 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1063 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 3/3/13) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n128,261 street-prop tris in 73 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1834 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 705 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
    },
    "authored": {
-    "calls": 773,
-    "triangles": 961793,
+    "calls": 740,
+    "triangles": 931555,
     "ms": null
    },
    "original": {
-    "calls": 795,
-    "triangles": 987133,
+    "calls": 737,
+    "triangles": 923672,
     "ms": null
    },
    "files": [
@@ -2814,11 +4609,11 @@
    "clock": "AUGUST 21, 2011  7:44 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 57 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3078 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 698 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 923 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 2039 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 75 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2687 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 679 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 939 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1714 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
     "calls": 495,
@@ -2855,8 +4650,8 @@
    },
    "cameraKind": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "at": {
-    "d": 138,
-    "lat": -3,
+    "d": 139.16,
+    "lat": -3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
@@ -2865,11 +4660,11 @@
    "clock": "AUGUST 21, 2011  7:44 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 57 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3078 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 4/19/280) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 2/30/54 · 45,594 tris · 0 chunks pending\n277,403 veg tris drawn · 173 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 698 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 923 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 3/4/19) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n142,970 street-prop tris in 80 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 2039 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 75 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2687 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 4/19/280) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 2/30/54 · 45,594 tris · 0 chunks pending\n277,403 veg tris drawn · 173 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 679 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 939 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 3/4/19) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n142,970 street-prop tris in 80 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1714 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
     "calls": 435,
@@ -2892,14 +4687,14 @@
    "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
    "camera": {
     "p": [
-     -1.541,
-     2.68,
-     -123.049
+     -1.542,
+     2.676,
+     -123.048
     ],
     "q": [
-     -0.0241,
+     -0.0239,
      -0.2092,
-     0.0039,
+     0.0042,
      0.9776
     ],
     "fov": 64
@@ -2916,11 +4711,11 @@
    "clock": "AUGUST 21, 2011  7:43 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 57 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3078 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 4/18/282) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/18/49 · 29,838 tris · 0 chunks pending\n255,969 veg tris drawn · 171 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 698 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 923 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/6/18) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n128,148 street-prop tris in 78 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 2039 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 75 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2687 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 4/18/282) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/18/49 · 29,838 tris · 0 chunks pending\n255,969 veg tris drawn · 171 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 679 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 939 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/6/18) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n128,148 street-prop tris in 78 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1714 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
     "calls": 493,
@@ -2957,8 +4752,8 @@
    },
    "cameraKind": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "at": {
-    "d": 131,
-    "lat": 3,
+    "d": 132,
+    "lat": 3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
@@ -2967,11 +4762,11 @@
    "clock": "AUGUST 21, 2011  7:44 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 80 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2690 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 938 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1730 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 746 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 53 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2642 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 637 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 944 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1714 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
     "calls": 515,
@@ -2989,20 +4784,71 @@
    ]
   },
   {
+   "name": "S09-streetlight-at-dusk",
+   "what": "streetlights lit at dusk (the ride near the end of the street: the lamps have come on)",
+   "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
+   "camera": {
+    "p": [
+     232.656,
+     3.302,
+     -929.055
+    ],
+    "q": [
+     -0.0463,
+     -0.2719,
+     -0.0061,
+     0.9612
+    ],
+    "fov": 64
+   },
+   "cameraKind": "gameplay riding camera (QA placement)",
+   "at": {
+    "d": 1032,
+    "lat": -1.2,
+    "yaw": -0.3,
+    "target": null,
+    "aimError": null,
+    "free": false
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "sameCamera": true,
+   "labels": {
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 48 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2800 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD1 · trees 386 (42 variants; LOD 7/16/246) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 7/31/86 · 68,217 tris · 13 chunks pending\n320,304 veg tris drawn · 190 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 752 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 2/3/20) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n136,000 street-prop tris in 77 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 593 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1725 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+   },
+   "authored": {
+    "calls": 388,
+    "triangles": 596403,
+    "ms": null
+   },
+   "original": {
+    "calls": 332,
+    "triangles": 481811,
+    "ms": null
+   },
+   "files": [
+    "docs/qa/streetprops/browser/S09-streetlight-at-dusk--authored.jpg",
+    "docs/qa/streetprops/browser/S09-streetlight-at-dusk--original.jpg"
+   ]
+  },
+  {
    "name": "S10-mailbox-beside-a-driveway",
    "what": "mailboxes beside a driveway (a white post, a brick column beyond)",
    "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
    "camera": {
     "p": [
-     -3.137,
-     2.413,
-     -135.711
+     -3.139,
+     2.408,
+     -135.71
     ],
     "q": [
-     -0.2229,
-     0.4334,
-     0.1025,
-     0.8672
+     -0.2237,
+     0.4331,
+     0.1028,
+     0.8671
     ],
     "fov": 64
    },
@@ -3018,11 +4864,11 @@
    "clock": "AUGUST 21, 2011  7:44 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 80 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2690 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 5/17/282) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/25/67 · 41,106 tris · 0 chunks pending\n281,950 veg tris drawn · 174 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 938 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 2/5/18) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n133,688 street-prop tris in 77 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1730 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 746 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 53 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2642 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 5/17/282) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/25/67 · 41,106 tris · 0 chunks pending\n281,950 veg tris drawn · 174 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 637 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 944 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 2/5/18) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n133,688 street-prop tris in 77 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1714 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
     "calls": 381,
@@ -3045,14 +4891,14 @@
    "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
    "camera": {
     "p": [
-     -3.441,
-     3.18,
-     -76.521
+     -3.443,
+     3.176,
+     -76.52
     ],
     "q": [
-     -0.2396,
-     0.3932,
-     0.1094,
+     -0.2401,
+     0.393,
+     0.1096,
      0.8809
     ],
     "fov": 64
@@ -3069,11 +4915,11 @@
    "clock": "AUGUST 21, 2011  7:43 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 80 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2690 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 5/17/282) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 13/14/20 · 47,751 tris · 0 chunks pending\n286,256 veg tris drawn · 173 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 938 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/6/18) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n129,064 street-prop tris in 79 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1730 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 746 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 53 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2642 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 5/17/282) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 13/14/20 · 47,751 tris · 0 chunks pending\n286,256 veg tris drawn · 173 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 637 ms · 17.9 MB\nLOD now 2×0 4×1 6×2 · 30272 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 944 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/6/18) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n129,064 street-prop tris in 79 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1714 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
     "calls": 408,
@@ -3120,11 +4966,11 @@
    "clock": "AUGUST 21, 2011  7:41 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 63 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3229 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 2312 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 693 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1128 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 47 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2766 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1133 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 688 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1906 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
     "calls": 499,
@@ -3161,8 +5007,8 @@
    },
    "cameraKind": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "at": {
-    "d": 322,
-    "lat": 3,
+    "d": 333.46,
+    "lat": 3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
@@ -3171,20 +5017,20 @@
    "clock": "AUGUST 21, 2011  7:47 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 63 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3229 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 7/19/250) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 30/33/69 · 118,008 tris · 0 chunks pending\n338,252 veg tris drawn · 183 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 2312 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD1 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 693 ms · 17.9 MB\nLOD now 4×0 4×1 4×2 · 48648 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1128 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 2/2/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n141,003 street-prop tris in 70 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 47 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2766 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 7/19/250) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 30/33/69 · 118,008 tris · 0 chunks pending\n338,252 veg tris drawn · 183 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1133 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 2/2/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n141,003 street-prop tris in 70 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 688 ms · 17.9 MB\nLOD now 4×0 4×1 4×2 · 48648 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1906 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD1 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
-    "calls": 331,
-    "triangles": 776524,
+    "calls": 333,
+    "triangles": 785978,
     "ms": null
    },
    "original": {
-    "calls": 266,
-    "triangles": 681724,
+    "calls": 268,
+    "triangles": 691178,
     "ms": null
    },
    "files": [
@@ -3198,14 +5044,14 @@
    "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
    "camera": {
     "p": [
-     28.91,
-     1.145,
+     28.908,
+     1.141,
      -235.234
     ],
     "q": [
      -0.0501,
      -0.4276,
-     -0.0168,
+     -0.0165,
      0.9024
     ],
     "fov": 64
@@ -3222,11 +5068,11 @@
    "clock": "AUGUST 21, 2011  7:45 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 63 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3229 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 8/12/294) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 32/25/68 · 116,016 tris · 0 chunks pending\n389,842 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 2312 ms\nbike.player  v1 LOD1 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 693 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1128 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 0/6/22) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n121,567 street-prop tris in 81 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 47 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2766 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 8/12/294) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 32/25/68 · 116,016 tris · 0 chunks pending\n389,842 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1133 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 0/6/22) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n121,567 street-prop tris in 81 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 688 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1906 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
     "calls": 629,
@@ -3245,48 +5091,48 @@
   },
   {
    "name": "S14-wooden-fence-and-gate",
-   "what": "a side-yard privacy fence and its gate beside a house (QA camera standing in the side yard)",
+   "what": "a side-yard gate (grey boards, strap hinges, latch) between the house and the stained privacy fence, its finished face toward the street (QA camera standing in the side yard)",
    "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
    "camera": {
     "p": [
-     -21.049,
-     2.937,
-     326.511
+     -18.476,
+     1.893,
+     258.894
     ],
     "q": [
-     -0.062,
-     0.583,
-     0.0447,
-     0.8089
+     -0.0632,
+     0.5829,
+     0.0456,
+     0.8088
     ],
     "fov": 64
    },
    "cameraKind": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "at": {
-    "d": -410,
-    "lat": -3,
+    "d": -260.69,
+    "lat": -3.3,
     "yaw": 0,
     "target": null,
     "aimError": null,
     "free": true
    },
-   "clock": "AUGUST 21, 2011  7:35 PM",
+   "clock": "AUGUST 21, 2011  7:37 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 87 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3127 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1655 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 632 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 887 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 49 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2565 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1774 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 886 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 630 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
    },
    "authored": {
-    "calls": 243,
-    "triangles": 446836,
+    "calls": 265,
+    "triangles": 588204,
     "ms": null
    },
    "original": {
-    "calls": 176,
-    "triangles": 365117,
+    "calls": 196,
+    "triangles": 498592,
     "ms": null
    },
    "files": [
@@ -3300,15 +5146,15 @@
    "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
    "camera": {
     "p": [
-     -6.939,
-     3.753,
-     417.994
+     -6.941,
+     3.748,
+     417.993
     ],
     "q": [
-     -0.0719,
-     0.621,
-     0.0582,
-     0.7784
+     -0.0736,
+     0.6209,
+     0.058,
+     0.7783
     ],
     "fov": 64
    },
@@ -3324,20 +5170,20 @@
    "clock": "AUGUST 21, 2011  7:35 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 87 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3127 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/16/168) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 28/39/114 · 132,408 tris · 0 chunks pending\n264,513 veg tris drawn · 118 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1655 ms\nbike.player  v1 LOD2 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 632 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 887 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 0/4/12) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n101,565 street-prop tris in 78 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 49 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2565 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 9/15/197) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 57/43/104 · 199,995 tris · 0 chunks pending\n379,893 veg tris drawn · 139 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1774 ms\nbike.player  v1 LOD1 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 886 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 0/6/13) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n110,604 street-prop tris in 82 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 630 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
    },
    "authored": {
     "calls": 221,
-    "triangles": 417060,
+    "triangles": 418122,
     "ms": null
    },
    "original": {
     "calls": 171,
-    "triangles": 357604,
+    "triangles": 358666,
     "ms": null
    },
    "files": [
@@ -3351,14 +5197,14 @@
    "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
    "camera": {
     "p": [
-     99.085,
-     -1.107,
-     -355.199
+     99.083,
+     -1.11,
+     -355.2
     ],
     "q": [
-     -0.1013,
-     -0.2484,
-     -0.0197,
+     -0.1014,
+     -0.2485,
+     -0.0195,
      0.9631
     ],
     "fov": 64
@@ -3375,11 +5221,11 @@
    "clock": "AUGUST 21, 2011  7:48 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 87 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3127 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 2/9/168) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 36/38/91 · 142,950 tris · 0 chunks pending\n225,392 veg tris drawn · 102 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1655 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 632 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 887 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 0/2/10) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n79,168 street-prop tris in 64 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 49 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2565 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 3/7/169) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 36/39/91 · 143,742 tris · 0 chunks pending\n232,746 veg tris drawn · 100 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1774 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 886 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 0/2/10) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n79,168 street-prop tris in 64 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 630 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
    },
    "authored": {
     "calls": 691,
@@ -3416,8 +5262,8 @@
    },
    "cameraKind": "QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)",
    "at": {
-    "d": 30,
-    "lat": 0,
+    "d": 25,
+    "lat": -1,
     "yaw": 0,
     "target": null,
     "aimError": null,
@@ -3426,11 +5272,11 @@
    "clock": "AUGUST 21, 2011  7:42 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 77 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2883 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1793 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1151 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 931 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 49 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2445 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 764 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 569 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1514 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
    },
    "authored": {
     "calls": 488,
@@ -3438,64 +5284,13 @@
     "ms": null
    },
    "original": {
-    "calls": 496,
-    "triangles": 680697,
+    "calls": 495,
+    "triangles": 680309,
     "ms": null
    },
    "files": [
     "docs/qa/streetprops/browser/S16-oak-hollow-wide-all-five--authored.jpg",
     "docs/qa/streetprops/browser/S16-oak-hollow-wide-all-five--original.jpg"
-   ]
-  },
-  {
-   "name": "S09-streetlight-at-dusk",
-   "what": "streetlights lit at dusk (the ride near the end of the street: the lamps have come on)",
-   "flags": "qa&bikes&houses&vegetation&pavement&streetprops",
-   "camera": {
-    "p": [
-     232.656,
-     3.302,
-     -929.055
-    ],
-    "q": [
-     -0.0463,
-     -0.2719,
-     -0.0061,
-     0.9612
-    ],
-    "fov": 64
-   },
-   "cameraKind": "gameplay riding camera (QA placement)",
-   "at": {
-    "d": 1032,
-    "lat": -1.2,
-    "yaw": -0.3,
-    "target": null,
-    "aimError": null,
-    "free": false
-   },
-   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
-   "sameCamera": true,
-   "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 45 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2831 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD1 · trees 386 (42 variants; LOD 7/16/246) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 7/22/40 · 46,461 tris · 14 chunks pending\n298,548 veg tris drawn · 190 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1937 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD2 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD2 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD2 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 1212 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 3/2/20) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,022 street-prop tris in 80 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 602 ms · 17.9 MB\nLOD now 0×0 0×1 12×2 · 7842 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto"
-   },
-   "authored": {
-    "calls": 388,
-    "triangles": 596403,
-    "ms": null
-   },
-   "original": {
-    "calls": 332,
-    "triangles": 481811,
-    "ms": null
-   },
-   "files": [
-    "docs/qa/streetprops/browser/S09-streetlight-at-dusk--authored.jpg",
-    "docs/qa/streetprops/browser/S09-streetlight-at-dusk--original.jpg"
    ]
   },
   {
@@ -3528,11 +5323,11 @@
    "clock": "AUGUST 21, 2011  7:42 PM",
    "sameCamera": true,
    "labels": {
-    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 43 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
-    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 3185 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
-    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 691 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
-    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1778 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
-    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 960 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
+    "pavement-benchmark-label": "PAVEMENT BENCHMARK (DEV) — RECONSTRUCTED · loaded in 88 ms\n6 textures 1024² (~32 MB GPU, aniso 16) · 200 pavement batches · 103,128 tris · 133 driveways · layout 133 cuts, 16 inlets, 106 trees\nO reconstructed/original",
+    "vegetation-benchmark-label": "VEGETATION BENCHMARK (DEV) — AUTHORED · loaded in 2507 ms · 29.2 MB · 13 materials · 23 textures (~156.6 MB GPU)\noak LOD2 · trees 386 (42 variants; LOD 6/20/251) · shrubs 553 · meadow 7251\nLAWN C — repaired ground + continuous blades · blade tiles 0/9/33 · 17,622 tris · 14 chunks pending\n232,002 veg tris drawn · 182 veg draw groups · wind ×1 (game breeze)\nK authored/procedural · Y lawn C/B/A · L LOD auto/0/1/2 · U wind",
+    "house-benchmark-label": "HOUSE BENCHMARK (DEV) — C · REFINED (realism pass, v2) on 12 lots · loaded in 603 ms · 17.9 MB\nLOD now 6×0 2×1 4×2 · 55720 tris drawn by houses · 10 materials · 17 textures (shared)\nH refined/benchmark/procedural · G LOD auto/0/1/2 · V room lamps auto",
+    "bike-benchmark-label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1590 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD1 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on",
+    "streetprops-benchmark-label": "STREET PROPS BENCHMARK (DEV) — AUTHORED · loaded in 967 ms · 8 textures (~86.7 MB GPU)\ncars 54 (LOD 1/3/23) · poles 39 (15 transformers) · wires 157 · lamps 27 · mailboxes 133 · hydrants 8 · bins 89 · hoops 10 · fence bays 2457 + gates 189\n134,726 street-prop tris in 69 instanced draws\nX authored/original · Z LOD auto/0/1/2 · incorporates CC BY 4.0 work by Comrade1280, SLASH / RENDAR, Spellkaze, peyman.khaleghi, DmitriyGDS (THIRD_PARTY_ASSETS.md)"
    },
    "authored": {
     "calls": 688,
@@ -3550,6 +5345,12 @@
    ]
   }
  ],
- "kept": [],
- "finished": "2026-11-20T04:21:12.256Z"
+ "kept": [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E"
+ ],
+ "finished": "2026-11-20T08:44:56.497Z"
 }

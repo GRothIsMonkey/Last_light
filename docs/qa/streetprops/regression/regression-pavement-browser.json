@@ -1,0 +1,1422 @@
+{
+ "command": "node tests/pavement-browser.mjs <scratch>",
+ "note": "A first attempt in a queue of suites was killed for lack of memory in part B (Aftermath I page, software renderer at 7.9 GB, before any check failed); run again alone, it passed. The pavement suite never loads ?streetprops.",
+ "renderer": "Chromium (Playwright) with ANGLE SwiftShader \u2014 software rendering, not a GPU",
+ "commit": "495d571",
+ "started": "2026-11-20T08:17:59.848Z",
+ "viewport": "1600x900, deviceScaleFactor 1",
+ "checks": [
+  {
+   "name": "Default game: without ?pavement none of the pavement modules or textures is fetched",
+   "detail": []
+  },
+  {
+   "name": "Default game: no pavement material, attribute or layout exists (the world is baked as before)",
+   "detail": {
+    "label": false,
+    "pv": 0,
+    "layout": null,
+    "merged": 2225,
+    "proxies": 379
+   }
+  },
+  {
+   "name": "Default game: no page errors",
+   "detail": []
+  },
+  {
+   "name": "?pavement: the six pavement textures load without error",
+   "detail": {
+    "error": null,
+    "loadMs": 46,
+    "files": [
+     {
+      "file": "assets/pavement/pv.asphalt.albedo.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.concrete.albedo.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.asphalt.normal.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.asphalt.hra.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.concrete.hra.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.concrete.normal.jpg",
+      "w": 1024,
+      "h": 1024
+     }
+    ]
+   }
+  },
+  {
+   "name": "?pavement: textures are 1024 x 1024, tiled, trilinear mipmapped, anisotropic, linear data",
+   "detail": [
+    {
+     "k": "asA",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "asN",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "asH",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "coA",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "coN",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "coH",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    }
+   ]
+  },
+  {
+   "name": "?pavement: real-world scale (asphalt 2.5 m per tile = 410 px/m; concrete 2.0 m = 512 px/m; the Art Bible asks 256-512 px/m)",
+   "detail": {
+    "asphalt": {
+     "albedo_p01": 0.6095972860788921,
+     "albedo_p99": 2.065472562465247,
+     "rough_mean": 0.9127393222764226,
+     "meters": 2.5,
+     "px_per_m": 409.6,
+     "size": 1024
+    },
+    "concrete": {
+     "albedo_p01": 0.4675181229164829,
+     "albedo_p99": 1.718081324990562,
+     "rough_mean": 0.9180418287950829,
+     "meters": 2,
+     "px_per_m": 512,
+     "size": 1024
+    }
+   }
+  },
+  {
+   "name": "?pavement: no request leaves the local server",
+   "detail": []
+  },
+  {
+   "name": "?pavement: every pavement batch carries finite street coordinates (uv) and a unit along-direction (pv)",
+   "detail": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   }
+  },
+  {
+   "name": "?pavement: on Oak Hollow Drive the asphalt's coordinates are the street's own (u within 5 cm of d, v within 5 cm of the lateral offset)",
+   "detail": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   }
+  },
+  {
+   "name": "?pavement: no UV stretch at bends: micro-structure in world metres; street-coordinate features within 6 % of true length at the asphalt edge on the tightest bend",
+   "detail": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   }
+  },
+  {
+   "name": "Geometry: every merged surface, shadow proxy and line has exactly the default game's vertices (positions hashed at 1 mm), but for the soil faces added beside driveway aprons and the cul-de-sac bulb, tessellated to follow the ground",
+   "detail": {
+    "with": {
+     "merged": {
+      "tris": 3672521,
+      "verts": 11017563,
+      "h1": 2909938247,
+      "h2": 224281111
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2395,
+     "proxyCount": 379
+    },
+    "without": {
+     "merged": {
+      "tris": 3672521,
+      "verts": 11017563,
+      "h1": 2909938247,
+      "h2": 224281111
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2225,
+     "proxyCount": 379
+    },
+    "soil": {
+     "batches": 30,
+     "tris": 8384,
+     "bulbTris": 1470,
+     "bulbTrisDefault": null
+    }
+   }
+  },
+  {
+   "name": "Gameplay: surface heights, rideability, standing ground and authored pads at 30848 street points are identical; obstacles, navigation shapes and driveway openings unchanged",
+   "detail": {
+    "with": {
+     "n": 30848,
+     "hash": 995588364,
+     "obstacles": 812,
+     "space": [
+      159,
+      247,
+      247,
+      5717,
+      0,
+      618,
+      52
+     ],
+     "drives": 105
+    },
+    "without": {
+     "n": 30848,
+     "hash": 995588364,
+     "obstacles": 812,
+     "space": [
+      159,
+      247,
+      247,
+      5717,
+      0,
+      618,
+      52
+     ],
+     "drives": 105
+    }
+   }
+  },
+  {
+   "name": "Riding: a scripted ride over a driveway cut onto the walk, and one into a plain curb, follow exactly the same path, speed and wheel height",
+   "detail": {
+    "cut": [
+     [
+      754.3317,
+      7.5516,
+      4.4849,
+      0
+     ],
+     [
+      755.2299,
+      7.8134,
+      4.4953,
+      0
+     ]
+    ],
+    "curb": [
+     [
+      764.7885,
+      6.9045,
+      4.5126,
+      0
+     ],
+     [
+      765.693,
+      7.2991,
+      4.5289,
+      0
+     ]
+    ],
+    "without": {
+     "cut": [
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "name": "Junctions and cul-de-sac: rays from above find a surface everywhere, never below the street's ground, and every surface within 3.5 cm of the authored height away from curbs and surface edges (no gaps, no floating or sunken surfaces; the default game's bulb sank up to 4 cm: reported as without)",
+   "detail": {
+    "with": {
+     "samples": 13125,
+     "none": 0,
+     "base": 0,
+     "off": 0,
+     "worst": [],
+     "kinds": {
+      "asphalt": 9108,
+      "gutter": 88,
+      "curb": 352,
+      "other": 1853,
+      "walk": 1706,
+      "drive": 18
+     }
+    },
+    "without": {
+     "none": 0,
+     "base": 191,
+     "off": 167
+    }
+   }
+  },
+  {
+   "name": "?pavement (measures): no page errors",
+   "detail": []
+  },
+  {
+   "name": "Comparison: O swaps RECONSTRUCTED (shader on, old decal patches / joint bars / crack lines hidden) and ORIGINAL (shader off, all shown) in the same frame",
+   "detail": [
+    [
+     "reconstructed",
+     1,
+     false
+    ],
+    [
+     "original",
+     0,
+     true
+    ],
+    [
+     "reconstructed",
+     1,
+     false
+    ]
+   ]
+  },
+  {
+   "name": "Captures: every before/after pair is one camera and one frame",
+   "detail": 17
+  },
+  {
+   "name": "Cost: in every pair the reconstruction draws no more draw calls than the original and at most 1 % more triangles (the soil faces)",
+   "detail": {
+    "drawCallDelta": [
+     -21,
+     -2
+    ],
+    "triangleRatio": [
+     0.983,
+     1
+    ]
+   }
+  },
+  {
+   "name": "?pavement: no page errors (every pavement shader compiles and links)",
+   "detail": []
+  },
+  {
+   "name": "Prologue only: active in the Prologue; in Chapter One the original surfaces show (the reconstruction is inactive)",
+   "detail": {
+    "prologue": {
+     "active": true,
+     "on": 1,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "on": 0,
+     "state": "c1-ride"
+    }
+   }
+  },
+  {
+   "name": "Chapter One with ?pavement: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Aftermath I: the reconstruction is inactive, and Chapter Eight's ground cuts are installed on every pavement material",
+   "detail": {
+    "active": false,
+    "on": 0,
+    "state": "c1-walk",
+    "keys": [
+     "astra-art-roadwear-3-onBeforeCompile( /* shaderobject, renderer */ ) {}|ll-pave-0|c8cut",
+     "concrete|ll-pave-2|c8cut",
+     "concrete|ll-pave-3|c8cut",
+     "concrete|ll-pave-1|c8cut",
+     "concrete|ll-pave-5|c8cut",
+     "(sh,r)=>{prev?.call(m,sh,r);sh.uniforms.uCutN=CUT.n;sh.uniforms.uCutInv=CUT.inv;sh.uniforms.uCutK=CUT.kind;\n   sh.vertexShader='varying vec3 vCutW;\\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\\n{vec4 cw=vec4(transformed,1.);\\n#ifdef USE_INSTANCING\\ncw=instanceMatrix*cw;\\n#endif\\nvCutW=(modelMatrix*cw).xyz;}');\n   sh.fragmentShader='uniform int uCutN;\\nuniform mat4 uCutInv['+MAXCUT+'];\\nuniform float uCutK['+MAXCUT+'];\\nvarying vec3 vCutW;\\n'+sh.fragmentShader.replace('void main() {','void main() {\\n for(int i=0;i<'+MAXCUT+';i++){if(i>=uCutN)break;vec3 q=(uCutInv[i]*vec4(vCutW,1.)).xyz;bool inside=uCutK[i]<.5?(abs(q.x)<1.&&abs(q.y)<1.&&abs(q.z)<1.):(q.x*q.x+q.z*q.z<1.&&abs(q.y)<1.);if(inside)discard;}');}|ll-pave-6|c8cut",
+     "concrete|ll-pave-4|c8cut"
+    ],
+    "allCut": true
+   }
+  },
+  {
+   "name": "Aftermath I with ?pavement: no page errors",
+   "detail": []
+  },
+  {
+   "name": "All four benchmarks together (?bikes&houses&vegetation&pavement) load without error; the lawn is the repair (C)",
+   "detail": {
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "lawn": "C"
+   }
+  },
+  {
+   "name": "Lawn: the repaired lawn's masks build the same lawn cells in the same chunks as without ?pavement (grass boundaries unchanged)",
+   "detail": {
+    "with": [
+     [
+      40,
+      106
+     ],
+     [
+      104,
+      89
+     ],
+     [
+      150,
+      96
+     ],
+     [
+      572,
+      120
+     ],
+     [
+      848,
+      119
+     ],
+     [
+      1110,
+      112
+     ]
+    ],
+    "without": [
+     [
+      40,
+      106
+     ],
+     [
+      104,
+      89
+     ],
+     [
+      150,
+      96
+     ],
+     [
+      572,
+      120
+     ],
+     [
+      848,
+      119
+     ],
+     [
+      1110,
+      112
+     ]
+    ]
+   }
+  },
+  {
+   "name": "Four benchmarks: no page errors; riding works with them all on",
+   "detail": []
+  },
+  {
+   "name": "Offline package (PLAYTEST_MODELS=1): the six pavement textures and the pavement modules are embedded",
+   "detail": [
+    "dist/assets/pavement/pv.asphalt.albedo.jpg",
+    "dist/assets/pavement/pv.asphalt.hra.jpg",
+    "dist/assets/pavement/pv.asphalt.normal.jpg",
+    "dist/assets/pavement/pv.concrete.albedo.jpg",
+    "dist/assets/pavement/pv.concrete.hra.jpg",
+    "dist/assets/pavement/pv.concrete.normal.jpg"
+   ]
+  },
+  {
+   "name": "Offline package from disk, browser offline: ?pavement loads its textures from the embedded bytes, with no network request",
+   "detail": {
+    "error": null,
+    "files": 6,
+    "active": true,
+    "net": []
+   }
+  },
+  {
+   "name": "Offline package: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Default package (no models): ?pavement fails loudly and substitutes nothing (the original surfaces stay)",
+   "detail": {
+    "error": "asset assets/pavement/pv.asphalt.albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)",
+    "on": 0,
+    "label": "PAVEMENT BENCHMARK (DEV) \u2014 FAILED, nothing substituted: asset assets/pavement/pv.asphalt.albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)"
+   }
+  }
+ ],
+ "failures": [],
+ "parts": {
+  "A": {
+   "label": false,
+   "pv": 0,
+   "layout": null,
+   "merged": 2225,
+   "proxies": 379,
+   "fingerprint": {
+    "merged": {
+     "tris": 3672521,
+     "verts": 11017563,
+     "h1": 2909938247,
+     "h2": 224281111
+    },
+    "proxies": {
+     "tris": 2371121,
+     "h1": 3930555726
+    },
+    "lines": {
+     "segs": 4471,
+     "h1": 3072461437
+    },
+    "mergedCount": 2225,
+    "proxyCount": 379
+   },
+   "queries": {
+    "n": 30848,
+    "hash": 995588364,
+    "obstacles": 812,
+    "space": [
+     159,
+     247,
+     247,
+     5717,
+     0,
+     618,
+     52
+    ],
+    "drives": 105
+   },
+   "rides": {
+    "drive": {
+     "d": 744.0601318057627,
+     "d0": 742.4601318057627,
+     "d1": 745.6601318057626
+    },
+    "runs": {
+     "cut": [
+      [
+       740.9684,
+       2.6001,
+       3.2492,
+       0
+      ],
+      [
+       741.6493,
+       2.617,
+       3.5068,
+       0
+      ],
+      [
+       742.3752,
+       2.6962,
+       3.7103,
+       0
+      ],
+      [
+       743.1366,
+       2.8582,
+       3.8713,
+       0
+      ],
+      [
+       743.9263,
+       3.0946,
+       3.9989,
+       0
+      ],
+      [
+       744.7383,
+       3.3869,
+       4.1003,
+       0
+      ],
+      [
+       745.568,
+       3.7173,
+       4.181,
+       0
+      ],
+      [
+       746.412,
+       4.0721,
+       4.2456,
+       0
+      ],
+      [
+       747.2673,
+       4.4422,
+       4.2974,
+       0
+      ],
+      [
+       748.1318,
+       4.8215,
+       4.3392,
+       0
+      ],
+      [
+       749.0037,
+       5.2062,
+       4.3732,
+       0
+      ],
+      [
+       749.8817,
+       5.5942,
+       4.401,
+       0
+      ],
+      [
+       750.7646,
+       5.9841,
+       4.4239,
+       0
+      ],
+      [
+       751.6517,
+       6.3751,
+       4.443,
+       0
+      ],
+      [
+       752.5423,
+       6.7669,
+       4.4592,
+       0
+      ],
+      [
+       753.4357,
+       7.1591,
+       4.473,
+       0
+      ],
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       753.9685,
+       3.1001,
+       3.2521,
+       0
+      ],
+      [
+       754.6518,
+       3.1171,
+       3.525,
+       0
+      ],
+      [
+       755.3828,
+       3.1967,
+       3.7406,
+       0
+      ],
+      [
+       756.1515,
+       3.3597,
+       3.911,
+       0
+      ],
+      [
+       756.9499,
+       3.5979,
+       4.046,
+       0
+      ],
+      [
+       757.772,
+       3.8926,
+       4.1532,
+       0
+      ],
+      [
+       758.6129,
+       4.2257,
+       4.2384,
+       0
+      ],
+      [
+       759.4688,
+       4.5835,
+       4.3065,
+       0
+      ],
+      [
+       760.3367,
+       4.9566,
+       4.361,
+       0
+      ],
+      [
+       761.2141,
+       5.3389,
+       4.4048,
+       0
+      ],
+      [
+       762.0994,
+       5.7267,
+       4.4403,
+       0
+      ],
+      [
+       762.9909,
+       6.1177,
+       4.4692,
+       0
+      ],
+      [
+       763.8876,
+       6.5106,
+       4.4929,
+       0
+      ],
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ]
+    }
+   },
+   "gaps": {
+    "samples": 13125,
+    "none": 0,
+    "base": 191,
+    "off": 167,
+    "worst": [
+     {
+      "d": 1137.017,
+      "lat": -6.833,
+      "kind": "other",
+      "dy": -0.037
+     },
+     {
+      "d": 1137.017,
+      "lat": -6.463,
+      "kind": "other",
+      "dy": -0.038
+     },
+     {
+      "d": 1137.017,
+      "lat": -6.093,
+      "kind": "other",
+      "dy": -0.037
+     },
+     {
+      "d": 1137.017,
+      "lat": -5.723,
+      "kind": "other",
+      "dy": -0.036
+     },
+     {
+      "d": 1137.387,
+      "lat": -7.573,
+      "kind": "other",
+      "dy": -0.035
+     },
+     {
+      "d": 1137.387,
+      "lat": -7.203,
+      "kind": "other",
+      "dy": -0.039
+     },
+     {
+      "d": 1137.387,
+      "lat": -6.833,
+      "kind": "other",
+      "dy": -0.041
+     },
+     {
+      "d": 1137.387,
+      "lat": -6.463,
+      "kind": "other",
+      "dy": -0.042
+     },
+     {
+      "d": 1137.387,
+      "lat": -6.093,
+      "kind": "other",
+      "dy": -0.041
+     },
+     {
+      "d": 1137.387,
+      "lat": -5.723,
+      "kind": "other",
+      "dy": -0.04
+     },
+     {
+      "d": 1137.387,
+      "lat": -5.353,
+      "kind": "other",
+      "dy": -0.037
+     },
+     {
+      "d": 1137.757,
+      "lat": -7.573,
+      "kind": "other",
+      "dy": -0.039
+     },
+     {
+      "d": 1137.757,
+      "lat": -7.203,
+      "kind": "other",
+      "dy": -0.042
+     },
+     {
+      "d": 1137.757,
+      "lat": -6.833,
+      "kind": "other",
+      "dy": -0.044
+     }
+    ],
+    "kinds": {
+     "other": 13125
+    }
+   }
+  },
+  "B": {
+   "wallLoadMs": 26411,
+   "loaded": {
+    "error": null,
+    "loadMs": 46,
+    "info": {
+     "files": [
+      {
+       "file": "assets/pavement/pv.asphalt.albedo.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.concrete.albedo.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.asphalt.normal.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.asphalt.hra.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.concrete.hra.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.concrete.normal.jpg",
+       "w": 1024,
+       "h": 1024
+      }
+     ],
+     "bytes": 0,
+     "aniso": 16,
+     "ms": 39,
+     "gpuMB": 32
+    },
+    "layout": {
+     "layoutBytes": 65536,
+     "drives": 133
+    },
+    "stats": {
+     "batches": 200,
+     "triangles": 103128,
+     "kinds": {
+      "asphalt": 31,
+      "curb": 30,
+      "walk": 31,
+      "gutter": 30,
+      "path": 32,
+      "iron": 15,
+      "drive": 31
+     },
+     "originalOnly": 46,
+     "lines": 2,
+     "active": true,
+     "mode": "reconstructed"
+    }
+   },
+   "coords": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   },
+   "fingerprint": {
+    "merged": {
+     "tris": 3672521,
+     "verts": 11017563,
+     "h1": 2909938247,
+     "h2": 224281111
+    },
+    "proxies": {
+     "tris": 2371121,
+     "h1": 3930555726
+    },
+    "lines": {
+     "segs": 4471,
+     "h1": 3072461437
+    },
+    "mergedCount": 2395,
+    "proxyCount": 379
+   },
+   "soil": {
+    "batches": 30,
+    "tris": 8384,
+    "bulbTris": 1470,
+    "bulbTrisDefault": null
+   },
+   "queries": {
+    "n": 30848,
+    "hash": 995588364,
+    "obstacles": 812,
+    "space": [
+     159,
+     247,
+     247,
+     5717,
+     0,
+     618,
+     52
+    ],
+    "drives": 105
+   },
+   "rides": {
+    "drive": {
+     "d": 744.0601318057627,
+     "d0": 742.4601318057627,
+     "d1": 745.6601318057626
+    },
+    "runs": {
+     "cut": [
+      [
+       740.9684,
+       2.6001,
+       3.2492,
+       0
+      ],
+      [
+       741.6493,
+       2.617,
+       3.5068,
+       0
+      ],
+      [
+       742.3752,
+       2.6962,
+       3.7103,
+       0
+      ],
+      [
+       743.1366,
+       2.8582,
+       3.8713,
+       0
+      ],
+      [
+       743.9263,
+       3.0946,
+       3.9989,
+       0
+      ],
+      [
+       744.7383,
+       3.3869,
+       4.1003,
+       0
+      ],
+      [
+       745.568,
+       3.7173,
+       4.181,
+       0
+      ],
+      [
+       746.412,
+       4.0721,
+       4.2456,
+       0
+      ],
+      [
+       747.2673,
+       4.4422,
+       4.2974,
+       0
+      ],
+      [
+       748.1318,
+       4.8215,
+       4.3392,
+       0
+      ],
+      [
+       749.0037,
+       5.2062,
+       4.3732,
+       0
+      ],
+      [
+       749.8817,
+       5.5942,
+       4.401,
+       0
+      ],
+      [
+       750.7646,
+       5.9841,
+       4.4239,
+       0
+      ],
+      [
+       751.6517,
+       6.3751,
+       4.443,
+       0
+      ],
+      [
+       752.5423,
+       6.7669,
+       4.4592,
+       0
+      ],
+      [
+       753.4357,
+       7.1591,
+       4.473,
+       0
+      ],
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       753.9685,
+       3.1001,
+       3.2521,
+       0
+      ],
+      [
+       754.6518,
+       3.1171,
+       3.525,
+       0
+      ],
+      [
+       755.3828,
+       3.1967,
+       3.7406,
+       0
+      ],
+      [
+       756.1515,
+       3.3597,
+       3.911,
+       0
+      ],
+      [
+       756.9499,
+       3.5979,
+       4.046,
+       0
+      ],
+      [
+       757.772,
+       3.8926,
+       4.1532,
+       0
+      ],
+      [
+       758.6129,
+       4.2257,
+       4.2384,
+       0
+      ],
+      [
+       759.4688,
+       4.5835,
+       4.3065,
+       0
+      ],
+      [
+       760.3367,
+       4.9566,
+       4.361,
+       0
+      ],
+      [
+       761.2141,
+       5.3389,
+       4.4048,
+       0
+      ],
+      [
+       762.0994,
+       5.7267,
+       4.4403,
+       0
+      ],
+      [
+       762.9909,
+       6.1177,
+       4.4692,
+       0
+      ],
+      [
+       763.8876,
+       6.5106,
+       4.4929,
+       0
+      ],
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ]
+    }
+   },
+   "gaps": {
+    "samples": 13125,
+    "none": 0,
+    "base": 0,
+    "off": 0,
+    "worst": [],
+    "kinds": {
+     "asphalt": 9108,
+     "gutter": 88,
+     "curb": 352,
+     "other": 1853,
+     "walk": 1706,
+     "drive": 18
+    }
+   },
+   "key": [
+    [
+     "reconstructed",
+     1,
+     false
+    ],
+    [
+     "original",
+     0,
+     true
+    ],
+    [
+     "reconstructed",
+     1,
+     false
+    ]
+   ],
+   "cost": {
+    "drawCallDelta": [
+     -21,
+     -2
+    ],
+    "triangleRatio": [
+     0.983,
+     1
+    ]
+   },
+   "frameMs": {
+    "reconstructed": 9.6,
+    "original": 9.2
+   },
+   "memory": {
+    "textures": 6,
+    "gpuTextureMB": 32,
+    "layoutTextureBytes": 65536,
+    "driveTableBytes": 1024,
+    "renderer": {
+     "geometries": 1098,
+     "textures": 27
+    },
+    "programs": 88
+   },
+   "chapters": {
+    "prologue": {
+     "active": true,
+     "on": 1,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "on": 0,
+     "state": "c1-ride"
+    }
+   }
+  },
+  "B2": {
+   "a1": {
+    "active": false,
+    "on": 0,
+    "state": "c1-walk",
+    "keys": [
+     "astra-art-roadwear-3-onBeforeCompile( /* shaderobject, renderer */ ) {}|ll-pave-0|c8cut",
+     "concrete|ll-pave-2|c8cut",
+     "concrete|ll-pave-3|c8cut",
+     "concrete|ll-pave-1|c8cut",
+     "concrete|ll-pave-5|c8cut",
+     "(sh,r)=>{prev?.call(m,sh,r);sh.uniforms.uCutN=CUT.n;sh.uniforms.uCutInv=CUT.inv;sh.uniforms.uCutK=CUT.kind;\n   sh.vertexShader='varying vec3 vCutW;\\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\\n{vec4 cw=vec4(transformed,1.);\\n#ifdef USE_INSTANCING\\ncw=instanceMatrix*cw;\\n#endif\\nvCutW=(modelMatrix*cw).xyz;}');\n   sh.fragmentShader='uniform int uCutN;\\nuniform mat4 uCutInv['+MAXCUT+'];\\nuniform float uCutK['+MAXCUT+'];\\nvarying vec3 vCutW;\\n'+sh.fragmentShader.replace('void main() {','void main() {\\n for(int i=0;i<'+MAXCUT+';i++){if(i>=uCutN)break;vec3 q=(uCutInv[i]*vec4(vCutW,1.)).xyz;bool inside=uCutK[i]<.5?(abs(q.x)<1.&&abs(q.y)<1.&&abs(q.z)<1.):(q.x*q.x+q.z*q.z<1.&&abs(q.y)<1.);if(inside)discard;}');}|ll-pave-6|c8cut",
+     "concrete|ll-pave-4|c8cut"
+    ],
+    "allCut": true
+   },
+   "trench": {
+    "pixels": 1440000,
+    "changed": 454277,
+    "darkOriginal": 15643,
+    "darkForced": 15911,
+    "state": "c1-walk"
+   }
+  },
+  "Cbase": {
+   "lawn": [
+    [
+     40,
+     106
+    ],
+    [
+     104,
+     89
+    ],
+    [
+     150,
+     96
+    ],
+    [
+     572,
+     120
+    ],
+    [
+     848,
+     119
+    ],
+    [
+     1110,
+     112
+    ]
+   ]
+  },
+  "C": {
+   "loaded": {
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "lawn": "C"
+   },
+   "lawn": [
+    [
+     40,
+     106
+    ],
+    [
+     104,
+     89
+    ],
+    [
+     150,
+     96
+    ],
+    [
+     572,
+     120
+    ],
+    [
+     848,
+     119
+    ],
+    [
+     1110,
+     112
+    ]
+   ]
+  }
+ },
+ "notes": [
+  "Aftermath I trench frame: reconstruction forced on vs the original shader: {\"pixels\":1440000,\"changed\":454277,\"darkOriginal\":15643,\"darkForced\":15911,\"state\":\"c1-walk\"}"
+ ],
+ "finished": "2026-11-20T08:28:54.373Z",
+ "passed": 30,
+ "failed": 0
+}
