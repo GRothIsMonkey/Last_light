@@ -199,9 +199,11 @@ perf = f"""## 11. Tests and performance
 
 `verify.mjs` reports one known DEV difference (`2/alex-bike`: a companion's bike position after a dev-scene switch). It is
 reported, not asserted, and appears with the same values in the pavement branch's own run
-(`docs/qa/pavement/regression/regression-verify.json`). The game-logic run was made before the last commits, which touch
-only the street-props modules, assets, the suite and docs: the code of the default path is the same (runtime hashes in its
-summary).
+(`docs/qa/pavement/regression/regression-verify.json`). The game-logic suite was re-run after the review fixes (commit
+`ff761b0`). The other benchmarks' browser suites ran at `495d571`, before them. Since then the only change outside the
+street-props modules, assets, suite and docs is `background.js`, which records its pole lines when `?streetprops` is on and
+does nothing without it: the default game's fingerprint in part A (merged geometry, shadow proxies, line batches, ground
+queries and obstacles) is hash-for-hash the one of the earlier runs, and the game-logic suite passes.
 
 ### 11.3 Cost
 

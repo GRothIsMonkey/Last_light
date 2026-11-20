@@ -15,15 +15,15 @@ software-renderer or file number; no real-GPU frame time has been measured.
 
 <!-- RESULT:start -->
 **Result.** All 54 parked cars and the parent's moving minivan are now six refined US-market family vehicles. Also
-rebuilt in place: 39 utility poles (39 on Oak Hollow and its side streets, 0 on the pole lines
-behind the houses) with their hardware and 157 continuous wires, 27 cobra-head streetlights, 133 mailboxes,
+rebuilt in place: 110 utility poles (39 on Oak Hollow and its side streets, 71 on the pole lines
+behind the houses) with their hardware and 291 continuous wires, 27 cobra-head streetlights, 133 mailboxes,
 8 hydrants, 89 bins, 13 hoops and Oak Hollow's 500 fence runs
 (2,457 bays, 189 gates, 2,944 posts). Every object stands exactly where the
 recorded procedural one stands; the default game's geometry, collisions, navigation and riding are identical (hashed
 vertex by vertex and ride by ride). The street-props suite passes **38 of 38** checks
-(`tests/streetprops-browser.mjs`, commit `495d571`). The regression suites
+(`tests/streetprops-browser.mjs`, commit `b7e4c06`). The regression suites
 all pass.
-There are 21 before/after pairs (§10), browsable in the [review gallery](https://claude.ai/artifact/CDWeAKYTnw6AAbSgTFUV6D).
+There are 23 before/after pairs (§10), browsable in the [review gallery](https://claude.ai/artifact/CDWeAKYTnw6AAbSgTFUV6D).
 <!-- RESULT:end -->
 
 ## 1. Source of truth
@@ -147,8 +147,9 @@ no neutral or service drops). On each pole:
 | Guy guard and anchor | original | the yellow guard turned along the guy wire (the original stood vertical) |
 
 **Wires** are redrawn on the same spans with the same sag formula, as one ribbon mesh: true thickness near the camera
-(13–18 mm), never thinner than about a pixel far away (coverage fades instead of aliasing), lit by the sky with a glint
-along the sun. Every wire is attached at both ends (§11). **Visual-only attachment changes** (A-62): the conductors meet
+(13–18 mm), never thinner than about a pixel far away and never fainter than about 60 % (so distant spans stay a thin
+dark line against the sky instead of fading into the haze: the first version let them fade, and the pole lines behind the
+houses nearly vanished), shaded as a conductor seen from below, with a glint along the sun. Every wire is attached at both ends (§11). **Visual-only attachment changes** (A-62): the conductors meet
 the insulator tops (±0.93 m, 8.93 m instead of ±0.85 m, 8.95 m); the neutral and the drops meet the secondary rack
 below the transformers (6.80 / 6.62 m instead of 7.25 / 7.10 m on the pole's axis — at those heights they ran through the
 cans); at the junction pole the along-arm conductors meet side pins 0.2 m off the pole (9.05 / 8.10 m instead of through
@@ -208,8 +209,8 @@ reading as copies. No global renderer setting was changed (tone mapping, exposur
 <!-- MEASURED:start -->
 ## 10. Evidence
 
-**21 before/after pairs** in `docs/qa/streetprops/browser/`: the 17 required views, with a second angle for
-4 of them. Each pair is one camera and one frame, with all five benchmarks on; the two images differ only by the X
+**23 before/after pairs** in `docs/qa/streetprops/browser/`: the 17 required views, with a second angle for
+6 of them. Each pair is one camera and one frame, with all five benchmarks on; the two images differ only by the X
 key. `report.json` beside them holds each image's camera, game clock, draw calls, triangles and SHA-256.
 **Review gallery** (the pairs side by side with a slider): https://claude.ai/artifact/CDWeAKYTnw6AAbSgTFUV6D. The same gallery is also in the offline package (`review-gallery/index.html`).
 
@@ -235,31 +236,33 @@ key. `report.json` beside them holds each image's camera, game clock, draw calls
 
 | Pair | What it shows | Camera | Game clock | Images | Draw calls (authored / original) | Triangles (authored / original) |
 |---|---|---|---|---|---|---|
-| **S01** | a sedan parked in a driveway | riding camera | AUGUST 21, 2011 7:43 PM | [authored](qa/streetprops/browser/S01-sedan-in-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S01-sedan-in-a-driveway--original.jpg) | 563 / 552 | 1,065,072 / 1,037,669 |
-| **S02** | a minivan in a driveway beside a house | riding camera | AUGUST 21, 2011 7:43 PM | [authored](qa/streetprops/browser/S02-minivan-beside-a-house--authored.jpg) · [original](qa/streetprops/browser/S02-minivan-beside-a-house--original.jpg) | 364 / 321 | 668,670 / 589,649 |
-| **S03** | a pickup in a driveway | riding camera | AUGUST 21, 2011 7:47 PM | [authored](qa/streetprops/browser/S03-pickup-in-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S03-pickup-in-a-driveway--original.jpg) | 538 / 539 | 1,081,879 / 1,058,709 |
-| **S03b** | a station wagon in a driveway | riding camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S03b-wagon-in-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S03b-wagon-in-a-driveway--original.jpg) | 376 / 325 | 665,640 / 568,962 |
-| **S04** | a wagon, a pickup and an SUV (and a sedan) parked down the street, at matched scale | riding camera | AUGUST 21, 2011 7:38 PM | [authored](qa/streetprops/browser/S04-three-vehicle-types-together--authored.jpg) · [original](qa/streetprops/browser/S04-three-vehicle-types-together--original.jpg) | 683 / 683 | 816,135 / 792,812 |
-| **S05** | a close view of a car's front wheel, tyre, body paint and glass (QA close-up camera, 1.4 m from the wheel) | QA camera | AUGUST 21, 2011 7:37 PM | [authored](qa/streetprops/browser/S05-wheel-and-body-close--authored.jpg) · [original](qa/streetprops/browser/S05-wheel-and-body-close--original.jpg) | 740 / 737 | 931,555 / 923,672 |
-| **S06** | a utility pole with its crossarm, transformer and the connected overhead wires | riding camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S06-utility-pole-and-wires--authored.jpg) · [original](qa/streetprops/browser/S06-utility-pole-and-wires--original.jpg) | 495 / 468 | 871,815 / 809,075 |
-| **S07** | the transformer, fused cutouts, pin insulators, crossarm braces and the secondary rack (QA close-up camera at 7.6 m) | QA camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S07-transformer-and-insulators--authored.jpg) · [original](qa/streetprops/browser/S07-transformer-and-insulators--original.jpg) | 435 / 399 | 817,739 / 757,431 |
-| **S08** | a cobra-head streetlight at golden hour (off, as the game's evening has it) | riding camera | AUGUST 21, 2011 7:43 PM | [authored](qa/streetprops/browser/S08-streetlight-golden-hour--authored.jpg) · [original](qa/streetprops/browser/S08-streetlight-golden-hour--original.jpg) | 493 / 488 | 776,505 / 733,228 |
-| **S08b** | the cobra head: die-cast housing, photocell, drop refractor, mast arm (QA close-up camera) | QA camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S08b-cobra-head-close--authored.jpg) · [original](qa/streetprops/browser/S08b-cobra-head-close--original.jpg) | 515 / 502 | 869,313 / 830,047 |
-| **S09** | streetlights lit at dusk (the ride near the end of the street: the lamps have come on) | riding camera | AUGUST, 2011 AS YOU REMEMBER IT | [authored](qa/streetprops/browser/S09-streetlight-at-dusk--authored.jpg) · [original](qa/streetprops/browser/S09-streetlight-at-dusk--original.jpg) | 388 / 332 | 596,403 / 481,811 |
-| **S10** | mailboxes beside a driveway (a white post, a brick column beyond) | riding camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S10-mailbox-beside-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S10-mailbox-beside-a-driveway--original.jpg) | 381 / 324 | 610,421 / 507,892 |
-| **S11** | a fire hydrant in the parking strip near the curb (and a black scroll-post mailbox) | riding camera | AUGUST 21, 2011 7:43 PM | [authored](qa/streetprops/browser/S11-hydrant-near-the-curb--authored.jpg) · [original](qa/streetprops/browser/S11-hydrant-near-the-curb--original.jpg) | 408 / 370 | 693,417 / 636,050 |
-| **S12** | the recorded wheeled carts at the curb beside a driveway, the garage behind (their existing place) | riding camera | AUGUST 21, 2011 7:41 PM | [authored](qa/streetprops/browser/S12-bins-beside-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S12-bins-beside-a-driveway--original.jpg) | 499 / 484 | 926,392 / 873,307 |
-| **S13** | a garage-mounted basketball hoop: backboard, rim, net, bracket (QA camera at the driveway's free-throw distance) | QA camera | AUGUST 21, 2011 7:47 PM | [authored](qa/streetprops/browser/S13-basketball-hoop-garage--authored.jpg) · [original](qa/streetprops/browser/S13-basketball-hoop-garage--original.jpg) | 333 / 268 | 785,978 / 691,178 |
-| **S13b** | the portable hoop at the curb (d 253), as placed | riding camera | AUGUST 21, 2011 7:45 PM | [authored](qa/streetprops/browser/S13b-portable-hoop-at-the-curb--authored.jpg) · [original](qa/streetprops/browser/S13b-portable-hoop-at-the-curb--original.jpg) | 629 / 617 | 1,078,537 / 1,029,938 |
-| **S14** | a side-yard gate (grey boards, strap hinges, latch) between the house and the stained privacy fence, its finished face toward the street (QA camera standing in the side yard) | QA camera | AUGUST 21, 2011 7:37 PM | [authored](qa/streetprops/browser/S14-wooden-fence-and-gate--authored.jpg) · [original](qa/streetprops/browser/S14-wooden-fence-and-gate--original.jpg) | 265 / 196 | 588,204 / 498,592 |
-| **S14b** | back-yard and lot-line fences seen between houses from the sidewalk | riding camera | AUGUST 21, 2011 7:35 PM | [authored](qa/streetprops/browser/S14b-fences-from-the-street--authored.jpg) · [original](qa/streetprops/browser/S14b-fences-from-the-street--original.jpg) | 221 / 171 | 418,122 / 358,666 |
-| **S15** | a residential street with its cars, poles, wires, lamps, mailboxes and bins | riding camera | AUGUST 21, 2011 7:48 PM | [authored](qa/streetprops/browser/S15-residential-street--authored.jpg) · [original](qa/streetprops/browser/S15-residential-street--original.jpg) | 691 / 703 | 1,208,155 / 1,181,628 |
-| **S16** | a wide, raised view of Oak Hollow with all five benchmarks (QA raised camera, 13 m up) | QA camera | AUGUST 21, 2011 7:42 PM | [authored](qa/streetprops/browser/S16-oak-hollow-wide-all-five--authored.jpg) · [original](qa/streetprops/browser/S16-oak-hollow-wide-all-five--original.jpg) | 488 / 495 | 701,845 / 680,309 |
-| **S17** | the boys on their bikes as the ride begins — CURRENT IN-GAME CHARACTER PLACEHOLDERS (the game's procedural figures on the authored ?bikes bicycles), not the unintegrated Phase 1A Blender characters | riding camera | AUGUST 21, 2011 7:42 PM | [authored](qa/streetprops/browser/S17-the-boys-on-their-current-bikes--authored.jpg) · [original](qa/streetprops/browser/S17-the-boys-on-their-current-bikes--original.jpg) | 688 / 694 | 986,183 / 955,092 |
+| **S01** | a sedan parked in a driveway | riding camera | AUGUST 21, 2011 7:43 PM | [authored](qa/streetprops/browser/S01-sedan-in-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S01-sedan-in-a-driveway--original.jpg) | 562 / 555 | 1,087,564 / 1,037,273 |
+| **S02** | a minivan in a driveway beside a house | riding camera | AUGUST 21, 2011 7:43 PM | [authored](qa/streetprops/browser/S02-minivan-beside-a-house--authored.jpg) · [original](qa/streetprops/browser/S02-minivan-beside-a-house--original.jpg) | 363 / 323 | 689,931 / 589,253 |
+| **S03** | a pickup in a driveway | riding camera | AUGUST 21, 2011 7:47 PM | [authored](qa/streetprops/browser/S03-pickup-in-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S03-pickup-in-a-driveway--original.jpg) | 537 / 543 | 1,102,663 / 1,058,385 |
+| **S03b** | a station wagon in a driveway | riding camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S03b-wagon-in-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S03b-wagon-in-a-driveway--original.jpg) | 375 / 328 | 686,718 / 568,638 |
+| **S04** | a wagon, a pickup and an SUV (and a sedan) parked down the street, at matched scale | riding camera | AUGUST 21, 2011 7:38 PM | [authored](qa/streetprops/browser/S04-three-vehicle-types-together--authored.jpg) · [original](qa/streetprops/browser/S04-three-vehicle-types-together--original.jpg) | 682 / 686 | 835,447 / 792,812 |
+| **S05** | a close view of a car's front wheel, tyre, body paint and glass (QA close-up camera, 1.4 m from the wheel) | QA camera | AUGUST 21, 2011 7:37 PM | [authored](qa/streetprops/browser/S05-wheel-and-body-close--authored.jpg) · [original](qa/streetprops/browser/S05-wheel-and-body-close--original.jpg) | 739 / 742 | 948,824 / 923,240 |
+| **S06** | a utility pole with its crossarm, transformer and the connected overhead wires | riding camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S06-utility-pole-and-wires--authored.jpg) · [original](qa/streetprops/browser/S06-utility-pole-and-wires--original.jpg) | 494 / 472 | 892,601 / 808,643 |
+| **S06b** | the pole line along the next street over, seen across the back yards: the same authored pole, crossarm, insulators and wires as on Oak Hollow (QA camera raised to crossarm height over the back yards, about 30 m from the pole) | QA camera | AUGUST 21, 2011 7:38 PM | [authored](qa/streetprops/browser/S06b-pole-line-behind-the-houses--authored.jpg) · [original](qa/streetprops/browser/S06b-pole-line-behind-the-houses--original.jpg) | 244 / 182 | 349,948 / 245,113 |
+| **S07** | the transformer, fused cutouts, pin insulators, crossarm braces and the secondary rack (QA close-up camera at 7.6 m) | QA camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S07-transformer-and-insulators--authored.jpg) · [original](qa/streetprops/browser/S07-transformer-and-insulators--original.jpg) | 433 / 401 | 831,534 / 750,893 |
+| **S08** | a cobra-head streetlight at golden hour (off, as the game's evening has it) | riding camera | AUGUST 21, 2011 7:43 PM | [authored](qa/streetprops/browser/S08-streetlight-golden-hour--authored.jpg) · [original](qa/streetprops/browser/S08-streetlight-golden-hour--original.jpg) | 492 / 492 | 795,615 / 732,114 |
+| **S08b** | the cobra head: die-cast housing, photocell, drop refractor, mast arm (QA close-up camera) | QA camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S08b-cobra-head-close--authored.jpg) · [original](qa/streetprops/browser/S08b-cobra-head-close--original.jpg) | 514 / 506 | 891,897 / 831,839 |
+| **S09** | streetlights lit at dusk (the ride near the end of the street: the lamps have come on) | riding camera | AUGUST, 2011 AS YOU REMEMBER IT | [authored](qa/streetprops/browser/S09-streetlight-at-dusk--authored.jpg) · [original](qa/streetprops/browser/S09-streetlight-at-dusk--original.jpg) | 387 / 333 | 614,444 / 481,811 |
+| **S10** | mailboxes beside a driveway (a white post, a brick column beyond) | riding camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S10-mailbox-beside-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S10-mailbox-beside-a-driveway--original.jpg) | 380 / 326 | 628,957 / 504,433 |
+| **S10b** | a brick mailbox column: plinth, running bond at true brick size, rowlock course, precast cap, arched steel insert, newspaper slot, house numbers (QA close-up camera) | QA camera | AUGUST 21, 2011 7:44 PM | [authored](qa/streetprops/browser/S10b-brick-mailbox-close--authored.jpg) · [original](qa/streetprops/browser/S10b-brick-mailbox-close--original.jpg) | 383 / 339 | 671,938 / 568,520 |
+| **S11** | a fire hydrant in the parking strip near the curb (and a black scroll-post mailbox) | riding camera | AUGUST 21, 2011 7:43 PM | [authored](qa/streetprops/browser/S11-hydrant-near-the-curb--authored.jpg) · [original](qa/streetprops/browser/S11-hydrant-near-the-curb--original.jpg) | 407 / 373 | 712,427 / 634,454 |
+| **S12** | the recorded wheeled carts at the curb beside a driveway, the garage behind (their existing place) | riding camera | AUGUST 21, 2011 7:41 PM | [authored](qa/streetprops/browser/S12-bins-beside-a-driveway--authored.jpg) · [original](qa/streetprops/browser/S12-bins-beside-a-driveway--original.jpg) | 496 / 485 | 942,453 / 869,088 |
+| **S13** | a garage-mounted basketball hoop: backboard, rim, net, bracket (QA camera at the driveway's free-throw distance) | QA camera | AUGUST 21, 2011 7:47 PM | [authored](qa/streetprops/browser/S13-basketball-hoop-garage--authored.jpg) · [original](qa/streetprops/browser/S13-basketball-hoop-garage--original.jpg) | 332 / 270 | 806,601 / 690,978 |
+| **S13b** | the portable hoop at the curb (d 253), as placed | riding camera | AUGUST 21, 2011 7:45 PM | [authored](qa/streetprops/browser/S13b-portable-hoop-at-the-curb--authored.jpg) · [original](qa/streetprops/browser/S13b-portable-hoop-at-the-curb--original.jpg) | 628 / 618 | 1,098,689 / 1,029,218 |
+| **S14** | a side-yard gate (grey boards, strap hinges, latch) between the house and the stained privacy fence, its finished face toward the street (QA camera standing in the side yard) | QA camera | AUGUST 21, 2011 7:37 PM | [authored](qa/streetprops/browser/S14-wooden-fence-and-gate--authored.jpg) · [original](qa/streetprops/browser/S14-wooden-fence-and-gate--original.jpg) | 264 / 198 | 607,593 / 498,612 |
+| **S14b** | back-yard and lot-line fences seen between houses from the sidewalk | riding camera | AUGUST 21, 2011 7:35 PM | [authored](qa/streetprops/browser/S14b-fences-from-the-street--authored.jpg) · [original](qa/streetprops/browser/S14b-fences-from-the-street--original.jpg) | 220 / 172 | 433,327 / 357,874 |
+| **S15** | a residential street with its cars, poles, wires, lamps, mailboxes and bins | riding camera | AUGUST 21, 2011 7:48 PM | [authored](qa/streetprops/browser/S15-residential-street--authored.jpg) · [original](qa/streetprops/browser/S15-residential-street--original.jpg) | 689 / 705 | 1,227,872 / 1,180,744 |
+| **S16** | a wide, raised view of Oak Hollow with all five benchmarks (QA raised camera, 13 m up) | QA camera | AUGUST 21, 2011 7:42 PM | [authored](qa/streetprops/browser/S16-oak-hollow-wide-all-five--authored.jpg) · [original](qa/streetprops/browser/S16-oak-hollow-wide-all-five--original.jpg) | 496 / 507 | 720,916 / 679,631 |
+| **S17** | the boys on their bikes as the ride begins — CURRENT IN-GAME CHARACTER PLACEHOLDERS (the game's procedural figures on the authored ?bikes bicycles), not the unintegrated Phase 1A Blender characters | riding camera | AUGUST 21, 2011 7:42 PM | [authored](qa/streetprops/browser/S17-the-boys-on-their-current-bikes--authored.jpg) · [original](qa/streetprops/browser/S17-the-boys-on-their-current-bikes--original.jpg) | 687 / 697 | 1,005,516 / 954,840 |
 
 The clock reads the game's own date line: every daytime pair is in the Prologue's evening (7:35–7:48 PM, August 21,
 2011); S09 is later in the same ride, after the lamps come on. **Riding camera**: the gameplay camera, placed by the QA
-hook. **QA camera**: placed by hand beside the object (S05, S07, S08b, S13, S14, S16), with the same renderer, light and
+hook. **QA camera**: placed by hand beside the object (S05, S06b, S07, S08b, S10b, S13, S14, S16), with the same renderer, light and
 shadows. In S16 the bike stands under the raised camera.
 
 **Blender inspection renders** (offline Cycles, **not** the game): `docs/qa/streetprops/blender/`
@@ -271,15 +274,15 @@ paints, and the prop kit. They show the models themselves, not how the game draw
 ### 11.1 The street-props suite
 
 `node tests/streetprops-browser.mjs` (Chromium + ANGLE SwiftShader, 1600 × 900): **38 passed, 0 failed**
-(commit `495d571`; `docs/qa/streetprops/browser/report.json`).
+(commit `b7e4c06`; `docs/qa/streetprops/browser/report.json`).
 
 | Part | Checks | What is proved |
 |---|---|---|
 | A | 3 | the default game fetches no street-props module or asset and has no `sp:` record, zone or line tag; its baseline: 3,672,619 merged triangles, 40,488 ground queries, 812 obstacles |
-| B | 20 | the two GLBs and eight textures load (module 242 ms; page 26,679 ms in software); 54/54 cars on their records (x/z within 2 cm), tyres within 0.0051 m of the ground (the level procedural cars: up to 0.0934 m), none further over a sidewalk (0) or into a house margin (0) than the procedural car; every pole, lamp, mailbox, hydrant, bin, bay and post accounted for; 157 wires attached at both ends (0 detached, 0 primaries off an insulator); the merged geometry, shadow proxies and lines hash identical to A; 40,488 ground queries, obstacles, navigation shapes and three scripted rides identical; X and Z work; the moving minivan is authored, drives 21.57 m with its wheels turning; Chapter One shows the originals; no page errors |
+| B | 20 | the two GLBs and eight textures load (module 252 ms; page 29,921 ms in software); 54/54 cars on their records (x/z within 2 cm), tyres within 0.0051 m of the ground (the level procedural cars: up to 0.0934 m), none further over a sidewalk (0) or into a house margin (0) than the procedural car; every pole, lamp, mailbox, hydrant, bin, bay and post accounted for; 291 wires attached at both ends (0 detached, 0 primaries off an insulator); the merged geometry, shadow proxies and lines hash identical to A; 40,488 ground queries, obstacles, navigation shapes and three scripted rides identical; X and Z work; the moving minivan is authored, drives 21.57 m with its wheels turning; Chapter One shows the originals; no page errors |
 | C | 4 | all five benchmarks load together without error; vegetation identical with and without `?streetprops`; the ride runs |
 | D | 5 | the offline package with models runs `?streetprops` and all five from the embedded bytes, browser offline, with no network request; the default package fails loudly and substitutes nothing |
-| E | 3 | 21 pairs, each one camera and one frame; cost per frame (below); no page errors |
+| E | 3 | 23 pairs, each one camera and one frame; cost per frame (below); no page errors |
 | F | 3 | cost against the default game at eight riding cameras (below); no page errors |
 
 ### 11.2 Regressions (the existing suites)
@@ -296,48 +299,50 @@ paints, and the prop kit. They show the models themselves, not how the game draw
 
 `verify.mjs` reports one known DEV difference (`2/alex-bike`: a companion's bike position after a dev-scene switch). It is
 reported, not asserted, and appears with the same values in the pavement branch's own run
-(`docs/qa/pavement/regression/regression-verify.json`). The game-logic run was made before the last commits, which touch
-only the street-props modules, assets, the suite and docs: the code of the default path is the same (runtime hashes in its
-summary).
+(`docs/qa/pavement/regression/regression-verify.json`). The game-logic suite was re-run after the review fixes (commit
+`ff761b0`). The other benchmarks' browser suites ran at `495d571`, before them. Since then the only change outside the
+street-props modules, assets, suite and docs is `background.js`, which records its pole lines when `?streetprops` is on and
+does nothing without it: the default game's fingerprint in part A (merged geometry, shadow proxies, line batches, ground
+queries and obstacles) is hash-for-hash the one of the earlier runs, and the game-logic suite passes.
 
 ### 11.3 Cost
 
 **Files.** `street.vehicles.glb` 4.46 MB, `street.props.glb` 2.04 MB, eight textures
 3.47 MB on disk (2048² albedos, 1024² ORM and normal maps, a 512² cut-out). Offline package with every
-benchmark's models: 166.7 MB; default package (no models): 12.9 MB.
+benchmark's models: 167.0 MB; default package (no models): 12.9 MB.
 
 **GPU textures** (estimated, RGBA8 with mipmaps): **≈ 86.7 MB**, anisotropy 16.
 
 **Geometry at a riding camera** (the DEV label's count, B): cars 38,935 triangles in 26
-instanced draws for 54 cars; props 96,505 triangles in
-45 draws for 6,030 instances. LOD0 per car: 7,915–9,380 triangles (§4).
+instanced draws for 54 cars; props 117,110 triangles in
+45 draws for 6,172 instances. LOD0 per car: 7,915–9,380 triangles (§4).
 
 **Per captured frame** (E, all five benchmarks; authored against original in the same frame): draw calls
-−12 to +69 per frame, triangles ×1.009 to 1.238. Over the 21 frames: 10,193 against
-9,668 calls, 17,157,980 against
-15,995,717 triangles.
+−16 to +66 per frame, triangles ×1.028 to 1.428. Over the 23 frames: 10,804 against
+10,253 calls, 18,583,475 against
+16,788,406 triangles.
 
 **Against the default game** (F: eight riding cameras, `?streetprops` alone; fresh browsers: three cameras per browser for the default game, one per browser with the flag, which renders each camera in both X modes):
 
 | Camera | Default game: calls · tris · ms | `?streetprops`, ORIGINAL | `?streetprops`, AUTHORED |
 |---|---|---|---|
-| C1 (d 40) | 308 · 645,869 · 1369 | 353 · 625,271 · 1474 | 350 · 647,603 · 1695 |
-| C2 (d -232) | 433 · 732,825 · 1673 | 474 · 716,819 · 1483 | 472 · 739,366 · 1705 |
-| C3 (d 128) | 302 · 742,317 · 1109 | 325 · 694,646 · 1059 | 355 · 758,070 · 1418 |
-| C4 (d 380) | 474 · 1,025,149 · 2102 | 527 · 987,842 · 1930 | 515 · 1,014,369 · 2252 |
-| C5 (d 76.5) | 184 · 432,150 · 807 | 228 · 435,032 · 1227 | 267 · 492,779 · 1162 |
-| C6 (d -4.5) | 308 · 763,643 · 1231 | 320 · 691,875 · 1279 | 336 · 745,340 · 1522 |
-| C7 (d 700) | 459 · 770,818 · 1809 | 513 · 761,278 · 1698 | 500 · 789,866 · 1972 |
-| C8 (d 1032) | 194 · 254,594 · 667 | 211 · 251,565 · 1135 | 267 · 366,157 · 1139 |
-| **Sum** | 2,662 · 5,367,365 · 10767 | 2,951 · 5,164,328 · 11285 | 3,062 · 5,553,550 · 12865 |
+| C1 (d 40) | 308 · 645,869 · 1408 | 356 · 624,983 · 1869 | 349 · 668,174 · 2168 |
+| C2 (d -232) | 433 · 732,825 · 1772 | 477 · 716,819 · 1485 | 471 · 758,678 · 2258 |
+| C3 (d 128) | 302 · 742,317 · 1349 | 329 · 694,214 · 1266 | 354 · 778,856 · 1722 |
+| C4 (d 380) | 474 · 1,025,149 · 2305 | 530 · 986,978 · 2050 | 514 · 1,034,106 · 2604 |
+| C5 (d 76.5) | 184 · 432,150 · 834 | 231 · 434,708 · 1364 | 266 · 513,061 · 1401 |
+| C6 (d -4.5) | 308 · 763,643 · 1225 | 323 · 691,103 · 1284 | 335 · 764,848 · 1769 |
+| C7 (d 700) | 459 · 770,818 · 1854 | 518 · 761,242 · 1813 | 500 · 810,553 · 2370 |
+| C8 (d 1032) | 194 · 254,594 · 844 | 212 · 251,565 · 1280 | 266 · 384,198 · 1424 |
+| **Sum** | 2,662 · 5,367,365 · 11591 | 2,976 · 5,161,612 · 12411 | 3,055 · 5,712,474 · 15716 |
 
-Authored against the default game: **draw calls ×1.15, triangles ×1.035, software frame
-time ×1.195**. ORIGINAL under the flag already costs a little more than the default game in draw calls: the flag
+Authored against the default game: **draw calls ×1.148, triangles ×1.064, software frame
+time ×1.356**. ORIGINAL under the flag already costs a little more than the default game in draw calls: the flag
 bakes the street props into batches of their own (zones `sp:*`) so that X can hide them. Those smaller batches are also
 frustum-culled one by one, so fewer triangles are drawn (the geometry is identical, §11.1). The frame time is the median of three renders on SwiftShader, on the CPU: it shows the relative
 added work, not a GPU frame time.
 
-**Load.** The street-props module builds its set in 242 ms after its files arrive. The world bake is
+**Load.** The street-props module builds its set in 252 ms after its files arrive. The world bake is
 the game's own: the flag adds batch splits, not geometry. **Memory** in software rendering: see §13. No real-GPU number has
 been measured.
 <!-- MEASURED:end -->
@@ -410,15 +415,25 @@ keep A-67 and A-68 for later.
 | # | Deliverable | Where |
 |---|---|---|
 | 1 | The branch | `claude/prologue-vehicles-street-props-benchmark`, pushed to `origin`; started from `75f40efb5895f0d2d06d01490e84241a4dc660dc`; **not merged into `main`**; the pavement branch untouched. The head commit is the one that adds this section (its SHA is given with the delivery and by `git ls-remote origin claude/prologue-vehicles-street-props-benchmark`). |
-| 2 | The runtime (`?streetprops`) | `dist/streetprops-assets.js`, `dist/streetprops-benchmark.js`, `dist/assets/street/` (2 GLBs, 8 textures); the recording hooks in `world.js`, `props.js`, `furniture.js`, `houses.js`, `game.js` (inert without the flag) |
+| 2 | The runtime (`?streetprops`) | `dist/streetprops-assets.js`, `dist/streetprops-benchmark.js`, `dist/assets/street/` (2 GLBs, 8 textures); the recording hooks in `world.js`, `props.js`, `furniture.js`, `houses.js`, `background.js`, `game.js` (inert without the flag) |
 | 3 | Editable sources and build scripts | `assets/source/street/` (`.blend` files, atlases and their maps, the five used originals, the Sketchfab records, `SHA256SUMS`); `tools/blender/streetprops/` (textures, vehicles, props, inspection renders, gallery) |
 | 4 | Provenance and credits | `assets/source/street/PROVENANCE.md`; `docs/THIRD_PARTY_ASSETS.md` (with the credits wording prepared for a production swap) |
 | 5 | Model-to-game mapping, LODs, attachment points, rebuild | `docs/art/STREET-PROPS-KIT.md`; §12 |
-| 6 | Review evidence | `docs/qa/streetprops/browser/` (21 same-frame pairs, `report.json`); the review gallery https://claude.ai/artifact/CDWeAKYTnw6AAbSgTFUV6D (private to its owner until shared), also `review-gallery/` in the package; Blender inspection renders in `docs/qa/streetprops/blender/` (labelled) |
-| 7 | Tests | `tests/streetprops-browser.mjs`: 38 passed, 0 failed. Parts A–E ran at `495d571`; part F was re-run on the same `dist/` with one `?streetprops` camera per browser. The regression summaries are in `docs/qa/streetprops/regression/` (§11.2). |
+| 6 | Review evidence | `docs/qa/streetprops/browser/` (23 same-frame pairs, `report.json`); the review gallery https://claude.ai/artifact/CDWeAKYTnw6AAbSgTFUV6D (private to its owner until shared), also `review-gallery/` in the package; Blender inspection renders in `docs/qa/streetprops/blender/` (labelled) |
+| 7 | Tests | `tests/streetprops-browser.mjs`: 38 passed, 0 failed, all six parts at `b7e4c06` (after the review fixes). The regression summaries are in `docs/qa/streetprops/regression/` (§11.2). |
 | 8 | Performance | §11.3 (software renderer: draw calls, triangles, frame-time ratio, files, texture memory, load) |
-| 9 | Offline playtest | `Last-Light-Prologue-Street-Props-Benchmark.zip`, 99,031,446 bytes, SHA-256 `cb73526788e159b0d16dca27a4e25394dcf3b49dacf586b7c5873439d6e772e0`: `Last-Light-Playtest.html` (the whole game with every benchmark's models embedded, entry SHA-256 `e7844b270410741bee6939bf8e62384d1f3d77b6790bf8a47253d0fb0c3e629d`), `STREETPROPS-README.txt`, this report, the review gallery, credits and licences. It was built from the `dist/` of `495d571`, which is identical in the head commit. The ZIP is not in git (`release/` is ignored). |
+| 9 | Offline playtest | `Last-Light-Prologue-Street-Props-Benchmark.zip`, 100,228,233 bytes, SHA-256 `7a49666b068c22c4dc9333e1318af1dab58b01dd8097b983dbf07ba017f28436`: `Last-Light-Playtest.html` (the whole game with every benchmark's models embedded, entry SHA-256 `5b34e0a2ace742076da35412c4b37bbd1b00b6e5a2ddb5f27dba9a8536463dc7`), `STREETPROPS-README.txt`, this report, the review gallery, credits and licences. It was built from the `dist/` of `b7e4c06`, which is identical in the head commit. The ZIP is not in git (`release/` is ignored). |
 | 10 | Decisions awaiting you | A-60 to A-68 in `docs/art/ART-APPROVAL-REGISTER.md`, all OPEN (§14) |
+
+**After the first review** ("some of the mailboxes still look like the old cartoonish ones, same with some of the
+powerlines"):
+- The pole lines behind the houses (71 poles, 134 spans, built by `background.js`) had never been recorded, so they still
+  showed the old poles and hairline wires. They now carry the authored hardware.
+- The ribbon wires faded into the haze at a distance. They now keep at least about 60 % coverage and shade as a conductor
+  seen from below.
+- The mailboxes were reworked: a detailed T1 box on reworked posts, and the brick column rebuilt at true brick size, with
+  its insert, slot and cap.
+- Two captures were added: S06b and S10b.
 
 **Stopped here for your review.** Nothing in this benchmark is approved, nothing is merged, and the default game is
 unchanged.
