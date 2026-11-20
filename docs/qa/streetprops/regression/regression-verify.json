@@ -1,0 +1,24 @@
+{
+ "command": "QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs",
+ "commit": "c6c23b5 (the default-path code is identical in the final commit: since then only streetprops-*.js, assets, tests and docs changed)",
+ "passed": 818,
+ "failures": [],
+ "knownDifference": "KNOWN DEV DIFFERENCE (switching; reported, not asserted): [{\"k\":\"2/alex-bike\",\"d\":[[\"companions.1.b.x\",-1.4,115.139],[\"companions.1.b.z\",-17,-511.484],[\"companions.1.ba\",0,-0.398]]}]",
+ "runtimeHashes": {
+  "dist/aftermath1-props.js": "f9e14d51543f770d05ba41346c130527d10f555cf70e498a242ea6b54c0289bc",
+  "dist/aftermath2-props.js": "b1a98c0e1999cb44a679d88523acb422b8ec29ebb19e40fe9d9959b332e7b83e",
+  "dist/asset-library.js": "6b760d012fc1d2aa8881f135d7f54e2f88c317ff41a4ff54d8e0ef975f58e496",
+  "dist/chapter3-props.js": "4ba5446b792d82adf49f7a0f055035e7310378f28c94f28d668bbdad55bb2b6f",
+  "dist/chapter5-props.js": "26f45c566b01d5bb86035768e871fb0a505bf4a901a12ab2cf8fc48d3009db2d",
+  "dist/chapter6-props.js": "8f0a9a4dae9ed9e242079ca3eae5588ebfd1183ebfbadd5ecd72b10ff2e078a8",
+  "dist/chapter7-props.js": "23568f26e7cfbd84fdfab1425390d6720d4b27e125685d3b36310f46c40eac7f",
+  "dist/chapter8-props.js": "d9064469c111c05f2b32d22018bb60afd3398f1a352711cc21d00692f1707f59",
+  "dist/furniture.js": "34f52a21087555eb286d45ed72a35ed6fa08dfa6b60a576ad3933960ad9447ae",
+  "dist/game.js": "91f63afa8be9b2533f691f93e2a5c98c2b29a114d4e32e2cc4c2df3397e1c3e2",
+  "dist/houses.js": "3797c3ee3c8f105908ec7d4e4da07e93d447aa815fbff751b6f4af1ee0166a19",
+  "dist/props.js": "9349400ad0802c8135cc39185039d37059a0a409543ddf54eb10f0788c6d9cac",
+  "dist/town-houses.js": "f007e67fecc1c57647352e37e616047a7c8dbdfeda865bdfa3f4d1241a43810a",
+  "dist/town-props.js": "8b1abf9f3a89a7e1bcec3b5764a6d76a90d468bc00c64dd96686450bae5d5c56",
+  "dist/world.js": "0192b29f98faf3f98268bfaa145f4de83e7e253d2bb98511abfded85bb543e09"
+ }
+}

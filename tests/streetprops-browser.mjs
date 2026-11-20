@@ -13,18 +13,27 @@
 //      without ?streetprops; the pavement active; the bikes and riding work;
 //   D. the offline package (file://, browser offline): PLAYTEST_MODELS=1 (from the embedded bytes, no network) and the
 //      default package (?streetprops fails loudly, nothing substituted);
-//   E. the review captures: same camera, same frame, X's two modes, with all five benchmarks (cost per pair).
-// usage: node tests/streetprops-browser.mjs [outDir=docs/qa/streetprops/browser]   (PARTS=A,B,C,D,E; SHOTS=0 to skip images)
+//   E. the review captures: same camera, same frame, X's two modes, with all five benchmarks (cost per pair);
+//   F. cost against the default game at eight riding cameras (software frame time, draw calls, triangles).
+// usage: node tests/streetprops-browser.mjs [outDir=docs/qa/streetprops/browser]   (PARTS=A,B,C,D,E,F; SHOTS=0 to skip images; VIEWS=S01,S05 to pick captures)
 import fs from 'node:fs';import http from 'node:http';import path from 'node:path';import os from 'node:os';import {createRequire} from 'node:module';import {execFileSync} from 'node:child_process';import {pathToFileURL} from 'node:url';import {createHash} from 'node:crypto';
 const require=createRequire(import.meta.url);let pw;for(const p of [null,'/opt/node-tools/node_modules','/opt/node22/lib/node_modules'])try{pw=p?require(p+'/playwright'):require('playwright');break;}catch{}
 const out=path.resolve(process.argv[2]||'docs/qa/streetprops/browser');fs.mkdirSync(out,{recursive:true});
-const PARTS=(process.env.PARTS||'A,B,C,D,E').split(','),SHOTS=process.env.SHOTS!=='0';
-const ARGS=['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist','--enable-precise-memory-info'];
+const PARTS=(process.env.PARTS||'A,B,C,D,E,F').split(','),SHOTS=process.env.SHOTS!=='0';
+const ARGS=['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist','--enable-precise-memory-info',...(process.env.SP_ARGS?process.env.SP_ARGS.split(' '):[])];
+// (SP_ARGS: extra Chromium switches, e.g. "--in-process-gpu" to keep the software GPU's buffers in the page's own process
+// when the five benchmarks together come near the machine's memory limit)
 const commit=(()=>{try{return execFileSync('git',['rev-parse','--short','HEAD']).toString().trim();}catch{return null;}})();
 const report={renderer:'Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU',commit,started:new Date().toISOString(),viewport:'1600x900, deviceScaleFactor 1',checks:[],failures:[],parts:{},shots:[],pairs:[]};
 const prev=(()=>{try{return JSON.parse(fs.readFileSync(path.join(out,'report.json'),'utf8'));}catch{return null;}})();
-if(prev&&!PARTS.includes('A')&&prev.parts?.A)report.parts.A=prev.parts.A;// (re-running only some parts keeps the baseline)
-const check=(name,ok,detail)=>{(ok?report.checks:report.failures).push(detail===undefined?name:{name,detail});console.log((ok?'PASS ':'FAIL ')+name+(detail!==undefined?' '+JSON.stringify(detail).slice(0,700):''));return ok;};
+// re-running only some parts keeps the other parts' results (their checks, measures, pairs and shots) from the last report
+let PART='?';const partOf=x=>(typeof x==='object'&&x.part)||null;
+if(prev){for(const k of Object.keys(prev.parts||{}))if(!PARTS.includes(k[0]))report.parts[k]=prev.parts[k];
+ const keep=x=>{const pt=partOf(x);return pt&&!PARTS.includes(pt);};report.checks.push(...(prev.checks||[]).filter(keep));report.failures.push(...(prev.failures||[]).filter(keep));
+ if(!PARTS.includes('E')){report.pairs=prev.pairs||[];report.shots=prev.shots||[];}
+ else if(process.env.VIEWS){const re=process.env.VIEWS.split(','),again=n=>re.some(o=>n.startsWith(o));report.pairs=(prev.pairs||[]).filter(p=>!again(p.name));report.shots=(prev.shots||[]).filter(x=>!again(path.basename(x.file||'')));
+  report.checks.push(...(prev.checks||[]).filter(x=>partOf(x)==='E'&&!/^Captures|^Cost \(measured|^Five benchmarks, captures/.test(x.name)));}report.kept=[...new Set([...(prev.checks||[]),...(prev.failures||[])].filter(keep).map(partOf))];}
+const check=(name,ok,detail)=>{(ok?report.checks:report.failures).push({name,part:PART,...(detail===undefined?{}:{detail})});console.log((ok?'PASS ':'FAIL ')+name+(detail!==undefined?' '+JSON.stringify(detail).slice(0,700):''));return ok;};
 const save=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,1)+'\n');
 const root=path.resolve('dist'),types={js:'application/javascript',css:'text/css',html:'text/html',glb:'model/gltf-binary',json:'application/json',jpg:'image/jpeg',png:'image/png'};
 const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.split('?')[0]);const f=path.join(root,u.replace(/^\//,'')||'index.html');if(!f.startsWith(root)){res.writeHead(403);return res.end();}
@@ -108,6 +117,7 @@ const AUTHORED=`async()=>{const S=__streetprops.handle,T=__streetprops.THREE,W=l
  return res;}`;
 
 // ---------------------------------------------------------------------------------------------------------------- A
+PART='A';
 if(PARTS.includes('A'))await withPage(async(page,{errors,requests})=>{await open(page,'');await startRide(page);
  const req=requests.filter(u=>/streetprops-|assets\/street\//.test(u));
  check('Default game: without ?streetprops none of the street-props modules or assets is fetched',req.length===0,req);
@@ -117,6 +127,7 @@ if(PARTS.includes('A'))await withPage(async(page,{errors,requests})=>{await open
  check('Default game: no page errors',errors.length===0,errors);save();});
 
 // ---------------------------------------------------------------------------------------------------------------- B
+PART='B';
 if(PARTS.includes('B'))await withPage(async(page,{errors,requests})=>{const R=report.parts.B={};const t0=Date.now();await open(page,'streetprops');await waitSP(page);R.wallLoadMs=Date.now()-t0;
  R.loaded=await page.evaluate(()=>{const S=__streetprops.handle;return {error:__streetprops.error,loadMs:__streetprops.loadMs,errors:S?.errors,tex:S?.texInfo,stats:__streetprops.stats(),label:document.getElementById('streetprops-benchmark-label')?.textContent};});
  check('?streetprops: the two GLBs and eight textures load without error',!R.loaded.error&&!(R.loaded.errors||[]).length&&R.loaded.tex?.files?.length===8,{error:R.loaded.error,errors:R.loaded.errors,files:R.loaded.tex?.files});
@@ -162,6 +173,7 @@ if(PARTS.includes('B'))await withPage(async(page,{errors})=>{const R=report.part
  check('Chapter One with ?streetprops: no page errors',errors.length===0,errors);save();});
 
 // ---------------------------------------------------------------------------------------------------------------- C
+PART='C';
 const VEGSTATS=`()=>{const V=window.__vegetation?.handle;if(!V)return null;const I=V.info;return {trees:I.trees,shrubs:I.shrubs,meadow:I.meadow,variants:I.variantsUsed,lawn:V.lawnMode};}`;
 if(PARTS.includes('C'))await withPage(async(page)=>{await open(page,'vegetation');await page.waitForFunction(()=>window.__vegetation,null,{timeout:400000});report.parts.Cbase={veg:await page.evaluate(`(${VEGSTATS})()`)};save();});
 const FIVE='bikes&houses&vegetation&pavement&streetprops';
@@ -171,12 +183,13 @@ if(PARTS.includes('C'))await withPage(async(page,{errors})=>{const R=report.part
  check('All five benchmarks together (?'+FIVE+') load without error',!R.loaded.streetprops&&!(R.loaded.spErrors||[]).length&&!R.loaded.pavement&&!R.loaded.veg&&!R.loaded.houses&&!R.loaded.bikes,R.loaded);
  R.veg=await page.evaluate(`(${VEGSTATS})()`);
  check('Trees and lawns intact: the authored vegetation places the same trees, shrubs and meadow, with the repaired lawn (C), as without ?streetprops',JSON.stringify(R.veg)===JSON.stringify(report.parts.Cbase?.veg),{with:R.veg,without:report.parts.Cbase?.veg});
- await startRide(page);for(let i=0;i<3;i++)await page.evaluate(()=>{lastLight.step(1);__streetprops.tick();});
+ await startRide(page);await page.evaluate(()=>{const L=lastLight;L.press('KeyW');for(let i=0;i<4*30;i++)L.step(1/30);L.release('KeyW');__streetprops.tick();});// (pedal for four seconds)
  R.state=await page.evaluate(()=>({pavement:__pavement.active,streetprops:__streetprops.active,hoopsLeftToHouses:__streetprops.handle.parts.props.kinds['hoops-on-house-benchmark-lots']||0,houses:__houses.mode,bikes:!!window.__bikes,friends:lastLight.state.friends.map(f=>f.mode),distance:+lastLight.state.distance.toFixed(2),speed:+lastLight.state.speed.toFixed(2)}));
  check('With all five: the pavement and the street props are active, the houses refined, the bikes upgraded; the ride runs (the boys ride on); the garage hoops on the house benchmark\'s lots are left to it',R.state.pavement&&R.state.streetprops&&R.state.houses==='refined'&&R.state.bikes&&R.state.distance>0&&R.state.hoopsLeftToHouses>0,R.state);
  check('Five benchmarks: no page errors',errors.length===0,errors);save();});
 
 // ---------------------------------------------------------------------------------------------------------------- D
+PART='D';
 if(PARTS.includes('D')){const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'sp-pkg-')),pm=path.join(tmp,'models'),pd=path.join(tmp,'default');
  execFileSync('node',['tools/package-playtest.mjs',pm],{env:{...process.env,PLAYTEST_MENU:'1',PLAYTEST_MODELS:'1'},stdio:'inherit'});
  execFileSync('node',['tools/package-playtest.mjs',pd],{env:{...process.env,PLAYTEST_MENU:'1',PLAYTEST_MODELS:''},stdio:'inherit'});
@@ -197,6 +210,7 @@ if(PARTS.includes('D')){const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'sp-pkg-'
  fs.rmSync(tmp,{recursive:true,force:true});save();}
 
 // ---------------------------------------------------------------------------------------------------------------- E
+PART='E';
 // The review captures. Riding camera views are placed by the QA hook (L.place + L.look, as the pavement suite does);
 // 'free' views are a QA close-up camera set beside a recorded object (the game renderer, the game's light and shadows;
 // only the camera is placed by hand) and are labelled so.
@@ -205,8 +219,14 @@ const look=(page,v)=>page.evaluate(async v=>{const L=lastLight,{MAIN}=await impo
  if(v.friends){L.reset?.();L.start();for(let i=0;i<150;i++)L.step(1/30);document.getElementById('subtitle').style.visibility='hidden';s={...v,d:L.state.distance,lat:L.state.lateral};}
  if(v.carType){const P=__streetprops.handle.parts.vehicles.placed.filter(p=>p.type===v.carType&&p.rec.frame==='main'&&p.rec.where==='drive');const pos=g=>{g.updateWorldMatrix(true,false);const q=MAIN.project(g.matrixWorld.elements[12],g.matrixWorld.elements[14]);return q;};
   const c=P.map(p=>({p,q:pos(p.rec.g)})).filter(x=>x.q.u>(v.after??0)).sort((a,b)=>a.q.u-b.q.u)[0];const sd=Math.sign(c.q.v);s={...v,d:c.q.u+(v.dd??-7),lat:sd*(v.latAbs??2.4)};
-  const dd=c.q.u-s.d,dl=c.q.v-s.lat;s.yaw=Math.atan2(-dl,dd)+(v.yawOff??0);window.__target={u:+c.q.u.toFixed(1),v:+c.q.v.toFixed(1)};}
+  const g=c.p.rec.g;g.updateWorldMatrix(true,false);window.__aim={x:g.matrixWorld.elements[12],z:g.matrixWorld.elements[14]};s.yaw=0;window.__target={u:+c.q.u.toFixed(1),v:+c.q.v.toFixed(1)};}
+ else window.__aim=null;
  L.place(s.d,s.lat,0);for(let i=0;i<(v.settle||4);i++)L.step(1/30);if(v.step)for(let t=0;t<v.step;t++)L.step(1);L.look(s.yaw||0,s.pitch||0);L.step(1/30);
+ if(window.__aim){// turn until the camera looks straight at the target (the riding look's yaw is relative to the bike)
+  const err=()=>{const c=L.camera,f=new T.Vector3();c.getWorldDirection(f);const t=new T.Vector3(window.__aim.x-c.position.x,0,window.__aim.z-c.position.z).normalize();f.y=0;f.normalize();return Math.atan2(f.x*t.z-f.z*t.x,f.x*t.x+f.z*t.z);};
+  const set=y=>{s.yaw=y;L.look(y,s.pitch||0);L.step(1/30);};let sg=-1;
+  for(let k=0;k<4;k++){const e0=err(),y0=s.yaw||0;set(y0+sg*e0);if(Math.abs(err())>Math.abs(e0)){sg=-sg;set(y0+sg*e0);}}
+  if(v.yawOff)set(s.yaw+v.yawOff);window.__aimErr=+err().toFixed(4);}
  window.__freeCam=null;
  if(v.free){let M;const f=v.free;
   if(f.kind==='gate'){const gates=R.fences.filter(x=>x.gate);const g=gates[f.i],b=g.bays[0],a=MAIN.point((b.ua+b.ub)/2,b.va),side=Math.sign(b.va);const cpos=MAIN.point((b.ua+b.ub)/2+(f.du||0),b.va-side*(f.back||4.2));
@@ -215,26 +235,29 @@ const look=(page,v)=>page.evaluate(async v=>{const L=lastLight,{MAIN}=await impo
   else if(f.kind==='street'){const a=MAIN.point(f.d,f.lat),b=MAIN.point(f.td,f.tlat);M={from:new T.Vector3(a.x,a.y+f.h,a.z),at:new T.Vector3(b.x,b.y+(f.th||0),b.z)};}
   else{let list=R[f.kind];if(f.kind==='cars')list=__streetprops.handle.parts.vehicles.placed.filter(p=>p.type===f.type&&p.rec.frame==='main').map(p=>p.rec);else list=list.filter(x=>(x.frame||'main')==='main');const g=list[f.i].g;g.updateWorldMatrix(true,false);
    M={from:new T.Vector3(...f.from).applyMatrix4(g.matrixWorld),at:new T.Vector3(...f.at).applyMatrix4(g.matrixWorld)};}
+  // the bike (and with it the sky dome, the shadow camera and the world's own distance culling) next to the subject
+  {const q=MAIN.project(M.at.x,M.at.z);L.place(q.u-3,Math.max(-3.3,Math.min(3.3,q.v)),0);for(let i=0;i<4;i++)L.step(1/30);L.look(0,0);L.step(1/30);s={...s,d:q.u-3,lat:Math.max(-3.3,Math.min(3.3,q.v))};}
   const c=L.camera;c.position.copy(M.from);c.up.set(0,1,0);c.lookAt(M.at);c.updateMatrixWorld(true);window.__freeCam={p:c.position.toArray(),q:c.quaternion.toArray()};}
- return {d:+(+s.d).toFixed(2),lat:+(+s.lat).toFixed(2),yaw:+(s.yaw||0).toFixed(3),target:window.__target||null,free:!!v.free};},v);
-const frame=(page,mode)=>page.evaluate(m=>{__streetprops.setMode(m);__streetprops.tick(true);window.__vegetation?.tick?.();window.__houses?.tick?.();window.__bikes?.tick?.();window.__pavement?.tick?.();
+ return {d:+(+s.d).toFixed(2),lat:+(+s.lat).toFixed(2),yaw:+(s.yaw||0).toFixed(3),target:window.__target||null,aimError:window.__aim?window.__aimErr:null,free:!!v.free};},v);
+const frame=(page,mode,timing=false)=>page.evaluate(([m,timing])=>{__streetprops.setMode(m);__streetprops.tick(true);window.__vegetation?.tick?.();window.__houses?.tick?.();window.__bikes?.tick?.();window.__pavement?.tick?.();
  if(window.__freeCam){const c=lastLight.camera;c.position.fromArray(window.__freeCam.p);c.quaternion.fromArray(window.__freeCam.q);c.updateMatrixWorld(true);}
  const i=lastLight.render();const c=lastLight.camera;
  // software frame time: the median of three renders of this frame (SwiftShader on the CPU: NOT a GPU number)
- const gl=lastLight.renderer.getContext(),px=new Uint8Array(4),ms=[];for(let k=0;k<3;k++){const t0=performance.now();lastLight.render();gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);ms.push(performance.now()-t0);}ms.sort((a,b)=>a-b);
+ const gl=lastLight.renderer.getContext(),px=new Uint8Array(4),ms=[];if(timing)for(let k=0;k<3;k++){const t0=performance.now();lastLight.render();gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);ms.push(performance.now()-t0);}ms.sort((a,b)=>a-b);
  if(window.__freeCam){c.position.fromArray(window.__freeCam.p);c.quaternion.fromArray(window.__freeCam.q);c.updateMatrixWorld(true);lastLight.render();}
- return {calls:i.calls,triangles:i.triangles,ms:+ms[1].toFixed(0),cam:{p:c.position.toArray().map(v=>+v.toFixed(3)),q:c.quaternion.toArray().map(v=>+v.toFixed(4)),fov:c.fov},clock:document.getElementById('date')?.textContent||null};},mode);
-async function pair(page,v,flags){const at=await look(page,v);const cam=v.free?'QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)':'gameplay riding camera (QA placement)';
+ return {calls:i.calls,triangles:i.triangles,ms:ms.length?+ms[1].toFixed(0):null,cam:{p:c.position.toArray().map(v=>+v.toFixed(3)),q:c.quaternion.toArray().map(v=>+v.toFixed(4)),fov:c.fov},clock:document.getElementById('date')?.textContent||null};},[mode,timing]);
+const labels=page=>page.evaluate(()=>{const out={};for(const el of document.querySelectorAll('[id$="-benchmark-label"]')){out[el.id]=el.textContent;el.style.visibility='hidden';}return out;});
+async function pair(page,v,flags){const at=await look(page,v);const lab=await labels(page);const cam=v.free?'QA close-up camera (placed by hand beside the object; the game renderer, light and shadows)':'gameplay riding camera (QA placement)';
  const a=await frame(page,'authored');const A=await shot(page,`${v.n}--authored`,{kind:'game-renderer capture',camera:cam,mode:'authored',flags,view:v,at,...a});
  const b=await frame(page,'original');const B=await shot(page,`${v.n}--original`,{kind:'game-renderer capture',camera:cam,mode:'original',flags,view:v,at,...b});
  await page.evaluate(()=>__streetprops.setMode('authored'));
  const same=JSON.stringify(a.cam)===JSON.stringify(b.cam);
- report.pairs.push({name:v.n,what:v.what,flags,camera:a.cam,cameraKind:cam,at,clock:a.clock,sameCamera:same,authored:{calls:a.calls,triangles:a.triangles,ms:a.ms},original:{calls:b.calls,triangles:b.triangles,ms:b.ms},files:[A?.file,B?.file]});save();return {a,b,same};}
+ report.pairs.push({name:v.n,what:v.what,flags,camera:a.cam,cameraKind:cam,at,clock:a.clock,sameCamera:same,labels:lab,authored:{calls:a.calls,triangles:a.triangles,ms:a.ms},original:{calls:b.calls,triangles:b.triangles,ms:b.ms},files:[A?.file,B?.file]});save();return {a,b,same};}
 const VIEWS=[
- {n:'S01-sedan-in-a-driveway',what:'a sedan parked in a driveway',carType:'sedan',after:100,dd:-6.5,latAbs:2.6,pitch:-.1},
- {n:'S02-minivan-beside-a-house',what:'a minivan in a driveway beside a house',carType:'minivan',after:60,dd:-7.5,latAbs:2.8,pitch:-.08},
- {n:'S03-pickup-in-a-driveway',what:'a pickup in a driveway',carType:'pickup',after:300,dd:-7,latAbs:2.4,pitch:-.09},
- {n:'S03b-wagon-in-a-driveway',what:'a station wagon in a driveway',carType:'wagon',after:120,dd:-7,latAbs:2.6,pitch:-.09},
+ {n:'S01-sedan-in-a-driveway',what:'a sedan parked in a driveway',carType:'sedan',after:100,dd:-5.5,latAbs:3.3,pitch:-.06},
+ {n:'S02-minivan-beside-a-house',what:'a minivan in a driveway beside a house',carType:'minivan',after:60,dd:-6.5,latAbs:3.3,pitch:-.05},
+ {n:'S03-pickup-in-a-driveway',what:'a pickup in a driveway',carType:'pickup',after:300,dd:-6,latAbs:3.3,pitch:-.06},
+ {n:'S03b-wagon-in-a-driveway',what:'a station wagon in a driveway',carType:'wagon',after:120,dd:-6,latAbs:3.3,pitch:-.06},
  {n:'S04-three-vehicle-types-together',what:'a wagon, a pickup and an SUV (and a sedan) parked down the street, at matched scale',d:-232,lat:-.4,yaw:.0,pitch:-.05},
  {n:'S05-wheel-and-body-close',what:'a close view of a car\'s front wheel, tyre, body paint and glass (QA close-up camera, 1.4 m from the wheel)',d:200,lat:-2,free:{kind:'cars',type:'sedan',i:2,from:[2.25,.85,-2.55],at:[.8,.42,-1.35]}},
  {n:'S06-utility-pole-and-wires',what:'a utility pole with its crossarm, transformer and the connected overhead wires',d:128,lat:1.5,yaw:.55,pitch:.32},
@@ -253,24 +276,41 @@ const VIEWS=[
  {n:'S16-oak-hollow-wide-all-five',what:'a wide, raised view of Oak Hollow with all five benchmarks (QA raised camera, 13 m up)',d:30,lat:0,free:{kind:'street',d:28,lat:-1,h:13,td:150,tlat:0,th:0}},
  {n:'S17-the-boys-on-their-current-bikes',what:'the boys on their bikes as the ride begins — CURRENT IN-GAME CHARACTER PLACEHOLDERS (the game\'s procedural figures on the authored ?bikes bicycles), not the unintegrated Phase 1A Blender characters',d:12,lat:-1,pitch:-.08,friends:true},
 ];
-if(PARTS.includes('E'))await withPage(async(page,{errors})=>{const R=report.parts.E={};await open(page,FIVE);
- await page.waitForFunction(()=>window.__vegetation&&window.__houses&&window.__bikes&&window.__pavement&&window.__streetprops,null,{timeout:600000});await startRide(page);
- const only=process.env.VIEWS?process.env.VIEWS.split(','):null;
- for(const v of VIEWS.filter(v=>!v.night&&!v.friends&&(!only||only.some(o=>v.n.startsWith(o)))))await pair(page,v,'qa&'+FIVE);
- for(const v of VIEWS.filter(v=>v.friends&&(!only||only.some(o=>v.n.startsWith(o)))))await pair(page,v,'qa&'+FIVE);
+const loadFive=async page=>{await open(page,FIVE);await page.waitForFunction(()=>window.__vegetation&&window.__houses&&window.__bikes&&window.__pavement&&window.__streetprops,null,{timeout:600000});await startRide(page);};
+if(PARTS.includes('E')){const R=report.parts.E={};const only=process.env.VIEWS?process.env.VIEWS.split(','):null,pick=VIEWS.filter(v=>!only||only.some(o=>v.n.startsWith(o)));
+ // (three views per fresh browser: in software rendering the five benchmarks together come near this machine's memory,
+ // and every rendered frame and screenshot holds memory the software GPU releases late)
+ const day=pick.filter(v=>!v.friends&&!v.n.startsWith('S09')),errs=[];
+ for(let i=0;i<day.length;i+=3)await withPage(async(page,{errors})=>{await loadFive(page);for(const v of day.slice(i,i+3))await pair(page,v,'qa&'+FIVE);errs.push(...errors);});
+ for(const v of pick.filter(v=>v.n.startsWith('S09')))await withPage(async(page,{errors})=>{await loadFive(page);
+  await page.evaluate(()=>{const L=lastLight;for(let d=600;d<=1030;d+=10){L.place(d,-1.2,6);L.step(.6);}});await pair(page,v,'qa&'+FIVE);errs.push(...errors);});
+ for(const v of pick.filter(v=>v.friends))await withPage(async(page,{errors})=>{await loadFive(page);await pair(page,v,'qa&'+FIVE);errs.push(...errors);});
  const P=report.pairs.filter(p=>p.flags==='qa&'+FIVE);
  check('Captures: every before/after pair is one camera and one frame ('+P.length+' pairs)',P.length>0&&P.every(p=>p.sameCamera),P.map(p=>[p.name,p.sameCamera]));
- const dc=P.map(p=>p.authored.calls-p.original.calls),dt=P.map(p=>p.authored.triangles/p.original.triangles),dm=P.map(p=>p.authored.ms/p.original.ms);
- R.cost={drawCallDelta:[Math.min(...dc),Math.max(...dc)],triangleRatio:[+Math.min(...dt).toFixed(3),+Math.max(...dt).toFixed(3)],softwareFrameRatio:[+Math.min(...dm).toFixed(2),+Math.max(...dm).toFixed(2)],
-  sum:{authored:{calls:P.reduce((a,p)=>a+p.authored.calls,0),tris:P.reduce((a,p)=>a+p.authored.triangles,0),ms:P.reduce((a,p)=>a+p.authored.ms,0)},original:{calls:P.reduce((a,p)=>a+p.original.calls,0),tris:P.reduce((a,p)=>a+p.original.triangles,0),ms:P.reduce((a,p)=>a+p.original.ms,0)}}};
+ const dc=P.map(p=>p.authored.calls-p.original.calls),dt=P.map(p=>p.authored.triangles/p.original.triangles);
+ R.cost={drawCallDelta:[Math.min(...dc),Math.max(...dc)],triangleRatio:[+Math.min(...dt).toFixed(3),+Math.max(...dt).toFixed(3)],
+  sum:{authored:{calls:P.reduce((a,p)=>a+p.authored.calls,0),tris:P.reduce((a,p)=>a+p.authored.triangles,0)},original:{calls:P.reduce((a,p)=>a+p.original.calls,0),tris:P.reduce((a,p)=>a+p.original.triangles,0)}}};
  check('Cost (measured, reported): the authored set adds at most 90 draw calls and at most 60 % more triangles in any captured frame',dc.every(x=>x<=90)&&dt.every(x=>x<=1.6),R.cost);
- R.memory=await page.evaluate(()=>{const S=__streetprops.handle;return {textures:S.texInfo.files.length,gpuTextureMB:S.texInfo.gpuMB,files:S.texInfo.files,renderer:{...lastLight.renderer.info.memory},programs:lastLight.renderer.info.programs?.length,heapMB:performance.memory?+(performance.memory.usedJSHeapSize/1048576).toFixed(0):null,stats:__streetprops.stats()};});
- check('Five benchmarks, captures: no page errors',errors.length===0,errors);save();});
-// dusk: a fresh page (the lamps come on as the ride passes the middle of the street)
-if(PARTS.includes('E'))await withPage(async(page,{errors})=>{await open(page,FIVE);await page.waitForFunction(()=>window.__vegetation&&window.__houses&&window.__bikes&&window.__pavement&&window.__streetprops,null,{timeout:600000});await startRide(page);
- const only=process.env.VIEWS?process.env.VIEWS.split(','):null;
- for(const v of VIEWS.filter(v=>v.n.startsWith('S09')&&(!only||only.some(o=>v.n.startsWith(o))))){await page.evaluate(()=>{const L=lastLight;for(let d=600;d<=1030;d+=10){L.place(d,-1.2,6);L.step(.6);}});await pair(page,v,'qa&'+FIVE);}
- check('Dusk captures: no page errors',errors.length===0,errors);save();});
+ check('Five benchmarks, captures: no page errors',errs.length===0,errs);save();}
+
+// ---------------------------------------------------------------------------------------------------------------- F
+PART='F';
+// Cost against the default game at the same riding cameras (software rendering: the ratio shows the added work; NOT a GPU
+// number): the default game (no flag), and ?streetprops with X's two modes (authored / original), each a fresh browser.
+const COST_VIEWS=[{n:'C1',d:40,lat:-1.2,pitch:-.1},{n:'C2',d:-232,lat:-.4,pitch:-.05},{n:'C3',d:128,lat:1.5,yaw:.55,pitch:.32},{n:'C4',d:380,lat:-1.1,yaw:.05,pitch:-.04},{n:'C5',d:76.5,lat:-3.4,yaw:.85,pitch:-.35},{n:'C6',d:-4.5,lat:-3.3,yaw:.75,pitch:-.22},{n:'C7',d:700,lat:1,pitch:-.03},{n:'C8',d:1032,lat:-1.2,yaw:-.3,pitch:.06}];
+const COST=`async v=>{const L=lastLight;L.place(v.d,v.lat,0);for(let i=0;i<4;i++)L.step(1/30);L.look(v.yaw||0,v.pitch||0);L.step(1/30);const out={};const gl=L.renderer.getContext(),px=new Uint8Array(4);
+ const modes=window.__streetprops?['authored','original']:['default'];
+ for(const m of modes){if(window.__streetprops){__streetprops.setMode(m);__streetprops.tick(true);}const i=L.render();const ms=[];for(let k=0;k<3;k++){const t0=performance.now();L.render();gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);ms.push(performance.now()-t0);}ms.sort((a,b)=>a-b);out[m]={calls:i.calls,tris:i.triangles,ms:+ms[1].toFixed(0)};}
+ if(window.__streetprops)__streetprops.setMode('authored');return out;}`;
+if(PARTS.includes('F')){const R=report.parts.F={views:COST_VIEWS,default:{},streetprops:{}};
+ for(const [key,flags] of [['default',''],['streetprops','streetprops']])await withPage(async(page,{errors})=>{const t0=Date.now();await open(page,flags);if(flags)await waitSP(page);await startRide(page);R[key+'LoadMs']=Date.now()-t0;
+  for(const v of COST_VIEWS)R[key][v.n]=await page.evaluate(`(${COST})(${JSON.stringify(v)})`);
+  R[key+'Memory']=await page.evaluate(()=>({heapMB:+(performance.memory.usedJSHeapSize/1048576).toFixed(0),renderer:{...lastLight.renderer.info.memory},programs:lastLight.renderer.info.programs?.length}));
+  check('Cost run ('+key+'): no page errors',errors.length===0,errors);});
+ const sum=(k,m,f)=>COST_VIEWS.reduce((a,v)=>a+(R[k][v.n]?.[m]?.[f]||0),0);
+ R.summary={default:{calls:sum('default','default','calls'),tris:sum('default','default','tris'),ms:sum('default','default','ms')},authored:{calls:sum('streetprops','authored','calls'),tris:sum('streetprops','authored','tris'),ms:sum('streetprops','authored','ms')},original:{calls:sum('streetprops','original','calls'),tris:sum('streetprops','original','tris'),ms:sum('streetprops','original','ms')}};
+ R.summary.ratio={calls:+(R.summary.authored.calls/R.summary.default.calls).toFixed(3),tris:+(R.summary.authored.tris/R.summary.default.tris).toFixed(3),ms:+(R.summary.authored.ms/R.summary.default.ms).toFixed(3)};
+ check('Cost against the default game measured at '+COST_VIEWS.length+' riding cameras (software frame time, draw calls, triangles: reported)',R.summary.default.ms>0&&R.summary.authored.ms>0,R.summary);save();}
 
 report.finished=new Date().toISOString();save();server.close();
 console.log(`\n${report.checks.length} passed, ${report.failures.length} failed`);process.exit(report.failures.length?1:0);

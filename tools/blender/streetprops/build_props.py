@@ -976,7 +976,9 @@ def main():
     bpy.ops.wm.save_as_mainfile(filepath=BLEND, relative_remap=True, compress=True)
     for n, tn in img.items():          # the GLB carries geometry only (the game builds its materials from the atlases)
         MATS[n].node_tree.nodes.remove(tn)
-    ll_export.export_glb(OUT, export_materials='EXPORT', export_tangents=True)
+    # no exported tangents: several planar-mapped faces (post sides, board edges) have UVs constant in one direction, and
+    # their MikkTSpace tangents degenerate (black in the game); three.js then derives tangents per pixel, safely
+    ll_export.export_glb(OUT, export_materials='EXPORT', export_tangents=False)
     stats['glb_bytes'] = os.path.getsize(OUT)
     json.dump(stats, open(STATS, 'w'), indent=1)
     log('wrote', OUT, stats['glb_bytes'], 'bytes')

@@ -1,6 +1,6 @@
 6505eb37b2b8d130eef47f9e51cf54e1ec32ae6cc51319f5356778ae0070e78d  ./PROVENANCE.md
-0bc5107671295e6c22a81eda7a486e05b36969e368664b7a1a83f57d449a5ddc  ./props/build-stats.json
-bd38f599e1ee4fe5e3b48da3ea03e860d5d7ff7ebd76e18e759a90cdc026d757  ./props/street.props.blend
+f8999531dd349bcfb27adaae152a5cf4884232b6f4c81fb52b8c24c36e00725c  ./props/build-stats.json
+24c02fd452edde0405f790ca832b701a4ee15e1323cde5e6a012ae146c28d9d9  ./props/street.props.blend
 692a528feba8836e5143b541be97680f32bb2181a62985be99c4c4ac7c2418f8  ./textures/props_albedo.jpg
 67ce470dd00d4b7f334583b25893b6098e4d461af9849f053e2bde0ea1b3a830  ./textures/props_atlas.json
 9d800829826624f7512e304382c947267303d81e16fbff394b1e7dc3d879914d  ./textures/props_cutout.png

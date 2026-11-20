@@ -49,7 +49,7 @@ for i, p in enumerate(R.get('pairs', [])):
  <dl>
   <div><dt>Capture</dt><dd>Game-renderer capture · {esc(camkind)} · software WebGL (SwiftShader), not a GPU</dd></div>
   <div><dt>Scene</dt><dd>{esc(clock or 'Prologue')} · flags <code>?{esc(flags)}</code> · same camera and frame: {'yes' if p.get('sameCamera') else 'NO'}</dd></div>
-  <div><dt>Cost</dt><dd>authored {rc.get('calls','?')} draw calls, {rc.get('triangles',0):,} tris, {rc.get('ms','?')} ms · original {oc.get('calls','?')} calls, {oc.get('triangles',0):,} tris, {oc.get('ms','?')} ms (software frame)</dd></div>
+  <div><dt>Cost</dt><dd>authored {rc.get('calls','?')} draw calls, {rc.get('triangles',0):,} tris · original {oc.get('calls','?')} calls, {oc.get('triangles',0):,} tris</dd></div>
   <div><dt>Files</dt><dd><a href="{rec}">authored</a> · <a href="{org}">original</a> · commit <code>{esc(commit)}</code></dd></div>
  </dl>
 </article>''')
