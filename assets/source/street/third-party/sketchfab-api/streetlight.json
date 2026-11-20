@@ -1,0 +1,34 @@
+{
+ "uid": "21964142d86b49df8ff93f94a1d0c91f",
+ "name": "Street Light",
+ "viewerUrl": "https://sketchfab.com/3d-models/street-light-21964142d86b49df8ff93f94a1d0c91f",
+ "createdAt": "2018-02-28T06:58:52.035654",
+ "publishedAt": "2018-02-28T07:02:16.916258",
+ "license": {
+  "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+  "label": "CC Attribution",
+  "fullName": "Creative Commons Attribution",
+  "requirements": "Author must be credited. Commercial use is allowed.",
+  "url": "http://creativecommons.org/licenses/by/4.0/",
+  "slug": "by"
+ },
+ "isDownloadable": true,
+ "faceCount": 2658,
+ "vertexCount": 1382,
+ "description": "",
+ "user": {
+  "uid": "ad4a4a6d3edd4fb682304d2b5c58520c",
+  "username": "kmb_jr",
+  "displayName": "KMB3D",
+  "profileUrl": "https://sketchfab.com/kmb_jr"
+ },
+ "tags": [
+  "street",
+  "light"
+ ],
+ "_retrieved": {
+  "endpoint": "https://api.sketchfab.com/v3/models/21964142d86b49df8ff93f94a1d0c91f",
+  "date": "2026-11-20",
+  "by": "automated provenance check (Claude Code session)"
+ }
+}

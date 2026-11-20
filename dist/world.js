@@ -70,6 +70,12 @@ export function buildWorld(scene,opts={}){
  // and carry their street coordinates (uv, pv) through the bake; W.pv collects the layout the material reads. Without it nothing changes.
  if(opts.pavement){W.pavement=opts.pavement;W.pv={cuts:[],inlets:[],manholes:[],trees:[],drives:[],mouths:[]};}
  if(opts.vegetation){W.vegRecord={trees:[],beds:[],scope:(x,z)=>{if(!W.vegPhase)return false;const q=MAIN.project(x,z);return q.u>-440&&q.u<1400&&Math.abs(q.v)<95;}};}
+ // opts.streetprops (DEV, ?streetprops only): the Prologue street's cars, utility poles and wires, streetlights, mailboxes, hydrants, bins,
+ // hoops and fences are recorded (W.sp: where, what kind, which colour; the wires' sag points and their poles) and baked into batches,
+ // shadow proxies and line batches of their own (zones 'sp:*'), so the street-props benchmark can stand the authored versions in their
+ // places and bring the procedural ones back on demand. Geometry, collisions and every gameplay query stay the default game's.
+ if(opts.streetprops){W.sp={cars:[],dynCars:[],mailboxes:[],bins:[],hydrants:[],lamps:[],poles:[],spans:[],drops:[],guys:[],fences:[],hoops:[],phase:null};
+  W.spZone=(g,kind)=>{g.traverse(o=>{if(o.isMesh||o.isLine)o.userData.zone='sp:'+kind;});return g;};}
  W.easement=easementFrame(W);// Chapter Two's drainage easement: its ground leaves holes in the older ground
  W.woods=woodsFrame(W);// Chapter Three: the old access road past Briarwood's end, the woods, the outfall (same idea)
  W.drain=drainFrame(W);// ...and the storm sewer trunk behind the outfall
@@ -114,7 +120,7 @@ export function buildWorld(scene,opts={}){
  return {scene,road:W.named.road,originals,merged,windowMats:W.windowMats,porchMats:W.porchMats,streetLamps:W.streetLamps,foliage:W.foliage,grassMat:W.grassMat,grassMats:W.grassMats,
   groundY,authoredY,rideable:W.rideable,obstacles:W.obstacles,homes:W.homes,doors,garages,windows,sideDoors,anchor,houseAnchor,alexWindow:W.alexWindow,car:W.car,drivewayOpenings:W.drives,sideDrives:W.sideDrives||[],houses:W.houses,sidePlansAll:W.sidePlans,surfaceY:W.surfaceY,sideSurface:W.sideSurface,junctions:W.junctions,creek:W.creekInfo||null,interiorMats:W.interiorMats,
   material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,vegRecord:W.vegRecord||null,lights:W.lights,hooks:W.hooks||{},hoops:W.hoops||[],easement:W.easement,woods:W.woods,drain:W.drain,town:W.town,pine:W.pine,vegBuild:(g,r,o)=>W.veg.build(g,r,o),terrainY,signs:W.signs||[],
-  poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space,fenceSegs:W.fenceSegs||[],pavement:W.pv?{...W.pv,materials:W.pvMats||{}}:null};
+  poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space,fenceSegs:W.fenceSegs||[],pavement:W.pv?{...W.pv,materials:W.pvMats||{}}:null,streetProps:W.sp||null};
 }
 
 // A material whose emissive level follows the evening: uP is the ride's progress (0..1),
@@ -189,7 +195,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
   for(const o of objs){const {pos,nor}=transform(o,layer,height);
    if(o.userData.vgBed&&W.vegRecord){let x=0,y=0,z=0,lo=1e9;const n=pos.length/3;for(let i=0;i<n;i++){x+=pos[i*3];y+=pos[i*3+1];z+=pos[i*3+2];lo=Math.min(lo,pos[i*3+1]);}W.vegRecord.beds.push({...o.userData.vgBed,x:x/n,y:y/n,z:z/n,ground:lo});}
    if(o.name&&o.isMesh&&!/^pine/.test(layer.zone||o.userData.zone||'')){/* (Pine Ridge keeps no reference copies: nothing reads them) */const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));if(o.geometry.index)g.setIndex(o.geometry.index.clone());g.computeBoundingSphere();const m=new THREE.Mesh(g,o.material);m.name=o.name;m.userData={...o.userData};originals.push(m);if(o.userData.ref)W.named[o.userData.ref]=m;}
-   if(o.isLine){const key=o.material.color.getHex()+(o.userData.pvLine?':'+o.userData.pvLine:'');if(!lineBatches.has(key))lineBatches.set(key,new Buf());const arr=lineBatches.get(key),segs=o.isLineSegments;for(let i=0;i<pos.length/3-1;i+=segs?2:1)arr.push(pos[i*3],pos[i*3+1],pos[i*3+2]),arr.push(pos[i*3+3],pos[i*3+4],pos[i*3+5]);continue;}
+   if(o.isLine){const key=o.material.color.getHex()+(o.userData.pvLine?':'+o.userData.pvLine:'')+(o.userData.spLine?'|sp':'');if(!lineBatches.has(key))lineBatches.set(key,new Buf());const arr=lineBatches.get(key),segs=o.isLineSegments;for(let i=0;i<pos.length/3-1;i+=segs?2:1)arr.push(pos[i*3],pos[i*3+1],pos[i*3+2]),arr.push(pos[i*3+3],pos[i*3+4],pos[i*3+5]);continue;}
    const material=batchMaterial(o.material),idx=o.geometry.index,uv=o.geometry.attributes.uv,pvA=o.geometry.attributes.pv,far=!!layer.far||!!o.userData.far,zone=layer.zone||o.userData.zone||null,cellSize=zone==='woods'?(far?120:70):zone==='tunnel'?50:zone==='town'?(far?160:90):zone==='town-int'?30:zone==='pine'?(far?150:80):zone==='pine-int'?24:far?220:110;
    const wi=W.windowMats.indexOf(o.material),pi=W.porchMats.indexOf(o.material);
    const col=o.material===W.darkGlass?{r:9,g:0,b:0}:wi>=0?{r:W.windowOn[wi],g:0,b:0}:pi>=0?{r:W.porchOn[pi],g:0,b:0}:o.material===W.farWindow?{r:.5+hashF(t0++)*.3,g:0,b:0}:o.material.userData.lamp!==undefined?{r:1,g:o.material.userData.lamp/255,b:0}:o.material.color;
@@ -197,7 +203,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
    for(let t=0;t<tris;t++){const i0=idx?idx.getX(t*3):t*3,i1=idx?idx.getX(t*3+1):t*3+1,i2=idx?idx.getX(t*3+2):t*3+2;
     const cx=(pos[i0*3]+pos[i1*3]+pos[i2*3])/3,cz=(pos[i0*3+2]+pos[i1*3+2]+pos[i2*3+2])/3,cell=Math.floor(cx/cellSize)*1000+Math.floor(cz/cellSize);
     let b=local.get(cell);if(!b){b=batchFor(material,cell,far,zone);local.set(cell,b);}add(b,pos,nor,col,uv,i0,pvA);add(b,pos,nor,col,uv,i1,pvA);add(b,pos,nor,col,uv,i2,pvA);
-    if(caster){const sz=zone==='woods'?110:50,hb=zone&&(zone.startsWith('hb:')||zone.startsWith('vg:'))?zone:null,sc=(hb?hb+':':'')+(zone==='woods'?'w':'')+((Math.floor(cx/sz)*1000+Math.floor(cz/sz))*2+(leaf?1:0));let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,hb,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
+    if(caster){const sz=zone==='woods'?110:50,hb=zone&&(zone.startsWith('hb:')||zone.startsWith('vg:')||zone.startsWith('sp:'))?zone:null,sc=(hb?hb+':':'')+(zone==='woods'?'w':'')+((Math.floor(cx/sz)*1000+Math.floor(cz/sz))*2+(leaf?1:0));let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,hb,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
      for(const i of [i0,i1,i2]){sp.p.push(pos[i*3],pos[i*3+1],pos[i*3+2]);if(leaf)sp.uv.push(uv?uv.getX(i):0,uv?uv.getY(i):0,0);}}}
   }
  }
@@ -210,7 +216,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
   if(sp.leaf){const u3=sp.uv.view(),uv=new Float32Array(u3.length/3*2);for(let i=0,j=0;i<u3.length;i+=3){uv[j++]=u3[i];uv[j++]=u3[i+1];}g.setAttribute('uv',new THREE.BufferAttribute(uv,2));}
   g.computeBoundingSphere();const mat=sp.leaf?leafShadowMaterial(W):shadowOnly;const mesh=new THREE.Mesh(g,mat);if(sp.leaf)mesh.customDepthMaterial=leafDepth(W);
   mesh.castShadow=true;mesh.receiveShadow=false;mesh.layers.set(1);mesh.name='shadow-proxy';if(sp.hb)mesh.userData.zone=sp.hb;scene.add(mesh);shadowProxies.push(mesh);}
- for(const [key,arr] of lineBatches){const [color,tag]=String(key).split(':'),g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(arr.view().slice(),3));g.computeBoundingSphere();const ls=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:+color}));if(tag)ls.userData.pvLine=tag;scene.add(ls);}
+ for(const [key,arr] of lineBatches){const spl=String(key).endsWith('|sp'),[color,tag]=String(key).replace(/\|sp$/,'').split(':'),g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(arr.view().slice(),3));g.computeBoundingSphere();const ls=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:+color}));if(tag)ls.userData.pvLine=tag;if(spl)ls.userData.spLine=true;scene.add(ls);}
  return {merged,originals,shadowProxies};
 }
 let _leafShadow=null,_leafDepth=null;

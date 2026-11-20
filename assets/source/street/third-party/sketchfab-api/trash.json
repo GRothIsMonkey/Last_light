@@ -1,0 +1,43 @@
+{
+ "uid": "3fecc117da264b8587417e31c7cf4e93",
+ "name": "Trash_cans",
+ "viewerUrl": "https://sketchfab.com/3d-models/trash-cans-3fecc117da264b8587417e31c7cf4e93",
+ "createdAt": "2021-11-29T06:40:25.155433",
+ "publishedAt": "2021-12-28T19:13:03.343583",
+ "license": {
+  "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+  "label": "CC Attribution",
+  "fullName": "Creative Commons Attribution",
+  "requirements": "Author must be credited. Commercial use is allowed.",
+  "url": "http://creativecommons.org/licenses/by/4.0/",
+  "slug": "by"
+ },
+ "isDownloadable": true,
+ "faceCount": 15320,
+ "vertexCount": 7869,
+ "description": "1. Low Poly Urban prop pack of game ready models with PBR textures.\n2. Textures included: Albedo, Normals, Metalness, Roughness, AO\n3. I used autodesk maya 2020 for modeling and substance painter for texturing.\n4. Pack included:\n5. Recycle bin / 2k texture.\n6. Trash can / 2k texture.\n7. Garbage bin / 2k texture.\n8. Units : centimetre\n9. **These models can be used for any game, any project, etc. You may not resell any content**",
+ "user": {
+  "uid": "270d1da180494e23a0a0515387427d78",
+  "username": "peyman.khaleghi",
+  "displayName": "peyman.khaleghi",
+  "profileUrl": "https://sketchfab.com/peyman.khaleghi"
+ },
+ "tags": [
+  "prop",
+  "urban",
+  "unrealengine",
+  "recyclebin",
+  "maya",
+  "unity",
+  "asset",
+  "lowpoly",
+  "gameasset",
+  "gameready",
+  "urbanprop"
+ ],
+ "_retrieved": {
+  "endpoint": "https://api.sketchfab.com/v3/models/3fecc117da264b8587417e31c7cf4e93",
+  "date": "2026-11-20",
+  "by": "automated provenance check (Claude Code session)"
+ }
+}

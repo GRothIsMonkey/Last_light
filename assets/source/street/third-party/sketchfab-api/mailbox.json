@@ -1,0 +1,45 @@
+{
+ "uid": "132c790ac74c42a0bb1a5fc7e3d43d7e",
+ "name": "Home US Mailbox 📫",
+ "viewerUrl": "https://sketchfab.com/3d-models/home-us-mailbox-132c790ac74c42a0bb1a5fc7e3d43d7e",
+ "createdAt": "2021-11-17T08:08:09.067127",
+ "publishedAt": "2021-11-17T08:16:09.488684",
+ "license": {
+  "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+  "label": "CC Attribution",
+  "fullName": "Creative Commons Attribution",
+  "requirements": "Author must be credited. Commercial use is allowed.",
+  "url": "http://creativecommons.org/licenses/by/4.0/",
+  "slug": "by"
+ },
+ "isDownloadable": true,
+ "faceCount": 2074,
+ "vertexCount": 1100,
+ "description": "**If you download this free model, please consider hitting the star button and leaving a like! Thanks!**\n\n**NoAI: This model may not be used in datasets for, in the development of, or as inputs to generative AI programs.**\n\nKey Features:\n\n📫 Authentic Replica: Detailed 3D model of the classic US Mail mailbox, complete with a raised red flag, capturing the essence of Americana.\n\n📸 PBR Textures: Utilizing high-quality PBR texture sets to achieve a realistic metal finish, this model looks virtually indistinguishable from the real thing.\n\n🏠 Suburban Scenery: A quintessential addition to any virtual suburban setting, enhancing the realism and depth of your 3D architectural projects.\n\n🎮 Versatile Use: Perfect for 3D architectural visualizations, virtual real estate tours, or as a real-time asset in game development.\n\nStamp your virtual world with a touch of American nostalgia. Add this \"US Mail Mailbox with Raised Red Flag 3D Model\" to your collection today!",
+ "user": {
+  "uid": "6b9630bace66465b93763027daf803f6",
+  "username": "glowbox3d",
+  "displayName": "Glowbox 3D",
+  "profileUrl": "https://sketchfab.com/glowbox3d"
+ },
+ "tags": [
+  "archviz",
+  "us",
+  "prop",
+  "mail",
+  "service",
+  "mailbox",
+  "letter",
+  "postal",
+  "neighborhood",
+  "write",
+  "send",
+  "pbr",
+  "receive"
+ ],
+ "_retrieved": {
+  "endpoint": "https://api.sketchfab.com/v3/models/132c790ac74c42a0bb1a5fc7e3d43d7e",
+  "date": "2026-11-20",
+  "by": "automated provenance check (Claude Code session)"
+ }
+}

@@ -1,0 +1,31 @@
+{
+ "uid": "7db1161bc6e840a6a383779da8ae8b9a",
+ "name": "Basketball Hoop Scary Baboon",
+ "viewerUrl": "https://sketchfab.com/3d-models/basketball-hoop-scary-baboon-7db1161bc6e840a6a383779da8ae8b9a",
+ "createdAt": "2025-05-17T21:19:35.213640",
+ "publishedAt": "2025-05-17T21:20:15.235440",
+ "license": {
+  "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+  "label": "CC Attribution",
+  "fullName": "Creative Commons Attribution",
+  "requirements": "Author must be credited. Commercial use is allowed.",
+  "url": "http://creativecommons.org/licenses/by/4.0/",
+  "slug": "by"
+ },
+ "isDownloadable": true,
+ "faceCount": 6044,
+ "vertexCount": 3116,
+ "description": "",
+ "user": {
+  "uid": "9b461bb33f2c4a01bba75fcb008cbfaa",
+  "username": "sbarchiver",
+  "displayName": "ScaryBaboonRipper",
+  "profileUrl": "https://sketchfab.com/sbarchiver"
+ },
+ "tags": [],
+ "_retrieved": {
+  "endpoint": "https://api.sketchfab.com/v3/models/7db1161bc6e840a6a383779da8ae8b9a",
+  "date": "2026-11-20",
+  "by": "automated provenance check (Claude Code session)"
+ }
+}

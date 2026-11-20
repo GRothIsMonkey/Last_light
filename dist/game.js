@@ -88,8 +88,12 @@ const VEGETATION_FLAG=typeof location!=='undefined'&&/[?&]vegetation\b/.test(loc
 // surfaces in the same frame. The Prologue only: past it the original surfaces show. Without ?pavement nothing changes.
 const PAVEMENT_FLAG=typeof location!=='undefined'&&/[?&]pavement\b/.test(location.search||'');
 const pavementKit=PAVEMENT_FLAG?await import('./pavement-surfaces.js').catch(e=>{console.error('pavement benchmark failed:',e);return null;}):null;
-const worldOpts={...(HOUSES_FLAG?{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}:{}),...(VEGETATION_FLAG?{vegetation:true}:{}),...(pavementKit?{pavement:pavementKit}:{})};
-const world=(HOUSES_FLAG||VEGETATION_FLAG||pavementKit)?buildWorld(scene,worldOpts):buildWorld(scene);
+// DEV vehicles & street-props benchmark (?streetprops): the Prologue street's cars, utility poles and wires, streetlights, mailboxes,
+// hydrants, bins, hoops and fences are recorded and baked into batches of their own (world.js opts.streetprops) so the authored
+// versions can stand in their places; X swaps them with the originals in the same frame. Without ?streetprops nothing changes.
+const STREETPROPS_FLAG=typeof location!=='undefined'&&/[?&]streetprops\b/.test(location.search||'');
+const worldOpts={...(HOUSES_FLAG?{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}:{}),...(VEGETATION_FLAG?{vegetation:true}:{}),...(pavementKit?{pavement:pavementKit}:{}),...(STREETPROPS_FLAG?{streetprops:true}:{})};
+const world=(HOUSES_FLAG||VEGETATION_FLAG||pavementKit||STREETPROPS_FLAG)?buildWorld(scene,worldOpts):buildWorld(scene);
 // Added after the neighborhood is bent and merged, so the sky stays a sky.
 scene.add(sky);const {road,originals,groundY}=world;// road and originals are read by tests/verify.mjs.
 const _v=new THREE.Vector3(),_q=new THREE.Quaternion(),_e=new THREE.Euler();
@@ -877,6 +881,12 @@ if(HOUSES_FLAG)import('./house-benchmark.js').then(m=>m.mountInGame({scene,camer
 let pavementPast=false;const pavementPrologue=()=>{const s=state==='paused'?resumeState:state;if(s==='intro')pavementPast=false;if(s.startsWith('c1-')||s==='credits'||coda?.active)pavementPast=true;return !pavementPast;};
 if(pavementKit)import('./pavement-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,kit:pavementKit,prologue:pavementPrologue})).catch(e=>console.error('pavement benchmark failed:',e));
 if(VEGETATION_FLAG)import('./vegetation-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,sun:sunlight,ambient})).catch(e=>console.error('vegetation benchmark failed:',e));
+// Prologue vehicles & street-props benchmark (DEV only): ?streetprops stands the authored cars, utility hardware and wires,
+// cobra-head streetlights, mailboxes, hydrants, bins, hoops and fences in place of the procedural ones (streetprops-benchmark.js);
+// X swaps them in the same frame, Z steps the LOD. The Prologue only, as the pavement: past it the originals show (the night chapters
+// move, damage and reuse these things). Without ?streetprops nothing is loaded.
+let streetPropsPast=false;const streetPropsPrologue=()=>{const s=state==='paused'?resumeState:state;if(s==='intro')streetPropsPast=false;if(s.startsWith('c1-')||s==='credits'||coda?.active)streetPropsPast=true;return !streetPropsPast;};
+if(STREETPROPS_FLAG)import('./streetprops-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,hemi,sun:sunlight,prologue:streetPropsPrologue})).catch(e=>console.error('street-props benchmark failed:',e));
 if(typeof location!=='undefined'&&/[?&]pipeline\b/.test(location.search||''))import('./pipeline-lab.js').then(m=>m.mountInGame({scene,camera,renderer,groundY:(x,z)=>nav.groundY(x,z)})).catch(e=>console.error('pipeline probe failed:',e));
 // Optional QA hook (?qa): deterministic stepping and a peek at state for automated checks.
 // In QA mode the page is driven only by these calls, so runs are repeatable.

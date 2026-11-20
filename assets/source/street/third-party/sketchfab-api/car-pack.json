@@ -1,0 +1,45 @@
+{
+ "uid": "20f9af9b8a404d5cb022ac6fe87f21f5",
+ "name": "Generic passenger car pack",
+ "viewerUrl": "https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5",
+ "createdAt": "2017-08-13T23:15:07.706666",
+ "publishedAt": "2017-08-15T00:13:06.171676",
+ "license": {
+  "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+  "label": "CC Attribution",
+  "fullName": "Creative Commons Attribution",
+  "requirements": "Author must be credited. Commercial use is allowed.",
+  "url": "http://creativecommons.org/licenses/by/4.0/",
+  "slug": "by"
+ },
+ "isDownloadable": true,
+ "faceCount": 69312,
+ "vertexCount": 41463,
+ "description": "Low-poly (under 8k) pack of generic passenger vehicles.\n\n\nSuitable for exterior landscape renderings and can be used in gamedev as props or in mobile games as player vehicle.\n\nAll cars are bearing minimum to none similarities to real life cars and completly  trademark clame proof.\n\nSpecs are:\nsedan - 7122 tris.\nwagon - 6982 tris.\nhatchback - 6808 tris.\ncompact - 7257 tris.\ncoupe - 6022 tris.\nminivan - 7450 tris.\nsport - 6268 tris.\npickup - 6918 tris.\nSUV - 7951 tris.\noffroad - 6502 tris. \n\nEach car has 6 different colors texture, metallic, glossiness and opacity, also, they can be rendered without textures at all using only material color or vertex paint.\n\n\n\nFor the best picture, please, switch viewer to HD texture.",
+ "user": {
+  "uid": "b3d557b8090940e69b5ca9524e9681b7",
+  "username": "comrade1280",
+  "displayName": "Comrade1280",
+  "profileUrl": "https://sketchfab.com/comrade1280"
+ },
+ "tags": [
+  "cars",
+  "set",
+  "urban",
+  "generic",
+  "pack",
+  "props",
+  "civilian",
+  "render",
+  "unity",
+  "low-poly",
+  "asset",
+  "vehicle",
+  "car"
+ ],
+ "_retrieved": {
+  "endpoint": "https://api.sketchfab.com/v3/models/20f9af9b8a404d5cb022ac6fe87f21f5",
+  "date": "2026-11-20",
+  "by": "automated provenance check (Claude Code session)"
+ }
+}

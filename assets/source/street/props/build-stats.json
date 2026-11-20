@@ -1,0 +1,123 @@
+{
+ "blender": "5.1.2",
+ "pieces": {
+  "can.lod0": 2136,
+  "can.lod1": 747,
+  "can.lod2": 212,
+  "cart.lod0": 4888,
+  "cart.lod1": 1710,
+  "cart.lod2": 488,
+  "fence.chain.lod0": 18,
+  "fence.chain.lod1": 12,
+  "fence.chain.lod2": 2,
+  "fence.gate.lod0": 232,
+  "fence.gate.lod1": 82,
+  "fence.gate.lod2": 10,
+  "fence.picket.lod0": 296,
+  "fence.picket.lod1": 296,
+  "fence.picket.lod2": 12,
+  "fence.privacy.lod0": 344,
+  "fence.privacy.lod1": 88,
+  "fence.privacy.lod2": 12,
+  "fence.privacy_grey.lod0": 344,
+  "fence.privacy_grey.lod1": 88,
+  "fence.privacy_grey.lod2": 12,
+  "fence.rail.lod0": 88,
+  "fence.rail.lod1": 24,
+  "fence.rail.lod2": 24,
+  "hoop.garage.lod0": 560,
+  "hoop.garage.lod1": 256,
+  "hoop.old.lod0": 572,
+  "hoop.old.lod1": 220,
+  "hoop.portable.lod0": 816,
+  "hoop.portable.lod1": 480,
+  "hydrant.lod0": 1628,
+  "hydrant.lod1": 651,
+  "hydrant.lod2": 195,
+  "lamp.lens.lod0": 320,
+  "lamp.lens.lod1": 80,
+  "lamp.lens.lod2": 30,
+  "lamp.lod0": 1281,
+  "lamp.lod1": 517,
+  "lamp.lod2": 168,
+  "mailbox.brick.lod0": 156,
+  "mailbox.brick.lod1": 156,
+  "mailbox.deco.lod0": 494,
+  "mailbox.deco.lod1": 416,
+  "mailbox.white.lod0": 258,
+  "mailbox.white.lod1": 180,
+  "mailbox.wood.lod0": 258,
+  "mailbox.wood.lod1": 180,
+  "pole.arm.lod0": 1904,
+  "pole.arm.lod1": 855,
+  "pole.arm.lod2": 228,
+  "pole.guard.lod0": 80,
+  "pole.rack.lod0": 332,
+  "pole.rack.lod1": 188,
+  "pole.shaft.lod0": 266,
+  "pole.shaft.lod1": 56,
+  "pole.shaft.lod2": 15,
+  "pole.sidepin.lod0": 180,
+  "pole.sidepin.lod1": 96,
+  "pole.xfmr.lod0": 3572,
+  "pole.xfmr.lod1": 1607,
+  "pole.xfmr.lod2": 535,
+  "post.chain.lod0": 120,
+  "post.chain.lod1": 60,
+  "post.chain.lod2": 60,
+  "post.white.lod0": 48,
+  "post.white.lod1": 16,
+  "post.white.lod2": 16,
+  "post.wood.lod0": 44,
+  "post.wood.lod1": 12,
+  "post.wood.lod2": 12
+ },
+ "attach": {
+  "primary": [
+   0.934,
+   8.925
+  ],
+  "pairZ": 0.131,
+  "neutral": [
+   0.19,
+   6.8
+  ],
+  "drop": [
+   0.19,
+   6.62
+  ],
+  "sidepin": [
+   0,
+   0,
+   0.16
+  ],
+  "guyEye": 8.6,
+  "lens": [
+   -2.08,
+   7.17
+  ],
+  "hoopGarage": {
+   "board": [
+    1.83,
+    1.07
+   ],
+   "rim": [
+    -0.23,
+    0.3
+   ]
+  },
+  "hoopOld": {
+   "board": [
+    1.32,
+    0.84
+   ],
+   "rim": [
+    -0.27,
+    0.23
+   ]
+  },
+  "mailboxY": 1.13,
+  "fenceRef": 2.4
+ },
+ "glb_bytes": 2734824
+}

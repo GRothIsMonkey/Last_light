@@ -1,0 +1,39 @@
+{
+ "uid": "92f4d3b0ef38472d8c1c62a28fe15135",
+ "name": "Utility Pole (PBR)",
+ "viewerUrl": "https://sketchfab.com/3d-models/utility-pole-pbr-92f4d3b0ef38472d8c1c62a28fe15135",
+ "createdAt": "2021-06-18T12:25:10.801707",
+ "publishedAt": "2021-06-18T12:41:24.509534",
+ "license": {
+  "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+  "label": "CC Attribution",
+  "fullName": "Creative Commons Attribution",
+  "requirements": "Author must be credited. Commercial use is allowed.",
+  "url": "http://creativecommons.org/licenses/by/4.0/",
+  "slug": "by"
+ },
+ "isDownloadable": true,
+ "faceCount": 5594,
+ "vertexCount": 3060,
+ "description": "Game ready model of an utility/electricity pole\n\n* 1 Set of 4K PBR-textures\n\nSOCIAL: https://www.instagram.com/johnkoeberle/",
+ "user": {
+  "uid": "191014fd45db477795adb63f9e15b11b",
+  "username": "SLASH-RENDAR",
+  "displayName": "SLASH / RENDAR",
+  "profileUrl": "https://sketchfab.com/SLASH-RENDAR"
+ },
+ "tags": [
+  "road",
+  "electricity",
+  "infrastructure",
+  "pole",
+  "utility",
+  "utilitypole",
+  "decoration"
+ ],
+ "_retrieved": {
+  "endpoint": "https://api.sketchfab.com/v3/models/92f4d3b0ef38472d8c1c62a28fe15135",
+  "date": "2026-11-20",
+  "by": "automated provenance check (Claude Code session)"
+ }
+}

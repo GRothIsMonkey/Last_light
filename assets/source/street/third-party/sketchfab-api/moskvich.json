@@ -1,0 +1,37 @@
+{
+ "uid": "8b2e431a32334db98613ff43dd620fec",
+ "name": "AZLK Moskvich 2141",
+ "viewerUrl": "https://sketchfab.com/3d-models/azlk-moskvich-2141-8b2e431a32334db98613ff43dd620fec",
+ "createdAt": "2025-03-23T13:03:32.831297",
+ "publishedAt": "2025-03-23T13:14:30.931772",
+ "license": {
+  "uri": "https://api.sketchfab.com/v3/licenses/322a749bcfa841b29dff1e8a1bb74b0b",
+  "label": "CC Attribution",
+  "fullName": "Creative Commons Attribution",
+  "requirements": "Author must be credited. Commercial use is allowed.",
+  "url": "http://creativecommons.org/licenses/by/4.0/",
+  "slug": "by"
+ },
+ "isDownloadable": true,
+ "faceCount": 7503,
+ "vertexCount": 4476,
+ "description": "Years: 1984\nClass: D\nWeight: Medium\nBody Type: Sedan\nSize: Small",
+ "user": {
+  "uid": "355459d1f7dc4556941652d314621675",
+  "username": "Car2022",
+  "displayName": "Mona x Supercars",
+  "profileUrl": "https://sketchfab.com/Car2022"
+ },
+ "tags": [
+  "mona",
+  "moskvich",
+  "azlk",
+  "unity",
+  "unity3d"
+ ],
+ "_retrieved": {
+  "endpoint": "https://api.sketchfab.com/v3/models/8b2e431a32334db98613ff43dd620fec",
+  "date": "2026-11-20",
+  "by": "automated provenance check (Claude Code session)"
+ }
+}

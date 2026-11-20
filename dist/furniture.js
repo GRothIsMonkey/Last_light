@@ -10,9 +10,9 @@ import {smooth} from './kit.js';
 
 const CF=SECTION.curbFace;
 export function buildFurniture(W){
- const {K}=W,mainG=W.bent(MAIN);
+ const {K}=W,mainG=W.bent(MAIN),SP=W.sp||null;// (?streetprops: lamps, poles, wires and hydrants are recorded; zones 'sp:*')
  const groundMain=(d,lat)=>groundPoint(d,lat).y+W.surfaceY(d,lat);
- const lines=W.wires=[];const wire=(pts,color=STREET.wire,kind='span')=>{const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color}));W.baked.push(l);lines.push({kind,a:pts[0].clone(),b:pts[pts.length-1].clone(),mid:pts[pts.length>>1].clone()});return l;};
+ const lines=W.wires=[];const wire=(pts,color=STREET.wire,kind='span',rec=null)=>{const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color}));W.baked.push(l);if(SP){l.userData.spLine=true;if(rec)(kind==='guy'?SP.guys:kind==='drop'?SP.drops:SP.spans).push({...rec,kind,color,pts:pts.map(p=>[p.x,p.y,p.z])});}lines.push({kind,a:pts[0].clone(),b:pts[pts.length-1].clone(),mid:pts[pts.length>>1].clone()});return l;};
  const sag=(a,b,s,n=14)=>{const pts=[];for(let k=0;k<=n;k++){const t=k/n;pts.push(new THREE.Vector3(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t-4*s*t*(1-t),a.z+(b.z-a.z)*t));}return pts;};
  const clearAt=(frame,u,v,r)=>{const p=frame.point(u,v);return W.space.free(p.x,p.z,r);};
 
@@ -26,6 +26,7 @@ export function buildFurniture(W){
   const p=frame.point(u,v);W.space.circle(p.x,p.z,.45,'lamp');if(frame===MAIN)W.obstacles.push({d0:u-.3,d1:u+.3,l0:v-.3,l1:v+.3});
   // World positions too: side-street lamps cannot be found from Oak Hollow coordinates.
   const head=frame.point(u,v+armDir*2.08),pool=frame.point(u,(v+armDir*2.08)*.55);
+  if(SP)SP.lamps.push({g:W.spZone(g,'lamp'),index:W.streetLamps.length,frame:frame.id||'main',u,v,armDir,ground});
   W.streetLamps.push({d:u,lat:v+armDir*2.08,y:ground-groundPoint(u,v+armDir*2.08).y+7.15,mat:lm,frame:frame.id,x:head.x,z:head.z,top:ground+7.15,pool});
  }
  const onCut=(frameId,side,u,m=1.2)=>W.cuts.some(c=>c.frame===frameId&&c.side===side&&u>c.u0-m&&u<c.u1+m);
@@ -47,16 +48,18 @@ export function buildFurniture(W){
   K.box(g,0,7.25,.1,.5,.08,.08,0x5a5a55);if(transformer){K.cyl(g,.32,7.75,0,.24,.75,0x7b7f7c,10);K.cyl(g,.32,8.16,0,.26,.06,0x6b6f6c,10);}
   const pole={frame,u,v,x:p.x,z:p.z,y,rot:-frame.heading(u)+arm,
    at(dx,h){const c=Math.cos(this.rot),s=Math.sin(this.rot);return new THREE.Vector3(this.x+dx*c,this.y+h,this.z-dx*s);}};
-  if(guy){const a=pole.at(0,8.6),b=new THREE.Vector3(p.x+guy[0],y-.1,p.z+guy[1]);wire([a,b],0x8a8a86,'guy');const gg=W.placeWorld(b.x,b.z,y,0,false);K.cyl(gg,0,1,0,.05,2,0xd8c040,6);}
+  let gg=null;if(guy){const a=pole.at(0,8.6),b=new THREE.Vector3(p.x+guy[0],y-.1,p.z+guy[1]);wire([a,b],0x8a8a86,'guy',SP?{pole:poles.length,h:8.6,dx:0}:null);gg=W.placeWorld(b.x,b.z,y,0,false);K.cyl(gg,0,1,0,.05,2,0xd8c040,6);}
+  if(SP)SP.poles.push({g:W.spZone(g,'pole'),guyGroup:gg?W.spZone(gg,'pole'):null,index:poles.length,frame:frame.id||'main',u,v,x:p.x,z:p.z,y,rot:pole.rot,arm,transformer,guy:guy?[...guy]:null});
   W.space.circle(p.x,p.z,.5,'pole');if(frame===MAIN)W.obstacles.push({d0:u-.3,d1:u+.3,l0:v-.3,l1:v+.3});poles.push(pole);return pole;
  }
  // Wires run along a span; when a crossarm is parallel to the span (a branch leaving the
  // line), the conductors hang one above the other instead, so they never overlap.
  function span(a,b){const A=a.at(0,0),B=b.at(0,0),L=A.distanceTo(B),s=.5+L*.012,dir=new THREE.Vector3().subVectors(B,A).normalize();
   const along=p=>Math.abs(dir.x*Math.cos(p.rot)-dir.z*Math.sin(p.rot))>.5;
-  if(along(a)||along(b)){for(const h of [8.95,8.45])wire(sag(a.at(0,h),b.at(0,h),s));}
-  else for(const dx of [-.85,.85]){const pa=a.at(dx,8.95),pb=b.at(dx,8.95);wire(sag(pa,pb,s));}
-  wire(sag(a.at(0,7.25),b.at(0,7.25),s*1.2));}
+  const ia=poles.indexOf(a),ib=poles.indexOf(b),R=(dxa,ha,dxb,hb,sg,role)=>SP?{a:{pole:ia,dx:dxa,h:ha},b:{pole:ib,dx:dxb,h:hb},sag:sg,along:along(a)||along(b),alongA:along(a),alongB:along(b),role}:null;
+  if(along(a)||along(b)){for(const h of [8.95,8.45])wire(sag(a.at(0,h),b.at(0,h),s),undefined,'span',R(0,h,0,h,s,h>8.9?'primary-top':'primary-low'));}
+  else for(const dx of [-.85,.85]){const pa=a.at(dx,8.95),pb=b.at(dx,8.95);wire(sag(pa,pb,s),undefined,'span',R(dx,8.95,dx,8.95,s,'primary'));}
+  wire(sag(a.at(0,7.25),b.at(0,7.25),s*1.2),undefined,'span',R(0,7.25,0,7.25,s*1.2,'neutral'));}
  // Main line along the left side, at lot lines behind the sidewalk.
  const left=W.plans.filter(p=>p.side<0).sort((a,b)=>a.u-b.u),lineV=-9.3,main=[];
  const lotLines=[];for(let i=0;i<left.length-1;i++)lotLines.push((left[i].u+left[i+1].u)/2);
@@ -81,7 +84,7 @@ export function buildFurniture(W){
   if(h.seedA>.27&&!h.key)continue;
   const q=h.toWorld(h.hasGarage?-h.gs*h.w/2:h.w/2,h.front-1.2),target=new THREE.Vector3(q.x,q.ground+h.h-.35,q.z);
   let best=null,bd=1e9;for(const p of poles){const d=Math.hypot(p.x-q.x,p.z-q.z);if(d<bd){bd=d;best=p;}}
-  if(best&&bd<52)wire(sag(best.at(0,7.1),target,.35+bd*.008,10),0x322c28,'drop');
+  if(best&&bd<52)wire(sag(best.at(0,7.1),target,.35+bd*.008,10),0x322c28,'drop',SP?{a:{pole:poles.indexOf(best),dx:0,h:7.1},house:{x:target.x,y:target.y,z:target.z},plan:h,sag:.35+bd*.008}:null);
  }
 
  // Signs --------------------------------------------------------------------------------------
@@ -120,6 +123,7 @@ export function buildFurniture(W){
   const v=side*5.6,g=W.place(MAIN,u,v,{y:groundMain(u,v)});const c=0xc8b53a;
   K.lathe(g,[[.001,0],[.17,0],[.17,.06],[.13,.09],[.12,.55],[.14,.6],[.14,.66],[.11,.7],[.09,.8],[.03,.86],[.001,.88]],0,0,0,c,10);
   for(const s of [-1,1])K.cyl(g,s*.16,.46,0,.05,.12,c,8,[0,0,Math.PI/2]);K.cyl(g,0,.46,.16,.065,.12,c,8,[Math.PI/2,0,0]);K.cyl(g,0,.46,.23,.08,.03,0x8a7a2a,8,[Math.PI/2,0,0]);
+  if(SP)SP.hydrants.push({g:W.spZone(g,'hydrant'),u,v,side,color:c});
   const p=MAIN.point(u,v);W.space.circle(p.x,p.z,.4,'hydrant');}
  for(let d=ROAD_START+60;d<1095;d+=95){const side=(d/95|0)%2?1:-1;let u=d;for(let k=0;k<6&&(onCut('main',side,u,2)||inMouth(u,side,4));k++)u+=4;
   if(W.pv)W.pv.inlets.push({row:side>0?1:0,d:u});

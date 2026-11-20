@@ -33,6 +33,10 @@ export const ASSETS={
  'veg.shrubs':{file:'assets/veg/veg.shrubs.glb',rig:'none',kind:'vegetation',note:'18 residential shrubs, 3 LODs; incorporates CC BY 4.0 material'},
  'veg.ground':{file:'assets/veg/veg.ground.glb',rig:'none',kind:'vegetation',note:'lawn, meadow and wildflower clumps; incorporates CC BY 4.0 material'},
  'veg.lawn':{file:'assets/veg/veg.lawn.glb',rig:'none',kind:'vegetation',note:'lawn ground textures and the lawn blade tile (original work; grass-and-ground repair)'},
+ // Prologue vehicles & street-props benchmark (DEV, ?streetprops): the parked cars and the street's utility hardware, lamps,
+ // mailboxes, hydrants, bins, hoops and fences, awaiting approval (geometry only: their atlases ship beside them)
+ 'street.vehicles':{file:'assets/street/street.vehicles.glb',rig:'none',kind:'street',note:'six US-market family vehicles, 3 LODs; incorporates CC BY 4.0 material (THIRD_PARTY_ASSETS.md)'},
+ 'street.props':{file:'assets/street/street.props.glb',rig:'none',kind:'street',note:'utility poles, cobra-head lamps, mailboxes, hydrant, bins, hoops, fences, 3 LODs; incorporates CC BY 4.0 material'},
 };
 const cache=new Map(),log=[];
 let loader=null;
