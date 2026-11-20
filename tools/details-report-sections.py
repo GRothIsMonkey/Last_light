@@ -150,8 +150,9 @@ parts_txt = {
          f"{n(fp.get('merged', {}).get('tris', 0))} merged triangles, {fp.get('proxyCount', '?')} shadow proxies, "
          f"{n(q.get('n', 0))} ground queries, {q.get('obstacles')} obstacles",
     'B': f"the kit and five textures load (module {loaded.get('loadMs')} ms; page {n(B.get('wallLoadMs') or 0)} ms in software). "
-         f"Every record is placed: {rec.get('chairs', '?')} chairs, {rec.get('toys', '?')} toys, {rec.get('sheds', '?')} sheds "
-         f"and the rest, with the {k.get('hose coils inside a house (never seen): left out', 0)} hidden hose coils counted. "
+         f"Every record is accounted for ({rec.get('chairs', '?')} chair, {rec.get('grills', '?')} grill, {rec.get('toys', '?')} toy and {rec.get('sheds', '?')} shed records and the rest): "
+         f"each is placed, or counted where it is left alone (the {k.get('hose coils inside a house (never seen): left out', 0)} hidden hose coils, and Old Mill Road's "
+         f"{k.get('porch chairs on Old Mill Road (a Chapter Four place): left as they are', 0)} porch chairs and {k.get('grills on Old Mill Road (a Chapter Four place): left as they are', 0)} grills). "
          f"Every authored piece stands on its procedural original ({(m.get('origin') or {}).get('checked', '?')} pieces against the baked geometry of their own zone, {(m.get('origin') or {}).get('off', '?')} off). "
          f"Every rigid piece is upright at true scale; nothing floats or sinks ({len(ground)} kinds measured). "
          f"All {len(signs)} plates and blades read their record's words, front and back, with none mirrored or pierced. "
@@ -163,7 +164,7 @@ parts_txt = {
          f"obstacles, navigation and three scripted rides are identical. The sprinklers turn and spray as before; `.` and `,` "
          f"work; Chapter One shows the originals; there are no page errors",
     'C': "all six benchmarks load together without error; vegetation and the street props are identical with and without "
-         "`?details`; no authored porch chair on a house-benchmark lot; the ride runs",
+         "`?details`; no authored porch chair or grill on a house-benchmark lot, and no grill anywhere but at a recorded grill; the ride runs",
     'D': "the offline package with models runs `?details` and all six from the embedded bytes, browser offline, with no "
          "network request; the default package fails loudly and substitutes nothing",
     'E': f"{len(R['pairs'])} pairs, each one camera and one frame; cost per frame (below); no page errors",
@@ -224,6 +225,12 @@ perf = f"""## 13. Tests and performance
 `verify.mjs` reports one known DEV difference, `2/alex-bike`: a companion's bike position after a dev-scene switch. It is
 reported, not asserted, and appears with the same values in the earlier branches' runs.
 
+**Which commit.** The details suite and every regression ran on `6a85f70`. The later commits on this branch change only
+documentation, the QA records and the text of one capture's description in the details suite (D19). `dist/` is
+byte-identical. The street-props suite ran its correctness parts A–D (the default game unchanged, every street prop
+placed, the offline package). Its capture and cost parts (E, F) are that benchmark's own evidence, and nothing they
+measure was touched.
+
 ### 13.3 Cost
 
 **Files.**
@@ -276,7 +283,7 @@ delivery = f"""| # | Deliverable | Where |
 | 10 | Performance numbers and limitations | §13.3, §15 |
 | 11 | The test suite | `tests/details-browser.mjs`: {checks} passed, {fails} failed, all six parts |
 | 12 | Regression results | §13.2; `docs/qa/details/regression/` |
-| 13 | Offline ZIP | {('`' + z.get('name', '?') + '`, ' + n(z.get('bytes', 0)) + ' bytes, SHA-256 `' + z.get('sha256', '?') + '`. It holds `Last-Light-Playtest.html` (the whole game with every benchmark\'s models embedded; entry SHA-256 `' + z.get('entrySha256', '?') + '`), `DETAILS-README.txt`, this report, the review gallery, and the credits and licences. It was built from the `dist/` of `' + str(z.get('builtFrom', '?')) + '`.') if z else '(see the delivery message)'} The ZIP is not in git (`release/` is ignored). |
+| 13 | Offline ZIP | {('`' + z.get('name', '?') + '`, ' + n(z.get('bytes', 0)) + ' bytes, SHA-256 `' + z.get('sha256', '?') + '`. It holds `Last-Light-Playtest.html` (the whole game with every benchmark\'s models embedded; entry SHA-256 `' + z.get('entrySha256', '?') + '`), `DETAILS-README.txt`, this report, the review gallery, and the credits and licences. It was built from the `dist/` of `' + str(z.get('builtFrom', '?')) + '`. Smoke test of the delivered file: ' + z.get('smokeTest', 'not run') + '.') if z else '(see the delivery message)'} The ZIP is not in git (`release/` is ignored). |
 | 14 | Six-benchmark instructions | §14, and `DETAILS-README.txt` in the ZIP (`?bikes&houses&vegetation&pavement&streetprops&details`; `.` and `,`) |
 | 15 | Approval entries | A-69 to A-77 in `docs/art/ART-APPROVAL-REGISTER.md`, all OPEN (§17); A-60 to A-68 unchanged |
 | 16 | Deferred list | §16 |"""

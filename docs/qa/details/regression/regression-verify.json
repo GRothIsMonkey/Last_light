@@ -1,0 +1,22 @@
+{
+ "command": "QUICK=1 DEV_KNOWN=2/alex-bike node tests/verify.mjs",
+ "commit": "6a85f70",
+ "passed": 818,
+ "failed": 0,
+ "failures": [],
+ "knownDifference": "KNOWN DEV DIFFERENCE (switching; reported, not asserted): [{\"k\":\"2/alex-bike\",\"d\":[[\"companions.1.b.x\",-1.4,115.139],[\"companions.1.b.z\",-17,-511.484],[\"companions.1.ba\",0,-0.398]]}]",
+ "runtimeHashes": {
+  "dist/ambient.js": "872fca1a8843c3da0436b1c47e970588be4d53361ba2e133985efef4637e5f30",
+  "dist/asset-library.js": "ebdbfd8b9505e56516ec0bd5f6b7677d1fd74e7fa32b5e00e0f4aef9ff285bc0",
+  "dist/background.js": "b3a1c9780964070508900721ad9b8a9547ffc3bd1b3e39bbaf946fc9147dac17",
+  "dist/details-assets.js": "d178f946f9526cc86ad8b6f500ea3ea9ddf8b4dd39a779240132bbe58dc1d3cc",
+  "dist/details-benchmark.js": "d3796c668d0d351b6d46a89235a993c12822cef3d8b04c40ec9af7778d70003e",
+  "dist/furniture.js": "e25e991825987b1ed6b93379b73c3ca65308315ea2e2f0350ce64ee817a5014c",
+  "dist/game.js": "37f1dcfd456c639388aad0ee38a0cbe519c33766894ffe7ff88cfc819636566b",
+  "dist/houses.js": "9096b40fdd44129fcd33712300ca7485358f6a4d662707a081c1f3249dc2ea0a",
+  "dist/props.js": "20246c874a8fe3e5db216d33638f68a5dca603cb54386aa567a6ecb8f1eb9e20",
+  "dist/streetprops-assets.js": "d1a04915c3dcd2cf3dfe94ddc5a3a5cf71eb8448abf3a4e69418a8c97201e86a",
+  "dist/town-houses.js": "f007e67fecc1c57647352e37e616047a7c8dbdfeda865bdfa3f4d1241a43810a",
+  "dist/world.js": "f7801d3d16c938b10c3fd341dbafa1b099cf2ff208f9ac74916f5bedca7ba50b"
+ }
+}

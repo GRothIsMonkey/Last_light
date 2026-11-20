@@ -1,0 +1,11 @@
+{
+ "zip": {
+  "name": "Last-Light-Prologue-Neighborhood-Details-Benchmark.zip",
+  "bytes": 106528491,
+  "sha256": "e3049dabce3a9a70bc0813b6c817437a1efa1e2bdb50e712c95da7f799db171e",
+  "entrySha256": "eb38f16beed9b7273711b265dd0e78370511a1631660b0d7a55db127caf44f4a",
+  "builtFrom": "6a85f70",
+  "dirty": false,
+  "smokeTest": "Last-Light-Playtest.html from the unzipped ZIP, opened from disk with the browser offline (Chromium, SwiftShader), ?qa&details: the kit and its 5 textures load from the embedded bytes in 210 ms, the set is active (5 signs, 48 porch chairs, 32 grills, 23 trampolines), 0 page errors, 0 network requests"
+ }
+}

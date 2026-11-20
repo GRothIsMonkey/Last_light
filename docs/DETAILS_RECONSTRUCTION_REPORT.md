@@ -16,7 +16,7 @@ game. Every performance number is a software-renderer or file number. No real-GP
 <!-- RESULT:start -->
 **Result.** The Prologue's remaining neighborhood details are rebuilt in place as original Blender models:
 - 5 street-sign assemblies (9 plates and blades);
-- 64 lawn and porch chairs and 37 kettle grills;
+- 56 lawn and porch chairs and 32 kettle grills;
 - 21 garden hoses with their hose bibs on the houses' walls, and 4 impact sprinklers on the game's own turning heads;
 - 24 toys;
 - 5 kiddie pools, 23 trampolines with their nets and 19 swing sets;
@@ -27,10 +27,10 @@ Every object stands where the recorded procedural one stands, in its own yard an
 tire swing, the bench, the chalk, the bikes, the friends' homes) are untouched. The default game's geometry, collisions,
 navigation and riding are identical, hashed vertex by vertex and ride by ride.
 
-The details suite passes **38 of 38** checks (`tests/details-browser.mjs`, commit `3bc5d1d`).
+The details suite passes **42 of 42** checks (`tests/details-browser.mjs`, commit `6a85f70`).
 The regression suites
-are listed in §13 (not all were run: street-props benchmark (parts A–D), pavement benchmark, vegetation benchmark, house benchmark, bike benchmark, character pipeline lab, game logic (`verify.mjs`, every chapter), main menu, offline package (final chapter)).
-There are 12 before/after pairs (§12).
+all pass.
+There are 27 before/after pairs (§12), browsable in the [review gallery](https://claude.ai/artifact/LN5PXbjUsBz57VCaKeRDC5).
 <!-- RESULT:end -->
 
 ## 1. Source of truth
@@ -302,11 +302,11 @@ street props are counted identically with and without `?details` (part C).
 <!-- MEASURED:start -->
 ## 12. Evidence
 
-**12 before/after pairs** are in `docs/qa/details/browser/`: the 22 required views, plus -10 more
+**27 before/after pairs** are in `docs/qa/details/browser/`: the 22 required views, plus 5 more
 (a second angle or a further object). Each pair is one camera and one frame, with all six benchmarks on; the two images
 differ only by the `.` key. `report.json` beside them holds each image's camera, game clock, draw calls, triangles and
 SHA-256.
-The review gallery is built from `report.json` by `tools/blender/details/build_review_gallery.py`.
+**Review gallery** (the pairs side by side with a slider, and the Blender renders in a section of their own): https://claude.ai/artifact/LN5PXbjUsBz57VCaKeRDC5. The same gallery is also in the offline package (`review-gallery/index.html`).
 
 | # | Required capture | Pair(s) |
 |---|---|---|
@@ -335,22 +335,37 @@ The review gallery is built from `report.json` by `tools/blender/details/build_r
 
 | Pair | What it shows | Camera | Game clock | Images | Draw calls (authored / original) | Triangles (authored / original) |
 |---|---|---|---|---|---|---|
-| **D01** | the street-name blades at Briarwood Lane: OAK HOLLOW DR and BRIARWOOD LN in their cast cross bracket on the galvanized post (QA camera) | QA camera | AUGUST 21, 2011 7:51 PM | [authored](qa/details/browser/D01-street-name-sign-close--authored.jpg) · [original](qa/details/browser/D01-street-name-sign-close--original.jpg) | 426 / 399 | 851,924 / 829,415 |
-| **D02** | the STOP sign at Briarwood Lane seen from the cross street, the intersection with Oak Hollow beyond (QA camera on Briarwood) | QA camera | AUGUST 21, 2011 7:51 PM | [authored](qa/details/browser/D02-stop-sign-and-intersection--authored.jpg) · [original](qa/details/browser/D02-stop-sign-and-intersection--original.jpg) | 656 / 648 | 1,137,050 / 1,120,309 |
-| **D03** | SPEED LIMIT 25 at d 150, as the ride passes it | riding camera | AUGUST 21, 2011 7:44 PM | [authored](qa/details/browser/D03-speed-limit-sign--authored.jpg) · [original](qa/details/browser/D03-speed-limit-sign--original.jpg) | 520 / 534 | 837,683 / 820,160 |
-| **D04** | SLOW CHILDREN AT PLAY near the start of the ride | riding camera | AUGUST 21, 2011 7:42 PM | [authored](qa/details/browser/D04-children-at-play-sign--authored.jpg) · [original](qa/details/browser/D04-children-at-play-sign--original.jpg) | 544 / 556 | 798,461 / 783,372 |
-| **D04b** | NO OUTLET past Summerfield Road | riding camera | AUGUST 21, 2011 7:56 PM | [authored](qa/details/browser/D04b-no-outlet-sign--authored.jpg) · [original](qa/details/browser/D04b-no-outlet-sign--original.jpg) | 503 / 499 | 704,753 / 694,789 |
-| **D05** | a pair of lawn chairs left in a front yard (QA camera) | QA camera | AUGUST 21, 2011 7:55 PM | [authored](qa/details/browser/D05-lawn-chairs--authored.jpg) · [original](qa/details/browser/D05-lawn-chairs--original.jpg) | 510 / 489 | 982,358 / 966,254 |
-| **D05b** | white resin chairs on a front porch, from the street | riding camera | AUGUST 21, 2011 7:42 PM | [authored](qa/details/browser/D05b-porch-chairs--authored.jpg) · [original](qa/details/browser/D05b-porch-chairs--original.jpg) | 569 / 570 | 1,083,492 / 1,067,743 |
-| **D06** | a garden hose coiled on the lawn by a house, run to its hose bib on the wall (QA camera) | QA camera | AUGUST 21, 2011 7:37 PM | [authored](qa/details/browser/D06-garden-hose--authored.jpg) · [original](qa/details/browser/D06-garden-hose--original.jpg) | 715 / 733 | 960,213 / 960,218 |
-| **D07** | an impact sprinkler on its spike, running, its hose across the lawn to the house (QA camera) | QA camera | AUGUST 21, 2011 7:45 PM | [authored](qa/details/browser/D07-sprinkler--authored.jpg) · [original](qa/details/browser/D07-sprinkler--original.jpg) | 600 / 601 | 1,074,580 / 1,059,506 |
-| **D08** | a red steel wagon left in a front yard (QA camera) | QA camera | AUGUST, 2011 AS YOU REMEMBER IT | [authored](qa/details/browser/D08-wagon--authored.jpg) · [original](qa/details/browser/D08-wagon--original.jpg) | 710 / 720 | 1,233,924 / 1,231,946 |
-| **D09** | a big-wheel trike in the grass (QA camera) | QA camera | AUGUST 21, 2011 7:39 PM | [authored](qa/details/browser/D09-big-wheel--authored.jpg) · [original](qa/details/browser/D09-big-wheel--original.jpg) | 371 / 351 | 696,325 / 675,530 |
-| **D10** | the stretch of front yards with the most toys, chairs and kiddie pools, from the street | riding camera | AUGUST 21, 2011 7:47 PM | [authored](qa/details/browser/D10-yard-with-toys--authored.jpg) · [original](qa/details/browser/D10-yard-with-toys--original.jpg) | 647 / 661 | 1,168,969 / 1,166,778 |
+| **D01** | the street-name blades at Briarwood Lane: OAK HOLLOW DR and BRIARWOOD LN in their cast cross bracket on the galvanized post (QA camera) | QA camera | AUGUST 21, 2011 7:51 PM | [authored](qa/details/browser/D01-street-name-sign-close--authored.jpg) · [original](qa/details/browser/D01-street-name-sign-close--original.jpg) | 428 / 399 | 855,876 / 829,415 |
+| **D02** | the STOP sign at Briarwood Lane seen from the cross street, the intersection with Oak Hollow beyond (QA camera on Briarwood) | QA camera | AUGUST 21, 2011 7:51 PM | [authored](qa/details/browser/D02-stop-sign-and-intersection--authored.jpg) · [original](qa/details/browser/D02-stop-sign-and-intersection--original.jpg) | 658 / 648 | 1,140,282 / 1,120,309 |
+| **D03** | SPEED LIMIT 25 at d 150, as the ride comes up to it | riding camera | AUGUST 21, 2011 7:44 PM | [authored](qa/details/browser/D03-speed-limit-sign--authored.jpg) · [original](qa/details/browser/D03-speed-limit-sign--original.jpg) | 536 / 553 | 889,553 / 881,640 |
+| **D04** | SLOW CHILDREN AT PLAY near the start of the ride, as the ride comes up to it | riding camera | AUGUST 21, 2011 7:42 PM | [authored](qa/details/browser/D04-children-at-play-sign--authored.jpg) · [original](qa/details/browser/D04-children-at-play-sign--original.jpg) | 534 / 547 | 814,448 / 806,099 |
+| **D04b** | NO OUTLET past Summerfield Road, as the ride comes up to it | riding camera | AUGUST 21, 2011 7:56 PM | [authored](qa/details/browser/D04b-no-outlet-sign--authored.jpg) · [original](qa/details/browser/D04b-no-outlet-sign--original.jpg) | 452 / 437 | 684,339 / 663,913 |
+| **D05** | a pair of lawn chairs left in a front yard (QA camera) | QA camera | AUGUST 21, 2011 7:55 PM | [authored](qa/details/browser/D05-lawn-chairs--authored.jpg) · [original](qa/details/browser/D05-lawn-chairs--original.jpg) | 514 / 491 | 985,771 / 965,481 |
+| **D05b** | a pair of green folding lawn chairs (aluminium tube, woven webbing) in a front yard (QA camera) | QA camera | AUGUST 21, 2011 7:56 PM | [authored](qa/details/browser/D05b-folding-lawn-chairs--authored.jpg) · [original](qa/details/browser/D05b-folding-lawn-chairs--original.jpg) | 462 / 425 | 896,844 / 868,523 |
+| **D05c** | a pair of white resin chairs on a front porch of an Oak Hollow house the details benchmark dresses (QA camera on the front walk) | QA camera | AUGUST 21, 2011 7:44 PM | [authored](qa/details/browser/D05c-porch-chairs--authored.jpg) · [original](qa/details/browser/D05c-porch-chairs--original.jpg) | 342 / 307 | 593,712 / 570,925 |
+| **D06** | a garden hose coiled on the lawn by a house, run to its hose bib on the wall (QA camera) | QA camera | AUGUST 21, 2011 7:37 PM | [authored](qa/details/browser/D06-garden-hose--authored.jpg) · [original](qa/details/browser/D06-garden-hose--original.jpg) | 730 / 748 | 960,301 / 960,288 |
+| **D07** | an impact sprinkler on its spike, running, its hose across the lawn to the house (QA camera) | QA camera | AUGUST 21, 2011 7:45 PM | [authored](qa/details/browser/D07-sprinkler--authored.jpg) · [original](qa/details/browser/D07-sprinkler--original.jpg) | 600 / 601 | 1,082,231 / 1,069,769 |
+| **D08** | a red steel wagon left in a front yard (QA camera) | QA camera | AUGUST, 2011 AS YOU REMEMBER IT | [authored](qa/details/browser/D08-wagon--authored.jpg) · [original](qa/details/browser/D08-wagon--original.jpg) | 712 / 720 | 1,241,927 / 1,231,946 |
+| **D09** | a big-wheel trike in the grass (QA camera) | QA camera | AUGUST 21, 2011 7:39 PM | [authored](qa/details/browser/D09-big-wheel--authored.jpg) · [original](qa/details/browser/D09-big-wheel--original.jpg) | 371 / 351 | 696,518 / 675,530 |
+| **D10** | the fullest front yard in the game (d 273): a kid's bike in the grass, the sprinkler running, the hose run to the house; the game leaves at most one toy in a yard (QA camera on the sidewalk) | QA camera | AUGUST 21, 2011 7:46 PM | [authored](qa/details/browser/D10-yard-with-toys--authored.jpg) · [original](qa/details/browser/D10-yard-with-toys--original.jpg) | 513 / 506 | 809,930 / 797,950 |
+| **D11** | a back-yard swing set with its slide (QA camera between the houses) | QA camera | AUGUST 21, 2011 7:36 PM | [authored](qa/details/browser/D11-swing-set--authored.jpg) · [original](qa/details/browser/D11-swing-set--original.jpg) | 357 / 339 | 622,497 / 611,568 |
+| **D12** | a 12 ft trampoline with its enclosure (QA camera) | QA camera | AUGUST 21, 2011 7:38 PM | [authored](qa/details/browser/D12-trampoline--authored.jpg) · [original](qa/details/browser/D12-trampoline--original.jpg) | 452 / 444 | 759,178 / 743,266 |
+| **D13** | a hard plastic kiddie pool on a front lawn (QA camera) | QA camera | AUGUST 21, 2011 7:35 PM | [authored](qa/details/browser/D13-kiddie-pool--authored.jpg) · [original](qa/details/browser/D13-kiddie-pool--original.jpg) | 682 / 692 | 908,341 / 907,856 |
+| **D14** | a back-yard shed: T1-11 siding, trim, the braced door, shingles (QA camera) | QA camera | AUGUST 21, 2011 7:36 PM | [authored](qa/details/browser/D14-shed--authored.jpg) · [original](qa/details/browser/D14-shed--original.jpg) | 223 / 204 | 446,006 / 431,738 |
+| **D15** | a clothesline with its sheet, towel and shirt (QA camera) | QA camera | AUGUST 21, 2011 7:38 PM | [authored](qa/details/browser/D15-clothesline--authored.jpg) · [original](qa/details/browser/D15-clothesline--original.jpg) | 703 / 722 | 950,848 / 948,078 |
+| **D16** | Briarwood's creek chain link across the back of the strip, dropping into the channel to the gap (QA camera on the bank) | QA camera | AUGUST 21, 2011 7:50 PM | [authored](qa/details/browser/D16-creek-chain-link--authored.jpg) · [original](qa/details/browser/D16-creek-chain-link--original.jpg) | 635 / 644 | 1,069,436 / 1,058,797 |
+| **D17** | the lookout's field fence beyond the bench (QA camera at the knoll) | QA camera | AUGUST, 2011 AS YOU REMEMBER IT | [authored](qa/details/browser/D17-lookout-field-fence--authored.jpg) · [original](qa/details/browser/D17-lookout-field-fence--original.jpg) | 242 / 212 | 670,918 / 655,256 |
+| **D18** | the side-street fences: Briarwood's creek strip from the street, its chain link along both sides and across the back (QA camera on Briarwood) | QA camera | AUGUST 21, 2011 7:51 PM | [authored](qa/details/browser/D18-side-street-fences--authored.jpg) · [original](qa/details/browser/D18-side-street-fences--original.jpg) | 585 / 601 | 880,130 / 870,295 |
+| **D19** | a residential street: SPEED LIMIT 25 at the curb ahead, the carts and a mailbox beside it, the yards beyond | riding camera | AUGUST 21, 2011 7:44 PM | [authored](qa/details/browser/D19-residential-street--authored.jpg) · [original](qa/details/browser/D19-residential-street--original.jpg) | 528 / 547 | 803,573 / 796,760 |
+| **D20** | a wide, raised view of Oak Hollow with all six benchmarks (QA raised camera, 13 m up) | QA camera | AUGUST 21, 2011 7:42 PM | [authored](qa/details/browser/D20-oak-hollow-wide-all-six--authored.jpg) · [original](qa/details/browser/D20-oak-hollow-wide-all-six--original.jpg) | 537 / 548 | 726,865 / 717,564 |
+| **D21** | riding past the front yards (first-person): a big wheel left on a lawn on the right, the street ahead | riding camera | AUGUST 21, 2011 7:48 PM | [authored](qa/details/browser/D21-riding-past-household-things--authored.jpg) · [original](qa/details/browser/D21-riding-past-household-things--original.jpg) | 692 / 685 | 1,305,791 / 1,294,317 |
+| **D22** | the lookout as the ride ends: the old oak, its tire swing, the bench and the chalk unchanged; only the field fence behind them is the details benchmark's | riding camera | AUGUST, 2011 AS YOU REMEMBER IT | [authored](qa/details/browser/D22-lookout-and-old-oak--authored.jpg) · [original](qa/details/browser/D22-lookout-and-old-oak--original.jpg) | 319 / 290 | 433,113 / 415,897 |
+| **D23** | a kettle grill on a back patio (QA camera) | QA camera | AUGUST 21, 2011 7:40 PM | [authored](qa/details/browser/D23-kettle-grill--authored.jpg) · [original](qa/details/browser/D23-kettle-grill--original.jpg) | 476 / 478 | 847,259 / 834,211 |
+| **D24** | a small kid's bike with training wheels lying in a yard (QA camera) | QA camera | AUGUST 21, 2011 7:40 PM | [authored](qa/details/browser/D24-kids-bike-and-scooter--authored.jpg) · [original](qa/details/browser/D24-kids-bike-and-scooter--original.jpg) | 346 / 323 | 672,449 / 653,976 |
 
 The clock reads the game's own date line: every pair is in the Prologue's evening ride on August 21, 2011.
 - **Riding camera:** the gameplay camera, placed by the QA hook and turned toward its subject.
-- **QA camera:** placed by hand beside the object (D01, D02, D05, D06, D07, D08, D09), with the same renderer, light and shadows. The bike
+- **QA camera:** placed by hand beside the object (D01, D02, D05, D05b, D05c, D06, D07, D08, D09, D10, D11, D12, D13, D14, D15, D16, D17, D18, D20, D23, D24), with the same renderer, light and shadows. The bike
   stands next to the subject, or under a raised camera, so that the sky, the shadow camera and the world's own culling
   follow it.
 
@@ -361,68 +376,90 @@ The clock reads the game's own date line: every pair is in the Prologue's evenin
 
 ### 13.1 The details suite
 
-`node tests/details-browser.mjs` (Chromium + ANGLE SwiftShader, 1600 × 900): **38 passed, 0 failed**
-(commit `3bc5d1d`; `docs/qa/details/browser/report.json`).
+`node tests/details-browser.mjs` (Chromium + ANGLE SwiftShader, 1600 × 900): **42 passed, 0 failed**
+(commit `6a85f70`; `docs/qa/details/browser/report.json`).
 
 | Part | Checks | What is proved |
 |---|---|---|
 | A | 3 | the default game fetches no details module or asset and has no `dt:` record, zone or label; its baseline: 3,672,619 merged triangles, 379 shadow proxies, 40,488 ground queries, 812 obstacles |
-| B | 22 | the kit and five textures load (module 335 ms; page 31,669 ms in software). Every record is placed: 64 chairs, 24 toys, 45 sheds and the rest, with the 11 hidden hose coils counted. Every rigid piece is upright at true scale; nothing floats or sinks (13 kinds measured). All 9 plates and blades read their record's words, front and back, with none mirrored or pierced. 25 hose bibs are on their walls (0 off), with 25 continuous hose runs (0 jumps, 0 under the lawn, 0 on a walk or the street, 0 on a drive). There are no duplicates or double shadows, and no detail on a story home or at the lookout. The merged geometry, shadow proxies and lines hash identical to A, and 40,488 ground queries, obstacles, navigation and three scripted rides are identical. The sprinklers turn and spray as before; `.` and `,` work; Chapter One shows the originals; there are no page errors |
-| C | 5 | all six benchmarks load together without error; vegetation and the street props are identical with and without `?details`; no authored porch chair on a house-benchmark lot; the ride runs |
+| B | 23 | the kit and five textures load (module 365 ms; page 29,407 ms in software). Every record is accounted for (64 chair, 37 grill, 24 toy and 45 shed records and the rest): each is placed, or counted where it is left alone (the 11 hidden hose coils, and Old Mill Road's 8 porch chairs and 5 grills). Every authored piece stands on its procedural original (314 pieces against the baked geometry of their own zone, 0 off). Every rigid piece is upright at true scale; nothing floats or sinks (13 kinds measured). All 9 plates and blades read their record's words, front and back, with none mirrored or pierced. 25 hose bibs are on their walls (0 off), with 25 continuous hose runs (0 jumps, 0 under the lawn, 0 on a walk or the street, 0 on a drive). There are no duplicates or double shadows, and no detail on a story home or at the lookout. The merged geometry, shadow proxies and lines hash identical to A, and 40,488 ground queries, obstacles, navigation and three scripted rides are identical. The sprinklers turn and spray as before; `.` and `,` work; Chapter One shows the originals; there are no page errors |
+| C | 5 | all six benchmarks load together without error; vegetation and the street props are identical with and without `?details`; no authored porch chair or grill on a house-benchmark lot, and no grill anywhere but at a recorded grill; the ride runs |
 | D | 5 | the offline package with models runs `?details` and all six from the embedded bytes, browser offline, with no network request; the default package fails loudly and substitutes nothing |
-| E | 3 | 12 pairs, each one camera and one frame; cost per frame (below); no page errors |
-| F | 0 | cost against the default game at eight riding cameras (below); no page errors |
+| E | 3 | 27 pairs, each one camera and one frame; cost per frame (below); no page errors |
+| F | 3 | cost against the default game at eight riding cameras (below); no page errors |
 
 ### 13.2 Regressions (the existing suites)
 
 | Suite | Result | Commit | Summary |
 |---|---|---|---|
-| street-props benchmark (parts A–D) | not run | — | `docs/qa/details/regression/regression-streetprops-browser.json` |
-| pavement benchmark | not run | — | `docs/qa/details/regression/regression-pavement-browser.json` |
-| vegetation benchmark | not run | — | `docs/qa/details/regression/regression-vegetation-browser.json` |
-| house benchmark | not run | — | `docs/qa/details/regression/regression-house-browser.json` |
-| bike benchmark | not run | — | `docs/qa/details/regression/regression-bike-browser.json` |
-| character pipeline lab | not run | — | `docs/qa/details/regression/regression-pipeline-browser.json` |
-| game logic (`verify.mjs`, every chapter) | not run | — | `docs/qa/details/regression/regression-verify.json` |
-| main menu, offline package (final chapter) | not run | — | `docs/qa/details/regression/regression-main-menu-package.json` |
+| street-props benchmark (parts A–D) | **32 passed, 0 failed** | `6a85f70` | `docs/qa/details/regression/regression-streetprops-browser.json` |
+| pavement benchmark | **30 passed, 0 failed** | `6a85f70` | `docs/qa/details/regression/regression-pavement-browser.json` |
+| vegetation benchmark | **74 passed, 0 failed** | `6a85f70` | `docs/qa/details/regression/regression-vegetation-browser.json` |
+| house benchmark | **30 passed, 0 failed** | `6a85f70` | `docs/qa/details/regression/regression-house-browser.json` |
+| bike benchmark | **29 passed, 0 failed** | `6a85f70` | `docs/qa/details/regression/regression-bike-browser.json` |
+| character pipeline lab | **36 passed, 0 failed** | `6a85f70` | `docs/qa/details/regression/regression-pipeline-browser.json` |
+| game logic (`verify.mjs`, every chapter) | **818 passed, 0 failed** | `6a85f70` | `docs/qa/details/regression/regression-verify.json` |
+| main menu, offline package (final chapter) | **96 passed, 0 failed** | `6a85f70` | `docs/qa/details/regression/regression-main-menu-package.json` |
 
 `verify.mjs` reports one known DEV difference, `2/alex-bike`: a companion's bike position after a dev-scene switch. It is
 reported, not asserted, and appears with the same values in the earlier branches' runs.
 
+**Which commit.** The details suite and every regression ran on `6a85f70`. The later commits on this branch change only
+documentation, the QA records and the text of one capture's description in the details suite (D19). `dist/` is
+byte-identical. The street-props suite ran its correctness parts A–D (the default game unchanged, every street prop
+placed, the offline package). Its capture and cost parts (E, F) are that benchmark's own evidence, and nothing they
+measure was touched.
+
 ### 13.3 Cost
 
 **Files.**
-- `details.kit.glb`: 1.91 MB (every piece, three LODs).
-- Five textures: 1.59 MB on disk (a 2048² albedo, 1024² ORM and normal maps, a 512² cut-out, a 2048 × 1024
+- `details.kit.glb`: 1.94 MB (every piece, three LODs).
+- Five textures: 1.61 MB on disk (a 2048² albedo, 1024² ORM and normal maps, a 512² cut-out, a 2048 × 1024
   sign atlas).
-- Offline package with every benchmark's models: 171.7 MB. Default package (no models):
+- Offline package with every benchmark's models: 171.8 MB. Default package (no models):
   13.0 MB.
 
 **GPU textures** (estimated, RGBA8 with mipmaps): **≈ 44 MB**, anisotropy 16. One atlas set
 serves every detail, through instancing and the shared atlases.
 
-**Geometry at a riding camera** (the DEV label's count, part B): 33,739 detail triangles in
-39 instanced draws for 525 instances (35 sets, 6 materials;
-LOD 0/1/2 sets in view: 4/39/78). LOD0 per piece is between 24 triangles (a
+**Geometry at a riding camera** (the DEV label's count, part B): 30,276 detail triangles in
+39 instanced draws for 512 instances (35 sets, 6 materials;
+LOD 0/1/2 sets in view: 4/37/70). LOD0 per piece is between 24 triangles (a
 chain-link bay) and 3,420 (a trampoline); the kit's triangle counts are in `assets/source/details/build-stats.json`.
 
 **With all six benchmarks** (E, per captured frame; authored against original in the same frame): draw calls
-−18 to +27 per frame, triangles ×1 to 1.031. Over the 12 frames:
-- draw calls: 6,771 against 6,761;
-- triangles: 11,529,732 against 11,376,020.
+−19 to +37 per frame, triangles ×1 to 1.041. Over the 27 frames:
+- draw calls: 13,629 against 13,462;
+- triangles: 22,748,136 against 22,381,367.
 
 **The details alone, against the default game** (F): eight riding cameras, with `?details` alone, in fresh browsers. The
 default game renders three cameras per browser. The flag renders two per browser, each camera in both `.` modes.
 
-_Part F was not measured in this report._
+| Camera | Default game: calls · tris · ms | `?details`, ORIGINAL | `?details`, AUTHORED |
+|---|---|---|---|
+| C1 (d 40) | 308 · 645,869 · 1572 | 356 · 639,003 · 1556 | 341 · 651,856 · 1575 |
+| C2 (d -232) | 433 · 732,825 · 1589 | 479 · 726,783 · 1567 | 457 · 731,349 · 1465 |
+| C3 (d 128) | 314 · 815,694 · 1479 | 339 · 794,104 · 1498 | 344 · 812,450 · 1407 |
+| C4 (d 380) | 474 · 1,025,149 · 2153 | 516 · 1,013,915 · 2367 | 503 · 1,017,753 · 2279 |
+| C5 (d 76.5) | 203 · 466,683 · 1104 | 239 · 464,953 · 1256 | 258 · 490,694 · 1275 |
+| C6 (d -4.5) | 307 · 691,001 · 1311 | 325 · 674,285 · 1124 | 323 · 689,257 · 1046 |
+| C7 (d 700) | 459 · 770,818 · 1886 | 500 · 762,228 · 1696 | 487 · 771,523 · 1861 |
+| C8 (d 1132) | 158 · 183,070 · 609 | 157 · 173,104 · 881 | 186 · 190,980 · 742 |
+| **Sum** | 2,656 · 5,331,109 · 11703 | 2,911 · 5,248,375 · 11945 | 2,899 · 5,355,862 · 11650 |
 
-**Load.** The details module builds its set in 335 ms after its files arrive. The world bake is the game's
+Authored against the default game: **draw calls ×1.091, triangles ×1.005, software frame
+time ×0.995**. ORIGINAL under the flag can differ a little from the default game in draw calls and triangles:
+the flag bakes the details into batches of their own (zones `dt:*`) so that `.` can hide them, and those batches are
+frustum-culled one by one. The geometry is identical (§13.1). The frame time is the median of three renders on
+SwiftShader, on the CPU: it shows the relative added work, not a GPU frame time.
+
+**Load.** The details module builds its set in 365 ms after its files arrive. The world bake is the game's
 own: the flag adds batch splits, not geometry.
 
-**Memory** (software renderer, the first browser of F): JS heap ? MB for the default game,
-? MB with `?details`. Geometries ? against
-?; textures ? against
-?. No real-GPU number has been measured.
+**Memory** (software renderer, the first browser of F): JS heap 1286 MB for the default game,
+1293 MB with `?details`. Geometries 608 against
+666; textures 13 against
+18. No real-GPU number has been measured.
 <!-- MEASURED:end -->
 
 ## 14. How to rebuild, run and try it
@@ -511,12 +548,12 @@ Approve or adjust A-69 to A-76 after a ride on real hardware; keep A-77 for late
 | 5 | Game-ready assets | `dist/assets/details/` (`details.kit.glb`, five textures). The runtime is `dist/details-assets.js` and `dist/details-benchmark.js`; the recording hooks are in `world.js`, `props.js`, `furniture.js`, `houses.js`, `background.js`, `ambient.js` and `game.js` (inert without the flag). |
 | 6 | Build scripts | `tools/blender/details/`: `details_textures.py`, `build_details.py`, `render_details.py` and `build_review_gallery.py`. `tools/details-report-sections.py` fills this report. |
 | 7 | Provenance | `assets/source/details/PROVENANCE.md`, `SHA256SUMS`, and `docs/THIRD_PARTY_ASSETS.md` (the details section) |
-| 8 | Screenshots | `docs/qa/details/browser/` (12 same-frame pairs, `report.json`) |
-| 9 | Gallery | (not published) (private to its owner until shared), also `review-gallery/` in the package; Blender renders in `docs/qa/details/blender/`, labelled |
+| 8 | Screenshots | `docs/qa/details/browser/` (27 same-frame pairs, `report.json`) |
+| 9 | Gallery | https://claude.ai/artifact/LN5PXbjUsBz57VCaKeRDC5 (private to its owner until shared), also `review-gallery/` in the package; Blender renders in `docs/qa/details/blender/`, labelled |
 | 10 | Performance numbers and limitations | §13.3, §15 |
-| 11 | The test suite | `tests/details-browser.mjs`: 38 passed, 0 failed, all six parts |
+| 11 | The test suite | `tests/details-browser.mjs`: 42 passed, 0 failed, all six parts |
 | 12 | Regression results | §13.2; `docs/qa/details/regression/` |
-| 13 | Offline ZIP | (see the delivery message) The ZIP is not in git (`release/` is ignored). |
+| 13 | Offline ZIP | `Last-Light-Prologue-Neighborhood-Details-Benchmark.zip`, 106,528,491 bytes, SHA-256 `e3049dabce3a9a70bc0813b6c817437a1efa1e2bdb50e712c95da7f799db171e`. It holds `Last-Light-Playtest.html` (the whole game with every benchmark's models embedded; entry SHA-256 `eb38f16beed9b7273711b265dd0e78370511a1631660b0d7a55db127caf44f4a`), `DETAILS-README.txt`, this report, the review gallery, and the credits and licences. It was built from the `dist/` of `6a85f70`. Smoke test of the delivered file: Last-Light-Playtest.html from the unzipped ZIP, opened from disk with the browser offline (Chromium, SwiftShader), ?qa&details: the kit and its 5 textures load from the embedded bytes in 210 ms, the set is active (5 signs, 48 porch chairs, 32 grills, 23 trampolines), 0 page errors, 0 network requests. The ZIP is not in git (`release/` is ignored). |
 | 14 | Six-benchmark instructions | §14, and `DETAILS-README.txt` in the ZIP (`?bikes&houses&vegetation&pavement&streetprops&details`; `.` and `,`) |
 | 15 | Approval entries | A-69 to A-77 in `docs/art/ART-APPROVAL-REGISTER.md`, all OPEN (§17); A-60 to A-68 unchanged |
 | 16 | Deferred list | §16 |

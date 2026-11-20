@@ -328,7 +328,7 @@ const VIEWS=[
  {n:'D16-creek-chain-link',what:'Briarwood\'s creek chain link across the back of the strip, dropping into the channel to the gap (QA camera on the bank)',free:{kind:'frame',u:91.5,v:25.5,h:1.5,tu:103,tv:31.2,th:-.1}},
  {n:'D17-lookout-field-fence',what:'the lookout\'s field fence beyond the bench (QA camera at the knoll)',free:{kind:'point',d:1165,lat:-9,h:1.55,td:1173,tlat:-14,th:.7}},
  {n:'D18-side-street-fences',what:'the side-street fences: Briarwood\'s creek strip from the street, its chain link along both sides and across the back (QA camera on Briarwood)',free:{kind:'frame',u:100,v:-1.5,h:1.6,tu:100,tv:22,th:.4,under:true}},
- {n:'D19-residential-street',what:'a residential street: SPEED LIMIT 25 by the curb, white lawn chairs in a front yard, the carts, mailboxes and yards beyond',d:128,lat:-.6,aimAt:{d:150,lat:3.2},pitch:-.02},
+ {n:'D19-residential-street',what:'a residential street: SPEED LIMIT 25 at the curb ahead, the carts and a mailbox beside it, the yards beyond',d:128,lat:-.6,aimAt:{d:150,lat:3.2},pitch:-.02},
  {n:'D20-oak-hollow-wide-all-six',what:'a wide, raised view of Oak Hollow with all six benchmarks (QA raised camera, 13 m up)',free:{kind:'point',d:28,lat:-1,h:13,td:150,tlat:0,th:0,under:true}},
  {n:'D21-riding-past-household-things',what:'riding past the front yards (first-person): a big wheel left on a lawn on the right, the street ahead',aimAt:{d:452,lat:12},d:432,lat:2.6,pitch:-.03},
  {n:'D22-lookout-and-old-oak',what:'the lookout as the ride ends: the old oak, its tire swing, the bench and the chalk unchanged; only the field fence behind them is the details benchmark\'s',d:1132,lat:-.9,aimAt:{d:1160,lat:3},pitch:.03},

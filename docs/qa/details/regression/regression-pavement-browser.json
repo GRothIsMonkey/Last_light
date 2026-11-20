@@ -1,0 +1,3903 @@
+{
+ "command": "node tests/pavement-browser.mjs <scratch>",
+ "commit": "6a85f70",
+ "renderer": "Chromium (Playwright) with ANGLE SwiftShader \u2014 software rendering, not a GPU",
+ "started": "2026-11-20T21:48:16.810Z",
+ "viewport": "1600x900, deviceScaleFactor 1",
+ "checks": [
+  {
+   "name": "Default game: without ?pavement none of the pavement modules or textures is fetched",
+   "detail": []
+  },
+  {
+   "name": "Default game: no pavement material, attribute or layout exists (the world is baked as before)",
+   "detail": {
+    "label": false,
+    "pv": 0,
+    "layout": null,
+    "merged": 2225,
+    "proxies": 379
+   }
+  },
+  {
+   "name": "Default game: no page errors",
+   "detail": []
+  },
+  {
+   "name": "?pavement: the six pavement textures load without error",
+   "detail": {
+    "error": null,
+    "loadMs": 67,
+    "files": [
+     {
+      "file": "assets/pavement/pv.asphalt.albedo.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.asphalt.normal.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.asphalt.hra.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.concrete.hra.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.concrete.albedo.jpg",
+      "w": 1024,
+      "h": 1024
+     },
+     {
+      "file": "assets/pavement/pv.concrete.normal.jpg",
+      "w": 1024,
+      "h": 1024
+     }
+    ]
+   }
+  },
+  {
+   "name": "?pavement: textures are 1024 x 1024, tiled, trilinear mipmapped, anisotropic, linear data",
+   "detail": [
+    {
+     "k": "asA",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "asN",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "asH",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "coA",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "coN",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    },
+    {
+     "k": "coH",
+     "w": 1024,
+     "h": 1024,
+     "mips": true,
+     "min": true,
+     "wrap": true,
+     "aniso": 16,
+     "space": ""
+    }
+   ]
+  },
+  {
+   "name": "?pavement: real-world scale (asphalt 2.5 m per tile = 410 px/m; concrete 2.0 m = 512 px/m; the Art Bible asks 256-512 px/m)",
+   "detail": {
+    "asphalt": {
+     "albedo_p01": 0.6095972860788921,
+     "albedo_p99": 2.065472562465247,
+     "rough_mean": 0.9127393222764226,
+     "meters": 2.5,
+     "px_per_m": 409.6,
+     "size": 1024
+    },
+    "concrete": {
+     "albedo_p01": 0.4675181229164829,
+     "albedo_p99": 1.718081324990562,
+     "rough_mean": 0.9180418287950829,
+     "meters": 2,
+     "px_per_m": 512,
+     "size": 1024
+    }
+   }
+  },
+  {
+   "name": "?pavement: no request leaves the local server",
+   "detail": []
+  },
+  {
+   "name": "?pavement: every pavement batch carries finite street coordinates (uv) and a unit along-direction (pv)",
+   "detail": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   }
+  },
+  {
+   "name": "?pavement: on Oak Hollow Drive the asphalt's coordinates are the street's own (u within 5 cm of d, v within 5 cm of the lateral offset)",
+   "detail": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   }
+  },
+  {
+   "name": "?pavement: no UV stretch at bends: micro-structure in world metres; street-coordinate features within 6 % of true length at the asphalt edge on the tightest bend",
+   "detail": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   }
+  },
+  {
+   "name": "Geometry: every merged surface, shadow proxy and line has exactly the default game's vertices (positions hashed at 1 mm), but for the soil faces added beside driveway aprons and the cul-de-sac bulb, tessellated to follow the ground",
+   "detail": {
+    "with": {
+     "merged": {
+      "tris": 3672521,
+      "verts": 11017563,
+      "h1": 2909938247,
+      "h2": 224281111
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2395,
+     "proxyCount": 379
+    },
+    "without": {
+     "merged": {
+      "tris": 3672521,
+      "verts": 11017563,
+      "h1": 2909938247,
+      "h2": 224281111
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2225,
+     "proxyCount": 379
+    },
+    "soil": {
+     "batches": 30,
+     "tris": 8384,
+     "bulbTris": 1470,
+     "bulbTrisDefault": null
+    }
+   }
+  },
+  {
+   "name": "Gameplay: surface heights, rideability, standing ground and authored pads at 30848 street points are identical; obstacles, navigation shapes and driveway openings unchanged",
+   "detail": {
+    "with": {
+     "n": 30848,
+     "hash": 995588364,
+     "obstacles": 812,
+     "space": [
+      159,
+      247,
+      247,
+      5717,
+      0,
+      618,
+      52
+     ],
+     "drives": 105
+    },
+    "without": {
+     "n": 30848,
+     "hash": 995588364,
+     "obstacles": 812,
+     "space": [
+      159,
+      247,
+      247,
+      5717,
+      0,
+      618,
+      52
+     ],
+     "drives": 105
+    }
+   }
+  },
+  {
+   "name": "Riding: a scripted ride over a driveway cut onto the walk, and one into a plain curb, follow exactly the same path, speed and wheel height",
+   "detail": {
+    "cut": [
+     [
+      754.3317,
+      7.5516,
+      4.4849,
+      0
+     ],
+     [
+      755.2299,
+      7.8134,
+      4.4953,
+      0
+     ]
+    ],
+    "curb": [
+     [
+      764.7885,
+      6.9045,
+      4.5126,
+      0
+     ],
+     [
+      765.693,
+      7.2991,
+      4.5289,
+      0
+     ]
+    ],
+    "without": {
+     "cut": [
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "name": "Junctions and cul-de-sac: rays from above find a surface everywhere, never below the street's ground, and every surface within 3.5 cm of the authored height away from curbs and surface edges (no gaps, no floating or sunken surfaces; the default game's bulb sank up to 4 cm: reported as without)",
+   "detail": {
+    "with": {
+     "samples": 13125,
+     "none": 0,
+     "base": 0,
+     "off": 0,
+     "worst": [],
+     "kinds": {
+      "asphalt": 9108,
+      "gutter": 88,
+      "curb": 352,
+      "other": 1853,
+      "walk": 1706,
+      "drive": 18
+     }
+    },
+    "without": {
+     "none": 0,
+     "base": 191,
+     "off": 167
+    }
+   }
+  },
+  {
+   "name": "?pavement (measures): no page errors",
+   "detail": []
+  },
+  {
+   "name": "Comparison: O swaps RECONSTRUCTED (shader on, old decal patches / joint bars / crack lines hidden) and ORIGINAL (shader off, all shown) in the same frame",
+   "detail": [
+    [
+     "reconstructed",
+     1,
+     false
+    ],
+    [
+     "original",
+     0,
+     true
+    ],
+    [
+     "reconstructed",
+     1,
+     false
+    ]
+   ]
+  },
+  {
+   "name": "Captures: every before/after pair is one camera and one frame",
+   "detail": 17
+  },
+  {
+   "name": "Cost: in every pair the reconstruction draws no more draw calls than the original and at most 1 % more triangles (the soil faces)",
+   "detail": {
+    "drawCallDelta": [
+     -21,
+     -2
+    ],
+    "triangleRatio": [
+     0.983,
+     1
+    ]
+   }
+  },
+  {
+   "name": "?pavement: no page errors (every pavement shader compiles and links)",
+   "detail": []
+  },
+  {
+   "name": "Prologue only: active in the Prologue; in Chapter One the original surfaces show (the reconstruction is inactive)",
+   "detail": {
+    "prologue": {
+     "active": true,
+     "on": 1,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "on": 0,
+     "state": "c1-ride"
+    }
+   }
+  },
+  {
+   "name": "Chapter One with ?pavement: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Aftermath I: the reconstruction is inactive, and Chapter Eight's ground cuts are installed on every pavement material",
+   "detail": {
+    "active": false,
+    "on": 0,
+    "state": "c1-walk",
+    "keys": [
+     "astra-art-roadwear-3-onBeforeCompile( /* shaderobject, renderer */ ) {}|ll-pave-0|c8cut",
+     "concrete|ll-pave-2|c8cut",
+     "concrete|ll-pave-3|c8cut",
+     "concrete|ll-pave-1|c8cut",
+     "concrete|ll-pave-5|c8cut",
+     "(sh,r)=>{prev?.call(m,sh,r);sh.uniforms.uCutN=CUT.n;sh.uniforms.uCutInv=CUT.inv;sh.uniforms.uCutK=CUT.kind;\n   sh.vertexShader='varying vec3 vCutW;\\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\\n{vec4 cw=vec4(transformed,1.);\\n#ifdef USE_INSTANCING\\ncw=instanceMatrix*cw;\\n#endif\\nvCutW=(modelMatrix*cw).xyz;}');\n   sh.fragmentShader='uniform int uCutN;\\nuniform mat4 uCutInv['+MAXCUT+'];\\nuniform float uCutK['+MAXCUT+'];\\nvarying vec3 vCutW;\\n'+sh.fragmentShader.replace('void main() {','void main() {\\n for(int i=0;i<'+MAXCUT+';i++){if(i>=uCutN)break;vec3 q=(uCutInv[i]*vec4(vCutW,1.)).xyz;bool inside=uCutK[i]<.5?(abs(q.x)<1.&&abs(q.y)<1.&&abs(q.z)<1.):(q.x*q.x+q.z*q.z<1.&&abs(q.y)<1.);if(inside)discard;}');}|ll-pave-6|c8cut",
+     "concrete|ll-pave-4|c8cut"
+    ],
+    "allCut": true
+   }
+  },
+  {
+   "name": "Aftermath I with ?pavement: no page errors",
+   "detail": []
+  },
+  {
+   "name": "All four benchmarks together (?bikes&houses&vegetation&pavement) load without error; the lawn is the repair (C)",
+   "detail": {
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "lawn": "C"
+   }
+  },
+  {
+   "name": "Lawn: the repaired lawn's masks build the same lawn cells in the same chunks as without ?pavement (grass boundaries unchanged)",
+   "detail": {
+    "with": [
+     [
+      40,
+      106
+     ],
+     [
+      104,
+      89
+     ],
+     [
+      150,
+      96
+     ],
+     [
+      572,
+      120
+     ],
+     [
+      848,
+      119
+     ],
+     [
+      1110,
+      112
+     ]
+    ],
+    "without": [
+     [
+      40,
+      106
+     ],
+     [
+      104,
+      89
+     ],
+     [
+      150,
+      96
+     ],
+     [
+      572,
+      120
+     ],
+     [
+      848,
+      119
+     ],
+     [
+      1110,
+      112
+     ]
+    ]
+   }
+  },
+  {
+   "name": "Four benchmarks: no page errors; riding works with them all on",
+   "detail": []
+  },
+  {
+   "name": "Offline package (PLAYTEST_MODELS=1): the six pavement textures and the pavement modules are embedded",
+   "detail": [
+    "dist/assets/pavement/pv.asphalt.albedo.jpg",
+    "dist/assets/pavement/pv.asphalt.hra.jpg",
+    "dist/assets/pavement/pv.asphalt.normal.jpg",
+    "dist/assets/pavement/pv.concrete.albedo.jpg",
+    "dist/assets/pavement/pv.concrete.hra.jpg",
+    "dist/assets/pavement/pv.concrete.normal.jpg"
+   ]
+  },
+  {
+   "name": "Offline package from disk, browser offline: ?pavement loads its textures from the embedded bytes, with no network request",
+   "detail": {
+    "error": null,
+    "files": 6,
+    "active": true,
+    "net": []
+   }
+  },
+  {
+   "name": "Offline package: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Default package (no models): ?pavement fails loudly and substitutes nothing (the original surfaces stay)",
+   "detail": {
+    "error": "asset assets/pavement/pv.asphalt.albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)",
+    "on": 0,
+    "label": "PAVEMENT BENCHMARK (DEV) \u2014 FAILED, nothing substituted: asset assets/pavement/pv.asphalt.albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)"
+   }
+  }
+ ],
+ "failures": [],
+ "parts": {
+  "A": {
+   "label": false,
+   "pv": 0,
+   "layout": null,
+   "merged": 2225,
+   "proxies": 379,
+   "fingerprint": {
+    "merged": {
+     "tris": 3672521,
+     "verts": 11017563,
+     "h1": 2909938247,
+     "h2": 224281111
+    },
+    "proxies": {
+     "tris": 2371121,
+     "h1": 3930555726
+    },
+    "lines": {
+     "segs": 4471,
+     "h1": 3072461437
+    },
+    "mergedCount": 2225,
+    "proxyCount": 379
+   },
+   "queries": {
+    "n": 30848,
+    "hash": 995588364,
+    "obstacles": 812,
+    "space": [
+     159,
+     247,
+     247,
+     5717,
+     0,
+     618,
+     52
+    ],
+    "drives": 105
+   },
+   "rides": {
+    "drive": {
+     "d": 744.0601318057627,
+     "d0": 742.4601318057627,
+     "d1": 745.6601318057626
+    },
+    "runs": {
+     "cut": [
+      [
+       740.9684,
+       2.6001,
+       3.2492,
+       0
+      ],
+      [
+       741.6493,
+       2.617,
+       3.5068,
+       0
+      ],
+      [
+       742.3752,
+       2.6962,
+       3.7103,
+       0
+      ],
+      [
+       743.1366,
+       2.8582,
+       3.8713,
+       0
+      ],
+      [
+       743.9263,
+       3.0946,
+       3.9989,
+       0
+      ],
+      [
+       744.7383,
+       3.3869,
+       4.1003,
+       0
+      ],
+      [
+       745.568,
+       3.7173,
+       4.181,
+       0
+      ],
+      [
+       746.412,
+       4.0721,
+       4.2456,
+       0
+      ],
+      [
+       747.2673,
+       4.4422,
+       4.2974,
+       0
+      ],
+      [
+       748.1318,
+       4.8215,
+       4.3392,
+       0
+      ],
+      [
+       749.0037,
+       5.2062,
+       4.3732,
+       0
+      ],
+      [
+       749.8817,
+       5.5942,
+       4.401,
+       0
+      ],
+      [
+       750.7646,
+       5.9841,
+       4.4239,
+       0
+      ],
+      [
+       751.6517,
+       6.3751,
+       4.443,
+       0
+      ],
+      [
+       752.5423,
+       6.7669,
+       4.4592,
+       0
+      ],
+      [
+       753.4357,
+       7.1591,
+       4.473,
+       0
+      ],
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       753.9685,
+       3.1001,
+       3.2521,
+       0
+      ],
+      [
+       754.6518,
+       3.1171,
+       3.525,
+       0
+      ],
+      [
+       755.3828,
+       3.1967,
+       3.7406,
+       0
+      ],
+      [
+       756.1515,
+       3.3597,
+       3.911,
+       0
+      ],
+      [
+       756.9499,
+       3.5979,
+       4.046,
+       0
+      ],
+      [
+       757.772,
+       3.8926,
+       4.1532,
+       0
+      ],
+      [
+       758.6129,
+       4.2257,
+       4.2384,
+       0
+      ],
+      [
+       759.4688,
+       4.5835,
+       4.3065,
+       0
+      ],
+      [
+       760.3367,
+       4.9566,
+       4.361,
+       0
+      ],
+      [
+       761.2141,
+       5.3389,
+       4.4048,
+       0
+      ],
+      [
+       762.0994,
+       5.7267,
+       4.4403,
+       0
+      ],
+      [
+       762.9909,
+       6.1177,
+       4.4692,
+       0
+      ],
+      [
+       763.8876,
+       6.5106,
+       4.4929,
+       0
+      ],
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ]
+    }
+   },
+   "gaps": {
+    "samples": 13125,
+    "none": 0,
+    "base": 191,
+    "off": 167,
+    "worst": [
+     {
+      "d": 1137.017,
+      "lat": -6.833,
+      "kind": "other",
+      "dy": -0.037
+     },
+     {
+      "d": 1137.017,
+      "lat": -6.463,
+      "kind": "other",
+      "dy": -0.038
+     },
+     {
+      "d": 1137.017,
+      "lat": -6.093,
+      "kind": "other",
+      "dy": -0.037
+     },
+     {
+      "d": 1137.017,
+      "lat": -5.723,
+      "kind": "other",
+      "dy": -0.036
+     },
+     {
+      "d": 1137.387,
+      "lat": -7.573,
+      "kind": "other",
+      "dy": -0.035
+     },
+     {
+      "d": 1137.387,
+      "lat": -7.203,
+      "kind": "other",
+      "dy": -0.039
+     },
+     {
+      "d": 1137.387,
+      "lat": -6.833,
+      "kind": "other",
+      "dy": -0.041
+     },
+     {
+      "d": 1137.387,
+      "lat": -6.463,
+      "kind": "other",
+      "dy": -0.042
+     },
+     {
+      "d": 1137.387,
+      "lat": -6.093,
+      "kind": "other",
+      "dy": -0.041
+     },
+     {
+      "d": 1137.387,
+      "lat": -5.723,
+      "kind": "other",
+      "dy": -0.04
+     },
+     {
+      "d": 1137.387,
+      "lat": -5.353,
+      "kind": "other",
+      "dy": -0.037
+     },
+     {
+      "d": 1137.757,
+      "lat": -7.573,
+      "kind": "other",
+      "dy": -0.039
+     },
+     {
+      "d": 1137.757,
+      "lat": -7.203,
+      "kind": "other",
+      "dy": -0.042
+     },
+     {
+      "d": 1137.757,
+      "lat": -6.833,
+      "kind": "other",
+      "dy": -0.044
+     }
+    ],
+    "kinds": {
+     "other": 13125
+    }
+   }
+  },
+  "B": {
+   "wallLoadMs": 27720,
+   "loaded": {
+    "error": null,
+    "loadMs": 67,
+    "info": {
+     "files": [
+      {
+       "file": "assets/pavement/pv.asphalt.albedo.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.asphalt.normal.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.asphalt.hra.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.concrete.hra.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.concrete.albedo.jpg",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/pavement/pv.concrete.normal.jpg",
+       "w": 1024,
+       "h": 1024
+      }
+     ],
+     "bytes": 0,
+     "aniso": 16,
+     "ms": 41,
+     "gpuMB": 32
+    },
+    "layout": {
+     "layoutBytes": 65536,
+     "drives": 133
+    },
+    "stats": {
+     "batches": 200,
+     "triangles": 103128,
+     "kinds": {
+      "asphalt": 31,
+      "curb": 30,
+      "walk": 31,
+      "gutter": 30,
+      "path": 32,
+      "iron": 15,
+      "drive": 31
+     },
+     "originalOnly": 46,
+     "lines": 2,
+     "active": true,
+     "mode": "reconstructed"
+    }
+   },
+   "coords": {
+    "batches": 200,
+    "kinds": {
+     "asphalt": 31,
+     "curb": 30,
+     "walk": 31,
+     "gutter": 30,
+     "path": 32,
+     "iron": 15,
+     "drive": 31
+    },
+    "missing": 0,
+    "bad": 0,
+    "samples": 770,
+    "maxDu": 0,
+    "maxDv": 0,
+    "alongScaleWorstAtEdge": 0.0475
+   },
+   "fingerprint": {
+    "merged": {
+     "tris": 3672521,
+     "verts": 11017563,
+     "h1": 2909938247,
+     "h2": 224281111
+    },
+    "proxies": {
+     "tris": 2371121,
+     "h1": 3930555726
+    },
+    "lines": {
+     "segs": 4471,
+     "h1": 3072461437
+    },
+    "mergedCount": 2395,
+    "proxyCount": 379
+   },
+   "soil": {
+    "batches": 30,
+    "tris": 8384,
+    "bulbTris": 1470,
+    "bulbTrisDefault": null
+   },
+   "queries": {
+    "n": 30848,
+    "hash": 995588364,
+    "obstacles": 812,
+    "space": [
+     159,
+     247,
+     247,
+     5717,
+     0,
+     618,
+     52
+    ],
+    "drives": 105
+   },
+   "rides": {
+    "drive": {
+     "d": 744.0601318057627,
+     "d0": 742.4601318057627,
+     "d1": 745.6601318057626
+    },
+    "runs": {
+     "cut": [
+      [
+       740.9684,
+       2.6001,
+       3.2492,
+       0
+      ],
+      [
+       741.6493,
+       2.617,
+       3.5068,
+       0
+      ],
+      [
+       742.3752,
+       2.6962,
+       3.7103,
+       0
+      ],
+      [
+       743.1366,
+       2.8582,
+       3.8713,
+       0
+      ],
+      [
+       743.9263,
+       3.0946,
+       3.9989,
+       0
+      ],
+      [
+       744.7383,
+       3.3869,
+       4.1003,
+       0
+      ],
+      [
+       745.568,
+       3.7173,
+       4.181,
+       0
+      ],
+      [
+       746.412,
+       4.0721,
+       4.2456,
+       0
+      ],
+      [
+       747.2673,
+       4.4422,
+       4.2974,
+       0
+      ],
+      [
+       748.1318,
+       4.8215,
+       4.3392,
+       0
+      ],
+      [
+       749.0037,
+       5.2062,
+       4.3732,
+       0
+      ],
+      [
+       749.8817,
+       5.5942,
+       4.401,
+       0
+      ],
+      [
+       750.7646,
+       5.9841,
+       4.4239,
+       0
+      ],
+      [
+       751.6517,
+       6.3751,
+       4.443,
+       0
+      ],
+      [
+       752.5423,
+       6.7669,
+       4.4592,
+       0
+      ],
+      [
+       753.4357,
+       7.1591,
+       4.473,
+       0
+      ],
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       753.9685,
+       3.1001,
+       3.2521,
+       0
+      ],
+      [
+       754.6518,
+       3.1171,
+       3.525,
+       0
+      ],
+      [
+       755.3828,
+       3.1967,
+       3.7406,
+       0
+      ],
+      [
+       756.1515,
+       3.3597,
+       3.911,
+       0
+      ],
+      [
+       756.9499,
+       3.5979,
+       4.046,
+       0
+      ],
+      [
+       757.772,
+       3.8926,
+       4.1532,
+       0
+      ],
+      [
+       758.6129,
+       4.2257,
+       4.2384,
+       0
+      ],
+      [
+       759.4688,
+       4.5835,
+       4.3065,
+       0
+      ],
+      [
+       760.3367,
+       4.9566,
+       4.361,
+       0
+      ],
+      [
+       761.2141,
+       5.3389,
+       4.4048,
+       0
+      ],
+      [
+       762.0994,
+       5.7267,
+       4.4403,
+       0
+      ],
+      [
+       762.9909,
+       6.1177,
+       4.4692,
+       0
+      ],
+      [
+       763.8876,
+       6.5106,
+       4.4929,
+       0
+      ],
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ]
+    }
+   },
+   "gaps": {
+    "samples": 13125,
+    "none": 0,
+    "base": 0,
+    "off": 0,
+    "worst": [],
+    "kinds": {
+     "asphalt": 9108,
+     "gutter": 88,
+     "curb": 352,
+     "other": 1853,
+     "walk": 1706,
+     "drive": 18
+    }
+   },
+   "key": [
+    [
+     "reconstructed",
+     1,
+     false
+    ],
+    [
+     "original",
+     0,
+     true
+    ],
+    [
+     "reconstructed",
+     1,
+     false
+    ]
+   ],
+   "cost": {
+    "drawCallDelta": [
+     -21,
+     -2
+    ],
+    "triangleRatio": [
+     0.983,
+     1
+    ]
+   },
+   "frameMs": {
+    "reconstructed": 6.7,
+    "original": 4.3
+   },
+   "memory": {
+    "textures": 6,
+    "gpuTextureMB": 32,
+    "layoutTextureBytes": 65536,
+    "driveTableBytes": 1024,
+    "renderer": {
+     "geometries": 1098,
+     "textures": 27
+    },
+    "programs": 88
+   },
+   "chapters": {
+    "prologue": {
+     "active": true,
+     "on": 1,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "on": 0,
+     "state": "c1-ride"
+    }
+   }
+  },
+  "B2": {
+   "a1": {
+    "active": false,
+    "on": 0,
+    "state": "c1-walk",
+    "keys": [
+     "astra-art-roadwear-3-onBeforeCompile( /* shaderobject, renderer */ ) {}|ll-pave-0|c8cut",
+     "concrete|ll-pave-2|c8cut",
+     "concrete|ll-pave-3|c8cut",
+     "concrete|ll-pave-1|c8cut",
+     "concrete|ll-pave-5|c8cut",
+     "(sh,r)=>{prev?.call(m,sh,r);sh.uniforms.uCutN=CUT.n;sh.uniforms.uCutInv=CUT.inv;sh.uniforms.uCutK=CUT.kind;\n   sh.vertexShader='varying vec3 vCutW;\\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\\n{vec4 cw=vec4(transformed,1.);\\n#ifdef USE_INSTANCING\\ncw=instanceMatrix*cw;\\n#endif\\nvCutW=(modelMatrix*cw).xyz;}');\n   sh.fragmentShader='uniform int uCutN;\\nuniform mat4 uCutInv['+MAXCUT+'];\\nuniform float uCutK['+MAXCUT+'];\\nvarying vec3 vCutW;\\n'+sh.fragmentShader.replace('void main() {','void main() {\\n for(int i=0;i<'+MAXCUT+';i++){if(i>=uCutN)break;vec3 q=(uCutInv[i]*vec4(vCutW,1.)).xyz;bool inside=uCutK[i]<.5?(abs(q.x)<1.&&abs(q.y)<1.&&abs(q.z)<1.):(q.x*q.x+q.z*q.z<1.&&abs(q.y)<1.);if(inside)discard;}');}|ll-pave-6|c8cut",
+     "concrete|ll-pave-4|c8cut"
+    ],
+    "allCut": true
+   },
+   "trench": {
+    "pixels": 1440000,
+    "changed": 454277,
+    "darkOriginal": 15643,
+    "darkForced": 15911,
+    "state": "c1-walk"
+   }
+  },
+  "Cbase": {
+   "lawn": [
+    [
+     40,
+     106
+    ],
+    [
+     104,
+     89
+    ],
+    [
+     150,
+     96
+    ],
+    [
+     572,
+     120
+    ],
+    [
+     848,
+     119
+    ],
+    [
+     1110,
+     112
+    ]
+   ]
+  },
+  "C": {
+   "loaded": {
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "lawn": "C"
+   },
+   "lawn": [
+    [
+     40,
+     106
+    ],
+    [
+     104,
+     89
+    ],
+    [
+     150,
+     96
+    ],
+    [
+     572,
+     120
+    ],
+    [
+     848,
+     119
+    ],
+    [
+     1110,
+     112
+    ]
+   ]
+  }
+ },
+ "shots": [
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P01-asphalt-beneath-the-bike--reconstructed.jpg",
+   "sha256": "70986fbd55678def9281d527cbcaae275e12cc1d59e9af6e6d9d179c20e95b40",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P01-asphalt-beneath-the-bike",
+    "what": "asphalt directly beneath the player while riding",
+    "d": 40,
+    "lat": -1.2,
+    "pitch": -0.8
+   },
+   "at": {
+    "d": 40,
+    "lat": -1.2
+   },
+   "calls": 147,
+   "triangles": 300174,
+   "cam": {
+    "p": [
+     -1.235,
+     2.726,
+     -39.989
+    ],
+    "q": [
+     -0.4503,
+     -0.0096,
+     0.0045,
+     0.8928
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P01-asphalt-beneath-the-bike--original.jpg",
+   "sha256": "30baafac7abdcf2296787190c32098430e984895d520ff2743e451784fe7e117",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P01-asphalt-beneath-the-bike",
+    "what": "asphalt directly beneath the player while riding",
+    "d": 40,
+    "lat": -1.2,
+    "pitch": -0.8
+   },
+   "at": {
+    "d": 40,
+    "lat": -1.2
+   },
+   "calls": 154,
+   "triangles": 303704,
+   "cam": {
+    "p": [
+     -1.235,
+     2.726,
+     -39.989
+    ],
+    "q": [
+     -0.4503,
+     -0.0096,
+     0.0045,
+     0.8928
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P02-road-ahead-from-the-bike--reconstructed.jpg",
+   "sha256": "aa26a98ec19466c527f93b211bde1310292156d3a143bbd117d5351569aee551",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P02-road-ahead-from-the-bike",
+    "what": "the road looking forward from bicycle height",
+    "d": 60,
+    "lat": -1.5,
+    "pitch": -0.12
+   },
+   "at": {
+    "d": 60,
+    "lat": -1.5
+   },
+   "calls": 343,
+   "triangles": 647679,
+   "cam": {
+    "p": [
+     -1.539,
+     3.089,
+     -60.004
+    ],
+    "q": [
+     -0.133,
+     -0.0032,
+     0.0057,
+     0.9911
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P02-road-ahead-from-the-bike--original.jpg",
+   "sha256": "361bb9a7ccc050b39b2633c44b1c25263577125f262d89e354a61f15e340daef",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P02-road-ahead-from-the-bike",
+    "what": "the road looking forward from bicycle height",
+    "d": 60,
+    "lat": -1.5,
+    "pitch": -0.12
+   },
+   "at": {
+    "d": 60,
+    "lat": -1.5
+   },
+   "calls": 359,
+   "triangles": 656671,
+   "cam": {
+    "p": [
+     -1.539,
+     3.089,
+     -60.004
+    ],
+    "q": [
+     -0.133,
+     -0.0032,
+     0.0057,
+     0.9911
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P03-long-view-down-oak-hollow--reconstructed.jpg",
+   "sha256": "dd1711672222a9c74bc041a435a74ff0777caab7b167fbd49ecc984a1ae90a92",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P03-long-view-down-oak-hollow",
+    "what": "a long view down Oak Hollow Drive",
+    "d": 300,
+    "lat": -1,
+    "pitch": -0.04
+   },
+   "at": {
+    "d": 300,
+    "lat": -1
+   },
+   "calls": 475,
+   "triangles": 984376,
+   "cam": {
+    "p": [
+     57.365,
+     0.455,
+     -286.96
+    ],
+    "q": [
+     -0.1062,
+     -0.2722,
+     -0.0236,
+     0.9561
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:46 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P03-long-view-down-oak-hollow--original.jpg",
+   "sha256": "abc777ebf56d0c3f600cf3a416f389d4ba5fa0808b169c098a30601b82e00b9e",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P03-long-view-down-oak-hollow",
+    "what": "a long view down Oak Hollow Drive",
+    "d": 300,
+    "lat": -1,
+    "pitch": -0.04
+   },
+   "at": {
+    "d": 300,
+    "lat": -1
+   },
+   "calls": 492,
+   "triangles": 997406,
+   "cam": {
+    "p": [
+     57.365,
+     0.455,
+     -286.96
+    ],
+    "q": [
+     -0.1062,
+     -0.2722,
+     -0.0236,
+     0.9561
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:46 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P04-asphalt-close-detail--reconstructed.jpg",
+   "sha256": "0b99ebb2ee1fb8efcb87eed89d8232a5965fce649998291516d02e063f3e36f6",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P04-asphalt-close-detail",
+    "what": "a close asphalt detail: a repaired manhole, a sealed crack",
+    "d": 82.5,
+    "lat": -1.1,
+    "pitch": -0.8
+   },
+   "at": {
+    "d": 82.5,
+    "lat": -1.1
+   },
+   "calls": 167,
+   "triangles": 379370,
+   "cam": {
+    "p": [
+     -1.143,
+     3.189,
+     -82.525
+    ],
+    "q": [
+     -0.4632,
+     -0.0118,
+     0.0057,
+     0.8861
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P04-asphalt-close-detail--original.jpg",
+   "sha256": "e55b08bdce289679ebba1375a10b8605fa38024d77cd0e7141aa479443e4ba26",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P04-asphalt-close-detail",
+    "what": "a close asphalt detail: a repaired manhole, a sealed crack",
+    "d": 82.5,
+    "lat": -1.1,
+    "pitch": -0.8
+   },
+   "at": {
+    "d": 82.5,
+    "lat": -1.1
+   },
+   "calls": 174,
+   "triangles": 382900,
+   "cam": {
+    "p": [
+     -1.143,
+     3.189,
+     -82.525
+    ],
+    "q": [
+     -0.4632,
+     -0.0118,
+     0.0057,
+     0.8861
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P05-asphalt-meets-gutter--reconstructed.jpg",
+   "sha256": "ccf4c4aa331904760b40436ab89226d70a00168fd1de8d8c2b0ab2c0f1962212",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P05-asphalt-meets-gutter",
+    "what": "asphalt meeting the concrete gutter pan",
+    "d": 150,
+    "lat": 3.5,
+    "yaw": -0.75,
+    "pitch": -0.6
+   },
+   "at": {
+    "d": 150,
+    "lat": 3.5
+   },
+   "calls": 203,
+   "triangles": 519562,
+   "cam": {
+    "p": [
+     4.127,
+     2.098,
+     -149.808
+    ],
+    "q": [
+     -0.34,
+     -0.3782,
+     -0.1379,
+     0.8499
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:44 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P05-asphalt-meets-gutter--original.jpg",
+   "sha256": "e7aeb64c5bdc24f7fa985ec3c335676a0d93d10b1af3e3bfaf28043502fed4dd",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P05-asphalt-meets-gutter",
+    "what": "asphalt meeting the concrete gutter pan",
+    "d": 150,
+    "lat": 3.5,
+    "yaw": -0.75,
+    "pitch": -0.6
+   },
+   "at": {
+    "d": 150,
+    "lat": 3.5
+   },
+   "calls": 210,
+   "triangles": 523382,
+   "cam": {
+    "p": [
+     4.127,
+     2.098,
+     -149.808
+    ],
+    "q": [
+     -0.34,
+     -0.3782,
+     -0.1379,
+     0.8499
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:44 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P06-sidewalk-from-standing-height--reconstructed.jpg",
+   "sha256": "fe0db07ff4363f1f1a1fbb3b167dede8a0d780803e47df2c0a9b8d79de875e94",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P06-sidewalk-from-standing-height",
+    "what": "sidewalk concrete (riding camera on the walk, eye about 1.5 m)",
+    "d": 44,
+    "lat": 7.1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "calls": 343,
+   "triangles": 656224,
+   "cam": {
+    "p": [
+     7.055,
+     2.93,
+     -43.993
+    ],
+    "q": [
+     -0.2427,
+     -0.0069,
+     0.0065,
+     0.9701
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P06-sidewalk-from-standing-height--original.jpg",
+   "sha256": "dbd8e6c8cb33975af7cfa1899b73b3f10c7667d2dd50aeab1861d822d1dcaa9a",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P06-sidewalk-from-standing-height",
+    "what": "sidewalk concrete (riding camera on the walk, eye about 1.5 m)",
+    "d": 44,
+    "lat": 7.1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "calls": 360,
+   "triangles": 666536,
+   "cam": {
+    "p": [
+     7.055,
+     2.93,
+     -43.993
+    ],
+    "q": [
+     -0.2427,
+     -0.0069,
+     0.0065,
+     0.9701
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P07-sidewalk-joints-close--reconstructed.jpg",
+   "sha256": "79e7532b2a9e941d7997d8758c3f603ba541c50493300070d2806bd82fda7897",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P07-sidewalk-joints-close",
+    "what": "sidewalk joints from close range",
+    "d": 44,
+    "lat": 7.1,
+    "pitch": -0.9
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "calls": 140,
+   "triangles": 286621,
+   "cam": {
+    "p": [
+     7.054,
+     2.929,
+     -43.989
+    ],
+    "q": [
+     -0.4957,
+     -0.0139,
+     0.0057,
+     0.8684
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P07-sidewalk-joints-close--original.jpg",
+   "sha256": "70b14d6fc95d2c50b290509b4f8bf51a3120918746ed86573f4b63fe53fcc166",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P07-sidewalk-joints-close",
+    "what": "sidewalk joints from close range",
+    "d": 44,
+    "lat": 7.1,
+    "pitch": -0.9
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "calls": 146,
+   "triangles": 289533,
+   "cam": {
+    "p": [
+     7.054,
+     2.929,
+     -43.989
+    ],
+    "q": [
+     -0.4957,
+     -0.0139,
+     0.0057,
+     0.8684
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P08-curb-face-from-the-bike--reconstructed.jpg",
+   "sha256": "590425d61faa2282c0434bbe7477e65ed19e1cfa406d3b755a7a2066dbdb9d7b",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P08-curb-face-from-the-bike",
+    "what": "the curb face from bicycle height",
+    "d": 40,
+    "lat": 3.4,
+    "yaw": -1.25,
+    "pitch": -0.32
+   },
+   "at": {
+    "d": 40,
+    "lat": 3.4
+   },
+   "calls": 217,
+   "triangles": 536843,
+   "cam": {
+    "p": [
+     3.354,
+     2.688,
+     -39.986
+    ],
+    "q": [
+     -0.1674,
+     -0.5717,
+     -0.1407,
+     0.7908
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P08-curb-face-from-the-bike--original.jpg",
+   "sha256": "5c97441695e8fea7bbdb81fd25c3aa7d88b1a1c775a4e7b9338eae27bc34e169",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P08-curb-face-from-the-bike",
+    "what": "the curb face from bicycle height",
+    "d": 40,
+    "lat": 3.4,
+    "yaw": -1.25,
+    "pitch": -0.32
+   },
+   "at": {
+    "d": 40,
+    "lat": 3.4
+   },
+   "calls": 226,
+   "triangles": 543661,
+   "cam": {
+    "p": [
+     3.354,
+     2.688,
+     -39.986
+    ],
+    "q": [
+     -0.1674,
+     -0.5717,
+     -0.1407,
+     0.7908
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P09-driveway-curb-cut--reconstructed.jpg",
+   "sha256": "0b0ff7f2d1b73e63a9699f9b84e78c5438ae53144e150481f076831884ada4d0",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P09-driveway-curb-cut",
+    "what": "a driveway curb cut from street level",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": -3.5,
+    "lat": 3.6,
+    "yaw": -1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "calls": 454,
+   "triangles": 987837,
+   "cam": {
+    "p": [
+     3.554,
+     3.021,
+     -100.96
+    ],
+    "q": [
+     -0.2127,
+     -0.4704,
+     -0.1127,
+     0.849
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P09-driveway-curb-cut--original.jpg",
+   "sha256": "f45c50acd54194e8a4dce02aa34c07600169bd58203a09c394c8e4897ca67879",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P09-driveway-curb-cut",
+    "what": "a driveway curb cut from street level",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": -3.5,
+    "lat": 3.6,
+    "yaw": -1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "calls": 475,
+   "triangles": 1005233,
+   "cam": {
+    "p": [
+     3.554,
+     3.021,
+     -100.96
+    ],
+    "q": [
+     -0.2127,
+     -0.4704,
+     -0.1127,
+     0.849
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P10-a-whole-driveway--reconstructed.jpg",
+   "sha256": "11378a673eb19072ef3b0e96698db542d902dbbaafd55f590d37b88606ffe307",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P10-a-whole-driveway",
+    "what": "a complete residential driveway",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": 0,
+    "lat": 2.2,
+    "yaw": -1.5,
+    "pitch": -0.14
+   },
+   "at": {
+    "d": 104.43,
+    "lat": 2.2
+   },
+   "calls": 170,
+   "triangles": 435913,
+   "cam": {
+    "p": [
+     2.153,
+     2.986,
+     -104.465
+    ],
+    "q": [
+     -0.0956,
+     -0.6774,
+     -0.0922,
+     0.7235
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P10-a-whole-driveway--original.jpg",
+   "sha256": "e0b3b345ba70e96e2a68405db8ef729b0e2cca917d055d428eadaccbae27ba48",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P10-a-whole-driveway",
+    "what": "a complete residential driveway",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": 0,
+    "lat": 2.2,
+    "yaw": -1.5,
+    "pitch": -0.14
+   },
+   "at": {
+    "d": 104.43,
+    "lat": 2.2
+   },
+   "calls": 178,
+   "triangles": 442777,
+   "cam": {
+    "p": [
+     2.153,
+     2.986,
+     -104.465
+    ],
+    "q": [
+     -0.0956,
+     -0.6774,
+     -0.0922,
+     0.7235
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P11-sidewalk-passing-a-driveway--reconstructed.jpg",
+   "sha256": "49dfdd49146ff44a4fa6b1f8ab2aa574ea27e4337ba296b3a24c9f14ca66bca3",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P11-sidewalk-passing-a-driveway",
+    "what": "the sidewalk passing a driveway",
+    "drive": {
+     "side": 1,
+     "after": 100,
+     "edge": "d0"
+    },
+    "dd": -6.5,
+    "lat": 7.1,
+    "pitch": -0.24
+   },
+   "at": {
+    "d": 96.23,
+    "lat": 7.1
+   },
+   "calls": 393,
+   "triangles": 752652,
+   "cam": {
+    "p": [
+     7.053,
+     3.216,
+     -96.261
+    ],
+    "q": [
+     -0.2039,
+     -0.0055,
+     0.0069,
+     0.979
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P11-sidewalk-passing-a-driveway--original.jpg",
+   "sha256": "75b9a71a799b64dc08808c6e1a816d8a3d8e4ffaa04979ffb364b09a8bb64f97",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P11-sidewalk-passing-a-driveway",
+    "what": "the sidewalk passing a driveway",
+    "drive": {
+     "side": 1,
+     "after": 100,
+     "edge": "d0"
+    },
+    "dd": -6.5,
+    "lat": 7.1,
+    "pitch": -0.24
+   },
+   "at": {
+    "d": 96.23,
+    "lat": 7.1
+   },
+   "calls": 411,
+   "triangles": 765168,
+   "cam": {
+    "p": [
+     7.053,
+     3.216,
+     -96.261
+    ],
+    "q": [
+     -0.2039,
+     -0.0055,
+     0.0069,
+     0.979
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P13-briarwood-intersection--reconstructed.jpg",
+   "sha256": "d441069c4f19fbda0d0b958c01c75d7f811eae3f5f99eb3529e530155569d4c8",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P13-briarwood-intersection",
+    "what": "the Briarwood Lane junction",
+    "d": 572,
+    "lat": -0.5,
+    "yaw": -0.5,
+    "pitch": -0.18
+   },
+   "at": {
+    "d": 572,
+    "lat": -0.5
+   },
+   "calls": 502,
+   "triangles": 851302,
+   "cam": {
+    "p": [
+     107.446,
+     2.952,
+     -532.978
+    ],
+    "q": [
+     -0.1638,
+     -0.0538,
+     -0.0019,
+     0.985
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:51 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P13-briarwood-intersection--original.jpg",
+   "sha256": "208d6c7df2980d3c2db0220cebf6bee6eac3eeecb805f77173b002cea3360302",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P13-briarwood-intersection",
+    "what": "the Briarwood Lane junction",
+    "d": 572,
+    "lat": -0.5,
+    "yaw": -0.5,
+    "pitch": -0.18
+   },
+   "at": {
+    "d": 572,
+    "lat": -0.5
+   },
+   "calls": 520,
+   "triangles": 866442,
+   "cam": {
+    "p": [
+     107.446,
+     2.952,
+     -532.978
+    ],
+    "q": [
+     -0.1638,
+     -0.0538,
+     -0.0019,
+     0.985
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:51 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P14-summerfield-intersection--reconstructed.jpg",
+   "sha256": "6eb254106356e8d0f6f154163f1cc9e38e34b46e44b5236102f1e941cc9cde28",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P14-summerfield-intersection",
+    "what": "the Summerfield Road junction",
+    "d": 848,
+    "lat": 0.5,
+    "yaw": 0.5,
+    "pitch": -0.18
+   },
+   "at": {
+    "d": 848,
+    "lat": 0.5
+   },
+   "calls": 343,
+   "triangles": 482810,
+   "cam": {
+    "p": [
+     129.673,
+     -0.36,
+     -779.075
+    ],
+    "q": [
+     -0.1806,
+     -0.1022,
+     -0.0154,
+     0.9781
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:55 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P14-summerfield-intersection--original.jpg",
+   "sha256": "1209d4bbc1a4eb7ef535d9fc0617e2474596df3baf0110057705b7afe8a0ff9c",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P14-summerfield-intersection",
+    "what": "the Summerfield Road junction",
+    "d": 848,
+    "lat": 0.5,
+    "yaw": 0.5,
+    "pitch": -0.18
+   },
+   "at": {
+    "d": 848,
+    "lat": 0.5
+   },
+   "calls": 353,
+   "triangles": 489532,
+   "cam": {
+    "p": [
+     129.673,
+     -0.36,
+     -779.075
+    ],
+    "q": [
+     -0.1806,
+     -0.1022,
+     -0.0154,
+     0.9781
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:55 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P15-cul-de-sac-curb--reconstructed.jpg",
+   "sha256": "b5b5a3e26ddb782d9b78cddadb178e08f297e8a3ab7d5c8e99c8e095586f4a17",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P15-cul-de-sac-curb",
+    "what": "the curved cul-de-sac curb",
+    "d": 1127,
+    "lat": 2,
+    "yaw": -0.9,
+    "pitch": -0.3
+   },
+   "at": {
+    "d": 1127,
+    "lat": 2
+   },
+   "calls": 103,
+   "triangles": 159135,
+   "cam": {
+    "p": [
+     246.271,
+     2.56,
+     -1022.908
+    ],
+    "q": [
+     -0.1909,
+     -0.464,
+     -0.1001,
+     0.8592
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P15-cul-de-sac-curb--original.jpg",
+   "sha256": "3766bbcc45e590c0b517718c2a3b7868356e96f65870edce63f799831ac3cc8f",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P15-cul-de-sac-curb",
+    "what": "the curved cul-de-sac curb",
+    "d": 1127,
+    "lat": 2,
+    "yaw": -0.9,
+    "pitch": -0.3
+   },
+   "at": {
+    "d": 1127,
+    "lat": 2
+   },
+   "calls": 105,
+   "triangles": 159135,
+   "cam": {
+    "p": [
+     246.271,
+     2.56,
+     -1022.908
+    ],
+    "q": [
+     -0.1909,
+     -0.464,
+     -0.1001,
+     0.8592
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P16-cul-de-sac-and-lookout--reconstructed.jpg",
+   "sha256": "fd8ca4bf1553491782ef2a80ae98edc4bc78185ba2c1a2aac978e3fe79e247f6",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P16-cul-de-sac-and-lookout",
+    "what": "the cul-de-sac asphalt and the lookout",
+    "d": 1112,
+    "lat": -0.8,
+    "pitch": -0.14
+   },
+   "at": {
+    "d": 1112,
+    "lat": -0.8
+   },
+   "calls": 170,
+   "triangles": 189566,
+   "cam": {
+    "p": [
+     242.282,
+     2.624,
+     -1008.182
+    ],
+    "q": [
+     -0.1521,
+     -0.0437,
+     0.0008,
+     0.9874
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P16-cul-de-sac-and-lookout--original.jpg",
+   "sha256": "ccff806392986db884269ebed8accfaf2fa9404eea67ff1b511e0832bc439c13",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P16-cul-de-sac-and-lookout",
+    "what": "the cul-de-sac asphalt and the lookout",
+    "d": 1112,
+    "lat": -0.8,
+    "pitch": -0.14
+   },
+   "at": {
+    "d": 1112,
+    "lat": -0.8
+   },
+   "calls": 172,
+   "triangles": 189566,
+   "cam": {
+    "p": [
+     242.282,
+     2.624,
+     -1008.182
+    ],
+    "q": [
+     -0.1521,
+     -0.0437,
+     0.0008,
+     0.9874
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P18-streetlights-at-dusk--reconstructed.jpg",
+   "sha256": "25d6094709ab1701cdc5c2f7380d7970d8278bb24246d1bf08bdf3cd02959ab4",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P18-streetlights-at-dusk",
+    "what": "the streetlight at d 1115 on the pavement, end of the evening (after the call at the lookout, night 0.7)",
+    "night": true,
+    "d": 1104,
+    "lat": -1.4,
+    "yaw": -0.25,
+    "pitch": -0.15
+   },
+   "at": {
+    "d": 1104,
+    "lat": -1.4
+   },
+   "calls": 170,
+   "triangles": 235153,
+   "cam": {
+    "p": [
+     241.044,
+     2.671,
+     -1000.258
+    ],
+    "q": [
+     -0.1523,
+     -0.1665,
+     -0.0181,
+     0.974
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P18-streetlights-at-dusk--original.jpg",
+   "sha256": "a1610a593b6ed7d622b6a6274a51e12790109f0b55aac04fca08698f559ba3ec",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P18-streetlights-at-dusk",
+    "what": "the streetlight at d 1115 on the pavement, end of the evening (after the call at the lookout, night 0.7)",
+    "night": true,
+    "d": 1104,
+    "lat": -1.4,
+    "yaw": -0.25,
+    "pitch": -0.15
+   },
+   "at": {
+    "d": 1104,
+    "lat": -1.4
+   },
+   "calls": 173,
+   "triangles": 235241,
+   "cam": {
+    "p": [
+     241.044,
+     2.671,
+     -1000.258
+    ],
+    "q": [
+     -0.1523,
+     -0.1665,
+     -0.0181,
+     0.974
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P21-flashlight-on-the-pavement--reconstructed.jpg",
+   "sha256": "0d9c9f17b010e404d13528a97b104505c5bdb8233a44715ec4c990bcd38e437f",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P21-flashlight-on-the-pavement",
+    "what": "the game's flashlight on the pavement at the end of the evening (QA lighting test: the flashlight light switched on in the Prologue, after the call)",
+    "night": true,
+    "d": 1118,
+    "lat": -3.2,
+    "yaw": -0.6,
+    "pitch": -0.45,
+    "flash": true
+   },
+   "at": {
+    "d": 1118,
+    "lat": -3.2
+   },
+   "calls": 147,
+   "triangles": 177727,
+   "cam": {
+    "p": [
+     240.369,
+     2.581,
+     -1014.354
+    ],
+    "q": [
+     -0.2774,
+     -0.3262,
+     -0.0929,
+     0.8989
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P21-flashlight-on-the-pavement--original.jpg",
+   "sha256": "d148aad4aa086ed0aca771da37299be67acae5270e86944e350701ea1433be01",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "qa&pavement",
+   "view": {
+    "n": "P21-flashlight-on-the-pavement",
+    "what": "the game's flashlight on the pavement at the end of the evening (QA lighting test: the flashlight light switched on in the Prologue, after the call)",
+    "night": true,
+    "d": 1118,
+    "lat": -3.2,
+    "yaw": -0.6,
+    "pitch": -0.45,
+    "flash": true
+   },
+   "at": {
+    "d": 1118,
+    "lat": -3.2
+   },
+   "calls": 149,
+   "triangles": 177727,
+   "cam": {
+    "p": [
+     240.369,
+     2.581,
+     -1014.354
+    ],
+    "q": [
+     -0.2774,
+     -0.3262,
+     -0.0929,
+     0.8989
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P23-aftermath1-damage-with-the-flag--forced-on.jpg",
+   "sha256": "09975bd55cf56ea99a820b330820fa5e9dbc4e34ac1d78decbb851551917bdba",
+   "kind": "game-renderer capture",
+   "camera": "Aftermath I scene camera (DEV scene start)",
+   "mode": "reconstruction forced on for this test only (in play it is off outside the Prologue)"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P23-aftermath1-damage-with-the-flag--as-played.jpg",
+   "sha256": "0c6f4552f0bceb75222ee3d01bf1727c0a57e201fde7db22ef82426498b6cb33",
+   "kind": "game-renderer capture",
+   "camera": "Aftermath I scene camera (DEV scene start)",
+   "mode": "as played with ?pavement: original surfaces"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P12-sidewalk-and-lawn-boundary--reconstructed.jpg",
+   "sha256": "7657371229bfa0ec6e85195d42ffe9c25f132adcfae940bc5f48e64fa3fc0348",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P12-sidewalk-and-lawn-boundary",
+    "what": "the sidewalk and the repaired lawn",
+    "d": 120,
+    "lat": 7,
+    "yaw": -0.35,
+    "pitch": -0.62
+   },
+   "at": {
+    "d": 120,
+    "lat": 7
+   },
+   "calls": 312,
+   "triangles": 784039,
+   "cam": {
+    "p": [
+     6.965,
+     2.866,
+     -120.045
+    ],
+    "q": [
+     -0.3781,
+     -0.1692,
+     -0.0602,
+     0.9082
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P12-sidewalk-and-lawn-boundary--original.jpg",
+   "sha256": "94a72f956d90ba7376e6a29c80d562126120f4ff1d37e35e10b32bb350eef26b",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P12-sidewalk-and-lawn-boundary",
+    "what": "the sidewalk and the repaired lawn",
+    "d": 120,
+    "lat": 7,
+    "yaw": -0.35,
+    "pitch": -0.62
+   },
+   "at": {
+    "d": 120,
+    "lat": 7
+   },
+   "calls": 319,
+   "triangles": 787859,
+   "cam": {
+    "p": [
+     6.965,
+     2.866,
+     -120.045
+    ],
+    "q": [
+     -0.3781,
+     -0.1692,
+     -0.0602,
+     0.9082
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P17-golden-hour-shadows--reconstructed.jpg",
+   "sha256": "d2e78a09275c622d071afcc22cb91fc00dba4b618346c4337abc7a5f2fdcd888",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P17-golden-hour-shadows",
+    "what": "golden-hour shadows across the road",
+    "d": 196,
+    "lat": -1,
+    "pitch": -0.2
+   },
+   "at": {
+    "d": 196,
+    "lat": -1
+   },
+   "calls": 564,
+   "triangles": 984981,
+   "cam": {
+    "p": [
+     7.929,
+     1.419,
+     -195.474
+    ],
+    "q": [
+     -0.1825,
+     -0.1559,
+     -0.0228,
+     0.9705
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:45 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P17-golden-hour-shadows--original.jpg",
+   "sha256": "e30ba22a7cad04fff71641f396b777a197a563c58cbbdd8bfe7e80781cd58581",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P17-golden-hour-shadows",
+    "what": "golden-hour shadows across the road",
+    "d": 196,
+    "lat": -1,
+    "pitch": -0.2
+   },
+   "at": {
+    "d": 196,
+    "lat": -1
+   },
+   "calls": 582,
+   "triangles": 997439,
+   "cam": {
+    "p": [
+     7.929,
+     1.419,
+     -195.474
+    ],
+    "q": [
+     -0.1825,
+     -0.1559,
+     -0.0228,
+     0.9705
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:45 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P19-houses-trees-and-pavement--reconstructed.jpg",
+   "sha256": "c8b10043afe8aeb77568b2d77646d042ffa388ef76510019b6c1dc5a735fe415",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P19-houses-trees-and-pavement",
+    "what": "a wider scene with the refined houses and vegetation",
+    "d": 96,
+    "lat": -2.2,
+    "yaw": 0.2,
+    "pitch": -0.08
+   },
+   "at": {
+    "d": 96,
+    "lat": -2.2
+   },
+   "calls": 551,
+   "triangles": 943849,
+   "cam": {
+    "p": [
+     -2.241,
+     3.099,
+     -96.035
+    ],
+    "q": [
+     -0.1265,
+     0.0963,
+     0.0175,
+     0.9871
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P19-houses-trees-and-pavement--original.jpg",
+   "sha256": "1b0f4a8808d0207f23ba50400fc895f750c0fffdb21e48a8f03033de220e8afb",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P19-houses-trees-and-pavement",
+    "what": "a wider scene with the refined houses and vegetation",
+    "d": 96,
+    "lat": -2.2,
+    "yaw": 0.2,
+    "pitch": -0.08
+   },
+   "at": {
+    "d": 96,
+    "lat": -2.2
+   },
+   "calls": 570,
+   "triangles": 956929,
+   "cam": {
+    "p": [
+     -2.241,
+     3.099,
+     -96.035
+    ],
+    "q": [
+     -0.1265,
+     0.0963,
+     0.0175,
+     0.9871
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P20-the-boys-bikes-and-all-four--reconstructed.jpg",
+   "sha256": "355acd0862f616c7ea19669f5a0373277f9a1be3480df002bdf1097c03bbc175",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P20-the-boys-bikes-and-all-four",
+    "what": "the boys' bicycles with all four upgraded systems",
+    "d": 0,
+    "lat": -0.3,
+    "pitch": -0.1,
+    "friends": true
+   },
+   "at": {
+    "d": 0,
+    "lat": -0.3
+   },
+   "calls": 649,
+   "triangles": 975493,
+   "cam": {
+    "p": [
+     -0.347,
+     1.401,
+     0.031
+    ],
+    "q": [
+     -0.1114,
+     -0.0038,
+     0.0069,
+     0.9938
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P20-the-boys-bikes-and-all-four--original.jpg",
+   "sha256": "a3e8e9ad74f438c804a4de626b07f3e3d2f473e709a294c1ec6642b1efd6dd4d",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P20-the-boys-bikes-and-all-four",
+    "what": "the boys' bicycles with all four upgraded systems",
+    "d": 0,
+    "lat": -0.3,
+    "pitch": -0.1,
+    "friends": true
+   },
+   "at": {
+    "d": 0,
+    "lat": -0.3
+   },
+   "calls": 666,
+   "triangles": 984748,
+   "cam": {
+    "p": [
+     -0.347,
+     1.401,
+     0.031
+    ],
+    "q": [
+     -0.1114,
+     -0.0038,
+     0.0069,
+     0.9938
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P22-curb-cut-with-the-repaired-lawn--reconstructed.jpg",
+   "sha256": "7356e3b5a94c7b489540f0f981a09ebdcb7a0b0da540b70fa5f8309d116c74ff",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "reconstructed",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P22-curb-cut-with-the-repaired-lawn",
+    "what": "a driveway apron and the repaired lawn",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": -3.5,
+    "lat": 3.6,
+    "yaw": -1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "calls": 567,
+   "triangles": 1128641,
+   "cam": {
+    "p": [
+     3.553,
+     3.02,
+     -100.958
+    ],
+    "q": [
+     -0.2122,
+     -0.4705,
+     -0.1128,
+     0.8491
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  },
+  {
+   "file": "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P22-curb-cut-with-the-repaired-lawn--original.jpg",
+   "sha256": "fded273168f0eb61aac1809f698b000e2ace86e7dcd3856593b824ee309147ab",
+   "kind": "game-renderer capture",
+   "camera": "gameplay riding camera (QA placement)",
+   "mode": "original",
+   "flags": "bikes&houses&vegetation&pavement",
+   "view": {
+    "n": "P22-curb-cut-with-the-repaired-lawn",
+    "what": "a driveway apron and the repaired lawn",
+    "drive": {
+     "side": 1,
+     "after": 100
+    },
+    "dd": -3.5,
+    "lat": 3.6,
+    "yaw": -1,
+    "pitch": -0.35
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "calls": 588,
+   "triangles": 1146037,
+   "cam": {
+    "p": [
+     3.553,
+     3.02,
+     -100.958
+    ],
+    "q": [
+     -0.2122,
+     -0.4705,
+     -0.1128,
+     0.8491
+    ],
+    "fov": 64
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM"
+  }
+ ],
+ "pairs": [
+  {
+   "name": "P01-asphalt-beneath-the-bike",
+   "what": "asphalt directly beneath the player while riding",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     -1.235,
+     2.726,
+     -39.989
+    ],
+    "q": [
+     -0.4503,
+     -0.0096,
+     0.0045,
+     0.8928
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 40,
+    "lat": -1.2
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 147,
+    "triangles": 300174
+   },
+   "original": {
+    "calls": 154,
+    "triangles": 303704
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P01-asphalt-beneath-the-bike--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P01-asphalt-beneath-the-bike--original.jpg"
+   ]
+  },
+  {
+   "name": "P02-road-ahead-from-the-bike",
+   "what": "the road looking forward from bicycle height",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     -1.539,
+     3.089,
+     -60.004
+    ],
+    "q": [
+     -0.133,
+     -0.0032,
+     0.0057,
+     0.9911
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 60,
+    "lat": -1.5
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 343,
+    "triangles": 647679
+   },
+   "original": {
+    "calls": 359,
+    "triangles": 656671
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P02-road-ahead-from-the-bike--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P02-road-ahead-from-the-bike--original.jpg"
+   ]
+  },
+  {
+   "name": "P03-long-view-down-oak-hollow",
+   "what": "a long view down Oak Hollow Drive",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     57.365,
+     0.455,
+     -286.96
+    ],
+    "q": [
+     -0.1062,
+     -0.2722,
+     -0.0236,
+     0.9561
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 300,
+    "lat": -1
+   },
+   "clock": "AUGUST 21, 2011  7:46 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 475,
+    "triangles": 984376
+   },
+   "original": {
+    "calls": 492,
+    "triangles": 997406
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P03-long-view-down-oak-hollow--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P03-long-view-down-oak-hollow--original.jpg"
+   ]
+  },
+  {
+   "name": "P04-asphalt-close-detail",
+   "what": "a close asphalt detail: a repaired manhole, a sealed crack",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     -1.143,
+     3.189,
+     -82.525
+    ],
+    "q": [
+     -0.4632,
+     -0.0118,
+     0.0057,
+     0.8861
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 82.5,
+    "lat": -1.1
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 167,
+    "triangles": 379370
+   },
+   "original": {
+    "calls": 174,
+    "triangles": 382900
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P04-asphalt-close-detail--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P04-asphalt-close-detail--original.jpg"
+   ]
+  },
+  {
+   "name": "P05-asphalt-meets-gutter",
+   "what": "asphalt meeting the concrete gutter pan",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     4.127,
+     2.098,
+     -149.808
+    ],
+    "q": [
+     -0.34,
+     -0.3782,
+     -0.1379,
+     0.8499
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 150,
+    "lat": 3.5
+   },
+   "clock": "AUGUST 21, 2011  7:44 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 203,
+    "triangles": 519562
+   },
+   "original": {
+    "calls": 210,
+    "triangles": 523382
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P05-asphalt-meets-gutter--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P05-asphalt-meets-gutter--original.jpg"
+   ]
+  },
+  {
+   "name": "P06-sidewalk-from-standing-height",
+   "what": "sidewalk concrete (riding camera on the walk, eye about 1.5 m)",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     7.055,
+     2.93,
+     -43.993
+    ],
+    "q": [
+     -0.2427,
+     -0.0069,
+     0.0065,
+     0.9701
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 343,
+    "triangles": 656224
+   },
+   "original": {
+    "calls": 360,
+    "triangles": 666536
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P06-sidewalk-from-standing-height--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P06-sidewalk-from-standing-height--original.jpg"
+   ]
+  },
+  {
+   "name": "P07-sidewalk-joints-close",
+   "what": "sidewalk joints from close range",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     7.054,
+     2.929,
+     -43.989
+    ],
+    "q": [
+     -0.4957,
+     -0.0139,
+     0.0057,
+     0.8684
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 44,
+    "lat": 7.1
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 140,
+    "triangles": 286621
+   },
+   "original": {
+    "calls": 146,
+    "triangles": 289533
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P07-sidewalk-joints-close--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P07-sidewalk-joints-close--original.jpg"
+   ]
+  },
+  {
+   "name": "P08-curb-face-from-the-bike",
+   "what": "the curb face from bicycle height",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     3.354,
+     2.688,
+     -39.986
+    ],
+    "q": [
+     -0.1674,
+     -0.5717,
+     -0.1407,
+     0.7908
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 40,
+    "lat": 3.4
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 217,
+    "triangles": 536843
+   },
+   "original": {
+    "calls": 226,
+    "triangles": 543661
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P08-curb-face-from-the-bike--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P08-curb-face-from-the-bike--original.jpg"
+   ]
+  },
+  {
+   "name": "P09-driveway-curb-cut",
+   "what": "a driveway curb cut from street level",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     3.554,
+     3.021,
+     -100.96
+    ],
+    "q": [
+     -0.2127,
+     -0.4704,
+     -0.1127,
+     0.849
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 454,
+    "triangles": 987837
+   },
+   "original": {
+    "calls": 475,
+    "triangles": 1005233
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P09-driveway-curb-cut--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P09-driveway-curb-cut--original.jpg"
+   ]
+  },
+  {
+   "name": "P10-a-whole-driveway",
+   "what": "a complete residential driveway",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     2.153,
+     2.986,
+     -104.465
+    ],
+    "q": [
+     -0.0956,
+     -0.6774,
+     -0.0922,
+     0.7235
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 104.43,
+    "lat": 2.2
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 170,
+    "triangles": 435913
+   },
+   "original": {
+    "calls": 178,
+    "triangles": 442777
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P10-a-whole-driveway--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P10-a-whole-driveway--original.jpg"
+   ]
+  },
+  {
+   "name": "P11-sidewalk-passing-a-driveway",
+   "what": "the sidewalk passing a driveway",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     7.053,
+     3.216,
+     -96.261
+    ],
+    "q": [
+     -0.2039,
+     -0.0055,
+     0.0069,
+     0.979
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 96.23,
+    "lat": 7.1
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 393,
+    "triangles": 752652
+   },
+   "original": {
+    "calls": 411,
+    "triangles": 765168
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P11-sidewalk-passing-a-driveway--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P11-sidewalk-passing-a-driveway--original.jpg"
+   ]
+  },
+  {
+   "name": "P13-briarwood-intersection",
+   "what": "the Briarwood Lane junction",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     107.446,
+     2.952,
+     -532.978
+    ],
+    "q": [
+     -0.1638,
+     -0.0538,
+     -0.0019,
+     0.985
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 572,
+    "lat": -0.5
+   },
+   "clock": "AUGUST 21, 2011  7:51 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 502,
+    "triangles": 851302
+   },
+   "original": {
+    "calls": 520,
+    "triangles": 866442
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P13-briarwood-intersection--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P13-briarwood-intersection--original.jpg"
+   ]
+  },
+  {
+   "name": "P14-summerfield-intersection",
+   "what": "the Summerfield Road junction",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     129.673,
+     -0.36,
+     -779.075
+    ],
+    "q": [
+     -0.1806,
+     -0.1022,
+     -0.0154,
+     0.9781
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 848,
+    "lat": 0.5
+   },
+   "clock": "AUGUST 21, 2011  7:55 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 343,
+    "triangles": 482810
+   },
+   "original": {
+    "calls": 353,
+    "triangles": 489532
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P14-summerfield-intersection--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P14-summerfield-intersection--original.jpg"
+   ]
+  },
+  {
+   "name": "P15-cul-de-sac-curb",
+   "what": "the curved cul-de-sac curb",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     246.271,
+     2.56,
+     -1022.908
+    ],
+    "q": [
+     -0.1909,
+     -0.464,
+     -0.1001,
+     0.8592
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 1127,
+    "lat": 2
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 103,
+    "triangles": 159135
+   },
+   "original": {
+    "calls": 105,
+    "triangles": 159135
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P15-cul-de-sac-curb--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P15-cul-de-sac-curb--original.jpg"
+   ]
+  },
+  {
+   "name": "P16-cul-de-sac-and-lookout",
+   "what": "the cul-de-sac asphalt and the lookout",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     242.282,
+     2.624,
+     -1008.182
+    ],
+    "q": [
+     -0.1521,
+     -0.0437,
+     0.0008,
+     0.9874
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 1112,
+    "lat": -0.8
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 170,
+    "triangles": 189566
+   },
+   "original": {
+    "calls": 172,
+    "triangles": 189566
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P16-cul-de-sac-and-lookout--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P16-cul-de-sac-and-lookout--original.jpg"
+   ]
+  },
+  {
+   "name": "P18-streetlights-at-dusk",
+   "what": "the streetlight at d 1115 on the pavement, end of the evening (after the call at the lookout, night 0.7)",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     241.044,
+     2.671,
+     -1000.258
+    ],
+    "q": [
+     -0.1523,
+     -0.1665,
+     -0.0181,
+     0.974
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 1104,
+    "lat": -1.4
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 170,
+    "triangles": 235153
+   },
+   "original": {
+    "calls": 173,
+    "triangles": 235241
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P18-streetlights-at-dusk--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P18-streetlights-at-dusk--original.jpg"
+   ]
+  },
+  {
+   "name": "P21-flashlight-on-the-pavement",
+   "what": "the game's flashlight on the pavement at the end of the evening (QA lighting test: the flashlight light switched on in the Prologue, after the call)",
+   "flags": "qa&pavement",
+   "camera": {
+    "p": [
+     240.369,
+     2.581,
+     -1014.354
+    ],
+    "q": [
+     -0.2774,
+     -0.3262,
+     -0.0929,
+     0.8989
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 1118,
+    "lat": -3.2
+   },
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 147,
+    "triangles": 177727
+   },
+   "original": {
+    "calls": 149,
+    "triangles": 177727
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P21-flashlight-on-the-pavement--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P21-flashlight-on-the-pavement--original.jpg"
+   ]
+  },
+  {
+   "name": "P12-sidewalk-and-lawn-boundary",
+   "what": "the sidewalk and the repaired lawn",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     6.965,
+     2.866,
+     -120.045
+    ],
+    "q": [
+     -0.3781,
+     -0.1692,
+     -0.0602,
+     0.9082
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 120,
+    "lat": 7
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 312,
+    "triangles": 784039
+   },
+   "original": {
+    "calls": 319,
+    "triangles": 787859
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P12-sidewalk-and-lawn-boundary--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P12-sidewalk-and-lawn-boundary--original.jpg"
+   ]
+  },
+  {
+   "name": "P17-golden-hour-shadows",
+   "what": "golden-hour shadows across the road",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     7.929,
+     1.419,
+     -195.474
+    ],
+    "q": [
+     -0.1825,
+     -0.1559,
+     -0.0228,
+     0.9705
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 196,
+    "lat": -1
+   },
+   "clock": "AUGUST 21, 2011  7:45 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 564,
+    "triangles": 984981
+   },
+   "original": {
+    "calls": 582,
+    "triangles": 997439
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P17-golden-hour-shadows--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P17-golden-hour-shadows--original.jpg"
+   ]
+  },
+  {
+   "name": "P19-houses-trees-and-pavement",
+   "what": "a wider scene with the refined houses and vegetation",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     -2.241,
+     3.099,
+     -96.035
+    ],
+    "q": [
+     -0.1265,
+     0.0963,
+     0.0175,
+     0.9871
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 96,
+    "lat": -2.2
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 551,
+    "triangles": 943849
+   },
+   "original": {
+    "calls": 570,
+    "triangles": 956929
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P19-houses-trees-and-pavement--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P19-houses-trees-and-pavement--original.jpg"
+   ]
+  },
+  {
+   "name": "P20-the-boys-bikes-and-all-four",
+   "what": "the boys' bicycles with all four upgraded systems",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     -0.347,
+     1.401,
+     0.031
+    ],
+    "q": [
+     -0.1114,
+     -0.0038,
+     0.0069,
+     0.9938
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 0,
+    "lat": -0.3
+   },
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 649,
+    "triangles": 975493
+   },
+   "original": {
+    "calls": 666,
+    "triangles": 984748
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P20-the-boys-bikes-and-all-four--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P20-the-boys-bikes-and-all-four--original.jpg"
+   ]
+  },
+  {
+   "name": "P22-curb-cut-with-the-repaired-lawn",
+   "what": "a driveway apron and the repaired lawn",
+   "flags": "bikes&houses&vegetation&pavement",
+   "camera": {
+    "p": [
+     3.553,
+     3.02,
+     -100.958
+    ],
+    "q": [
+     -0.2122,
+     -0.4705,
+     -0.1128,
+     0.8491
+    ],
+    "fov": 64
+   },
+   "at": {
+    "d": 100.93,
+    "lat": 3.6
+   },
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "sameCamera": true,
+   "reconstructed": {
+    "calls": 567,
+    "triangles": 1128641
+   },
+   "original": {
+    "calls": 588,
+    "triangles": 1146037
+   },
+   "files": [
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P22-curb-cut-with-the-repaired-lawn--reconstructed.jpg",
+    "../../../tmp/claude-0/-home-user-Last-light/f3b60de5-d3d2-5ab8-ac82-b36cab5fea84/scratchpad/regression/pavement-final/P22-curb-cut-with-the-repaired-lawn--original.jpg"
+   ]
+  }
+ ],
+ "notes": [
+  "Aftermath I trench frame: reconstruction forced on vs the original shader: {\"pixels\":1440000,\"changed\":454277,\"darkOriginal\":15643,\"darkForced\":15911,\"state\":\"c1-walk\"}"
+ ],
+ "finished": "2026-11-20T21:59:44.407Z",
+ "passed": 30,
+ "failed": 0
+}
