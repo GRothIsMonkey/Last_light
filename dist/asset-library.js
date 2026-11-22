@@ -17,6 +17,7 @@ import {GLTFLoader} from './three-addons-gltf-loader.js';
 import {clone as cloneSkinned} from './three-addons-skeleton-utils.js';
 
 export const ASSETS={
+ 'chr.protagonist.a12':{file:'assets/chr/chr.protagonist.a12.glb',rig:'rig.human.child',kind:'character',note:'Opt-in Prologue player movement study'},
  // id: runtime file (relative to dist/), rig contract, what it is
  'tst.pipeline-probe':{file:'assets/tst/tst.pipeline-probe.glb',rig:'rig.human.child',kind:'test',note:'Phase 0A technical probe; not a character'},
 };
