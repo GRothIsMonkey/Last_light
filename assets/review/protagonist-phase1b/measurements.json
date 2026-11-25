@@ -919,6 +919,18 @@
         ]
       }
     ],
-    "reference_commit": "c7cc8c0794b82634c27b0bfcf63378487950c6cc"
+    "reference_commit": "c7cc8c0794b82634c27b0bfcf63378487950c6cc",
+    "rerun": {
+      "setting": "DEV_KNOWN=2/alex-bike",
+      "checks_passed": 840,
+      "reported_development_scene_differences": 1
+    }
+  },
+  "restored_game_capture": {
+    "frames": 132,
+    "fps": 18,
+    "max_grip_target_error_m": 8.959774847421348e-08,
+    "max_speed_m_per_s": 4.44200969651141,
+    "final_speed_m_per_s": 0
   }
 }

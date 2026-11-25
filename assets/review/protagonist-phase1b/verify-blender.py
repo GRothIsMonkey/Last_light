@@ -41,5 +41,6 @@ for path in sorted((folder / "movement-clips").glob("*.mp4")):
     assert clip.frame_duration >= 24 and min(clip.size) >= 400, path
     clips[path.stem] = [clip.frame_duration, *clip.size]
     bpy.data.movieclips.remove(clip)
-assert len(clips) == 16
+assert clips["combined-prologue-ride"] == [132, 800, 560]
+assert len(clips) == 17
 print("Recovered linked cycling scene and MP4s", json.dumps(clips))

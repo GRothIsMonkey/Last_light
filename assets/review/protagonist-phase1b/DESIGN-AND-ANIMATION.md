@@ -12,7 +12,7 @@ The standing, walking and running poses have separate joint and finger motion. W
 
 ## Reviewing the work
 
-Open [the review gallery](REVIEW.html) for 16 motion clips, 14 Cycles renders and 11 screenshots from the playable Prologue. The labeled [first-person sheet](First-person-review.png) compares contact in the Blender studio with the actual game camera. The [four-friends portrait](blender-review/16-four-friends.png) is the cast consistency check.
+Open [the review gallery](REVIEW.html) for 17 motion clips, 14 Cycles renders and 11 screenshots from the playable Prologue. The labeled [first-person sheet](First-person-review.png) compares contact in the Blender studio with the actual game camera. The [four-friends portrait](blender-review/16-four-friends.png) is the cast consistency check.
 
 Open [the bicycle studio](Bicycle-motion-studio.blend) and play frames 1–91 at 30 fps for a continuous side view. The rider camera is also available in the scene. Keep its linked [player rig](Player-2011-rig.blend) beside it. Select the PlayerRig armature and use the Action Editor to inspect or edit any of the thirteen actions. The source opens on Steer so the bicycle file can evaluate it directly. Select Idle for the standing character.
 
