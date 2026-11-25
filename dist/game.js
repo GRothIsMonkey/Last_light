@@ -96,8 +96,12 @@ const STREETPROPS_FLAG=typeof location!=='undefined'&&/[?&]streetprops\b/.test(l
 // toys, kiddie pools, trampolines, swing sets, sheds, clotheslines and the creek's and the lookout's fences, authored, in place of
 // the procedural ones. Without the flag nothing of it loads or changes.
 const DETAILS_FLAG=typeof location!=='undefined'&&/[?&]details\b/.test(location.search||'');
-const worldOpts={...(HOUSES_FLAG?{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}:{}),...(VEGETATION_FLAG?{vegetation:true}:{}),...(pavementKit?{pavement:pavementKit}:{}),...(STREETPROPS_FLAG?{streetprops:true}:{}),...(DETAILS_FLAG?{details:true}:{})};
-const world=(HOUSES_FLAG||VEGETATION_FLAG||pavementKit||STREETPROPS_FLAG||DETAILS_FLAG)?buildWorld(scene,worldOpts):buildWorld(scene);
+// DEV environment repairs (?envrepair): targeted fixes on top of the six benchmarks (envrepair.js): chain-link coverage on the street
+// props' fences, Briarwood creek's remaining procedural plants, the trampolines, swing sets, big wheels and wagons, contact shadows.
+// The creek's brush, reeds and ground patches are recorded and baked apart (world.js opts.envrepair). Without the flag nothing changes.
+const ENVREPAIR_FLAG=typeof location!=='undefined'&&/[?&]envrepair\b/.test(location.search||'');
+const worldOpts={...(HOUSES_FLAG?{splitHouses:P=>isBenchmarkLot(P)?lotKey(P):null}:{}),...(VEGETATION_FLAG?{vegetation:true}:{}),...(pavementKit?{pavement:pavementKit}:{}),...(STREETPROPS_FLAG?{streetprops:true}:{}),...(DETAILS_FLAG?{details:true}:{}),...(ENVREPAIR_FLAG?{envrepair:true}:{})};
+const world=(HOUSES_FLAG||VEGETATION_FLAG||pavementKit||STREETPROPS_FLAG||DETAILS_FLAG||ENVREPAIR_FLAG)?buildWorld(scene,worldOpts):buildWorld(scene);
 // Added after the neighborhood is bent and merged, so the sky stays a sky.
 scene.add(sky);const {road,originals,groundY}=world;// road and originals are read by tests/verify.mjs.
 const _v=new THREE.Vector3(),_q=new THREE.Quaternion(),_e=new THREE.Euler();
@@ -105,6 +109,7 @@ const ctx={distance:0,speed:0,lateral:0,state:'intro',clock:0,speaker:null,eye:n
 let audio=null;const sfx=(name,pos,opts)=>audio?.sfx(name,pos,opts);
 const friends=createFriends(scene,world,{sfx,bell:(pos,g)=>audio?.bell(pos,g)});
 const ambient=createAmbient(scene,world,{sfx,camera,renderer,riders:()=>friends.list.filter(f=>f.mode!=='foot'&&f.bike.group.visible).map(f=>({d:f.bd,lat:f.blat}))});
+let supportCast=null;// (?supportcast: the supporting-cast benchmark, mounted below; updated after friends and ambient)
 // The end of the street: what can be touched there, and what does not quite fit.
 const ending=createEnding(scene,world),interact=createInteractions({world,ambient,sfx});
 // Menus, settings, prompts and memory lines. (The title screen itself, menu.js, is made at the end, once the chapters exist.)
@@ -733,7 +738,7 @@ function update(dt){if(state==='paused'||state==='ended')return;if(state==='cred
  if(state!=='memory'){escFov=damp(escFov,escWant,escWant>escFov?1.6:1,dt);if(escFov<.01&&!escWant)escFov=0;if(Math.abs(camera.fov-(64+escFov))>.02){camera.fov=64+escFov;camera.updateProjectionMatrix();}}
  if(titleOn)titleScene.place();
  foot.lamp(dt,state==='c1-walk');barLamp();camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=n1?clamp(nav.locate(camera.position.x,camera.position.z).d,-300,1140):distance;ctx.speed=n1?0:speed;ctx.lateral=lateral;ctx.state=mem?'riding':state;
- friends.update(dt,ctx);if(mem&&memCast)memCast.update(dt,ctx);ambient.update(dt,titleOn?titleScene.ambientCtx():ctx);if(titleOn)titleScene.afterAmbient();ending.update(dt,{callDone,fade,ended:state==='ended',camera,night:n1||mem});
+ friends.update(dt,ctx);if(mem&&memCast)memCast.update(dt,ctx);ambient.update(dt,titleOn?titleScene.ambientCtx():ctx);if(supportCast)supportCast.update(dt,ctx);if(titleOn)titleScene.afterAmbient();ending.update(dt,{callDone,fade,ended:state==='ended',camera,night:n1||mem});
  if(n1){chapter.update(dt);if(roam.fadeIn>0){roam.fadeIn=Math.max(0,roam.fadeIn-dt/3.2);fade=roam.fadeIn;$('fade').style.opacity=fade;}}
  if(coda?.active)coda.update(dt);
  chapter3Art.update(dt);
@@ -893,6 +898,13 @@ let streetPropsPast=false;const streetPropsPrologue=()=>{const s=state==='paused
 // Prologue neighborhood-details benchmark (DEV only): ?details stands the authored signs, furniture, hoses, sprinklers, toys,
 // play equipment, sheds, clotheslines and the remaining fences in place of the procedural ones (details-benchmark.js); the same
 // Prologue-only rule as the pavement and the street props.
+// Prologue supporting cast (DEV only): ?supportcast gives Jamie's mother and the driveway basketball kid authored Blender
+// characters (supportcast.js), driven by friends.js and ambient.js exactly as before (the update hook above reads their state
+// after they move); ; (Semicolon) swaps them with the originals. The Prologue only. Without ?supportcast nothing is loaded.
+let envPast=false;const envPrologue=()=>{const s=state==='paused'?resumeState:state;if(s==='intro')envPast=false;if(s.startsWith('c1-')||s==='credits'||coda?.active)envPast=true;return !envPast;};
+if(ENVREPAIR_FLAG)import('./envrepair.js').then(m=>m.mountInGame({scene,camera,renderer,world,hemi,sun:sunlight,ambient,prologue:envPrologue})).catch(e=>console.error('environment repairs failed:',e));
+let supportPast=false;const supportPrologue=()=>{const s=state==='paused'?resumeState:state;if(s==='intro')supportPast=false;if(s.startsWith('c1-')||s==='credits'||coda?.active)supportPast=true;return !supportPast;};
+if(typeof location!=='undefined'&&/[?&]supportcast\b/.test(location.search||''))import('./supportcast.js').then(m=>m.mountInGame({scene,camera,renderer,world,friends,ambient,prologue:supportPrologue})).then(a=>{supportCast=a;}).catch(e=>console.error('supporting cast failed:',e));
 let detailsPast=false;const detailsPrologue=()=>{const s=state==='paused'?resumeState:state;if(s==='intro')detailsPast=false;if(s.startsWith('c1-')||s==='credits'||coda?.active)detailsPast=true;return !detailsPast;};
 if(DETAILS_FLAG)import('./details-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,hemi,sun:sunlight,prologue:detailsPrologue})).catch(e=>console.error('details benchmark failed:',e));
 if(STREETPROPS_FLAG)import('./streetprops-benchmark.js').then(m=>m.mountInGame({scene,camera,renderer,world,hemi,sun:sunlight,prologue:streetPropsPrologue})).catch(e=>console.error('street-props benchmark failed:',e));

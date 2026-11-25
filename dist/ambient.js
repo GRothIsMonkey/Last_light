@@ -232,5 +232,6 @@ export function createAmbient(scene,world,hooks={}){
  reset();
  // Things in the street a rider should not pass through.
  function blockers(){return carGroup.visible&&car.mode!=='parked'&&Math.abs(car.lat)<5?[{d:car.d,lat:car.lat,half:2.6,width:1.1,speed:car.mode==='drive'?car.v:0}]:[];}
- return {update,reset,sources,time,blockers,pushSwing,swingPosition,night,morning,skipTo,blink,blinkReset:()=>{blinks.length=0;},lampOverride,lamps:()=>lamps.map(l=>({i:l.i,d:l.d,lat:l.lat,at:l.at,frame:l.frame})),get flag(){return flag;},get nightMode(){return nightMode;},get morningMode(){return morningMode;},get swing(){return {...pend};},get state(){return {sprinklers:sprinklers.map(s=>s.on),kidVisible:kid.person.group.visible,car:car.mode,lamps:lamps.map(l=>l.level),swing:Math.abs(pend.th)+Math.abs(pend.ph)};}};
+ return {get hoopKid(){return {kid,ball:ballMesh,ring,ringY};},// (?supportcast reads the hoop kid's state; nothing else uses it)
+  update,reset,sources,time,blockers,pushSwing,swingPosition,night,morning,skipTo,blink,blinkReset:()=>{blinks.length=0;},lampOverride,lamps:()=>lamps.map(l=>({i:l.i,d:l.d,lat:l.lat,at:l.at,frame:l.frame})),get flag(){return flag;},get nightMode(){return nightMode;},get morningMode(){return morningMode;},get swing(){return {...pend};},get state(){return {sprinklers:sprinklers.map(s=>s.on),kidVisible:kid.person.group.visible,car:car.mode,lamps:lamps.map(l=>l.level),swing:Math.abs(pend.th)+Math.abs(pend.ph)};}};
 }

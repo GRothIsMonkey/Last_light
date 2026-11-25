@@ -95,14 +95,14 @@ export function vegMaterial(src,kind,U,{shadow=true}={}){
  m.customProgramCacheKey=()=>'ll-veg-'+kind;
  return m;
 }
-function depthMaterial(map,U){const d=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map,alphaTest:.42,side:THREE.DoubleSide});
+export function depthMaterial(map,U){const d=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map,alphaTest:.42,side:THREE.DoubleSide});
  d.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.vertexShader='attribute vec4 _wind;\nuniform float uTime,uGust,uWind;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n vec3 objectNormal=vec3(0.,1.,0.);'+WIND_GLSL);};
  d.customProgramCacheKey=()=>'ll-veg-depth';return d;}
 
 // ------------------------------------------------------------------------------------------------ variants from the files
 // Each variant node (extras.ll_variant, or the oak's root) holds LOD meshes (extras.ll_lod); every glTF primitive of a LOD
 // is merged into one geometry with a group per material, so a variant's LOD is one InstancedMesh.
-function variantsOf(template,U,shared){const out=new Map();
+export function variantsOf(template,U,shared){const out=new Map();
  const roots=[];template.traverse(o=>{if(o.userData?.ll_variant||(o.userData?.ll_asset_id==='lm.old-oak'))roots.push(o);});
  for(const r of roots){const id=r.userData.ll_variant||r.userData.ll_asset_id,lods=[];
   for(const c of r.children){const l=c.userData?.ll_lod;if(l===undefined)continue;
@@ -117,7 +117,7 @@ function variantsOf(template,U,shared){const out=new Map();
  return out;}
 
 // ------------------------------------------------------------------------------------------------ instanced LOD fields
-class Field{
+export class Field{
  constructor(scene,name,{dist,hide=Infinity,shadowLods=[0,1],U}){this.scene=scene;this.name=name;this.dist=dist;this.hide=hide;this.shadowLods=shadowLods;this.U=U;
   this.root=new THREE.Group();this.root.name='authored-veg:'+name;scene.add(this.root);this.items=[];this.meshes=new Map();this.forced=null;this.dirty=true;}
  add(variant,matrix,pos,extra={}){this.items.push({variant,matrix,pos,level:-1,...extra});}

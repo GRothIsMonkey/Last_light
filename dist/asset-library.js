@@ -40,6 +40,12 @@ export const ASSETS={
  // Prologue neighborhood-details benchmark (DEV, ?details): street signs, yard and porch furniture, grills, hoses and
  // sprinklers, toys, kiddie pools, trampolines, swing sets, sheds, clotheslines and the remaining fences, awaiting approval
  'details.kit':{file:'assets/details/details.kit.glb',rig:'none',kind:'details',note:'neighborhood details, 3 LODs; original work (the lookout rails reuse the street props\' CC BY 4.0 fence wood; sign lettering in Overpass, SIL OFL 1.1)'},
+ // Prologue environment repairs (DEV, ?envrepair): the details kit's trampoline, swing set, big wheel and wagon, corrected
+ 'envrepair.kit':{file:'assets/envrepair/envrepair.kit.glb',rig:'none',kind:'details',note:'trampoline, swing set, big wheel, wagon repairs on the details atlas; original work'},
+ // Prologue supporting cast (DEV, ?supportcast): Jamie's mother and the driveway basketball kid, original procedural Blender
+ // characters awaiting approval (A-22 open; A-78, A-79)
+ 'chr.jamie-mother':{file:'assets/chr/chr.jamie-mother.glb',rig:'rig.human.adult',kind:'character',note:'Jamie\'s mother (provisional design); original work'},
+ 'chr.hoop-kid':{file:'assets/chr/chr.hoop-kid.glb',rig:'rig.human.child',kind:'character',note:'the driveway basketball kid (anonymous neighbour); original work'},
 };
 const cache=new Map(),log=[];
 let loader=null;

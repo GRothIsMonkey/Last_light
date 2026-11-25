@@ -83,6 +83,12 @@ export function buildWorld(scene,opts={}){
  // geometry, collisions and every gameplay query stay the default game's.
  if(opts.details){W.dt={signs:[],chairs:[],grills:[],toys:[],pools:[],hoses:[],sprinklers:[],trampolines:[],swings:[],sheds:[],clotheslines:[],fences:[],fieldFence:null};
   W.dtZone=(g,kind)=>{g.traverse(o=>{if(o.isMesh||o.isLine)o.userData.zone='dt:'+kind;});return g;};}
+ // opts.envrepair (DEV, ?envrepair only): the targeted environment repairs. Briarwood creek's remaining procedural brush, reeds,
+ // ground patches, algae and the creek trees outside the vegetation record are recorded (W.er: where, what, the values already
+ // chosen) and baked into batches and shadow proxies of their own (zones 'er:*'), so envrepair.js can stand the vegetation
+ // library's plants in their places. Recording never draws from a random stream; geometry and gameplay stay the default game's.
+ if(opts.envrepair){W.er={creek:{shrubs:[],weeds:[],patches:[],algae:[],trees:[]}};
+  W.erZone=(g,kind)=>{g.traverse(o=>{if(o.isMesh||o.isLine)o.userData.zone='er:'+kind;});return g;};}
  W.easement=easementFrame(W);// Chapter Two's drainage easement: its ground leaves holes in the older ground
  W.woods=woodsFrame(W);// Chapter Three: the old access road past Briarwood's end, the woods, the outfall (same idea)
  W.drain=drainFrame(W);// ...and the storm sewer trunk behind the outfall
@@ -127,7 +133,7 @@ export function buildWorld(scene,opts={}){
  return {scene,road:W.named.road,originals,merged,windowMats:W.windowMats,porchMats:W.porchMats,streetLamps:W.streetLamps,foliage:W.foliage,grassMat:W.grassMat,grassMats:W.grassMats,
   groundY,authoredY,rideable:W.rideable,obstacles:W.obstacles,homes:W.homes,doors,garages,windows,sideDoors,anchor,houseAnchor,alexWindow:W.alexWindow,car:W.car,drivewayOpenings:W.drives,sideDrives:W.sideDrives||[],houses:W.houses,sidePlansAll:W.sidePlans,surfaceY:W.surfaceY,sideSurface:W.sideSurface,junctions:W.junctions,creek:W.creekInfo||null,interiorMats:W.interiorMats,
   material:K.mat,farWindow:W.farWindow,glassLit:W.glassLit,porchLit:W.porchLit,lampLit:W.lampLit,shadowProxies,LOOKOUT,sideFrames,interiors:W.interiors,vegRecord:W.vegRecord||null,lights:W.lights,hooks:W.hooks||{},hoops:W.hoops||[],easement:W.easement,woods:W.woods,drain:W.drain,town:W.town,pine:W.pine,vegBuild:(g,r,o)=>W.veg.build(g,r,o),terrainY,signs:W.signs||[],
-  poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space,fenceSegs:W.fenceSegs||[],pavement:W.pv?{...W.pv,materials:W.pvMats||{}}:null,streetProps:W.sp||null,details:W.dt||null};
+  poles:W.poles,wires:W.wires,background:W.background,plans:W.plans,sidePlans:W.sidePlans,farHouses:W.farHouses,space:W.space,fenceSegs:W.fenceSegs||[],pavement:W.pv?{...W.pv,materials:W.pvMats||{}}:null,streetProps:W.sp||null,er:W.er||null,details:W.dt||null};
 }
 
 // A material whose emissive level follows the evening: uP is the ride's progress (0..1),
@@ -210,7 +216,7 @@ function bakeAndMerge(W,scene){let t0=0;const hashF=n=>{const x=Math.sin(n*127.1
    for(let t=0;t<tris;t++){const i0=idx?idx.getX(t*3):t*3,i1=idx?idx.getX(t*3+1):t*3+1,i2=idx?idx.getX(t*3+2):t*3+2;
     const cx=(pos[i0*3]+pos[i1*3]+pos[i2*3])/3,cz=(pos[i0*3+2]+pos[i1*3+2]+pos[i2*3+2])/3,cell=Math.floor(cx/cellSize)*1000+Math.floor(cz/cellSize);
     let b=local.get(cell);if(!b){b=batchFor(material,cell,far,zone);local.set(cell,b);}add(b,pos,nor,col,uv,i0,pvA);add(b,pos,nor,col,uv,i1,pvA);add(b,pos,nor,col,uv,i2,pvA);
-    if(caster){const sz=zone==='woods'?110:50,hb=zone&&(zone.startsWith('hb:')||zone.startsWith('vg:')||zone.startsWith('sp:')||zone.startsWith('dt:'))?zone:null,sc=(hb?hb+':':'')+(zone==='woods'?'w':'')+((Math.floor(cx/sz)*1000+Math.floor(cz/sz))*2+(leaf?1:0));let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,hb,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
+    if(caster){const sz=zone==='woods'?110:50,hb=zone&&(zone.startsWith('hb:')||zone.startsWith('vg:')||zone.startsWith('sp:')||zone.startsWith('dt:')||zone.startsWith('er:'))?zone:null,sc=(hb?hb+':':'')+(zone==='woods'?'w':'')+((Math.floor(cx/sz)*1000+Math.floor(cz/sz))*2+(leaf?1:0));let sp=slocal.get(sc);if(!sp){sp=shadow.get(sc);if(!sp){sp={leaf,hb,p:new Buf(),uv:leaf?new Buf():null};shadow.set(sc,sp);}slocal.set(sc,sp);}
      for(const i of [i0,i1,i2]){sp.p.push(pos[i*3],pos[i*3+1],pos[i*3+2]);if(leaf)sp.uv.push(uv?uv.getX(i):0,uv?uv.getY(i):0,0);}}}
   }
  }

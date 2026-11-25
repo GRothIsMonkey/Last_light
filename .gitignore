@@ -18,3 +18,6 @@ assets/source/house/kit/interior-renders/
 
 # offline playtest packages (built by tools/package-playtest.mjs; delivered separately, never committed)
 release/
+# Python bytecode caches of the Blender build scripts
+__pycache__/
+*.pyc

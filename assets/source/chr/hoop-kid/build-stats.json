@@ -1,0 +1,81 @@
+{
+ "asset": "chr.hoop-kid",
+ "version": "1",
+ "blender": "5.1.2",
+ "glb_bytes": 3777844,
+ "triangles": {
+  "HoopKidHead": 10544,
+  "HoopKidHair": 2944,
+  "HoopKidBody": 10554,
+  "HoopKidEyes": 960,
+  "total": 25002
+ },
+ "bones": 65,
+ "shape_keys": [
+  "browDownLeft",
+  "browDownRight",
+  "browInnerUp",
+  "browOuterUpLeft",
+  "browOuterUpRight",
+  "cheekPuff",
+  "cheekSquintLeft",
+  "cheekSquintRight",
+  "eyeBlinkLeft",
+  "eyeBlinkRight",
+  "eyeSquintLeft",
+  "eyeSquintRight",
+  "eyeWideLeft",
+  "eyeWideRight",
+  "jawOpen",
+  "mouthClose",
+  "mouthFrownLeft",
+  "mouthFrownRight",
+  "mouthFunnel",
+  "mouthLowerDown",
+  "mouthPressLeft",
+  "mouthPressRight",
+  "mouthPucker",
+  "mouthSmileLeft",
+  "mouthSmileRight",
+  "mouthStretchLeft",
+  "mouthStretchRight",
+  "mouthUpperUp",
+  "noseSneerLeft",
+  "noseSneerRight"
+ ],
+ "clips": {
+  "dribble": {
+   "frames": 31,
+   "seconds": 1.0,
+   "loop": true
+  },
+  "shoot": {
+   "frames": 43,
+   "seconds": 1.4,
+   "loop": false
+  },
+  "catch": {
+   "frames": 40,
+   "seconds": 1.3,
+   "loop": false
+  },
+  "hold": {
+   "frames": 61,
+   "seconds": 2.0,
+   "loop": true
+  },
+  "idle": {
+   "frames": 61,
+   "seconds": 2.0,
+   "loop": true
+  },
+  "apose": {
+   "frames": 2,
+   "seconds": 0.03333333333333333,
+   "loop": false
+  }
+ },
+ "measurements": {
+  "stature_m": 1.503
+ }
+}
