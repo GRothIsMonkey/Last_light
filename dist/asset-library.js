@@ -17,6 +17,10 @@ import {GLTFLoader} from './three-addons-gltf-loader.js';
 import {clone as cloneSkinned} from './three-addons-skeleton-utils.js';
 
 export const ASSETS={
+ 'chr.protagonist.a12':{file:'assets/chr/chr.protagonist.a12.glb',rig:'rig.human.child',kind:'character',note:'Opt-in Prologue player movement study'},
+ 'chr.jamie.a12':{file:'assets/chr/chr.jamie.a12.glb',rig:'rig.human.child',kind:'character',note:'Prologue friend, three fitted detail levels'},
+ 'chr.sam.a12':{file:'assets/chr/chr.sam.a12.glb',rig:'rig.human.child',kind:'character',note:'Prologue friend, three fitted detail levels'},
+ 'chr.alex.a12':{file:'assets/chr/chr.alex.a12.glb',rig:'rig.human.child',kind:'character',note:'Prologue friend, three fitted detail levels'},
  // id: runtime file (relative to dist/), rig contract, what it is
  'tst.pipeline-probe':{file:'assets/tst/tst.pipeline-probe.glb',rig:'rig.human.child',kind:'test',note:'Phase 0A technical probe; not a character'},
  // Phase 1 bicycle benchmark (DEV, ?bikes): authored bikes awaiting approval; no story scene asks for them yet

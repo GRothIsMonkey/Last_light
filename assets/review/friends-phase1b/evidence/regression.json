@@ -1,0 +1,71 @@
+{
+  "strictPassesBeforeKnownDifference": 838,
+  "fullPassesWithKnownDifference": 840,
+  "known": [
+    {
+      "k": "2/alex-bike",
+      "d": [
+        [
+          "companions.1.b.x",
+          -1.4,
+          115.139
+        ],
+        [
+          "companions.1.b.z",
+          -17,
+          -511.484
+        ],
+        [
+          "companions.1.ba",
+          0,
+          -0.398
+        ]
+      ]
+    }
+  ],
+  "baseline": "[{\"k\":\"2/alex-bike\",\"d\":[[\"companions.1.b.x\",-1.4,115.139],[\"companions.1.b.z\",-17,-511.484],[\"companions.1.ba\",0,-0.398]]}]",
+  "environment": {
+    "suite": "tests/details-browser.mjs",
+    "parts": [
+      "A",
+      "B",
+      "Cbase",
+      "C"
+    ],
+    "checks": [
+      "Default game: without ?details none of the details modules or assets is fetched",
+      "Default game: no details record, zone or label exists (the world is baked as before; 379 shadow proxies as accepted)",
+      "Default game: no page errors",
+      "?details: the kit and its five textures load without error",
+      "?details: assets come from dist/assets/details (1 GLB, 5 textures), none from outside the local server",
+      "Transforms: every authored detail is finite; every rigid one upright at true scale",
+      "On the original: every authored piece stands where the bake drew the procedural object it replaces (the nearest baked vertex of that object's own zone within its footprint; 314 pieces)",
+      "Placement: every recorded sign, chair, grill, toy, kiddie pool, hose coil, trampoline, swing set, shed and clothesline has its authored piece at the record's x/z (within 1 cm: nothing moved)",
+      "Counts: every record is placed (excepted, and counted: the porch chairs on house-benchmark lots, the hose coils the procedural formula hid inside houses, and the porch chairs and grills of Old Mill Road's houses, a Chapter Four place the same house builder makes)",
+      "Grounding: no detail floats above or sinks into the lawn (resting things touch it within 3 cm; level structures have no foot above it, none sunk past 0.3 m)",
+      "Scale: every piece the size of the real thing it stands for (lawn chair, resin chair, kettle grill, big wheel, wagon, scooter, kiddie pool, 12 ft trampoline, swing set, shed, clothesline, sign plates and blades, sign post, hose coil)",
+      "Signs: every plate and blade says what its record says (OAK HOLLOW DR, BRIARWOOD LN, SUMMERFIELD RD, STOP, SPEED LIMIT 25, SLOW CHILDREN AT PLAY, NO OUTLET), on its own post, facing where the procedural plate faced",
+      "Signs: no lettering backward or mirrored (front faces read left to right; the blades' backs read left to right from behind; no mirrored placement)",
+      "Signs: no plate pierced by its post (every plate's back clear of the post's face), every blade above the post's top in its bracket, every plate's lower edge 1.5 m or more above the ground",
+      "Hoses: every hose bib on its house's wall (within 3 cm), every hose continuous, lying on the lawn (none under it), none across a sidewalk, the street or a driveway",
+      "No duplicates: the procedural details and their shadows hidden while the authored ones show (the sprinklers' old stands and arms hidden, their authored heads on the game's turning heads)",
+      "Story: no detail recorded on a story home (Jamie's red chair, Alex's house and hose, Sam's house untouched); nothing at the lookout but its field fence and the ball in its grass; the bench, the oak, the initials and the chalk keep their hooks",
+      "Geometry: every merged surface, shadow proxy and line holds exactly the default game's vertices (hashed at 1 mm) \u2014 the flag only splits the details into batches of their own",
+      "Gameplay: surface heights, rideability, standing ground and authored pads at 40488 street points identical; obstacles, navigation and placement shapes (toy, sign, trampoline, swing, shed and the rest) and driveway openings unchanged",
+      "Riding: scripted rides over a driveway cut, into a plain curb and past a mailbox follow exactly the same path, speed and wheel height",
+      "Sprinklers: the jets run as before (their timing and sound untouched); the authored head turns on the game's own head group",
+      "Comparison: \".\" swaps AUTHORED (procedural details and their shadows hidden; authored details, hoses and sprinkler heads shown) and ORIGINAL in the same frame",
+      "LOD: \",\" steps the forced level 0, 1, 2 and back to automatic",
+      "?details (measures): no page errors (every details shader compiles and links)",
+      "Prologue only: active in the Prologue; in Chapter One the procedural details show again (the authored set hidden)",
+      "Chapter One with ?details: no page errors",
+      "All six benchmarks together (?bikes&houses&vegetation&pavement&streetprops&details) load without error",
+      "Trees and lawns intact: the vegetation places the same trees, shrubs and meadow, with the repaired lawn (C), as without ?details",
+      "Street props intact: the same cars and the same poles, wires, lamps, mailboxes, hydrants, bins and fences as with ?streetprops alone",
+      "With all six: the details, street props and pavement active, the houses refined, the bikes upgraded; the ride runs; no authored porch chair or grill on a house-benchmark lot (those houses are the house benchmark's), no grill anywhere but at a recorded grill",
+      "Six benchmarks: no page errors"
+    ],
+    "failures": [],
+    "renderer": "Chromium (Playwright) with ANGLE SwiftShader \u2014 software rendering, not a GPU"
+  }
+}

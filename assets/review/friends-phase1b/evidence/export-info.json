@@ -1,0 +1,152 @@
+{
+  "jamie": {
+    "bytes": 5881564,
+    "sha256": "a030ab62fa809a35e4cd575c7ab52e2a784142501b6f6baf45629c7c31a02b63",
+    "tris": {
+      "FriendLOD0": 87084,
+      "FriendLOD1": 23849,
+      "FriendLOD2": 4098
+    },
+    "joints": 68,
+    "actions": [
+      "Brake",
+      "Cycle",
+      "Dismount",
+      "HandleBike",
+      "Idle",
+      "Look",
+      "RideWave",
+      "Run",
+      "Smile",
+      "StandPedal",
+      "Steer",
+      "Talk",
+      "Walk",
+      "Wave"
+    ],
+    "animationBufferBytes": 209756,
+    "textures": [
+      {
+        "size": [
+          1024,
+          1024
+        ],
+        "bytes": 116276,
+        "format": "JPEG",
+        "rgba8MipmappedEstimate": 5592405
+      }
+    ]
+  },
+  "sam": {
+    "bytes": 6141016,
+    "sha256": "07f81d573c69aab7df4fc5ad719323dd6b9dc5d34c541408ecd96c574b481fdc",
+    "tris": {
+      "FriendLOD0": 87925,
+      "FriendLOD1": 25606,
+      "FriendLOD2": 4506
+    },
+    "joints": 68,
+    "actions": [
+      "Brake",
+      "Cycle",
+      "Dismount",
+      "HandleBike",
+      "Idle",
+      "Look",
+      "RideWave",
+      "Run",
+      "Smile",
+      "StandPedal",
+      "Steer",
+      "Talk",
+      "Walk",
+      "Wave"
+    ],
+    "animationBufferBytes": 215956,
+    "textures": [
+      {
+        "size": [
+          1024,
+          1024
+        ],
+        "bytes": 119162,
+        "format": "JPEG",
+        "rgba8MipmappedEstimate": 5592405
+      }
+    ]
+  },
+  "alex": {
+    "bytes": 5575848,
+    "sha256": "75cb157549935b82b77d48221719dfa171fa83ab4eb94fff915141a3276fa80b",
+    "tris": {
+      "FriendLOD0": 79577,
+      "FriendLOD1": 25734,
+      "FriendLOD2": 4482
+    },
+    "joints": 68,
+    "actions": [
+      "Brake",
+      "Cycle",
+      "Dismount",
+      "HandleBike",
+      "Idle",
+      "Look",
+      "RideWave",
+      "Run",
+      "Smile",
+      "StandPedal",
+      "Steer",
+      "Talk",
+      "Walk",
+      "Wave"
+    ],
+    "animationBufferBytes": 208092,
+    "textures": [
+      {
+        "size": [
+          1024,
+          1024
+        ],
+        "bytes": 124915,
+        "format": "JPEG",
+        "rgba8MipmappedEstimate": 5592405
+      }
+    ]
+  },
+  "protagonist": {
+    "bytes": 6505696,
+    "sha256": "eba97295e32f499066eb7075fbfe44820e216f6ab4a807b2cfeb3d92fc45b99c",
+    "tris": {
+      "PlayerBody": 70687,
+      "PlayerHead": 59849
+    },
+    "joints": 59,
+    "actions": [
+      "Bell",
+      "Brake",
+      "Crouch",
+      "Cycle",
+      "Dismount",
+      "GaitChanges",
+      "Idle",
+      "RideToWalk",
+      "Run",
+      "RunLight",
+      "RunStop",
+      "Steer",
+      "Walk"
+    ],
+    "animationBufferBytes": 368620,
+    "textures": [
+      {
+        "size": [
+          1024,
+          1024
+        ],
+        "bytes": 107088,
+        "format": "JPEG",
+        "rgba8MipmappedEstimate": 5592405
+      }
+    ]
+  }
+}

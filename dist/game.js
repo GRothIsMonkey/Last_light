@@ -129,6 +129,18 @@ let eyeLift=0,codaDate=null,memLimit=Infinity,rideAuto=false,finalShown=false,co
 let tut={},escFov=0,escWant=0,escDir=null,walkHint=0,firstHome=false,finaleT=0,walkD=0,walkLat=0,walkYaw=0,walkPitch=0,gait=0,lastStep=0,moveT=0,transT=0,transFrom=null,callDone=false,callT=-1,lookedBack=0,fade=0,endHint=false,wHint=false,leaveT=0;
 const keys=new Set();const touch=matchMedia('(pointer:coarse)').matches;if(touch)document.body.classList.add('touch');
 const qa=typeof location!=='undefined'&&/[?&]qa\b/.test(location.search||'');
+let playerMovementStudy=null;
+if(typeof location!=='undefined'&&new URLSearchParams(location.search).has('player1b')){
+ import('./player-1b.js').then(({createPlayerBenchmark})=>createPlayerBenchmark({renderer,self,bike:playerBike,foot})).then(study=>{
+   playerMovementStudy=study;if(qa)window.player1b=study;
+ }).catch(error=>console.error('Player movement study could not load',error));
+}
+let friendMovementStudy=null;
+if(typeof location!=='undefined'&&new URLSearchParams(location.search).has('friends1b')){
+ import('./friends-1b.js').then(({createFriendBenchmark})=>createFriendBenchmark({friends,renderer,camera})).then(study=>{
+   friendMovementStudy=study;if(qa)window.friends1b=study;
+ }).catch(error=>console.error('Friend movement study could not load',error));
+}
 let muted=true;
 const foot=createOnFoot({scene,self,bike:playerBike,camera,keys,sfx,landing:()=>audio?.footstep(night1()?nav.surface(wx,wz):'grass',.8),$});
 const onBike=()=>['riding','arriving','stopped','leaving','c1-ride'].includes(state);
@@ -732,8 +744,9 @@ function update(dt){if(state==='paused'||state==='ended')return;if(state==='cred
  if(state!=='c1-walk'&&state!=='c1-ride')escWant=0;if(state!=='c1-walk')escDir=null;
  if(state!=='memory'){escFov=damp(escFov,escWant,escWant>escFov?1.6:1,dt);if(escFov<.01&&!escWant)escFov=0;if(Math.abs(camera.fov-(64+escFov))>.02){camera.fov=64+escFov;camera.updateProjectionMatrix();}}
  if(titleOn)titleScene.place();
+ if(playerMovementStudy)playerMovementStudy.update(dt,{state,phase:gait,speed:foot.speed||0,astride,transT,pitch:walkPitch,bell:bellTime<0?0:smooth(bellTime/.12)*(1-smooth((bellTime-.20)/.20)),scripted:!!interact.pose});
  foot.lamp(dt,state==='c1-walk');barLamp();camera.updateMatrixWorld();ctx.eye.copy(camera.position);ctx.distance=n1?clamp(nav.locate(camera.position.x,camera.position.z).d,-300,1140):distance;ctx.speed=n1?0:speed;ctx.lateral=lateral;ctx.state=mem?'riding':state;
- friends.update(dt,ctx);if(mem&&memCast)memCast.update(dt,ctx);ambient.update(dt,titleOn?titleScene.ambientCtx():ctx);if(titleOn)titleScene.afterAmbient();ending.update(dt,{callDone,fade,ended:state==='ended',camera,night:n1||mem});
+ friends.update(dt,ctx);if(friendMovementStudy)friendMovementStudy.update(dt,ctx,!titleOn&&!n1&&!mem&&['riding','arriving','stopped','dismounting','walking','remounting','leaving'].includes(state));if(mem&&memCast)memCast.update(dt,ctx);ambient.update(dt,titleOn?titleScene.ambientCtx():ctx);if(titleOn)titleScene.afterAmbient();ending.update(dt,{callDone,fade,ended:state==='ended',camera,night:n1||mem});
  if(n1){chapter.update(dt);if(roam.fadeIn>0){roam.fadeIn=Math.max(0,roam.fadeIn-dt/3.2);fade=roam.fadeIn;$('fade').style.opacity=fade;}}
  if(coda?.active)coda.update(dt);
  chapter3Art.update(dt);

@@ -321,3 +321,7 @@ in Blender from scripts, `tools/blender/details/`). Two inputs are credited here
 The game's credits need no new line for the details beyond the DmitriyGDS credit prepared for the street props (A-66).
 Overpass needs none: the OFL does not require one for rendered images. It is acknowledged in the benchmark's DEV label
 and in `DETAILS-README.txt` all the same. Provenance and hashes: `assets/source/details/PROVENANCE.md`, `SHA256SUMS`.
+
+## Four-friend character benchmark
+
+The 2011 player, Jamie, Sam and Alex adapt the anatomy of [Child by gelmi.com.br](https://skfb.ly/oLutp), used under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/). Last Light developed the individual faces, proportions, grooming, outfits, textures, retargeted rigs, animation and game exports. The new assets retain the source attribution in their editable rigs.

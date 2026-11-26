@@ -1,0 +1,284 @@
+{
+  "jamie": {
+    "sha256": "6a495bab38c596d210d76a2d214a2bcb878100a837225bdca090a047ea04b3c4",
+    "source": "e97b3401127a734a24a8754de233208674e2b40d9ba1c1f581070af30d4357b8",
+    "bones": 68,
+    "actionFrames": {
+      "Idle": [
+        1,
+        49
+      ],
+      "Walk": [
+        1,
+        33
+      ],
+      "Run": [
+        1,
+        25
+      ],
+      "Cycle": [
+        1,
+        33
+      ],
+      "Steer": [
+        1,
+        73
+      ],
+      "StandPedal": [
+        1,
+        65
+      ],
+      "Brake": [
+        1,
+        49
+      ],
+      "Dismount": [
+        1,
+        43
+      ],
+      "Wave": [
+        1,
+        53
+      ],
+      "RideWave": [
+        1,
+        65
+      ],
+      "Look": [
+        1,
+        65
+      ],
+      "Smile": [
+        1,
+        41
+      ],
+      "Talk": [
+        1,
+        46
+      ],
+      "HandleBike": [
+        1,
+        65
+      ]
+    },
+    "packedImages": [
+      "bike.jamie__frame_basecolor",
+      "bike.jamie__frame_normal",
+      "bike.jamie__frame_orm",
+      "bike.jamie__hardware_basecolor",
+      "bike.jamie__hardware_normal",
+      "bike.jamie__hardware_orm",
+      "bike.jamie__soft_basecolor",
+      "bike.jamie__soft_normal",
+      "bike.jamie__soft_orm",
+      "chr.jamie.a12__cotton-weave.png",
+      "chr.jamie.a12__hair-fibres.png",
+      "chr.jamie.a12__iris-brown.png",
+      "chr.jamie.a12__ocular-color.png",
+      "chr.jamie.a12__portrait-color.png",
+      "chr.jamie.a12__portrait-roughness.png",
+      "chr.jamie.a12__summer-skin.png"
+    ],
+    "missing": [],
+    "renders": [
+      "01-front.png",
+      "02-side.png",
+      "03-three-quarter.png",
+      "04-face.png",
+      "05-smile.png",
+      "06-ride.png",
+      "07-grip.png",
+      "08-pedal.png",
+      "09-standing.png",
+      "10-goodbye.png"
+    ]
+  },
+  "sam": {
+    "sha256": "6c9ba1381154bb5e491609dfc1acf1ea733146e2f6784833213b1701307cf120",
+    "source": "898e9e4438fe6a9233bf25eda815d9c203775abd1be1d8f481e0a794041d9dfa",
+    "bones": 68,
+    "actionFrames": {
+      "Idle": [
+        1,
+        49
+      ],
+      "Walk": [
+        1,
+        33
+      ],
+      "Run": [
+        1,
+        25
+      ],
+      "Cycle": [
+        1,
+        33
+      ],
+      "Steer": [
+        1,
+        73
+      ],
+      "StandPedal": [
+        1,
+        65
+      ],
+      "Brake": [
+        1,
+        49
+      ],
+      "Dismount": [
+        1,
+        43
+      ],
+      "Wave": [
+        1,
+        53
+      ],
+      "RideWave": [
+        1,
+        65
+      ],
+      "Look": [
+        1,
+        65
+      ],
+      "Smile": [
+        1,
+        41
+      ],
+      "Talk": [
+        1,
+        46
+      ],
+      "HandleBike": [
+        1,
+        65
+      ]
+    },
+    "packedImages": [
+      "bike.sam__frame_basecolor",
+      "bike.sam__frame_normal",
+      "bike.sam__frame_orm",
+      "bike.sam__hardware_basecolor",
+      "bike.sam__hardware_normal",
+      "bike.sam__hardware_orm",
+      "bike.sam__soft_basecolor",
+      "bike.sam__soft_normal",
+      "bike.sam__soft_orm",
+      "chr.sam.a12__cotton-weave.png",
+      "chr.sam.a12__hair-fibres.png",
+      "chr.sam.a12__iris-brown.png",
+      "chr.sam.a12__layered-lock.png",
+      "chr.sam.a12__ocular-color.png",
+      "chr.sam.a12__portrait-color.png",
+      "chr.sam.a12__portrait-roughness.png",
+      "chr.sam.a12__summer-skin.png"
+    ],
+    "missing": [],
+    "renders": [
+      "01-front.png",
+      "02-side.png",
+      "03-three-quarter.png",
+      "04-face.png",
+      "05-smile.png",
+      "06-ride.png",
+      "07-grip.png",
+      "08-pedal.png",
+      "09-standing.png",
+      "10-goodbye.png"
+    ]
+  },
+  "alex": {
+    "sha256": "42df37f2453320278721e4f073e3cfd56ff16fb742eb6635b38d651dd7aaf66b",
+    "source": "c554358f78962c8f45a1dd260d2b7aed2119618bd42c20a68e3aeadc4a25f9c2",
+    "bones": 68,
+    "actionFrames": {
+      "Idle": [
+        1,
+        49
+      ],
+      "Walk": [
+        1,
+        33
+      ],
+      "Run": [
+        1,
+        25
+      ],
+      "Cycle": [
+        1,
+        33
+      ],
+      "Steer": [
+        1,
+        73
+      ],
+      "StandPedal": [
+        1,
+        65
+      ],
+      "Brake": [
+        1,
+        49
+      ],
+      "Dismount": [
+        1,
+        43
+      ],
+      "Wave": [
+        1,
+        53
+      ],
+      "RideWave": [
+        1,
+        65
+      ],
+      "Look": [
+        1,
+        65
+      ],
+      "Smile": [
+        1,
+        41
+      ],
+      "Talk": [
+        1,
+        46
+      ],
+      "HandleBike": [
+        1,
+        65
+      ]
+    },
+    "packedImages": [
+      "bike.alex__frame_basecolor",
+      "bike.alex__frame_normal",
+      "bike.alex__frame_orm",
+      "bike.alex__hardware_basecolor",
+      "bike.alex__hardware_normal",
+      "bike.alex__hardware_orm",
+      "bike.alex__soft_basecolor",
+      "bike.alex__soft_normal",
+      "bike.alex__soft_orm",
+      "chr.alex.a12__cotton-weave.png",
+      "chr.alex.a12__iris-hazel.png",
+      "chr.alex.a12__ocular-color.png",
+      "chr.alex.a12__portrait-color.png",
+      "chr.alex.a12__portrait-roughness.png",
+      "chr.alex.a12__summer-skin.png"
+    ],
+    "missing": [],
+    "renders": [
+      "01-front.png",
+      "02-side.png",
+      "03-three-quarter.png",
+      "04-face.png",
+      "05-smile.png",
+      "06-ride.png",
+      "07-grip.png",
+      "08-pedal.png",
+      "09-standing.png",
+      "10-goodbye.png"
+    ]
+  }
+}

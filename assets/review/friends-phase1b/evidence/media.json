@@ -1,0 +1,143 @@
+{
+  "decodedImages": 58,
+  "media": {
+    "alex-goodbye.mp4": {
+      "bytes": 10696118,
+      "sha256": "35bc691807deb470ce7e5a9098538757efb5ff09ac9224d1713769b649fd44c1",
+      "tracks": [
+        {
+          "kind": "vide",
+          "codec": "avc1",
+          "seconds": 26.867,
+          "samples": 403
+        },
+        {
+          "kind": "soun",
+          "codec": "mp4a",
+          "seconds": 26.901,
+          "samples": 1261
+        }
+      ]
+    },
+    "alex-motion.mp4": {
+      "bytes": 3173571,
+      "sha256": "db2acbeba017cba60a206eadc734b42c898caca8dfe8c2ef18545c9e3b775454",
+      "tracks": [
+        {
+          "kind": "vide",
+          "codec": "avc1",
+          "seconds": 35.333,
+          "samples": 530
+        }
+      ]
+    },
+    "all-four.mp4": {
+      "bytes": 4763334,
+      "sha256": "95f2d55b6f64a4b74e104292ca2512abffeb9bed0cc023d168b2d2773db9e099",
+      "tracks": [
+        {
+          "kind": "vide",
+          "codec": "avc1",
+          "seconds": 11.0,
+          "samples": 165
+        }
+      ]
+    },
+    "full.mp4": {
+      "bytes": 79243055,
+      "sha256": "da5acd44768e5944eb9bbeff5d1e053f1445f6fd6f46480e118a71a133a24df8",
+      "tracks": [
+        {
+          "kind": "vide",
+          "codec": "avc1",
+          "seconds": 272.667,
+          "samples": 4090
+        },
+        {
+          "kind": "soun",
+          "codec": "mp4a",
+          "seconds": 272.704,
+          "samples": 12783
+        }
+      ]
+    },
+    "group.mp4": {
+      "bytes": 11618567,
+      "sha256": "05c11f42dd81878435efa7340f7ee15796eb5714d68fb1306931628d6d22902f",
+      "tracks": [
+        {
+          "kind": "vide",
+          "codec": "avc1",
+          "seconds": 20.733,
+          "samples": 311
+        },
+        {
+          "kind": "soun",
+          "codec": "mp4a",
+          "seconds": 20.757,
+          "samples": 973
+        }
+      ]
+    },
+    "jamie-goodbye.mp4": {
+      "bytes": 8912039,
+      "sha256": "396e96665f6d6289fc25cde8ada6c7084dd92ecd747152ead922490c1d610684",
+      "tracks": [
+        {
+          "kind": "vide",
+          "codec": "avc1",
+          "seconds": 23.533,
+          "samples": 353
+        },
+        {
+          "kind": "soun",
+          "codec": "mp4a",
+          "seconds": 23.573,
+          "samples": 1105
+        }
+      ]
+    },
+    "jamie-motion.mp4": {
+      "bytes": 2767596,
+      "sha256": "53e0e8a111e88b2b8024aa5ab9e9c7640d4e6cecbd2ff4399e83b0df5ee7f5fe",
+      "tracks": [
+        {
+          "kind": "vide",
+          "codec": "avc1",
+          "seconds": 35.333,
+          "samples": 530
+        }
+      ]
+    },
+    "sam-goodbye.mp4": {
+      "bytes": 7593651,
+      "sha256": "8ec24d0c6a4896c5904aeedfb425e2f4ec6fc8515ba81ccd62aa4b2f5d5e7f84",
+      "tracks": [
+        {
+          "kind": "vide",
+          "codec": "avc1",
+          "seconds": 26.867,
+          "samples": 403
+        },
+        {
+          "kind": "soun",
+          "codec": "mp4a",
+          "seconds": 26.901,
+          "samples": 1261
+        }
+      ]
+    },
+    "sam-motion.mp4": {
+      "bytes": 3158045,
+      "sha256": "fc98a74242c830dbf1cd6b723efed291b626e6fa73089982c06355820a14aa26",
+      "tracks": [
+        {
+          "kind": "vide",
+          "codec": "avc1",
+          "seconds": 35.333,
+          "samples": 530
+        }
+      ]
+    }
+  }
+}

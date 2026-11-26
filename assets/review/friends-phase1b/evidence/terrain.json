@@ -1,0 +1,134 @@
+[
+  {
+    "key": "jamie",
+    "location": "Road",
+    "d": 45,
+    "lat": 0,
+    "pitch": 0.021799387478901613,
+    "groundClearanceMeters": {
+      "l": -0.00010206089317144063,
+      "r": -0.00010212801716469322
+    }
+  },
+  {
+    "key": "jamie",
+    "location": "Road grade",
+    "d": 645,
+    "lat": 1.2,
+    "pitch": -0.006236641714729935,
+    "groundClearanceMeters": {
+      "l": -0.0010741492713980394,
+      "r": 0.0007476228457895528
+    }
+  },
+  {
+    "key": "jamie",
+    "location": "Driveway cut",
+    "d": 755.23,
+    "lat": 7.81,
+    "pitch": -0.007278730916960414,
+    "groundClearanceMeters": {
+      "l": 0.004717228954072283,
+      "r": -0.008310830831609717
+    }
+  },
+  {
+    "key": "jamie",
+    "location": "Sidewalk edge",
+    "d": 765.69,
+    "lat": 7.3,
+    "pitch": -0.021532464795848746,
+    "groundClearanceMeters": {
+      "l": -0.0018105886261179926,
+      "r": 0.0009037694971858468
+    }
+  },
+  {
+    "key": "sam",
+    "location": "Road",
+    "d": 45,
+    "lat": 0,
+    "pitch": 0.021799387478901613,
+    "groundClearanceMeters": {
+      "l": -0.00009278056088146691,
+      "r": -0.0000925885443541219
+    }
+  },
+  {
+    "key": "sam",
+    "location": "Road grade",
+    "d": 645,
+    "lat": 1.2,
+    "pitch": -0.006236641714729935,
+    "groundClearanceMeters": {
+      "l": -0.0010516049200545163,
+      "r": 0.0007613374986989996
+    }
+  },
+  {
+    "key": "sam",
+    "location": "Driveway cut",
+    "d": 755.23,
+    "lat": 7.81,
+    "pitch": -0.007278730916960414,
+    "groundClearanceMeters": {
+      "l": 0.004816867032187255,
+      "r": -0.008176118245935726
+    }
+  },
+  {
+    "key": "sam",
+    "location": "Sidewalk edge",
+    "d": 765.69,
+    "lat": 7.3,
+    "pitch": -0.021532464795848746,
+    "groundClearanceMeters": {
+      "l": -0.001778689436545161,
+      "r": 0.0009276453023476794
+    }
+  },
+  {
+    "key": "alex",
+    "location": "Road",
+    "d": 45,
+    "lat": 0,
+    "pitch": 0.021799387478901613,
+    "groundClearanceMeters": {
+      "l": -0.0000920988799795186,
+      "r": -0.00009197421425044539
+    }
+  },
+  {
+    "key": "alex",
+    "location": "Road grade",
+    "d": 645,
+    "lat": 1.2,
+    "pitch": -0.006236641714729935,
+    "groundClearanceMeters": {
+      "l": -0.0010599945918976506,
+      "r": 0.0007553292572562986
+    }
+  },
+  {
+    "key": "alex",
+    "location": "Driveway cut",
+    "d": 755.23,
+    "lat": 7.81,
+    "pitch": -0.007278730916960414,
+    "groundClearanceMeters": {
+      "l": 0.004788892491533081,
+      "r": -0.008209115630078978
+    }
+  },
+  {
+    "key": "alex",
+    "location": "Sidewalk edge",
+    "d": 765.69,
+    "lat": 7.3,
+    "pitch": -0.021532464795848746,
+    "groundClearanceMeters": {
+      "l": -0.0017918915046275519,
+      "r": 0.0009185530973528366
+    }
+  }
+]
