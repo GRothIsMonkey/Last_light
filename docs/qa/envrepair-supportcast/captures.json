@@ -802,19 +802,6 @@
    "note": "rendered at 1600 x 900 in two runs (a container restart at frame 1302; the run resumed by replaying the saved frames at the fixed game step, the re-rendered frame 1301 matching the saved one to a mean of 0.03/255), then encoded at 1280 x 720 (CRF 27) for the repository"
   },
   {
-   "name": "V03-hoop-kid-driveway",
-   "file": "docs/qa/envrepair-supportcast/video/V03-hoop-kid-driveway.mp4",
-   "fps": 15,
-   "bytes": 1700002,
-   "sha256": "89172af77f3a2f9c03370aa551ac76e0745f07cd8d9a2f7a1fd98519a659870f",
-   "what": "the hoop kid in the running game: dribbling, the shot (release at the controller's 0.35 s), the ball off the rim, the chase and the catch; QA camera on the driveway's side, the hoop in frame; 10 s",
-   "subject": {
-    "du": 6.5,
-    "dv": -1.2,
-    "dist": 6.8
-   }
-  },
-  {
    "name": "V03b-hoop-kid-riding-past",
    "file": "docs/qa/envrepair-supportcast/video/V03b-hoop-kid-riding-past.mp4",
    "fps": 15,
@@ -871,9 +858,22 @@
     "path": "corner-a",
     "blocked": 0
    }
+  },
+  {
+   "name": "V03-hoop-kid-driveway",
+   "file": "docs/qa/envrepair-supportcast/video/V03-hoop-kid-driveway.mp4",
+   "fps": 15,
+   "bytes": 1699580,
+   "sha256": "b9ed7250e45450d1b7f51d1a4d95f22b2294e1692866d8343ad7fce6ae91cf71",
+   "what": "the hoop kid in the running game: dribbling, the shot (release at the controller's 0.35 s), the ball off the rim, the chase and the catch; QA camera on the driveway's side, the hoop in frame; 10 s",
+   "subject": {
+    "du": 6.5,
+    "dv": -1.2,
+    "dist": 6.8
+   }
   }
  ],
  "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
- "commit": "29f8443",
+ "commit": "74e9ed2",
  "flags": "bikes&houses&vegetation&pavement&streetprops&details&envrepair&supportcast"
 }
