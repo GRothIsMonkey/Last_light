@@ -123,7 +123,9 @@ if(WHAT.includes('pairs')){const only=process.env.VIEWS?process.env.VIEWS.split(
   if(errors.length)console.log('errors',errors.slice(0,5));});}
 
 // ------------------------------------------------------------------------------------------------ recordings
-const encode=(dir,name,fps,meta)=>{const f=path.join(VIDEO,name+'.mp4');execFileSync('ffmpeg',['-y','-loglevel','error','-framerate',String(fps),'-i',path.join(dir,'%05d.jpg'),'-c:v','libx264','-pix_fmt','yuv420p','-crf','23','-preset','medium',f]);
+// a long recording (over 600 frames) is encoded at 1280 x 720, CRF 27, to stay well inside GitHub's 100 MB file limit
+const encode=(dir,name,fps,meta)=>{const f=path.join(VIDEO,name+'.mp4'),long=fs.readdirSync(dir).filter(n=>n.endsWith('.jpg')).length>600;
+ execFileSync('ffmpeg',['-y','-loglevel','error','-framerate',String(fps),'-i',path.join(dir,'%05d.jpg'),...(long?['-vf','scale=1280:720:flags=lanczos']:[]),'-c:v','libx264','-pix_fmt','yuv420p','-crf',long?'27':'23','-preset',long?'slow':'medium','-movflags','+faststart',f]);
  rep.videos=rep.videos.filter(v=>v.name!==name);rep.videos.push({name,file:path.relative(process.cwd(),f),fps,bytes:fs.statSync(f).size,sha256:sha(f),...meta});save();fs.rmSync(dir,{recursive:true,force:true});console.log('video',name);};
 // RESUME_NAME=<recording> RESUME_DIR=<its frame folder>: continue an interrupted recording (the game advances a fixed step per
 // frame, so the frames already on disk are replayed without rendering; the last one is rendered again to RESUME_CHECK to
