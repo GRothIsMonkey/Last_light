@@ -78,7 +78,9 @@ if(PARTS.includes('A'))await withPage(async(page,{errors,requests})=>{const R=re
  check('Default game: no envrepair or supportcast module, model or texture is fetched',mods.length===0,mods);
  R.fingerprint=await page.evaluate(`(${FINGERPRINT})()`);check('Default game: no er: record or zone (world.er is null)',R.fingerprint.erZones.length===0&&await page.evaluate(()=>lastLight.world.er===null),R.fingerprint.erZones);
  R.queries=await page.evaluate(`(${QUERIES})()`);R.rides=await page.evaluate(`(${RIDES})()`);
- await startRide(page);R.mom=await page.evaluate(`(${MOMLINE})()`);
+ // the controllers' baseline in a freshly loaded page, as every other part records them: the scripted rides above leave the
+ // friends one frame off (the default game gives the same timeline as the flags in a fresh page; after the rides it does not)
+ await open(page,'');await startRide(page);R.mom=await page.evaluate(`(${MOMLINE})()`);
  await page.evaluate(()=>{lastLight.reset?.();});await startRide(page);R.kid=await page.evaluate(`(${KIDLINE})()`);
  check('Baseline recorded: geometry, '+R.fingerprint.merged.tris+' merged triangles; the mother\'s controller over '+R.mom.steps+' frames (door opens, she walks out, waits, goes in, the door closes); the kid\'s 14 s',R.mom.samples.some(s=>s[0]==='porch')&&R.mom.samples.some(s=>s[0]==='in')&&R.mom.samples.at(-1)[10]===1&&R.kid.samples.some(s=>s[0]==='shoot'),{momHash:R.mom.hash,kidHash:R.kid.hash});
  check('Default game: no page errors',errors.length===0,errors);delete R.mom.meas;delete R.kid.meas;save();});
