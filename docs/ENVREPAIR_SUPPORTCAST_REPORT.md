@@ -36,7 +36,7 @@ Every performance number is a software-renderer or file number; no real-GPU fram
   - Six in-game recordings, including the mother's complete scene and a 146-second combined ride.
   - 30 Blender renders, three of them a same-scale lineup with Jamie's Phase 1A model, and 11 Blender motion clips.
   - The consistency audit.
-  - All of it is in the review gallery (⟦GALLERY⟧) and in `docs/qa/envrepair-supportcast/`.
+  - All of it is in the review gallery (https://claude.ai/artifact/VxZQGUNXaTq2EGA6GsQiqX) and in `docs/qa/envrepair-supportcast/`.
 - **Not done or not claimed.**
   - Compatibility with Astra's `player1b&friends1b` is not tested.
   - The mother is over the 30–40k triangle budget and has no LOD.
@@ -365,7 +365,7 @@ people are drawn.
 
 ## 13. Evidence
 
-**Review gallery:** ⟦GALLERY⟧ (private until shared). Everything in it is in `docs/qa/envrepair-supportcast/`:
+**Review gallery:** https://claude.ai/artifact/VxZQGUNXaTq2EGA6GsQiqX (private until shared). Everything in it is in `docs/qa/envrepair-supportcast/`:
 
 In-game images and films carry the label "in game · software WebGL" and were rendered with all eight flags. Those marked
 `--BLENDER-RENDER` are offline Cycles renders of the editable .blend files, not the game. Wherever Jamie appears in the

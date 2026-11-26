@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Prologue Repair Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+ /* layout: a review sheet. A sticky section bar, then each subject as a band of evidence cards on a quiet ground */
+ --bg:#eef0f3;--panel:#ffffff;--ink:#141a22;--muted:#5b6574;--line:#d5dae1;--accent:#b8621b;--accent-ink:#ffffff;
+ --chip-game:#1f5e8c;--chip-blender:#6a4c93;--chip-warn:#8a5a00;--chip-bg-game:#e3eef7;--chip-bg-blender:#eee8f6;--chip-bg-warn:#fbf0d9;
+ --pass:#1d7a46;--fail:#b3261e;
+ --display:'Archivo',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141a;--panel:#171c24;--ink:#e7eaef;--muted:#9aa4b2;--line:#2a313c;--accent:#f0a23e;--accent-ink:#1a1206;
+ --chip-game:#9cc8ec;--chip-blender:#c9b3ea;--chip-warn:#f2c86b;--chip-bg-game:#1b2c3b;--chip-bg-blender:#2a2238;--chip-bg-warn:#3a2d12;--pass:#6fd39b;--fail:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10141a;--panel:#171c24;--ink:#e7eaef;--muted:#9aa4b2;--line:#2a313c;--accent:#f0a23e;--accent-ink:#1a1206;
+ --chip-game:#9cc8ec;--chip-blender:#c9b3ea;--chip-warn:#f2c86b;--chip-bg-game:#1b2c3b;--chip-bg-blender:#2a2238;--chip-bg-warn:#3a2d12;--pass:#6fd39b;--fail:#ff8a80;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{padding-block:28px 8px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,42px);line-height:1.08;margin:0 0 8px;text-wrap:balance;letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:700;font-size:26px;margin:0 0 6px;text-wrap:balance}
+h3{font-family:var(--display);font-weight:700;font-size:18px;margin:26px 0 10px}
+p{max-width:72ch;margin:0 0 10px}
+.lede{color:var(--muted);font-size:16px}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0 4px;min-width:0}
+.meta span{min-width:0;overflow-wrap:anywhere}
+.meta b{color:var(--ink);font-weight:600}
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav.bar .wrap{display:flex;gap:4px;overflow-x:auto;padding-block:8px}
+nav.bar a{font-family:var(--mono);font-size:12.5px;text-decoration:none;color:var(--muted);padding:6px 10px;border-radius:6px;white-space:nowrap}
+nav.bar a:hover,nav.bar a:focus-visible{color:var(--ink);background:var(--panel);outline:none}
+section{padding-block:30px 10px;border-bottom:1px solid var(--line)}
+.notice{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0;max-width:100%}
+.notice p{margin:0 0 6px}.notice p:last-child{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;white-space:nowrap}
+.chip.game{color:var(--chip-game);background:var(--chip-bg-game)}
+.chip.blender{color:var(--chip-blender);background:var(--chip-bg-blender)}
+.chip.warn{color:var(--chip-warn);background:var(--chip-bg-warn)}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr))}
+.grid.small{grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr))}
+.grid.wide{grid-template-columns:repeat(auto-fill,minmax(min(100%,560px),1fr))}
+.grid.one{grid-template-columns:1fr}
+figure{margin:0;min-width:0}
+figure img,figure video{display:block;width:100%;height:auto;max-width:100%;border-radius:6px;background:#000}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:6px}
+figcaption b{color:var(--ink);font-weight:600}
+.cmp{position:relative;border-radius:6px;overflow:hidden;background:#000;touch-action:pan-y}
+.cmp img{border-radius:0}
+.cmp .over{position:absolute;inset:0}
+.cmp .over img{width:100%;height:100%;object-fit:cover;clip-path:inset(0 calc(100% - var(--x,50%)) 0 0)}
+.cmp .rule{position:absolute;top:0;bottom:0;left:var(--x,50%);width:2px;margin-left:-1px;background:var(--accent);pointer-events:none}
+.cmp .tag{position:absolute;top:8px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px;background:rgba(0,0,0,.62);color:#fff;pointer-events:none}
+.cmp .tag.l{left:8px}.cmp .tag.r{right:8px}
+.cmp input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.cmp input[type=range]:focus-visible + .rule{box-shadow:0 0 0 3px var(--accent)}
+.cmp.detail{margin-top:8px}
+.pairhead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin-top:8px}
+.pairhead b{font-family:var(--mono);font-size:12.5px}
+.toggle{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:4px 9px;cursor:pointer}
+.toggle:hover{border-color:var(--accent)}.toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tablewrap{overflow-x:auto;max-width:100%;margin:10px 0}
+table{border-collapse:collapse;font-size:13.5px;min-width:520px}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.n{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.ok{color:var(--pass);font-weight:600}.bad{color:var(--fail);font-weight:600}
+.cam{font-family:var(--mono);font-size:11.5px;color:var(--muted);word-break:break-all}
+footer{padding-block:24px 40px;color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<h1>Prologue environment repairs &amp; supporting cast</h1>
+<p class="lede">Review evidence for <code>?envrepair</code> and <code>?supportcast</code> on branch <code>claude/prologue-environment-repair-supporting-cast</code>. Nothing here is approved: every decision is open in the approval register (A-78 to A-86), and A-22 stays open.</p>
+<div class="meta"><span>build <b>?bikes&amp;houses&amp;vegetation&amp;pavement&amp;streetprops&amp;details&amp;envrepair&amp;supportcast</b></span><span>captures at <b>74e9ed2</b></span><span>keys <b>'</b> repairs · <b>;</b> cast</span></div>
+<div class="notice"><p><b>How to read this page.</b> In-game images and films are the shipped renderer under <b>software WebGL</b> (Chromium + SwiftShader, not a GPU) at 1600 × 900. A pair is one camera and one frame; drag across it, or use its button, to compare. Only the benchmark's own key changes between the two images.</p>
+<p>Items marked <b>Blender render</b> are offline Cycles renders of the editable .blend files, not the game. <b>Jamie</b> in every in-game view is the existing procedural Jamie, a placeholder, not Astra's Phase 1B character.</p></div>
+</div></header>
+<nav class="bar" aria-label="Sections"><div class="wrap"><a href="#environment">Environment</a><a href="#mother">Jamie's mother</a><a href="#kid">Hoop kid</a><a href="#ride">The ride</a><a href="#audit">Audit</a><a href="#tests">Tests</a><a href="#cost">Cost</a></div></nav>
+<main>
+<section id="environment"><div class="wrap"><h2>Environment repairs</h2><p>Chain link that keeps its coverage at a distance, Briarwood creek's last primitive vegetation, the play equipment and toys, and contact shadows. Key <b>'</b> swaps repaired and original.</p>
+<div class="grid wide"><figure>
+ <div class="cmp" id="c-E01-chain-link-close"><img src="browser/E01-chain-link-close--original.jpg" alt="E01-chain-link-close: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E01-chain-link-close--repaired.jpg" alt="E01-chain-link-close: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E01-chain-link-close"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E01-chain-link-close</b><button class="toggle" type="button" data-for="c-E01-chain-link-close" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>Oak Hollow chain link (the street props&#x27; rear-lot fence) straight on at 2.5 m, from inside the yard: the wire up close; the coverage rule changes nothing here (QA camera) <span class="cam">· key &#x27; (repairs) · clock AUGUST, 2011  AS YOU REMEMBER IT · draws 425/424, triangles 925,372/906,729 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E02-chain-link-medium"><img src="browser/E02-chain-link-medium--original.jpg" alt="E02-chain-link-medium: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E02-chain-link-medium--repaired.jpg" alt="E02-chain-link-medium: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E02-chain-link-medium"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E02-chain-link-medium</b><button class="toggle" type="button" data-for="c-E02-chain-link-medium" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>the same chain link straight on from 7 m inside the back yard: the wire starts to thin below the 0.5 test (QA camera) <span class="cam">· key &#x27; (repairs) · clock AUGUST, 2011  AS YOU REMEMBER IT · draws 438/437, triangles 974,568/955,925 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E03-chain-link-distant"><img src="browser/E03-chain-link-distant--original.jpg" alt="E03-chain-link-distant: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E03-chain-link-distant--repaired.jpg" alt="E03-chain-link-distant: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E03-chain-link-distant"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E03-chain-link-distant</b><button class="toggle" type="button" data-for="c-E03-chain-link-distant" data-after="repaired">Show original</button></div>
+ <div class="cmp detail" id="c-E03-chain-link-distant-detail"><img src="browser/detail/E03-chain-link-distant--before.jpg" alt="E03-chain-link-distant detail: original" loading="lazy">
+  <div class="over"><img src="browser/detail/E03-chain-link-distant--after.jpg" alt="E03-chain-link-distant detail: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare the enlarged detail: E03-chain-link-distant"><div class="rule"></div>
+  <span class="tag l">repaired · detail ×1.3</span><span class="tag r">original</span></div>
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>across the same back yard diagonally from one corner: the bays recede to about 20 m at a grazing angle, where the plain test thins the wire away and the coverage rule keeps a faint grey screen (QA camera) <span class="cam">· key &#x27; (repairs) · clock AUGUST, 2011  AS YOU REMEMBER IT · draws 495/494, triangles 907,562/888,919 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E04-creek-vegetation"><img src="browser/E04-creek-vegetation--original.jpg" alt="E04-creek-vegetation: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E04-creek-vegetation--repaired.jpg" alt="E04-creek-vegetation: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E04-creek-vegetation"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E04-creek-vegetation</b><button class="toggle" type="button" data-for="c-E04-creek-vegetation" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>Briarwood creek from the inside bank: the brush, reeds, ground patches and algae (before: procedural balls, flat blades, hard polygons; after: the vegetation library&#x27;s shrubs and grasses, soft patches) (QA camera) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:50 PM · draws 613/591, triangles 990,343/976,229 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E05-creek-fence-and-vegetation"><img src="browser/E05-creek-fence-and-vegetation--original.jpg" alt="E05-creek-fence-and-vegetation: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E05-creek-fence-and-vegetation--repaired.jpg" alt="E05-creek-fence-and-vegetation: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E05-creek-fence-and-vegetation"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E05-creek-fence-and-vegetation</b><button class="toggle" type="button" data-for="c-E05-creek-fence-and-vegetation" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>the creek&#x27;s chain link across the back of the strip and the planting around it (QA camera on the bank) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:50 PM · draws 645/628, triangles 1,048,159/1,029,398 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E06-trampoline-supports"><img src="browser/E06-trampoline-supports--original.jpg" alt="E06-trampoline-supports: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E06-trampoline-supports--repaired.jpg" alt="E06-trampoline-supports: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E06-trampoline-supports"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E06-trampoline-supports</b><button class="toggle" type="button" data-for="c-E06-trampoline-supports" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>a trampoline&#x27;s supports: W-legs 45 mm with their sockets and feet, the enclosure poles clamped to the legs (QA camera, 3 m) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:38 PM · draws 347/346, triangles 709,362/683,795 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E07-trampoline-net"><img src="browser/E07-trampoline-net--original.jpg" alt="E07-trampoline-net: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E07-trampoline-net--repaired.jpg" alt="E07-trampoline-net: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E07-trampoline-net"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E07-trampoline-net</b><button class="toggle" type="button" data-for="c-E07-trampoline-net" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>a trampoline and its enclosure net from the yard, 7 m (QA camera) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:38 PM · draws 345/344, triangles 667,611/642,044 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E08-big-wheel"><img src="browser/E08-big-wheel--original.jpg" alt="E08-big-wheel: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E08-big-wheel--repaired.jpg" alt="E08-big-wheel: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E08-big-wheel"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E08-big-wheel</b><button class="toggle" type="button" data-for="c-E08-big-wheel" data-after="repaired">Show original</button></div>
+ <div class="cmp detail" id="c-E08-big-wheel-detail"><img src="browser/detail/E08-big-wheel--before.jpg" alt="E08-big-wheel detail: original" loading="lazy">
+  <div class="over"><img src="browser/detail/E08-big-wheel--after.jpg" alt="E08-big-wheel detail: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare the enlarged detail: E08-big-wheel"><div class="rule"></div>
+  <span class="tag l">repaired · detail ×1.5</span><span class="tag r">original</span></div>
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>a big wheel: the moulded body, tread ribs, pedal blocks on their cranks, axle caps (QA camera) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:39 PM · draws 382/381, triangles 743,895/717,517 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E08b-wagon"><img src="browser/E08b-wagon--original.jpg" alt="E08b-wagon: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E08b-wagon--repaired.jpg" alt="E08b-wagon: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E08b-wagon"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E08b-wagon</b><button class="toggle" type="button" data-for="c-E08b-wagon" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>a wagon: the tray&#x27;s walls, the rolled rim, hub caps, the handle&#x27;s yoke (QA camera) <span class="cam">· key &#x27; (repairs) · clock AUGUST, 2011  AS YOU REMEMBER IT · draws 754/720, triangles 1,282,411/1,281,344 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E08c-swing-set"><img src="browser/E08c-swing-set--original.jpg" alt="E08c-swing-set: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E08c-swing-set--repaired.jpg" alt="E08c-swing-set: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E08c-swing-set"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E08c-swing-set</b><button class="toggle" type="button" data-for="c-E08c-swing-set" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>a swing set: thicker legs on plastic feet, the hangers, seats with thickness (QA camera between the houses) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:36 PM · draws 572/571, triangles 898,537/885,300 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E09-grounding-yard"><img src="browser/E09-grounding-yard--original.jpg" alt="E09-grounding-yard: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E09-grounding-yard--repaired.jpg" alt="E09-grounding-yard: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E09-grounding-yard"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E09-grounding-yard</b><button class="toggle" type="button" data-for="c-E09-grounding-yard" data-after="repaired">Show original</button></div>
+ <div class="cmp detail" id="c-E09-grounding-yard-detail"><img src="browser/detail/E09-grounding-yard--before.jpg" alt="E09-grounding-yard detail: original" loading="lazy">
+  <div class="over"><img src="browser/detail/E09-grounding-yard--after.jpg" alt="E09-grounding-yard detail: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare the enlarged detail: E09-grounding-yard"><div class="rule"></div>
+  <span class="tag l">repaired · detail ×3.2</span><span class="tag r">original</span></div>
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>grounding: lawn chairs, a grill and toys with their contact shadows (QA camera) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:56 PM · draws 469/468, triangles 948,486/927,551 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E09b-grounding-car-mailbox"><img src="browser/E09b-grounding-car-mailbox--original.jpg" alt="E09b-grounding-car-mailbox: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E09b-grounding-car-mailbox--repaired.jpg" alt="E09b-grounding-car-mailbox: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E09b-grounding-car-mailbox"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E09b-grounding-car-mailbox</b><button class="toggle" type="button" data-for="c-E09b-grounding-car-mailbox" data-after="repaired">Show original</button></div>
+ <div class="cmp detail" id="c-E09b-grounding-car-mailbox-detail"><img src="browser/detail/E09b-grounding-car-mailbox--before.jpg" alt="E09b-grounding-car-mailbox detail: original" loading="lazy">
+  <div class="over"><img src="browser/detail/E09b-grounding-car-mailbox--after.jpg" alt="E09b-grounding-car-mailbox detail: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare the enlarged detail: E09b-grounding-car-mailbox"><div class="rule"></div>
+  <span class="tag l">repaired · detail ×3.2</span><span class="tag r">original</span></div>
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>grounding: a parked car and a mailbox at the curb, the contact under the car (QA camera on the sidewalk) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:37 PM · draws 280/279, triangles 499,947/484,543 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E10-riding-view"><img src="browser/E10-riding-view--original.jpg" alt="E10-riding-view: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E10-riding-view--repaired.jpg" alt="E10-riding-view: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E10-riding-view"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E10-riding-view</b><button class="toggle" type="button" data-for="c-E10-riding-view" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span></div>
+ <figcaption>the riding camera in the repaired neighbourhood (first-person, a yard with play equipment ahead on the left) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:46 PM · draws 669/631, triangles 1,084,802/1,083,866 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E11-lookout-and-old-oak"><img src="browser/E11-lookout-and-old-oak--original.jpg" alt="E11-lookout-and-old-oak: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E11-lookout-and-old-oak--repaired.jpg" alt="E11-lookout-and-old-oak: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E11-lookout-and-old-oak"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E11-lookout-and-old-oak</b><button class="toggle" type="button" data-for="c-E11-lookout-and-old-oak" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>the lookout and the old oak as the ride ends: unchanged by the repairs <span class="cam">· key &#x27; (repairs) · clock AUGUST, 2011  AS YOU REMEMBER IT · draws 335/334, triangles 546,867/535,884 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E12-full-environment"><img src="browser/E12-full-environment--original.jpg" alt="E12-full-environment: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E12-full-environment--repaired.jpg" alt="E12-full-environment: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E12-full-environment"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E12-full-environment</b><button class="toggle" type="button" data-for="c-E12-full-environment" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>Oak Hollow wide with all six benchmarks and the repairs (QA raised camera, 13 m up) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:42 PM · draws 564/563, triangles 805,907/786,441 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-E13-creek-from-oak-hollow"><img src="browser/E13-creek-from-oak-hollow--original.jpg" alt="E13-creek-from-oak-hollow: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/E13-creek-from-oak-hollow--repaired.jpg" alt="E13-creek-from-oak-hollow: repaired" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and repaired: E13-creek-from-oak-hollow"><div class="rule"></div>
+  <span class="tag l">repaired</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>E13-creek-from-oak-hollow</b><button class="toggle" type="button" data-for="c-E13-creek-from-oak-hollow" data-after="repaired">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span></div>
+ <figcaption>what the Prologue&#x27;s playable street shows of the creek: Briarwood Lane from Oak Hollow at the junction, the creek strip 90 m down it (riding camera) <span class="cam">· key &#x27; (repairs) · clock AUGUST 21, 2011  7:51 PM · draws 648/586, triangles 1,173,782/1,166,478 · same camera: yes</span></figcaption>
+</figure></div>
+<h3>Chain link in motion</h3><div class="grid wide"><figure><video controls muted playsinline preload="none" poster="video/posters/video__V01-chain-link-in-motion--original.jpg" src="video/V01-chain-link-in-motion--original.mp4"></video><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption><b>Before</b> Oak Hollow&#x27;s rear-lot chain link in motion (QA camera in one back yard): pulling back from 2.5 m to 8 m straight on, then sliding to the yard&#x27;s corner to look along about 25 m of the run at a grazing angle (the path whose sight lines are clear); as the street props left it (the wire thins away with distance)</figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__V01-chain-link-in-motion--repaired.jpg" src="video/V01-chain-link-in-motion--repaired.mp4"></video><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption><b>After</b> Oak Hollow&#x27;s rear-lot chain link in motion (QA camera in one back yard): pulling back from 2.5 m to 8 m straight on, then sliding to the yard&#x27;s corner to look along about 25 m of the run at a grazing angle (the path whose sight lines are clear); with the coverage rule</figcaption></figure></div></div></section>
+<section id="mother"><div class="wrap"><h2>Jamie's mother</h2><p>An original procedural character proposed for A-22 (still open): late thirties, 1.64 m, the Prologue's outfit, a face of her own. The game's controller (<code>friends.js updateMom</code>) drives when and where she moves; nothing about the scene's timing, triggers, positions or lines changed.</p>
+<h3>In game</h3><div class="grid wide"><figure>
+ <div class="cmp" id="c-S01-mother-porch-close"><img src="browser/S01-mother-porch-close--original.jpg" alt="S01-mother-porch-close: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/S01-mother-porch-close--authored.jpg" alt="S01-mother-porch-close: authored" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and authored: S01-mother-porch-close"><div class="rule"></div>
+  <span class="tag l">authored</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>S01-mother-porch-close</b><button class="toggle" type="button" data-for="c-S01-mother-porch-close" data-after="authored">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span><span class="chip warn">Jamie: placeholder</span></div>
+ <figcaption>Jamie&#x27;s mother on her porch during her wave (QA camera on the front walk, 4 m); left: the authored character, right: the original <span class="cam">· key ; (supporting cast) · clock AUGUST 21, 2011  7:52 PM · draws 880/890, triangles 1,284,618/1,246,696 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-S02-mother-from-the-street"><img src="browser/S02-mother-from-the-street--original.jpg" alt="S02-mother-from-the-street: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/S02-mother-from-the-street--authored.jpg" alt="S02-mother-from-the-street: authored" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and authored: S02-mother-from-the-street"><div class="rule"></div>
+  <span class="tag l">authored</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>S02-mother-from-the-street</b><button class="toggle" type="button" data-for="c-S02-mother-from-the-street" data-after="authored">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span><span class="chip warn">Jamie: placeholder</span></div>
+ <figcaption>Jamie&#x27;s mother waiting on the porch (the riding camera 11 m before her house, turned toward her); Jamie is the existing placeholder <span class="cam">· key ; (supporting cast) · clock AUGUST 21, 2011  7:54 PM · draws 587/597, triangles 996,089/958,167 · same camera: yes</span></figcaption>
+</figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__V02-jamies-mother-complete-scene.jpg" src="video/V02-jamies-mother-complete-scene.mp4"></video><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span><span class="chip warn">Jamie: placeholder</span></div>
+ <figcaption><b>The complete scene</b> Jamie&#x27;s mother&#x27;s complete Prologue scene in the running game: the door opens, she comes out, waves and calls (silently: she has no line), waits, Jamie arrives (the existing procedural Jamie: a placeholder, not Astra&#x27;s Phase 1B character), she follows him in, the door closes. Camera: QA camera on the street in front of the house; the ride goes on as in the game.</figcaption></figure></div>
+<h3>Model</h3><div class="grid small"><figure><img src="blender/jamie-mother-full-front--BLENDER-RENDER.png" alt="Front" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Front</b></figcaption></figure><figure><img src="blender/jamie-mother-full-three-quarter--BLENDER-RENDER.png" alt="Three-quarter" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Three-quarter</b></figcaption></figure><figure><img src="blender/jamie-mother-full-side--BLENDER-RENDER.png" alt="Side" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Side</b></figcaption></figure><figure><img src="blender/jamie-mother-full-back--BLENDER-RENDER.png" alt="Back" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Back</b></figcaption></figure><figure><img src="blender/jamie-mother-apose-front--BLENDER-RENDER.png" alt="A-pose (rig rest)" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>A-pose (rig rest)</b></figcaption></figure><figure><img src="blender/jamie-mother-clothing--BLENDER-RENDER.png" alt="Clothing" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Clothing</b></figcaption></figure><figure><img src="blender/jamie-mother-hands--BLENDER-RENDER.png" alt="Hands" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Hands</b></figcaption></figure><figure><img src="blender/jamie-mother-ponytail--BLENDER-RENDER.png" alt="Ponytail" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Ponytail</b></figcaption></figure><figure><img src="blender/jamie-mother-posture-wait--BLENDER-RENDER.png" alt="Waiting posture" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Waiting posture</b></figcaption></figure><figure><img src="blender/jamie-mother-walk--BLENDER-RENDER.png" alt="Walk (mid-stride)" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Walk (mid-stride)</b></figcaption></figure><figure><img src="blender/jamie-mother-wave--BLENDER-RENDER.png" alt="The wave" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>The wave</b></figcaption></figure><figure><img src="blender/jamie-mother-portrait-neutral--BLENDER-RENDER.png" alt="Neutral" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Neutral</b></figcaption></figure><figure><img src="blender/jamie-mother-portrait-smile--BLENDER-RENDER.png" alt="Warm smile" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Warm smile</b></figcaption></figure><figure><img src="blender/jamie-mother-portrait-calling--BLENDER-RENDER.png" alt="Calling (silent)" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Calling (silent)</b></figcaption></figure><figure><img src="blender/jamie-mother-portrait-attentive--BLENDER-RENDER.png" alt="Attentive" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Attentive</b></figcaption></figure><figure><img src="blender/jamie-mother-portrait-expectant--BLENDER-RENDER.png" alt="Mild expectation" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Mild expectation</b></figcaption></figure><figure><img src="blender/jamie-mother-portrait-blink--BLENDER-RENDER.png" alt="Blink" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Blink</b></figcaption></figure><figure><img src="blender/jamie-mother-portrait-profile--BLENDER-RENDER.png" alt="Profile" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Profile</b></figcaption></figure></div>
+<h3>Beside Jamie (Phase 1A design model, read only, same scale)</h3><p>Jamie's 1A model is a Sketchfab-based design pass with its own shading; it is neither the game's current Jamie nor the Phase 1B character. Shown for scale and family resemblance only.</p><div class="grid"><figure><img src="blender/jamie-mother-lineup-front-with-jamie-phase1a--BLENDER-RENDER.png" alt="Front" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Front</b></figcaption></figure><figure><img src="blender/jamie-mother-lineup-three-quarter-with-jamie-phase1a--BLENDER-RENDER.png" alt="Three-quarter" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Three-quarter</b></figcaption></figure><figure><img src="blender/jamie-mother-lineup-heads-with-jamie-phase1a--BLENDER-RENDER.png" alt="Heads" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Heads</b></figcaption></figure></div>
+<h3>Motion clips</h3><div class="grid small"><figure><video controls muted playsinline preload="none" poster="video/posters/video__jamie-mother-idle--BLENDER-RENDER.jpg" src="video/jamie-mother-idle--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>1 · Idle</b> </figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__jamie-mother-door--BLENDER-RENDER.jpg" src="video/jamie-mother-door--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>2 · At the door (anticipation)</b> </figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__jamie-mother-walk--BLENDER-RENDER.jpg" src="video/jamie-mother-walk--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>3 · Walk</b> </figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__jamie-mother-turn--BLENDER-RENDER.jpg" src="video/jamie-mother-turn--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>4 · Turn to the street</b> </figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__jamie-mother-call-wave--BLENDER-RENDER.jpg" src="video/jamie-mother-call-wave--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>5 · Call and wave (silent)</b> </figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__jamie-mother-wait--BLENDER-RENDER.jpg" src="video/jamie-mother-wait--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>6 · Waiting</b> </figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__jamie-mother-return--BLENDER-RENDER.jpg" src="video/jamie-mother-return--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>7 · Back inside</b> </figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__jamie-mother-face--BLENDER-RENDER.jpg" src="video/jamie-mother-face--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>Face: blink, smile, call</b> </figcaption></figure></div></div></section>
+<section id="kid"><div class="wrap"><h2>The driveway basketball kid</h2><p>The anonymous neighbour of <code>CAST.kid</code>, kept where and as he was. <code>ambient.js updateKid</code> still drives the dribble, the shot, the ball and his look at the boys; the clips follow its phase.</p>
+<h3>In game</h3><div class="grid wide"><figure>
+ <div class="cmp" id="c-S03-hoop-kid-driveway"><img src="browser/S03-hoop-kid-driveway--original.jpg" alt="S03-hoop-kid-driveway: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/S03-hoop-kid-driveway--authored.jpg" alt="S03-hoop-kid-driveway: authored" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and authored: S03-hoop-kid-driveway"><div class="rule"></div>
+  <span class="tag l">authored</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>S03-hoop-kid-driveway</b><button class="toggle" type="button" data-for="c-S03-hoop-kid-driveway" data-after="authored">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption>the driveway basketball kid dribbling (QA camera beside the driveway, 5 m) <span class="cam">· key ; (supporting cast) · clock AUGUST 21, 2011  7:43 PM · draws 653/653, triangles 887,381/824,265 · same camera: yes</span></figcaption>
+</figure><figure>
+ <div class="cmp" id="c-S04-hoop-kid-riding-view"><img src="browser/S04-hoop-kid-riding-view--original.jpg" alt="S04-hoop-kid-riding-view: original" loading="lazy" width="1600" height="900">
+  <div class="over"><img src="browser/S04-hoop-kid-riding-view--authored.jpg" alt="S04-hoop-kid-riding-view: authored" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare original and authored: S04-hoop-kid-riding-view"><div class="rule"></div>
+  <span class="tag l">authored</span><span class="tag r">original</span></div>
+ <div class="pairhead"><b>S04-hoop-kid-riding-view</b><button class="toggle" type="button" data-for="c-S04-hoop-kid-riding-view" data-after="authored">Show original</button></div>
+ 
+ <div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span></div>
+ <figcaption>the hoop kid as the ride comes past (riding camera); he looks at the boys, ball at his hip <span class="cam">· key ; (supporting cast) · clock AUGUST 21, 2011  7:44 PM · draws 486/496, triangles 845,908/833,506 · same camera: yes</span></figcaption>
+</figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__V03-hoop-kid-driveway.jpg" src="video/V03-hoop-kid-driveway.mp4"></video><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">QA camera</span></div>
+ <figcaption><b>At his driveway</b> the hoop kid in the running game: dribbling, the shot (release at the controller&#x27;s 0.35 s), the ball off the rim, the chase and the catch; QA camera on the driveway&#x27;s side, the hoop in frame; 10 s</figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__V03b-hoop-kid-riding-past.jpg" src="video/V03b-hoop-kid-riding-past.mp4"></video><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span><span class="chip warn">Jamie: placeholder</span></div>
+ <figcaption><b>Riding past him</b> riding past the hoop kid with the group (riding camera, turning toward him as he goes by): he stops dribbling and watches the boys pass, ball at his hip</figcaption></figure></div>
+<h3>Model and clips</h3><div class="grid small"><figure><img src="blender/hoop-kid-full-front--BLENDER-RENDER.png" alt="Front" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Front</b></figcaption></figure><figure><img src="blender/hoop-kid-full-three-quarter--BLENDER-RENDER.png" alt="Three-quarter" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Three-quarter</b></figcaption></figure><figure><img src="blender/hoop-kid-full-back--BLENDER-RENDER.png" alt="Back" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Back</b></figcaption></figure><figure><img src="blender/hoop-kid-portrait-neutral--BLENDER-RENDER.png" alt="Portrait" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Portrait</b></figcaption></figure><figure><img src="blender/hoop-kid-dribble--BLENDER-RENDER.png" alt="Dribble" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Dribble</b></figcaption></figure><figure><img src="blender/hoop-kid-shoot--BLENDER-RENDER.png" alt="Shot, release" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Shot, release</b></figcaption></figure><figure><img src="blender/hoop-kid-shoot-follow--BLENDER-RENDER.png" alt="Follow-through" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Follow-through</b></figcaption></figure><figure><img src="blender/hoop-kid-catch--BLENDER-RENDER.png" alt="Catch" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Catch</b></figcaption></figure><figure><img src="blender/hoop-kid-hold--BLENDER-RENDER.png" alt="Holding, watching the boys" loading="lazy"><div class="chips"><span class="chip blender">Blender render · not the game</span></div><figcaption><b>Holding, watching the boys</b></figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__hoop-kid-dribble--BLENDER-RENDER.jpg" src="video/hoop-kid-dribble--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>Dribble</b> </figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__hoop-kid-shoot--BLENDER-RENDER.jpg" src="video/hoop-kid-shoot--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>Shot</b> </figcaption></figure><figure><video controls muted playsinline preload="none" poster="video/posters/video__hoop-kid-catch--BLENDER-RENDER.jpg" src="video/hoop-kid-catch--BLENDER-RENDER.mp4"></video><div class="chips"><span class="chip blender">Blender render · not the game</span></div>
+ <figcaption><b>Catch</b> </figcaption></figure></div></div></section>
+<section id="ride"><div class="wrap"><h2>The ride</h2><div class="grid wide"><figure><video controls muted playsinline preload="none" poster="video/posters/video__V04-combined-prologue-ride.jpg" src="video/V04-combined-prologue-ride.mp4"></video><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span><span class="chip warn">Jamie: placeholder</span></div>
+ <figcaption><b>From the hoop kid&#x27;s street to Jamie&#x27;s house</b> a continuous ride with the group (riding camera) from the hoop kid&#x27;s street to Jamie&#x27;s house: the repaired neighbourhood, the hoop kid, the yards, Jamie&#x27;s mother&#x27;s whole scene; all eight flags; Jamie is the existing placeholder</figcaption></figure></div></div></section>
+<section id="audit"><div class="wrap"><h2>Consistency audit</h2><p>The riding camera every 60 m from 0 to 1,140 m, looking to both sides, all eight flags, at the game's own time of day for each distance (labels: distance in metres, L or R). Findings are in the report's §7: the parked cars stand on their tyres (0.5–0.9 cm, measured; they only look lifted at dusk); two small pre-existing items (the lawn's cut edge at driveway aprons, the flat curb inlets); the authored supporting cast beside the procedural boys (expected until Phase 1B); a DEV-label bug, fixed.</p><div class="grid one"><figure><a href="audit/audit-sheet-01.jpg" target="_blank" rel="noopener"><img src="audit/audit-sheet-01.jpg" alt="Audit contact sheet 1" loading="lazy"></a><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span></div><figcaption><b>Sheet 1</b> (opens full size)</figcaption></figure><figure><a href="audit/audit-sheet-02.jpg" target="_blank" rel="noopener"><img src="audit/audit-sheet-02.jpg" alt="Audit contact sheet 2" loading="lazy"></a><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span></div><figcaption><b>Sheet 2</b> (opens full size)</figcaption></figure><figure><a href="audit/audit-sheet-03.jpg" target="_blank" rel="noopener"><img src="audit/audit-sheet-03.jpg" alt="Audit contact sheet 3" loading="lazy"></a><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span></div><figcaption><b>Sheet 3</b> (opens full size)</figcaption></figure><figure><a href="audit/audit-sheet-04.jpg" target="_blank" rel="noopener"><img src="audit/audit-sheet-04.jpg" alt="Audit contact sheet 4" loading="lazy"></a><div class="chips"><span class="chip game">In game · software WebGL</span><span class="chip game">Riding camera</span></div><figcaption><b>Sheet 4</b> (opens full size)</figcaption></figure></div></div></section>
+<section id="tests"><div class="wrap"><h2>Tests</h2><p><b>33 passed, 0 failed</b> · <span class="cam">Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU · commit c77f9db</span></p><div class="tablewrap"><table><thead><tr><th>Part</th><th>Result</th><th>Check</th></tr></thead><tbody><tr><td>A</td><td class="ok">pass</td><td>Default game: no envrepair or supportcast module, model or texture is fetched</td></tr><tr><td>A</td><td class="ok">pass</td><td>Default game: no er: record or zone (world.er is null)</td></tr><tr><td>A</td><td class="ok">pass</td><td>Baseline recorded: geometry, 3672619 merged triangles; the mother&#x27;s controller over 1066 frames (door opens, she walks out, waits, goes in, the door closes); the kid&#x27;s 14 s</td></tr><tr><td>A</td><td class="ok">pass</td><td>Default game: no page errors</td></tr><tr><td>B</td><td class="ok">pass</td><td>?envrepair: every merged surface, shadow proxy and line holds exactly the default game&#x27;s vertices (the flag only bakes the creek&#x27;s recorded plants and patches into batches of their own)</td></tr><tr><td>B</td><td class="ok">pass</td><td>?envrepair: ground heights, rideability, obstacles, navigation shapes and driveway openings identical</td></tr><tr><td>B</td><td class="ok">pass</td><td>?envrepair: the three scripted rides identical</td></tr><tr><td>B</td><td class="ok">pass</td><td>?envrepair alone: the creek&#x27;s ground patches and algae recorded and replaced by soft-edged ones (the hard polygons hidden); the brush, reeds and trees left (they extend the vegetation library: ?vegetation); the chain link and play equipment say they need ?streetprops and ?details</td></tr><tr><td>B</td><td class="ok">pass</td><td>Prologue only: active in the Prologue; in Chapter One the creek&#x27;s originals show again</td></tr><tr><td>B</td><td class="ok">pass</td><td>?envrepair: no page errors</td></tr><tr><td>B</td><td class="ok">pass</td><td>?supportcast (with ?envrepair, without the six): the mother&#x27;s controller identical to the default game on every one of 1066 frames (door, path, facing, visibility, the slam) and the kid&#x27;s 14 s identical (ball, phases)</td></tr><tr><td>B</td><td class="ok">pass</td><td>?supportcast without the six: no page errors</td></tr><tr><td>C</td><td class="ok">pass</td><td>Reference: the six benchmarks alone, recorded (geometry, the mother&#x27;s and the kid&#x27;s timelines)</td></tr><tr><td>C</td><td class="ok">pass</td><td>All eight flags (?bikes&amp;houses&amp;vegetation&amp;pavement&amp;streetprops&amp;details&amp;envrepair&amp;supportcast) load without error</td></tr><tr><td>C</td><td class="ok">pass</td><td>All eight: the world geometry is exactly the six benchmarks&#x27; (vertex for vertex): the repairs and the cast add their own meshes and change no surface</td></tr><tr><td>C</td><td class="ok">pass</td><td>Chain link: the street props&#x27; chain-link material carries the coverage rule (same material, same draws; 518 chain-link bays, 603 posts, positions untouched)</td></tr><tr><td>C</td><td class="ok">pass</td><td>Play equipment: the trampolines, swing sets, big wheels and wagons use the repaired pieces (trampoline 23, swing 19, toy.bigwheel 6, toy.wagon 2), no invalid transform</td></tr><tr><td>C</td><td class="ok">pass</td><td>Play equipment on the ground: every trampoline and swing-set foot on the lawn (fitted to the ground under its feet: none floats more than 3 cm, none sunk more than 5 cm); the toys rest on their lowest points</td></tr><tr><td>C</td><td class="ok">pass</td><td>The &#x27; key restores the details kit exactly (its geometry and matrices) and repairs again</td></tr><tr><td>C</td><td class="ok">pass</td><td>Contact shadows: under 932 grounded things (cars, chairs, toys, grills, play-equipment feet, mailboxes, bins, hydrants, poles, lamps, sheds)</td></tr><tr><td>C</td><td class="ok">pass</td><td>Briarwood creek: the brush, reeds, ground patches, algae and out-of-scope trees replaced one for one from the vegetation library (originals and their shadows hidden)</td></tr><tr><td>C</td><td class="ok">pass</td><td>Jamie&#x27;s mother: friends.js runs exactly as without ?supportcast: mode, clock, path, facing, the door&#x27;s swing, visibility and the door&#x27;s slam on every one of 1066 frames, against the six benchmarks alone (hash 1328757589)</td></tr><tr><td>C</td><td class="ok">pass</td><td>Jamie&#x27;s mother: the authored figure stands on the controller&#x27;s own transform every frame (offset 0 m) and is shown exactly when the original would be, never together with it (original meshes shown: 0), hidden once the door has closed</td></tr><tr><td>C</td><td class="ok">pass</td><td>Jamie&#x27;s mother: her feet on the ground she walks on (the lower ankle 0.069–0.12 m above the ground under it: neither floating nor sunk), no invalid bone transform</td></tr><tr><td>C</td><td class="ok">pass</td><td>Jamie&#x27;s mother: on the porch she looks at Jamie whenever he is in front of her (within the neck&#x27;s reach): head toward his head, median 18.8°, 90th percentile 37.3°</td></tr><tr><td>C</td><td class="ok">pass</td><td>The hoop kid: ambient.js runs exactly as in the default game: phase, clock, the ball&#x27;s path and visibility on every frame for 14 s (hash 3447585440)</td></tr><tr><td>C</td><td class="ok">pass</td><td>The hoop kid: on the controller&#x27;s transform every frame, never shown with the original, his right hand on the ball the controller places in the contact phases (excluding the one frame where the controller itself moves the ball from the dribble to the set point; palm to ball surface -0.021…0.005 m)</td></tr><tr><td>C</td><td class="ok">pass</td><td>Night, restart, pause and a DEV scene jump: the kid hidden at night as before; after a restart the mother waits unseen again; in Chapter One the originals are back (their meshes as before)</td></tr><tr><td>C</td><td class="ok">pass</td><td>Both characters identify themselves from their GLBs (asset id, version and rig, as the DEV label shows them)</td></tr><tr><td>C</td><td class="ok">pass</td><td>All eight: no page errors</td></tr><tr><td>C</td><td class="ok">pass</td><td>Later chapters, the four boys and the shared rig untouched: chapter7-cast.js, aftermath1*.js, people.js, adult-art.js, adult-sculpt.js, cast.js, friends.js, rig.js, faces.js, astra-anatomy.js identical to the starting commit</td></tr><tr><td>D</td><td class="ok">pass</td><td>Offline package (PLAYTEST_MODELS=1): both modules, the repair kit and both characters embedded</td></tr><tr><td>D</td><td class="ok">pass</td><td>Offline package from disk, browser offline: all eight flags load from the embedded bytes, no network request, no error</td></tr></tbody></table></div></div></section>
+<section id="cost"><div class="wrap"><h2>Cost</h2><p>Software WebGL (Chromium + ANGLE SwiftShader), <b>not a GPU</b>: frame times show relative CPU-side cost only and are noisy
+(median of three renders). Six = the six Prologue benchmarks; eight = with <code>?envrepair&amp;supportcast</code>. Load: 34.7 s / 34.4 s.</p>
+<div class="tablewrap"><table><thead><tr><th>Camera</th><th>Draws six</th><th>Draws eight</th><th>Triangles six</th><th>Triangles eight</th><th>ms six</th><th>ms eight</th><th>Cast update ms</th></tr></thead><tbody><tr><td>C1 hoop kid</td><td class="n">621</td><td class="n">652</td><td class="n">962,199</td><td class="n">972,221</td><td class="n">86.8</td><td class="n">76.3</td><td class="n">0.037</td></tr><tr><td>C2 yards</td><td class="n">612</td><td class="n">665</td><td class="n">1,074,794</td><td class="n">1,098,063</td><td class="n">40.6</td><td class="n">36.5</td><td class="n">0.168</td></tr><tr><td>C3 chain link</td><td class="n">708</td><td class="n">751</td><td class="n">1,228,176</td><td class="n">1,222,712</td><td class="n">11</td><td class="n">14.8</td><td class="n">0.001</td></tr><tr><td>C4 Briarwood junction</td><td class="n">601</td><td class="n">602</td><td class="n">971,114</td><td class="n">982,442</td><td class="n">19</td><td class="n">10.5</td><td class="n">0.001</td></tr><tr><td>C5 Jamie&#x27;s porch (scene running)</td><td class="n">634</td><td class="n">625</td><td class="n">914,315</td><td class="n">976,481</td><td class="n">17.2</td><td class="n">15.4</td><td class="n">0.287</td></tr><tr><td>C6 lookout</td><td class="n">317</td><td class="n">328</td><td class="n">454,530</td><td class="n">516,227</td><td class="n">29.2</td><td class="n">36.2</td><td class="n">0.075</td></tr></tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Character</th><th>Triangles</th><th>Bones</th><th>Draws</th><th>Textures</th><th>Face keys</th><th>Clips</th><th>GLB</th><th>Read + parse ms</th></tr></thead><tbody><tr><td>mother</td><td class="n">50,714</td><td class="n">65</td><td class="n">10</td><td class="n">15</td><td class="n">30</td><td class="n">6</td><td class="n">8.36 MB</td><td class="n">253.3 + 953.3</td></tr><tr><td>kid</td><td class="n">25,002</td><td class="n">65</td><td class="n">10</td><td class="n">16</td><td class="n">30</td><td class="n">6</td><td class="n">3.78 MB</td><td class="n">318 + 273.4</td></tr></tbody></table></div></div></section>
+</main><footer><div class="wrap">Generated by <code>tools/review/envrepair_supportcast_gallery.py</code> from <code>docs/qa/envrepair-supportcast/</code>. The full report: <code>docs/ENVREPAIR_SUPPORTCAST_REPORT.md</code>.</div></footer>
+<script>
+for(const c of document.querySelectorAll('.cmp')){const r=c.querySelector('input');const set=v=>{c.style.setProperty('--x',v+'%');};r.addEventListener('input',()=>set(r.value));set(r.value);}
+for(const b of document.querySelectorAll('.toggle')){b.addEventListener('click',()=>{const c=document.getElementById(b.dataset.for);const r=c.querySelector('input');r.value=(+r.value>50)?0:100;c.style.setProperty('--x',r.value+'%');b.textContent=+r.value>50?'Show original':'Show '+b.dataset.after;});}
+</script>
+</body></html>

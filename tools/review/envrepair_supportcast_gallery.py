@@ -114,7 +114,8 @@ h2{font-family:var(--display);font-weight:700;font-size:26px;margin:0 0 6px;text
 h3{font-family:var(--display);font-weight:700;font-size:18px;margin:26px 0 10px}
 p{max-width:72ch;margin:0 0 10px}
 .lede{color:var(--muted);font-size:16px}
-.meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0 4px}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0 4px;min-width:0}
+.meta span{min-width:0;overflow-wrap:anywhere}
 .meta b{color:var(--ink);font-weight:600}
 nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
@@ -132,6 +133,7 @@ section{padding-block:30px 10px;border-bottom:1px solid var(--line)}
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr))}
 .grid.small{grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr))}
 .grid.wide{grid-template-columns:repeat(auto-fill,minmax(min(100%,560px),1fr))}
+.grid.one{grid-template-columns:1fr}
 figure{margin:0;min-width:0}
 figure img,figure video{display:block;width:100%;height:auto;max-width:100%;border-radius:6px;background:#000}
 figcaption{font-size:13.5px;color:var(--muted);margin-top:6px}
@@ -176,7 +178,7 @@ def chips(*kinds):
 
 def detail_crop(after_abs, before_abs):
     """the region where the two images of a pair differ (pixels changed by more than 30/765), padded and widened to 16:9;
-    None when the change already fills a third of the frame or there is none"""
+    None when the change already fills a third of the frame, spans most of its width, or there is none"""
     import numpy as np
     from PIL import Image
     a, b = Image.open(after_abs).convert('RGB'), Image.open(before_abs).convert('RGB')
@@ -192,6 +194,8 @@ def detail_crop(after_abs, before_abs):
     if w * h > W * H / 3:
         return None
     w, h = max(w, h * 16 / 9, 400), max(h, w * 9 / 16, 225)
+    if w > W / 1.6:  # (a detail must enlarge the frame at least 1.6 times, or it says nothing the full pair does not)
+        return None
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
     bx0 = int(min(max(cx - w / 2, 0), W - w)); by0 = int(min(max(cy - h / 2, 0), H - h))
     return (bx0, by0, int(bx0 + w), int(by0 + h))
@@ -330,8 +334,8 @@ def page(M):
                    'looking to both sides, all eight flags, at the game\'s own time of day for each distance (labels: distance in metres, L or R). '
                    'Findings are in the report\'s §7: the parked cars stand on their tyres (0.5–0.9 cm, measured; they only look lifted at dusk); '
                    'two small pre-existing items (the lawn\'s cut edge at driveway aprons, the flat curb inlets); the authored supporting cast beside '
-                   'the procedural boys (expected until Phase 1B); a DEV-label bug, fixed.</p><div class="grid wide">'
-                   + ''.join(f'<figure><img src="{E(M.image("audit/" + f, width=1920))}" alt="Audit contact sheet {i + 1}" loading="lazy">{chips("game", "ride")}<figcaption><b>Sheet {i + 1}</b></figcaption></figure>' for i, f in enumerate(sheets))
+                   'the procedural boys (expected until Phase 1B); a DEV-label bug, fixed.</p><div class="grid one">'
+                   + ''.join(f'<figure><a href="{E(M.image("audit/" + f, width=1920))}" target="_blank" rel="noopener"><img src="{E(M.image("audit/" + f, width=1920))}" alt="Audit contact sheet {i + 1}" loading="lazy"></a>{chips("game", "ride")}<figcaption><b>Sheet {i + 1}</b> (opens full size)</figcaption></figure>' for i, f in enumerate(sheets))
                    + '</div></div></section>')
     out.append(f'<section id="tests"><div class="wrap"><h2>Tests</h2>{suite_table()}</div></section>')
     out.append(f'<section id="cost"><div class="wrap"><h2>Cost</h2>{perf_table()}</div></section>')
