@@ -392,7 +392,7 @@ is not shipped. `docs/THIRD_PARTY_ASSETS.md` is unchanged (nothing new from a th
 - **Gaze.** On the porch the angle between her head's direction and Jamie's head has a median of 18.8° and a 90th percentile of 37.3°. That is inside the suite's limits (20° and 40°), but she lags when he moves quickly, because the neck and head are damped.
 - **Chain link**
   - The coverage rule is a screen-space dither. At a distance it keeps the fence as a faint, fixed grey screen rather than true wire.
-  - In motion the pattern stays put on screen, so there is no crawling, but the screen itself reads as slightly finer than the real mesh.
+  - The dither is fixed to the screen. While the camera moves, the fence slides through a stationary stipple, which reads as a fine grain slightly busier than the original. In V01 the fence band changes about 12% more from frame to frame (mean change 10.7 against 9.6 per frame, out of 255), and no stretch of fence vanishes or pops.
   - From the street most rear-lot chain link is hidden behind the houses, so in the riding camera the repair mostly shows at side yards and gaps.
 - **Off-screen characters are drawn** (§12): the shared asset library turns frustum culling off for skinned meshes. A cull sphere in `supportcast.js` is the next step.
 - **Riding view.** E10, the riding camera, shows little change: the repairs are small at riding distance by design.

@@ -846,6 +846,31 @@
     "path": "corner-a",
     "blocked": 0
    }
+  },
+  {
+   "name": "V01-chain-link-in-motion--repaired",
+   "file": "docs/qa/envrepair-supportcast/video/V01-chain-link-in-motion--repaired.mp4",
+   "fps": 15,
+   "bytes": 10718095,
+   "sha256": "6b072213039c0d012e9e7bda19a04b274d961605eb7e700373700c698e0cd0f7",
+   "what": "Oak Hollow's rear-lot chain link in motion (QA camera in one back yard): pulling back from 2.5 m to 8 m straight on, then sliding to the yard's corner to look along about 25 m of the run at a grazing angle (the path whose sight lines are clear); with the coverage rule",
+   "subject": {
+    "run": [
+     919,
+     1012.5
+    ],
+    "side": -1,
+    "vf": -33.5,
+    "bays": 39,
+    "yard": [
+     957.1,
+     983.8
+    ],
+    "distance": 2.5,
+    "frames": 135,
+    "path": "corner-a",
+    "blocked": 0
+   }
   }
  ],
  "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
