@@ -1,0 +1,1639 @@
+{
+ "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
+ "started": "2026-11-26T06:04:40.425Z",
+ "checks": [
+  "Lab: the four authored bikes load through GLTFLoader r160",
+  "Lab: loaded over same-origin HTTP from dist/assets/bike, nothing else fetched",
+  {
+   "name": "Lab: generator is Blender's glTF exporter",
+   "detail": [
+    "Khronos glTF Blender I/O v5.0.21",
+    "Khronos glTF Blender I/O v5.0.21",
+    "Khronos glTF Blender I/O v5.0.21",
+    "Khronos glTF Blender I/O v5.0.21"
+   ]
+  },
+  {
+   "name": "Lab: every bike is on its rig.js anchors (BB, saddle, grips, steering pivot and rake, rear axle, wheel radius, crank, pedal offset within 2 mm)",
+   "detail": {
+    "jamie": {
+     "bb": 0,
+     "saddle": 0,
+     "grip": 0,
+     "pivot": 0,
+     "rear": 0,
+     "wheelR": 0,
+     "rake": 0,
+     "crank": 0,
+     "pedalX": 0,
+     "frontAxleMovedBy": 0.07006999999999997
+    },
+    "sam": {
+     "bb": 0,
+     "saddle": 0,
+     "grip": 0,
+     "pivot": 0,
+     "rear": 0,
+     "wheelR": 0,
+     "rake": 0,
+     "crank": 0,
+     "pedalX": 0,
+     "frontAxleMovedBy": 0.05343999999999993
+    },
+    "alex": {
+     "bb": 0,
+     "saddle": 0,
+     "grip": 0,
+     "pivot": 0,
+     "rear": 0,
+     "wheelR": 0,
+     "rake": 0,
+     "crank": 0,
+     "pedalX": 0,
+     "frontAxleMovedBy": 0.08158999999999994
+    },
+    "player": {
+     "bb": 0,
+     "saddle": 0,
+     "grip": 0,
+     "pivot": 0,
+     "rear": 0,
+     "wheelR": 0,
+     "rake": 0,
+     "crank": 0,
+     "pedalX": 0,
+     "frontAxleMovedBy": 0.05343999999999993
+    }
+   }
+  },
+  {
+   "name": "Lab: three PBR materials and nine textures per bike (≤ 4 materials)",
+   "detail": [
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     9
+    ]
+   ]
+  },
+  {
+   "name": "Lab: base colour sRGB, normal and ORM linear, 1024², one ORM image for occlusion/roughness/metal, single-sided, fog on",
+   "detail": {
+    "jamie:mat.metal.bare/bike.jamie.hardware": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "jamie:mat.metal.painted/bike.jamie.frame": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "jamie:mat.rubber/bike.jamie.soft": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "sam:mat.metal.bare/bike.sam.hardware": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "sam:mat.rubber/bike.sam.soft": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "sam:mat.metal.painted/bike.sam.frame": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "alex:mat.metal.bare/bike.alex.hardware": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "alex:mat.metal.painted/bike.alex.frame": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "alex:mat.rubber/bike.alex.soft": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "player:mat.metal.bare/bike.player.hardware": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "player:mat.rubber/bike.player.soft": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "player:mat.metal.painted/bike.player.frame": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    }
+   }
+  },
+  {
+   "name": "Lab: wheels turn about their axles (authored wheel centres drift < 2 mm while turning; front on the authored axle, rear on rig.js's)",
+   "detail": {
+    "jamie": {
+     "frontWheelCentreDrift": 0.00000612117629229981,
+     "rearWheelCentreDrift": 2.3430245372886443e-8,
+     "frontWheelCentreToAuthoredAxle": 0.0000030830543913946725,
+     "rearWheelCentreToAxle": 0.003249999135754022,
+     "wheelTurns": true,
+     "pedalCentreToRigPedal": 1.2573613642996438e-8,
+     "gripSurfaceToRigGrip": [
+      0.0174,
+      0.0174,
+      0.0174
+     ],
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016
+    },
+    "sam": {
+     "frontWheelCentreDrift": 0.000005787424631443274,
+     "rearWheelCentreDrift": 2.7253847920915877e-8,
+     "frontWheelCentreToAuthoredAxle": 0.0000029149536086171566,
+     "rearWheelCentreToAxle": 0.0035999994725250035,
+     "wheelTurns": true,
+     "pedalCentreToRigPedal": 8.35661587130246e-9,
+     "gripSurfaceToRigGrip": [
+      0.0087,
+      0.0087,
+      0.0087
+     ],
+     "standFootLowest": 0.0039,
+     "standFootLowestLocal": 0.0039
+    },
+    "alex": {
+     "frontWheelCentreDrift": 0.0000012278507430228719,
+     "rearWheelCentreDrift": 5.110615656860834e-8,
+     "frontWheelCentreToAuthoredAxle": 6.184318902635196e-7,
+     "rearWheelCentreToAxle": 0.0005499999976220542,
+     "wheelTurns": true,
+     "pedalCentreToRigPedal": 1.2028073368849019e-8,
+     "gripSurfaceToRigGrip": [
+      0.0085,
+      0.0085,
+      0.0085
+     ],
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016,
+     "bellLeverMoves": 0.0054,
+     "bellDomeToRigBell": 0.0094
+    },
+    "player": {
+     "frontWheelCentreDrift": 0.00000588662361918427,
+     "rearWheelCentreDrift": 5.110615656860834e-8,
+     "frontWheelCentreToAuthoredAxle": 0.0000029649171877984158,
+     "rearWheelCentreToAxle": 0.003599999472590859,
+     "wheelTurns": true,
+     "pedalCentreToRigPedal": 0.0049500077962879975,
+     "gripSurfaceToRigGrip": [
+      0.0088,
+      0.0088,
+      0.0088
+     ],
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016,
+     "bellLeverMoves": 0.0054,
+     "bellDomeToRigBell": 0.008
+    }
+   }
+  },
+  {
+   "name": "Lab: the authored pedals ride on rig.js's pedal points at every crank angle (< 8 mm)",
+   "detail": [
+    1.2573613642996438e-8,
+    8.35661587130246e-9,
+    1.2028073368849019e-8,
+    0.0049500077962879975
+   ]
+  },
+  {
+   "name": "Lab: steering turns the authored bars about the raked axis: the grip surface stays at rig.js's grip point (< 2 cm, the grip's own radius)",
+   "detail": [
+    [
+     0.0174,
+     0.0174,
+     0.0174
+    ],
+    [
+     0.0087,
+     0.0087,
+     0.0087
+    ],
+    [
+     0.0085,
+     0.0085,
+     0.0085
+    ],
+    [
+     0.0088,
+     0.0088,
+     0.0088
+    ]
+   ]
+  },
+  {
+   "name": "Lab: the deployed stand reaches the ground (foot within 1.5 cm of y=0 in bike space)",
+   "detail": [
+    -0.0016,
+    0.0039,
+    -0.0016,
+    -0.0016
+   ]
+  },
+  {
+   "name": "Lab: the bell lever moves with the game's bell animation, and the dome sits at rig.js's bell point (< 3 cm)",
+   "detail": [
+    [
+     0.0054,
+     0.0094
+    ],
+    [
+     0.0054,
+     0.008
+    ]
+   ]
+  },
+  {
+   "name": "Lab: LOD1 and LOD2 cut the lineup's triangles (LOD0 > LOD1 > LOD2)",
+   "detail": {
+    "lod0": {
+     "calls": 75,
+     "triangles": 84664
+    },
+    "lod1": {
+     "calls": 75,
+     "triangles": 24126
+    },
+    "lod2": {
+     "calls": 69,
+     "triangles": 7206
+    },
+    "memory": {
+     "geometries": 217,
+     "textures": 38
+    },
+    "heapMB": 117
+   }
+  },
+  {
+   "name": "Lab: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Game: without ?bikes the Prologue fetches none of the bike modules or models",
+   "detail": []
+  },
+  {
+   "name": "Game: ?bikes upgrades the protagonist's, Jamie's, Sam's and Alex's bikes in place (no failures)",
+   "detail": {
+    "errors": [],
+    "loadMs": 1260,
+    "keys": [
+     "player",
+     "jamie",
+     "sam",
+     "alex"
+    ],
+    "info": {
+     "player": {
+      "lod": 0,
+      "tris": [
+       22078,
+       6524,
+       2100
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.05343999999999993
+      }
+     },
+     "jamie": {
+      "lod": 0,
+      "tris": [
+       18920,
+       5238,
+       1244
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.07006999999999997
+      }
+     },
+     "sam": {
+      "lod": 0,
+      "tris": [
+       23178,
+       6418,
+       1942
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.05343999999999993
+      }
+     },
+     "alex": {
+      "lod": 0,
+      "tris": [
+       20484,
+       5942,
+       1916
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.08158999999999994
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "Game: the Prologue plays on with the authored bikes (6 s of pedalling moves the player; the friends ride on them)",
+   "detail": {
+    "state": "riding",
+    "moved": 21.53,
+    "friends": [
+     {
+      "key": "jamie",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 0,
+      "dist": 13.3,
+      "riderOn": true
+     },
+     {
+      "key": "sam",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 1,
+      "dist": 15.5,
+      "riderOn": true
+     },
+     {
+      "key": "alex",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 0,
+      "dist": 6.6,
+      "riderOn": true
+     }
+    ],
+    "calls": 433,
+    "triangles": 798794,
+    "player": {
+     "authored": true,
+     "lod": 0
+    }
+   }
+  },
+  {
+   "name": "Game: Space rings the bell: the authored lever is on the game's lever and swings with it",
+   "detail": {
+    "maxLeverRotation": -0.4,
+    "authoredLeverAttached": true
+   }
+  },
+  {
+   "name": "Game: after B (procedural) and back (authored), the ride continues",
+   "detail": {
+    "state": "riding",
+    "moved": 12.63
+   }
+  },
+  {
+   "name": "Game: no page errors",
+   "detail": []
+  },
+  {
+   "name": "Game: no request leaves the local server",
+   "detail": []
+  },
+  {
+   "name": "Package: PLAYTEST_MODELS=1 embeds the four bikes, hashes them in the manifest and writes the offline Bike Lab page",
+   "detail": {
+    "models": [
+     "assets/bike/bike.alex.glb",
+     "assets/bike/bike.jamie.glb",
+     "assets/bike/bike.player.glb",
+     "assets/bike/bike.sam.glb",
+     "assets/chr/chr.hoop-kid.glb",
+     "assets/chr/chr.jamie-mother.glb",
+     "assets/details/details.kit.glb",
+     "assets/details/details_albedo.jpg",
+     "assets/details/details_cutout.png",
+     "assets/details/details_normal.png",
+     "assets/details/details_orm.png",
+     "assets/details/details_signs.jpg",
+     "assets/envrepair/envrepair.kit.glb",
+     "assets/house/house.prologue.glb",
+     "assets/house/house.prologue.v1.glb",
+     "assets/pavement/pv.asphalt.albedo.jpg",
+     "assets/pavement/pv.asphalt.hra.jpg",
+     "assets/pavement/pv.asphalt.normal.jpg",
+     "assets/pavement/pv.concrete.albedo.jpg",
+     "assets/pavement/pv.concrete.hra.jpg",
+     "assets/pavement/pv.concrete.normal.jpg",
+     "assets/street/props_albedo.jpg",
+     "assets/street/props_cutout.png",
+     "assets/street/props_normal.png",
+     "assets/street/props_orm.png",
+     "assets/street/street.props.glb",
+     "assets/street/street.vehicles.glb",
+     "assets/street/veh_a_albedo.jpg",
+     "assets/street/veh_a_orm.png",
+     "assets/street/veh_b_albedo.jpg",
+     "assets/street/veh_b_orm.png",
+     "assets/tst/tst.pipeline-probe.glb",
+     "assets/veg/lm.old-oak.glb",
+     "assets/veg/veg.ground.glb",
+     "assets/veg/veg.lawn.glb",
+     "assets/veg/veg.shrubs.glb",
+     "assets/veg/veg.street-trees.glb"
+    ],
+    "bikeLab": {
+     "entry": "Last-Light-Bike-Lab.html",
+     "sha256": "7b39ac55990b3c455347014a89bbf32cfa1e40223d5d77ff0975d6426dac7772"
+    }
+   }
+  },
+  {
+   "name": "Package: the offline Bike Lab loads the four embedded bikes (browser offline)",
+   "detail": {
+    "ok": true,
+    "from": [
+     "package",
+     "package",
+     "package",
+     "package"
+    ]
+   }
+  },
+  {
+   "name": "Package: offline Bike Lab makes no network request",
+   "detail": []
+  },
+  {
+   "name": "Package: offline Bike Lab without page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: ?bikes in the offline game upgrades the four bikes from the embedded bytes, in the running Prologue",
+   "detail": {
+    "errors": [],
+    "from": [
+     "package",
+     "package",
+     "package",
+     "package"
+    ],
+    "state": "riding",
+    "label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1033 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD0 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+   }
+  },
+  {
+   "name": "Package: offline game makes no network request",
+   "detail": []
+  },
+  {
+   "name": "Package: offline game without page errors",
+   "detail": []
+  },
+  {
+   "name": "Package: the default package (no models) says the bikes FAILED, keeps the procedural bikes and substitutes nothing",
+   "detail": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 2 ms\nFAILED (nothing substituted): player: asset assets/bike/bike.player.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | jamie: asset assets/bike/bike.jamie.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | sam: asset assets/bike/bike.sam.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | alex: asset assets/bike/bike.alex.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+  },
+  {
+   "name": "Package: default package makes no network request either",
+   "detail": []
+  }
+ ],
+ "failures": [],
+ "parts": {
+  "lab": {
+   "readyWallMs": 1310,
+   "assets": {
+    "jamie": {
+     "id": "bike.jamie",
+     "file": "assets/bike/bike.jamie.glb",
+     "from": "http",
+     "bytes": 7170512,
+     "readMs": 87.1,
+     "parseMs": 132.7,
+     "triangles": 25402,
+     "skinnedMeshes": 0,
+     "geometries": 47,
+     "materials": 3,
+     "textures": 9,
+     "clips": [],
+     "morphTargets": [],
+     "version": 1,
+     "rig": "rig.bike",
+     "license": "Original work for Last Light (Roth Studios). Incorporates modified geometry from \"Bmx Bike\" by Mitchell (https://skfb.ly/oUoKB), licensed under CC BY 4.0 (http://creativecommons.org/licenses/by/4.0/); see docs/THIRD_PARTY_ASSETS.md.",
+     "generator": "Khronos glTF Blender I/O v5.0.21",
+     "anchors": {
+      "bb": 0,
+      "saddle": 0,
+      "grip": 0,
+      "pivot": 0,
+      "rear": 0,
+      "wheelR": 0,
+      "rake": 0,
+      "crank": 0,
+      "pedalX": 0,
+      "frontAxleMovedBy": 0.07006999999999997
+     },
+     "lods": {
+      "tris": [
+       18920,
+       5238,
+       1244
+      ],
+      "meshes": [
+       16,
+       16,
+       15
+      ]
+     }
+    },
+    "sam": {
+     "id": "bike.sam",
+     "file": "assets/bike/bike.sam.glb",
+     "from": "http",
+     "bytes": 7812648,
+     "readMs": 51.3,
+     "parseMs": 101.2,
+     "triangles": 31538,
+     "skinnedMeshes": 0,
+     "geometries": 52,
+     "materials": 3,
+     "textures": 9,
+     "clips": [],
+     "morphTargets": [],
+     "version": 1,
+     "rig": "rig.bike",
+     "license": "Original work for Last Light (Roth Studios).",
+     "generator": "Khronos glTF Blender I/O v5.0.21",
+     "anchors": {
+      "bb": 0,
+      "saddle": 0,
+      "grip": 0,
+      "pivot": 0,
+      "rear": 0,
+      "wheelR": 0,
+      "rake": 0,
+      "crank": 0,
+      "pedalX": 0,
+      "frontAxleMovedBy": 0.05343999999999993
+     },
+     "lods": {
+      "tris": [
+       23178,
+       6418,
+       1942
+      ],
+      "meshes": [
+       18,
+       18,
+       16
+      ]
+     }
+    },
+    "alex": {
+     "id": "bike.alex",
+     "file": "assets/bike/bike.alex.glb",
+     "from": "http",
+     "bytes": 6940636,
+     "readMs": 51.8,
+     "parseMs": 107.6,
+     "triangles": 28342,
+     "skinnedMeshes": 0,
+     "geometries": 56,
+     "materials": 3,
+     "textures": 9,
+     "clips": [],
+     "morphTargets": [],
+     "version": 1,
+     "rig": "rig.bike",
+     "license": "Original work for Last Light (Roth Studios).",
+     "generator": "Khronos glTF Blender I/O v5.0.21",
+     "anchors": {
+      "bb": 0,
+      "saddle": 0,
+      "grip": 0,
+      "pivot": 0,
+      "rear": 0,
+      "wheelR": 0,
+      "rake": 0,
+      "crank": 0,
+      "pedalX": 0,
+      "frontAxleMovedBy": 0.08158999999999994
+     },
+     "lods": {
+      "tris": [
+       20484,
+       5942,
+       1916
+      ],
+      "meshes": [
+       19,
+       19,
+       18
+      ]
+     }
+    },
+    "player": {
+     "id": "bike.player",
+     "file": "assets/bike/bike.player.glb",
+     "from": "http",
+     "bytes": 7539324,
+     "readMs": 97.8,
+     "parseMs": 109.4,
+     "triangles": 30702,
+     "skinnedMeshes": 0,
+     "geometries": 58,
+     "materials": 3,
+     "textures": 9,
+     "clips": [],
+     "morphTargets": [],
+     "version": 1,
+     "rig": "rig.bike",
+     "license": "Original work for Last Light (Roth Studios).",
+     "generator": "Khronos glTF Blender I/O v5.0.21",
+     "anchors": {
+      "bb": 0,
+      "saddle": 0,
+      "grip": 0,
+      "pivot": 0,
+      "rear": 0,
+      "wheelR": 0,
+      "rake": 0,
+      "crank": 0,
+      "pedalX": 0,
+      "frontAxleMovedBy": 0.05343999999999993
+     },
+     "lods": {
+      "tris": [
+       22078,
+       6524,
+       2100
+      ],
+      "meshes": [
+       20,
+       20,
+       18
+      ]
+     }
+    }
+   },
+   "materials": {
+    "jamie:mat.metal.bare/bike.jamie.hardware": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "jamie:mat.metal.painted/bike.jamie.frame": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "jamie:mat.rubber/bike.jamie.soft": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "sam:mat.metal.bare/bike.sam.hardware": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "sam:mat.rubber/bike.sam.soft": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "sam:mat.metal.painted/bike.sam.frame": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "alex:mat.metal.bare/bike.alex.hardware": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "alex:mat.metal.painted/bike.alex.frame": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "alex:mat.rubber/bike.alex.soft": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "player:mat.metal.bare/bike.player.hardware": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "player:mat.rubber/bike.player.soft": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    },
+    "player:mat.metal.painted/bike.player.frame": {
+     "type": "MeshStandardMaterial",
+     "map": {
+      "w": 1024,
+      "cs": "srgb"
+     },
+     "normalMap": {
+      "w": 1024,
+      "cs": ""
+     },
+     "orm": {
+      "w": 1024,
+      "cs": ""
+     },
+     "sameORM": true,
+     "env": true,
+     "side": 0,
+     "fog": true
+    }
+   },
+   "motion": {
+    "jamie": {
+     "frontWheelCentreDrift": 0.00000612117629229981,
+     "rearWheelCentreDrift": 2.3430245372886443e-8,
+     "frontWheelCentreToAuthoredAxle": 0.0000030830543913946725,
+     "rearWheelCentreToAxle": 0.003249999135754022,
+     "wheelTurns": true,
+     "pedalCentreToRigPedal": 1.2573613642996438e-8,
+     "gripSurfaceToRigGrip": [
+      0.0174,
+      0.0174,
+      0.0174
+     ],
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016
+    },
+    "sam": {
+     "frontWheelCentreDrift": 0.000005787424631443274,
+     "rearWheelCentreDrift": 2.7253847920915877e-8,
+     "frontWheelCentreToAuthoredAxle": 0.0000029149536086171566,
+     "rearWheelCentreToAxle": 0.0035999994725250035,
+     "wheelTurns": true,
+     "pedalCentreToRigPedal": 8.35661587130246e-9,
+     "gripSurfaceToRigGrip": [
+      0.0087,
+      0.0087,
+      0.0087
+     ],
+     "standFootLowest": 0.0039,
+     "standFootLowestLocal": 0.0039
+    },
+    "alex": {
+     "frontWheelCentreDrift": 0.0000012278507430228719,
+     "rearWheelCentreDrift": 5.110615656860834e-8,
+     "frontWheelCentreToAuthoredAxle": 6.184318902635196e-7,
+     "rearWheelCentreToAxle": 0.0005499999976220542,
+     "wheelTurns": true,
+     "pedalCentreToRigPedal": 1.2028073368849019e-8,
+     "gripSurfaceToRigGrip": [
+      0.0085,
+      0.0085,
+      0.0085
+     ],
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016,
+     "bellLeverMoves": 0.0054,
+     "bellDomeToRigBell": 0.0094
+    },
+    "player": {
+     "frontWheelCentreDrift": 0.00000588662361918427,
+     "rearWheelCentreDrift": 5.110615656860834e-8,
+     "frontWheelCentreToAuthoredAxle": 0.0000029649171877984158,
+     "rearWheelCentreToAxle": 0.003599999472590859,
+     "wheelTurns": true,
+     "pedalCentreToRigPedal": 0.0049500077962879975,
+     "gripSurfaceToRigGrip": [
+      0.0088,
+      0.0088,
+      0.0088
+     ],
+     "standFootLowest": -0.0016,
+     "standFootLowestLocal": -0.0016,
+     "bellLeverMoves": 0.0054,
+     "bellDomeToRigBell": 0.008
+    }
+   },
+   "contacts": {
+    "jamie.hand_l": {
+     "min": -0.0158,
+     "max": -0.0136
+    },
+    "jamie.hand_r": {
+     "min": -0.0149,
+     "max": -0.0136
+    },
+    "jamie.sole_l": {
+     "min": 0.0554,
+     "max": 0.063
+    },
+    "jamie.sole_r": {
+     "min": 0.0554,
+     "max": 0.0629
+    },
+    "jamie.pelvis_to_saddle": {
+     "min": -0.0487,
+     "max": -0.0487
+    },
+    "sam.hand_l": {
+     "min": -0.0159,
+     "max": -0.0142
+    },
+    "sam.hand_r": {
+     "min": -0.0159,
+     "max": -0.0141
+    },
+    "sam.sole_l": {
+     "min": 0.0554,
+     "max": 0.0632
+    },
+    "sam.sole_r": {
+     "min": 0.0554,
+     "max": 0.0632
+    },
+    "sam.pelvis_to_saddle": {
+     "min": -0.0234,
+     "max": -0.0234
+    },
+    "alex.hand_l": {
+     "min": -0.0159,
+     "max": -0.0135
+    },
+    "alex.hand_r": {
+     "min": -0.0158,
+     "max": -0.0135
+    },
+    "alex.sole_l": {
+     "min": 0.0554,
+     "max": 0.0634
+    },
+    "alex.sole_r": {
+     "min": 0.0554,
+     "max": 0.0634
+    },
+    "alex.pelvis_to_saddle": {
+     "min": -0.0341,
+     "max": -0.0341
+    },
+    "player.hand_l": {
+     "min": -0.016,
+     "max": -0.0137
+    },
+    "player.hand_r": {
+     "min": -0.0156,
+     "max": -0.0138
+    },
+    "player.sole_l": {
+     "min": 0.0554,
+     "max": 0.0632
+    },
+    "player.sole_r": {
+     "min": 0.0554,
+     "max": 0.0632
+    },
+    "player.pelvis_to_saddle": {
+     "min": -0.0328,
+     "max": -0.0328
+    }
+   },
+   "lod": {
+    "lod0": {
+     "calls": 75,
+     "triangles": 84664
+    },
+    "lod1": {
+     "calls": 75,
+     "triangles": 24126
+    },
+    "lod2": {
+     "calls": 69,
+     "triangles": 7206
+    },
+    "memory": {
+     "geometries": 217,
+     "textures": 38
+    },
+    "heapMB": 117
+   },
+   "firstFrameMs": 6.1
+  },
+  "gameWithout": {
+   "errors": []
+  },
+  "game": {
+   "loaded": {
+    "errors": [],
+    "loadMs": 1260,
+    "keys": [
+     "player",
+     "jamie",
+     "sam",
+     "alex"
+    ],
+    "info": {
+     "player": {
+      "lod": 0,
+      "tris": [
+       22078,
+       6524,
+       2100
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.05343999999999993
+      }
+     },
+     "jamie": {
+      "lod": 0,
+      "tris": [
+       18920,
+       5238,
+       1244
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.07006999999999997
+      }
+     },
+     "sam": {
+      "lod": 0,
+      "tris": [
+       23178,
+       6418,
+       1942
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.05343999999999993
+      }
+     },
+     "alex": {
+      "lod": 0,
+      "tris": [
+       20484,
+       5942,
+       1916
+      ],
+      "anchors": {
+       "bb": 0,
+       "saddle": 0,
+       "grip": 0,
+       "pivot": 0,
+       "rear": 0,
+       "wheelR": 0,
+       "rake": 0,
+       "crank": 0,
+       "pedalX": 0,
+       "frontAxleMovedBy": 0.08158999999999994
+      }
+     }
+    }
+   },
+   "ride": {
+    "state": "riding",
+    "moved": 21.53,
+    "friends": [
+     {
+      "key": "jamie",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 0,
+      "dist": 13.3,
+      "riderOn": true
+     },
+     {
+      "key": "sam",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 1,
+      "dist": 15.5,
+      "riderOn": true
+     },
+     {
+      "key": "alex",
+      "mode": "ride",
+      "visible": true,
+      "authored": true,
+      "lod": 0,
+      "dist": 6.6,
+      "riderOn": true
+     }
+    ],
+    "calls": 433,
+    "triangles": 798794,
+    "player": {
+     "authored": true,
+     "lod": 0
+    }
+   },
+   "bell": {
+    "maxLeverRotation": -0.4,
+    "authoredLeverAttached": true
+   },
+   "review": {
+    "jamie": {
+     "lod": 0,
+     "calls": 293
+    },
+    "sam": {
+     "lod": 0,
+     "calls": 371
+    },
+    "alex": {
+     "lod": 0,
+     "calls": 228
+    }
+   },
+   "group": {
+    "lods": {
+     "player": 0,
+     "jamie": 1,
+     "sam": 1,
+     "alex": 0
+    },
+    "calls": 433,
+    "triangles": 738003
+   },
+   "cost": {
+    "authored": {
+     "calls": 433,
+     "triangles": 781154,
+     "memory": {
+      "geometries": 567,
+      "textures": 47
+     }
+    },
+    "procedural": {
+     "calls": 412,
+     "triangles": 755038,
+     "memory": {
+      "geometries": 600,
+      "textures": 47
+     }
+    }
+   },
+   "after": {
+    "state": "riding",
+    "moved": 12.63
+   }
+  },
+  "package": {
+   "withModels": {
+    "out": "/tmp/ll-bikes-eZlhM7/models",
+    "bytes": 190010907,
+    "branch": "claude/prologue-environment-repair-supporting-cast",
+    "commit": "ffeba63404550dc9a8b76e463b14286209d76dcf",
+    "dirty": false,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "8990b6845301db9221012ac6b52b803bab89081ce82e9fbecd883457afe8ed4d",
+    "modules": 184,
+    "pipelineLab": {
+     "entry": "Last-Light-Pipeline-Lab.html",
+     "sha256": "44345eee2e6ce886fdf616f06444060b5122ec9dddedb21e1fafc4b2088d013c",
+     "models": [
+      "assets/bike/bike.alex.glb",
+      "assets/bike/bike.jamie.glb",
+      "assets/bike/bike.player.glb",
+      "assets/bike/bike.sam.glb",
+      "assets/chr/chr.hoop-kid.glb",
+      "assets/chr/chr.jamie-mother.glb",
+      "assets/details/details.kit.glb",
+      "assets/details/details_albedo.jpg",
+      "assets/details/details_cutout.png",
+      "assets/details/details_normal.png",
+      "assets/details/details_orm.png",
+      "assets/details/details_signs.jpg",
+      "assets/envrepair/envrepair.kit.glb",
+      "assets/house/house.prologue.glb",
+      "assets/house/house.prologue.v1.glb",
+      "assets/pavement/pv.asphalt.albedo.jpg",
+      "assets/pavement/pv.asphalt.hra.jpg",
+      "assets/pavement/pv.asphalt.normal.jpg",
+      "assets/pavement/pv.concrete.albedo.jpg",
+      "assets/pavement/pv.concrete.hra.jpg",
+      "assets/pavement/pv.concrete.normal.jpg",
+      "assets/street/props_albedo.jpg",
+      "assets/street/props_cutout.png",
+      "assets/street/props_normal.png",
+      "assets/street/props_orm.png",
+      "assets/street/street.props.glb",
+      "assets/street/street.vehicles.glb",
+      "assets/street/veh_a_albedo.jpg",
+      "assets/street/veh_a_orm.png",
+      "assets/street/veh_b_albedo.jpg",
+      "assets/street/veh_b_orm.png",
+      "assets/tst/tst.pipeline-probe.glb",
+      "assets/veg/lm.old-oak.glb",
+      "assets/veg/veg.ground.glb",
+      "assets/veg/veg.lawn.glb",
+      "assets/veg/veg.shrubs.glb",
+      "assets/veg/veg.street-trees.glb"
+     ],
+     "bikeLab": {
+      "entry": "Last-Light-Bike-Lab.html",
+      "sha256": "7b39ac55990b3c455347014a89bbf32cfa1e40223d5d77ff0975d6426dac7772"
+     }
+    }
+   },
+   "default": {
+    "out": "/tmp/ll-bikes-eZlhM7/default",
+    "bytes": 13024833,
+    "branch": "claude/prologue-environment-repair-supporting-cast",
+    "commit": "ffeba63404550dc9a8b76e463b14286209d76dcf",
+    "dirty": false,
+    "untrackedFilesExcluded": true,
+    "entry": "Last-Light-Playtest.html",
+    "entrySHA256": "322dacbe6c5951c86711247972f60a6afccad6c7ea3001c8c77c7eb680ab1de2",
+    "modules": 184
+   },
+   "sizes": {
+    "withModels": 190010907,
+    "bikeLab": 189748782,
+    "default": 13024833
+   },
+   "models": [
+    "assets/bike/bike.alex.glb",
+    "assets/bike/bike.jamie.glb",
+    "assets/bike/bike.player.glb",
+    "assets/bike/bike.sam.glb",
+    "assets/chr/chr.hoop-kid.glb",
+    "assets/chr/chr.jamie-mother.glb",
+    "assets/details/details.kit.glb",
+    "assets/details/details_albedo.jpg",
+    "assets/details/details_cutout.png",
+    "assets/details/details_normal.png",
+    "assets/details/details_orm.png",
+    "assets/details/details_signs.jpg",
+    "assets/envrepair/envrepair.kit.glb",
+    "assets/house/house.prologue.glb",
+    "assets/house/house.prologue.v1.glb",
+    "assets/pavement/pv.asphalt.albedo.jpg",
+    "assets/pavement/pv.asphalt.hra.jpg",
+    "assets/pavement/pv.asphalt.normal.jpg",
+    "assets/pavement/pv.concrete.albedo.jpg",
+    "assets/pavement/pv.concrete.hra.jpg",
+    "assets/pavement/pv.concrete.normal.jpg",
+    "assets/street/props_albedo.jpg",
+    "assets/street/props_cutout.png",
+    "assets/street/props_normal.png",
+    "assets/street/props_orm.png",
+    "assets/street/street.props.glb",
+    "assets/street/street.vehicles.glb",
+    "assets/street/veh_a_albedo.jpg",
+    "assets/street/veh_a_orm.png",
+    "assets/street/veh_b_albedo.jpg",
+    "assets/street/veh_b_orm.png",
+    "assets/tst/tst.pipeline-probe.glb",
+    "assets/veg/lm.old-oak.glb",
+    "assets/veg/veg.ground.glb",
+    "assets/veg/veg.lawn.glb",
+    "assets/veg/veg.shrubs.glb",
+    "assets/veg/veg.street-trees.glb"
+   ],
+   "lab": {
+    "ok": true,
+    "from": [
+     "package",
+     "package",
+     "package",
+     "package"
+    ]
+   },
+   "game": {
+    "errors": [],
+    "from": [
+     "package",
+     "package",
+     "package",
+     "package"
+    ],
+    "state": "riding",
+    "label": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 1033 ms\nbike.player  v1 LOD0 · 22078/6524/2100 tris · 9 tex · 7.19 MB\nbike.jamie   v1 LOD0 · 18920/5238/1244 tris · 9 tex · 6.84 MB\nbike.sam     v1 LOD0 · 23178/6418/1942 tris · 9 tex · 7.45 MB\nbike.alex    v1 LOD0 · 20484/5942/1916 tris · 9 tex · 6.62 MB\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+   },
+   "defaultPackageLabel": "BIKE BENCHMARK (DEV) — AUTHORED bikes · loaded in 2 ms\nFAILED (nothing substituted): player: asset assets/bike/bike.player.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | jamie: asset assets/bike/bike.jamie.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | sam: asset assets/bike/bike.sam.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …) | alex: asset assets/bike/bike.alex.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)\nB authored/procedural · N LOD auto/0/1/2 · J reflections on"
+  }
+ },
+ "finished": "2026-11-26T06:08:21.575Z",
+ "passed": 29,
+ "failed": 0
+}

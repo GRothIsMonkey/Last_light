@@ -1,0 +1,2564 @@
+{
+ "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
+ "commit": "29f8443",
+ "started": "2026-11-26T06:08:21.811Z",
+ "viewport": "1600x900, deviceScaleFactor 1",
+ "checks": [
+  {
+   "name": "Default game: without ?details none of the details modules or assets is fetched",
+   "part": "A",
+   "detail": []
+  },
+  {
+   "name": "Default game: no details record, zone or label exists (the world is baked as before; 379 shadow proxies as accepted)",
+   "part": "A",
+   "detail": {
+    "label": false,
+    "rec": null,
+    "zones": 0,
+    "proxies": 379,
+    "hooks": {
+     "bins": 54,
+     "kiddie-pool": 5,
+     "parked-car": 42,
+     "hose": 32,
+     "trampoline": 23,
+     "big-wheel": 6,
+     "bike-in-yard": 5,
+     "ball": 7,
+     "scooter": 1,
+     "lawn-chairs": 4,
+     "wagon": 2,
+     "chalk": 1,
+     "portable-hoop": 1,
+     "toy-at-curb": 1,
+     "scooter-in-grass": 1,
+     "bench": 1,
+     "old-oak": 1,
+     "ball-in-grass": 1,
+     "initials": 1
+    }
+   }
+  },
+  {
+   "name": "Default game: no page errors",
+   "part": "A",
+   "detail": []
+  },
+  {
+   "name": "?details: the kit and its five textures load without error",
+   "part": "B",
+   "detail": {
+    "error": null,
+    "errors": [],
+    "loadMs": 342,
+    "tex": {
+     "files": [
+      {
+       "file": "assets/details/details_albedo.jpg",
+       "w": 2048,
+       "h": 2048
+      },
+      {
+       "file": "assets/details/details_orm.png",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/details/details_normal.png",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/details/details_cutout.png",
+       "w": 512,
+       "h": 512
+      },
+      {
+       "file": "assets/details/details_signs.jpg",
+       "w": 2048,
+       "h": 1024
+      }
+     ],
+     "gpuMB": 44,
+     "aniso": 16
+    },
+    "stats": {
+     "tris": 30276,
+     "calls": 39,
+     "instances": 512,
+     "levels": [
+      4,
+      37,
+      70
+     ],
+     "kinds": {
+      "plates": 5,
+      "signs": 5,
+      "blades": 4,
+      "porch chairs": 48,
+      "lawn chairs": 8,
+      "porch chairs on Old Mill Road (a Chapter Four place): left as they are": 8,
+      "grills": 32,
+      "grills on Old Mill Road (a Chapter Four place): left as they are": 5,
+      "bigwheel": 6,
+      "kidbike": 5,
+      "balls": 9,
+      "scooter": 2,
+      "wagon": 2,
+      "kiddie pools": 5,
+      "trampolines": 23,
+      "swing sets": 19,
+      "sheds": 9,
+      "sheds behind the rear fences": 36,
+      "clotheslines": 6,
+      "creek fence bays": 56,
+      "creek fence posts": 64,
+      "field fence posts": 14,
+      "field fence rails": 28,
+      "hose bibs": 25,
+      "hose coils": 21,
+      "hose coils inside a house (never seen): left out": 11,
+      "sprinklers": 4,
+      "sprinkler hoses": 4
+     },
+     "materials": 6,
+     "sets": 35
+    }
+   }
+  },
+  {
+   "name": "?details: assets come from dist/assets/details (1 GLB, 5 textures), none from outside the local server",
+   "part": "B",
+   "detail": [
+    "/assets/details/details_albedo.jpg",
+    "/assets/details/details_orm.png",
+    "/assets/details/details_normal.png",
+    "/assets/details/details_cutout.png",
+    "/assets/details/details_signs.jpg",
+    "/assets/details/details.kit.glb"
+   ]
+  },
+  {
+   "name": "Transforms: every authored detail is finite; every rigid one upright at true scale",
+   "part": "B",
+   "detail": {
+    "instances": 512,
+    "bad": [],
+    "badCount": 0
+   }
+  },
+  {
+   "name": "On the original: every authored piece stands where the bake drew the procedural object it replaces (the nearest baked vertex of that object's own zone within its footprint; 314 pieces)",
+   "part": "B",
+   "detail": {
+    "checked": 314,
+    "off": 0,
+    "examples": [],
+    "worstPerPiece": {
+     "sign.post": 0.03,
+     "chair.resin": 0.29,
+     "chair.lawn": 0.29,
+     "grill": 0.23,
+     "toy.bigwheel": 0.09,
+     "toy.kidbike": 0.12,
+     "toy.playball": 0.02,
+     "toy.scooter": 0.17,
+     "toy.wagon": 0.29,
+     "toy.basketball": 0.02,
+     "pool.kiddie": 0,
+     "trampoline": 0,
+     "swing": 0.27,
+     "shed": 1.12,
+     "shed.small": 1.2,
+     "clothesline": 0.05,
+     "post.chain": 0.01,
+     "ff.post": 0,
+     "hose.coil": 0.21
+    }
+   }
+  },
+  {
+   "name": "Placement: every recorded sign, chair, grill, toy, kiddie pool, hose coil, trampoline, swing set, shed and clothesline has its authored piece at the record's x/z (within 1 cm: nothing moved)",
+   "part": "B",
+   "detail": {
+    "signs": 0,
+    "chairs": 0,
+    "grills": 0,
+    "toys": 0,
+    "pools": 0,
+    "trampolines": 0,
+    "swings": 0,
+    "sheds": 0,
+    "clotheslines": 0,
+    "hoses": 0
+   }
+  },
+  {
+   "name": "Counts: every record is placed (excepted, and counted: the porch chairs on house-benchmark lots, the hose coils the procedural formula hid inside houses, and the porch chairs and grills of Old Mill Road's houses, a Chapter Four place the same house builder makes)",
+   "part": "B",
+   "detail": {
+    "kinds": {
+     "plates": 5,
+     "signs": 5,
+     "blades": 4,
+     "porch chairs": 48,
+     "lawn chairs": 8,
+     "porch chairs on Old Mill Road (a Chapter Four place): left as they are": 8,
+     "grills": 32,
+     "grills on Old Mill Road (a Chapter Four place): left as they are": 5,
+     "bigwheel": 6,
+     "kidbike": 5,
+     "balls": 9,
+     "scooter": 2,
+     "wagon": 2,
+     "kiddie pools": 5,
+     "trampolines": 23,
+     "swing sets": 19,
+     "sheds": 9,
+     "sheds behind the rear fences": 36,
+     "clotheslines": 6,
+     "creek fence bays": 56,
+     "creek fence posts": 64,
+     "field fence posts": 14,
+     "field fence rails": 28,
+     "hose bibs": 25,
+     "hose coils": 21,
+     "hose coils inside a house (never seen): left out": 11,
+     "sprinklers": 4,
+     "sprinkler hoses": 4
+    },
+    "records": {
+     "signs": 5,
+     "plates": 9,
+     "chairs": 64,
+     "benchChairs": 0,
+     "grills": 37,
+     "toys": 24,
+     "pools": 5,
+     "hoses": 32,
+     "sprinklers": 4,
+     "trampolines": 23,
+     "swings": 19,
+     "sheds": 45,
+     "clotheslines": 6,
+     "fenceBays": 56,
+     "fencePosts": 64,
+     "ffPosts": 14,
+     "ffRails": 28
+    }
+   }
+  },
+  {
+   "name": "Grounding: no detail floats above or sinks into the lawn (resting things touch it within 3 cm; level structures have no foot above it, none sunk past 0.3 m)",
+   "part": "B",
+   "detail": {
+    "toy.bigwheel": {
+     "n": 6,
+     "floating": 0,
+     "sunk": 0,
+     "worst": 0.001
+    },
+    "toy.wagon": {
+     "n": 2,
+     "floating": 0,
+     "sunk": 0,
+     "worst": null
+    },
+    "toy.kidbike": {
+     "n": 5,
+     "floating": 0,
+     "sunk": 0,
+     "worst": null
+    },
+    "toy.scooter": {
+     "n": 2,
+     "floating": 0,
+     "sunk": 0,
+     "worst": null
+    },
+    "toy.basketball": {
+     "n": 2,
+     "floating": 0,
+     "sunk": 0,
+     "worst": 0
+    },
+    "toy.playball": {
+     "n": 7,
+     "floating": 0,
+     "sunk": 0,
+     "worst": 0.001
+    },
+    "chair.lawn": {
+     "n": 3,
+     "floating": 0,
+     "sunk": 0,
+     "worst": 0
+    },
+    "hose.coil": {
+     "n": 21,
+     "floating": 0,
+     "sunk": 0,
+     "worst": null
+    },
+    "trampoline": {
+     "n": 23,
+     "floating": 0,
+     "sunk": 0,
+     "worst": -0.012
+    },
+    "swing": {
+     "n": 19,
+     "floating": 0,
+     "sunk": 0,
+     "worst": 0
+    },
+    "shed": {
+     "n": 9,
+     "floating": 0,
+     "sunk": 0,
+     "worst": 0
+    },
+    "clothesline": {
+     "n": 6,
+     "floating": 0,
+     "sunk": 0,
+     "worst": -0.031
+    },
+    "pool.kiddie": {
+     "n": 5,
+     "floating": 0,
+     "sunk": 0,
+     "worst": 0.001
+    }
+   }
+  },
+  {
+   "name": "Scale: every piece the size of the real thing it stands for (lawn chair, resin chair, kettle grill, big wheel, wagon, scooter, kiddie pool, 12 ft trampoline, swing set, shed, clothesline, sign plates and blades, sign post, hose coil)",
+   "part": "B",
+   "detail": {
+    "chair.lawn": {
+     "ax": "y",
+     "val": 0.962,
+     "ok": true
+    },
+    "chair.resin": {
+     "ax": "y",
+     "val": 0.905,
+     "ok": true
+    },
+    "grill": {
+     "ax": "y",
+     "val": 1,
+     "ok": true
+    },
+    "toy.bigwheel": {
+     "ax": "z",
+     "val": 1.038,
+     "ok": true
+    },
+    "toy.wagon": {
+     "ax": "z",
+     "val": 1.478,
+     "ok": true
+    },
+    "toy.scooter": {
+     "ax": "y",
+     "val": 0.794,
+     "ok": true
+    },
+    "pool.kiddie": {
+     "ax": "x",
+     "val": 2,
+     "ok": true
+    },
+    "trampoline": {
+     "ax": "x",
+     "val": 4,
+     "ok": true
+    },
+    "swing": {
+     "ax": "y",
+     "val": 2.392,
+     "ok": true
+    },
+    "shed": {
+     "ax": "x",
+     "val": 2.7,
+     "ok": true
+    },
+    "clothesline": {
+     "ax": "x",
+     "val": 4.64,
+     "ok": true
+    },
+    "sign.stop": {
+     "ax": "x",
+     "val": 0.762,
+     "ok": true
+    },
+    "sign.speed": {
+     "ax": "y",
+     "val": 0.762,
+     "ok": true
+    },
+    "sign.blade.OAK_HOLLOW_DR": {
+     "ax": "x",
+     "val": 1.2,
+     "ok": true
+    },
+    "hose.coil": {
+     "ax": "x",
+     "val": 0.52,
+     "ok": true
+    },
+    "sign.post": {
+     "ax": "y",
+     "val": 3.062,
+     "ok": true
+    }
+   }
+  },
+  {
+   "name": "Signs: every plate and blade says what its record says (OAK HOLLOW DR, BRIARWOOD LN, SUMMERFIELD RD, STOP, SPEED LIMIT 25, SLOW CHILDREN AT PLAY, NO OUTLET), on its own post, facing where the procedural plate faced",
+   "part": "B",
+   "detail": [
+    {
+     "sign": "children",
+     "name": "SLOW CHILDREN AT PLAY",
+     "set": "sign.children",
+     "found": true,
+     "faces": 1,
+     "mirrored": false,
+     "frontReads": true,
+     "backReads": true,
+     "clearOfPost": true,
+     "bottom": 1.77
+    },
+    {
+     "sign": "speed",
+     "name": "SPEED LIMIT 25",
+     "set": "sign.speed",
+     "found": true,
+     "faces": 1,
+     "mirrored": false,
+     "frontReads": true,
+     "backReads": true,
+     "clearOfPost": true,
+     "bottom": 1.72
+    },
+    {
+     "sign": "outlet",
+     "name": "NO OUTLET",
+     "set": "sign.outlet",
+     "found": true,
+     "faces": 1,
+     "mirrored": false,
+     "frontReads": true,
+     "backReads": true,
+     "clearOfPost": true,
+     "bottom": 1.67
+    },
+    {
+     "sign": "junction",
+     "name": "OAK HOLLOW DR",
+     "set": "sign.blade.OAK_HOLLOW_DR",
+     "found": true,
+     "faces": 1,
+     "mirrored": false,
+     "frontReads": true,
+     "backReads": true,
+     "clearOfPost": true,
+     "bottom": 0.035
+    },
+    {
+     "sign": "junction",
+     "name": "BRIARWOOD LN",
+     "set": "sign.blade.BRIARWOOD_LN",
+     "found": true,
+     "faces": 1,
+     "mirrored": false,
+     "frontReads": true,
+     "backReads": true,
+     "clearOfPost": true,
+     "bottom": 0.295
+    },
+    {
+     "sign": "junction",
+     "name": "STOP",
+     "set": "sign.stop",
+     "found": true,
+     "faces": 1,
+     "mirrored": false,
+     "frontReads": true,
+     "backReads": true,
+     "clearOfPost": true,
+     "bottom": 1.72
+    },
+    {
+     "sign": "junction",
+     "name": "OAK HOLLOW DR",
+     "set": "sign.blade.OAK_HOLLOW_DR",
+     "found": true,
+     "faces": 1,
+     "mirrored": false,
+     "frontReads": true,
+     "backReads": true,
+     "clearOfPost": true,
+     "bottom": 0.035
+    },
+    {
+     "sign": "junction",
+     "name": "SUMMERFIELD RD",
+     "set": "sign.blade.SUMMERFIELD_RD",
+     "found": true,
+     "faces": 1,
+     "mirrored": false,
+     "frontReads": true,
+     "backReads": true,
+     "clearOfPost": true,
+     "bottom": 0.295
+    },
+    {
+     "sign": "junction",
+     "name": "STOP",
+     "set": "sign.stop",
+     "found": true,
+     "faces": 1,
+     "mirrored": false,
+     "frontReads": true,
+     "backReads": true,
+     "clearOfPost": true,
+     "bottom": 1.72
+    }
+   ]
+  },
+  {
+   "name": "Signs: no lettering backward or mirrored (front faces read left to right; the blades' backs read left to right from behind; no mirrored placement)",
+   "part": "B",
+   "detail": [
+    [
+     "SLOW CHILDREN AT PLAY",
+     true,
+     true,
+     false
+    ],
+    [
+     "SPEED LIMIT 25",
+     true,
+     true,
+     false
+    ],
+    [
+     "NO OUTLET",
+     true,
+     true,
+     false
+    ],
+    [
+     "OAK HOLLOW DR",
+     true,
+     true,
+     false
+    ],
+    [
+     "BRIARWOOD LN",
+     true,
+     true,
+     false
+    ],
+    [
+     "STOP",
+     true,
+     true,
+     false
+    ],
+    [
+     "OAK HOLLOW DR",
+     true,
+     true,
+     false
+    ],
+    [
+     "SUMMERFIELD RD",
+     true,
+     true,
+     false
+    ],
+    [
+     "STOP",
+     true,
+     true,
+     false
+    ]
+   ]
+  },
+  {
+   "name": "Signs: no plate pierced by its post (every plate's back clear of the post's face), every blade above the post's top in its bracket, every plate's lower edge 1.5 m or more above the ground",
+   "part": "B",
+   "detail": [
+    [
+     "SLOW CHILDREN AT PLAY",
+     true,
+     1.77
+    ],
+    [
+     "SPEED LIMIT 25",
+     true,
+     1.72
+    ],
+    [
+     "NO OUTLET",
+     true,
+     1.67
+    ],
+    [
+     "OAK HOLLOW DR",
+     true,
+     0.035
+    ],
+    [
+     "BRIARWOOD LN",
+     true,
+     0.295
+    ],
+    [
+     "STOP",
+     true,
+     1.72
+    ],
+    [
+     "OAK HOLLOW DR",
+     true,
+     0.035
+    ],
+    [
+     "SUMMERFIELD RD",
+     true,
+     0.295
+    ],
+    [
+     "STOP",
+     true,
+     1.72
+    ]
+   ]
+  },
+  {
+   "name": "Hoses: every hose bib on its house's wall (within 3 cm), every hose continuous, lying on the lawn (none under it), none across a sidewalk, the street or a driveway",
+   "part": "B",
+   "detail": {
+    "bibs": 25,
+    "bibsOffWall": 0,
+    "offList": [],
+    "runs": 25,
+    "points": 160,
+    "jumps": 0,
+    "underLawn": 0,
+    "onWalkOrStreet": 0,
+    "onDrive": 0
+   }
+  },
+  {
+   "name": "No duplicates: the procedural details and their shadows hidden while the authored ones show (the sprinklers' old stands and arms hidden, their authored heads on the game's turning heads)",
+   "part": "B",
+   "detail": {
+    "procVisible": 0,
+    "proxyVisible": 0,
+    "setsVisible": true,
+    "hoses": true,
+    "sprinklerStands": true
+   }
+  },
+  {
+   "name": "Story: no detail recorded on a story home (Jamie's red chair, Alex's house and hose, Sam's house untouched); nothing at the lookout but its field fence and the ball in its grass; the bench, the oak, the initials and the chalk keep their hooks",
+   "part": "B",
+   "detail": {
+    "storyHomeDetails": 0,
+    "lookoutRecords": 0,
+    "hookZones": {
+     "bench": 1,
+     "old-oak": 1,
+     "initials": 1,
+     "chalk": 1,
+     "portable-hoop": 1
+    }
+   }
+  },
+  {
+   "name": "Geometry: every merged surface, shadow proxy and line holds exactly the default game's vertices (hashed at 1 mm) — the flag only splits the details into batches of their own",
+   "part": "B",
+   "detail": {
+    "with": {
+     "merged": {
+      "tris": 3672619,
+      "verts": 11017857,
+      "h1": 3449740665,
+      "h2": 2223264169
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2412,
+     "proxyCount": 589,
+     "zones": []
+    },
+    "without": {
+     "merged": {
+      "tris": 3672619,
+      "verts": 11017857,
+      "h1": 3449740665,
+      "h2": 2223264169
+     },
+     "proxies": {
+      "tris": 2371121,
+      "h1": 3930555726
+     },
+     "lines": {
+      "segs": 4471,
+      "h1": 3072461437
+     },
+     "mergedCount": 2225,
+     "proxyCount": 379,
+     "zones": []
+    }
+   }
+  },
+  {
+   "name": "Gameplay: surface heights, rideability, standing ground and authored pads at 40488 street points identical; obstacles, navigation and placement shapes (toy, sign, trampoline, swing, shed and the rest) and driveway openings unchanged",
+   "part": "B",
+   "detail": {
+    "with": {
+     "n": 40488,
+     "hash": 3254642635,
+     "obstacles": 812,
+     "obstacleHash": 271482339,
+     "space": [
+      [
+       "walk",
+       159
+      ],
+      [
+       "porch",
+       247
+      ],
+      [
+       "house",
+       247
+      ],
+      [
+       "tree",
+       5717
+      ],
+      [
+       "fence",
+       0
+      ],
+      [
+       "driveway",
+       618
+      ],
+      [
+       "pole",
+       52
+      ],
+      [
+       "lamp",
+       27
+      ],
+      [
+       "mailbox",
+       133
+      ],
+      [
+       "hydrant",
+       8
+      ],
+      [
+       "bins",
+       54
+      ],
+      [
+       "hoop",
+       1
+      ],
+      [
+       "toy",
+       30
+      ],
+      [
+       "sign",
+       23
+      ]
+     ],
+     "drives": 105
+    },
+    "without": {
+     "n": 40488,
+     "hash": 3254642635,
+     "obstacles": 812,
+     "obstacleHash": 271482339,
+     "space": [
+      [
+       "walk",
+       159
+      ],
+      [
+       "porch",
+       247
+      ],
+      [
+       "house",
+       247
+      ],
+      [
+       "tree",
+       5717
+      ],
+      [
+       "fence",
+       0
+      ],
+      [
+       "driveway",
+       618
+      ],
+      [
+       "pole",
+       52
+      ],
+      [
+       "lamp",
+       27
+      ],
+      [
+       "mailbox",
+       133
+      ],
+      [
+       "hydrant",
+       8
+      ],
+      [
+       "bins",
+       54
+      ],
+      [
+       "hoop",
+       1
+      ],
+      [
+       "toy",
+       30
+      ],
+      [
+       "sign",
+       23
+      ]
+     ],
+     "drives": 105
+    }
+   }
+  },
+  {
+   "name": "Riding: scripted rides over a driveway cut, into a plain curb and past a mailbox follow exactly the same path, speed and wheel height",
+   "part": "B",
+   "detail": {
+    "with": {
+     "cut": [
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ],
+     "mailbox": [
+      [
+       162.9022,
+       7.8241,
+       5.0013,
+       0
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "name": "Sprinklers: the jets run as before (their timing and sound untouched); the authored head turns on the game's own head group",
+   "part": "B",
+   "detail": {
+    "moved": true,
+    "visible": true,
+    "headOnHead": true
+   }
+  },
+  {
+   "name": "Comparison: \".\" swaps AUTHORED (procedural details and their shadows hidden; authored details, hoses and sprinkler heads shown) and ORIGINAL in the same frame",
+   "part": "B",
+   "detail": [
+    {
+     "procShown": false,
+     "procHidden": true,
+     "authored": true,
+     "hoses": true,
+     "mode": "authored"
+    },
+    {
+     "procShown": true,
+     "procHidden": false,
+     "authored": false,
+     "hoses": false,
+     "mode": "original"
+    },
+    {
+     "procShown": false,
+     "procHidden": true,
+     "authored": true,
+     "hoses": true,
+     "mode": "authored"
+    }
+   ]
+  },
+  {
+   "name": "LOD: \",\" steps the forced level 0, 1, 2 and back to automatic",
+   "part": "B",
+   "detail": [
+    0,
+    1,
+    2,
+    null
+   ]
+  },
+  {
+   "name": "?details (measures): no page errors (every details shader compiles and links)",
+   "part": "B",
+   "detail": []
+  },
+  {
+   "name": "Prologue only: active in the Prologue; in Chapter One the procedural details show again (the authored set hidden)",
+   "part": "B",
+   "detail": {
+    "prologue": {
+     "active": true,
+     "procVisible": false,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "procVisible": true,
+     "state": "c1-ride"
+    }
+   }
+  },
+  {
+   "name": "Chapter One with ?details: no page errors",
+   "part": "B",
+   "detail": []
+  },
+  {
+   "name": "All six benchmarks together (?bikes&houses&vegetation&pavement&streetprops&details) load without error",
+   "part": "C",
+   "detail": {
+    "details": null,
+    "dtErrors": [],
+    "streetprops": null,
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "bikes": null
+   }
+  },
+  {
+   "name": "Trees and lawns intact: the vegetation places the same trees, shrubs and meadow, with the repaired lawn (C), as without ?details",
+   "part": "C",
+   "detail": {
+    "with": {
+     "trees": 386,
+     "shrubs": 553,
+     "meadow": 12487,
+     "variants": 42,
+     "lawn": "C"
+    },
+    "without": {
+     "trees": 386,
+     "shrubs": 553,
+     "meadow": 12487,
+     "variants": 42,
+     "lawn": "C"
+    }
+   }
+  },
+  {
+   "name": "Street props intact: the same cars and the same poles, wires, lamps, mailboxes, hydrants, bins and fences as with ?streetprops alone",
+   "part": "C",
+   "detail": {
+    "with": {
+     "cars": 54,
+     "props": {
+      "poles": 110,
+      "transformers": 15,
+      "backgroundPoles": 71,
+      "guys": 1,
+      "sidepins": 10,
+      "wires": 291,
+      "lamps": 27,
+      "mailbox.white": 31,
+      "mailbox.wood": 45,
+      "mailbox.brick": 29,
+      "mailbox.deco": 28,
+      "hydrants": 8,
+      "carts": 82,
+      "cans": 7,
+      "bays": 2457,
+      "posts": 2944,
+      "gates": 189
+     }
+    },
+    "without": {
+     "cars": 54,
+     "props": {
+      "poles": 110,
+      "transformers": 15,
+      "backgroundPoles": 71,
+      "guys": 1,
+      "sidepins": 10,
+      "wires": 291,
+      "lamps": 27,
+      "mailbox.white": 31,
+      "mailbox.wood": 45,
+      "mailbox.brick": 29,
+      "mailbox.deco": 28,
+      "hydrants": 8,
+      "carts": 82,
+      "cans": 7,
+      "bays": 2457,
+      "posts": 2944,
+      "gates": 189
+     }
+    }
+   }
+  },
+  {
+   "name": "With all six: the details, street props and pavement active, the houses refined, the bikes upgraded; the ride runs; no authored porch chair or grill on a house-benchmark lot (those houses are the house benchmark's), no grill anywhere but at a recorded grill",
+   "part": "C",
+   "detail": {
+    "details": true,
+    "streetprops": true,
+    "pavement": true,
+    "houses": "refined",
+    "bikes": true,
+    "benchLots": 12,
+    "porchChairsOnBenchLots": 0,
+    "leftToHouses": 6,
+    "grills": 29,
+    "recordedGrills": 32,
+    "strayGrills": 0,
+    "grillsOnBenchLots": 3,
+    "grillsLeftToHouses": 3,
+    "friends": [
+     "ride",
+     "ride",
+     "ride"
+    ],
+    "distance": 13.22
+   }
+  },
+  {
+   "name": "Six benchmarks: no page errors",
+   "part": "C",
+   "detail": []
+  },
+  {
+   "name": "Offline package (PLAYTEST_MODELS=1): the details kit, its five textures and both details modules are embedded",
+   "part": "D",
+   "detail": [
+    "dist/assets/details/details.kit.glb",
+    "dist/assets/details/details_albedo.jpg",
+    "dist/assets/details/details_cutout.png",
+    "dist/assets/details/details_normal.png",
+    "dist/assets/details/details_orm.png",
+    "dist/assets/details/details_signs.jpg"
+   ]
+  },
+  {
+   "name": "Offline package from disk, browser offline: ?details loads its kit and textures from the embedded bytes, with no network request",
+   "part": "D",
+   "detail": {
+    "error": null,
+    "errors": [],
+    "files": 5,
+    "active": true,
+    "net": []
+   }
+  },
+  {
+   "name": "Offline package: no page errors",
+   "part": "D",
+   "detail": []
+  },
+  {
+   "name": "Offline package from disk, browser offline: all six benchmarks load together from the embedded bytes, no network request, no error",
+   "part": "D",
+   "detail": {
+    "dt": null,
+    "sp": null,
+    "pv": null,
+    "veg": null,
+    "houses": null,
+    "net": [],
+    "errors": []
+   }
+  },
+  {
+   "name": "Default package (no models): ?details fails loudly and substitutes nothing (the procedural details stay)",
+   "part": "D",
+   "detail": {
+    "error": "asset assets/details/details_albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)",
+    "label": "DETAILS BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/details/details_albedo.jpg is not embedded in this offline package (package with PLAYTEST_MODELS=1)",
+    "proc": true
+   }
+  }
+ ],
+ "failures": [],
+ "parts": {
+  "A": {
+   "label": false,
+   "rec": null,
+   "zones": 0,
+   "proxies": 379,
+   "hooks": {
+    "bins": 54,
+    "kiddie-pool": 5,
+    "parked-car": 42,
+    "hose": 32,
+    "trampoline": 23,
+    "big-wheel": 6,
+    "bike-in-yard": 5,
+    "ball": 7,
+    "scooter": 1,
+    "lawn-chairs": 4,
+    "wagon": 2,
+    "chalk": 1,
+    "portable-hoop": 1,
+    "toy-at-curb": 1,
+    "scooter-in-grass": 1,
+    "bench": 1,
+    "old-oak": 1,
+    "ball-in-grass": 1,
+    "initials": 1
+   },
+   "fingerprint": {
+    "merged": {
+     "tris": 3672619,
+     "verts": 11017857,
+     "h1": 3449740665,
+     "h2": 2223264169
+    },
+    "proxies": {
+     "tris": 2371121,
+     "h1": 3930555726
+    },
+    "lines": {
+     "segs": 4471,
+     "h1": 3072461437
+    },
+    "mergedCount": 2225,
+    "proxyCount": 379,
+    "zones": []
+   },
+   "queries": {
+    "n": 40488,
+    "hash": 3254642635,
+    "obstacles": 812,
+    "obstacleHash": 271482339,
+    "space": [
+     [
+      "walk",
+      159
+     ],
+     [
+      "porch",
+      247
+     ],
+     [
+      "house",
+      247
+     ],
+     [
+      "tree",
+      5717
+     ],
+     [
+      "fence",
+      0
+     ],
+     [
+      "driveway",
+      618
+     ],
+     [
+      "pole",
+      52
+     ],
+     [
+      "lamp",
+      27
+     ],
+     [
+      "mailbox",
+      133
+     ],
+     [
+      "hydrant",
+      8
+     ],
+     [
+      "bins",
+      54
+     ],
+     [
+      "hoop",
+      1
+     ],
+     [
+      "toy",
+      30
+     ],
+     [
+      "sign",
+      23
+     ]
+    ],
+    "drives": 105
+   },
+   "rides": {
+    "drive": {
+     "d": 744.0601318057627
+    },
+    "runs": {
+     "cut": [
+      [
+       740.9684,
+       2.6001,
+       3.2492,
+       0
+      ],
+      [
+       741.6493,
+       2.617,
+       3.5068,
+       0
+      ],
+      [
+       742.3752,
+       2.6962,
+       3.7103,
+       0
+      ],
+      [
+       743.1366,
+       2.8582,
+       3.8713,
+       0
+      ],
+      [
+       743.9263,
+       3.0946,
+       3.9989,
+       0
+      ],
+      [
+       744.7383,
+       3.3869,
+       4.1003,
+       0
+      ],
+      [
+       745.568,
+       3.7173,
+       4.181,
+       0
+      ],
+      [
+       746.412,
+       4.0721,
+       4.2456,
+       0
+      ],
+      [
+       747.2673,
+       4.4422,
+       4.2974,
+       0
+      ],
+      [
+       748.1318,
+       4.8215,
+       4.3392,
+       0
+      ],
+      [
+       749.0037,
+       5.2062,
+       4.3732,
+       0
+      ],
+      [
+       749.8817,
+       5.5942,
+       4.401,
+       0
+      ],
+      [
+       750.7646,
+       5.9841,
+       4.4239,
+       0
+      ],
+      [
+       751.6517,
+       6.3751,
+       4.443,
+       0
+      ],
+      [
+       752.5423,
+       6.7669,
+       4.4592,
+       0
+      ],
+      [
+       753.4357,
+       7.1591,
+       4.473,
+       0
+      ],
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       753.9685,
+       3.1001,
+       3.2521,
+       0
+      ],
+      [
+       754.6518,
+       3.1171,
+       3.525,
+       0
+      ],
+      [
+       755.3828,
+       3.1967,
+       3.7406,
+       0
+      ],
+      [
+       756.1515,
+       3.3597,
+       3.911,
+       0
+      ],
+      [
+       756.9499,
+       3.5979,
+       4.046,
+       0
+      ],
+      [
+       757.772,
+       3.8926,
+       4.1532,
+       0
+      ],
+      [
+       758.6129,
+       4.2257,
+       4.2384,
+       0
+      ],
+      [
+       759.4688,
+       4.5835,
+       4.3065,
+       0
+      ],
+      [
+       760.3367,
+       4.9566,
+       4.361,
+       0
+      ],
+      [
+       761.2141,
+       5.3389,
+       4.4048,
+       0
+      ],
+      [
+       762.0994,
+       5.7267,
+       4.4403,
+       0
+      ],
+      [
+       762.9909,
+       6.1177,
+       4.4692,
+       0
+      ],
+      [
+       763.8876,
+       6.5106,
+       4.4929,
+       0
+      ],
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ],
+     "mailbox": [
+      [
+       150.1091,
+       4.2001,
+       3.2741,
+       0
+      ],
+      [
+       150.8106,
+       4.2175,
+       3.6611,
+       0
+      ],
+      [
+       151.5795,
+       4.3001,
+       3.9652,
+       0
+      ],
+      [
+       152.4013,
+       4.4708,
+       4.2041,
+       0
+      ],
+      [
+       153.2648,
+       4.7214,
+       4.3915,
+       0
+      ],
+      [
+       154.1608,
+       5.0321,
+       4.5385,
+       0
+      ],
+      [
+       155.0824,
+       5.3834,
+       4.6536,
+       0
+      ],
+      [
+       156.024,
+       5.7604,
+       4.7436,
+       0
+      ],
+      [
+       156.9812,
+       6.153,
+       4.8138,
+       0
+      ],
+      [
+       157.9505,
+       6.5544,
+       4.8685,
+       0
+      ],
+      [
+       158.9293,
+       6.9608,
+       4.9108,
+       0
+      ],
+      [
+       159.9154,
+       7.3696,
+       4.9434,
+       0
+      ],
+      [
+       160.9071,
+       7.7797,
+       4.9683,
+       0
+      ],
+      [
+       161.9031,
+       7.8241,
+       4.9872,
+       0
+      ],
+      [
+       162.9022,
+       7.8241,
+       5.0013,
+       0
+      ]
+     ]
+    }
+   }
+  },
+  "B": {
+   "wallLoadMs": 34086,
+   "loaded": {
+    "error": null,
+    "errors": [],
+    "loadMs": 342,
+    "tex": {
+     "files": [
+      {
+       "file": "assets/details/details_albedo.jpg",
+       "w": 2048,
+       "h": 2048
+      },
+      {
+       "file": "assets/details/details_orm.png",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/details/details_normal.png",
+       "w": 1024,
+       "h": 1024
+      },
+      {
+       "file": "assets/details/details_cutout.png",
+       "w": 512,
+       "h": 512
+      },
+      {
+       "file": "assets/details/details_signs.jpg",
+       "w": 2048,
+       "h": 1024
+      }
+     ],
+     "gpuMB": 44,
+     "aniso": 16
+    },
+    "stats": {
+     "tris": 30276,
+     "calls": 39,
+     "instances": 512,
+     "levels": [
+      4,
+      37,
+      70
+     ],
+     "kinds": {
+      "plates": 5,
+      "signs": 5,
+      "blades": 4,
+      "porch chairs": 48,
+      "lawn chairs": 8,
+      "porch chairs on Old Mill Road (a Chapter Four place): left as they are": 8,
+      "grills": 32,
+      "grills on Old Mill Road (a Chapter Four place): left as they are": 5,
+      "bigwheel": 6,
+      "kidbike": 5,
+      "balls": 9,
+      "scooter": 2,
+      "wagon": 2,
+      "kiddie pools": 5,
+      "trampolines": 23,
+      "swing sets": 19,
+      "sheds": 9,
+      "sheds behind the rear fences": 36,
+      "clotheslines": 6,
+      "creek fence bays": 56,
+      "creek fence posts": 64,
+      "field fence posts": 14,
+      "field fence rails": 28,
+      "hose bibs": 25,
+      "hose coils": 21,
+      "hose coils inside a house (never seen): left out": 11,
+      "sprinklers": 4,
+      "sprinkler hoses": 4
+     },
+     "materials": 6,
+     "sets": 35
+    }
+   },
+   "m": {
+    "transforms": {
+     "instances": 512,
+     "bad": [],
+     "badCount": 0
+    },
+    "place": {
+     "signs": 0,
+     "chairs": 0,
+     "grills": 0,
+     "toys": 0,
+     "pools": 0,
+     "trampolines": 0,
+     "swings": 0,
+     "sheds": 0,
+     "clotheslines": 0,
+     "hoses": 0
+    },
+    "origin": {
+     "checked": 314,
+     "off": 0,
+     "examples": [],
+     "worstPerPiece": {
+      "sign.post": 0.03,
+      "chair.resin": 0.29,
+      "chair.lawn": 0.29,
+      "grill": 0.23,
+      "toy.bigwheel": 0.09,
+      "toy.kidbike": 0.12,
+      "toy.playball": 0.02,
+      "toy.scooter": 0.17,
+      "toy.wagon": 0.29,
+      "toy.basketball": 0.02,
+      "pool.kiddie": 0,
+      "trampoline": 0,
+      "swing": 0.27,
+      "shed": 1.12,
+      "shed.small": 1.2,
+      "clothesline": 0.05,
+      "post.chain": 0.01,
+      "ff.post": 0,
+      "hose.coil": 0.21
+     }
+    },
+    "counts": {
+     "kinds": {
+      "plates": 5,
+      "signs": 5,
+      "blades": 4,
+      "porch chairs": 48,
+      "lawn chairs": 8,
+      "porch chairs on Old Mill Road (a Chapter Four place): left as they are": 8,
+      "grills": 32,
+      "grills on Old Mill Road (a Chapter Four place): left as they are": 5,
+      "bigwheel": 6,
+      "kidbike": 5,
+      "balls": 9,
+      "scooter": 2,
+      "wagon": 2,
+      "kiddie pools": 5,
+      "trampolines": 23,
+      "swing sets": 19,
+      "sheds": 9,
+      "sheds behind the rear fences": 36,
+      "clotheslines": 6,
+      "creek fence bays": 56,
+      "creek fence posts": 64,
+      "field fence posts": 14,
+      "field fence rails": 28,
+      "hose bibs": 25,
+      "hose coils": 21,
+      "hose coils inside a house (never seen): left out": 11,
+      "sprinklers": 4,
+      "sprinkler hoses": 4
+     },
+     "records": {
+      "signs": 5,
+      "plates": 9,
+      "chairs": 64,
+      "benchChairs": 0,
+      "grills": 37,
+      "toys": 24,
+      "pools": 5,
+      "hoses": 32,
+      "sprinklers": 4,
+      "trampolines": 23,
+      "swings": 19,
+      "sheds": 45,
+      "clotheslines": 6,
+      "fenceBays": 56,
+      "fencePosts": 64,
+      "ffPosts": 14,
+      "ffRails": 28
+     }
+    },
+    "ground": {
+     "toy.bigwheel": {
+      "n": 6,
+      "floating": 0,
+      "sunk": 0,
+      "worst": 0.001
+     },
+     "toy.wagon": {
+      "n": 2,
+      "floating": 0,
+      "sunk": 0,
+      "worst": null
+     },
+     "toy.kidbike": {
+      "n": 5,
+      "floating": 0,
+      "sunk": 0,
+      "worst": null
+     },
+     "toy.scooter": {
+      "n": 2,
+      "floating": 0,
+      "sunk": 0,
+      "worst": null
+     },
+     "toy.basketball": {
+      "n": 2,
+      "floating": 0,
+      "sunk": 0,
+      "worst": 0
+     },
+     "toy.playball": {
+      "n": 7,
+      "floating": 0,
+      "sunk": 0,
+      "worst": 0.001
+     },
+     "chair.lawn": {
+      "n": 3,
+      "floating": 0,
+      "sunk": 0,
+      "worst": 0
+     },
+     "hose.coil": {
+      "n": 21,
+      "floating": 0,
+      "sunk": 0,
+      "worst": null
+     },
+     "trampoline": {
+      "n": 23,
+      "floating": 0,
+      "sunk": 0,
+      "worst": -0.012
+     },
+     "swing": {
+      "n": 19,
+      "floating": 0,
+      "sunk": 0,
+      "worst": 0
+     },
+     "shed": {
+      "n": 9,
+      "floating": 0,
+      "sunk": 0,
+      "worst": 0
+     },
+     "clothesline": {
+      "n": 6,
+      "floating": 0,
+      "sunk": 0,
+      "worst": -0.031
+     },
+     "pool.kiddie": {
+      "n": 5,
+      "floating": 0,
+      "sunk": 0,
+      "worst": 0.001
+     }
+    },
+    "scale": {
+     "chair.lawn": {
+      "ax": "y",
+      "val": 0.962,
+      "ok": true
+     },
+     "chair.resin": {
+      "ax": "y",
+      "val": 0.905,
+      "ok": true
+     },
+     "grill": {
+      "ax": "y",
+      "val": 1,
+      "ok": true
+     },
+     "toy.bigwheel": {
+      "ax": "z",
+      "val": 1.038,
+      "ok": true
+     },
+     "toy.wagon": {
+      "ax": "z",
+      "val": 1.478,
+      "ok": true
+     },
+     "toy.scooter": {
+      "ax": "y",
+      "val": 0.794,
+      "ok": true
+     },
+     "pool.kiddie": {
+      "ax": "x",
+      "val": 2,
+      "ok": true
+     },
+     "trampoline": {
+      "ax": "x",
+      "val": 4,
+      "ok": true
+     },
+     "swing": {
+      "ax": "y",
+      "val": 2.392,
+      "ok": true
+     },
+     "shed": {
+      "ax": "x",
+      "val": 2.7,
+      "ok": true
+     },
+     "clothesline": {
+      "ax": "x",
+      "val": 4.64,
+      "ok": true
+     },
+     "sign.stop": {
+      "ax": "x",
+      "val": 0.762,
+      "ok": true
+     },
+     "sign.speed": {
+      "ax": "y",
+      "val": 0.762,
+      "ok": true
+     },
+     "sign.blade.OAK_HOLLOW_DR": {
+      "ax": "x",
+      "val": 1.2,
+      "ok": true
+     },
+     "hose.coil": {
+      "ax": "x",
+      "val": 0.52,
+      "ok": true
+     },
+     "sign.post": {
+      "ax": "y",
+      "val": 3.062,
+      "ok": true
+     }
+    },
+    "signs": [
+     {
+      "sign": "children",
+      "name": "SLOW CHILDREN AT PLAY",
+      "set": "sign.children",
+      "found": true,
+      "faces": 1,
+      "mirrored": false,
+      "frontReads": true,
+      "backReads": true,
+      "clearOfPost": true,
+      "bottom": 1.77
+     },
+     {
+      "sign": "speed",
+      "name": "SPEED LIMIT 25",
+      "set": "sign.speed",
+      "found": true,
+      "faces": 1,
+      "mirrored": false,
+      "frontReads": true,
+      "backReads": true,
+      "clearOfPost": true,
+      "bottom": 1.72
+     },
+     {
+      "sign": "outlet",
+      "name": "NO OUTLET",
+      "set": "sign.outlet",
+      "found": true,
+      "faces": 1,
+      "mirrored": false,
+      "frontReads": true,
+      "backReads": true,
+      "clearOfPost": true,
+      "bottom": 1.67
+     },
+     {
+      "sign": "junction",
+      "name": "OAK HOLLOW DR",
+      "set": "sign.blade.OAK_HOLLOW_DR",
+      "found": true,
+      "faces": 1,
+      "mirrored": false,
+      "frontReads": true,
+      "backReads": true,
+      "clearOfPost": true,
+      "bottom": 0.035
+     },
+     {
+      "sign": "junction",
+      "name": "BRIARWOOD LN",
+      "set": "sign.blade.BRIARWOOD_LN",
+      "found": true,
+      "faces": 1,
+      "mirrored": false,
+      "frontReads": true,
+      "backReads": true,
+      "clearOfPost": true,
+      "bottom": 0.295
+     },
+     {
+      "sign": "junction",
+      "name": "STOP",
+      "set": "sign.stop",
+      "found": true,
+      "faces": 1,
+      "mirrored": false,
+      "frontReads": true,
+      "backReads": true,
+      "clearOfPost": true,
+      "bottom": 1.72
+     },
+     {
+      "sign": "junction",
+      "name": "OAK HOLLOW DR",
+      "set": "sign.blade.OAK_HOLLOW_DR",
+      "found": true,
+      "faces": 1,
+      "mirrored": false,
+      "frontReads": true,
+      "backReads": true,
+      "clearOfPost": true,
+      "bottom": 0.035
+     },
+     {
+      "sign": "junction",
+      "name": "SUMMERFIELD RD",
+      "set": "sign.blade.SUMMERFIELD_RD",
+      "found": true,
+      "faces": 1,
+      "mirrored": false,
+      "frontReads": true,
+      "backReads": true,
+      "clearOfPost": true,
+      "bottom": 0.295
+     },
+     {
+      "sign": "junction",
+      "name": "STOP",
+      "set": "sign.stop",
+      "found": true,
+      "faces": 1,
+      "mirrored": false,
+      "frontReads": true,
+      "backReads": true,
+      "clearOfPost": true,
+      "bottom": 1.72
+     }
+    ],
+    "hoses": {
+     "bibs": 25,
+     "bibsOffWall": 0,
+     "offList": [],
+     "runs": 25,
+     "points": 160,
+     "jumps": 0,
+     "underLawn": 0,
+     "onWalkOrStreet": 0,
+     "onDrive": 0
+    },
+    "dup": {
+     "procVisible": 0,
+     "proxyVisible": 0,
+     "setsVisible": true,
+     "hoses": true,
+     "sprinklerStands": true
+    },
+    "story": {
+     "storyHomeDetails": 0,
+     "lookoutRecords": 0,
+     "hookZones": {
+      "bench": 1,
+      "old-oak": 1,
+      "initials": 1,
+      "chalk": 1,
+      "portable-hoop": 1
+     }
+    }
+   },
+   "fingerprint": {
+    "merged": {
+     "tris": 3672619,
+     "verts": 11017857,
+     "h1": 3449740665,
+     "h2": 2223264169
+    },
+    "proxies": {
+     "tris": 2371121,
+     "h1": 3930555726
+    },
+    "lines": {
+     "segs": 4471,
+     "h1": 3072461437
+    },
+    "mergedCount": 2412,
+    "proxyCount": 589,
+    "zones": []
+   },
+   "queries": {
+    "n": 40488,
+    "hash": 3254642635,
+    "obstacles": 812,
+    "obstacleHash": 271482339,
+    "space": [
+     [
+      "walk",
+      159
+     ],
+     [
+      "porch",
+      247
+     ],
+     [
+      "house",
+      247
+     ],
+     [
+      "tree",
+      5717
+     ],
+     [
+      "fence",
+      0
+     ],
+     [
+      "driveway",
+      618
+     ],
+     [
+      "pole",
+      52
+     ],
+     [
+      "lamp",
+      27
+     ],
+     [
+      "mailbox",
+      133
+     ],
+     [
+      "hydrant",
+      8
+     ],
+     [
+      "bins",
+      54
+     ],
+     [
+      "hoop",
+      1
+     ],
+     [
+      "toy",
+      30
+     ],
+     [
+      "sign",
+      23
+     ]
+    ],
+    "drives": 105
+   },
+   "rides": {
+    "drive": {
+     "d": 744.0601318057627
+    },
+    "runs": {
+     "cut": [
+      [
+       740.9684,
+       2.6001,
+       3.2492,
+       0
+      ],
+      [
+       741.6493,
+       2.617,
+       3.5068,
+       0
+      ],
+      [
+       742.3752,
+       2.6962,
+       3.7103,
+       0
+      ],
+      [
+       743.1366,
+       2.8582,
+       3.8713,
+       0
+      ],
+      [
+       743.9263,
+       3.0946,
+       3.9989,
+       0
+      ],
+      [
+       744.7383,
+       3.3869,
+       4.1003,
+       0
+      ],
+      [
+       745.568,
+       3.7173,
+       4.181,
+       0
+      ],
+      [
+       746.412,
+       4.0721,
+       4.2456,
+       0
+      ],
+      [
+       747.2673,
+       4.4422,
+       4.2974,
+       0
+      ],
+      [
+       748.1318,
+       4.8215,
+       4.3392,
+       0
+      ],
+      [
+       749.0037,
+       5.2062,
+       4.3732,
+       0
+      ],
+      [
+       749.8817,
+       5.5942,
+       4.401,
+       0
+      ],
+      [
+       750.7646,
+       5.9841,
+       4.4239,
+       0
+      ],
+      [
+       751.6517,
+       6.3751,
+       4.443,
+       0
+      ],
+      [
+       752.5423,
+       6.7669,
+       4.4592,
+       0
+      ],
+      [
+       753.4357,
+       7.1591,
+       4.473,
+       0
+      ],
+      [
+       754.3317,
+       7.5516,
+       4.4849,
+       0
+      ],
+      [
+       755.2299,
+       7.8134,
+       4.4953,
+       0
+      ]
+     ],
+     "curb": [
+      [
+       753.9685,
+       3.1001,
+       3.2521,
+       0
+      ],
+      [
+       754.6518,
+       3.1171,
+       3.525,
+       0
+      ],
+      [
+       755.3828,
+       3.1967,
+       3.7406,
+       0
+      ],
+      [
+       756.1515,
+       3.3597,
+       3.911,
+       0
+      ],
+      [
+       756.9499,
+       3.5979,
+       4.046,
+       0
+      ],
+      [
+       757.772,
+       3.8926,
+       4.1532,
+       0
+      ],
+      [
+       758.6129,
+       4.2257,
+       4.2384,
+       0
+      ],
+      [
+       759.4688,
+       4.5835,
+       4.3065,
+       0
+      ],
+      [
+       760.3367,
+       4.9566,
+       4.361,
+       0
+      ],
+      [
+       761.2141,
+       5.3389,
+       4.4048,
+       0
+      ],
+      [
+       762.0994,
+       5.7267,
+       4.4403,
+       0
+      ],
+      [
+       762.9909,
+       6.1177,
+       4.4692,
+       0
+      ],
+      [
+       763.8876,
+       6.5106,
+       4.4929,
+       0
+      ],
+      [
+       764.7885,
+       6.9045,
+       4.5126,
+       0
+      ],
+      [
+       765.693,
+       7.2991,
+       4.5289,
+       0
+      ]
+     ],
+     "mailbox": [
+      [
+       150.1091,
+       4.2001,
+       3.2741,
+       0
+      ],
+      [
+       150.8106,
+       4.2175,
+       3.6611,
+       0
+      ],
+      [
+       151.5795,
+       4.3001,
+       3.9652,
+       0
+      ],
+      [
+       152.4013,
+       4.4708,
+       4.2041,
+       0
+      ],
+      [
+       153.2648,
+       4.7214,
+       4.3915,
+       0
+      ],
+      [
+       154.1608,
+       5.0321,
+       4.5385,
+       0
+      ],
+      [
+       155.0824,
+       5.3834,
+       4.6536,
+       0
+      ],
+      [
+       156.024,
+       5.7604,
+       4.7436,
+       0
+      ],
+      [
+       156.9812,
+       6.153,
+       4.8138,
+       0
+      ],
+      [
+       157.9505,
+       6.5544,
+       4.8685,
+       0
+      ],
+      [
+       158.9293,
+       6.9608,
+       4.9108,
+       0
+      ],
+      [
+       159.9154,
+       7.3696,
+       4.9434,
+       0
+      ],
+      [
+       160.9071,
+       7.7797,
+       4.9683,
+       0
+      ],
+      [
+       161.9031,
+       7.8241,
+       4.9872,
+       0
+      ],
+      [
+       162.9022,
+       7.8241,
+       5.0013,
+       0
+      ]
+     ]
+    }
+   },
+   "spr": {
+    "moved": true,
+    "visible": true,
+    "headOnHead": true
+   },
+   "keys": {
+    "r": [
+     {
+      "procShown": false,
+      "procHidden": true,
+      "authored": true,
+      "hoses": true,
+      "mode": "authored"
+     },
+     {
+      "procShown": true,
+      "procHidden": false,
+      "authored": false,
+      "hoses": false,
+      "mode": "original"
+     },
+     {
+      "procShown": false,
+      "procHidden": true,
+      "authored": true,
+      "hoses": true,
+      "mode": "authored"
+     }
+    ],
+    "lod": [
+     0,
+     1,
+     2,
+     null
+    ]
+   },
+   "chapters": {
+    "prologue": {
+     "active": true,
+     "procVisible": false,
+     "state": "intro"
+    },
+    "chapterOne": {
+     "active": false,
+     "procVisible": true,
+     "state": "c1-ride"
+    }
+   }
+  },
+  "Cbase": {
+   "veg": {
+    "trees": 386,
+    "shrubs": 553,
+    "meadow": 12487,
+    "variants": 42,
+    "lawn": "C"
+   },
+   "sp": {
+    "cars": 54,
+    "props": {
+     "poles": 110,
+     "transformers": 15,
+     "backgroundPoles": 71,
+     "guys": 1,
+     "sidepins": 10,
+     "wires": 291,
+     "lamps": 27,
+     "mailbox.white": 31,
+     "mailbox.wood": 45,
+     "mailbox.brick": 29,
+     "mailbox.deco": 28,
+     "hydrants": 8,
+     "carts": 82,
+     "cans": 7,
+     "bays": 2457,
+     "posts": 2944,
+     "gates": 189
+    }
+   }
+  },
+  "C": {
+   "wallLoadMs": 37076,
+   "loaded": {
+    "details": null,
+    "dtErrors": [],
+    "streetprops": null,
+    "pavement": null,
+    "veg": null,
+    "houses": null,
+    "bikes": null
+   },
+   "veg": {
+    "trees": 386,
+    "shrubs": 553,
+    "meadow": 12487,
+    "variants": 42,
+    "lawn": "C"
+   },
+   "sp": {
+    "cars": 54,
+    "props": {
+     "poles": 110,
+     "transformers": 15,
+     "backgroundPoles": 71,
+     "guys": 1,
+     "sidepins": 10,
+     "wires": 291,
+     "lamps": 27,
+     "mailbox.white": 31,
+     "mailbox.wood": 45,
+     "mailbox.brick": 29,
+     "mailbox.deco": 28,
+     "hydrants": 8,
+     "carts": 82,
+     "cans": 7,
+     "bays": 2457,
+     "posts": 2944,
+     "gates": 189
+    }
+   },
+   "state": {
+    "details": true,
+    "streetprops": true,
+    "pavement": true,
+    "houses": "refined",
+    "bikes": true,
+    "benchLots": 12,
+    "porchChairsOnBenchLots": 0,
+    "leftToHouses": 6,
+    "grills": 29,
+    "recordedGrills": 32,
+    "strayGrills": 0,
+    "grillsOnBenchLots": 3,
+    "grillsLeftToHouses": 3,
+    "friends": [
+     "ride",
+     "ride",
+     "ride"
+    ],
+    "distance": 13.22
+   }
+  },
+  "D": {
+   "package": {
+    "models": 190010907,
+    "default": 13024833
+   }
+  }
+ },
+ "shots": [],
+ "pairs": [],
+ "finished": "2026-11-26T06:14:38.164Z"
+}
