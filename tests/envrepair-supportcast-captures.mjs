@@ -149,12 +149,14 @@ if(WHAT.includes('kid'))await session(async(page)=>{const r=await page.evaluate(
   const chest=g.clone().add(new T.Vector3(0,1.0,0)),head=g.clone().add(new T.Vector3(0,1.4,0));
   const ok=(p,t,stop)=>{const dir=t.clone().sub(p),l=dir.length();dir.normalize();rc.set(p,dir);rc.far=l-stop;return !rc.intersectObjects(meshes,false).length;};
   for(const [du,dv] of [[6.5,-1.2],[-6.5,-1.2],[7.5,0],[-7.5,0],[5.5,-3.2],[-5.5,-3.2],[8.5,-2.2],[-8.5,-2.2],[4,-5.5],[-4,-5.5]]){const a=MAIN.point(q.u+du,q.v+sv*dv);const p=new T.Vector3(a.x,a.y+1.55,a.z);
-   if(ok(p,chest,.3)&&ok(p,head,.3)&&ok(p,ring,.6)){const at=chest.clone().lerp(ring,.42);window.__fc={p:p.toArray(),at:at.toArray()};return {du,dv,dist:+p.distanceTo(chest).toFixed(1)};}}
+   // his chest and head, and 0.6 m to either side of them across the view (he moves while he plays), and the ring
+   const side=new T.Vector3().subVectors(chest,p).cross(new T.Vector3(0,1,0)).setY(0).normalize().multiplyScalar(.6);
+   if([chest,head].every(t=>[0,1,-1].every(m=>ok(p,t.clone().addScaledVector(side,m),.3)))&&ok(p,ring,.6)){const at=chest.clone().lerp(ring,.42);window.__fc={p:p.toArray(),at:at.toArray()};return {du,dv,dist:+p.distanceTo(chest).toFixed(1)};}}
   throw new Error('no clear side view of the hoop kid and the ring');});
  await record(page,'V03-hoop-kid-driveway',15,150,({k,dt})=>{const L=lastLight;L.step(dt);return false;},{what:'the hoop kid in the running game: dribbling, the shot (release at the controller\'s 0.35 s), the ball off the rim, the chase and the catch; QA camera on the driveway\'s side, the hoop in frame; 10 s',subject:r});
- await page.evaluate(()=>{const L=lastLight,K=L.ambient.hoopKid.kid;window.__fc=null;window.__yaw=0;L.place(K.d-34,-1.5,4.6);L.friends.warp(K.d-34);L.press('KeyW');for(let i=0;i<10;i++)L.step(1/30);});
+ if(!(process.env.KID_ONLY==='V03'))await page.evaluate(()=>{const L=lastLight,K=L.ambient.hoopKid.kid;window.__fc=null;window.__yaw=0;L.place(K.d-34,-1.5,4.6);L.friends.warp(K.d-34);L.press('KeyW');for(let i=0;i<10;i++)L.step(1/30);});
  // the riding camera turns toward him as a rider would (eased; it lets go once he is more than 75 degrees behind the heading)
- await record(page,'V03b-hoop-kid-riding-past',15,120,({k,dt})=>{const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;L.step(dt);const c=L.camera;
+ if(!(process.env.KID_ONLY==='V03'))await record(page,'V03b-hoop-kid-riding-past',15,120,({k,dt})=>{const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;L.step(dt);const c=L.camera;
    const f=c.getWorldDirection(new T.Vector3()),to=K.person.group.getWorldPosition(new T.Vector3()).add(new T.Vector3(0,1.1,0)).sub(c.position);f.y=0;to.y=0;f.normalize();to.normalize();
    const a=Math.atan2(f.z*to.x-f.x*to.z,f.x*to.x+f.z*to.z),want=Math.abs(window.__yaw+a)<1.3?window.__yaw+a:0;window.__yaw+=(Math.max(-1.25,Math.min(1.25,want))-window.__yaw)*.18;L.look(window.__yaw,-.03);return false;},
   {what:'riding past the hoop kid with the group (riding camera, turning toward him as he goes by): he stops dribbling and watches the boys pass, ball at his hip'});});
