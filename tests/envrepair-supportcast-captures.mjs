@@ -33,7 +33,7 @@ const mode=(page,which,m)=>page.evaluate(([w,m])=>{if(w==='er'){__envrepair.setM
 
 // ------------------------------------------------------------------------------------------------ pairs
 // placement helpers evaluated in the page: P(view) returns nothing; sets window.__fc and places the bike near the subject
-const PLACE=`async(v)=>{const L=lastLight,W=L.world,T=__envrepair.THREE,{MAIN}=await import('./terrain.js');const near=(x,z)=>{const q=MAIN.project(x,z);L.place(q.u-3,Math.max(-3.3,Math.min(3.3,q.v)),0);for(let i=0;i<4;i++)L.step(1/30);L.look(0,0);L.step(1/30);};
+const PLACE=`async(v)=>{window.__subject=null;const L=lastLight,W=L.world,T=__envrepair.THREE,{MAIN}=await import('./terrain.js');const near=(x,z)=>{const q=MAIN.project(x,z);L.place(q.u-3,Math.max(-3.3,Math.min(3.3,q.v)),0);for(let i=0;i<4;i++)L.step(1/30);L.look(0,0);L.step(1/30);};
  const at=(set,i)=>{const it=set.items[i];return it.matrix;};let from,to;
  if(v.kind==='chain'){const set=__streetprops.handle.parts.props.sets['fence.chain'];
   // Oak Hollow's rear-lot chain link (parallel to the street at the back of the lots, |v| = 33.5): the longest continuous run
@@ -47,12 +47,17 @@ const PLACE=`async(v)=>{const L=lastLight,W=L.world,T=__envrepair.THREE,{MAIN}=a
   const runs=[];for(const side of [-1,1]){const l=bays.filter(o=>Math.sign(o.q.v)===side).sort((a,b)=>a.q.u-b.q.u);let r=null;for(const o of l){if(r&&o.q.u-r[r.length-1].q.u<o.len/2+r[r.length-1].len/2+.8)r.push(o);else{r=[o];runs.push(r);}}}
   runs.sort((a,b)=>(b[b.length-1].q.u-b[0].q.u)-(a[a.length-1].q.u-a[0].q.u));const run=runs[0];if(!run)throw new Error('no rear chain-link run');
   const side=Math.sign(run[0].q.v),u0=run[0].q.u-run[0].len/2,u1=run[run.length-1].q.u+run[run.length-1].len/2,vf=run[0].q.v;
-  let cam,look,dist=v.dist;
-  if(v.dist<30){const mids=run.slice().sort((a,b)=>Math.abs(a.q.u-(u0+u1)/2)-Math.abs(b.q.u-(u0+u1)/2));let pick=null;
-   for(const d of [v.dist,v.dist*.85,v.dist*.7,v.dist*.55])for(const o of mids){const c=[o.q.u,o.q.v-side*d];if(clear(c,[o.q.u,o.q.v-side*.4])){pick={o,d};break;}}if(pick)break;
-   if(!pick)throw new Error('no clear straight-on view of the run');dist=pick.d;const a=MAIN.point(pick.o.q.u,pick.o.q.v-side*pick.d);cam=new T.Vector3(a.x,a.y+(v.h||1.55),a.z);look=pick.o.p.clone().add(new T.Vector3(0,.7,0));}
-  else{const a=MAIN.point(u0-1.5,vf-side*1.6),b=MAIN.point(Math.min(u1,u0+v.dist),vf);cam=new T.Vector3(a.x,a.y+(v.h||1.6),a.z);look=new T.Vector3(b.x,b.y+.6,b.z);dist=+(Math.min(u1,u0+v.dist)-u0+1.5).toFixed(1);}
-  from=cam;to=look;near(to.x,to.z);window.__subject={run:[+u0.toFixed(1),+u1.toFixed(1)],side,bays:run.length,distance:+(+dist).toFixed(1)};}
+  // one back yard along the run (between two lot lines, the lines as props.js draws them): straight on from inside it, and
+  // across it diagonally from one corner (the lot-line and side-yard fences block any longer view inside the lots)
+  const plans=W.plans.filter(p=>p.side===side).sort((a,b)=>a.u-b.u),ext=p=>{const a=p.lin(-p.w/2-(p.hasGarage&&p.gs<0?p.gw:0),0).u,b=p.lin(p.w/2+(p.hasGarage&&p.gs>0?p.gw:0),0).u;return [Math.min(a,b),Math.max(a,b)];};
+  const lines=[];for(let i=0;i<plans.length-1;i++){const [,a1]=ext(plans[i]),[b0]=ext(plans[i+1]);lines.push((a1+b0)/2);}
+  const yards=[];for(let i=0;i<lines.length-1;i++)if(lines[i]>u0+.5&&lines[i+1]<u1-.5)yards.push([lines[i],lines[i+1]]);
+  let cam,look,dist=v.dist,yard=null;
+  for(const [ya,yb] of yards){const m=(ya+yb)/2;if(clear([m,vf-side*7],[m,vf-side*.4])){yard=[ya,yb];break;}}if(!yard)throw new Error('no back yard with a clear view of the run');
+  const [ya,yb]=yard,mid=(ya+yb)/2;
+  if(v.dist<30){const a=MAIN.point(mid,vf-side*v.dist),b=MAIN.point(mid,vf);cam=new T.Vector3(a.x,a.y+(v.h||1.55),a.z);look=new T.Vector3(b.x,b.y+.7,b.z);}
+  else{const a=MAIN.point(ya+1.6,vf-side*1.6),b=MAIN.point(yb-.6,vf);cam=new T.Vector3(a.x,a.y+(v.h||1.6),a.z);look=new T.Vector3(b.x,b.y+.6,b.z);dist=+(Math.hypot(yb-.6-ya-1.6,1.6)).toFixed(1);}
+  from=cam;to=look;near(to.x,to.z);window.__subject={run:[+u0.toFixed(1),+u1.toFixed(1)],side,bays:run.length,yard:[+ya.toFixed(1),+yb.toFixed(1)],distance:+(+dist).toFixed(1)};}
  else if(v.kind==='rec'){const set=(v.from==='sp'?__streetprops.handle.parts.props.sets:v.from==='veh'?__streetprops.handle.parts.vehicles.sets:__details.handle.sets)[v.set];const M=at(set,v.i||0);from=new T.Vector3(...v.cam).applyMatrix4(M);to=new T.Vector3(...v.look).applyMatrix4(M);near(to.x,to.z);}
  else if(v.kind==='frame'){const f=W.sideFrames[0],a=f.point(v.u,v.v),b=f.point(v.tu,v.tv);from=new T.Vector3(a.x,a.y+v.h,a.z);to=new T.Vector3(b.x,b.y+(v.th||0),b.z);near(b.x,b.z);}
  else if(v.kind==='point'){const a=MAIN.point(v.d,v.lat),b=MAIN.point(v.td,v.tlat);from=new T.Vector3(a.x,a.y+v.h,a.z);to=new T.Vector3(b.x,b.y+(v.th||0),b.z);(v.under?near(a.x,a.z):near(b.x,b.z));}
@@ -67,8 +72,8 @@ const KIDVIEW=`(K,T,MAIN,cands,h,far)=>{let sc=K.person.group;while(sc.parent)sc
   if(!rc.intersectObjects(meshes,false).length)return {p:p.toArray(),at:tgt.toArray(),du,dv};}return null;}`;
 const VIEWS=[
  {n:'E01-chain-link-close',what:'Oak Hollow chain link (the street props\' rear-lot fence) straight on at 2.5 m, from inside the yard: the wire up close; the coverage rule changes nothing here (QA camera)',kind:'chain',dist:2.5,h:1.5},
- {n:'E02-chain-link-medium',what:'the same run straight on from further into the yard (about 10 m; the exact distance is in the record): the wire starts to thin below the 0.5 test (QA camera)',kind:'chain',dist:12,h:1.6},
- {n:'E03-chain-link-distant',what:'looking along the run from its end, 1.6 m inside it: the bays recede from 2 m to 30-40 m; before, the far wire thins away; after, it keeps its coverage as a faint grey screen (QA camera)',kind:'chain',dist:40,h:1.6},
+ {n:'E02-chain-link-medium',what:'the same chain link straight on from 7 m inside the back yard: the wire starts to thin below the 0.5 test (QA camera)',kind:'chain',dist:7,h:1.6},
+ {n:'E03-chain-link-distant',what:'across the same back yard diagonally from one corner: the bays recede to about 20 m at a grazing angle, where the plain test thins the wire away and the coverage rule keeps a faint grey screen (QA camera)',kind:'chain',dist:40,h:1.6},
  {n:'E04-creek-vegetation',what:'Briarwood creek from the inside bank: the brush, reeds, ground patches and algae (before: procedural balls, flat blades, hard polygons; after: the vegetation library\'s shrubs and grasses, soft patches) (QA camera)',kind:'frame',u:92,v:9.6,h:1.6,tu:104,tv:28,th:.3},
  {n:'E05-creek-fence-and-vegetation',what:'the creek\'s chain link across the back of the strip and the planting around it (QA camera on the bank)',kind:'frame',u:91.5,v:24.5,h:1.5,tu:103,tv:31.2,th:-.1},
  {n:'E06-trampoline-supports',what:'a trampoline\'s supports: W-legs 45 mm with their sockets and feet, the enclosure poles clamped to the legs (QA camera, 3 m)',kind:'rec',set:'trampoline',i:0,cam:[3.0,.55,1.6],look:[1.6,.45,.6]},
@@ -83,18 +88,20 @@ const VIEWS=[
  {n:'E12-full-environment',what:'Oak Hollow wide with all six benchmarks and the repairs (QA raised camera, 13 m up)',kind:'point',d:28,lat:-1,h:13,td:150,tlat:0,th:0,under:true},
  {n:'E13-creek-from-oak-hollow',what:'what the Prologue\'s playable street shows of the creek: Briarwood Lane from Oak Hollow at the junction, the creek strip 90 m down it (riding camera)',kind:'junction'},
  {n:'S01-mother-porch-close',what:'Jamie\'s mother on her porch during her wave (QA camera on the front walk, 4 m); left: the authored character, right: the original',kind:'mom',t:.9,cam:'close',sc:true},
- {n:'S02-mother-from-the-street',what:'Jamie\'s mother waiting on the porch as the ride comes past (the riding camera, turned toward her); Jamie is the existing placeholder',kind:'mom',t:6,cam:'ride',sc:true},
+ {n:'S02-mother-from-the-street',what:'Jamie\'s mother waiting on the porch (the riding camera 11 m before her house, turned toward her); Jamie is the existing placeholder',kind:'mom',t:6,cam:'ride',sc:true},
  {n:'S03-hoop-kid-driveway',what:'the driveway basketball kid dribbling (QA camera beside the driveway, 5 m)',kind:'kid',phase:'dribble',sc:true},
  {n:'S04-hoop-kid-riding-view',what:'the hoop kid as the ride comes past (riding camera); he looks at the boys, ball at his hip',kind:'kidride',sc:true},
 ];
 if(WHAT.includes('pairs')){const only=process.env.VIEWS?process.env.VIEWS.split(','):null,list=VIEWS.filter(v=>!only||only.some(o=>v.n.startsWith(o)));
  for(let i=0;i<list.length;i+=2)await session(async(page,errors)=>{for(const v of list.slice(i,i+2)){
-   if(v.kind==='mom')await page.evaluate(async(v)=>{const L=lastLight;L.place(655,1.2,4.4);L.friends.warp(655);L.press('KeyW');for(let i=0;i<60*30;i++){L.step(1/30);const m=L.friends.mom;if(m.mode==='porch'&&m.t>=v.t)break;}L.release('KeyW');
+   if(v.kind==='mom')await page.evaluate(async(v)=>{window.__subject=null;const L=lastLight;L.place(655,1.2,4.4);L.friends.warp(655);L.press('KeyW');for(let i=0;i<60*30;i++){L.step(1/30);const m=L.friends.mom;if(m.mode==='porch'&&m.t>=v.t)break;}L.release('KeyW');
      const {MAIN}=await import('./terrain.js');const T=__envrepair.THREE,grp=L.friends.mom.person.group,g=grp.getWorldPosition(new T.Vector3()),fw=new T.Vector3(0,0,-1).applyQuaternion(grp.getWorldQuaternion(new T.Quaternion()));fw.y=0;fw.normalize();const side=new T.Vector3(-fw.z,0,fw.x),c=L.camera;
      // close: on the front walk 3.1 m out from her toward the street, at porch eye height (above the foundation shrubs)
-     if(v.cam==='close'){const m=L.friends.mom,a=MAIN.point(m.pd+.9,m.plat-Math.sign(m.plat)*3.1);c.position.set(a.x,g.y+1.5,a.z);c.lookAt(g.x,g.y+1.3,g.z);}else{L.look(0,0);L.step(1/30);c.lookAt(g.x,g.y+1.2,g.z);}
+     if(v.cam==='close'){const m=L.friends.mom,a=MAIN.point(m.pd+.9,m.plat-Math.sign(m.plat)*3.1);c.position.set(a.x,g.y+1.5,a.z);c.lookAt(g.x,g.y+1.3,g.z);}else{const m=L.friends.mom;L.place(m.pd-11,Math.sign(m.plat)*1.4,0);L.step(1/30);L.look(0,0);L.step(1/30);const g2=grp.getWorldPosition(new T.Vector3());c.lookAt(g2.x,g2.y+1.2,g2.z);}
      c.updateMatrixWorld(true);window.__fc={p:c.position.toArray(),q:c.quaternion.toArray()};},v);
-   else if(v.kind==='kid'||v.kind==='kidride')await page.evaluate(async([v,KV])=>{const kidView=(0,eval)(KV);const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;
+   else if(v.kind==='kid'||v.kind==='kidride')await page.evaluate(async([v,KV])=>{const kidView=(0,eval)(KV);const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;window.__subject=null;
+     // (ambient.js re-shows him only while the ride is more than 140 m away; a QA jump back from Jamie's house would leave him hidden)
+     K.person.group.visible=L.ambient.hoopKid.ball.visible=true;
      if(v.kind==='kid'){L.place(K.d-30,0,0);for(let i=0;i<300;i++){L.step(1/30);if(K.phase==='dribble'&&(K.t%.52)/.52>.1&&(K.t%.52)/.52<.16&&K.t>1)break;}
       const {MAIN}=await import('./terrain.js');const r=kidView(K,T,MAIN,[[2.6,3.4],[-2.6,3.4],[3.6,1.8],[-3.6,1.8],[0,4.2],[4.2,0],[-4.2,0],[3.4,-2.2],[-3.4,-2.2]],1.4);if(!r)throw new Error('no clear view of the hoop kid');
       const c=L.camera;c.position.fromArray(r.p);c.lookAt(r.at[0],r.at[1]-.15,r.at[2]);c.updateMatrixWorld(true);window.__fc={p:c.position.toArray(),q:c.quaternion.toArray()};window.__subject={du:r.du,dv:r.dv};}
