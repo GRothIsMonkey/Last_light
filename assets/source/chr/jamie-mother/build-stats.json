@@ -2,7 +2,7 @@
  "asset": "chr.jamie-mother",
  "version": "1",
  "blender": "5.1.2",
- "glb_bytes": 8356592,
+ "glb_bytes": 8356808,
  "triangles": {
   "JamieMotherHead": 22882,
   "JamieMotherHair": 9774,
@@ -95,5 +95,6 @@
   "thigh_m": 0.394,
   "shin_m": 0.39,
   "interpupillary_m": 0.061
- }
+ },
+ "glb_patched": "the scene carries the rig's full ll_ tag set (asset id, version, rig, licence, character), as the build script now writes it; geometry, textures and clips unchanged (8,356,592 bytes before)"
 }

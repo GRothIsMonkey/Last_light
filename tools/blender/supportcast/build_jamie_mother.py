@@ -898,7 +898,10 @@ def main():
     eye_obs[0].name = 'JamieMotherEyes'
     for ob in (head_ob, hair_ob, body_ob, eye_obs[0]):
         ob['ll_part'] = ob.name
-    sc['ll_asset_id'] = ASSET_ID
+    # the scene carries the rig's full tag set: asset-library.js reads the first tagged object it meets, and the glTF
+    # exporter writes the scene's properties first (a scene tagged with the id alone read as version undefined)
+    for k in ('ll_asset_id', 'll_asset_version', 'll_rig', 'll_license', 'll_character'):
+        sc[k] = arm_ob[k]
     bpy.ops.wm.save_as_mainfile(filepath=BLEND)
     bpy.ops.file.make_paths_relative()
     bpy.ops.wm.save_as_mainfile(filepath=BLEND)
