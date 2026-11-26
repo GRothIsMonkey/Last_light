@@ -159,17 +159,26 @@ if(WHAT.includes('kid'))await session(async(page)=>{const r=await page.evaluate(
    const a=Math.atan2(f.z*to.x-f.x*to.z,f.x*to.x+f.z*to.z),want=Math.abs(window.__yaw+a)<1.3?window.__yaw+a:0;window.__yaw+=(Math.max(-1.25,Math.min(1.25,want))-window.__yaw)*.18;L.look(window.__yaw,-.03);return false;},
   {what:'riding past the hoop kid with the group (riding camera, turning toward him as he goes by): he stops dribbling and watches the boys pass, ball at his hip'});});
 // the chain link in motion, in both modes: a QA camera in the back yard of E01-E03 pulls back from the wire (2.5 m to 8 m
-// straight on), then slides to the yard's corner and looks along the run (about 25 m at a grazing angle): near, medium and
-// far coverage while the view moves, on the same path in both modes
+// straight on), then slides to one of the yard's corners, or pans from 9.5 m, to look along the run at a grazing angle:
+// near, medium and far coverage while the view moves, on the same path in both modes
 if(WHAT.includes('fence'))await session(async(page)=>{await page.evaluate(`(${PLACE})(${JSON.stringify({kind:'chain',dist:2.5,h:1.5})})`);
- const r=await page.evaluate(async()=>{const {MAIN}=await import('./terrain.js');const S=window.__subject,[ya,yb]=S.yard,side=S.side,mid=(ya+yb)/2;
-  const vf=S.vf,pt=(u,dv,h)=>{const a=MAIN.point(u,vf-side*dv);return [a.x,a.y+h,a.z];},e=t=>t*t*(3-2*t),N=135,path=[];
-  for(let k=0;k<N;k++){const t=k/(N-1);let cu,cd,ch,tu,th;if(t<.38){const s=e(t/.38);cu=mid;cd=2.5+5.5*s;ch=1.5+.1*s;tu=mid;th=.75;}
-   else{const s=e((t-.38)/.62);cu=mid+(ya+1.6-mid)*s;cd=8+(1.6-8)*s;ch=1.6;tu=mid+(yb-.6-mid)*s;th=.75-.15*s;}path.push({p:pt(cu,cd,ch),at:pt(tu,0,th)});}
-  window.__path=path;return {...S,frames:N};});
+ // candidate paths in that yard (pull back, then slide to either corner or pan along the run); each is sampled every
+ // ninth frame and its sight lines to the wire (the look point and 4 m either side of it) are cast against every visible
+ // mesh: the first path with nothing in the way (a yard tree, a deck, a shed) is used, else the one with the fewest hits
+ const r=await page.evaluate(async()=>{const {MAIN}=await import('./terrain.js');const T=__envrepair.THREE,L=lastLight;const S=window.__subject,[ya,yb]=S.yard,side=S.side,mid=(ya+yb)/2;
+  const vf=S.vf,pt=(u,dv,h)=>{const a=MAIN.point(u,vf-side*dv);return [a.x,a.y+h,a.z];},e=t=>t*t*(3-2*t),N=135;
+  const C=[{n:'corner-a',cu:ya+1.6,cd:1.6,tu:yb-.6},{n:'corner-b',cu:yb-1.6,cd:1.6,tu:ya+.6},{n:'pan-b',cu:mid,cd:9.5,tu:yb-.6},{n:'pan-a',cu:mid,cd:9.5,tu:ya+.6}];
+  const build=c=>{const path=[];for(let k=0;k<N;k++){const t=k/(N-1);let cu,cd,ch,tu,th;if(t<.38){const s=e(t/.38);cu=mid;cd=2.5+5.5*s;ch=1.5+.1*s;tu=mid;th=.75;}
+   else{const s=e((t-.38)/.62);cu=mid+(c.cu-mid)*s;cd=8+(c.cd-8)*s;ch=1.6;tu=mid+(c.tu-mid)*s;th=.75-.15*s;}path.push({p:pt(cu,cd,ch),at:pt(tu,0,th),tu,th});}return path;};
+  const meshes=[];L.scene.traverseVisible(o=>{if(o.isMesh&&!o.isSkinnedMesh&&!o.isSprite)meshes.push(o);});const rc=new T.Raycaster();
+  const hits=path=>{let n=0;for(let k=0;k<N;k+=9){const f=path[k],p=new T.Vector3(...f.p);for(const du of [0,-4,4]){const u=f.tu+du;if(u<S.run[0]||u>S.run[1])continue;const q=new T.Vector3(...pt(u,0,f.th));
+    const dir=q.clone().sub(p),l=dir.length();dir.normalize();rc.set(p,dir);rc.far=l-.8;if(rc.intersectObjects(meshes,false).length)n++;}}return n;};
+  let best=null;for(const c of C){const path=build(c),n=hits(path);if(!best||n<best.n)best={c,n,path};if(n===0)break;}
+  window.__path=best.path.map(f=>({p:f.p,at:f.at}));return {...S,frames:N,path:best.c.n,blocked:best.n};});
+ console.log('chain-link path',r.path,'blocked sight lines',r.blocked);
  // the sight line of every frame (any house in the way would show up as a wall in both films)
  for(const m of ['before','after']){await mode(page,'er',m);for(let w=0;w<3;w++)await render(page);
-  await record(page,'V01-chain-link-in-motion--'+(m==='after'?'repaired':'original'),15,r.frames,({k,dt})=>{const L=lastLight;L.step(dt);window.__fc=window.__path[k];return false;},{what:`Oak Hollow's rear-lot chain link in motion (QA camera in one back yard): pulling back from 2.5 m to 8 m straight on, then sliding to the yard's corner to look along about 25 m of the run at a grazing angle; ${m==='after'?'with the coverage rule':'as the street props left it (the wire thins away with distance)'}`,subject:r});}});
+  await record(page,'V01-chain-link-in-motion--'+(m==='after'?'repaired':'original'),15,r.frames,({k,dt})=>{const L=lastLight;L.step(dt);window.__fc=window.__path[k];return false;},{what:`Oak Hollow's rear-lot chain link in motion (QA camera in one back yard): pulling back from 2.5 m to 8 m straight on, then ${r.path.startsWith('corner')?'sliding to the yard\'s corner to look along about 25 m of the run at a grazing angle':'panning along the run from 9.5 m'} (the path whose sight lines are clear); ${m==='after'?'with the coverage rule':'as the street props left it (the wire thins away with distance)'}`,subject:r});}});
 // a continuous ride through the Prologue's relevant stretch: the hoop kid, the yards and fences, Jamie's mother's scene
 if(WHAT.includes('ride'))await session(async(page)=>{await page.evaluate(()=>{const L=lastLight;L.place(96,1.0,4.8);L.friends.warp(96);L.press('KeyW');for(let i=0;i<10;i++)L.step(1/30);window.__fc=null;});
  await record(page,'V04-combined-prologue-ride',10,3000,({k,dt})=>{const L=lastLight;const n=Math.round(30*dt);for(let i=0;i<n;i++)L.step(1/30);const s=L.state;
