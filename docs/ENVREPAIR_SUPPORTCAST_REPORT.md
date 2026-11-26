@@ -24,7 +24,7 @@ Every performance number is a software-renderer or file number; no real-GPU fram
 | Start | `claude/prologue-neighborhood-details-benchmark` @ `716fc6b` (the six benchmarks: bikes, houses, vegetation, pavement, street props, details) |
 | This branch | `claude/prologue-environment-repair-supporting-cast` (new) |
 | Astra's work, read only | `codex/astra-phase1b-protagonist-animation` @ `66e3f4b` (rig and export conventions: bone names, `instantiate()`, ARKit keys); `codex/astra-phase1a-jamie-sketchfab-redesign` @ `42340fe` (Jamie's design report; it holds no .blend); Jamie's editable Phase 1A source `chr.jamie.a12.blend` as carried on the 1B branch (git blob `67490e2027801ec08190307cd8580392842eeea8`), opened read-only for the lineup only |
-| Not touched | the four boys' models, controllers and animations; `friends.js`, `cast.js`, `rig.js`, `faces.js`, `astra-anatomy.js`, `player-1b.js`; Chapter Seven's and Aftermath I's mother; the old oak and its tire swing; the departure sequence; any dialogue, caption, voice or sound |
+| Not touched | the four boys' models, controllers and animations; `friends.js`, `cast.js`, `rig.js`, `faces.js`, `astra-anatomy.js` (Astra's `player-1b.js` is not on this branch); Chapter Seven's and Aftermath I's mother; the old oak and its tire swing; the departure sequence; any dialogue, caption, voice or sound |
 
 Read before changing anything: the two previous reports, the approval register, the character canon, the environment style
 guide, the roadmap, the visual-consistency audit, and `friends.js`, `cast.js`, `ambient.js`, `rig.js`, `faces.js`,

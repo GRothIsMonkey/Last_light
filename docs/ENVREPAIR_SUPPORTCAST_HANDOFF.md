@@ -2,7 +2,8 @@
 
 For merging into the combined Prologue build that carries `?player1b&friends1b`. Everything here is opt-in, Prologue-only and
 independent of the four boys. **Do not overwrite your friend controllers with anything from this branch**: this branch never
-modifies `friends.js`, `cast.js`, `rig.js`, `faces.js`, `astra-anatomy.js`, `player-1b.js` or any boy's asset (the suite checks).
+modifies `friends.js`, `cast.js`, `rig.js`, `faces.js`, `astra-anatomy.js` or any boy's asset (the suite checks), and your
+`player-1b.js` is not on this branch at all.
 
 ## 1. Commits
 
@@ -77,6 +78,12 @@ Nothing in `supportcast.js` writes to a controller, plays a sound or shows a cap
    instead (`mother()` → `orig`).
 3. Both modules add a DEV label stacked under the others (`*-benchmark-label`); add yours to their `place()` lists if needed.
 4. The mother's gaze target is the procedural Jamie's group position + 1.32 m (foot) / 1.45 m (bike).
+5. `asset-library.js` turns frustum culling off for every skinned mesh, yours included: the supporting cast is drawn whenever
+   its controller shows it, on screen or not (10 draws each; the report's §12). A cull sphere in `supportcast.js` would fix it
+   for these two without touching the shared library.
+6. `asset-library.js` identifies a GLB by the **first** object it meets tagged `ll_asset_id`, and the glTF exporter writes the
+   scene's custom properties first. A scene tagged with the id alone reads as version `undefined` (the mother's did; fixed by
+   giving the scene the rig's full tag set). Keep a tagged scene's tags complete, or leave the scene untagged.
 
 ## 7. Tests to rerun after integration
 
