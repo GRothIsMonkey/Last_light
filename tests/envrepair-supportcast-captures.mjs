@@ -57,7 +57,7 @@ const PLACE=`async(v)=>{window.__subject=null;const L=lastLight,W=L.world,T=__en
   const [ya,yb]=yard,mid=(ya+yb)/2;
   if(v.dist<30){const a=MAIN.point(mid,vf-side*v.dist),b=MAIN.point(mid,vf);cam=new T.Vector3(a.x,a.y+(v.h||1.55),a.z);look=new T.Vector3(b.x,b.y+.7,b.z);}
   else{const a=MAIN.point(ya+1.6,vf-side*1.6),b=MAIN.point(yb-.6,vf);cam=new T.Vector3(a.x,a.y+(v.h||1.6),a.z);look=new T.Vector3(b.x,b.y+.6,b.z);dist=+(Math.hypot(yb-.6-ya-1.6,1.6)).toFixed(1);}
-  from=cam;to=look;near(to.x,to.z);window.__subject={run:[+u0.toFixed(1),+u1.toFixed(1)],side,bays:run.length,yard:[+ya.toFixed(1),+yb.toFixed(1)],distance:+(+dist).toFixed(1)};}
+  from=cam;to=look;near(to.x,to.z);window.__subject={run:[+u0.toFixed(1),+u1.toFixed(1)],side,vf:+vf.toFixed(2),bays:run.length,yard:[+ya.toFixed(1),+yb.toFixed(1)],distance:+(+dist).toFixed(1)};}
  else if(v.kind==='rec'){const set=(v.from==='sp'?__streetprops.handle.parts.props.sets:v.from==='veh'?__streetprops.handle.parts.vehicles.sets:__details.handle.sets)[v.set];const M=at(set,v.i||0);from=new T.Vector3(...v.cam).applyMatrix4(M);to=new T.Vector3(...v.look).applyMatrix4(M);near(to.x,to.z);}
  else if(v.kind==='frame'){const f=W.sideFrames[0],a=f.point(v.u,v.v),b=f.point(v.tu,v.tv);from=new T.Vector3(a.x,a.y+v.h,a.z);to=new T.Vector3(b.x,b.y+(v.th||0),b.z);near(b.x,b.z);}
  else if(v.kind==='point'){const a=MAIN.point(v.d,v.lat),b=MAIN.point(v.td,v.tlat);from=new T.Vector3(a.x,a.y+v.h,a.z);to=new T.Vector3(b.x,b.y+(v.th||0),b.z);(v.under?near(a.x,a.z):near(b.x,b.z));}
@@ -133,17 +133,37 @@ if(WHAT.includes('mom'))await session(async(page)=>{await page.evaluate(async()=
   const {MAIN}=await import('./terrain.js');const a=MAIN.point(788.5,5.2),b=MAIN.point(791.6,13.4);window.__fc={p:[a.x,a.y+1.5,a.z],at:[b.x,b.y+1.25,b.z]};window.__mm={stop:0};});
  await record(page,'V02-jamies-mother-complete-scene',12,640,({k,dt})=>{const L=lastLight;const n=Math.round(30*dt);for(let i=0;i<n;i++){L.step(1/30);if(L.state.distance>778)L.release('KeyW');}const m=L.friends.mom;if(m.mode==='gone'&&m.closeT>1.2)window.__mm.stop++;return window.__mm.stop>6;},
   {what:'Jamie\'s mother\'s complete Prologue scene in the running game: the door opens, she comes out, waves and calls (silently: she has no line), waits, Jamie arrives (the existing procedural Jamie: a placeholder, not Astra\'s Phase 1B character), she follows him in, the door closes. Camera: QA camera on the street in front of the house; the ride goes on as in the game.'});});
-if(WHAT.includes('kid'))await session(async(page)=>{await page.evaluate(async(KV)=>{const kidView=(0,eval)(KV);const {MAIN}=await import('./terrain.js');const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;L.place(K.d-32,0,0);for(let i=0;i<5;i++)L.step(1/30);
-  const r=kidView(K,T,MAIN,[[3.2,4.2],[-3.2,4.2],[4.4,2.4],[-4.4,2.4],[0,5.2],[5.2,0],[-5.2,0],[4,-2.6],[-4,-2.6]],1.45);if(!r)throw new Error('no clear view of the hoop kid');window.__fc={p:r.p,at:[r.at[0],r.at[1],r.at[2]]};},KIDVIEW);
- await record(page,'V03-hoop-kid-driveway',15,150,({k,dt})=>{const L=lastLight;L.step(dt);return false;},{what:'the hoop kid in the running game: dribbling, the shot (release at the controller\'s 0.35 s), the ball back off the rim, the catch; QA camera beside the driveway; 10 s'});
- await page.evaluate(()=>{const L=lastLight,K=L.ambient.hoopKid.kid;window.__fc=null;L.place(K.d-34,-1.5,4.6);L.friends.warp(K.d-34);L.press('KeyW');for(let i=0;i<10;i++)L.step(1/30);});
- await record(page,'V03b-hoop-kid-riding-past',15,120,({k,dt})=>{const L=lastLight,K=L.ambient.hoopKid.kid;L.step(dt);const c=L.camera,g=K.person.group.position;const s=L.state;L.look(Math.max(-1.2,Math.min(1.2,-(Math.atan2(g.x-c.position.x,-(g.z-c.position.z))-(-c.rotation?.y||0))*0)),0);return false;},{what:'riding past the hoop kid with the group (riding camera): he stops dribbling and watches the boys go by, ball at his hip'});});
-// riding past chain link in both modes (the shimmer and the coverage in motion)
-if(WHAT.includes('fence'))await session(async(page)=>{const r=await page.evaluate(async()=>{const set=__streetprops.handle.parts.props.sets['fence.chain'],T=__envrepair.THREE,{MAIN}=await import('./terrain.js');
-  const pts=set.items.map(it=>{const p=new T.Vector3().setFromMatrixPosition(it.matrix);return MAIN.project(p.x,p.z);}).filter(q=>Math.abs(q.v)>9&&Math.abs(q.v)<26&&q.u>60&&q.u<1000).sort((a,b)=>a.u-b.u);
-  let best=null;for(const q of pts){const n=pts.filter(o=>o.u>=q.u&&o.u<q.u+40).length;if(!best||n>best.n)best={n,u:q.u,v:q.v};}return best;});
- for(const m of ['before','after']){await page.evaluate(({u,v})=>{const L=lastLight;L.place(u-55,Math.sign(v)*2.6,5.2);L.press('KeyW');for(let i=0;i<5;i++)L.step(1/30);window.__fc=null;},r);await mode(page,'er',m);
-  await record(page,'V01-riding-past-chain-link--'+(m==='after'?'repaired':'original'),15,135,({k,dt})=>{const L=lastLight;L.step(dt);L.look(.32*Math.sign(1),0);return false;},{what:`riding past Oak Hollow chain link at 5 m/s (riding camera looking 18 degrees toward the fences), ${m==='after'?'with the coverage rule':'as the street props left it'}: from 55 m out to alongside`,subject:r});}});
+// the hoop kid's driveway from the side (the kid and the hoop both in frame, the first spot whose sight lines to his chest,
+// his head and the ring all clear every visible mesh), then the ride past him with the riding camera turning toward him
+if(WHAT.includes('kid'))await session(async(page)=>{const r=await page.evaluate(async()=>{const {MAIN}=await import('./terrain.js');const L=lastLight,H=L.ambient.hoopKid,K=H.kid,T=__envrepair.THREE;L.place(K.d-32,0,0);for(let i=0;i<5;i++)L.step(1/30);
+  let sc=K.person.group;while(sc.parent)sc=sc.parent;const g=K.person.group.getWorldPosition(new T.Vector3()),q=MAIN.project(g.x,g.z),sv=Math.sign(q.v)||1;
+  const rp=MAIN.point(H.ring.d,H.ring.lat),ring=new T.Vector3(rp.x,H.ringY,rp.z);
+  const skip=new Set(),ex=o=>o&&o.traverse(x=>skip.add(x));ex(K.person.group);ex(window.__supportcast?.cast?.kid?.root);ex(H.ball);
+  const meshes=[];sc.traverseVisible(o=>{if(o.isMesh&&!o.isSkinnedMesh&&!skip.has(o))meshes.push(o);});const rc=new T.Raycaster();
+  const chest=g.clone().add(new T.Vector3(0,1.0,0)),head=g.clone().add(new T.Vector3(0,1.4,0));
+  const ok=(p,t,stop)=>{const dir=t.clone().sub(p),l=dir.length();dir.normalize();rc.set(p,dir);rc.far=l-stop;return !rc.intersectObjects(meshes,false).length;};
+  for(const [du,dv] of [[6.5,-1.2],[-6.5,-1.2],[7.5,0],[-7.5,0],[5.5,-3.2],[-5.5,-3.2],[8.5,-2.2],[-8.5,-2.2],[4,-5.5],[-4,-5.5]]){const a=MAIN.point(q.u+du,q.v+sv*dv);const p=new T.Vector3(a.x,a.y+1.55,a.z);
+   if(ok(p,chest,.3)&&ok(p,head,.3)&&ok(p,ring,.6)){const at=chest.clone().lerp(ring,.42);window.__fc={p:p.toArray(),at:at.toArray()};return {du,dv,dist:+p.distanceTo(chest).toFixed(1)};}}
+  throw new Error('no clear side view of the hoop kid and the ring');});
+ await record(page,'V03-hoop-kid-driveway',15,150,({k,dt})=>{const L=lastLight;L.step(dt);return false;},{what:'the hoop kid in the running game: dribbling, the shot (release at the controller\'s 0.35 s), the ball off the rim, the chase and the catch; QA camera on the driveway\'s side, the hoop in frame; 10 s',subject:r});
+ await page.evaluate(()=>{const L=lastLight,K=L.ambient.hoopKid.kid;window.__fc=null;window.__yaw=0;L.place(K.d-34,-1.5,4.6);L.friends.warp(K.d-34);L.press('KeyW');for(let i=0;i<10;i++)L.step(1/30);});
+ // the riding camera turns toward him as a rider would (eased; it lets go once he is more than 75 degrees behind the heading)
+ await record(page,'V03b-hoop-kid-riding-past',15,120,({k,dt})=>{const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;L.step(dt);const c=L.camera;
+   const f=c.getWorldDirection(new T.Vector3()),to=K.person.group.getWorldPosition(new T.Vector3()).add(new T.Vector3(0,1.1,0)).sub(c.position);f.y=0;to.y=0;f.normalize();to.normalize();
+   const a=Math.atan2(f.z*to.x-f.x*to.z,f.x*to.x+f.z*to.z),want=Math.abs(window.__yaw+a)<1.3?window.__yaw+a:0;window.__yaw+=(Math.max(-1.25,Math.min(1.25,want))-window.__yaw)*.18;L.look(window.__yaw,-.03);return false;},
+  {what:'riding past the hoop kid with the group (riding camera, turning toward him as he goes by): he stops dribbling and watches the boys pass, ball at his hip'});});
+// the chain link in motion, in both modes: a QA camera in the back yard of E01-E03 pulls back from the wire (2.5 m to 8 m
+// straight on), then slides to the yard's corner and looks along the run (about 25 m at a grazing angle): near, medium and
+// far coverage while the view moves, on the same path in both modes
+if(WHAT.includes('fence'))await session(async(page)=>{await page.evaluate(`(${PLACE})(${JSON.stringify({kind:'chain',dist:2.5,h:1.5})})`);
+ const r=await page.evaluate(async()=>{const {MAIN}=await import('./terrain.js');const S=window.__subject,[ya,yb]=S.yard,side=S.side,mid=(ya+yb)/2;
+  const vf=S.vf,pt=(u,dv,h)=>{const a=MAIN.point(u,vf-side*dv);return [a.x,a.y+h,a.z];},e=t=>t*t*(3-2*t),N=135,path=[];
+  for(let k=0;k<N;k++){const t=k/(N-1);let cu,cd,ch,tu,th;if(t<.38){const s=e(t/.38);cu=mid;cd=2.5+5.5*s;ch=1.5+.1*s;tu=mid;th=.75;}
+   else{const s=e((t-.38)/.62);cu=mid+(ya+1.6-mid)*s;cd=8+(1.6-8)*s;ch=1.6;tu=mid+(yb-.6-mid)*s;th=.75-.15*s;}path.push({p:pt(cu,cd,ch),at:pt(tu,0,th)});}
+  window.__path=path;return {...S,frames:N};});
+ // the sight line of every frame (any house in the way would show up as a wall in both films)
+ for(const m of ['before','after']){await mode(page,'er',m);for(let w=0;w<3;w++)await render(page);
+  await record(page,'V01-chain-link-in-motion--'+(m==='after'?'repaired':'original'),15,r.frames,({k,dt})=>{const L=lastLight;L.step(dt);window.__fc=window.__path[k];return false;},{what:`Oak Hollow's rear-lot chain link in motion (QA camera in one back yard): pulling back from 2.5 m to 8 m straight on, then sliding to the yard's corner to look along about 25 m of the run at a grazing angle; ${m==='after'?'with the coverage rule':'as the street props left it (the wire thins away with distance)'}`,subject:r});}});
 // a continuous ride through the Prologue's relevant stretch: the hoop kid, the yards and fences, Jamie's mother's scene
 if(WHAT.includes('ride'))await session(async(page)=>{await page.evaluate(()=>{const L=lastLight;L.place(96,1.0,4.8);L.friends.warp(96);L.press('KeyW');for(let i=0;i<10;i++)L.step(1/30);window.__fc=null;});
  await record(page,'V04-combined-prologue-ride',10,3000,({k,dt})=>{const L=lastLight;const n=Math.round(30*dt);for(let i=0;i<n;i++)L.step(1/30);const s=L.state;

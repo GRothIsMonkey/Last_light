@@ -314,7 +314,7 @@ def page(M):
 <main>''')
     out.append('<section id="environment"><div class="wrap"><h2>Environment repairs</h2><p>Chain link that keeps its coverage at a distance, Briarwood creek\'s last primitive vegetation, the play equipment and toys, and contact shadows. Key <b>\'</b> swaps repaired and original.</p>')
     out.append('<div class="grid wide">' + ''.join(pair_card(M, p) for p in env) + '</div>')
-    out.append('<h3>Riding past chain link</h3><div class="grid wide">' + vcard('V01-riding-past-chain-link--original', 'Before', ['game', 'ride']) + vcard('V01-riding-past-chain-link--repaired', 'After', ['game', 'ride']) + '</div></div></section>')
+    out.append('<h3>Chain link in motion</h3><div class="grid wide">' + vcard('V01-chain-link-in-motion--original', 'Before', ['game', 'qa']) + vcard('V01-chain-link-in-motion--repaired', 'After', ['game', 'qa']) + '</div></div></section>')
     out.append('<section id="mother"><div class="wrap"><h2>Jamie\'s mother</h2><p>An original procedural character proposed for A-22 (still open): late thirties, 1.64 m, the Prologue\'s outfit, a face of her own. The game\'s controller (<code>friends.js updateMom</code>) drives when and where she moves; nothing about the scene\'s timing, triggers, positions or lines changed.</p>')
     out.append('<h3>In game</h3><div class="grid wide">' + ''.join(pair_card(M, p) for p in cast if 'mother' in p['name']) + vcard('V02-jamies-mother-complete-scene', 'The complete scene', ['game', 'qa', 'placeholder']) + '</div>')
     out.append('<h3>Model</h3><div class="grid small">' + ''.join(render_card(M, f'{B}jamie-mother-{n}--BLENDER-RENDER.png', t) for n, t in MOTHER_RENDERS) + '</div>')
