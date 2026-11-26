@@ -1,0 +1,823 @@
+{
+ "pairs": [
+  {
+   "name": "E01-chain-link-close",
+   "what": "Oak Hollow chain link (the street props' rear-lot fence) straight on at 2.5 m, from inside the yard: the wire up close; the coverage rule changes nothing here (QA camera)",
+   "subject": {
+    "run": [
+     919,
+     1012.5
+    ],
+    "side": -1,
+    "bays": 39,
+    "yard": [
+     957.1,
+     983.8
+    ],
+    "distance": 2.5
+   },
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     182.426,
+     2.63,
+     -891.627
+    ],
+    "q": [
+     -0.1452,
+     0.4495,
+     0.0743,
+     0.8783
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "after": {
+    "calls": 425,
+    "triangles": 925372
+   },
+   "before": {
+    "calls": 424,
+    "triangles": 906729
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E01-chain-link-close--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E01-chain-link-close--original.jpg"
+   ],
+   "sha256": [
+    "562d1f903000a891c23ca080b2e54ff7b40e2a4ad3ab45d5dcb7985078af0c74",
+    "c188edf2107aa2d4727ad8f7bb980c376091773bf8e8a7aa6e377789bb0dda37"
+   ]
+  },
+  {
+   "name": "E02-chain-link-medium",
+   "what": "the same chain link straight on from 7 m inside the back yard: the wire starts to thin below the 0.5 test (QA camera)",
+   "subject": {
+    "run": [
+     919,
+     1012.5
+    ],
+    "side": -1,
+    "bays": 39,
+    "yard": [
+     957.1,
+     983.8
+    ],
+    "distance": 7
+   },
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     186.076,
+     2.79,
+     -888.995
+    ],
+    "q": [
+     -0.0637,
+     0.4544,
+     0.0326,
+     0.8879
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "after": {
+    "calls": 438,
+    "triangles": 974568
+   },
+   "before": {
+    "calls": 437,
+    "triangles": 955925
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E02-chain-link-medium--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E02-chain-link-medium--original.jpg"
+   ],
+   "sha256": [
+    "46d2d74f01e0b63e43dbf70e574e8da9c87e9dbab3da2c8371f60e5389cb7d10",
+    "296abb1bc26456c37e471333459ca7cbbd4adcf12f546cb934faf1c650c68739"
+   ]
+  },
+  {
+   "name": "E03-chain-link-distant",
+   "what": "across the same back yard diagonally from one corner: the bays recede to about 20 m at a grazing angle, where the plain test thins the wire away and the coverage rule keeps a faint grey screen (QA camera)",
+   "subject": {
+    "run": [
+     919,
+     1012.5
+    ],
+    "side": -1,
+    "bays": 39,
+    "yard": [
+     957.1,
+     983.8
+    ],
+    "distance": 24.6
+   },
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     175.446,
+     2.291,
+     -883.914
+    ],
+    "q": [
+     -0.005,
+     -0.2689,
+     -0.0014,
+     0.9631
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "after": {
+    "calls": 495,
+    "triangles": 907562
+   },
+   "before": {
+    "calls": 494,
+    "triangles": 888919
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E03-chain-link-distant--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E03-chain-link-distant--original.jpg"
+   ],
+   "sha256": [
+    "832536abfc9d004306e8093b497a9598bd498da3f43e0ad1b31519ce5b0c4370",
+    "9ebd984e52bf014b5a4f9c1842e90e206f0811acf138e244acf4462a5671adc1"
+   ]
+  },
+  {
+   "name": "E04-creek-vegetation",
+   "what": "Briarwood creek from the inside bank: the brush, reeds, ground patches and algae (before: procedural balls, flat blades, hard polygons; after: the vegetation library's shrubs and grasses, soft patches) (QA camera)",
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     183.422,
+     3.677,
+     -574.152
+    ],
+    "q": [
+     0.0014,
+     0.9985,
+     0.0446,
+     -0.0308
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:50 PM",
+   "after": {
+    "calls": 613,
+    "triangles": 990343
+   },
+   "before": {
+    "calls": 591,
+    "triangles": 976229
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E04-creek-vegetation--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E04-creek-vegetation--original.jpg"
+   ],
+   "sha256": [
+    "0ba28fc31110644c20165d0eb4de059f6d0d104833ffafb04fe60fc3234f4770",
+    "e4ca8e14efe3aba027f9ae531de697db52752e5811c70be53dca7dd274d72863"
+   ]
+  },
+  {
+   "name": "E05-creek-fence-and-vegetation",
+   "what": "the creek's chain link across the back of the strip and the planting around it (QA camera on the bank)",
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     180.529,
+     3.397,
+     -559.533
+    ],
+    "q": [
+     0.0128,
+     0.9858,
+     0.0889,
+     -0.1416
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:50 PM",
+   "after": {
+    "calls": 645,
+    "triangles": 1048159
+   },
+   "before": {
+    "calls": 628,
+    "triangles": 1029398
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E05-creek-fence-and-vegetation--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E05-creek-fence-and-vegetation--original.jpg"
+   ],
+   "sha256": [
+    "d650380b121ac6ad49b718a51b9323d5f0b49baec2ed73d04835f3af7f1c3e22",
+    "7e09b15a47bf37873747ef90c5fbbe691f2f10c7548f118ae152baf64145054e"
+   ]
+  },
+  {
+   "name": "E06-trampoline-supports",
+   "what": "a trampoline's supports: W-legs 45 mm with their sockets and feet, the enclosure poles clamped to the legs (QA camera, 3 m)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     -26.647,
+     0.914,
+     201.727
+    ],
+    "q": [
+     -0.0321,
+     0.4572,
+     0.0165,
+     0.8886
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:38 PM",
+   "after": {
+    "calls": 347,
+    "triangles": 709362
+   },
+   "before": {
+    "calls": 346,
+    "triangles": 683795
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E06-trampoline-supports--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E06-trampoline-supports--original.jpg"
+   ],
+   "sha256": [
+    "3d6ac444a9abf7ac35580fccc62c1659e81bc7c00c21b762bb75e386fd7f97a4",
+    "6ed1a726752bdab7b9cfdcfa856cabb3d90dd2cb29f58e9d04799feea00b9581"
+   ]
+  },
+  {
+   "name": "E07-trampoline-net",
+   "what": "a trampoline and its enclosure net from the yard, 7 m (QA camera)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     -24.06,
+     1.91,
+     203.922
+    ],
+    "q": [
+     -0.0454,
+     0.4675,
+     0.024,
+     0.8825
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:38 PM",
+   "after": {
+    "calls": 345,
+    "triangles": 667611
+   },
+   "before": {
+    "calls": 344,
+    "triangles": 642044
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E07-trampoline-net--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E07-trampoline-net--original.jpg"
+   ],
+   "sha256": [
+    "1813b4da4dd0c237b3d37ab4f06e5cb07aa18960d2e4cd106fe7a8f33b044217",
+    "9d9a06cd9617943d2debc71deb9aac8c745efcf0e765062119f70b1f5f2bf54d"
+   ]
+  },
+  {
+   "name": "E08-big-wheel",
+   "what": "a big wheel: the moulded body, tread ribs, pedal blocks on their cranks, axle caps (QA camera)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     -13.246,
+     0.463,
+     162.686
+    ],
+    "q": [
+     -0.1235,
+     -0.6219,
+     -0.1002,
+     0.7668
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:39 PM",
+   "after": {
+    "calls": 382,
+    "triangles": 743895
+   },
+   "before": {
+    "calls": 381,
+    "triangles": 717517
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E08-big-wheel--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E08-big-wheel--original.jpg"
+   ],
+   "sha256": [
+    "86c5875bf07be8b9ae6b5ec10ea17d252ae83ce7618cbb79c88804bc79695f30",
+    "4122bc0193b6450c58870a5e6810f6bd21c3f3006d80ca50819129158193d23a"
+   ]
+  },
+  {
+   "name": "E08b-wagon",
+   "what": "a wagon: the tray's walls, the rolled rim, hub caps, the handle's yoke (QA camera)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     195.11,
+     1.928,
+     -874.96
+    ],
+    "q": [
+     0.0213,
+     0.9778,
+     0.1673,
+     -0.1246
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "after": {
+    "calls": 754,
+    "triangles": 1282411
+   },
+   "before": {
+    "calls": 720,
+    "triangles": 1281344
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E08b-wagon--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E08b-wagon--original.jpg"
+   ],
+   "sha256": [
+    "9da47748f610c6bdd6626818a16c03409f1a57bd76a4af18d8996a605e63a186",
+    "6ab97b1960cee088d53dd98d670e4d729eaed461fc5b448663ed5aca1a8a2340"
+   ]
+  },
+  {
+   "name": "E08c-swing-set",
+   "what": "a swing set: thicker legs on plastic feet, the hangers, seats with thickness (QA camera between the houses)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     -26.812,
+     3.128,
+     332.043
+    ],
+    "q": [
+     -0.0561,
+     0.3678,
+     0.0222,
+     0.928
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:36 PM",
+   "after": {
+    "calls": 572,
+    "triangles": 898537
+   },
+   "before": {
+    "calls": 571,
+    "triangles": 885300
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E08c-swing-set--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E08c-swing-set--original.jpg"
+   ],
+   "sha256": [
+    "dacc1a00c41a84e8ad6020001b75f12e567ee87fb7700416f5454612b78fca1a",
+    "6d33dedf78cac29cef3c7aa2c8b7c8481303f18d53a0644b7e81391921675dd1"
+   ]
+  },
+  {
+   "name": "E09-grounding-yard",
+   "what": "grounding: lawn chairs, a grill and toys with their contact shadows (QA camera)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     149.908,
+     -0.168,
+     -816.799
+    ],
+    "q": [
+     -0.1161,
+     0.6166,
+     0.0926,
+     0.7732
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:56 PM",
+   "after": {
+    "calls": 469,
+    "triangles": 948486
+   },
+   "before": {
+    "calls": 468,
+    "triangles": 927551
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E09-grounding-yard--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E09-grounding-yard--original.jpg"
+   ],
+   "sha256": [
+    "53dc775cf8ef73643759239894da7edc77cd8779d8eeed0511930f0452674faa",
+    "dc1ac8b4e046f9bb4f4efea62b2a72fc3489ac9f2578fae845be5177c7d8aa0d"
+   ]
+  },
+  {
+   "name": "E09b-grounding-car-mailbox",
+   "what": "grounding: a parked car and a mailbox at the curb, the contact under the car (QA camera on the sidewalk)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     8.875,
+     2.35,
+     286.33
+    ],
+    "q": [
+     0.0346,
+     0.8933,
+     0.0698,
+     -0.4427
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:37 PM",
+   "after": {
+    "calls": 280,
+    "triangles": 499947
+   },
+   "before": {
+    "calls": 279,
+    "triangles": 484543
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E09b-grounding-car-mailbox--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E09b-grounding-car-mailbox--original.jpg"
+   ],
+   "sha256": [
+    "8a0ef7b3cc1a1f3e606ece5d3db2ffa4b28ef3dd671687f5f7b9e8f3cc36d461",
+    "6b99eb9661dec545cf7cc5e3dd44662f81c6dba17afc0b9e2fc9638e41ca3297"
+   ]
+  },
+  {
+   "name": "E10-riding-view",
+   "what": "the riding camera in the repaired neighbourhood (first-person, a yard with play equipment ahead on the left)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     36.988,
+     1.008,
+     -254.868
+    ],
+    "q": [
+     -0.1102,
+     -0.0516,
+     -0.0032,
+     0.9926
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:46 PM",
+   "after": {
+    "calls": 669,
+    "triangles": 1084802
+   },
+   "before": {
+    "calls": 631,
+    "triangles": 1083866
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E10-riding-view--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E10-riding-view--original.jpg"
+   ],
+   "sha256": [
+    "2b3746d7c65288136aa1e888384aa7ce0d688011d0ee3cd011e421b60d655cfc",
+    "b1fcbf168baf958c6aa64c155053c832bd6b1a471b3b9154ebef2973cf7aa125"
+   ]
+  },
+  {
+   "name": "E11-lookout-and-old-oak",
+   "what": "the lookout and the old oak as the ride ends: unchanged by the repairs",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     243.792,
+     2.566,
+     -1028.128
+    ],
+    "q": [
+     -0.0682,
+     0.0485,
+     0.0081,
+     0.9965
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST, 2011  AS YOU REMEMBER IT",
+   "after": {
+    "calls": 335,
+    "triangles": 546867
+   },
+   "before": {
+    "calls": 334,
+    "triangles": 535884
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E11-lookout-and-old-oak--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E11-lookout-and-old-oak--original.jpg"
+   ],
+   "sha256": [
+    "4fee963b51f21ecd85b63f0e759bc047bb59a87cf9a8eab40a55271b9f7891df",
+    "5ff14bf74446224facb1237aeae24dc2b85be34ed6bde4fb4067bc1748059838"
+   ]
+  },
+  {
+   "name": "E12-full-environment",
+   "what": "Oak Hollow wide with all six benchmarks and the repairs (QA raised camera, 13 m up)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     -1,
+     13.971,
+     -28
+    ],
+    "q": [
+     -0.0541,
+     -0.0069,
+     -0.0004,
+     0.9985
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:42 PM",
+   "after": {
+    "calls": 564,
+    "triangles": 805907
+   },
+   "before": {
+    "calls": 563,
+    "triangles": 786441
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E12-full-environment--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E12-full-environment--original.jpg"
+   ],
+   "sha256": [
+    "ba6027c33f1df7ea931058c7d151ecec1c148f50096587eee9be2c19e0b264d0",
+    "2327c31334e1fdd8d63287f983d315b422643c32ca6aca8116335374c383cdeb"
+   ]
+  },
+  {
+   "name": "E13-creek-from-oak-hollow",
+   "what": "what the Prologue's playable street shows of the creek: Briarwood Lane from Oak Hollow at the junction, the creek strip 90 m down it (riding camera)",
+   "subject": null,
+   "key": "' (repairs)",
+   "camera": {
+    "p": [
+     103.598,
+     2.82,
+     -549.814
+    ],
+    "q": [
+     0.0024,
+     -0.5773,
+     0.0017,
+     0.8165
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:51 PM",
+   "after": {
+    "calls": 648,
+    "triangles": 1173782
+   },
+   "before": {
+    "calls": 586,
+    "triangles": 1166478
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/E13-creek-from-oak-hollow--repaired.jpg",
+    "docs/qa/envrepair-supportcast/browser/E13-creek-from-oak-hollow--original.jpg"
+   ],
+   "sha256": [
+    "a3d3a42ba558bd1fbcd187b0ceb268072206b9d9433f7b486679100ca38fae82",
+    "87640de17955ac3d055a9463630450f4be30a9d8162223a7c0ecd67e197a81d3"
+   ]
+  },
+  {
+   "name": "S01-mother-porch-close",
+   "what": "Jamie's mother on her porch during her wave (QA camera on the front walk, 4 m); left: the authored character, right: the original",
+   "subject": null,
+   "key": "; (supporting cast)",
+   "camera": {
+    "p": [
+     101.019,
+     1.186,
+     -730.906
+    ],
+    "q": [
+     0.0092,
+     0.9544,
+     0.0296,
+     -0.297
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:52 PM",
+   "after": {
+    "calls": 880,
+    "triangles": 1284618
+   },
+   "before": {
+    "calls": 890,
+    "triangles": 1246696
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/S01-mother-porch-close--authored.jpg",
+    "docs/qa/envrepair-supportcast/browser/S01-mother-porch-close--original.jpg"
+   ],
+   "sha256": [
+    "e1a1ec8f3b1f9123851b543aea1754198bfb2c7d2701610262b08bc9f6389b3a",
+    "7189250b5744c67f1daa5ad7d2f5ddb3d0370610571564979e4186663f6ac366"
+   ]
+  },
+  {
+   "name": "S02-mother-from-the-street",
+   "what": "Jamie's mother waiting on the porch (the riding camera 11 m before her house, turned toward her); Jamie is the existing placeholder",
+   "subject": null,
+   "key": "; (supporting cast)",
+   "camera": {
+    "p": [
+     87.434,
+     1.261,
+     -726.901
+    ],
+    "q": [
+     -0.0089,
+     -0.6755,
+     -0.0082,
+     0.7373
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:54 PM",
+   "after": {
+    "calls": 587,
+    "triangles": 996089
+   },
+   "before": {
+    "calls": 597,
+    "triangles": 958167
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/S02-mother-from-the-street--authored.jpg",
+    "docs/qa/envrepair-supportcast/browser/S02-mother-from-the-street--original.jpg"
+   ],
+   "sha256": [
+    "54ce2fe0ea6aa5cce12e278fb9963a9b03706237d8c2d2d60b7ba7c60d3c2eeb",
+    "19753681b265e165b5a7140a1bbccccdcb0574f79b5913a298c5e9a4a97cefad"
+   ]
+  },
+  {
+   "name": "S03-hoop-kid-driveway",
+   "what": "the driveway basketball kid dribbling (QA camera beside the driveway, 5 m)",
+   "subject": {
+    "du": 2.6,
+    "dv": 3.4
+   },
+   "key": "; (supporting cast)",
+   "camera": {
+    "p": [
+     -12.952,
+     2.288,
+     -145.583
+    ],
+    "q": [
+     0.0179,
+     0.9086,
+     0.0391,
+     -0.4154
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:43 PM",
+   "after": {
+    "calls": 653,
+    "triangles": 887381
+   },
+   "before": {
+    "calls": 653,
+    "triangles": 824265
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/S03-hoop-kid-driveway--authored.jpg",
+    "docs/qa/envrepair-supportcast/browser/S03-hoop-kid-driveway--original.jpg"
+   ],
+   "sha256": [
+    "9b7d1fd596b7207a0d1f9cfadf08328977cb7f37871a07f7664839080237aec4",
+    "731d3673341d81d4f2f64a60b8a1b318fd45887e72fd7796b48dc943b715e074"
+   ]
+  },
+  {
+   "name": "S04-hoop-kid-riding-view",
+   "what": "the hoop kid as the ride comes past (riding camera); he looks at the boys, ball at his hip",
+   "subject": {
+    "x": 11,
+    "lat": -1.5
+   },
+   "key": "; (supporting cast)",
+   "camera": {
+    "p": [
+     -1.411,
+     2.598,
+     -134.484
+    ],
+    "q": [
+     -0.0212,
+     0.3826,
+     0.0088,
+     0.9237
+    ]
+   },
+   "sameCamera": true,
+   "clock": "AUGUST 21, 2011  7:44 PM",
+   "after": {
+    "calls": 486,
+    "triangles": 845908
+   },
+   "before": {
+    "calls": 496,
+    "triangles": 833506
+   },
+   "files": [
+    "docs/qa/envrepair-supportcast/browser/S04-hoop-kid-riding-view--authored.jpg",
+    "docs/qa/envrepair-supportcast/browser/S04-hoop-kid-riding-view--original.jpg"
+   ],
+   "sha256": [
+    "ff25b85b0cf4dfbb3ef8d3a7b15c4bc7ae2b36e2b50334711271af5859aee330",
+    "4e25f74066cb1c88593efce2506a33acb943138a93f36aecdad2a88081fb26aa"
+   ]
+  }
+ ],
+ "videos": [
+  {
+   "name": "V02-jamies-mother-complete-scene",
+   "file": "docs/qa/envrepair-supportcast/video/V02-jamies-mother-complete-scene.mp4",
+   "fps": 12,
+   "bytes": 7231301,
+   "sha256": "5c287ba03368c671400e4367998cceea32c340739146c6e4a614355567d38f58",
+   "what": "Jamie's mother's complete Prologue scene in the running game: the door opens, she comes out, waves and calls (silently: she has no line), waits, Jamie arrives (the existing procedural Jamie: a placeholder, not Astra's Phase 1B character), she follows him in, the door closes. Camera: QA camera on the street in front of the house; the ride goes on as in the game."
+  },
+  {
+   "name": "V01-riding-past-chain-link--original",
+   "file": "docs/qa/envrepair-supportcast/video/V01-riding-past-chain-link--original.mp4",
+   "fps": 15,
+   "bytes": 14285198,
+   "sha256": "cc04d6782066d534fba9b5d541fbb2655cbd594e3911cb688513fcb2285cecd4",
+   "what": "riding past Oak Hollow chain link at 5 m/s (riding camera looking 18 degrees toward the fences), as the street props left it: from 55 m out to alongside",
+   "subject": {
+    "n": 13,
+    "u": 310.67600014788326,
+    "v": -21.63922751457426
+   }
+  },
+  {
+   "name": "V01-riding-past-chain-link--repaired",
+   "file": "docs/qa/envrepair-supportcast/video/V01-riding-past-chain-link--repaired.mp4",
+   "fps": 15,
+   "bytes": 14270351,
+   "sha256": "bf36fc97fa96b8df618e995edc990a095e0a900e1016b68e0d74bda02c9b6a52",
+   "what": "riding past Oak Hollow chain link at 5 m/s (riding camera looking 18 degrees toward the fences), with the coverage rule: from 55 m out to alongside",
+   "subject": {
+    "n": 13,
+    "u": 310.67600014788326,
+    "v": -21.63922751457426
+   }
+  }
+ ],
+ "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
+ "commit": "4137430",
+ "flags": "bikes&houses&vegetation&pavement&streetprops&details&envrepair&supportcast"
+}
