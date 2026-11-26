@@ -821,9 +821,34 @@
    "bytes": 12759004,
    "sha256": "613ab5af930365d633a5e02ae9e80449e5677b085ec6991445983931b16d67d1",
    "what": "riding past the hoop kid with the group (riding camera, turning toward him as he goes by): he stops dribbling and watches the boys pass, ball at his hip"
+  },
+  {
+   "name": "V01-chain-link-in-motion--original",
+   "file": "docs/qa/envrepair-supportcast/video/V01-chain-link-in-motion--original.mp4",
+   "fps": 15,
+   "bytes": 8827435,
+   "sha256": "b71bb4daea0b0e5002ff111547892efe65f9e83ad4d2dbe16d0c25a249406e99",
+   "what": "Oak Hollow's rear-lot chain link in motion (QA camera in one back yard): pulling back from 2.5 m to 8 m straight on, then sliding to the yard's corner to look along about 25 m of the run at a grazing angle (the path whose sight lines are clear); as the street props left it (the wire thins away with distance)",
+   "subject": {
+    "run": [
+     919,
+     1012.5
+    ],
+    "side": -1,
+    "vf": -33.5,
+    "bays": 39,
+    "yard": [
+     957.1,
+     983.8
+    ],
+    "distance": 2.5,
+    "frames": 135,
+    "path": "corner-a",
+    "blocked": 0
+   }
   }
  ],
  "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
- "commit": "affe1d3",
+ "commit": "29f8443",
  "flags": "bikes&houses&vegetation&pavement&streetprops&details&envrepair&supportcast"
 }
