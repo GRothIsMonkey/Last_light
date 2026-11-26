@@ -1,0 +1,14 @@
+PASS Default game: no envrepair or supportcast module, model or texture is fetched []
+PASS Default game: no er: record or zone (world.er is null) []
+PASS Baseline recorded: geometry, 3672619 merged triangles; the mother's controller over 1066 frames (door opens, she walks out, waits, goes in, the door closes); the kid's 14 s {"momHash":1328757589,"kidHash":3447585440}
+PASS Default game: no page errors []
+PASS ?envrepair: every merged surface, shadow proxy and line holds exactly the default game's vertices (the flag only bakes the creek's recorded plants and patches into batches of their own) {"with":{"merged":{"tris":3672619,"verts":11017857,"h1":3449740665,"h2":2223264169},"proxies":{"tris":2371121,"h1":3930555726},"lines":{"segs":4471,"h1":3072461437},"erZones":["er:creek-algae","er:creek-patch","er:creek-weed"]},"without":{"merged":{"tris":3672619,"verts":11017857,"h1":3449740665,"h2":2223264169},"proxies":{"tris":2371121,"h1":3930555726},"lines":{"segs":4471,"h1":3072461437},"erZones":[]}}
+PASS ?envrepair: ground heights, rideability, obstacles, navigation shapes and driveway openings identical {"hash":2717091991,"obstacles":812,"obstacleHash":271482339,"space":[["walk",159],["porch",247],["house",247],["tree",5717],["fence",0],["driveway",618],["pole",52],["lamp",27],["mailbox",133],["hydrant",8],["bins",54],["hoop",1],["toy",30],["sign",23]],"drives":105}
+PASS ?envrepair: the three scripted rides identical
+PASS ?envrepair alone: the creek's ground patches and algae recorded and replaced by soft-edged ones (the hard polygons hidden); the brush, reeds and trees left (they extend the vegetation library: ?vegetation); the chain link and play equipment say they need ?streetprops and ?details {"records":{"shrubs":0,"weeds":197,"patches":39,"algae":42,"trees":0},"zones":["er:creek-algae","er:creek-patch","er:creek-weed"],"errors":["chain link: needs ?streetprops","play equipment: needs ?details"],"creek":{"shrubs":0,"grass":0,"trees":0,"patches":39,"algae":42,"skipped":["plants need ?vegetation (the creek repair extends its library)"]},"hidden":true,"active":true}
+PASS Prologue only: active in the Prologue; in Chapter One the creek's originals show again {"prologue":{"active":true,"proc":false},"chapterOne":{"active":false,"proc":true}}
+PASS ?envrepair: no page errors []
+PASS ?supportcast (with ?envrepair, without the six): the mother's controller identical to the default game on every one of 1066 frames (door, path, facing, visibility, the slam) and the kid's 14 s identical (ball, phases) {"mom":[1328757589,1328757589],"kid":[3447585440,3447585440]}
+PASS ?supportcast without the six: no page errors []
+
+32 passed, 0 failed

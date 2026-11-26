@@ -1,0 +1,31 @@
+PASS Game: without ?houses the Prologue fetches none of the house benchmark modules or the model []
+PASS Game: without ?houses no benchmark batches exist (the world is baked as in the accepted build) {"label":false,"zones":0,"merged":2225}
+PASS Game (no ?houses): no page errors []
+PASS Game: ?houses loads the twelve authored houses with no errors {"error":null,"errors":[],"n":12}
+PASS Game: each house sits on its lot exactly as the plan (P.toWorld) places it: placement error < 2 mm [0,0,0,0,0,0,0,0,0,0,0,0]
+PASS Game: loaded through GLTFLoader r160 over same-origin HTTP, nothing else fetched
+PASS Game: no authored geometry on the street, curb, planting strip or sidewalk (every vertex beyond 7.85 m from the centre line) {"house.car":13.04,"house.hoop":12.39,"house.lotL37":13.39,"house.lotL66":11.9,"house.lotL8":11.65,"house.lotLm21":11.15,"house.lotR153":12.66,"house.lotR37":13.16,"house.lotR530":10.51,"house.lotR66":11.35,"house.lotR8":12.61,"house.lotRm21":11.31}
+PASS Game: every house ends inside the plan's riding obstacle (front <= stepFront + 0.3 m: porches and steps never reach the yard path or the walk) {"house.car":[7.134,7.709],"house.hoop":[6.3,6.9],"house.lotL37":[5.819,6.419],"house.lotL66":[7.224,7.799],"house.lotL8":[8.078,8.654],"house.lotLm21":[7.426,7.89],"house.lotR153":[6.542,7.142],"house.lotR37":[6.101,6.701],"house.lotR530":[8.48,9.056],"house.lotR66":[8.454,9.029],"house.lotR8":[6.543,7.143],"house.lotRm21":[8.431,9.007]}
+PASS Game: footprints follow the plans (house and garage width within 0.8 m each side: eaves, chimneys and AC pads only) {"house.car":{"x":[-6.18,11.66],"plan":[-5.01,11.41]},"house.hoop":{"x":[-14.04,8.23],"plan":[-13.62,7.22]},"house.lotL37":{"x":[-6.81,10.05],"plan":[-5.8,9.8]},"house.lotL66":{"x":[-6.6,9.84],"plan":[-5.59,9.59]},"house.lotL8":{"x":[-8.85,5.77],"plan":[-8.6,4.6]},"house.lotLm21":{"x":[-6.68,7.44],"plan":[-6.43,6.43]},"house.lotR153":{"x":[-7.73,10.97],"plan":[-6.72,10.72]},"house.lotR37":{"x":[-9.56,6.32],"plan":[-9.31,5.31]},"house.lotR530":{"x":[-9.12,5.88],"plan":[-8.87,4.87]},"house.lotR66":{"x":[-11.59,5.95],"plan":[-11.34,4.94]},"house.lotR8":{"x":[-12.51,6.87],"plan":[-12.26,5.86]},"ho
+PASS Game: the car house's working garage door is the authored one (3 LODs under the panel world.js animates); it moves with the panel; the procedural slab and footing are hidden {"hoopRim":{"x":-10.421018602652476,"y":3.05,"z":5.009963770993054},"hoopPlanned":{"x":-10.421018602652476,"y":3.05,"z":5.009963770993054},"authoredDoorLods":3,"procDoorVisible":0,"doorMovesWithPanel":1.36,"footingHidden":true}
+PASS Game: the hoop the kid shoots at is where the plan put it (the authored hoop was built on the same numbers) {"hoopRim":{"x":-10.421018602652476,"y":3.05,"z":5.009963770993054},"hoopPlanned":{"x":-10.421018602652476,"y":3.05,"z":5.009963770993054},"authoredDoorLods":3,"procDoorVisible":0,"doorMovesWithPanel":1.36,"footingHidden":true}
+PASS Game: three LODs per house (LOD0 > LOD1 > LOD2 triangles) {"allLevels":[96781,41129,7842],"forcedDrawn":[96781,41129,7842],"materials":72}
+PASS Game: the refined set (house.prologue v2) gets the house-only treatment: occlusion maps, full anisotropy, per-house upkeep materials, the street-horizon glass reflection {"asset":"house.prologue","version":2,"refined":true,"materials":72,"withAO":45,"maxAnisotropy":16,"careClones":44,"glassEnvs":1,"max":16}
+PASS Game: B, the first benchmark (house.prologue.v1, version 1), loads on demand beside the refined houses, on the same plans (0 mm), with its own approved treatment {"errors":[],"houses":12,"version":1,"bytes":18798284,"refined":false,"placeErrMm":[0,0,0,0,0,0,0,0,0,0,0,0],"withAO":0,"loadMs":464}
+PASS Game: H shows exactly one of C, B, A at a time (all twelve lots each) {"v1":{"C":0,"B":12,"proc":0,"procTotal":93},"procedural":{"C":0,"B":0,"proc":93,"procTotal":93},"refined":{"C":12,"B":0,"proc":0,"procTotal":93}}
+PASS Game: the rooms' lamps follow the evening schedule (V on: every house lit; off: none) {"lit":1.65,"off":0}
+PASS Game: the Prologue plays on (8 s of pedalling from the start moves the player past the first benchmark lots) {"state":"riding","moved":30.1,"lateral":-0.3,"calls":465}
+PASS Game: after H through B and A and back to C, the ride continues {"state":"riding","moved":11.52}
+PASS Game (?houses): no page errors []
+PASS Game (?houses): no request leaves the local server
+PASS Game: ?bikes&houses loads both benchmarks together (12 houses, 4 bikes, no failures) {"houses":12,"houseErrors":[],"bikeErrors":[],"bikes":["player","jamie","sam","alex"]}
+PASS Game: the group ride goes on with authored bikes past the authored houses {"state":"riding","d":17.4,"calls":483,"triangles":777369,"friends":[{"k":"jamie","authored":true},{"k":"sam","authored":true},{"k":"alex","authored":true}]}
+PASS Game (?bikes&houses): no page errors []
+PASS Package: PLAYTEST_MODELS=1 embeds the house models (C and B) and hashes them in the manifest {"sizes":{"withModels":190010907,"default":13024833}}
+PASS Package: ?houses in the offline game places the twelve houses from the embedded bytes, in the running Prologue {"error":null,"errors":[],"houses":12,"from":"package","state":"riding"}
+PASS Package: H in the offline game reaches B (the first benchmark, embedded too) and A, and comes back to C {"mode":"v1","houses":12,"errors":[],"from":"package","version":1,"procedural":"procedural","back":"refined"}
+PASS Package: offline game makes no network request []
+PASS Package: offline game without page errors []
+PASS Package: the default package (no models) says the houses FAILED, keeps the procedural houses and substitutes nothing {"label":"HOUSE BENCHMARK (DEV) — FAILED, nothing substituted: asset assets/house/house.prologue.glb is not embedded in this offline package (package with PLAYTEST_MODELS=1 to embed dist/assets/tst, chr, …)","proceduralBatchesVisible":78}
+PASS Package: default package makes no network request either []
+30 passed, 0 failed

@@ -27,7 +27,7 @@ Every performance number is a software-renderer or file number; no real-GPU fram
     - Jamie's mother, `chr.jamie-mother`: 50,714 triangles, an adult rig in Astra's bone naming, 30 face keys, six clips (A-78, A-79, A-81);
     - the driveway basketball kid, `chr.hoop-kid`: 25,002 triangles (A-80).
 - **Tests.**
-  - This pass's suite: ⟦SUITECOUNT⟧.
+  - This pass's suite: 33 passed, 0 failed (a full run on the final runtime).
   - The seven existing browser suites pass: 267 checks, 0 failed.
   - `verify.mjs` stops at a DEV chapter check that fails identically on the starting commit, so the failure is not from this pass (§11).
 - **Cost.** With both flags on top of the six benchmarks there are +3.7% draw calls and +2.9% triangles over six riding cameras. These figures come from software WebGL; no GPU was measured (§12).
@@ -285,7 +285,21 @@ Prologue shows besides the boys is authored. The audit (§7, item 4) notes how t
 
 ### 11.1 This pass (`node tests/envrepair-supportcast-browser.mjs`)
 
-⟦SUITE⟧
+The final full run is on the final runtime (commit `c77f9db`; `dist/` unchanged since `7fc71d6`): **33 passed, 0 failed**.
+The report is `docs/qa/envrepair-supportcast/tests/report.json` and the log is `regression/envrepair-supportcast-final-run.txt`.
+
+| Part | What it proves |
+|---|---|
+| **A**, the default game with no flags | No envrepair or supportcast module, model or texture is fetched, and there is no `er:` record or zone. It records the baseline: the geometry fingerprint (3,672,619 merged triangles), ground and navigation queries, three scripted rides, the mother's controller over 1,066 frames and the kid's 14 s. No page errors. |
+| **B**, `?envrepair` alone, then `?envrepair&supportcast`, both without the six | Every merged surface, shadow proxy and line holds exactly the default game's vertices, and ground heights, rideability, obstacles, navigation and driveway openings are identical. The three rides are identical. The creek's ground patches and algae are replaced and its plants left for `?vegetation`. The flags are active in the Prologue only. The mother's controller (door, path, facing, visibility, the slam) and the kid's are identical frame by frame to the default game's. No errors. |
+| **C**, all eight flags against the six alone | The world geometry is the six benchmarks' vertex for vertex. Per repair: the chain-link material carries the coverage rule (518 bays, positions untouched); the play equipment uses the repaired pieces, on the ground (0 m float, 0 m sink), and `'` restores the details kit exactly; there are 932 contact shadows; the creek is replaced one for one. For the cast: both controllers run exactly as without `?supportcast`. The authored figures stand on the controllers' transforms (offset 0 m) and are never shown with the originals. Her feet are on the ground (ankle 0.069–0.12 m). Her gaze on the porch has a median of 18.8° and a 90th percentile of 37.3°. His right hand is on the controller's ball within −2.1…+0.5 cm. Night, restart, pause and a DEV scene jump behave as before. Both characters identify themselves from their GLBs. The later chapters, the four boys and the shared rig are untouched. No errors. |
+| **D**, the offline package | Both modules, the kit and both characters are embedded. Opened from disk with the browser offline, all eight flags load with no network request and no error. |
+
+**One earlier failure, in the test itself.** The first full run, at `5888323`, failed one check, 31 passed and 1 failed (`regression/envrepair-supportcast-first-full-run.txt`).
+- What failed: the check that the mother's controller is unchanged with `?envrepair&supportcast`.
+- The cause was in Part A, not the game: it recorded the default game's baseline *after* three scripted rides in the same page, which leaves the friends one frame off.
+- The proof: in a freshly loaded page the default game gives the same timeline as every flag combination (hash 1328757589 over 1,066 frames). After the rides it gives 1562494664 over 1,067.
+- The fix: Part A now reloads the page before recording the baseline (`8af64ab`). The runtime did not change.
 
 ### 11.2 Existing suites (regressions)
 
@@ -295,7 +309,7 @@ suite has parts. Logs and reports are in `docs/qa/envrepair-supportcast/regressi
 
 | Suite | Result | Notes |
 |---|---|---|
-| `tests/verify.mjs` (headless game: world geometry, riding, characters, interface, chapters, ending, replay) | **stops at its last block**, the DEV chapter selector check (`dev-chapters-sim.mjs:227`, "2/alex-bike": Alex's bike after a DEV jump to Chapter Two at (115.1, −511.5) instead of (−1.4, −17)). Every check before it passes. | **Pre-existing.** The starting commit `716fc6b` fails the same check with the same values (`verify-at-start-716fc6b.log`). Nothing in this pass touches the chapters or the DEV selector. |
+| `tests/verify.mjs` (headless game: world geometry, riding, characters, interface, chapters, ending, replay) | **stops at its last block**, the DEV chapter selector check (`dev-chapters-sim.mjs:227`, "2/alex-bike": Alex's bike after a DEV jump to Chapter Two at (115.1, −511.5) instead of (−1.4, −17)). Every check before it passes. | **Pre-existing.** The starting commit `716fc6b` fails the same check with the same values (`verify-at-start-716fc6b.txt`). Nothing in this pass touches the chapters or the DEV selector. |
 | `tests/pipeline-browser.mjs` | 36 passed, 0 failed | |
 | `tests/bike-browser.mjs` | 29 passed, 0 failed | |
 | `tests/details-browser.mjs` | 36 passed, 0 failed | |

@@ -1,0 +1,53 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: [{"k":"2/alex-bike","d":[["companions.1.b.x",-1.4,115.139],["companions.1.b.z",-17,-511.484],["companions.1.ba",0,-0.398]]}]
++ actual - expected
+
++ [
++   {
++     d: [
++       [
++         'companions.1.b.x',
++         -1.4,
++         115.139
++       ],
++       [
++         'companions.1.b.z',
++         -17,
++         -511.484
++       ],
++       [
++         'companions.1.ba',
++         0,
++         -0.398
++       ]
++     ],
++     k: '2/alex-bike'
++   }
++ ]
+- []
+
+    at file://./tests/dev-chapters-sim.mjs:227:219
+    at check (file://./tests/verify.mjs:43:56)
+    at runDevChapterChecks (file://./tests/dev-chapters-sim.mjs:227:3)
+    at file://./tests/verify.mjs:591:7 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [
+    {
+      k: '2/alex-bike',
+      d: [
+        [ 'companions.1.b.x', -1.4, 115.139 ],
+        [ 'companions.1.b.z', -17, -511.484 ],
+        [ 'companions.1.ba', 0, -0.398 ]
+      ]
+    }
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.23.5
