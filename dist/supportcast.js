@@ -207,7 +207,7 @@ export async function mountInGame({scene,camera,renderer,world,friends,ambient,p
  try{cast.mother=await mother({world,friends,renderer});scene.add(cast.mother.root);}catch(e){errors.push('mother: '+String(e?.message||e));console.error('supportcast mother:',e);}
  try{cast.kid=await hoopKid({world,ambient,renderer});scene.add(cast.kid.root);}catch(e){errors.push('kid: '+String(e?.message||e));console.error('supportcast kid:',e);}
  const loadMs=+(performance.now()-t0).toFixed(0);
- let mode='authored',active=null;
+ let mode='authored',active=null,lastCtx=null;
  function apply(){const on=mode==='authored'&&prologue();if(on===active)return;active=on;for(const c of Object.values(cast))c.setEnabled(on);updateLabel();}
  function setMode(m){mode=m==='original'?'original':'authored';active=null;apply();return mode;}
  addEventListener('keydown',e=>{if(e.repeat)return;if(e.code==='Semicolon')setMode(mode==='authored'?'original':'authored');});
@@ -220,7 +220,8 @@ export async function mountInGame({scene,camera,renderer,world,friends,ambient,p
  const api={cast,errors,loadMs,setMode,get mode(){return mode;},get active(){return !!active;},
   // called from the game's update (game.js), after friends.update and ambient.update, so the pose always matches the
   // controllers' state in the same frame (and QA stepping stays deterministic)
-  update(dt,ctx){apply();if(!active)return;for(const c of Object.values(cast))c.update(dt,ctx);},
-  tick(){apply();},THREE};
+  update(dt,ctx){apply();lastCtx=ctx;if(!active)return;for(const c of Object.values(cast))c.update(dt,ctx);},
+  // (QA renders between game updates: a mode switch shows at once, posed for the current controller state, with no time step)
+  tick(){apply();if(active&&lastCtx)for(const c of Object.values(cast))c.update(0,lastCtx);},THREE};
  window.__supportcast=api;return api;
 }

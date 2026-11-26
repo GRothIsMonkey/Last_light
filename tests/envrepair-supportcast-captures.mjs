@@ -36,27 +36,39 @@ const mode=(page,which,m)=>page.evaluate(([w,m])=>{if(w==='er'){__envrepair.setM
 const PLACE=`async(v)=>{const L=lastLight,W=L.world,T=__envrepair.THREE,{MAIN}=await import('./terrain.js');const near=(x,z)=>{const q=MAIN.project(x,z);L.place(q.u-3,Math.max(-3.3,Math.min(3.3,q.v)),0);for(let i=0;i<4;i++)L.step(1/30);L.look(0,0);L.step(1/30);};
  const at=(set,i)=>{const it=set.items[i];return it.matrix;};let from,to;
  if(v.kind==='chain'){const set=__streetprops.handle.parts.props.sets['fence.chain'];
-  // a bay that faces the street (a side-yard gate run between two houses) and that all three distances see straight on: the
-  // camera on the bay's street-side normal, the sight line clear of every house footprint (in street coordinates)
+  // Oak Hollow's rear-lot chain link (parallel to the street at the back of the lots, |v| = 33.5): the longest continuous run
+  // in the playable stretch; close and medium views straight on from inside the yard (the sight line checked clear of every
+  // house footprint, in street coordinates), the distant view looking along the run
   const foot=W.plans.map(h=>{const x0=-h.w/2-(h.hasGarage&&h.gs<0?h.gw:0)-.4,x1=h.w/2+(h.hasGarage&&h.gs>0?h.gw:0)+.4,z0=-h.depth/2-.6,z1=h.depth/2+.6;return [[x0,z0],[x1,z0],[x1,z1],[x0,z1]].map(([x,z])=>{const s=h.S(x,z);return [s.d,s.lat];});});
   const cross=(a,b,c,d)=>{const o=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);return o(a,b,c)*o(a,b,d)<0&&o(c,d,a)*o(c,d,b)<0;};
   const inside=(P,pt)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const [xi,yi]=P[i],[xj,yj]=P[j];if((yi>pt[1])!==(yj>pt[1])&&pt[0]<(xj-xi)*(pt[1]-yi)/(yj-yi)+xi)c=!c;}return c;};
   const clear=(a,b)=>foot.every(P=>!inside(P,a)&&P.every((c,i)=>!cross(a,b,c,P[(i+1)%P.length])));
-  const DISTS=[2.5,12,35];const cands=[];
-  set.items.forEach((it,i)=>{const e=it.matrix.elements,p=new T.Vector3().setFromMatrixPosition(it.matrix),q=MAIN.project(p.x,p.z);if(q.u<60||q.u>1050||Math.abs(q.v)<7||Math.abs(q.v)>30)return;
-   const q2=MAIN.project(p.x+e[8],p.z+e[10]);let du=q2.u-q.u,dv=q2.v-q.v;const n=Math.hypot(du,dv)||1;du/=n;dv/=n;if(Math.abs(dv)<.88)return;if(Math.sign(dv)===Math.sign(q.v)){du=-du;dv=-dv;}
-   const at=d=>[q.u+du*d,q.v+dv*d],ok=DISTS.map(d=>clear(at(d),[q.u+du*.5,q.v+dv*.5]));if(ok.every(Boolean))cands.push({i,p,q,du,dv});});
-  cands.sort((a,b)=>a.q.u-b.q.u);const o=cands[v.pick||0];if(!o)throw new Error('no chain-link bay with a clear sight line');
-  const a=MAIN.point(o.q.u+o.du*v.dist,o.q.v+o.dv*v.dist);from=new T.Vector3(a.x,a.y+(v.h||1.55),a.z);to=o.p.clone().add(new T.Vector3(0,.7,0));near(o.p.x,o.p.z);window.__subject={u:o.q.u,v:o.q.v,candidates:cands.length};}
+  const bays=set.items.map(it=>{const p=new T.Vector3().setFromMatrixPosition(it.matrix);return {p,q:MAIN.project(p.x,p.z),len:Math.hypot(it.matrix.elements[0],it.matrix.elements[2])};}).filter(o=>Math.abs(Math.abs(o.q.v)-33.5)<.8&&o.q.u>60&&o.q.u<1050);
+  const runs=[];for(const side of [-1,1]){const l=bays.filter(o=>Math.sign(o.q.v)===side).sort((a,b)=>a.q.u-b.q.u);let r=null;for(const o of l){if(r&&o.q.u-r[r.length-1].q.u<o.len/2+r[r.length-1].len/2+.8)r.push(o);else{r=[o];runs.push(r);}}}
+  runs.sort((a,b)=>(b[b.length-1].q.u-b[0].q.u)-(a[a.length-1].q.u-a[0].q.u));const run=runs[0];if(!run)throw new Error('no rear chain-link run');
+  const side=Math.sign(run[0].q.v),u0=run[0].q.u-run[0].len/2,u1=run[run.length-1].q.u+run[run.length-1].len/2,vf=run[0].q.v;
+  let cam,look,dist=v.dist;
+  if(v.dist<30){const mids=run.slice().sort((a,b)=>Math.abs(a.q.u-(u0+u1)/2)-Math.abs(b.q.u-(u0+u1)/2));let pick=null;
+   for(const d of [v.dist,v.dist*.85,v.dist*.7,v.dist*.55])for(const o of mids){const c=[o.q.u,o.q.v-side*d];if(clear(c,[o.q.u,o.q.v-side*.4])){pick={o,d};break;}}if(pick)break;
+   if(!pick)throw new Error('no clear straight-on view of the run');dist=pick.d;const a=MAIN.point(pick.o.q.u,pick.o.q.v-side*pick.d);cam=new T.Vector3(a.x,a.y+(v.h||1.55),a.z);look=pick.o.p.clone().add(new T.Vector3(0,.7,0));}
+  else{const a=MAIN.point(u0-1.5,vf-side*1.6),b=MAIN.point(Math.min(u1,u0+v.dist),vf);cam=new T.Vector3(a.x,a.y+(v.h||1.6),a.z);look=new T.Vector3(b.x,b.y+.6,b.z);dist=+(Math.min(u1,u0+v.dist)-u0+1.5).toFixed(1);}
+  from=cam;to=look;near(to.x,to.z);window.__subject={run:[+u0.toFixed(1),+u1.toFixed(1)],side,bays:run.length,distance:+(+dist).toFixed(1)};}
  else if(v.kind==='rec'){const set=(v.from==='sp'?__streetprops.handle.parts.props.sets:v.from==='veh'?__streetprops.handle.parts.vehicles.sets:__details.handle.sets)[v.set];const M=at(set,v.i||0);from=new T.Vector3(...v.cam).applyMatrix4(M);to=new T.Vector3(...v.look).applyMatrix4(M);near(to.x,to.z);}
  else if(v.kind==='frame'){const f=W.sideFrames[0],a=f.point(v.u,v.v),b=f.point(v.tu,v.tv);from=new T.Vector3(a.x,a.y+v.h,a.z);to=new T.Vector3(b.x,b.y+(v.th||0),b.z);near(b.x,b.z);}
  else if(v.kind==='point'){const a=MAIN.point(v.d,v.lat),b=MAIN.point(v.td,v.tlat);from=new T.Vector3(a.x,a.y+v.h,a.z);to=new T.Vector3(b.x,b.y+(v.th||0),b.z);(v.under?near(a.x,a.z):near(b.x,b.z));}
  else if(v.kind==='ride'){L.place(v.d,v.lat,0);for(let i=0;i<4;i++)L.step(1/30);L.look(v.yaw||0,v.pitch||0);L.step(1/30);window.__fc=null;return;}
  const c=L.camera;c.position.copy(from);c.up.set(0,1,0);c.lookAt(to);c.updateMatrixWorld(true);window.__fc={p:c.position.toArray(),q:c.quaternion.toArray()};}`;
+// a camera on the hoop kid with a clear sight line: candidate spots around him (street coordinates, dv>0 = toward his house,
+// where he faces the hoop), the first whose ray to his chest meets no visible mesh (poles, cars, the garage) wins
+const KIDVIEW=`(K,T,MAIN,cands,h,far)=>{let sc=K.person.group;while(sc.parent)sc=sc.parent;const g=K.person.group.getWorldPosition(new T.Vector3()),q=MAIN.project(g.x,g.z),sv=Math.sign(q.v)||1;
+ const skip=new Set(),ex=o=>o&&o.traverse(x=>skip.add(x));ex(K.person.group);ex(window.__supportcast?.cast?.kid?.root);ex(lastLight.ambient.hoopKid.ball);
+ const meshes=[];sc.traverseVisible(o=>{if(o.isMesh&&!o.isSkinnedMesh&&!skip.has(o))meshes.push(o);});const rc=new T.Raycaster(),tgt=g.clone().add(new T.Vector3(0,1.0,0));
+ for(const [du,dv] of cands){const a=MAIN.point(q.u+du,q.v+sv*dv);const p=new T.Vector3(a.x,a.y+h,a.z);const dir=tgt.clone().sub(p),L2=dir.length();dir.normalize();rc.set(p,dir);rc.far=L2-.3;
+  if(!rc.intersectObjects(meshes,false).length)return {p:p.toArray(),at:tgt.toArray(),du,dv};}return null;}`;
 const VIEWS=[
- {n:'E01-chain-link-close',what:'Oak Hollow chain link (the street props\' fence) at close range, straight on: the wire up close; the coverage rule changes nothing here (QA camera, 2.5 m)',kind:'chain',dist:2.5,pick:0,h:1.5},
- {n:'E02-chain-link-medium',what:'the same chain link at a medium distance, 12 m, straight on from the street side (QA camera)',kind:'chain',dist:12,pick:0,h:1.6},
- {n:'E03-chain-link-distant',what:'the same chain link at 35 m: before, the wire thins away below the 0.5 test; after, it keeps its coverage as a faint grey screen (QA camera)',kind:'chain',dist:35,pick:0,h:1.6},
+ {n:'E01-chain-link-close',what:'Oak Hollow chain link (the street props\' rear-lot fence) straight on at 2.5 m, from inside the yard: the wire up close; the coverage rule changes nothing here (QA camera)',kind:'chain',dist:2.5,h:1.5},
+ {n:'E02-chain-link-medium',what:'the same run straight on from further into the yard (about 10 m; the exact distance is in the record): the wire starts to thin below the 0.5 test (QA camera)',kind:'chain',dist:12,h:1.6},
+ {n:'E03-chain-link-distant',what:'looking along the run from its end, 1.6 m inside it: the bays recede from 2 m to 30-40 m; before, the far wire thins away; after, it keeps its coverage as a faint grey screen (QA camera)',kind:'chain',dist:40,h:1.6},
  {n:'E04-creek-vegetation',what:'Briarwood creek from the inside bank: the brush, reeds, ground patches and algae (before: procedural balls, flat blades, hard polygons; after: the vegetation library\'s shrubs and grasses, soft patches) (QA camera)',kind:'frame',u:92,v:9.6,h:1.6,tu:104,tv:28,th:.3},
  {n:'E05-creek-fence-and-vegetation',what:'the creek\'s chain link across the back of the strip and the planting around it (QA camera on the bank)',kind:'frame',u:91.5,v:24.5,h:1.5,tu:103,tv:31.2,th:-.1},
  {n:'E06-trampoline-supports',what:'a trampoline\'s supports: W-legs 45 mm with their sockets and feet, the enclosure poles clamped to the legs (QA camera, 3 m)',kind:'rec',set:'trampoline',i:0,cam:[3.0,.55,1.6],look:[1.6,.45,.6]},
@@ -78,15 +90,18 @@ const VIEWS=[
 if(WHAT.includes('pairs')){const only=process.env.VIEWS?process.env.VIEWS.split(','):null,list=VIEWS.filter(v=>!only||only.some(o=>v.n.startsWith(o)));
  for(let i=0;i<list.length;i+=2)await session(async(page,errors)=>{for(const v of list.slice(i,i+2)){
    if(v.kind==='mom')await page.evaluate(async(v)=>{const L=lastLight;L.place(655,1.2,4.4);L.friends.warp(655);L.press('KeyW');for(let i=0;i<60*30;i++){L.step(1/30);const m=L.friends.mom;if(m.mode==='porch'&&m.t>=v.t)break;}L.release('KeyW');
-     const T=__envrepair.THREE,grp=L.friends.mom.person.group,g=grp.getWorldPosition(new T.Vector3()),fw=new T.Vector3(0,0,-1).applyQuaternion(grp.getWorldQuaternion(new T.Quaternion()));fw.y=0;fw.normalize();const side=new T.Vector3(-fw.z,0,fw.x),c=L.camera;
-     // close: on the front walk 3 m in front of her, a little to one side, at eye height (above the foundation shrubs)
-     if(v.cam==='close'){c.position.copy(g).addScaledVector(fw,3.0).addScaledVector(side,.9).add(new T.Vector3(0,1.5,0));c.lookAt(g.x,g.y+1.3,g.z);}else{L.look(0,0);L.step(1/30);c.lookAt(g.x,g.y+1.2,g.z);}
+     const {MAIN}=await import('./terrain.js');const T=__envrepair.THREE,grp=L.friends.mom.person.group,g=grp.getWorldPosition(new T.Vector3()),fw=new T.Vector3(0,0,-1).applyQuaternion(grp.getWorldQuaternion(new T.Quaternion()));fw.y=0;fw.normalize();const side=new T.Vector3(-fw.z,0,fw.x),c=L.camera;
+     // close: on the front walk 3.1 m out from her toward the street, at porch eye height (above the foundation shrubs)
+     if(v.cam==='close'){const m=L.friends.mom,a=MAIN.point(m.pd+.9,m.plat-Math.sign(m.plat)*3.1);c.position.set(a.x,g.y+1.5,a.z);c.lookAt(g.x,g.y+1.3,g.z);}else{L.look(0,0);L.step(1/30);c.lookAt(g.x,g.y+1.2,g.z);}
      c.updateMatrixWorld(true);window.__fc={p:c.position.toArray(),q:c.quaternion.toArray()};},v);
-   else if(v.kind==='kid'||v.kind==='kidride')await page.evaluate(async(v)=>{const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;
+   else if(v.kind==='kid'||v.kind==='kidride')await page.evaluate(async([v,KV])=>{const kidView=(0,eval)(KV);const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;
      if(v.kind==='kid'){L.place(K.d-30,0,0);for(let i=0;i<300;i++){L.step(1/30);if(K.phase==='dribble'&&(K.t%.52)/.52>.1&&(K.t%.52)/.52<.16&&K.t>1)break;}
-      const grp=K.person.group,g=grp.getWorldPosition(new T.Vector3()),fw=new T.Vector3(0,0,-1).applyQuaternion(grp.getWorldQuaternion(new T.Quaternion())),side=new T.Vector3(-fw.z,0,fw.x);const p=g.clone().addScaledVector(fw,3.6).addScaledVector(side,-3.0).add(new T.Vector3(0,1.4,0));
-      const c=L.camera;c.position.copy(p);c.lookAt(g.x,g.y+.85,g.z);c.updateMatrixWorld(true);window.__fc={p:c.position.toArray(),q:c.quaternion.toArray()};}
-     else{L.place(K.d-7,-1.5,4.5);L.friends.warp(K.d-7);for(let i=0;i<20;i++)L.step(1/30);const c=L.camera;const g=K.person.group.getWorldPosition(new T.Vector3());c.lookAt(g.x,g.y+1,g.z);c.updateMatrixWorld(true);window.__fc={p:c.position.toArray(),q:c.quaternion.toArray()};}},v);
+      const {MAIN}=await import('./terrain.js');const r=kidView(K,T,MAIN,[[2.6,3.4],[-2.6,3.4],[3.6,1.8],[-3.6,1.8],[0,4.2],[4.2,0],[-4.2,0],[3.4,-2.2],[-3.4,-2.2]],1.4);if(!r)throw new Error('no clear view of the hoop kid');
+      const c=L.camera;c.position.fromArray(r.p);c.lookAt(r.at[0],r.at[1]-.15,r.at[2]);c.updateMatrixWorld(true);window.__fc={p:c.position.toArray(),q:c.quaternion.toArray()};window.__subject={du:r.du,dv:r.dv};}
+     else{const {MAIN}=await import('./terrain.js');let ok=null;for(const [x,lat] of [[9,-1.5],[11,-1.5],[8,1.2],[13,-1.5],[10,1.2],[7,-1.5],[15,-1.5]]){L.place(K.d-x,lat,4.5);L.friends.warp(K.d-x);for(let i=0;i<20;i++)L.step(1/30);
+       const g=K.person.group.getWorldPosition(new T.Vector3()),c=L.camera;c.lookAt(g.x,g.y+1,g.z);c.updateMatrixWorld(true);const q=MAIN.project(c.position.x,c.position.z),gq=MAIN.project(g.x,g.z);
+       const r=kidView(K,T,MAIN,[[q.u-gq.u,(q.v-gq.v)*(Math.sign(gq.v)||1)]],c.position.y-MAIN.point(q.u,q.v).y);if(r){ok={x,lat};break;}}
+      window.__subject=ok;const c=L.camera;const g=K.person.group.getWorldPosition(new T.Vector3());c.lookAt(g.x,g.y+1,g.z);c.updateMatrixWorld(true);window.__fc={p:c.position.toArray(),q:c.quaternion.toArray()};}},[v,KIDVIEW]);
    else if(v.kind==='junction')await page.evaluate(async()=>{const L=lastLight,W=L.world,f=W.sideFrames[0],J=f.junction;L.place(J.d-6,J.side*2.5,0);for(let i=0;i<4;i++)L.step(1/30);const c=L.camera;const b=f.point(J.creek.u,0);c.lookAt(b.x,b.y+1.2,b.z);c.updateMatrixWorld(true);window.__fc={p:c.position.toArray(),q:c.quaternion.toArray()};});
    else await page.evaluate(`(${PLACE})(${JSON.stringify(v)})`);
    const which=v.sc?'sc':'er',files=[],stats={};
@@ -95,7 +110,7 @@ if(WHAT.includes('pairs')){const only=process.env.VIEWS?process.env.VIEWS.split(
    for(const m of ['after','before','after']){await mode(page,which,m);await render(page);}
    for(const m of ['after','before']){await mode(page,which,m);const r=await render(page);const f=path.join(PAIRS,`${v.n}--${m==='after'?(v.sc?'authored':'repaired'):'original'}.jpg`);await page.screenshot({path:f,type:'jpeg',quality:90,timeout:480000});files.push(path.relative(process.cwd(),f));stats[m]=r;}
    await mode(page,which,'after');
-   rep.pairs=rep.pairs.filter(p=>p.name!==v.n);rep.pairs.push({name:v.n,what:v.what,key:v.sc?'; (supporting cast)':'\' (repairs)',camera:stats.after.cam,sameCamera:JSON.stringify(stats.after.cam)===JSON.stringify(stats.before.cam),clock:stats.after.clock,
+   rep.pairs=rep.pairs.filter(p=>p.name!==v.n);const subject=await page.evaluate(()=>window.__subject||null);rep.pairs.push({name:v.n,what:v.what,subject,key:v.sc?'; (supporting cast)':'\' (repairs)',camera:stats.after.cam,sameCamera:JSON.stringify(stats.after.cam)===JSON.stringify(stats.before.cam),clock:stats.after.clock,
     after:{calls:stats.after.calls,triangles:stats.after.triangles},before:{calls:stats.before.calls,triangles:stats.before.triangles},files,sha256:files.map(f=>sha(f))});
    rep.pairs.sort((a,b)=>a.name.localeCompare(b.name));save();console.log('pair',v.n,stats.after.calls,stats.after.triangles,'/',stats.before.calls,stats.before.triangles);}
   if(errors.length)console.log('errors',errors.slice(0,5));});}
@@ -111,8 +126,8 @@ if(WHAT.includes('mom'))await session(async(page)=>{await page.evaluate(async()=
   const {MAIN}=await import('./terrain.js');const a=MAIN.point(788.5,5.2),b=MAIN.point(791.6,13.4);window.__fc={p:[a.x,a.y+1.5,a.z],at:[b.x,b.y+1.25,b.z]};window.__mm={stop:0};});
  await record(page,'V02-jamies-mother-complete-scene',12,640,({k,dt})=>{const L=lastLight;const n=Math.round(30*dt);for(let i=0;i<n;i++){L.step(1/30);if(L.state.distance>778)L.release('KeyW');}const m=L.friends.mom;if(m.mode==='gone'&&m.closeT>1.2)window.__mm.stop++;return window.__mm.stop>6;},
   {what:'Jamie\'s mother\'s complete Prologue scene in the running game: the door opens, she comes out, waves and calls (silently: she has no line), waits, Jamie arrives (the existing procedural Jamie: a placeholder, not Astra\'s Phase 1B character), she follows him in, the door closes. Camera: QA camera on the street in front of the house; the ride goes on as in the game.'});});
-if(WHAT.includes('kid'))await session(async(page)=>{await page.evaluate(()=>{const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;L.place(K.d-32,0,0);for(let i=0;i<5;i++)L.step(1/30);
-  const grp=K.person.group,g=grp.getWorldPosition(new T.Vector3()),fw=new T.Vector3(0,0,-1).applyQuaternion(grp.getWorldQuaternion(new T.Quaternion())),side=new T.Vector3(-fw.z,0,fw.x);const p=g.clone().addScaledVector(fw,4.2).addScaledVector(side,-3.2).add(new T.Vector3(0,1.45,0));window.__fc={p:p.toArray(),at:[g.x,g.y+1.0,g.z]};});
+if(WHAT.includes('kid'))await session(async(page)=>{await page.evaluate(async(KV)=>{const kidView=(0,eval)(KV);const {MAIN}=await import('./terrain.js');const L=lastLight,K=L.ambient.hoopKid.kid,T=__envrepair.THREE;L.place(K.d-32,0,0);for(let i=0;i<5;i++)L.step(1/30);
+  const r=kidView(K,T,MAIN,[[3.2,4.2],[-3.2,4.2],[4.4,2.4],[-4.4,2.4],[0,5.2],[5.2,0],[-5.2,0],[4,-2.6],[-4,-2.6]],1.45);if(!r)throw new Error('no clear view of the hoop kid');window.__fc={p:r.p,at:[r.at[0],r.at[1],r.at[2]]};},KIDVIEW);
  await record(page,'V03-hoop-kid-driveway',15,150,({k,dt})=>{const L=lastLight;L.step(dt);return false;},{what:'the hoop kid in the running game: dribbling, the shot (release at the controller\'s 0.35 s), the ball back off the rim, the catch; QA camera beside the driveway; 10 s'});
  await page.evaluate(()=>{const L=lastLight,K=L.ambient.hoopKid.kid;window.__fc=null;L.place(K.d-34,-1.5,4.6);L.friends.warp(K.d-34);L.press('KeyW');for(let i=0;i<10;i++)L.step(1/30);});
  await record(page,'V03b-hoop-kid-riding-past',15,120,({k,dt})=>{const L=lastLight,K=L.ambient.hoopKid.kid;L.step(dt);const c=L.camera,g=K.person.group.position;const s=L.state;L.look(Math.max(-1.2,Math.min(1.2,-(Math.atan2(g.x-c.position.x,-(g.z-c.position.z))-(-c.rotation?.y||0))*0)),0);return false;},{what:'riding past the hoop kid with the group (riding camera): he stops dribbling and watches the boys go by, ball at his hip'});});
