@@ -125,8 +125,12 @@ if(WHAT.includes('pairs')){const only=process.env.VIEWS?process.env.VIEWS.split(
 // ------------------------------------------------------------------------------------------------ recordings
 const encode=(dir,name,fps,meta)=>{const f=path.join(VIDEO,name+'.mp4');execFileSync('ffmpeg',['-y','-loglevel','error','-framerate',String(fps),'-i',path.join(dir,'%05d.jpg'),'-c:v','libx264','-pix_fmt','yuv420p','-crf','23','-preset','medium',f]);
  rep.videos=rep.videos.filter(v=>v.name!==name);rep.videos.push({name,file:path.relative(process.cwd(),f),fps,bytes:fs.statSync(f).size,sha256:sha(f),...meta});save();fs.rmSync(dir,{recursive:true,force:true});console.log('video',name);};
-async function record(page,name,fps,frames,stepFn,meta){const dir=fs.mkdtempSync(path.join(VIDEO,'.frames-'));
- for(let k=0;k<frames;k++){const done=await page.evaluate(stepFn,{k,dt:1/fps});await render(page);const fr=path.join(dir,String(k).padStart(5,'0')+'.jpg');for(let a=0;;a++){try{await page.screenshot({path:fr,type:'jpeg',quality:84,timeout:480000});break;}catch(e){if(a>=3)throw e;await new Promise(r=>setTimeout(r,2000));}}if(done)break;}
+// RESUME_NAME=<recording> RESUME_DIR=<its frame folder>: continue an interrupted recording (the game advances a fixed step per
+// frame, so the frames already on disk are replayed without rendering; the last one is rendered again to RESUME_CHECK to
+// compare with the saved frame before the recording goes on)
+async function record(page,name,fps,frames,stepFn,meta){const RES=process.env.RESUME_NAME===name?process.env.RESUME_DIR:null;const dir=RES||fs.mkdtempSync(path.join(VIDEO,'.frames-'));
+ const have=RES?fs.readdirSync(dir).filter(f=>/^\d{5}\.jpg$/.test(f)).length:0;
+ for(let k=0;k<frames;k++){const done=await page.evaluate(stepFn,{k,dt:1/fps});if(k<have-1){if(done)break;continue;}if(RES&&k===have-1){await render(page);await page.screenshot({path:process.env.RESUME_CHECK,type:'jpeg',quality:84,timeout:480000});if(done)break;continue;}await render(page);const fr=path.join(dir,String(k).padStart(5,'0')+'.jpg');for(let a=0;;a++){try{await page.screenshot({path:fr,type:'jpeg',quality:84,timeout:480000});break;}catch(e){if(a>=3)throw e;await new Promise(r=>setTimeout(r,2000));}}if(done)break;}
  encode(dir,name,fps,meta);}
 // the mother's whole scene, from the door opening to its closing, from the front walk across the street (the ride goes on)
 if(WHAT.includes('mom'))await session(async(page)=>{await page.evaluate(async()=>{const L=lastLight;L.place(660,1.2,4.4);L.friends.warp(660);L.press('KeyW');for(let i=0;i<30*30;i++){L.step(1/30);if(L.friends.mom.mode!=='waiting')break;}
