@@ -374,7 +374,7 @@ game he is the existing procedural Jamie, a placeholder.
 | Folder | What | Files |
 |---|---|---|
 | `browser/` | **Same-frame pairs.** One camera and one frame, and only the benchmark's own key changes between the two images: `'` for the repairs, `;` for the cast. Cameras and subjects are in `captures.json`. | E01–E03 chain link (2.5 m, 7 m, a 25 m run at a grazing angle) · E04–E05 the creek's planting · E06–E08c trampolines, the net, the big wheel, the wagon, the swing set · E09–E09b grounding and contact shadows · E10 the riding view · E11 the lookout and the old oak (unchanged) · E12 the whole street · E13 the creek from Oak Hollow · S01–S02 Jamie's mother · S03–S04 the hoop kid |
-| `browser/detail/` | Enlarged crops of the pairs whose difference is small in the full frame (made by the gallery script) | 10 |
+| `browser/detail/` | Enlarged crops of the pairs whose difference is small in the full frame, made by the gallery script where the crop enlarges at least 1.6 times | E03, E08, E09, E09b |
 | `video/` (in game) | **Recordings.** Rendered frame by frame at a fixed game step, so they play in real time. | V01 the chain link in motion, original and repaired (one back yard: from 2.5 m to a grazing view along the run) · V02 Jamie's mother's complete scene · V03 the hoop kid at his driveway (from the driveway's side, the hoop in frame; the street's utility pole, nearer the camera, crosses his left arm at moments: the sight-line test that chose the spot did not catch it, and S03 is the unobstructed close view) · V03b riding past him · V04 the combined ride from the hoop kid's street to past Jamie's house (146 s) |
 | `video/*--BLENDER-RENDER.mp4` | **Motion clips** of the authored characters | Mother: idle, door, walk, turn, call-and-wave, wait, return, face. Kid: dribble, shoot, catch. Each with a still |
 | `blender/` | **Model renders** | Mother: front, side, back, three-quarter, A-pose; neutral, smile, calling, attentive, expectant, blink, profile; ponytail, hands, clothing, walk, wave, waiting posture. The **same-scale lineup** with Jamie's Phase 1A model (front, three-quarter, heads) and `lineup-heights.txt`. Kid: front, back, three-quarter, neutral portrait, dribble, shoot, follow-through, catch, hold |
@@ -422,5 +422,13 @@ mother's canonical identity across chapters) stays open.
 
 ## 15. Delivery
 
-⟦DELIVERY⟧
+| | |
+|---|---|
+| Branch | `claude/prologue-environment-repair-supporting-cast`, pushed; **not merged into `main`**, no pull request opened |
+| Started from | `claude/prologue-neighborhood-details-benchmark` @ `716fc6bfacae1166f45826905475b7cb1d2409e0` (untouched, like the five earlier benchmark branches) |
+| Content complete at | `6083368d60006a786a5f0bbaffff70b88cf2749a`: the runtime, assets, tests, evidence, gallery and docs. The final commit adds only this delivery record, the corrected count of detail crops in §13, and a copy of the ZIP's README and hash in `docs/qa/envrepair-supportcast/release/`. Its SHA is in the delivery message and `git log`. |
+| Offline ZIP | `release/Last-Light-Prologue-Environment-Repair-Supporting-Cast.zip`, **313,907,400 bytes**, SHA-256 `4c363cd13b346f38f2188701a002f4b5a6c6d0e79580ec8ddcf86ac2ce017345`, 131 files (597 MB extracted). Packaged from `6083368` with a clean tree (`manifest.json` records the commit and every file's hash): `PLAYTEST_MENU=1 PLAYTEST_MODELS=1 node tools/package-playtest.mjs`, then the README, this report, the handoff, the identity proposal and the review gallery added. `release/` is ignored by git, so the ZIP is not in the repository. |
+| ZIP smoke test | Extracted to a fresh folder and opened from disk, with the browser offline. `Last-Light-Playtest.html?bikes&houses&vegetation&pavement&streetprops&details&envrepair&supportcast` loads in 50 s (software WebGL) with no page error and no network request. The repairs report no error, and both characters load as `chr.jamie-mother v1` and `chr.hoop-kid v1`. `review-gallery/index.html` shows all 82 images and its 17 videos; the first video was loaded and reads 9 s. |
+| Review gallery | https://claude.ai/artifact/VxZQGUNXaTq2EGA6GsQiqX (private until shared), and in the repository `docs/qa/envrepair-supportcast/index.html` |
+| Status | **Stopped for the creative director's approval.** Nothing is marked accepted: A-78 to A-86 are open, and A-22 stays open. |
 <!-- BODY:end -->
