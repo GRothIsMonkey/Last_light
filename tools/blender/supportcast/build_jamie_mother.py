@@ -900,6 +900,8 @@ def main():
         ob['ll_part'] = ob.name
     sc['ll_asset_id'] = ASSET_ID
     bpy.ops.wm.save_as_mainfile(filepath=BLEND)
+    bpy.ops.file.make_paths_relative()
+    bpy.ops.wm.save_as_mainfile(filepath=BLEND)
     log('saved', BLEND)
     ll_export.export_glb(GLB)
     stats = dict(asset=ASSET_ID, version=VERSION, blender=bpy.app.version_string, glb_bytes=os.path.getsize(GLB),

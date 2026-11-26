@@ -2,7 +2,7 @@
  "asset": "chr.jamie-mother",
  "version": "1",
  "blender": "5.1.2",
- "glb_bytes": 8353920,
+ "glb_bytes": 8356592,
  "triangles": {
   "JamieMotherHead": 22882,
   "JamieMotherHair": 9774,
@@ -82,7 +82,7 @@
  },
  "measurements": {
   "stature_m": 1.637,
-  "top_of_hair_m": 1.6464,
+  "top_of_hair_m": 1.6459,
   "head_height_m": 0.2132,
   "heads_tall": 7.68,
   "chin_m": 1.4238,

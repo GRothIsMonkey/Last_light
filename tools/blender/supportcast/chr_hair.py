@@ -70,10 +70,15 @@ def shell(head_mesh, H, NU, NV):
     # thickness: rises from under the skin (-0.8 mm) through the hairline (so the visible edge is the smooth curve where
     # the shell meets the skin), thin at the hairline, fuller over the crown and gathered at the elastic
     da = np.linalg.norm(G - ANCHOR, axis=-1)
-    thick = -.0030 + SHELL['edge'] * CH.sstep(-.03, .03, depth) + SHELL['base'] * mask + SHELL['bulge'] * np.exp(-(da / .040) ** 2)
+    # (every positive term fades out below the hairline, so the shell is a full 3.5 mm under the skin well before the
+    # faces stop: the visible edge is the smooth crossing, never the stepped edge of the kept faces)
+    # (spread over several rows: a rise inside one row of quads shows its triangulation as teeth along the edge)
+    below = CH.sstep(-.10, -.01, depth)
+    lift = SHELL['edge'] * CH.sstep(-.06, .03, depth) + (SHELL['base'] * mask + SHELL['bulge'] * np.exp(-(da / .040) ** 2)) * below
     # the pull: hair lies flatter above the ears where it is drawn back
     az, el = az_el(G)
-    thick *= 1 - SHELL['flat_ears'] * np.exp(-((np.abs(az) - 1.45) / .35) ** 2)
+    lift *= 1 - SHELL['flat_ears'] * np.exp(-((np.abs(az) - 1.45) / .35) ** 2)
+    thick = -.0035 + lift
     S = G + n * thick[..., None]
     keep = np.zeros((NV - 1, NU), bool)
     for j in range(NV - 1):
@@ -168,7 +173,7 @@ def clumps(H, count=46, seed=11):
     tip_dir = ANCHOR - Cc
     for k in range(count):
         az = -math.pi * .97 + 2 * math.pi * .97 * (k + .5) / count + rng.uniform(-.04, .04)
-        el = hairline_elev(az) + .012
+        el = hairline_elev(az) + .030
         d0 = np.array([math.sin(az) * math.cos(el), -math.cos(az) * math.cos(el), math.sin(el)])
         start = HC + d0 * .1 - Cc
         end = tip_dir + rng.normal(0, .004, 3)
@@ -183,7 +188,9 @@ def clumps(H, count=46, seed=11):
         th = .0012 + .0060 * mk + .0050 * np.exp(-(da / .040) ** 2)
         az_, el_ = az_el(pts)
         th *= 1 - .25 * np.exp(-((np.abs(az_) - 1.45) / .35) ** 2)
-        cen = pts + nrm * (th + .0004 + .0005 * (k % 3))[:, None]
+        # each ribbon starts sunk into the shell and rises onto it over its first few sections (no stepped ends)
+        sink = -.0022 * (1 - CH.sstep(0, .22, np.linspace(0, 1, n)))
+        cen = pts + nrm * (th + .0004 + .0005 * (k % 3) + sink)[:, None]
         width = .010 + .008 * rng.random()
         base = len(V)
         for i in range(n):
@@ -192,7 +199,7 @@ def clumps(H, count=46, seed=11):
             tg /= np.linalg.norm(tg)
             side = np.cross(nrm[i], tg)
             side /= np.linalg.norm(side)
-            w = width * (.25 + .75 * math.sin(math.pi * min(1, t_ * 1.6)) ** .7) * (1 - .55 * t_ ** 2)
+            w = width * (.08 + .92 * math.sin(math.pi * min(1, t_ * 1.6)) ** .7) * (1 - .55 * t_ ** 2)
             V.append(cen[i] - side * w)
             V.append(cen[i] + side * w)
         u0 = (k * .37) % 1

@@ -469,6 +469,8 @@ def main():
     bpy.ops.object.join()
     eye_obs[0].name = 'HoopKidEyes'
     bpy.ops.wm.save_as_mainfile(filepath=BJ.BLEND)
+    bpy.ops.file.make_paths_relative()
+    bpy.ops.wm.save_as_mainfile(filepath=BJ.BLEND)
     BJ.ll_export.export_glb(BJ.GLB)
     stats = dict(asset=ASSET_ID, version=BJ.VERSION, blender=bpy.app.version_string, glb_bytes=os.path.getsize(BJ.GLB),
                  triangles={ob.name: sum(len(p.vertices) - 2 for p in ob.data.polygons) for ob in (head_ob, hair_ob, body_ob, eye_obs[0])},

@@ -64,7 +64,7 @@ def kid_plan():
     cam = ((2.0, -2.8, .95), (0, -.2, .8), 50)
     return {
         'dribble': ('dribble', [(f % 31, k / 30) for k, f in enumerate(list(range(0, 31, 2)) * 3)], *cam, None, None, 30),
-        'shoot': ('shoot', [(f, f / 30) for f in range(0, 43)], ((2.4, -2.6, 1.15), (0, -.1, 1.05), 50), None, None, 30),
+        'shoot': ('shoot', [(f, f / 30) for f in range(0, 43)], *((2.4, -2.6, 1.15), (0, -.1, 1.05), 50), None, None, 30),
         'catch': ('catch', [(f, f / 30) for f in range(0, 40)], *cam, None, None, 30),
     }
 

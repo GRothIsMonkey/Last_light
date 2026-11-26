@@ -193,7 +193,8 @@ def yoke(head_bottom, z_to=1.310, rows=10, inset=.003):
     for k in range(1, rows + 1):
         t = k / rows
         z = z0 + (z_to - z0) * t ** 1.2
-        tp = torso_point(z, th, ease=-inset)
+        # sinking further under the shirt as it goes down (the shirt hugs the shoulder line closely)
+        tp = torso_point(z, th, ease=-(inset + .007 * sstep(.3, 1, t)))
         # blend in from the head ring's own shape for the first rows
         b = sstep(0, .5, t)
         p = hb * (1 - b)[..., None] * 0 + tp
@@ -278,7 +279,7 @@ def arm(side=1, n=22):
     W = J['wrist'] * [side, 1, 1]
     rings = []
     up = np.array([0, 1., 0])
-    for t, rx, ry in ((.15, .043, .044), (.35, .041, .041), (.55, .039, .038), (.75, .036, .035), (.92, .034, .032), (1.0, .0335, .031)):
+    for t, rx, ry in ((.20, .039, .038), (.35, .040, .040), (.55, .039, .038), (.75, .036, .035), (.92, .034, .032), (1.0, .0335, .031)):
         c = S + (E - S) * t
         rings.append(ring_around(c, E - S, rx, ry, n, side=up))
     # forearm: flatter toward the wrist, the muscle mass high on the forearm

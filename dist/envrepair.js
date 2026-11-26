@@ -165,7 +165,7 @@ async function repairCreek({scene,world,renderer}){
  // soft ground patches (damp silt, wet mud) and the algae along the channel's edges, in place of the hard-edged polygons
  const patchTex=softPatchTexture();const quad=new THREE.PlaneGeometry(2,2);quad.rotateX(-Math.PI/2);
  const pm=(color,rough)=>{const m=new THREE.MeshStandardMaterial({color,map:patchTex,roughness:rough,metalness:0,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3});m.name='er:creek-ground';return m;};
- const groups=[['mud',R.patches.filter(p=>!p.wet),pm(0x6d6550,.95)],['wet',R.patches.filter(p=>p.wet),pm(0x4a5242,.6)],['algae',R.algae,Object.assign(pm(0x5a6a48,.55),{opacity:.55})]];
+ const groups=[['mud',R.patches.filter(p=>!p.wet),pm(0x7d735a,.95)],['wet',R.patches.filter(p=>p.wet),pm(0x58614b,.6)],['algae',R.algae,Object.assign(pm(0x5a6a48,.55),{opacity:.55})]];
  const meshes=[];
  for(const [name,list,m] of groups){if(!list.length)continue;const im=new THREE.InstancedMesh(quad,m,list.length);im.name='envrepair:creek-'+name;im.receiveShadow=true;im.castShadow=false;
   list.forEach((p,i)=>{const sx=name==='algae'?p.r*1.05:p.r*1.25,sz=name==='algae'?p.r*p.len*1.05:p.r*p.sy*1.25;im.setMatrixAt(i,mat4(p.x,p.y+.006,p.z,p.rot+(name==='algae'?0:hash(p.x,p.z,1)),1).multiply(new THREE.Matrix4().makeScale(sx,1,sz)));});
