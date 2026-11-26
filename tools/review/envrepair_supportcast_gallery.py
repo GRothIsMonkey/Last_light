@@ -145,6 +145,7 @@ figcaption b{color:var(--ink);font-weight:600}
 .cmp .tag.l{left:8px}.cmp .tag.r{right:8px}
 .cmp input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
 .cmp input[type=range]:focus-visible + .rule{box-shadow:0 0 0 3px var(--accent)}
+.cmp.detail{margin-top:8px}
 .pairhead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin-top:8px}
 .pairhead b{font-family:var(--mono);font-size:12.5px}
 .toggle{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:4px 9px;cursor:pointer}
@@ -173,6 +174,43 @@ def chips(*kinds):
     return '<div class="chips">' + ''.join(f'<span class="chip {cls[k]}">{labels[k]}</span>' for k in kinds) + '</div>'
 
 
+def detail_crop(after_abs, before_abs):
+    """the region where the two images of a pair differ (pixels changed by more than 30/765), padded and widened to 16:9;
+    None when the change already fills a third of the frame or there is none"""
+    import numpy as np
+    from PIL import Image
+    a, b = Image.open(after_abs).convert('RGB'), Image.open(before_abs).convert('RGB')
+    d = np.abs(np.asarray(a, np.int16) - np.asarray(b, np.int16)).sum(2) > 30
+    # ignore isolated speckle: keep rows/columns with several changed pixels
+    ys, xs = np.where(d)
+    if len(xs) < 200:
+        return None
+    x0, x1 = np.percentile(xs, [2, 98]).astype(int)
+    y0, y1 = np.percentile(ys, [2, 98]).astype(int)
+    W, H = a.size
+    w, h = (x1 - x0) * 1.3 + 40, (y1 - y0) * 1.3 + 40
+    if w * h > W * H / 3:
+        return None
+    w, h = max(w, h * 16 / 9, 400), max(h, w * 9 / 16, 225)
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    bx0 = int(min(max(cx - w / 2, 0), W - w)); by0 = int(min(max(cy - h / 2, 0), H - h))
+    return (bx0, by0, int(bx0 + w), int(by0 + h))
+
+
+def crop_pair(M, name, after_abs, before_abs, box):
+    from PIL import Image
+    out = []
+    for tag, src in (('after', after_abs), ('before', before_abs)):
+        im = Image.open(src).convert('RGB').crop(box)
+        im = im.resize((1280, round(1280 * im.height / im.width)), Image.NEAREST if im.width < 640 else Image.LANCZOS)
+        rel = f'browser/detail/{name}--{tag}.jpg'
+        dst = os.path.join(QA, rel) if M.mode == 'repo' else os.path.join(M.out, 'm', f'detail__{name}--{tag}.jpg')
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        im.save(dst, quality=88)
+        out.append(rel if M.mode == 'repo' else 'm/' + os.path.basename(dst))
+    return out
+
+
 def pair_card(M, p):
     files = p['files']
     after = next((f for f in files if '--repaired' in f or '--authored' in f), None)
@@ -186,12 +224,22 @@ def pair_card(M, p):
     kinds = ['game', 'ride' if ('riding' in p['what'] or 'ride' in p['name']) else 'qa']
     if p['name'].startswith('S0') and 'Jamie' in p['what']:
         kinds.append('placeholder')
+    detail = ''
+    box = detail_crop(os.path.join(ROOT, after), os.path.join(ROOT, before)) if p['name'].startswith('E') else None
+    if box:
+        da, db = crop_pair(M, p['name'], os.path.join(ROOT, after), os.path.join(ROOT, before), box)
+        did = cid + '-detail'
+        detail = f'''<div class="cmp detail" id="{E(did)}"><img src="{E(db)}" alt="{E(p['name'])} detail: original" loading="lazy">
+  <div class="over"><img src="{E(da)}" alt="{E(p['name'])} detail: {word}" loading="lazy"></div>
+  <input type="range" min="0" max="100" value="50" aria-label="Compare the enlarged detail: {E(p['name'])}"><div class="rule"></div>
+  <span class="tag l">{word} · detail ×{1280 / (box[2] - box[0]):.1f}</span><span class="tag r">original</span></div>'''
     return f'''<figure>
  <div class="cmp" id="{E(cid)}"><img src="{E(b)}" alt="{E(p['name'])}: original" loading="lazy" width="1600" height="900">
   <div class="over"><img src="{E(a)}" alt="{E(p['name'])}: {word}" loading="lazy"></div>
   <input type="range" min="0" max="100" value="50" aria-label="Compare original and {word}: {E(p['name'])}"><div class="rule"></div>
   <span class="tag l">{word}</span><span class="tag r">original</span></div>
  <div class="pairhead"><b>{E(p['name'])}</b><button class="toggle" type="button" data-for="{E(cid)}" data-after="{word}">Show original</button></div>
+ {detail}
  {chips(*kinds)}
  <figcaption>{E(p['what'])} <span class="cam">· key {E(p.get('key', ''))} · clock {E(p.get('clock') or '')} · draws {p['after']['calls']}/{p['before']['calls']}, triangles {p['after']['triangles']:,}/{p['before']['triangles']:,} · same camera: {'yes' if p.get('sameCamera') else 'NO'}</span></figcaption>
 </figure>'''
