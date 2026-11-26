@@ -783,14 +783,6 @@
  ],
  "videos": [
   {
-   "name": "V02-jamies-mother-complete-scene",
-   "file": "docs/qa/envrepair-supportcast/video/V02-jamies-mother-complete-scene.mp4",
-   "fps": 12,
-   "bytes": 7231301,
-   "sha256": "5c287ba03368c671400e4367998cceea32c340739146c6e4a614355567d38f58",
-   "what": "Jamie's mother's complete Prologue scene in the running game: the door opens, she comes out, waves and calls (silently: she has no line), waits, Jamie arrives (the existing procedural Jamie: a placeholder, not Astra's Phase 1B character), she follows him in, the door closes. Camera: QA camera on the street in front of the house; the ride goes on as in the game."
-  },
-  {
    "name": "V01-riding-past-chain-link--original",
    "file": "docs/qa/envrepair-supportcast/video/V01-riding-past-chain-link--original.mp4",
    "fps": 15,
@@ -815,9 +807,17 @@
     "u": 310.67600014788326,
     "v": -21.63922751457426
    }
+  },
+  {
+   "name": "V02-jamies-mother-complete-scene",
+   "file": "docs/qa/envrepair-supportcast/video/V02-jamies-mother-complete-scene.mp4",
+   "fps": 12,
+   "bytes": 7233243,
+   "sha256": "5d304b7575d58557f433c1500f7c9ed40db286d2d19e66cf4bdabd4b7b60be53",
+   "what": "Jamie's mother's complete Prologue scene in the running game: the door opens, she comes out, waves and calls (silently: she has no line), waits, Jamie arrives (the existing procedural Jamie: a placeholder, not Astra's Phase 1B character), she follows him in, the door closes. Camera: QA camera on the street in front of the house; the ride goes on as in the game."
   }
  ],
  "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",
- "commit": "4137430",
+ "commit": "3718185",
  "flags": "bikes&houses&vegetation&pavement&streetprops&details&envrepair&supportcast"
 }
