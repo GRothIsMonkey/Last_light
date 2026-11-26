@@ -783,11 +783,35 @@
  ],
  "videos": [
   {
+   "name": "V02-jamies-mother-complete-scene",
+   "file": "docs/qa/envrepair-supportcast/video/V02-jamies-mother-complete-scene.mp4",
+   "fps": 12,
+   "bytes": 7233243,
+   "sha256": "5d304b7575d58557f433c1500f7c9ed40db286d2d19e66cf4bdabd4b7b60be53",
+   "what": "Jamie's mother's complete Prologue scene in the running game: the door opens, she comes out, waves and calls (silently: she has no line), waits, Jamie arrives (the existing procedural Jamie: a placeholder, not Astra's Phase 1B character), she follows him in, the door closes. Camera: QA camera on the street in front of the house; the ride goes on as in the game."
+  },
+  {
+   "name": "V03-hoop-kid-driveway",
+   "file": "docs/qa/envrepair-supportcast/video/V03-hoop-kid-driveway.mp4",
+   "fps": 15,
+   "bytes": 2944095,
+   "sha256": "c19f4857968e47b0eb051200b0afcb941babf4b52bdd5ec5a475c3ae2afa9d34",
+   "what": "the hoop kid in the running game: dribbling, the shot (release at the controller's 0.35 s), the ball back off the rim, the catch; QA camera beside the driveway; 10 s"
+  },
+  {
+   "name": "V03b-hoop-kid-riding-past",
+   "file": "docs/qa/envrepair-supportcast/video/V03b-hoop-kid-riding-past.mp4",
+   "fps": 15,
+   "bytes": 12958378,
+   "sha256": "ba96bf8fae0afbd43d06ab4f0d80c68a74de6f3d2c78f09c8f110c0c1d68b07f",
+   "what": "riding past the hoop kid with the group (riding camera): he stops dribbling and watches the boys go by, ball at his hip"
+  },
+  {
    "name": "V01-riding-past-chain-link--original",
    "file": "docs/qa/envrepair-supportcast/video/V01-riding-past-chain-link--original.mp4",
    "fps": 15,
-   "bytes": 14285198,
-   "sha256": "cc04d6782066d534fba9b5d541fbb2655cbd594e3911cb688513fcb2285cecd4",
+   "bytes": 14281411,
+   "sha256": "7056a62af8f352c4844c6733c93d8d92064a92dafc0d4a17042180a2a6aefffc",
    "what": "riding past Oak Hollow chain link at 5 m/s (riding camera looking 18 degrees toward the fences), as the street props left it: from 55 m out to alongside",
    "subject": {
     "n": 13,
@@ -799,22 +823,14 @@
    "name": "V01-riding-past-chain-link--repaired",
    "file": "docs/qa/envrepair-supportcast/video/V01-riding-past-chain-link--repaired.mp4",
    "fps": 15,
-   "bytes": 14270351,
-   "sha256": "bf36fc97fa96b8df618e995edc990a095e0a900e1016b68e0d74bda02c9b6a52",
+   "bytes": 14273589,
+   "sha256": "952994e3520ef5db0a0cb680ff40b0e184cad2da4e9b3adbc35e47d5d8d46cd3",
    "what": "riding past Oak Hollow chain link at 5 m/s (riding camera looking 18 degrees toward the fences), with the coverage rule: from 55 m out to alongside",
    "subject": {
     "n": 13,
     "u": 310.67600014788326,
     "v": -21.63922751457426
    }
-  },
-  {
-   "name": "V02-jamies-mother-complete-scene",
-   "file": "docs/qa/envrepair-supportcast/video/V02-jamies-mother-complete-scene.mp4",
-   "fps": 12,
-   "bytes": 7233243,
-   "sha256": "5d304b7575d58557f433c1500f7c9ed40db286d2d19e66cf4bdabd4b7b60be53",
-   "what": "Jamie's mother's complete Prologue scene in the running game: the door opens, she comes out, waves and calls (silently: she has no line), waits, Jamie arrives (the existing procedural Jamie: a placeholder, not Astra's Phase 1B character), she follows him in, the door closes. Camera: QA camera on the street in front of the house; the ride goes on as in the game."
   }
  ],
  "renderer": "Chromium (Playwright) with ANGLE SwiftShader — software rendering, not a GPU",

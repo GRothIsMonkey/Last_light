@@ -21,3 +21,6 @@ release/
 # Python bytecode caches of the Blender build scripts
 __pycache__/
 *.pyc
+
+# frame folders the review recorder writes and deletes while it encodes
+docs/qa/*/video/.frames-*/
