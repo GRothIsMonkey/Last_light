@@ -1,0 +1,201 @@
+{
+ "renderer": "Chromium (Playwright) + ANGLE SwiftShader — software rendering, not a GPU",
+ "commit": "0cacb35",
+ "cameras": [],
+ "runs": {
+  "six": {
+   "loadMs": 34661,
+   "cams": [
+    {
+     "cam": "C1 hoop kid",
+     "calls": 621,
+     "triangles": 962199,
+     "ms": 86.8,
+     "scUpdateMs": null,
+     "momVisible": null,
+     "heapMB": 1856,
+     "geos": 595,
+     "textures": 74
+    },
+    {
+     "cam": "C2 yards",
+     "calls": 612,
+     "triangles": 1074794,
+     "ms": 40.6,
+     "scUpdateMs": null,
+     "momVisible": null,
+     "heapMB": 1570,
+     "geos": 720,
+     "textures": 76
+    },
+    {
+     "cam": "C3 chain link",
+     "calls": 708,
+     "triangles": 1228176,
+     "ms": 11,
+     "scUpdateMs": null,
+     "momVisible": null,
+     "heapMB": 1563,
+     "geos": 872,
+     "textures": 79
+    },
+    {
+     "cam": "C4 Briarwood junction",
+     "calls": 601,
+     "triangles": 971114,
+     "ms": 19,
+     "scUpdateMs": null,
+     "momVisible": null,
+     "heapMB": 1567,
+     "geos": 1034,
+     "textures": 83
+    },
+    {
+     "cam": "C5 Jamie's porch (scene running)",
+     "calls": 634,
+     "triangles": 914315,
+     "ms": 17.2,
+     "scUpdateMs": null,
+     "momVisible": null,
+     "heapMB": 1562,
+     "geos": 1172,
+     "textures": 92
+    },
+    {
+     "cam": "C6 lookout",
+     "calls": 317,
+     "triangles": 454530,
+     "ms": 29.2,
+     "scUpdateMs": null,
+     "momVisible": null,
+     "heapMB": 1550,
+     "geos": 1234,
+     "textures": 94
+    }
+   ],
+   "er": null,
+   "sc": null
+  },
+  "eight": {
+   "loadMs": 34358,
+   "cams": [
+    {
+     "cam": "C1 hoop kid",
+     "calls": 652,
+     "triangles": 972221,
+     "ms": 76.3,
+     "scUpdateMs": 0.037,
+     "momVisible": false,
+     "heapMB": 1737,
+     "geos": 615,
+     "textures": 96
+    },
+    {
+     "cam": "C2 yards",
+     "calls": 665,
+     "triangles": 1098063,
+     "ms": 36.5,
+     "scUpdateMs": 0.168,
+     "momVisible": false,
+     "heapMB": 1737,
+     "geos": 741,
+     "textures": 98
+    },
+    {
+     "cam": "C3 chain link",
+     "calls": 751,
+     "triangles": 1222712,
+     "ms": 14.8,
+     "scUpdateMs": 0.001,
+     "momVisible": false,
+     "heapMB": 1626,
+     "geos": 893,
+     "textures": 101
+    },
+    {
+     "cam": "C4 Briarwood junction",
+     "calls": 602,
+     "triangles": 982442,
+     "ms": 10.5,
+     "scUpdateMs": 0.001,
+     "momVisible": false,
+     "heapMB": 1630,
+     "geos": 1055,
+     "textures": 105
+    },
+    {
+     "cam": "C5 Jamie's porch (scene running)",
+     "calls": 625,
+     "triangles": 976481,
+     "ms": 15.4,
+     "scUpdateMs": 0.287,
+     "momVisible": true,
+     "heapMB": 1623,
+     "geos": 1191,
+     "textures": 133
+    },
+    {
+     "cam": "C6 lookout",
+     "calls": 328,
+     "triangles": 516227,
+     "ms": 36.2,
+     "scUpdateMs": 0.075,
+     "momVisible": true,
+     "heapMB": 1645,
+     "geos": 1253,
+     "textures": 135
+    }
+   ],
+   "er": {
+    "loadMs": 3701
+   },
+   "sc": {
+    "loadMs": 1811,
+    "cast": {
+     "mother": {
+      "tris": 50714,
+      "bones": 65,
+      "bytes": 8356592,
+      "readMs": 253.3,
+      "parseMs": 953.3,
+      "textures": 15,
+      "materials": 9,
+      "clips": 6,
+      "morphs": 30,
+      "draws": 10
+     },
+     "kid": {
+      "tris": 25002,
+      "bones": 65,
+      "bytes": 3778800,
+      "readMs": 318,
+      "parseMs": 273.4,
+      "textures": 16,
+      "materials": 10,
+      "clips": 6,
+      "morphs": 30,
+      "draws": 10
+     }
+    }
+   }
+  }
+ },
+ "summary": {
+  "calls": [
+   3493,
+   3623
+  ],
+  "triangles": [
+   5605128,
+   5768146
+  ],
+  "ms": [
+   203.8,
+   189.7
+  ],
+  "load": [
+   34661,
+   34358
+  ]
+ }
+}
